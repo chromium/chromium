@@ -73,8 +73,6 @@ static_library("renderer") {
     "instant_restricted_id_cache.h",
     "loadtimes_extension_bindings.cc",
     "loadtimes_extension_bindings.h",
-    "media/chrome_key_systems.cc",
-    "media/chrome_key_systems.h",
     "media/flash_embed_rewrite.cc",
     "media/flash_embed_rewrite.h",
     "media/media_feeds.cc",
@@ -290,6 +288,13 @@ static_library("renderer") {
 
   if (enable_widevine_cdm_component) {
     deps += [ "//third_party/widevine/cdm:headers" ]
+  }
+
+  if (enable_library_cdms || is_win || is_android) {
+    sources += [
+      "media/chrome_key_systems.cc",
+      "media/chrome_key_systems.h",
+    ]
   }
 
   if (safe_browsing_mode != 0) {

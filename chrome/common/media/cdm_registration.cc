@@ -47,6 +47,10 @@
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "media/base/android/media_drm_bridge.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace {
 
 using Robustness = content::CdmInfo::Robustness;
@@ -142,7 +146,17 @@ content::CdmInfo* GetComponentUpdatedWidevine() {
         // BUILDFLAG(IS_CHROMEOS))
 
 void AddSoftwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  DVLOG(1) << __func__;
+
+#if BUILDFLAG(IS_ANDROID)
+  // On Android Widevine is done by MediaDrm, and should be supported on all
+  // devices. Register Widevine without any capabilities so that it will be
+  // checked the first time some page attempts to play protected content.
+  cdms->push_back(content::CdmInfo(kWidevineKeySystem,
+                                   Robustness::kSoftwareSecure, absl::nullopt,
+                                   kWidevineCdmType));
+
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #if defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
   base::Version glibc_version(gnu_get_libc_version());
   DCHECK(glibc_version.IsValid());
@@ -189,11 +203,21 @@ void AddSoftwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   } else {
     VLOG(1) << "Widevine enabled but no library found";
   }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
-#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+  DVLOG(1) << __func__;
+
+#if BUILDFLAG(IS_ANDROID)
+  // On Android Widevine is done by MediaDrm, and should be supported on all
+  // devices. Register Widevine without any capabilities so that it will be
+  // checked the first time some page attempts to play protected content.
+  cdms->push_back(content::CdmInfo(kWidevineKeySystem,
+                                   Robustness::kHardwareSecure, absl::nullopt,
+                                   kWidevineCdmType));
+
+#elif BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kLacrosUseChromeosProtectedMedia)) {
@@ -243,7 +267,7 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   cdms->push_back(
       content::CdmInfo(kWidevineKeySystem, Robustness::kHardwareSecure,
                        std::move(capability), content::kChromeOsCdmType));
-#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void AddWidevine(std::vector<content::CdmInfo>* cdms) {
@@ -286,6 +310,34 @@ void AddExternalClearKey(std::vector<content::CdmInfo>* cdms) {
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
+#if BUILDFLAG(IS_ANDROID)
+void AddOtherAndroidKeySystems(std::vector<content::CdmInfo>* cdms) {
+  // CdmInfo needs a CdmType, but on Android it is not used as the key system
+  // is supported by MediaDrm. Using a random value as something needs to be
+  // specified, but must be different than other CdmTypes specified.
+  // (On Android the key system is identified by UUID, and that mapping is
+  // maintained by MediaDrmBridge.)
+  const media::CdmType kAndroidCdmType{0x2e9dabb9c171c28cull,
+                                       0xf455252ec70b52adull};
+
+  // MediaDrmBridge returns a list of key systems available on the device
+  // that are not Widevine. Register them with no capabilities specified so
+  // that lazy evaluation can figure out what is supported when requested.
+  // We don't know if either software secure or hardware secure support is
+  // available, so register them both. Lazy evaluation will remove them
+  // if they aren't supported.
+  const auto key_system_names =
+      media::MediaDrmBridge::GetPlatformKeySystemNames();
+  for (const auto& key_system : key_system_names) {
+    DVLOG(3) << __func__ << " key_system:" << key_system;
+    cdms->push_back(content::CdmInfo(key_system, Robustness::kSoftwareSecure,
+                                     absl::nullopt, kAndroidCdmType));
+    cdms->push_back(content::CdmInfo(key_system, Robustness::kHardwareSecure,
+                                     absl::nullopt, kAndroidCdmType));
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 void RegisterCdmInfo(std::vector<content::CdmInfo>* cdms) {
@@ -300,4 +352,10 @@ void RegisterCdmInfo(std::vector<content::CdmInfo>* cdms) {
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   AddExternalClearKey(cdms);
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+  AddOtherAndroidKeySystems(cdms);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  DVLOG(3) << __func__ << " done with " << cdms->size() << " cdms";
 }

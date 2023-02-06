@@ -7,47 +7,39 @@
 #include <stddef.h>
 
 #include <string>
-#include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/strings/string_split.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
 #include "components/cdm/renderer/external_clear_key_key_system_info.h"
 #include "components/cdm/renderer/widevine_key_system_info.h"
-#include "content/public/renderer/render_thread.h"
-#include "media/base/decrypt_config.h"
+#include "content/public/renderer/key_system_support.h"
+#include "media/base/audio_codecs.h"
+#include "media/base/content_decryption_module.h"
 #include "media/base/eme_constants.h"
 #include "media/base/key_system_info.h"
+#include "media/base/media_switches.h"
+#include "media/base/video_codecs.h"
 #include "media/cdm/cdm_capability.h"
 #include "media/cdm/clear_key_cdm_common.h"
 #include "media/media_buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "components/cdm/renderer/android_key_systems.h"
-#endif
-
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN)
-#include "base/feature_list.h"
-#include "content/public/renderer/key_system_support.h"
-#include "media/base/media_switches.h"
-#include "media/base/video_codecs.h"
 #if BUILDFLAG(ENABLE_WIDEVINE)
 #include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_ANDROID)
+#include "components/cdm/renderer/android_key_system_info.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using media::CdmSessionType;
-using media::EmeConfig;
 using media::EmeFeatureSupport;
 using media::KeySystemInfo;
 using media::KeySystemInfos;
@@ -55,9 +47,7 @@ using media::SupportedCodecs;
 
 namespace {
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(ENABLE_WIDEVINE)
+#if BUILDFLAG(ENABLE_WIDEVINE) || BUILDFLAG(IS_ANDROID)
 SupportedCodecs GetVP9Codecs(
     const base::flat_set<media::VideoCodecProfile>& profiles) {
   if (profiles.empty()) {
@@ -236,42 +226,47 @@ SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability,
 
   return supported_codecs;
 }
+#endif  // BUILDFLAG(ENABLE_WIDEVINE) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_WIDEVINE)
 
 // Returns whether persistent-license session can be supported.
 bool CanSupportPersistentLicense() {
   // Do not support persistent-license if the process cannot persist data.
   // TODO(crbug.com/457487): Have a better plan on this. See bug for details.
+
   if (ChromeRenderThreadObserver::is_incognito_process()) {
     DVLOG(2) << __func__ << ": Not supported in incognito process.";
     return false;
   }
 
-// On ChromeOS, platform verification is similar to CDM host verification.
-#if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION) || BUILDFLAG(IS_CHROMEOS)
-  bool cdm_host_verification_potentially_supported = true;
-#else
-  bool cdm_host_verification_potentially_supported = false;
-#endif
-
-  // If we are sure CDM host verification is NOT supported, we should not
-  // support persistent-license.
-  if (!cdm_host_verification_potentially_supported) {
-    DVLOG(2) << __func__ << ": Not supported without CDM host verification.";
-    return false;
-  }
-
 #if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, platform verification is similar to CDM host verification
+  // and is always checked, so persistent licenses are allowed.
   // TODO(jrummell): Currently the ChromeOS CDM does not require storage ID
   // to support persistent license. Update this logic when the new CDM requires
   // storage ID.
   return true;
-#elif BUILDFLAG(ENABLE_CDM_STORAGE_ID)
-  // On other platforms, we require storage ID to support persistent license.
+
+#elif BUILDFLAG(IS_ANDROID)
+  // Since we do not control the implementation of the MediaDrm API on Android,
+  // we assume that it can and will make use of persistence no matter whether
+  // persistence-based features are supported or not.
   return true;
+
+#elif BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION) && \
+    BUILDFLAG(ENABLE_CDM_STORAGE_ID)
+  // On other platforms, persistent licenses are only supported if CDM host
+  // verification and CDM storage ID are available.
+  return true;
+
 #else
-  // Storage ID not implemented, so no support for persistent license.
-  DVLOG(2) << __func__ << ": Not supported without CDM storage ID.";
+  DVLOG_IF(2, !BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION))
+      << __func__ << ": Not supported without CDM host verification.";
+  DVLOG_IF(2, !BUILDFLAG(ENABLE_CDM_STORAGE_ID))
+      << __func__ << ": Not supported without CDM storage ID.";
   return false;
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -284,8 +279,18 @@ base::flat_set<CdmSessionType> UpdatePersistentLicenseSupport(
   return updated_session_types;
 }
 
-bool AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
+void AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
                  KeySystemInfos* key_systems) {
+#if BUILDFLAG(IS_ANDROID)
+  // When using MediaDrm, we assume it'll always try to persist some data.
+  // If we are in incognito mode and MediaDrm were to persist data, we are
+  // somewhat violating the incognito assumption, so don't allow this.
+  if (ChromeRenderThreadObserver::is_incognito_process()) {
+    DVLOG(2) << __func__ << ": Not supported in incognito process.";
+    return;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // Codecs and encryption schemes.
   SupportedCodecs codecs = media::EME_CODEC_NONE;
   SupportedCodecs hw_secure_codecs = media::EME_CODEC_NONE;
@@ -305,9 +310,11 @@ bool AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
         capability->sw_secure_capability->session_types);
     if (!base::Contains(session_types, CdmSessionType::kTemporary)) {
       DVLOG(1) << "Temporary sessions must be supported.";
-      return false;
+      return;
     }
     DVLOG(2) << "Software secure Widevine supported";
+  } else {
+    DVLOG(2) << "Software secure Widevine NOT supported";
   }
 
   if (capability->hw_secure_capability) {
@@ -323,17 +330,29 @@ bool AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
     hw_secure_codecs_clear_lead_support_not_required =
         GetSupportedCodecs(capability->hw_secure_capability.value(),
                            /*requires_clear_lead_support=*/false);
-#endif
+#endif  // BUILDFLAG(IS_WIN)
+
     hw_secure_encryption_schemes =
         capability->hw_secure_capability->encryption_schemes;
     hw_secure_session_types = UpdatePersistentLicenseSupport(
         capability->hw_secure_capability->session_types);
     if (!base::Contains(hw_secure_session_types, CdmSessionType::kTemporary)) {
       DVLOG(1) << "Temporary sessions must be supported.";
-      return false;
+      return;
     }
     DVLOG(2) << "Hardware secure Widevine supported";
+  } else {
+    DVLOG(2) << "Hardware secure Widevine NOT supported";
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // It doesn't make sense to support hw secure codecs but not regular codecs.
+  if (codecs == media::EME_CODEC_NONE) {
+    DCHECK(hw_secure_codecs == media::EME_CODEC_NONE);
+    DVLOG(3) << __func__ << " Widevine NOT supported.";
+    return;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Robustness.
   using Robustness = cdm::WidevineKeySystemInfo::Robustness;
@@ -349,6 +368,10 @@ bool AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
   // See WidevineKeySystemInfo::GetRobustnessConfigRule().
   max_audio_robustness = Robustness::HW_SECURE_ALL;
   max_video_robustness = Robustness::HW_SECURE_ALL;
+#elif BUILDFLAG(IS_ANDROID)
+  // On Android we support hardware secure if possible.
+  max_audio_robustness = Robustness::HW_SECURE_CRYPTO;
+  max_video_robustness = Robustness::HW_SECURE_ALL;
 #else
   // The hardware secure robustness for the two keys systems are guarded by
   // different flags. The audio and video robustness should be set differently
@@ -363,14 +386,20 @@ bool AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
     max_experimental_audio_robustness = Robustness::HW_SECURE_CRYPTO;
     max_experimental_video_robustness = Robustness::HW_SECURE_ALL;
   }
-#endif
-#endif
+#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Others.
   auto persistent_state_support = EmeFeatureSupport::REQUESTABLE;
   auto distinctive_identifier_support = EmeFeatureSupport::NOT_SUPPORTED;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   distinctive_identifier_support = EmeFeatureSupport::REQUESTABLE;
+#elif BUILDFLAG(IS_ANDROID)
+  // Since we do not control the implementation of the MediaDrm API on Android,
+  // we assume that it can and will make use of persistence no matter whether
+  // persistence-based features are supported or not.
+  persistent_state_support = EmeFeatureSupport::ALWAYS_ENABLED;
+  distinctive_identifier_support = EmeFeatureSupport::ALWAYS_ENABLED;
 #endif
 
   key_systems->emplace_back(std::make_unique<cdm::WidevineKeySystemInfo>(
@@ -399,8 +428,7 @@ bool AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
 
     key_systems->emplace_back(std::move(experimental_key_system_info));
   }
-#endif
-  return true;
+#endif  // BUILDFLAG(IS_WIN)
 }
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
@@ -418,13 +446,55 @@ void AddExternalClearKey(
   key_systems->push_back(std::make_unique<cdm::ExternalClearKeySystemInfo>());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void AddAndroidPlatformKeySystem(
+    const std::string& key_system,
+    const media::mojom::KeySystemCapabilityPtr& capability,
+    KeySystemInfos* key_systems) {
+  DCHECK_NE(key_system, kWidevineKeySystem);
+
+  // When using MediaDrm, we assume it'll always try to persist some data.
+  // If we are in incognito mode and MediaDrm were to persist data, we are
+  // somewhat violating the incognito assumption, so don't allow this.
+  if (ChromeRenderThreadObserver::is_incognito_process()) {
+    DVLOG(2) << __func__ << ": Key system " << key_system
+             << " not supported in incognito process.";
+    return;
+  }
+
+  // Codecs and encryption schemes.
+  SupportedCodecs sw_secure_codecs = media::EME_CODEC_NONE;
+  SupportedCodecs hw_secure_codecs = media::EME_CODEC_NONE;
+  base::flat_set<::media::EncryptionScheme> sw_secure_encryption_schemes;
+  base::flat_set<::media::EncryptionScheme> hw_secure_encryption_schemes;
+
+  if (capability->sw_secure_capability) {
+    sw_secure_codecs =
+        GetSupportedCodecs(capability->sw_secure_capability.value());
+    sw_secure_encryption_schemes =
+        capability->sw_secure_capability->encryption_schemes;
+    DVLOG(2) << "Software secure " << key_system << " supported";
+  }
+
+  if (capability->hw_secure_capability) {
+    hw_secure_codecs =
+        GetSupportedCodecs(capability->hw_secure_capability.value());
+    hw_secure_encryption_schemes =
+        capability->hw_secure_capability->encryption_schemes;
+    DVLOG(2) << "Hardware secure " << key_system << " supported";
+  }
+
+  key_systems->push_back(std::make_unique<cdm::AndroidKeySystemInfo>(
+      key_system, sw_secure_codecs, sw_secure_encryption_schemes,
+      hw_secure_codecs, hw_secure_encryption_schemes));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 void OnKeySystemSupportUpdated(
     media::GetSupportedKeySystemsCB cb,
     content::KeySystemCapabilityPtrMap key_system_capabilities) {
   KeySystemInfos key_systems;
-  for (const auto& entry : key_system_capabilities) {
-    const auto& key_system = entry.first;
-    const auto& capability = entry.second;
+  for (const auto& [key_system, capability] : key_system_capabilities) {
 #if BUILDFLAG(ENABLE_WIDEVINE)
     if (key_system == kWidevineKeySystem) {
       AddWidevine(capability, &key_systems);
@@ -437,28 +507,19 @@ void OnKeySystemSupportUpdated(
       continue;
     }
 
+#if BUILDFLAG(IS_ANDROID)
+    AddAndroidPlatformKeySystem(key_system, capability, &key_systems);
+#else
     DLOG(ERROR) << "Unrecognized key system: " << key_system;
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   cb.Run(std::move(key_systems));
 }
 
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN)
-
 }  // namespace
 
 void GetChromeKeySystems(media::GetSupportedKeySystemsCB cb) {
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_WIDEVINE)
-  KeySystemInfos key_systems;
-  cdm::AddAndroidWidevine(&key_systems);
-  std::move(cb).Run(std::move(key_systems));
-  return;
-#elif BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN)
   content::ObserveKeySystemSupportUpdate(
       base::BindRepeating(&OnKeySystemSupportUpdated, std::move(cb)));
-  return;
-#else
-  std::move(cb).Run({});
-  return;
-#endif
 }

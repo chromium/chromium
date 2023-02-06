@@ -102,7 +102,7 @@ target(link_target_type, "renderer_sources") {
     deps += [ "//sandbox" ]
   }
 
-  if (enable_library_cdms) {
+  if (enable_library_cdms || is_win || is_android) {
     sources += [
       "key_system_support.cc",
       "key_system_support.h",

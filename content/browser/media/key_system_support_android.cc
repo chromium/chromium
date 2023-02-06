@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "base/android/build_info.h"
+#include "base/feature_list.h"
+#include "content/public/browser/android/android_overlay_provider.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/android/media_drm_bridge.h"
@@ -15,6 +17,7 @@
 #include "media/base/content_decryption_module.h"
 #include "media/base/eme_constants.h"
 #include "media/base/encryption_scheme.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/video_codecs.h"
 
@@ -80,6 +83,22 @@ void GetAndroidCdmCapability(const std::string& key_system,
     return;
   }
 
+  if (is_secure) {
+    // Rendering of hardware secure codecs is only supported when
+    // AndroidOverlay is enabled.
+    // TODO(crbug.com/853336): Allow Cast override.
+    bool are_overlay_supported =
+        content::AndroidOverlayProvider::GetInstance()->AreOverlaysSupported();
+    bool overlay_fullscreen_video =
+        base::FeatureList::IsEnabled(media::kOverlayFullscreenVideo);
+    if (!are_overlay_supported || !overlay_fullscreen_video) {
+      DVLOG(1) << "Hardware secure codecs not supported for key system"
+               << key_system << ".";
+      std::move(cdm_capability_cb).Run(absl::nullopt);
+      return;
+    }
+  }
+
   const std::vector<media::VideoCodecProfile> kAllProfiles = {};
   media::CdmCapability capability;
   if (MediaDrmBridge::IsKeySystemSupportedWithType(key_system, "video/webm")) {
@@ -122,6 +141,18 @@ void GetAndroidCdmCapability(const std::string& key_system,
         }
       }
     }
+  }
+
+  if (is_secure && capability.video_codecs.empty()) {
+    // There are currently no hardware secure audio codecs on Android.
+    // If there are no hardware secure video codecs available and the check
+    // is for hardware secure, then this key system is not available.
+    // TODO(b/266240828): Add checking for hardware secure audio codecs
+    // once they exist.
+    DVLOG(1) << "Key system " << key_system
+             << " not supported as no hardware secure video codecs available.";
+    std::move(cdm_capability_cb).Run(absl::nullopt);
+    return;
   }
 
   // For VP9 and HEVC, if they are supported, then determine which profiles
