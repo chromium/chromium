@@ -57,8 +57,7 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
 void MediaBrowserTest::RunMediaTestPage(const std::string& html_page,
                                         const base::StringPairs& query_params,
                                         const std::string& expected_title,
-                                        bool http,
-                                        bool with_transient_activation) {
+                                        bool http) {
   GURL gurl;
   std::string query = media::GetURLQueryString(query_params);
   std::unique_ptr<net::EmbeddedTestServer> http_test_server;
@@ -73,14 +72,12 @@ void MediaBrowserTest::RunMediaTestPage(const std::string& html_page,
     gurl = content::GetFileUrlWithQuery(media::GetTestDataFilePath(html_page),
                                         query);
   }
-  std::string final_title =
-      RunTest(gurl, expected_title, with_transient_activation);
+  std::string final_title = RunTest(gurl, expected_title);
   EXPECT_EQ(expected_title, final_title);
 }
 
 std::string MediaBrowserTest::RunTest(const GURL& gurl,
-                                      const std::string& expected_title,
-                                      bool with_transient_activation) {
+                                      const std::string& expected_title) {
   DVLOG(0) << base::TimeFormatTimeOfDayWithMilliseconds(base::Time::Now())
            << " Running test URL: " << gurl;
 
@@ -89,12 +86,6 @@ std::string MediaBrowserTest::RunTest(const GURL& gurl,
       base::ASCIIToUTF16(expected_title));
   AddWaitForTitles(&title_watcher);
   CHECK(ui_test_utils::NavigateToURL(browser(), gurl));
-
-  if (with_transient_activation) {
-    content::WebContents* tab =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    EXPECT_TRUE(content::ExecJs(tab, "runTest()"));
-  }
   std::u16string result = title_watcher.WaitAndGetTitle();
   return base::UTF16ToASCII(result);
 }
