@@ -607,8 +607,9 @@ PhysicalRect LayoutView::ViewRect() const {
       DCHECK_GE(transition->GetSnapshotRootSize().height(),
                 frame_view_->Size().height());
 
-      return PhysicalRect(PhysicalOffset(),
-                          PhysicalSize(transition->GetSnapshotRootSize()));
+      return PhysicalRect(
+          PhysicalOffset(transition->GetFrameToSnapshotRootOffset()),
+          PhysicalSize(transition->GetSnapshotRootSize()));
     }
   }
 
