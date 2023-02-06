@@ -25,7 +25,7 @@ FileSystemDirectoryIterator::FileSystemDirectoryIterator(
       directory_(directory),
       receiver_(this, execution_context) {
   directory_->MojoHandle()->GetEntries(receiver_.BindNewPipeAndPassRemote(
-      execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+      execution_context->GetTaskRunner(TaskType::kStorage)));
 }
 
 ScriptPromise FileSystemDirectoryIterator::next(ScriptState* script_state) {

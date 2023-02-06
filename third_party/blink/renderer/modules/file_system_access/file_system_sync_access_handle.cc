@@ -18,9 +18,8 @@ FileSystemSyncAccessHandle::FileSystemSyncAccessHandle(
     mojo::PendingRemote<mojom::blink::FileSystemAccessAccessHandleHost>
         access_handle_remote)
     : file_delegate_(file_delegate), access_handle_remote_(context) {
-  access_handle_remote_.Bind(
-      std::move(access_handle_remote),
-      context->GetTaskRunner(TaskType::kMiscPlatformAPI));
+  access_handle_remote_.Bind(std::move(access_handle_remote),
+                             context->GetTaskRunner(TaskType::kStorage));
   DCHECK(access_handle_remote_.is_bound());
 }
 

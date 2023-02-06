@@ -33,7 +33,7 @@ FileSystemFileHandle::FileSystemFileHandle(
     mojo::PendingRemote<mojom::blink::FileSystemAccessFileHandle> mojo_ptr)
     : FileSystemHandle(context, name), mojo_ptr_(context) {
   mojo_ptr_.Bind(std::move(mojo_ptr),
-                 context->GetTaskRunner(TaskType::kMiscPlatformAPI));
+                 context->GetTaskRunner(TaskType::kStorage));
   DCHECK(mojo_ptr_.is_bound());
 }
 

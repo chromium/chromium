@@ -91,7 +91,7 @@ FileSystemAccessIncognitoFileDelegate::FileSystemAccessIncognitoFileDelegate(
       write_helper_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({})) {
   mojo_ptr_.Bind(std::move(incognito_file_remote),
-                 context->GetTaskRunner(TaskType::kMiscPlatformAPI));
+                 context->GetTaskRunner(TaskType::kStorage));
   DCHECK(mojo_ptr_.is_bound());
 }
 

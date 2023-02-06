@@ -33,7 +33,7 @@ FileSystemUnderlyingSink::FileSystemUnderlyingSink(
     mojo::PendingRemote<mojom::blink::FileSystemAccessFileWriter> writer_remote)
     : writer_remote_(context) {
   writer_remote_.Bind(std::move(writer_remote),
-                      context->GetTaskRunner(TaskType::kMiscPlatformAPI));
+                      context->GetTaskRunner(TaskType::kStorage));
   DCHECK(writer_remote_.is_bound());
 }
 

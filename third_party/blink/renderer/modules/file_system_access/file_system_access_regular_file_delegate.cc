@@ -56,7 +56,7 @@ FileSystemAccessRegularFileDelegate::FileSystemAccessRegularFileDelegate(
           std::move(capacity_allocation_host_remote),
           backing_file_size,
           base::PassKey<FileSystemAccessRegularFileDelegate>())),
-      task_runner_(context->GetTaskRunner(TaskType::kMiscPlatformAPI)) {
+      task_runner_(context->GetTaskRunner(TaskType::kStorage)) {
 }
 
 base::FileErrorOr<int> FileSystemAccessRegularFileDelegate::Read(
