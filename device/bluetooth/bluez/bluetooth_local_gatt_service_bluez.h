@@ -6,20 +6,17 @@
 #define DEVICE_BLUETOOTH_BLUEZ_BLUETOOTH_LOCAL_GATT_SERVICE_BLUEZ_H_
 
 #include <string>
-#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_local_gatt_service.h"
+#include "device/bluetooth/bluez/bluetooth_adapter_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_gatt_service_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_local_gatt_characteristic_bluez.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace bluez {
-
-class BluetoothAdapterBlueZ;
-class BluetoothLocalGattCharacteristicBlueZ;
 
 // The BluetoothLocalGattServiceBlueZ class implements BluetootGattService
 // for local GATT services for platforms that use BlueZ.

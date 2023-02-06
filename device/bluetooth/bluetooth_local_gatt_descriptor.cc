@@ -6,21 +6,43 @@
 
 #include "base/notreached.h"
 #include "build/build_config.h"
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+    !defined(LINUX_WITHOUT_DBUS)
+#include "device/bluetooth/bluez/bluetooth_local_gatt_descriptor_bluez.h"
+#include "device/bluetooth/floss/floss_features.h"
+#endif
 
 namespace device {
 
-#if (!BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)) || \
-    defined(LINUX_WITHOUT_DBUS)
 // static
 base::WeakPtr<BluetoothLocalGattDescriptor>
 BluetoothLocalGattDescriptor::Create(
     const BluetoothUUID& uuid,
     BluetoothGattCharacteristic::Permissions permissions,
     BluetoothLocalGattCharacteristic* characteristic) {
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+    !defined(LINUX_WITHOUT_DBUS)
+  DCHECK(characteristic);
+  if (floss::features::IsFlossEnabled()) {
+    // TODO: Floss local gatt work.
+    // return (new floss::BluetoothLocalGattDescriptorFloss(
+    //             uuid, permissions,
+    //             static_cast<floss::BluetoothLocalGattCharacteristicFloss*>(
+    //                 characteristic)))
+    //     ->weak_ptr_factory_.GetWeakPtr();
+    return nullptr;
+  } else {
+    return (new bluez::BluetoothLocalGattDescriptorBlueZ(
+                uuid, permissions,
+                static_cast<bluez::BluetoothLocalGattCharacteristicBlueZ*>(
+                    characteristic)))
+        ->weak_ptr_factory_.GetWeakPtr();
+  }
+#else
   NOTIMPLEMENTED();
   return nullptr;
-}
 #endif
+}
 
 BluetoothLocalGattDescriptor::BluetoothLocalGattDescriptor() = default;
 

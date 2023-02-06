@@ -14,11 +14,13 @@
 #include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
 #include "device/bluetooth/bluez/bluetooth_gatt_characteristic_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_local_gatt_descriptor_bluez.h"
+#include "device/bluetooth/bluez/bluetooth_local_gatt_service_bluez.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace bluez {
 
 class BluetoothLocalGattServiceBlueZ;
+class BluetoothLocalGattDescriptorBlueZ;
 
 // The BluetoothLocalGattCharacteristicBlueZ class implements
 // BluetoothLocalGattCharacteristic for local GATT characteristics for

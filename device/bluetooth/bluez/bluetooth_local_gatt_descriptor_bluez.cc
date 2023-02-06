@@ -11,26 +11,6 @@
 #include "device/bluetooth/bluez/bluetooth_local_gatt_characteristic_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_local_gatt_service_bluez.h"
 
-namespace device {
-
-// static
-base::WeakPtr<BluetoothLocalGattDescriptor>
-BluetoothLocalGattDescriptor::Create(
-    const BluetoothUUID& uuid,
-    BluetoothGattCharacteristic::Permissions permissions,
-    BluetoothLocalGattCharacteristic* characteristic) {
-  DCHECK(characteristic);
-  bluez::BluetoothLocalGattCharacteristicBlueZ* characteristic_bluez =
-      static_cast<bluez::BluetoothLocalGattCharacteristicBlueZ*>(
-          characteristic);
-  bluez::BluetoothLocalGattDescriptorBlueZ* descriptor =
-      new bluez::BluetoothLocalGattDescriptorBlueZ(uuid, permissions,
-                                                   characteristic_bluez);
-  return descriptor->weak_ptr_factory_.GetWeakPtr();
-}
-
-}  // namespace device
-
 namespace bluez {
 
 BluetoothLocalGattDescriptorBlueZ::BluetoothLocalGattDescriptorBlueZ(

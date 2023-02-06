@@ -11,25 +11,6 @@
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluez/bluetooth_adapter_bluez.h"
 
-namespace device {
-
-// static
-base::WeakPtr<BluetoothLocalGattService> BluetoothLocalGattService::Create(
-    BluetoothAdapter* adapter,
-    const BluetoothUUID& uuid,
-    bool is_primary,
-    BluetoothLocalGattService* included_service,
-    BluetoothLocalGattService::Delegate* delegate) {
-  bluez::BluetoothAdapterBlueZ* adapter_bluez =
-      static_cast<bluez::BluetoothAdapterBlueZ*>(adapter);
-  bluez::BluetoothLocalGattServiceBlueZ* service =
-      new bluez::BluetoothLocalGattServiceBlueZ(adapter_bluez, uuid, is_primary,
-                                                delegate);
-  return service->weak_ptr_factory_.GetWeakPtr();
-}
-
-}  // namespace device
-
 namespace bluez {
 
 BluetoothLocalGattServiceBlueZ::BluetoothLocalGattServiceBlueZ(
