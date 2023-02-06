@@ -292,9 +292,11 @@ class BASE_EXPORT ThreadController {
         TraceObserverForTesting* trace_observer_for_testing);
 
    private:
+#if BUILDFLAG(ENABLE_BASE_TRACING)
     using TerminatingFlowLambda =
         std::invoke_result<decltype(perfetto::TerminatingFlow::FromPointer),
                            void*>::type;
+#endif
 
     // Keeps track of the time spent in various Phases (ignores idle), reports
     // via UMA to the corresponding phase every time one reaches >= 100ms of
