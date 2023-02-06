@@ -318,35 +318,6 @@ TEST_F(IOSChromePasswordCheckManagerTest, CheckFinishedWithDelay) {
   manager().RemoveObserver(&observer);
 }
 
-// Tests that the correct number of compromised credentials is returned.
-TEST_F(IOSChromePasswordCheckManagerTest, CheckCompromisedCredentialsCount) {
-  // Enable unmuted compromised credential feature and disable Password Checkup
-  // feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitWithFeatures(
-      /*enabled_features=*/{password_manager::features::
-                                kMuteCompromisedPasswords},
-      /*disabled_features=*/{password_manager::features::kIOSPasswordCheckup});
-
-  // Add a muted password.
-  PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername216);
-  AddIssueToForm(&form1, InsecureType::kLeaked, base::Minutes(1), true);
-  store().AddLogin(form1);
-  RunUntilIdle();
-  // Should return an empty list because the compromised credential is muted.
-  EXPECT_THAT(manager().GetInsecureCredentials(), IsEmpty());
-
-  // Add an unmuted password.
-  PasswordForm form2 = MakeSavedPassword(kExampleCom, kUsername116);
-  AddIssueToForm(&form2, InsecureType::kLeaked, base::Minutes(1), false);
-  store().AddLogin(form2);
-  RunUntilIdle();
-
-  // Should return only the unmuted compromised credentials.
-  EXPECT_THAT(manager().GetInsecureCredentials(),
-              ElementsAre(CredentialUIEntry(form2)));
-}
-
 // Tests that the correct warning type is returned.
 TEST_F(IOSChromePasswordCheckManagerTest,
        CheckReturnedHighestPriorityWarningType) {

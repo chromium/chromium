@@ -1924,11 +1924,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-compromised-passwords-muting",
-    "owners": [ "noemies@google.com", "tmartino" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "enable-cooperative-scheduling",
     "owners": [ "keishi" ],
     "expiry_milestone": 85

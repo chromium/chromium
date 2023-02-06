@@ -117,16 +117,6 @@ BASE_FEATURE(kMemoryMapWeaknessCheckDictionaries,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Enables (un)muting compromised passwords from bulk leak check in settings.
-BASE_FEATURE(kMuteCompromisedPasswords,
-             "MuteCompromisedPasswords",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
-
 // Enables new regex for OTP fields.
 BASE_FEATURE(kNewRegexForOtpFields,
              "NewRegexForOtpFields",
