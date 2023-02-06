@@ -1853,8 +1853,9 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   bool success = false;
   if (actualRange)
     gfxActualRange = gfx::Range::FromPossiblyInvalidNSRange(*actualRange);
-  _host->SyncGetFirstRectForRange(gfx::Range(theRange), &gfxRect,
-                                  &gfxActualRange, &success);
+  _host->SyncGetFirstRectForRange(
+      gfx::Range::FromPossiblyInvalidNSRange(theRange), &gfxRect,
+      &gfxActualRange, &success);
   if (!success) {
     // The call to cancelComposition comes from https://crrev.com/350261.
     [self cancelComposition];
