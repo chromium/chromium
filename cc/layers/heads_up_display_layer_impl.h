@@ -174,7 +174,11 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
 
   ResourcePool::InUsePoolResource in_flight_resource_;
   std::unique_ptr<ResourcePool> pool_;
-  raw_ptr<viz::DrawQuad> current_quad_ = nullptr;
+  // A reference to the DrawQuad that will be replaced by a quad containing the
+  // HUD's contents. The actual quad can't be created until UpdateHudTexture()
+  // which happens during draw, so we hold this reference to it when
+  // constructing the placeholder between these two steps in the draw process.
+  raw_ptr<viz::DrawQuad> placeholder_quad_ = nullptr;
   // Used for software raster when it will be uploaded to a texture.
   sk_sp<SkSurface> staging_surface_;
 

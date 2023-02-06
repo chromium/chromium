@@ -45,13 +45,15 @@ gn args ./out/dangling/
 ```gn
 use_goma = true
 is_debug = false  # Important! (*)
+is_component_build = false  # Important! (*)
 dcheck_always_on = true
-enable_backup_ref_ptr_support = true  # true by default on most platforms
+enable_backup_ref_ptr_support = true  # true by default on some platforms
 enable_dangling_raw_ptr_checks = true
 ```
 
-(*) We want to emphasize that `is_debug = false` is important. It is a common
-mistake to set it to `true`, which in turn turns on component builds, which
+(*) We want to emphasize that setting either `is_debug = false` or
+`is_component_build = false` is important. It is a common mistake to set
+`is_debug` to `true`, which in turn turns on component builds, which
 disables PartitionAlloc-Everywhere. `enable_backup_ref_ptr_support = true` can't
 be used without PartitionAlloc-Everywhere, and is silently set to `false`.
 
