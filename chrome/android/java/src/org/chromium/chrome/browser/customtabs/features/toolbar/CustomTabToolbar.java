@@ -951,7 +951,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 mTitleBar.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                         getResources().getDimension(R.dimen.custom_tabs_title_text_size));
                 // Refresh the status icon and url bar.
-                mLocationBarModel.notifyUrlChanged();
+                updateUrlBar();
                 mLocationBarModel.notifySecurityStateChanged();
             } else {
                 if (CustomTabsConnection.getInstance().isDynamicFeatureEnabled(
@@ -1085,14 +1085,16 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             ImageViewCompat.setImageTintList(mSecurityButton, colorStateList);
             mAnimDelegate.updateSecurityButton(R.drawable.chromelogo16, mAnimateIconTransition);
 
-            mUrlBar.setText(R.string.twa_running_in_chrome);
+            mUrlCoordinator.setUrlBarData(UrlBarData.forNonUrlText(getContext().getString(
+                                                  R.string.twa_running_in_chrome)),
+                    UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_ALL);
         }
 
         private void runAfterBrandingRunnables() {
             // Always refresh the security icon and URL bar when branding is finished.
             // If Title is changed during branding, it should already get addressed in
             // #setShowTitle.
-            mLocationBarModel.notifyUrlChanged();
+            updateUrlBar();
             mLocationBarModel.notifySecurityStateChanged();
 
             for (int i = 0; i < mAfterBrandingRunnables.length; i++) {
