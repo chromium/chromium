@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/thread_annotations.h"
-#include "content/browser/attribution_reporting/attribution_reporting.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/common/content_export.h"
 
@@ -17,6 +16,24 @@ namespace content {
 
 struct AttributionConfig;
 class CommonSourceInfo;
+
+enum class AttributionNoiseMode {
+  // Various aspects of the API are subject to noise:
+  // - Sources are subject to randomized response
+  // - Reports within a reporting window are shuffled
+  // - Pending reports are randomly delayed when the browser comes online
+  kDefault,
+  // None of the above applies.
+  kNone,
+};
+
+enum class AttributionDelayMode {
+  // Reports are sent in reporting windows some time after attribution is
+  // triggered.
+  kDefault,
+  // Reports are sent immediately after attribution is triggered.
+  kNone,
+};
 
 // Implementation of the storage delegate. This class handles assigning
 // report times to newly created reports. It

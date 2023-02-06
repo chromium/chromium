@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/attribution_reporting.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
