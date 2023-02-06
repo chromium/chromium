@@ -594,7 +594,10 @@ void TurnSyncOnHelper::ShowSyncConfirmationUI() {
 
   // The sync disabled dialog has an explicit "sign-out" label for the
   // LoginUIService::ABORT_SYNC action, force the mode to remove the account.
-  signin_aborted_mode_ = SigninAbortedMode::REMOVE_ACCOUNT;
+  if (!chrome::enterprise_util::UserAcceptedAccountManagement(profile_) ||
+      !base::FeatureList::IsEnabled(kDisallowManagedProfileSignout)) {
+    signin_aborted_mode_ = SigninAbortedMode::REMOVE_ACCOUNT;
+  }
   // Use the email-based heuristic if `account_info_` isn't fully initialized.
   const bool is_managed_account =
       account_info_.IsValid()

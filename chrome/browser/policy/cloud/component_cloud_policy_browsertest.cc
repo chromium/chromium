@@ -7,6 +7,7 @@
 
 #include "base/base64url.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -344,6 +346,12 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_InstallNewExtension) {
 // Signing out on Lacros is not possible.
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, SignOutAndBackIn) {
+  // Signout is not enabled when this feature is enabled.
+  if (base::FeatureList::IsEnabled(kDisallowManagedProfileSignout)) {
+    event_listener_->Reply("idle");
+    event_listener_.reset();
+    return;
+  }
   // Read the initial policy.
   ExtensionTestMessageListener initial_policy_listener(
       kTestPolicyJSON, ReplyBehavior::kWillReply);

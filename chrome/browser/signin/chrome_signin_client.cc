@@ -27,6 +27,7 @@
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/force_signin_verifier.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -304,9 +305,17 @@ SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(
 #endif
 
   // Check if managed user.
-  if (chrome::enterprise_util::UserAcceptedAccountManagement(profile_) &&
-      has_sync_account) {
-    return SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED;
+  if (chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
+    if (base::FeatureList::IsEnabled(kDisallowManagedProfileSignout)) {
+      // Allow revoke sync but disallow signout regardless of consent level of
+      // the primary account.
+      return SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED;
+    }
+    // Syncing users are not allowed to revoke sync or signout. Signed in non-
+    // syncing users don't have any signout restrictions related to management.
+    if (has_sync_account) {
+      return SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED;
+    }
   }
   return SigninClient::SignoutDecision::ALLOW;
 }

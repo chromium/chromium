@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/browser/signin/chrome_signin_client.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/pref_names.h"
@@ -108,7 +110,6 @@ void UserPolicySigninService::OnPrimaryAccountChanged(
              !CanApplyPolicies(/*check_for_refresh_token=*/true)) {
     ShutdownUserCloudPolicyManager();
   }
-
   if (!IsAnySigninEvent(event))
     return;
 
@@ -179,15 +180,17 @@ void UserPolicySigninService::OnProfileUserManagementAcceptanceChanged(
 }
 
 void UserPolicySigninService::ProhibitSignoutIfNeeded() {
-  if (!policy_manager()->IsClientRegistered() &&
+  if ((!policy_manager() || !policy_manager()->IsClientRegistered()) &&
       !internal::g_force_prohibit_signout_for_tests) {
     return;
   }
 
   DVLOG(1) << "User is registered for policy - prohibiting signout";
+  bool has_sync_account =
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync);
 
   if (!chrome::enterprise_util::UserAcceptedAccountManagement(profile_) &&
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+      has_sync_account) {
     // Ensure user accepted management bit is set.
     chrome::enterprise_util::SetUserAcceptedAccountManagement(profile_, true);
   }
@@ -197,12 +200,20 @@ void UserPolicySigninService::ProhibitSignoutIfNeeded() {
   // signout.
   // The user accepted management bit is set in the profile storage. If there
   // is no profile storage, the bit will not be set.
-  if (identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
+  if (!base::FeatureList::IsEnabled(kDisallowManagedProfileSignout) &&
+      has_sync_account &&
       chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
     auto* signin_client = ChromeSigninClientFactory::GetForProfile(profile_);
     DCHECK(!signin_client->IsRevokeSyncConsentAllowed());
     DCHECK(!signin_client->IsClearPrimaryAccountAllowed(
         /*has_sync_account=*/true));
+  }
+
+  if (base::FeatureList::IsEnabled(kDisallowManagedProfileSignout) &&
+      chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
+    auto* sigin_client = ChromeSigninClientFactory::GetForProfile(profile_);
+    DCHECK(sigin_client->IsRevokeSyncConsentAllowed());
+    DCHECK(!sigin_client->IsClearPrimaryAccountAllowed(has_sync_account));
   }
 #endif
 }
