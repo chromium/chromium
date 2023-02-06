@@ -449,6 +449,13 @@ TEST(CheckDeathTest, OstreamVsToString) {
     logging::SetLogMessageHandler(nullptr);                                    \
   } while (0)
 
+// This non-void function is here to make sure that NOTREACHED_NORETURN() is
+// properly annotated as [[noreturn]] and does not require a return statement.
+int NotReachedNoreturnInFunction() {
+  NOTREACHED_NORETURN();
+  // No return statement here.
+}
+
 TEST(CheckDeathTest, NotReached) {
 #if DCHECK_IS_ON()
   // Expect a DCHECK with streamed params intact.
@@ -463,6 +470,8 @@ TEST(CheckDeathTest, NotReached) {
   EXPECT_LOG_ERROR_WITH_FILENAME("", -1, NOTREACHED() << "foo",
                                  "Check failed: false. \n");
 #endif
+  EXPECT_DEATH_IF_SUPPORTED(NotReachedNoreturnInFunction(),
+                            CHECK_WILL_STREAM() ? "NOTREACHED hit. " : "");
 }
 
 TEST(CheckTest, NotImplemented) {

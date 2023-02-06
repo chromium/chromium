@@ -205,6 +205,24 @@ void NotReachedError::TriggerNotReached() {
 
 NotReachedError::~NotReachedError() = default;
 
+NotReachedNoreturnError::NotReachedNoreturnError(const char* file, int line)
+    : CheckError([file, line]() {
+        auto* const log_message = new LogMessage(file, line, LOGGING_FATAL);
+        log_message->stream() << "NOTREACHED hit. ";
+        return log_message;
+      }()) {}
+
+// Note: This function ends up in crash stack traces. If its full name changes,
+// the crash server's magic signature logic needs to be updated. See
+// cl/306632920.
+NotReachedNoreturnError::~NotReachedNoreturnError() {
+  delete log_message_;
+
+  // Make sure we die if we haven't. LOG(FATAL) is not yet [[noreturn]] as of
+  // writing this.
+  base::ImmediateCrash();
+}
+
 void RawCheck(const char* message) {
   RawLog(LOGGING_FATAL, message);
 }

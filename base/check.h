@@ -93,7 +93,7 @@ class BASE_EXPORT CheckError {
     return stream() << streamed_type;
   }
 
- private:
+ protected:
   LogMessage* const log_message_;
 };
 
@@ -111,6 +111,15 @@ class BASE_EXPORT NotReachedError : public CheckError {
 
  private:
   using CheckError::CheckError;
+};
+
+// TODO(crbug.com/851128): This should take the name of the above class once all
+// callers of NOTREACHED() have migrated to the CHECK-fatal version.
+class BASE_EXPORT NotReachedNoreturnError : public CheckError {
+ public:
+  NotReachedNoreturnError(const char* file, int line);
+
+  [[noreturn]] NOMERGE NOINLINE NOT_TAIL_CALLED ~NotReachedNoreturnError();
 };
 
 // The 'switch' is used to prevent the 'else' from being ambiguous when the
