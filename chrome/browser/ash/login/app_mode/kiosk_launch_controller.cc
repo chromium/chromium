@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
@@ -17,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/syslog_logging.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_service.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
@@ -48,9 +50,6 @@
 namespace ash {
 namespace {
 
-// Web Kiosk splash screen minimum show time.
-constexpr base::TimeDelta kKioskSplashScreenMinTime = base::Seconds(10);
-
 // Time of waiting for the network to be ready to start installation. Can be
 // changed in tests.
 constexpr base::TimeDelta kKioskNetworkWaitTime = base::Seconds(10);
@@ -61,9 +60,9 @@ bool g_skip_splash_wait_for_testing = false;
 bool g_block_app_launch_for_testing = false;
 // Whether we should prevent Kiosk launcher from exiting when launch fails.
 bool g_block_exit_on_failure_for_testing = false;
-// Whether we should disable splash wait timer and do not perform any operations
-// using KioskProfileLoader. Used in tests.
-bool g_disable_wait_timer_and_login_operations = false;
+// Whether we should disable any operations using KioskProfileLoader. Used in
+// tests.
+bool g_disable_login_operations = false;
 
 base::OnceClosure* network_timeout_callback = nullptr;
 KioskLaunchController::ReturnBoolCallback* can_configure_network_callback =
@@ -184,9 +183,32 @@ std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
   NOTREACHED();
 }
 
+base::TimeDelta GetSplashScreenMinTime() {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+
+  std::string min_time_string = command_line->GetSwitchValueASCII(
+      ash::switches::kKioskSplashScreenMinTimeSeconds);
+
+  if (min_time_string.empty()) {
+    return kDefaultKioskSplashScreenMinTime;
+  }
+
+  int min_time_in_seconds;
+  if (!base::StringToInt(min_time_string, &min_time_in_seconds) ||
+      min_time_in_seconds < 0) {
+    LOG(ERROR) << "Ignored " << ash::switches::kKioskSplashScreenMinTimeSeconds
+               << "=" << min_time_string;
+    return kDefaultKioskSplashScreenMinTime;
+  }
+
+  return base::Seconds(min_time_in_seconds);
+}
+
 }  // namespace
 
 const char kKioskLaunchStateCrashKey[] = "kiosk-launch-state";
+const base::TimeDelta kDefaultKioskSplashScreenMinTime = base::Seconds(10);
 
 std::string KioskLaunchStateToString(KioskLaunchState state) {
   switch (state) {
@@ -256,13 +278,13 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
   splash_screen_view_->SetDelegate(this);
   splash_screen_view_->Show();
 
-  if (g_disable_wait_timer_and_login_operations) {
-    return;
-  }
-
-  splash_wait_timer_.Start(FROM_HERE, kKioskSplashScreenMinTime,
+  splash_wait_timer_.Start(FROM_HERE, GetSplashScreenMinTime(),
                            base::BindOnce(&KioskLaunchController::OnTimerFire,
                                           weak_ptr_factory_.GetWeakPtr()));
+
+  if (g_disable_login_operations) {
+    return;
+  }
 
   kiosk_profile_loader_ = std::make_unique<KioskProfileLoader>(
       *kiosk_app_id_.account_id, kiosk_app_id_.type, /*delegate=*/this);
@@ -855,9 +877,9 @@ void KioskLaunchController::LaunchApp() {
 
 // static
 std::unique_ptr<base::AutoReset<bool>>
-KioskLaunchController::DisableWaitTimerAndLoginOperationsForTesting() {
-  return std::make_unique<base::AutoReset<bool>>(
-      &g_disable_wait_timer_and_login_operations, true);
+KioskLaunchController::DisableLoginOperationsForTesting() {
+  return std::make_unique<base::AutoReset<bool>>(&g_disable_login_operations,
+                                                 true);
 }
 
 // static

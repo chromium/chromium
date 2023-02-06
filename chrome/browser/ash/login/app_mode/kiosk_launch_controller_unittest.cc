@@ -6,9 +6,12 @@
 
 #include <memory>
 
+#include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/app_mode/fake_kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
@@ -100,7 +103,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
         ChromeKeyboardControllerClientTestHelper::InitializeWithFake();
 
     disable_wait_timer_and_login_operations_for_testing_ =
-        KioskLaunchController::DisableWaitTimerAndLoginOperationsForTesting();
+        KioskLaunchController::DisableLoginOperationsForTesting();
 
     view_ = std::make_unique<FakeAppLaunchSplashScreenHandler>();
     controller_ = std::make_unique<KioskLaunchController>(
@@ -158,7 +161,9 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
         Eq(error));
   }
 
-  void FireSplashScreenTimer() { controller_->OnTimerFire(); }
+  void FireSplashScreenTimer() {
+    task_environment()->FastForwardBy(kDefaultKioskSplashScreenMinTime);
+  }
 
   void DeleteSplashScreen() { controller_->OnDeletingSplashScreenView(); }
 
@@ -250,6 +255,24 @@ TEST_F(KioskLaunchControllerTest, SplashScreenTimerShouldLaunchPreparedApp) {
   EXPECT_FALSE(launcher().HasAppLaunched());
 
   FireSplashScreenTimer();
+  EXPECT_TRUE(launcher().HasAppLaunched());
+}
+
+TEST_F(KioskLaunchControllerTest, SplashScreenTimeoutShouldBeConfigurable) {
+  const int kTimeStep = 15;
+
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kKioskSplashScreenMinTimeSeconds,
+      base::NumberToString(2 * kTimeStep));
+
+  RunUntilAppPrepared();
+  EXPECT_FALSE(launcher().HasAppLaunched());
+
+  task_environment()->FastForwardBy(base::Seconds(kTimeStep));
+  EXPECT_FALSE(launcher().HasAppLaunched());
+
+  task_environment()->FastForwardBy(base::Seconds(kTimeStep));
   EXPECT_TRUE(launcher().HasAppLaunched());
 }
 

@@ -658,6 +658,10 @@ const char kInstallLogFastUploadForTests[] =
 // directory. For now, only one extension can be specified.
 const char kInstallSystemExtension[] = "install-system-extension";
 
+// Minimum time the kiosk splash screen will be shown in seconds.
+const char kKioskSplashScreenMinTimeSeconds[] =
+    "kiosk-splash-screen-min-time-seconds";
+
 // When this flag is set, the lacros-availability policy is ignored.
 const char kLacrosAvailabilityIgnore[] = "lacros-availability-ignore";
 

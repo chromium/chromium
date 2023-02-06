@@ -28,6 +28,7 @@ class LoginDisplayHost;
 class OobeUI;
 
 extern const char kKioskLaunchStateCrashKey[];
+extern const base::TimeDelta kDefaultKioskSplashScreenMinTime;
 
 // Kiosk launch state for crash key.
 enum class KioskLaunchState {
@@ -111,7 +112,7 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   ~KioskLaunchController() override;
 
   [[nodiscard]] static std::unique_ptr<base::AutoReset<bool>>
-  DisableWaitTimerAndLoginOperationsForTesting();
+  DisableLoginOperationsForTesting();
   [[nodiscard]] static std::unique_ptr<base::AutoReset<bool>>
   SkipSplashScreenWaitForTesting();
   [[nodiscard]] static std::unique_ptr<base::AutoReset<base::TimeDelta>>
