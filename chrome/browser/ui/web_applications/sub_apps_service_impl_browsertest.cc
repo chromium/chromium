@@ -342,14 +342,14 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddDoesntForceReinstall) {
 // Add call should fail if calling app is already a sub app.
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddFailAppIsSubApp) {
   NavigateToParentApp();
-  InstallParentApp();
   BindRemote();
 
   AppId app_id = test::InstallDummyWebApp(
       profile(), "App that is already a sub app",
       GetURLFromPath(kParentAppPath), webapps::WebappInstallSource::SUB_APP);
 
-  CallAdd({{kSubAppPath, kSubAppPath}});
+  ExpectCallAdd({{kSubAppPath, SubAppsServiceResult::kFailure}},
+                {{kSubAppPath, kSubAppPath}});
   EXPECT_EQ(0ul, GetAllSubAppIds(app_id).size());
 }
 
