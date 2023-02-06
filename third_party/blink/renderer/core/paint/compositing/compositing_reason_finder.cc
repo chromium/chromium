@@ -108,7 +108,7 @@ CompositingReasons CompositingReasonsFor3DTransform(
     // is probably good enough for a use counter.
     auto& box = To<LayoutBox>(layout_object);
     gfx::Transform matrix;
-    style.ApplyTransform(matrix, box.Size(),
+    style.ApplyTransform(matrix, &box, box.Size(),
                          ComputedStyle::kIncludeTransformOperations,
                          ComputedStyle::kExcludeTransformOrigin,
                          ComputedStyle::kExcludeMotionPath,
