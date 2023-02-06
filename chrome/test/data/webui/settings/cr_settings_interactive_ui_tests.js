@@ -38,7 +38,13 @@ var CrSettingsPaymentsSectionTest = class extends CrSettingsInteractiveUITest {
   }
 };
 
-TEST_F('CrSettingsPaymentsSectionTest', 'All', function() {
+// TODO(https://crbug.com/1411294): Flaky on LinuxDbg.
+GEN('#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)');
+GEN('#define MAYBE_All DISABLED_All');
+GEN('#else');
+GEN('#define MAYBE_All All');
+GEN('#endif');
+TEST_F('CrSettingsPaymentsSectionTest', 'MAYBE_All', function() {
   mocha.run();
 });
 
