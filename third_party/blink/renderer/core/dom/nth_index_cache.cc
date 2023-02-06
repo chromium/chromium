@@ -157,7 +157,12 @@ unsigned NthIndexCache::NthChildIndex(
     auto it = nth_index_cache->cache_->Find<KeyHashTranslator>(
         Key(element.parentNode(), filter));
     if (it != nth_index_cache->cache_->end()) {
-      return it->value->NthIndex(element);
+      unsigned result =
+          it->value->NthIndex(element, filter, selector_checker, context);
+      [[maybe_unused]] unsigned sibling_count = 0;
+      DCHECK_EQ(result, UncachedNthChildIndex(element, filter, selector_checker,
+                                              context, sibling_count));
+      return result;
     }
   }
   unsigned sibling_count = 0;
@@ -183,7 +188,13 @@ unsigned NthIndexCache::NthLastChildIndex(
     auto it = nth_index_cache->cache_->Find<KeyHashTranslator>(
         Key(element.parentNode(), filter));
     if (it != nth_index_cache->cache_->end()) {
-      return it->value->NthLastIndex(element);
+      unsigned result =
+          it->value->NthLastIndex(element, filter, selector_checker, context);
+      [[maybe_unused]] unsigned sibling_count = 0;
+      DCHECK_EQ(result,
+                UncachedNthLastChildIndex(element, filter, selector_checker,
+                                          context, sibling_count));
+      return result;
     }
   }
   unsigned sibling_count = 0;
@@ -267,16 +278,28 @@ void NthIndexCache::CacheNthOfTypeIndexDataForParent(Element& element) {
   DCHECK(add_result.is_new_entry);
 }
 
-unsigned NthIndexData::NthIndex(Element& element) const {
+unsigned NthIndexData::NthIndex(
+    Element& element,
+    const CSSSelectorList* filter,
+    const SelectorChecker* selector_checker,
+    const SelectorChecker::SelectorCheckingContext* context) const {
   DCHECK(!element.IsPseudoElement());
+  auto matches = [&](Element& element) {
+    return NthIndexCache::MatchesFilter(&element, filter, selector_checker,
+                                        context);
+  };
 
   unsigned index = 0;
   for (Element* sibling = &element; sibling;
-       sibling = ElementTraversal::PreviousSibling(*sibling), index++) {
+       sibling = ElementTraversal::PreviousSibling(*sibling)) {
+    if (!matches(*sibling)) {
+      continue;
+    }
     auto it = element_index_map_.find(sibling);
     if (it != element_index_map_.end()) {
       return it->value + index;
     }
+    ++index;
   }
   return index;
 }
@@ -297,8 +320,12 @@ unsigned NthIndexData::NthOfTypeIndex(Element& element) const {
   return index;
 }
 
-unsigned NthIndexData::NthLastIndex(Element& element) const {
-  return count_ - NthIndex(element) + 1;
+unsigned NthIndexData::NthLastIndex(
+    Element& element,
+    const CSSSelectorList* filter,
+    const SelectorChecker* selector_checker,
+    const SelectorChecker::SelectorCheckingContext* context) const {
+  return count_ - NthIndex(element, filter, selector_checker, context) + 1;
 }
 
 unsigned NthIndexData::NthLastOfTypeIndex(Element& element) const {

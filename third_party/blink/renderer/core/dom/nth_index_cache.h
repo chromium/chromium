@@ -53,8 +53,20 @@ class CORE_EXPORT NthIndexData final : public GarbageCollected<NthIndexData> {
   NthIndexData(const NthIndexData&) = delete;
   NthIndexData& operator=(const NthIndexData&) = delete;
 
-  unsigned NthIndex(Element&) const;
-  unsigned NthLastIndex(Element&) const;
+  // The three last parameters in NthIndex() and NthLastIndex() are for
+  // re-checking the selector (if any), since we only store every third
+  // matching element. We're not allowed to store them easily in the
+  // constructor, since they are marked as STACK_ALLOCATED.
+  unsigned NthIndex(
+      Element&,
+      const CSSSelectorList* filter,
+      const SelectorChecker* selector_checker,
+      const SelectorChecker::SelectorCheckingContext* context) const;
+  unsigned NthLastIndex(
+      Element&,
+      const CSSSelectorList* filter,
+      const SelectorChecker* selector_checker,
+      const SelectorChecker::SelectorCheckingContext* context) const;
   unsigned NthOfTypeIndex(Element&) const;
   unsigned NthLastOfTypeIndex(Element&) const;
 
