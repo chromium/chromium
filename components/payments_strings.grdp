@@ -260,15 +260,6 @@
     <message name="IDS_PAYMENTS_EMAIL_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing an email address. Sentence-cased. [CHAR_LIMIT=32]">
       Email
     </message>
-    <message name="IDS_PAYMENTS_SAVE_CARD_TO_DEVICE_CHECKBOX" desc="The label for the checkbox that enables the user to save a credit card to their device, for example, on their phone. Sentence-cased." formatter_data="android_java">
-      Save this card to this device
-    </message>
-    <message name="IDS_PAYMENTS_ACCEPTED_CARDS_LABEL" desc="The title for the section that displays the card networks that the merchant accepts. Below the title, we show a row of icons indicating the accepted networks (Visa icon, Mastercard icon, etc.). Sentence-cased." formatter_data="android_java">
-      Accepted cards
-    </message>
-    <message name="IDS_PAYMENTS_CREDIT_CARD_EXPIRATION_DATE_ABBR" desc="Abbreviated label for credit card expiration date. Sentence-cased. [CHAR_LIMIT=32]" formatter_data="android_java">
-      Expires <ph name="EXPIRATION_MONTH">%1$s<ex>06</ex></ph>/<ph name="EXPIRATION_YEAR">%2$s<ex>17</ex></ph>
-    </message>
     <message name="IDS_PAYMENTS_LOADING_MESSAGE" desc="The text that informs the user that payment information is being loaded up. Sentence-cased." formatter_data="android_java">
       Loading
     </message>
@@ -293,17 +284,8 @@
     <message name="IDS_PAYMENTS_EMAIL_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing an email address. Title-Cased. [CHAR_LIMIT=32]">
       Email
     </message>
-    <message name="IDS_PAYMENTS_SAVE_CARD_TO_DEVICE_CHECKBOX" desc="The label for the checkbox that enables the user to save a credit card to their device, for example, on their phone. Title-Cased.">
-      Save This Card to This Device
-    </message>
-    <message name="IDS_PAYMENTS_ACCEPTED_CARDS_LABEL" desc="The title for the section that displays the card networks that the merchant accepts. Below the title, we show a row of icons indicating the accepted networks (Visa icon, Mastercard icon, etc.). Title-Cased.">
-      Accepted Cards
-    </message>
     <message name="IDS_PAYMENTS_ACCEPTED_CREDIT_CARDS_LABEL" desc="The title for the section that displays the credit card networks that the merchant accepts. Below the title, we show a row of icons indicating the accepted credit card networks (Visa icon, Mastercard icon, etc.). Title-Cased.">
       Accepted Credit Cards
-    </message>
-    <message name="IDS_PAYMENTS_CREDIT_CARD_EXPIRATION_DATE_ABBR" desc="Abbreviated label for credit card expiration date. Title-Cased. [CHAR_LIMIT=32]" formatter_data="android_java">
-      Expires <ph name="EXPIRATION_MONTH">%1$s<ex>06</ex></ph>/<ph name="EXPIRATION_YEAR">%2$s<ex>17</ex></ph>
     </message>
     <message name="IDS_PAYMENTS_LOADING_MESSAGE" desc="The text that informs the user that payment information is being loaded up. Title-Cased.">
       Loading
@@ -433,7 +415,7 @@
   <message name="IDS_PAYMENTS_CARD_NUMBER_INVALID_VALIDATION_MESSAGE" desc="The text that informs the user that the credit card number they have entered is not valid." formatter_data="android_java">
     Enter a valid card number
   </message>
-  <message name="IDS_PAYMENTS_CARD_EXPIRATION_INVALID_VALIDATION_MESSAGE" desc="The text that informs the user that the credit card expiration date they have entered is not valid." formatter_data="android_java">
+  <message name="IDS_PAYMENTS_CARD_EXPIRATION_INVALID_VALIDATION_MESSAGE" desc="The text that informs the user that the credit card expiration date they have entered is not valid.">
     Enter a valid expiration date
   </message>
   <message name="IDS_PAYMENTS_INVALID_ADDRESS" desc="The label to indicate the shipping address is invalid. For example, missing state or city name." formatter_data="android_java">

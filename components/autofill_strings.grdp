@@ -49,16 +49,16 @@
       Remove address from Chromium?
     </message>
   </if>
-  <message name="IDS_AUTOFILL_CC_AMEX" desc="Full American Express credit card name." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_CC_AMEX" desc="Full American Express credit card name.">
     American Express
   </message>
   <message name="IDS_AUTOFILL_CC_AMEX_SHORT" desc="Shorter name for American Express credit card.">
     Amex
   </message>
-  <message name="IDS_AUTOFILL_CC_DINERS" desc="Diners Club credit card name." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_CC_DINERS" desc="Diners Club credit card name.">
     Diners Club
   </message>
-  <message name="IDS_AUTOFILL_CC_DISCOVER" desc="Discover credit card name." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_CC_DISCOVER" desc="Discover credit card name.">
     Discover
   </message>
   <message name="IDS_AUTOFILL_CC_ELO" desc="Elo credit card name.">
@@ -67,22 +67,22 @@
   <message name="IDS_AUTOFILL_CC_GOOGLE_PAY" desc="Google pay brand name">
     Google Pay
   </message>
-  <message name="IDS_AUTOFILL_CC_JCB" desc="JCB credit card name." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_CC_JCB" desc="JCB credit card name.">
     JCB
   </message>
-  <message name="IDS_AUTOFILL_CC_MASTERCARD" desc="Mastercard credit card name." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_CC_MASTERCARD" desc="Mastercard credit card name.">
     Mastercard
   </message>
-  <message name="IDS_AUTOFILL_CC_MIR" desc="Mir credit card name." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_CC_MIR" desc="Mir credit card name.">
     Mir
   </message>
   <message name="IDS_AUTOFILL_CC_TROY" desc="Troy credit card name.">
     Troy
   </message>
-  <message name="IDS_AUTOFILL_CC_UNION_PAY" desc="China UnionPay credit card name." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_CC_UNION_PAY" desc="China UnionPay credit card name.">
     China UnionPay
   </message>
-  <message name="IDS_AUTOFILL_CC_VISA" desc="Visa credit card name." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_CC_VISA" desc="Visa credit card name.">
     Visa
   </message>
   <message name="IDS_AUTOFILL_CC_GENERIC" desc="Generic credit card name.">

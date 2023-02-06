@@ -156,7 +156,6 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/AndroidPaymentApp.java",
     "java/src/org/chromium/components/payments/AndroidPaymentAppFactory.java",
     "java/src/org/chromium/components/payments/AndroidPaymentAppFinder.java",
-    "java/src/org/chromium/components/payments/BasicCardUtils.java",
     "java/src/org/chromium/components/payments/BrowserPaymentRequest.java",
     "java/src/org/chromium/components/payments/CSPCheckerBridge.java",
     "java/src/org/chromium/components/payments/CanMakePaymentQuery.java",
