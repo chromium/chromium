@@ -638,8 +638,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   _folderChooserCoordinator = [[BookmarksFolderChooserCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:_browser
-                  selectedFolder:selectedFolder
                      hiddenNodes:nodes];
+  _folderChooserCoordinator.selectedFolder = selectedFolder;
   _folderChooserCoordinator.delegate = self;
   [_folderChooserCoordinator start];
 }
@@ -894,19 +894,17 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 #pragma mark - BookmarksFolderChooserCoordinatorDelegate
 
-- (void)
-    bookmarksFolderChooserCoordinatorDidConfirm:
-        (BookmarksFolderChooserCoordinator*)coordinator
-                             withSelectedFolder:
-                                 (const bookmarks::BookmarkNode*)folder
-                                    editedNodes:
-                                        (const std::set<
-                                            const bookmarks::BookmarkNode*>&)
-                                            editedNodes {
+- (void)bookmarksFolderChooserCoordinatorDidConfirm:
+            (BookmarksFolderChooserCoordinator*)coordinator
+                                 withSelectedFolder:
+                                     (const bookmarks::BookmarkNode*)folder {
   DCHECK(_folderChooserCoordinator);
   DCHECK(folder);
 
+  std::set<const bookmarks::BookmarkNode*>& editedNodes =
+      _folderChooserCoordinator.editedNodes;
   [_folderChooserCoordinator stop];
+  _folderChooserCoordinator.delegate = nil;
   _folderChooserCoordinator = nil;
 
   DCHECK(!folder->is_url());
@@ -923,6 +921,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     (BookmarksFolderChooserCoordinator*)coordinator {
   DCHECK(_folderChooserCoordinator);
   [_folderChooserCoordinator stop];
+  _folderChooserCoordinator.delegate = nil;
   _folderChooserCoordinator = nil;
   [self setTableViewEditing:NO];
 }

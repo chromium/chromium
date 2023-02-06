@@ -14,17 +14,11 @@ class BookmarkNode;
 // Delegate for BookmarksFolderChooserCoordinator.
 @protocol BookmarksFolderChooserCoordinatorDelegate <NSObject>
 
-// Called when the user confirms a folder selection. `editedNodes` holds the
-// current nodes (bookmarks or folders) that are considered for a move.
-- (void)
-    bookmarksFolderChooserCoordinatorDidConfirm:
-        (BookmarksFolderChooserCoordinator*)coordinator
-                             withSelectedFolder:
-                                 (const bookmarks::BookmarkNode*)folder
-                                    editedNodes:
-                                        (const std::set<
-                                            const bookmarks::BookmarkNode*>&)
-                                            editedNodes;
+// Called when the user confirms a folder selection.
+- (void)bookmarksFolderChooserCoordinatorDidConfirm:
+            (BookmarksFolderChooserCoordinator*)coordinator
+                                 withSelectedFolder:
+                                     (const bookmarks::BookmarkNode*)folder;
 
 // Called when the user cancels or dismisses (by swiping down) the folder
 // selection.

@@ -281,27 +281,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _folderChooserCoordinator = [[BookmarksFolderChooserCoordinator alloc]
       initWithNavigationController:self.navigationController
                            browser:_browser
-                    selectedFolder:self.parentFolder
                        hiddenNodes:hiddenNodes];
+  _folderChooserCoordinator.selectedFolder = self.parentFolder;
   _folderChooserCoordinator.delegate = self;
   [_folderChooserCoordinator start];
 }
 
 #pragma mark - BookmarksFolderChooserCoordinatorDelegate
 
-- (void)
-    bookmarksFolderChooserCoordinatorDidConfirm:
-        (BookmarksFolderChooserCoordinator*)coordinator
-                             withSelectedFolder:
-                                 (const bookmarks::BookmarkNode*)folder
-                                    editedNodes:
-                                        (const std::set<
-                                            const bookmarks::BookmarkNode*>&)
-                                            editedNodes {
+- (void)bookmarksFolderChooserCoordinatorDidConfirm:
+            (BookmarksFolderChooserCoordinator*)coordinator
+                                 withSelectedFolder:
+                                     (const bookmarks::BookmarkNode*)folder {
   DCHECK(_folderChooserCoordinator);
   DCHECK(folder);
 
   [_folderChooserCoordinator stop];
+  _folderChooserCoordinator.delegate = nil;
   _folderChooserCoordinator = nil;
 
   self.parentFolder = folder;
@@ -312,6 +308,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     (BookmarksFolderChooserCoordinator*)coordinator {
   DCHECK(_folderChooserCoordinator);
   [_folderChooserCoordinator stop];
+  _folderChooserCoordinator.delegate = nil;
   _folderChooserCoordinator = nil;
 }
 

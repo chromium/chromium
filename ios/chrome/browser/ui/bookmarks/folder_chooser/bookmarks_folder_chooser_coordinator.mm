@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
@@ -31,7 +32,7 @@
   // Delegate for `_navigationController` if it was created inside folder
   // chooser and needs to be deleted with it.
   BookmarkNavigationControllerDelegate* _navigationControllerDelegate;
-  BookmarksFolderChooserViewController* _folderChooserViewController;
+  BookmarksFolderChooserViewController* _viewController;
   // List of nodes to hide when displaying folders. This is to avoid to move a
   // folder inside a child folder.
   std::set<const bookmarks::BookmarkNode*> _hiddenNodes;
@@ -48,13 +49,11 @@
 - (instancetype)
     initWithNavigationController:(UINavigationController*)navigationController
                          browser:(Browser*)browser
-                  selectedFolder:(const bookmarks::BookmarkNode*)folder
                      hiddenNodes:
                          (const std::set<const bookmarks::BookmarkNode*>&)
                              hiddenNodes {
   self = [self initWithBaseViewController:navigationController
                                   browser:browser
-                           selectedFolder:folder
                               hiddenNodes:hiddenNodes];
   if (self) {
     _baseNavigationController = navigationController;
@@ -65,12 +64,10 @@
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
-                selectedFolder:(const bookmarks::BookmarkNode*)folder
                    hiddenNodes:(const std::set<const bookmarks::BookmarkNode*>&)
                                    hiddenNodes {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _selectedFolder = folder;
     _hiddenNodes = hiddenNodes;
   }
   return self;
@@ -82,21 +79,22 @@
   bookmarks::BookmarkModel* model =
       ios::BookmarkModelFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-  _folderChooserViewController = [[BookmarksFolderChooserViewController alloc]
+  _viewController = [[BookmarksFolderChooserViewController alloc]
       initWithBookmarkModel:model
            allowsNewFolders:YES
                 editedNodes:_hiddenNodes
                allowsCancel:YES
              selectedFolder:_selectedFolder
                     browser:self.browser];
-  _folderChooserViewController.delegate = self;
+  _viewController.delegate = self;
 
   if (_baseNavigationController) {
-    [_baseNavigationController pushViewController:_folderChooserViewController
-                                         animated:YES];
+    _viewController.navigationItem.largeTitleDisplayMode =
+        UINavigationItemLargeTitleDisplayModeNever;
+    [_baseNavigationController pushViewController:_viewController animated:YES];
   } else {
     _navigationController = [[BookmarkNavigationController alloc]
-        initWithRootViewController:_folderChooserViewController];
+        initWithRootViewController:_viewController];
     _navigationControllerDelegate =
         [[BookmarkNavigationControllerDelegate alloc] init];
     _navigationController.delegate = _navigationControllerDelegate;
@@ -111,11 +109,23 @@
 
 - (void)stop {
   [super stop];
-  DCHECK(_folderChooserViewController);
+  DCHECK(_viewController);
 
   if (_baseNavigationController) {
-    DCHECK_EQ(_baseNavigationController.topViewController,
-              _folderChooserViewController);
+    // Currently when folder editor is shown from folder chooser and the user
+    // presses done button on the folder editor both the folder editor and
+    // folder chooser is supposed to be popped at the same time. However the
+    // folder chooser view controller also calls
+    // delayedNotifyDelegateOfSelection in this case, so both the view
+    // controllers need to be popped here at the end of that delayed
+    // selection.
+    // TODO(crbug.com/1405746): Revisit this logic after folder editor
+    // coordinator is finished.
+    if (_baseNavigationController.topViewController != _viewController) {
+      [_baseNavigationController popToViewController:_viewController
+                                            animated:YES];
+    }
+    DCHECK_EQ(_baseNavigationController.topViewController, _viewController);
     [_baseNavigationController popViewControllerAnimated:YES];
   } else if (_navigationController) {
     [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
@@ -124,18 +134,29 @@
   } else {
     DCHECK(!self.baseViewController.presentedViewController);
   }
-  _delegate = nil;
-  _folderChooserViewController = nil;
+  _viewController = nil;
+}
+
+- (void)setSelectedFolder:(const bookmarks::BookmarkNode*)folder {
+  DCHECK(folder);
+  DCHECK(folder->is_folder());
+  _selectedFolder = folder;
+  if (_viewController) {
+    [_viewController changeSelectedFolder:_selectedFolder];
+  }
+}
+
+- (void)changeSelectedFolder:(const bookmarks::BookmarkNode*)folder {
+  [_viewController changeSelectedFolder:folder];
 }
 
 #pragma mark - BookmarkFolderViewControllerDelegate
 
 - (void)folderPicker:(BookmarksFolderChooserViewController*)folderPicker
     didFinishWithFolder:(const bookmarks::BookmarkNode*)folder {
-  [_delegate
-      bookmarksFolderChooserCoordinatorDidConfirm:self
-                               withSelectedFolder:folder
-                                      editedNodes:folderPicker.editedNodes];
+  self.editedNodes = _viewController.editedNodes;
+  [_delegate bookmarksFolderChooserCoordinatorDidConfirm:self
+                                      withSelectedFolder:folder];
 }
 
 - (void)folderPickerDidCancel:
@@ -145,7 +166,6 @@
 
 - (void)folderPickerDidDismiss:
     (BookmarksFolderChooserViewController*)folderPicker {
-  DCHECK(_navigationController);
   _navigationController = nil;
   _navigationControllerDelegate = nil;
   [_delegate bookmarksFolderChooserCoordinatorDidCancel:self];

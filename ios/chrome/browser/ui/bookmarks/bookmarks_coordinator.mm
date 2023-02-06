@@ -284,7 +284,6 @@ enum class PresentedState {
   _folderChooserCoordinator = [[BookmarksFolderChooserCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
-                  selectedFolder:nil
                      hiddenNodes:std::set<const bookmarks::BookmarkNode*>()];
   _folderChooserCoordinator.delegate = self;
   [_folderChooserCoordinator start];
@@ -470,15 +469,10 @@ enum class PresentedState {
 
 #pragma mark - BookmarksFolderChooserCoordinatorDelegate
 
-- (void)
-    bookmarksFolderChooserCoordinatorDidConfirm:
-        (BookmarksFolderChooserCoordinator*)coordinator
-                             withSelectedFolder:
-                                 (const bookmarks::BookmarkNode*)folder
-                                    editedNodes:
-                                        (const std::set<
-                                            const bookmarks::BookmarkNode*>&)
-                                            editedNodes {
+- (void)bookmarksFolderChooserCoordinatorDidConfirm:
+            (BookmarksFolderChooserCoordinator*)coordinator
+                                 withSelectedFolder:
+                                     (const bookmarks::BookmarkNode*)folder {
   if (self.currentPresentedState != PresentedState::FOLDER_SELECTION) {
     return;
   }
@@ -487,6 +481,7 @@ enum class PresentedState {
   DCHECK(_URLs);
 
   [_folderChooserCoordinator stop];
+  _folderChooserCoordinator.delegate = nil;
   _folderChooserCoordinator = nil;
 
   [self.snackbarCommandsHandler
@@ -499,6 +494,7 @@ enum class PresentedState {
     (BookmarksFolderChooserCoordinator*)coordinator {
   DCHECK(_folderChooserCoordinator);
   [_folderChooserCoordinator stop];
+  _folderChooserCoordinator.delegate = nil;
   _folderChooserCoordinator = nil;
   _URLs = nil;
   self.currentPresentedState = PresentedState::NONE;

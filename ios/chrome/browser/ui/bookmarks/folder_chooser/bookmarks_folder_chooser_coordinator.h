@@ -21,6 +21,25 @@ class BookmarkNode;
 // folder hierarchy, to let the user chooser a folder.
 @interface BookmarksFolderChooserCoordinator : ChromeCoordinator
 
+// Coordinator's delegate.
+@property(nonatomic, weak) id<BookmarksFolderChooserCoordinatorDelegate>
+    delegate;
+
+// The current nodes (bookmarks or folders) that are considered for a move.
+// Will be set right before this coordinator sends a confirm selection signal
+// through it's delegate.
+@property(nonatomic, assign, readonly)
+    std::set<const bookmarks::BookmarkNode*>& editedNodes;
+
+// The folder that has a blue check mark beside it in the UI. This property has
+// 2 functionality.
+// - It can be set while initializing this coordinator to already have a blue
+//   check mark beside the folder in the UI. If unset no check mark is shown.
+// - This property will also hold the folder the user selected. This
+//   information should be accessed when the `delegate` sends a confirmation
+//   of folder selection.
+@property(nonatomic, assign) const bookmarks::BookmarkNode* selectedFolder;
+
 // Initializes BookmarksFolderChooserCoordinator. The view is pushed into
 // `navigationController`.
 // `selectedFolder` will be the folder with check mark in the UI.
@@ -29,7 +48,6 @@ class BookmarkNode;
 - (instancetype)
     initWithNavigationController:(UINavigationController*)navigationController
                          browser:(Browser*)browser
-                  selectedFolder:(const bookmarks::BookmarkNode*)folder
                      hiddenNodes:
                          (const std::set<const bookmarks::BookmarkNode*>&)
                              hiddenNodes;
@@ -42,16 +60,11 @@ class BookmarkNode;
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
-                selectedFolder:(const bookmarks::BookmarkNode*)folder
                    hiddenNodes:(const std::set<const bookmarks::BookmarkNode*>&)
                                    hiddenNodes NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
-
-// Coordinator's delegate.
-@property(nonatomic, weak) id<BookmarksFolderChooserCoordinatorDelegate>
-    delegate;
 
 @end
 
