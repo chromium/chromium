@@ -23,8 +23,6 @@ class WestonTestOzoneUIControlsTestHelper
       const WestonTestOzoneUIControlsTestHelper&) = delete;
   ~WestonTestOzoneUIControlsTestHelper() override;
 
-  // OzoneUIControlsTestHelper:
-  bool SupportsScreenCoordinates() const override;
   unsigned ButtonDownMask() const override;
   void SendKeyPressEvent(gfx::AcceleratedWidget widget,
                          ui::KeyboardCode key,

@@ -811,7 +811,7 @@ static_library("test_support") {
     ]
   }
 
-  if (use_aura && (is_win || is_chromeos_ash || is_fuchsia || is_castos)) {
+  if (use_aura) {
     sources += [
       "test/ui_controls_aura.cc",
       "test/ui_controls_aura.h",

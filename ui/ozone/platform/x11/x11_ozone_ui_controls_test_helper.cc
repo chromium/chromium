@@ -9,10 +9,6 @@ namespace ui {
 X11OzoneUIControlsTestHelper::X11OzoneUIControlsTestHelper() = default;
 X11OzoneUIControlsTestHelper::~X11OzoneUIControlsTestHelper() = default;
 
-bool X11OzoneUIControlsTestHelper::SupportsScreenCoordinates() const {
-  return true;
-}
-
 unsigned X11OzoneUIControlsTestHelper::ButtonDownMask() const {
   return x11_ui_controls_test_helper_.ButtonDownMask();
 }

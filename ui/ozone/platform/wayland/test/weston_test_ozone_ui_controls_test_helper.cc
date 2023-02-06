@@ -12,7 +12,6 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/ozone/platform/wayland/emulate/weston_test_input_emulate.h"
-#include "ui/ozone/platform/wayland/host/proxy/wayland_proxy.h"
 
 namespace wl {
 
@@ -153,14 +152,6 @@ WestonTestOzoneUIControlsTestHelper::WestonTestOzoneUIControlsTestHelper()
 
 WestonTestOzoneUIControlsTestHelper::~WestonTestOzoneUIControlsTestHelper() =
     default;
-
-bool WestonTestOzoneUIControlsTestHelper::SupportsScreenCoordinates() const {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return true;
-#else
-  return false;
-#endif
-}
 
 unsigned WestonTestOzoneUIControlsTestHelper::ButtonDownMask() const {
   return button_down_mask_;

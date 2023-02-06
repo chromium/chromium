@@ -1131,6 +1131,7 @@ source_set("test_support") {
       "test/test_desktop_screen_ozone.cc",
       "test/test_desktop_screen_ozone.h",
       "test/ui_controls_factory_desktop_aura_ozone.cc",
+      "test/ui_controls_factory_desktop_aura_ozone.h",
     ]
     deps += [ "//ui/ozone:ui_test_support" ]
   }
