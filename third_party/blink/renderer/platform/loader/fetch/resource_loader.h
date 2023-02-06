@@ -145,7 +145,7 @@ class PLATFORM_EXPORT ResourceLoader final
                    uint64_t total_bytes_to_be_sent) override;
   void DidReceiveResponse(const WebURLResponse&) override;
   void DidReceiveCachedMetadata(mojo_base::BigBuffer data) override;
-  void DidReceiveData(const char*, int) override;
+  void DidReceiveData(const char*, size_t) override;
   void DidReceiveTransferSizeUpdate(int transfer_size_diff) override;
   void DidStartLoadingResponseBody(
       mojo::ScopedDataPipeConsumerHandle body) override;
@@ -295,7 +295,7 @@ class PLATFORM_EXPORT ResourceLoader final
 
   base::TimeTicks request_start_time_;
   base::TimeTicks code_cache_arrival_time_;
-  uint32_t received_body_length_from_service_worker_ = 0;
+  int64_t received_body_length_from_service_worker_ = 0;
 };
 
 }  // namespace blink

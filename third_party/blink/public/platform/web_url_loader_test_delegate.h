@@ -28,7 +28,7 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderTestDelegate {
                                   const WebURLResponse&);
   virtual void DidReceiveData(WebURLLoaderClient* original_client,
                               const char* data,
-                              int data_length);
+                              size_t data_length);
   virtual void DidFail(WebURLLoaderClient* original_client,
                        const WebURLError&,
                        int64_t total_encoded_data_length,

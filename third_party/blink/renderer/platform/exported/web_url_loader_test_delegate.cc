@@ -24,7 +24,7 @@ void WebURLLoaderTestDelegate::DidReceiveResponse(
 void WebURLLoaderTestDelegate::DidReceiveData(
     WebURLLoaderClient* original_client,
     const char* data,
-    int data_length) {
+    size_t data_length) {
   original_client->DidReceiveData(data, data_length);
 }
 

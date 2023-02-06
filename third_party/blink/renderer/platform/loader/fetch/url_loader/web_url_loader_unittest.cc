@@ -243,7 +243,7 @@ class TestWebURLLoaderClient : public WebURLLoaderClient {
     response_body_ = std::move(response_body);
   }
 
-  void DidReceiveData(const char* data, int dataLength) override {
+  void DidReceiveData(const char* data, size_t dataLength) override {
     NOTREACHED();
   }
 

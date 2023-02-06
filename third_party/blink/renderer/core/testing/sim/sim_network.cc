@@ -60,7 +60,7 @@ void SimNetwork::DidReceiveResponse(WebURLLoaderClient* client,
 
 void SimNetwork::DidReceiveData(WebURLLoaderClient* client,
                                 const char* data,
-                                int data_length) {
+                                size_t data_length) {
   if (!current_request_)
     client->DidReceiveData(data, data_length);
 }

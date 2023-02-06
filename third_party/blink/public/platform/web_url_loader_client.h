@@ -89,11 +89,8 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderClient {
       mojo::ScopedDataPipeConsumerHandle body) {}
 
   // Called when a chunk of response data is received. |data_length| is the
-  // number of bytes pointed to by |data|. |encoded_data_length| is the number
-  // of bytes actually received from network to serve this chunk, including
-  // HTTP headers and framing if relevant. It is 0 if the response was served
-  // from cache, and -1 if this information is unavailable.
-  virtual void DidReceiveData(const char* data, int data_length) {}
+  // number of bytes pointed to by |data|.
+  virtual void DidReceiveData(const char* data, size_t data_length) {}
 
   // Called when the number of bytes actually received from network including
   // HTTP headers is updated. |transfer_size_diff| is positive.

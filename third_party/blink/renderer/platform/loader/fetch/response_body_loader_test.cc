@@ -444,8 +444,8 @@ TEST_F(ResponseBodyLoaderTest, DrainAsDataPipe) {
   ASSERT_TRUE(client);
   EXPECT_TRUE(body_loader->IsDrained());
 
-  client_for_draining->DidReceiveData(base::make_span("xyz", 3));
-  client_for_draining->DidReceiveData(base::make_span("abc", 3));
+  client_for_draining->DidReceiveData(base::make_span("xyz", 3u));
+  client_for_draining->DidReceiveData(base::make_span("abc", 3u));
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
@@ -717,8 +717,8 @@ TEST_F(ResponseBodyLoaderTest, DrainAsDataPipeAndReportError) {
   ASSERT_TRUE(client);
   EXPECT_TRUE(body_loader->IsDrained());
 
-  client_for_draining->DidReceiveData(base::make_span("xyz", 3));
-  client_for_draining->DidReceiveData(base::make_span("abc", 3));
+  client_for_draining->DidReceiveData(base::make_span("xyz", 3u));
+  client_for_draining->DidReceiveData(base::make_span("abc", 3u));
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());

@@ -36,7 +36,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/safe_conversions.h"
+#include "base/numerics/checked_math.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -614,7 +614,7 @@ void ResourceLoader::Run() {
 }
 
 void ResourceLoader::DidReceiveData(base::span<const char> data) {
-  DidReceiveData(data.data(), base::checked_cast<int>(data.size()));
+  DidReceiveData(data.data(), data.size());
 }
 
 void ResourceLoader::DidReceiveDecodedData(
@@ -1205,9 +1205,7 @@ void ResourceLoader::DidStartLoadingResponseBody(
   data_pipe_completion_notifier_ = completion_notifier;
 }
 
-void ResourceLoader::DidReceiveData(const char* data, int length) {
-  CHECK_GE(length, 0);
-
+void ResourceLoader::DidReceiveData(const char* data, size_t length) {
   if (auto* observer = fetcher_->GetResourceLoadObserver()) {
     observer->DidReceiveData(resource_->InspectorId(),
                              base::make_span(data, length));
@@ -1218,7 +1216,15 @@ void ResourceLoader::DidReceiveData(const char* data, int length) {
   if (resource_->response_.WasFetchedViaServiceWorker() &&
       resource_->response_.GetType() !=
           network::mojom::FetchResponseType::kOpaque) {
-    received_body_length_from_service_worker_ += length;
+    // `received_body_length_from_service_worker_` needs to fit into both a
+    // uint64_t and an int64_t so must be >= 0 and also <=
+    // std::numeric_limits<int64_t>::max(); Since `length` is guaranteed never
+    // to be negative, the value must always increase, giving assurance that it
+    // will always be >= 0, but the CheckAdd is used to enforce the second
+    // constraint.
+    received_body_length_from_service_worker_ =
+        base::CheckAdd(received_body_length_from_service_worker_, length)
+            .ValueOrDie<int64_t>();
   }
 }
 
@@ -1435,7 +1441,7 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
   if (data_out.size()) {
     data_out.ForEachSegment([this](const char* segment, size_t segment_size,
                                    size_t segment_offset) {
-      DidReceiveData(segment, base::checked_cast<int>(segment_size));
+      DidReceiveData(segment, segment_size);
       return true;
     });
   }
