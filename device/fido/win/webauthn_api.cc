@@ -640,8 +640,4 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
           std::move(response)};
 }
 
-bool SupportsCredProtectExtension(WinWebAuthnApi* api) {
-  return api->IsAvailable() && api->Version() >= WEBAUTHN_API_VERSION_2;
-}
-
 }  // namespace device

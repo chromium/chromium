@@ -124,7 +124,7 @@ MakeCredentialStatus IsCandidateAuthenticatorPostTouch(
     const MakeCredentialOptions& options,
     const FidoRequestHandlerBase::Observer* observer) {
   if (options.cred_protect_request && options.cred_protect_request->second &&
-      !authenticator->SupportsCredProtectExtension()) {
+      !authenticator->Options().supports_cred_protect) {
     return MakeCredentialStatus::kAuthenticatorMissingResidentKeys;
   }
 
@@ -279,7 +279,7 @@ bool ValidateResponseExtensions(
     const std::string& ext_name = it.first.GetString();
 
     if (ext_name == kExtensionCredProtect) {
-      if (!authenticator.SupportsCredProtectExtension() ||
+      if (!authenticator.Options().supports_cred_protect ||
           !it.second.is_integer()) {
         return false;
       }
@@ -1010,7 +1010,7 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
   }
 
   if (options_.cred_protect_request &&
-      authenticator->SupportsCredProtectExtension()) {
+      authenticator->Options().supports_cred_protect) {
     request->cred_protect = CredProtectForAuthenticator(
         options_.cred_protect_request->first, *authenticator);
     request->cred_protect_enforce = options_.cred_protect_request->second;

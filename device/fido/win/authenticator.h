@@ -93,9 +93,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
   void Cancel() override;
   Type GetType() const override;
   std::string GetId() const override;
-  // SupportsCredProtectExtension returns whether the native API supports the
-  // credProtect CTAP extension.
-  bool SupportsCredProtectExtension() const override;
   bool SupportsHMACSecretExtension() const override;
   bool SupportsEnterpriseAttestation() const override;
   bool SupportsLargeBlobs() const override;
