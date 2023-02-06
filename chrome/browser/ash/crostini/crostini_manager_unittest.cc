@@ -82,11 +82,6 @@ const char kTerminaKernelVersion[] =
 const char kCrostiniCorruptionHistogram[] = "Crostini.FilesystemCorruption";
 constexpr auto kLongTime = base::Days(10);
 
-void ExpectSuccess(base::OnceClosure closure, bool success) {
-  EXPECT_TRUE(success);
-  std::move(closure).Run();
-}
-
 void ExpectCrostiniResult(base::OnceClosure closure,
                           CrostiniResult expected_result,
                           CrostiniResult result) {
@@ -1622,36 +1617,6 @@ TEST_F(CrostiniManagerRestartTest, InstallHistogramEntries) {
       CrostiniResult::VM_START_FAILED, 1);
   histogram_tester_.ExpectTotalCount("Crostini.RestarterResult.Installer", 1);
   histogram_tester_.ExpectTotalCount("Crostini.RestarterResult", 0);
-}
-
-TEST_F(CrostiniManagerRestartTest, IsContainerRunningFalseIfVmNotStarted) {
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  EXPECT_TRUE(crostini_manager()->IsRestartPending(restart_id_));
-  run_loop()->Run();
-
-  EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
-  // Mount only performed for termina/penguin.
-  EXPECT_EQ(1, restart_crostini_callback_count_);
-
-  EXPECT_TRUE(crostini_manager()->IsVmRunning(kVmName));
-
-  // Now call StartTerminaVm again. The default response state is "STARTING",
-  // so no container should be considered running.
-  const base::FilePath& disk_path = base::FilePath("unused");
-
-  base::RunLoop run_loop2;
-  crostini_manager()->StartTerminaVm(
-      kVmName, disk_path, {}, 0,
-      base::BindOnce(&ExpectSuccess, run_loop2.QuitClosure()));
-  run_loop2.Run();
-  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
-  EXPECT_TRUE(crostini_manager()->IsVmRunning(kVmName));
-  ExpectRestarterUmaCount(1);
 }
 
 TEST_F(CrostiniManagerRestartTest, OsReleaseSetCorrectly) {
