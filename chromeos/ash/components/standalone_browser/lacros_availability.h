@@ -6,8 +6,13 @@
 #define CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER_LACROS_AVAILABILITY_H_
 
 #include "base/component_export.h"
+#include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace user_manager {
+class User;
+}
 
 namespace ash::standalone_browser {
 
@@ -29,6 +34,11 @@ enum class LacrosAvailability {
   kLacrosOnly = 4
 };
 
+// When this feature is enabled, Lacros is allowed to roll out by policy to
+// Googlers.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
+BASE_DECLARE_FEATURE(kLacrosGooglePolicyRollout);
+
 // Parses the string representation of LacrosAvailability policy value into
 // the enum value. Returns nullopt on unknown value.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
@@ -38,6 +48,21 @@ absl::optional<LacrosAvailability> ParseLacrosAvailability(
 // Returns the policy value name from the given value.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
 base::StringPiece GetLacrosAvailabilityPolicyName(LacrosAvailability value);
+
+// Given a raw policy value, decides what LacrosAvailability value should be
+// used as a result of policy application.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
+LacrosAvailability DetermineLacrosAvailabilityFromPolicyValue(
+    const user_manager::User* user,
+    base::StringPiece policy_value);
+
+// Returns true if the given user's profile is associated with a google internal
+// account.
+// TODO(andreaorru): conceptually, this is an internal utility function
+// and should not be exported. Currently, `crosapi::browser_util` still
+// depends on it. Remove once the IsLacrosEnabled* refactoring is complete.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
+bool IsGoogleInternal(const user_manager::User* user);
 
 }  // namespace ash::standalone_browser
 

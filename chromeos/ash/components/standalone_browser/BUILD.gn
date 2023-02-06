@@ -9,7 +9,14 @@ assert(is_chromeos_ash,
 
 component("standalone_browser") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER_IMPL" ]
-  deps = [ "//base" ]
+  deps = [
+    "//ash/constants:constants",
+    "//base",
+    "//components/account_id",
+    "//components/policy/core/common",
+    "//components/user_manager:user_manager",
+    "//google_apis:google_apis",
+  ]
   sources = [
     "browser_support.cc",
     "browser_support.h",

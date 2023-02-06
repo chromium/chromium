@@ -231,7 +231,8 @@ TEST_F(BrowserUtilTest, LacrosCrosTeamRollout) {
   }
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({}, {browser_util::kLacrosGooglePolicyRollout});
+  feature_list.InitWithFeatures(
+      {}, {ash::standalone_browser::kLacrosGooglePolicyRollout});
 
   {
     ScopedLacrosAvailabilityCache cache(LacrosAvailability::kSideBySide);

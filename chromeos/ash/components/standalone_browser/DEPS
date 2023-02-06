@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "lacros_availability\.cc": [
+    "+components/user_manager/user.h",
+  ],
+}
