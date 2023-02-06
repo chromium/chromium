@@ -17,9 +17,8 @@ desc: |-
   version 114, after which support for this API is planned to be eliminated
   unconditionally.
 
-  NOTE: When the value of the policy is changed, new tabs will pick up the new
-  value. Existing tabs will need to be closed and reopened to pick up the new
-  value.
+  NOTE: Only newly-started renderer processes will reflect changes to this
+  policy while the browser is running.
 
 supported_on:
 # TODO(crbug.com/1408421): Remove this policy on ~May 6 after 114 has branched.

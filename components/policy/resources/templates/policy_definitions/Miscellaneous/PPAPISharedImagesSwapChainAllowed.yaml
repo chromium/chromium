@@ -15,9 +15,9 @@ desc: |-
   until the policy is expired.
 
   If you must use the policy, please file a bug on crbug.com explaining your
-  use case. The policy is scheduled to be offered through <ph
-  name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 114, after which
-  the old implementation will be removed.
+  use case and CC {blundell, vasilyt}@chromium.org. The policy is scheduled to
+  be offered through <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
+  version 114, after which the old implementation will be removed.
 
   NOTE: Only newly-started renderer processes will reflect changes to this
   policy while the browser is running.
