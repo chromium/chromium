@@ -300,7 +300,7 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
     registry->AddInterface<safe_browsing::mojom::SafeBrowsing>(
         base::BindRepeating(
             &MaybeCreateSafeBrowsingForRenderer, render_process_host->GetID(),
-            resource_context,
+            base::UnsafeDanglingUntriaged(resource_context),
             base::BindRepeating(
                 &ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
                 base::Unretained(this))),
