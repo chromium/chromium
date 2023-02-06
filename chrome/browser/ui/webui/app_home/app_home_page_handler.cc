@@ -179,15 +179,8 @@ void AppHomePageHandler::LaunchAppInternal(
                   : WindowOpenDisposition::CURRENT_TAB;
   GURL override_url;
 
-  if (app_id != extensions::kWebStoreAppId) {
-    CHECK_NE(launch_bucket, extension_misc::APP_LAUNCH_BUCKET_INVALID);
-    extensions::RecordAppLaunchType(launch_bucket, type);
-  } else {
-    extensions::RecordWebStoreLaunch();
-    override_url = net::AppendQueryParameter(
-        full_launch_url, extension_urls::kWebstoreSourceField,
-        "chrome-ntp-icon");
-  }
+  CHECK_NE(launch_bucket, extension_misc::APP_LAUNCH_BUCKET_INVALID);
+  extensions::RecordAppLaunchType(launch_bucket, type);
 
   if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
       disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
@@ -387,7 +380,8 @@ void AppHomePageHandler::FillExtensionInfoList(
                                                ExtensionRegistry::TERMINATED);
   for (const auto& extension : *extension_apps) {
     if (!extensions::ui_util::ShouldDisplayInNewTabPage(extension.get(),
-                                                        profile_)) {
+                                                        profile_) ||
+        extension->id() == extensions::kWebStoreAppId) {
       continue;
     }
 
