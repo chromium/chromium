@@ -157,7 +157,10 @@ void SubAppInstallCommand::StartWithLock(
 
   DCHECK(state_ == State::kNotStarted);
 
-  if (!lock_->registrar().IsInstalled(parent_app_id_)) {
+  // Abort if parent app is not installed or the calling app is itself a sub
+  // app.
+  if (!lock_->registrar().IsInstalled(parent_app_id_) ||
+      lock_->registrar().GetAppById(parent_app_id_)->IsSubAppInstalledApp()) {
     base::ranges::transform(
         requested_installs_, std::inserter(results_, results_.begin()),
         [](auto const& pair) {

@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -336,6 +337,20 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddDoesntForceReinstall) {
   EXPECT_EQ(
       DisplayMode::kStandalone,
       provider().registrar_unsafe().GetAppEffectiveDisplayMode(sub_app_id));
+}
+
+// Add call should fail if calling app is already a sub app.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddFailAppIsSubApp) {
+  NavigateToParentApp();
+  InstallParentApp();
+  BindRemote();
+
+  AppId app_id = test::InstallDummyWebApp(
+      profile(), "App that is already a sub app",
+      GetURLFromPath(kParentAppPath), webapps::WebappInstallSource::SUB_APP);
+
+  CallAdd({{kSubAppPath, kSubAppPath}});
+  EXPECT_EQ(0ul, GetAllSubAppIds(app_id).size());
 }
 
 /******** Tests for the Add API call - adding multiple/zero sub-apps. ********/
