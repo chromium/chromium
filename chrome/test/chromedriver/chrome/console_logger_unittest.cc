@@ -141,10 +141,9 @@ void ConsoleLogParams(base::Value::Dict* out_dict,
 }  // namespace
 
 TEST(ConsoleLogger, ConsoleMessages) {
-  FakeDevToolsClient client("webview");
   FakeLog log;
   ConsoleLogger logger(&log);
-
+  FakeDevToolsClient client("webview");
   client.AddListener(&logger);
   logger.OnConnected(&client);
   EXPECT_EQ("Log.enable", client.PopSentCommand());
