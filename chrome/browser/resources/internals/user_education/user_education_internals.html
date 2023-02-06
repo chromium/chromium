@@ -1,9 +1,26 @@
-<h1>User Education Testing</h1>
-<div>
+<style include="cr-hidden-style">
+cr-toolbar:not([narrow]) {
+  --cr-toolbar-left-spacer-width: var(--side-bar-width);
+}
+#main {
+  margin-inline-start: var(--side-bar-width);
+}
+</style>
+<cr-toolbar id="toolbar" page-name="IPH Tester"
+    clear-label="Clear Search"
+    search-prompt="Search IPH and Tutorials"
+    autofocus
+    on-search-changed="onSearchChanged_"></cr-toolbar>
+<div id="main">
+  <!-- Use hidden instead of dom-repeat to filter items because:
+       - Updates automatically with filter property.
+       - Doesn't delete the node, so doesn't mess with WebUI IPH demo.
+  -->
   <h2>Start a tutorial</h2>
   <ul>
-    <template is="dom-repeat" items="[[tutorials_]]">
-      <li>
+    <template id="tutorials" is="dom-repeat" items="[[tutorials_]]">
+      <li hidden$="[[!tutorialFilter_(item, filter)]]">
+        <h3>[[item]]</h3>
         <button id="[[item]]" on-click="startTutorial_">[[item]]</button>
       </li>
     </template>
@@ -11,7 +28,7 @@
   <h2>Show an IPH</h2>
   <ul>
     <template is="dom-repeat" id="promos" items="[[featurePromos_]]">
-      <li>
+      <li hidden$="[[!iphFilter_(item, filter)]]">
         <h3>[[item.displayTitle]]</h3>
         <h4>[[item.displayDescription]]</h4>
         <button id="[[item.displayTitle]]" on-click="showFeaturePromo_">

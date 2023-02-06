@@ -3,8 +3,13 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 
 import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './user_education_internals.html.js';
@@ -17,6 +22,8 @@ const UserEducationInternalsElementBase = HelpBubbleMixin(PolymerElement) as {
 interface UserEducationInternalsElement {
   $: {
     promos: DomRepeat,
+    toolbar: CrToolbarElement,
+    tutorials: DomRepeat,
   };
 }
 
@@ -32,6 +39,11 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
   static get properties() {
     return {
       /**
+       * Substring filter that (when set) shows only entries containing
+       * `filter`.
+       */
+      filter: String,
+      /**
        * List of tutorials and feature_promos that can be started.
        * Each tutorial has a string identifier.
        */
@@ -41,6 +53,7 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
     };
   }
 
+  filter: string = '';
   private tutorials_: string[];
   private featurePromos_: FeaturePromoDemoPageInfo[];
   private featurePromoErrorMessage_: string;
@@ -79,6 +92,10 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
     });
   }
 
+  private onSearchChanged_(e: CustomEvent) {
+    this.filter = (e.detail as string).toLowerCase();
+  }
+
   private startTutorial_(e: DomRepeatEvent<string>) {
     const id = e.model.item;
     this.handler_.startTutorial(id);
@@ -91,6 +108,15 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
     this.handler_.showFeaturePromo(id).then(({errorMessage}) => {
       this.featurePromoErrorMessage_ = errorMessage;
     });
+  }
+
+  private iphFilter_(iph: FeaturePromoDemoPageInfo, filter: string) {
+    return filter === '' || iph.displayTitle.toLowerCase().includes(filter) ||
+        iph.displayDescription.toLowerCase().includes(filter);
+  }
+
+  private tutorialFilter_(tutorial: string, filter: string) {
+    return filter === '' || tutorial.toLowerCase().includes(filter);
   }
 }
 
