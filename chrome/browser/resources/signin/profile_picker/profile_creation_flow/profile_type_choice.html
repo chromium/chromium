@@ -56,6 +56,13 @@
     min-width: 210px;
   }
 
+  /* Tangible sync style details are found in go/tangible-sync-ui */
+  .tangible-sync-style cr-button {
+    --cr-button-height: 36px;
+    font-family: 'Google Sans', arial, sans-serif;
+    font-size: 0.75rem;
+  }
+
   #notNowButton {
     margin-top: 18px;
   }
@@ -66,25 +73,7 @@
     text-align: center;
   }
 
-  #new-design-left-illustration {
-    content: url(../images/profile_type_choice_left_illustration.svg);
-    left: 0;
-  }
-
-  #new-design-right-illustration {
-    content: url(../images/profile_type_choice_right_illustration.svg);
-    right: 0;
-  }
-
-  #new-design-left-illustration,
-  #new-design-right-illustration {
-    max-width: 320px;
-    position: absolute;
-    top: 0;
-    width: 17vw;
-  }
-
-  .new-design .title {
+  .tangible-sync-style .title {
     font-family: 'Google Sans', arial, sans-serif;
     font-size: 2.25rem;
     font-weight: 500;
@@ -92,15 +81,9 @@
     margin-bottom: 16px;
   }
 
-  .new-design .subtitle {
+  .tangible-sync-style .subtitle {
     font-size: 1.25rem;
     line-height: 24px;
-  }
-
-  .new-design cr-button {
-    --cr-button-height: 36px;
-    font-family: 'Google Sans', arial, sans-serif;
-    font-size: 0.75rem;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -112,19 +95,22 @@
     .icon-container {
       background-color: var(--google-grey-700);
     }
-
-    #new-design-left-illustration {
-      content: url(../images/profile_type_choice_left_illustration_dark.svg);
-    }
-
-    #new-design-right-illustration {
-      content: url(../images/profile_type_choice_right_illustration_dark.svg);
-    }
   }
+
+@media screen and ((max-width: 780px) or (max-height: 600px)) {
+  .tangible-sync-style .title {
+    font-size: 1.5rem;
+    line-height: 32px;
+  }
+
+  .tangible-sync-style .subtitle {
+    font-size: 0.94rem;
+  }
+}
 </style>
 
-<div id="leftBanner" class="banner" hidden="[[isNewDesign_]]"></div>
-<img id="new-design-left-illustration" hidden="[[!isNewDesign_]]">
+<div id="leftBanner" class="banner" hidden="[[isTangibleSyncEnabled_]]"></div>
+<img id="tangible-sync-style-left-banner" hidden="[[!isTangibleSyncEnabled_]]">
 <div id="headerContainer"
     style$="--theme-frame-color:[[profileThemeInfo.themeFrameColor]];
             --theme-text-color:[[profileThemeInfo.themeFrameTextColor]];">
@@ -136,11 +122,11 @@
     <img class="avatar" alt="" src="[[profileThemeInfo.themeGenericAvatar]]">
   </div>
 </div>
-<div class$="title-container [[getNewDesignClass_()]]">
+<div class$="title-container [[getTangibleSyncStyleClass_()]]">
   <h1 class="title">$i18n{profileTypeChoiceTitle}</h1>
   <div class="subtitle">$i18n{profileTypeChoiceSubtitle}</div>
 </div>
-<div id="actionContainer" class$="[[getNewDesignClass_()]]">
+<div id="actionContainer" class$="[[getTangibleSyncStyleClass_()]]">
   <cr-button id="signInButton" class="action-button" on-click="onSignInClick_"
       disabled="[[profileCreationInProgress]]">
     $i18n{signInButtonLabel}
@@ -150,8 +136,8 @@
     $i18n{notNowButtonLabel}
   </cr-button>
 </div>
-<div id="rightBanner" class="banner" hidden="[[isNewDesign_]]"></div>
-<img id="new-design-right-illustration" hidden="[[!isNewDesign_]]">
+<div id="rightBanner" class="banner" hidden="[[isTangibleSyncEnabled_]]"></div>
+<img id="tangible-sync-style-right-banner" hidden="[[!isTangibleSyncEnabled_]]">
 
 <template is="dom-if" if="[[managedDeviceDisclaimer_]]">
   <div id="infoContainer">

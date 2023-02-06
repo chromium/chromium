@@ -259,23 +259,20 @@ void AddStrings(content::WebUIDataSource* html_source) {
       "isLocalProfileCreationDialogEnabled",
       base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept));
 
-  // Update the profile picker design to match tangible sync styles when
-  // `switches::kTangibleSync` is enabled
   html_source->AddBoolean(
-      "isNewDesign", base::FeatureList::IsEnabled(switches::kTangibleSync));
+      "isTangibleSyncEnabled",
+      base::FeatureList::IsEnabled(switches::kTangibleSync));
 
+  html_source->AddResourcePath("images/tangible_sync_style_left_banner.svg",
+                               IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
   html_source->AddResourcePath(
-      "images/profile_type_choice_left_illustration.svg",
-      IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_LEFT_ILLUSTRATION_SVG);
+      "images/tangible_sync_style_left_banner_dark.svg",
+      IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_DARK_SVG);
+  html_source->AddResourcePath("images/tangible_sync_style_right_banner.svg",
+                               IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_SVG);
   html_source->AddResourcePath(
-      "images/profile_type_choice_left_illustration_dark.svg",
-      IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_LEFT_ILLUSTRATION_DARK_SVG);
-  html_source->AddResourcePath(
-      "images/profile_type_choice_right_illustration.svg",
-      IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_RIGHT_ILLUSTRATION_SVG);
-  html_source->AddResourcePath(
-      "images/profile_type_choice_right_illustration_dark.svg",
-      IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_RIGHT_ILLUSTRATION_DARK_SVG);
+      "images/tangible_sync_style_right_banner_dark.svg",
+      IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
 }
 
 }  // namespace

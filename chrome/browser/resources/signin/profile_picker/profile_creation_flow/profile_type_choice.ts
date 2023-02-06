@@ -58,10 +58,10 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
         notify: true,
       },
 
-      isNewDesign_: {
+      isTangibleSyncEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isNewDesign');
+          return loadTimeData.getBoolean('isTangibleSyncEnabled');
         },
       },
 
@@ -93,7 +93,7 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
   private managedDeviceDisclaimer_: boolean;
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
-  private isNewDesign_: boolean;
+  private isTangibleSyncEnabled_: boolean;
 
   // <if expr="chromeos_lacros">
   private hasAvailableAccounts_: boolean;
@@ -160,8 +160,8 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
         'backButtonAriaLabel', this.i18n('profileTypeChoiceTitle'));
   }
 
-  private getNewDesignClass_() {
-    return this.isNewDesign_ ? 'new-design' : '';
+  private getTangibleSyncStyleClass_() {
+    return this.isTangibleSyncEnabled_ ? 'tangible-sync-style' : '';
   }
 
   // <if expr="chromeos_lacros">

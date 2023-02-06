@@ -270,18 +270,17 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
     illustration_dark_id =
         IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_DIALOG_ILLUSTRATION_DARK_SVG;
 
-    source->AddResourcePath(
-        "images/tangible_sync_window_left_illustration.svg",
-        IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_LEFT_ILLUSTRATION_SVG);
+    source->AddResourcePath("images/tangible_sync_window_left_illustration.svg",
+                            IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
     source->AddResourcePath(
         "images/tangible_sync_window_left_illustration_dark.svg",
-        IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_LEFT_ILLUSTRATION_DARK_SVG);
+        IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_DARK_SVG);
     source->AddResourcePath(
         "images/tangible_sync_window_right_illustration.svg",
-        IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_RIGHT_ILLUSTRATION_SVG);
+        IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_SVG);
     source->AddResourcePath(
         "images/tangible_sync_window_right_illustration_dark.svg",
-        IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_RIGHT_ILLUSTRATION_DARK_SVG);
+        IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
   }
 
   // Registering and resolving the strings with placeholders
