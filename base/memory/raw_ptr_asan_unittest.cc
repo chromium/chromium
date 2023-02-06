@@ -40,8 +40,6 @@ const char kAsanBrpProtected_Callback[] = ASAN_BRP_PROTECTED(
     "region");
 const char kAsanBrpMaybeProtected_Extraction[] = ASAN_BRP_MANUAL_ANALYSIS(
     "pointer to the same region was extracted from a raw_ptr<T>");
-const char kAsanBrpNotProtected_Instantiation[] = ASAN_BRP_NOT_PROTECTED(
-    "pointer to an already freed region was assigned to a raw_ptr<T>");
 const char kAsanBrpNotProtected_EarlyAllocation[] = ASAN_BRP_NOT_PROTECTED(
     "crash occurred while accessing a region that was allocated before "
     "MiraclePtr was activated");
@@ -51,6 +49,10 @@ const char kAsanBrpMaybeProtected_Race[] =
     ASAN_BRP_MANUAL_ANALYSIS("\\nThe \"use\" and \"free\" threads don't match");
 const char kAsanBrpMaybeProtected_ThreadPool[] =
     ASAN_BRP_MANUAL_ANALYSIS("\\nThis crash occurred in the thread pool");
+
+// Instantiation failure message format is special.
+const char kAsanBrp_Instantiation[] =
+    "crash occurred due to an attempt to assign a dangling pointer";
 
 #undef ASAN_BRP_PROTECTED
 #undef ASAN_BRP_MANUAL_ANALYSIS
@@ -133,7 +135,7 @@ TEST_F(AsanBackupRefPtrTest, Instantiation) {
 
   EXPECT_DEATH_IF_SUPPORTED(
       { [[maybe_unused]] raw_ptr<AsanStruct> protected_ptr2 = ptr; },
-      kAsanBrpNotProtected_Instantiation);
+      kAsanBrp_Instantiation);
 }
 
 TEST_F(AsanBackupRefPtrTest, InstantiationInvalidPointer) {
@@ -157,7 +159,7 @@ TEST_F(AsanBackupRefPtrTest, UserPoisoned) {
   delete ptr;  // Should crash now.
   EXPECT_DEATH_IF_SUPPORTED(
       { [[maybe_unused]] raw_ptr<AsanStruct> protected_ptr2 = ptr; },
-      kAsanBrpNotProtected_Instantiation);
+      kAsanBrp_Instantiation);
 }
 
 TEST_F(AsanBackupRefPtrTest, EarlyAllocationDetection) {
@@ -371,8 +373,7 @@ TEST_F(AsanBackupRefPtrTest, BoundArgumentsInstantiation) {
 
   // It is not allowed to create a new `raw_ptr<T>` inside a callback once
   // `*protected_ptr` is no longer valid.
-  EXPECT_DEATH_IF_SUPPORTED(std::move(callback).Run(),
-                            kAsanBrpNotProtected_Instantiation);
+  EXPECT_DEATH_IF_SUPPORTED(std::move(callback).Run(), kAsanBrp_Instantiation);
 }
 
 TEST_F(AsanBackupRefPtrTest, BoundReferences) {

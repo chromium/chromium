@@ -55,12 +55,13 @@ NOINLINE NOT_TAIL_CALLED void CrashImmediatelyOnUseAfterFree(
 }
 
 void WrapPtr(uintptr_t address) {
-  if (RawPtrAsanService::GetInstance().is_instantiation_check_enabled() &&
-      IsFreedHeapPointer(address)) {
+  auto& service = RawPtrAsanService::GetInstance();
+
+  if (service.is_instantiation_check_enabled() && IsFreedHeapPointer(address)) {
     RawPtrAsanService::SetPendingReport(
         RawPtrAsanService::ReportType::kInstantiation,
         reinterpret_cast<void*>(address));
-    CrashImmediatelyOnUseAfterFree(address);
+    service.CrashOnDanglingInstantiation(reinterpret_cast<void*>(address));
   }
 }
 

@@ -60,6 +60,7 @@ class BASE_EXPORT RawPtrAsanService {
   }
 
   void WarnOnDanglingExtraction(const volatile void* ptr) const;
+  void CrashOnDanglingInstantiation(const volatile void* ptr) const;
 
   static void SetPendingReport(ReportType type, const volatile void* ptr);
 

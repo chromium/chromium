@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/debug/asan_service.h"
+#include "base/immediate_crash.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_asan_bound_arg_tracker.h"
@@ -277,25 +278,81 @@ void RawPtrAsanService::ErrorReportCallback(const char* report, bool*) {
       crash_info.crash_details, crash_info.protection_details);
 }
 
-void RawPtrAsanService::WarnOnDanglingExtraction(
-    const volatile void* ptr) const {
+namespace {
+enum class MessageLevel {
+  kWarning,
+  kError,
+};
+
+const char* LevelToString(MessageLevel level) {
+  switch (level) {
+    case MessageLevel::kWarning:
+      return "WARNING";
+    case MessageLevel::kError:
+      return "ERROR";
+  }
+}
+
+// Prints AddressSanitizer-like custom error messages.
+void Log(MessageLevel level,
+         uintptr_t address,
+         const char* type,
+         const char* description) {
+#if __has_builtin(__builtin_extract_return_addr) && \
+    __has_builtin(__builtin_return_address)
+  void* pc = __builtin_extract_return_addr(__builtin_return_address(0));
+#else
+  void* pc = nullptr;
+#endif
+
+#if __has_builtin(__builtin_frame_address)
+  void* bp = __builtin_frame_address(0);
+#else
+  void* bp = nullptr;
+#endif
+
+  void* local_stack;
+  void* sp = &local_stack;
+
   debug::AsanService::GetInstance()->Log(
       "=================================================================\n"
-      "==%d==WARNING: MiraclePtr: dangling-pointer-extraction on address "
-      "%p\n"
-      "extracted here:",
-      Process::Current().Pid(), ptr);
+      "==%d==%s: MiraclePtr: %s on address %p at pc %p bp %p sp %p",
+      Process::Current().Pid(), LevelToString(level), type, address, pc, bp,
+      sp);
   __sanitizer_print_stack_trace();
-  __asan_describe_address(const_cast<void*>(ptr));
+  __asan_describe_address(reinterpret_cast<void*>(address));
   debug::AsanService::GetInstance()->Log(
+      "%s\n"
+      "=================================================================",
+      description);
+}
+}  // namespace
+
+void RawPtrAsanService::WarnOnDanglingExtraction(
+    const volatile void* ptr) const {
+  Log(MessageLevel::kWarning, reinterpret_cast<uintptr_t>(ptr),
+      "dangling-pointer-extraction",
       "A regular ASan report will follow if the extracted pointer is "
       "dereferenced later.\n"
       "Otherwise, it is still likely a bug to rely on the address of an "
       "already freed allocation.\n"
       "Refer to "
       "https://chromium.googlesource.com/chromium/src/+/main/base/memory/"
-      "raw_ptr.md for details.\n"
-      "=================================================================");
+      "raw_ptr.md for details.");
+}
+
+void RawPtrAsanService::CrashOnDanglingInstantiation(
+    const volatile void* ptr) const {
+  Log(MessageLevel::kError, reinterpret_cast<uintptr_t>(ptr),
+      "dangling-pointer-instantiation",
+      "This crash occurred due to an attempt to assign a dangling pointer to a "
+      "raw_ptr<T> variable, which might lead to use-after-free.\n"
+      "Note that this report might be a false positive if at the moment of the "
+      "crash another raw_ptr<T> is guaranteed to keep the allocation alive.\n"
+      "Refer to "
+      "https://chromium.googlesource.com/chromium/src/+/main/base/memory/"
+      "raw_ptr.md for details.");
+  base::ImmediateCrash();
 }
 
 // static
