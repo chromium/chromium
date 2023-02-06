@@ -941,6 +941,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.DesktopCapture.IsZeroHzActive.{CapturerType}"
+    enum="BooleanActive" expires_after="2024-02-03">
+  <owner>henrika@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    A boolean is recorded to this histogram for each captured video frame where
+    the desktop media source is given by {CapturerType}. Only recorded for
+    capturers that support detection of whether 0Hz is active or not which
+    requires that each captured frame must contain a representation of what
+    regions have been updated since the last frame. Windows WGC is an example of
+    a capturer which does not support this.
+  </summary>
+  <token key="CapturerType">
+    <variant name="Screen" summary="Screen capture type"/>
+    <variant name="Window" summary="Window capture type"/>
+  </token>
+</histogram>
+
 <histogram name="WebRTC.DesktopCapture.Win.DesktopCapturerImpl"
     enum="WebRtcDesktopCapturerImpl" expires_after="2023-06-18">
   <owner>alcooper@chromium.org</owner>

@@ -108,6 +108,17 @@ int GetMaximumCpuConsumptionPercentage() {
   return max_cpu_consumption_percentage;
 }
 
+void LogDesktopCaptureZeroHzIsActive(DesktopMediaID::Type capturer_type,
+                                     bool zero_hz_is_active) {
+  if (capturer_type == DesktopMediaID::TYPE_SCREEN) {
+    UMA_HISTOGRAM_BOOLEAN("WebRTC.DesktopCapture.IsZeroHzActive.Screen",
+                          zero_hz_is_active);
+  } else {
+    UMA_HISTOGRAM_BOOLEAN("WebRTC.DesktopCapture.IsZeroHzActive.Window",
+                          zero_hz_is_active);
+  }
+}
+
 }  // namespace
 
 class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
@@ -376,8 +387,13 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
   // valid frame has already been captured.
   // |zero_hertz_is_supported()| can be false in combination with capturers that
   // do not support the 0Hz mode, e.g. Windows capturers using the WGC API.
-  if (zero_hertz_is_supported() && output_frame_ &&
-      frame->updated_region().is_empty()) {
+  const bool zero_hertz_is_active = zero_hertz_is_supported() &&
+                                    output_frame_ &&
+                                    frame->updated_region().is_empty();
+  if (zero_hertz_is_supported()) {
+    LogDesktopCaptureZeroHzIsActive(capturer_type_, zero_hertz_is_active);
+  }
+  if (zero_hertz_is_active) {
     ScheduleNextCaptureFrame();
     return;
   }
