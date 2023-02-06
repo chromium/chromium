@@ -13,7 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
-#include "chrome/browser/ash/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
@@ -158,12 +158,14 @@ void PluginVmTestHelper::SetUserRequirementsToAllowPluginVm() {
   // User for the profile should be affiliated with the device.
   const AccountId account_id(AccountId::FromUserEmailGaiaId(
       testing_profile_->GetProfileUserName(), "id"));
-  auto mock_user_manager =
-      std::make_unique<testing::NiceMock<ash::MockUserManager>>();
-  mock_user_manager->AddUserWithAffiliationAndType(
-      account_id, true, user_manager::USER_TYPE_REGULAR);
+  auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+  auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+      account_id, true, user_manager::USER_TYPE_REGULAR, testing_profile_);
+  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
+                             /*browser_restart=*/false,
+                             /*is_child=*/false);
   scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-      std::move(mock_user_manager));
+      std::move(user_manager));
   running_on_chromeos_ =
       std::make_unique<base::test::ScopedRunningOnChromeOS>();
 }
