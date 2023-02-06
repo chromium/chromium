@@ -234,10 +234,26 @@ PrivacySandboxService::PrivacySandboxService(
       base::BindRepeating(&PrivacySandboxService::OnAdMeasurementPrefChanged,
                           base::Unretained(this)));
 
-  // If the Sandbox is currently restricted, disable the V2 preference. The user
-  // must manually enable the sandbox if they stop being restricted.
+  // If the Sandbox is currently restricted, disable it and reset any consent
+  // information. The user must manually enable the sandbox if they stop being
+  // restricted.
   if (IsPrivacySandboxRestricted()) {
+    // Disable trials prefs.
     pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
+
+    // Disable M1 prefs.
+    pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
+    pref_service_->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, false);
+    pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
+                              false);
+
+    // Clear any recorded consent information.
+    pref_service_->ClearPref(prefs::kPrivacySandboxTopicsConsentGiven);
+    pref_service_->ClearPref(prefs::kPrivacySandboxTopicsConsentLastUpdateTime);
+    pref_service_->ClearPref(
+        prefs::kPrivacySandboxTopicsConsentLastUpdateReason);
+    pref_service_->ClearPref(
+        prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate);
   }
 
   // Check for FPS pref init at each startup.

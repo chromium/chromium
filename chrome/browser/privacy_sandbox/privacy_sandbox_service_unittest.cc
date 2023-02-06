@@ -892,12 +892,19 @@ class PrivacySandboxServiceTest : public testing::Test {
 
   virtual void InitializeFeaturesBeforeStart() {}
 
-  void CreateService() {
+  virtual std::unique_ptr<
+      privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
+  CreateMockDelegate() {
     auto mock_delegate = std::make_unique<testing::NiceMock<
         privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>>();
-    mock_delegate_ = mock_delegate.get();
     mock_delegate->SetUpIsPrivacySandboxRestrictedResponse(
         /*restricted=*/false);
+    return mock_delegate;
+  }
+
+  void CreateService() {
+    auto mock_delegate = CreateMockDelegate();
+    mock_delegate_ = mock_delegate.get();
 
     privacy_sandbox_settings_ =
         std::make_unique<privacy_sandbox::PrivacySandboxSettingsImpl>(
@@ -3517,6 +3524,93 @@ TEST_F(PrivacySandboxServiceM1Test, RecordPrivacySandbox4StartupMetrics_APIs) {
         static_cast<int>(false),
         /*expected_count=*/1);
   }
+}
+
+class PrivacySandboxServiceM1DelayCreation
+    : public PrivacySandboxServiceM1Test {
+ public:
+  void SetUp() override {
+    // Prevent service from being created by base class.
+  }
+};
+
+TEST_F(PrivacySandboxServiceM1DelayCreation,
+       UnrestrictedRemainsEnabledWithConsent) {
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, true);
+  prefs()->SetBoolean(prefs::kPrivacySandboxTopicsConsentGiven, true);
+  prefs()->SetTime(prefs::kPrivacySandboxTopicsConsentLastUpdateTime,
+                   base::Time::Now());
+  prefs()->SetInteger(
+      prefs::kPrivacySandboxTopicsConsentLastUpdateReason,
+      static_cast<int>(
+          privacy_sandbox::TopicsConsentUpdateSource::kConfirmation));
+  prefs()->SetString(prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate,
+                     "foo");
+
+  CreateService();
+
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled));
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled));
+  EXPECT_TRUE(
+      prefs()->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled));
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxTopicsConsentGiven));
+  EXPECT_EQ(
+      base::Time::Now(),
+      prefs()->GetTime(prefs::kPrivacySandboxTopicsConsentLastUpdateTime));
+  EXPECT_EQ(privacy_sandbox::TopicsConsentUpdateSource::kConfirmation,
+            static_cast<privacy_sandbox::TopicsConsentUpdateSource>(
+                prefs()->GetInteger(
+                    prefs::kPrivacySandboxTopicsConsentLastUpdateReason)));
+  EXPECT_EQ("foo", prefs()->GetString(
+                       prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate));
+}
+
+class PrivacySandboxServiceM1DelayCreationRestricted
+    : public PrivacySandboxServiceM1DelayCreation {
+ public:
+  std::unique_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
+  CreateMockDelegate() override {
+    auto mock_delegate = std::make_unique<testing::NiceMock<
+        privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>>();
+    mock_delegate->SetUpIsPrivacySandboxRestrictedResponse(
+        /*restricted=*/true);
+    return mock_delegate;
+  }
+};
+
+TEST_F(PrivacySandboxServiceM1DelayCreationRestricted,
+       RestrictedDisablesAndClearsConsent) {
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, true);
+  prefs()->SetBoolean(prefs::kPrivacySandboxTopicsConsentGiven, true);
+  prefs()->SetTime(prefs::kPrivacySandboxTopicsConsentLastUpdateTime,
+                   base::Time::Now());
+  prefs()->SetInteger(
+      prefs::kPrivacySandboxTopicsConsentLastUpdateReason,
+      static_cast<int>(
+          privacy_sandbox::TopicsConsentUpdateSource::kConfirmation));
+  prefs()->SetString(prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate,
+                     "foo");
+
+  CreateService();
+
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled));
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled));
+  EXPECT_FALSE(
+      prefs()->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled));
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxTopicsConsentGiven));
+  EXPECT_EQ(
+      base::Time(),
+      prefs()->GetTime(prefs::kPrivacySandboxTopicsConsentLastUpdateTime));
+  EXPECT_EQ(privacy_sandbox::TopicsConsentUpdateSource::kDefaultValue,
+            static_cast<privacy_sandbox::TopicsConsentUpdateSource>(
+                prefs()->GetInteger(
+                    prefs::kPrivacySandboxTopicsConsentLastUpdateReason)));
+  EXPECT_EQ("", prefs()->GetString(
+                    prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate));
 }
 
 class PrivacySandboxServiceM1PromptTest : public PrivacySandboxServiceM1Test {
