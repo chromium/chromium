@@ -11,14 +11,7 @@ js_type_check("closure_compile_module") {
   deps = [
     ":account_manager",
     ":account_manager_browser_proxy",
-    ":fingerprint_browser_proxy",
-    ":fingerprint_list",
-    ":local_data_recovery_dialog",
-    ":lock_screen",
-    ":lock_screen_password_prompt_dialog",
     ":lock_state_behavior",
-    ":setup_fingerprint_dialog",
-    ":setup_pin_dialog",
   ]
 }
 
@@ -47,71 +40,6 @@ js_library("account_manager") {
   ]
 }
 
-js_library("fingerprint_browser_proxy") {
-  deps = [
-    "//ash/webui/common/resources:cr.m",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("fingerprint_list") {
-  deps = [
-    ":fingerprint_browser_proxy",
-    "..:deep_linking_behavior",
-    "..:metrics_recorder",
-    "..:os_route",
-    "..:route_observer_behavior",
-    "..:router",
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:cr.m",
-    "//ash/webui/common/resources:focus_without_ink_js",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//third_party/polymer/v3_0/components-chromium/iron-resizable-behavior:iron-resizable-behavior",
-    "//third_party/polymer/v3_0/components-chromium/paper-ripple:paper-ripple",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("local_data_recovery_dialog") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("lock_screen") {
-  deps = [
-    ":fingerprint_browser_proxy",
-    ":lock_screen_password_prompt_dialog",
-    ":lock_state_behavior",
-    "..:deep_linking_behavior",
-    "..:os_route",
-    "..:route_observer_behavior",
-    "..:router",
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:focus_without_ink_js",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//ash/webui/common/resources/quick_unlock:lock_screen_constants",
-    "//chromeos/ash/services/auth_factor_config/public/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "../settings_controls_types.js",
-    "$externs_path/settings_private.js",
-  ]
-}
-
-js_library("lock_screen_password_prompt_dialog") {
-  deps = [
-    ":lock_state_behavior",
-    "//ash/webui/common/resources/quick_unlock:lock_screen_constants",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
 js_library("lock_state_behavior") {
   deps = [
     "..:router",
@@ -123,28 +51,4 @@ js_library("lock_state_behavior") {
   ]
   externs_list = [ "$externs_path/quick_unlock_private.js" ]
   extra_sources = [ "$interfaces_path/quick_unlock_private_interface.js" ]
-}
-
-js_library("setup_fingerprint_dialog") {
-  deps = [
-    ":fingerprint_browser_proxy",
-    "..:metrics_recorder",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//ui/webui/resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc_externs.js",
-    "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js",
-  ]
-}
-
-js_library("setup_pin_dialog") {
-  deps = [
-    ":lock_screen_password_prompt_dialog",
-    "..:router",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources/quick_unlock:setup_pin_keyboard",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
 }

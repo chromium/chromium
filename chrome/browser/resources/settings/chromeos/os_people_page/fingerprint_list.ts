@@ -14,51 +14,30 @@ import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import './setup_fingerprint_dialog.js';
 import '../../settings_shared.css.js';
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
 import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {castExists} from '../assert_extras.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {FingerprintBrowserProxy, FingerprintBrowserProxyImpl, FingerprintInfo} from './fingerprint_browser_proxy.js';
 import {getTemplate} from './fingerprint_list.html.js';
 
-/**
- * The duration in ms of a background flash when a user touches the fingerprint
- * sensor on this page.
- * @type {number}
- */
-const FLASH_DURATION_MS = 500;
+const SettingsFingerprintListElementBase = RouteObserverMixin(
+    WebUiListenerMixin(I18nMixin(DeepLinkingMixin(PolymerElement))));
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const SettingsFingerprintListElementBase = mixinBehaviors(
-    [
-      DeepLinkingBehavior,
-      I18nBehavior,
-      WebUIListenerBehavior,
-      RouteObserverBehavior,
-    ],
-    PolymerElement);
-
-/** @polymer */
 class SettingsFingerprintListElement extends
     SettingsFingerprintListElementBase {
   static get is() {
-    return 'settings-fingerprint-list';
+    return 'settings-fingerprint-list' as const;
   }
 
   static get template() {
@@ -76,10 +55,6 @@ class SettingsFingerprintListElement extends
         observer: 'onAuthTokenChanged_',
       },
 
-      /**
-       * The list of fingerprint objects.
-       * @private {!Array<string>}
-       */
       fingerprints_: {
         type: Array,
         value() {
@@ -87,14 +62,8 @@ class SettingsFingerprintListElement extends
         },
       },
 
-      /** @private */
       showSetupFingerprintDialog_: Boolean,
 
-      /**
-       * Whether add another finger is allowed.
-       * @type {boolean}
-       * @private
-       */
       allowAddAnotherFinger_: {
         type: Boolean,
         value: true,
@@ -102,11 +71,10 @@ class SettingsFingerprintListElement extends
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kAddFingerprintV2,
           Setting.kRemoveFingerprintV2,
         ]),
@@ -114,26 +82,29 @@ class SettingsFingerprintListElement extends
     };
   }
 
+  authToken: string;
+  private fingerprints_: string[];
+  private showSetupFingerprintDialog_: boolean;
+  private allowAddAnotherFinger_: boolean;
+  private browserProxy_: FingerprintBrowserProxy;
+
   constructor() {
     super();
 
-    /** @private {!FingerprintBrowserProxy} */
     this.browserProxy_ = FingerprintBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
-    this.addWebUIListener('on-screen-locked', this.onScreenLocked_.bind(this));
+    this.addWebUiListener('on-screen-locked', this.onScreenLocked_.bind(this));
     this.updateFingerprintsList_();
   }
 
   /**
-   * @return {boolean} Whether an event was fired to show the password dialog.
-   * @private
+   * @return whether an event was fired to show the password dialog.
    */
-  requestPasswordIfApplicable_() {
+  private requestPasswordIfApplicable_(): boolean {
     const currentRoute = Router.getInstance().getCurrentRoute();
     if (currentRoute === routes.FINGERPRINT && !this.authToken) {
       const event = new CustomEvent(
@@ -144,13 +115,7 @@ class SettingsFingerprintListElement extends
     return false;
   }
 
-  /**
-   * Overridden from RouteObserverBehavior.
-   * @param {!Route} newRoute
-   * @param {!Route=} oldRoute
-   * @protected
-   */
-  currentRouteChanged(newRoute, oldRoute) {
+  override currentRouteChanged(newRoute: Route) {
     if (newRoute !== routes.FINGERPRINT) {
       this.showSetupFingerprintDialog_ = false;
       return;
@@ -163,30 +128,20 @@ class SettingsFingerprintListElement extends
     this.attemptDeepLink();
   }
 
-  /** @private */
-  updateFingerprintsList_() {
+  private updateFingerprintsList_(): void {
     this.browserProxy_.getFingerprintsList().then(
         this.onFingerprintsChanged_.bind(this));
   }
 
-  /**
-   * @param {!FingerprintInfo} fingerprintInfo
-   * @private
-   */
-  onFingerprintsChanged_(fingerprintInfo) {
+  private onFingerprintsChanged_(fingerprintInfo: FingerprintInfo): void {
     // Update iron-list.
     this.fingerprints_ = fingerprintInfo.fingerprintsList.slice();
-    this.shadowRoot.querySelector('.action-button').disabled =
-        fingerprintInfo.isMaxed;
+    this.shadowRoot!.querySelector<CrButtonElement>(
+                        '.action-button')!.disabled = fingerprintInfo.isMaxed;
     this.allowAddAnotherFinger_ = !fingerprintInfo.isMaxed;
   }
 
-  /**
-   * Deletes a fingerprint from |fingerprints_|.
-   * @param {!{model: !{index: !number}}} e
-   * @private
-   */
-  onFingerprintDeleteTapped_(e) {
+  private onFingerprintDeleteTapped_(e: DomRepeatEvent<number>): void {
     this.browserProxy_.removeEnrollment(e.model.index, this.authToken)
         .then(success => {
           if (success) {
@@ -196,11 +151,7 @@ class SettingsFingerprintListElement extends
         });
   }
 
-  /**
-   * @param {!{model: !{index: !number, item: !string}}} e
-   * @private
-   */
-  onFingerprintLabelChanged_(e) {
+  private onFingerprintLabelChanged_(e: DomRepeatEvent<string>): void {
     this.browserProxy_.changeEnrollmentLabel(e.model.index, e.model.item)
         .then(success => {
           if (success) {
@@ -209,34 +160,27 @@ class SettingsFingerprintListElement extends
         });
   }
 
-  /**
-   * Opens the setup fingerprint dialog.
-   * @private
-   */
-  openAddFingerprintDialog_() {
+  private openAddFingerprintDialog_(): void {
     this.showSetupFingerprintDialog_ = true;
   }
 
-  /** @private */
-  onSetupFingerprintDialogClose_() {
+  private onSetupFingerprintDialogClose_(): void {
     this.showSetupFingerprintDialog_ = false;
-    focusWithoutInk(assert(this.shadowRoot.querySelector('#addFingerprint')));
+    focusWithoutInk(
+        castExists(this.shadowRoot!.querySelector('#addFingerprint')));
   }
 
   /**
    * Close the setup fingerprint dialog when the screen is unlocked.
-   * @param {boolean} screenIsLocked
-   * @private
    */
-  onScreenLocked_(screenIsLocked) {
+  private onScreenLocked_(screenIsLocked: boolean): void {
     if (!screenIsLocked &&
         Router.getInstance().getCurrentRoute() === routes.FINGERPRINT) {
       this.onSetupFingerprintDialogClose_();
     }
   }
 
-  /** @private */
-  onAuthTokenChanged_() {
+  private onAuthTokenChanged_(): void {
     if (this.requestPasswordIfApplicable_()) {
       this.showSetupFingerprintDialog_ = false;
       return;
@@ -248,13 +192,14 @@ class SettingsFingerprintListElement extends
     }
   }
 
-  /**
-   * @param {string} item
-   * @return {string}
-   * @private
-   */
-  getButtonAriaLabel_(item) {
+  private getButtonAriaLabel_(item: string): string {
     return this.i18n('lockScreenDeleteFingerprintLabel', item);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsFingerprintListElement.is]: SettingsFingerprintListElement;
   }
 }
 

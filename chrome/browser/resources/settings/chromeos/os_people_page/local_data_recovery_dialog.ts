@@ -15,31 +15,33 @@ import 'chrome://resources/ash/common/assert.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../settings_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {AuthFactor, ConfigureResult, FactorObserverInterface, FactorObserverReceiver, ManagementType} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {ConfigureResult} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Constructor} from '../common/types.js';
+
 import {getTemplate} from './local_data_recovery_dialog.html.js';
-import {LockScreenUnlockType, LockStateBehavior, LockStateBehaviorInterface} from './lock_state_behavior.js';
+import {LockStateBehavior, LockStateBehaviorInterface} from './lock_state_behavior.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {LockStateBehaviorInterface}
- */
 const LocalDataRecoveryDialogElementBase = mixinBehaviors(
-    [
-      I18nBehavior,
-      LockStateBehavior,
-    ],
-    PolymerElement);
+                                               [
+                                                 LockStateBehavior,
+                                               ],
+                                               I18nMixin(PolymerElement)) as
+    Constructor<PolymerElement&I18nMixinInterface&LockStateBehaviorInterface>;
 
-/** @polymer */
+interface LocalDataRecoveryDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
+
 class LocalDataRecoveryDialogElement extends
     LocalDataRecoveryDialogElementBase {
   static get is() {
-    return 'local-data-recovery-dialog';
+    return 'local-data-recovery-dialog' as const;
   }
 
   static get template() {
@@ -58,34 +60,32 @@ class LocalDataRecoveryDialogElement extends
     };
   }
 
+  authToken: chrome.quickUnlockPrivate.TokenInfo|undefined;
+
   constructor() {
     super();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
     this.$.dialog.showModal();
   }
 
-  close() {
+  close(): void {
     if (this.$.dialog.open) {
       this.$.dialog.close();
     }
   }
 
-  /** @private */
-  onClose_() {
+  private onClose_(): void {
     this.close();
   }
 
-  /** @private */
-  onCancelTap_() {
+  private onCancelTap_(): void {
     this.close();
   }
 
-  /** @private */
-  async onDisableTap_() {
+  private async onDisableTap_(): Promise<void> {
     try {
       if (!this.authToken) {
         console.error('Recovery changed with expired token.');
@@ -93,13 +93,19 @@ class LocalDataRecoveryDialogElement extends
       }
 
       const {result} = await this.recoveryFactorEditor.configure(
-          this.authToken.token, false);
+          this.authToken!.token, false);
       if (result !== ConfigureResult.kSuccess) {
         console.error('RecoveryFactorEditor::Configure failed:', result);
       }
     } finally {
       this.close();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [LocalDataRecoveryDialogElement.is]: LocalDataRecoveryDialogElement;
   }
 }
 

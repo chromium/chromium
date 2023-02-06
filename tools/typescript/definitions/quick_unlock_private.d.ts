@@ -24,5 +24,14 @@ declare namespace chrome {
     export function setModes(
         token: string, modes: QuickUnlockMode[], credentials: string[],
         onComplete: (success: boolean) => void): void;
+
+    // TODO(crbug/1368302) Update to use promises instead of callback
+    export function setPinAutosubmitEnabled(
+        token: string, pin: string, enabled: boolean,
+        onComplete: (success: boolean) => void): void;
+
+    // TODO(crbug/1368302) Update to use promises instead of callback
+    export function canAuthenticatePin(onComplete: (success: boolean) => void):
+        void;
   }
 }

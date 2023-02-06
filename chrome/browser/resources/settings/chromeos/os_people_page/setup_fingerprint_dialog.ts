@@ -8,59 +8,61 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '../../settings_shared.css.js';
 
-import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrFingerprintProgressArcElement} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.js';
 
 import {FingerprintBrowserProxy, FingerprintBrowserProxyImpl, FingerprintResultType, FingerprintScan} from './fingerprint_browser_proxy.js';
 import {getTemplate} from './setup_fingerprint_dialog.html.js';
 
+
 /**
  * The steps in the fingerprint setup flow.
- * @enum {number}
  */
-export const FingerprintSetupStep = {
-  LOCATE_SCANNER: 1,  // The user needs to locate the scanner.
-  MOVE_FINGER: 2,     // The user needs to move finger around the scanner.
-  READY: 3,           // The scanner has read the fingerprint successfully.
-};
+export enum FingerprintSetupStep {
+  LOCATE_SCANNER = 1,  // The user needs to locate the scanner.
+  MOVE_FINGER = 2,     // The user needs to move finger around the scanner.
+  READY = 3,           // The scanner has read the fingerprint successfully.
+}
 
 /**
  * The amount of milliseconds after a successful but not completed scan before
  * a message shows up telling the user to scan their finger again.
- * @type {number}
  */
-const SHOW_TAP_SENSOR_MESSAGE_DELAY_MS = 2000;
+const SHOW_TAP_SENSOR_MESSAGE_DELAY_MS: number = 2000;
 
 /**
  * The onboarding animation asset for dark mode.
- * @type {string}
  */
-const ONBOARDING_ANIMATION_DARK = 'fingerprint_scanner_animation_dark.json';
+const ONBOARDING_ANIMATION_DARK: string =
+    'fingerprint_scanner_animation_dark.json';
 
 /**
  * The onboarding animation asset for light mode.
- * @type {string}
  */
-const ONBOARDING_ANIMATION_LIGHT = 'fingerprint_scanner_animation_light.json';
+const ONBOARDING_ANIMATION_LIGHT: string =
+    'fingerprint_scanner_animation_light.json';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
+
 const SettingsSetupFingerprintDialogElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+    I18nMixin(WebUiListenerMixin(PolymerElement));
 
-/** @polymer */
+interface SettingsSetupFingerprintDialogElement {
+  $: {
+    dialog: CrDialogElement,
+    arc: CrFingerprintProgressArcElement,
+  };
+}
+
 class SettingsSetupFingerprintDialogElement extends
     SettingsSetupFingerprintDialogElementBase {
   static get is() {
-    return 'settings-setup-fingerprint-dialog';
+    return 'settings-setup-fingerprint-dialog' as const;
   }
 
   static get template() {
@@ -71,7 +73,6 @@ class SettingsSetupFingerprintDialogElement extends
     return {
       /**
        * Whether add another finger is allowed.
-       * @type {boolean}
        */
       allowAddAnotherFinger: {
         type: Boolean,
@@ -88,7 +89,6 @@ class SettingsSetupFingerprintDialogElement extends
 
       /**
        * The problem message to display.
-       * @private
        */
       problemMessage_: {
         type: String,
@@ -97,8 +97,6 @@ class SettingsSetupFingerprintDialogElement extends
 
       /**
        * The setup phase we are on.
-       * @type {!FingerprintSetupStep}
-       * @private
        */
       step_: {type: Number, value: FingerprintSetupStep.LOCATE_SCANNER},
 
@@ -107,8 +105,6 @@ class SettingsSetupFingerprintDialogElement extends
        * This is used to approximate the progress of the setup.
        * The value within [0, 100] represents the percent of enrollment
        * completion.
-       * @type {number}
-       * @private
        */
       percentComplete_: {
         type: Number,
@@ -118,8 +114,6 @@ class SettingsSetupFingerprintDialogElement extends
 
       /**
        * Whether the dialog is being rendered in dark mode.
-       * @type {boolean}
-       * @private
        */
       isDarkModeActive_: {
         type: Boolean,
@@ -128,29 +122,34 @@ class SettingsSetupFingerprintDialogElement extends
     };
   }
 
+  allowAddAnotherFinger: boolean;
+  authToken: string;
+  private browserProxy_: FingerprintBrowserProxy;
+  private isDarkModeActive_: boolean;
+  private percentComplete_: number;
+  private problemMessage_: string;
+  private step_: FingerprintSetupStep;
+  private tapSensorMessageTimeoutId_: number;
+
   constructor() {
     super();
 
     /**
      * A message shows after the user has not scanned a finger during setup.
      * This is the set timeout id.
-     * @type {number}
-     * @private
      */
     this.tapSensorMessageTimeoutId_ = 0;
 
-    /** @private {?FingerprintBrowserProxy} */
     this.browserProxy_ = FingerprintBrowserProxyImpl.getInstance();
   }
 
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'on-fingerprint-scan-received', this.onScanReceived_.bind(this));
-    this.addWebUIListener('on-screen-locked', this.onScreenLocked_.bind(this));
+    this.addWebUiListener('on-screen-locked', this.onScreenLocked_.bind(this));
     this.$.arc.reset();
     this.browserProxy_.startEnroll(this.authToken);
     this.$.dialog.showModal();
@@ -159,7 +158,7 @@ class SettingsSetupFingerprintDialogElement extends
   /**
    * Closes the dialog.
    */
-  close() {
+  close(): void {
     // Note: Reset resets |step_| back to the default, so handle anything that
     // checks |step_| before resetting.
     if (this.step_ !== FingerprintSetupStep.READY) {
@@ -173,8 +172,7 @@ class SettingsSetupFingerprintDialogElement extends
     this.reset_();
   }
 
-  /** private */
-  clearSensorMessageTimeout_() {
+  private clearSensorMessageTimeout_(): void {
     if (this.tapSensorMessageTimeoutId_ !== 0) {
       clearTimeout(this.tapSensorMessageTimeoutId_);
       this.tapSensorMessageTimeoutId_ = 0;
@@ -184,9 +182,8 @@ class SettingsSetupFingerprintDialogElement extends
   /**
    * Resets the dialog to its start state. Call this when the dialog gets
    * closed.
-   * @private
    */
-  reset_() {
+  private reset_(): void {
     this.step_ = FingerprintSetupStep.LOCATE_SCANNER;
     this.percentComplete_ = 0;
     this.clearSensorMessageTimeout_();
@@ -194,9 +191,8 @@ class SettingsSetupFingerprintDialogElement extends
 
   /**
    * Closes the dialog.
-   * @private
    */
-  onClose_() {
+  private onClose_(): void {
     if (this.$.dialog.open) {
       this.$.dialog.close();
     }
@@ -205,10 +201,8 @@ class SettingsSetupFingerprintDialogElement extends
   /**
    * Advances steps, shows problems and animates the progress as needed based
    * on scan results.
-   * @param {!FingerprintScan} scan
-   * @private
    */
-  onScanReceived_(scan) {
+  private onScanReceived_(scan: FingerprintScan): void {
     switch (this.step_) {
       case FingerprintSetupStep.LOCATE_SCANNER:
         this.$.arc.reset();
@@ -233,7 +227,6 @@ class SettingsSetupFingerprintDialogElement extends
         break;
       default:
         assertNotReached();
-        break;
     }
   }
 
@@ -242,7 +235,7 @@ class SettingsSetupFingerprintDialogElement extends
    * the dialog to cancel the enrollment process and make the fingerprint
    * unlock available to the user.
    */
-  onScreenLocked_(screenIsLocked) {
+  private onScreenLocked_(screenIsLocked: boolean): void {
     if (screenIsLocked) {
       this.close();
     }
@@ -252,12 +245,11 @@ class SettingsSetupFingerprintDialogElement extends
   /**
    * Sets the instructions based on which phase of the fingerprint setup we
    * are on.
-   * @param {!FingerprintSetupStep} step The current step the
-   *     fingerprint setup is on.
-   * @param {string} problemMessage Message for the scan result.
-   * @private
+   * step: The current step the fingerprint setup is on.
+   * problemMessage: Message for the scan result.
    */
-  getInstructionMessage_(step, problemMessage) {
+  private getInstructionMessage_(
+      step: FingerprintSetupStep, problemMessage: string): string {
     switch (step) {
       case FingerprintSetupStep.LOCATE_SCANNER:
         return this.i18n('configureFingerprintInstructionLocateScannerStep');
@@ -265,17 +257,16 @@ class SettingsSetupFingerprintDialogElement extends
         return problemMessage;
       case FingerprintSetupStep.READY:
         return this.i18n('configureFingerprintInstructionReadyStep');
+      default:
+        assertNotReached();
     }
-    assertNotReached();
   }
 
   /**
    * Set the problem message based on the result from the fingerprint scanner.
-   * @param {!FingerprintResultType} scanResult The result the
-   *     fingerprint scanner gives.
-   * @private
+   * scanResult: The result the fingerprint scanner gives.
    */
-  setProblem_(scanResult) {
+  private setProblem_(scanResult: FingerprintResultType): void {
     this.clearSensorMessageTimeout_();
     switch (scanResult) {
       case FingerprintResultType.SUCCESS:
@@ -296,18 +287,15 @@ class SettingsSetupFingerprintDialogElement extends
         break;
       default:
         assertNotReached();
-        break;
     }
   }
 
   /**
    * Displays the text of the close button based on which phase of the
    * fingerprint setup we are on.
-   * @param {!FingerprintSetupStep} step The current step the
-   *     fingerprint setup is on.
-   * @private
+   * step: The current step the fingerprint setup is on.
    */
-  getCloseButtonText_(step) {
+  private getCloseButtonText_(step: FingerprintSetupStep): string {
     if (step === FingerprintSetupStep.READY) {
       return this.i18n('done');
     }
@@ -315,11 +303,7 @@ class SettingsSetupFingerprintDialogElement extends
     return this.i18n('cancel');
   }
 
-  /**
-   * @param {!FingerprintSetupStep} step
-   * @private
-   */
-  getCloseButtonClass_(step) {
+  private getCloseButtonClass_(step: FingerprintSetupStep): string {
     if (step === FingerprintSetupStep.READY) {
       return 'action-button';
     }
@@ -327,21 +311,16 @@ class SettingsSetupFingerprintDialogElement extends
     return 'cancel-button';
   }
 
-  /**
-   * @param {!FingerprintSetupStep} step
-   * @param {boolean} allowAddAnotherFinger
-   * @private
-   */
-  hideAddAnother_(step, allowAddAnotherFinger) {
+  private hideAddAnother_(
+      step: FingerprintSetupStep, allowAddAnotherFinger: boolean): boolean {
     return step !== FingerprintSetupStep.READY || !allowAddAnotherFinger;
   }
 
   /**
    * Enrolls the finished fingerprint and sets the dialog back to step one to
    * prepare to enroll another fingerprint.
-   * @private
    */
-  onAddAnotherFingerprint_() {
+  private onAddAnotherFingerprint_(): void {
     this.reset_();
     this.$.arc.reset();
     this.step_ = FingerprintSetupStep.MOVE_FINGER;
@@ -351,26 +330,23 @@ class SettingsSetupFingerprintDialogElement extends
 
   /**
    * Whether scanner location should be shown at the current step.
-   * @private
    */
-  showScannerLocation_() {
+  private showScannerLocation_(): boolean {
     return this.step_ === FingerprintSetupStep.LOCATE_SCANNER;
   }
 
   /**
    * Whether fingerprint progress circle should be shown at the current step.
-   * @private
    */
-  showArc_() {
+  private showArc_(): boolean {
     return this.step_ === FingerprintSetupStep.MOVE_FINGER ||
         this.step_ === FingerprintSetupStep.READY;
   }
 
   /**
    * Observer for percentComplete_.
-   * @private
    */
-  onProgressChanged_(newValue, oldValue) {
+  private onProgressChanged_(newValue: number, oldValue: number): void {
     // Start a new enrollment, so reset all enrollment related states.
     if (newValue === 0) {
       this.$.arc.reset();
@@ -383,12 +359,17 @@ class SettingsSetupFingerprintDialogElement extends
   /**
    * Returns the URL for the asset that defines the onboarding animation for the
    * current fingerprint sensor location.
-   * @return {string}
-   * @private
    */
-  getAnimationUrl_() {
+  private getAnimationUrl_(): string {
     return this.isDarkModeActive_ ? ONBOARDING_ANIMATION_DARK :
                                     ONBOARDING_ANIMATION_LIGHT;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsSetupFingerprintDialogElement.is]:
+        SettingsSetupFingerprintDialogElement;
   }
 }
 

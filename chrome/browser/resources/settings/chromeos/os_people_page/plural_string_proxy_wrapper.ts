@@ -12,11 +12,7 @@
 
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 
-/**
- * @param {string} message
- * @param {number} count
- * @return {!Promise<string>}
- */
-export function getPluralStringFromProxy(message, count) {
+export function getPluralStringFromProxy(
+    message: string, count: number): Promise<string> {
   return PluralStringProxyImpl.getInstance().getPluralString(message, count);
 }

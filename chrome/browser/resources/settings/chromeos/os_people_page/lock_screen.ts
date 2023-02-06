@@ -28,19 +28,23 @@ import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 import '../multidevice_page/multidevice_smartlock_item.js';
 
-import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
-import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {LockScreenProgress, recordLockScreenProgress} from 'chrome://resources/ash/common/quick_unlock/lock_screen_constants.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {AuthFactor, ConfigureResult, FactorObserverInterface, FactorObserverReceiver, ManagementType} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
+import {AuthFactor, ConfigureResult, FactorObserverReceiver, ManagementType} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {castExists} from '../assert_extras.js';
+import {Constructor} from '../common/types.js';
+import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {FingerprintBrowserProxy, FingerprintBrowserProxyImpl} from './fingerprint_browser_proxy.js';
@@ -48,30 +52,18 @@ import {getTemplate} from './lock_screen.html.js';
 import {LockScreenUnlockType, LockStateBehavior, LockStateBehaviorInterface} from './lock_state_behavior.js';
 import {getPluralStringFromProxy} from './plural_string_proxy_wrapper.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {FactorObserverInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {LockStateBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const SettingsLockScreenElementBase = mixinBehaviors(
-    [
-      DeepLinkingBehavior,
-      I18nBehavior,
-      LockStateBehavior,
-      WebUIListenerBehavior,
-      RouteObserverBehavior,
-    ],
-    PolymerElement);
+const SettingsLockScreenElementBase =
+    mixinBehaviors(
+        [LockStateBehavior],
+        RouteObserverMixin(
+            WebUiListenerMixin(I18nMixin(DeepLinkingMixin(PolymerElement))))) as
+    Constructor<PolymerElement&DeepLinkingMixinInterface&I18nMixinInterface&
+                WebUiListenerMixinInterface&RouteObserverMixinInterface&
+                LockStateBehaviorInterface>;
 
-/** @polymer */
 class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   static get is() {
-    return 'settings-lock-screen';
+    return 'settings-lock-screen' as const;
   }
 
   static get template() {
@@ -80,13 +72,11 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
 
   static get properties() {
     return {
-      /** Preferences state. */
       prefs: {type: Object},
 
       /**
        * setModes is a partially applied function that stores the current auth
        * token. It's defined only when the user has entered a valid password.
-       * @type {Object|undefined}
        */
       setModes: {
         type: Object,
@@ -95,7 +85,6 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
 
       /**
        * Authentication token provided by lock-screen-password-prompt-dialog.
-       * @type {!chrome.quickUnlockPrivate.TokenInfo|undefined}
        */
       authToken: {
         type: Object,
@@ -105,9 +94,6 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       /**
        * writeUma_ is a function that handles writing uma stats. It may be
        * overridden for tests.
-       *
-       * @type {Function}
-       * @private
        */
       writeUma_: {
         type: Object,
@@ -118,7 +104,6 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
 
       /**
        * True if quick unlock settings should be displayed on this machine.
-       * @private
        */
       quickUnlockEnabled_: {
         type: Boolean,
@@ -130,7 +115,6 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
 
       /**
        * True if quick unlock settings are disabled by policy.
-       * @private
        */
       quickUnlockDisabledByPolicy_: {
         type: Boolean,
@@ -140,7 +124,6 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       /**
        * True if fingerprint unlock settings should be displayed on this
        * machine.
-       * @private
        */
       fingerprintUnlockEnabled_: {
         type: Boolean,
@@ -150,14 +133,12 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
         readOnly: true,
       },
 
-      /** @private */
       numFingerprints_: {
         type: Number,
         value: 0,
         observer: 'updateNumFingerprintsDescription_',
       },
 
-      /** @private */
       numFingerprintsDescription_: {
         type: String,
       },
@@ -165,7 +146,6 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       /**
        * Whether notifications on the lock screen are enable by the feature
        * flag.
-       * @private
        */
       lockScreenNotificationsEnabled_: {
         type: Boolean,
@@ -178,7 +158,6 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       /**
        * Whether the "hide sensitive notification" option on the lock screen can
        * be enable by the feature flag.
-       * @private
        */
       lockScreenHideSensitiveNotificationSupported_: {
         type: Boolean,
@@ -192,15 +171,12 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       /**
        * State of the recovery toggle. Is |null| iff recovery is not a
        * available.
-       * @type {?chrome.settingsPrivate.PrefObject}
-       * @private
        */
       recovery_: {
         type: Object,
         value: null,
       },
 
-      /** @private*/
       recoveryChangeInProcess_: {
         type: Boolean,
         value: false,
@@ -208,7 +184,6 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
 
       /**
        * True if quick unlock settings should be displayed on this machine.
-       * @private
        */
       quickUnlockPinAutosubmitFeatureEnabled_: {
         type: Boolean,
@@ -221,7 +196,6 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
 
       /**
        * Alias for the SmartLockUIRevamp feature flag.
-       * @private
        */
       smartLockUIRevampEnabled_: {
         type: Boolean,
@@ -231,18 +205,14 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
         readOnly: true,
       },
 
-      /** @private */
       showSetupPinDialog_: Boolean,
 
-      /** @private */
       showPinAutosubmitDialog_: Boolean,
 
-      /** @private */
       showDisableRecoveryDialog_: Boolean,
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -254,6 +224,26 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     };
   }
 
+  prefs: Object;
+  setModes: Function|undefined;
+  authToken: chrome.quickUnlockPrivate.TokenInfo|undefined;
+  private writeUma_: Function;
+  private quickUnlockEnabled_: boolean;
+  private quickUnlockDisabledByPolicy_: boolean;
+  private fingerprintUnlockEnabled_: boolean;
+  private numFingerprints_: number;
+  private numFingerprintDescription_: string;
+  private lockScreenNotificationsEnabled_: boolean;
+  private lockScreenHideSensitiveNotificationSupported_: boolean;
+  private recovery_: chrome.settingsPrivate.PrefObject|null;
+  private recoveryChangeInProcess_: boolean;
+  private quickUnlockPinAutosubmitFeatureEnabled_: boolean;
+  private smartLockUIRevampEnabled_: boolean;
+  private showSetupPinDialog_: boolean;
+  private showPinAutosubmitDialog_: boolean;
+  private showDisableRecoveryDialog_: boolean;
+  private fingerprintBrowserProxy_: FingerprintBrowserProxy;
+
   static get observers() {
     return [
       'selectedUnlockTypeChanged_(selectedUnlockType)',
@@ -264,15 +254,12 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   constructor() {
     super();
 
-    /** @private {!FingerprintBrowserProxy} */
     this.fingerprintBrowserProxy_ = FingerprintBrowserProxyImpl.getInstance();
 
-    /** @private {string} */
     this.numFingerprintDescription_ = '';
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
     // Register observer for auth factor updates.
     // TODO(crbug/1321440): Are we leaking |this| here because we never remove
@@ -284,27 +271,20 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     this.authFactorConfig.observeFactorChanges(remote);
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.updateNumFingerprints_();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'quick-unlock-disabled-by-policy-changed',
-        (quickUnlockDisabledByPolicy) => {
+        (quickUnlockDisabledByPolicy: boolean) => {
           this.quickUnlockDisabledByPolicy_ = quickUnlockDisabledByPolicy;
         });
     chrome.send('RequestQuickUnlockDisabledByPolicy');
   }
 
-  /**
-   * Overridden from RouteObserverBehavior.
-   * @param {!Route} newRoute
-   * @param {!Route=} oldRoute
-   * @protected
-   */
-  currentRouteChanged(newRoute, oldRoute) {
+  override currentRouteChanged(newRoute: Route) {
     if (newRoute === routes.LOCK_SCREEN) {
       this.updateUnlockType(/*activeModesChanged=*/ false);
       this.updateNumFingerprints_();
@@ -319,18 +299,14 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
 
   // Dispatch an event that signal that the auth token is invalid. This will
   // reopen the password prompt.
-  dispatchAuthTokenInvalidEvent_() {
+  private dispatchAuthTokenInvalidEvent_(): void {
     const authTokenInvalid =
         new CustomEvent('auth-token-invalid', {bubbles: true, composed: true});
     this.dispatchEvent(authTokenInvalid);
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onScreenLockChange_(event) {
-    const target = /** @type {!SettingsToggleButtonElement} */ (event.target);
+  private onScreenLockChange_(event: Event): void {
+    const target = event.target as SettingsToggleButtonElement;
     if (!this.authToken) {
       console.error('Screen lock changed with expired token.');
       target.checked = !target.checked;
@@ -345,12 +321,8 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
         });
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onPinAutosubmitChange_(event) {
-    const target = /** @type {!SettingsToggleButtonElement} */ (event.target);
+  private onPinAutosubmitChange_(event: Event): void {
+    const target = event.target as SettingsToggleButtonElement;
     if (!this.authToken) {
       console.error('PIN autosubmit setting changed with expired token.');
       target.checked = !target.checked;
@@ -370,12 +342,7 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     }
   }
 
-  /**
-   * Called when the unlock type has changed.
-   * @param {!string} selected The current unlock type.
-   * @private
-   */
-  selectedUnlockTypeChanged_(selected) {
+  private selectedUnlockTypeChanged_(selected: string): void {
     if (selected === LockScreenUnlockType.VALUE_PENDING) {
       return;
     }
@@ -389,7 +356,7 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       // small chance that CrOS fails to remove the quick unlock capability. See
       // https://crbug.com/1054327 for details.
       this.hasPin = false;
-      this.setModes.call(null, [], [], (result) => {
+      this.setModes.call(null, [], [], (result: string) => {
         // Revert |hasPin| to true in the event setModes fails to set lock state
         // to PASSWORD only.
         if (!result) {
@@ -401,20 +368,20 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     }
   }
 
-  /** @private */
-  focusDefaultElement_() {
+  private focusDefaultElement_(): void {
     afterNextRender(this, () => {
-      if (!this.shadowRoot.querySelector('#unlockType').disabled) {
-        focusWithoutInk(assert(this.shadowRoot.querySelector('#unlockType')));
+      if (!this.shadowRoot!.querySelector<CrRadioGroupElement>(
+                               '#unlockType')!.disabled) {
+        focusWithoutInk(
+            castExists(this.shadowRoot!.querySelector('#unlockType')));
       } else {
         focusWithoutInk(
-            assert(this.shadowRoot.querySelector('#enableLockScreen')));
+            castExists(this.shadowRoot!.querySelector('#enableLockScreen')));
       }
     });
   }
 
-  /** @private */
-  onSetModesChanged_() {
+  private onSetModesChanged_(): void {
     if (this.requestPasswordIfApplicable_()) {
       this.showSetupPinDialog_ = false;
       this.showPinAutosubmitDialog_ = false;
@@ -432,59 +399,48 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     }
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onConfigurePin_(e) {
+  private onConfigurePin_(e: Event): void {
     e.preventDefault();
     this.writeUma_(LockScreenProgress.CHOOSE_PIN_OR_PASSWORD);
     this.showSetupPinDialog_ = true;
   }
 
-  /** @private */
-  onSetupPinDialogClose_() {
+  private onSetupPinDialogClose_() {
     this.showSetupPinDialog_ = false;
-    focusWithoutInk(assert(this.shadowRoot.querySelector('#setupPinButton')));
+    focusWithoutInk(
+        castExists(this.shadowRoot!.querySelector('#setupPinButton')));
   }
 
-  /** @private */
-  onPinAutosubmitDialogClose_() {
+  private onPinAutosubmitDialogClose_(): void {
     this.showPinAutosubmitDialog_ = false;
     focusWithoutInk(
-        assert(this.shadowRoot.querySelector('#enablePinAutoSubmit')));
+        castExists(this.shadowRoot!.querySelector('#enablePinAutoSubmit')));
   }
 
-  /** @private */
-  onRecoveryDialogClose_() {
+  private onRecoveryDialogClose_(): void {
     this.showDisableRecoveryDialog_ = false;
     this.recoveryChangeInProcess_ = false;
-    focusWithoutInk(assert(this.shadowRoot.querySelector('#recoveryToggle')));
+    focusWithoutInk(
+        castExists(this.shadowRoot!.querySelector('#recoveryToggle')));
   }
 
   /**
-   * Returns true if the setup pin section should be shown.
-   * @param {!string} selectedUnlockType The current unlock type. Used to let
+   * @param selectedUnlockType the current unlock type. Used to let
    *     Polymer know about the dependency.
-   * @private
+   * @return true if the setup pin section should be shown.
    */
-  showConfigurePinButton_(selectedUnlockType) {
+  private showConfigurePinButton_(selectedUnlockType: string): boolean {
     return selectedUnlockType === LockScreenUnlockType.PIN_PASSWORD;
   }
 
-  /**
-   * @param {boolean} hasPin
-   * @private
-   */
-  getSetupPinText_(hasPin) {
+  private getSetupPinText_(hasPin: boolean): string {
     if (hasPin) {
       return this.i18n('lockScreenChangePinButton');
     }
     return this.i18n('lockScreenSetupPinButton');
   }
 
-  /** @private */
-  updateNumFingerprintsDescription_() {
+  private updateNumFingerprintsDescription_(): void {
     if (this.numFingerprints_ === 0) {
       this.numFingerprintDescription_ =
           this.i18n('lockScreenEditFingerprintsDescription');
@@ -495,16 +451,14 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     }
   }
 
-  /** @private */
-  onEditFingerprints_() {
+  private onEditFingerprints_(): void {
     Router.getInstance().navigateTo(routes.FINGERPRINT);
   }
 
   /**
-   * @return {boolean} Whether an event was fired to show the password dialog.
-   * @private
+   * @return whether an event was fired to show the password dialog.
    */
-  requestPasswordIfApplicable_() {
+  private requestPasswordIfApplicable_(): boolean {
     const currentRoute = Router.getInstance().getCurrentRoute();
     if (currentRoute === routes.LOCK_SCREEN && !this.setModes) {
       const event = new CustomEvent(
@@ -515,8 +469,7 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     return false;
   }
 
-  /** @private */
-  updateNumFingerprints_() {
+  private updateNumFingerprints_(): void {
     if (this.fingerprintUnlockEnabled_ && this.fingerprintBrowserProxy_) {
       this.fingerprintBrowserProxy_.getNumFingerprints().then(
           numFingerprints => {
@@ -527,10 +480,8 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
 
   /**
    * Looks up the translation id, which depends on PIN login support.
-   * @param {boolean} hasPinLogin
-   * @private
    */
-  selectLockScreenOptionsString(hasPinLogin) {
+  private selectLockScreenOptionsString(hasPinLogin: boolean): string {
     if (hasPinLogin) {
       return this.i18n('lockScreenOptionsLoginLock');
     }
@@ -539,10 +490,8 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
 
   /**
    * Called by chrome when the state of an auth factor changes.
-   * @param {!AuthFactor} factor
-   * @private
    * */
-  onFactorChanged(factor) {
+  onFactorChanged(factor: AuthFactor): void {
     switch (factor) {
       case AuthFactor.kRecovery:
         this.updateRecoveryState_(this.authToken);
@@ -556,12 +505,10 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
    * Fetches state of an auth factor from the backend. Returns a |PrefObject|
    * suitable for use with a boolean toggle, or |null| if the auth factor is
    * not available.
-   * @private
-   * @param {!AuthFactor} authFactor
-   * @return {!Promise<?chrome.settingsPrivate.PrefObject>}
    */
-  async fetchFactorState_(authFactor) {
-    const token = this.authToken.token;
+  private async fetchFactorState_(authFactor: AuthFactor):
+      Promise<chrome.settingsPrivate.PrefObject|null> {
+    const token = this.authToken!.token;
 
     const {supported} =
         await this.authFactorConfig.isSupported(token, authFactor);
@@ -576,7 +523,7 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       this.authFactorConfig.isEditable(token, authFactor),
     ]);
 
-    const state = {
+    const state: chrome.settingsPrivate.PrefObject<boolean> = {
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: configured,
       key: '',
@@ -584,10 +531,10 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
 
     if (management !== ManagementType.kNone) {
       if (management === ManagementType.kDevice) {
-        state.managed = chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
+        state.controlledBy = chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
       } else {
         assert(management === ManagementType.kUser, 'Invalid management type');
-        state.managed = chrome.settingsPrivate.ControlledBy.USER_POLICY;
+        state.controlledBy = chrome.settingsPrivate.ControlledBy.USER_POLICY;
       }
 
       if (editable) {
@@ -603,14 +550,14 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   /**
    * Fetches the state of the recovery factor and updates the corresponding
    * property.
-   * @private
-   * @param {!chrome.quickUnlockPrivate.TokenInfo|undefined} authToken
    */
-  async updateRecoveryState_(authToken) {
+  private async updateRecoveryState_(authToken:
+                                         chrome.quickUnlockPrivate.TokenInfo|
+                                     undefined): Promise<void> {
     if (!authToken) {
       return;
     }
-    assert(authToken.token === this.authToken.token);
+    assert(authToken.token === this.authToken!.token);
     this.recovery_ = await this.fetchFactorState_(AuthFactor.kRecovery);
   }
 
@@ -618,8 +565,8 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
    * Called when the user flips the recovery toggle.
    * @private
    */
-  async onRecoveryChange_(event) {
-    const target = /** @type {!SettingsToggleButtonElement} */ (event.target);
+  private async onRecoveryChange_(event: Event): Promise<void> {
+    const target = event.target as SettingsToggleButtonElement;
     // Reset checkbox to its previous state and disable it. If we succeed to
     // enable/disable recovery, this is updated automatically because the
     // pref value changes.
@@ -655,6 +602,12 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     } finally {
       this.recoveryChangeInProcess_ = false;
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsLockScreenElement.is]: SettingsLockScreenElement;
   }
 }
 

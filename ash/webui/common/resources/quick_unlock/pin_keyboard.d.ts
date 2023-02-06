@@ -4,12 +4,16 @@
 
 import {LegacyElementMixin} from '//resources/polymer/v3_0/polymer/lib/legacy/legacy-element-mixin.js';
 
-interface PinKeyboardElement extends LegacyElementMixin, HTMLElement {}
+interface PinKeyboardElement extends LegacyElementMixin, HTMLElement {
+  focusInput(start?: number, end?: number): void;
+  doSubmit(): void;
+  resetState(): void;
+}
 
 export {PinKeyboardElement};
 
 declare global {
   interface HTMLElementTagNameMap {
-    'bluetooth-dialog': PinKeyboardElement;
+    'pin-keyboard': PinKeyboardElement;
   }
 }
