@@ -7,12 +7,12 @@
  * @suppress {checkTypes} closure can't recognize LitElement
  */
 
-import {classMap} from 'chrome://resources/mwc/lit/directives/class-map.js';
-import {ifDefined} from 'chrome://resources/mwc/lit/directives/if-defined.js';
-import {repeat} from 'chrome://resources/mwc/lit/directives/repeat.js';
-import {styleMap} from 'chrome://resources/mwc/lit/directives/style-map.js';
 import {css, CSSResult, CSSResultGroup, html, LitElement, nothing, PropertyValues, svg} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators';
+import {classMap} from 'lit/directives/class-map.js';
+import {ifDefined} from 'lit/directives/if-defined.js';
+import {repeat} from 'lit/directives/repeat.js';
+import {styleMap} from 'lit/directives/style-map.js';
 
 export {
   classMap,
