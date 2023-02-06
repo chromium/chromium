@@ -380,29 +380,31 @@ public class RequestDesktopUtils {
             return false;
         }
 
-        // TODO(shuyng): Add downgrade path support for smallestScreenWidthDp or displaySizeInInches
-        //  change.
         // If the smallest screen size in dp is below threshold, avoid default-enabling the setting.
         if (context.getResources().getConfiguration().smallestScreenWidthDp
                 < ChromeFeatureList.getFieldTrialParamByFeatureAsInt(feature,
                         PARAM_GLOBAL_SETTING_DEFAULT_ON_SMALLEST_SCREEN_WIDTH,
                         DEFAULT_GLOBAL_SETTING_DEFAULT_ON_SMALLEST_SCREEN_WIDTH_THRESHOLD_DP)) {
+            updateNoLongerInCohort();
+            return false;
+        }
+
+        double screenSizeThreshold = ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(feature,
+                PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
+                DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES);
+        if (displaySizeInInches < screenSizeThreshold) {
+            updateNoLongerInCohort();
             return false;
         }
 
         SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
-
         boolean previouslyDefaultEnabled = sharedPreferencesManager.readBoolean(
                 ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING, false);
         boolean previouslyUpdatedByUser = sharedPreferencesManager.contains(
                 SingleCategorySettingsConstants
                         .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY);
 
-        double screenSizeThreshold = ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(feature,
-                PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
-                DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES);
-
-        boolean inCohort = !previouslyUpdatedByUser && displaySizeInInches >= screenSizeThreshold;
+        boolean inCohort = !previouslyUpdatedByUser;
         boolean wouldEnable = !previouslyDefaultEnabled && inCohort;
         if (wouldEnable) {
             // Store a SharedPreferences key to tag the device as qualified for the feature
