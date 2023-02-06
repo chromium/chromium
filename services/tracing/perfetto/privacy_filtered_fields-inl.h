@@ -555,9 +555,9 @@ constexpr MessageInfo kTriggerRule = {kTriggerRuleIndices,
                                       kTriggerRuleComplexMessages};
 
 // Proto Message: TraceMetadata
-constexpr int kTraceMetadataIndices[] = {1, 2, -1};
-constexpr MessageInfo const* kTraceMetadataComplexMessages[] = {&kTriggerRule,
-                                                                &kTriggerRule};
+constexpr int kTraceMetadataIndices[] = {1, 2, 3, -1};
+constexpr MessageInfo const* kTraceMetadataComplexMessages[] = {
+    &kTriggerRule, &kTriggerRule, nullptr};
 constexpr MessageInfo kTraceMetadata = {kTraceMetadataIndices,
                                         kTraceMetadataComplexMessages};
 
