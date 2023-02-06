@@ -520,7 +520,7 @@ void RetroactivePairingDetectorImpl::
     }
   }
 
-  for (std::string device_address : devices_to_remove) {
+  for (const std::string& device_address : devices_to_remove) {
     QP_LOG(VERBOSE) << __func__ << ": Removing device at " << device_address
                     << "that has exceeded the time allotted for detecting "
                        "retroactive scenario.";
