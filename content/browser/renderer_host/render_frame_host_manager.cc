@@ -913,6 +913,9 @@ void RenderFrameHostManager::UnloadOldFrame(
     BackForwardCacheImpl& back_forward_cache =
         GetNavigationController().GetBackForwardCache();
 
+    // The result of this eligibility check will only include sticky reasons.
+    // Non-sticky reasons will be checked later and if any, the page will be
+    // evicted from BFCache.
     BackForwardCacheCanStoreDocumentResultWithTree bfcache_eligibility =
         back_forward_cache.GetCurrentBackForwardCacheEligibility(
             old_render_frame_host.get());
@@ -933,8 +936,17 @@ void RenderFrameHostManager::UnloadOldFrame(
     }
 
     if (old_page_back_forward_cache_metrics) {
+      // Reasons set in the metrics object will be used for DevTools and
+      // NotRestoredReasons API. We should include non-sticky reasons as well
+      // here for better debugging, though non-sticky features might get cleaned
+      // in pagehide handlers.
+      BackForwardCacheCanStoreDocumentResultWithTree
+          eligibility_including_non_sticky =
+              back_forward_cache
+                  .GetCompleteBackForwardCacheEligibilityForReporting(
+                      old_render_frame_host.get());
       old_page_back_forward_cache_metrics->SetNotRestoredReasons(
-          bfcache_eligibility);
+          eligibility_including_non_sticky);
     }
   }
 
@@ -2108,14 +2120,21 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
         same_site ? ShouldSwapBrowsingInstance::kYes_SameSiteProactiveSwap
                   : ShouldSwapBrowsingInstance::kYes_CrossSiteProactiveSwap);
   } else {
-    // As GetFutureBackForwardCacheEligibilityPotential is used instead of
-    // GetCurrentBackForwardCacheEligibility, non- sticky reasons are not
-    // recorded here. This is intentional because it is impossible to get
-    // correct non-sticky reasons at this timing.
     BackForwardCacheMetrics* back_forward_cache_metrics =
         render_frame_host_->GetBackForwardCacheMetrics();
     if (back_forward_cache_metrics) {
-      back_forward_cache_metrics->SetNotRestoredReasons(bfcache_eligibility);
+      // Reasons set in the metrics object will be used for DevTools and
+      // NotRestoredReasons API. We should include non-sticky reasons as well
+      // here for better debugging, though non-sticky features might get cleaned
+      // in pagehide handlers.
+      BackForwardCacheCanStoreDocumentResultWithTree
+          eligibility_including_non_sticky =
+              GetNavigationController()
+                  .GetBackForwardCache()
+                  .GetCompleteBackForwardCacheEligibilityForReporting(
+                      render_frame_host_.get());
+      back_forward_cache_metrics->SetNotRestoredReasons(
+          eligibility_including_non_sticky);
     }
     return BrowsingContextGroupSwap::CreateNoSwap(
         ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache);

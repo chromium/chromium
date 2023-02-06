@@ -1801,11 +1801,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 4) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
 
-  // Only sticky features are recorded because they're tracked in
-  // RenderFrameHostManager::UnloadOldFrame.
-  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
-                    {blink::scheduler::WebSchedulerTrackedFeature::kDummy}, {},
-                    {}, {}, FROM_HERE);
+  // Both sticky and non-sticky features are recorded.
+  ExpectNotRestored(
+      {NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kDummy,
+       blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel},
+      {}, {}, {}, FROM_HERE);
 }
 
 // Tests which blocklisted features are tracked in the metrics when we used
@@ -1843,13 +1844,13 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   if (AreStrictSiteInstancesEnabled()) {
-    // Only sticky features are recorded because they're tracked in
-    // RenderFrameHostManager::UnloadOldFrame.
+    // Both sticky and non-sticky features are recorded.
     ExpectNotRestored(
         {NotRestoredReason::kRelatedActiveContentsExist,
          NotRestoredReason::kBlocklistedFeatures,
          NotRestoredReason::kBrowsingInstanceNotSwapped},
-        {blink::scheduler::WebSchedulerTrackedFeature::kDummy},
+        {blink::scheduler::WebSchedulerTrackedFeature::kDummy,
+         blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel},
         {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {}, {},
         FROM_HERE);
 
@@ -1865,13 +1866,13 @@ IN_PROC_BROWSER_TEST_F(
         ShouldSwapBrowsingInstance::kNo_AlreadyHasMatchingBrowsingInstance,
         FROM_HERE);
   } else {
-    // Non-sticky reasons are not recorded here.
     ExpectNotRestored(
         {
             NotRestoredReason::kBlocklistedFeatures,
             NotRestoredReason::kBrowsingInstanceNotSwapped,
         },
-        {blink::scheduler::WebSchedulerTrackedFeature::kDummy},
+        {blink::scheduler::WebSchedulerTrackedFeature::kDummy,
+         blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel},
         {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {}, {},
         FROM_HERE);
   }
@@ -1912,13 +1913,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 4) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
 
-  // Non-sticky reasons are not recorded here.
+  // Both sticky and non-sticky reasons are recorded here.
   ExpectNotRestored(
       {
           NotRestoredReason::kBlocklistedFeatures,
           NotRestoredReason::kBrowsingInstanceNotSwapped,
       },
-      {blink::scheduler::WebSchedulerTrackedFeature::kDummy},
+      {blink::scheduler::WebSchedulerTrackedFeature::kDummy,
+       blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel},
       {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {}, {},
       FROM_HERE);
   // NotRestoredReason tree should match the flattened list.
@@ -1928,7 +1930,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
           NotRestoredReasons(NotRestoredReason::kBlocklistedFeatures,
                              NotRestoredReason::kBrowsingInstanceNotSwapped),
           BlockListedFeatures(
-              blink::scheduler::WebSchedulerTrackedFeature::kDummy)));
+              blink::scheduler::WebSchedulerTrackedFeature::kDummy,
+              blink::scheduler::WebSchedulerTrackedFeature::
+                  kBroadcastChannel)));
 }
 
 // Tests which blocklisted features are tracked in the metrics when we used a

@@ -80,6 +80,8 @@ struct CONTENT_EXPORT BackForwardCacheCanStoreDocumentResultWithTree {
   BackForwardCacheCanStoreDocumentResultWithTree(
       BackForwardCacheCanStoreDocumentResult& flattened_reasons,
       std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree_reasons);
+  BackForwardCacheCanStoreDocumentResultWithTree(
+      BackForwardCacheCanStoreDocumentResultWithTree&& other);
   ~BackForwardCacheCanStoreDocumentResultWithTree();
 
   BackForwardCacheCanStoreDocumentResult flattened_reasons;
@@ -232,13 +234,18 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // of blocklisted features, pending navigations, load state, etc.) anymore.
   // Note that criteria for storing and restoring can be different, i.e.
   // |CanStore()| and |CanRestore()| might give different results.
+  // Note that the returned result will not include non-sticky features if the
+  // browser has not received an IPC ACK from the renderer. See also the
+  // comments for |RequestedFeatures|. If you always want to include non-sticky
+  // features, use GetCompleteBackForwardCacheEligibilityForReporting() instead.
   BackForwardCacheCanStoreDocumentResultWithTree
   GetCurrentBackForwardCacheEligibility(RenderFrameHostImpl* render_frame_host);
 
   // Whether a RenderFrameHost could be stored into the BackForwardCache at some
   // point in the future. Different than GetCurrentBackForwardCacheEligibility()
-  // above, we won't check for properties of |render_frame_host| that might
-  // change in the future such as usage of certain APIs, loading state,
+  // above and GetCompleteBackForwardCacheEligibilityForReporting() below, we
+  // won't check for properties of |render_frame_host| that might change in the
+  // future such as usage of certain APIs (non-sticky features), loading state,
   // existence of pending navigation requests, etc. This should be treated as a
   // "best guess" on whether a page still has a chance to be stored in the
   // back-forward cache later on, and should not be used as a final check before
@@ -246,6 +253,16 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // GetCurrentBackForwardCacheEligibility() instead).
   BackForwardCacheCanStoreDocumentResultWithTree
   GetFutureBackForwardCacheEligibilityPotential(
+      RenderFrameHostImpl* render_frame_host);
+
+  // This will return all the reasons present at the point of calling that could
+  // block back/forward cache, including both sticky and non-sticky features,
+  // regardless of the IPC ack status (unlike
+  // GetCurrentBackForwardCacheEligibility()). Note that non-sticky features
+  // might get cleaned in pagehide handlers and might not block back/forward
+  // cache, and this result will include them anyway.
+  BackForwardCacheCanStoreDocumentResultWithTree
+  GetCompleteBackForwardCacheEligibilityForReporting(
       RenderFrameHostImpl* render_frame_host);
 
   // Moves the specified BackForwardCache entry into the BackForwardCache. It
@@ -386,15 +403,29 @@ class CONTENT_EXPORT BackForwardCacheImpl
       BackForwardCacheCanStoreDocumentResult& result,
       RenderFrameHostImpl* render_frame_host);
 
+  // This enum indicates what features to include when recording
+  // NotRestoredReasons.
+  enum RequestedFeatures {
+    // Report only sticky reasons.
+    kOnlySticky,
+    // If the entry has received an IPC ack from the renderer, report all the
+    // reasons. Otherwise only include sticky features, because non-sticky
+    // features might be removed by the renderer when the browser signals it is
+    // about to put the page into BFCache.
+    kAllIfAcked,
+    // Regardless of the ack status, report all the reasons.
+    kAll,
+  };
+
   // Populates the reasons why this |rfh| and its subframes cannot enter the
   // back/forward cache in a flat list through |flattened_result| and as a tree
   // through its return value.
-  // |include_non_sticky| controls whether we include non-sticky reasons in the
+  // |requested_features| controls whether we include non-sticky reasons in the
   // result.
-  std::unique_ptr<BackForwardCacheCanStoreTreeResult> PopulateReasonsForPage(
+  BackForwardCacheCanStoreDocumentResultWithTree PopulateReasonsForPage(
       RenderFrameHostImpl* rfh,
       BackForwardCacheCanStoreDocumentResult& flattened_result,
-      bool include_non_sticky);
+      RequestedFeatures requested_features);
 
   // Updates the result to include CacheControlNoStore reasons if the flag is
   // on.
@@ -429,7 +460,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // get restored from back/forward cache unless cookies change.
   static bool AllowStoringPagesWithCacheControlNoStore();
 
-  enum RequestedFeatures { kAll, kOnlySticky };
   static BlockListedFeatures GetAllowedFeatures(
       RequestedFeatures requested_features);
   static BlockListedFeatures GetDisallowedFeatures(
@@ -488,7 +518,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
     // |root_rfh| represents the root document of the page. |include_non_sticky|
     // controls whether or not we should record non-sticky reasons in the tree.
     NotRestoredReasonBuilder(RenderFrameHostImpl* root_rfh,
-                             bool include_non_sticky);
+                             RequestedFeatures requested_features);
 
     // Struct for containing the RenderFrameHostImpl that is going to be
     // evicted if applicable. |reasons| represent why |rfh_to_be_evicted| will
@@ -502,7 +532,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
     };
 
     NotRestoredReasonBuilder(RenderFrameHostImpl* root_rfh,
-                             bool include_non_sticky,
+                             RequestedFeatures requested_features,
                              absl::optional<EvictionInfo> eviction_info);
 
     ~NotRestoredReasonBuilder();
@@ -522,7 +552,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
     void PopulateReasonsForDocument(
         BackForwardCacheCanStoreDocumentResult& result,
         RenderFrameHostImpl* rfh,
-        bool include_non_sticky);
+        RequestedFeatures requested_features);
 
     // Populates the sticky reasons for `rfh` without recursing into subframes.
     // Sticky features can't be unregistered and remain active for the rest of
@@ -536,7 +566,8 @@ class CONTENT_EXPORT BackForwardCacheImpl
     // such as when the page releases blocking resources in pagehide.
     void PopulateNonStickyReasonsForDocument(
         BackForwardCacheCanStoreDocumentResult& result,
-        RenderFrameHostImpl* rfh);
+        RenderFrameHostImpl* rfh,
+        RequestedFeatures requested_features);
 
    private:
     // Populate NotRestoredReasons for the `rfh` by
@@ -554,9 +585,8 @@ class CONTENT_EXPORT BackForwardCacheImpl
     BackForwardCacheCanStoreDocumentResult flattened_result_;
     // Tree result of NotRestoredReasons. This is populated in the constructor.
     std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree_result_;
-    // If true, check both non-sticky reasons and sticky reasons. If false,
-    // check only sticky reasons.
-    const bool include_non_sticky_;
+    // See |RequestedFeatures|.
+    const RequestedFeatures requested_features_;
     // Contains the information of the RenderFrameHost that causes eviction, if
     // applicable. If set, the result returned by the builder will only contain
     // the NotRestoredReason for the RenderFrameHost that causes eviction
