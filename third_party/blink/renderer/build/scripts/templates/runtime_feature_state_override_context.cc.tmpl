@@ -8,6 +8,7 @@
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
@@ -59,6 +60,10 @@ void RuntimeFeatureStateOverrideContext::
 
 bool RuntimeFeatureStateOverrideContext::
     Set{{feature.name}}Enabled(const WTF::Vector<WTF::String>& tokens) {
+{% if (feature.name)|string == 'DisableThirdPartyStoragePartitioning' %}
+  UseCounter::Count(execution_context_,
+                          WebFeature::kDisableThirdPartyStoragePartitioning);
+{% endif %}
   // Origin Trial feature values should not override any sent from
   // the browser, so we only add a value if has not already been set
   // in the override_values_ map. Return whether the override was
