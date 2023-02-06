@@ -68,6 +68,7 @@ class SERVICES_DEVICE_FINGERPRINT_EXPORT FingerprintChromeOS
 
   // ash::BiodClient::Observer:
   void BiodServiceRestarted() override;
+  void BiodServiceStatusChanged(biod::BiometricsManagerStatus status) override;
   void BiodEnrollScanDoneReceived(biod::ScanResult scan_result,
                                   bool enroll_session_complete,
                                   int percent_complete) override;

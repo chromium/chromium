@@ -66,6 +66,14 @@ void FakeBiodClient::SendRestarted() {
     observer.BiodServiceRestarted();
 }
 
+void FakeBiodClient::SendStatusChanged(biod::BiometricsManagerStatus status) {
+  current_session_ = FingerprintSession::NONE;
+
+  for (auto& observer : observers_) {
+    observer.BiodServiceStatusChanged(status);
+  }
+}
+
 void FakeBiodClient::SendEnrollScanDone(const std::string& fingerprint,
                                         biod::ScanResult type_result,
                                         bool is_complete,

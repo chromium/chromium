@@ -105,6 +105,7 @@ class ASH_EXPORT AmbientController
       override;
   void OnSessionFailed() override {}
   void OnRestarted() override {}
+  void OnStatusChanged(device::mojom::BiometricsManagerStatus state) override {}
   void OnEnrollScanDone(device::mojom::ScanResult scan_result,
                         bool enroll_session_complete,
                         int percent_complete) override {}

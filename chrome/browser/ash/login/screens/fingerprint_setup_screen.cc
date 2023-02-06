@@ -176,6 +176,12 @@ void FingerprintSetupScreen::OnRestarted() {
   VLOG(1) << "Fingerprint session restarted.";
 }
 
+void FingerprintSetupScreen::OnStatusChanged(
+    device::mojom::BiometricsManagerStatus status) {
+  VLOG(1) << "Fingerprint status changed. New state="
+          << static_cast<int>(status);
+}
+
 void FingerprintSetupScreen::OnEnrollScanDone(
     device::mojom::ScanResult scan_result,
     bool enroll_session_complete,

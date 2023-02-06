@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "chromeos/ash/components/dbus/biod/constants.pb.h"
 #include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
 #include "chromeos/ash/components/dbus/biod/messages.pb.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
@@ -226,6 +227,14 @@ class BiodClientImpl : public BiodClient {
 
     biod_proxy_->ConnectToSignal(
         biod::kBiometricsManagerInterface,
+        biod::kBiometricsManagerStatusChangedSignal,
+        base::BindRepeating(&BiodClientImpl::OnStatusChanged,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&BiodClientImpl::OnSignalConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
+
+    biod_proxy_->ConnectToSignal(
+        biod::kBiometricsManagerInterface,
         biod::kBiometricsManagerEnrollScanDoneSignal,
         base::BindRepeating(&BiodClientImpl::EnrollScanDoneReceived,
                             weak_ptr_factory_.GetWeakPtr()),
@@ -340,6 +349,20 @@ class BiodClientImpl : public BiodClient {
     if (!new_owner.empty()) {
       for (auto& observer : observers_)
         observer.BiodServiceRestarted();
+    }
+  }
+
+  void OnStatusChanged(dbus::Signal* signal) {
+    current_enroll_session_path_.reset();
+    current_auth_session_path_.reset();
+
+    biod::BiometricsManagerStatusChanged proto;
+    dbus::MessageReader reader(signal);
+    CHECK(reader.PopArrayOfBytesAsProto(&proto));
+    biod::BiometricsManagerStatus status = proto.status();
+
+    for (auto& observer : observers_) {
+      observer.BiodServiceStatusChanged(status);
     }
   }
 

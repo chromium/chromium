@@ -93,6 +93,7 @@ class FingerprintStorage final
 
   // device::mojom::FingerprintObserver:
   void OnRestarted() override;
+  void OnStatusChanged(device::mojom::BiometricsManagerStatus status) override;
   void OnEnrollScanDone(device::mojom::ScanResult scan_result,
                         bool is_complete,
                         int32_t percent_complete) override;

@@ -89,6 +89,16 @@ device::mojom::FingerprintError ToMojom(biod::FingerprintError type) {
   return device::mojom::FingerprintError::UNKNOWN;
 }
 
+device::mojom::BiometricsManagerStatus ToMojom(
+    biod::BiometricsManagerStatus status) {
+  switch (status) {
+    case biod::BiometricsManagerStatus::INITIALIZED:
+      return device::mojom::BiometricsManagerStatus::INITIALIZED;
+  }
+  NOTREACHED();
+  return device::mojom::BiometricsManagerStatus::UNKNOWN;
+}
+
 }  // namespace
 
 FingerprintChromeOS::FingerprintChromeOS() {
@@ -241,6 +251,14 @@ void FingerprintChromeOS::BiodServiceRestarted() {
   opened_session_ = FingerprintSession::NONE;
   for (auto& observer : observers_)
     observer->OnRestarted();
+}
+
+void FingerprintChromeOS::BiodServiceStatusChanged(
+    biod::BiometricsManagerStatus status) {
+  opened_session_ = FingerprintSession::NONE;
+  for (auto& observer : observers_) {
+    observer->OnStatusChanged(ToMojom(status));
+  }
 }
 
 void FingerprintChromeOS::BiodEnrollScanDoneReceived(

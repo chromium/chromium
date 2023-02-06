@@ -53,6 +53,7 @@ class UI_CHROMEOS_EXPORT UserActivityPowerManagerNotifier
       override;
   void OnSessionFailed() override;
   void OnRestarted() override;
+  void OnStatusChanged(device::mojom::BiometricsManagerStatus status) override;
   void OnEnrollScanDone(device::mojom::ScanResult scan_result,
                         bool enroll_session_complete,
                         int percent_complete) override;

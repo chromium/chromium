@@ -82,6 +82,9 @@ void UserActivityPowerManagerNotifier::OnSessionFailed() {}
 
 void UserActivityPowerManagerNotifier::OnRestarted() {}
 
+void UserActivityPowerManagerNotifier::OnStatusChanged(
+    device::mojom::BiometricsManagerStatus status) {}
+
 void UserActivityPowerManagerNotifier::OnEnrollScanDone(
     device::mojom::ScanResult scan_result,
     bool enroll_session_complete,

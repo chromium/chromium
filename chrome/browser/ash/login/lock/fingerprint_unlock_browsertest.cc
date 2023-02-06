@@ -290,6 +290,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, BiodFailsBeforeLockScreenReady) {
   // Simulate a biod late start, giving us fingerprint records.
   EnrollFingerprint();
   biod_->SendRestarted();
+  biod_->SendStatusChanged(biod::BiometricsManagerStatus::INITIALIZED);
   base::RunLoop().RunUntilIdle();
 
   FingerprintState state_after_getting_records =
@@ -367,6 +368,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintUnlockEnrollTest,
   // fingerprint records were previously recorded for this user.
   biod_->DestroyAllRecords(base::DoNothing());
   biod_->SendRestarted();
+  biod_->SendStatusChanged(biod::BiometricsManagerStatus::INITIALIZED);
   base::RunLoop().RunUntilIdle();
 
   FingerprintState state_after_bad_session =

@@ -110,6 +110,9 @@ void FingerprintHandler::OnJavascriptDisallowed() {
 
 void FingerprintHandler::OnRestarted() {}
 
+void FingerprintHandler::OnStatusChanged(
+    device::mojom::BiometricsManagerStatus status) {}
+
 void FingerprintHandler::OnEnrollScanDone(device::mojom::ScanResult scan_result,
                                           bool enroll_session_complete,
                                           int percent_complete) {

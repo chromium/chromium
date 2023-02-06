@@ -136,7 +136,19 @@ int FingerprintStorage::GetRecentUnlockAttemptCount(base::TimeTicks timestamp) {
 }
 
 void FingerprintStorage::OnRestarted() {
+  LOG(WARNING) << "Biod restarted";
   GetRecordsForUser();
+}
+
+void FingerprintStorage::OnStatusChanged(
+    device::mojom::BiometricsManagerStatus status) {
+  LOG(WARNING) << "Biod status changed";
+  if (status == device::mojom::BiometricsManagerStatus::INITIALIZED) {
+    GetRecordsForUser();
+  } else {
+    LOG(ERROR) << "FingerprintStorage StatusChanged to an unknown state"
+               << static_cast<int>(status);
+  }
 }
 
 void FingerprintStorage::OnEnrollScanDone(device::mojom::ScanResult scan_result,

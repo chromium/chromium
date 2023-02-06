@@ -41,6 +41,9 @@ class COMPONENT_EXPORT(BIOD_CLIENT) FakeBiodClient : public BiodClient {
   // Emulates biod service restarted.
   void SendRestarted();
 
+  // Emulates biod service status changed.
+  void SendStatusChanged(biod::BiometricsManagerStatus status);
+
   // Emulates a scan that occurs during enrolling a new fingerprint.
   // |fingerprint| is the fake data of the finger as a string. If |is_complete|
   // is true the enroll session is finished, and the record is stored.

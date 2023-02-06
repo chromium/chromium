@@ -65,6 +65,7 @@ class TestBiodObserver : public BiodClient::Observer {
 
   // BiodClient::Observer:
   void BiodServiceRestarted() override;
+  void BiodServiceStatusChanged(biod::BiometricsManagerStatus status) override;
   void BiodEnrollScanDoneReceived(biod::ScanResult scan_result,
                                   bool is_complete,
                                   int percent_complete) override;

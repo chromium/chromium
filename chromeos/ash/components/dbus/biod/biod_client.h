@@ -39,6 +39,10 @@ class COMPONENT_EXPORT(BIOD_CLIENT) BiodClient {
     // Called when biometrics manager powers up or is restarted.
     virtual void BiodServiceRestarted() {}
 
+    // Called when biometrics manager status changed: e.g initialized.
+    virtual void BiodServiceStatusChanged(
+        biod::BiometricsManagerStatus status) {}
+
     // Called whenever a user attempts a scan during enrollment. |scan_result|
     // tells whether the scan was succesful. |enroll_session_complete| tells
     // whether enroll session is complete and is now over.

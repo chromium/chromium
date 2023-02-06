@@ -56,12 +56,23 @@ union FingerprintMessage {
   ScanResult scan_result;
 };
 
+// Note: this needs to stay in sync with
+// src/platform2/system_api/dbus/biod/constants.proto in the ChromeOS repo.
+enum BiometricsManagerStatus {
+  UNKNOWN = 0,
+  INITIALIZED = 1,
+};
+
 // This interface is ChromeOS-specific. If it is ever desired to support a more
 // general fingerprint service across more platforms, the interface would need
 // to be generalized. Interface for observing fingerprint daemon signals.
 interface FingerprintObserver {
-  // Called when biometics device powers up or is restarted.
+  // Called when biometrics device powers up or is restarted.
   OnRestarted();
+
+  // Called when BiometricsManager Status changed.
+  // e.g Primary profile initialized.
+  OnStatusChanged(BiometricsManagerStatus status);
 
   // Called whenever a user attempts a scan. |scan_result| tells whether the
   // scan was successful. |is_complete| tells whether record is complete and now

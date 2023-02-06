@@ -56,6 +56,9 @@ void TestBiodObserver::ResetAllCounts() {
 
 void TestBiodObserver::BiodServiceRestarted() {}
 
+void TestBiodObserver::BiodServiceStatusChanged(
+    biod::BiometricsManagerStatus status) {}
+
 void TestBiodObserver::BiodEnrollScanDoneReceived(biod::ScanResult scan_result,
                                                   bool is_complete,
                                                   int percent_complete) {
