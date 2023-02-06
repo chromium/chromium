@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.ui.base.LocalizationUtils;
 
 /** Tests for {@link StripLayoutHelperManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -59,6 +60,10 @@ public class StripLayoutHelperManagerTest {
 
     private StripLayoutHelperManager mStripLayoutHelperManager;
     private Context mContext;
+    private static final float SCREEN_WIDTH = 800.f;
+    private static final float SCREEN_HEIGHT = 1600.f;
+    private static final float VISBLE_VIEWPORT_Y = 200.f;
+    private static final int ORIENTATION = 2;
 
     @Before
     public void beforeTest() {
@@ -95,5 +100,36 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.onContextChanged(mContext);
         assertEquals(ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_2),
                 mStripLayoutHelperManager.getBackgroundColor());
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testModelSelectorButtonPosition() {
+        // setup
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
+
+        // Set model selector button position.
+        mStripLayoutHelperManager.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, VISBLE_VIEWPORT_Y, ORIENTATION);
+
+        // Verify model selector button position.
+        assertEquals("Model selector button position is not as expected", 757.f,
+                mStripLayoutHelperManager.getModelSelectorButton().getX(), 0.0);
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testModelSelectorButtonPosition_RTL() {
+        // setup
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
+
+        // Set model selector button position.
+        LocalizationUtils.setRtlForTesting(true);
+        mStripLayoutHelperManager.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, VISBLE_VIEWPORT_Y, ORIENTATION);
+
+        // Verify model selector button position.
+        assertEquals("Model selector button position is not as expected", 5.f,
+                mStripLayoutHelperManager.getModelSelectorButton().getX(), 0.0);
     }
 }

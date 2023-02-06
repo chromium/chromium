@@ -82,6 +82,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_DETACHED = 38.f;
     private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP_DETACHED = 38.f;
     private static final float MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP = 12.f;
+    private static final float NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING = 8.f;
+    private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE = 48.f;
 
     // External influences
     private TabModelSelector mTabModelSelector;
@@ -459,11 +461,10 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         }
         if (!LocalizationUtils.isLayoutRtl()) {
             mModelSelectorButton.setX(
-                    mWidth - mModelSelectorWidth - MODEL_SELECTOR_BUTTON_PADDING_DP);
+                    mWidth - mModelSelectorWidth - getModelSelectorButtonWithTabStripEndPadding());
         } else {
-            mModelSelectorButton.setX(MODEL_SELECTOR_BUTTON_PADDING_DP);
+            mModelSelectorButton.setX(getModelSelectorButtonWithTabStripEndPadding());
         }
-
         updateStripScrim();
 
         mNormalHelper.onSizeChanged(mWidth, mHeight, orientationChanged, LayoutManagerImpl.time());
@@ -490,8 +491,20 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         mStripScrim.setX(drawX);
     }
 
+    private float getModelSelectorButtonWithTabStripEndPadding() {
+        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            return (BUTTON_DESIRED_TOUCH_TARGET_SIZE - mModelSelectorWidth) / 2;
+        } else {
+            return MODEL_SELECTOR_BUTTON_PADDING_DP;
+        }
+    }
+
     private float getModelSelectorButtonWidthWithPadding() {
-        return mModelSelectorWidth + (MODEL_SELECTOR_BUTTON_PADDING_DP * 2);
+        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            return mModelSelectorWidth + NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING;
+        } else {
+            return mModelSelectorWidth + (MODEL_SELECTOR_BUTTON_PADDING_DP * 2);
+        }
     }
 
     public TintedCompositorButton getNewTabButton() {
