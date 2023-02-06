@@ -14,7 +14,6 @@
 #include <utility>
 
 #include "ash/public/cpp/app_list/app_list_features.h"
-#include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -2449,27 +2448,6 @@ const FeatureEntry::FeatureVariation kBackForwardCacheVariations[] = {
     {"force caching all pages (experimental)", kBackForwardCache_ForceCaching,
      std::size(kBackForwardCache_ForceCaching), nullptr},
 };
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const FeatureEntry::Choice kEnableCrOSActionRecorderChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {ash::switches::kCrOSActionRecorderWithHash,
-     ash::switches::kEnableCrOSActionRecorder,
-     ash::switches::kCrOSActionRecorderWithHash},
-    {ash::switches::kCrOSActionRecorderWithoutHash,
-     ash::switches::kEnableCrOSActionRecorder,
-     ash::switches::kCrOSActionRecorderWithoutHash},
-    {ash::switches::kCrOSActionRecorderCopyToDownloadDir,
-     ash::switches::kEnableCrOSActionRecorder,
-     ash::switches::kCrOSActionRecorderCopyToDownloadDir},
-    {ash::switches::kCrOSActionRecorderDisabled,
-     ash::switches::kEnableCrOSActionRecorder,
-     ash::switches::kCrOSActionRecorderDisabled},
-    {ash::switches::kCrOSActionRecorderStructuredDisabled,
-     ash::switches::kEnableCrOSActionRecorder,
-     ash::switches::kCrOSActionRecorderStructuredDisabled},
-};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::Choice kWebOtpBackendChoices[] = {
@@ -7048,13 +7026,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kScreenTimeDescription, kOsMac,
      FEATURE_VALUE_TYPE(screentime::kScreenTime)},
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-cros-action-recorder",
-     flag_descriptions::kEnableCrOSActionRecorderName,
-     flag_descriptions::kEnableCrOSActionRecorderDescription, kOsCrOS,
-     MULTI_VALUE_TYPE(kEnableCrOSActionRecorderChoices)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"enable-heavy-ad-intervention",
      flag_descriptions::kHeavyAdInterventionName,

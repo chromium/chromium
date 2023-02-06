@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/public/cpp/app_list/app_list_switches.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"

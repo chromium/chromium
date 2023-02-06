@@ -193,10 +193,6 @@
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/app_list/search/cros_action_history/cros_action_recorder_tab_tracker.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/web_contents_can_go_back_observer.h"
 #endif
@@ -525,7 +521,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  app_list::CrOSActionRecorderTabTracker::CreateForWebContents(web_contents);
   GoogleOneOfferIphTabHelper::CreateForWebContents(web_contents);
 #endif
 

@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/app_sync_ui_state_watcher.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ash/app_list/search/cros_action_history/cros_action_recorder.h"
 #include "chrome/browser/ash/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/search_controller_factory.h"
@@ -406,11 +405,7 @@ void AppListClientImpl::OnSearchResultVisibilityChanged(const std::string& id,
 
 void AppListClientImpl::OnQuickSettingsChanged(
     const std::string& setting_name,
-    const std::map<std::string, int>& values) {
-  // CrOS action recorder.
-  app_list::CrOSActionRecorder::GetCrosActionRecorder()->RecordAction(
-      {base::StrCat({"SettingsChanged-", setting_name})}, values);
-}
+    const std::map<std::string, int>& values) {}
 
 void AppListClientImpl::ActiveUserChanged(user_manager::User* active_user) {
   if (user_manager::UserManager::Get()->IsCurrentUserNew()) {

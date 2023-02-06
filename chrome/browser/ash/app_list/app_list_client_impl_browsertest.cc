@@ -10,7 +10,6 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
-#include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"

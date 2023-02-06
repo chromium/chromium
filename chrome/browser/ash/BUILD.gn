@@ -4748,8 +4748,6 @@ source_set("unit_tests") {
     "app_list/search/chrome_search_result_unittest.cc",
     "app_list/search/common/keyword_util_unittest.cc",
     "app_list/search/common/string_util_unittest.cc",
-    "app_list/search/cros_action_history/cros_action_recorder_tab_tracker_unittest.cc",
-    "app_list/search/cros_action_history/cros_action_recorder_unittest.cc",
     "app_list/search/files/file_result_unittest.cc",
     "app_list/search/files/file_search_provider_unittest.cc",
     "app_list/search/files/justifications_unittest.cc",

@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/app_list/search/app_search_data_source.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/common/string_util.h"
-#include "chrome/browser/ash/app_list/search/cros_action_history/cros_action_recorder.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ash/app_list/search/ranking/sorting.h"
 #include "chrome/browser/ash/app_list/search/search_metrics_manager.h"
@@ -369,12 +368,6 @@ void SearchController::Train(LaunchData&& launch_data) {
 
   profile_->GetPrefs()->SetBoolean(ash::prefs::kLauncherResultEverLaunched,
                                    true);
-
-  // CrOS action recorder.
-  CrOSActionRecorder::GetCrosActionRecorder()->RecordAction(
-      {base::StrCat({"SearchResultLaunched-", NormalizeId(launch_data.id)})},
-      {{"ResultType", static_cast<int>(launch_data.result_type)},
-       {"Query", static_cast<int>(base::HashMetricName(query))}});
 
   // Train all search result ranking models.
   ranker_manager_->Train(launch_data);

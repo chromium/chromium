@@ -55,8 +55,6 @@ component("cpp") {
     "app_list/app_list_metrics.h",
     "app_list/app_list_model_delegate.h",
     "app_list/app_list_notifier.h",
-    "app_list/app_list_switches.cc",
-    "app_list/app_list_switches.h",
     "app_list/app_list_types.cc",
     "app_list/app_list_types.h",
     "app_list/internal_app_id_constants.h",

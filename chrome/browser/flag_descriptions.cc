@@ -5143,12 +5143,6 @@ const char kEnhancedClipboardNudgeSessionResetDescription[] =
     "When enabled, this will reset the clipboard nudge shown data on every new "
     "user session, allowing the nudge to be shown again.";
 
-const char kEnableCrOSActionRecorderName[] = "Enable CrOS action recorder";
-const char kEnableCrOSActionRecorderDescription[] =
-    "When enabled, each app launching, file opening, setting change, and url "
-    "visiting will be logged locally into an encrypted file. Should not be "
-    "enabled. Be aware that hash option only provides a thin layer of privacy.";
-
 const char kDisableDnsProxyName[] = "Disable DNS proxy service for ChromeOS";
 const char kDisableDnsProxyDescription[] =
     "Turns off DNS proxying and SecureDNS for ChromeOS (only). Does not impact "
