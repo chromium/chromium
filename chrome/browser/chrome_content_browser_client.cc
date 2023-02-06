@@ -39,7 +39,6 @@
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/after_startup_task_utils.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate_impl_client.h"
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/browser_features.h"
@@ -385,6 +384,7 @@
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_backend_delegate.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_backend_delegate.h"
 #include "chrome/browser/ash/chrome_browser_main_parts_ash.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/drive/fileapi/drivefs_file_system_backend_delegate.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_system_provider/fileapi/backend_delegate.h"
@@ -7383,7 +7383,7 @@ bool ChromeContentBrowserClient::OpenExternally(
         std::make_unique<apps::WindowInfo>(display_id));
     return true;
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return false;
 }
