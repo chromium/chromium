@@ -4,6 +4,13 @@
 
 import("//build/config/ui.gni")
 
+source_set("common") {
+  sources = [
+    "common/switches.cc",
+    "common/switches.h",
+  ]
+}
+
 static_library("client") {
   output_name = "demo_client"
 
@@ -28,6 +35,7 @@ static_library("host") {
 
   deps = [
     ":client",
+    ":common",
     "//components/viz/common",
     "//components/viz/host",
     "//mojo/public/cpp/system",
@@ -43,10 +51,14 @@ static_library("service") {
   ]
 
   deps = [
+    ":common",
     "//components/viz/common",
+    "//components/viz/service",
     "//components/viz/service/main",
+    "//gpu/ipc/host:host",
     "//mojo/public/cpp/system",
     "//services/viz/privileged/mojom",
+    "//services/viz/privileged/mojom/gl",
   ]
 }
 
@@ -54,6 +66,7 @@ executable("viz_demo") {
   sources = [ "demo_main.cc" ]
 
   deps = [
+    ":common",
     "//base",
     "//base:base_static",
     "//base:i18n",

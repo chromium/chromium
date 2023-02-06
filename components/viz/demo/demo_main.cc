@@ -14,6 +14,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "components/viz/demo/common/switches.h"
 #include "components/viz/demo/host/demo_host.h"
 #include "components/viz/demo/service/demo_service.h"
 #include "mojo/core/embedder/embedder.h"
@@ -21,6 +22,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/events/platform/platform_event_source.h"
+#include "ui/gl/init/gl_factory.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -227,9 +229,13 @@ int main(int argc, char** argv) {
   InitUI ui;
 
 #if BUILDFLAG(IS_OZONE)
+  const bool use_gpu = command_line.HasSwitch(switches::kVizDemoUseGPU);
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
   ui::OzonePlatform::InitializeForUI(params);
+  if (use_gpu) {
+    ui::OzonePlatform::InitializeForGPU(params);
+  }
 
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::UI;
@@ -243,7 +249,9 @@ int main(int argc, char** argv) {
   // To create dmabuf through gbm, Ozone needs to be set up.
   gpu_helper = std::make_unique<ui::OzoneGpuTestHelper>();
   gpu_helper->Initialize();
+  if (use_gpu) {
+    gl::init::InitializeGLOneOff(gl::GpuPreference::kDefault);
+  }
 #endif
-
   return DemoMain();
 }

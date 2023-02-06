@@ -6,10 +6,12 @@
 
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/viz/demo/client/demo_client.h"
+#include "components/viz/demo/common/switches.h"
 #include "components/viz/host/renderer_settings_creation.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
@@ -137,7 +139,10 @@ void DemoHost::Initialize(
   constexpr viz::FrameSinkId root_frame_sink_id(0xdead, 0xbeef);
   root_params->frame_sink_id = root_frame_sink_id;
   root_params->widget = widget_;
-  root_params->gpu_compositing = false;
+
+  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  root_params->gpu_compositing = cmd_line->HasSwitch(switches::kVizDemoUseGPU);
+
   root_params->renderer_settings = viz::CreateRendererSettings();
 
   host_frame_sink_manager_.RegisterFrameSinkId(

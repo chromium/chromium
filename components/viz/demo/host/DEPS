@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/viz/demo/common",
   "+components/viz/demo/client",
   "+components/viz/host",
   "+services/viz/privileged",
