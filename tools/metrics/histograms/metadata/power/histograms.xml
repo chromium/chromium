@@ -2107,6 +2107,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Power.PC10inS0ixRuntimeResidencyRate" units="%"
+    expires_after="2023-06-30">
+  <owner>skardach@google.com</owner>
+  <owner>svenva@google.com</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    Reports the time a Chrome OS device spends in the S0ix idle state while not
+    suspended (that is between system resume and suspend events) as a percentage
+    of the time spent in the Package C10 (PC10) idle state. Reported only if at
+    the time of measurement the time spent in PC10 is non-zero.
+
+    Data points for this metric are recorded on every resume and suspend event
+    and therefore the metric itself is reported on every suspend attempt,
+    starting from the second one.
+
+    Only available on Chrome OS devices with Intel CPU.
+  </summary>
+</histogram>
+
+<histogram name="Power.PC10RuntimeResidencyRate" units="%"
+    expires_after="2023-06-30">
+  <owner>skardach@google.com</owner>
+  <owner>svenva@google.com</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    Reports the time a Chrome OS device spends in the Package C10 (PC10) idle
+    state as a percentage of the time device is not suspended (that is between
+    system resume and suspend events). Reported even if the value is zero.
+
+    Data points for this metric are recorded on every resume and suspend event
+    and therefore the metric itself is reported on every suspend attempt,
+    starting from the second one.
+
+    Only available on Chrome OS devices with Intel CPU.
+  </summary>
+</histogram>
+
 <histogram name="Power.PowerButtonAcknowledgmentDelay" units="ms"
     expires_after="M100">
   <owner>puthik@chromium.org</owner>
