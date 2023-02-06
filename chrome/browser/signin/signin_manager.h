@@ -36,6 +36,7 @@ struct CoreAccountId;
 #endif
 
 class PrefService;
+class SigninClient;
 
 // See `SigninManager::CreateAccountSelectionInProgressHandle()`.
 class AccountSelectionInProgressHandle {
@@ -129,6 +130,7 @@ class SigninManager : public KeyedService,
 #endif
 
   raw_ptr<PrefService> prefs_;
+  const raw_ptr<SigninClient> signin_client_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
@@ -144,9 +146,6 @@ class SigninManager : public KeyedService,
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<SigninHelperLacros> signin_helper_lacros_;
-  // Whether this is the main profile for which the primary account is
-  // the account used to signin to the device aka initial primary account.
-  bool is_main_profile_ = false;
 #endif
 
   base::WeakPtrFactory<SigninManager> weak_ptr_factory_{this};
