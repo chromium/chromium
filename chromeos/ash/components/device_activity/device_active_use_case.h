@@ -180,6 +180,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   absl::optional<private_membership::rlwe::RlwePlaintextId>
   GeneratePsmIdentifier(absl::optional<std::string> window_id) const;
 
+  // Once the client has initiated churn_active_status object, then pass
+  // the reference to the churn use cases to get the churn active status.
+  void SetChurnActiveStatus(ChurnActiveStatus* churn_active_status);
+
+  // Uses the churn_active_status to get the device churn active status
+  // metadata.
+  ChurnActiveStatus* GetChurnActiveStatus();
+
  protected:
   // Retrieve full hardware class from MachineStatistics.
   // |DeviceActivityController| waits for object to finish loading, to avoid
@@ -194,14 +202,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
   // Retrieve the ChromeOS device market segment.
   MarketSegment GetMarketSegment() const;
-
-  // Once the client has initiated churn_active_status object, then pass
-  // the reference to the churn use cases to get the churn active status.
-  void SetChurnActiveStatus(ChurnActiveStatus* churn_active_status);
-
-  // Uses the churn_active_status to get the device churn active status
-  // metadata.
-  ChurnActiveStatus* GetChurnActiveStatus();
 
   // Retrieve |psm_device_active_secret_|.
   const std::string& GetPsmDeviceActiveSecret() const;
