@@ -32,6 +32,8 @@ class NativePixmapEGLX11Binding : public NativePixmapGLBinding {
       GLenum target,
       GLuint texture_id);
 
+  static bool CanImportNativeGLXPixmap();
+
   // NativePixmapGLBinding:
   GLuint GetInternalFormat() override;
   GLenum GetDataType() override;
