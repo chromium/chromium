@@ -1901,7 +1901,9 @@ public class TabPersistentStore {
      * @return Whether the specified filename matches the expected pattern of the tab state files.
      */
     public static boolean isStateFile(String fileName) {
-        return fileName.startsWith(SAVED_STATE_FILE_PREFIX);
+        // The .new suffix will be added internally by AtomicFile before the file finishes writing.
+        // Ignore files in this transitory state.
+        return fileName.startsWith(SAVED_STATE_FILE_PREFIX) && !fileName.endsWith(".new");
     }
 
     /**
