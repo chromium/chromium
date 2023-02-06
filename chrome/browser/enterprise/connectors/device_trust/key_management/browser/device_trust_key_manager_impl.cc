@@ -49,19 +49,28 @@ RotationStatusToPermanentFailure(KeyRotationCommand::Status status,
     return absl::nullopt;
   }
 
-  if (status == KeyRotationCommand::Status::FAILED_KEY_CONFLICT) {
-    // Hitting a conflict in a key creation flow means that the corresponding
-    // local key has been lost, and is therefore considered a permanent failure.
-    return DeviceTrustKeyManager::PermanentFailure::kCreationUploadConflict;
+  switch (status) {
+    case KeyRotationCommand::Status::FAILED_KEY_CONFLICT:
+      // Hitting a conflict in a key creation flow means that the corresponding
+      // local key has been lost, and is therefore considered a permanent
+      // failure.
+      return DeviceTrustKeyManager::PermanentFailure::kCreationUploadConflict;
+    case KeyRotationCommand::Status::FAILED_OS_RESTRICTION:
+      // The current OS doesn't allow support for Device Trust.
+      return DeviceTrustKeyManager::PermanentFailure::kOsRestriction;
+    case KeyRotationCommand::Status::FAILED_INVALID_PERMISSIONS:
+      // Something is wrong in the setup and the browser doesn't have sufficient
+      // privileges.
+      return DeviceTrustKeyManager::PermanentFailure::kInsufficientPermissions;
+    case KeyRotationCommand::Status::FAILED_INVALID_INSTALLATION:
+      // The current browser installation doesn't allow support for Device
+      // Trust.
+      return DeviceTrustKeyManager::PermanentFailure::kInvalidInstallation;
+    case KeyRotationCommand::Status::SUCCEEDED:
+    case KeyRotationCommand::Status::FAILED:
+    case KeyRotationCommand::Status::TIMED_OUT:
+      return absl::nullopt;
   }
-
-  if (status == KeyRotationCommand::Status::FAILED_INVALID_PERMISSIONS) {
-    // Something is wrong in the setup and the browser doesn't have sufficient
-    // privileges.
-    return DeviceTrustKeyManager::PermanentFailure::kInsufficientPermissions;
-  }
-
-  return absl::nullopt;
 }
 
 }  // namespace
