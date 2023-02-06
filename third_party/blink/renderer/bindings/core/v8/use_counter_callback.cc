@@ -389,7 +389,10 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kAsyncStackTaggingCreateTaskCall:
       blink_feature = WebFeature::kV8AsyncStackTaggingCreateTaskCall;
       break;
-
+    case v8::Isolate::kRegExpUnicodeSetIncompatibilitiesWithUnicodeMode:
+      blink_feature =
+          WebFeature::kV8RegExpUnicodeSetIncompatibilitiesWithUnicodeMode;
+      break;
     default:
       // This can happen if V8 has added counters that this version of Blink
       // does not know about. It's harmless.

@@ -42090,6 +42090,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4456" label="WebAppEnableScopeExtensions"/>
   <int value="4457"
       label="ServiceWorkerBypassFetchHandlerForMainResourceByOriginTrial"/>
+  <int value="4458" label="V8RegExpUnicodeSetIncompatibilitiesWithUnicodeMode"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
