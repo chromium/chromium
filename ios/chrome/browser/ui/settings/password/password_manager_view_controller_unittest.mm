@@ -543,8 +543,20 @@ TEST_F(PasswordManagerViewControllerTest,
   EXPECT_EQ(2,
             NumberOfItemsInSection(GetSectionIndex(SectionIdentifierBlocked)));
 
-  // Delete first affiliated group in Saved Passwords section.
+  // Expect password delete dialog and delete first affiliated group in Saved
+  // Passwords section.
+  OCMExpect([passwords_settings_commands_strict_mock_
+                showPasswordDeleteDialogWithOrigins:@[ @"example.com" ]
+                                         completion:[OCMArg isNotNil]])
+      .andDo(^(NSInvocation* invocation) {
+        [GetPasswordManagerViewController() deleteItemAtIndexPathsForTesting:@[
+          [NSIndexPath
+              indexPathForRow:0
+                    inSection:GetSectionIndex(SectionIdentifierSavedPasswords)]
+        ]];
+      });
   deleteItemAndWait(GetSectionIndex(SectionIdentifierSavedPasswords), 0);
+  EXPECT_OCMOCK_VERIFY(passwords_settings_commands_strict_mock_);
 
   // Should only have 1 affiliated group left in this section.
   EXPECT_EQ(1, NumberOfItemsInSection(

@@ -51,6 +51,9 @@ struct CredentialUIEntry;
 // Data source for favicon images.
 @property(nonatomic, weak) id<TableViewFaviconDataSource> imageDataSource;
 
+// Method to delete items at index paths used for testing.
+- (void)deleteItemAtIndexPathsForTesting:(NSArray<NSIndexPath*>*)indexPaths;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_MANAGER_VIEW_CONTROLLER_H_
