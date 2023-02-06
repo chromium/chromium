@@ -260,9 +260,8 @@ class CONTENT_EXPORT InputRouterImpl
   // Whether stylus writing has started.
   bool stylus_writing_started_ = false;
 
-  // Stores the pan action that can take place like stylus writing, moving
-  // cursor or scrolling. This is sent when the pointer is hovering and set from
-  // the main thread.
+  // Stores the pan action possible for element under hovering pointer. Ex:
+  // stylus writing, moving cursor or scrolling. This is set from main thread.
   blink::mojom::PanAction pan_action_ = blink::mojom::PanAction::kNone;
 
   MouseWheelEventQueue wheel_event_queue_;

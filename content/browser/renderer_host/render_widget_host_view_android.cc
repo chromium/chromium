@@ -1492,9 +1492,9 @@ bool RenderWidgetHostViewAndroid::RequestStartStylusWriting() {
          ime_adapter_android_->RequestStartStylusWriting();
 }
 
-void RenderWidgetHostViewAndroid::SetHoverActionStylusWritable(
+void RenderWidgetHostViewAndroid::NotifyHoverActionStylusWritable(
     bool stylus_writable) {
-  view_.SetHoverActionStylusWritable(stylus_writable);
+  view_.NotifyHoverActionStylusWritable(stylus_writable);
 }
 
 void RenderWidgetHostViewAndroid::OnEditElementFocusedForStylusWriting(

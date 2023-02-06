@@ -108,7 +108,7 @@ class MockRenderWidgetHostViewForStylusWriting
 
   bool RequestStartStylusWriting() override { return supports_stylus_writing_; }
 
-  void SetHoverActionStylusWritable(bool stylus_writable) override {
+  void NotifyHoverActionStylusWritable(bool stylus_writable) override {
     hover_action_stylus_writable_ = stylus_writable;
   }
 

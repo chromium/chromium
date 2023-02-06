@@ -401,6 +401,12 @@ void PointerEventManager::AdjustPointerEvent(WebPointerEvent& pointer_event) {
       pointer_event.pointer_type == WebPointerProperties::PointerType::kPen ||
       pointer_event.pointer_type == WebPointerProperties::PointerType::kEraser);
 
+  Node* adjusted_node = nullptr;
+  AdjustPointerEvent(pointer_event, adjusted_node);
+}
+
+void PointerEventManager::AdjustPointerEvent(WebPointerEvent& pointer_event,
+                                             Node*& adjusted_node) {
   float adjustment_width = 0.0f;
   float adjustment_height = 0.0f;
   if (pointer_event.pointer_type == WebPointerProperties::PointerType::kTouch) {
@@ -436,7 +442,6 @@ void PointerEventManager::AdjustPointerEvent(WebPointerEvent& pointer_event) {
   HitTestLocation location(PhysicalRect(hit_test_point, hit_rect_size));
   HitTestResult hit_test_result =
       root_frame.GetEventHandler().HitTestResultAtLocation(location, hit_type);
-  Node* adjusted_node = nullptr;
   gfx::Point adjusted_point;
 
   if (pointer_event.pointer_type == WebPointerProperties::PointerType::kTouch) {
@@ -458,8 +463,6 @@ void PointerEventManager::AdjustPointerEvent(WebPointerEvent& pointer_event) {
         frame_->GetEventHandler().BestStylusWritableNodeForHitTestResult(
             location, hit_test_result, adjusted_point, adjusted_node);
 
-    // TODO(crbug.com/1399797): Update Stylus pointer icon to indicate writing
-    // can be started when adjustment is about to be done.
     if (adjusted)
       pointer_event.SetPositionInWidget(adjusted_point.x(), adjusted_point.y());
   }
@@ -925,6 +928,19 @@ void PointerEventManager::SendEffectivePanActionAtPointer(
     const Node* node_at_pointer) {
   if (IsAnyTouchActive())
     return;
+
+  if (ShouldAdjustStylusPointerEvent(event)) {
+    Node* adjusted_node = nullptr;
+    // Check if node adjustment allows stylus writing. Use a cloned event to
+    // avoid adjusting actual pointer's position.
+    std::unique_ptr<WebInputEvent> cloned_event = event.Clone();
+    WebPointerEvent& cloned_pointer_event =
+        static_cast<WebPointerEvent&>(*cloned_event);
+    AdjustPointerEvent(cloned_pointer_event, adjusted_node);
+    if (adjusted_node) {
+      node_at_pointer = adjusted_node;
+    }
+  }
 
   TouchAction effective_touch_action = TouchAction::kAuto;
   if (node_at_pointer) {

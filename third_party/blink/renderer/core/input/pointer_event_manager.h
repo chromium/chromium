@@ -247,6 +247,9 @@ class CORE_EXPORT PointerEventManager final
   // best touch clickable target or best stylus writable target.
   void AdjustPointerEvent(WebPointerEvent&);
 
+  // Adjust pointer event and set the best adjusted target.
+  void AdjustPointerEvent(WebPointerEvent& pointer_event, Node*& adjusted_node);
+
   // Check if the SkipTouchEventFilter experiment is configured to skip
   // filtering on the given event.
   bool ShouldFilterEvent(PointerEvent* pointer_event);

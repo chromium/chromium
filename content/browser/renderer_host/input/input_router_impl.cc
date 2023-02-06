@@ -353,7 +353,7 @@ void InputRouterImpl::SetPanAction(blink::mojom::PanAction pan_action) {
   // is set again.
   if (!client_->GetRenderWidgetHostViewBase())
     return;
-  client_->GetRenderWidgetHostViewBase()->SetHoverActionStylusWritable(
+  client_->GetRenderWidgetHostViewBase()->NotifyHoverActionStylusWritable(
       pan_action_ == blink::mojom::PanAction::kStylusWritable);
 }
 

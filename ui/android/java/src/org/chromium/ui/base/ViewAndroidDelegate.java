@@ -81,8 +81,13 @@ public class ViewAndroidDelegate {
 
     private StylusWritingCursorHandler mStylusWritingCursorHandler;
 
-    // Whether the current hovered element's action is stylus writable or not.
-    private boolean mHoverActionStylusWritable;
+    // Cache the last Pointer Icon calculated for cursor type received from blink. Pointer is reset
+    // to this icon when once cursor stops being overridden.
+    private PointerIcon mPointerIconForLastCursor;
+
+    // Whether the cursor received from blink has been overridden to set specific cursor.
+    // Ex: Stylus writing cursor.
+    private boolean mCursorOverridden;
 
     /**
      * Sets a handler to handle the stylus writing cursor updates.
@@ -266,18 +271,15 @@ public class ViewAndroidDelegate {
     @CalledByNative
     public void onCursorChangedToCustom(Bitmap customCursorBitmap, int hotspotX, int hotspotY) {
         PointerIcon icon = PointerIcon.create(customCursorBitmap, hotspotX, hotspotY);
+        mPointerIconForLastCursor = icon;
+        if (mCursorOverridden) return;
+
         getContainerViewGroup().setPointerIcon(icon);
     }
 
     @VisibleForTesting
     @CalledByNative
     public void onCursorChanged(int cursorType) {
-        // Allow stylus writing handler to override the cursor.
-        if (mHoverActionStylusWritable && mStylusWritingCursorHandler != null
-                && mStylusWritingCursorHandler.didHandleCursorUpdate(getContainerViewGroup())) {
-            return;
-        }
-
         int pointerIconType = PointerIcon.TYPE_ARROW;
         switch (cursorType) {
             case CursorType.NONE:
@@ -401,12 +403,31 @@ public class ViewAndroidDelegate {
         }
         ViewGroup containerView = getContainerViewGroup();
         PointerIcon icon = PointerIcon.getSystemIcon(containerView.getContext(), pointerIconType);
+        mPointerIconForLastCursor = icon;
+        if (mCursorOverridden) return;
+
         containerView.setPointerIcon(icon);
     }
 
     @CalledByNative
-    private void setHoverActionStylusWritable(boolean stylusWritable) {
-        mHoverActionStylusWritable = stylusWritable;
+    private void notifyHoverActionStylusWritable(boolean stylusWritable) {
+        // Set stylus writing icon when hover action under pointer is writable.
+        if (stylusWritable && didHandleStylusWritingCursorUpdate()) {
+            mCursorOverridden = true;
+            return;
+        }
+
+        // If the hover action becomes not writable, then blink may not send another cursor update
+        // as the element under pointer is still same. Then reset to last cached icon from blink.
+        if (mCursorOverridden && !stylusWritable) {
+            getContainerViewGroup().setPointerIcon(mPointerIconForLastCursor);
+        }
+        mCursorOverridden = false;
+    }
+
+    private boolean didHandleStylusWritingCursorUpdate() {
+        return mStylusWritingCursorHandler != null
+                && mStylusWritingCursorHandler.didHandleCursorUpdate(getContainerViewGroup());
     }
 
     /**
