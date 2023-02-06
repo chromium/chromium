@@ -31,6 +31,61 @@ enum class FeatureIdsEnum {
   kMaxValue = kTts,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// See enum LanguagePackFeatureSuccess in tools/metrics/histograms/enums.xml.
+enum class FeatureSuccessEnum {
+  kUnknownSuccess = 0,
+  kUnknownFailure = 1,
+  kHandwritingSuccess = 2,
+  kHandwritingFailure = 3,
+  kTtsSuccess = 4,
+  kTtsFailure = 5,
+  kMaxValue = kTtsFailure,
+};
+
+// This function returns the enum value of a feature ID that matches the
+// corresponding value in the UMA Histogram enum.
+FeatureIdsEnum GetFeatureIdValueForUma(const std::string& feature_id) {
+  if (feature_id == kHandwritingFeatureId) {
+    return FeatureIdsEnum::kHandwriting;
+  }
+  if (feature_id == kTtsFeatureId) {
+    return FeatureIdsEnum::kTts;
+  }
+
+  // Default value of unknown.
+  return FeatureIdsEnum::kUnknown;
+}
+
+// This function returns the enum value of a success or failure for a given
+// Feature ID. These valus match the corresponding UMA histogram enum
+// "LanguagePackFeatureSuccess".
+FeatureSuccessEnum GetSuccessValueForUma(const std::string& feature_id,
+                                         const bool success) {
+  if (feature_id == kHandwritingFeatureId) {
+    if (success) {
+      return FeatureSuccessEnum::kHandwritingSuccess;
+    } else {
+      return FeatureSuccessEnum::kHandwritingFailure;
+    }
+  }
+  if (feature_id == kTtsFeatureId) {
+    if (success) {
+      return FeatureSuccessEnum::kTtsSuccess;
+    } else {
+      return FeatureSuccessEnum::kTtsFailure;
+    }
+  }
+
+  // Default value of unknown.
+  if (success) {
+    return FeatureSuccessEnum::kUnknownSuccess;
+  } else {
+    return FeatureSuccessEnum::kUnknownFailure;
+  }
+}
+
 // PackResult that is returned by an invalid feature ID is specified.
 PackResult CreateInvalidDlcPackResult() {
   return {
@@ -203,6 +258,7 @@ void InstallDlc(const std::string& dlc_id,
 }
 
 void OnInstallDlcComplete(OnInstallCompleteCallback callback,
+                          const std::string& feature_id,
                           const DlcserviceClient::InstallResult& dlc_result) {
   PackResult result;
   result.operation_error = dlc_result.error;
@@ -215,8 +271,8 @@ void OnInstallDlcComplete(OnInstallCompleteCallback callback,
     result.pack_state = PackResult::UNKNOWN;
   }
 
-  base::UmaHistogramBoolean("ChromeOS.LanguagePacks.InstallComplete.Success",
-                            success);
+  base::UmaHistogramEnumeration("ChromeOS.LanguagePacks.InstallPack.Success",
+                                GetSuccessValueForUma(feature_id, success));
 
   std::move(callback).Run(result);
 }
@@ -254,18 +310,6 @@ void OnGetDlcState(GetPackStateCallback callback,
   std::move(callback).Run(result);
 }
 
-// This function returns the enum value of a feature ID that matches the
-// corresponding value in the UMA Histogram enum.
-FeatureIdsEnum GetFeatureIdValueForUma(const std::string& feature_id) {
-  if (feature_id == kHandwritingFeatureId)
-    return FeatureIdsEnum::kHandwriting;
-  if (feature_id == kTtsFeatureId)
-    return FeatureIdsEnum::kTts;
-
-  // Default value of unknown.
-  return FeatureIdsEnum::kUnknown;
-}
-
 }  // namespace
 
 bool LanguagePackManager::IsPackAvailable(const std::string& feature_id,
@@ -288,8 +332,8 @@ void LanguagePackManager::InstallPack(const std::string& feature_id,
     return;
   }
 
-  InstallDlc(*dlc_id,
-             base::BindOnce(&OnInstallDlcComplete, std::move(callback)));
+  InstallDlc(*dlc_id, base::BindOnce(&OnInstallDlcComplete, std::move(callback),
+                                     feature_id));
 }
 
 void LanguagePackManager::GetPackState(const std::string& feature_id,
@@ -347,8 +391,8 @@ void LanguagePackManager::InstallBasePack(
       "ChromeOS.LanguagePacks.InstallBasePack.FeatureId",
       GetFeatureIdValueForUma(feature_id));
 
-  InstallDlc(*dlc_id,
-             base::BindOnce(&OnInstallDlcComplete, std::move(callback)));
+  InstallDlc(*dlc_id, base::BindOnce(&OnInstallDlcComplete, std::move(callback),
+                                     feature_id));
 }
 
 void LanguagePackManager::AddObserver(Observer* const observer) {

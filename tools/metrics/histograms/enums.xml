@@ -55704,6 +55704,23 @@ chromeos/ash/components/language/language_packs/language_pack_manager.cc -->
   <int value="2" label="TTS"/>
 </enum>
 
+<enum name="LanguagePackFeatureSuccess">
+<!-- This enum needs to match FeatureSuccessEnum in
+chromeos/ash/components/language/language_packs/language_pack_manager.cc -->
+
+  <summary>
+    Multidimension Enum that captures success and failures broken down by
+    Feature ID. We use this approach based on the Histograms guidelines to
+    represent a MxN matrix.
+  </summary>
+  <int value="0" label="Unknown success"/>
+  <int value="1" label="Unknown failure"/>
+  <int value="2" label="Handwriting success"/>
+  <int value="3" label="Handwriting failure"/>
+  <int value="4" label="TTS success"/>
+  <int value="5" label="TTS failure"/>
+</enum>
+
 <enum name="LanguagePackLanguageCodes">
   <summary>
     Hash values of language codes that correspond to a Language Pack. The hash

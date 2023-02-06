@@ -1599,12 +1599,26 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.LanguagePacks.InstallComplete.Success"
     enum="BooleanSuccess" expires_after="2023-07-01">
+<!-- TODO(b/231288152): Deprecate this once experiment is complete. Replaced
+       by InstallPack.Success below. -->
+
   <owner>claudiomagni@chromium.org</owner>
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
   <summary>
     Records whether a language pack installation was successful after a language
     pack installation attempt.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.LanguagePacks.InstallPack.Success"
+    enum="LanguagePackFeatureSuccess" expires_after="2023-07-01">
+  <owner>claudiomagni@chromium.org</owner>
+  <owner>mlcui@google.com</owner>
+  <owner>dvallet@chromium.org</owner>
+  <summary>
+    Records whether a language pack installation was successful after a language
+    pack installation attempt, broken down by feature ID.
   </summary>
 </histogram>
 
