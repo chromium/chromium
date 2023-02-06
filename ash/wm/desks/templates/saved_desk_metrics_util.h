@@ -55,6 +55,16 @@ constexpr char kTimeBetweenSaveAndRecallHistogramName[] =
 constexpr char kSaveAndRecallUnsupportedAppDialogShowHistogramName[] =
     "Ash.DeskTemplate.SaveAndRecallUnsupportedAppDialogShow";
 
+// Histogram names for Floating Workspace.
+constexpr char kLaunchFloatingWorkspaceHistogramName[] =
+    "Ash.DeskTemplate.LaunchFloatingWorkspace";
+constexpr char kFloatingWorkspaceWindowCountHistogramName[] =
+    "Ash.DeskTemplate.FloatingWorkspaceWindowCount";
+constexpr char kFloatingWorkspaceTabCountHistogramName[] =
+    "Ash.DeskTemplate.FloatingWorkspaceTabCount";
+constexpr char kFloatingWorkspaceWindowAndTabCountHistogramName[] =
+    "Ash.DeskTemplate.FloatingWorkspaceWindowAndTabCount";
+
 // Wrappers calls base::uma with correct histogram name.
 void RecordLoadSavedDeskLibraryHistogram();
 void RecordDeleteSavedDeskHistogram(DeskTemplateType type);

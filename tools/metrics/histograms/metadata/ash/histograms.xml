@@ -2072,6 +2072,41 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded when desk templates are deleted, is never false.</summary>
 </histogram>
 
+<histogram name="Ash.DeskTemplate.FloatingWorkspaceTabCount" units="tabs"
+    expires_after="2024-02-02">
+  <owner>ligeng@google.com</owner>
+  <owner>marcuskoehler@google.com</owner>
+  <summary>
+    Records the number of tabs in a Floating Workspace desk when it is saved.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.FloatingWorkspaceWindowAndTabCount"
+    units="windows and tabs" expires_after="2024-02-02">
+  <owner>ligeng@google.com</owner>
+  <owner>marcuskoehler@google.com</owner>
+  <summary>
+    Records the number of windows and tabs in a Floating Workspace desk when it
+    is saved.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.FloatingWorkspaceWindowCount" units="windows"
+    expires_after="2024-02-02">
+  <owner>ligeng@google.com</owner>
+  <owner>marcuskoehler@google.com</owner>
+  <summary>
+    Records the number of windows in a Floating Workspace desk when it is saved.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.LaunchFloatingWorkspace" enum="BooleanHit"
+    expires_after="2024-02-02">
+  <owner>ligeng@google.com</owner>
+  <owner>marcuskoehler@google.com</owner>
+  <summary>Emitted when a Floating Workspace desk is launched.</summary>
+</histogram>
+
 <histogram name="Ash.DeskTemplate.LaunchFromTemplate" enum="BooleanHit"
     expires_after="2023-10-03">
   <owner>richui@chromium.org</owner>

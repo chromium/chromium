@@ -65,6 +65,18 @@ const char* GetHistogramName(DeskTemplateType type,
           return kSaveAndRecallUnsupportedAppDialogShowHistogramName;
       }
     case DeskTemplateType::kFloatingWorkspace:
+      switch (metrics_action_name) {
+        case MetricsAction::kLaunch:
+          return kLaunchFloatingWorkspaceHistogramName;
+        case MetricsAction::kTabCount:
+          return kFloatingWorkspaceTabCountHistogramName;
+        case MetricsAction::kWindowCount:
+          return kFloatingWorkspaceWindowCountHistogramName;
+        case MetricsAction::kWindowAndTabCount:
+          return kFloatingWorkspaceWindowAndTabCountHistogramName;
+        default:
+          return nullptr;
+      }
     case DeskTemplateType::kUnknown:
       return nullptr;
   }
