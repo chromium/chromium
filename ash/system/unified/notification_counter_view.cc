@@ -61,11 +61,18 @@ ui::ColorId SeparatorIconColorId(session_manager::SessionState state) {
 bool ShouldShowCounterView() {
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
+
+  if (features::IsQsRevampEnabled()) {
+    // The `NotificationCounterView` should only be hidden if the screen is not
+    // locked and quiet mode is enabled.
+    return !message_center::MessageCenter::Get()->IsQuietMode() ||
+           session_controller->IsScreenLocked();
+  }
+
   return !message_center::MessageCenter::Get()->IsQuietMode() &&
          session_controller->ShouldShowNotificationTray() &&
          (!session_controller->IsScreenLocked() ||
-          AshMessageCenterLockScreenController::IsEnabled() ||
-          features::IsQsRevampEnabled());
+          AshMessageCenterLockScreenController::IsEnabled());
 }
 
 class NumberIconImageSource : public gfx::CanvasImageSource {

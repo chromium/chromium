@@ -206,4 +206,25 @@ TEST_P(NotificationCounterViewTest, LockScreenCounter) {
             GetNotificationCounterView()->count_for_display_for_testing());
 }
 
+TEST_P(NotificationCounterViewTest, LockScreenCounterInDoNotDisturbMode) {
+  // This behavior is only applicable when QsRevamp is enabled.
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+
+  for (size_t i = 0; i < kTrayNotificationMaxCount; i++) {
+    AddNotification(base::NumberToString(i));
+  }
+
+  // Turn on Do not disturb mode.
+  message_center::MessageCenter::Get()->SetQuietMode(true);
+
+  // Counter not shown when Do not disturb mode is enabled.
+  EXPECT_FALSE(GetNotificationCounterView()->GetVisible());
+
+  // Counter should become visible if the screen is locked.
+  BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
+  EXPECT_TRUE(GetNotificationCounterView()->GetVisible());
+}
+
 }  // namespace ash
