@@ -161,7 +161,7 @@ class ArrayBufferSharedMemoryMapper : public base::SharedMemoryMapper {
     size_t allocation_granularity = address_space->allocation_granularity();
 
     v8::PlatformSharedMemoryHandle v8_handle;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     v8_handle = v8::SharedMemoryHandleFromMachMemoryEntry(handle);
 #elif BUILDFLAG(IS_FUCHSIA)
     v8_handle = v8::SharedMemoryHandleFromVMO(handle->get());
