@@ -14,13 +14,13 @@ chrome_public_shared_deps = [
   "//third_party/icu:icu_assets",
 ]
 
+chrome_public_test_manifest_package = "org.chromium.chrome.tests"
+
 template("chrome_test_apk_tmpl") {
   chrome_public_common_apk_or_module_tmpl(target_name) {
     forward_variables_from(invoker,
                            [
                              "apk_name",
-                             "android_manifest",
-                             "android_manifest_dep",
                              "data_deps",
                              "enable_lint",
                              "enforce_resource_overlays_in_tests",
@@ -34,6 +34,8 @@ template("chrome_test_apk_tmpl") {
     testonly = true
     target_type = "instrumentation_test_apk"
     bundles_supported = true
+    jinja_input = "//chrome/android/javatests/AndroidManifest.xml"
+    manifest_package = chrome_public_test_manifest_package
 
     deps = chrome_public_shared_deps + invoker.deps + [
              "//chrome/android:chrome_apk_pak_assets",
@@ -69,8 +71,6 @@ template("monochrome_test_apk_tmpl") {
   monochrome_public_common_apk_or_module_tmpl(target_name) {
     forward_variables_from(invoker,
                            [
-                             "android_manifest",
-                             "android_manifest_dep",
                              "apk_name",
                              "data_deps",
                              "is_64_bit_browser",
@@ -83,9 +83,15 @@ template("monochrome_test_apk_tmpl") {
                              "shared_libraries",
                              "target_sdk_version",
                            ])
-
     testonly = true
     target_type = "instrumentation_test_apk"
+
+    # TODO(agrieve): Add: manifest_package = chrome_public_test_manifest_package
+
+    jinja_input = "//chrome/android/javatests/AndroidManifest_monochrome.xml"
+    jinja_extra_includes = [ "//chrome/android/javatests/AndroidManifest.xml" ]
+    jinja_extra_variables =
+        [ "test_manifest_package=$chrome_public_test_manifest_package" ]
 
     deps = chrome_public_shared_deps + invoker.deps + [
              "//android_webview:platform_service_bridge_upstream_implementation_java",

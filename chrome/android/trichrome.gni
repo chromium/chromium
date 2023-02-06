@@ -6,7 +6,6 @@ import("//build/config/android/abi.gni")
 import("//build/config/android/channel.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
-import("//chrome/android/chrome_public_apk_tmpl.gni")
 import("//chrome/android/modules/buildflags.gni")
 import("//chrome/version.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -26,28 +25,55 @@ declare_args() {
   trichrome_certdigest = default_trichrome_certdigest
 }
 
+use_32bit_abi_jinja_variable = "use32bitAbi=android:use32bitAbi=\"true\""
 trichrome_jinja_variables = [
-  "min_sdk_version=29",
-  "target_sdk_version=$android_sdk_version",
   "trichrome_library=$trichrome_library_package",
   "trichrome_certdigest=$trichrome_certdigest",
-  "use32bitAbi=android:use32bitAbi=\"true\"",
   "zygote_preload_class=org.chromium.chrome.app.TrichromeZygotePreload",
+  use_32bit_abi_jinja_variable,
 ]
 
 template("trichrome_library_apk_tmpl") {
+  _is_64_bit_browser = android_64bit_target_cpu && invoker.is_64_bit_browser
+  _include_64_bit_webview =
+      (!defined(invoker.include_64_bit_webview) ||
+       invoker.include_64_bit_webview) && android_64bit_target_cpu
+  _include_32_bit_webview =
+      !defined(invoker.include_32_bit_webview) || invoker.include_32_bit_webview
+  _version_code = TRICHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
+
+  # TODO(crbug.com/1411557): Remove option for custom manifest.
+  if (!defined(invoker.android_manifest)) {
+    if (defined(invoker.manifest_package)) {
+      _manifest_package = invoker.manifest_package
+    } else {
+      _manifest_package = trichrome_library_package
+    }
+    _android_manifest = "$target_gen_dir/$target_name/AndroidManifest.xml"
+    _android_manifest_target_name = "${target_name}__android_manifest"
+    jinja_template(_android_manifest_target_name) {
+      input = "//chrome/android/java/AndroidManifest_trichrome_library.xml"
+      output = _android_manifest
+      variables = trichrome_jinja_variables + [
+                    "manifest_package=$_manifest_package",
+                    "trichrome_version=$_version_code",
+                  ]
+      if (_is_64_bit_browser) {
+        variables -= [ use_32bit_abi_jinja_variable ]
+      }
+      if (defined(invoker.jinja_extra_variables)) {
+        variables += invoker.jinja_extra_variables
+      }
+    }
+  }
   android_apk(target_name) {
-    forward_variables_from(invoker,
-                           [
-                             "android_manifest",
-                             "android_manifest_dep",
-                             "apk_name",
-                             "expected_android_manifest",
-                             "expected_libs_and_assets",
-                             "min_sdk_version",
-                             "target_sdk_version",
-                           ])
-    if (defined(expected_android_manifest)) {
+    if (defined(_android_manifest_target_name)) {
+      android_manifest = _android_manifest
+      android_manifest_dep = ":$_android_manifest_target_name"
+      manifest_package = _manifest_package
+    }
+
+    if (defined(invoker.expected_android_manifest)) {
       expected_android_manifest_version_code_offset = chrome_version_code
       expected_android_manifest_library_version_offset = chrome_version_code
     }
@@ -69,14 +95,7 @@ template("trichrome_library_apk_tmpl") {
 
     uncompress_dex = true
     version_name = chrome_version_name
-
-    _is_64_bit_browser = android_64bit_target_cpu && invoker.is_64_bit_browser
-    _include_64_bit_webview =
-        (!defined(invoker.include_64_bit_webview) ||
-         invoker.include_64_bit_webview) && android_64bit_target_cpu
-    _include_32_bit_webview = !defined(invoker.include_32_bit_webview) ||
-                              invoker.include_32_bit_webview
-    version_code = TRICHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
+    version_code = _version_code
 
     min_sdk_version = 29
 
@@ -85,6 +104,9 @@ template("trichrome_library_apk_tmpl") {
       "//android_webview/nonembedded:icon_resources",
       "//third_party/icu:icu_assets",
     ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
 
     omit_dex = true
 
@@ -159,6 +181,15 @@ template("trichrome_library_apk_tmpl") {
         }
       }
     }
+    forward_variables_from(invoker,
+                           "*",
+                           TESTONLY_AND_VISIBILITY + [
+                                 "deps",
+                                 "include_64_bit_webview",
+                                 "include_32_bit_webview",
+                                 "is_64_bit_browser",
+                               ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
   }
 }
 

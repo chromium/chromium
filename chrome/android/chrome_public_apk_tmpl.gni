@@ -10,6 +10,7 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/locales.gni")
 import("//chrome/android/features/dev_ui/dev_ui_module.gni")
 import("//chrome/android/modules/chrome_bundle_tmpl.gni")
+import("//chrome/android/trichrome.gni")
 import("//chrome/common/features.gni")
 import("//chrome/version.gni")
 import("//components/crash/android/silent_java_assert_reporting.gni")
@@ -18,13 +19,87 @@ import("//device/vr/buildflags/buildflags.gni")
 import("//weblayer/variables.gni")
 import("channel.gni")
 
+declare_args() {
+  # Android package name to use when compiling the public chrome targets
+  # (chrome_public_apk, monochrome_public_apk, etc. as well as the
+  # *_bundle variants). This is particularly useful when using
+  # monochrome_public_apk for WebView development, as the OS only accepts
+  # WebView providers which declare one of a handful of package names. See
+  # https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/build-instructions.md#Changing-package-name
+  # for details.
+  chrome_public_manifest_package = "org.chromium.chrome"
+  if (use_stable_package_name_for_trichrome) {
+    chrome_public_manifest_package += ".stable"
+  } else if (android_channel != "default") {
+    chrome_public_manifest_package += "." + android_channel
+  }
+}
+
 default_chrome_public_jinja_variables = [
   "channel=$android_channel",
+  "enable_cardboard=$enable_cardboard",
   "enable_vr=$enable_vr",
   "include_arcore_manifest_flag=false",
-  "enable_cardboard=$enable_cardboard",
   "zygote_preload_class=org.chromium.content_public.app.ZygotePreload",
 ]
+
+monochrome_android_manifest_jinja_variables = [
+  "sandboxed_service_exported=true",
+  use_32bit_abi_jinja_variable,
+]
+
+# Generates an AndroidManifest.xml along with an optional second manifest
+# dependent on the original.
+#
+# Variables:
+#   input: The base manifest template with the main application definition.
+#   output: Output path for |input|.
+#   split_input: Path to an alternate manifest that will be built if
+#     definitions_in_split is true.
+#   split_output: Output path for |split_input|.
+#   variables: Variables to pass to the jinja templates.
+#   definitions_in_split: If true will pass definitions_in_split=true in the
+#     variables passed to |input| and generate |split_output|.
+template("split_manifest_template") {
+  _definitions_in_split =
+      defined(invoker.definitions_in_split) && invoker.definitions_in_split
+  jinja_template(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "includes",
+                             "input",
+                             "output",
+                             "variables",
+                           ])
+    if (_definitions_in_split) {
+      variables += [ "definitions_in_split=true" ]
+    }
+  }
+
+  if (_definitions_in_split) {
+    jinja_template("${target_name}__split") {
+      forward_variables_from(invoker,
+                             [
+                               "includes",
+                               "variables",
+                             ])
+      if (!defined(includes)) {
+        includes = []
+      }
+      includes += [ invoker.input ]
+      input = invoker.split_input
+      output = invoker.split_output
+      _rebased_input = rebase_path(invoker.input, "//")
+      variables += [ "base_manifest=${_rebased_input}" ]
+    }
+  } else {
+    not_needed(invoker,
+               [
+                 "split_input",
+                 "split_output",
+               ])
+  }
+}
 
 # A template used to declare any target that will implement a full Chromium
 # or Chrome application, either as an APK, or an app bundle module.
@@ -34,8 +109,6 @@ default_chrome_public_jinja_variables = [
 #   apk_name: For APK target types, the final APK name without a suffix.
 #   is_base_module: For bundle module target types, true iff this is a base
 #     application module, instead of a feature module.
-#   android_manifest: Application manifest path.
-#   android_manifest_dep: Name of target generating the android_manifest.
 #   shared_libraries: List of native shared libraries targets to include in
 #     the final target (e.g. [ ":libchrome" ]).
 #   is_monochrome: Indicates that this target contains chrome and webview
@@ -60,6 +133,13 @@ template("chrome_public_common_apk_or_module_tmpl") {
   _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
   _is_bundle = invoker.target_type == "android_app_bundle_module"
 
+  if (_is_trichrome || _is_monochrome) {
+    _include_64_bit_webview =
+        android_64bit_target_cpu && (!defined(invoker.include_64_bit_webview) ||
+                                     invoker.include_64_bit_webview)
+    _include_32_bit_webview = !defined(invoker.include_32_bit_webview) ||
+                              invoker.include_32_bit_webview
+  }
   _is_64_bit_browser =
       android_64bit_target_cpu &&
       (!defined(invoker.is_64_bit_browser) || invoker.is_64_bit_browser)
@@ -78,8 +158,86 @@ template("chrome_public_common_apk_or_module_tmpl") {
     _target_type = invoker.target_type
   }
 
+  if (_is_trichrome) {
+    _version_code = TRICHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
+  } else if (_is_monochrome) {
+    _version_code = MONOCHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
+  } else {
+    # TODO(agrieve): Merge chrome_modern_version_code with chrome_version_code.
+    _version_code = chrome_modern_version_code
+  }
+
+  # TODO(crbug.com/1411557): Remove option for custom manifest.
+  if (!defined(invoker.android_manifest)) {
+    if (defined(invoker.manifest_package)) {
+      _manifest_package = invoker.manifest_package
+    } else {
+      _manifest_package = chrome_public_manifest_package
+    }
+
+    _android_manifest = "$target_gen_dir/$target_name/AndroidManifest.xml"
+
+    # TODO(crbug.com/1411557): Move out of manifest/ when downstream is updated.
+    # _split.xml is used in chrome_bundle template.
+    _split_android_manifest =
+        "$target_gen_dir/manifest/$target_name/AndroidManifest_split.xml"
+    _android_manifest_target_name = "${target_name}__android_manifest"
+    split_manifest_template(_android_manifest_target_name) {
+      definitions_in_split = _is_bundle
+      split_input = "//chrome/android/java/AndroidManifest_split.xml"
+      split_output = _split_android_manifest
+      includes = []
+      output = _android_manifest
+      variables = default_chrome_public_jinja_variables +
+                  [ "manifest_package=$_manifest_package" ]
+      if (_is_trichrome) {
+        input = "//chrome/android/java/AndroidManifest_trichrome_chrome.xml"
+        includes = [ "//chrome/android/java/AndroidManifest.xml" ]
+        variables +=
+            trichrome_jinja_variables + [ "trichrome_version=$_version_code" ]
+      } else if (_is_monochrome) {
+        input = "//chrome/android/java/AndroidManifest_monochrome.xml"
+        includes = [
+          "//android_webview/nonembedded/java/AndroidManifest.xml",
+          "//chrome/android/java/AndroidManifest.xml",
+        ]
+        variables += monochrome_android_manifest_jinja_variables
+        if (_is_64_bit_browser) {
+          variables += [ "webview_library=libmonochrome_64.so" ]
+        } else {
+          variables += [ "webview_library=libmonochrome.so" ]
+        }
+      } else {
+        input = "//chrome/android/java/AndroidManifest.xml"
+      }
+      if (_is_monochrome || _is_trichrome) {
+        variables += [ "include_arcore_manifest_flag=$enable_arcore" ]
+        if (_is_64_bit_browser) {
+          variables -= [ use_32bit_abi_jinja_variable ]
+        }
+      }
+      if (defined(invoker.jinja_input)) {
+        includes += [ input ]
+        input = invoker.jinja_input
+      }
+      if (defined(invoker.jinja_extra_variables)) {
+        variables += invoker.jinja_extra_variables
+      }
+      if (defined(invoker.jinja_extra_includes)) {
+        includes += invoker.jinja_extra_includes
+      }
+    }
+  }
   target(_target_type, target_name) {
-    forward_variables_from(invoker, "*")
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
+    # TODO(crbug.com/1411557): Do not allows custom manifest dep.
+    if (defined(_android_manifest_target_name)) {
+      android_manifest = _android_manifest
+      android_manifest_dep = ":$_android_manifest_target_name"
+      manifest_package = _manifest_package
+    }
 
     if (!defined(min_sdk_version)) {
       if (_is_trichrome) {
@@ -294,22 +452,11 @@ template("chrome_public_common_apk_or_module_tmpl") {
     if (!defined(version_name)) {
       version_name = chrome_version_name
     }
-    if (!defined(version_code)) {
-      if (_is_trichrome || _is_monochrome) {
-        _include_64_bit_webview = android_64bit_target_cpu &&
-                                  (!defined(invoker.include_64_bit_webview) ||
-                                   invoker.include_64_bit_webview)
-        _include_32_bit_webview = !defined(invoker.include_32_bit_webview) ||
-                                  invoker.include_32_bit_webview
-      }
-      if (_is_trichrome) {
-        version_code = TRICHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
-      } else if (_is_monochrome) {
-        version_code = MONOCHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
-      } else {
-        # TODO(agrieve): Merge chrome_modern_version_code with chrome_version_code.
-        version_code = chrome_modern_version_code
-      }
+    version_code = _version_code
+
+    # Override for the actual versionCode, but not for trichrome_version.
+    if (defined(invoker.version_code)) {
+      version_code = invoker.version_code
     }
   }
 }
@@ -619,58 +766,5 @@ template("monochrome_public_common_apk_or_module_tmpl") {
     ]
     forward_variables_from(invoker, "*", _override_args)
     forward_variables_from(_overrides, _override_args)
-  }
-}
-
-# Generates an AndroidManifest.xml along with an optional second manifest
-# dependent on the original.
-#
-# Variables:
-#   input: The base manifest template with the main application definition.
-#   output: Output path for |input|.
-#   split_input: Path to an alternate manifest that will be built if
-#     definitions_in_split is true.
-#   split_output: Output path for |split_input|.
-#   variables: Variables to pass to the jinja templates.
-#   definitions_in_split: If true will pass definitions_in_split=true in the
-#     variables passed to |input| and generate |split_output|.
-template("split_manifest_template") {
-  _definitions_in_split =
-      defined(invoker.definitions_in_split) && invoker.definitions_in_split
-  jinja_template(target_name) {
-    forward_variables_from(invoker,
-                           [
-                             "includes",
-                             "input",
-                             "output",
-                             "variables",
-                           ])
-    if (_definitions_in_split) {
-      variables += [ "definitions_in_split=true" ]
-    }
-  }
-
-  if (_definitions_in_split) {
-    jinja_template("${target_name}__split") {
-      forward_variables_from(invoker,
-                             [
-                               "includes",
-                               "variables",
-                             ])
-      if (!defined(includes)) {
-        includes = []
-      }
-      includes += [ invoker.input ]
-      input = invoker.split_input
-      output = invoker.split_output
-      _rebased_input = rebase_path(invoker.input, "//")
-      variables += [ "base_manifest=${_rebased_input}" ]
-    }
-  } else {
-    not_needed(invoker,
-               [
-                 "split_input",
-                 "split_output",
-               ])
   }
 }

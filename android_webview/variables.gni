@@ -14,18 +14,6 @@ declare_args() {
   webview_devui_show_icon = android_channel != "stable"
 }
 
-system_webview_android_manifest =
-    "$root_gen_dir/android_webview/system_webview_apk/AndroidManifest.xml"
-system_webview_64_android_manifest =
-    "$root_gen_dir/android_webview/system_webview_64_apk/AndroidManifest.xml"
-trichrome_webview_android_manifest =
-    "$root_gen_dir/android_webview/trichrome_webview_apk/AndroidManifest.xml"
-trichrome_webview_64_android_manifest =
-    "$root_gen_dir/android_webview/trichrome_webview_64_apk/AndroidManifest.xml"
-trichrome_webview_64_32_android_manifest = "$root_gen_dir/android_webview/trichrome_webview_64_32_apk/AndroidManifest.xml"
-trichrome_webview_32_android_manifest =
-    "$root_gen_dir/android_webview/trichrome_webview_32_apk/AndroidManifest.xml"
-
 upstream_only_webview_deps = [
   "//android_webview:platform_service_bridge_upstream_implementation_java",
   "//android_webview/nonembedded:icon_resources",

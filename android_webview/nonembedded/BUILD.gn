@@ -2,10 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//android_webview/system_webview_apk_tmpl.gni")
-import("//android_webview/variables.gni")
 import("//build/config/android/rules.gni")
-import("//build/config/chrome_build.gni")
 
 generate_jni("nonembedded_jni_headers") {
   sources = [
@@ -82,7 +79,6 @@ android_library("devui_java") {
   deps = [
     ":devui_resources",
     ":services_java",
-    ":system_webview_manifest",
     ":util_java",
     "//android_webview:common_aidl_java",
     "//android_webview:common_crash_java",
@@ -125,7 +121,6 @@ android_library("services_java") {
   ]
   deps = [
     ":devui_resources",
-    ":system_webview_manifest",
     "//android_webview:common_aidl_java",
     "//android_webview:common_crash_java",
     "//android_webview:common_java",
@@ -248,100 +243,4 @@ android_resources("devui_launcher_icon_resources") {
 android_resources("monochrome_devui_launcher_icon_resources") {
   sources = []
   android_manifest = "java/MonochromeDeveloperUiLauncherManifest.xml"
-}
-
-_webview_jinja_variables = [ "manifest_package=$system_webview_package_name" ] +
-                           webview_jinja_variables
-
-jinja_template("system_webview_manifest") {
-  input = "java/AndroidManifest.xml"
-  output = system_webview_android_manifest
-  variables = _webview_jinja_variables
-}
-
-_use_stable_package_name_for_trichrome =
-    use_stable_package_name_for_trichrome && android_channel == "beta"
-
-jinja_template("trichrome_webview_manifest") {
-  input = "java/AndroidManifest.xml"
-  output = trichrome_webview_android_manifest
-  if (_use_stable_package_name_for_trichrome) {
-    _version_code = trichrome_beta_version_code
-  } else {
-    _version_code = trichrome_version_code
-  }
-  variables = trichrome_jinja_variables + _webview_jinja_variables + [
-                "trichrome_version=$_version_code",
-                "library=libmonochrome.so",
-              ]
-}
-
-if (android_64bit_target_cpu) {
-  jinja_template("system_webview_64_manifest") {
-    input = "java/AndroidManifest.xml"
-    output = system_webview_64_android_manifest
-    variables = _webview_jinja_variables + [ "use32bitAbi=" ]
-  }
-
-  _use_high_package_name_for_trichrome = is_high_end_android
-
-  jinja_template("trichrome_webview_64_manifest") {
-    input = "java/AndroidManifest.xml"
-    output = trichrome_webview_64_android_manifest
-    if (_use_high_package_name_for_trichrome) {
-      if (_use_stable_package_name_for_trichrome) {
-        _version_code = trichrome_64_high_beta_version_code  # Deprecated.
-      } else {
-        _version_code = trichrome_64_high_version_code  # Deprecated.
-      }
-    } else {
-      if (_use_stable_package_name_for_trichrome) {
-        _version_code = trichrome_64_beta_version_code
-      } else {
-        _version_code = trichrome_64_version_code
-      }
-    }
-    variables = trichrome_jinja_variables + _webview_jinja_variables + [
-                  "use32bitAbi=",
-                  "trichrome_version=$_version_code",
-                  "library=libmonochrome_64.so",
-                ]
-  }
-
-  jinja_template("trichrome_webview_64_32_manifest") {
-    input = "java/AndroidManifest.xml"
-    output = trichrome_webview_64_32_android_manifest
-    if (_use_high_package_name_for_trichrome) {
-      if (_use_stable_package_name_for_trichrome) {
-        _version_code = trichrome_64_32_high_beta_version_code
-      } else {
-        _version_code = trichrome_64_32_high_version_code
-      }
-    } else {
-      if (_use_stable_package_name_for_trichrome) {
-        _version_code = trichrome_64_32_beta_version_code
-      } else {
-        _version_code = trichrome_64_32_version_code
-      }
-    }
-    variables = trichrome_jinja_variables + _webview_jinja_variables + [
-                  "use32bitAbi=",
-                  "trichrome_version=$_version_code",
-                  "library=libmonochrome_64.so",
-                ]
-  }
-
-  jinja_template("trichrome_webview_32_manifest") {
-    input = "java/AndroidManifest.xml"
-    output = trichrome_webview_32_android_manifest
-    if (_use_stable_package_name_for_trichrome) {
-      _version_code = trichrome_32_beta_version_code
-    } else {
-      _version_code = trichrome_32_version_code
-    }
-    variables = trichrome_jinja_variables + _webview_jinja_variables + [
-                  "trichrome_version=$_version_code",
-                  "library=libmonochrome.so",
-                ]
-  }
 }

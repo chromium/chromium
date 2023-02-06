@@ -2,12 +2,5 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/android/modules/buildflags.gni")
-
-use_32bit_abi_jinja_variable = "use32bitAbi=android:use32bitAbi=\"true\""
-
-monochrome_android_manifest_jinja_variables = [
-  "min_sdk_version=24",
-  "sandboxed_service_exported=true",
-  use_32bit_abi_jinja_variable,
-]
+# TODO(crbug.com/1411557): Delete this file.
+import("//chrome/android/chrome_public_apk_tmpl.gni")
