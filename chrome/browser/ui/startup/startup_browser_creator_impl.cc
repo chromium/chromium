@@ -433,12 +433,23 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
   const bool whats_new_enabled =
       whats_new::ShouldShowForState(local_state, promotional_tabs_enabled);
 
-  auto* privacy_sandbox_serivce =
+  auto* privacy_sandbox_service =
       PrivacySandboxServiceFactory::GetForProfile(profile_);
-  const bool privacy_sandbox_dialog_required =
-      privacy_sandbox_serivce &&
-      privacy_sandbox_serivce->GetRequiredPromptType() ==
-          PrivacySandboxService::PromptType::kConsent;
+
+  bool privacy_sandbox_dialog_required = false;
+  if (privacy_sandbox_service) {
+    switch (privacy_sandbox_service->GetRequiredPromptType()) {
+      case PrivacySandboxService::PromptType::kConsent:
+      case PrivacySandboxService::PromptType::kM1Consent:
+      case PrivacySandboxService::PromptType::kM1NoticeEEA:
+      case PrivacySandboxService::PromptType::kM1NoticeROW:
+        privacy_sandbox_dialog_required = true;
+        break;
+      case PrivacySandboxService::PromptType::kNotice:
+      case PrivacySandboxService::PromptType::kNone:
+        break;
+    }
+  }
 
   auto result = DetermineStartupTabs(
       StartupTabProviderImpl(), process_startup, is_incognito_or_guest,
