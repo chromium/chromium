@@ -8,6 +8,7 @@
 #include <string>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
@@ -48,6 +49,8 @@
 using autofill::PopupItemId;
 using views::BubbleBorder;
 
+namespace autofill {
+
 namespace {
 
 // By spec, dropdowns should always have a width which is a multiple of 12.
@@ -62,9 +65,38 @@ int GetContentsVerticalPadding() {
       DISTANCE_CONTENT_LIST_VERTICAL_SINGLE);
 }
 
-}  // namespace
+// Returns true if the item at `line_number` is a footer item.
+bool IsFooterItem(const std::vector<Suggestion>& suggestions,
+                  size_t line_number) {
+  if (line_number >= suggestions.size()) {
+    return false;
+  }
 
-namespace autofill {
+  switch (suggestions[line_number].frontend_id) {
+    case PopupItemId::POPUP_ITEM_ID_SCAN_CREDIT_CARD:
+    case PopupItemId::POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO:
+    case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY:
+    case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN:
+    case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN:
+    case PopupItemId::
+        POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE:
+    case PopupItemId::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS:
+    case PopupItemId::POPUP_ITEM_ID_USE_VIRTUAL_CARD:
+    case PopupItemId::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY:
+    case PopupItemId::POPUP_ITEM_ID_CLEAR_FORM:
+    case PopupItemId::POPUP_ITEM_ID_AUTOFILL_OPTIONS:
+    case PopupItemId::POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS:
+      return true;
+    // If the next item is a footer item, the separator also belongs to the
+    // footer.
+    case PopupItemId::POPUP_ITEM_ID_SEPARATOR:
+      return IsFooterItem(suggestions, line_number + 1);
+    default:
+      return false;
+  }
+}
+
+}  // namespace
 
 PopupViewViews::PopupViewViews(
     base::WeakPtr<AutofillPopupController> controller,
@@ -160,97 +192,7 @@ void PopupViewViews::CreateChildViews() {
   rows_.clear();
   RemoveAllChildViews();
 
-  int line_count = controller_->GetLineCount();
-
-  std::vector<int> footer_item_line_numbers;
-  footer_item_line_numbers.reserve(line_count);
-
-  // Convert a line number to a front end id.
-  auto line_number_to_frontend_id = [&](int line_number) {
-    return controller_->GetSuggestionAt(line_number).frontend_id;
-  };
-
-  // Returns true if the item at |line_number| is a footer item.
-  // Returns false if the |line_number| exceeds the line count.
-  auto is_footer_item = [&](int line_number) {
-    if (line_number >= line_count) {
-      return false;
-    }
-
-    switch (line_number_to_frontend_id(line_number)) {
-      case PopupItemId::POPUP_ITEM_ID_SCAN_CREDIT_CARD:
-      case PopupItemId::POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO:
-      case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY:
-      case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN:
-      case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN:
-      case PopupItemId::
-          POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE:
-      case PopupItemId::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS:
-      case PopupItemId::POPUP_ITEM_ID_USE_VIRTUAL_CARD:
-      case PopupItemId::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY:
-      case PopupItemId::POPUP_ITEM_ID_CLEAR_FORM:
-      case PopupItemId::POPUP_ITEM_ID_AUTOFILL_OPTIONS:
-      case PopupItemId::POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS:
-        return true;
-
-      default:
-        return false;
-    }
-  };
-
-  // Process and add all the suggestions which are in the primary container.
-  // Collect all footer line numbers such that those can be added to the footer
-  // container below. DCHECK that all non-footer items are added before any
-  // footer items.
-  for (int current_line_number = 0; current_line_number < line_count;
-       ++current_line_number) {
-    // Collect all footer item numbers for subsequent processing.
-    if (is_footer_item(current_line_number)) {
-      footer_item_line_numbers.emplace_back(current_line_number);
-      continue;
-    }
-
-    int frontend_id = line_number_to_frontend_id(current_line_number);
-    bool is_separator = frontend_id == PopupItemId::POPUP_ITEM_ID_SEPARATOR;
-
-    // Non-footer items must precede footer items.
-    // The separator item can be part of both the footer or the scroll view.
-    DCHECK(footer_item_line_numbers.empty() || is_separator);
-
-    switch (frontend_id) {
-      // The separator should be added to the scroll view only if the next item
-      // is not a footer item and the footer section has not been started yet.
-      case PopupItemId::POPUP_ITEM_ID_SEPARATOR:
-        if (footer_item_line_numbers.empty() &&
-            !is_footer_item(current_line_number + 1)) {
-          rows_.push_back(
-              PopupSeparatorView::Create(this, current_line_number));
-        } else {
-          footer_item_line_numbers.push_back(current_line_number);
-        }
-        break;
-
-      case PopupItemId::POPUP_ITEM_ID_MIXED_FORM_MESSAGE:
-      case PopupItemId::POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE:
-        rows_.push_back(PopupWarningView::Create(this, current_line_number));
-        break;
-
-      case PopupItemId::POPUP_ITEM_ID_USERNAME_ENTRY:
-      case PopupItemId::POPUP_ITEM_ID_PASSWORD_ENTRY:
-      case PopupItemId::POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY:
-      case PopupItemId::POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY:
-        rows_.push_back(PopupPasswordSuggestionView::Create(
-            this, current_line_number, frontend_id));
-        break;
-
-      // The default section contains most of the suggestions including
-      // addresses and credit cards.
-      default:
-        rows_.push_back(
-            PopupSuggestionView::Create(this, current_line_number, frontend_id,
-                                        controller_->GetPopupType()));
-    }
-  }
+  const std::vector<Suggestion> kSuggestions = controller_->GetSuggestions();
 
   SetBackground(
       views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
@@ -266,15 +208,51 @@ void PopupViewViews::CreateChildViews() {
           .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart)
           .Build());
 
-  if (!rows_.empty()) {
+  rows_.reserve(kSuggestions.size());
+  size_t current_line_number = 0u;
+  // Add the body rows, if there are any.
+  if (!kSuggestions.empty() && !IsFooterItem(kSuggestions, 0u)) {
     // Create a container to wrap the "regular" (non-footer) rows.
     std::unique_ptr<views::BoxLayoutView> body_container =
         views::Builder<views::BoxLayoutView>()
             .SetOrientation(views::BoxLayout::Orientation::kVertical)
             .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart)
             .Build();
-    for (raw_ptr<PopupRowView> row : rows_) {
-      body_container->AddChildView(row.get());
+
+    for (; current_line_number < kSuggestions.size() &&
+           !IsFooterItem(kSuggestions, current_line_number);
+         ++current_line_number) {
+      int frontend_id = kSuggestions[current_line_number].frontend_id;
+      switch (frontend_id) {
+        case PopupItemId::POPUP_ITEM_ID_SEPARATOR:
+          rows_.push_back(body_container->AddChildView(
+              PopupSeparatorView::Create(this, current_line_number)));
+          break;
+
+        case PopupItemId::POPUP_ITEM_ID_MIXED_FORM_MESSAGE:
+        case PopupItemId::
+            POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE:
+          rows_.push_back(body_container->AddChildView(
+              PopupWarningView::Create(this, current_line_number)));
+          break;
+
+        case PopupItemId::POPUP_ITEM_ID_USERNAME_ENTRY:
+        case PopupItemId::POPUP_ITEM_ID_PASSWORD_ENTRY:
+        case PopupItemId::POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY:
+        case PopupItemId::POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY:
+          rows_.push_back(
+              body_container->AddChildView(PopupPasswordSuggestionView::Create(
+                  this, current_line_number, frontend_id)));
+          break;
+
+        // The default section contains most of the suggestions including
+        // addresses and credit cards.
+        default:
+          rows_.push_back(
+              body_container->AddChildView(PopupSuggestionView::Create(
+                  this, current_line_number, frontend_id,
+                  controller_->GetPopupType())));
+      }
     }
 
     std::unique_ptr<views::ScrollView> scroll_view =
@@ -290,7 +268,7 @@ void PopupViewViews::CreateChildViews() {
     content_view->SetFlexForView(scroll_view_.get(), 1);
   }
 
-  if (footer_item_line_numbers.empty()) {
+  if (current_line_number >= kSuggestions.size()) {
     return;
   }
 
@@ -305,15 +283,18 @@ void PopupViewViews::CreateChildViews() {
               ui::kColorBubbleFooterBackground))
           .Build();
 
-  for (int line_number : footer_item_line_numbers) {
+  for (; current_line_number < kSuggestions.size(); ++current_line_number) {
+    DCHECK(IsFooterItem(kSuggestions, current_line_number));
     // The footer can contain either footer views or separator lines.
-    if (line_number_to_frontend_id(line_number) == POPUP_ITEM_ID_SEPARATOR) {
-      rows_.push_back(PopupSeparatorView::Create(this, line_number));
+    if (kSuggestions[current_line_number].frontend_id ==
+        POPUP_ITEM_ID_SEPARATOR) {
+      rows_.push_back(footer_container->AddChildView(
+          PopupSeparatorView::Create(this, current_line_number)));
     } else {
-      rows_.push_back(PopupFooterView::Create(
-          this, line_number, line_number_to_frontend_id(line_number)));
+      rows_.push_back(footer_container->AddChildView(PopupFooterView::Create(
+          this, current_line_number,
+          kSuggestions[current_line_number].frontend_id)));
     }
-    footer_container->AddChildView(rows_.back().get());
   }
 
   content_view->SetFlexForView(

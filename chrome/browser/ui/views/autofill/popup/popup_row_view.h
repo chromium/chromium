@@ -162,10 +162,10 @@ class PopupSuggestionView : public PopupItemView {
   PopupSuggestionView& operator=(const PopupSuggestionView&) = delete;
   ~PopupSuggestionView() override = default;
 
-  static PopupSuggestionView* Create(PopupViewViews* popup_view,
-                                     int line_number,
-                                     int frontend_id,
-                                     PopupType popup_type);
+  static std::unique_ptr<PopupSuggestionView> Create(PopupViewViews* popup_view,
+                                                     int line_number,
+                                                     int frontend_id,
+                                                     PopupType popup_type);
 
  protected:
   // PopupItemView:
@@ -192,9 +192,8 @@ class PopupPasswordSuggestionView : public PopupSuggestionView {
       delete;
   ~PopupPasswordSuggestionView() override = default;
 
-  static PopupPasswordSuggestionView* Create(PopupViewViews* popup_view,
-                                             int line_number,
-                                             int frontend_id);
+  static std::unique_ptr<PopupPasswordSuggestionView>
+  Create(PopupViewViews* popup_view, int line_number, int frontend_id);
 
  protected:
   // PopupItemView:
@@ -218,9 +217,9 @@ class PopupFooterView : public PopupItemView {
   METADATA_HEADER(PopupFooterView);
   ~PopupFooterView() override = default;
 
-  static PopupFooterView* Create(PopupViewViews* popup_view,
-                                 int line_number,
-                                 int frontend_id);
+  static std::unique_ptr<PopupFooterView> Create(PopupViewViews* popup_view,
+                                                 int line_number,
+                                                 int frontend_id);
 
  protected:
   // PopupItemView:
@@ -242,8 +241,8 @@ class PopupSeparatorView : public PopupRowView {
   PopupSeparatorView& operator=(const PopupSeparatorView&) = delete;
   ~PopupSeparatorView() override = default;
 
-  static PopupSeparatorView* Create(PopupViewViews* popup_view,
-                                    int line_number);
+  static std::unique_ptr<PopupSeparatorView> Create(PopupViewViews* popup_view,
+                                                    int line_number);
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -267,7 +266,8 @@ class PopupWarningView : public PopupRowView {
   PopupWarningView& operator=(const PopupWarningView&) = delete;
   ~PopupWarningView() override = default;
 
-  static PopupWarningView* Create(PopupViewViews* popup_view, int line_number);
+  static std::unique_ptr<PopupWarningView> Create(PopupViewViews* popup_view,
+                                                  int line_number);
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;

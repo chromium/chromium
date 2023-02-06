@@ -5,12 +5,14 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <type_traits>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -661,12 +663,13 @@ END_METADATA
 /************** PopupSuggestionView **************/
 
 // static
-PopupSuggestionView* PopupSuggestionView::Create(PopupViewViews* popup_view,
-                                                 int line_number,
-                                                 int frontend_id,
-                                                 PopupType popup_type) {
-  PopupSuggestionView* result =
-      new PopupSuggestionView(popup_view, line_number, frontend_id, popup_type);
+std::unique_ptr<PopupSuggestionView> PopupSuggestionView::Create(
+    PopupViewViews* popup_view,
+    int line_number,
+    int frontend_id,
+    PopupType popup_type) {
+  auto result = base::WrapUnique(new PopupSuggestionView(
+      popup_view, line_number, frontend_id, popup_type));
   result->Init();
   return result;
 }
@@ -763,12 +766,12 @@ END_METADATA
 
 /************** PopupPasswordSuggestionView **************/
 
-PopupPasswordSuggestionView* PopupPasswordSuggestionView::Create(
-    PopupViewViews* popup_view,
-    int line_number,
-    int frontend_id) {
-  PopupPasswordSuggestionView* result =
-      new PopupPasswordSuggestionView(popup_view, line_number, frontend_id);
+std::unique_ptr<PopupPasswordSuggestionView>
+PopupPasswordSuggestionView::Create(PopupViewViews* popup_view,
+                                    int line_number,
+                                    int frontend_id) {
+  auto result = base::WrapUnique(
+      new PopupPasswordSuggestionView(popup_view, line_number, frontend_id));
   result->Init();
   return result;
 }
@@ -840,11 +843,12 @@ END_METADATA
 /************** PopupFooterView **************/
 
 // static
-PopupFooterView* PopupFooterView::Create(PopupViewViews* popup_view,
-                                         int line_number,
-                                         int frontend_id) {
-  PopupFooterView* result =
-      new PopupFooterView(popup_view, line_number, frontend_id);
+std::unique_ptr<PopupFooterView> PopupFooterView::Create(
+    PopupViewViews* popup_view,
+    int line_number,
+    int frontend_id) {
+  auto result = base::WrapUnique(
+      new PopupFooterView(popup_view, line_number, frontend_id));
   result->Init();
   return result;
 }
@@ -926,9 +930,11 @@ END_METADATA
 /************** PopupSeparatorView **************/
 
 // static
-PopupSeparatorView* PopupSeparatorView::Create(PopupViewViews* popup_view,
-                                               int line_number) {
-  PopupSeparatorView* result = new PopupSeparatorView(popup_view, line_number);
+std::unique_ptr<PopupSeparatorView> PopupSeparatorView::Create(
+    PopupViewViews* popup_view,
+    int line_number) {
+  auto result =
+      base::WrapUnique(new PopupSeparatorView(popup_view, line_number));
   result->Init();
   return result;
 }
@@ -962,9 +968,10 @@ END_METADATA
 /************** PopupWarningView **************/
 
 // static
-PopupWarningView* PopupWarningView::Create(PopupViewViews* popup_view,
-                                           int line_number) {
-  PopupWarningView* result = new PopupWarningView(popup_view, line_number);
+std::unique_ptr<PopupWarningView> PopupWarningView::Create(
+    PopupViewViews* popup_view,
+    int line_number) {
+  auto result = base::WrapUnique(new PopupWarningView(popup_view, line_number));
   result->Init();
   return result;
 }
