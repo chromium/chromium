@@ -1700,7 +1700,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.IncognitoReauth.PromoActionType"
+<histogram name="Android.IncognitoReauth.PromoAcceptedOrDismissed"
     enum="IncognitoReauthPromoActionType" expires_after="M115">
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
