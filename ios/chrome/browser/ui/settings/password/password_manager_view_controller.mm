@@ -1806,10 +1806,12 @@ NSInteger kTrailingSymbolSize = 18;
               self.insecurePasswordsCount));
       if (UseSymbols()) {
         _passwordProblemsItem.trailingImage =
-            DefaultSymbolTemplateWithPointSize(kWarningFillSymbol,
+            DefaultSymbolTemplateWithPointSize(IsPasswordGroupingEnabled()
+                                                   ? kErrorCircleFillSymbol
+                                                   : kWarningFillSymbol,
                                                kTrailingSymbolSize);
-        _passwordProblemsItem.trailingImageTintColor =
-            [UIColor colorNamed:kRedColor];
+        _passwordProblemsItem.trailingImageTintColor = [UIColor
+            colorNamed:IsPasswordGroupingEnabled() ? kRed500Color : kRedColor];
       } else {
         _passwordProblemsItem.trailingImage =
             [UIImage imageNamed:@"round_settings_unsafe_state"];

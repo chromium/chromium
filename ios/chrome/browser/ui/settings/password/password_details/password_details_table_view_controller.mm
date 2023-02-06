@@ -126,6 +126,9 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 // If YES, the password details are shown without requiring any authentication.
 @property(nonatomic, assign) BOOL showPasswordWithoutAuth;
 
+// YES if this is the details view for a blocked site (never saved password).
+@property(nonatomic, assign) BOOL isBlockedSite;
+
 // Stores the user email if the user is authenticated amd syncing passwords.
 @property(nonatomic, readonly) NSString* syncingUserEmail;
 
@@ -174,6 +177,11 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   // reauthentication.
   if (![self hasAtLeastOnePassword]) {
     [super editButtonPressed];
+
+    // Reload view to show the delete button.
+    if (IsPasswordGroupingEnabled()) {
+      [self reloadData];
+    }
     return;
   }
 
@@ -337,7 +345,8 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
       IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED);
   item.image = [self compromisedIcon];
   if (UseSymbols()) {
-    item.imageViewTintColor = [UIColor colorNamed:kRedColor];
+    item.imageViewTintColor = [UIColor
+        colorNamed:IsPasswordGroupingEnabled() ? kRed500Color : kRedColor];
   }
   return item;
 }
@@ -346,7 +355,9 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
     (PasswordDetails*)passwordDetails {
   TableViewTextButtonItem* item = [[TableViewTextButtonItem alloc]
       initWithType:PasswordDetailsItemTypeDeleteButton];
-  item.buttonText = l10n_util::GetNSString(IDS_IOS_CONFIRM_PASSWORD_DELETION);
+  item.buttonText = l10n_util::GetNSString(
+      self.isBlockedSite ? IDS_IOS_DELETE_ACTION_TITLE
+                         : IDS_IOS_CONFIRM_PASSWORD_DELETION);
   item.buttonContentHorizontalAlignment =
       UIControlContentHorizontalAlignmentLeft;
   item.boldButtonText = NO;
@@ -549,6 +560,10 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   [self reloadData];
 }
 
+- (void)setIsBlockedSite:(BOOL)isBlockedSite {
+  _isBlockedSite = isBlockedSite;
+}
+
 #pragma mark - TableViewTextEditItemDelegate
 
 - (void)tableViewItemDidBeginEditing:(TableViewTextEditItem*)tableViewItem {
@@ -608,7 +623,9 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 // Applies tint colour and resizes image.
 - (UIImage*)compromisedIcon {
   if (UseSymbols()) {
-    return DefaultSymbolTemplateWithPointSize(kWarningFillSymbol,
+    return DefaultSymbolTemplateWithPointSize(IsPasswordGroupingEnabled()
+                                                  ? kErrorCircleFillSymbol
+                                                  : kWarningFillSymbol,
                                               kCompromisedPasswordSymbolSize);
   }
   return [UIImage imageNamed:@"round_settings_unsafe_state"];
@@ -1096,10 +1113,15 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   int position = buttonView.tag;
   DCHECK(position >= 0);
   DCHECK(self.handler);
-  [self.handler
-      showPasswordDeleteDialogWithPasswordDetails:self.passwords[position]
-                                       anchorView:buttonView
-                                       anchorRect:buttonView.frame];
+  if (self.isBlockedSite) {
+    [self.handler showPasswordDeleteDialogWithOrigin:nil
+                                 compromisedPassword:NO];
+  } else {
+    [self.handler
+        showPasswordDeleteDialogWithPasswordDetails:self.passwords[position]
+                                         anchorView:buttonView
+                                         anchorRect:buttonView.frame];
+  }
 }
 
 #pragma mark - UIResponder

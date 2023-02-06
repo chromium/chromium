@@ -17,6 +17,10 @@
 - (void)setPasswords:(NSArray<PasswordDetails*>*)passwords
             andTitle:(NSString*)title;
 
+// Determine if this is a details view for a blocked site (never saved
+// password).
+- (void)setIsBlockedSite:(BOOL)isBlockedSite;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_CONSUMER_H_
