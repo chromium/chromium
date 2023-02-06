@@ -73,6 +73,10 @@ function initGA(
   // By default GA only accepts "http://" and "https://" protocol. Bypass the
   // check here since we are "chrome-extension://".
   window.ga('set', 'checkProtocolTask', null);
+
+  // GA automatically derives geographical data from the IP address. Truncate
+  // the IP address to avoid violating privacy policy.
+  window.ga('set', 'anonymizeIp', true);
 }
 
 /**
