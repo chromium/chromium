@@ -18,12 +18,10 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
-#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/unused_site_permissions_service.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace {
 // Reflects the maximum number of days between a permissions being revoked and
@@ -59,6 +57,7 @@ void SiteSettingsPermissionsHandler::HandleGetRevokedUnusedSitePermissionsList(
 void SiteSettingsPermissionsHandler::HandleAllowPermissionsAgainForUnusedSite(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
+  CHECK(args[0].is_string());
   const std::string& origin_str = args[0].GetString();
 
   permissions::UnusedSitePermissionsService* service =
@@ -84,6 +83,22 @@ void SiteSettingsPermissionsHandler::HandleAllowPermissionsAgainForUnusedSite(
 }
 
 void SiteSettingsPermissionsHandler::
+    HandleUndoAllowPermissionsAgainForUnusedSite(
+        const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  CHECK(args[0].is_dict());
+
+  auto [origin, permissions, constraints] =
+      GetUnusedSitePermissionsFromDict(args[0].GetDict());
+  permissions::UnusedSitePermissionsService* service =
+      UnusedSitePermissionsServiceFactory::GetForProfile(profile_);
+
+  service->UndoRegrantPermissionsForOrigin(permissions, constraints, origin);
+
+  SendUnusedSitePermissionsReviewList();
+}
+
+void SiteSettingsPermissionsHandler::
     HandleAcknowledgeRevokedUnusedSitePermissionsList(
         const base::Value::List& args) {
   permissions::UnusedSitePermissionsService* service =
@@ -103,35 +118,13 @@ void SiteSettingsPermissionsHandler::
   permissions::UnusedSitePermissionsService* service =
       UnusedSitePermissionsServiceFactory::GetForProfile(profile_);
 
-  for (const auto& unused_site_permissions : unused_site_permissions_list) {
-    CHECK(unused_site_permissions.is_dict());
-    const std::string* origin_str =
-        unused_site_permissions.GetDict().FindString(site_settings::kOrigin);
-    CHECK(origin_str);
-    const auto url = GURL(*origin_str);
-    CHECK(url.is_valid());
+  for (const auto& unused_site_permissions_js : unused_site_permissions_list) {
+    CHECK(unused_site_permissions_js.is_dict());
+    auto [origin, permissions, constraints] =
+        GetUnusedSitePermissionsFromDict(unused_site_permissions_js.GetDict());
 
-    const base::Value::List* permissions =
-        unused_site_permissions.GetDict().FindList(site_settings::kPermissions);
-    CHECK(permissions);
-    std::list<ContentSettingsType> permission_types;
-    for (const auto& permission : *permissions) {
-      CHECK(permission.is_string());
-      const std::string& type = permission.GetString();
-      permission_types.push_back(
-          site_settings::ContentSettingsTypeFromGroupName(type));
-    }
-
-    const base::Value* js_expiration =
-        unused_site_permissions.GetDict().Find(kExpirationKey);
-    CHECK(js_expiration);
-    auto expiration = base::ValueToTime(js_expiration);
-
-    const content_settings::ContentSettingConstraints constraint{
-        .expiration = *expiration};
-
-    service->StorePermissionInRevokedPermissionSetting(
-        permission_types, constraint, url::Origin::Create(url));
+    service->StorePermissionInRevokedPermissionSetting(permissions, constraints,
+                                                       origin);
   }
 
   SendUnusedSitePermissionsReviewList();
@@ -184,6 +177,40 @@ SiteSettingsPermissionsHandler::PopulateUnusedSitePermissionsData() {
   return result;
 }
 
+std::tuple<url::Origin,
+           std::set<ContentSettingsType>,
+           content_settings::ContentSettingConstraints>
+SiteSettingsPermissionsHandler::GetUnusedSitePermissionsFromDict(
+    const base::Value::Dict& unused_site_permissions) {
+  const std::string* origin_str =
+      unused_site_permissions.FindString(site_settings::kOrigin);
+  CHECK(origin_str);
+  const auto url = GURL(*origin_str);
+  CHECK(url.is_valid());
+  const url::Origin origin = url::Origin::Create(url);
+
+  const base::Value::List* permissions =
+      unused_site_permissions.FindList(site_settings::kPermissions);
+  CHECK(permissions);
+  std::set<ContentSettingsType> permission_types;
+  for (const auto& permission : *permissions) {
+    CHECK(permission.is_string());
+    const std::string& type = permission.GetString();
+    permission_types.insert(
+        site_settings::ContentSettingsTypeFromGroupName(type));
+  }
+
+  const base::Value* js_expiration =
+      unused_site_permissions.Find(kExpirationKey);
+  CHECK(js_expiration);
+  auto expiration = base::ValueToTime(js_expiration);
+
+  const content_settings::ContentSettingConstraints constraints{
+      .expiration = *expiration};
+
+  return std::make_tuple(origin, permission_types, constraints);
+}
+
 void SiteSettingsPermissionsHandler::RegisterMessages() {
   // Usage of base::Unretained(this) is safe, because web_ui() owns `this` and
   // won't release ownership until destruction.
@@ -196,6 +223,11 @@ void SiteSettingsPermissionsHandler::RegisterMessages() {
       "allowPermissionsAgainForUnusedSite",
       base::BindRepeating(&SiteSettingsPermissionsHandler::
                               HandleAllowPermissionsAgainForUnusedSite,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "undoAllowPermissionsAgainForUnusedSite",
+      base::BindRepeating(&SiteSettingsPermissionsHandler::
+                              HandleUndoAllowPermissionsAgainForUnusedSite,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "acknowledgeRevokedUnusedSitePermissionsList",

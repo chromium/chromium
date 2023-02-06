@@ -191,6 +191,21 @@ void UnusedSitePermissionsService::RegrantPermissionsForOrigin(
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, {});
 }
 
+void UnusedSitePermissionsService::UndoRegrantPermissionsForOrigin(
+    const std::set<ContentSettingsType> permissions,
+    const absl::optional<content_settings::ContentSettingConstraints>
+        constraint,
+    const url::Origin origin) {
+  for (const auto& permission : permissions) {
+    hcsm_->SetContentSettingCustomScope(
+        ContentSettingsPattern::FromURLNoWildcard(origin.GetURL()),
+        ContentSettingsPattern::Wildcard(), permission,
+        ContentSetting::CONTENT_SETTING_DEFAULT);
+  }
+
+  StorePermissionInRevokedPermissionSetting(permissions, constraint, origin);
+}
+
 void UnusedSitePermissionsService::ClearRevokedPermissionsList() {
   ContentSettingsForOneType settings;
   hcsm_->GetSettingsForOneType(
@@ -293,7 +308,7 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
     ContentSettingsPattern secondary_pattern =
         unused_site_permissions.front().source.secondary_pattern;
 
-    std::list<ContentSettingsType> revoked_permissions;
+    std::set<ContentSettingsType> revoked_permissions;
     for (auto permission_itr = unused_site_permissions.begin();
          permission_itr != unused_site_permissions.end();) {
       const ContentSettingEntry& entry = *permission_itr;
@@ -315,7 +330,7 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
       if (entry.source.metadata.last_visited < threshold &&
           entry.source.secondary_pattern ==
               ContentSettingsPattern::Wildcard()) {
-        revoked_permissions.push_back(entry.type);
+        revoked_permissions.insert(entry.type);
         hcsm_->SetContentSettingCustomScope(
             entry.source.primary_pattern, entry.source.secondary_pattern,
             entry.type, ContentSetting::CONTENT_SETTING_DEFAULT);
@@ -351,7 +366,7 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
 }
 
 void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
-    const std::list<ContentSettingsType> permissions,
+    const std::set<ContentSettingsType> permissions,
     const absl::optional<content_settings::ContentSettingConstraints>
         constraint,
     const url::Origin origin) {
@@ -364,7 +379,7 @@ void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
 }
 
 void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
-    const std::list<ContentSettingsType> permissions,
+    const std::set<ContentSettingsType> permissions,
     const absl::optional<content_settings::ContentSettingConstraints>
         constraint,
     const ContentSettingsPattern& primary_pattern,

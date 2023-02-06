@@ -30,6 +30,8 @@
 
 constexpr char kUnusedTestSite[] = "https://example1.com";
 constexpr char kUsedTestSite[] = "https://example2.com";
+constexpr ContentSettingsType kUnusedPermission =
+    ContentSettingsType::GEOLOCATION;
 
 class SiteSettingsPermissionsHandlerTest : public testing::Test {
  public:
@@ -93,6 +95,18 @@ class SiteSettingsPermissionsHandlerTest : public testing::Test {
     }
   }
 
+  void ExpectRevokedPermission() {
+    ContentSettingsForOneType revoked_permissions_list;
+    hcsm()->GetSettingsForOneType(
+        ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+        &revoked_permissions_list);
+    EXPECT_EQ(1U, revoked_permissions_list.size());
+    EXPECT_EQ(
+        ContentSetting::CONTENT_SETTING_ASK,
+        hcsm()->GetContentSetting(GURL(kUnusedTestSite), GURL(kUnusedTestSite),
+                                  kUnusedPermission));
+  }
+
   TestingProfile* profile() { return profile_.get(); }
   content::TestWebUI* web_ui() { return &web_ui_; }
   SiteSettingsPermissionsHandler* handler() { return handler_.get(); }
@@ -133,6 +147,9 @@ TEST_F(SiteSettingsPermissionsHandlerTest,
   // Advance 14 days; this will be the expected histogram sample.
   clock()->Advance(base::Days(14));
   base::HistogramTester histogram_tester;
+  base::Value::List initial_unused_site_permissions =
+      handler()->PopulateUnusedSitePermissionsData();
+  ExpectRevokedPermission();
 
   // Allow the revoked permission for the unused site again.
   base::Value::List args;
@@ -157,7 +174,12 @@ TEST_F(SiteSettingsPermissionsHandlerTest,
   EXPECT_EQ(
       ContentSetting::CONTENT_SETTING_ALLOW,
       hcsm()->GetContentSetting(GURL(kUnusedTestSite), GURL(kUnusedTestSite),
-                                ContentSettingsType::GEOLOCATION));
+                                kUnusedPermission));
+
+  // Undoing restores the initial state.
+  handler()->HandleUndoAllowPermissionsAgainForUnusedSite(
+      std::move(initial_unused_site_permissions));
+  ExpectRevokedPermission();
 }
 
 TEST_F(SiteSettingsPermissionsHandlerTest,
