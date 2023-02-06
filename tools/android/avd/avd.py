@@ -171,7 +171,7 @@ def main(raw_args):
       '--debug-tags',
       help='Comma-separated list of debug tags. This can be used to enable or '
       'disable debug messages from specific parts of the emulator, e.g. '
-      'init, snapshot. See "emulator -help-debug-tags" '
+      'init,snapshot. See "emulator -help-debug-tags" '
       'for a full list of tags.')
   subparser.add_argument(
       '--require-fast-start',

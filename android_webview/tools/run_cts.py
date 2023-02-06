@@ -487,6 +487,10 @@ def main():
       help='Path to the avd config textpb. '
            '(See //tools/android/avd/proto for message definition'
            ' and existing textpb files.)')
+  # Emulator log will be routed to stdout when "--emulator-debug-tags" is set
+  # without an output_manager.
+  # Mark this arg as unused for run_cts to avoid dumping too much swarming log.
+  parser.add_argument('--emulator-debug-tags', help='Unused')
   # The CTS config and archive paths are suitable defaults that
   # normally won't need to change, this is available for if we
   # want to re-use the run_cts.py script with alternative configurations.

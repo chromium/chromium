@@ -353,6 +353,12 @@ def AddEmulatorOptions(parser):
       action='store_true',
       default=False,
       help='Enable graphical window display on the emulator.')
+  parser.add_argument(
+      '--emulator-debug-tags',
+      help='Comma-separated list of debug tags. This can be used to enable or '
+      'disable debug messages from specific parts of the emulator, e.g. '
+      'init,snapshot. See "emulator -help-debug-tags" '
+      'for a full list of tags.')
 
 
 def AddGTestOptions(parser):
