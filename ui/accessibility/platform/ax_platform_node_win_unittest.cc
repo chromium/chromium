@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/auto_reset.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
@@ -17,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
@@ -7831,11 +7833,12 @@ TEST_F(AXPlatformNodeWinTest, DISABLED_BulkFetch) {
 
   // Note: base::JSONReader is fine for unit tests, but production code
   // that parses untrusted JSON should always use DataDecoder instead.
-  absl::optional<base::Value> result =
+  absl::optional<base::Value> result_val =
       base::JSONReader::Read(response, base::JSON_ALLOW_TRAILING_COMMAS);
-  ASSERT_TRUE(result);
-  ASSERT_TRUE(result->FindKey("role"));
-  ASSERT_EQ("scrollBar", result->FindKey("role")->GetString());
+  ASSERT_TRUE(result_val);
+  const base::Value::Dict& result = result_val->GetDict();
+  ASSERT_TRUE(result.contains("role"));
+  ASSERT_EQ("scrollBar", CHECK_DEREF(result.FindString("role")));
 }
 
 TEST_F(AXPlatformNodeWinTest, AsyncHitTest) {
