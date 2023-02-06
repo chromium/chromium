@@ -1339,7 +1339,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4282346679996504092">Alerts for this product have been turned off and the bookmark removed</translation>
 <translation id="4285498937028063278">Unpin</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{This card has been saved in your Google Account}other{These cards have been saved in your Google Account}}</translation>
-<translation id="4287495839370498922">Enhanced ad privacy in Chrome</translation>
+<translation id="4287495839370498922">Enhanced ads privacy in Chrome</translation>
 <translation id="4287885627794386150">Eligible for trial but not active</translation>
 <translation id="4297502707443874121">Thumbnail for page <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Investing</translation>
@@ -1782,7 +1782,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5337569431717511221">Set Chrome as default browser button, press Enter to set Chrome as the system's default browser</translation>
 <translation id="5340250774223869109">Application is blocked</translation>
 <translation id="534295439873310000">NFC devices</translation>
-<translation id="5344522958567249764">Manage ad privacy</translation>
+<translation id="5344522958567249764">Manage ads privacy</translation>
 <translation id="5344579389779391559">This page may try to charge you money</translation>
 <translation id="5347645913823149105">Customise fonts in Chrome button, press Enter to customise font sizes and typefaces in Chrome</translation>
 <translation id="5355557959165512791">You cannot visit <ph name="SITE" /> right now because its certificate has been revoked. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
@@ -2109,7 +2109,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6196640612572343990">Block third-party cookies</translation>
 <translation id="6197648101609735209">89 mm x 89 mm</translation>
 <translation id="6203231073485539293">Check your Internet connection</translation>
-<translation id="6205314730813004066">Ad privacy</translation>
+<translation id="6205314730813004066">Ads privacy</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
 <translation id="6218753634732582820">Remove address from Chromium?</translation>
 <translation id="622039917539443112">Parallel fold</translation>

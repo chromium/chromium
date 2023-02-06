@@ -231,7 +231,7 @@
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5335288049665977812">Разрешить сайтам использовать JavaScript (рекомендуется)</translation>
 <translation id="534295439873310000">Устройства с NFC</translation>
-<translation id="5344522958567249764">Настройки рекламы и конфиденциальности</translation>
+<translation id="5344522958567249764">Настройки конфиденциальности в рекламе</translation>
 <translation id="5354152178998424783">Будут удалены данные и файлы cookie (всего <ph name="DATASIZE" />), сохраненные сайтами.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и ещё 1)}one{(и ещё #)}few{(и ещё #)}many{(и ещё #)}other{(и ещё #)}}</translation>
 <translation id="5403592356182871684">Имена</translation>
@@ -280,7 +280,7 @@
 <translation id="6181444274883918285">Добавить исключение</translation>
 <translation id="6192792657125177640">Исключения</translation>
 <translation id="6196640612572343990">Блокировать сторонние файлы cookie</translation>
-<translation id="6205314730813004066">Реклама и конфиденциальность</translation>
+<translation id="6205314730813004066">Конфиденциальность в рекламе</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />: параметры</translation>
 <translation id="6231752747840485235">Удалить приложение "<ph name="APP_NAME" />"?</translation>
 <translation id="6262191102408817757">На основе данных последней использованной вкладки</translation>
