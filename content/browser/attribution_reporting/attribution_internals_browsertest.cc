@@ -47,6 +47,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/net_errors.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -268,10 +269,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               .SetSourceEventId(std::numeric_limits<uint64_t>::max())
               .SetAttributionLogic(StoredSource::AttributionLogic::kNever)
               .SetDebugKey(19)
-              .SetDestinationOrigins({
-                  *SuitableOrigin::Create(GURL("https://x.a.test")),
-                  *SuitableOrigin::Create(GURL("https://y.a.test")),
-                  *SuitableOrigin::Create(GURL("https://z.b.test")),
+              .SetDestinationSites({
+                  net::SchemefulSite::Deserialize("https://a.test"),
+                  net::SchemefulSite::Deserialize("https://b.test"),
               })
               .BuildStored(),
           SourceBuilder(now + base::Hours(1))

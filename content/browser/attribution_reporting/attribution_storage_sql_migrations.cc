@@ -547,6 +547,20 @@ bool MigrateToVersion45(sql::Database* db, sql::MetaTable* meta_table) {
   return transaction.Commit();
 }
 
+bool MigrateToVersion46(sql::Database* db, sql::MetaTable* meta_table) {
+  sql::Transaction transaction(db);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  if (!db->Execute("ALTER TABLE sources DROP COLUMN destination_origin")) {
+    return false;
+  }
+
+  meta_table->SetVersionNumber(46);
+  return transaction.Commit();
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
@@ -606,6 +620,11 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
   }
   if (meta_table->GetVersionNumber() == 44) {
     if (!MigrateToVersion45(db, meta_table)) {
+      return false;
+    }
+  }
+  if (meta_table->GetVersionNumber() == 45) {
+    if (!MigrateToVersion46(db, meta_table)) {
       return false;
     }
   }

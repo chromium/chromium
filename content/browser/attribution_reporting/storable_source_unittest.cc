@@ -10,6 +10,7 @@
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -19,7 +20,7 @@ namespace {
 using ::attribution_reporting::SuitableOrigin;
 
 TEST(StorableSourceTest, ReportWindows) {
-  const auto destination = *SuitableOrigin::Deserialize("https://dest.test");
+  const auto destination = net::SchemefulSite::Deserialize("https://dest.test");
 
   const auto reporting_origin =
       *SuitableOrigin::Deserialize("https://report.test");

@@ -104,19 +104,23 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
 bool RateLimitTable::AddRateLimitForSource(sql::Database* db,
                                            const StoredSource& source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return AddRateLimit(db, source, /*trigger_time=*/absl::nullopt);
+  return AddRateLimit(db, source, /*trigger_time=*/absl::nullopt,
+                      /*context_origin=*/source.common_info().source_origin());
 }
 
 bool RateLimitTable::AddRateLimitForAttribution(
     sql::Database* db,
     const AttributionInfo& attribution_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return AddRateLimit(db, attribution_info.source, attribution_info.time);
+  return AddRateLimit(db, attribution_info.source, attribution_info.time,
+                      attribution_info.context_origin);
 }
 
-bool RateLimitTable::AddRateLimit(sql::Database* db,
-                                  const StoredSource& source,
-                                  absl::optional<base::Time> trigger_time) {
+bool RateLimitTable::AddRateLimit(
+    sql::Database* db,
+    const StoredSource& source,
+    absl::optional<base::Time> trigger_time,
+    const attribution_reporting::SuitableOrigin& context_origin) {
   const CommonSourceInfo& common_info = source.common_info();
 
   // Only delete expired rate limits periodically to avoid excessive DB
@@ -133,15 +137,12 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
   }
 
   Scope scope;
-  const attribution_reporting::SuitableOrigin* context_origin;
   base::Time source_expiry_or_attribution_time;
   if (trigger_time.has_value()) {
     scope = Scope::kAttribution;
-    context_origin = &common_info.destination_origin();
     source_expiry_or_attribution_time = *trigger_time;
   } else {
     scope = Scope::kSource;
-    context_origin = &common_info.source_origin();
     source_expiry_or_attribution_time = common_info.expiry_time();
   }
 
@@ -155,8 +156,8 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
   statement.BindInt(0, static_cast<int>(scope));
   statement.BindInt64(1, *source.source_id());
   statement.BindString(2, common_info.SourceSite().Serialize());
-  statement.BindString(3, common_info.DestinationSite().Serialize());
-  statement.BindString(4, context_origin->Serialize());
+  statement.BindString(3, common_info.destination_site().Serialize());
+  statement.BindString(4, context_origin.Serialize());
   statement.BindString(5, common_info.reporting_origin().Serialize());
   statement.BindTime(6, common_info.source_time());
   statement.BindTime(7, source_expiry_or_attribution_time);
@@ -183,7 +184,7 @@ RateLimitResult RateLimitTable::AttributionAllowedForAttributionLimit(
 
   sql::Statement statement(db->GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kRateLimitAttributionAllowedSql));
-  statement.BindString(0, common_info.DestinationSite().Serialize());
+  statement.BindString(0, common_info.destination_site().Serialize());
   statement.BindString(1, common_info.SourceSite().Serialize());
   statement.BindString(2, common_info.reporting_origin().Serialize());
   statement.BindTime(3, min_timestamp);
@@ -227,7 +228,7 @@ RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
   statement.BindTime(2, common_info.source_time());
 
   const std::string serialized_destination_site =
-      common_info.DestinationSite().Serialize();
+      common_info.destination_site().Serialize();
 
   const int limit = delegate_->GetMaxDestinationsPerSourceSiteReportingOrigin();
   DCHECK_GT(limit, 0);
@@ -294,7 +295,7 @@ RateLimitResult RateLimitTable::AllowedForReportingOriginLimit(
       SQL_FROM_HERE, attribution_queries::kRateLimitSelectReportingOriginsSql));
   statement.BindInt(0, static_cast<int>(scope));
   statement.BindString(1, common_info.SourceSite().Serialize());
-  statement.BindString(2, common_info.DestinationSite().Serialize());
+  statement.BindString(2, common_info.destination_site().Serialize());
   statement.BindTime(3, min_timestamp);
 
   base::flat_set<std::string> reporting_origins;

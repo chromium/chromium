@@ -6,12 +6,21 @@
 
 #include <utility>
 
+#include "components/attribution_reporting/suitable_origin.h"
+
 namespace content {
 
-AttributionInfo::AttributionInfo(StoredSource source,
-                                 base::Time time,
-                                 absl::optional<uint64_t> debug_key)
-    : source(std::move(source)), time(time), debug_key(debug_key) {}
+// TODO(apaseltiner): DCHECK that `context_origin` is valid for `source` and
+// likewise non-DCHECK that this is true when reading reports out of storage.
+AttributionInfo::AttributionInfo(
+    StoredSource source,
+    base::Time time,
+    absl::optional<uint64_t> debug_key,
+    attribution_reporting::SuitableOrigin context_origin)
+    : source(std::move(source)),
+      time(time),
+      debug_key(debug_key),
+      context_origin(std::move(context_origin)) {}
 
 AttributionInfo::~AttributionInfo() = default;
 

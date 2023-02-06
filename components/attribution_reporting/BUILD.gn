@@ -52,13 +52,11 @@ component("attribution_reporting") {
     "//base",
     "//components/aggregation_service",
     "//components/aggregation_service:mojom",
+    "//net",
     "//url",
   ]
 
-  deps = [
-    "//net",
-    "//services/network/public/cpp",
-  ]
+  deps = [ "//services/network/public/cpp" ]
 
   defines = [ "IS_ATTRIBUTION_REPORTING_IMPL" ]
 }
@@ -165,6 +163,7 @@ mojom("registration_mojom") {
   deps = [
     "//components/aggregation_service:mojom",
     "//mojo/public/mojom/base",
+    "//services/network/public/mojom:mojom_schemeful_site",
     "//url/mojom:url_mojom_origin",
   ]
 
@@ -272,6 +271,8 @@ component("registration_mojom_traits") {
     "//base",
     "//components/aggregation_service:mojom_shared",
     "//mojo/public/cpp/base:shared_typemap_traits",
+    "//net",
+    "//services/network/public/mojom",
     "//url",
     "//url/mojom:mojom_traits",
   ]

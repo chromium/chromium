@@ -31,6 +31,7 @@
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "net/base/schemeful_site.h"
 #include "net/http/http_response_headers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -456,7 +457,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
     attribution_reporting::SourceRegistration data) {
   // This is validated by the Mojo typemapping.
   DCHECK(reporting_origin.IsValid());
-  DCHECK(data.destination.IsValid());
+  DCHECK(attribution_reporting::IsSitePotentiallySuitable(data.destination));
 
   ReceiverContext& context = receivers_.current_context();
 

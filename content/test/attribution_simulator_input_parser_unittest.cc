@@ -18,6 +18,7 @@
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -116,8 +117,8 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
             *SuitableOrigin::Deserialize("https://a.r.test"));
   EXPECT_EQ(source1->source.common_info().source_origin(),
             *SuitableOrigin::Deserialize("https://a.s.test"));
-  EXPECT_EQ(source1->source.common_info().destination_origin(),
-            *SuitableOrigin::Deserialize("https://a.d.test"));
+  EXPECT_EQ(source1->source.common_info().destination_site(),
+            net::SchemefulSite::Deserialize("https://d.test"));
   EXPECT_FALSE(source1->source.is_within_fenced_frame());
   EXPECT_TRUE(source1->debug_permission);
 
@@ -129,8 +130,8 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
             *SuitableOrigin::Deserialize("https://b.r.test"));
   EXPECT_EQ(source2->source.common_info().source_origin(),
             *SuitableOrigin::Deserialize("https://b.s.test"));
-  EXPECT_EQ(source2->source.common_info().destination_origin(),
-            *SuitableOrigin::Deserialize("https://b.d.test"));
+  EXPECT_EQ(source2->source.common_info().destination_site(),
+            net::SchemefulSite::Deserialize("https://d.test"));
   EXPECT_FALSE(source2->source.is_within_fenced_frame());
   EXPECT_FALSE(source2->debug_permission);
 }

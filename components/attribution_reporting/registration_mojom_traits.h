@@ -25,6 +25,8 @@
 #include "components/attribution_reporting/trigger_registration.h"
 #include "mojo/public/cpp/base/int128_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "net/base/schemeful_site.h"
+#include "services/network/public/cpp/schemeful_site_mojom_traits.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/mojom/origin_mojom_traits.h"
@@ -119,7 +121,7 @@ template <>
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
                  attribution_reporting::SourceRegistration> {
-  static const attribution_reporting::SuitableOrigin& destination(
+  static const net::SchemefulSite& destination(
       const attribution_reporting::SourceRegistration& source) {
     return source.destination;
   }

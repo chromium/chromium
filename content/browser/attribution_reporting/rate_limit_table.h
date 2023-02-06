@@ -18,6 +18,10 @@
 #include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace attribution_reporting {
+class SuitableOrigin;
+}  // namespace attribution_reporting
+
 namespace sql {
 class Database;
 }  // namespace sql
@@ -103,9 +107,11 @@ class CONTENT_EXPORT RateLimitTable {
       std::vector<AttributionDataModel::DataKey>& keys);
 
  private:
-  [[nodiscard]] bool AddRateLimit(sql::Database* db,
-                                  const StoredSource& source,
-                                  absl::optional<base::Time> trigger_time)
+  [[nodiscard]] bool AddRateLimit(
+      sql::Database* db,
+      const StoredSource& source,
+      absl::optional<base::Time> trigger_time,
+      const attribution_reporting::SuitableOrigin& context_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] RateLimitResult AllowedForReportingOriginLimit(

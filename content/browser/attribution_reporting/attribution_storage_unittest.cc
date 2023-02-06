@@ -152,7 +152,9 @@ class AttributionStorageTest : public testing::Test {
     CHECK(event_trigger !=
           conversion.registration().event_triggers.vec().end());
 
-    return ReportBuilder(AttributionInfoBuilder(source)
+    return ReportBuilder(AttributionInfoBuilder(
+                             source,
+                             /*context_origin=*/conversion.destination_origin())
                              .SetTime(base::Time::Now())
                              .Build())
         .SetTriggerData(event_trigger->data)
@@ -163,8 +165,11 @@ class AttributionStorageTest : public testing::Test {
 
   AttributionReport GetExpectedAggregatableReport(
       const StoredSource& source,
-      std::vector<AggregatableHistogramContribution> contributions) {
-    return ReportBuilder(AttributionInfoBuilder(source)
+      std::vector<AggregatableHistogramContribution> contributions,
+      const AttributionTrigger& trigger) {
+    return ReportBuilder(AttributionInfoBuilder(
+                             source,
+                             /*context_origin=*/trigger.destination_origin())
                              .SetTime(base::Time::Now())
                              .Build())
         .SetReportTime(base::Time::Now() + kReportDelay)
@@ -1025,7 +1030,7 @@ TEST_F(AttributionStorageTest, MaxAttributionsBetweenSites) {
               ElementsAre(GetExpectedEventLevelReport(source, conversion1),
                           GetExpectedEventLevelReport(source, conversion2),
                           GetExpectedAggregatableReport(
-                              source, std::move(contributions))));
+                              source, std::move(contributions), conversion2)));
 }
 
 TEST_F(AttributionStorageTest,
@@ -1135,7 +1140,7 @@ TEST_F(AttributionStorageTest,
           .SetPriority(0)
           .SetAggregatableBudgetConsumed(1)
           .BuildStored(),
-      DefaultAggregatableHistogramContributions());
+      DefaultAggregatableHistogramContributions(), trigger);
 
   task_environment_.FastForwardBy(kReportDelay);
 
@@ -1444,7 +1449,9 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
                   .SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
                   .SetActiveState(StoredSource::ActiveState::
                                       kReachedEventLevelAttributionLimit)
-                  .BuildStored())
+                  .BuildStored(),
+              /*context_origin=*/*SuitableOrigin::Deserialize(
+                  "https://impression.test"))
               .SetTime(fake_trigger_time)
               .Build())
           .SetTriggerData(7)
@@ -1493,7 +1500,9 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
                   .SetAggregatableBudgetConsumed(1)
                   .SetActiveState(StoredSource::ActiveState::
                                       kReachedEventLevelAttributionLimit)
-                  .BuildStored())
+                  .BuildStored(),
+              /*context_origin=*/*SuitableOrigin::Deserialize(
+                  "https://impression.test"))
               .SetTime(fake_trigger_time)
               .Build())
           .SetTriggerData(7)
@@ -1503,7 +1512,7 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
   const AttributionReport expected_aggregatable_report =
       GetExpectedAggregatableReport(
           builder.SetAggregatableBudgetConsumed(1).BuildStored(),
-          DefaultAggregatableHistogramContributions({1}));
+          DefaultAggregatableHistogramContributions({1}), trigger);
 
   task_environment_.FastForwardBy(kReportDelay);
 
@@ -3029,7 +3038,7 @@ TEST_F(AttributionStorageTest, AggregatableAttribution_ReportsScheduled) {
   auto expected_event_level_report =
       GetExpectedEventLevelReport(source, trigger);
   auto expected_aggregatable_report =
-      GetExpectedAggregatableReport(source, std::move(contributions));
+      GetExpectedAggregatableReport(source, std::move(contributions), trigger);
 
   task_environment_.FastForwardBy(kReportDelay);
 

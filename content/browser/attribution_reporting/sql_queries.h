@@ -140,7 +140,7 @@ inline constexpr const char kSetAggregatableReportTimeSql[] =
   prefix "source_id,"                          \
   prefix "source_event_id,"                    \
   prefix "source_origin,"                      \
-  prefix "destination_origin,"                 \
+  prefix "destination_site,"                   \
   prefix "reporting_origin,"                   \
   prefix "source_time,"                        \
   prefix "expiry_time,"                        \
@@ -172,7 +172,8 @@ inline constexpr const char kGetActiveSourcesSql[] =
   "SELECT "                                                             \
   ATTRIBUTION_SOURCE_COLUMNS_SQL("I.")                                  \
   ",C.trigger_data,C.trigger_time,C.report_time,C.report_id,"           \
-  "C.priority,C.failed_send_attempts,C.external_report_id,C.debug_key " \
+  "C.priority,C.failed_send_attempts,C.external_report_id,C.debug_key," \
+  "C.context_origin "                                                   \
   "FROM event_level_reports C "                                         \
   "JOIN sources I ON C.source_id=I.source_id "
 
@@ -186,13 +187,13 @@ inline constexpr const char kGetEventLevelReportSql[] =
 
 #undef ATTRIBUTION_SELECT_EVENT_LEVEL_REPORT_AND_SOURCE_COLUMNS_SQL
 
-#define ATTRIBUTION_SELECT_AGGREGATABLE_REPORT_AND_SOURCE_COLUMNS_SQL  \
-  "SELECT "                                                            \
-  ATTRIBUTION_SOURCE_COLUMNS_SQL("I.")                                 \
-  ",A.aggregation_id,A.trigger_time,A.report_time,A.debug_key,"        \
-  "A.external_report_id,A.failed_send_attempts,A.initial_report_time," \
-  "A.aggregation_coordinator,A.attestation_token "                     \
-  "FROM aggregatable_report_metadata A "                               \
+#define ATTRIBUTION_SELECT_AGGREGATABLE_REPORT_AND_SOURCE_COLUMNS_SQL   \
+  "SELECT "                                                             \
+  ATTRIBUTION_SOURCE_COLUMNS_SQL("I.")                                  \
+  ",A.aggregation_id,A.trigger_time,A.report_time,A.debug_key,"         \
+  "A.external_report_id,A.failed_send_attempts,A.initial_report_time,"  \
+  "A.aggregation_coordinator,A.attestation_token,A.destination_origin " \
+  "FROM aggregatable_report_metadata A "                                \
   "JOIN sources I ON A.source_id=I.source_id "
 
 inline constexpr const char kGetAggregatableReportsSql[] =

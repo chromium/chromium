@@ -42,6 +42,7 @@
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "net/base/schemeful_site.h"
 #include "net/http/http_response_headers.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -152,8 +153,8 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
   base::HistogramTester histograms;
 
   auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
-  auto destination_origin =
-      *SuitableOrigin::Deserialize("https://trigger.example");
+  auto destination_site =
+      net::SchemefulSite::Deserialize("https://trigger.example");
   auto reporting_origin =
       *SuitableOrigin::Deserialize("https://reporter.example");
   auto aggregation_keys = *attribution_reporting::AggregationKeys::FromKeys(
@@ -163,10 +164,9 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
       mock_manager_,
       HandleSource(AllOf(
           SourceTypeIs(AttributionSourceType::kEvent), SourceEventIdIs(10),
-          DestinationOriginIs(destination_origin),
-          ImpressionOriginIs(page_origin), ReportingOriginIs(reporting_origin),
-          SourcePriorityIs(20), SourceDebugKeyIs(789),
-          AggregationKeysAre(aggregation_keys),
+          DestinationSiteIs(destination_site), ImpressionOriginIs(page_origin),
+          ReportingOriginIs(reporting_origin), SourcePriorityIs(20),
+          SourceDebugKeyIs(789), AggregationKeysAre(aggregation_keys),
           SourceIsWithinFencedFrameIs(false), SourceDebugReportingIs(true))));
   {
     RemoteDataHost data_host_remote{.task_environment =
@@ -177,7 +177,7 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
 
     task_environment_.FastForwardBy(base::Milliseconds(1));
 
-    SourceRegistration source_data(destination_origin);
+    SourceRegistration source_data(destination_site);
     source_data.source_event_id = 10;
     source_data.priority = 20;
     source_data.debug_key = 789;
@@ -214,8 +214,8 @@ TEST_F(AttributionDataHostManagerImplTest,
   }
 
   auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
-  auto destination_origin =
-      *SuitableOrigin::Deserialize("https://trigger.example");
+  auto destination_site =
+      net::SchemefulSite::Deserialize("https://trigger.example");
   auto reporting_origin =
       *SuitableOrigin::Deserialize("https://reporter.example");
 
@@ -226,7 +226,7 @@ TEST_F(AttributionDataHostManagerImplTest,
         data_host_remote.data_host.BindNewPipeAndPassReceiver(), page_origin,
         /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
-    SourceRegistration source_data(destination_origin);
+    SourceRegistration source_data(destination_site);
     data_host_remote.data_host->SourceDataAvailable(reporting_origin,
                                                     source_data);
     data_host_remote.data_host.FlushForTesting();
@@ -240,7 +240,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     checkpoint.Call(2);
 
     source_data.destination =
-        *SuitableOrigin::Deserialize("https://other-trigger.example");
+        net::SchemefulSite::Deserialize("https://other-trigger.example");
     data_host_remote.data_host->SourceDataAvailable(reporting_origin,
                                                     source_data);
     data_host_remote.data_host.FlushForTesting();
@@ -375,7 +375,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     {
       mojo::test::BadMessageObserver bad_message_observer;
 
-      SourceRegistration source_data(destination_origin);
+      SourceRegistration source_data((net::SchemefulSite(destination_origin)));
 
       data_host_remote.data_host->SourceDataAvailable(reporting_origin,
                                                       std::move(source_data));
@@ -420,8 +420,8 @@ TEST_F(AttributionDataHostManagerImplTest,
   }
 
   auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
-  auto destination_origin =
-      *SuitableOrigin::Deserialize("https://trigger.example");
+  auto destination_site =
+      net::SchemefulSite::Deserialize("https://trigger.example");
   auto reporting_origin =
       *SuitableOrigin::Deserialize("https://reporter.example");
 
@@ -432,7 +432,7 @@ TEST_F(AttributionDataHostManagerImplTest,
         data_host_remote.data_host.BindNewPipeAndPassReceiver(), page_origin,
         /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
-    SourceRegistration source_data(destination_origin);
+    SourceRegistration source_data(destination_site);
 
     data_host_remote.data_host->SourceDataAvailable(reporting_origin,
                                                     source_data);
@@ -479,8 +479,8 @@ TEST_F(AttributionDataHostManagerImplTest,
   base::HistogramTester histograms;
 
   const auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
-  const auto destination_origin =
-      *SuitableOrigin::Deserialize("https://trigger.example");
+  const auto destination_site =
+      net::SchemefulSite::Deserialize("https://trigger.example");
   const auto reporting_origin =
       *SuitableOrigin::Deserialize("https://reporter.example");
 
@@ -496,7 +496,7 @@ TEST_F(AttributionDataHostManagerImplTest,
         mock_manager_,
         HandleSource(AllOf(
             SourceTypeIs(AttributionSourceType::kNavigation),
-            SourceEventIdIs(10), DestinationOriginIs(destination_origin),
+            SourceEventIdIs(10), DestinationSiteIs(destination_site),
             ImpressionOriginIs(page_origin),
             ReportingOriginIs(reporting_origin), SourcePriorityIs(20),
             SourceDebugKeyIs(789), AggregationKeysAre(aggregation_keys),
@@ -521,7 +521,7 @@ TEST_F(AttributionDataHostManagerImplTest,
         AttributionNavigationType::kContextMenu,
         /*is_within_fenced_frame=*/false);
 
-    SourceRegistration source_data(destination_origin);
+    SourceRegistration source_data(destination_site);
     source_data.source_event_id = 10;
     source_data.priority = 20;
     source_data.debug_key = 789;
@@ -536,7 +536,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     // This should succeed even though the destination site doesn't match the
     // final navigation site.
     source_data.destination =
-        *SuitableOrigin::Deserialize("https://trigger2.example");
+        net::SchemefulSite::Deserialize("https://trigger2.example");
     data_host_remote.data_host->SourceDataAvailable(reporting_origin,
                                                     std::move(source_data));
     data_host_remote.data_host.FlushForTesting();
@@ -1271,7 +1271,7 @@ TEST_F(AttributionDataHostManagerImplTest, SourceThenTrigger_TriggerDelayed) {
       /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
   SourceRegistration source_data(
-      *SuitableOrigin::Deserialize("https://dest.test"));
+      net::SchemefulSite::Deserialize("https://dest.test"));
   source_data_host_remote->SourceDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report1.test"),
       std::move(source_data));
@@ -1368,8 +1368,8 @@ TEST_F(AttributionDataHostManagerImplTest,
                                   1);
   }
 
-  const auto destination_origin =
-      *SuitableOrigin::Deserialize("https://trigger.example");
+  const auto destination_site =
+      net::SchemefulSite::Deserialize("https://trigger.example");
 
   data_host_manager_.NotifyNavigationForDataHost(
       attribution_src_token,
@@ -1379,7 +1379,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporting_origin =
       *SuitableOrigin::Deserialize("https://reporter.example");
 
-  SourceRegistration source_data(destination_origin);
+  SourceRegistration source_data(destination_site);
   source_data.source_event_id = 1;
   data_host_remote1->SourceDataAvailable(reporting_origin, source_data);
   data_host_remote1.FlushForTesting();
@@ -1393,8 +1393,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 TEST_F(AttributionDataHostManagerImplTest,
        SourceDataHostWithinFencedFrame_SourceRegistered) {
   auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
-  auto destination_origin =
-      *SuitableOrigin::Deserialize("https://trigger.example");
+  auto destination_site =
+      net::SchemefulSite::Deserialize("https://trigger.example");
   auto reporting_origin =
       *SuitableOrigin::Deserialize("https://reporter.example");
 
@@ -1402,8 +1402,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       mock_manager_,
       HandleSource(AllOf(
           SourceTypeIs(AttributionSourceType::kEvent), SourceEventIdIs(10),
-          DestinationOriginIs(destination_origin),
-          ImpressionOriginIs(page_origin), ReportingOriginIs(reporting_origin),
+          DestinationSiteIs(destination_site), ImpressionOriginIs(page_origin),
+          ReportingOriginIs(reporting_origin),
           SourceIsWithinFencedFrameIs(true))));
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
@@ -1413,7 +1413,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
-  SourceRegistration source_data(destination_origin);
+  SourceRegistration source_data(destination_site);
   source_data.source_event_id = 10;
   data_host_remote->SourceDataAvailable(reporting_origin,
                                         std::move(source_data));
@@ -1461,7 +1461,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_remote->SourceDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
       SourceRegistration(
-          /*destination=*/*SuitableOrigin::Deserialize(
+          /*destination=*/net::SchemefulSite::Deserialize(
               "https://destination.test")));
   data_host_remote.FlushForTesting();
 }

@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,6 +22,7 @@
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
@@ -53,7 +55,7 @@ void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
   }
 }
 
-base::expected<SuitableOrigin, SourceRegistrationError> ParseDestination(
+base::expected<net::SchemefulSite, SourceRegistrationError> ParseDestination(
     const base::Value::Dict& registration) {
   const base::Value* v = registration.Find(kDestination);
   if (!v)
@@ -67,7 +69,7 @@ base::expected<SuitableOrigin, SourceRegistrationError> ParseDestination(
   if (!destination.has_value())
     return base::unexpected(SourceRegistrationError::kDestinationUntrustworthy);
 
-  return *destination;
+  return net::SchemefulSite(*destination);
 }
 
 }  // namespace
@@ -78,8 +80,10 @@ void RecordSourceRegistrationError(mojom::SourceRegistrationError error) {
 
 SourceRegistration::SourceRegistration() = default;
 
-SourceRegistration::SourceRegistration(SuitableOrigin destination)
-    : destination(std::move(destination)) {}
+SourceRegistration::SourceRegistration(net::SchemefulSite destination)
+    : destination(std::move(destination)) {
+  DCHECK(IsSitePotentiallySuitable(this->destination));
+}
 
 SourceRegistration::~SourceRegistration() = default;
 
@@ -163,7 +167,7 @@ SourceRegistration::Parse(base::StringPiece json) {
 base::Value::Dict SourceRegistration::ToJson() const {
   base::Value::Dict dict;
 
-  dict.Set(kDestination, destination->Serialize());
+  dict.Set(kDestination, destination.Serialize());
 
   if (!filter_data.filter_values().empty()) {
     dict.Set(kFilterData, filter_data.ToJson());

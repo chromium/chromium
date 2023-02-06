@@ -66,6 +66,10 @@ class PendingReceiver;
 
 }  // namespace mojo
 
+namespace net {
+class SchemefulSite;
+}  // namespace net
+
 namespace url {
 class Origin;
 }  // namespace url
@@ -433,10 +437,12 @@ class SourceBuilder {
 
   SourceBuilder& SetSourceOrigin(attribution_reporting::SuitableOrigin);
 
-  SourceBuilder& SetDestinationOrigin(attribution_reporting::SuitableOrigin);
+  // TODO(apaseltiner): Rename this to `SetDestination()`, since the origin
+  // itself is no longer used.
+  SourceBuilder& SetDestinationOrigin(
+      const attribution_reporting::SuitableOrigin&);
 
-  SourceBuilder& SetDestinationOrigins(
-      base::flat_set<attribution_reporting::SuitableOrigin>);
+  SourceBuilder& SetDestinationSites(base::flat_set<net::SchemefulSite>);
 
   SourceBuilder& SetReportingOrigin(attribution_reporting::SuitableOrigin);
 
@@ -483,7 +489,7 @@ class SourceBuilder {
   absl::optional<base::TimeDelta> event_report_window_;
   absl::optional<base::TimeDelta> aggregatable_report_window_;
   attribution_reporting::SuitableOrigin source_origin_;
-  base::flat_set<attribution_reporting::SuitableOrigin> destination_origins_;
+  base::flat_set<net::SchemefulSite> destination_sites_;
   attribution_reporting::SuitableOrigin reporting_origin_;
   AttributionSourceType source_type_ = AttributionSourceType::kNavigation;
   int64_t priority_ = 0;
@@ -579,7 +585,12 @@ class TriggerBuilder {
 // Helper class to construct an `AttributionInfo` for tests using default data.
 class AttributionInfoBuilder {
  public:
-  explicit AttributionInfoBuilder(StoredSource source);
+  explicit AttributionInfoBuilder(
+      StoredSource source,
+      // For most tests, the context origin is irrelevant.
+      attribution_reporting::SuitableOrigin context_origin =
+          *attribution_reporting::SuitableOrigin::Deserialize(
+              "https://context.test"));
   ~AttributionInfoBuilder();
 
   AttributionInfoBuilder& SetTime(base::Time time);
@@ -592,6 +603,7 @@ class AttributionInfoBuilder {
   StoredSource source_;
   base::Time time_;
   absl::optional<uint64_t> debug_key_;
+  attribution_reporting::SuitableOrigin context_origin_;
 };
 
 // Helper class to construct an `AttributionReport` for tests using default
@@ -752,8 +764,8 @@ MATCHER_P(ImpressionOriginIs, matcher, "") {
                             result_listener);
 }
 
-MATCHER_P(DestinationOriginIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.common_info().destination_origin(),
+MATCHER_P(DestinationSiteIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.common_info().destination_site(),
                             result_listener);
 }
 

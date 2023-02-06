@@ -7,6 +7,7 @@ module attribution_reporting.mojom;
 import "components/aggregation_service/aggregation_service.mojom";
 import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/schemeful_site.mojom";
 import "url/mojom/origin.mojom";
 
 struct DebugKey {
@@ -67,7 +68,7 @@ struct SourceRegistration {
   // For sources associated with a navigation, the destination site must be
   // same-site with the final committed url of the navigation. If they are not
   // same-site, this source will be ignored by the browser.
-  SuitableOrigin destination;
+  network.mojom.SchemefulSite destination;
 
   // Data that will be sent in attribution reports to identify this source.
   uint64 source_event_id = 0;

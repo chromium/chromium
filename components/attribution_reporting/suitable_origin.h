@@ -20,7 +20,19 @@ namespace mojo {
 struct DefaultConstructTraits;
 }  // namespace mojo
 
+namespace net {
+class SchemefulSite;
+}  // namespace net
+
 namespace attribution_reporting {
+
+// Returns true if the given site is potentially suitable as a destination site,
+// that is, it `net::SchemefulSite::has_registrable_domain_or_host()` and its
+// scheme is HTTP or HTTPS.
+//
+// Other requirements may be enforced in the future.
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+bool IsSitePotentiallySuitable(const net::SchemefulSite&);
 
 // A thin wrapper around `url::Origin` that enforces invariants required for an
 // origin to be used as a source origin, a destination origin, or a reporting

@@ -696,25 +696,26 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
 
     base::flat_map<int64_t, RateLimitRow> rows = {
         {1, RateLimitRow::Attribution("https://s1.test", "https://d1.test",
-                                      "https://a.r.test", "https://a.d1.test",
-                                      now, now)},
+                                      "https://a.r.test",
+                                      "https://context.test", now, now)},
         {2, RateLimitRow::Source("https://s1.test", "https://d1.test",
                                  "https://b.r.test", "https://b.s1.test", now,
                                  now + kExpiry)},
-        {3, RateLimitRow::Attribution(
-                "https://s1.test", "https://d1.test", "https://c.r.test",
-                "https://a.d1.test", now + base::Days(1), now + base::Days(1))},
+        {3,
+         RateLimitRow::Attribution("https://s1.test", "https://d1.test",
+                                   "https://c.r.test", "https://context.test",
+                                   now + base::Days(1), now + base::Days(1))},
         {4, RateLimitRow::Source("https://s1.test", "https://d1.test",
                                  "https://d.r.test", "https://b.s1.test",
                                  now + base::Days(1),
                                  now + base::Days(1) + kExpiry)},
         {5, RateLimitRow::Attribution(
                 "https://s1.test", "https://d1.test", "https://c.r.test",
-                "https://a.d1.test", now + base::Days(1),
+                "https://context.test", now + base::Days(1),
                 now + base::Days(1) + base::Milliseconds(10))},
         {6, RateLimitRow::Attribution(
                 "https://s1.test", "https://d1.test", "https://d.r.test",
-                "https://a.d1.test", now + base::Days(1),
+                "https://context.test", now + base::Days(1),
                 now + base::Days(1) + base::Milliseconds(10))},
     };
 

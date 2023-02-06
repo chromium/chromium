@@ -151,7 +151,7 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           attribution_info.source.common_info().source_time()));
   additional_fields.Set(
       "attribution_destination",
-      attribution_info.source.common_info().DestinationSite().Serialize());
+      attribution_info.source.common_info().destination_site().Serialize());
   return AggregatableReportRequest::Create(
       AggregationServicePayloadContents(
           AggregationServicePayloadContents::Operation::kHistogram,

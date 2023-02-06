@@ -8,20 +8,18 @@
 
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
-#include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
 namespace {
-
-using ::attribution_reporting::SuitableOrigin;
 
 using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
 using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
@@ -236,10 +234,9 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
         AttributionDebugReport::Create(
             SourceBuilder()
                 .SetDebugReporting(true)
-                .SetDestinationOrigins({
-                    *SuitableOrigin::Create(GURL("https://a.c.test")),
-                    *SuitableOrigin::Create(GURL("https://b.c.test")),
-                    *SuitableOrigin::Create(GURL("https://d.test")),
+                .SetDestinationSites({
+                    net::SchemefulSite::Deserialize("https://c.test"),
+                    net::SchemefulSite::Deserialize("https://d.test"),
                 })
                 .Build(),
             /*is_debug_cookie_set=*/true,

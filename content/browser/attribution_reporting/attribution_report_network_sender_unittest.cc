@@ -25,6 +25,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/base/schemeful_site.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -203,14 +204,13 @@ TEST_F(AttributionReportNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
 TEST_F(AttributionReportNetworkSenderTest,
        MultiDestination_ReportBodySetCorrectly) {
   const struct {
-    base::flat_set<SuitableOrigin> destination_origins;
+    base::flat_set<net::SchemefulSite> destination_sites;
     const char* expected_report;
   } kTestCases[] = {
       {
           {
-              *SuitableOrigin::Deserialize("https://a.b.test"),
-              *SuitableOrigin::Deserialize("https://c1.d.test"),
-              *SuitableOrigin::Deserialize("https://c2.d.test"),
+              net::SchemefulSite::Deserialize("https://b.test"),
+              net::SchemefulSite::Deserialize("https://d.test"),
           },
           R"({"attribution_destination":["https://b.test","https://d.test"],)"
           R"("randomized_trigger_rate":0.0,)"
@@ -222,8 +222,7 @@ TEST_F(AttributionReportNetworkSenderTest,
       },
       {
           {
-              *SuitableOrigin::Deserialize("https://c1.d.test"),
-              *SuitableOrigin::Deserialize("https://c2.d.test"),
+              net::SchemefulSite::Deserialize("https://d.test"),
           },
           R"({"attribution_destination":"https://d.test",)"
           R"("randomized_trigger_rate":0.0,)"
@@ -236,7 +235,7 @@ TEST_F(AttributionReportNetworkSenderTest,
 
   for (const auto& test_case : kTestCases) {
     auto source = SourceBuilder(base::Time::UnixEpoch())
-                      .SetDestinationOrigins(test_case.destination_origins)
+                      .SetDestinationSites(test_case.destination_sites)
                       .BuildStored();
     AttributionReport report =
         ReportBuilder(AttributionInfoBuilder(std::move(source))

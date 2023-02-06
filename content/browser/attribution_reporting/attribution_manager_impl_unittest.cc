@@ -341,7 +341,9 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
   attribution_manager_->HandleTrigger(conversion);
 
   AttributionReport expected_report =
-      ReportBuilder(AttributionInfoBuilder(builder.BuildStored())
+      ReportBuilder(AttributionInfoBuilder(
+                        builder.BuildStored(),
+                        /*context_origin=*/conversion.destination_origin())
                         .SetTime(base::Time::Now())
                         .Build())
           .SetTriggerData(5)

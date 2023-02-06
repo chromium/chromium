@@ -24,6 +24,8 @@
 #include "components/attribution_reporting/trigger_registration.h"
 #include "mojo/public/cpp/base/int128_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "net/base/schemeful_site.h"
+#include "services/network/public/cpp/schemeful_site_mojom_traits.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/mojom/origin_mojom_traits.h"
@@ -96,7 +98,8 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
                   attribution_reporting::SourceRegistration>::
     Read(attribution_reporting::mojom::SourceRegistrationDataView data,
          attribution_reporting::SourceRegistration* out) {
-  if (!data.ReadDestination(&out->destination)) {
+  if (!data.ReadDestination(&out->destination) ||
+      !attribution_reporting::IsSitePotentiallySuitable(out->destination)) {
     return false;
   }
 

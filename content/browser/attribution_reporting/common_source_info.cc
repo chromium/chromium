@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/cxx17_backports.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "net/base/schemeful_site.h"
@@ -20,8 +21,9 @@ namespace {
 
 using ::attribution_reporting::SuitableOrigin;
 
-base::flat_set<SuitableOrigin> DestinationSet(SuitableOrigin destination) {
-  base::flat_set<SuitableOrigin> set;
+base::flat_set<net::SchemefulSite> DestinationSet(
+    net::SchemefulSite destination) {
+  base::flat_set<net::SchemefulSite> set;
   set.reserve(1);
   set.insert(std::move(destination));
   return set;
@@ -63,7 +65,7 @@ base::Time CommonSourceInfo::GetExpiryTime(
 CommonSourceInfo::CommonSourceInfo(
     uint64_t source_event_id,
     SuitableOrigin source_origin,
-    SuitableOrigin destination_origin,
+    net::SchemefulSite destination_site,
     SuitableOrigin reporting_origin,
     base::Time source_time,
     base::Time expiry_time,
@@ -76,7 +78,7 @@ CommonSourceInfo::CommonSourceInfo(
     attribution_reporting::AggregationKeys aggregation_keys)
     : CommonSourceInfo(source_event_id,
                        std::move(source_origin),
-                       DestinationSet(std::move(destination_origin)),
+                       DestinationSet(std::move(destination_site)),
                        std::move(reporting_origin),
                        source_time,
                        expiry_time,
@@ -91,7 +93,7 @@ CommonSourceInfo::CommonSourceInfo(
 CommonSourceInfo::CommonSourceInfo(
     uint64_t source_event_id,
     SuitableOrigin source_origin,
-    base::flat_set<SuitableOrigin> destination_origins,
+    base::flat_set<net::SchemefulSite> destination_sites,
     SuitableOrigin reporting_origin,
     base::Time source_time,
     base::Time expiry_time,
@@ -104,7 +106,7 @@ CommonSourceInfo::CommonSourceInfo(
     attribution_reporting::AggregationKeys aggregation_keys)
     : source_event_id_(source_event_id),
       source_origin_(std::move(source_origin)),
-      destination_origins_(std::move(destination_origins)),
+      destination_sites_(std::move(destination_sites)),
       reporting_origin_(std::move(reporting_origin)),
       source_time_(source_time),
       expiry_time_(expiry_time),
@@ -129,7 +131,9 @@ CommonSourceInfo::CommonSourceInfo(
   DCHECK_GT(event_report_window_time_, source_time);
   DCHECK_GT(aggregatable_report_window_time_, source_time);
 
-  DCHECK(!destination_origins_.empty());
+  DCHECK(!destination_sites_.empty());
+  DCHECK(base::ranges::all_of(
+      destination_sites_, &attribution_reporting::IsSitePotentiallySuitable));
 }
 
 CommonSourceInfo::~CommonSourceInfo() = default;
@@ -143,32 +147,19 @@ CommonSourceInfo& CommonSourceInfo::operator=(const CommonSourceInfo&) =
 
 CommonSourceInfo& CommonSourceInfo::operator=(CommonSourceInfo&&) = default;
 
-net::SchemefulSite CommonSourceInfo::DestinationSite() const {
-  return net::SchemefulSite(destination_origin());
-}
-
 net::SchemefulSite CommonSourceInfo::SourceSite() const {
   return net::SchemefulSite(source_origin_);
 }
 
-base::flat_set<net::SchemefulSite> CommonSourceInfo::DestinationSites() const {
-  base::flat_set<net::SchemefulSite> sites;
-  for (const auto& destination : destination_origins_) {
-    sites.insert(net::SchemefulSite(destination));
-  }
-  return sites;
-}
-
 base::Value CommonSourceInfo::SerializeDestinationSites() const {
-  base::flat_set<net::SchemefulSite> sites = DestinationSites();
-  if (sites.size() == 1) {
-    return base::Value(sites.begin()->Serialize());
+  if (destination_sites_.size() == 1) {
+    return base::Value(destination_sites_.begin()->Serialize());
   }
 
   base::Value::List list;
-  list.reserve(sites.size());
+  list.reserve(destination_sites_.size());
 
-  for (const auto& site : sites) {
+  for (const auto& site : destination_sites_) {
     list.Append(site.Serialize());
   }
 

@@ -65,7 +65,7 @@ struct AggregatableReportMetadataRecord {
   int aggregation_coordinator = static_cast<int>(
       ::aggregation_service::mojom::AggregationCoordinator::kDefault);
   absl::optional<std::string> attestation_token;
-  std::string destination_origin;
+  std::string destination_origin = "https://destination.test";
 };
 
 struct AggregatableContributionRecord {
@@ -728,15 +728,9 @@ TEST_F(AttributionStorageSqlTest, MaxUint64StorageSucceeds) {
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(SourceEventIdIs(kMaxUint64)));
 
-  EXPECT_EQ(
-      AttributionTrigger::EventLevelResult::kSuccess,
-      MaybeCreateAndStoreEventLevelReport(
-          TriggerBuilder()
-              .SetDebugKey(kMaxUint64)
-              .SetDestinationOrigin(
-                  impression.common_info().destination_origin())
-              .SetReportingOrigin(impression.common_info().reporting_origin())
-              .Build()));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(
+                TriggerBuilder().SetDebugKey(kMaxUint64).Build()));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
               ElementsAre(TriggerDebugKeyIs(kMaxUint64)));
@@ -954,34 +948,46 @@ TEST_F(AttributionStorageSqlTest,
 }
 
 TEST_F(AttributionStorageSqlTest,
-       InsecureImpressionOrigin_FailsDeserialization) {
-  static constexpr const char* kUpdateSqls[] = {
-      "UPDATE sources SET source_origin=?",
-      "UPDATE sources SET destination_origin=?",
-      "UPDATE sources SET reporting_origin=?",
+       InvalidSourceOriginOrSite_FailsDeserialization) {
+  const struct {
+    const char* sql;
+    const char* value;
+  } kTestCases[] = {
+      {
+          .sql = "UPDATE sources SET source_origin=?",
+          .value = "http://insecure.test",
+      },
+      {
+          .sql = "UPDATE sources SET reporting_origin=?",
+          .value = "http://insecure.test",
+      },
+      {
+          .sql = "UPDATE sources SET destination_site=?",
+          .value = "wss://a.test",
+      },
   };
 
-  for (const char* update_sql : kUpdateSqls) {
+  for (const auto& test_case : kTestCases) {
     OpenDatabase();
 
     SourceBuilder source_builder;
     storage()->StoreSource(
         source_builder.SetExpiry(base::Milliseconds(3)).Build());
-    ASSERT_THAT(storage()->GetActiveSources(), SizeIs(1)) << update_sql;
+    ASSERT_THAT(storage()->GetActiveSources(), SizeIs(1)) << test_case.sql;
 
     CloseDatabase();
 
     {
       sql::Database raw_db;
-      ASSERT_TRUE(raw_db.Open(db_path())) << update_sql;
+      ASSERT_TRUE(raw_db.Open(db_path())) << test_case.sql;
 
-      sql::Statement statement(raw_db.GetUniqueStatement(update_sql));
-      statement.BindString(0, "http://insecure.test");
-      ASSERT_TRUE(statement.Run()) << update_sql;
+      sql::Statement statement(raw_db.GetUniqueStatement(test_case.sql));
+      statement.BindString(0, test_case.value);
+      ASSERT_TRUE(statement.Run()) << test_case.sql;
     }
 
     OpenDatabase();
-    ASSERT_THAT(storage()->GetActiveSources(), IsEmpty()) << update_sql;
+    ASSERT_THAT(storage()->GetActiveSources(), IsEmpty()) << test_case.sql;
     storage()->ClearData(base::Time::Min(), base::Time::Max(),
                          base::NullCallback());
     CloseDatabase();

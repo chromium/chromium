@@ -33,6 +33,7 @@
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/net_errors.h"
+#include "net/base/schemeful_site.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -50,7 +51,6 @@ namespace content {
 
 namespace {
 
-using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::RegistrationType;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest, SourceRegistered) {
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.front().source_event_id, 5UL);
   EXPECT_EQ(source_data.front().destination,
-            *SuitableOrigin::Deserialize("https://d.test"));
+            net::SchemefulSite::Deserialize("https://d.test"));
   EXPECT_EQ(source_data.front().priority, 0);
   EXPECT_EQ(source_data.front().expiry, absl::nullopt);
   EXPECT_FALSE(source_data.front().debug_key);
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
     EXPECT_EQ(source_data.size(), 1u);
     EXPECT_EQ(source_data.front().source_event_id, 5UL);
     EXPECT_EQ(source_data.front().destination,
-              *SuitableOrigin::Deserialize("https://d.test"));
+              net::SchemefulSite::Deserialize("https://d.test"));
     EXPECT_EQ(source_data.front().priority, 0);
     EXPECT_EQ(source_data.front().expiry, absl::nullopt);
     EXPECT_FALSE(source_data.front().debug_key);
@@ -510,10 +510,10 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(source_data.size(), 2u);
   EXPECT_EQ(source_data.front().source_event_id, 1UL);
   EXPECT_EQ(source_data.front().destination,
-            *SuitableOrigin::Deserialize("https://d.test"));
+            net::SchemefulSite::Deserialize("https://d.test"));
   EXPECT_EQ(source_data.back().source_event_id, 5UL);
   EXPECT_EQ(source_data.back().destination,
-            *SuitableOrigin::Deserialize("https://d.test"));
+            net::SchemefulSite::Deserialize("https://d.test"));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -547,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.back().source_event_id, 5UL);
   EXPECT_EQ(source_data.back().destination,
-            *SuitableOrigin::Deserialize("https://d.test"));
+            net::SchemefulSite::Deserialize("https://d.test"));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -610,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.back().source_event_id, 5UL);
   EXPECT_EQ(source_data.back().destination,
-            *SuitableOrigin::Deserialize("https://d.test"));
+            net::SchemefulSite::Deserialize("https://d.test"));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,

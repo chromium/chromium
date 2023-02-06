@@ -270,8 +270,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       absl::optional<uint64_t> dedup_key,
       int num_conversions,
       absl::optional<AttributionReport>& replaced_report,
-      absl::optional<AttributionReport>& dropped_report,
-      const attribution_reporting::SuitableOrigin& context_origin)
+      absl::optional<AttributionReport>& dropped_report)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Initializes the database if necessary, and returns whether the database is
@@ -367,14 +366,11 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       AttributionReport& report,
       int64_t aggregatable_budget_consumed,
       absl::optional<uint64_t> dedup_key,
-      absl::optional<int64_t>& aggregatable_budget_per_source,
-      const attribution_reporting::SuitableOrigin& destination_origin)
+      absl::optional<int64_t>& aggregatable_budget_per_source)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] bool StoreAggregatableAttributionReport(
-      AttributionReport& report,
-      const attribution_reporting::SuitableOrigin& destination_origin)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
+      AttributionReport& report) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   absl::optional<AttributionReport>
   ReadAggregatableAttributionReportFromStatement(sql::Statement&)

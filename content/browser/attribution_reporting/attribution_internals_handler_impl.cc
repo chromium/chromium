@@ -44,6 +44,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/net_errors.h"
+#include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -86,8 +87,10 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
 
   return attribution_internals::mojom::WebUISource::New(
       source.source_event_id(), source.source_origin(),
-      source.DestinationSites().extract(), source.reporting_origin(),
-      source.source_time().ToJsTime(), source.expiry_time().ToJsTime(),
+      std::vector<net::SchemefulSite>(source.destination_sites().begin(),
+                                      source.destination_sites().end()),
+      source.reporting_origin(), source.source_time().ToJsTime(),
+      source.expiry_time().ToJsTime(),
       source.event_report_window_time().ToJsTime(),
       source.aggregatable_report_window_time().ToJsTime(), source.source_type(),
       source.priority(), std::move(debug_key), dedup_keys,

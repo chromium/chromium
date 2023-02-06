@@ -5,6 +5,7 @@
 #include "components/attribution_reporting/suitable_origin.h"
 
 #include "base/strings/string_piece.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -127,6 +128,56 @@ TEST(SuitableOriginTest, OperatorLt) {
   EXPECT_TRUE(origin_a < origin_b);
   EXPECT_FALSE(origin_b < origin_a);
   EXPECT_FALSE(origin_a < origin_a);
+}
+
+TEST(SuitableOriginTest, IsSitePotentiallySuitable) {
+  const struct {
+    net::SchemefulSite site;
+    bool expected_suitable;
+  } kTestCases[] = {
+      {
+          net::SchemefulSite::Deserialize("https://a.test"),
+          true,
+      },
+      {
+          net::SchemefulSite::Deserialize("http://a.test"),
+          true,
+      },
+      {
+          net::SchemefulSite::Deserialize("https://localhost"),
+          true,
+      },
+      {
+          net::SchemefulSite::Deserialize("http://localhost"),
+          true,
+      },
+      {
+          net::SchemefulSite::Deserialize("https://127.0.0.1"),
+          true,
+      },
+      {
+          net::SchemefulSite::Deserialize("http://127.0.0.1"),
+          true,
+      },
+      {
+          net::SchemefulSite(),
+          false,
+      },
+      {
+          net::SchemefulSite::Deserialize("wss://a.test"),
+          false,
+      },
+      {
+          net::SchemefulSite::Deserialize("ws://a.test"),
+          false,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(IsSitePotentiallySuitable(test_case.site),
+              test_case.expected_suitable)
+        << test_case.site;
+  }
 }
 
 }  // namespace

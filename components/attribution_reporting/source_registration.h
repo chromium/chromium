@@ -15,7 +15,7 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
-#include "components/attribution_reporting/suitable_origin.h"
+#include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
@@ -36,7 +36,10 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   static base::expected<SourceRegistration, mojom::SourceRegistrationError>
   Parse(base::StringPiece json);
 
-  explicit SourceRegistration(SuitableOrigin destination);
+  // `destination` must meet the requirements of `IsSitePotentiallySuitable()`.
+  // TODO(apaseltiner): Refactor this class so that it is impossible to pass an
+  // invalid `destination`.
+  explicit SourceRegistration(net::SchemefulSite destination);
 
   ~SourceRegistration();
 
@@ -49,7 +52,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   base::Value::Dict ToJson() const;
 
   uint64_t source_event_id = 0;
-  SuitableOrigin destination;
+  net::SchemefulSite destination;
   absl::optional<base::TimeDelta> expiry;
   absl::optional<base::TimeDelta> event_report_window;
   absl::optional<base::TimeDelta> aggregatable_report_window;
