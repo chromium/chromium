@@ -4,9 +4,9 @@
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "content/browser/webui/test_js_interface_binder_ui.h"
-#include "content/test/web_ui/js_interface_binder_unittest.test-mojom-js-interface-binder-impl.h"
-#include "content/test/web_ui/js_interface_binder_unittest2.test-mojom-js-interface-binder-impl.h"
+#include "content/browser/webui/test_webui_js_bridge_ui.h"
+#include "content/test/web_ui/webui_js_bridge_unittest.test-mojom-webui-js-bridge-impl.h"
+#include "content/test/web_ui/webui_js_bridge_unittest2.test-mojom-webui-js-bridge-impl.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -79,10 +79,10 @@ class BarObserver : public mojom::BarObserver {
 
 }  // namespace
 
-class JsInterfaceBinderTest : public testing::Test {
+class WebUIJsBridgeTest : public testing::Test {
  public:
-  JsInterfaceBinderTest() = default;
-  ~JsInterfaceBinderTest() override = default;
+  WebUIJsBridgeTest() = default;
+  ~WebUIJsBridgeTest() override = default;
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -90,7 +90,7 @@ class JsInterfaceBinderTest : public testing::Test {
 
 // Tests binder methods are overridden and can be called. Calling them does
 // nothing for now.
-TEST_F(JsInterfaceBinderTest, Bind) {
+TEST_F(WebUIJsBridgeTest, Bind) {
   std::unique_ptr<FooPageHandler> page_handler;
   auto page_handler_binder = base::BindLambdaForTesting(
       [&page_handler](mojo::PendingReceiver<mojom::FooPageHandler> receiver,
@@ -100,15 +100,15 @@ TEST_F(JsInterfaceBinderTest, Bind) {
       });
   Bar bar;
 
-  TestJsInterfaceBinderUI controller;
-  mojom::FooJsInterfaceBinderImpl binder(
+  TestWebUIJsBridgeUI controller;
+  mojom::FooWebUIJsBridgeImpl bridge(
       &controller, page_handler_binder,
       base::BindRepeating(&Bar::BindBar, base::Unretained(&bar)),
       base::BindRepeating(&Bar::BindObserver, base::Unretained(&bar)));
 
   mojo::Remote<mojom::FooPageHandler> page_handler_remote;
   FooPage page;
-  binder.BindFooPageHandler(page_handler_remote.BindNewPipeAndPassReceiver(),
+  bridge.BindFooPageHandler(page_handler_remote.BindNewPipeAndPassReceiver(),
                             page.receiver().BindNewPipeAndPassRemote());
   EXPECT_TRUE(page_handler_remote.is_bound());
   EXPECT_TRUE(page.receiver().is_bound());
@@ -116,31 +116,30 @@ TEST_F(JsInterfaceBinderTest, Bind) {
   EXPECT_TRUE(page_handler->remote().is_bound());
 
   mojo::Remote<mojom::Bar> bar_remote;
-  binder.BindBar(bar_remote.BindNewPipeAndPassReceiver());
+  bridge.BindBar(bar_remote.BindNewPipeAndPassReceiver());
   EXPECT_TRUE(bar_remote.is_bound());
   EXPECT_EQ(1u, bar.receivers().size());
 
   BarObserver observer;
-  binder.BindBarObserver(observer.receiver().BindNewPipeAndPassRemote());
+  bridge.BindBarObserver(observer.receiver().BindNewPipeAndPassRemote());
   EXPECT_TRUE(observer.receiver().is_bound());
   EXPECT_EQ(1u, bar.observers().size());
 }
 
-// Tests we correctly generate a JsInterfaceBinderImpl for a interface that
+// Tests we correctly generate a WebUIJsBridgeImpl for a interface that
 // binds interfaces in a separate mojom.
-TEST_F(JsInterfaceBinderTest, CrossModule) {
-  TestJsInterfaceBinderUI controller;
-  mojom::TestInterfaceBinder2Impl binder(&controller, base::DoNothing());
-  binder.BindSecondaryInterface(mojo::NullReceiver());
+TEST_F(WebUIJsBridgeTest, CrossModule) {
+  TestWebUIJsBridgeUI controller;
+  mojom::TestWebUIJsBridge2Impl bridge(&controller, base::DoNothing());
+  bridge.BindSecondaryInterface(mojo::NullReceiver());
 }
 
 // Tests that we crash if the wrong WebUIController is passed to the
-// JsInterfaceBinder.
-TEST_F(JsInterfaceBinderTest, IncorrectWebUIControllerCrash) {
-  TestJsInterfaceBinderIncorrectUI controller;
+// WebUIJsBridge.
+TEST_F(WebUIJsBridgeTest, IncorrectWebUIControllerCrash) {
+  TestWebUIJsBridgeIncorrectUI controller;
   EXPECT_DEATH_IF_SUPPORTED(
-      mojom::TestInterfaceBinder2Impl binder(&controller, base::DoNothing()),
-      "");
+      mojom::TestWebUIJsBridge2Impl bridge(&controller, base::DoNothing()), "");
 }
 
 }  // namespace content

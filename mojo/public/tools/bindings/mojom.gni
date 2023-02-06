@@ -118,9 +118,9 @@ mojom_generator_sources =
       "$mojom_generator_root/generators/mojom_cpp_generator.py",
       "$mojom_generator_root/generators/mojom_java_generator.py",
       "$mojom_generator_root/generators/mojom_js_generator.py",
-      "$mojom_generator_root/generators/mojom_js_interface_binder_generator.py",
       "$mojom_generator_root/generators/mojom_mojolpm_generator.py",
       "$mojom_generator_root/generators/mojom_ts_generator.py",
+      "$mojom_generator_root/generators/mojom_webui_js_bridge_generator.py",
       "$mojom_generator_script",
     ]
 
@@ -338,8 +338,8 @@ if (enable_scrambled_message_ids) {
 #       bindings for WebUI. Ignored if use_typescript_sources is not set to
 #       true.
 #
-#   js_interface_binder_config (optional)
-#       Prefer to use the `mojom_with_js_interface_binder` target below instead
+#   webui_js_bridge_config (optional)
+#       Prefer to use the `mojom_with_webui_js_bridge` target below instead
 #       of using this argument directly.
 #
 #   js_generate_struct_deserializers (optional)
@@ -1801,13 +1801,13 @@ template("mojom") {
     }
   }
 
-  if (defined(invoker.js_interface_binder_config)) {
+  if (defined(invoker.webui_js_bridge_config)) {
     if (sources_list != []) {
-      binder_config = invoker.js_interface_binder_config
+      bridge_config = invoker.webui_js_bridge_config
 
-      generator_js_interface_binder_impl_target_name =
-          "${target_name}_js_interface_binder_impl__generator"
-      action(generator_js_interface_binder_impl_target_name) {
+      generator_webui_js_bridge_impl_target_name =
+          "${target_name}_webui_js_bridge_impl__generator"
+      action(generator_webui_js_bridge_impl_target_name) {
         visibility = [ ":*" ]
         script = mojom_generator_script
         inputs = mojom_generator_sources + jinja2_sources
@@ -1826,8 +1826,8 @@ template("mojom") {
         outputs = []
         foreach(base_path, output_file_base_paths) {
           outputs += [
-            "$root_gen_dir/${base_path}-js-interface-binder-impl.cc",
-            "$root_gen_dir/${base_path}-js-interface-binder-impl.h",
+            "$root_gen_dir/${base_path}-webui-js-bridge-impl.cc",
+            "$root_gen_dir/${base_path}-webui-js-bridge-impl.h",
           ]
         }
 
@@ -1837,23 +1837,23 @@ template("mojom") {
         args += [
           "--filelist={{response_file_name}}",
           "-g",
-          "js_interface_binder",
+          "webui_js_bridge",
         ]
 
         rebased_webui_controller_header =
-            rebase_path(binder_config.webui_controller_header, "//")
+            rebase_path(bridge_config.webui_controller_header, "//")
 
         # Use a single string for the argument to avoid it being parsed as a
         # filename by the mojom_bindings_generator.py argument parser.
         config_arg =
-            "--js_interface_binder_config=" + binder_config.webui_controller +
-            "=" + rebased_webui_controller_header
+            "--webui_js_bridge_config=" + bridge_config.webui_controller + "=" +
+            rebased_webui_controller_header
 
         args += [ config_arg ]
       }
 
       cpp_target_name = target_name
-      source_set("${target_name}_js_interface_binder_impl") {
+      source_set("${target_name}_webui_js_bridge_impl") {
         if (defined(invoker.testonly)) {
           testonly = invoker.testonly
         }
@@ -1861,16 +1861,16 @@ template("mojom") {
         sources = []
         foreach(base_path, output_file_base_paths) {
           sources += [
-            "$root_gen_dir/${base_path}-js-interface-binder-impl.cc",
-            "$root_gen_dir/${base_path}-js-interface-binder-impl.h",
+            "$root_gen_dir/${base_path}-webui-js-bridge-impl.cc",
+            "$root_gen_dir/${base_path}-webui-js-bridge-impl.h",
           ]
         }
         deps = [
           ":$cpp_target_name",
-          ":$generator_js_interface_binder_impl_target_name",
+          ":$generator_webui_js_bridge_impl_target_name",
         ]
 
-        deps += binder_config.webui_controller_deps
+        deps += bridge_config.webui_controller_deps
       }
     }
   }
@@ -2165,35 +2165,35 @@ template("mojom_component") {
   }
 }
 
-# A helper for the mojom() template above for defining a JsInterfaceBinder.
+# A helper for the mojom() template above for defining a WebUIJsBridge.
 # Supports all the same arguments as mojom() except for `sources` and adds
 # `source`, `webui_controller`, `webui_controller_header`, and
 # `webui_controller_deps` which are *required*. See below for more details.
 #
-# A JsInterfaceBinder is a Mojo interface that contains binders for all
-# interfaces that can be bound from a WebUI's JavaScript. This taret
-# will generate a C++ implementation of the JSInterfaceBinder interface
-# and a {target_name}_js_interface_binder_impl target that can be depended
+# A WebUIJsBridge is a Mojo interface that contains binders for all interfaces
+# that can be bound from a WebUI's JavaScript. This taret
+# will generate a C++ implementation of the WebUIJsBridge interface
+# and a {target_name}_webui_js_bridge_impl target that can be depended
 # on.
 #
 # The following arguments are required:
-#  - `source`: The mojom file that defines the JsInterfaceBinder interface. It's
+#  - `source`: The mojom file that defines the WebUIJsBridge interface. It's
 #    allowed to define other interfaces.
 #  - `webui_controller`: The name of the WebUIController associated with the
-#    JsInterfaceBinder.
+#    WebUIJsBridge.
 #  - `webui_controller_header`: The header where the WebUIController
 #    is declared.
 #  - `webui_controller_deps`: The target containing the WebUIController.
-template("mojom_with_js_interface_binder") {
+template("mojom_with_webui_js_bridge") {
   assert(defined(invoker.source))
   assert(defined(invoker.webui_controller),
-         "mojom_with_js_interface_binder should have a " +
+         "mojom_with_webui_js_bridge should have a " +
              "`webui_controller` parameter e.g. `foo::FooUI`.")
   assert(defined(invoker.webui_controller_header),
-         "mojom_with_js_interface_binder should have a " +
+         "mojom_with_webui_js_bridge should have a " +
              "`webui_controller_header` parameter.")
   assert(defined(invoker.webui_controller_deps),
-         "mojom_with_js_interface_binder should have a " +
+         "mojom_with_webui_js_bridge should have a " +
              "`webui_controller_deps` parameter.")
 
   mojom(target_name) {
@@ -2207,7 +2207,7 @@ template("mojom_with_js_interface_binder") {
                            ])
     sources = [ invoker.source ]
 
-    js_interface_binder_config = {
+    webui_js_bridge_config = {
       webui_controller = invoker.webui_controller
       webui_controller_header = invoker.webui_controller_header
       webui_controller_deps = invoker.webui_controller_deps

@@ -4,8 +4,8 @@
 
 module content.mojom;
 
-[JsInterfaceBinder]
-interface FooJsInterfaceBinder {
+[WebUIJsBridge]
+interface FooWebUIJsBridge {
   BindFooPageHandler(pending_receiver<FooPageHandler> page_handler,
                      pending_remote<FooPage> page);
 

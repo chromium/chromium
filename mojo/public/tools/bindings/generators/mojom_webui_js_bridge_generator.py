@@ -1,7 +1,7 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Generates C++ source files from a mojom.Module with a JSInterfaceBinder"""
+"""Generates C++ source files from a mojom.Module with a WebUIJsBridge"""
 import os.path
 import sys
 
@@ -23,6 +23,7 @@ def _setup_sys_path():
     # https://docs.python.org/3/library/sys.html?highlight=path[0]#sys.path
     sys.path.insert(1, module_dir)
 
+
 _setup_sys_path()
 
 import argparse
@@ -32,10 +33,10 @@ from mojom.generate import template_expander
 # Import it as "mojom" because "module" is a common variable name.
 import mojom.generate.module as mojom
 
-GENERATOR_PREFIX = 'js_interface_binder'
+GENERATOR_PREFIX = 'webui_js_bridge'
 
 
-class JsInterfaceBinderImplStylizer(generator.Stylizer):
+class WebUIJsBridgeImplStylizer(generator.Stylizer):
   def StylizeConstant(self, mojom_name):
     return mojom_name
 
@@ -70,7 +71,7 @@ class Generator(generator.Generator):
 
   @staticmethod
   def GetTemplatePrefix():
-    return 'js_interface_binder_templates'
+    return 'webui_js_bridge_templates'
 
   def _GetKindName(self, kind):
     """Return `kind`'s name, prefixing it with its namespace if necessary."""
@@ -82,7 +83,7 @@ class Generator(generator.Generator):
   def _GetCppType(self, kind):
     """Return a string representing the C++ type of `kind`
 
-     Returns None if the type is not supposed to be used in a JsInterfaceBinder.
+     Returns None if the type is not supposed to be used in a WebUIJsBridge.
      """
     if mojom.IsPendingRemoteKind(kind):
       return f'::mojo::PendingRemote<{self._GetKindName(kind.kind)}>'
@@ -99,41 +100,41 @@ class Generator(generator.Generator):
         'binder_variable_name': self._GetBinderMemberVariableName,
     }
 
-  def _GetValidatedInterfaceBinder(self):
-    """Returns an Interface object for the JsInterfaceBinder..
+  def _GetValidatedWebUIJsBridge(self):
+    """Returns an Interface object for the WebUIJsBridge in this module.
 
-    Raises an Exception if the interface doesn't satisfy JsInterfaceBinder
+    Raises an Exception if the interface doesn't satisfy WebUIJsBridge
     constraints.
     """
-    interface_binders = [
-        interface for interface in self.module.interfaces if
-        (interface.attributes and interface.attributes.get('JsInterfaceBinder'))
+    webui_js_bridges = [
+        interface for interface in self.module.interfaces
+        if (interface.attributes and interface.attributes.get('WebUIJsBridge'))
     ]
-    if len(interface_binders) > 1:
-      raise Exception('Found more than one JsInterfaceBinder in '
-                      f'{self.module.path}. Only one JsInterfaceBinder is '
+    if len(webui_js_bridges) > 1:
+      raise Exception('Found more than one WebUIJsBridge in '
+                      f'{self.module.path}. Only one WebUIJsBridge is '
                       'supported per mojom target.')
-    if len(interface_binders) == 0:
-      raise Exception(f'Found no JsInterfaceBinder in {self.module.path}.')
+    if len(webui_js_bridges) == 0:
+      raise Exception(f'Found no WebUIJsBridge in {self.module.path}.')
 
-    # Enforce JsInterfaceBinders constraints.
-    interface_binder = interface_binders[0]
-    for method in interface_binder.methods:
+    # Enforce WebUIJsBridges constraints.
+    webui_js_bridge = webui_js_bridges[0]
+    for method in webui_js_bridge.methods:
       if method.response_parameters != None:
-        raise Exception(f'{interface_binder.name}.{method.name} has a '
-                        'response. JsInterfaceBinder\'s methods should not '
+        raise Exception(f'{webui_js_bridge.name}.{method.name} has a '
+                        'response. WebUIJsBridge\'s methods should not '
                         'have responses.')
 
       for param in method.parameters:
         if not (mojom.IsPendingReceiverKind(param.kind)
                 or mojom.IsPendingRemoteKind(param.kind)):
-          raise Exception(f'{interface_binder.name}.{method.name}\'s '
+          raise Exception(f'{webui_js_bridge.name}.{method.name}\'s '
                           f'"{param.name}" is not a pending_receiver or a '
-                          'pending_remote. JSInterfaceBinder\'s methods '
+                          'pending_remote. WebUIJsBridge\'s methods '
                           'should only have pending_receiver or '
                           'pending_remote parameters.')
 
-    return interface_binder
+    return webui_js_bridge
 
   def _GetParameters(self):
     webui_controller_namespace = None
@@ -150,29 +151,29 @@ class Generator(generator.Generator):
 
     return {
         'module': self.module,
-        'interface_binder': self._GetValidatedInterfaceBinder(),
+        'webui_js_bridge': self._GetValidatedWebUIJsBridge(),
         'webui_controller_name': webui_controller_name,
         'webui_controller_namespace': webui_controller_namespace,
         'webui_controller_header': self.webui_controller_header,
     }
 
-  @UseJinja('js_interface_binder_impl.h.tmpl')
-  def _GenerateJsInterfaceBinderImplDeclaration(self):
+  @UseJinja('webui_js_bridge_impl.h.tmpl')
+  def _GenerateWebUIJsBridgeImplDeclaration(self):
     return self._GetParameters()
 
-  @UseJinja('js_interface_binder_impl.cc.tmpl')
-  def _GenerateJsInterfaceBinderImplDefinition(self):
+  @UseJinja('webui_js_bridge_impl.cc.tmpl')
+  def _GenerateWebUIJsBridgeImplDefinition(self):
     return self._GetParameters()
 
   def GenerateFiles(self, unparsed_args):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--js_interface_binder_config', dest='config')
+    parser.add_argument('--webui_js_bridge_config', dest='config')
     args = parser.parse_args(unparsed_args)
     (self.webui_controller_with_namespace, self.webui_controller_header) = \
         args.config.split('=')
 
-    self.module.Stylize(JsInterfaceBinderImplStylizer())
-    self.WriteWithComment(self._GenerateJsInterfaceBinderImplDeclaration(),
-                          f'{self.module.path}-js-interface-binder-impl.h')
-    self.WriteWithComment(self._GenerateJsInterfaceBinderImplDefinition(),
-                          f'{self.module.path}-js-interface-binder-impl.cc')
+    self.module.Stylize(WebUIJsBridgeImplStylizer())
+    self.WriteWithComment(self._GenerateWebUIJsBridgeImplDeclaration(),
+                          f'{self.module.path}-webui-js-bridge-impl.h')
+    self.WriteWithComment(self._GenerateWebUIJsBridgeImplDefinition(),
+                          f'{self.module.path}-webui-js-bridge-impl.cc')

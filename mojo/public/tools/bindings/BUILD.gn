@@ -61,9 +61,6 @@ action("precompile_templates") {
     "$mojom_generator_root/generators/java_templates/interface_internal.java.tmpl",
     "$mojom_generator_root/generators/java_templates/struct.java.tmpl",
     "$mojom_generator_root/generators/java_templates/union.java.tmpl",
-    "$mojom_generator_root/generators/js_interface_binder_templates/js_interface_binder_impl.cc.tmpl",
-    "$mojom_generator_root/generators/js_interface_binder_templates/js_interface_binder_impl.h.tmpl",
-    "$mojom_generator_root/generators/js_interface_binder_templates/js_interface_binder_macros.tmpl",
     "$mojom_generator_root/generators/js_templates/enum_definition.tmpl",
     "$mojom_generator_root/generators/js_templates/fuzzing.tmpl",
     "$mojom_generator_root/generators/js_templates/interface_definition.tmpl",
@@ -95,6 +92,9 @@ action("precompile_templates") {
     "$mojom_generator_root/generators/ts_templates/module_definition.tmpl",
     "$mojom_generator_root/generators/ts_templates/struct_definition.tmpl",
     "$mojom_generator_root/generators/ts_templates/union_definition.tmpl",
+    "$mojom_generator_root/generators/webui_js_bridge_templates/webui_js_bridge_impl.cc.tmpl",
+    "$mojom_generator_root/generators/webui_js_bridge_templates/webui_js_bridge_impl.h.tmpl",
+    "$mojom_generator_root/generators/webui_js_bridge_templates/webui_js_bridge_macros.tmpl",
   ]
   script = mojom_generator_script
 
@@ -102,7 +102,7 @@ action("precompile_templates") {
   outputs = [
     "$target_gen_dir/cpp_templates.zip",
     "$target_gen_dir/java_templates.zip",
-    "$target_gen_dir/js_interface_binder_templates.zip",
+    "$target_gen_dir/webui_js_bridge_templates.zip",
     "$target_gen_dir/js_templates.zip",
     "$target_gen_dir/mojolpm_templates.zip",
     "$target_gen_dir/ts_templates.zip",

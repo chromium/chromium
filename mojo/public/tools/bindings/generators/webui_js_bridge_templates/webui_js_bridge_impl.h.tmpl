@@ -1,9 +1,9 @@
-{%- import "js_interface_binder_macros.tmpl" as macros -%}
+{%- import "webui_js_bridge_macros.tmpl" as macros -%}
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-{%- set header_guard = "%s_JS_INTERFACE_BINDER_IMPL_H_"|format(
+{%- set header_guard = "%s_WEBUI_JS_BRIDGE_IMPL_H_"|format(
         module.path|upper|replace("/","_")|replace(".","_")|
             replace("-", "_")) %}
 
@@ -29,11 +29,11 @@ class {{webui_controller_name}};
 
 namespace {{module.namespace}} {
 
-{%- set class_name = "%sImpl" % interface_binder.name %}
+{%- set class_name = "%sImpl" % webui_js_bridge.name %}
 
-class {{class_name}} : public {{interface_binder.name}} {
+class {{class_name}} : public {{webui_js_bridge.name}} {
  public:
-{% for method in interface_binder.methods %}
+{% for method in webui_js_bridge.methods %}
   using BinderFor{{method.name}} = base::RepeatingCallback<void(
 {%-  for param in method.parameters %}
     {{param.kind|cpp_type}}{{"," if not loop.last else ""}}
@@ -50,12 +50,12 @@ class {{class_name}} : public {{interface_binder.name}} {
 
   {{class_name}}(
     content::WebUIController* controller,
-    {{- macros.constructor_params(interface_binder) -}}
+    {{- macros.constructor_params(webui_js_bridge) -}}
   );
 
   ~{{class_name}}();
 
-{% for method in interface_binder.methods %}
+{% for method in webui_js_bridge.methods %}
   void {{method.name}}(
 {%-  for param in method.parameters %}
     {{param.kind|cpp_type}} {{param.name}}{{"," if not loop.last else ""}}
@@ -64,7 +64,7 @@ class {{class_name}} : public {{interface_binder.name}} {
 {% endfor %}
 
  private:
-{% for method in interface_binder.methods %}
+{% for method in webui_js_bridge.methods %}
   BinderFor{{method.name}} {{method|binder_variable_name}}_;
 {% endfor %}
 };

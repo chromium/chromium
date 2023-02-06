@@ -6,8 +6,8 @@ module content.mojom;
 
 import "content/test/web_ui/test_secondary_interface.test-mojom";
 
-[JsInterfaceBinder]
-interface TestInterfaceBinder2 {
+[WebUIJsBridge]
+interface TestWebUIJsBridge2 {
   BindSecondaryInterface(
     pending_receiver<content.secondary.mojom.SecondaryInterface> receiver);
 };
