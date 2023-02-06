@@ -23,12 +23,10 @@ import {EarconId} from '../common/earcon_id.js';
 import {EventSourceType} from '../common/event_source_type.js';
 import {GestureGranularity} from '../common/gesture_command_data.js';
 import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
-import {LogType} from '../common/log_types.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {PermissionChecker} from '../common/permission_checker.js';
 import {SettingsManager} from '../common/settings_manager.js';
-import {TreeDumper} from '../common/tree_dumper.js';
 import {Personality, QueueMode, TtsSettings, TtsSpeechProperties} from '../common/tts_types.js';
 
 import {AutoScrollHandler} from './auto_scroll_handler.js';
@@ -46,7 +44,7 @@ import {TypingEcho} from './editing/editable_text_base.js';
 import {EventSource} from './event_source.js';
 import {GestureInterface} from './gesture_interface.js';
 import {BackgroundKeyboardHandler} from './keyboard_handler.js';
-import {LogStore} from './logging/log_store.js';
+import {LogManager} from './logging/log_manager.js';
 import {Output} from './output/output.js';
 import {OutputCustomEvent} from './output/output_types.js';
 import {PhoneticData} from './phonetic_data.js';
@@ -105,18 +103,16 @@ export class CommandHandler extends CommandHandlerInterface {
         this.showLearnModePage_();
         break;
       case Command.SHOW_LOG_PAGE:
-        const logPage = {url: 'chromevox/log_page/log.html'};
-        chrome.tabs.create(logPage);
+        LogManager.showLogPage();
         break;
       case Command.ENABLE_LOGGING:
-        this.enableLogging_();
+        LogManager.setLoggingEnabled(true);
         break;
       case Command.DISABLE_LOGGING:
-        this.disableLogging_();
+        LogManager.setLoggingEnabled(false);
         break;
       case Command.DUMP_TREE:
-        chrome.automation.getDesktop(
-            root => LogStore.instance.writeTreeLog(new TreeDumper(root)));
+        LogManager.logTreeDump();
         break;
       case Command.DECREASE_TTS_RATE:
         this.increaseOrDecreaseSpeechProperty_(TtsSettings.RATE, false);
@@ -1095,25 +1091,9 @@ export class CommandHandler extends CommandHandlerInterface {
   }
 
   /** @private */
-  disableLogging_() {
-    for (const type in ChromeVoxPrefs.loggingPrefs) {
-      ChromeVoxPrefs.instance.setLoggingPrefs(
-          ChromeVoxPrefs.loggingPrefs[type], false);
-    }
-  }
-
-  /** @private */
   enableChromeVoxArcSupportForCurrentApp_() {
     chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp(
         true, response => {});
-  }
-
-  /** @private */
-  enableLogging_() {
-    for (const type in ChromeVoxPrefs.loggingPrefs) {
-      ChromeVoxPrefs.instance.setLoggingPrefs(
-          ChromeVoxPrefs.loggingPrefs[type], true);
-    }
   }
 
   /** @private */
