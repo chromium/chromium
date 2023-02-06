@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/observer_list_types.h"
 #include "chrome/browser/ui/media_router/media_sink_with_cast_modes.h"
 
 namespace media_router {
@@ -14,9 +15,9 @@ namespace media_router {
 // This interface can be used for observing updates about what |MediaSink| and
 // |MediaCastMode| combinations can be cast to. Classes such as
 // |QueryResultManager| or |MediaStartRouter| will alert on these changes.
-class MediaSinkWithCastModesObserver {
+class MediaSinkWithCastModesObserver : public base::CheckedObserver {
  public:
-  virtual ~MediaSinkWithCastModesObserver() = default;
+  ~MediaSinkWithCastModesObserver() override = default;
 
   virtual void OnSinksUpdated(
       const std::vector<MediaSinkWithCastModes>& sinks) = 0;

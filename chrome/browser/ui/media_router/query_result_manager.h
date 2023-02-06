@@ -181,7 +181,7 @@ class QueryResultManager {
   std::vector<MediaSink> all_sinks_;
 
   // Registered observers.
-  base::ObserverList<MediaSinkWithCastModesObserver>::Unchecked observers_;
+  base::ObserverList<MediaSinkWithCastModesObserver> observers_;
 
   // Not owned by this object.
   const raw_ptr<MediaRouter> router_;
