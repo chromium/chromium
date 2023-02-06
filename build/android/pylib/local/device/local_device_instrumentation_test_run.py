@@ -265,14 +265,15 @@ class LocalDeviceInstrumentationTestRun(
         @trace_event.traced
         def install_helper_internal(d, apk_path=None):
           # pylint: disable=unused-argument
-          d.Install(
-              apk,
-              modules=modules,
-              fake_modules=fake_modules,
-              permissions=permissions,
-              additional_locales=additional_locales,
-              instant_app=instant_app,
-              force_queryable=self._test_instance.IsApkForceQueryable(apk))
+          with self._ArchiveLogcat(d, 'install_apk'):
+            d.Install(
+                apk,
+                modules=modules,
+                fake_modules=fake_modules,
+                permissions=permissions,
+                additional_locales=additional_locales,
+                instant_app=instant_app,
+                force_queryable=self._test_instance.IsApkForceQueryable(apk))
 
         return install_helper_internal
 

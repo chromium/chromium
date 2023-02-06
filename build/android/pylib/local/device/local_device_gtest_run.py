@@ -502,7 +502,8 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     def individual_device_set_up(device, host_device_tuples):
       def install_apk(dev):
         # Install test APK.
-        self._delegate.Install(dev)
+        with self._ArchiveLogcat(dev, 'install_apk'):
+          self._delegate.Install(dev)
 
       def push_test_data(dev):
         if self._test_instance.use_existing_test_data:
