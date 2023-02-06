@@ -386,10 +386,11 @@ void UserPerformanceTuningManager::OnBatteryStateSampled(
     }
   }
 
-  // Log the battery usage to local pref if the previous value is more than a
-  // day old.
-  if (has_battery_ && (base::Time::Now() - GetLastBatteryUsageTimestamp() >
-                       kBatteryUsageWriteFrequency)) {
+  // Log the unplugged battery usage to local pref if the previous value is more
+  // than a day old.
+  if (has_battery_ && !battery_state->is_external_power_connected &&
+      (base::Time::Now() - GetLastBatteryUsageTimestamp() >
+       kBatteryUsageWriteFrequency)) {
     pref_change_registrar_.prefs()->SetTime(
         performance_manager::user_tuning::prefs::kLastBatteryUseTimestamp,
         base::Time::Now());
