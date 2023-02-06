@@ -128,7 +128,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   std::string GetId() const override;
   std::string GetDisplayName() const override;
   ProtocolVersion SupportedProtocol() const override;
-  bool SupportsEnterpriseAttestation() const override;
   bool SupportsDevicePublicKey() const override;
   bool SupportsLargeBlobs() const override;
   const AuthenticatorSupportedOptions& Options() const override;

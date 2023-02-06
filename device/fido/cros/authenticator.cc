@@ -46,7 +46,7 @@ std::string ChromeOSAuthenticator::GetId() const {
 
 namespace {
 
-AuthenticatorSupportedOptions ChromeOSAuthenticatorOptions() {
+AuthenticatorSupportedOptions ChromeOSAuthenticatorOptions(bool u2f_enabled) {
   AuthenticatorSupportedOptions options;
   options.is_platform_device =
       AuthenticatorSupportedOptions::PlatformDevice::kYes;
@@ -57,6 +57,9 @@ AuthenticatorSupportedOptions ChromeOSAuthenticatorOptions() {
   options.user_verification_availability = AuthenticatorSupportedOptions::
       UserVerificationAvailability::kSupportedAndConfigured;
   options.supports_user_presence = true;
+  // Enterprise attestation is enabled in the authenticator if its U2F/G2F mode
+  // is enabled.
+  options.enterprise_attestation = u2f_enabled;
   return options;
 }
 
@@ -64,7 +67,7 @@ AuthenticatorSupportedOptions ChromeOSAuthenticatorOptions() {
 
 const AuthenticatorSupportedOptions& ChromeOSAuthenticator::Options() const {
   static const AuthenticatorSupportedOptions options =
-      ChromeOSAuthenticatorOptions();
+      ChromeOSAuthenticatorOptions(u2f_enabled_);
   return options;
 }
 
@@ -446,12 +449,6 @@ void ChromeOSAuthenticator::IsLacrosSupported(
             std::move(callback).Run(response && response->support_lacros());
           },
           std::move(callback)));
-}
-
-bool ChromeOSAuthenticator::SupportsEnterpriseAttestation() const {
-  // Enterprise attestation is enabled in the authenticator if its U2F/G2F mode
-  // is enabled.
-  return u2f_enabled_;
 }
 
 base::WeakPtr<FidoAuthenticator> ChromeOSAuthenticator::GetWeakPtr() {

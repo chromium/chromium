@@ -198,10 +198,6 @@ ProtocolVersion FidoAuthenticator::SupportedProtocol() const {
   return ProtocolVersion::kUnknown;
 }
 
-bool FidoAuthenticator::SupportsEnterpriseAttestation() const {
-  return false;
-}
-
 bool FidoAuthenticator::SupportsDevicePublicKey() const {
   return false;
 }

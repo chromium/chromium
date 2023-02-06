@@ -87,8 +87,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
 
   absl::optional<FidoTransportProtocol> AuthenticatorTransport() const override;
 
-  bool SupportsEnterpriseAttestation() const override;
-
   void GetTouch(base::OnceClosure callback) override {}
   base::WeakPtr<FidoAuthenticator> GetWeakPtr() override;
 

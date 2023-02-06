@@ -1029,7 +1029,7 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
     request->min_pin_length_requested = false;
   }
 
-  if (!authenticator->SupportsEnterpriseAttestation()) {
+  if (!authenticator->Options().enterprise_attestation) {
     switch (request->attestation_preference) {
       case AttestationConveyancePreference::kEnterpriseApprovedByBrowser:
         // If enterprise attestation is approved by policy then downgrade to

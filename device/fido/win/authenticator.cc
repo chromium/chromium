@@ -358,10 +358,6 @@ WinWebAuthnApiAuthenticator::AuthenticatorTransport() const {
   return absl::nullopt;
 }
 
-bool WinWebAuthnApiAuthenticator::SupportsEnterpriseAttestation() const {
-  return win_api_->Version() >= WEBAUTHN_API_VERSION_3;
-}
-
 bool WinWebAuthnApiAuthenticator::SupportsLargeBlobs() const {
   return win_api_->SupportsLargeBlobs();
 }

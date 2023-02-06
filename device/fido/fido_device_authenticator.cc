@@ -93,6 +93,10 @@ void FidoDeviceAuthenticator::InitializeAuthenticatorDone(
   initialized_ = true;
   switch (device_->supported_protocol()) {
     case ProtocolVersion::kU2f:
+      // U2F devices always "support" enterprise attestation because it turns
+      // into a bit in the makeCredential command that is ignored if not
+      // supported.
+      options_.enterprise_attestation = true;
       break;
     case ProtocolVersion::kCtap2:
       DCHECK(device_->device_info()) << "uninitialized device";
@@ -1318,16 +1322,6 @@ std::string FidoDeviceAuthenticator::GetDisplayName() const {
 ProtocolVersion FidoDeviceAuthenticator::SupportedProtocol() const {
   DCHECK(initialized_);
   return device_->supported_protocol();
-}
-
-bool FidoDeviceAuthenticator::SupportsEnterpriseAttestation() const {
-  DCHECK(initialized_);
-  if (device_->supported_protocol() == ProtocolVersion::kU2f) {
-    // U2F devices always "support" enterprise attestation because it turns into
-    // a bit in the makeCredential command that is ignored if not supported.
-    return true;
-  }
-  return options_.enterprise_attestation;
 }
 
 bool FidoDeviceAuthenticator::SupportsDevicePublicKey() const {
