@@ -210,10 +210,6 @@ static_library("content_shell_lib") {
       "browser/shell_web_contents_view_delegate_ios.mm",
     ]
     configs += [ "//build/config/compiler:enable_arc" ]
-    deps += [
-      "//services/tracing/public/cpp",
-      "//services/tracing/public/mojom:mojom",
-    ]
   }
 
   if (is_win) {
@@ -344,6 +340,13 @@ static_library("content_shell_lib") {
 
   if (is_mac) {
     deps += [ "//ui/display:test_support" ]
+  }
+
+  if (is_ios) {
+    deps += [
+      "//services/tracing/public/cpp",
+      "//services/tracing/public/mojom:mojom",
+    ]
   }
 
   if (is_android) {
