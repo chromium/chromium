@@ -221,17 +221,6 @@ fuzzer_test("speech_audio_encoder_fuzzer") {
   ]
 }
 
-fuzzer_test("attribution_simulator_fuzzer") {
-  sources = [ "attribution_simulator_fuzzer.cc" ]
-  deps = [
-    "//content/test:test_support",
-    "//testing/libfuzzer/proto:json_proto",
-    "//testing/libfuzzer/proto:json_proto_converter",
-    "//third_party/libprotobuf-mutator",
-  ]
-  seed_corpus = "//content/test/data/fuzzer_corpus/attribution_simulator/"
-}
-
 fuzzer_test("browser_accessibility_fuzzer") {
   sources = [ "browser_accessibility_fuzzer.cc" ]
   deps = [
