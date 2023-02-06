@@ -183,16 +183,8 @@ bool ContainsIcannNameCollisionIp(const std::vector<IPEndPoint>& endpoints) {
 
 // True if |hostname| ends with either ".local" or ".local.".
 bool ResemblesMulticastDNSName(base::StringPiece hostname) {
-  const char kSuffix[] = ".local.";
-  const size_t kSuffixLen = sizeof(kSuffix) - 1;
-  const size_t kSuffixLenTrimmed = kSuffixLen - 1;
-  if (!hostname.empty() && hostname.back() == '.') {
-    return hostname.size() > kSuffixLen &&
-           !hostname.compare(hostname.size() - kSuffixLen, kSuffixLen, kSuffix);
-  }
-  return hostname.size() > kSuffixLenTrimmed &&
-         !hostname.compare(hostname.size() - kSuffixLenTrimmed,
-                           kSuffixLenTrimmed, kSuffix, kSuffixLenTrimmed);
+  return base::EndsWith(hostname, ".local") ||
+         base::EndsWith(hostname, ".local.");
 }
 
 bool ConfigureAsyncDnsNoFallbackFieldTrial() {
