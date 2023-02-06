@@ -47,6 +47,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/transform_util.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_util.h"
 
@@ -69,11 +70,60 @@ constexpr base::TimeDelta kShowOverviewTimeWhenDragSuspend =
 // The scroll update threshold to restart the show overview timer.
 constexpr float kScrollUpdateOverviewThreshold = 2.f;
 
+// Once we have dragged the window more than the display height divided by this
+// ratio, the other window copy will be fully faded out.
+constexpr float kOtherWindowFullFadeHeightRatio = 8.f;
+
+// The other window will be scaled down to this maximum during dragging.
+constexpr float kOtherWindowMaxScale = 0.9f;
+
 // Presentation time histogram names.
 constexpr char kDragWindowFromShelfHistogram[] =
     "Ash.DragWindowFromShelf.PresentationTime";
 constexpr char kDragWindowFromShelfMaxLatencyHistogram[] =
     "Ash.DragWindowFromShelf.PresentationTime.MaxLatency";
+
+// Self deleting class that takes ownership of the other window copy and
+// animates it on drag finished. Deletes itself when the animation is done. The
+// other window refers to the secondary window that moves when dragging from
+// the shelf.
+class OtherWindowCopyAnimation {
+ public:
+  // Takes ownership of the layer tree `other_winodw_copy`. Use a fade in and
+  // scale up animation if `show` is true. Use a fade out animation if `show` is
+  // false.
+  OtherWindowCopyAnimation(
+      std::unique_ptr<ui::LayerTreeOwner> other_window_copy,
+      bool show)
+      : other_window_copy_(std::move(other_window_copy)) {
+    ui::Layer* layer = other_window_copy_->root();
+
+    views::AnimationBuilder builder;
+    builder
+        .OnEnded(base::BindOnce(&OtherWindowCopyAnimation::OnAnimationEnded,
+                                base::Unretained(this)))
+        .OnAborted(base::BindOnce(&OtherWindowCopyAnimation::OnAnimationEnded,
+                                  base::Unretained(this)))
+        .SetPreemptionStrategy(
+            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+        .Once()
+        .SetDuration(base::Milliseconds(350))
+        .SetOpacity(layer, show ? 1.f : 0.f, gfx::Tween::LINEAR);
+    if (show) {
+      builder.Once()
+          .SetDuration(base::Milliseconds(350))
+          .SetTransform(layer, gfx::Transform(), gfx::Tween::LINEAR);
+    }
+  }
+  OtherWindowCopyAnimation(const OtherWindowCopyAnimation&) = delete;
+  OtherWindowCopyAnimation& operator=(const OtherWindowCopyAnimation&) = delete;
+  ~OtherWindowCopyAnimation() = default;
+
+  void OnAnimationEnded() { delete this; }
+
+ private:
+  std::unique_ptr<ui::LayerTreeOwner> other_window_copy_;
+};
 
 }  // namespace
 
@@ -207,7 +257,7 @@ DragWindowFromShelfController::~DragWindowFromShelfController() {
   CancelDrag();
   if (window_)
     window_->RemoveObserver(this);
-  ResetOtherWindow();
+  ResetOtherWindow(/*show=*/absl::nullopt);
 }
 
 void DragWindowFromShelfController::Drag(const gfx::PointF& location_in_screen,
@@ -380,7 +430,7 @@ void DragWindowFromShelfController::FinalizeDraggedWindow() {
 
 void DragWindowFromShelfController::OnWindowDestroying(aura::Window* window) {
   if (window == other_window_) {
-    ResetOtherWindow();
+    ResetOtherWindow(/*show=*/absl::nullopt);
     return;
   }
 
@@ -501,10 +551,15 @@ void DragWindowFromShelfController::OnDragEnded(
       windows_hider_.reset();
       break;
   }
+
+  // If it exists, `other_window_copy_` will restore to its initial bounds and
+  // opacity if the drag result is to restore windows to their original bounds.
+  // Otherwise we fade out the copy before destroying it.
+  ResetOtherWindow(/*show=*/*window_drag_result_ ==
+                   ShelfWindowDragResult::kRestoreToOriginalBounds);
+
   window_drag_result_.reset();
   started_in_overview_ = false;
-
-  ResetOtherWindow();
 }
 
 void DragWindowFromShelfController::UpdateDraggedWindow(
@@ -564,14 +619,20 @@ void DragWindowFromShelfController::UpdateDraggedWindow(
   SetTransform(window_, transform);
 
   if (other_window_copy_) {
-    // TODO(b/252504142): Figure out the opacity once motion specs are ready.
-    // For now, the opacity will become zero once we have dragged more than one
-    // eighth of the display.
-    float opacity = (initial_location_in_screen_.y() - location_in_screen.y()) /
-                    (display_bounds.height() / 8.f);
+    // When we have dragged 1/8th of the display height, the copy should be
+    // fully faded out and shrunk.
+    float copy_scale =
+        (bounds.bottom() - location_in_screen.y()) /
+        (display_bounds.height() / kOtherWindowFullFadeHeightRatio);
+    copy_scale = 1.f - base::clamp(copy_scale, 0.f, 1.f);
 
-    opacity = base::clamp(opacity, 0.f, 1.f);
-    other_window_copy_->root()->SetOpacity(1.f - opacity);
+    other_window_copy_->root()->SetOpacity(copy_scale);
+    const float copy_transform_scale =
+        base::clamp(copy_scale, kOtherWindowMaxScale, 1.f);
+    const gfx::Transform copy_transform = gfx::GetScaleTransform(
+        other_window_copy_->root()->bounds().CenterPoint(),
+        copy_transform_scale);
+    other_window_copy_->root()->SetTransform(copy_transform);
   }
 }
 
@@ -799,10 +860,32 @@ void DragWindowFromShelfController::OnWindowDragStartedInOverview() {
   HideOverviewDuringDrag();
 }
 
-void DragWindowFromShelfController::ResetOtherWindow() {
+void DragWindowFromShelfController::ResetOtherWindow(
+    absl::optional<bool> show) {
   if (other_window_) {
     other_window_->RemoveObserver(this);
     other_window_ = nullptr;
+
+    if (show.has_value()) {
+      DCHECK(other_window_copy_);
+
+      // We can skip the animation if the copy is already dragged to its final
+      // opacity and transform (if showing). This can happen since the copy is
+      // fully transparent after dragging more than 1/8th of the display height.
+      ui::Layer* layer = other_window_copy_->root();
+      if (show.value()) {
+        if (layer->GetTargetOpacity() != 1.f &&
+            layer->GetTargetTransform() != gfx::Transform()) {
+          new OtherWindowCopyAnimation(std::move(other_window_copy_),
+                                       /*show=*/true);
+        }
+      } else {
+        if (layer->GetTargetOpacity() != 0.f) {
+          new OtherWindowCopyAnimation(std::move(other_window_copy_),
+                                       /*show=*/false);
+        }
+      }
+    }
   }
   other_window_copy_.reset();
 }

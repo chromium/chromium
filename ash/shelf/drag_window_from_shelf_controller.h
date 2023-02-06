@@ -172,8 +172,13 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
   // function is supposed to be called with an active overview session.
   void OnWindowDragStartedInOverview();
 
-  // Cleans up `other_window_` and `other_window_copy`.
-  void ResetOtherWindow();
+  // Cleans up `other_window_` and `other_window_copy_`.
+  // If `show` is `absl::nullopt`, we destroy the copy without animation.
+  // If `show` is true, drag has been canceled and we scale up the copy and fade
+  // it in. The copy will be destroyed and replaced by the original window on
+  // animation end.
+  // If `show` is false, fade out the copy and destroy it after the animation.
+  void ResetOtherWindow(absl::optional<bool> show);
 
   aura::Window* window_ = nullptr;
   // The `other_window_` refers to the window other than `window_` that is
