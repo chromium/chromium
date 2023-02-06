@@ -460,7 +460,7 @@ void AppListSyncableService::InitFromLocalStorage() {
         item_dict.FindBool(kEmptyItemOrdinalFixable).value_or(true);
 
     // Fetch icon colors from `dict_item` if any.
-    if (item.second.FindKey(kBackgroundColorKey)) {
+    if (item_dict.contains(kBackgroundColorKey)) {
       // Retrieve the background color.
       const std::string* background_color_internal_string =
           item_dict.FindString(kBackgroundColorKey);
