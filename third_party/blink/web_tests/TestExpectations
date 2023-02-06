@@ -6899,3 +6899,6 @@ crbug.com/1411508 external/wpt/performance-timeline/not-restored-reasons/perform
 
 # Sheriff 2023-02-06
 crbug.com/1413112 [ Mac10.15 ] virtual/reduce-accept-language/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
+
+# WPT for checking if the browser supports lazy loading of non matching media queries
+crbug.com/1001078 external/wpt/css/mediaqueries/mq-non-matching-lazy-load.html [ Failure ]
