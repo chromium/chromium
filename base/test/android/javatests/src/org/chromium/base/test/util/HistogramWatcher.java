@@ -192,6 +192,14 @@ public class HistogramWatcher {
      * Assert that the watched histograms were recorded as expected.
      */
     public void assertExpected() {
+        assertExpected(/* failureMessage */ null);
+    }
+
+    /**
+     * Assert that the watched histograms were recorded as expected, with a custom message if the
+     * assertion is not satisfied.
+     */
+    public void assertExpected(@Nullable String customMessage) {
         for (Entry<HistogramAndValue, Integer> kv : mRecordsExpected.entrySet()) {
             HistogramAndValue histogramAndValue = kv.getKey();
             int expectedDelta = kv.getValue();
@@ -200,11 +208,12 @@ public class HistogramWatcher {
             int actualDelta = actualFinalCount - mStartingCounts.get(histogramAndValue);
 
             if (expectedDelta != actualDelta) {
-                fail(String.format(
+                String defaultMessage = String.format(
                         "Expected delta of <%d record(s)> of histogram \"%s\" with value [%d], "
                                 + "but saw a delta of <%d record(s)> in that value's bucket.",
                         expectedDelta, histogramAndValue.mHistogram, histogramAndValue.mValue,
-                        actualDelta));
+                        actualDelta);
+                failWithDefaultOrCustomMessage(customMessage, defaultMessage);
             }
         }
 
@@ -216,11 +225,21 @@ public class HistogramWatcher {
             int actualDelta = actualFinalCount - mStartingTotalCounts.get(histogram);
 
             if (expectedDelta != actualDelta) {
-                fail(String.format(
+                String defaultMessage = String.format(
                         "Expected delta of <%d total record(s)> of histogram \"%s\", but saw a "
                                 + "delta of <%d total record(s)>.",
-                        expectedDelta, histogram, actualDelta));
+                        expectedDelta, histogram, actualDelta);
+                failWithDefaultOrCustomMessage(customMessage, defaultMessage);
             }
+        }
+    }
+
+    private void failWithDefaultOrCustomMessage(
+            @Nullable String customMessage, String defaultMessage) {
+        if (customMessage != null) {
+            fail(String.format("%s\n%s", customMessage, defaultMessage));
+        } else {
+            fail(defaultMessage);
         }
     }
 
