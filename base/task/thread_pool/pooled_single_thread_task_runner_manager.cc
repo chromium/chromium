@@ -518,7 +518,11 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
     return static_cast<WorkerThreadDelegate*>(worker_->delegate());
   }
 
-  const raw_ptr<PooledSingleThreadTaskRunnerManager> outer_;
+  // Dangling but safe since use is controlled by `g_manager_is_alive`.
+  const raw_ptr<PooledSingleThreadTaskRunnerManager,
+                DisableDanglingPtrDetection>
+      outer_;
+
   const raw_ptr<WorkerThread, DanglingUntriaged> worker_;
   const SingleThreadTaskRunnerThreadMode thread_mode_;
   const scoped_refptr<Sequence> sequence_;
