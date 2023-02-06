@@ -11,6 +11,7 @@
 #include "build/branding_buildflags.h"
 #include "chromeos/crosapi/cpp/channel_to_enum.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
+#include "components/variations/cros/featured.pb.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/service/variations_field_trial_creator.h"
 
@@ -56,6 +57,7 @@ std::unique_ptr<ClientFilterableState> GetClientFilterableState(
 
 absl::optional<SafeSeed> GetSafeSeedData(const base::CommandLine* command_line,
                                          FILE* stream) {
+  featured::SeedDetails safe_seed;
   if (command_line->HasSwitch(kSafeSeedSwitch)) {
     // Read safe seed from |stream|.
     std::string safe_seed_data;
@@ -63,9 +65,14 @@ absl::optional<SafeSeed> GetSafeSeedData(const base::CommandLine* command_line,
       PLOG(ERROR) << "Failed to read from stream:";
       return absl::nullopt;
     }
-    return SafeSeed{true, safe_seed_data};
+    // Parse safe seed.
+    if (!safe_seed.ParseFromString(safe_seed_data)) {
+      LOG(ERROR) << "Failed to parse proto from input";
+      return absl::nullopt;
+    }
+    return SafeSeed{true, safe_seed};
   }
-  return SafeSeed{false, ""};
+  return SafeSeed{false, safe_seed};
 }
 
 int EvaluateSeedMain(const base::CommandLine* command_line, FILE* stream) {

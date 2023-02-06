@@ -12,6 +12,7 @@
 
 #include "base/command_line.h"
 #include "components/variations/client_filterable_state.h"
+#include "components/variations/cros/featured.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations::evaluate_seed {
@@ -22,11 +23,11 @@ std::unique_ptr<ClientFilterableState> GetClientFilterableState(
 
 struct SafeSeed {
   bool use_safe_seed = false;
-  std::string seed_data;
+  featured::SeedDetails seed_data;
 };
 
-// Read the safe seed data, but do not parse it, from |stream|, if and only if
-// the |command_line| indicates that we should use the safe seed.
+// Read the safe seed data from |stream|, if and only if the |command_line|
+// indicates that we should use the safe seed.
 absl::optional<SafeSeed> GetSafeSeedData(const base::CommandLine* command_line,
                                          FILE* stream);
 

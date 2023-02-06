@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 executable("evaluate_seed") {
   sources = [ "evaluate_seed_main.cc" ]
@@ -18,6 +19,7 @@ source_set("evaluate_seed_lib") {
     "evaluate_seed.h",
   ]
   deps = [
+    ":proto",
     "//base",
     "//build:branding_buildflags",
     "//chromeos/crosapi/cpp",
@@ -36,6 +38,7 @@ source_set("unit_tests") {
   sources = [ "evaluate_seed_unittest.cc" ]
   deps = [
     ":evaluate_seed_lib",
+    ":proto",
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
@@ -52,4 +55,10 @@ test("variations_cros_unittests") {
     ":unit_tests",
     "//components/test:test_support",
   ]
+}
+
+proto_library("proto") {
+  sources = [ "//third_party/cros_system_api/dbus/featured/featured.proto" ]
+
+  proto_out_dir = "components/variations/cros"
 }

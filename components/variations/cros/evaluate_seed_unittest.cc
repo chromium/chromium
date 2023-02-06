@@ -8,9 +8,20 @@
 #include "base/test/scoped_chromeos_version_info.h"
 #include "build/branding_buildflags.h"
 #include "components/variations/client_filterable_state.h"
+#include "components/variations/cros/featured.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations::evaluate_seed {
+
+MATCHER_P(EqualsProto,
+          message,
+          "Match a proto Message equal to the matcher's argument.") {
+  std::string expected_serialized, actual_serialized;
+  message.SerializeToString(&expected_serialized);
+  arg.SerializeToString(&actual_serialized);
+  return expected_serialized == actual_serialized;
+}
 
 TEST(VariationsCrosEvaluateSeed, GetClientFilterable_Enrolled) {
   base::CommandLine command_line({"evaluate_seed", "--enterprise-enrolled"});
@@ -88,20 +99,27 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Should ignore data if flag is off.
 TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_Off) {
-  std::string text("some text");
+  featured::SeedDetails safe_seed;
+  safe_seed.set_compressed_data("some text");
+  std::string text;
+  safe_seed.SerializeToString(&text);
   FILE* stream = fmemopen(text.data(), text.size(), "r");
   ASSERT_NE(stream, nullptr);
 
   base::CommandLine command_line({"evaluate_seed"});
   auto data = GetSafeSeedData(&command_line, stream);
+  featured::SeedDetails empty_seed;
   ASSERT_TRUE(data.has_value());
   EXPECT_FALSE(data.value().use_safe_seed);
-  EXPECT_EQ(data.value().seed_data, "");
+  EXPECT_THAT(data.value().seed_data, EqualsProto(empty_seed));
 }
 
 // Should return specified data via stream if flag is on.
 TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On) {
-  std::string text("some text");
+  featured::SeedDetails safe_seed;
+  safe_seed.set_compressed_data("some text");
+  std::string text;
+  safe_seed.SerializeToString(&text);
   FILE* stream = fmemopen(text.data(), text.size(), "r");
   ASSERT_NE(stream, nullptr);
 
@@ -109,31 +127,49 @@ TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On) {
   auto data = GetSafeSeedData(&command_line, stream);
   ASSERT_TRUE(data.has_value());
   EXPECT_TRUE(data.value().use_safe_seed);
-  EXPECT_EQ(data.value().seed_data, text);
+  EXPECT_THAT(data.value().seed_data, EqualsProto(safe_seed));
 }
 
 // Should not attempt to read stream if flag is not on.
 TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_Off_FailRead) {
-  std::string text("some text");
+  featured::SeedDetails safe_seed;
+  safe_seed.set_compressed_data("some text");
+  std::string text;
+  safe_seed.SerializeToString(&text);
   FILE* stream = fmemopen(text.data(), text.size(), "w");
   ASSERT_NE(stream, nullptr);
 
   base::CommandLine command_line({"evaluate_seed"});
   auto data = GetSafeSeedData(&command_line, stream);
+  featured::SeedDetails empty_seed;
   ASSERT_TRUE(data.has_value());
   EXPECT_FALSE(data.value().use_safe_seed);
-  EXPECT_EQ(data.value().seed_data, "");
+  EXPECT_THAT(data.value().seed_data, EqualsProto(empty_seed));
 }
 
 // If flag is on and reading fails, should return nullopt.
 TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On_FailRead) {
-  std::string text("some text");
+  featured::SeedDetails safe_seed;
+  safe_seed.set_compressed_data("some text");
+  std::string text;
+  safe_seed.SerializeToString(&text);
   FILE* stream = fmemopen(text.data(), text.size(), "w");
   ASSERT_NE(stream, nullptr);
 
   base::CommandLine command_line({"evaluate_seed", "--use-safe-seed"});
   auto data = GetSafeSeedData(&command_line, stream);
   EXPECT_FALSE(data.has_value());
+}
+
+// If flag is on and parsing input fails, should return nullopt.
+TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On_FailParse) {
+  std::string text("not a serialized proto");
+  FILE* stream = fmemopen(text.data(), text.size(), "r");
+  ASSERT_NE(stream, nullptr);
+
+  base::CommandLine command_line({"evaluate_seed", "--use-safe-seed"});
+  auto data = GetSafeSeedData(&command_line, stream);
+  ASSERT_FALSE(data.has_value());
 }
 
 // If flag is on and reading fails, should return nullopt.
