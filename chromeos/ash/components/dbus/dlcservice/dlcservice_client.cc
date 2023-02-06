@@ -114,14 +114,17 @@ class DlcserviceClientImpl : public DlcserviceClient {
                ProgressCallback progress_callback) override {
     CheckServiceAvailable("Install");
     const std::string& id = install_request.id();
+    VLOG(1) << "DLC install called for: " << id;
     // If another installation for the same DLC ID was already called, go ahead
     // and hold the installation fields.
     if (installation_holder_.find(id) != installation_holder_.end()) {
+      LOG(WARNING) << "DLC install is already in progress for: " << id;
       HoldInstallation(install_request, std::move(install_callback),
                        std::move(progress_callback));
       return;
     }
     if (installing_) {
+      LOG(WARNING) << "DLC install is getting queued for: " << id;
       EnqueueTask(base::BindOnce(
           &DlcserviceClientImpl::Install, weak_ptr_factory_.GetWeakPtr(),
           std::move(install_request), std::move(install_callback),
@@ -372,6 +375,8 @@ class DlcserviceClientImpl : public DlcserviceClient {
 
     const auto err = DlcserviceErrorResponseHandler(err_response).get_err();
     if (err == dlcservice::kErrorBusy) {
+      // No need to log here, as it can be inferred from error response handler
+      // and the binded callback logging.
       EnqueueTask(base::BindOnce(&DlcserviceClientImpl::Install,
                                  weak_ptr_factory_.GetWeakPtr(),
                                  install_request, std::move(install_callback),
