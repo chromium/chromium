@@ -1,0 +1,9 @@
+CONSOLE ERROR: Uncaught Unable to fetch WebGL rendering context for Canvas
+Verifies the contents of the RENDERER and VENDOR strings to avoid regressions.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+FAIL successfullyParsed should be true. Was false.
+
+TEST COMPLETE
+

@@ -1,0 +1,22 @@
+Check the imageBitmap of webgl.
+PASS d[0] == 0 is true
+PASS d[1] == 255 is true
+PASS d[2] == 0 is true
+PASS d[3] == 255 is true
+PASS d[0] == 0 is true
+PASS d[1] == 255 is true
+PASS d[2] == 0 is true
+PASS d[3] == 255 is true
+Check the imageBitmap of webgl in the next frame. drawingBuffer is discarded.
+PASS d[0] == 0 is true
+PASS d[1] == 0 is true
+PASS d[2] == 0 is true
+PASS d[3] == 0 is true
+PASS d[0] == 0 is true
+PASS d[1] == 0 is true
+PASS d[2] == 0 is true
+PASS d[3] == 0 is true
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

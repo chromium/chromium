@@ -1,0 +1,10 @@
+Tests that User-Agent override works for requests from Service Workers.
+
+navigated to http://localhost:8000/devtools/service-workers/resources/sw-return-useragent.php
+user-agent: Mozilla/5.0 (Overridden User Agent)
+awaited service worker target created
+navigated to http://127.0.0.1:8000
+
+Stopped worker and awaited target removal
+Error: exception from evaluateInPageAnonymously.
+

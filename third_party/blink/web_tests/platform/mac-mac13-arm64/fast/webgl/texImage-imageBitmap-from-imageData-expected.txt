@@ -1,0 +1,8 @@
+CONSOLE ERROR: Uncaught TypeError: Cannot read properties of null (reading 'clearColor')
+FAIL Unexpected error: Uncaught TypeError: Cannot read properties of null (reading 'clearColor')
+FAIL successfullyParsed should be true. Was false.
+
+TEST COMPLETE
+
+ 
+Test FAILED

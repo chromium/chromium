@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Tests basic functionalities of OffscreenCanvas.getContext on the main thread. assert_true: expected true got false
+Harness: the test ran to completion.
+

@@ -1,0 +1,6 @@
+Tests the Timeline events for GPUTask
+
+Error: Uncaught (in promise) TypeError: Cannot read properties of null (reading 'getParameter') TypeError: Cannot read properties of null (reading 'getParameter')
+    at performActions (test://evaluations/0/timeline-gpu-tasks.js:12:19)
+    at <anonymous>:1:1
+

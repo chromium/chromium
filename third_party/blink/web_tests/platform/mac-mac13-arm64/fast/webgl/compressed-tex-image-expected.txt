@@ -1,0 +1,12 @@
+This test ensures WebGL implementations correctly implement compressedTexImage2D and compressedTexSubImage2D.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+
+
+FAIL Unable to fetch WebGL rendering context for Canvas
+FAIL context does not exist
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

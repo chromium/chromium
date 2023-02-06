@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+NOTRUN First contentful paint fires due to webgl2 canvas render. WebGL 2 Canvas isn't supported.
+Harness: the test ran to completion.
+

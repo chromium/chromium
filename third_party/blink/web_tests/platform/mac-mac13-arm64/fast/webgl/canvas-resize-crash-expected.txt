@@ -1,0 +1,10 @@
+Tests that canvas does not crash on resize.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS Canvas did not crash on resize.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+FAIL Unable to fetch WebGL rendering context for Canvas

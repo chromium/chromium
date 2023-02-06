@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test that WebGL context loss events can be handled with OffscreenCanvas Cannot read properties of null (reading 'isContextLost')
+Harness: the test ran to completion.
+

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Create WebSocket - Close the Connection - close(1005) - see '7.1.5.  The WebSocket Connection Close Code' in http://www.ietf.org/rfc/rfc6455.txt assert_unreached: close event should not fire Reached unreachable code
+Harness: the test ran to completion.
+

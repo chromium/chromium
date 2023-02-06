@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test that webgl accepts a small view of ArrayBuffer bigger than 2GB. Cannot read properties of null (reading 'createShader')
+Harness: the test ran to completion.
+

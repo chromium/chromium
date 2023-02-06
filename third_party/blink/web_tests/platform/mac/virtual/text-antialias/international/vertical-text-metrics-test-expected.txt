@@ -14,9 +14,9 @@ string「あ、変っ！」。
 
 
 
-width=227
-width=33
-width=33
-width=227
-width=33
-width=33
+width=219
+width=30
+width=30
+width=219
+width=30
+width=30

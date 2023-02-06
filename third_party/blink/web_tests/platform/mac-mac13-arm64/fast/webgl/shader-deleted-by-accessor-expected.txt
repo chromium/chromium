@@ -1,0 +1,9 @@
+CONSOLE ERROR: Uncaught Unable to fetch WebGL rendering context for Canvas
+Verifies that WebGLRenderingContext::getAttachedShaders doesn't crash when an accessor property is defined on Array.prototype.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+FAIL successfullyParsed should be true. Was false.
+
+TEST COMPLETE
+

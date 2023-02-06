@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+FAIL Tests requestSession accepts XRSessionInit dictionary - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL Tests requestSession accepts XRSessionInit dictionary - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL Tests requestSession accepts XRSessionInit dictionary with empty feature lists - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL Tests requestSession accepts XRSessionInit dictionary with empty feature lists - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL Tests requestSession ignores unknown strings in optionalFeatures - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL Tests requestSession ignores unknown strings in optionalFeatures - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL Tests requestSession ignores unknown objects in optionalFeatures - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL Tests requestSession ignores unknown objects in optionalFeatures - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.
+

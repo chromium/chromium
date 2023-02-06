@@ -1,0 +1,2 @@
+ALERT: No WebGL context found
+CONSOLE ERROR: Uncaught TypeError: Cannot read properties of null (reading 'viewport')

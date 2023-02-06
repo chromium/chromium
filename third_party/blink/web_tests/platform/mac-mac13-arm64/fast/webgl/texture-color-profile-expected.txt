@@ -1,0 +1,13 @@
+CONSOLE ERROR: Uncaught TypeError: Cannot read properties of null (reading 'VERTEX_SHADER')
+Test that applying a color profile to a texture with separate alpha doesn't destroy the texture.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+
+
+This test isn't appropriate to include in the WebGL conformance suite, since the browser's behavior when applying a color profile can't be guaranteed.
+FAIL Unable to fetch WebGL rendering context for Canvas
+FAIL successfullyParsed should be true. Was false.
+
+TEST COMPLETE
+

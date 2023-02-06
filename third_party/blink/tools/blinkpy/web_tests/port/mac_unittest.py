@@ -58,13 +58,17 @@ class MacPortTest(port_testcase.PortTestCase):
     def test_versions(self):
         self.assert_name(None, 'mac11', 'mac-mac11')
         self.assert_name(None, 'mac12', 'mac-mac12')
+        self.assert_name(None, 'mac13', 'mac-mac13')
         self.assert_name('mac', 'mac11', 'mac-mac11')
         self.assert_name('mac', 'mac12', 'mac-mac12')
+        self.assert_name('mac', 'mac13', 'mac-mac13')
 
         self.assert_name(None, 'mac11', 'mac-mac11-arm64', 'arm64')
         self.assert_name(None, 'mac12', 'mac-mac12-arm64', 'arm64')
+        self.assert_name(None, 'mac13', 'mac-mac13-arm64', 'arm64')
         self.assert_name('mac', 'mac11', 'mac-mac11-arm64', 'arm64')
         self.assert_name('mac', 'mac12', 'mac-mac12-arm64', 'arm64')
+        self.assert_name('mac', 'mac13', 'mac-mac13-arm64', 'arm64')
 
     def test_driver_name_option(self):
         self.assertTrue(
