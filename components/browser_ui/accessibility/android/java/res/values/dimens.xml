@@ -7,9 +7,10 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <dimen name="page_zoom_preview_image_size">24dp</dimen>
 
-    <dimen name="page_zoom_view_margins">32dp</dimen>
+    <dimen name="page_zoom_view_margins">20dp</dimen>
     <dimen name="page_zoom_view_level_margin">8dp</dimen>
     <dimen name="page_zoom_view_level_padding">12dp</dimen>
+    <dimen name="page_zoom_view_level_padding_large">16dp</dimen>
     <dimen name="page_zoom_view_elevation">4dp</dimen>
     <dimen name="page_zoom_view_corner_radius">44dp</dimen>
     <dimen name="page_zoom_view_max_width">300dp</dimen>

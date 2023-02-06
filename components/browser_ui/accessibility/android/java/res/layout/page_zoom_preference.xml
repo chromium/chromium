@@ -29,6 +29,7 @@ found in the LICENSE file.
         style="@style/TextAppearance.TextSmall.Secondary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingTop="@dimen/page_zoom_view_level_padding_large"
         android:textAlignment="center" />
 
     <include layout="@layout/page_zoom_slider" />
@@ -37,15 +38,15 @@ found in the LICENSE file.
         style="@style/PreferenceTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/page_zoom_view_level_margin"
         android:text="@string/page_zoom_preview_title" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="180dp"
-        android:background="@drawable/rectangle_surface_1"
+        android:background="@drawable/rounded_rectangle_surface_1"
         android:layout_marginTop="10dp"
-        android:padding="16dp"
+        android:padding="@dimen/page_zoom_view_level_padding_large"
         android:orientation="vertical" >
 
         <ImageView
@@ -61,6 +62,8 @@ found in the LICENSE file.
             style="@style/TextAppearance.TextLarge.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/page_zoom_view_level_margin"
+            android:layout_marginBottom="@dimen/page_zoom_view_level_margin"
             android:text="@string/page_zoom_preview_text_title" />
 
         <TextView
@@ -68,6 +71,7 @@ found in the LICENSE file.
             style="@style/TextAppearance.TextMedium.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/page_zoom_view_level_margin"
             android:text="@string/page_zoom_preview_text_summary" />
 
         <TextView
