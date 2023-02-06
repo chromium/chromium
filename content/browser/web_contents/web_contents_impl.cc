@@ -4602,6 +4602,16 @@ std::string WebContentsImpl::DumpAccessibilityTree(
   // using an inspection tool, e.g. chrome://accessibility.
   BrowserAccessibilityManager::AlwaysFailFast();
 
+  // Since for Web Content we get the AXTree updates through the renderer at a
+  // point after the manager is created, there are cases where at this point in
+  // the lifecycle the AXTree associated with `ax_mgr` does not have a valid
+  // tree ID. As such, if this is the case we return an empty string early. If
+  // we don't have this check, there will be a scenario where we then try to get
+  // the manager using the ID (which at this point is invalid) which leads to a
+  // crash. See https://crbug.com/1405036.
+  if (!ax_mgr->HasValidTreeID())
+    return "-";
+
   std::unique_ptr<ui::AXTreeFormatter> formatter =
       internal ? AXInspectFactory::CreateBlinkFormatter()
                : AXInspectFactory::CreatePlatformFormatter();
