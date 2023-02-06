@@ -103,7 +103,7 @@ export class CategoriesElement extends PolymerElement {
   }
 
   private computeSelectedCategory_() {
-    if (!this.theme_) {
+    if (!this.theme_ || this.theme_.thirdPartyThemeInfo) {
       return {type: CategoryType.NONE};
     }
     if (!this.theme_.backgroundImage) {

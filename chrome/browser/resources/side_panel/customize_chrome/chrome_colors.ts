@@ -118,7 +118,8 @@ export class ChromeColorsElement extends PolymerElement {
 
   private computeSelectedColor_(): SelectedColor {
     // None will be considered selected if it isn't classic chrome.
-    if (!this.colors_ || !this.theme_ || this.theme_.backgroundImage) {
+    if (!this.colors_ || !this.theme_ || this.theme_.backgroundImage ||
+        this.theme_.thirdPartyThemeInfo) {
       return {type: ColorType.NONE};
     }
     if (!this.theme_.foregroundColor) {
