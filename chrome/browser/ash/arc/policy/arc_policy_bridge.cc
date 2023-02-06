@@ -125,8 +125,9 @@ void MapObjectToPresenceBool(const std::string& arc_policy_name,
     return;
   }
   for (const auto& field : fields) {
-    if (!policy_value->FindKey(field))
+    if (!policy_value->GetDict().contains(field)) {
       return;
+    }
   }
   filtered_policies->Set(arc_policy_name, true);
 }
