@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 27
+// Next MinVersion: 28
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -694,6 +694,13 @@ enum LohsStatus {
   kErrorGeneric = 2,
   kErrorIncompatibleMode = 3,
   kErrorTetheringDisallowed = 4,
+
+  // The ARC config contains values that the host cannot support.
+  [MinVersion=27] kErrorInvalidArgument = 5,
+
+  // The ARC config is theoretically valid, but there was some error at the
+  // platform-level.
+  [MinVersion=27] kErrorConfiguringPlatform = 6,
 };
 
 // The struct to represent a local only hotspot configuration.
