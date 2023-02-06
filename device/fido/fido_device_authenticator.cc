@@ -1324,14 +1324,6 @@ ProtocolVersion FidoDeviceAuthenticator::SupportedProtocol() const {
   return device_->supported_protocol();
 }
 
-bool FidoDeviceAuthenticator::SupportsDevicePublicKey() const {
-  const absl::optional<AuthenticatorGetInfoResponse>& get_info_response =
-      device_->device_info();
-  return get_info_response && get_info_response->extensions &&
-         base::Contains(*get_info_response->extensions,
-                        kExtensionDevicePublicKey);
-}
-
 bool FidoDeviceAuthenticator::SupportsLargeBlobs() const {
   DCHECK(initialized_);
   return options_.supports_large_blobs;

@@ -1057,7 +1057,8 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
     request->cred_blob.reset();
   }
 
-  if (request->device_public_key && !authenticator->SupportsDevicePublicKey()) {
+  if (request->device_public_key &&
+      !authenticator->Options().supports_device_public_key) {
     request->device_public_key.reset();
   }
 }

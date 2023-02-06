@@ -286,7 +286,8 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
       !authenticator.Options().max_cred_blob_length.has_value()) {
     specialized_request.get_cred_blob = false;
   }
-  if (request.device_public_key && !authenticator.SupportsDevicePublicKey()) {
+  if (request.device_public_key &&
+      !authenticator.Options().supports_device_public_key) {
     specialized_request.device_public_key.reset();
   }
   return specialized_request;
