@@ -344,7 +344,8 @@ export class DriveSyncHandlerImpl extends EventTarget {
     const stillCompletedUrls = [];
     const valuesToUpdate = [];
 
-    const metadata = this.metadataModel.getCacheByUrls(fileUrls, [SYNC_STATUS]);
+    const metadata =
+        this.metadataModel_.getCacheByUrls(fileUrls, [SYNC_STATUS]);
     for (let i = 0; i < metadata.length; i++) {
       if (metadata[i].syncStatus === COMPLETED) {
         stillCompletedUrls.push(fileUrls[i]);

@@ -952,7 +952,7 @@ export class FileGrid extends Grid {
         break;
     }
 
-    inlineStatus.setAttribute('data-sync-status', syncStatus);
+    li.setAttribute('data-sync-status', syncStatus);
     inlineStatus.querySelector('.progress')
         .setAttribute('progress', (progress || 0).toFixed(2));
   }
