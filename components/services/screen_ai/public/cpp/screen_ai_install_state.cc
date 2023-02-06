@@ -80,7 +80,15 @@ void ScreenAIInstallState::SetComponentFolder(
   component_binary_path_ =
       component_folder.Append(GetComponentBinaryFileName());
 
-  SetState(State::kReady);
+  // A new component may be downloaded when an older version already exists and
+  // is ready to use. We don't need to set the state again and call the
+  // observers to tell this. If the older component is already in use, current
+  // session will continue using that and the new one will be used after next
+  // Chrome restart. Otherwise the new component will be used when a service
+  // request arrives as its path is stored in |component_binary_path_|.
+  if (state_ != State::kReady) {
+    SetState(State::kReady);
+  }
 }
 
 void ScreenAIInstallState::SetState(State state) {
