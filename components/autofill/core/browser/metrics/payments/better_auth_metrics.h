@@ -108,6 +108,12 @@ void LogCardUnmaskDurationAfterWebauthn(
     AutofillClient::PaymentsRpcResult result,
     AutofillClient::PaymentsRpcCardType card_type);
 
+// Logs the number of times that we initiate the card unmask preflight flow.
+// This will log both when the user is verifiable as well as when the user is
+// not verifiable, as it is logged before we check whether the user is
+// verifiable.
+void LogCardUnmaskPreflightInitiated();
+
 // Logs the count of calls to PaymentsClient::GetUnmaskDetails() (aka
 // GetDetailsForGetRealPan). If `is_user_opted_in` is true, then the user is
 // opted-in to FIDO auth, and if the user is not opted-in to FIDO auth then

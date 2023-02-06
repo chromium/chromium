@@ -153,9 +153,9 @@ void CreditCardAccessManager::PrepareToFetchCreditCard() {
   // Reset in case a late response was ignored.
   ready_to_start_authentication_.Reset();
 
-  // If |is_user_verifiable_| is set, then directly call
-  // GetUnmaskDetailsIfUserIsVerifiable(), otherwise fetch value for
-  // |is_user_verifiable_|.
+  // If `is_user_verifiable_` is set, then directly call
+  // `GetUnmaskDetailsIfUserIsVerifiable()`, otherwise fetch value for
+  // `is_user_verifiable_`.
   if (is_user_verifiable_.has_value()) {
     GetUnmaskDetailsIfUserIsVerifiable(is_user_verifiable_.value());
   } else {
@@ -179,11 +179,19 @@ void CreditCardAccessManager::GetUnmaskDetailsIfUserIsVerifiable(
         is_user_verifiable_called_timestamp_.value());
   }
 
+  // If there is already an unmask details request in progress, do not initiate
+  // another one and return early.
+  if (unmask_details_request_in_progress_) {
+    return;
+  }
+
+  // Log that we are initiating the card unmask preflight flow.
+  autofill_metrics::LogCardUnmaskPreflightInitiated();
+
   // If user is verifiable, then make preflight call to payments to fetch unmask
   // details, otherwise the only option is to perform CVC Auth, which does not
-  // require any. Do nothing if request is already in progress.
-  if (is_user_verifiable_.value_or(false) &&
-      !unmask_details_request_in_progress_) {
+  // require any.
+  if (is_user_verifiable_.value_or(false)) {
     unmask_details_request_in_progress_ = true;
     preflight_call_timestamp_ = AutofillTickClock::NowTicks();
     payments_client_->GetUnmaskDetails(

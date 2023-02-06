@@ -685,6 +685,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.BetterAuth.CardUnmaskPreflightInitiated"
+    enum="Boolean" expires_after="2023-07-01">
+  <owner>vinnypersky@google.com</owner>
+  <owner>autofill-auth-team@google.com</owner>
+  <summary>
+    Logs the number of times that we initiate the card unmask preflight flow.
+    This will log both when the user is eligible for WebAuthn as well as when
+    the user is not eligible for WebAuthn, as it is logged before we check this
+    status.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.BetterAuth.CardUnmaskTypeDecision"
     enum="AutofillCreditCardUnmaskDecisionMetric" expires_after="2023-07-01">
   <owner>jsaul@google.com</owner>
