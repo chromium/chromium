@@ -84,7 +84,7 @@ std::unique_ptr<views::LabelButton> CreateMenuItem(
     int button_id,
     const std::u16string& name,
     views::Button::PressedCallback callback,
-    const gfx::VectorIcon* icon = nullptr) {
+    const ui::ImageModel& icon = ui::ImageModel()) {
   const auto* layout_provider = ChromeLayoutProvider::Get();
   const int horizontal_spacing = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
@@ -105,7 +105,7 @@ std::unique_ptr<views::LabelButton> CreateMenuItem(
 std::unique_ptr<views::BubbleDialogModelHost::CustomView>
 CreateMenuItemCustomView(const std::u16string& name,
                          views::Button::PressedCallback callback,
-                         const gfx::VectorIcon* icon = nullptr) {
+                         const ui::ImageModel& icon = ui::ImageModel()) {
   return std::make_unique<views::BubbleDialogModelHost::CustomView>(
       CreateMenuItem(-1, name, std::move(callback), icon),
       views::BubbleDialogModelHost::FieldType::kMenuItem);
@@ -348,25 +348,25 @@ views::Widget* TabGroupEditorBubbleView::Show(
             base::BindRepeating(
                 &TabGroupEditorBubbleDelegate::NewTabInGroupPressed,
                 base::Unretained(bubble_delegate)),
-            &kNewTabInGroupIcon))
+            ui::ImageModel::FromVectorIcon(kNewTabInGroupIcon)))
         .AddCustomField(CreateMenuItemCustomView(
             l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNGROUP),
             base::BindRepeating(&TabGroupEditorBubbleDelegate::UngroupPressed,
                                 base::Unretained(bubble_delegate), header_view),
-            &kUngroupIcon))
+            ui::ImageModel::FromVectorIcon(kUngroupIcon)))
         .AddCustomField(CreateMenuItemCustomView(
             l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP),
             base::BindRepeating(
                 &TabGroupEditorBubbleDelegate::CloseGroupPressed,
                 base::Unretained(bubble_delegate)),
-            &kCloseGroupIcon))
+            ui::ImageModel::FromVectorIcon(kCloseGroupIcon)))
         .AddCustomField(CreateMenuItemCustomView(
             l10n_util::GetStringUTF16(
                 IDS_TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW),
             base::BindRepeating(
                 &TabGroupEditorBubbleDelegate::MoveGroupToNewWindowPressed,
                 base::Unretained(bubble_delegate)),
-            &kMoveGroupToNewWindowIcon));
+            ui::ImageModel::FromVectorIcon(kMoveGroupToNewWindowIcon)));
 
     // TODO(pbos): Add enabling/disabling of
     // TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW item.
@@ -523,29 +523,29 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::NewTabInGroupPressed,
                           base::Unretained(this)),
-      &kNewTabInGroupIcon));
+      ui::ImageModel::FromVectorIcon(kNewTabInGroupIcon)));
 
   AddChildView(CreateMenuItem(
       TAB_GROUP_HEADER_CXMENU_UNGROUP,
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNGROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::UngroupPressed,
                           base::Unretained(this), header_view),
-      &kUngroupIcon));
+      ui::ImageModel::FromVectorIcon(kUngroupIcon)));
 
   AddChildView(CreateMenuItem(
       TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP, GetTextForCloseButton(),
       base::BindRepeating(&TabGroupEditorBubbleView::CloseGroupPressed,
                           base::Unretained(this)),
-      &kCloseGroupIcon));
+      ui::ImageModel::FromVectorIcon(kCloseGroupIcon)));
 
-  move_menu_item_ = AddChildView(
-      CreateMenuItem(TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW,
-                     l10n_util::GetStringUTF16(
-                         IDS_TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW),
-                     base::BindRepeating(
-                         &TabGroupEditorBubbleView::MoveGroupToNewWindowPressed,
-                         base::Unretained(this)),
-                     &kMoveGroupToNewWindowIcon));
+  move_menu_item_ = AddChildView(CreateMenuItem(
+      TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW,
+      l10n_util::GetStringUTF16(
+          IDS_TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW),
+      base::BindRepeating(
+          &TabGroupEditorBubbleView::MoveGroupToNewWindowPressed,
+          base::Unretained(this)),
+      ui::ImageModel::FromVectorIcon(kMoveGroupToNewWindowIcon)));
   move_menu_item_->SetEnabled(
       tab_strip_model->count() !=
       tab_strip_model->group_model()->GetTabGroup(group_)->tab_count());

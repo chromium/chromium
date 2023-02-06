@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
+
 #include <memory>
 
 #include "chrome/browser/ui/views/controls/hover_button.h"
@@ -10,7 +11,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/border.h"
@@ -35,8 +35,8 @@ class BubbleMenuItem : public HoverButton {
   BubbleMenuItem(PressedCallback callback,
                  const std::u16string& text,
                  int button_id,
-                 const gfx::VectorIcon* icon)
-      : HoverButton(callback, ui::ImageModel::FromVectorIcon(*icon), text) {
+                 const ui::ImageModel& icon)
+      : HoverButton(callback, icon, text) {
     ConfigureBubbleMenuItem(this, button_id);
   }
 
@@ -67,15 +67,10 @@ std::unique_ptr<HoverButton> CreateBubbleMenuItem(
     int button_id,
     const std::u16string& name,
     views::Button::PressedCallback callback,
-    const gfx::VectorIcon* icon) {
-  std::unique_ptr<BubbleMenuItem> button;
-  if (icon == nullptr) {
-    button = std::make_unique<BubbleMenuItem>(callback, name, button_id);
-  } else {
-    button = std::make_unique<BubbleMenuItem>(callback, name, button_id, icon);
-  }
+    const ui::ImageModel& icon) {
+  std::unique_ptr<BubbleMenuItem> button =
+      std::make_unique<BubbleMenuItem>(callback, name, button_id, icon);
 
   button->SetBorder(views::CreateEmptyBorder(kDefaultBorderInsets));
-
   return button;
 }
