@@ -633,8 +633,7 @@ void SystemNotificationManager::HandleIOTaskProgress(
   }
 
   // From here state is kQueued or kInProgress:
-  std::u16string title = l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME);
-
+  std::u16string title = app_name_;
   std::u16string message = GetIOTaskMessage(profile_, status);
 
   int progress = 0;
