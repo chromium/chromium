@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_preload_service/app_preload_server_connector.h"
 
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_preload_service/almanac_api_util.h"
@@ -26,6 +27,9 @@ constexpr char kAppPreloadAlmanacEndpoint[] =
 
 // Maximum accepted size of an APS Response. 1MB.
 constexpr int kMaxResponseSizeInBytes = 1024 * 1024;
+
+constexpr char kAppPreloadServiceServerErrorHistogramName[] =
+    "AppPreloadService.ServerResponseCodes";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("app_preload_service", R"(
@@ -149,6 +153,10 @@ void AppPreloadServerConnector::OnGetAppsForFirstLoginResponse(
   }
   const int net_error = loader_->NetError();
   loader_.reset();
+
+  // If there is no response code, there was a net error.
+  base::UmaHistogramSparse(kAppPreloadServiceServerErrorHistogramName,
+                           response_code > 0 ? response_code : net_error);
 
   if (net_error == net::Error::ERR_INSUFFICIENT_RESOURCES) {
     LOG(ERROR) << "Network request failed due to insufficent resources.";

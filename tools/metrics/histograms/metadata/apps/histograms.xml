@@ -187,6 +187,16 @@ chromium-metrics-reviews@google.com.
   <summary>The ways the user opens up the App Management interface.</summary>
 </histogram>
 
+<histogram name="AppPreloadService.ServerResponseCodes"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-08-01">
+  <owner>jshikaram@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    The combined http and net error codes the App Provisioning Server responds
+    with after a request is made.
+  </summary>
+</histogram>
+
 <histogram name="Apps.ActivatedCount.{AppType}" units="units"
     expires_after="2022-07-01">
   <owner>nancylingwang@chromium.org</owner>
