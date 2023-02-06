@@ -14,8 +14,7 @@ The following command will start an emulator, update WebEngineShell, and
 navigate to [URL]:
 
 ```bash
-$ ./build/fuchsia/test/run_test.py webpage --browser=web-engine-shell [URL] \
--C [OUTPUT_DIR]
+$ ./build/fuchsia/test/run_test.py webpage --browser=web-engine-shell [URL] -C [OUTPUT_DIR]
 ```
 
 To use with a persistent Fuchsia device, add the flag `--target-id=[FUCHSIA_NODENAME]`

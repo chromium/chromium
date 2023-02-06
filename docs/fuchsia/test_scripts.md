@@ -20,8 +20,7 @@ Once the emulator is running, you can run tests on this emulator instance by
 adding the command line arguments indicated above:
 
 ```bash
-$ ./build/fuchsia/test/run_test.py [TEST_BINARY] -C [OUTPUT_DIR] \
-  --target-id [EMULATOR_NAME]
+$ ./build/fuchsia/test/run_test.py [TEST_BINARY] -C [OUTPUT_DIR] --target-id [EMULATOR_NAME]
 ```
 
 For gtests, there are scripts that further abstract the command line above.
@@ -48,8 +47,7 @@ Before devices can run the packages built, a directory needs to be initialized
 to serve as a package repository and the packages must be published to it:
 
 ```bash
-$ ./build/fuchsia/test/publish_package.py -C [OUTPUT_DIR] --repo [REPO_DIR] \
-  --packages [TEST_BINARY]
+$ ./build/fuchsia/test/publish_package.py -C [OUTPUT_DIR] --repo [REPO_DIR] --packages [TEST_BINARY]
 ```
 
 ##### Package installation
@@ -65,8 +63,7 @@ $ ./build/fuchsia/test/serve_repo.py start --serve-repo [REPO_DIR]
 System logs can be obtained via:
 
 ```bash
-$ ./build/fuchsia/test/log_manager.py start --packages [TEST_BINARY] \
-  -C [OUTPUT_DIR]
+$ ./build/fuchsia/test/log_manager.py start --packages [TEST_BINARY] -C [OUTPUT_DIR]
 ```
 
 Specifying the test binary and the output directory allows the logs to be

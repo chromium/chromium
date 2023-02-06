@@ -65,8 +65,7 @@ Make sure that the CPU architecture of your Chromium output directory matches
 the architecture of the Fuchsia output directory (x64==x64, arm64==arm64, etc.).
 
 ```bash
-$ out/fuchsia/bin/run_base_unittests -d --repo [FUCHSIA_OUT_DIR]/amber-files \
---no-repo-init
+$ out/fuchsia/bin/run_base_unittests -d --repo [FUCHSIA_OUT_DIR]/amber-files --no-repo-init
 ```
 
 Note that you should not have `fx serve` running as Chromium will handle serving
