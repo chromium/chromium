@@ -68,7 +68,7 @@ static float CalculateNormalizationScale(AudioBus* response) {
   power = sqrt(power / (number_of_channels * length));
 
   // Protect against accidental overload
-  if (std::isinf(power) || std::isnan(power) || power < kMinPower) {
+  if (!std::isfinite(power) || power < kMinPower) {
     power = kMinPower;
   }
 

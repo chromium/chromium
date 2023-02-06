@@ -29,7 +29,7 @@ constexpr char kEqualPowerString[] = "equalpower";
 constexpr char kHrtfString[] = "HRTF";
 
 void FixNANs(double& x) {
-  if (std::isnan(x) || std::isinf(x)) {
+  if (!std::isfinite(x)) {
     x = 0.0;
   }
 }

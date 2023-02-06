@@ -102,7 +102,7 @@ void AudioResampler::Process(AudioSourceProvider* provider,
 }
 
 void AudioResampler::SetRate(double rate) {
-  if (std::isnan(rate) || std::isinf(rate) || rate <= 0.0) {
+  if (!std::isfinite(rate) || rate <= 0.0) {
     return;
   }
 
