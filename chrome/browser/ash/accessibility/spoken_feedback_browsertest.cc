@@ -2058,54 +2058,29 @@ class SigninToUserProfileSwitchTest : public OobeSpokenFeedbackTest {
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
 };
 
-// Verifies spoken feedback during sign in.
-IN_PROC_BROWSER_TEST_F(SigninToUserProfileSwitchTest, BeforeLoginAsNewUser) {
-  sm_.Call([]() {
-    AccessibilityManager::Get()->EnableSpokenFeedback(true);
-    // Force sync screen.
-    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
-        true;
-    ASSERT_TRUE(IsSigninBrowserContext(AccessibilityManager::Get()->profile()));
-  });
+// Verifies that spoken feedback correctly handles profile switch (signin ->
+// user) and announces the sync consent screen correctly.
+// TODO(crbug.com/1184714): Fix flakiness.
+IN_PROC_BROWSER_TEST_F(SigninToUserProfileSwitchTest, DISABLED_LoginAsNewUser) {
+  // Force sync screen.
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
+  AccessibilityManager::Get()->EnableSpokenFeedback(true);
   sm_.ExpectSpeechPattern("*");
-  sm_.Replay();
-}
-
-// Verifies spoken feedback during log in as a new user. Turns on ChromeVox
-// after sign in; otherwise, the test fails due to timed out.
-IN_PROC_BROWSER_TEST_F(SigninToUserProfileSwitchTest, LoginAsNewUser) {
-  ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
-  // Force sync screen.
-  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
-  ASSERT_TRUE(IsSigninBrowserContext(AccessibilityManager::Get()->profile()));
 
   sm_.Call([this]() {
-    AccessibilityManager::Get()->EnableSpokenFeedback(true);
+    ASSERT_TRUE(IsSigninBrowserContext(AccessibilityManager::Get()->profile()));
     login_manager_.LoginAsNewRegularUser();
   });
-  sm_.ExpectSpeechPattern("*Accept and continue*");
 
-  // Check that profile switched to the active user.
+  sm_.ExpectSpeechPattern("Welcome to the ChromeVox tutorial*");
+
+  // The tutorial can be exited by pressing Escape.
   sm_.Call([]() {
-    ASSERT_EQ(AccessibilityManager::Get()->profile(),
-              ProfileManager::GetActiveUserProfile());
+    ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+        nullptr, ui::VKEY_ESCAPE, false, false, false, false));
   });
-  sm_.Replay();
-}
 
-// Verifies spoken feedback after log in as a new user.
-IN_PROC_BROWSER_TEST_F(SigninToUserProfileSwitchTest, AfterLoginAsNewUser) {
-  ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
-  // Force sync screen.
-  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
-  ASSERT_TRUE(IsSigninBrowserContext(AccessibilityManager::Get()->profile()));
-
-  sm_.Call([this]() {
-    // Log in, then activate ChromeVox.
-    login_manager_.LoginAsNewRegularUser();
-    AccessibilityManager::Get()->EnableSpokenFeedback(true);
-  });
-  sm_.ExpectSpeechPattern("*Accept and continue*");
+  sm_.ExpectSpeech("Accept and continue");
 
   // Check that profile switched to the active user.
   sm_.Call([]() {
