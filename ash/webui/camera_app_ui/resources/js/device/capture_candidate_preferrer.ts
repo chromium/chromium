@@ -891,8 +891,7 @@ export class CaptureCandidatePreferrer {
 
   private getFallbackFPS(deviceId: string, level: VideoResolutionLevel):
       number {
-    // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
-    return (this.prefVideoFpsesMap[deviceId] ?? {})[level] ?? 30;
+    return this.prefVideoFpsesMap[deviceId]?.[level] ?? 30;
   }
 
   private getPreferPhotoResolution(

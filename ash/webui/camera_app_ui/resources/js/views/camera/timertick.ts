@@ -40,18 +40,20 @@ export function start(): Promise<void> {
     };
 
     let tickCounter = state.get(state.State.TIMER_10SEC) ? 10 : 3;
-    const sounds: string[] = [];
-    sounds[1] = '#sound-tick-final';
-    sounds[2] = '#sound-tick-inc';
-    sounds[3] = '#sound-tick-inc';
-    sounds[tickCounter] = '#sound-tick-start';
+    const sounds = new Map([
+      [1, '#sound-tick-final'],
+      [2, '#sound-tick-inc'],
+      [3, '#sound-tick-inc'],
+      [tickCounter, '#sound-tick-start'],
+    ]);
 
     function onTimerTick() {
       if (tickCounter === 0) {
         resolve();
       } else {
-        if (sounds[tickCounter] !== undefined) {
-          play(dom.get(sounds[tickCounter], HTMLAudioElement));
+        const sound = sounds.get(tickCounter);
+        if (sound !== undefined) {
+          play(dom.get(sound, HTMLAudioElement));
         }
         tickMsg.textContent = tickCounter + '';
         animate.play(tickMsg);
