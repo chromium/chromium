@@ -57,7 +57,7 @@ $ ./build/fuchsia/test/publish_package.py -C [OUTPUT_DIR] --repo [REPO_DIR] \
 The packages need to be installed on the device:
 
 ```bash
-$ ./build/fuchsia/test/serve_repo.py start --serve-repo [REPO_DIR] \
+$ ./build/fuchsia/test/serve_repo.py start --serve-repo [REPO_DIR]
 ```
 
 ##### Stream system logs
@@ -75,5 +75,5 @@ properly symbolized.
 ##### Run test package
 
 ```bash
-$ ./build/fuchsia/test/run_executable_test.py --test-name [TEST_BINARY] \
+$ ./build/fuchsia/test/run_executable_test.py --test-name [TEST_BINARY]
 ```

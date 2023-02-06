@@ -39,12 +39,10 @@ from the Chromium tree. To start a persistent emulator, run:
 $ ./build/fuchsia/test/start_emulator.py
 ```
 
-Part of the output should be:
+Part of the output should be like the following:
 
 ```
-2022-05-31 22:55:13,011:INFO:root:Emulator successfully started.\
- You can now run Chrome Fuchsia tests with\
- "--target-id fuchsia-emulator-198" to target this emulator.
+INFO:root:Emulator successfully started. You can now run Chrome Fuchsia tests with --target-id=fuchsia-emulator-198 to target this emulator.
 ```
 
 You can run tests on persistent devices by adding the command line

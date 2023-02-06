@@ -35,7 +35,7 @@ directory if you want to run a specific benchmark:
 $ ../../content/test/gpu/run_telemetry_benchmark_fuchsia.py \
 --browser=web-engine-shell  --output-format=histograms  \
 --experimental-tbmv3-metrics -d
-[--repo=/path/to/fuchsia/out/dir --no-repo-init] \  # Deploy custom fuchsia.
+[--repo=/path/to/fuchsia/out/dir --no-repo-init] \  # Deploy custom Fuchsia.
 [benchmark] [--story-filter=<story name>]
 ```
 
