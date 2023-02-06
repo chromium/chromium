@@ -28,7 +28,8 @@ bool IOPMPowerSourceSamplingEventSource::Start(SamplingEventCallback callback) {
       kIOMasterPortDefault, IOServiceMatching("IOPMPowerSource")));
 
   if (!service_) {
-    LOG(ERROR) << "IOPMPowerSource service not found";
+    VLOG(1) << "IOPMPowerSource service not found. This is expected on desktop "
+               "Macs.";
     return false;
   }
 
