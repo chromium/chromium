@@ -560,7 +560,10 @@ void SelectionController::UpdateSelectionForMouseDrag(
       adjusted_selection.IsRange()
           ? CreateVisibleSelection(adjusted_selection).AsSelection()
           : adjusted_selection;
-
+  if (new_visible_selection.IsNone()) {
+    // See http://crbug.com/1412880
+    return;
+  }
   const bool selection_is_directional =
       should_extend_selection ? Selection().IsDirectional() : false;
   SetNonDirectionalSelectionIfNeeded(
