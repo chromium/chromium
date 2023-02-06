@@ -40,38 +40,8 @@ bool IsFileHandlersMV3(int manifest_version) {
          base::FeatureList::IsEnabled(extensions_features::kFileHandlersMV3);
 }
 
-}  // namespace
-
-FileHandlerMatch::FileHandlerMatch() = default;
-FileHandlerMatch::~FileHandlerMatch() = default;
-
-FileHandlers::FileHandlers() = default;
-FileHandlers::~FileHandlers() = default;
-
-// static
-const FileHandlersInfoMV3* FileHandlers::GetFileHandlersMV3(
-    const Extension* extension) {
-  if (!IsFileHandlersMV3(extension->manifest_version()))
-    return nullptr;
-  FileHandlersMV3* info = static_cast<FileHandlersMV3*>(
-      extension->GetManifestData(keys::kFileHandlers));
-  return info ? &info->file_handlers : nullptr;
-}
-
-// static
-const FileHandlersInfo* FileHandlers::GetFileHandlers(
-    const Extension* extension) {
-  FileHandlers* info = static_cast<FileHandlers*>(
-      extension->GetManifestData(keys::kFileHandlers));
-  return info ? &info->file_handlers : nullptr;
-}
-
-FileHandlersParser::FileHandlersParser() = default;
-
-FileHandlersParser::~FileHandlersParser() = default;
-
 bool LoadFileHandler(const std::string& handler_id,
-                     const base::Value& handler_info,
+                     const base::Value::Dict& handler_info,
                      FileHandlersInfo* file_handlers,
                      std::u16string* error,
                      std::vector<InstallWarning>* install_warnings) {
@@ -80,7 +50,7 @@ bool LoadFileHandler(const std::string& handler_id,
 
   handler.id = handler_id;
 
-  const base::Value* mime_types = handler_info.FindKey(keys::kFileHandlerTypes);
+  const base::Value* mime_types = handler_info.Find(keys::kFileHandlerTypes);
   if (mime_types != nullptr && !mime_types->is_list()) {
     *error = ErrorUtils::FormatErrorMessageUTF16(
         errors::kInvalidFileHandlerType, handler_id);
@@ -88,7 +58,7 @@ bool LoadFileHandler(const std::string& handler_id,
   }
 
   const base::Value* file_extensions =
-      handler_info.FindKey(keys::kFileHandlerExtensions);
+      handler_info.Find(keys::kFileHandlerExtensions);
   if (file_extensions != nullptr && !file_extensions->is_list()) {
     *error = ErrorUtils::FormatErrorMessageUTF16(
         errors::kInvalidFileHandlerExtension, handler_id);
@@ -97,7 +67,7 @@ bool LoadFileHandler(const std::string& handler_id,
 
   handler.include_directories = false;
   const base::Value* include_directories =
-      handler_info.FindKey(keys::kFileHandlerIncludeDirectories);
+      handler_info.Find(keys::kFileHandlerIncludeDirectories);
   if (include_directories != nullptr) {
     if (include_directories->is_bool()) {
       handler.include_directories = include_directories->GetBool();
@@ -108,8 +78,7 @@ bool LoadFileHandler(const std::string& handler_id,
   }
 
   handler.verb = apps::file_handler_verbs::kOpenWith;
-  const base::Value* file_handler =
-      handler_info.FindKey(keys::kFileHandlerVerb);
+  const base::Value* file_handler = handler_info.Find(keys::kFileHandlerVerb);
   if (file_handler != nullptr) {
     if (file_handler->is_string() &&
         IsSupportedVerb(file_handler->GetString())) {
@@ -159,7 +128,7 @@ bool LoadFileHandler(const std::string& handler_id,
   file_handlers->push_back(handler);
 
   // Check for unknown keys.
-  for (auto entry : handler_info.DictItems()) {
+  for (auto entry : handler_info) {
     if (entry.first != keys::kFileHandlerExtensions &&
         entry.first != keys::kFileHandlerTypes &&
         entry.first != keys::kFileHandlerIncludeDirectories &&
@@ -172,6 +141,37 @@ bool LoadFileHandler(const std::string& handler_id,
 
   return true;
 }
+
+}  // namespace
+
+FileHandlerMatch::FileHandlerMatch() = default;
+FileHandlerMatch::~FileHandlerMatch() = default;
+
+FileHandlers::FileHandlers() = default;
+FileHandlers::~FileHandlers() = default;
+
+// static
+const FileHandlersInfoMV3* FileHandlers::GetFileHandlersMV3(
+    const Extension* extension) {
+  if (!IsFileHandlersMV3(extension->manifest_version())) {
+    return nullptr;
+  }
+  FileHandlersMV3* info = static_cast<FileHandlersMV3*>(
+      extension->GetManifestData(keys::kFileHandlers));
+  return info ? &info->file_handlers : nullptr;
+}
+
+// static
+const FileHandlersInfo* FileHandlers::GetFileHandlers(
+    const Extension* extension) {
+  FileHandlers* info = static_cast<FileHandlers*>(
+      extension->GetManifestData(keys::kFileHandlers));
+  return info ? &info->file_handlers : nullptr;
+}
+
+FileHandlersParser::FileHandlersParser() = default;
+
+FileHandlersParser::~FileHandlersParser() = default;
 
 bool FileHandlersParser::Parse(Extension* extension, std::u16string* error) {
   // If this is an MV3 extension, use the generated `file_handlers` object.
@@ -192,8 +192,8 @@ bool FileHandlersParser::Parse(Extension* extension, std::u16string* error) {
       *error = errors::kInvalidFileHandlers;
       return false;
     }
-    if (!LoadFileHandler(entry.first, entry.second, &info->file_handlers, error,
-                         &install_warnings)) {
+    if (!LoadFileHandler(entry.first, entry.second.GetDict(),
+                         &info->file_handlers, error, &install_warnings)) {
       return false;
     }
   }
