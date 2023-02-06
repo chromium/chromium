@@ -1350,8 +1350,7 @@ class MockTaggingClientSocketFactory : public MockClientSocketFactory {
   MockUDPClientSocket* GetLastProducedUDPSocket() const { return udp_socket_; }
 
  private:
-  // TODO(crbug.com/1298696): Breaks net_unittests.
-  raw_ptr<MockTaggingStreamSocket, DegradeToNoOpWhenMTE> tcp_socket_ = nullptr;
+  raw_ptr<MockTaggingStreamSocket> tcp_socket_ = nullptr;
   raw_ptr<MockUDPClientSocket> udp_socket_ = nullptr;
 };
 
