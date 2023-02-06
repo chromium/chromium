@@ -12,7 +12,6 @@ dictionary CookieListItem {
   EpochTimeStamp? expires;
   boolean secure;
   CookieSameSite sameSite;
-  [RuntimeEnabled=FirstPartySets] boolean sameParty;
   [RuntimeEnabled=PartitionedCookies] boolean partitioned;
 };
 

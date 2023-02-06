@@ -1392,10 +1392,6 @@
       status: "stable",
     },
     {
-      name: "FirstPartySets",
-      status: "experimental",
-    },
-    {
       name: "FirstRectForRangeVertical",
       status: "stable",
       base_feature: "FirstRectForRangeVertical",
@@ -2750,7 +2746,6 @@
       name: "StorageAccessAPI",
       status: "experimental",
       base_feature: "StorageAccessAPI",
-      implied_by: ["FirstPartySets"],
     },
     {
       name: "StorageAccessAPIForOriginExtension",

@@ -116,7 +116,6 @@ CookieListItem* CookieChangeEvent::ToCookieListItem(
     }
   }
 
-  list_item->setSameParty(canonical_cookie.IsSameParty());
   list_item->setPartitioned(canonical_cookie.IsPartitioned());
 
   return list_item;
