@@ -69,9 +69,6 @@ namespace {
 // Timeout for an installed worker to start.
 constexpr base::TimeDelta kStartInstalledWorkerTimeout = base::Seconds(60);
 
-// Timeout for a request to be handled.
-constexpr base::TimeDelta kRequestTimeout = base::Minutes(5);
-
 const base::FeatureParam<int> kUpdateDelayParam{
     &blink::features::kServiceWorkerUpdateDelay, "update_delay_in_ms", 1000};
 
@@ -1236,6 +1233,10 @@ void ServiceWorkerVersion::SimulatePingTimeoutForTesting() {
 void ServiceWorkerVersion::SetTickClockForTesting(
     const base::TickClock* tick_clock) {
   tick_clock_ = tick_clock;
+}
+
+void ServiceWorkerVersion::RunUserTasksForTesting() {
+  timeout_timer_.user_task().Run();
 }
 
 bool ServiceWorkerVersion::HasNoWork() const {

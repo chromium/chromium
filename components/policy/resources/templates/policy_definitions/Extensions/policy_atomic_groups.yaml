@@ -10,3 +10,4 @@ Extensions:
   - ExtensionSettings
   - ExtensionManifestV2Availability
   - ExtensionUnpublishedAvailability
+  - ExtensionExtendedBackgroundLifetimeForPortConnectionsToUrls

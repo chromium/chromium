@@ -319,7 +319,7 @@ void ExtensionMessagePort::DispatchOnMessage(const Message& message) {
 }
 
 void ExtensionMessagePort::IncrementLazyKeepaliveCount(
-    bool is_for_native_message_connect) {
+    bool should_have_strong_keepalive) {
   ProcessManager* pm = ProcessManager::Get(browser_context_);
   ExtensionHost* host = pm->GetBackgroundHostForExtension(extension_id_);
   if (host && BackgroundInfo::HasLazyBackgroundPage(host->extension())) {
@@ -335,7 +335,7 @@ void ExtensionMessagePort::IncrementLazyKeepaliveCount(
        pm->GetServiceWorkersForExtension(extension_id_)) {
     std::string request_uuid = pm->IncrementServiceWorkerKeepaliveCount(
         worker_id,
-        is_for_native_message_connect
+        should_have_strong_keepalive
             ? content::ServiceWorkerExternalRequestTimeoutType::kDoesNotTimeout
             : content::ServiceWorkerExternalRequestTimeoutType::kDefault,
         Activity::MESSAGE_PORT, PortIdToString(port_id_));

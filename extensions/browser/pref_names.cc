@@ -33,6 +33,10 @@ const char kAllowedInstallSites[] = "extensions.allowed_install_sites";
 const char kAllowedTypes[] = "extensions.allowed_types";
 const char kAppFullscreenAllowed[] = "apps.fullscreen.allowed";
 const char kBlockExternalExtensions[] = "extensions.block_external_extensions";
+const char kDeletedComponentExtensions[] =
+    "extensions.deleted_component_extensions";
+const char kExtendedBackgroundLifetimeForPortConnectionsToUrls[] =
+    "extensions.extended_background_lifetime_urls";
 const char kExtensions[] = "extensions.settings";
 const char kExtensionManagement[] = "extensions.management";
 const char kExtensionUnpublishedAvailability[] =
@@ -48,8 +52,6 @@ const char kNativeMessagingUserLevelHosts[] =
 const char kManifestV2Availability[] = "extensions.manifest_v2";
 const char kPinnedExtensions[] = "extensions.pinned_extensions";
 const char kStorageGarbageCollect[] = "extensions.storage.garbagecollect";
-const char kDeletedComponentExtensions[] =
-    "extensions.deleted_component_extensions";
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
 extern const char kChromeAppsEnabled[] = "extensions.chrome_apps_enabled";

@@ -539,6 +539,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Used to allow tests to change time for testing.
   void SetTickClockForTesting(const base::TickClock* tick_clock);
 
+  // Run user tasks for testing. Used for stopping a service worker.
+  void RunUserTasksForTesting();
+
   // Returns true when the service worker isn't handling any events or stream
   // responses, initiated from either the browser or the renderer.
   bool HasNoWork() const;
@@ -682,6 +685,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
   absl::optional<std::string> sha256_script_checksum() {
     return sha256_script_checksum_;
   }
+
+  // Timeout for a request to be handled.
+  static constexpr base::TimeDelta kRequestTimeout = base::Minutes(5);
 
  private:
   friend class base::RefCounted<ServiceWorkerVersion>;

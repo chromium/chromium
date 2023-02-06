@@ -1,0 +1,37 @@
+caption: Configure a list of origins that grant extended background lifetime to the connecting extensions.
+desc: |-
+  Extensions that connect to one of these origins will be be kept running as long as the port is connected.
+
+  If unset, the policy's default values will be used. These are app origins that offer SDKs that are known to not offer the possibility to restart a closed connection to a previous state:
+  - Smart Card Connector
+  - Citrix Receiver (stable, beta, back-up)
+  - VMware Horizon (stable, beta)
+
+  If set, the default value list is extended with the newly configured values. Both defaults and the policy-provided entries will grant the exception to the connecting extensions, as long as the port is connected.
+example_value:
+- chrome-extension://abcdefghijklmnopabcdefghijklmnop/
+- chrome-extension://bcdefghijklmnopabcdefghijklmnopa/
+default:
+- chrome-extension://khpfeaanjngmcnplbdlpegiifgpfgdco/
+- chrome-extension://haiffjcadagjlijoggckpgfnoeiflnem/
+- chrome-extension://lbfgjakkeeccemhonnolnmglmfmccaag/
+- chrome-extension://anjihnbmjbbpofafpmklejenkgnjfcdi/
+- chrome-extension://ppkfnjlimknmjoaemnpidmdlfchhehel/
+- chrome-extension://kenkpdjcfppbccchillfdjkjnejjgand/
+features:
+  dynamic_refresh: true
+  per_profile: true
+supported_on:
+- chrome.*:112-
+- chrome_os:112-
+future_on:
+- fuchsia
+owners:
+- mpetrisor@chromium.org
+- chromeos-commercial-identity@google.com
+schema:
+  items:
+    type: string
+  type: array
+tags: []
+type: list

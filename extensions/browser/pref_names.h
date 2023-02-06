@@ -43,6 +43,16 @@ extern const char kAppFullscreenAllowed[];
 // A boolean indicating if external extensions are blocked from installing.
 extern const char kBlockExternalExtensions[];
 
+// A preference for a list of Component extensions that have been
+// uninstalled/removed and should not be reloaded.
+extern const char kDeletedComponentExtensions[];
+
+// A list of app origins that will grant a long-lived background lifetime to
+// the connecting extension, if connected to them via persistent messaging
+// ports. The value is controlled by the
+// `ExtensionExtendedBackgroundLifetimeForPortConnectionsToUrls` policy.
+extern const char kExtendedBackgroundLifetimeForPortConnectionsToUrls[];
+
 // Dictionary pref that keeps track of per-extension settings. The keys are
 // extension ids.
 extern const char kExtensions[];
@@ -102,10 +112,6 @@ extern const char kPinnedExtensions[];
 // Indicates on-disk data might have skeletal data that needs to be cleaned
 // on the next start of the browser.
 extern const char kStorageGarbageCollect[];
-
-// A preference for a list of Component extensions that have been
-// uninstalled/removed and should not be reloaded.
-extern const char kDeletedComponentExtensions[];
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)

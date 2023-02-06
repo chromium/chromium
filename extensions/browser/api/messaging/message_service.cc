@@ -135,6 +135,59 @@ void MaybeDisableBackForwardCacheForMessaging(content::RenderFrameHost* host) {
                 back_forward_cache::DisabledReasonId::kExtensionMessaging));
 }
 
+// Default apps that grant extended lifetime when connecting to them with a
+// persistent port connection, until the channel is closed. These values extend
+// the values of the
+// ExtensionExtendedBackgroundLifetimeForPortConnectionsToUrls policy. They
+// are chosen as defaults because they are known apps that offer SDKs and do not
+// offer the possibility to restart a closed connection to a previous state.
+constexpr const char* kDefaultSWExtendedLifetimeList[] = {
+    // Smart Card Connector
+    "chrome-extension://khpfeaanjngmcnplbdlpegiifgpfgdco/",
+
+    // Citrix Receiver
+    "chrome-extension://haiffjcadagjlijoggckpgfnoeiflnem/",  // stable
+    "chrome-extension://lbfgjakkeeccemhonnolnmglmfmccaag/",  // beta
+    "chrome-extension://anjihnbmjbbpofafpmklejenkgnjfcdi/",  // back-up
+
+    // VMware Horizon
+    "chrome-extension://ppkfnjlimknmjoaemnpidmdlfchhehel/",  // stable
+    "chrome-extension://kenkpdjcfppbccchillfdjkjnejjgand/",  // beta
+};
+
+std::vector<url::Origin> GetServiceWorkerExtendedLifetimeOrigins(
+    content::BrowserContext* browser_context) {
+  std::vector<url::Origin> origins;
+  const base::Value::List& extended_lifetime_urls =
+      ExtensionPrefs::Get(browser_context)
+          ->pref_service()
+          ->GetList(
+              pref_names::kExtendedBackgroundLifetimeForPortConnectionsToUrls);
+  origins.reserve(std::size(kDefaultSWExtendedLifetimeList) +
+                  extended_lifetime_urls.size());
+
+  // Add default values.
+  for (const std::string& default_value : kDefaultSWExtendedLifetimeList) {
+    url::Origin origin = url::Origin::Create(GURL(default_value));
+    origins.push_back(std::move(origin));
+  }
+
+  // Add policy values.
+  for (const base::Value& value : extended_lifetime_urls) {
+    GURL url(value.GetString());
+    if (!url.is_valid()) {
+      continue;
+    }
+    url::Origin origin = url::Origin::Create(url);
+    if (origin.opaque()) {
+      continue;
+    }
+    origins.push_back(std::move(origin));
+  }
+
+  return origins;
+}
+
 }  // namespace
 
 struct MessageService::MessageChannel {
@@ -462,7 +515,7 @@ void MessageService::OpenChannelToNativeApp(
 
   // Keep the opener alive until the channel is closed.
   channel->opener->IncrementLazyKeepaliveCount(
-      true /* is_for_native_message_connect */);
+      /* should_have_strong_keepalive= */ true);
 
   AddChannel(std::move(channel), receiver_port_id);
 #else   // !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
@@ -575,10 +628,10 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
   if (!will_open_channel) {
     // The channel won't open. If this was a pending channel, remove it,
     // because now it will never open. This prevents the pending message
-    // from being re-added indefinitely.  See https://crbug.com/1231683.
+    // from being re-added indefinitely. See https://crbug.com/1231683.
     // TODO(crbug.com/1296492): This probably isn't the best solution.
     // Ideally, we should close the channel before we get to this point
-    // if there's  no chance it will ever open, remove it from pending
+    // if there's no chance it will ever open, remove it from pending
     // channels, and then only try to open the pending channel if it's
     // still valid.
     pending_lazy_context_channels_.erase(
@@ -653,14 +706,38 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
         ->ReportEvent(histogram_value, target_extension, did_enqueue);
   }
 
+  // Check source and target of the connection and grant extended lifetime if
+  // one of the ends is configured in the
+  // ExtendedBackgroundLifetimeForPortConnectionsToUrls policy.
+  std::vector<url::Origin> extended_lifetime_origins =
+      GetServiceWorkerExtendedLifetimeOrigins(browser_context);
+  url::Origin source_origin = url::Origin::Create(params->source_url);
+  url::Origin target_origin =
+      Extension::CreateOriginFromExtensionId(params->target_extension_id);
+
+  bool should_grant_opener_strong_keepalive = false;
+  bool should_grant_receiver_strong_keepalive = false;
+
+  for (const url::Origin& origin : extended_lifetime_origins) {
+    if (origin == source_origin) {
+      // Opener found in allowlist, keep receiver SW alive.
+      should_grant_receiver_strong_keepalive = true;
+    }
+    if (origin == target_origin) {
+      // Receiver found in allowlist, keep opener SW alive.
+      should_grant_opener_strong_keepalive = true;
+    }
+  }
+
   // Keep both ends of the channel alive until the channel is closed.
   channel->opener->IncrementLazyKeepaliveCount(
-      false /* is_for_native_message_connect */);
+      /* should_have_strong_keepalive= */ should_grant_opener_strong_keepalive);
   // Note: Though the receiver can be SW for native hosts connecting to it, we
   // don't support long lived SW for this particular case yet and specify false
   // below.
   channel->receiver->IncrementLazyKeepaliveCount(
-      false /* is_for_native_message_connect */);
+      /* should_have_strong_keepalive= */
+      should_grant_receiver_strong_keepalive);
 }
 
 void MessageService::AddChannel(std::unique_ptr<MessageChannel> channel,
@@ -954,7 +1031,7 @@ void MessageService::PendingLazyContextOpenChannel(
       weak_factory_.GetWeakPtr(), params->receiver_port_id,
       params->target_extension_id, context_info->browser_context);
   const Extension* const extension =
-      extensions::ExtensionRegistry::Get(context_info->browser_context)
+      ExtensionRegistry::Get(context_info->browser_context)
           ->enabled_extensions()
           .GetByID(context_info->extension_id);
   OpenChannelImpl(context_info->browser_context, std::move(params), extension,
