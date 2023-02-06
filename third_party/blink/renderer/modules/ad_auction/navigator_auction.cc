@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/map_traits_wtf_hash_map.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -30,6 +31,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_fencedframeconfig_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_usvstring_usvstringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ad_properties.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ad_request_config.h"
@@ -2179,11 +2181,27 @@ ScriptPromise NavigatorAuction::deprecatedURNToURL(
 ScriptPromise NavigatorAuction::deprecatedURNToURL(
     ScriptState* script_state,
     Navigator& navigator,
-    const String& uuid_url,
+    const V8UnionFencedFrameConfigOrUSVString* urn_or_config,
     bool send_reports,
     ExceptionState& exception_state) {
+  String uuid_url_string;
+  switch (urn_or_config->GetContentType()) {
+    case V8UnionFencedFrameConfigOrUSVString::ContentType::kUSVString:
+      uuid_url_string = urn_or_config->GetAsUSVString();
+      break;
+    case V8UnionFencedFrameConfigOrUSVString::ContentType::kFencedFrameConfig:
+      absl::optional<KURL> uuid_url_opt =
+          urn_or_config->GetAsFencedFrameConfig()->urn_uuid(
+              base::PassKey<NavigatorAuction>());
+      if (!uuid_url_opt.has_value()) {
+        exception_state.ThrowTypeError("Passed config must have a mapped URL.");
+        return ScriptPromise();
+      }
+      uuid_url_string = uuid_url_opt->GetString();
+      break;
+  }
   return From(ExecutionContext::From(script_state), navigator)
-      .deprecatedURNToURL(script_state, uuid_url, send_reports,
+      .deprecatedURNToURL(script_state, uuid_url_string, send_reports,
                           exception_state);
 }
 
@@ -2222,9 +2240,25 @@ ScriptPromise NavigatorAuction::deprecatedReplaceInURN(
 ScriptPromise NavigatorAuction::deprecatedReplaceInURN(
     ScriptState* script_state,
     Navigator& navigator,
-    const String& uuid_url_string,
+    const V8UnionFencedFrameConfigOrUSVString* urn_or_config,
     const Vector<std::pair<String, String>>& replacements,
     ExceptionState& exception_state) {
+  String uuid_url_string;
+  switch (urn_or_config->GetContentType()) {
+    case V8UnionFencedFrameConfigOrUSVString::ContentType::kUSVString:
+      uuid_url_string = urn_or_config->GetAsUSVString();
+      break;
+    case V8UnionFencedFrameConfigOrUSVString::ContentType::kFencedFrameConfig:
+      absl::optional<KURL> uuid_url_opt =
+          urn_or_config->GetAsFencedFrameConfig()->urn_uuid(
+              base::PassKey<NavigatorAuction>());
+      if (!uuid_url_opt.has_value()) {
+        exception_state.ThrowTypeError("Passed config must have a mapped URL.");
+        return ScriptPromise();
+      }
+      uuid_url_string = uuid_url_opt->GetString();
+      break;
+  }
   return From(ExecutionContext::From(script_state), navigator)
       .deprecatedReplaceInURN(script_state, uuid_url_string,
                               std::move(replacements), exception_state);

@@ -31,6 +31,7 @@ class AuctionAdInterestGroup;
 class AuctionAdConfig;
 class ScopedAbortState;
 class ScriptPromiseResolver;
+class V8UnionFencedFrameConfigOrUSVString;
 
 class MODULES_EXPORT NavigatorAuction final
     : public GarbageCollected<NavigatorAuction>,
@@ -97,26 +98,27 @@ class MODULES_EXPORT NavigatorAuction final
                                             ExceptionState& exception_state);
 
   ScriptPromise deprecatedURNToURL(ScriptState* script_state,
-                                   const String& uuid_url_string,
+                                   const String& urn_uuid,
                                    bool send_reports,
                                    ExceptionState& exception_state);
 
-  static ScriptPromise deprecatedURNToURL(ScriptState* script_state,
-                                          Navigator& navigator,
-                                          const String& uuid_url_string,
-                                          bool send_reports,
-                                          ExceptionState& exception_state);
+  static ScriptPromise deprecatedURNToURL(
+      ScriptState* script_state,
+      Navigator& navigator,
+      const V8UnionFencedFrameConfigOrUSVString* urn_or_config,
+      bool send_reports,
+      ExceptionState& exception_state);
 
   ScriptPromise deprecatedReplaceInURN(
       ScriptState* script_state,
-      const String& uuid_url_string,
+      const String& urn_uuid,
       const Vector<std::pair<String, String>>& replacement,
       ExceptionState& exception_state);
 
   static ScriptPromise deprecatedReplaceInURN(
       ScriptState* script_state,
       Navigator& navigator,
-      const String& uuid_url_string,
+      const V8UnionFencedFrameConfigOrUSVString* urn_or_config,
       const Vector<std::pair<String, String>>& replacement,
       ExceptionState& exception_state);
 

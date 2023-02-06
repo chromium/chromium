@@ -17,6 +17,10 @@
 
 namespace blink {
 
+// For base::PassKey<NavigationAuction>.
+// TODO(crbug.com/1347953): Remove when the accessor is removed.
+class NavigatorAuction;
+
 // FencedFrameConfig class implements the FencedFrameConfig IDL. It specifies
 // the fenced frame's inner properties. It can be returned by shared storage's
 // selectURL() and FLEDGE's runAdAuction(), or directly constructed for
@@ -80,6 +84,12 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
   }
 
   absl::optional<KURL> urn_uuid(base::PassKey<HTMLFencedFrameElement>) {
+    return urn_uuid_;
+  }
+
+  // Temporary accessor for `deprecatedURNToURL` and `deprecatedReplaceInURN`.
+  // TODO(crbug.com/1347953): Remove when those functions are removed.
+  absl::optional<KURL> urn_uuid(base::PassKey<NavigatorAuction>) {
     return urn_uuid_;
   }
 

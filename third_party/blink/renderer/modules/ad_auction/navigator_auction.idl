@@ -9,7 +9,7 @@
 // Common interest group APIs are behind AdInterestGroupAPI and specific ad
 // serving APIs are behing Fledge and Parakeet respectively.
 
-typedef (USVString or FencedFrameConfig) AdAuctionResponse;
+typedef (USVString or FencedFrameConfig) UrnOrConfig;
 
 [
   ImplementedAs=NavigatorAuction,
@@ -26,16 +26,16 @@ typedef (USVString or FencedFrameConfig) AdAuctionResponse;
   void updateAdInterestGroups();
 
   [RuntimeEnabled=Fledge, CallWith=ScriptState, Measure, RaisesException]
-  Promise<AdAuctionResponse?> runAdAuction(AuctionAdConfig config);
+  Promise<UrnOrConfig?> runAdAuction(AuctionAdConfig config);
 
   [RuntimeEnabled=Fledge, CallWith=ScriptState, Measure, RaisesException]
   sequence<USVString> adAuctionComponents([Clamp] unsigned short numComponents);
 
   [RuntimeEnable=AllowURLsinIframes, CallWith=ScriptState, Measure, RaisesException]
-  Promise<USVString> deprecatedURNToURL(USVString uuid_url, optional boolean send_reports = false);
+  Promise<USVString> deprecatedURNToURL(UrnOrConfig urn_or_config, optional boolean send_reports = false);
 
   [RuntimeEnable=AllowURLsinIframes, CallWith=ScriptState, Measure, RaisesException]
-  Promise<void> deprecatedReplaceInURN(USVString uuid_url, record<USVString, USVString> replacements);
+  Promise<void> deprecatedReplaceInURN(UrnOrConfig urn_or_config, record<USVString, USVString> replacements);
 
   [RuntimeEnabled=Parakeet, CallWith=ScriptState, Measure, RaisesException]
   Promise<Ads> createAdRequest(AdRequestConfig config);

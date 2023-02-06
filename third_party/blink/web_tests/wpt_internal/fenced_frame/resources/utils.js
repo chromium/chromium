@@ -20,6 +20,23 @@ function getRemoteContextURL(origin) {
   return new URL(REMOTE_EXECUTOR_URL, origin);
 }
 
+async function runSelectRawURL(href, resolve_to_config = false) {
+  try {
+    await sharedStorage.worklet.addModule(
+      "/wpt_internal/shared_storage/resources/simple-module.js");
+  } catch (e) {
+    // Shared Storage needs to have a module added before we can operate on it.
+    // It is generated on the fly with this call, and since there's no way to
+    // tell through the API if a module already exists, wrap the addModule call
+    // in a try/catch so that if it runs a second time in a test, it will
+    // gracefully fail rather than bring the whole test down.
+  }
+  return await sharedStorage.selectURL(
+      "test-url-selection-operation", [{url: href}],
+      {data: {'mockResult': 0}, resolveToConfig: resolve_to_config}
+  );
+}
+
 // Similar to generateURL, but creates
 // 1. An urn:uuid if `resolve_to_config` is false.
 // 2. A fenced frame config object if `resolve_to_config` is true.
@@ -43,40 +60,14 @@ function getRemoteContextURL(origin) {
 // Otherwise `selectURL()` will fall back to the old behavior that returns an
 // urn:uuid.
 async function runSelectURL(href, keylist = [], resolve_to_config = false) {
-  try {
-    await sharedStorage.worklet.addModule(
-      "/wpt_internal/shared_storage/resources/simple-module.js");
-  } catch (e) {
-    // Shared Storage needs to have a module added before we can operate on it.
-    // It is generated on the fly with this call, and since there's no way to
-    // tell through the API if a module already exists, wrap the addModule call
-    // in a try/catch so that if it runs a second time in a test, it will
-    // gracefully fail rather than bring the whole test down.
-  }
-
   const full_url = generateURL(href, keylist);
-  return await sharedStorage.selectURL(
-      "test-url-selection-operation", [{url: full_url}],
-      {data: {'mockResult': 0}, resolveToConfig: resolve_to_config}
-  );
+  return await runSelectRawURL(full_url, resolve_to_config);
 }
 
-// Similar to runSelectURL, but uses FLEDGE instead of Shared Storage as the
-// auctioning tool.
-// Note: this function, unlike generateURL, is asynchronous and needs to be
-// called with an await operator. @param {string} href - The base url of the
-// page being navigated to @param {string list} keylist - The list of key UUIDs
-// to be used. Note that order matters when extracting the keys
-// @param {string} href - The base url of the page being navigated to
-// @param {string list} keylist - The list of key UUIDs to be used. Note that
-//                                order matters when extracting the keys
-// @param {string list} nested_urls - A list of urls that will eventually become
-//                                    the nested configs/ad components
-async function generateURNFromFledge(href, keylist, nested_urls=[]) {
+async function generateURNFromFledgeRawURL(href, nested_urls, resolve_to_config = false) {
   const bidding_token = token();
   const seller_token = token();
 
-  const full_url = generateURL(href, keylist);
   const ad_components_list = nested_urls.map((url) => {
     return {renderUrl: url}
   });
@@ -85,7 +76,7 @@ async function generateURNFromFledge(href, keylist, nested_urls=[]) {
     name: 'testAd1',
     owner: location.origin,
     biddingLogicUrl: new URL(FLEDGE_BIDDING_URL, location.origin),
-    ads: [{renderUrl: full_url, bid: 1}],
+    ads: [{renderUrl: href, bid: 1}],
     userBiddingSignals: {biddingToken: bidding_token},
     trustedBiddingSignalsKeys: ['key1'],
     adComponents: ad_components_list,
@@ -100,8 +91,29 @@ async function generateURNFromFledge(href, keylist, nested_urls=[]) {
     interestGroupBuyers: [location.origin],
     decisionLogicUrl: new URL(FLEDGE_DECISION_URL, location.origin),
     auctionSignals: {biddingToken: bidding_token, sellerToken: seller_token},
+    resolveToConfig: resolve_to_config,
   };
   return navigator.runAdAuction(auctionConfig);
+}
+
+// Similar to runSelectURL, but uses FLEDGE instead of Shared Storage as the
+// auctioning tool.
+// Note: this function, unlike generateURL, is asynchronous and needs to be
+// called with an await operator. @param {string} href - The base url of the
+// page being navigated to @param {string list} keylist - The list of key UUIDs
+// to be used. Note that order matters when extracting the keys
+// @param {string} href - The base url of the page being navigated to
+// @param {string list} keylist - The list of key UUIDs to be used. Note that
+//                                order matters when extracting the keys
+// @param {string list} nested_urls - A list of urls that will eventually become
+//                                    the nested configs/ad components
+// @param {boolean} [resolve_to_config = false] - Determines whether the result
+//                                                of `navigator.runAdAuction()`
+//                                                is an urn:uuid or a fenced
+//                                                frame config.
+async function generateURNFromFledge(href, keylist, nested_urls=[], resolve_to_config = false) {
+  const full_url = generateURL(href, keylist);
+  return generateURNFromFledgeRawURL(full_url, nested_urls, resolve_to_config);
 }
 
 // Extracts a list of UUIDs from the from the current page's URL.
