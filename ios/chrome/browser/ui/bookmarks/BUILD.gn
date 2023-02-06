@@ -36,7 +36,7 @@ source_set("bookmarks") {
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/bookmarks/editor",
     "//ios/chrome/browser/ui/bookmarks/folder_chooser",
-    "//ios/chrome/browser/ui/bookmarks/folder_editor",
+    "//ios/chrome/browser/ui/bookmarks/folder_editor:ui",
     "//ios/chrome/browser/ui/bookmarks/home",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",

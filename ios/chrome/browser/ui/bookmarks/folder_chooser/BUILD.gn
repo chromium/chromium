@@ -2,12 +2,54 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("folder_chooser") {
+# Public target.
+group("folder_chooser") {
+  public_deps = [ ":coordinator_headers" ]
+  deps = [ ":coordinator_impl" ]
+}
+
+# Do not include this target. Prefer :folder_chooser instead.
+# This target is only used for internal builds in bookmark.
+# Contains coordinator headers.
+source_set("coordinator_headers") {
   configs += [ "//build/config/compiler:enable_arc" ]
+  visibility = [
+    ":coordinator_impl",
+    ":folder_chooser",
+    "//ios/chrome/browser/ui/bookmarks/folder_editor:ui",
+  ]
   sources = [
     "bookmarks_folder_chooser_coordinator.h",
-    "bookmarks_folder_chooser_coordinator.mm",
     "bookmarks_folder_chooser_coordinator_delegate.h",
+  ]
+  public_deps = [ "//ios/chrome/browser/ui/coordinators:chrome_coordinators" ]
+}
+
+# Do not include this target. Prefer :folder_chooser instead.
+# This target is only used for internal builds in bookmark.
+# Contains coordinator implementation.
+source_set("coordinator_impl") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  visibility = [ ":folder_chooser" ]
+  sources = [ "bookmarks_folder_chooser_coordinator.mm" ]
+  deps = [
+    ":coordinator_headers",
+    ":ui",
+    "//base",
+    "//components/bookmarks/browser",
+    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/bookmarks:core",
+    "//ios/chrome/browser/ui/table_view",
+  ]
+}
+
+# Private to this coordinator.
+# Contains folder chooser ui implementation.
+source_set("ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  visibility = [ ":coordinator_impl" ]
+  sources = [
     "bookmarks_folder_chooser_view_controller.h",
     "bookmarks_folder_chooser_view_controller.mm",
   ]
@@ -20,6 +62,7 @@ source_set("folder_chooser") {
     "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/bookmarks:core",
     "//ios/chrome/browser/ui/bookmarks/cells",
+    "//ios/chrome/browser/ui/bookmarks/folder_editor:ui",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/icons",
