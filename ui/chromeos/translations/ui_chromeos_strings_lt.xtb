@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Anglų k. (JAV) su Dvorako klaviatūra</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – priegloba</translation>
 <translation id="1521655867290435174">„Google“ skaičiuoklės</translation>
+<translation id="1521795806314479294">Ruošiamas failas <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">Atidaromi „Linux“ failai...</translation>
 <translation id="1547964879613821194">Kanados anglų</translation>
 <translation id="1556189134700913550">Taikyti visiems</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Archyvuojama elementų: <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="1722687688096767818">Pridedamas profilis...</translation>
 <translation id="1726100011689679555">Pavadinimų serveriai</translation>
+<translation id="1727562178154619254">Paruošta sinchronizuoti</translation>
 <translation id="1729953886957086472">Vokiečių k. (Vokietija)</translation>
 <translation id="1730235522912993863">Kinų k. „Cangjie“</translation>
 <translation id="1731889557567069540">Nukopijuota tiek elementų: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -479,6 +481,7 @@
 <translation id="4973523518332075481">Naudokite pavadinimą, sudarytą iš <ph name="MAX_LENGTH" /> ar mažiau simbolių</translation>
 <translation id="4973970068702235170">Archyvuojant įvyko netikėta klaida: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japonų k.</translation>
+<translation id="4987699874727873250">Anglų k. (Indija)</translation>
 <translation id="4988205478593450158">Ar tikrai norite ištrinti „<ph name="FILE_NAME" />“?</translation>
 <translation id="498902553138568924">Raudonas drugelis</translation>
 <translation id="4992066212339426712">Įjungti garsą</translation>
@@ -509,6 +512,7 @@
    Pašalinę dar naudojamą įrenginį galite prarasti duomenų. Palaukite, kol pasibaigs operacija, ir pašalinkite įrenginį naudodami programą „Failai“.</translation>
 <translation id="5163869187418756376">Nepavyko bendrinti. Patikrinkite ryšį ir vėliau bandykite dar kartą.</translation>
 <translation id="516592729076796170">Programuotojų JAV Dvorako</translation>
+<translation id="5167102019886320507">Ruošiama tiek elementų: <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="5177526793333269655">Miniatiūros rodinys</translation>
 <translation id="5181896909298187506">Nėra naujausių failų</translation>
 <translation id="5194713942430106590">Spustelėkite, kad galėtumėte rūšiuoti stulpelį didėjimo tvarka.</translation>

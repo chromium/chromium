@@ -80,6 +80,7 @@
 <translation id="149095475893949513">Цей веб-сайт намагається завантажити профіль конфігурації.</translation>
 <translation id="1491277525950327607">Двічі торкніться, щоб змінити налаштування</translation>
 <translation id="1492417797159476138">Ви вже зберегли це ім'я користувача для цього сайту</translation>
+<translation id="1498283581832036924">Ваш обліковий запис на веб-сайті <ph name="WEBSITE" /> не буде видалено.</translation>
 <translation id="1506063256525392513">Так ви зможете робити й завантажувати фотографії, а також сканувати QR-коди</translation>
 <translation id="1509486075633541495">Увійдіть в обліковий запис на веб-сайті</translation>
 <translation id="1509960214886564027">Функції на багатьох сайтах можуть не працювати</translation>
@@ -205,7 +206,6 @@
 <translation id="2529021024822217800">Відкрити всі</translation>
 <translation id="2556092377360758201">Захист вимкнено (не рекомендовано)</translation>
 <translation id="2562041823070056534">Надсилання на пристрій <ph name="DEVICE_NAME" />…</translation>
-<translation id="2570206273416014374">Надсилає деякі файли cookie й пошукові запити з адресного рядка та вікна пошуку в пошукову систему за умовчанням.</translation>
 <translation id="2578571896248130439">Надіслати веб-сторінку</translation>
 <translation id="2584132361465095047">Додати обліковий запис…</translation>
 <translation id="2600682495497606169">Видалити файли cookie сайту</translation>
@@ -219,6 +219,7 @@
 <translation id="2664621323652615289">Зупинити</translation>
 <translation id="2671426118752779020">Ви можете використовувати паролі, збережені в Менеджері паролів Google, в інших додатках на iPhone.</translation>
 <translation id="2690858294534178585">Камера використовується</translation>
+<translation id="26915454213703967">Пошук на зображенні через Google</translation>
 <translation id="2691653761409724435">Недоступно в режимі офлайн</translation>
 <translation id="2695507686909505111">Сторінку перекладено</translation>
 <translation id="2697526135132990015">Вийти й очистити дані</translation>
@@ -259,7 +260,6 @@
 <translation id="2890171748217283516">Сайти, на які ви підписалися, зберігаються в обліковому записі Google. Керувати ними можна в налаштуваннях рекомендацій.</translation>
 <translation id="2898963176829412617">Нова папка…</translation>
 <translation id="2902684821701498619">Додати в список читання</translation>
-<translation id="2916171785467530738">Увімкнути автозавершення пошукових запитів і URL-адрес</translation>
 <translation id="291754862089661335">Розмістіть QR-код або штрих-код у цій рамці</translation>
 <translation id="2920866371965792875">Щоб отримувати новини з цього сайту, підпишіться на нього тут.</translation>
 <translation id="2921219216347069551">Неможливо поділитися</translation>
@@ -382,6 +382,7 @@
 <translation id="3819183753496523827">Ви не в мережі. Перевірте інтернет-з’єднання й повторіть спробу.</translation>
 <translation id="3835964409414434850">Перейти на наступну вкладку</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3851938967634752633">Паролі для веб-сайтів <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> і ще кількох облікових записів (<ph name="NUMBER_OF_ACCOUNTS" />) буде видалено. Ваші облікові записи не буде видалено.</translation>
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3861486700625780712">Скасувати підписку</translation>
 <translation id="3863769054730344136">Надіслати на пристрої</translation>
@@ -517,6 +518,7 @@
 <translation id="4833786495304741580">Автоматично надсилає статистику використання та звіти про аварійне завершення роботи в Google.</translation>
 <translation id="4840495572919996524">Закладки, історія, паролі тощо більше не синхронізуватимуться з обліковим записом Google.</translation>
 <translation id="4844899002472726590">Переглядайте й редагуйте цікаві вам теми</translation>
+<translation id="4848999860252535517">Видалити пароль для веб-сайту <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Налаштуйте код доступу</translation>
 <translation id="4858786880085262208">За можливості використовуйте протокол HTTPS. На безпечних сайтах може бути вбудовано незахищений контент.</translation>
 <translation id="4860895144060829044">Зателефонувати</translation>
@@ -708,6 +710,7 @@
 <translation id="6284652193729350524">Пропонувати переклад для такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Ви скасували підписку на канал <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Щоб увімкнути Безпечний перегляд, відкрийте параметр <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" /> і натисніть "Безпечний перегляд".</translation>
+<translation id="6320780930074869063">Якщо ввімкнути цю функцію, паролі зберігатимуться в обліковому записі <ph name="ACCOUNT" />. Якщо її вимкнути, паролі зберігатимуться лише на цьому пристрої.</translation>
 <translation id="6321526113093607004">Додати в закладки</translation>
 <translation id="6324669097367352121">Налаштування входу</translation>
 <translation id="6337234675334993532">Шифрування</translation>
@@ -769,6 +772,7 @@
 <translation id="6598875554591387303">Сортувати за категорією "Видавець"</translation>
 <translation id="6603393121510733479">Адміністратор вашої організації вимкнув режим анонімного перегляду.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Паролі для веб-сайтів <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> і <ph name="THIRD_WEBSITE" /> буде видалено. Ваші облікові записи не буде видалено.</translation>
 <translation id="6610002944194042868">Параметри перекладу</translation>
 <translation id="661266467055912436">Покращує захист усіх користувачів в Інтернеті.</translation>
 <translation id="6620279676667515405">Скасувати</translation>
@@ -1023,7 +1027,7 @@
 <translation id="8548878600947630424">Знайти на сторінці...</translation>
 <translation id="8558480467877843976">Тепер ви можете переглядати й відкривати в Chrome посилання з повідомлень, документів та інших додатків.</translation>
 <translation id="8588404856427128947">Вимкнено</translation>
-<translation id="8591976964826315682">Блокувати файли cookie третіх сторін в анонімному режимі</translation>
+<translation id="8591976964826315682">Блокувати сторонні файли cookie в анонімному режимі</translation>
 <translation id="8605219856220328675">Закрити вкладку.</translation>
 <translation id="8620640915598389714">Редагувати</translation>
 <translation id="8626393685701737946">Ви можете змінити режим перегляду сайту за умовчанням у меню "Налаштування" &gt; "Веб-контент"</translation>
@@ -1046,6 +1050,7 @@
 <translation id="8756969031206844760">Оновити пароль?</translation>
 <translation id="8763613688786959833">Перейти на останню вкладку</translation>
 <translation id="8764015330924122850">Скасувати підписку на <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Паролі для веб-сайтів <ph name="WEBSITE" /> і <ph name="SECOND_WEBSITE" /> буде видалено. Ваші облікові записи не буде видалено.</translation>
 <translation id="8775144690796719618">Недійсна URL-адреса</translation>
 <translation id="8787968206789828143">Шукати в Інтернеті</translation>
 <translation id="8792626944327216835">мікрофон</translation>
@@ -1095,6 +1100,7 @@
 <translation id="9093271241977565440">Угорі екрана натисніть значок пошуку</translation>
 <translation id="9094033019050270033">Оновити пароль</translation>
 <translation id="9097506547406246598">Не вдалося скасувати підписку.</translation>
+<translation id="9098541895599151034">Видалити паролі для кількох облікових записів (<ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9100610230175265781">Потрібно вказати парольну фразу</translation>
 <translation id="9107664647686727385">Перевіряйте, чи були ваші паролі зламані</translation>
 <translation id="9124387962554796433">Google може використовувати вашу історію для персоналізації Пошуку й інших сервісів Google.</translation>

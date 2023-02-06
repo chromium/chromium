@@ -1137,7 +1137,6 @@
 <translation id="1997433994358798851">சாதனத்துடன் இணைப்பதற்காக புளூடூத்தைப் பயன்படுத்த Chromeமிற்கு அனுமதி தேவை</translation>
 <translation id="1997616988432401742">உங்கள் சான்றிதழ்கள்</translation>
 <translation id="1999115740519098545">தொடக்கத்தில்</translation>
-<translation id="2000419248597011803">முகவரிப் பட்டியிலிருந்தும், தேடல் பெட்டியிலிருந்தும் சில குக்கீகளையும் தேடல்களையும் உங்கள் இயல்புத் தேடல் இன்ஜினுக்கு அனுப்பும்</translation>
 <translation id="2002109485265116295">நிகழ்நேரம்</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' டேட்டாவைச் செயல்படுத்த, முதலில் ஒரு வைஃபை நெட்வொர்க்குடன் இணைக்கவும்</translation>
 <translation id="2004697686368036666">சில தளங்களில் உள்ள அம்சங்கள் செயல்படாமல் போகக்கூடும்</translation>
@@ -2193,7 +2192,6 @@
 <translation id="2908358077082926882">ஒதுக்கீட்டை அகற்றிவிட்டு <ph name="RESPONSE" /> “<ph name="CURRENTKEY" />” பட்டனை மீண்டும் அழுத்தவும்</translation>
 <translation id="2909506265808101667">Google சேவைகளுடன் இணைக்க முடியவில்லை. நெட்வொர்க் இணைப்பைச் சரிபார்த்து மீண்டும் முயலவும். பிழைக் குறியீடு: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">நெட்வொர்க்குடன் இணைத்து, மீண்டும் முயலவும்</translation>
-<translation id="291056154577034373">படிக்காதவை</translation>
 <translation id="2910718431259223434">ஏதோ தவறாகிவிட்டது. மீண்டும் முயலவும் அல்லது உங்கள் சாதன உரிமையாளரையோ நிர்வாகியையோ தொடர்புகொள்ளவும். பிழைக் குறியீடு: <ph name="ERROR_CODE" />.</translation>
 <translation id="2912247081180973411">சாளரங்களை மூடுக</translation>
 <translation id="2913331724188855103">குக்கீத் தரவை, தளங்கள் சேமிக்கவும் படிக்கவும் அனுமதி (பரிந்துரைக்கப்பட்டது)</translation>
@@ -2618,6 +2616,7 @@
 <translation id="3315442055907669208">படித்தல் பயன்முறையில் நுழை</translation>
 <translation id="3317459757438853210">இரு-பக்கம்</translation>
 <translation id="3317678681329786349">கேமராவும் மைக்ரோஃபோனும் தடுக்கப்பட்டன</translation>
+<translation id="3319306431415395200">படத்தில் உள்ள வார்த்தைகளை <ph name="VISUAL_SEARCH_PROVIDER" /> மூலம் மொழிபெயர்</translation>
 <translation id="3320630259304269485">பாதுகாப்பு உலாவல் (ஆபத்தான தளங்களிலிருந்து பாதுகாப்பு) மற்றும் பிற பாதுகாப்பு அமைப்புகள்</translation>
 <translation id="3323521181261657960">போனஸ்! கூடுதல் நேரம் பயன்படுத்தலாம்</translation>
 <translation id="3323577066981719144">இங்கே செய்யும் மாற்றங்கள் Chrome உலாவியில் மட்டுமே பயன்படுத்தப்படும். Lacros Chrome உலாவி அமைப்புகளில் மாற்றங்களைச் செய்ய, Lacros Chrome உலாவியைத் திறந்து அமைப்புகளுக்குச் செல்லவும்.</translation>
@@ -3802,7 +3801,6 @@
 <translation id="4404843640767531781">உங்கள் பெற்றோரால் <ph name="APP_NAME" /> தடுக்கப்பட்டுள்ளது. இந்த ஆப்ஸைப் பயன்படுத்த உங்கள் பெற்றோரிடம் அனுமதி கேட்கவும்.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">இங்கு நகர்த்து…</translation>
-<translation id="440653823335387109">படித்த பக்கங்கள்</translation>
 <translation id="4406883609789734330">உடனடி வசனம்</translation>
 <translation id="4407039574263172582">தொடர உங்கள் பெயர், மின்னஞ்சல் முகவரி, சுயவிவரப் படம் ஆகியவற்றை இந்தத் தளத்தில் <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> பகிரும். இந்தத் தளத்தின் <ph name="BEGIN_LINK" />சேவை விதிமுறைகளைப்<ph name="END_LINK" /> பார்க்கவும்.</translation>
 <translation id="4408599188496843485">உ&amp;தவி</translation>
@@ -3848,6 +3846,7 @@
 <translation id="4441147046941420429">தொடர உங்கள் சாதனத்திலிருந்து பாதுகாப்பு விசையை அகற்றி அதை மீண்டும் செருகி, தொடவும்</translation>
 <translation id="444134486829715816">விரிவாக்கு...</translation>
 <translation id="4441928470323187829">உங்கள் நிர்வாகி பின் (pin) செய்துள்ளார்</translation>
+<translation id="4442863809158514979">இணைய அனுமதிகளைக் காட்டு</translation>
 <translation id="4443536555189480885">&amp;Help</translation>
 <translation id="4444304522807523469">USB அல்லது பிற லோக்கல் நெட்வொர்க் மூலம் இணைக்கப்பட்ட ஆவண ஸ்கேனர்களை அணுகுதல்</translation>
 <translation id="4444512841222467874">போதுமான இடம் காலியாக்கப்படவில்லை எனில், பயனர்களும் தரவும் தானாகவே அகற்றப்படலாம்.</translation>
@@ -5533,6 +5532,7 @@
 <translation id="6011193465932186973">கைரேகை</translation>
 <translation id="6011908034087870826"><ph name="DEVICE_NAME" /> சாதனத்திற்கு இணைப்பை அனுப்புகிறது</translation>
 <translation id="6013027779243312217">உங்கள் ஆடியோவிற்கும் வீடியோவிற்கும் வசனங்களைக் பெறலாம்</translation>
+<translation id="6014293228235665243">படிக்காதவை</translation>
 <translation id="6015796118275082299">ஆண்டு</translation>
 <translation id="6016178549409952427">கூடுதல் உள்ளடக்கத்திற்குச் செல்லும் (<ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" />)</translation>
 <translation id="6016551720757758985">முந்தைய பதிப்பிற்கு மாற, பவர்வாஷை உறுதிப்படுத்தவும்</translation>
@@ -7364,7 +7364,6 @@
 <translation id="7702574632857388784">பட்டியலிலிருந்து <ph name="FILE_NAME" />ஐ அகற்று</translation>
 <translation id="7702907602086592255">டொமைன்</translation>
 <translation id="7704305437604973648">பணி</translation>
-<translation id="7704317875155739195">தேடல்களையும் URLகளையும் தானே நிரப்பு</translation>
 <translation id="7704521324619958564">Play Storeரைத் திற</translation>
 <translation id="7705276765467986571">புக்மார்க் மாதிரியை ஏற்ற முடியவில்லை.</translation>
 <translation id="7705334495398865155">பிறர் இந்தச் சாதனத்தைக் கண்காணிப்பதைத் தடுக்க உங்கள் வன்பொருளின் ஐடியை (BSSID) ரேண்டமாக்கும்.</translation>
@@ -7478,6 +7477,7 @@
 <translation id="779308894558717334">வெளிர் பச்சை</translation>
 <translation id="7793098747275782155">அடர் நீலம்</translation>
 <translation id="7797571222998226653">முடக்கப்பட்டுள்ளது</translation>
+<translation id="7798504574384119986">இணைய அனுமதிகளைக் காட்டு</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> தானாகத் தடுக்கப்பட்டது</translation>
 <translation id="7800518121066352902">இ&amp;டஞ்சுழியாகச் சுற்று</translation>
 <translation id="7801679634091975683">இங்கே செய்யும் மாற்றங்கள் Lacros Chrome உலாவியில் மட்டுமே பயன்படுத்தப்படும். Chrome உலாவி அமைப்புகளில் மாற்றங்களைச் செய்ய, Chrome உலாவியைத் திறந்து அமைப்புகளுக்குச் செல்லவும்.</translation>
@@ -7692,6 +7692,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> குரல் <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">ஸ்விட்ச் அணுகலுக்கான அமைப்புகள்</translation>
 <translation id="7992203134935383159">பேச்சு உருவாக்கம்</translation>
+<translation id="7994515119120860317">படத்தில் உள்ள வார்த்தைகளை <ph name="VISUAL_SEARCH_PROVIDER" /> மூலம் மொழிபெயர்</translation>
 <translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">செயல்படுத்தல் முன்னுரிமை</translation>
 <translation id="7999229196265990314">பின்வரும் ஃபைல்கள்  உருவாக்கப்பட்டன:

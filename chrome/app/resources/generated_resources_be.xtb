@@ -1128,7 +1128,6 @@
 <translation id="1997433994358798851">Браўзеру Chrome неабходны дазвол на выкарыстанне Bluetooth для падключэння да прылады</translation>
 <translation id="1997616988432401742">Вашы сертыфікаты</translation>
 <translation id="1999115740519098545">Пры запуску</translation>
-<translation id="2000419248597011803">Адпраўляе вашай стандартнай пошукавай сістэме некаторыя файлы cookie, а таксама пошукавыя запыты, уведзеныя ў адрасным радку і полі пошуку</translation>
 <translation id="2002109485265116295">У рэальным часе</translation>
 <translation id="2003130567827682533">Каб актываваць даныя "<ph name="NAME" />", спачатку падключыцеся да сеткі Wi-Fi</translation>
 <translation id="2004697686368036666">На некаторых сайтах можа не працаваць частка функцый</translation>
@@ -2181,7 +2180,6 @@
 <translation id="2908358077082926882">Каб скасаваць прызначэнне і <ph name="RESPONSE" />, яшчэ раз націсніце "<ph name="CURRENTKEY" />"</translation>
 <translation id="2909506265808101667">Не ўдалося падключыцца да сэрвісаў Google. Праверце падключэнне да сеткі і паўтарыце спробу. Код памылкі: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Падключыцеся да сеткі і паўтарыце спробу</translation>
-<translation id="291056154577034373">НЕПРАЧЫТАНАЕ</translation>
 <translation id="2910718431259223434">Нешта пайшло не так. Паўтарыце спробу або звярніцеся да адміністратара ці ўладальніка прылады. Код памылкі: <ph name="ERROR_CODE" />.</translation>
 <translation id="2912247081180973411">Закрыць вокны</translation>
 <translation id="2913331724188855103">Дазволіць сайтам захоўваць і чытаць даныя файлаў cookie (рэкамендуецца)</translation>
@@ -2606,6 +2604,7 @@
 <translation id="3315442055907669208">Перайсці ў рэжым чытання</translation>
 <translation id="3317459757438853210">Двухбаковы</translation>
 <translation id="3317678681329786349">Камера і мікрафон заблакіраваны</translation>
+<translation id="3319306431415395200">Перакласці тэкст на відарысе з дапамогай <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Бяспечны прагляд (абарона ад небяспечных сайтаў) і іншыя налады бяспекі</translation>
 <translation id="3323521181261657960">Бонус! Час карыстання павялічыўся</translation>
 <translation id="3323577066981719144">Унесеныя тут змены будуць прыменены толькі ў браўзеры Chrome. Каб змяніць налады браўзера Lacros Chrome, адкрыйце яго і перайдзіце ў налады.</translation>
@@ -3788,7 +3787,6 @@
 <translation id="4404843640767531781">Бацькі заблакіравалі праграму "<ph name="APP_NAME" />" – запытайце ў іх дазвол на яе выкарыстанне.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Перамясціць у…</translation>
-<translation id="440653823335387109">ПРАЧЫТАНЫЯ СТАРОНКІ</translation>
 <translation id="4406883609789734330">Імгненныя субцітры</translation>
 <translation id="4407039574263172582">Каб працягнуць, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> абагуліць ваша імя, адрас электроннай пошты і відарыс профілю з гэтым сайтам. Азнаёмцеся з <ph name="BEGIN_LINK" />умовамі выкарыстання<ph name="END_LINK" /> сайта.</translation>
 <translation id="4408599188496843485">Да&amp;ведка</translation>
@@ -5518,6 +5516,7 @@
 <translation id="6011193465932186973">Лічбавы адбітак</translation>
 <translation id="6011908034087870826">Ідзе адпраўка спасылкі на прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6013027779243312217">Уключыце стварэнне субцітраў для аўдыя і відэа</translation>
+<translation id="6014293228235665243">Непрачытанае</translation>
 <translation id="6015796118275082299">Год</translation>
 <translation id="6016178549409952427">Перайсці да дадатковага змесціва: <ph name="CURRENT_ELEMENT" /> з <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Пацвердзіце Powerwash з вяртаннем да папярэдняй версіі</translation>
@@ -7355,7 +7354,6 @@
 <translation id="7702574632857388784">Выдаліць "<ph name="FILE_NAME" />" са спіса</translation>
 <translation id="7702907602086592255">Дамен</translation>
 <translation id="7704305437604973648">Задача</translation>
-<translation id="7704317875155739195">Аўтаматычна дапісваць пошукавыя запыты і URL-адрасы</translation>
 <translation id="7704521324619958564">Адкрыць Краму Play</translation>
 <translation id="7705276765467986571">Не ўдалося загрузіць мадэль закладак.</translation>
 <translation id="7705334495398865155">Выкарыстоўваць выпадковы ідэнтыфікатар BSSID праграмнага забеспячэння, каб іншыя карыстальнікі не змаглі адсачыць гэту прыладу.</translation>
@@ -7684,6 +7682,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />, голас <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Налады доступу праз пераключальнікі</translation>
 <translation id="7992203134935383159">Сінтэз маўлення</translation>
+<translation id="7994515119120860317">Перакласці тэкст на відарысе з дапамогай <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Прыярытэт працэсу</translation>
 <translation id="7999229196265990314">Створаны наступныя файлы:

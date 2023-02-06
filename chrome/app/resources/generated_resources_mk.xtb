@@ -1138,7 +1138,6 @@
 <translation id="1997433994358798851">На Chrome му треба дозвола за користење на Bluetooth за да се поврзе со вашиот уред</translation>
 <translation id="1997616988432401742">Ваши сертификати</translation>
 <translation id="1999115740519098545">На стартување</translation>
-<translation id="2000419248597011803">Испраќа колачиња и пребарувања од лентата за адреси и полето за пребарување во вашиот стандарден пребарувач</translation>
 <translation id="2002109485265116295">Реално време</translation>
 <translation id="2003130567827682533">За да ја активирате мобилната мрежа <ph name="NAME" />, најпрво поврзете се на Wi-Fi мрежа</translation>
 <translation id="2004697686368036666">Функциите на некои сајтови може да не функционираат</translation>
@@ -2194,7 +2193,6 @@
 <translation id="2908358077082926882">Притиснете „<ph name="CURRENTKEY" />“ повторно за да го отстраните назначувањето и <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Не може да се поврземе со услугите на Google. Проверете ја мрежната врска и обидете се повторно. Код за грешка: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Поврзете се на мрежа и обидете се повторно</translation>
-<translation id="291056154577034373">НЕПРОЧИТАНО</translation>
 <translation id="2910718431259223434">Нешто тргна наопаку. Обидете се повторно или контактирајте со сопственикот или администраторот на уредот. Код за грешка: <ph name="ERROR_CODE" />.</translation>
 <translation id="2912247081180973411">Затвори ги прозорците</translation>
 <translation id="2913331724188855103">Дозволете локациите да зачувуваат и читаат податоци за колачињата (препорачано)</translation>
@@ -3806,7 +3804,6 @@
 <translation id="4404843640767531781">Твојот родител ја блокирал <ph name="APP_NAME" />. Побарај дозвола од родителот за користење на апликацијава.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Премести во…</translation>
-<translation id="440653823335387109">ПРОЧИТАНИ СТРАНИЦИ</translation>
 <translation id="4406883609789734330">Автоматски титлови</translation>
 <translation id="4407039574263172582">За да продолжите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ќе ги сподели вашето име, адресата на е-пошта и профилната слика со сајтов. Погледнете ги <ph name="BEGIN_LINK" />Условите за користење<ph name="END_LINK" /> на сајтов.</translation>
 <translation id="4408599188496843485">П&amp;омош</translation>
@@ -5537,6 +5534,7 @@
 <translation id="6011193465932186973">Отпечаток</translation>
 <translation id="6011908034087870826">Се испраќа линк до <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">Добијте титлови за вашите аудио и видеосодржини</translation>
+<translation id="6014293228235665243">Непрочитано</translation>
 <translation id="6015796118275082299">Година</translation>
 <translation id="6016178549409952427">Одете на дополнителните содржини под број <ph name="CURRENT_ELEMENT" /> од вкупно <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Потврди фабричко ресетирање со враќање на претходната верзија</translation>
@@ -7371,7 +7369,6 @@
 <translation id="7702574632857388784">Отстранете ја датотеката <ph name="FILE_NAME" /> од списокот</translation>
 <translation id="7702907602086592255">Домен</translation>
 <translation id="7704305437604973648">Задача</translation>
-<translation id="7704317875155739195">Автоматски довршувај ги пребарувањата и URL-адресите</translation>
 <translation id="7704521324619958564">Отвори Play Store</translation>
 <translation id="7705276765467986571">Не може да се вчита модел на обележувач.</translation>
 <translation id="7705334495398865155">Рандомизирајте го ID на вашиот хардвер (BSSID) за да спречите други да го следат уредов.</translation>

@@ -1137,7 +1137,6 @@
 <translation id="1997433994358798851">మీ పరికరానికి కనెక్ట్ చేయడానికి, బ్లూటూత్‌ను ఉపయోగించడానికి Chromeకు అనుమతి కావాలి</translation>
 <translation id="1997616988432401742">మీ ప్రమాణపత్రాలు</translation>
 <translation id="1999115740519098545">ప్రారంభించిన తరువాత</translation>
-<translation id="2000419248597011803">అడ్రస్ బార్, సెర్చ్ బాక్స్‌లలో చేసే సెర్చ్‌లు, కొన్ని కుక్కీలను మీరు ఆటోమేటిక్ ఆప్షన్‌గా సెట్ చేసిన సెర్చ్ ఇంజిన్‌కు పంపుతుంది</translation>
 <translation id="2002109485265116295">నిజ-సమయం</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' డేటాను యాక్టివేట్ చేయడానికి, ముందుగా ఒక Wi-Fi నెట్‌వర్క్‌కు కనెక్ట్ చేయండి</translation>
 <translation id="2004697686368036666">కొన్ని సైట్‌లలోని ఫీచర్‌లు పని చేయకపోవచ్చు</translation>
@@ -2193,7 +2192,6 @@
 <translation id="2908358077082926882">కేటాయింపును తీసివేసి, <ph name="RESPONSE" /> కోసం "<ph name="CURRENTKEY" />"ని మళ్లీ నొక్కండి</translation>
 <translation id="2909506265808101667">Google సర్వీస్‌లతో కనెక్ట్ చేయడం సాధ్యం కాలేదు. మీ నెట్‌వర్క్ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">నెట్‌వర్క్‌కి కనెక్ట్ చేసి మళ్లీ ప్రయత్నించండి</translation>
-<translation id="291056154577034373">చదవనివి</translation>
 <translation id="2910718431259223434">ఏదో తప్పు జరిగింది. దయచేసి మళ్లీ ట్రై చేయండి లేదా మీ పరికర ఓనర్‌ను లేదా అడ్మినిస్ట్రేట‌ర్‌ను సంప్రదించండి. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="2912247081180973411">విండోలను మూసివేయి</translation>
 <translation id="2913331724188855103">కుక్కీ డేటాను సేవ్ చేయడానికి, చదవడానికి సైట్‌లను అనుమతిస్తుంది (సిఫార్సు చేయబడింది)</translation>
@@ -3805,7 +3803,6 @@
 <translation id="4404843640767531781"><ph name="APP_NAME" />ను మీ తల్లి/తండ్రి బ్లాక్ చేశారు. ఈ యాప్‌ను ఉపయోగించడానికి మీ తల్లి/తండ్రి అనుమతిని అడగండి.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">ఇక్కడికి తరలించండి…</translation>
-<translation id="440653823335387109">మీరు చదివిన పేజీలు</translation>
 <translation id="4406883609789734330">లైవ్ క్యాప్షన్</translation>
 <translation id="4407039574263172582">కొనసాగించడానికి, మీ పేరు, ఈమెయిల్ అడ్రస్, ప్రొఫైల్ ఫోటోను <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో షేర్ చేస్తుంది. ఈ సైట్ <ph name="BEGIN_LINK" />సర్వీస్ నియమాలను<ph name="END_LINK" /> చూడండి.</translation>
 <translation id="4408599188496843485">స&amp;హాయం</translation>
@@ -5537,6 +5534,7 @@
 <translation id="6011193465932186973">వేలిముద్ర</translation>
 <translation id="6011908034087870826"><ph name="DEVICE_NAME" />కు లింక్‌ను పంపుతోంది</translation>
 <translation id="6013027779243312217">మీ ఆడియో, వీడియోకు క్యాప్షన్‌లను పొందండి</translation>
+<translation id="6014293228235665243">చదవనివి</translation>
 <translation id="6015796118275082299">సంవత్సరం</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" />లో <ph name="CURRENT_ELEMENT" />వ అదనపు కంటెంట్‌కు నావిగేట్ చేయండి</translation>
 <translation id="6016551720757758985">మునుపటి వెర్షన్‌కు తిరిగి మార్చేలా చేసే పవర్‌వాష్‌ను నిర్ధారించండి</translation>
@@ -7370,7 +7368,6 @@
 <translation id="7702574632857388784">లిస్ట్‌ నుంచి <ph name="FILE_NAME" />ని తొలగించండి</translation>
 <translation id="7702907602086592255">డొమైన్</translation>
 <translation id="7704305437604973648">విధి</translation>
-<translation id="7704317875155739195">సెర్చ్‌లను, URLలను ఆటో-ఫిల్ చేయడం</translation>
 <translation id="7704521324619958564">Play Storeను తెరువు</translation>
 <translation id="7705276765467986571">బుక్‌మార్క్ నమూనాను లోడ్ చేయడం సాధ్యం కాలేదు.</translation>
 <translation id="7705334495398865155">ఇతరులు ఈ పరికరాన్ని ట్రాక్ చేయకుండా నిరోధించడానికి మీ హార్డ్‌వేర్ ID (BSSID)ని ర్యాండమైజ్ చేయండి.</translation>

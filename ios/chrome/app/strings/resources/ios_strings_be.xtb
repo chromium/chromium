@@ -205,7 +205,6 @@
 <translation id="2529021024822217800">Адкрыць усе</translation>
 <translation id="2556092377360758201">Без абароны (не рэкамендуецца)</translation>
 <translation id="2562041823070056534">Ідзе адпраўка на прыладу "<ph name="DEVICE_NAME" />"...</translation>
-<translation id="2570206273416014374">Адпраўляе вашай стандартнай пошукавай сістэме некаторыя файлы cookie, а таксама пошукавыя запыты, уведзеныя ў адрасным радку і полі пошуку.</translation>
 <translation id="2578571896248130439">Адпраўка вэб-старонкі</translation>
 <translation id="2584132361465095047">Дадаць уліковы запіс…</translation>
 <translation id="2600682495497606169">Выдаліць файлы cookie сайта</translation>
@@ -259,7 +258,6 @@
 <translation id="2890171748217283516">Сайты, на якія вы падпісаны, захоўваюцца ў вашым Уліковым запісе Google. Кіраваць імі можна ў наладах Рэкамендацый.</translation>
 <translation id="2898963176829412617">Новая папка…</translation>
 <translation id="2902684821701498619">Дадаць у Спіс на прагляд</translation>
-<translation id="2916171785467530738">Аўтазапаўненне ў полі пошуку і URL-адраса</translation>
 <translation id="291754862089661335">Змясціце QR-код або штрыхкод у гэтай рамцы</translation>
 <translation id="2920866371965792875">Каб бачыць навіны з гэтага сайта, падпішыцеся на яго тут.</translation>
 <translation id="2921219216347069551">Не ўдалося абагуліць</translation>
@@ -708,6 +706,7 @@
 <translation id="6284652193729350524">Прапаноўваць перакласці з мовы: <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Вы адпісаліся ад канала "<ph name="CHANNEL_NAME" />"</translation>
 <translation id="6293101329759844770">Каб уключыць Бяспечны прагляд, адкрыйце старонку <ph name="BEGIN_LINK" />Сэрвісы Google<ph name="END_LINK" /> і націсніце на пункт "Бяспечны прагляд".</translation>
+<translation id="6320780930074869063">Калі гэты параметр уключаны, паролі захоўваюцца ва ўліковым запісе <ph name="ACCOUNT" />, а калі выключаны, захоўваюцца толькі на гэтай прыладзе.</translation>
 <translation id="6321526113093607004">Дадаць у Закладкі</translation>
 <translation id="6324669097367352121">Налады ўваходу</translation>
 <translation id="6337234675334993532">Шыфраванне</translation>

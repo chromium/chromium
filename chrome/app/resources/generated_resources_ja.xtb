@@ -1122,7 +1122,6 @@
 <translation id="1997433994358798851">Chrome からデバイスに接続するには、Bluetooth の使用を許可する必要があります</translation>
 <translation id="1997616988432401742">ユーザーの証明書</translation>
 <translation id="1999115740519098545">起動時</translation>
-<translation id="2000419248597011803">Cookie と、アドレスバーや検索ボックスに入力した検索語句を既定の検索エンジンに送信します</translation>
 <translation id="2002109485265116295">リアルタイム</translation>
 <translation id="2003130567827682533">「<ph name="NAME" />」データサービスを有効にするには、まず Wi-Fi ネットワークに接続してください</translation>
 <translation id="2004697686368036666">一部のサイトで機能を使用できなくなる可能性があります</translation>
@@ -2172,7 +2171,6 @@
 <translation id="2908358077082926882">割り当てを削除して<ph name="RESPONSE" />には、もう一度「<ph name="CURRENTKEY" />」キーを押してください</translation>
 <translation id="2909506265808101667">Google サービスに接続できませんでした。ネットワーク接続を確認してからもう一度お試しください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="2910318910161511225">ネットワークに接続してから、もう一度お試しください</translation>
-<translation id="291056154577034373">未読</translation>
 <translation id="2910718431259223434">エラーが発生しました。もう一度お試しいただくか、デバイス所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="2912247081180973411">ウィンドウを閉じる</translation>
 <translation id="2913331724188855103">サイトに Cookie データの保存と読み取りを許可する（推奨）</translation>
@@ -3781,7 +3779,6 @@
 <translation id="4404843640767531781"><ph name="APP_NAME" /> は保護者によってブロックされています。このアプリを使用するには、保護者の許可が必要です。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
 <translation id="4405224443901389797">移動…</translation>
-<translation id="440653823335387109">既読のページ</translation>
 <translation id="4406883609789734330">自動字幕起こし</translation>
 <translation id="4407039574263172582">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに名前、メールアドレス、プロフィール画像が共有されます。このサイトの<ph name="BEGIN_LINK" />利用規約<ph name="END_LINK" />を確認してください。</translation>
 <translation id="4408599188496843485">ヘルプ(&amp;H)</translation>
@@ -5505,6 +5502,7 @@
 <translation id="6011193465932186973">指紋</translation>
 <translation id="6011908034087870826">リンクを <ph name="DEVICE_NAME" /> に送信しています</translation>
 <translation id="6013027779243312217">音声と動画の字幕を生成します</translation>
+<translation id="6014293228235665243">未読</translation>
 <translation id="6015796118275082299">年</translation>
 <translation id="6016178549409952427">追加コンテンツ <ph name="TOTAL_ELEMENTS" /> 件中 <ph name="CURRENT_ELEMENT" /> 件目に移動します</translation>
 <translation id="6016551720757758985">Powerwash を実行して以前のバージョンに戻すことを確認</translation>
@@ -7333,7 +7331,6 @@
 <translation id="7702574632857388784"><ph name="FILE_NAME" /> をリストから削除</translation>
 <translation id="7702907602086592255">ドメイン</translation>
 <translation id="7704305437604973648">タスク</translation>
-<translation id="7704317875155739195">検索語句や URL をオートコンプリートする</translation>
 <translation id="7704521324619958564">Play ストアを開く</translation>
 <translation id="7705276765467986571">ブックマーク モデルを読み込むことができませんでした。</translation>
 <translation id="7705334495398865155">ハードウェアの ID（BSSID）をランダム化して、他のユーザーがこのデバイスを追跡できないようにします。</translation>

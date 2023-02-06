@@ -1138,7 +1138,6 @@
 <translation id="1997433994358798851">Το Chrome χρειάζεται άδεια χρήσης του Bluetooth για σύνδεση στη συσκευή σας.</translation>
 <translation id="1997616988432401742">Τα πιστοποιητικά σας</translation>
 <translation id="1999115740519098545">Κατά την εκκίνηση</translation>
-<translation id="2000419248597011803">Στέλνει ορισμένα cookie και αναζητήσεις από τη γραμμή διευθύνσεων και το πλαίσιο αναζήτησης στην προεπιλεγμένη μηχανή αναζήτησης</translation>
 <translation id="2002109485265116295">Σε πραγματικό χρόνο</translation>
 <translation id="2003130567827682533">Για να ενεργοποιήσετε τα δεδομένα "<ph name="NAME" />", πρώτα συνδεθείτε σε κάποιο δίκτυο Wi-Fi</translation>
 <translation id="2004697686368036666">Ορισμένες λειτουργίες κάποιων ιστοτόπων μπορεί να μην είναι διαθέσιμες.</translation>
@@ -2194,7 +2193,6 @@
 <translation id="2908358077082926882">Πατήστε ξανά το πλήκτρο <ph name="CURRENTKEY" /> για κατάργηση της ανάθεσης και <ph name="RESPONSE" />.</translation>
 <translation id="2909506265808101667">Δεν ήταν δυνατή η σύνδεση με τις υπηρεσίες Google. Ελέγξτε τη σύνδεση δικτύου και δοκιμάστε ξανά. Κωδικός σφάλματος: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Συνδεθείτε σε ένα δίκτυο και δοκιμάστε ξανά</translation>
-<translation id="291056154577034373">ΜΗ ΑΝΑΓΝΩΣΜΕΝΑ</translation>
 <translation id="2910718431259223434">Κάτι δεν πήγε καλά. Δοκιμάστε ξανά ή επικοινωνήστε με τον κάτοχο ή τον διαχειριστή της συσκευής σας. Κωδικός σφάλματος: <ph name="ERROR_CODE" />.</translation>
 <translation id="2912247081180973411">Κλείσιμο παραθύρων</translation>
 <translation id="2913331724188855103">Να επιτρέπεται στους ιστότοπους η αποθήκευση και η ανάγνωση δεδομένων cookie (συνιστάται)</translation>
@@ -3806,7 +3804,6 @@
 <translation id="4404843640767531781">Η εφαρμογή <ph name="APP_NAME" /> αποκλείστηκε από τον γονέα σου. Ζήτησε άδεια από τον γονέα σου για να χρησιμοποιήσεις την εφαρμογή.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Μετακίνηση σε…</translation>
-<translation id="440653823335387109">ΣΕΛΙΔΕΣ ΠΟΥ ΕΧΕΤΕ ΔΙΑΒΑΣΕΙ</translation>
 <translation id="4406883609789734330">Ζωντανοί υπότιτλοι</translation>
 <translation id="4407039574263172582">Για να συνεχίσετε, το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> θα κοινοποιήσει το όνομα, τη διεύθυνση ηλεκτρονικού ταχυδρομείου και τη φωτογραφία προφίλ σας σε αυτόν τον ιστότοπο. Ανατρέξτε στους <ph name="BEGIN_LINK" />όρους παροχής υπηρεσιών<ph name="END_LINK" /> αυτού του ιστοτόπου.</translation>
 <translation id="4408599188496843485">Β&amp;οήθεια</translation>
@@ -5539,6 +5536,7 @@
 <translation id="6011193465932186973">Δακτυλικά αποτυπώματα</translation>
 <translation id="6011908034087870826">Αποστολή συνδέσμου στη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">Λάβετε υπότιτλους για ήχο και βίντεο</translation>
+<translation id="6014293228235665243">Μη αναγνωσμένα</translation>
 <translation id="6015796118275082299">Έτος</translation>
 <translation id="6016178549409952427">Πλοήγηση σε επιπλέον περιεχόμενο <ph name="CURRENT_ELEMENT" /> από <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Επιβεβαιώστε τη λειτουργία Powerwash με επιστροφή σε προηγούμενη έκδοση</translation>
@@ -7372,7 +7370,6 @@
 <translation id="7702574632857388784">Κατάργηση αρχείου <ph name="FILE_NAME" /> από τη λίστα</translation>
 <translation id="7702907602086592255">Τομέας</translation>
 <translation id="7704305437604973648">Εργασία</translation>
-<translation id="7704317875155739195">Αυτόματη συμπλήρωση αναζητήσεων και URL</translation>
 <translation id="7704521324619958564">Άνοιγμα Play Store</translation>
 <translation id="7705276765467986571">Δεν ήταν δυνατή η φόρτωση μοντέλου σελιδοδείκτη.</translation>
 <translation id="7705334495398865155">Το αναγνωριστικό εξοπλισμού σας (BSSID) ορίζεται τυχαία για να αποτραπεί η παρακολούθηση αυτής της συσκευής από άλλους.</translation>

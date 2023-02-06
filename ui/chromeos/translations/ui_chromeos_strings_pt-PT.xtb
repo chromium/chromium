@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Inglês (EUA) com teclado Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Anfitrião</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
+<translation id="1521795806314479294">A preparar <ph name="FILE_NAME" />…</translation>
 <translation id="1538729222189715449">A abrir ficheiros Linux…</translation>
 <translation id="1547964879613821194">Inglês canadiano</translation>
 <translation id="1556189134700913550">Aplicar a todas</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">A comprimir <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
 <translation id="1722687688096767818">A adicionar o perfil…</translation>
 <translation id="1726100011689679555">Servidores de nomes</translation>
+<translation id="1727562178154619254">Tudo pronto para sincronizar</translation>
 <translation id="1729953886957086472">Alemão (Alemanha)</translation>
 <translation id="1730235522912993863">Chinês cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> itens copiados.</translation>
@@ -479,6 +481,7 @@
 <translation id="4973523518332075481">Utilize um nome com, no máximo, <ph name="MAX_LENGTH" /> carateres</translation>
 <translation id="4973970068702235170">Falha ao comprimir; erro inesperado: <ph name="ERROR_MESSAGE" />.</translation>
 <translation id="4984616446166309645">Japonês</translation>
+<translation id="4987699874727873250">Inglês (Índia)</translation>
 <translation id="4988205478593450158">Tem a certeza de que pretende eliminar "<ph name="FILE_NAME" />"?</translation>
 <translation id="498902553138568924">Borboleta vermelha</translation>
 <translation id="4992066212339426712">Reativar o som</translation>
@@ -509,6 +512,7 @@
    Remover o dispositivo enquanto está a ser utilizado pode provocar perda de dados. Aguarde pela conclusão da operação e, em seguida, ejete o dispositivo através da aplicação Ficheiros.</translation>
 <translation id="5163869187418756376">Falha ao partilhar. Verifique a ligação e tente novamente mais tarde.</translation>
 <translation id="516592729076796170">Dvorak de programador americano</translation>
+<translation id="5167102019886320507">A preparar <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
 <translation id="5177526793333269655">Vista de miniatura</translation>
 <translation id="5181896909298187506">Sem ficheiros recentes</translation>
 <translation id="5194713942430106590">Clique para ordenar a coluna por ordem ascendente.</translation>

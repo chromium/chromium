@@ -376,6 +376,7 @@
 <translation id="1339009753652684748">"Ok Google" ಎಂದು ಹೇಳಿ, ನಿಮ್ಮ Assistant ಗೆ ಪ್ರವೇಶಿಸಿ. ಬ್ಯಾಟರಿಯನ್ನು ಉಳಿಸಲು, “ಆನ್ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)” ಆಯ್ಕೆಮಾಡಿ. ನಿಮ್ಮ ಸಾಧನವನ್ನು ಪ್ಲಗ್ ಇನ್ ಮಾಡಿರುವಾಗ ಅಥವಾ ಚಾರ್ಜ್ ಆಗುತ್ತಿರುವಾಗ ಮಾತ್ರ ನಿಮ್ಮ Assistant ಪ್ರತಿಕ್ರಿಯೆ ನೀಡುತ್ತದೆ.</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">ಫೈಲ್‌ಗಳ ಅಪ್ಲಿಕೇಶನ್ ಬಳಸಿಕೊಂಡು ಸಾಧನದಿಂದ ಮಾಧ್ಯಮವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿ.</translation>
+<translation id="1341871421050612057"><ph name="USERNAME" /> ಅವರೊಂದಿಗೆ ಸಿಂಕ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="1343865611738742294">USB ಸಾಧನಗಳಿಗೆ ಪ್ರವೇಶ ಪಡೆಯಲು Linux ಗೆ ಆ್ಯಪ್‌ಗಳ ಅನುಮತಿ ನೀಡಿ. USB ಸಾಧನವನ್ನು ತೆಗೆದುಹಾಕಿದ ಬಳಿಕ, Linux ಗೆ ಅದರ ಮಾಹಿತಿ ನೆನಪಿನಲ್ಲಿ ಇರುವುದಿಲ್ಲ.</translation>
 <translation id="1343920184519992513">ನೀವು ಎಲ್ಲಿ ನಿಲ್ಲಿಸಿರುವಿರೊ, ಅಲ್ಲಿಂದ ಮುಂದುವರಿಸಿ ಮತ್ತು ನಿರ್ದಿಷ್ಟ ಪುಟಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="134589511016534552">ಮೀಡಿಯಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆದಿರುವ ಟ್ಯಾಬ್‌ಗಳ ವಿಭಾಗದಲ್ಲಿ ಕೂಡ ತೋರಿಸಲಾಗುತ್ತದೆ</translation>
@@ -1130,7 +1131,6 @@
 <translation id="1997433994358798851">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಸಂಪರ್ಕಿಸಲು ಬ್ಲೂಟೂತ್ ಬಳಸಲು Chrome ಗೆ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="1997616988432401742">ನಿಮ್ಮ ಪ್ರಮಾಣಪತ್ರಗಳು</translation>
 <translation id="1999115740519098545">ಸ್ಟಾರ್ಟ್‌ಅಪ್‌ನಲ್ಲಿ</translation>
-<translation id="2000419248597011803">ಕೆಲವು ಕುಕೀಗಳನ್ನು ಹಾಗೂ ವಿಳಾಸ ಪಟ್ಟಿ ಮತ್ತು ಹುಡುಕಾಟ ಬಾಕ್ಸ್‌ನಿಂದ ಹುಡುಕಾಟಗಳನ್ನು, ನಿಮ್ಮ ಡಿಫಾಲ್ಟ್ ಹುಡುಕಾಟದ ಎಂಜಿನ್‌ಗೆ ಕಳುಹಿಸುತ್ತದೆ</translation>
 <translation id="2002109485265116295">ನೈಜ ಸಮಯ</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' ಡೇಟಾವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು, ಮೊದಲು ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="2004697686368036666">ಫೀಚರ್‌ಗಳು ಕೆಲವು ಸೈಟ್‌ಗಳಲ್ಲಿ ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು</translation>
@@ -2186,7 +2186,6 @@
 <translation id="2908358077082926882">ನಿಯೋಜನೆಯನ್ನು ತೆಗೆದುಹಾಕಲು “<ph name="CURRENTKEY" />” ಅನ್ನು ಪುನಃ ಒತ್ತಿರಿ ಮತ್ತು <ph name="RESPONSE" /> ಆಗಿರಿ</translation>
 <translation id="2909506265808101667">Google ಸೇವೆಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ. ದೋಷ ಕೋಡ್: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">ನೆಟ್‍ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
-<translation id="291056154577034373">ಓದದಿರುವುದು</translation>
 <translation id="2910718431259223434">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ನಿಮ್ಮ ಸಾಧನದ ಮಾಲೀಕರು ಅಥವಾ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ. ದೋಷ ಕೋಡ್: <ph name="ERROR_CODE" />.</translation>
 <translation id="2912247081180973411">ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="2913331724188855103">ಕುಕೀ ಡೇಟಾವನ್ನು ಉಳಿಸಲು ಮತ್ತು ರೀಡ್ ಮಾಡಲು ಸೈಟ್‌ಗಳನ್ನು ಅನುಮತಿಸಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
@@ -3049,6 +3048,7 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">ನೀವು ಮತ್ತು Google</translation>
 <translation id="3722108462506185496">ವರ್ಚುವಲ್ ಯಂತ್ರದ ಸೇವೆಯನ್ನು ಪ್ರಾರಂಭಿಸುವಲ್ಲಿ ದೋಷ ಕಂಡುಬಂದಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> ಸೂಚನೆಯನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">ಲಭ್ಯವಿರುವ ವೈಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
 <translation id="3727187387656390258">ಪಾಪ್‌ಅಪ್ ಪರೀಕ್ಷಿಸಿ</translation>
@@ -3405,6 +3405,7 @@
 <translation id="402211067068791756">ಇದು ಪ್ರದರ್ಶಿಸಲಾದ ಸೈಟ್‌ಗಳಿಂದ ಸಂಗ್ರಹಿಸಿದ <ph name="TOTAL_USAGE" /> ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸುತ್ತದೆ</translation>
 <translation id="4022426551683927403">ನಿಘಂಟಿಗೆ &amp;ಸೇರಿಸಿ</translation>
 <translation id="4025039777635956441">ಆಯ್ಕೆ ಮಾಡಿದ ಸೈಟ್ ಅನ್ನು ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
+<translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> ಸೂಚನೆಯನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ</translation>
 <translation id="4027958407426528157">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿರುವ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ವೆಬ್‌ಸೈಟ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="4028467762035011525">ಇನ್‌ಪುಟ್ ವಿಧಾನಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> ಪುಟದಿಂದ ಹಿಂದಕ್ಕೆ</translation>
@@ -3797,7 +3798,6 @@
 <translation id="4404843640767531781"><ph name="APP_NAME" /> ಅನ್ನು ನಿಮ್ಮ ಪೋಷಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ ಈ ಆ್ಯಪ್ ಬಳಸುವುದಕ್ಕೆ, ನಿಮ್ಮ ಪೋಷಕರ ಅನುಮತಿಯನ್ನು ಕೇಳಿ.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">ಇದಕ್ಕೆ ಸರಿಸಿ…</translation>
-<translation id="440653823335387109">ನೀವು ಓದಿದ ಪುಟಗಳು</translation>
 <translation id="4406883609789734330">ಲೈವ್ ಕ್ಯಾಪ್ಶನ್</translation>
 <translation id="4407039574263172582">ಮುಂದುವರಿಸಲು, ಈ ಸೈಟ್‌ನ ಜೊತೆಗೆ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ನಿಮ್ಮ ಹೆಸರು, ಇಮೇಲ್ ವಿಳಾಸ ಮತ್ತು ಪ್ರೊಫೈಲ್ ಚಿತ್ರವನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ. ಈ ಸೈಟ್‌ನ <ph name="BEGIN_LINK" />ಸೇವಾ ನಿಯಮಗಳನ್ನು<ph name="END_LINK" /> ನೋಡಿ.</translation>
 <translation id="4408599188496843485">ಸ&amp;ಹಾಯ</translation>
@@ -4145,6 +4145,7 @@
 <translation id="4713409221649555176">ನೀವು ಎಲ್ಲಾ ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿದಾಗ ಅಳಿಸಿ</translation>
 <translation id="47158868804223727">ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಲು ಅಥವಾ ಕುಗ್ಗಿಸಲು, ಅದರ ಹೆಸರಿನ ಮೇಲೆ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="4716483597559580346">ಹೆಚ್ಚುವರಿ ಸುರಕ್ಷತೆಗಾಗಿ ಪವರ್‌ವಾಶ್</translation>
+<translation id="471759229191973607">ಥೀಮ್ ಬದಲಾಯಿಸಿ</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> ನಿಮ್ಮ ಪರದೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.</translation>
 <translation id="4722989931633062466">ಥರ್ಡ್-ಪಾರ್ಟಿ ಸೈನ್-ಇನ್ ಪ್ರಾಂಪ್ಟ್‌ಗಳನ್ನು ತೋರಿಸಲು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
@@ -5529,6 +5530,7 @@
 <translation id="6011193465932186973">ಫಿಂಗರ್‌ಪ್ರಿಂಟ್</translation>
 <translation id="6011908034087870826"><ph name="DEVICE_NAME" /> ಗೆ ಲಿಂಕ್‌ ಅನ್ನು ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6013027779243312217">ನಿಮ್ಮ ಆಡಿಯೋ ಮತ್ತು ವೀಡಿಯೊಗಾಗಿ ಶೀರ್ಷಿಕೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
+<translation id="6014293228235665243">ಓದದಿರುವುದು</translation>
 <translation id="6015796118275082299">ವರ್ಷ</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" /> ರಲ್ಲಿ <ph name="CURRENT_ELEMENT" /> ಹೆಚ್ಚುವರಿ ವಿಷಯಕ್ಕೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ</translation>
 <translation id="6016551720757758985">ಹಿಂದಿನ ಆವೃತ್ತಿಗೆ ಹಿಂತಿರುಗುವ ಮೂಲಕ ಪವರ್‌ವಾಶ್‌ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
@@ -5686,6 +5688,7 @@
 <translation id="6150961653851236686">ಪುಟಗಳನ್ನು ಅನುವಾದಿಸುತ್ತಿರುವಾಗ ಈ ಭಾಷೆಯನ್ನು ಬಳಸಲಾಗುತ್ತದೆ</translation>
 <translation id="6151323131516309312"><ph name="SITE_NAME" /> ಹುಡುಕಲು <ph name="SEARCH_KEY" /> ಒತ್ತಿ</translation>
 <translation id="6151771661215463137">ನಿಮ್ಮ ಡೌನ್‌ಲೋಡ್ ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ಈಗಾಗಲೇ ಫೈಲ್ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ.</translation>
+<translation id="6152918902620844577">ಮುಂದಿನ ಕಾರ್ಯಾಚರಣೆಗಾಗಿ ಕಾಯಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6154240335466762404">ಎಲ್ಲಾ ಪೋರ್ಟ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="615436196126345398">ಪ್ರೊಟೊಕಾಲ್</translation>
 <translation id="6155141482566063812">ಹಿನ್ನೆಲೆ ಟ್ಯಾಬ್ ನಿಮ್ಮ ಪರದೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ</translation>
@@ -7171,6 +7174,7 @@
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> ಪ್ರತಿಕ್ರಿಯಿಸುತ್ತಿಲ್ಲ. ಆ್ಯಪ್ ಅನ್ನು ಮುಚ್ಚಲು "ಬಲವಂತವಾಗಿ ಮುಚ್ಚಿ" ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="7535730537657706072">ನಿಮ್ಮ ಸಾಧನದಿಂದ ಅಜ್ಞಾತ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸಲು, ಎಲ್ಲಾ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="7537451260744431038">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಅನುಭವವನ್ನು ಸುಧಾರಿಸಲು, ಉದಾಹರಣೆಗೆ, ನಿಮ್ಮನ್ನು ಸೈನ್ ಇನ್ ಆಗಿರಿಸಲು ಅಥವಾ ನಿಮ್ಮ ಶಾಪಿಂಗ್ ಕಾರ್ಟ್‌ನಲ್ಲಿರುವ ಐಟಂಗಳನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಲು ಕುಕೀಗಳನ್ನು ಬಳಸಲು, ಸೈಟ್‌ಗಳಿಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ</translation>
+<translation id="7538088324298143359"><ph name="SEARCH_ENGINE" /> ಬಳಸಿಕೊಂಡು ಚಿತ್ರದ ಒಳಗೆ ಹುಡುಕಿ</translation>
 <translation id="7540972813190816353">ನವೀಕರಣಗಳಿಗಾಗಿ ಪರಿಶೀಲಿಸುತ್ತಿರುವಾಗ ದೋಷವೊಂದು ಸಂಭವಿಸಿದೆ: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" />, ಈ ಸಾಧನವನ್ನು ಹಿಂದಿನ ಆವೃತ್ತಿಗೆ ಹಿಂತಿರುಗಿಸಿದೆ. ಪ್ರಮುಖ ಫೈಲ್‌ಗಳನ್ನು ಉಳಿಸಿ, ನಂತರ ಮರುಪ್ರಾರಂಭಿಸಿ. ಸಾಧನದಲ್ಲಿರುವ ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="7541773865713908457"><ph name="APP_NAME" /> ಆ್ಯಪ್ ಬಳಸಿಕೊಂಡು <ph name="ACTION_NAME" /></translation>
@@ -7363,7 +7367,6 @@
 <translation id="7702574632857388784">ಪಟ್ಟಿಯಿಂದ <ph name="FILE_NAME" /> ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="7702907602086592255">ಡೊಮೇನ್</translation>
 <translation id="7704305437604973648">ಕಾರ್ಯ</translation>
-<translation id="7704317875155739195">ಸ್ವಯಂಪೂರ್ಣ ಹುಡುಕಾಟಗಳು ಮತ್ತು URLಗಳು</translation>
 <translation id="7704521324619958564">Play Store  ತೆರೆಯಿರಿ</translation>
 <translation id="7705276765467986571">ಬುಕ್‌ಮಾರ್ಕ್ ಮಾದರಿಯನ್ನು ಲೋಡ್ ಮಾಡಲಾಗಿಲ್ಲ.</translation>
 <translation id="7705334495398865155">ಇತರರು ಈ ಸಾಧನವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದನ್ನು ತಡೆಯಲು ನಿಮ್ಮ ಹಾರ್ಡ್‌ವೇರ್ ID (BSSID) ಅನ್ನು ಯಾದೃಚ್ಛಿಕಗೊಳಿಸಿ.</translation>
@@ -7399,6 +7402,7 @@
 <translation id="7730683939467795481">ಈ ಪುಟವನ್ನು "<ph name="EXTENSION_NAME" />" ವಿಸ್ತರಣೆ ಬಳಸಿ ಬದಲಾಯಿಸಲಾಗಿದೆ</translation>
 <translation id="7735165285389721951">ಮತ್ತೊಂದು Steam ಸೆಟಪ್ ರನ್ ಆಗುತ್ತಿದೆ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸುವ ಮೊದಲು, ಅದು ಪೂರ್ಣವಾಗುವವರೆಗೆ ನಿರೀಕ್ಷಿಸಿ</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" ಜೊತೆ ಜೋಡಿಸಲಾಗುತ್ತಿದೆ...</translation>
+<translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> ಸೂಚನೆಯನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ</translation>
 <translation id="7737846262459425222">ನೀವು ಇದನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; Google Assistant &gt; ಸ್ಕ್ರೀನ್ ಸಂದರ್ಭದಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="7737948071472253612">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಬಳಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="77381465218432215">ಉಚ್ಚಾರಣಾ ಗುರುತುಗಳು ಮತ್ತು ವಿಶೇಷ ಅಕ್ಷರಗಳನ್ನು ತೋರಿಸಿ</translation>
@@ -7598,6 +7602,7 @@
 <translation id="7912080627461681647">ಸರ್ವರ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಬದಲಾಯಿಸಲಾಗಿದೆ. ಸೈನ್ ಔಟ್ ಮಾಡಿ ಮತ್ತೆ ಸೈನ್ ಇನ್ ಆಗಿರಿ.</translation>
 <translation id="7912974581251770345">ಅನುವಾದ</translation>
 <translation id="7915457674565721553">ಪೋಷಕ ನಿಯಂತ್ರಣಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಲು ಇಂಟರ್ನೆಟ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ</translation>
+<translation id="7916364730877325865">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ಈ ಖಾತೆಯೊಂದಿಗೆ ಸಿಂಕ್ ಅನ್ನು ಆನ್ ಮಾಡಲು ನಿಮಗೆ ಅನುಮತಿಸುವುದಿಲ್ಲ</translation>
 <translation id="7918257978052780342">ನೋಂದಾಯಿಸಿ</translation>
 <translation id="7919123827536834358">ಈ ಭಾಷೆಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅನುವಾದಿಸಿ</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />ಸೆ</translation>

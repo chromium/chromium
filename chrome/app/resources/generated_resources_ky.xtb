@@ -1137,7 +1137,6 @@
 <translation id="1997433994358798851">Chrome түзмөгүңүзгө туташуу үчүн Bluetooth'ду колдонууга уруксат сурап жатат</translation>
 <translation id="1997616988432401742">Тастыктамаларыңыз</translation>
 <translation id="1999115740519098545">Ишти баштаганда</translation>
-<translation id="2000419248597011803">Дарек тилкесиндеги жана издөө кутучасындагы издөөлөрдү жана айрым cookie файлдарын демейки издөө тутумуна жөнөтөт</translation>
 <translation id="2002109485265116295">Анык убакыт</translation>
 <translation id="2003130567827682533">"<ph name="NAME" />" маалыматтарды өткөрүү кызматын жандыруу үчүн, адегенде Wi-Fi тармагына туташыңыз</translation>
 <translation id="2004697686368036666">Функциялар айрым сайттарда иштебеши мүмкүн</translation>
@@ -2193,7 +2192,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2908358077082926882">Дайындоону өчүрүү жана чыгуу үчүн "<ph name="CURRENTKEY" />" баскычын кайра басыңыз жана <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Google кызматтарына туташпай калды. Тармакка туташууңузду текшерип, дагы бир жолу аракет кылыңыз. Ката коду: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Интернетке туташып, кайталап көрүңүз</translation>
-<translation id="291056154577034373">ОКУЛБАГАНДАР</translation>
 <translation id="2910718431259223434">Бир жерден ката кетти. Кайталап көрүңүз, болбосо, түзмөктүн ээсине же администраторго кайрылыңыз. Ката коду: <ph name="ERROR_CODE" />.</translation>
 <translation id="2912247081180973411">Терезелерди жабуу</translation>
 <translation id="2913331724188855103">Сайттарга куки дайындарын сактоого жана окууга уруксат берүү (сунушталат)</translation>
@@ -3805,7 +3803,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4404843640767531781"><ph name="APP_NAME" /> колдонмосун ата-энең бөгөттөп койгон. Ата-энеңден бул колдонмону иштетүүгө уруксат сура.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Төмөнкүгө жылдыруу…</translation>
-<translation id="440653823335387109">СИЗ ОКУГАН БАРАКТАР</translation>
 <translation id="4406883609789734330">Ыкчам коштомо жазуулар</translation>
 <translation id="4407039574263172582">Улантуу үчүн <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аты-жөнүңүздү, электрондук почтаңыздын дарегин жана профилиңиздин сүрөтүн ушул сайт менен бөлүшөт. Бул сайттын <ph name="BEGIN_LINK" />тейлөө шарттарын<ph name="END_LINK" /> карап көрүңүз.</translation>
 <translation id="4408599188496843485">Ж&amp;ардам</translation>
@@ -5536,6 +5533,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6011193465932186973">Манжа изи</translation>
 <translation id="6011908034087870826"><ph name="DEVICE_NAME" /> түзмөгүнө шилтеме жөнөтүлүүдө</translation>
 <translation id="6013027779243312217">Аудио жана видеоңуз үчүн коштомо жазууларды алып туруңуз</translation>
+<translation id="6014293228235665243">Окулбагандар</translation>
 <translation id="6015796118275082299">Жыл</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" /> ичинен <ph name="CURRENT_ELEMENT" />-кошумча мазмунга чабыттоо</translation>
 <translation id="6016551720757758985">Мурунку версиясына кайтаруу менен "Жууп салууну" ырастаңыз</translation>
@@ -7368,7 +7366,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7702574632857388784"><ph name="FILE_NAME" /> файлын тизмеден алып салуу</translation>
 <translation id="7702907602086592255">Домен</translation>
 <translation id="7704305437604973648">Тапшырма</translation>
-<translation id="7704317875155739195">Издөө сурамдарын жана URL'дерди автоматтык түрдө толтуруу</translation>
 <translation id="7704521324619958564">Play Store'ду ачуу</translation>
 <translation id="7705276765467986571">Кыстарма үлгүсү жүктөлгөн жок.</translation>
 <translation id="7705334495398865155">Аппараттык камсыздоонун идентификаторун (BSSID) башаламан иретте түзүү менен башкалардын бул түзмөктү колдонуусуна тоскоол болуңуз.</translation>

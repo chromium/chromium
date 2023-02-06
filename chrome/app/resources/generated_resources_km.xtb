@@ -1138,7 +1138,6 @@
 <translation id="1997433994358798851">Chrome ត្រូវការ​ការ​អនុញ្ញាត​ឱ្យ​ប្រើប្រាស់​ប៊្លូធូស ដើម្បី​ភ្ជាប់​ទៅ​ឧបករណ៍​របស់​អ្នក</translation>
 <translation id="1997616988432401742">វិញ្ញាបនបត្ររបស់អ្នក</translation>
 <translation id="1999115740519098545">នៅពេលចាប់ផ្តើមដំណើរការ</translation>
-<translation id="2000419248597011803">បញ្ជូនការស្វែងរក និងខូគី​មួយចំនួនពី​របារអាសយដ្ឋាន និង​ប្រអប់​ស្វែងរកទៅ​ម៉ាស៊ីន​ស្វែងរក​លំនាំដើម​របស់​អ្នក</translation>
 <translation id="2002109485265116295">ក្នុងពេលជាក់​ស្ដែង</translation>
 <translation id="2003130567827682533">ដើម្បីបើក​ដំណើរការ​ទិន្នន័យ '<ph name="NAME" />' សូមភ្ជាប់បណ្ដាញ​ Wi-Fi ជាមុនសិន</translation>
 <translation id="2004697686368036666">មុខងារ​នៅលើ​គេហទំព័រ​មួយចំនួន​អាចនឹងមិនដំណើរការទេ</translation>
@@ -2194,7 +2193,6 @@
 <translation id="2908358077082926882">ចុច “<ph name="CURRENTKEY" />” ម្ដងទៀត ដើម្បីដកការកំណត់ រួច<ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">មិនអាចភ្ជាប់​ជាមួយសេវាកម្ម Google បានទេ។ សូមពិនិត្យមើល​ការតភ្ជាប់បណ្ដាញ​របស់អ្នក រួចព្យាយាម​ម្ដងទៀត។ លេខ​កូដ​បញ្ហា៖ <ph name="ERROR_CODE" />។</translation>
 <translation id="2910318910161511225">សូមភ្ជាប់​បណ្តាញ រួច​ព្យាយាម​ម្តងទៀត</translation>
-<translation id="291056154577034373">មិនទាន់អាន</translation>
 <translation id="2910718431259223434">មានអ្វីមួយខុសប្រក្រតី។ សូម​ព្យាយាម​ម្ដងទៀត ឬ​ទាក់ទង​អ្នកគ្រប់គ្រង ឬម្ចាស់ឧបករណ៍របស់អ្នក។ លេខ​កូដ​បញ្ហា៖ <ph name="ERROR_CODE" />។</translation>
 <translation id="2912247081180973411">បិទវិនដូ</translation>
 <translation id="2913331724188855103">អនុញ្ញាតឲ្យគេហទំព័ររក្សាទុក និងអានទិន្នន័យខុកឃី (បានណែនាំ)</translation>
@@ -3806,7 +3804,6 @@
 <translation id="4404843640767531781"><ph name="APP_NAME" /> ត្រូវបាន​ទប់ស្កាត់​ដោយ​មាតាបិតា​របស់អ្នក​។ សូមស្នើសុំ​ការអនុញ្ញាត​ពីមាតាបិតា​របស់អ្នក ដើម្បីប្រើ​កម្មវិធីនេះ។</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">ផ្លាស់ទីទៅ…</translation>
-<translation id="440653823335387109">ទំព័រ​ដែល​អ្នក​បាន​អាន​</translation>
 <translation id="4406883609789734330">អក្សររត់​ក្នុងពេល​ជាក់ស្ដែង</translation>
 <translation id="4407039574263172582">ដើម្បីបន្ត <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> នឹងចែករំលែកឈ្មោះ អាសយដ្ឋានអ៊ីមែល និងរូបភាពកម្រងព័ត៌មានរបស់អ្នកជាមួយគេហទំព័រនេះ។ មើល<ph name="BEGIN_LINK" />លក្ខខណ្ឌ​ប្រើប្រាស់<ph name="END_LINK" />របស់គេហទំព័រនេះ។</translation>
 <translation id="4408599188496843485">ជំនួយ</translation>
@@ -5539,6 +5536,7 @@
 <translation id="6011193465932186973">ស្នាម​ម្រាមដៃ</translation>
 <translation id="6011908034087870826">កំពុងផ្ញើ​តំណទៅ <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">ទទួលបាន​អក្សររត់​សម្រាប់​សំឡេង និង​វីដេអូរបស់អ្នក</translation>
+<translation id="6014293228235665243">មិនទាន់អាន</translation>
 <translation id="6015796118275082299">ឆ្នាំ</translation>
 <translation id="6016178549409952427">ទៅកាន់ខ្លឹមសារបន្ថែម <ph name="CURRENT_ELEMENT" /> ក្នុងចំណោម <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">អះអាង Powerwash ជាមួយការត្រលប់ទៅកំណែមុន</translation>
@@ -7372,7 +7370,6 @@
 <translation id="7702574632857388784">លុប <ph name="FILE_NAME" /> ចេញ​ពីបញ្ជី</translation>
 <translation id="7702907602086592255">ដែន៖</translation>
 <translation id="7704305437604973648">ភារកិច្ច</translation>
-<translation id="7704317875155739195">បំពេញ​ការស្វែងរក និង URL ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="7704521324619958564">បើកហាង Play</translation>
 <translation id="7705276765467986571">មិនអាចដំណើរការម៉ូដែលចំណាំទេ។</translation>
 <translation id="7705334495398865155">តម្រៀប​លេខសម្គាល់​ហាតវែរ​ (BSSID) របស់​អ្នក​តាម​លំដាប់​ចៃដន្យ ដើម្បីទប់ស្កាត់កុំឱ្យ​អ្នក​ផ្សេង​តាមដាន​ឧបករណ៍​នេះ។</translation>

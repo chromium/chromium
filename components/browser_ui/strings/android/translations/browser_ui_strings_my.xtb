@@ -230,7 +230,7 @@
 <translation id="5317780077021120954">သိမ်းရန်</translation>
 <translation id="5335288049665977812">ဆိုက်များကို JavaScript အားဖွင့်ခွင့်ပေးပါ (အကြံပြုထားသည်)</translation>
 <translation id="534295439873310000">NFC စက်များ</translation>
-<translation id="5344522958567249764">ကြော်ငြာဆိုင်ရာ ကိုယ်ရေးအချက်အလက်လုံခြုံမှုကို စီမံရန်</translation>
+<translation id="5344522958567249764">ကြော်ငြာဆိုင်ရာ အချက်အလက်လုံခြုံမှုကို စီမံရန်</translation>
 <translation id="5354152178998424783">၎င်းက ဒေတာ <ph name="DATASIZE" /> နှင့် ဝဘ်ဆိုက်များက သိမ်းထားသည့် ကွတ်ကီးများကို ရှင်းထုတ်လိုက်ပါမည်။</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ နောက်ထပ် ၁ ခု)}other{(+ နောက်ထပ် # ခု)}}</translation>
 <translation id="5403592356182871684">အမည်များ</translation>
@@ -279,7 +279,7 @@
 <translation id="6181444274883918285">ခြွင်းချက်စာရင်းသို့ ဆိုက်ကိုထည့်ရန်</translation>
 <translation id="6192792657125177640">ခြွင်းချက်များ</translation>
 <translation id="6196640612572343990">ပြင်ပကုမ္ပဏီကွတ်ကီးများကို ပိတ်ဆို့မည်</translation>
-<translation id="6205314730813004066">ကြော်ငြာဆိုင်ရာ ကိုယ်ရေးအချက်အလက်လုံခြုံမှု</translation>
+<translation id="6205314730813004066">ကြော်ငြာဆိုင်ရာ အချက်အလက်လုံခြုံမှု</translation>
 <translation id="6216432067784365534">ရွေးစရာ <ph name="NAME_OF_LIST_ITEM" /> ခု</translation>
 <translation id="6231752747840485235">‘<ph name="APP_NAME" />’ ဖယ်ရှားမလား။</translation>
 <translation id="6262191102408817757">သင့်နောက်ဆုံးတဘ်ကို အခြေခံသည်</translation>

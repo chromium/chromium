@@ -1122,7 +1122,6 @@
 <translation id="1997433994358798851">Chrome लाई तपाईंको डिभाइसमा कनेक्ट हुन ब्लुटुथ प्रयोग गर्ने अनुमति दिनु पर्ने हुन्छ</translation>
 <translation id="1997616988432401742">तपाईंका प्रमाणपत्रहरू</translation>
 <translation id="1999115740519098545">सुरूवातमा</translation>
-<translation id="2000419248597011803">यसले ठेगाना पट्टी र खोज बाकसका केही कुकी र खोजहरूलाई तपाईंको डिफल्ट खोज इन्जिनमा पठाउँछ</translation>
 <translation id="2002109485265116295">वास्तविक समय</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' नामक मोबाइल डेटा सेवा सक्रिय गर्न सर्वप्रथम कुनै Wi-Fi नेटवर्कमा कनेक्ट गर्नुहोस्</translation>
 <translation id="2004697686368036666">केही साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
@@ -2176,7 +2175,6 @@
 <translation id="2908358077082926882">तोकिएको की हटाएर <ph name="RESPONSE" /> "<ph name="CURRENTKEY" />" की फेरि थिच्नुहोस्</translation>
 <translation id="2909506265808101667">Google का सेवाहरूमा कनेक्ट गर्न सकिएन। इन्टरनेट जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
 <translation id="2910318910161511225">नेटवर्कमा जडान गरेर फेरि प्रयास गर्नुहोस्</translation>
-<translation id="291056154577034373">नपढिएको</translation>
 <translation id="2910718431259223434">केही चिज गडबड भयो। कृपया फेरि प्रयास गर्नुहोस् वा आफ्नो डिभाइसका मालिक वा एड्मिनसँग सम्पर्क गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
 <translation id="2912247081180973411">विन्डोहरू बन्द गर्नुहोस्</translation>
 <translation id="2913331724188855103">साइटहरूलाई कुकी डेटा सुरक्षित गर्ने र पढ्ने अनुमति दिनुहोस् (सिफारिस गरिएको)</translation>
@@ -3038,6 +3036,7 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">तपाईं र Google</translation>
 <translation id="3722108462506185496">भर्चुअल मेसिन सेवा सुरु गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> सम्बन्धी निर्देशन प्राप्त भयो</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">उपलब्ध WiFi नेटवर्कहरू</translation>
 <translation id="3727187387656390258">पपअप निरीक्षण गर्नुहोस्</translation>
@@ -3393,6 +3392,7 @@
 <translation id="402211067068791756">तपाईंले यसो गर्नुभयो भने देखाइएका साइटहरूले भण्डारण गरेको <ph name="TOTAL_USAGE" /> डेटा मेटिने छ</translation>
 <translation id="4022426551683927403">शब्दकोषमा &amp;थप्नुहोस्</translation>
 <translation id="4025039777635956441">चयन गरिएको साइट म्युट गर्नुहोस्</translation>
+<translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> सम्बन्धी निर्देशन प्राप्त भयो</translation>
 <translation id="4027958407426528157">मेरो <ph name="DEVICE_TYPE" /> मा इन्स्टल गरिएका एपहरूमा वेबसाइटहरू खोलिऊन्</translation>
 <translation id="4028467762035011525">इनपुट विधिहरू थप्नुहोस्</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> नामक पेजबाट अघिल्लो पेजमा फर्कनुहोस्</translation>
@@ -3785,7 +3785,6 @@
 <translation id="4404843640767531781">तपाईंका अभिभावकले <ph name="APP_NAME" /> माथि रोक लगाउनुभएको छ। यो एप प्रयोग गर्न आफ्ना अभिभावकको अनुमति लिनुहोस्।</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">यहाँ सार्नुहोस्…</translation>
-<translation id="440653823335387109">तपाईंले पढ्नुभएका पृष्ठहरू</translation>
 <translation id="4406883609789734330">लाइभ क्याप्सन</translation>
 <translation id="4407039574263172582"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि यो साइटसँग तपाईंको नाम, इमेल ठेगाना र प्रोफाइल फोटो सेयर गर्ने छ। यो साइटको <ph name="BEGIN_LINK" />सेवाका सर्तहरू<ph name="END_LINK" /> हेर्नुहोस्।</translation>
 <translation id="4408599188496843485">म&amp;द्दत</translation>
@@ -5514,6 +5513,7 @@
 <translation id="6011193465932186973">फिंगरप्रिन्ट</translation>
 <translation id="6011908034087870826"><ph name="DEVICE_NAME" /> मा लिंक पठाइँदै छ</translation>
 <translation id="6013027779243312217">आफ्ना अडियो तथा भिडियोमा क्याप्सन देखाइने सुविधा प्राप्त गर्नुहोस्</translation>
+<translation id="6014293228235665243">नपढिएको</translation>
 <translation id="6015796118275082299">वर्ष</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" /> वटा थप सामग्रीमध्ये <ph name="CURRENT_ELEMENT" /> औँ सामग्रीमा जानुहोस्</translation>
 <translation id="6016551720757758985">अघिल्लो संस्करणमा फिर्तीसँग Powerwash पुष्टि गर्नुहोस्</translation>
@@ -5671,6 +5671,7 @@
 <translation id="6150961653851236686">पृष्ठहरूलाई अनुवाद गर्दा यो भाषा प्रयोग गरिन्छ</translation>
 <translation id="6151323131516309312"><ph name="SITE_NAME" /> खोज्नको लागि <ph name="SEARCH_KEY" /> थिच्नुहोस्</translation>
 <translation id="6151771661215463137">उक्त फाइल तपाईंको डाउनलोड फोल्डरमा पहिलादेखि नै अवस्थित छ।</translation>
+<translation id="6152918902620844577">अर्को कारबाहीको प्रतीक्षा गरिँदै छ</translation>
 <translation id="6154240335466762404">सबै पोर्टहरू हटाउनुहोस्</translation>
 <translation id="615436196126345398">प्रोटोकोल</translation>
 <translation id="6155141482566063812">पृष्ठभूमि स्क्रिनले तपाईंको स्क्रिन साझा गर्दै छ।</translation>
@@ -7345,7 +7346,6 @@
 <translation id="7702574632857388784">सूचीबाट <ph name="FILE_NAME" /> हटाउनुहोस्</translation>
 <translation id="7702907602086592255">डोमेन</translation>
 <translation id="7704305437604973648">कार्य</translation>
-<translation id="7704317875155739195">खोज तथा URL हरू स्वतः पूर्ण गर्नुहोस्</translation>
 <translation id="7704521324619958564">Play स्टोर खोल्नुहोस्</translation>
 <translation id="7705276765467986571">पृष्ठमञ्जूषा मोडेल लोड गर्न सकेन।</translation>
 <translation id="7705334495398865155">अरूले यो डिभाइस ट्र्याक गर्न नसकून् भन्नाका लागि हार्डवेयरको ID (BSSID) र्‍यान्डमाइज गर्नुहोस्।</translation>
@@ -7381,6 +7381,7 @@
 <translation id="7730683939467795481"><ph name="EXTENSION_NAME" /> एक्स्टेन्सनले यो पृष्ठ परिवर्तन गरेको छ</translation>
 <translation id="7735165285389721951">Steam सेटअप गर्ने अर्को प्रक्रिया चलिरहेको छ। उक्त प्रक्रिया पूरा भएपछि मात्र फेरि सेटअप गर्ने प्रयास गर्नुहोस्</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" सँग जोडा बनाउँदै ...</translation>
+<translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> सम्बन्धी निर्देशन प्राप्त भयो</translation>
 <translation id="7737846262459425222">तपाईं सेटिङ &gt; Google सहायक &gt; स्क्रिन कन्टेक्स्ट नामक खण्डमा गएर जुनसुकै बेला यो सेटिङ बदल्न सक्नुहुन्छ।</translation>
 <translation id="7737948071472253612">तपाईंको क्यामेरा प्रयोग गर्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="77381465218432215">एक्सेन्ट चिन्ह तथा विशेष वर्णहरू देखाइऊन्</translation>
@@ -8365,6 +8366,7 @@
 <translation id="8639635302972078117">प्रयोग तथा निदानसम्बन्धी डेटा पठाउनुहोस्। यो यन्त्रले हाल निदान, डिभाइस र एपको प्रयोगसम्बन्धी डेटा स्वतः Google लाई पठाइरहेको छ। यस्तो डेटा तपाईंका बच्चाको पहिचान गर्ने प्रयोजनका लागि प्रयोग गरिने छैन र यसले प्रणाली तथा एपको स्थिरता र अन्य कुराहरूमा सुधार ल्याउन मद्दत गर्ने छ। केही समग्र डेटाले Google का एप तथा Android का विकासकर्ता जस्ता साझेदारहरूलाई पनि मद्दत गर्ने छन्। तपाईंका बच्चाका खातामा वेब तथा एपसम्बन्धी अतिरिक्त गतिविधिको सेटिङ सक्रिय गरिएको छ भने यो डेटा उनको Google खातामा सुरक्षित गरिन सक्छ।</translation>
 <translation id="8642900771896232685">२ सेकेन्ड</translation>
 <translation id="8642947597466641025">पाठ ठुलो बानउनुहोस्</translation>
+<translation id="8643403533759285912">समूह मेटाउनुहोस्</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> हानिकारक हुन सक्छ। यो फाइल सुरक्षित छ कि छैन भनी स्क्यान गर्न यसलाई Google को सुरक्षासम्बन्धी उन्नत सुविधामा पठाउने हो?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{कुनै पनि कुकी ब्लक गरिएको छैन}=1{एउटा कुकी ब्लक गरिएको छ}other{# वटा कुकी ब्लक गरिएका छन्}}</translation>
 <translation id="864423554496711319">तपाईंको खातामा सेभ गरिएका डिभाइसहरू</translation>
@@ -8838,6 +8840,7 @@
 <translation id="90528604757378587">निर्वाध रूपमा स्क्रोल गर्ने सुविधालगायतका ब्याकग्राउन्डमा हुने गतिविधि र केही भिजुअल इफेक्टहरू सीमित हुन सक्छ।</translation>
 <translation id="9053563360605707198">दुवैतिर प्रिन्ट गर्नुहोस्</translation>
 <translation id="9055636786322918818">RC4 इन्क्रिप्सन लागू गर्नुहोस्। RC4 साइफरहरू असुरक्षित हुने हुनाले यो विकल्पको प्रयोग गर्नुले तपाईंको जोखिममा वृद्धि हुन्छ।</translation>
+<translation id="9056788090206401048">अर्को डिभाइसमा पासकी प्रयोग गर्न ब्लुटुथ अन हुनु पर्छ। तपाईं जुनसुकै बेला सेटिङमा गई यो कुरा व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
 <translation id="9056810968620647706">जोडाहरू भेटिएन।</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> निम्न सामग्री हेर्न चाहनुहुन्छ:</translation>
 <translation id="9057354806206861646">अद्यावधिक तालिका</translation>

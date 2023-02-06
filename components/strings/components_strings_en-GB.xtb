@@ -525,6 +525,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2202627062836089804">back of your card</translation>
 <translation id="22081806969704220">Tray 3</translation>
 <translation id="2210794033760923560">Upload report</translation>
+<translation id="2212579473415663542">This address is saved in your Google Account (<ph name="ACCOUNT" />). You can use this address across Google products on any device.</translation>
 <translation id="2212735316055980242">Policy not found</translation>
 <translation id="2213606439339815911">Fetching entries...</translation>
 <translation id="2213612003795704869">Page is printed</translation>
@@ -1977,6 +1978,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5866898949289125849">You're viewing a developer tools page</translation>
 <translation id="5869405914158311789">This site can’t be reached</translation>
 <translation id="5869522115854928033">Saved passwords</translation>
+<translation id="5872692522325383488">IBAN saved</translation>
 <translation id="5873013647450402046">Your bank wants to confirm that it's you.</translation>
 <translation id="5877831137320480913">Beauty and fitness</translation>
 <translation id="5884465125445718607">Envelope Chinese no.6</translation>
@@ -2146,6 +2148,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6300452962057769623">{0,plural, =0{Your device will restart now}=1{Your device will restart in 1 second}other{Your device will restart in # seconds}}</translation>
 <translation id="6301104306974789820">Get price tracking notifications</translation>
 <translation id="6305205051461490394"><ph name="URL" /> is unreachable.</translation>
+<translation id="6306713302480826305">This address will be deleted from this and your other signed-in devices</translation>
 <translation id="6311165245110979290">Virtual card available</translation>
 <translation id="6312113039770857350">Web page not available</translation>
 <translation id="6316226860534107313">Scooters and mopeds</translation>
@@ -3037,6 +3040,7 @@ Additional details:
 <translation id="8473863474539038330">Addresses and more</translation>
 <translation id="8474910779563686872">Show developer details</translation>
 <translation id="8479754468255770962">Staple bottom left</translation>
+<translation id="8483229036294884935">This address will be deleted from your Google Account, <ph name="ACCOUNT" /></translation>
 <translation id="8483780878231876732">To use cards from your Google Account, sign in to Chrome</translation>
 <translation id="8488350697529856933">Applies to</translation>
 <translation id="8490137692873530638">Stacker 10</translation>

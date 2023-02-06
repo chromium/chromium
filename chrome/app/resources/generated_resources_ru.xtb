@@ -1128,7 +1128,6 @@
 <translation id="1997433994358798851">Chrome требуется разрешение, чтобы подключиться к устройству по Bluetooth.</translation>
 <translation id="1997616988432401742">Ваши сертификаты</translation>
 <translation id="1999115740519098545">Запуск Chrome</translation>
-<translation id="2000419248597011803">Отправлять некоторые файлы cookie и поисковые запросы из адресной строки в поисковую систему по умолчанию</translation>
 <translation id="2002109485265116295">В режиме реального времени</translation>
 <translation id="2003130567827682533">Чтобы активировать службу передачи данных "<ph name="NAME" />", сначала подключитесь к сети Wi-Fi.</translation>
 <translation id="2004697686368036666">Функции некоторых сайтов могут стать недоступными</translation>
@@ -2181,7 +2180,6 @@
 <translation id="2908358077082926882">Чтобы снять назначение и <ph name="RESPONSE" />, нажмите клавишу "<ph name="CURRENTKEY" />" ещё раз.</translation>
 <translation id="2909506265808101667">Не удалось подключиться к сервисам Google. Проверьте подключение к сети и повторите попытку. Код ошибки: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Подключитесь к сети и повторите попытку.</translation>
-<translation id="291056154577034373">НЕ ПРОЧИТАНО</translation>
 <translation id="2910718431259223434">Произошла ошибка. Повторите попытку или обратитесь к владельцу или администратору устройства. Код ошибки: <ph name="ERROR_CODE" />.</translation>
 <translation id="2912247081180973411">Закрыть окна</translation>
 <translation id="2913331724188855103">Разрешить сайтам сохранять и читать файлы cookie (рекомендуется)</translation>
@@ -3793,7 +3791,6 @@
 <translation id="4404843640767531781">Чтобы пользоваться приложением "<ph name="APP_NAME" />", требуется разрешение родителя.</translation>
 <translation id="4405117686468554883">*.JPEG, *.JPG, *.PNG</translation>
 <translation id="4405224443901389797">Переместить в…</translation>
-<translation id="440653823335387109">ПРОЧИТАННЫЕ СТРАНИЦЫ</translation>
 <translation id="4406883609789734330">Автоматические субтитры</translation>
 <translation id="4407039574263172582">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт. Ознакомьтесь с его <ph name="BEGIN_LINK" />условиями предоставления услуг<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">&amp;Справка</translation>
@@ -5524,6 +5521,7 @@
 <translation id="6011193465932186973">Отпечатки пальцев</translation>
 <translation id="6011908034087870826">Отправка ссылки на устройство "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6013027779243312217">Включите субтитры для аудио и видео</translation>
+<translation id="6014293228235665243">Не прочитано</translation>
 <translation id="6015796118275082299">Год</translation>
 <translation id="6016178549409952427">Перейти к дополнительному контенту на карточке <ph name="CURRENT_ELEMENT" /> из <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Подтверждение Powerwash и возврата к предыдущей версии</translation>
@@ -7363,7 +7361,6 @@
 <translation id="7702574632857388784">Удалить файл "<ph name="FILE_NAME" />" из списка</translation>
 <translation id="7702907602086592255">Домен</translation>
 <translation id="7704305437604973648">Задача</translation>
-<translation id="7704317875155739195">Заполнять поисковые запросы и URL автоматически</translation>
 <translation id="7704521324619958564">Открыть Play Маркет</translation>
 <translation id="7705276765467986571">Не удалось загрузить модель закладок.</translation>
 <translation id="7705334495398865155">Указать случайный идентификатор BSSID, чтобы другие пользователи не смогли отследить это устройство</translation>
