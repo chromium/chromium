@@ -7735,7 +7735,8 @@ domain Page
     returns
       array of InstallabilityError installabilityErrors
 
-  experimental command getManifestIcons
+  # Deprecated because it's not guaranteed that the returned icon is in fact the one used for PWA installation.
+  experimental deprecated command getManifestIcons
     returns
       optional binary primaryIcon
 
