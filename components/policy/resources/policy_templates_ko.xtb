@@ -302,7 +302,7 @@
 
       정책을 사용 중지하면 <ph name="CHROME_CLEANUP_NAME" />에서 원치 않는 소프트웨어를 감지할 경우 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> 값과 상관없이 Google에 스캔에 관해 보고하지 않습니다. <ph name="CHROME_CLEANUP_NAME" />에서 사용자에게 정리를 원하는지 묻습니다. 결과는 Google에 보고되지 않습니다.
 
-      정책을 설정하지 않으면 <ph name="CHROME_CLEANUP_NAME" />에서는 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />에 의해 설정된 정책에 따라 Google에 원치 않는 소프트웨어 감지를 위한 스캔에 관해 보고할 수 있습니다. <ph name="CHROME_CLEANUP_NAME" />에서는 사용자에게 정리를 진행하고 향후 원치 않는 소프트웨어 감지를 지원할 수 있도록 Google과 결과를 공유할 것인지 물어봅니다. 이러한 결과에는 Chrome 개인정보 보호 백서에 명시된 대로 파일 메타데이터, 자동 설치된 확장 프로그램, 레지스트리 키가 포함됩니다.
+      정책을 설정하지 않으면 <ph name="CHROME_CLEANUP_NAME" />에서는 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />에 의해 설정된 정책에 따라 Google에 원치 않는 소프트웨어 감지를 위한 스캔에 관해 보고할 수 있습니다. <ph name="CHROME_CLEANUP_NAME" />에서는 사용자에게 정리를 진행하고 향후 원치 않는 소프트웨어 감지를 지원할 수 있도록 Google과 결과를 공유할 것인지 물어봅니다. 이러한 결과에는 Chrome 개인 정보 보호 백서에 명시된 대로 파일 메타데이터, 자동 설치된 확장 프로그램, 레지스트리 키가 포함됩니다.
 
       <ph name="MS_WIN_NAME" />의 경우 이 기능은 <ph name="MS_AD_NAME" /> 도메인에 연결된 인스턴스, Windows 10 Pro에서 실행되는 인스턴스 또는 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />에 등록된 인스턴스에서만 사용할 수 있습니다.</translation>
 <translation id="1285819498003746288">Event.path API를 사용할 수 없습니다.</translation>
@@ -1101,7 +1101,7 @@
       정책을 설정하지 않거나 빈 목록으로 설정하면 관리 기기에서 빠른 잠금 해제 모드를 사용할 수 없습니다.
 
       이 정책은 지원 중단되었으므로 <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" /> 정책을 대신 사용하세요.</translation>
-<translation id="2033784678146670379">정책을 사용 설정하면 사용자가 <ph name="PRODUCT_OS_NAME" /> 기기의 하드웨어로 <ph name="CHALLENGE_USER_KEY_FUNCTION" />를 사용하는 <ph name="ENTERPRISE_PLATFORM_KEYS_API" />를 통해 개인정보 보호 CA에 원격으로 신원을 증명할 수 있습니다.
+<translation id="2033784678146670379">정책을 사용 설정하면 사용자가 <ph name="PRODUCT_OS_NAME" /> 기기의 하드웨어로 <ph name="CHALLENGE_USER_KEY_FUNCTION" />를 사용하는 <ph name="ENTERPRISE_PLATFORM_KEYS_API" />를 통해 개인 정보 보호 CA에 원격으로 신원을 증명할 수 있습니다.
 
       정책을 사용 중지하거나 설정하지 않으면 API 호출이 실패하고 오류 코드가 표시됩니다.</translation>
 <translation id="2036522553891755455">정책을 사용 설정하면 공유 검색(<ph name="PRODUCT_NAME" />의 네트워크 파일 공유 기능)에서 <ph name="NETBIOS_PROTOCOL" />을 사용해 네트워크에서 공유 항목을 검색합니다. 사용 중지하면 공유 검색에서 이 프로토콜을 사용해 공유 항목을 검색하지 않습니다.
@@ -1337,13 +1337,13 @@
 <translation id="2269319728625047531">로그인 시 동기화 동의 표시 사용</translation>
 <translation id="2270747976331889601">로컬 트러스트 앵커에 TLS 1.3 보안 기능을 사용합니다.</translation>
 <translation id="22754818344448444">사용자가 로드할 데스크 템플릿 레이아웃을 선택하도록 허용</translation>
-<translation id="2281496157391382819"> <ph name="PRODUCT_OS_NAME" />에서 관리되는 게스트 세션의 개인정보 보호 경고를 제어합니다.
+<translation id="2281496157391382819"><ph name="PRODUCT_OS_NAME" />에서 관리되는 게스트 세션의 개인 정보 보호 경고를 제어합니다.
 
-      정책을 False로 설정하면 로그인 화면의 개인정보 보호 경고와 관리되는 게스트 세션 내부의 자동 실행 알림이 비활성화됩니다.
+      정책을 False로 설정하면 로그인 화면의 개인 정보 보호 경고와 관리되는 게스트 세션 내부의 자동 실행 알림이 비활성화됩니다.
 
       이 정책을 일반 대중이 사용하는 기기에 사용해서는 안 됩니다.
 
-      정책을 True로 설정하거나 설정하지 않으면 사용자가 닫을 때까지 자동 실행 및 관리되는 게스트 세션의 개인정보 보호 경고 알림이 고정됩니다.</translation>
+      정책을 True로 설정하거나 설정하지 않으면 사용자가 닫을 때까지 자동 실행 및 관리되는 게스트 세션의 개인 정보 보호 경고 알림이 고정됩니다.</translation>
 <translation id="2281878365805647176">이 정책을 설정하면 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 내 Chrome의 제한된 로그인 기능이 사용 설정되고 사용자가 설정을 변경할 수 없습니다. 사용자는 특정 도메인의 계정을 사용해서만 Gmail 또는 googlemail 계정을 허용하고 도메인 목록에 consumer_accounts를 추가하기 위해 Google 도구에 액세스할 수 있습니다. 이 설정은 보조 계정이 명시적으로 허용된 도메인에 속하지 않은 경우 사용자가 Google 인증이 필요한 관리 대상 기기에 보조 계정을 추가하고 보조 계정으로 로그인하는 것을 차단합니다.
 
       설정을 비워 두거나 설정하지 않으면 사용자가 어느 계정으로든 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />에 액세스할 수 있습니다.
@@ -1474,15 +1474,15 @@
       정책을 설정하지 않으면 사이트의 액세스 요청이 허용되지만 사용자가 이 설정을 변경할 수 있습니다.</translation>
 <translation id="2411817661175306360">비밀번호 보호 경고가 꺼짐</translation>
 <translation id="2411919772666155530">이 사이트에서 알림 차단</translation>
-<translation id="2413022450179356125">개인정보 보호 화면 기능을 사용/사용 중지합니다.
+<translation id="2413022450179356125">개인 정보 보호 화면 기능을 사용/사용 중지합니다.
 
-이 정책을 True로 설정하면 개인정보 보호 화면이 항상 사용 설정됩니다.
+이 정책을 True로 설정하면 개인 정보 보호 화면이 항상 사용 설정됩니다.
 
-False로 설정하면 개인정보 보호 화면은 항상 사용 중지됩니다.
+False로 설정하면 개인 정보 보호 화면은 항상 사용 중지됩니다.
 
 이 정책을 설정하면 사용자는 값을 재정의할 수 없습니다.
 
-이 정책을 설정하지 않으면 처음에는 개인정보 보호 화면이 사용 중지되지만 사용자가 이를 제어할 수 있습니다.</translation>
+이 정책을 설정하지 않으면 처음에는 개인 정보 보호 화면이 사용 중지되지만 사용자가 이를 제어할 수 있습니다.</translation>
 <translation id="2413899611035194909">로그인 화면 작업 표시줄 메뉴에 접근성 옵션 표시</translation>
 <translation id="2415715982424988916">살펴보기(버전 91부터 지원됨)</translation>
 <translation id="2421400544595297401">독립적인 사용자가 Android 앱을 사용하도록 허용 안함</translation>
@@ -3212,13 +3212,13 @@ Chrome 앱은 ID(예: <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHRO
       설정하지 않으면 내장된 인증서 확인 기능 또는 레거시 인증서 확인 기능을 사용할 수 있습니다.</translation>
 <translation id="3997519162482760140">SAML 로그인 페이지에서 동영상 캡처 기기에 액세스할 수 있는 권한이 부여되는 URL입니다.</translation>
 <translation id="4004523942550416237">최초 설정 시 Google 어시스턴트 Voice Match 흐름 표시 안함</translation>
-<translation id="4007646377576030214"> 이 정책은 M87에서 지원 중단되었으며 M89에서 삭제되었습니다. 대신 <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" />를 사용하여 관리 게스트 세션의 개인정보 보호 경고를 구성하세요.
+<translation id="4007646377576030214">이 정책은 M87에서 지원 중단되었으며 M89에서 삭제되었습니다. 대신 <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" />를 사용하여 관리 게스트 세션의 개인 정보 보호 경고를 구성하세요.
 
       <ph name="PRODUCT_OS_NAME" />에서 관리 게스트 세션의 자동 실행 알림을 제어합니다.
 
-      정책을 True로 설정하면 개인정보 보호 경고 알림이 몇 초 후 닫힙니다.
+      정책을 True로 설정하면 개인 정보 보호 경고 알림이 몇 초 후 닫힙니다.
 
-      정책을 False로 설정하거나 설정하지 않으면 사용자가 닫을 때까지 개인정보 보호 경고 알림이 고정됩니다.</translation>
+      정책을 False로 설정하거나 설정하지 않으면 사용자가 닫을 때까지 개인 정보 보호 경고 알림이 고정됩니다.</translation>
 <translation id="4008395195135046807">chrome://history/journeys에서 탐색 여정이 표시됩니다.</translation>
 <translation id="4008507541867797979">이 정책을 True로 설정하거나 구성하지 않으면 <ph name="PRODUCT_OS_NAME" />은(는) 기존의 사용자 이름을 로그인 화면에 표시하여 선택할 수 있도록 합니다.
 
@@ -5398,12 +5398,11 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 <translation id="6266043141694454734">Chrome Root Store 및 내장된 인증서 확인 기능을 서버 인증서 확인에 사용할지 결정합니다.</translation>
 <translation id="6270615143812355589">오디오 입력 사용 설정</translation>
 <translation id="6270791075656665237">QUIC 허용 안함</translation>
-<translation id="6273015149273504999">
-      로그인 화면에서 사용자가 개입하지 않아도 자동 설치되며 사용자가 제거하거나 사용 중지할 수 없는 앱 및 확장 프로그램 목록을 지정합니다.
+<translation id="6273015149273504999">로그인 화면에서 사용자가 개입하지 않아도 자동 설치되며 사용자가 제거하거나 사용 중지할 수 없는 앱 및 확장 프로그램 목록을 지정합니다.
 
       앱/확장 프로그램의 향후 버전에서 요청하는 추가 권한을 비롯해 앱/확장 프로그램에서 요청한 권한은 사용자가 개입하지 않아도 암묵적으로 부여됩니다. <ph name="PRODUCT_NAME" />에서는 확장 프로그램에서 요청할 수 있는 권한 집합이 제한됩니다.
 
-      보안 및 개인정보 보호를 위해 <ph name="PRODUCT_NAME" />에 허용 목록으로 지정된 앱과 확장 프로그램만 설치할 수 있으며 기타 모든 항목은 무시됩니다.
+      보안 및 개인 정보 보호를 위해 <ph name="PRODUCT_NAME" />에 허용 목록으로 지정된 앱과 확장 프로그램만 설치할 수 있으며 기타 모든 항목은 무시됩니다.
 
       이전에 강제 설치된 앱 또는 확장 프로그램이 이 목록에서 제거되었다면 이는 <ph name="PRODUCT_NAME" />에 의해 자동으로 제거됩니다.
 
@@ -6334,7 +6333,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 <translation id="7081784525008938771">정책을 사용 설정하거나 설정하지 않으면 동영상 재생 중에는 사용자를 유휴 상태로 간주하지 않습니다. 따라서 유휴 지연 시간, 화면 어둡게 하기 지연 시간, 화면 꺼짐 지연 시간 및 화면 잠금 지연 시간에 도달하지 않고 설정된 작업이 실행되지 않습니다.
 
       정책을 사용 중지하면 시스템에서 동영상 활동과 관계없이 사용자를 유휴 상태로 간주할 수 있습니다.</translation>
-<translation id="7086720321892395256">개인정보 보호 화면 기능과 관련해 사용자 및 기기 정책을 제어합니다.</translation>
+<translation id="7086720321892395256">개인 정보 보호 화면 기능과 관련해 사용자 및 기기 정책을 제어합니다.</translation>
 <translation id="7090500018761495290">M115까지 Event.path API를 다시 사용 설정합니다.</translation>
 <translation id="7090668780328470271">정책을 설정하면 사용자에게 USB 기기 액세스를 요청할 수 없는 사이트를 지정하는 URL 패턴 목록을 만들 수 있습니다.
 
@@ -7361,15 +7360,15 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
       https://www.chromestatus.com/feature/5989473649164288 페이지를 참고하세요.</translation>
 <translation id="8141795997560411818">이 정책은 사용자가 Android Google Drive 앱을 사용하지 못하게 막지 않습니다. Google Drive에 액세스하지 못하게 하려면 Android Google Drive 앱 설치를 허용하지 않아야 합니다.</translation>
 <translation id="8142894094385450823">관리 세션에서 사용할 추천 언어를 설정합니다.</translation>
-<translation id="8147132931626030921">로그인 화면에서 개인정보 보호 화면 기능의 상태를 설정합니다.
+<translation id="8147132931626030921">로그인 화면에서 개인 정보 보호 화면 기능의 상태를 설정합니다.
 
-이 정책을 True로 설정하면 로그인 화면이 표시될 때 개인정보 보호 화면이 사용 설정됩니다.
+이 정책을 True로 설정하면 로그인 화면이 표시될 때 개인 정보 보호 화면이 사용 설정됩니다.
 
-False로 설정하면 로그인 화면이 표시될 때 개인정보 보호 화면이 사용 중지됩니다.
+False로 설정하면 로그인 화면이 표시될 때 개인 정보 보호 화면이 사용 중지됩니다.
 
 이 정책을 설정하면 로그인 화면이 표시될 때 값을 사용자가 재정의할 수 없습니다.
 
-이 정책을 설정하지 않으면 처음에는 개인정보 보호 화면이 사용 중지되지만 로그인 화면이 표시될 때 사용자가 제어할 수 있습니다.</translation>
+이 정책을 설정하지 않으면 처음에는 개인 정보 보호 화면이 사용 중지되지만 로그인 화면이 표시될 때 사용자가 제어할 수 있습니다.</translation>
 <translation id="814753199998535240">이 정책은 M96부터 지원이 중단됩니다. 대신 <ph name="REPORT_DEVICE_CPU_INFO" />, <ph name="REPORT_DEVICE_MEMORY_INFO" />, <ph name="REPORT_DEVICE_STORAGE_STATUS" />, <ph name="REPORT_DEVICE_SECURITY_STATUS" />, <ph name="REPORT_DEVICE_AUDIO_STATUS" /> 정책을 사용해 주세요.
 
       정책을 사용 설정하거나 설정하지 않으면 등록된 기기에서 CPU/RAM 사용 등의 하드웨어 통계를 보고합니다.
@@ -7419,7 +7418,7 @@ False로 설정하면 로그인 화면이 표시될 때 개인정보 보호 화�
 <translation id="8195133650230097559">전원 관리를 위해 wake lock 요청 무시</translation>
 <translation id="8196558469954193908">이 정책을 사용하면 클라이언트 인증서가 사용될 때 HTTP/2 연결 병합이 허용됩니다. 연결을 병합하려면 잠재적인 새로운 연결의 호스트 이름과 기존 연결의 호스트 이름이 이 정책에서 설명된 패턴 중 하나 이상과 일치해야 합니다. 이 정책은 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 필터 형식을 사용하는 호스트 목록입니다. 예를 들어, 'example.com'은 'example.com' 및 모든 하위 도메인(예: 'sub.example.com')과 일치하며 'example.net'은 'example.net'과 정확하게 일치합니다.
 
-      클라이언트 인증서를 사용하는 연결을 통해 다른 호스트로 병합 요청이 전송되면 보안 및 개인정보 보호 문제를 일으킬 수 있습니다. 사용자가 명확하게 승인하지 않아도 앰비언트 권한이 모든 요청에 전달되기 때문입니다. 이 정책은 일시적으로 사용되며, 향후 버전에서 삭제될 예정입니다. https://crbug.com/855690을 참고하세요.
+      클라이언트 인증서를 사용하는 연결을 통해 다른 호스트로 병합 요청이 전송되면 보안 및 개인 정보 보호 문제를 일으킬 수 있습니다. 사용자가 명확하게 승인하지 않아도 앰비언트 권한이 모든 요청에 전달되기 때문입니다. 이 정책은 일시적으로 사용되며, 향후 버전에서 삭제될 예정입니다. https://crbug.com/855690을 참고하세요.
 
       정책이 설정되지 않으면 클라이언트 인증서를 사용하는 HTTP/2 연결 병합을 모두 허용하지 않는 기본 동작이 사용됩니다.</translation>
 <translation id="8197373549462388216">이 정책을 사용으로 설정하면 사용자가 세이프 브라우징 서비스에서 표시하는 경고 페이지를 무시하고 악성 사이트로 이동할 수 없습니다. 하지만 사용자가 세이프 브라우징 경고(예: 멀웨어 및 피싱)를 무시할 수 없게 될 뿐, 잘못되거나 만료된 인증서 등의 SSL 인증서 관련 경고는 계속해서 무시할 수 있습니다.
@@ -7480,7 +7479,7 @@ False로 설정하면 로그인 화면이 표시될 때 개인정보 보호 화�
 
       이 정책은 일반 사용자 계정에서는 무시됩니다.</translation>
 <translation id="8257863622304579015">네트워크 서비스 샌드박스 사용 설정</translation>
-<translation id="8259375588339409826">Chromium과 Chrome은 같은 정책 조합을 지원합니다. 이 문서는 고지 없이 변경되거나 삭제될 수 있는 출시되지 않은 정책(즉, '지원' 항목은 아직 출시되지 않은 <ph name="PRODUCT_NAME" /> 버전을 가리킴)을 포함할 수 있으며, 보안 및 개인정보 보호 속성에 관한 보장을 포함한 그 어떤 보장도 제공되지 않습니다.
+<translation id="8259375588339409826">Chromium과 Chrome은 같은 정책 조합을 지원합니다. 이 문서는 고지 없이 변경되거나 삭제될 수 있는 출시되지 않은 정책(즉, '지원' 항목은 아직 출시되지 않은 <ph name="PRODUCT_NAME" /> 버전을 가리킴)을 포함할 수 있으며, 보안 및 개인 정보 보호 속성에 관한 보장을 포함한 그 어떤 보장도 제공되지 않습니다.
 
 이 정책은 조직 내부용 <ph name="PRODUCT_NAME" />의 인스턴스를 설정할 때 사용하기 위한 것입니다. 조직 외부에서(예: 공개 배포 프로그램) 이러한 정책을 사용하면 멀웨어로 간주되어 Google 및 바이러스 백신 공급업체에 의해 멀웨어로 지정될 수 있습니다.
 
@@ -7653,7 +7652,7 @@ Windows에서는 GPO를 통해 정책을 설정하는 것이 좋습니다. 하�
 <translation id="8392478748777481636">이 정책은 지원 중단되었으며 지원되지 않습니다. 대신 '<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />' 정책을 사용하세요.</translation>
 <translation id="8393850527597048037">플랫폼만</translation>
 <translation id="8395749934754392549">Android 컨테이너(ARC) 및 Android 앱 관련 설정을 제어합니다.</translation>
-<translation id="8398952282584132331">개인정보 보호 화면 사용 설정</translation>
+<translation id="8398952282584132331">개인 정보 보호 화면 사용 설정</translation>
 <translation id="8402079500086185021">항상 외부 앱으로 PDF 파일 열기</translation>
 <translation id="8405691014775178834">이 사용자에게 Crostini 컨테이너에 대한 루트 액세스 권한을 허용합니다.
 
@@ -7705,13 +7704,13 @@ Windows에서는 GPO를 통해 정책을 설정하는 것이 좋습니다. 하�
 
       참고: <ph name="MS_AD_NAME" /> 도메인에 연결되지 않은 <ph name="MS_WIN_NAME" /> 인스턴스와 MDM을 통해 관리되지 않거나 MCX를 통해 도메인에 연결되지 않은 <ph name="MAC_OS_NAME" /> 인스턴스의 경우 강제 설치는 Chrome 웹 스토어에 등록된 앱과 확장 프로그램으로 제한됩니다.</translation>
 <translation id="8451988835943702790">새 탭 페이지를 홈페이지로 사용</translation>
-<translation id="8455529558077979314">개인정보 보호 화면 설정</translation>
+<translation id="8455529558077979314">개인 정보 보호 화면 설정</translation>
 <translation id="8461914792118322307">프록시</translation>
 <translation id="8465065632133292531">POST를 사용하는 인스턴트 URL용 매개변수</translation>
 <translation id="8470317291588703478">YouTube 제한 모드 사용 안함</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC가 최상의 경로를 검색할 때 가능한 모든 인터페이스를 사용합니다.</translation>
-<translation id="8483004350080020634">https:// URL의 개인정보 보호 및 보안 관련 민감한 부분을 제거한 후 프록시 확인 시 <ph name="PRODUCT_NAME" />에 의해 사용된 PAC 스크립트(Proxy 자동 설정)에 전달합니다.
+<translation id="8483004350080020634">https:// URL의 개인 정보 보호 및 보안 관련 민감한 부분을 제거한 후 프록시 확인 시 <ph name="PRODUCT_NAME" />에 의해 사용된 PAC 스크립트(Proxy 자동 설정)에 전달합니다.
 
       True일 경우 보안 기능이 사용 설정되며 PAC 스크립트에
       제출하기 전에 https:// URL이 제거됩니다. 이러한 방식으로 PAC
@@ -8253,7 +8252,7 @@ Windows에서는 GPO를 통해 정책을 설정하는 것이 좋습니다. 하�
 <translation id="8983539044126123594">추가 Google 계정으로 로그인 사용함</translation>
 <translation id="8985219286836584291">기기 시스템 정보 보고 사용 설정</translation>
 <translation id="8992176907758534924">모든 사이트에서 이미지 표시 허용 안함</translation>
-<translation id="8994850249590725417">개인 정보 보호 알림 표시 안함</translation>
+<translation id="8994850249590725417">개인 정보 관련 알림 표시 안함</translation>
 <translation id="8994954504552592260"><ph name="MS_AD_NAME" /> 관리 기기를 클라우드 관리로 이전할 수 있게 합니다. 이 정책은 회사 내 여러 기기의 터치리스 이전을 원격으로 시작할 수 있게 합니다. 또한 각 이전 단계가 최종 사용자에게 가능한 한 투명하게 공개됩니다.
 
       정책이 사용 설정되어 있고 등록 ID가 DMServer에 업로드되어 있다면 원격 기기 파워워시가 트리거됩니다.
@@ -8323,7 +8322,7 @@ Windows에서는 GPO를 통해 정책을 설정하는 것이 좋습니다. 하�
       이 정책을 설정하면 사용자는 변경하거나 덮어쓸 수 없습니다.
 
       이 정책 값은 밀리초로 지정되어야 하며 값은 30초에서 24시간 범위로 잘립니다.</translation>
-<translation id="9040042535845939426">로그인 화면에서 개인정보 보호 화면의 상태 설정</translation>
+<translation id="9040042535845939426">로그인 화면에서 개인 정보 보호 화면의 상태 설정</translation>
 <translation id="9050853837490399534">이 정책은 기기가 빠른 픽스 빌드로 업데이트되어야 하는지 여부를 제어합니다.
 
       정책 값이 빠른 픽스 빌드로 매핑되는 토큰으로 설정된 경우 업데이트가 다른 정책에 의해 차단되지 않으면 기기가 빠른 픽스 빌드로 업데이트됩니다.

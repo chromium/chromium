@@ -274,7 +274,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2417486498593892439">Võrku sisselogimine</translation>
 <translation id="2426051945783024481">Kaamera kaader on automaatselt keskel</translation>
 <translation id="2427507373259914951">Vasakklikk</translation>
-<translation id="2429753432712299108">Bluetoothi seade „<ph name="DEVICE_NAME" />” küsib luba sidumiseks. Enne nõustumist veenduge, et selles seadmes oleks kuvatud see parool: <ph name="PASSKEY" /></translation>
+<translation id="2429753432712299108">Bluetoothi seade „<ph name="DEVICE_NAME" />” küsib luba sidumiseks. Enne nõustumist veenduge, et selles seadmes oleks kuvatud see pääsuvõti: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Kuva parool</translation>
 <translation id="243878895369688216">Eile avatud</translation>
 <translation id="2441427462554639370">Salvestamine lõppes liiga vähese salvestusruumi tõttu</translation>
@@ -1036,7 +1036,7 @@ Uus installimine</translation>
 <translation id="6643169293433369663">Võta nime järgi sortimine tagasi</translation>
 <translation id="6649641931981131786">Kohandage kaamerat, et oleksite ekraanikuva keskel.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> soovib kinnitada, et see olete teie</translation>
-<translation id="6650933572246256093">Bluetoothi seade „<ph name="DEVICE_NAME" />” küsib luba sidumiseks. Sisestage seadmesse see parool: <ph name="PASSKEY" /></translation>
+<translation id="6650933572246256093">Bluetoothi seade „<ph name="DEVICE_NAME" />” küsib luba sidumiseks. Sisestage seadmesse see pääsuvõti: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Parool</translation>
 <translation id="6665545700722362599">Andke veebisaitidele, rakendustele ja laiendustele luba kasutada asukohateenuseid, seadme mikrofoni, kaamerat ning teisi funktsioone</translation>
 <translation id="6667908387435388584">Ühendage oma telefoni kuumkoht, vaigistage oma seade ja määrake selle asukoht ning vaadake telefonis hiljuti avatud Chrome'i vahelehti</translation>

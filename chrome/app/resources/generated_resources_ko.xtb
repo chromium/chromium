@@ -827,7 +827,7 @@
 <translation id="1734212868489994726">연한 파란색</translation>
 <translation id="1734230530703461088">제한 시간 내에 확장 프로그램을 로드할 수 없습니다. 관리자에게 문의해 주세요.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" />에서 자동 업데이트를 수행하지 못할 수 있습니다</translation>
-<translation id="173522743738009831">개인정보 보호 샌드박스 정보</translation>
+<translation id="173522743738009831">개인 정보 보호 샌드박스 정보</translation>
 <translation id="173628468822554835">알겠습니다. 앞으로 새로 방문하는 사이트에서는 기본적으로 알림을 표시하지 않습니다.</translation>
 <translation id="1737968601308870607">버그 신고</translation>
 <translation id="1741190788710022490">자동 조절 충전</translation>
@@ -1710,7 +1710,7 @@
 <translation id="2498539833203011245">최소화</translation>
 <translation id="2498765460639677199">크게</translation>
 <translation id="2499747912851752301">비밀번호를 내보내는 중...</translation>
-<translation id="2500471369733289700">개인정보 보호를 위해 차단됨</translation>
+<translation id="2500471369733289700">개인 정보 보호를 위해 차단됨</translation>
 <translation id="2501173422421700905">인증서 보류</translation>
 <translation id="2501278716633472235">뒤로 이동</translation>
 <translation id="2501797496290880632">단축키 입력</translation>
@@ -5918,7 +5918,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6445450263907939268">변경하지 않으려는 경우 이전 설정을 복원할 수 있습니다.</translation>
 <translation id="6446213738085045933">바탕화면 바로가기 만들기</translation>
 <translation id="6447842834002726250">쿠키</translation>
-<translation id="6450876761651513209">개인정보 보호 관련 설정 변경</translation>
+<translation id="6450876761651513209">개인 정보 보호 관련 설정 변경</translation>
 <translation id="6451344358166983408">사이트 또는 페이지</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 외 탭 1개}other{<ph name="PAGE_TITLE" /> 외 탭 #개}}</translation>
 <translation id="6451689256222386810">암호를 잊어버렸거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />합니다.</translation>
@@ -6344,7 +6344,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6832218595502288407">왼쪽 정렬</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> 그룹에서 탭이 삭제됨 - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">편리하고 안전한 브라우저로 전환</translation>
-<translation id="6833996806551876956">개인정보 보호 샌드박스 무료 체험</translation>
+<translation id="6833996806551876956">개인 정보 보호 샌드박스 무료 체험</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />을(를) 업데이트하려면 인터넷에 연결하세요.</translation>
 <translation id="6839225236531462745">인증서 삭제 오류</translation>
 <translation id="6839916869147598086">로그인 변경됨</translation>
@@ -6571,7 +6571,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7022562585984256452">홈페이지가 설정되었습니다.</translation>
 <translation id="7025082428878635038">동작으로 탐색하는 새로운 방법</translation>
 <translation id="7025190659207909717">모바일 데이터 서비스 관리</translation>
-<translation id="7025895441903756761">보안 및 개인정보 보호</translation>
+<translation id="7025895441903756761">보안 및 개인 정보 보호</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{시크릿 창에서 모두 열기(&amp;I)}=1{시크릿 창에서 열기(&amp;I)}other{시크릿 창에서 {COUNT}개 모두 열기(&amp;I)}}</translation>
 <translation id="7029307918966275733">Crostini가 설치되지 않았습니다. 크레딧을 확인하려면 Crostini를 설치하세요.</translation>
 <translation id="7029809446516969842">비밀번호</translation>
@@ -7820,7 +7820,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8188389033983459049">계속하려면 기기 설정을 확인하고 사용 설정하세요.</translation>
 <translation id="8188742492803591566">화면 전송을 시작하려면 Chromecast 또는 TV에 표시되는 액세스 코드를 입력하세요.</translation>
 <translation id="8189306097519446565">학교 계정</translation>
-<translation id="8189750580333936930">개인정보 보호 샌드박스</translation>
+<translation id="8189750580333936930">개인 정보 보호 샌드박스</translation>
 <translation id="8191230140820435481">앱, 확장 프로그램 및 테마 관리</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> 앱이 내 화면의 콘텐츠를 공유하려고 합니다.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />내 기기<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -8396,7 +8396,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8731851055419582926">비밀번호 확인 완료</translation>
 <translation id="8732030010853991079">아이콘을 클릭하여 확장 프로그램을 사용합니다.</translation>
 <translation id="8732212173949624846">로그인한 모든 기기의 인터넷 사용 기록 조회 및 변경</translation>
-<translation id="8732844209475700754">개인정보 보호, 보안, 데이터 수집과 관련된 설정 더보기</translation>
+<translation id="8732844209475700754">개인 정보 보호, 보안, 데이터 수집과 관련된 설정 더보기</translation>
 <translation id="8734073480934656039">이 설정을 사용하면 시작 시 키오스크 애플리케이션이 자동으로 실행됩니다.</translation>
 <translation id="8734674662128056360">타사 쿠키 차단</translation>
 <translation id="8734755021067981851">연결된 USB 기기가 없습니다.</translation>
@@ -8945,7 +8945,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="93343527085570547">법적인 이유로 콘텐츠 변경을 요청하려면 <ph name="BEGIN_LINK1" />법률 도움말 페이지<ph name="END_LINK1" />로 이동하세요. 일부 계정 및 시스템 정보가 Google에 전송될 수 있습니다. Google에서는 제공해 주신 정보를 <ph name="BEGIN_LINK2" />개인정보처리방침<ph name="END_LINK2" /> 및 <ph name="BEGIN_LINK3" />서비스 약관<ph name="END_LINK3" />에 따라 사용하여 기술적인 문제를 해결하고 서비스를 개선합니다.</translation>
 <translation id="93393615658292258">비밀번호만</translation>
 <translation id="934244546219308557">그룹 이름 지정</translation>
-<translation id="934503638756687833">필요한 경우 여기에 표시되지 않은 항목도 삭제됩니다. Chrome 개인정보 보호 백서에서 &lt;a href="<ph name="URL" />"&gt;원치 않는 소프트웨어 보호&lt;/a&gt;에 관해 자세히 알아보세요.</translation>
+<translation id="934503638756687833">필요한 경우 여기에 표시되지 않은 항목도 삭제됩니다. Chrome 개인 정보 보호 백서에서 &lt;a href="<ph name="URL" />"&gt;원치 않는 소프트웨어 보호&lt;/a&gt;에 관해 자세히 알아보세요.</translation>
 <translation id="93480724622239549">버그 또는 오류</translation>
 <translation id="935854577147268200">Smart Lock 휴대전화가 변경되었습니다. Smart Lock을 업데이트하려면 비밀번호를 입력하세요. 다음번에는 휴대전화를 통해 <ph name="DEVICE_TYPE" />이(가) 잠금 해제됩니다. 설정에서 Smart Lock을 사용 중지할 수 있습니다.</translation>
 <translation id="936646668635477464">카메라 및 마이크</translation>

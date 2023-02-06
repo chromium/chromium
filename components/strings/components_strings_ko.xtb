@@ -76,7 +76,7 @@
 <translation id="1174644974616730562">봉투 Chinese #1</translation>
 <translation id="1174723505405632867"><ph name="EMBEDDED_URL" />에서 <ph name="TOP_LEVEL_URL" />의 쿠키와 사이트 데이터를 사용하도록 허용할까요?
 
-쿠키와 사이트 데이터 사용은 현재 개인정보 보호 설정에 따라 차단되어 있습니다. 사용을 허용하면 이전에 상호작용했던 콘텐츠를 정상적으로 이용할 수 있지만, <ph name="EMBEDDED_URL" />에서 내 활동을 추적하게 될 수도 있습니다.</translation>
+쿠키와 사이트 데이터 사용은 현재 개인 정보 보호 설정에 따라 차단되어 있습니다. 사용을 허용하면 이전에 상호작용했던 콘텐츠를 정상적으로 이용할 수 있지만, <ph name="EMBEDDED_URL" />에서 내 활동을 추적하게 될 수도 있습니다.</translation>
 <translation id="1175364870820465910">인쇄(&amp;P)</translation>
 <translation id="1175875016430184367">오른쪽 트리플 스테이플</translation>
 <translation id="1177802847690410663">웹브라우저</translation>
@@ -192,7 +192,7 @@
 <translation id="1408787208417187241">상단 트리플 스테이플</translation>
 <translation id="1410941016594047814">봉투 Invite</translation>
 <translation id="1413407968866574823">액션 및 플랫폼 게임</translation>
-<translation id="1413809658975081374">개인정보 보호 오류</translation>
+<translation id="1413809658975081374">개인 정보 보호 오류</translation>
 <translation id="1414134146594747368">유치원</translation>
 <translation id="1422930527989633628">주변 블루투스 기기를 조회하도록 요청할 수 있음</translation>
 <translation id="1426410128494586442">예</translation>

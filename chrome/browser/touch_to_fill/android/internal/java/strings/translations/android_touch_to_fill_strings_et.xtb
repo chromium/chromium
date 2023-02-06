@@ -6,7 +6,7 @@
 <translation id="1717486229951421299">Loend mandaatidest, mis tuleb puudutusega täita, on avatud poolele kõrgusele.</translation>
 <translation id="207576718733492531">Loend mandaatidest, mis tuleb puudutusega täita, on suletud.</translation>
 <translation id="2359808026110333948">Jätka</translation>
-<translation id="2364266287022099258">Kas kasutada salvestatud pääsukoodi?</translation>
+<translation id="2364266287022099258">Kas kasutada salvestatud pääsuvõtit?</translation>
 <translation id="3399357656427473483">Loend mandaatidest, mis tuleb puudutusega täita.</translation>
 <translation id="3653689374478248324">Logite sisse saidile <ph name="SITE_NAME" /></translation>
 <translation id="3950820424414687140">Logige sisse</translation>
@@ -14,7 +14,7 @@
 <translation id="4907224763885298217">Kasutage ekraanilukku</translation>
 <translation id="5012523644916800014">Paroolide ja pääsukoodide haldamine</translation>
 <translation id="5441504010984421144">Loend mandaatidest, mis tuleb puudutusega täita, on avatud täiskõrgusele.</translation>
-<translation id="5591247451101092906">Kas kasutada salvestatud parooli või pääsukoodi?</translation>
+<translation id="5591247451101092906">Kas kasutada salvestatud parooli või pääsuvõtit?</translation>
 <translation id="5624120631404540903">Paroolide haldamine</translation>
-<translation id="7736236483645733578">Kasutaja <ph name="USERNAME" /> pääsukood, kasutage ekraanilukku.</translation>
+<translation id="7736236483645733578">Kasutaja <ph name="USERNAME" /> pääsuvõti, kasutage ekraanilukku.</translation>
 </translationbundle>
