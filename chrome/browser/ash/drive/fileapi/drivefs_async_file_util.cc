@@ -186,9 +186,8 @@ class DeleteOperation {
         // exposed (or parameter on the existing method) update the
         // implementation here.
         drive_->GetDriveFsInterface()->GetMetadata(
-            std::move(drive_path_),
-            base::BindOnce(&DeleteOperation::OnGotMetadata,
-                           base::Unretained(this)));
+            drive_path_, base::BindOnce(&DeleteOperation::OnGotMetadata,
+                                        base::Unretained(this)));
         return;
       }
     }
@@ -233,11 +232,10 @@ class DeleteOperation {
                                   ? base::File::FILE_OK
                                   : base::File::FILE_ERROR_FAILED;
     if (error == base::File::FILE_OK && drive_) {
-      if (drivefs::pinning::PinManager* const pin_manager =
-              drive_->GetPinManager()) {
+      using drivefs::pinning::PinManager;
+      if (PinManager* const pin_manager = drive_->GetPinManager()) {
         // TODO(b/267225898): Local delete events are currently not sent via
         // DriveFS, so for now notify the `PinManager` for local deletes.
-        using drivefs::pinning::PinManager;
         content::GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE, base::BindOnce(&PinManager::NotifyDelete,
                                       base::Unretained(pin_manager),
