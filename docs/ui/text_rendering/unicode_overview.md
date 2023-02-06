@@ -98,6 +98,24 @@ ZWJ (`U+200D`) is a zero width joiner and is a codepoint that joins two
 codepoints together. Left-To-Right Embedding (`U+202A`) is a codepoint that
 forces text to be interpreted as left-to-right.
 
+Variation selectors are another set of codepoints that only affects their
+surrounding character. These codepoints will affect the presentation of the
+preceding character. For example an emoji + U+FE0E will set the emoji to a text
+display while emoji + U+FE0F will set the emoji to the colored display. If you
+do not specify a variation, the shaping engine will just pick the default glyph
+in the font.
+
+```
+U+2708 maps to an airplane: ✈️
+
+Adding a variation selector (U+FE0E or U+FE0F) will affect the way the emoji is
+displayed
+
+U+2708 U+FE0E = ✈︎
+U+2708 U+FE0F = ✈️
+
+```
+
 ## **Graphemes**
 
 A grapheme is a sequence of one or multiple codepoints. For example, “e” and “é”
@@ -119,7 +137,7 @@ multiple codepoints.
 👨‍✈️ is actually a combination of
 👨 Man (U+1F468) +
 Zero Width Joiner (U+200D) +
-✈️ Airplane (U+FE0F)
+✈️ Airplane (U+2708)
 ```
 **Note: Graphemes are not breakable!**
 Because of codepoints such as diatric or joiners that can append multiple
