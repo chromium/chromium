@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_xnnpack.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
@@ -40,10 +39,9 @@ TEST_P(MLGraphXnnpackTest, SharedXnnpackContextTest) {
     // Test building MLGraphXnnpack with default options. The promise should be
     // resoveld with an MLGraphXnnpack object. The XNNPACK library should be
     // initialized successfully.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
-    auto* input =
-        BuildInput(builder, "input", {3, 4, 5}, V8MLOperandType::Enum::kFloat32,
-                   scope.GetExceptionState());
+    auto* builder = CreateMLGraphBuilder(scope);
+    auto* input = BuildInput(scope, builder, "input", {3, 4, 5},
+                             V8MLOperandType::Enum::kFloat32);
     auto* output = builder->relu(input, scope.GetExceptionState());
     EXPECT_NE(output, nullptr);
     auto [graph, exception] = BuildGraph(scope, builder, {{"output", output}});
@@ -55,11 +53,9 @@ TEST_P(MLGraphXnnpackTest, SharedXnnpackContextTest) {
     // should be initialized successfully.
     auto* context_options = MLContextOptions::Create();
     context_options->setDevicePreference(V8MLDevicePreference::Enum::kCpu);
-    auto* builder =
-        CreateMLGraphBuilder(scope.GetExecutionContext(), context_options);
-    auto* input =
-        BuildInput(builder, "input", {3, 4, 5}, V8MLOperandType::Enum::kFloat32,
-                   scope.GetExceptionState());
+    auto* builder = CreateMLGraphBuilder(scope, context_options);
+    auto* input = BuildInput(scope, builder, "input", {3, 4, 5},
+                             V8MLOperandType::Enum::kFloat32);
     auto* output = builder->relu(input, scope.GetExceptionState());
     EXPECT_NE(output, nullptr);
     auto [graph, exception] = BuildGraph(scope, builder, {{"output", output}});
@@ -69,7 +65,7 @@ TEST_P(MLGraphXnnpackTest, SharedXnnpackContextTest) {
 
 TEST_F(MLGraphXnnpackTest, TopoSortOperatorsTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder = CreateMLGraphBuilder(scope);
   {
     // Test sorting a graph in the following topology:
     //   conv2d
@@ -77,15 +73,13 @@ TEST_F(MLGraphXnnpackTest, TopoSortOperatorsTest) {
     //    add
     //     |
     //   relu
-    auto* input =
-        BuildInput(builder, "input", {1, 1, 5, 5},
-                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
-    auto* filter =
-        BuildConstant(builder, {1, 1, 3, 3}, V8MLOperandType::Enum::kFloat32,
-                      scope.GetExceptionState());
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 3, 3},
+                                 V8MLOperandType::Enum::kFloat32);
     auto* conv2d = BuildConv2d(scope, builder, input, filter);
-    auto* bias = BuildConstant(builder, {1}, V8MLOperandType::Enum::kFloat32,
-                               scope.GetExceptionState());
+    auto* bias =
+        BuildConstant(scope, builder, {1}, V8MLOperandType::Enum::kFloat32);
     auto* add = builder->add(conv2d, bias, scope.GetExceptionState());
     ASSERT_NE(add, nullptr);
     auto* relu = builder->relu(add, scope.GetExceptionState());
@@ -105,12 +99,10 @@ TEST_F(MLGraphXnnpackTest, TopoSortOperatorsTest) {
     //  conv2d   conv2d
     //      \   /   \
     //       add    output
-    auto* input =
-        BuildInput(builder, "input", {1, 1, 5, 5},
-                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
-    auto* filter =
-        BuildConstant(builder, {1, 1, 3, 3}, V8MLOperandType::Enum::kFloat32,
-                      scope.GetExceptionState());
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 3, 3},
+                                 V8MLOperandType::Enum::kFloat32);
     auto* options = MLConv2dOptions::Create();
     options->setAutoPad(V8MLAutoPad::Enum::kSameLower);
     auto* conv2d_0 = BuildConv2d(scope, builder, input, filter, options);
@@ -131,7 +123,7 @@ TEST_F(MLGraphXnnpackTest, TopoSortOperatorsTest) {
 
 TEST_P(MLGraphXnnpackTest, DefineXnnpackValuesTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder = CreateMLGraphBuilder(scope);
   Vector<uint32_t> shape({1, 4, 4, 3});
   // TODO(crbug.com/1273291): Test float16 data type once the XNNPACK Subgraph
   // Add Node supports it.
@@ -142,12 +134,10 @@ TEST_P(MLGraphXnnpackTest, DefineXnnpackValuesTest) {
     //            add
     //             |
     //          [output]
-    auto* input0 =
-        BuildInput(builder, "input0", shape, V8MLOperandType::Enum::kFloat32,
-                   scope.GetExceptionState());
-    auto* input1 =
-        BuildInput(builder, "input1", shape, V8MLOperandType::Enum::kFloat32,
-                   scope.GetExceptionState());
+    auto* input0 = BuildInput(scope, builder, "input0", shape,
+                              V8MLOperandType::Enum::kFloat32);
+    auto* input1 = BuildInput(scope, builder, "input1", shape,
+                              V8MLOperandType::Enum::kFloat32);
     auto* output = BuildElementWiseBinary(
         scope, builder, ElementWiseBinaryKind::kAdd, input0, input1);
     auto [graph, exception] = BuildGraph(scope, builder, {{"output", output}});
@@ -174,12 +164,10 @@ TEST_P(MLGraphXnnpackTest, DefineXnnpackValuesTest) {
     //            add
     //             |
     //          [output]
-    auto* input =
-        BuildInput(builder, "input", shape, V8MLOperandType::Enum::kFloat32,
-                   scope.GetExceptionState());
+    auto* input = BuildInput(scope, builder, "input", shape,
+                             V8MLOperandType::Enum::kFloat32);
     auto* constant =
-        BuildConstant(builder, shape, V8MLOperandType::Enum::kFloat32,
-                      scope.GetExceptionState());
+        BuildConstant(scope, builder, shape, V8MLOperandType::Enum::kFloat32);
     auto* output = BuildElementWiseBinary(
         scope, builder, ElementWiseBinaryKind::kAdd, input, constant);
     auto [graph, exception] = BuildGraph(scope, builder, {{"output", output}});
@@ -208,17 +196,14 @@ TEST_P(MLGraphXnnpackTest, DefineXnnpackValuesTest) {
     //                   add
     //                    |
     //                 [output]
-    auto* input =
-        BuildInput(builder, "input", shape, V8MLOperandType::Enum::kFloat32,
-                   scope.GetExceptionState());
+    auto* input = BuildInput(scope, builder, "input", shape,
+                             V8MLOperandType::Enum::kFloat32);
     auto* constant0 =
-        BuildConstant(builder, shape, V8MLOperandType::Enum::kFloat32,
-                      scope.GetExceptionState());
+        BuildConstant(scope, builder, shape, V8MLOperandType::Enum::kFloat32);
     auto* intermediate = BuildElementWiseBinary(
         scope, builder, ElementWiseBinaryKind::kAdd, input, constant0);
     auto* constant1 =
-        BuildConstant(builder, shape, V8MLOperandType::Enum::kFloat32,
-                      scope.GetExceptionState());
+        BuildConstant(scope, builder, shape, V8MLOperandType::Enum::kFloat32);
     auto* output = BuildElementWiseBinary(
         scope, builder, ElementWiseBinaryKind::kAdd, intermediate, constant1);
     auto [graph, exception] = BuildGraph(scope, builder, {{"output", output}});
@@ -248,18 +233,15 @@ TEST_P(MLGraphXnnpackTest, DefineXnnpackValuesTest) {
     //            relu    add
     //             |       |
     //       [output0]   [output1]
-    auto* input0 =
-        BuildInput(builder, "input0", shape, V8MLOperandType::Enum::kFloat32,
-                   scope.GetExceptionState());
-    auto* input1 =
-        BuildInput(builder, "input1", shape, V8MLOperandType::Enum::kFloat32,
-                   scope.GetExceptionState());
+    auto* input0 = BuildInput(scope, builder, "input0", shape,
+                              V8MLOperandType::Enum::kFloat32);
+    auto* input1 = BuildInput(scope, builder, "input1", shape,
+                              V8MLOperandType::Enum::kFloat32);
     auto* intermediate = BuildElementWiseBinary(
         scope, builder, ElementWiseBinaryKind::kAdd, input0, input1);
     auto* output0 = builder->relu(intermediate, scope.GetExceptionState());
-    auto* input2 =
-        BuildInput(builder, "input2", shape, V8MLOperandType::Enum::kFloat32,
-                   scope.GetExceptionState());
+    auto* input2 = BuildInput(scope, builder, "input2", shape,
+                              V8MLOperandType::Enum::kFloat32);
     auto* output1 = BuildElementWiseBinary(
         scope, builder, ElementWiseBinaryKind::kAdd, intermediate, input2);
     auto [graph, exception] = BuildGraph(
@@ -338,11 +320,11 @@ struct ElementWiseBinaryTester {
 
   void Test(V8TestingScope& scope) {
     // Build the graph.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
-    auto* lhs_operand = BuildInput(builder, "lhs", lhs.dimensions, lhs.type,
-                                   scope.GetExceptionState());
-    auto* rhs_operand = BuildInput(builder, "rhs", rhs.dimensions, rhs.type,
-                                   scope.GetExceptionState());
+    auto* builder = CreateMLGraphBuilder(scope);
+    auto* lhs_operand =
+        BuildInput(scope, builder, "lhs", lhs.dimensions, lhs.type);
+    auto* rhs_operand =
+        BuildInput(scope, builder, "rhs", rhs.dimensions, rhs.type);
     auto* output_operand =
         BuildElementWiseBinary(scope, builder, kind, lhs_operand, rhs_operand);
     auto [graph, build_exception] =
@@ -527,9 +509,9 @@ struct ReluTester {
 
   void Test(V8TestingScope& scope) {
     // Build the graph.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* builder = CreateMLGraphBuilder(scope);
+    auto* input_operand =
+        BuildInput(scope, builder, "input", input.dimensions, input.type);
     auto* output_operand =
         builder->relu(input_operand, scope.GetExceptionState());
     auto [graph, build_exception] =
@@ -624,7 +606,7 @@ void CheckExternalValues(const MLGraphXnnpack* xnnpack_graph,
 
 TEST_P(MLGraphXnnpackTest, InvokeXnnpackRuntimeTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder = CreateMLGraphBuilder(scope);
   Vector<uint32_t> shape({1, 2, 2, 1});
   // Create an MLGraphXnnpack with the following topology:
   //       [input0] [input1]
@@ -632,12 +614,10 @@ TEST_P(MLGraphXnnpackTest, InvokeXnnpackRuntimeTest) {
   //            add
   //             |
   //          [output]
-  auto* input0 =
-      BuildInput(builder, "input0", shape, V8MLOperandType::Enum::kFloat32,
-                 scope.GetExceptionState());
-  auto* input1 =
-      BuildInput(builder, "input1", shape, V8MLOperandType::Enum::kFloat32,
-                 scope.GetExceptionState());
+  auto* input0 = BuildInput(scope, builder, "input0", shape,
+                            V8MLOperandType::Enum::kFloat32);
+  auto* input1 = BuildInput(scope, builder, "input1", shape,
+                            V8MLOperandType::Enum::kFloat32);
   auto* output = BuildElementWiseBinary(
       scope, builder, ElementWiseBinaryKind::kAdd, input0, input1);
   auto [graph, exception] = BuildGraph(scope, builder, {{"output", output}});
@@ -743,7 +723,7 @@ TEST_P(MLGraphXnnpackTest, InvokeXnnpackRuntimeTest) {
 // name.
 TEST_P(MLGraphXnnpackTest, InputAndOutputUseSameNameTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder = CreateMLGraphBuilder(scope);
   Vector<uint32_t> shape({1, 2, 2, 1});
   {
     // Create an MLGraphXnnpack with the following topology:
@@ -753,8 +733,7 @@ TEST_P(MLGraphXnnpackTest, InputAndOutputUseSameNameTest) {
     //             |
     //            [x]
     auto* input =
-        BuildInput(builder, "x", shape, V8MLOperandType::Enum::kFloat32,
-                   scope.GetExceptionState());
+        BuildInput(scope, builder, "x", shape, V8MLOperandType::Enum::kFloat32);
     auto* output = builder->relu(input, scope.GetExceptionState());
     auto [graph, exception] = BuildGraph(scope, builder, {{"x", output}});
     ASSERT_NE(graph, nullptr);
@@ -778,11 +757,9 @@ TEST_P(MLGraphXnnpackTest, InputAndOutputUseSameNameTest) {
     //             |
     //            [y]
     auto* input0 =
-        BuildInput(builder, "x", shape, V8MLOperandType::Enum::kFloat32,
-                   scope.GetExceptionState());
+        BuildInput(scope, builder, "x", shape, V8MLOperandType::Enum::kFloat32);
     auto* input1 =
-        BuildInput(builder, "y", shape, V8MLOperandType::Enum::kFloat32,
-                   scope.GetExceptionState());
+        BuildInput(scope, builder, "y", shape, V8MLOperandType::Enum::kFloat32);
     auto* output = BuildElementWiseBinary(
         scope, builder, ElementWiseBinaryKind::kAdd, input0, input1);
     auto [graph, exception] = BuildGraph(scope, builder, {{"y", output}});
@@ -813,9 +790,9 @@ struct ClampTester {
   void Test(V8TestingScope& scope,
             MLClampOptions* options = MLClampOptions::Create()) {
     // Build the graph.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* builder = CreateMLGraphBuilder(scope);
+    auto* input_operand =
+        BuildInput(scope, builder, "input", input.dimensions, input.type);
     auto* output_operand =
         builder->clamp(input_operand, options, scope.GetExceptionState());
     auto [graph, build_exception] =
@@ -883,17 +860,17 @@ TEST_P(MLGraphXnnpackTest, ClampTest) {
 }
 
 template <typename T>
-MLOperand* BuildConstant(MLGraphBuilder* builder,
+MLOperand* BuildConstant(V8TestingScope& scope,
+                         MLGraphBuilder* builder,
                          const Vector<uint32_t>& dimensions,
                          V8MLOperandType::Enum type,
-                         const Vector<T>& values,
-                         ExceptionState& exception_state) {
+                         const Vector<T>& values) {
   size_t buffer_size = std::accumulate(dimensions.begin(), dimensions.end(),
                                        size_t(1), std::multiplies<uint32_t>());
   auto buffer = CreateDOMArrayBufferView(buffer_size, type);
   DCHECK_EQ(buffer->byteLength(), values.size() * sizeof(T));
   memcpy(buffer->BaseAddress(), values.data(), buffer->byteLength());
-  return BuildConstant(builder, dimensions, type, exception_state, buffer);
+  return BuildConstant(scope, builder, dimensions, type, buffer);
 }
 
 template <typename T>
@@ -908,15 +885,13 @@ struct Conv2dTester {
             MLGraphBuilder* builder,
             MLConv2dOptions* options = MLConv2dOptions::Create()) {
     // Build the graph.
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
-    auto* filter_operand =
-        BuildConstant(builder, filter.dimensions, filter.type, filter.values,
-                      scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(scope, builder, "input", input.dimensions, input.type);
+    auto* filter_operand = BuildConstant(scope, builder, filter.dimensions,
+                                         filter.type, filter.values);
     if (bias) {
-      options->setBias(BuildConstant(builder, bias.value().dimensions,
-                                     bias.value().type, bias.value().values,
-                                     scope.GetExceptionState()));
+      options->setBias(BuildConstant(scope, builder, bias.value().dimensions,
+                                     bias.value().type, bias.value().values));
     }
     auto* output_operand =
         BuildConv2d(scope, builder, input_operand, filter_operand, options);
@@ -938,7 +913,7 @@ struct Conv2dTester {
 
 TEST_P(MLGraphXnnpackTest, Conv2dTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder = CreateMLGraphBuilder(scope);
   {
     // Test conv2d operator for nhwc input layout and ohwi filter layout.
     auto* options = MLConv2dOptions::Create();
@@ -1066,13 +1041,12 @@ struct GemmTester {
             MLGraphBuilder* builder,
             MLGemmOptions* options = MLGemmOptions::Create()) {
     // Build the graph.
-    auto* a_operand = BuildInput(builder, "input", a.dimensions, a.type,
-                                 scope.GetExceptionState());
-    auto* b_operand = BuildConstant(builder, b.dimensions, b.type, b.values,
-                                    scope.GetExceptionState());
+    auto* a_operand = BuildInput(scope, builder, "input", a.dimensions, a.type);
+    auto* b_operand =
+        BuildConstant(scope, builder, b.dimensions, b.type, b.values);
     if (c) {
-      options->setC(BuildConstant(builder, c.value().dimensions, c.value().type,
-                                  c.value().values, scope.GetExceptionState()));
+      options->setC(BuildConstant(scope, builder, c.value().dimensions,
+                                  c.value().type, c.value().values));
     }
     auto* output_operand =
         BuildGemm(scope, builder, a_operand, b_operand, options);
@@ -1093,7 +1067,7 @@ struct GemmTester {
 
 TEST_P(MLGraphXnnpackTest, GemmTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder = CreateMLGraphBuilder(scope);
   {
     // Test gemm operator without operand c.
     GemmTester<float>{.a = {.type = V8MLOperandType::Enum::kFloat32,
@@ -1146,9 +1120,9 @@ struct HardSwishTester {
 
   void Test(V8TestingScope& scope) {
     // Build the graph.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* builder = CreateMLGraphBuilder(scope);
+    auto* input_operand =
+        BuildInput(scope, builder, "input", input.dimensions, input.type);
     auto* output_operand =
         builder->hardSwish(input_operand, scope.GetExceptionState());
     auto [graph, build_exception] =
@@ -1222,9 +1196,9 @@ struct Pool2dTester {
 
   void Test(V8TestingScope& scope,
             MLPool2dOptions* options = MLPool2dOptions::Create()) {
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* builder = CreateMLGraphBuilder(scope);
+    auto* input_operand =
+        BuildInput(scope, builder, "input", input.dimensions, input.type);
     auto* output_operand =
         BuildPool2d(scope, builder, kind, input_operand, options);
     auto [graph, build_exception] =
@@ -1413,9 +1387,9 @@ struct SoftmaxTester {
     xnnpack_output.Shrink(batch_size * channels);
 
     // Build WebNN graph with softmax operator.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* builder = CreateMLGraphBuilder(scope);
+    auto* input_operand =
+        BuildInput(scope, builder, "input", input.dimensions, input.type);
     auto* output_operand =
         builder->softmax(input_operand, scope.GetExceptionState());
     auto [graph, build_exception] =
