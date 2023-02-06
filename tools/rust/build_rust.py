@@ -65,6 +65,20 @@ from update_rust import (CHROMIUM_DIR, RUST_REVISION, RUST_SUB_REVISION,
                          THIRD_PARTY_DIR, VERSION_STAMP_PATH,
                          GetPackageVersionForBuild)
 
+EXCLUDED_TESTS = [
+    # Temporarily disabled due to https://github.com/rust-lang/rust/issues/94322
+    'tests/ui/numeric/numeric-cast.rs',
+    # Temporarily disabled due to https://github.com/rust-lang/rust/issues/96497
+    'tests/codegen/issue-96497-slice-size-nowrap.rs',
+    # TODO(crbug.com/1347563): Re-enable when fixed.
+    'tests/codegen/sanitizer-cfi-emit-type-checks.rs',
+    'tests/codegen/sanitizer-cfi-emit-type-metadata-itanium-cxx-abi.rs',
+]
+EXCLUDED_TESTS_WINDOWS = [
+    # https://github.com/rust-lang/rust/issues/96464
+    'tests/codegen/vec-shrink-panik.rs'
+]
+
 RUST_GIT_URL = ('https://chromium.googlesource.com/external/' +
                 'github.com/rust-lang/rust')
 
@@ -102,16 +116,6 @@ TEST_SUITES = [
     'library/std',
     'tests/codegen',
     'tests/ui',
-]
-
-EXCLUDED_TESTS = [
-    # Temporarily disabled due to https://github.com/rust-lang/rust/issues/94322
-    'src/test/ui/numeric/numeric-cast.rs',
-    # Temporarily disabled due to https://github.com/rust-lang/rust/issues/96497
-    'src/test/codegen/issue-96497-slice-size-nowrap.rs',
-    # TODO(crbug.com/1347563): Re-enable when fixed.
-    'src/test/codegen/sanitizer-cfi-emit-type-checks.rs',
-    'src/test/codegen/sanitizer-cfi-emit-type-metadata-itanium-cxx-abi.rs',
 ]
 
 
@@ -327,6 +331,10 @@ def GetTestArgs():
     for excluded in EXCLUDED_TESTS:
         args.append('--skip')
         args.append(excluded)
+    if sys.platform == 'win32':
+        for excluded in EXCLUDED_TESTS_WINDOWS:
+            args.append('--skip')
+            args.append(excluded)
     return args
 
 
