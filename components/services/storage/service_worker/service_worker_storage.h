@@ -16,10 +16,12 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
@@ -47,6 +49,9 @@ FORWARD_DECLARE_TEST(ServiceWorkerStorageDiskTest,
 FORWARD_DECLARE_TEST(ServiceWorkerStorageTest, DisabledStorage);
 }  // namespace service_worker_storage_unittest
 
+BASE_DECLARE_FEATURE(kServiceWorkerScopeCache);
+extern const base::FeatureParam<int> kServiceWorkerScopeCacheLimitPerKey;
+
 // This class provides an interface to store and retrieve ServiceWorker
 // registration data. The lifetime is equal to ServiceWorkerRegistry that is
 // an owner of this class. When a storage operation fails, this is marked as
@@ -59,6 +64,11 @@ class ServiceWorkerStorage {
   using ResourceList = std::vector<mojom::ServiceWorkerResourceRecordPtr>;
   using GetRegisteredStorageKeysCallback =
       base::OnceCallback<void(const std::vector<blink::StorageKey>& keys)>;
+  using FindRegistrationForClientUrlDataCallback =
+      base::OnceCallback<void(mojom::ServiceWorkerRegistrationDataPtr data,
+                              std::unique_ptr<ResourceList> resources,
+                              const absl::optional<std::vector<GURL>>& scopes,
+                              ServiceWorkerDatabase::Status status)>;
   using FindRegistrationDataCallback =
       base::OnceCallback<void(mojom::ServiceWorkerRegistrationDataPtr data,
                               std::unique_ptr<ResourceList> resources,
@@ -116,9 +126,10 @@ class ServiceWorkerStorage {
   // ResourceList if registration is found, or returns
   // ServiceWorkerDatabase::Status::kErrorNotFound if no matching registration
   // is found.
-  void FindRegistrationForClientUrl(const GURL& client_url,
-                                    const blink::StorageKey& key,
-                                    FindRegistrationDataCallback callback);
+  void FindRegistrationForClientUrl(
+      const GURL& client_url,
+      const blink::StorageKey& key,
+      FindRegistrationForClientUrlDataCallback callback);
   void FindRegistrationForScope(const GURL& scope,
                                 const blink::StorageKey& key,
                                 FindRegistrationDataCallback callback);
@@ -345,6 +356,11 @@ class ServiceWorkerStorage {
       StorageKeyState storage_key_state,
       const ServiceWorkerDatabase::DeletedVersion& deleted_version_data,
       ServiceWorkerDatabase::Status status)>;
+  using FindForClientUrlInDBCallback =
+      base::OnceCallback<void(mojom::ServiceWorkerRegistrationDataPtr data,
+                              std::unique_ptr<ResourceList> resources,
+                              const absl::optional<std::vector<GURL>>& scopes,
+                              ServiceWorkerDatabase::Status status)>;
   using FindInDBCallback =
       base::OnceCallback<void(mojom::ServiceWorkerRegistrationDataPtr data,
                               std::unique_ptr<ResourceList> resources,
@@ -442,7 +458,7 @@ class ServiceWorkerStorage {
       scoped_refptr<base::SequencedTaskRunner> original_task_runner,
       const GURL& client_url,
       const blink::StorageKey& key,
-      FindInDBCallback callback);
+      FindForClientUrlInDBCallback callback);
   static void FindForScopeInDB(
       ServiceWorkerDatabase* database,
       scoped_refptr<base::SequencedTaskRunner> original_task_runner,

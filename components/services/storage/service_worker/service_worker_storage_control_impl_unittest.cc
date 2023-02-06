@@ -222,7 +222,8 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
         client_url, key,
         base::BindLambdaForTesting(
             [&](DatabaseStatus status,
-                mojom::ServiceWorkerFindRegistrationResultPtr entry) {
+                mojom::ServiceWorkerFindRegistrationResultPtr entry,
+                const absl::optional<std::vector<GURL>>& scopes) {
               return_value.status = status;
               return_value.entry = std::move(entry);
               loop.Quit();

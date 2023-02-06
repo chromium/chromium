@@ -190,6 +190,12 @@ class ServiceWorkerStorageControlImpl
   using ResourceList = std::vector<mojom::ServiceWorkerResourceRecordPtr>;
 
   // Callbacks for ServiceWorkerStorage methods.
+  void DidFindRegistrationForClientUrl(
+      FindRegistrationForClientUrlCallback callback,
+      mojom::ServiceWorkerRegistrationDataPtr data,
+      std::unique_ptr<ResourceList> resources,
+      const absl::optional<std::vector<GURL>>& scopes,
+      mojom::ServiceWorkerDatabaseStatus status);
   void DidFindRegistration(
       base::OnceCallback<void(mojom::ServiceWorkerDatabaseStatus status,
                               mojom::ServiceWorkerFindRegistrationResultPtr)>
