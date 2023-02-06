@@ -413,6 +413,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // Command handler for find in page commands
 @property(nonatomic, weak) id<FindInPageCommands> findInPageCommandsHandler;
 
+// Command handler for toolbar commands
+@property(nonatomic, weak) id<ToolbarCommands> toolbarCommandsHandler;
+
 // The FullscreenController.
 @property(nonatomic, assign) FullscreenController* fullscreenController;
 
@@ -507,6 +510,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.browserCoordinatorCommandsHandler =
         dependencies.browserCoordinatorCommandsHandler;
     self.findInPageCommandsHandler = dependencies.findInPageCommandsHandler;
+    self.toolbarCommandsHandler = dependencies.toolbarCommandsHandler;
     dependencies.lensCoordinator.delegate = self;
 
     _inNewTabAnimation = NO;
@@ -538,10 +542,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 #pragma mark - Public Properties
-
-- (id<ToolbarCommands>)dispatcher {
-  return static_cast<id<ToolbarCommands>>(self.commandDispatcher);
-}
 
 - (UIView*)contentArea {
   return self.browserContainerViewController.view;
@@ -2208,7 +2208,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [self addURLToReadingList:urlWithTitle.URL withTitle:urlWithTitle.title];
   }
 
-  [self.dispatcher triggerToolsMenuButtonAnimation];
+  [self.toolbarCommandsHandler triggerToolsMenuButtonAnimation];
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
 
