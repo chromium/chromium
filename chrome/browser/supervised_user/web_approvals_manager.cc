@@ -15,9 +15,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/supervised_user/permission_request_creator.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/core/common/supervised_user_settings_service.h"
 #include "components/url_matcher/url_util.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -156,7 +156,7 @@ void WebApprovalsManager::RequestLocalApproval(
     const gfx::ImageSkia& favicon,
     ApprovalRequestInitiatedCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  SupervisedUserSettingsService* settings_service =
+  supervised_users::SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForKey(
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
               ->GetProfileKey());
@@ -168,7 +168,7 @@ void WebApprovalsManager::RequestLocalApproval(
           base::TimeTicks::Now()));
   std::move(callback).Run(true);
 #elif BUILDFLAG(IS_ANDROID)
-  SupervisedUserSettingsService* settings_service =
+  supervised_users::SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForKey(
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
               ->GetProfileKey());
@@ -252,7 +252,7 @@ void WebApprovalsManager::OnRemoteApprovalRequestIssued(
 }
 
 void WebApprovalsManager::CompleteLocalApprovalRequest(
-    SupervisedUserSettingsService* settings_service,
+    supervised_users::SupervisedUserSettingsService* settings_service,
     const GURL& url,
     base::TimeTicks start_time,
     WebApprovalsManager::LocalApprovalResult approval_result) {
@@ -274,7 +274,7 @@ void WebApprovalsManager::CompleteLocalApprovalRequest(
 
 #if BUILDFLAG(IS_ANDROID)
 void WebApprovalsManager::OnLocalApprovalRequestCompletedAndroid(
-    SupervisedUserSettingsService* settings_service,
+    supervised_users::SupervisedUserSettingsService* settings_service,
     const GURL& url,
     base::TimeTicks start_time,
     AndroidLocalWebApprovalFlowOutcome request_outcome) {
@@ -286,7 +286,7 @@ void WebApprovalsManager::OnLocalApprovalRequestCompletedAndroid(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void WebApprovalsManager::OnLocalApprovalRequestCompletedChromeOS(
-    SupervisedUserSettingsService* settings_service,
+    supervised_users::SupervisedUserSettingsService* settings_service,
     const GURL& url,
     base::TimeTicks start_time,
     crosapi::mojom::ParentAccessResultPtr result) {

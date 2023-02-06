@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/supervised_user_settings_service.h"
+#include "components/supervised_user/core/common/supervised_user_settings_service.h"
 
 #include <memory>
 #include <utility>
@@ -12,6 +12,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/model/sync_change.h"
@@ -19,9 +20,10 @@
 #include "components/sync/protocol/managed_user_setting_specifics.pb.h"
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace supervised_users {
 
 const char kAtomicItemName[] = "X-Wombat";
 const char kSettingsName[] = "TestingSetting";
@@ -137,7 +139,7 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
 
   void TearDown() override { settings_service_.Shutdown(); }
 
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::Value::Dict split_items_;
   std::unique_ptr<base::Value> atomic_setting_value_;
   SupervisedUserSettingsService settings_service_;
@@ -169,8 +171,9 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessAtomicSetting) {
   ASSERT_TRUE(value);
   std::string string_value;
   EXPECT_TRUE(value->is_string());
-  if (value->is_string())
+  if (value->is_string()) {
     string_value = value->GetString();
+  }
   EXPECT_EQ(kSettingsValue, string_value);
 }
 
@@ -325,8 +328,9 @@ TEST_F(SupervisedUserSettingsServiceTest, SetLocalSetting) {
   ASSERT_TRUE(value);
   std::string string_value;
   EXPECT_TRUE(value->is_string());
-  if (value->is_string())
+  if (value->is_string()) {
     string_value = value->GetString();
+  }
   EXPECT_EQ(kSettingsValue, string_value);
 }
 
@@ -347,8 +351,9 @@ TEST_F(SupervisedUserSettingsServiceTest, UploadItem) {
   syncer::SyncDataList sync_data = settings_service_.GetAllSyncDataForTesting(
       syncer::SUPERVISED_USER_SETTINGS);
   EXPECT_EQ(3u, sync_data.size());
-  for (const syncer::SyncData& sync_data_item : sync_data)
+  for (const syncer::SyncData& sync_data_item : sync_data) {
     VerifySyncDataItem(sync_data_item);
+  }
 
   // Uploading after we have started syncing should work too.
   sync_processor_->changes().clear();
@@ -361,8 +366,9 @@ TEST_F(SupervisedUserSettingsServiceTest, UploadItem) {
   sync_data = settings_service_.GetAllSyncDataForTesting(
       syncer::SUPERVISED_USER_SETTINGS);
   EXPECT_EQ(4u, sync_data.size());
-  for (const syncer::SyncData& sync_data_item : sync_data)
+  for (const syncer::SyncData& sync_data_item : sync_data) {
     VerifySyncDataItem(sync_data_item);
+  }
 
   // Uploading an item with a previously seen key should create an UPDATE
   // action.
@@ -376,8 +382,9 @@ TEST_F(SupervisedUserSettingsServiceTest, UploadItem) {
   sync_data = settings_service_.GetAllSyncDataForTesting(
       syncer::SUPERVISED_USER_SETTINGS);
   EXPECT_EQ(4u, sync_data.size());
-  for (const syncer::SyncData& sync_data_item : sync_data)
+  for (const syncer::SyncData& sync_data_item : sync_data) {
     VerifySyncDataItem(sync_data_item);
+  }
 
   sync_processor_->changes().clear();
   UploadAtomicItem("fjord");
@@ -389,8 +396,9 @@ TEST_F(SupervisedUserSettingsServiceTest, UploadItem) {
   sync_data = settings_service_.GetAllSyncDataForTesting(
       syncer::SUPERVISED_USER_SETTINGS);
   EXPECT_EQ(4u, sync_data.size());
-  for (const syncer::SyncData& sync_data_item : sync_data)
+  for (const syncer::SyncData& sync_data_item : sync_data) {
     VerifySyncDataItem(sync_data_item);
+  }
 
   // The uploaded items should not show up as settings.
   EXPECT_FALSE(settings_->Find(kAtomicItemName));
@@ -424,3 +432,5 @@ TEST_F(SupervisedUserSettingsServiceTest, RecordLocalWebsiteApproval) {
   CheckWebsiteApproval(syncer::SyncChange::ACTION_UPDATE,
                        "ContentPackManualBehaviorHosts:youtube.com");
 }
+
+}  // namespace supervised_users

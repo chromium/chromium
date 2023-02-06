@@ -42,8 +42,11 @@
 class PrefService;
 class Profile;
 class SupervisedUserServiceObserver;
-class SupervisedUserSettingsService;
 class SupervisedUserURLFilter;
+
+namespace supervised_users {
+class SupervisedUserSettingsService;
+}  // namespace supervised_users
 
 namespace base {
 class FilePath;
@@ -318,7 +321,7 @@ class SupervisedUserService : public KeyedService,
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Returns the SupervisedUserSettingsService associated with |profile_|.
-  SupervisedUserSettingsService* GetSettingsService();
+  supervised_users::SupervisedUserSettingsService* GetSettingsService();
 
   // Returns the PrefService associated with |profile_|.
   PrefService* GetPrefService();

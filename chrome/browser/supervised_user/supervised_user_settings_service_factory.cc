@@ -5,13 +5,13 @@
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 #include "components/keyed_service/core/simple_dependency_manager.h"
+#include "components/supervised_user/core/common/supervised_user_settings_service.h"
 
 // static
-SupervisedUserSettingsService* SupervisedUserSettingsServiceFactory::GetForKey(
-    SimpleFactoryKey* key) {
-  return static_cast<SupervisedUserSettingsService*>(
+supervised_users::SupervisedUserSettingsService*
+SupervisedUserSettingsServiceFactory::GetForKey(SimpleFactoryKey* key) {
+  return static_cast<supervised_users::SupervisedUserSettingsService*>(
       GetInstance()->GetServiceForKey(key, true));
 }
 
@@ -31,7 +31,7 @@ SupervisedUserSettingsServiceFactory::
 std::unique_ptr<KeyedService>
 SupervisedUserSettingsServiceFactory::BuildServiceInstanceFor(
     SimpleFactoryKey* key) const {
-  return std::make_unique<SupervisedUserSettingsService>();
+  return std::make_unique<supervised_users::SupervisedUserSettingsService>();
 }
 
 SimpleFactoryKey* SupervisedUserSettingsServiceFactory::GetKeyToUse(

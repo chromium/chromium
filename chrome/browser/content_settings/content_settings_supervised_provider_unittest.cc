@@ -8,12 +8,12 @@
 #include <string>
 
 #include "chrome/browser/content_settings/content_settings_mock_observer.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/core/common/supervised_user_settings_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
@@ -28,7 +28,7 @@ class SupervisedUserProviderTest : public ::testing::Test {
   void TearDown() override;
 
  protected:
-  SupervisedUserSettingsService service_;
+  supervised_users::SupervisedUserSettingsService service_;
   scoped_refptr<TestingPrefStore> pref_store_;
   std::unique_ptr<SupervisedProvider> provider_;
   content_settings::MockObserver mock_observer_;

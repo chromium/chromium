@@ -12,11 +12,15 @@
 #include "components/supervised_user/core/common/supervised_users.h"
 
 class SimpleFactoryKey;
+
+namespace supervised_users {
 class SupervisedUserSettingsService;
+}  // namespace supervised_users
 
 class SupervisedUserSettingsServiceFactory : public SimpleKeyedServiceFactory {
  public:
-  static SupervisedUserSettingsService* GetForKey(SimpleFactoryKey* key);
+  static supervised_users::SupervisedUserSettingsService* GetForKey(
+      SimpleFactoryKey* key);
 
   static SupervisedUserSettingsServiceFactory* GetInstance();
 

@@ -1,7 +1,10 @@
 include_rules = [
   "+components/grit",
+  "+components/keyed_service/core",
+  "+components/prefs",
   "+components/strings/grit",
   "+components/signin",
   "+third_party/protobuf",
+  "+components/sync",
   "+ui/base",
 ]

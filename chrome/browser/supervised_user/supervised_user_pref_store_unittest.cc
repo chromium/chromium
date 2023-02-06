@@ -11,7 +11,6 @@
 #include "base/values.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/supervised_user/supervised_user_pref_store.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 #include "chrome/common/net/safe_search_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -20,6 +19,7 @@
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/core/common/supervised_user_settings_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,7 +31,7 @@ using ::testing::Optional;
 class SupervisedUserPrefStoreFixture : public PrefStore::Observer {
  public:
   explicit SupervisedUserPrefStoreFixture(
-      SupervisedUserSettingsService* settings_service);
+      supervised_users::SupervisedUserSettingsService* settings_service);
   ~SupervisedUserPrefStoreFixture() override;
 
   base::Value::Dict* changed_prefs() { return &changed_prefs_; }
@@ -51,7 +51,7 @@ class SupervisedUserPrefStoreFixture : public PrefStore::Observer {
 };
 
 SupervisedUserPrefStoreFixture::SupervisedUserPrefStoreFixture(
-    SupervisedUserSettingsService* settings_service)
+    supervised_users::SupervisedUserSettingsService* settings_service)
     : pref_store_(new SupervisedUserPrefStore(settings_service)),
       initialization_completed_(pref_store_->IsInitializationComplete()) {
   pref_store_->AddObserver(this);
@@ -84,7 +84,7 @@ class SupervisedUserPrefStoreTest : public ::testing::Test {
   void TearDown() override;
 
  protected:
-  SupervisedUserSettingsService service_;
+  supervised_users::SupervisedUserSettingsService service_;
   scoped_refptr<TestingPrefStore> pref_store_;
 };
 

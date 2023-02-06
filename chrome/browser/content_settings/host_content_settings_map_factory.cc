@@ -32,8 +32,8 @@
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/content_settings/content_settings_supervised_provider.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#include "components/supervised_user/core/common/supervised_user_settings_service.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -150,7 +150,7 @@ scoped_refptr<RefcountedKeyedService>
           false));
 #endif // BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  SupervisedUserSettingsService* supervised_service =
+  supervised_users::SupervisedUserSettingsService* supervised_service =
       SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
   // This may be null in testing.
   if (supervised_service) {

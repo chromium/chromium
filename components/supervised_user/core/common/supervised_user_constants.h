@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_CONSTANTS_H_
 #define COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_CONSTANTS_H_
 
+#include "base/files/file_path.h"
+
 namespace supervised_users {
 
 // Keys for supervised user settings. These are configured remotely and mapped
@@ -32,6 +34,9 @@ extern const char kChromeOSPasswordData[];
 
 // A group of preferences of both primary and secondary custodians.
 extern const char* const kCustodianInfoPrefs[10];
+
+// Filenames.
+extern const base::FilePath::CharType kSupervisedUserSettingsFilename[];
 
 }  // namespace supervised_users
 

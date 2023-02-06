@@ -10,8 +10,8 @@
 
 #include "base/functional/bind.h"
 #include "base/values.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/core/common/supervised_user_settings_service.h"
 
 namespace {
 
@@ -49,8 +49,8 @@ const ContentSettingsFromSupervisedSettingsEntry
 namespace content_settings {
 
 SupervisedProvider::SupervisedProvider(
-    SupervisedUserSettingsService* supervised_user_settings_service) {
-
+    supervised_users::SupervisedUserSettingsService*
+        supervised_user_settings_service) {
   // The SupervisedProvider is owned by the HostContentSettingsMap which
   // DependsOn the SupervisedUserSettingsService (through their factories).
   // This means this will get destroyed before the SUSS and will be

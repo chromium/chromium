@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/supervised_user_settings_service.h"
+#include "components/supervised_user/core/common/supervised_user_settings_service.h"
 
 #include <stddef.h>
 
@@ -19,7 +19,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
-#include "chrome/common/chrome_constants.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_filter.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -27,12 +26,12 @@
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/managed_user_setting_specifics.pb.h"
-#include "content/public/browser/browser_thread.h"
+
+namespace supervised_users {
 
 using base::JSONReader;
 using base::UserMetricsAction;
 using base::Value;
-using content::BrowserThread;
 using syncer::ModelError;
 using syncer::ModelType;
 using syncer::SUPERVISED_USER_SETTINGS;
@@ -62,8 +61,9 @@ bool SyncChangeIsNewWebsiteApproval(const std::string& name,
   bool is_host_permission_change =
       base::StartsWith(name, supervised_users::kContentPackManualBehaviorHosts,
                        base::CompareCase::INSENSITIVE_ASCII);
-  if (!is_host_permission_change)
+  if (!is_host_permission_change) {
     return false;
+  }
   switch (change_type) {
     case SyncChange::ACTION_ADD:
     case SyncChange::ACTION_UPDATE: {
@@ -97,7 +97,7 @@ void SupervisedUserSettingsService::Init(
     base::SequencedTaskRunner* sequenced_task_runner,
     bool load_synchronously) {
   base::FilePath path =
-      profile_path.Append(chrome::kSupervisedUserSettingsFilename);
+      profile_path.Append(supervised_users::kSupervisedUserSettingsFilename);
   PersistentPrefStore* store = new JsonPrefStore(
       path, std::unique_ptr<PrefFilter>(), sequenced_task_runner);
   Init(store);
@@ -411,16 +411,18 @@ SupervisedUserSettingsService::ProcessSyncChanges(
         DLOG_IF(WARNING, !value.has_value())
             << "Invalid supervised_user_setting: "
             << supervised_user_setting.value();
-        if (!value.has_value())
+        if (!value.has_value()) {
           continue;
+        }
         new_value = dict->Set(key, std::move(*value));
         break;
       }
       case SyncChange::ACTION_DELETE: {
         DLOG_IF(WARNING, !old_value)
             << "Trying to delete nonexistent key " << key;
-        if (!old_value)
+        if (!old_value) {
           continue;
+        }
         old_value_for_delete = old_value->Clone();
         old_value = &old_value_for_delete;
         dict->Remove(key);
@@ -456,8 +458,9 @@ void SupervisedUserSettingsService::OnInitializationCompleted(bool success) {
 
   DCHECK(IsReady());
 
-  if (wait_until_ready_to_sync_cb_)
+  if (wait_until_ready_to_sync_cb_) {
     std::move(wait_until_ready_to_sync_cb_).Run();
+  }
 
   InformSubscribers();
 }
@@ -470,8 +473,9 @@ const base::Value::Dict& SupervisedUserSettingsService::LocalSettingsForTest()
 base::Value::Dict* SupervisedUserSettingsService::GetDictionaryAndSplitKey(
     std::string* key) const {
   size_t pos = key->find_first_of(kSplitSettingKeySeparator);
-  if (pos == std::string::npos)
+  if (pos == std::string::npos) {
     return GetAtomicSettings();
+  }
 
   base::Value::Dict* split_settings = GetSplitSettings();
   std::string prefix = key->substr(0, pos);
@@ -506,23 +510,26 @@ base::Value::Dict* SupervisedUserSettingsService::GetQueuedItems() const {
 
 base::Value::Dict SupervisedUserSettingsService::GetSettingsWithDefault() {
   DCHECK(IsReady());
-  if (!active_ || initialization_failed_)
+  if (!active_ || initialization_failed_) {
     return base::Value::Dict();
+  }
 
   base::Value::Dict settings(local_settings_.Clone());
 
   base::Value::Dict* atomic_settings = GetAtomicSettings();
   for (const auto it : *atomic_settings) {
-    if (!SettingShouldApplyToPrefs(it.first))
+    if (!SettingShouldApplyToPrefs(it.first)) {
       continue;
+    }
 
     settings.Set(it.first, it.second.Clone());
   }
 
   base::Value::Dict* split_settings = GetSplitSettings();
   for (const auto it : *split_settings) {
-    if (!SettingShouldApplyToPrefs(it.first))
+    if (!SettingShouldApplyToPrefs(it.first)) {
       continue;
+    }
 
     settings.Set(it.first, it.second.Clone());
   }
@@ -531,9 +538,12 @@ base::Value::Dict SupervisedUserSettingsService::GetSettingsWithDefault() {
 }
 
 void SupervisedUserSettingsService::InformSubscribers() {
-  if (!IsReady())
+  if (!IsReady()) {
     return;
+  }
 
   base::Value::Dict settings = GetSettingsWithDefault();
   settings_callback_list_.Notify(std::move(settings));
 }
+
+}  // namespace supervised_users

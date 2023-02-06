@@ -41,4 +41,7 @@ const char* const kCustodianInfoPrefs[] = {
     prefs::kSupervisedUserSecondCustodianProfileImageURL,
 };
 
+const base::FilePath::CharType kSupervisedUserSettingsFilename[] =
+    FILE_PATH_LITERAL("Managed Mode Settings");
+
 }  // namespace supervised_users

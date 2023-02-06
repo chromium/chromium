@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_SETTINGS_SERVICE_H_
-#define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_SETTINGS_SERVICE_H_
+#ifndef COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_SETTINGS_SERVICE_H_
+#define COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_SETTINGS_SERVICE_H_
 
 #include <memory>
 #include <string>
@@ -26,6 +26,8 @@ namespace base {
 class FilePath;
 class SequencedTaskRunner;
 }  // namespace base
+
+namespace supervised_users {
 
 // This class syncs supervised user settings from a server, which are mapped to
 // preferences. The downloaded settings are persisted in a PrefStore (which is
@@ -218,4 +220,6 @@ class SupervisedUserSettingsService : public KeyedService,
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
 };
 
-#endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_SETTINGS_SERVICE_H_
+}  // namespace supervised_users
+
+#endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_SETTINGS_SERVICE_H_

@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/net/safe_search_util.h"
@@ -31,6 +30,7 @@
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/core/common/supervised_user_settings_service.h"
 #include "extensions/buildflags/buildflags.h"
 
 namespace {
@@ -74,7 +74,8 @@ SupervisedUserSettingsPrefMappingEntry kSupervisedUserSettingsPrefMapping[] = {
 }  // namespace
 
 SupervisedUserPrefStore::SupervisedUserPrefStore(
-    SupervisedUserSettingsService* supervised_user_settings_service) {
+    supervised_users::SupervisedUserSettingsService*
+        supervised_user_settings_service) {
   user_settings_subscription_ =
       supervised_user_settings_service->SubscribeForSettingsChange(
           base::BindRepeating(&SupervisedUserPrefStore::OnNewSettingsAvailable,

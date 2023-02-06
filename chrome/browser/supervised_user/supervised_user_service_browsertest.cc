@@ -24,7 +24,6 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -32,6 +31,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/core/common/supervised_user_settings_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTestSupervised, ProfileName) {
   PrefService* prefs = profile->GetPrefs();
   std::string original_name = prefs->GetString(prefs::kProfileName);
 
-  SupervisedUserSettingsService* settings =
+  supervised_users::SupervisedUserSettingsService* settings =
       SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
 
   // Change the name. Both the profile pref and the entry in

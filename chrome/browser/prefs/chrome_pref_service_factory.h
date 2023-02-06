@@ -38,7 +38,10 @@ class PrefService;
 
 class PrefStore;
 class Profile;
+
+namespace supervised_users {
 class SupervisedUserSettingsService;
+}  // namespace supervised_users
 
 namespace chrome_prefs {
 
@@ -67,7 +70,7 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
     mojo::PendingRemote<prefs::mojom::TrackedPreferenceValidationDelegate>
         validation_delegate,
     policy::PolicyService* policy_service,
-    SupervisedUserSettingsService* supervised_user_settings,
+    supervised_users::SupervisedUserSettingsService* supervised_user_settings,
     scoped_refptr<PrefStore> extension_prefs,
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
     policy::BrowserPolicyConnector* connector,

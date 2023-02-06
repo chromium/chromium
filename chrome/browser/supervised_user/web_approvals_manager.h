@@ -28,7 +28,10 @@ enum class AndroidLocalWebApprovalFlowOutcome;
 
 class GURL;
 class PermissionRequestCreator;
+
+namespace supervised_users {
 class SupervisedUserSettingsService;
+}  // namespace supervised_users
 
 namespace content {
 class WebContents;
@@ -134,7 +137,7 @@ class WebApprovalsManager {
   // Shared between the platforms. Should be called by platform specific
   // completion callback.
   void CompleteLocalApprovalRequest(
-      SupervisedUserSettingsService* settings_service,
+      supervised_users::SupervisedUserSettingsService* settings_service,
       const GURL& url,
       base::TimeTicks start_time,
       LocalApprovalResult approval_result);
@@ -144,7 +147,7 @@ class WebApprovalsManager {
   // Should call `CompleteLocalApprovalRequest` to complete the request.
 #if BUILDFLAG(IS_ANDROID)
   void OnLocalApprovalRequestCompletedAndroid(
-      SupervisedUserSettingsService* settings_service,
+      supervised_users::SupervisedUserSettingsService* settings_service,
       const GURL& url,
       base::TimeTicks start_time,
       AndroidLocalWebApprovalFlowOutcome request_outcome);
@@ -152,7 +155,7 @@ class WebApprovalsManager {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnLocalApprovalRequestCompletedChromeOS(
-      SupervisedUserSettingsService* settings_service,
+      supervised_users::SupervisedUserSettingsService* settings_service,
       const GURL& url,
       base::TimeTicks start_time,
       crosapi::mojom::ParentAccessResultPtr result);

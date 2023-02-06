@@ -17,10 +17,10 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/supervised_user/core/common/supervised_user_settings_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/gurl.h"
@@ -67,7 +67,7 @@ void OnNotificationClick(const GURL& url) {
 
 WebsiteApprovalNotifier::WebsiteApprovalNotifier(Profile* profile)
     : profile_(profile) {
-  SupervisedUserSettingsService* settings_service =
+  supervised_users::SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForKey(
           profile_->GetProfileKey());
   website_approval_subscription_ =
