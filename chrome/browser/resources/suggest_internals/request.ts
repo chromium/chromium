@@ -53,6 +53,11 @@ export class SuggestRequestElement extends PolymerElement {
     }
   }
 
+  private getRequestData_(): string {
+    const requestData = JSON.stringify(this.request.data, null, 2);
+    return requestData === '{}' ? '' : requestData;
+  }
+
   private getRequestPath_(): string {
     try {
       const url = new URL(this.request.url.url);
@@ -114,6 +119,16 @@ export class SuggestRequestElement extends PolymerElement {
     return (new Date(startTimeMs - epochDeltaMs)).toLocaleTimeString();
   }
 
+  private onCopyRequestClick_() {
+    navigator.clipboard.writeText(this.getRequestData_());
+
+    this.dispatchEvent(new CustomEvent('show-toast', {
+      bubbles: true,
+      composed: true,
+      detail: 'Request Copied to Clipboard',
+    }));
+  }
+
   private onCopyResponseClick_() {
     navigator.clipboard.writeText(this.responseJson_);
 
@@ -124,21 +139,18 @@ export class SuggestRequestElement extends PolymerElement {
     }));
   }
 
-  private onCopyUrlClick_() {
-    navigator.clipboard.writeText(this.request.url.url);
-
-    this.dispatchEvent(new CustomEvent('show-toast', {
-      bubbles: true,
-      composed: true,
-      detail: 'URL Copied to Clipboard',
-    }));
-  }
-
   private onHardcodeResponseClick_() {
     this.dispatchEvent(new CustomEvent('open-hardcode-response-dialog', {
       bubbles: true,
       composed: true,
       detail: this.responseJson_,
+    }));
+  }
+
+  private onViewRequestClick_() {
+    this.dispatchEvent(new CustomEvent('open-view-request-dialog', {
+      bubbles: true,
+      composed: true,
     }));
   }
 

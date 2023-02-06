@@ -17,7 +17,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-class GURL;
 class Profile;
 
 namespace content {
@@ -47,11 +46,11 @@ class SuggestInternalsHandler : public suggest_internals::mojom::PageHandler,
                         HardcodeResponseCallback callback) override;
 
   // RemoteSuggestionsService::Observer:
-  void OnSuggestRequestStarted(const base::UnguessableToken& request_id,
-                               const GURL& url) override;
+  void OnSuggestRequestStarting(
+      const base::UnguessableToken& request_id,
+      const network::ResourceRequest* request) override;
   void OnSuggestRequestCompleted(
       const base::UnguessableToken& request_id,
-      const GURL& url,
       const bool response_received,
       const std::unique_ptr<std::string>& response_body) override;
 

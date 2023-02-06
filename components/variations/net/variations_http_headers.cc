@@ -369,9 +369,13 @@ CreateSimpleURLLoaderWithVariationsHeaderUnknownSignedIn(
 }
 
 bool HasVariationsHeader(const network::ResourceRequest& request) {
-  // Note: kOmniboxOnDeviceSuggestionsHeader is not listed because this function
-  // is only used for testing.
-  return request.cors_exempt_headers.HasHeader(kClientDataHeader);
+  std::string unused_header;
+  return GetVariationsHeader(request, &unused_header);
+}
+
+bool GetVariationsHeader(const network::ResourceRequest& request,
+                         std::string* out) {
+  return request.cors_exempt_headers.GetHeader(kClientDataHeader, out);
 }
 
 bool ShouldAppendVariationsHeaderForTesting(

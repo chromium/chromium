@@ -25,6 +25,7 @@ interface SuggestInternalsAppElement {
   $: {
     hardcodeResponseDialog: CrDialogElement,
     toast: CrToastElement,
+    viewRequestDialog: CrDialogElement,
     viewResponseDialog: CrDialogElement,
   };
 }
@@ -73,8 +74,8 @@ class SuggestInternalsAppElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
     this.suggestionsRequestStartedListenerId_ =
-        this.callbackRouter_.onSuggestRequestStarted.addListener(
-            this.onSuggestRequestStarted_.bind(this));
+        this.callbackRouter_.onSuggestRequestStarting.addListener(
+            this.onSuggestRequestStarting_.bind(this));
     this.suggestionsRequestCompletedListenerId_ =
         this.callbackRouter_.onSuggestRequestCompleted.addListener(
             this.onSuggestRequestCompleted_.bind(this));
@@ -90,8 +91,13 @@ class SuggestInternalsAppElement extends PolymerElement {
         this.suggestionsRequestCompletedListenerId_);
   }
 
+  private onClientDataLinkClick_() {
+    window.open('http://protoshop/webserver.gws.ClientDataHeader');
+  }
+
   private onCloseDialogs_() {
     this.$.hardcodeResponseDialog.close();
+    this.$.viewRequestDialog.close();
     this.$.viewResponseDialog.close();
   }
 
@@ -120,6 +126,10 @@ class SuggestInternalsAppElement extends PolymerElement {
     this.$.hardcodeResponseDialog.showModal();
   }
 
+  private onOpenViewRequestDialog_() {
+    this.$.viewRequestDialog.showModal();
+  }
+
   private onOpenViewResponseDialog_() {
     this.$.viewResponseDialog.showModal();
   }
@@ -129,7 +139,7 @@ class SuggestInternalsAppElement extends PolymerElement {
     this.$.toast.show();
   }
 
-  private onSuggestRequestStarted_(request: Request) {
+  private onSuggestRequestStarting_(request: Request) {
     // Add the request to the start of the list of known requests.
     this.unshift('requests_', request);
   }
@@ -139,9 +149,8 @@ class SuggestInternalsAppElement extends PolymerElement {
       return request.id.high === element.id.high &&
           request.id.low === element.id.low;
     });
-    // Update the request with additional information if it is already known.
+    // If the request is known, update it with the additional information.
     if (index !== -1) {
-      this.set(`requests_.${index}.url`, request.url);
       this.set(`requests_.${index}.status`, request.status);
       this.set(`requests_.${index}.endTime`, request.endTime);
       this.set(`requests_.${index}.response`, request.response);

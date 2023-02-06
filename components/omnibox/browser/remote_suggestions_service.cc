@@ -105,6 +105,11 @@ RemoteSuggestionsService::StartSuggestionsRequest(
   // Create a unique identifier for the request.
   const base::UnguessableToken request_id = base::UnguessableToken::Create();
 
+  // Notify the observers that the transfer is about to start.
+  for (Observer& observer : observers_) {
+    observer.OnSuggestRequestStarting(request_id, request.get());
+  }
+
   // Make loader and start download.
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
@@ -113,11 +118,6 @@ RemoteSuggestionsService::StartSuggestionsRequest(
       base::BindOnce(&RemoteSuggestionsService::OnURLLoadComplete,
                      weak_ptr_factory_.GetWeakPtr(), request_id,
                      std::move(completion_callback), loader.get()));
-
-  // Notify the observers that the transfer has started.
-  for (Observer& observer : observers_) {
-    observer.OnSuggestRequestStarted(request_id, suggest_url);
-  }
   return loader;
 }
 
@@ -179,6 +179,11 @@ RemoteSuggestionsService::StartZeroPrefixSuggestionsRequest(
   // Create a unique identifier for the request.
   const base::UnguessableToken request_id = base::UnguessableToken::Create();
 
+  // Notify the observers that the transfer is about to start.
+  for (Observer& observer : observers_) {
+    observer.OnSuggestRequestStarting(request_id, request.get());
+  }
+
   // Make loader and start download.
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
@@ -187,11 +192,6 @@ RemoteSuggestionsService::StartZeroPrefixSuggestionsRequest(
       base::BindOnce(&RemoteSuggestionsService::OnURLLoadComplete,
                      weak_ptr_factory_.GetWeakPtr(), request_id,
                      std::move(completion_callback), loader.get()));
-
-  // Notify the observers that the transfer has started.
-  for (Observer& observer : observers_) {
-    observer.OnSuggestRequestStarted(request_id, suggest_url);
-  }
   return loader;
 }
 
@@ -245,6 +245,11 @@ RemoteSuggestionsService::StartDeletionRequest(
   // Create a unique identifier for the request.
   const base::UnguessableToken request_id = base::UnguessableToken::Create();
 
+  // Notify the observers that the transfer is about to start.
+  for (Observer& observer : observers_) {
+    observer.OnSuggestRequestStarting(request_id, request.get());
+  }
+
   // Make loader and start download.
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
@@ -253,11 +258,6 @@ RemoteSuggestionsService::StartDeletionRequest(
       base::BindOnce(&RemoteSuggestionsService::OnURLLoadComplete,
                      weak_ptr_factory_.GetWeakPtr(), request_id,
                      std::move(completion_callback), loader.get()));
-
-  // Notify the observers that the transfer has started.
-  for (Observer& observer : observers_) {
-    observer.OnSuggestRequestStarted(request_id, url);
-  }
   return loader;
 }
 
@@ -281,8 +281,8 @@ void RemoteSuggestionsService::OnURLLoadComplete(
 
   // Notify the observers that the transfer is done.
   for (Observer& observer : observers_) {
-    observer.OnSuggestRequestCompleted(request_id, source->GetFinalURL(),
-                                       response_received, response_body);
+    observer.OnSuggestRequestCompleted(request_id, response_received,
+                                       response_body);
   }
 
   std::move(completion_callback)

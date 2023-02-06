@@ -23,6 +23,7 @@
 namespace network {
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
+struct ResourceRequest;
 }  // namespace network
 
 // A service to fetch suggestions from a search provider's suggest endpoint.
@@ -35,16 +36,16 @@ class RemoteSuggestionsService : public KeyedService {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    // Called when the transfer is started. `request_id` identifies the request.
-    virtual void OnSuggestRequestStarted(
+    // Called when the transfer is about to start. `request_id` identifies the
+    // request. `request` is deleted after this call once the transfer starts.
+    virtual void OnSuggestRequestStarting(
         const base::UnguessableToken& request_id,
-        const GURL& url) {}
+        const network::ResourceRequest* request) {}
     // Called when the transfer is done. `request_id` identifies the request.
     // `response_received` indicates whether the request has succeeded and
     // `response_body` is populated.
     virtual void OnSuggestRequestCompleted(
         const base::UnguessableToken& request_id,
-        const GURL& url,
         const bool response_received,
         const std::unique_ptr<std::string>& response_body) {}
   };

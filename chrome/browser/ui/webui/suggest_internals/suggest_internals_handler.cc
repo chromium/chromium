@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/suggest_internals/suggest_internals_handler.h"
+
 #include "base/time/time.h"
 #include "chrome/browser/autocomplete/remote_suggestions_service_factory.h"
+#include "components/variations/net/variations_http_headers.h"
+#include "services/network/public/cpp/resource_request.h"
 
 SuggestInternalsHandler::SuggestInternalsHandler(
     mojo::PendingReceiver<suggest_internals::mojom::PageHandler>
@@ -33,44 +36,46 @@ void SuggestInternalsHandler::HardcodeResponse(
   hardcoded_response_ = response;
   // Update the page with a synthetic request representing the hardcoded
   // response.
-  suggest_internals::mojom::RequestPtr request =
+  suggest_internals::mojom::RequestPtr mojom_request =
       suggest_internals::mojom::Request::New();
-  request->id = base::UnguessableToken::Create();
-  request->status = suggest_internals::mojom::RequestStatus::kHardcoded;
-  request->start_time = base::Time::Now();
-  request->response = response;
-  std::move(callback).Run(std::move(request));
+  mojom_request->id = base::UnguessableToken::Create();
+  mojom_request->status = suggest_internals::mojom::RequestStatus::kHardcoded;
+  mojom_request->start_time = base::Time::Now();
+  mojom_request->response = response;
+  std::move(callback).Run(std::move(mojom_request));
 }
 
-void SuggestInternalsHandler::OnSuggestRequestStarted(
+void SuggestInternalsHandler::OnSuggestRequestStarting(
     const base::UnguessableToken& request_id,
-    const GURL& url) {
+    const network::ResourceRequest* request) {
   // Update the page with the request information.
-  suggest_internals::mojom::RequestPtr request =
+  suggest_internals::mojom::RequestPtr mojom_request =
       suggest_internals::mojom::Request::New();
-  request->id = request_id;
-  request->url = url;
-  request->status = suggest_internals::mojom::RequestStatus::kSent;
-  request->start_time = base::Time::Now();
-  page_->OnSuggestRequestStarted(std::move(request));
+  mojom_request->id = request_id;
+  mojom_request->url = request->url;
+  std::string variations_header;
+  variations::GetVariationsHeader(*request, &variations_header);
+  mojom_request->data[variations::kClientDataHeader] = variations_header;
+  mojom_request->data[request->method] = request->url.spec();
+  mojom_request->status = suggest_internals::mojom::RequestStatus::kSent;
+  mojom_request->start_time = base::Time::Now();
+  page_->OnSuggestRequestStarting(std::move(mojom_request));
 }
 
 void SuggestInternalsHandler::OnSuggestRequestCompleted(
     const base::UnguessableToken& request_id,
-    const GURL& url,
     const bool response_received,
     const std::unique_ptr<std::string>& response_body) {
   // Update the page with the request information.
-  suggest_internals::mojom::RequestPtr request =
+  suggest_internals::mojom::RequestPtr mojom_request =
       suggest_internals::mojom::Request::New();
-  request->id = request_id;
-  request->url = url;
-  request->status = response_received
-                        ? suggest_internals::mojom::RequestStatus::kSucceeded
+  mojom_request->id = request_id;
+  mojom_request->status =
+      response_received ? suggest_internals::mojom::RequestStatus::kSucceeded
                         : suggest_internals::mojom::RequestStatus::kFailed;
-  request->end_time = base::Time::Now();
-  request->response = response_received ? *response_body : "";
-  page_->OnSuggestRequestCompleted(std::move(request));
+  mojom_request->end_time = base::Time::Now();
+  mojom_request->response = response_received ? *response_body : "";
+  page_->OnSuggestRequestCompleted(std::move(mojom_request));
 
   // If the page has hardcoded a response, override the response.
   if (response_received && !hardcoded_response_.empty()) {

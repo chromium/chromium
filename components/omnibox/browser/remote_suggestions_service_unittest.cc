@@ -39,19 +39,18 @@ class TestObserver : public RemoteSuggestionsService::Observer {
   std::string response_body() { return response_body_; }
 
   // RemoteSuggestionsService::Observer:
-  void OnSuggestRequestStarted(const base::UnguessableToken& request_id,
-                               const GURL& url) override {
+  void OnSuggestRequestStarting(
+      const base::UnguessableToken& request_id,
+      const network::ResourceRequest* request) override {
     request_id_ = request_id;
-    url_ = url;
+    url_ = request->url;
   }
   void OnSuggestRequestCompleted(
       const base::UnguessableToken& request_id,
-      const GURL& url,
       const bool response_received,
       const std::unique_ptr<std::string>& response_body) override {
     // Verify the observer has been notified of this request.
     ASSERT_EQ(request_id_, request_id);
-    ASSERT_EQ(url_, url);
     response_received_ = true;
     response_body_ = *response_body;
   }

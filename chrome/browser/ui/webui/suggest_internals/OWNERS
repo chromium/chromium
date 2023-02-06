@@ -1,3 +1,4 @@
+mahmadi@chromium.org
 file://components/omnibox/OWNERS
 
 per-file *.mojom=set noparent
