@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
+FAIL gemm two float32 2D tensors (b is non-constant) default options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL gemm two float32 2D tensors default options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL gemm two float32 2D tensors options.c / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL gemm two float32 2D tensors broadcast options.c [1, 5] => [3, 5] / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
@@ -14,6 +15,7 @@ FAIL gemm two float32 2D tensors options.aTranspose being explicit false / cpu /
 FAIL gemm two float32 2D tensors options.bTranspose being true / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL gemm two float32 2D tensors options.bTranspose being explicit false / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL gemm two float32 2D tensors all options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL gemm two float32 2D tensors (b is non-constant) default options / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL gemm two float32 2D tensors default options / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL gemm two float32 2D tensors options.c / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL gemm two float32 2D tensors broadcast options.c [1, 5] => [3, 5] / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
