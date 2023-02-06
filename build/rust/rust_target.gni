@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/rust.gni")
+import("//build/rust/analyze.gni")
 import("//build/rust/rust_unit_test.gni")
 
 # The //build directory is re-used for non-Chromium products. We do not support
@@ -306,6 +307,19 @@ template("rust_target") {
       output_dir = _out_dir
       if (!defined(output_name) || output_name == "") {
         output_name = crate_name
+      }
+
+      if (compute_inputs_for_analyze) {
+        deps += [ ":${_target_name}_analyze" ]
+      }
+    }
+
+    if (compute_inputs_for_analyze) {
+      # Find and depend on all rust files in the crate for the purpose of `gn
+      # analyze`.
+      analyze_rust("${_target_name}_analyze") {
+        forward_variables_from(invoker, "*", [ "crate_root" ])
+        crate_root = _crate_root
       }
     }
 
