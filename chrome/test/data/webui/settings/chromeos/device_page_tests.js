@@ -841,7 +841,7 @@ suite('SettingsDevicePage', function() {
         pointerId: 1,
         clientX: rect.left + ((percent / 100) * rect.width),
       }));
-      return await flushTasks();
+      return flushTasks();
     }
 
     setup(async function() {

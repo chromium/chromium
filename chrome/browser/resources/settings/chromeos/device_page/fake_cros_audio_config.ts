@@ -180,7 +180,7 @@ export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
    */
   setInputGainPercent(gain: number): void {
     assert(gain >= 0 && gain <= 100);
-    this.audioSystemProperties.inputGainPercent = gain;
+    this.audioSystemProperties.inputGainPercent = Math.round(gain);
     this.notifyAudioSystemPropertiesUpdated();
   }
 
@@ -189,7 +189,7 @@ export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
    * observers.
    */
   setOutputVolumePercent(volume: number): void {
-    this.audioSystemProperties.outputVolumePercent = volume;
+    this.audioSystemProperties.outputVolumePercent = Math.round(volume);
     this.notifyAudioSystemPropertiesUpdated();
   }
 

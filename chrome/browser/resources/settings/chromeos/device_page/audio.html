@@ -1,6 +1,6 @@
 <style include="settings-shared md-select">
   .audio-mute-button {
-    margin-inline-end: var(--settings-control-label-spacing);
+    margin-inline-end: 8px;
   }
 
   .audio-options-container {
@@ -9,7 +9,9 @@
   }
 
   .audio-slider {
-    width: 100px;
+    margin-inline-end: 16px;
+    padding: 0;
+    width: 142px;
   }
 
   h2 {
@@ -70,8 +72,8 @@
           $i18n{audioDeviceTitle}
         </div>
         <select id="audioOutputDeviceDropdown" class="md-select"
-            aria-labelledby="audioOutputDeviceLabel"
-            on-change="onOutputDeviceChanged">
+            on-change="onOutputDeviceChanged"
+            aria-labelledby="audioOutputTitle audioOutputDeviceLabel">
           <template is="dom-repeat"
               items="[[audioSystemProperties_.outputDevices]]">
             <option value="[[item.id]]" selected="[[item.isActive]]">
@@ -98,7 +100,8 @@
                   audioSystemProperties_.outputMuteState
                 )]]"
               value="[[audioSystemProperties_.outputVolumePercent]]"
-              on-cr-slider-value-changed="onOutputVolumeSliderChanged_">
+              on-cr-slider-value-changed="onOutputVolumeSliderChanged_"
+              aria-labelledby="audioOutputTitle audioOutputVolumeLabel">
           </cr-slider>
         </div>
       </div>
@@ -114,7 +117,9 @@
         <div id="audioInputDeviceLabel" class="start settings-box-text">
           Device
         </div>
-        <select id="audioInputDeviceDropdown" on-change="onInputDeviceChanged">
+        <select id="audioInputDeviceDropdown" on-change="onInputDeviceChanged"
+            class="md-select"
+            aria-labelledby="audioInputTitle audioInputDeviceLabel">
           <template is="dom-repeat"
               items="[[audioSystemProperties_.inputDevices]]">
             <option value="[[item.id]]" selected="[[item.isActive]]">
@@ -130,13 +135,15 @@
         <div class="audio-options-container">
           <cr-icon-button id="audioInputGainMuteButton"
               iron-icon="[[getInputIcon_(isInputMuted_)]]"
-              on-click="onInputMuteClicked">
+              on-click="onInputMuteClicked"
+              class="audio-mute-button">
           </cr-icon-button>
           <cr-slider id="audioInputGainVolumeSlider" min="0" max="100"
               iron-icon="[[getInputIcon_(isInputMuted_)]]"
               value="[[audioSystemProperties_.inputGainPercent]]"
               on-cr-slider-value-changed="onInputVolumeSliderChanged"
-              class="audio-slider">
+              class="audio-slider"
+              aria-labelledby="audioInputTitle audioInputGainLabel">
           </cr-slider>
         </div>
       </div>
