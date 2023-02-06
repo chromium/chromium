@@ -59,7 +59,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/native_library.h"
 #include "net/android/network_library.h"
-#include "net/android/radio_activity_tracker.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
@@ -370,9 +369,6 @@ int UDPSocketPosix::Write(
     int buf_len,
     CompletionOnceCallback callback,
     const NetworkTrafficAnnotationTag& traffic_annotation) {
-#if BUILDFLAG(IS_ANDROID)
-  android::MaybeRecordUDPWriteForWakeupTrigger(traffic_annotation);
-#endif  // BUILDFLAG(IS_ANDROID)
   return SendToOrWrite(buf, buf_len, nullptr, std::move(callback));
 }
 

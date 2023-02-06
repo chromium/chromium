@@ -4414,21 +4414,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Net.Radio.PossibleWakeupTrigger.{ProtocolType}WriteAnnotationId"
-    enum="TrafficAnnotationUniqueIdHash" expires_after="2023-02-22">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Records a traffic annotation ID hash when a write to a {ProtocolType} socket
-    happens and the radio state is dormant. Only recorded on Android.
-  </summary>
-  <token key="ProtocolType">
-    <variant name="TCP"/>
-    <variant name="UDP"/>
-  </token>
-</histogram>
-
 <histogram name="Net.RedirectChainLength" units="redirects" expires_after="M85">
   <owner>csharrison@chromium.org</owner>
   <owner>rsleevi@chromium.org</owner>
