@@ -17,17 +17,11 @@ class WebsiteParentApprovalMetrics {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     // The values need to be in sync with FamilyLinkUserLocalWebApprovalOutcome in enums.xml.
-    // TODO (b/261403529): Remove the unused values once the solution that records directly
-    // GMS error codes is integrated in Clank.
     @IntDef({FamilyLinkUserLocalWebApprovalOutcome.APPROVED_BY_PARENT,
             FamilyLinkUserLocalWebApprovalOutcome.DENIED_BY_PARENT,
             FamilyLinkUserLocalWebApprovalOutcome.PARENT_APPROVAL_CANCELLED,
             FamilyLinkUserLocalWebApprovalOutcome
                     .VERIFICATION_WIDGET_UNSUPPORTED_API_CALL_EXCEPTION,
-            FamilyLinkUserLocalWebApprovalOutcome
-                    .VERIFICATION_WIDGET_FAILURE_UNSUPPORTED_GMS_VERSION,
-            FamilyLinkUserLocalWebApprovalOutcome.VERIFICATION_WIDGET_FAILURE_NO_SUPERVISED_ACCOUNT,
-            FamilyLinkUserLocalWebApprovalOutcome.VERIFICATION_WIDGET_FAILURE_UNEXPECTED_REASON,
             FamilyLinkUserLocalWebApprovalOutcome.VERIFICATION_WIDGET_UNEXPECTED_EXCEPTION,
             FamilyLinkUserLocalWebApprovalOutcome.COUNT})
     public @interface FamilyLinkUserLocalWebApprovalOutcome {
@@ -35,9 +29,6 @@ class WebsiteParentApprovalMetrics {
         int DENIED_BY_PARENT = 1;
         int PARENT_APPROVAL_CANCELLED = 2;
         int VERIFICATION_WIDGET_UNSUPPORTED_API_CALL_EXCEPTION = 3;
-        int VERIFICATION_WIDGET_FAILURE_UNSUPPORTED_GMS_VERSION = 4;
-        int VERIFICATION_WIDGET_FAILURE_NO_SUPERVISED_ACCOUNT = 5;
-        int VERIFICATION_WIDGET_FAILURE_UNEXPECTED_REASON = 6;
         int VERIFICATION_WIDGET_UNEXPECTED_EXCEPTION = 7;
         int COUNT = 8;
     }

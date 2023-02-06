@@ -36776,15 +36776,6 @@ Called by update_extension_permission.py.-->
   <int value="3" label="Verification widget unsupported API call exception">
     Feature to support parent verification is missing.
   </int>
-  <int value="4" label="Verification widget failure unsupported GMS version">
-    GMSCore version does not support the API call.
-  </int>
-  <int value="5" label="Verification widget failure no suppervised account">
-    No supervised user account is found on the device.
-  </int>
-  <int value="6" label="Verification widget failure unexpected reason">
-    Verification widget failed with unexpected status code.
-  </int>
   <int value="7" label="Verification widget unexpected exception">
     An unexpected exception occured during parent verification.
   </int>
