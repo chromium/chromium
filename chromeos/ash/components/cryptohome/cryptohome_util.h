@@ -17,9 +17,7 @@
 namespace cryptohome {
 
 // Converts the key metadata in a RepeatedPtrField<cryptohome::KeyData> into
-// cryptohome::KeyDefinition format. Note that this is temporarily extracted
-// from GetKeyDataReplyToKeyDefinitions() to facilitate the transition from
-// cryptohome_util.cc to userdataauth_util.cc.
+// cryptohome::KeyDefinition format.
 std::vector<KeyDefinition> RepeatedKeyDataToKeyDefinitions(
     const google::protobuf::RepeatedPtrField<KeyData>& key_data);
 

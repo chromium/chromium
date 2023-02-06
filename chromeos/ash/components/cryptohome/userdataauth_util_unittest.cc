@@ -15,12 +15,6 @@ using ::cryptohome::KeyLabel;
 
 constexpr char kKeyLabelStr[] = "key_label";
 
-constexpr int64_t kKeyRevision = 123;
-constexpr char kProviderData1Name[] = "data_1";
-constexpr int64_t kProviderData1Number = 12345;
-constexpr char kProviderData2Name[] = "data_2";
-constexpr char kProviderData2Bytes[] = "data_2 bytes";
-
 }  // namespace
 
 class UserDataAuthUtilTest : public ::testing::Test {
@@ -57,70 +51,6 @@ TEST_F(UserDataAuthUtilTest, CryptohomeErrorToMountError) {
             cryptohome::MOUNT_ERROR_TPM_DEFEND_LOCK);
   EXPECT_EQ(CryptohomeErrorToMountError(CRYPTOHOME_ERROR_TPM_NEEDS_REBOOT),
             cryptohome::MOUNT_ERROR_TPM_NEEDS_REBOOT);
-}
-
-TEST_F(UserDataAuthUtilTest, GetKeyDataReplyToKeyDefinitionsTwoEntries) {
-  GetKeyDataReply result;
-  result.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET);
-  cryptohome::KeyData* key_data = result.add_key_data();
-  key_data->set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
-  key_data->set_label(kKeyLabelStr);
-  key_data->mutable_privileges()->set_update(false);
-  key_data->set_revision(kKeyRevision);
-  cryptohome::KeyProviderData* data = key_data->mutable_provider_data();
-  cryptohome::KeyProviderData::Entry* entry1 = data->add_entry();
-  entry1->set_name(kProviderData1Name);
-  entry1->set_number(kProviderData1Number);
-  cryptohome::KeyProviderData::Entry* entry2 = data->add_entry();
-  entry2->set_name(kProviderData2Name);
-  entry2->set_bytes(kProviderData2Bytes);
-  const absl::optional<GetKeyDataReply> reply = std::move(result);
-
-  std::vector<cryptohome::KeyDefinition> key_definitions =
-      GetKeyDataReplyToKeyDefinitions(reply);
-
-  // Verify that the call was successful and the result was correctly parsed.
-  ASSERT_EQ(1u, key_definitions.size());
-  const cryptohome::KeyDefinition& key_definition = key_definitions.front();
-  EXPECT_EQ(cryptohome::KeyDefinition::TYPE_PASSWORD, key_definition.type);
-  EXPECT_EQ(kKeyLabel, key_definition.label);
-  EXPECT_EQ(cryptohome::PRIV_ADD | cryptohome::PRIV_REMOVE,
-            key_definition.privileges);
-  EXPECT_EQ(kKeyRevision, key_definition.revision);
-  ASSERT_EQ(2u, key_definition.provider_data.size());
-  const cryptohome::KeyDefinition::ProviderData* provider_data =
-      &key_definition.provider_data[0];
-  EXPECT_EQ(kProviderData1Name, provider_data->name);
-  ASSERT_TRUE(provider_data->number);
-  EXPECT_EQ(kProviderData1Number, *provider_data->number.get());
-  EXPECT_FALSE(provider_data->bytes);
-  provider_data = &key_definition.provider_data[1];
-  EXPECT_EQ(kProviderData2Name, provider_data->name);
-  EXPECT_FALSE(provider_data->number);
-  ASSERT_TRUE(provider_data->bytes);
-  EXPECT_EQ(kProviderData2Bytes, *provider_data->bytes.get());
-}
-
-// Test the GetKeyDataReplyToKeyDefinitions() function against the
-// GetKeyDataReply proto containing the KeyData proto of the
-// |KEY_TYPE_CHALLENGE_RESPONSE| type.
-TEST_F(UserDataAuthUtilTest,
-       GetKeyDataReplyToKeyDefinitions_ChallengeResponse) {
-  GetKeyDataReply result;
-  result.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET);
-  cryptohome::KeyData* key_data = result.add_key_data();
-  key_data->set_type(cryptohome::KeyData::KEY_TYPE_CHALLENGE_RESPONSE);
-  key_data->set_label(kKeyLabelStr);
-  const absl::optional<GetKeyDataReply> reply = std::move(result);
-
-  const std::vector<cryptohome::KeyDefinition> key_definitions =
-      GetKeyDataReplyToKeyDefinitions(reply);
-
-  ASSERT_EQ(1u, key_definitions.size());
-  const cryptohome::KeyDefinition& key_definition = key_definitions.front();
-  EXPECT_EQ(cryptohome::KeyDefinition::TYPE_CHALLENGE_RESPONSE,
-            key_definition.type);
-  EXPECT_EQ(kKeyLabel, key_definition.label);
 }
 
 TEST_F(UserDataAuthUtilTest, AccountDiskUsageReplyToUsageSizeNullOptional) {

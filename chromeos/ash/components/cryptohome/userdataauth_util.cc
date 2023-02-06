@@ -54,9 +54,6 @@ template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
     ReplyToMountError(const absl::optional<UnmountReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
     cryptohome::MountError ReplyToMountError(const absl::optional<MountReply>&);
-template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    cryptohome::MountError
-    ReplyToMountError(const absl::optional<GetKeyDataReply>&);
 
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
     CryptohomeErrorCode
@@ -115,12 +112,6 @@ template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
     CryptohomeErrorCode
     ReplyToCryptohomeError(const absl::optional<StartMigrateToDircryptoReply>&);
-
-std::vector<cryptohome::KeyDefinition> GetKeyDataReplyToKeyDefinitions(
-    const absl::optional<GetKeyDataReply>& reply) {
-  const RepeatedPtrField<cryptohome::KeyData>& key_data = reply->key_data();
-  return cryptohome::RepeatedKeyDataToKeyDefinitions(key_data);
-}
 
 int64_t AccountDiskUsageReplyToUsageSize(
     const absl::optional<GetAccountDiskUsageReply>& reply) {

@@ -29,12 +29,6 @@ COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
 CryptohomeErrorCode
     ReplyToCryptohomeError(const absl::optional<ReplyType>& reply);
 
-// Converts the key metadata in GetKeyDataReply into cryptohome::KeyDefinition
-// format.
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-std::vector<cryptohome::KeyDefinition> GetKeyDataReplyToKeyDefinitions(
-    const absl::optional<GetKeyDataReply>& reply);
-
 // Extracts the account's disk usage size from |reply|.
 // If |reply| is malformed, returns -1.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
