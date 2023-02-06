@@ -4747,6 +4747,13 @@ const char kArcVmmSwapName[] = "Vmm swap support for ARCVM";
 const char kArcVmmSwapDesc[] =
     "When enabled, the ARCVM will be launched with vmm swap feature.";
 
+const char kArcVmmSwapKBShortcutName[] =
+    "Keyboard shortcut trigger for ARCVM"
+    " vmm swap feature";
+const char kArcVmmSwapKBShortcutDesc[] =
+    "Alt + Ctrl + Shift + O/P to enable / disable ARCVM vmm swap. Only for "
+    "experimental usage.";
+
 const char kArcEnableAAudioMMAPName[] = "Enable ARCVM AAudio MMAP";
 const char kArcEnableAAudioMMAPDescription[] =
     "Enable AAudio MMAP support for ARCVM which provides low latency audio "

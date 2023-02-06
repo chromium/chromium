@@ -57705,6 +57705,7 @@ from previous Chrome versions.
   <int value="-2111273398" label="SendTabToSelfManageDevicesLink:enabled"/>
   <int value="-2111196530" label="EnableAssistantLauncherUI:disabled"/>
   <int value="-2108866112" label="FeedHeaderStickToTop:enabled"/>
+  <int value="-2108836417" label="ArcvmSwapoutKeyboardShortcut:enabled"/>
   <int value="-2108564200" label="AutofillUpstream:disabled"/>
   <int value="-2106960993" label="HarfBuzzPDFSubsetter:disabled"/>
   <int value="-2106763275" label="ArcRtVcpuQuadCore:enabled"/>
@@ -64142,6 +64143,7 @@ from previous Chrome versions.
   <int value="1550865563" label="AnimatedImageDragShadow:enabled"/>
   <int value="1551743170"
       label="WebAuthenticationNewDiscoverableCredentialsUi:disabled"/>
+  <int value="1551752543" label="ArcvmSwapoutKeyboardShortcut:disabled"/>
   <int value="1552753678" label="DnsHttpssvc:disabled"/>
   <int value="1553017633" label="OmniboxHeaderPaddingUpdate:disabled"/>
   <int value="1553310752" label="AccessibilityCursorColor:enabled"/>
