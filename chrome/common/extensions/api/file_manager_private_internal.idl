@@ -29,6 +29,7 @@ namespace fileManagerPrivateInternal {
     fileManagerPrivate.SearchType types;
     long maxResults;
     double timestamp;
+    fileManagerPrivate.FileCategory category;
   };
 
   callback SimpleCallback = void();

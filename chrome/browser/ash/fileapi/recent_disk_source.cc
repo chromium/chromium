@@ -77,37 +77,6 @@ void GetMetadataOnIOThread(
       base::BindOnce(&OnGetMetadataOnIOThread, std::move(callback)));
 }
 
-// Returns true if the files at |path| matches the given |file_type|.
-bool MatchesFileType(const base::FilePath& path,
-                     RecentSource::FileType file_type) {
-  if (file_type == RecentSource::FileType::kAll)
-    return true;
-
-  // File type for |path| is guessed by data generated from file_types.json5.
-  // It guesses mime types based on file extensions, but it has a limited set
-  // of file extensions.
-  // TODO(fukino): It is better to have better coverage of file extensions to be
-  // consistent with file-type detection on Android system. crbug.com/1034874.
-  const auto ext = base::ToLowerASCII(path.Extension());
-  if (!file_types_data::kExtensionToMIME.contains(ext)) {
-    return false;
-  }
-  std::string mime_type = file_types_data::kExtensionToMIME.at(ext);
-
-  switch (file_type) {
-    case RecentSource::FileType::kAudio:
-      return net::MatchesMimeType(kAudioMimeType, mime_type);
-    case RecentSource::FileType::kImage:
-      return net::MatchesMimeType(kImageMimeType, mime_type);
-    case RecentSource::FileType::kVideo:
-      return net::MatchesMimeType(kVideoMimeType, mime_type);
-    case RecentSource::FileType::kDocument:
-      return file_types_data::kDocumentMIMETypes.contains(mime_type);
-    default:
-      return false;
-  }
-}
-
 }  // namespace
 
 RecentDiskSource::RecentDiskSource(std::string mount_point_name,
@@ -271,6 +240,37 @@ storage::FileSystemURL RecentDiskSource::BuildDiskURL(
   return mount_points->CreateExternalFileSystemURL(
       blink::StorageKey(url::Origin::Create(params_.value().origin())),
       mount_point_name_, path);
+}
+
+bool RecentDiskSource::MatchesFileType(const base::FilePath& path,
+                                       RecentSource::FileType file_type) {
+  if (file_type == RecentSource::FileType::kAll) {
+    return true;
+  }
+
+  // File type for |path| is guessed by data generated from file_types.json5.
+  // It guesses mime types based on file extensions, but it has a limited set
+  // of file extensions.
+  // TODO(fukino): It is better to have better coverage of file extensions to be
+  // consistent with file-type detection on Android system. crbug.com/1034874.
+  const auto ext = base::ToLowerASCII(path.Extension());
+  if (!file_types_data::kExtensionToMIME.contains(ext)) {
+    return false;
+  }
+  std::string mime_type = file_types_data::kExtensionToMIME.at(ext);
+
+  switch (file_type) {
+    case RecentSource::FileType::kAudio:
+      return net::MatchesMimeType(kAudioMimeType, mime_type);
+    case RecentSource::FileType::kImage:
+      return net::MatchesMimeType(kImageMimeType, mime_type);
+    case RecentSource::FileType::kVideo:
+      return net::MatchesMimeType(kVideoMimeType, mime_type);
+    case RecentSource::FileType::kDocument:
+      return file_types_data::kDocumentMIMETypes.contains(mime_type);
+    default:
+      return false;
+  }
 }
 
 }  // namespace ash

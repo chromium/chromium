@@ -58,6 +58,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/zip_io_task.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
+#include "chrome/browser/ash/fileapi/recent_disk_source.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -214,7 +215,8 @@ std::vector<std::pair<base::FilePath, bool>> SearchByPattern(
     const base::FilePath& root,
     const std::string& query,
     size_t max_results,
-    const base::Time& min_timestamp) {
+    const base::Time& min_timestamp,
+    ash::RecentSource::FileType file_type) {
   std::vector<std::pair<base::FilePath, bool>> prefix_matches;
   std::vector<std::pair<base::FilePath, bool>> other_matches;
 
@@ -226,6 +228,9 @@ std::vector<std::pair<base::FilePath, bool>> SearchByPattern(
   for (base::FilePath path = enumerator.Next(); !path.empty();
        path = enumerator.Next()) {
     if (enumerator.GetInfo().GetLastModifiedTime() < min_timestamp) {
+      continue;
+    }
+    if (!ash::RecentDiskSource::MatchesFileType(path, file_type)) {
       continue;
     }
     if (base::StartsWith(path.BaseName().value(), query,
@@ -1403,12 +1408,18 @@ FileManagerPrivateInternalSearchFilesFunction::Run() {
     root = url.path();
   }
 
+  ash::RecentSource::FileType file_type;
+  if (!file_manager::util::ToRecentSourceFileType(search_params.category,
+                                                  &file_type)) {
+    return RespondNow(Error("Cannot convert category to file type"));
+  }
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(
           &SearchByPattern, root, search_params.query,
           base::internal::checked_cast<size_t>(search_params.max_results),
-          base::Time::FromJsTime(search_params.timestamp)),
+          base::Time::FromJsTime(search_params.timestamp), file_type),
       base::BindOnce(
           &FileManagerPrivateInternalSearchFilesFunction::OnSearchByPattern,
           this));

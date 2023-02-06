@@ -1209,25 +1209,9 @@ FileManagerPrivateInternalGetRecentFilesFunction::Run() {
   ash::RecentModel* model = ash::RecentModel::GetForProfile(profile);
 
   ash::RecentModel::FileType file_type;
-  switch (params->file_category) {
-    case api::file_manager_private::FILE_CATEGORY_ALL:
-      file_type = ash::RecentModel::FileType::kAll;
-      break;
-    case api::file_manager_private::FILE_CATEGORY_AUDIO:
-      file_type = ash::RecentModel::FileType::kAudio;
-      break;
-    case api::file_manager_private::FILE_CATEGORY_IMAGE:
-      file_type = ash::RecentModel::FileType::kImage;
-      break;
-    case api::file_manager_private::FILE_CATEGORY_VIDEO:
-      file_type = ash::RecentModel::FileType::kVideo;
-      break;
-    case api::file_manager_private::FILE_CATEGORY_DOCUMENT:
-      file_type = ash::RecentModel::FileType::kDocument;
-      break;
-    default:
-      NOTREACHED();
-      return RespondNow(Error("Unknown file category is specified."));
+  if (!file_manager::util::ToRecentSourceFileType(params->file_category,
+                                                  &file_type)) {
+    return RespondNow(Error("Cannot convert category to file type"));
   }
 
   model->GetRecentFiles(

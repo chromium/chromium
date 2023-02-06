@@ -136,7 +136,12 @@ export class DriveSearchContentScanner extends ContentScanner {
         return;
       }
       chrome.fileManagerPrivate.searchDrive(
-          {query: this.query_, nextFeed: ''}, (entries, nextFeed) => {
+          {
+            query: this.query_,
+            category: chrome.fileManagerPrivate.FileCategory.ALL,
+            nextFeed: '',
+          },
+          (entries, nextFeed) => {
             if (chrome.runtime.lastError) {
               console.error(chrome.runtime.lastError.message);
             }
@@ -250,29 +255,21 @@ export class SearchV2ContentScanner extends ContentScanner {
   }
 
   /**
-   * @returns {function(Entry): boolean} A function to filter by file type.
-   * @private
+   * For the given options returns the category of files to which the search
+   * should be limited (e.g., images, videos, etc.).
    */
-  getTypeFilter_() {
+  getDesiredCategory_() {
     switch (this.options_.type) {
       case SearchFileType.AUDIO:
-        return (entry) => {
-          return FileType.isAudio(entry);
-        };
+        return chrome.fileManagerPrivate.FileCategory.AUDIO;
       case SearchFileType.DOCUMENTS:
-        return (entry) => {
-          return FileType.isDocument(entry);
-        };
+        return chrome.fileManagerPrivate.FileCategory.DOCUMENT;
       case SearchFileType.IMAGES:
-        return (entry) => {
-          return FileType.isImage(entry);
-        };
+        return chrome.fileManagerPrivate.FileCategory.IMAGE;
       case SearchFileType.VIDEOS:
-        return (entry) => {
-          return FileType.isVideo(entry);
-        };
+        return chrome.fileManagerPrivate.FileCategory.VIDEO;
       default:
-        return (entry) => true;
+        return chrome.fileManagerPrivate.FileCategory.ALL;
     }
   }
 
@@ -345,6 +342,7 @@ export class SearchV2ContentScanner extends ContentScanner {
       entriesCallback, successCallback, errorCallback,
       invalidateCache = false) {
     const searchPromises = [];
+    const category = this.getDesiredCategory_();
     if (this.isSearchingLocal_()) {
       searchPromises.push(new Promise((resolve, reject) => {
         const rootDir = this.options_.location === SearchLocation.THIS_FOLDER ?
@@ -358,6 +356,7 @@ export class SearchV2ContentScanner extends ContentScanner {
               types: chrome.fileManagerPrivate.SearchType.ALL,
               maxResults: 100,
               timestamp: timestamp,
+              category: category,
             },
             /**
              * @param {!Array<!Entry>} entries
@@ -370,7 +369,7 @@ export class SearchV2ContentScanner extends ContentScanner {
                     util.FileError.NOT_READABLE_ERR,
                     chrome.runtime.lastError.message));
               } else {
-                resolve(entries.filter(this.getTypeFilter_()));
+                resolve(entries);
               }
             });
       }));
@@ -378,7 +377,12 @@ export class SearchV2ContentScanner extends ContentScanner {
     if (this.isSearchingDrive_()) {
       searchPromises.push(new Promise((resolve, reject) => {
         chrome.fileManagerPrivate.searchDrive(
-            {query: this.query_, nextFeed: ''}, (entries, nextFeed) => {
+            {
+              query: this.query_,
+              category: category,
+              nextFeed: '',
+            },
+            (entries, nextFeed) => {
               if (chrome.runtime.lastError) {
                 reject(createDOMError(
                     util.FileError.NOT_READABLE_ERR,
@@ -388,7 +392,7 @@ export class SearchV2ContentScanner extends ContentScanner {
               } else if (!entries) {
                 reject(createDOMError(util.FileError.INVALID_MODIFICATION_ERR));
               } else {
-                resolve(entries.filter(this.getTypeFilter_()));
+                resolve(entries);
               }
             });
       }));

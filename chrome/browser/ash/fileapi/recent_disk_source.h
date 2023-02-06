@@ -46,6 +46,11 @@ class RecentDiskSource : public RecentSource {
   // RecentSource overrides:
   void GetRecentFiles(Params params) override;
 
+  // Helper function that determines a match between file type inferred from the
+  // path and the desired file_type.
+  static bool MatchesFileType(const base::FilePath& path,
+                              RecentSource::FileType file_type);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(RecentDiskSourceTest, GetRecentFiles_UmaStats);
 

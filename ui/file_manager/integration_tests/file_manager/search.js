@@ -413,9 +413,10 @@ testcase.searchWithRecencyOptions = async () => {
 };
 
 /**
- * Checks that changing file types options correctly filters search results.
+ * Checks that changing file types options correctly filters local
+ * search results.
  */
-testcase.searchWithTypeOptions = async () => {
+testcase.searchLocalWithTypeOptions = async () => {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -442,5 +443,44 @@ testcase.searchWithTypeOptions = async () => {
   // Expect only world, which is a video file.
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
     ENTRIES.world,
+  ]));
+};
+
+/**
+ * Checks that changing file types options correctly filters
+ * Drive search results.
+ */
+testcase.searchDriveWithTypeOptions = async () => {
+  // Open Files app on Downloads.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
+  // Navigate to Google Drive; make sure we have the desired files.
+  await navigateWithDirectoryTree(appId, '/My Drive');
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows(BASIC_DRIVE_ENTRY_SET));
+
+  // Search the Drive for all files with "b" in their name.
+  await remoteCall.typeSearchText(appId, 'b');
+
+  await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
+    ENTRIES.desktop,
+    ENTRIES.beautiful,
+  ]));
+
+  // Click the second button, which is "Audio" option.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseClick', appId,
+          [
+            [
+              'xf-search-options',
+              'xf-select#type-selector',
+              'cr-action-menu cr-button:nth-of-type(2)',
+            ],
+          ]),
+      'Failed to click "Audio" type selector');
+
+  await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
+    ENTRIES.beautiful,
   ]));
 };

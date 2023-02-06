@@ -40,6 +40,11 @@ class RecentDriveSource : public RecentSource {
   // RecentSource overrides:
   void GetRecentFiles(Params params) override;
 
+  // Generates type filters based on the file_type parameter. This is done so
+  // that this code can be shared between recent files and file search.
+  static std::vector<std::string> CreateTypeFilters(
+      RecentSource::FileType file_type);
+
  private:
   static const char kLoadHistogramName[];
 

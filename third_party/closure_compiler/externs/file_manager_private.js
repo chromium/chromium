@@ -584,7 +584,8 @@ chrome.fileManagerPrivate.SearchParams;
  *   query: string,
  *   types: !chrome.fileManagerPrivate.SearchType,
  *   maxResults: number,
- *   timestamp: (number|undefined)
+ *   timestamp: (number|undefined),
+ *   category: (!chrome.fileManagerPrivate.FileCategory|undefined)
  * }}
  */
 chrome.fileManagerPrivate.SearchMetadataParams;

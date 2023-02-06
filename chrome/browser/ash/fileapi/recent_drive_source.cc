@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/drivefs/drivefs_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "recent_drive_source.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -42,6 +43,32 @@ RecentDriveSource::RecentDriveSource(Profile* profile) : profile_(profile) {
 
 RecentDriveSource::~RecentDriveSource() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+}
+
+std::vector<std::string> RecentDriveSource::CreateTypeFilters(
+    RecentSource::FileType file_type) {
+  std::vector<std::string> type_filters;
+  switch (file_type) {
+    case FileType::kAudio:
+      type_filters.push_back(kAudioMimeType);
+      break;
+    case FileType::kImage:
+      type_filters.push_back(kImageMimeType);
+      break;
+    case FileType::kVideo:
+      type_filters.push_back(kVideoMimeType);
+      break;
+    case FileType::kDocument: {
+      type_filters.insert(type_filters.end(),
+                          file_types_data::kDocumentMIMETypes.begin(),
+                          file_types_data::kDocumentMIMETypes.end());
+      break;
+    }
+    default:
+      // Leave the filters empty.
+      break;
+  }
+  return type_filters;
 }
 
 void RecentDriveSource::GetRecentFiles(Params params) {
@@ -70,27 +97,12 @@ void RecentDriveSource::GetRecentFiles(Params params) {
       drivefs::mojom::QueryParameters::SortField::kLastModified;
   query_params->sort_direction =
       drivefs::mojom::QueryParameters::SortDirection::kDescending;
-  switch (params_->file_type()) {
-    case FileType::kAudio:
-      query_params->mime_type = kAudioMimeType;
-      break;
-    case FileType::kImage:
-      query_params->mime_type = kImageMimeType;
-      break;
-    case FileType::kVideo:
-      query_params->mime_type = kVideoMimeType;
-      break;
-    case FileType::kDocument: {
-      std::vector<std::string> doc_mime_types{
-          std::make_move_iterator(file_types_data::kDocumentMIMETypes.begin()),
-          std::make_move_iterator(file_types_data::kDocumentMIMETypes.end()),
-      };
-      query_params->mime_types = std::move(doc_mime_types);
-      break;
-    }
-    default:
-      // Leave the mime_type null to query all files.
-      break;
+  std::vector<std::string> type_filters =
+      RecentDriveSource::CreateTypeFilters(params_->file_type());
+  if (type_filters.size() == 1) {
+    query_params->mime_type = type_filters.front();
+  } else if (type_filters.size() > 1) {
+    query_params->mime_types = std::move(type_filters);
   }
   integration_service->GetDriveFsInterface()->StartSearchQuery(
       search_query_.BindNewPipeAndPassReceiver(), std::move(query_params));

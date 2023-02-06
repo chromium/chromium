@@ -790,6 +790,9 @@ dictionary SearchParams {
   // Search query.
   DOMString query;
 
+  // The category of files to which the search is limited.
+  FileCategory? category;
+
   // ID of the search feed that should be fetched next. Value passed here should
   // be gotten from previous searchDrive call. It can be empty for the initial
   // search request.
@@ -813,6 +816,9 @@ dictionary SearchMetadataParams {
   // Modified timestamp. The file must have modified timestamp more recent
   // than this to be included in results.
   double? timestamp;
+
+  // The category of files to which the search is limited.
+  FileCategory? category;
 };
 
 // Entry and Drive-related properties representing a search result.

@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
+#include "chrome/browser/ash/fileapi/recent_source.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
@@ -169,6 +170,12 @@ drive::EventLogger* GetLogger(Profile* profile);
 
 std::vector<extensions::api::file_manager_private::MountableGuest>
 CreateMountableGuestList(Profile* profile);
+
+// Converts file manager private FileCategory enum to RecentSource::FileType
+// enum. Returns true if the conversion was successful, and false otherwise.
+bool ToRecentSourceFileType(
+    extensions::api::file_manager_private::FileCategory input_category,
+    ash::RecentSource::FileType* output_type);
 
 }  // namespace util
 }  // namespace file_manager
