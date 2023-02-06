@@ -542,8 +542,8 @@
   'CROS_EVE_FULL': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '111.0.5550.0',
-      'cros_img': 'eve-public/R111-15326.0.0',
+      'cros_chrome_version': '109.0.5367.0',
+      'cros_img': 'eve-public/R109-15222.0.0',
       'bucket': 'chromiumos-image-archive',
     },
     'enabled': True,
@@ -633,8 +633,8 @@
   'CROS_JACUZZI_PUBLIC': {
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_chrome_version': '111.0.5550.0',
-      'cros_img': 'jacuzzi-public/R111-15326.0.0',
+      'cros_chrome_version': '109.0.5367.0',
+      'cros_img': 'jacuzzi-public/R109-15222.0.0',
       'bucket': 'chromiumos-image-archive',
     },
     'enabled': True,
@@ -643,8 +643,8 @@
   'CROS_KEVIN_PUBLIC': {
     'skylab': {
       'cros_board': 'kevin',
-      'cros_chrome_version': '111.0.5550.0',
-      'cros_img': 'kevin64-public/R111-15326.0.0',
+      'cros_chrome_version': '109.0.5367.0',
+      'cros_img': 'kevin64-public/R109-15222.0.0',
       'bucket': 'chromiumos-image-archive',
     },
     'enabled': True,
@@ -653,8 +653,8 @@
   'CROS_OCTOPUS_FULL': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '111.0.5550.0',
-      'cros_img': 'octopus-public/R111-15326.0.0',
+      'cros_chrome_version': '109.0.5367.0',
+      'cros_img': 'octopus-public/R109-15222.0.0',
       'bucket': 'chromiumos-image-archive',
     },
     'enabled': True,
