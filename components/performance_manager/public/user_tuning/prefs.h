@@ -25,6 +25,8 @@ enum class BatterySaverModeState {
 
 extern const char kBatterySaverModeState[];
 
+extern const char kLastBatteryUseTimestamp[];
+
 // The pref storing the list of URL patterns that prevent a tab from being
 // discarded.
 extern const char kTabDiscardingExceptions[];

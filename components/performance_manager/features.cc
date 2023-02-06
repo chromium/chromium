@@ -66,6 +66,11 @@ BASE_FEATURE(kPerformanceControlsBatterySaverOptOutSurvey,
              "PerformanceControlsBatterySaverOptOutSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<base::TimeDelta>
+    kPerformanceControlsBatterySurveyLookback{
+        &kPerformanceControlsBatteryPerformanceSurvey, "battery_lookback",
+        base::Days(8)};
+
 // On ChromeOS, the adjustment generally seems to be around 3%, sometimes 2%. We
 // choose 3% because it gets us close enough, or overestimates (which is better
 // than underestimating in this instance).

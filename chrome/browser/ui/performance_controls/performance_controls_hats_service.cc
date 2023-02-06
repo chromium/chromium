@@ -97,12 +97,6 @@ void PerformanceControlsHatsService::OpenedNewTabPage() {
     return;
   }
 
-  const bool show_performance_survey = base::FeatureList::IsEnabled(
-      performance_manager::features::kPerformanceControlsPerformanceSurvey);
-  const bool show_battery_survey = base::FeatureList::IsEnabled(
-      performance_manager::features::
-          kPerformanceControlsBatteryPerformanceSurvey);
-
   PrefService* prefs = g_browser_process->local_state();
   const int battery_saver_mode = prefs->GetInteger(
       performance_manager::user_tuning::prefs::kBatterySaverModeState);
@@ -110,17 +104,26 @@ void PerformanceControlsHatsService::OpenedNewTabPage() {
       performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
 
   // A general performance survey for all users.
-  if (show_performance_survey) {
+  if (base::FeatureList::IsEnabled(performance_manager::features::
+                                       kPerformanceControlsPerformanceSurvey)) {
     hats_service->LaunchSurvey(
         kHatsSurveyTriggerPerformanceControlsPerformance, base::DoNothing(),
         base::DoNothing(), {{"high_efficiency_mode", high_efficiency_mode}},
         {{"battery_saver_mode", base::NumberToString(battery_saver_mode)}});
   }
 
+  base::Time last_battery_timestamp =
+      performance_manager::user_tuning::UserPerformanceTuningManager::
+          GetInstance()
+              ->GetLastBatteryUsageTimestamp();
+
   // A battery performance survey for users with a battery-powered device.
-  if (show_battery_survey && performance_manager::user_tuning::
-                                 UserPerformanceTuningManager::GetInstance()
-                                     ->DeviceHasBattery()) {
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::
+              kPerformanceControlsBatteryPerformanceSurvey) &&
+      (base::Time::Now() - last_battery_timestamp) <=
+          performance_manager::features::
+              kPerformanceControlsBatterySurveyLookback.Get()) {
     hats_service->LaunchSurvey(
         kHatsSurveyTriggerPerformanceControlsBatteryPerformance,
         base::DoNothing(), base::DoNothing(),

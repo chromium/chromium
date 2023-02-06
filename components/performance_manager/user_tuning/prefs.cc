@@ -16,6 +16,9 @@ const char kHighEfficiencyModeEnabled[] =
 const char kBatterySaverModeState[] =
     "performance_tuning.battery_saver_mode.state";
 
+const char kLastBatteryUseTimestamp[] =
+    "performance_tuning.last_battery_use.timestamp";
+
 const char kTabDiscardingExceptions[] =
     "performance_tuning.tab_discarding.exceptions";
 
@@ -27,6 +30,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       kBatterySaverModeState,
       static_cast<int>(BatterySaverModeState::kEnabledBelowThreshold));
+  registry->RegisterTimePref(kLastBatteryUseTimestamp, base::Time());
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
