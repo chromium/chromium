@@ -1863,6 +1863,8 @@ source_set("browser") {
     "renderer_host/renderer_cancellation_throttle.h",
     "renderer_host/renderer_sandboxed_process_launcher_delegate.cc",
     "renderer_host/renderer_sandboxed_process_launcher_delegate.h",
+    "renderer_host/runtime_feature_state_controller_impl.cc",
+    "renderer_host/runtime_feature_state_controller_impl.h",
     "renderer_host/should_swap_browsing_instance.h",
     "renderer_host/stored_page.cc",
     "renderer_host/stored_page.h",

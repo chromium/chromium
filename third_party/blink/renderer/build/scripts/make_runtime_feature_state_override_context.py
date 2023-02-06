@@ -29,6 +29,7 @@ class RunTimeFeatureStateOverrideContextWriter(
             'input_files': self._input_files,
             'header_guard': self._header_guard,
             'overridable_features': self._overridable_features,
+            'origin_trial_controlled_features': self._origin_trial_features,
         }
 
     @template_expander.use_jinja(f'templates/{file_basename}.cc.tmpl')

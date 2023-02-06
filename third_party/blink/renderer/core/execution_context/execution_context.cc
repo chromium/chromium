@@ -79,7 +79,7 @@ ExecutionContext::ExecutionContext(v8::Isolate* isolate, Agent* agent)
       window_interaction_tokens_(0),
       origin_trial_context_(MakeGarbageCollected<OriginTrialContext>(this)),
       runtime_feature_state_override_context_(
-          MakeGarbageCollected<RuntimeFeatureStateOverrideContext>()) {
+          MakeGarbageCollected<RuntimeFeatureStateOverrideContext>(this)) {
   DCHECK(agent_);
 }
 

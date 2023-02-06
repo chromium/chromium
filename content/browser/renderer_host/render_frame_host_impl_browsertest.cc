@@ -74,6 +74,7 @@
 #include "content/test/data/mojo_web_test_helper_test.mojom.h"
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/frame_host_test_interface.mojom.h"
+#include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_render_frame_host_factory.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -792,6 +793,169 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   web_contents()->SetDelegate(nullptr);
   web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
+}
+
+// A separate class needed to test with Origin Trial tokens.
+class RenderFrameHostImplWithTokensBrowserTest : public ContentBrowserTest {
+ public:
+  RenderFrameHostImplWithTokensBrowserTest() = default;
+
+  // The URL that will be used for Origin Trials.
+  static constexpr char kOriginTrialUrl[] = "https://127.0.0.1:44444";
+
+ protected:
+  void SetUpOnMainThread() override {
+    // Set up the framework that allows us to intercept and inspect any Origin
+    // Trial header requests.
+    url_loader_interceptor_ =
+        std::make_unique<URLLoaderInterceptor>(base::BindRepeating(
+            &RenderFrameHostImplWithTokensBrowserTest::InterceptURLRequest,
+            base::Unretained(this)));
+    host_resolver()->AddRule("*", "127.0.0.1");
+    SetupCrossSiteRedirector(embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void TearDownOnMainThread() override {
+    url_loader_interceptor_.reset();
+    ContentBrowserTest::TearDownOnMainThread();
+  }
+
+  void SetOriginTrialToken(const std::string& token) {
+    origin_trial_token_ = token;
+  }
+
+  GURL simple_origin_trial_url() const {
+    return GURL(base::StrCat({kOriginTrialUrl, "/title1.html"}));
+  }
+
+  WebContentsImpl* web_contents() const {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
+ private:
+  // Create the framework to intercept origin trial header requests.
+  bool InterceptURLRequest(URLLoaderInterceptor::RequestParams* params) {
+    // We are only interested in requests from simple_origin_trial_url().
+    // Additionally, we should not send a response if the `origin_trial_token_`
+    // is empty.
+    if ((params->url_request.url != simple_origin_trial_url()) ||
+        origin_trial_token_.empty()) {
+      return false;
+    }
+    // Construct the origin trial header response.
+    std::string headers = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
+    base::StrAppend(&headers, {"Origin-Trial: ", origin_trial_token_, "\n"});
+    std::string body = "<html>This page has no title.</html>";
+    URLLoaderInterceptor::WriteResponse(headers, body, params->client.get());
+    return true;
+  }
+
+  std::string origin_trial_token_;
+  std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
+};
+
+// Check that the RuntimeFeatureStateDocumentData is altered when we receive a
+// RuntimeFeatureStateController IPC.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
+                       DocumentDataAltered) {
+  // Generated with:
+  // tools/origin_trials/generate_token.py https://127.0.0.1:44444
+  // DisableThirdPartyStoragePartitioning
+  // --expire-timestamp=2000000000
+  const char kValidFirstPartyToken[] =
+      "A9v/4viv5sMLtBrzIk/"
+      "ziQsS4dQo2hiBOHoVQ7JXtnDOMh32OUZVDB+"
+      "cDHP8StL1JrVCgLg7OkWhms8LRYflTwgAAABueyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4"
+      "wLjE6NDQ0NDQiLCAiZmVhdHVyZSI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXR"
+      "pb25pbmciLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=";
+
+  SetOriginTrialToken(kValidFirstPartyToken);
+  EXPECT_TRUE(NavigateToURL(shell(), simple_origin_trial_url()));
+
+  // Create a test remote to initiate the IPC.
+  mojo::Remote<blink::mojom::RuntimeFeatureStateController>
+      runtime_feature_state_controller_remote;
+  web_contents()->GetPrimaryMainFrame()->CreateRuntimeFeatureStateController(
+      runtime_feature_state_controller_remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(runtime_feature_state_controller_remote.is_connected());
+
+  // Before ApplyFeatureDiffForOriginTrial() is called, we expect that the
+  // feature overrides will be empty.
+  auto expected_overrides =
+      base::flat_map<blink::mojom::RuntimeFeatureState, bool>();
+  RuntimeFeatureStateDocumentData* actual_document_data =
+      RuntimeFeatureStateDocumentData::GetForCurrentDocument(
+          web_contents()->GetPrimaryMainFrame());
+  EXPECT_EQ(expected_overrides,
+            actual_document_data->runtime_feature_read_context()
+                .GetFeatureOverrides());
+
+  // Simulate receiving a feature diff from the renderer process.
+  auto overrides_with_tokens = base::flat_map<blink::mojom::RuntimeFeatureState,
+                                              blink::mojom::FeatureValuePtr>();
+  std::string raw_token(kValidFirstPartyToken);
+  std::vector<std::string> raw_tokens_vector{raw_token};
+  overrides_with_tokens[blink::mojom::RuntimeFeatureState::
+                            kDisableThirdPartyStoragePartitioning] =
+      blink::mojom::FeatureValue::New(true, raw_tokens_vector);
+  runtime_feature_state_controller_remote.get()->ApplyFeatureDiffForOriginTrial(
+      std::move(overrides_with_tokens));
+
+  // Create the set of expected overrides without the corresponding tokens.
+  expected_overrides[blink::mojom::RuntimeFeatureState::
+                         kDisableThirdPartyStoragePartitioning] = true;
+
+  // Verify that the document data was altered with the correct overrides.
+  runtime_feature_state_controller_remote.FlushForTesting();
+  EXPECT_EQ(expected_overrides,
+            actual_document_data->runtime_feature_read_context()
+                .GetFeatureOverrides());
+}
+
+// Check that the RuntimeFeatureStateDocumentData is not altered when we receive
+// a RuntimeFeatureStateController IPC that contains an invalid token.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
+                       DocumentDataInvalidToken) {
+  const char kInvalidToken[] = "invalid";
+
+  SetOriginTrialToken(kInvalidToken);
+  EXPECT_TRUE(NavigateToURL(shell(), simple_origin_trial_url()));
+
+  // Create a test remote to initiate the IPC.
+  mojo::Remote<blink::mojom::RuntimeFeatureStateController>
+      runtime_feature_state_controller_remote;
+  web_contents()->GetPrimaryMainFrame()->CreateRuntimeFeatureStateController(
+      runtime_feature_state_controller_remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(runtime_feature_state_controller_remote.is_connected());
+
+  // Before ApplyFeatureDiffForOriginTrial() is called, we expect that the
+  // feature overrides will be empty.
+  auto expected_overrides =
+      base::flat_map<blink::mojom::RuntimeFeatureState, bool>();
+  RuntimeFeatureStateDocumentData* actual_document_data =
+      RuntimeFeatureStateDocumentData::GetForCurrentDocument(
+          web_contents()->GetPrimaryMainFrame());
+  EXPECT_EQ(expected_overrides,
+            actual_document_data->runtime_feature_read_context()
+                .GetFeatureOverrides());
+
+  // Simulate receiving a feature diff from the renderer process.
+  auto overrides_with_tokens = base::flat_map<blink::mojom::RuntimeFeatureState,
+                                              blink::mojom::FeatureValuePtr>();
+  std::string raw_token(kInvalidToken);
+  std::vector<std::string> raw_tokens_vector{raw_token};
+  overrides_with_tokens[blink::mojom::RuntimeFeatureState::
+                            kDisableThirdPartyStoragePartitioning] =
+      blink::mojom::FeatureValue::New(true, raw_tokens_vector);
+  runtime_feature_state_controller_remote.get()->ApplyFeatureDiffForOriginTrial(
+      std::move(overrides_with_tokens));
+
+  // Verify that no feature overrides were added.
+  runtime_feature_state_controller_remote.FlushForTesting();
+  EXPECT_EQ(expected_overrides,
+            actual_document_data->runtime_feature_read_context()
+                .GetFeatureOverrides());
 }
 
 // Helper class for beforunload tests.  Sets up a custom dialog manager for the

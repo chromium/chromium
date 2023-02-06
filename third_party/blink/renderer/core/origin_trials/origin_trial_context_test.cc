@@ -43,6 +43,7 @@ const char kFrobulateTrialName[] = "Frobulate";
 const char kFrobulateThirdPartyTrialName[] = "FrobulateThirdParty";
 const char kFrobulateNavigationTrialName[] = "FrobulateNavigation";
 const char kFrobulateDeprecationTrialName[] = "FrobulateDeprecation";
+const char kFrobulateBrowserReadWriteTrialName[] = "FrobulateBrowserReadWrite";
 const char kPortalsTrialName[] = "Portals";
 const char kFrobulateEnabledOrigin[] = "https://www.example.com";
 const char kFrobulateEnabledOriginInsecure[] = "http://www.example.com";
@@ -181,6 +182,11 @@ class OriginTrialContextTest : public testing::Test {
   std::unique_ptr<Vector<OriginTrialFeature>> GetEnabledNavigationFeatures() {
     return execution_context_->GetOriginTrialContext()
         ->GetEnabledNavigationFeatures();
+  }
+
+  HashMap<OriginTrialFeature, Vector<String>> GetFeatureToTokens() {
+    return execution_context_->GetOriginTrialContext()
+        ->GetFeatureToTokensForTesting();
   }
 
   bool ActivateNavigationFeature(OriginTrialFeature feature) {
@@ -564,6 +570,26 @@ TEST_F(OriginTrialContextTest, SettingFeatureUpdatesDocumentSettings) {
 
   // TODO(crbug.com/1260410): Switch this test away from using the AutoDarkMode
   // feature towards an OriginTrialsSampleAPI* feature.
+}
+
+// This test ensures that the feature and token data are correctly mapped. The
+// assertions mirror the code that is used to send origin trial overrides to the
+// browser process via RuntimeFeatureStateOverrideContext's IPC.
+TEST_F(OriginTrialContextTest, AddedFeaturesAreMappedToTokens) {
+  // Add a new feature via token.
+  UpdateSecurityOrigin(kFrobulateEnabledOrigin);
+  AddTokenWithResponse(kFrobulateBrowserReadWriteTrialName,
+                       OriginTrialTokenStatus::kSuccess);
+  // Ensure that FrobulateBrowserReadWrite is enabled.
+  EXPECT_TRUE(IsFeatureEnabled(
+      OriginTrialFeature::kOriginTrialsSampleAPIBrowserReadWrite));
+  EXPECT_TRUE(GetFeatureToTokens().Contains(
+      OriginTrialFeature::kOriginTrialsSampleAPIBrowserReadWrite));
+  // Ensure that the corresponding token is stored.
+  Vector<String> expected_tokens({kTokenPlaceholder});
+  EXPECT_EQ(GetFeatureToTokens().at(
+                OriginTrialFeature::kOriginTrialsSampleAPIBrowserReadWrite),
+            expected_tokens);
 }
 
 class OriginTrialContextDevtoolsTest : public OriginTrialContextTest {
