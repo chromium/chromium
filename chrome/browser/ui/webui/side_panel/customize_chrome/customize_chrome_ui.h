@@ -11,12 +11,14 @@
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
+#include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
+#include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 
 namespace content {
 class WebContents;
@@ -25,10 +27,12 @@ class WebContents;
 class CustomizeChromePageHandler;
 class CartHandler;
 class Profile;
+class HelpBubbleHandler;
 
 // WebUI controller for chrome://customize-chrome-side-panel.top-chrome
 class CustomizeChromeUI
     : public ui::MojoBubbleWebUIController,
+      public help_bubble::mojom::HelpBubbleHandlerFactory,
       public side_panel::mojom::CustomizeChromePageHandlerFactory {
  public:
   explicit CustomizeChromeUI(content::WebUI* web_ui);
@@ -54,12 +58,22 @@ class CustomizeChromeUI
   void BindInterface(
       mojo::PendingReceiver<chrome_cart::mojom::CartHandler> pending_receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
+          pending_receiver);
+
  private:
   // side_panel::mojom::CustomizeChromePageHandlerFactory
   void CreatePageHandler(
       mojo::PendingRemote<side_panel::mojom::CustomizeChromePage> pending_page,
       mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>
           pending_page_handler) override;
+
+  // help_bubble::mojom::HelpBubbleHandlerFactory:
+  void CreateHelpBubbleHandler(
+      mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
+      mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler)
+      override;
 
   std::unique_ptr<CustomizeChromePageHandler> customize_chrome_page_handler_;
   std::unique_ptr<CartHandler> cart_handler_;
@@ -71,6 +85,10 @@ class CustomizeChromeUI
   // Caches a request to scroll to a section in case the request happens before
   // the front-end is ready to receive the request.
   absl::optional<CustomizeChromeSection> section_;
+
+  std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
+  mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
+      help_bubble_handler_factory_receiver_{this};
 
   base::WeakPtrFactory<CustomizeChromeUI> weak_ptr_factory_{this};
 

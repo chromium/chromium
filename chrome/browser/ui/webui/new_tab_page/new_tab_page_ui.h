@@ -16,6 +16,8 @@
 #include "chrome/browser/new_tab_page/modules/feed/feed.mojom.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/recipes/recipes.mojom.h"
+#include "components/user_education/webui/help_bubble_handler.h"
+#include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom-forward.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 #if !defined(OFFICIAL_BUILD)
@@ -79,12 +81,14 @@ class FeedHandler;
 namespace history_clusters {
 class HistoryClustersHandler;
 }
+class HelpBubbleHandler;
 class NewTabPageUI
     : public ui::MojoWebUIController,
       public new_tab_page::mojom::PageHandlerFactory,
       public customize_themes::mojom::CustomizeThemesHandlerFactory,
       public most_visited::mojom::MostVisitedPageHandlerFactory,
       public browser_command::mojom::CommandHandlerFactory,
+      public help_bubble::mojom::HelpBubbleHandlerFactory,
       public NtpCustomBackgroundServiceObserver,
       content::WebContentsObserver {
  public:
@@ -182,6 +186,10 @@ class NewTabPageUI
   void BindInterface(mojo::PendingReceiver<history_clusters::mojom::PageHandler>
                          pending_page_handler);
 
+  void BindInterface(
+      mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
+          pending_receiver);
+
   static base::RefCountedMemory* GetFaviconResourceBytes(
       ui::ResourceScaleFactor scale_factor);
 
@@ -209,6 +217,12 @@ class NewTabPageUI
       mojo::PendingRemote<most_visited::mojom::MostVisitedPage> pending_page,
       mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandler>
           pending_page_handler) override;
+
+  // help_bubble::mojom::HelpBubbleHandlerFactory:
+  void CreateHelpBubbleHandler(
+      mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
+      mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler)
+      override;
 
   // NtpCustomBackgroundServiceObserver:
   void OnCustomBackgroundImageUpdated() override;
@@ -244,6 +258,9 @@ class NewTabPageUI
   mojo::Receiver<browser_command::mojom::CommandHandlerFactory>
       browser_command_factory_receiver_;
   std::unique_ptr<RealboxHandler> realbox_handler_;
+  std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
+  mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
+      help_bubble_handler_factory_receiver_{this};
   MetricsReporter metrics_reporter_;
 #if !defined(OFFICIAL_BUILD)
   std::unique_ptr<FooHandler> foo_handler_;
