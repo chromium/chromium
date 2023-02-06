@@ -167,11 +167,13 @@ void BruschettaLauncher::StartVm(
 
   std::string user_hash =
       ash::ProfileHelper::GetUserIdHashFromProfile(profile_);
+  std::string vm_username = GetVmUsername(profile_);
   vm_tools::concierge::StartVmRequest request;
   request.set_start_termina(false);
   request.set_name(vm_name_);
   *request.mutable_vm()->mutable_tools_dlc_id() = kToolsDlc;
   *request.mutable_owner_id() = user_hash;
+  request.set_vm_username(vm_username);
   request.set_start_termina(false);
   request.set_timeout(240);
   request.set_vtpm_proxy(launch_policy.vtpm_enabled);

@@ -70,6 +70,8 @@ bool IsInstalled(Profile* profile, const guest_os::GuestId& guest_id);
 absl::optional<RunningVmPolicy> GetLaunchPolicyForConfig(Profile* profile,
                                                          std::string config_id);
 
+std::string GetVmUsername(const Profile* profile);
+
 }  // namespace bruschetta
 
 #endif  // CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_UTIL_H_

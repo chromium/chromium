@@ -116,4 +116,12 @@ absl::optional<RunningVmPolicy> GetLaunchPolicyForConfig(
   return ret;
 }
 
+std::string GetVmUsername(const Profile* profile) {
+  std::string username = profile->GetProfileUserName();
+  // Return the part before the '@' if this is an email. Since find returns
+  // std::string::npos if it can't find the token this will return the full
+  // username in that case.
+  return username.substr(0, username.find("@"));
+}
+
 }  // namespace bruschetta
