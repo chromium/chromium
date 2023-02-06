@@ -690,7 +690,7 @@ Value FunCeiling::Evaluate(EvaluationContext& context) const {
 }
 
 double FunRound::Round(double val) {
-  if (!std::isnan(val) && !std::isinf(val)) {
+  if (std::isfinite(val)) {
     if (std::signbit(val) && val >= -0.5)
       val *= 0;  // negative zero
     else

@@ -202,12 +202,12 @@ absl::optional<PixelsAndPercent> EvaluateValueIfNaNorInfinity(
   // |anchor_evaluator| is not needed because this function is just for handling
   // inf and NaN.
   float evaluated_value = value->Evaluate(1, /* anchor_evaluator */ nullptr);
-  if (std::isnan(evaluated_value) || std::isinf(evaluated_value)) {
+  if (!std::isfinite(evaluated_value)) {
     return CreateClampedSamePixelsAndPercent(evaluated_value);
   }
   if (allows_negative_percentage_reference) {
     evaluated_value = value->Evaluate(-1, /* anchor_evaluator */ nullptr);
-    if (std::isnan(evaluated_value) || std::isinf(evaluated_value)) {
+    if (!std::isfinite(evaluated_value)) {
       return CreateClampedSamePixelsAndPercent(evaluated_value);
     }
   }

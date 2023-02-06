@@ -343,8 +343,9 @@ void LayoutShiftTracker::ObjectShifted(
   // determine how much the element moved.
   float move_distance =
       GetMoveDistance(old_starting_point_in_root, new_starting_point_in_root);
-  if (std::isnan(move_distance) || std::isinf(move_distance))
+  if (!std::isfinite(move_distance)) {
     return;
+  }
   DCHECK_GT(move_distance, 0.f);
   frame_max_distance_ = std::max(frame_max_distance_, move_distance);
 

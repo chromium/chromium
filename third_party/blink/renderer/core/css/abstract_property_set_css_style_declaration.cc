@@ -282,7 +282,7 @@ bool AbstractPropertySetCSSStyleDeclaration::FastPathSetProperty(
     // even though we could.
     return false;
   }
-  if (std::isnan(value) || std::isinf(value)) {
+  if (!std::isfinite(value)) {
     // Just to be on the safe side.
     return false;
   }

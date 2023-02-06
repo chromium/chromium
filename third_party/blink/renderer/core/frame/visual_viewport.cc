@@ -561,7 +561,7 @@ bool VisualViewport::DidSetScaleOrLocation(float scale,
   bool notify_page_scale_factor_changed =
       is_pinch_gesture_active_ != is_pinch_gesture_active;
   is_pinch_gesture_active_ = is_pinch_gesture_active;
-  if (!std::isnan(scale) && !std::isinf(scale)) {
+  if (std::isfinite(scale)) {
     float clamped_scale = GetPage()
                               .GetPageScaleConstraintsSet()
                               .FinalConstraints()
@@ -582,9 +582,10 @@ bool VisualViewport::DidSetScaleOrLocation(float scale,
   // recursion as we reenter this function on clamping. It would be cleaner to
   // avoid reentrancy but for now just prevent the stack overflow.
   // crbug.com/702771.
-  if (std::isnan(clamped_offset.x()) || std::isnan(clamped_offset.y()) ||
-      std::isinf(clamped_offset.x()) || std::isinf(clamped_offset.y()))
+  if (!std::isfinite(clamped_offset.x()) ||
+      !std::isfinite(clamped_offset.y())) {
     return false;
+  }
 
   if (clamped_offset != offset_) {
     DCHECK(LocalMainFrame().View());

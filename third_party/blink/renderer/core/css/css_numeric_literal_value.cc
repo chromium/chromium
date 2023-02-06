@@ -266,7 +266,7 @@ String CSSNumericLiteralValue::CustomCSSText() const {
       // If the value is small integer, go the fast path.
       if (value < kMinInteger || value > kMaxInteger ||
           std::trunc(value) != value) {
-        if (std::isinf(value) || std::isnan(value)) {
+        if (!std::isfinite(value)) {
           text = FormatInfinityOrNaN(value, UnitTypeToString(GetType()));
         } else {
           text = FormatNumber(value, UnitTypeToString(GetType()));
