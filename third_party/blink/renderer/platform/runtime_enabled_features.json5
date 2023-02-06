@@ -992,8 +992,6 @@
     {
       // crbug.com/1259085
       name: "DeferredShaping",
-      status: "test",
-      base_feature: "DeferredShaping",
     },
     {
       name: "DeflateRawCompressionFormat",

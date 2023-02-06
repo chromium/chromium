@@ -300,10 +300,6 @@ class RenderAccessibilityImplTest : public RenderViewTest {
     blink::WebRuntimeFeatures::EnableAccessibilityExposeHTMLElement(true);
 
     RenderViewTest::SetUp();
-    // TestBoundsFor*FixedNodeAfterScroll doesn't work with DeferredShaping,
-    // which triggers layout of shaping-deferred elements on scrollTo().
-    blink::WebRuntimeFeatures::EnableFeatureFromString("DeferredShaping",
-                                                       false);
 
     sink_ = &render_thread_->sink();
 
