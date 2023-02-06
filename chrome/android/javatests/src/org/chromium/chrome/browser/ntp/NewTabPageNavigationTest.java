@@ -16,15 +16,21 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNTP;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 /**
@@ -33,6 +39,9 @@ import org.chromium.net.test.EmbeddedTestServer;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class NewTabPageNavigationTest {
+    private static final String HISTOGRAM_NTP_MODULE_CLICK = "NewTabPage.Module.Click";
+    private static final String HISTOGRAM_START_SURFACE_MODULE_CLICK = "StartSurface.Module.Click";
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
     @Rule
@@ -103,5 +112,50 @@ public class NewTabPageNavigationTest {
 
         // Check that the NTP is actually displayed.
         Assert.assertNotNull(tab.getNativePage() instanceof NewTabPage);
+    }
+
+    /**
+     * Tests navigating to the tab switcher from the NTP.
+     */
+    @Test
+    @MediumTest
+    @Feature({"NewTabPage"})
+    public void testNavigateToTabSwitcherFromNTP() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        Tab tab = cta.getActivityTab();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(
+                    tab != null && !tab.isIncognito() && UrlUtilities.isNTPUrl(tab.getUrl()));
+        });
+        TabUiTestHelper.enterTabSwitcher(cta);
+        TabUiTestHelper.verifyTabSwitcherCardCount(cta, 1);
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        HISTOGRAM_NTP_MODULE_CLICK, ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON));
+    }
+
+    /**
+     * Tests navigating to the tab switcher from the Incognito NTP.
+     */
+    @Test
+    @MediumTest
+    public void testNavigateToTabSwitcherFromIncognitoNTP() {
+        mActivityTestRule.newIncognitoTabFromMenu();
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        Tab tab = cta.getActivityTab();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(
+                    tab != null && tab.isIncognito() && UrlUtilities.isNTPUrl(tab.getUrl()));
+        });
+        TabUiTestHelper.enterTabSwitcher(cta);
+        TabUiTestHelper.verifyTabSwitcherCardCount(cta, 1);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 1);
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        HISTOGRAM_NTP_MODULE_CLICK, ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        HISTOGRAM_START_SURFACE_MODULE_CLICK,
+                        ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON));
     }
 }

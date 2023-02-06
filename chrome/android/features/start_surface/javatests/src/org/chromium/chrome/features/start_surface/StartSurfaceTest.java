@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNTP;
 import org.chromium.chrome.features.tasks.SingleTabSwitcherMediator;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -118,6 +119,7 @@ public class StartSurfaceTest {
 
     private static final long MAX_TIMEOUT_MS = 40000L;
     private static final long MILLISECONDS_PER_MINUTE = TimeUtils.SECONDS_PER_MINUTE * 1000;
+    private static final String HISTOGRAM_START_SURFACE_MODULE_CLICK = "StartSurface.Module.Click";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -331,6 +333,10 @@ public class StartSurfaceTest {
 
         StartSurfaceTestUtils.clickTabSwitcherButton(cta);
         StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        HISTOGRAM_START_SURFACE_MODULE_CLICK,
+                        ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON));
 
         if (isInstantReturn()) {
             // TODO(crbug.com/1076274): fix toolbar to avoid wrongly focusing on the toolbar
@@ -352,6 +358,18 @@ public class StartSurfaceTest {
             onViewWaiting(withId(R.id.single_tab_view)).perform(click());
             LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
         }
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"StartSurface"})
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
+    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS
+            + "open_ntp_instead_of_start/false/open_start_as_homepage/true"})
+    // clang-format off
+    public void testShow_SingleAsHomepage_SingleTab_RefactorEnabled() {
+        // clang-format on
+        testShow_SingleAsHomepage_SingleTab();
     }
 
     @Test

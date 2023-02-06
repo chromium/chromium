@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
@@ -936,5 +937,21 @@ public final class ReturnToChromeUtil {
 
     public static void setSkipInitializationCheckForTesting(boolean skipInitializationCheck) {
         sSkipInitializationCheckForTesting = skipInitializationCheck;
+    }
+
+    /**
+     * Records user clicks on the tab switcher button in New tab page or Start surface.
+     * @param isInOverview Whether the current tab is in overview mode.
+     * @param currentTab Current tab or null if none exists.
+     */
+    public static void recordClickTabSwitcher(boolean isInOverview, @Nullable Tab currentTab) {
+        if (isInOverview) {
+            BrowserUiUtils.recordModuleClickHistogram(HostSurface.START_SURFACE,
+                    BrowserUiUtils.ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON);
+        } else if (currentTab != null && !currentTab.isIncognito()
+                && UrlUtilities.isNTPUrl(currentTab.getUrl())) {
+            BrowserUiUtils.recordModuleClickHistogram(HostSurface.NEW_TAB_PAGE,
+                    BrowserUiUtils.ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON);
+        }
     }
 }

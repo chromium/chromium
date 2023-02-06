@@ -1101,8 +1101,9 @@ chromium-metrics-reviews@google.com.
     new incognito tab or check about this source and topic; 3) click the learn
     more button on the top of the feeds section. For omnibox: is recorded every
     time when user uses Omnibox or voice search on Omnibox to navigate. This is
-    consistent with MobileOmniboxUse. The histogram is logged on New tab page
-    and is Android-only.
+    consistent with MobileOmniboxUse. For tab switcher button: is recorded every
+    time when user clicks on the tab switcher button. The histogram is logged on
+    New tab page and is Android-only.
   </summary>
 </histogram>
 
