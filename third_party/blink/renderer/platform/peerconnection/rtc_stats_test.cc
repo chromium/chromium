@@ -169,8 +169,10 @@ TEST(RTCStatsTest, CopyHandle) {
   ASSERT_EQ(4u, all_members_copy->GetStats("id")->MembersCount());
 }
 
-// WebRtcUnshipDeprecatedStats is enabled-by-default.
 TEST(RTCStatsTest, ExcludeDeprecated) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(blink::WebRtcUnshipDeprecatedStats);
+
   rtc::scoped_refptr<webrtc::RTCStatsReport> webrtc_report =
       webrtc::RTCStatsReport::Create(webrtc::Timestamp::Micros(1234));
   {

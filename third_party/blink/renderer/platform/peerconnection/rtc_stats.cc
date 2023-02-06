@@ -29,7 +29,7 @@ namespace blink {
 // that filtering will become a NO-OP when "track" no longer exists.
 BASE_FEATURE(WebRtcUnshipDeprecatedStats,
              "WebRtcUnshipDeprecatedStats",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
