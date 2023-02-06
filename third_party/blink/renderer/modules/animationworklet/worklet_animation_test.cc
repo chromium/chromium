@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/time/time_delta_from_string.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -149,10 +149,9 @@ TEST_F(WorkletAnimationTest, ElementHasWorkletAnimation) {
 
 // Regression test for crbug.com/1136120, pass if there is no crash.
 TEST_F(WorkletAnimationTest, SetCurrentTimeInfNotCrash) {
-  absl::optional<base::TimeDelta> seek_time = base::TimeDeltaFromString("inf");
   worklet_animation_->SetPlayState(Animation::kRunning);
   GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks::Max());
-  worklet_animation_->SetCurrentTime(seek_time);
+  worklet_animation_->SetCurrentTime(/*current_time=*/base::TimeDelta::Max());
 }
 
 TEST_F(WorkletAnimationTest, StyleHasCurrentAnimation) {

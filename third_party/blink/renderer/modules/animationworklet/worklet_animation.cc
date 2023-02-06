@@ -524,25 +524,25 @@ bool WorkletAnimation::CheckCanStart(String* failure_message) {
 }
 
 void WorkletAnimation::SetCurrentTime(
-    absl::optional<base::TimeDelta> seek_time) {
+    absl::optional<base::TimeDelta> current_time) {
   DCHECK(timeline_);
-  DCHECK(seek_time || play_state_ == Animation::kIdle ||
+  DCHECK(current_time || play_state_ == Animation::kIdle ||
          play_state_ == Animation::kUnset);
   // The procedure either:
   // 1) updates the hold time (for paused animations, non-existent or inactive
   //    timeline)
   // 2) updates the start time (for playing animations)
   bool should_hold =
-      play_state_ == Animation::kPaused || !seek_time || !IsTimelineActive();
+      play_state_ == Animation::kPaused || !current_time || !IsTimelineActive();
   if (should_hold) {
     start_time_ = absl::nullopt;
-    hold_time_ = seek_time;
+    hold_time_ = current_time;
   } else {
     start_time_ =
-        CalculateStartTime(seek_time.value(), playback_rate_, *timeline_);
+        CalculateStartTime(current_time.value(), playback_rate_, *timeline_);
     hold_time_ = absl::nullopt;
   }
-  last_current_time_ = seek_time;
+  last_current_time_ = current_time;
   was_timeline_active_ = IsTimelineActive();
 }
 
