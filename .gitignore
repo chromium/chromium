@@ -106,6 +106,8 @@ vs-chromium-project.txt
 /cdm
 /ceee/internal/
 /chrome/android/profiles/afdo.prof
+/chrome/android/profiles/arm.afdo.prof
+/chrome/android/profiles/arm.local.txt
 /chrome/android/profiles/local.txt
 /chrome/angle_unittests_run.xml
 /chrome/build/pgo_profiles/
