@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/check_op.h"
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
@@ -430,6 +431,167 @@ void CopyOrMoveIOTaskImpl::CopyOrMoveFile(
   const storage::FileSystemURL& source_url = progress_.sources[idx].url;
   const storage::FileSystemURL& destination_url = destination_result.value();
 
+  // If the conflict dialog feature is disabled, use the destination url to
+  // implement default files app behavior: 'keepboth'.
+  if (!ash::features::IsFilesConflictDialogEnabled()) {
+    ContinueCopyOrMoveFile(idx, std::move(destination_url));
+    return;
+  }
+
+  // Create a replace url using the source base name and destination folder
+  // as the parent directory.
+  auto basename = source_url.path().BaseName();
+  auto replace_url = file_system_context_->CreateCrackedFileSystemURL(
+      progress_.destination_folder.storage_key(),
+      progress_.destination_folder.mount_type(),
+      progress_.destination_folder.virtual_path().Append(
+          base::FilePath::FromUTF8Unsafe(basename.AsUTF8Unsafe())));
+
+  // If the source url and replace url are the same, the copy/move operation
+  // must use the destination url: default files app behavior 'keepboth'.
+  if (source_url == replace_url) {
+    ContinueCopyOrMoveFile(idx, std::move(destination_url));
+    return;
+  }
+
+  // Otherwise, if the base names are the same, there is no conflict and the
+  // copy/move operation can use the destination url.
+  if (basename == destination_url.path().BaseName()) {
+    ContinueCopyOrMoveFile(idx, std::move(destination_url));
+    return;
+  }
+
+  // If the base names are not the same, then the destination url exists and
+  // we must resolve the file name conflict.  If the user's previous resolve
+  // was 'ApplyToAll', use it to automatically resolve the conflict.
+  if (!conflict_resolve_.empty()) {
+    ResumeParams params;
+    params.conflict_resolve = conflict_resolve_;
+    params.conflict_apply_to_all = true;
+    ResumeCopyOrMoveFile(idx, std::move(replace_url),
+                         std::move(destination_url), std::move(params));
+    return;
+  }
+
+  // Setup the resume callback prior to entering state::PAUSED. ResumeIOTask
+  // will invoke this callback, once the user has resolved the conflict. See
+  // CopyOrMoveIOTaskImpl::Resume() below.
+  DCHECK(!resume_callback_);
+  resume_callback_ = google_apis::CreateRelayCallback(
+      base::BindOnce(&CopyOrMoveIOTaskImpl::ResumeCopyOrMoveFile,
+                     weak_ptr_factory_.GetWeakPtr(), idx,
+                     std::move(replace_url), std::move(destination_url)));
+
+  // Enter state PAUSED: send pause params to the UI, to ask the user how to
+  // resolve the file name conflict.
+  progress_.state = State::kPaused;
+  progress_.pause_params.conflict_name = basename.AsUTF8Unsafe();
+  progress_.pause_params.conflict_multiple =
+      (idx < progress_.sources.size() - 1) ? true : false;
+  progress_.pause_params.conflict_is_directory =
+      progress_.sources[idx].is_directory;
+  auto destination_folder = file_system_context_->CreateCrackedFileSystemURL(
+      progress_.destination_folder.storage_key(),
+      progress_.destination_folder.mount_type(),
+      progress_.destination_folder.virtual_path());
+  progress_.pause_params.conflict_target_url =
+      destination_folder.ToGURL().spec();
+  progress_callback_.Run(progress_);
+}
+
+void CopyOrMoveIOTaskImpl::Resume(ResumeParams params) {
+  LOG_IF(ERROR, !resume_callback_) << "Resume but no resume_callback_";
+
+  if (resume_callback_) {
+    std::move(resume_callback_).Run(std::move(params));
+  }
+}
+
+void CopyOrMoveIOTaskImpl::ResumeCopyOrMoveFile(
+    size_t idx,
+    storage::FileSystemURL replace_url,
+    storage::FileSystemURL destination_url,
+    ResumeParams params) {
+  DCHECK(idx < progress_.sources.size());
+  DCHECK(idx < progress_.outputs.size());
+
+  // Re-enter state progress if needed.
+  if (progress_.state != State::kInProgress) {
+    progress_.state = State::kInProgress;
+    progress_callback_.Run(progress_);
+  }
+
+  // Get the user's conflict resolve choice.
+  const std::string& conflict_resolve = params.conflict_resolve;
+  const bool resolve_keepboth = conflict_resolve == "keepboth";
+  const bool resolve_replace = conflict_resolve == "replace";
+
+  // The Files app UI always returns valid conflict resolve values.
+  if (!resolve_keepboth && !resolve_replace) {
+    LOG(ERROR) << "Invalid conflict resolve: " << conflict_resolve;
+    OnCopyOrMoveComplete(idx, base::File::FILE_ERROR_INVALID_OPERATION);
+    return;
+  }
+
+  // Remember the 'ApplyToAll' choice for future conflict handling.
+  if (conflict_resolve_.empty() && params.conflict_apply_to_all) {
+    conflict_resolve_ = conflict_resolve;
+  }
+
+  // For 'keepboth' resolve, use the destination url as the target.
+  if (resolve_keepboth) {
+    ContinueCopyOrMoveFile(idx, destination_url);
+    return;
+  }
+
+  // For 'replace': delete replace_url so it can become the target.
+  auto did_delete_callback = google_apis::CreateRelayCallback(
+      base::BindOnce(&CopyOrMoveIOTaskImpl::DidDeleteDestinationURL,
+                     weak_ptr_factory_.GetWeakPtr(), idx, replace_url));
+
+  content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&StartDeleteOnIOThread, file_system_context_, replace_url,
+                     std::move(did_delete_callback)),
+      base::BindOnce(&CopyOrMoveIOTaskImpl::SetCurrentOperationID,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CopyOrMoveIOTaskImpl::DidDeleteDestinationURL(
+    size_t idx,
+    storage::FileSystemURL replace_url,
+    base::File::Error error) {
+  DCHECK(idx < progress_.sources.size());
+  DCHECK(idx < progress_.outputs.size());
+
+  operation_id_.reset();
+
+  // If replace_url delete failed, a copy/move of the source to that url will
+  // also fail. Report the error to OnCopyOrMoveComplete. Otherwise, call the
+  // ContinueCopyOrMoveFile() flow with the replace url as the target.
+  if (error) {
+    OnCopyOrMoveComplete(idx, error);
+  } else {
+    ContinueCopyOrMoveFile(idx, replace_url);
+  }
+}
+
+void CopyOrMoveIOTaskImpl::ContinueCopyOrMoveFile(
+    size_t idx,
+    storage::FileSystemURL destination_url) {
+  DCHECK(idx < progress_.sources.size());
+  DCHECK(idx < progress_.outputs.size());
+
+  const storage::FileSystemURL& source_url = progress_.sources[idx].url;
+
+  // For a source entry name 'test', the destination url base name will be:
+  //  `test` if that entry name did not exist at the destination.
+  //  `test` if that entry name existed at the destination and was deleted
+  //         because the user choice was to 'replace' that entry.
+  //  `test (2)` if the entry name exists at the destination and 'keepboth'
+  //         is active, either by default behavior or by user choice.
+  progress_.outputs[idx].url = destination_url;
+
   // File browsers generally default to preserving mtimes on copy/move so we
   // should do the same.
   storage::FileSystemOperation::CopyOrMoveOptionSet options =
@@ -463,10 +625,6 @@ void CopyOrMoveIOTaskImpl::CopyOrMoveFile(
                      GetHookDelegate(idx), std::move(complete_callback)),
       base::BindOnce(&CopyOrMoveIOTaskImpl::SetCurrentOperationID,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void CopyOrMoveIOTaskImpl::Resume(ResumeParams params) {
-  // TODO(b/255264604): implement resume.
 }
 
 storage::FileSystemOperation::ErrorBehavior
