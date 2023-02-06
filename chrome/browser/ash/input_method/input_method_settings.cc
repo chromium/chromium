@@ -558,8 +558,11 @@ void MigrateJapaneseSettingsToPrefs(PrefService& prefs,
           : base::Value::Dict();
 
   // Health check. This code should never be called if the migration has already
-  // happened.
-  CHECK(!japanese_settings.FindBool(kJapaneseMigrationCompleteKey));
+  // happened. This should fail if the returned optional is either
+  // nullopt or if it is false - indicating that it was unset due to the
+  // migration being cancelled.
+  CHECK(!japanese_settings.FindBool(kJapaneseMigrationCompleteKey)
+             .value_or(false));
 
   japanese_settings.Merge(ConvertConfigToJapaneseSettings(config));
 
