@@ -14,6 +14,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_system_access_access_handle_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_handle_base.h"
@@ -41,6 +42,10 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include <sys/clonefile.h>
 #endif
 
 using blink::mojom::FileSystemAccessStatus;
@@ -84,6 +89,18 @@ bool HasWritePermission(const base::FilePath& path) {
 
   return true;
 }
+
+#if BUILDFLAG(IS_MAC)
+// Creates a copy-on-write file at `swap_url`, which must not exist. Must be
+// called on a sequence which allows blocking.
+base::File::Error CreateCowSwapFile(const storage::FileSystemURL& source_url,
+                                    const storage::FileSystemURL& swap_url) {
+  return clonefile(source_url.path().value().c_str(),
+                   swap_url.path().value().c_str(), /*flags=*/0) == 0
+             ? base::File::Error::FILE_OK
+             : base::File::Error::FILE_ERROR_FAILED;
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 
@@ -557,6 +574,19 @@ void FileSystemAccessFileHandleImpl::CreateSwapFile(
   storage::FileSystemURL swap_url = GetSwapURL(swap_path);
   DCHECK(swap_url.is_valid());
 
+#if BUILDFLAG(IS_MAC)
+  if (CanUseCowSwapFile() && keep_existing_data) {
+    manager()->DoFileSystemOperation(
+        FROM_HERE, &FileSystemOperationRunner::FileExists,
+        base::BindOnce(
+            &FileSystemAccessFileHandleImpl::DidCheckIfSwapFileExists,
+            weak_factory_.GetWeakPtr(), count, swap_url, keep_existing_data,
+            auto_close, std::move(lock), std::move(callback)),
+        swap_url);
+    return;
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   manager()->DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::CreateFile,
       base::BindOnce(&FileSystemAccessFileHandleImpl::DidCreateSwapFile,
@@ -617,6 +647,42 @@ void FileSystemAccessFileHandleImpl::DidCreateSwapFile(
       std::make_unique<storage::CopyOrMoveHookDelegate>());
 }
 
+#if BUILDFLAG(IS_MAC)
+void FileSystemAccessFileHandleImpl::DidCheckIfSwapFileExists(
+    int count,
+    const storage::FileSystemURL& swap_url,
+    bool keep_existing_data,
+    bool auto_close,
+    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+    CreateFileWriterCallback callback,
+    base::File::Error result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // This code path should only be hit if we're keeping existing data to create
+  // a copy-on-write swap file.
+  DCHECK(keep_existing_data);
+  DCHECK(CanUseCowSwapFile());
+
+  if (result != base::File::FILE_ERROR_NOT_FOUND) {
+    // Creation attempt failed. We need to find an unused filename.
+    CreateSwapFile(count + 1, keep_existing_data, auto_close, std::move(lock),
+                   std::move(callback));
+    return;
+  }
+
+  // We need an usused file name, or else creation of the copy-on-write file
+  // will fail.
+  DCHECK_EQ(result, base::File::Error::FILE_ERROR_NOT_FOUND);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&CreateCowSwapFile, url(), swap_url),
+      base::BindOnce(&FileSystemAccessFileHandleImpl::DidCopySwapFile,
+                     weak_factory_.GetWeakPtr(), swap_url, auto_close,
+                     std::move(lock), std::move(callback)));
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 void FileSystemAccessFileHandleImpl::DidCopySwapFile(
     const storage::FileSystemURL& swap_url,
     bool auto_close,
@@ -650,6 +716,13 @@ void FileSystemAccessFileHandleImpl::GetUniqueId(GetUniqueIdCallback callback) {
   DCHECK(id.is_valid());
   std::move(callback).Run(id.AsLowercaseString());
 }
+
+#if BUILDFLAG(IS_MAC)
+bool FileSystemAccessFileHandleImpl::CanUseCowSwapFile() const {
+  return base::FeatureList::IsEnabled(features::kFileSystemAccessCowSwapFile) &&
+         url().type() == storage::kFileSystemTypeLocal;
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 base::WeakPtr<FileSystemAccessHandleBase>
 FileSystemAccessFileHandleImpl::AsWeakPtr() {

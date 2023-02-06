@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/thread_annotations.h"
+#include "build/build_config.h"
 #include "content/browser/file_system_access/file_system_access_handle_base.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/common/content_export.h"
@@ -73,6 +74,13 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   }
 
  private:
+#if BUILDFLAG(IS_MAC)
+  // Returns whether the swap file is eligible to be created using a
+  // copy-on-write file. This is only relevant on file systems which support
+  // COW, such as APFS.
+  bool CanUseCowSwapFile() const;
+#endif  // BUILDFLAG(IS_MAC)
+
   void DidGetMetaDataForBlob(AsBlobCallback callback,
                              base::File::Error result,
                              const base::File::Info& info);
@@ -99,6 +107,16 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
       scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
       CreateFileWriterCallback callback,
       base::File::Error result);
+#if BUILDFLAG(IS_MAC)
+  void DidCheckIfSwapFileExists(
+      int count,
+      const storage::FileSystemURL& swap_url,
+      bool keep_existing_data,
+      bool auto_close,
+      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+      CreateFileWriterCallback callback,
+      base::File::Error result);
+#endif  // BUILDFLAG(IS_MAC)
   void DidCopySwapFile(
       const storage::FileSystemURL& swap_url,
       bool auto_close,

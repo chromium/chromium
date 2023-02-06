@@ -306,6 +306,32 @@ TEST_F(FileSystemAccessFileHandleImplTest, CreateFileWriterOverLimitNotOK) {
   EXPECT_FALSE(writer_remote.is_valid());
 }
 
+TEST_F(FileSystemAccessFileHandleImplTest,
+       CreateFileWriterWithExistingSwapFile) {
+  const FileSystemURL swap_url =
+      file_system_context_->CreateCrackedFileSystemURL(
+          test_src_storage_key_, storage::kFileSystemTypeTest,
+          base::FilePath::FromUTF8Unsafe("test.crswap"));
+
+  // Create pre-existing swap file.
+  ASSERT_EQ(base::File::FILE_OK, storage::AsyncFileTestHelper::CreateFile(
+                                     file_system_context_.get(), swap_url));
+
+  // Creating the writer still succeeds.
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
+      future;
+  handle_->CreateFileWriter(
+      /*keep_existing_data=*/true,
+      /*auto_close=*/false, future.GetCallback());
+  blink::mojom::FileSystemAccessErrorPtr result;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> writer_remote;
+  std::tie(result, writer_remote) = future.Take();
+  EXPECT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_TRUE(writer_remote.is_valid());
+}
+
 TEST_F(FileSystemAccessFileHandleImplTest, Remove_NoWriteAccess) {
   base::FilePath file;
   ASSERT_TRUE(base::CreateTemporaryFileInDir(dir_.GetPath(), &file));
