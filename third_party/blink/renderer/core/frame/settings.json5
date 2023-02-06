@@ -1066,7 +1066,7 @@
       // just clip instead.
       name: "printingMaximumShrinkFactor",
       initial: 2,
-      type: "int",
+      type: "float",
     },
   ],
 }

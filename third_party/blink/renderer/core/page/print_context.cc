@@ -158,7 +158,8 @@ void PrintContext::BeginPrintMode(float width, float height) {
 
   const Settings* settings = frame_->GetSettings();
   DCHECK(settings);
-  int printingMaximumShrinkFactor = settings->GetPrintingMaximumShrinkFactor();
+  float printingMaximumShrinkFactor =
+      settings->GetPrintingMaximumShrinkFactor();
 
   // This changes layout, so callers need to make sure that they don't paint to
   // screen while in printing mode.
