@@ -1205,6 +1205,7 @@ public class TabListMediatorUnitTest {
         setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
 
         // Assume that moveTab in TabModel is finished. Selected tab in the group becomes mTab1.
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         doReturn(mTab1).when(mTabModel).getTabAt(POSITION2);
         doReturn(mTab2).when(mTabModel).getTabAt(POSITION1);
         doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(POSITION1);
@@ -1321,6 +1322,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.get(0).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
 
         // Assume that TabGroupModelFilter is already updated.
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(POSITION1);
         doReturn(mTab2).when(mTabGroupModelFilter).getTabAt(POSITION2);
         doReturn(2).when(mTabGroupModelFilter).getCount();
@@ -2226,6 +2228,7 @@ public class TabListMediatorUnitTest {
         TabImpl tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         tabs.add(tab3);
         int position3 = 2;
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         doReturn(tab3).when(mTabModel).getTabAt(position3);
         doReturn(position3).when(mTabModel).indexOf(tab3);
         doReturn(3).when(mTabModel).getCount();
