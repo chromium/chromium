@@ -1261,6 +1261,83 @@ TEST_P(MLGraphXnnpackTest, Pool2dTest) {
   }
 }
 
+// Because XNNPACK reshape Node runs copy operator, ReshapeTester just checks
+// the output against the input. So there is no need to set expected results.
+template <typename T>
+struct ReshapeTester {
+  MLGraphXnnpackTest* helper;
+  OperandInfo<T> input;
+  Vector<absl::optional<uint32_t>> new_shape;
+  Vector<uint32_t> expected_output_shape;
+
+  void Test(V8TestingScope& scope) {
+    // Build the graph.
+    auto* builder = CreateMLGraphBuilder(scope);
+    auto* input_operand =
+        BuildInput(scope, builder, "input", input.dimensions, input.type);
+    auto* output_operand =
+        builder->reshape(input_operand, new_shape, scope.GetExceptionState());
+    EXPECT_EQ(output_operand->Dimensions(), expected_output_shape);
+    auto [graph, build_exception] =
+        helper->BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    // Compute the graph.
+    auto input_buffer =
+        CreateArrayBufferViewForOperand(input_operand, input.values);
+    auto output_buffer = CreateArrayBufferViewForOperand(output_operand);
+    auto* compute_exception = helper->ComputeGraph(
+        scope, graph, {{"input", input_buffer}}, {{"output", output_buffer}});
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<T>(output_buffer);
+    EXPECT_EQ(results, input.values);
+  }
+};
+
+TEST_P(MLGraphXnnpackTest, ReshapeTest) {
+  V8TestingScope scope;
+  {
+    // Test reshaping 2-D tensor to 1-D tensor.
+    ReshapeTester<float>{.helper = this,
+                         .input = {.type = V8MLOperandType::Enum::kFloat32,
+                                   .dimensions = {2, 2},
+                                   .values = {-10.0, -0.5, 0.5, 10.0}},
+                         .new_shape = {4},
+                         .expected_output_shape = {4}}
+        .Test(scope);
+  }
+  {
+    // Test reshaping from 2-D tensor to 1-D tensor with calculated dimension.
+    ReshapeTester<float>{.helper = this,
+                         .input = {.type = V8MLOperandType::Enum::kFloat32,
+                                   .dimensions = {2, 2},
+                                   .values = {-10.0, -0.5, 0.5, 10.0}},
+                         .new_shape = {absl::nullopt},
+                         .expected_output_shape = {4}}
+        .Test(scope);
+  }
+  {
+    // Test reshaping from 4-D tensor to 2-D tensor.
+    ReshapeTester<float>{.helper = this,
+                         .input = {.type = V8MLOperandType::Enum::kFloat32,
+                                   .dimensions = {1, 2, 2, 1},
+                                   .values = {-10.0, -0.5, 0.5, 10.0}},
+                         .new_shape = {1, 4},
+                         .expected_output_shape = {1, 4}}
+        .Test(scope);
+  }
+  {
+    // Test reshaping from 4-D tensor to 2-D tensor with calculated dimension.
+    ReshapeTester<float>{.helper = this,
+                         .input = {.type = V8MLOperandType::Enum::kFloat32,
+                                   .dimensions = {1, 2, 2, 1},
+                                   .values = {-10.0, -0.5, 0.5, 10.0}},
+                         .new_shape = {1, absl::nullopt},
+                         .expected_output_shape = {1, 4}}
+        .Test(scope);
+  }
+}
+
 // The outputs of softmax function,
 // https://en.wikipedia.org/wiki/Softmax_function, are floating-point numbers
 // with mantissa. The WPT WebNN conformance test cases of softmax operator,

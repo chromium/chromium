@@ -838,6 +838,32 @@ xnn_status DefineXnnNodeForRelu(xnn_subgraph_t subgraph,
   return xnn_status_success;
 }
 
+xnn_status DefineXnnNodeForReshape(
+    xnn_subgraph_t subgraph,
+    const MLOperator* reshape,
+    const OperandValueIdMap& operand_value_id_map,
+    String& error_message) {
+  const uint32_t input_id =
+      GetOperatorInputValueId(reshape, operand_value_id_map);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(reshape, operand_value_id_map);
+  // Set the new shape of XNNPACK reshape Node to the output shape that is
+  // already calculated by `MLGraphBuilder::reshape()`.
+  Vector<size_t> new_shape;
+  for (auto& d : reshape->Outputs()[0]->Dimensions()) {
+    new_shape.push_back(base::checked_cast<size_t>(d));
+  }
+  const uint32_t flags = 0;
+  // XNNPACK will memcpy the content of `new_shape` vector to its internal
+  // structure, so it is safe to release `new_shape` vector after this call.
+  // Please refer to the implementation at:
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/xnnpack/src/src/subgraph/static-reshape.c;l=246
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+      xnn_define_static_reshape(subgraph, new_shape.size(), new_shape.data(),
+                                input_id, output_id, flags));
+  return xnn_status_success;
+}
+
 xnn_status DefineXnnNodeForSoftmax(
     xnn_subgraph_t subgraph,
     const MLOperator* softmax,
@@ -899,6 +925,10 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
     }
     case MLOperator::OperatorKind::kRelu:
       XNN_CHECK_STATUS(DefineXnnNodeForRelu(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+    case MLOperator::OperatorKind::kReshape:
+      XNN_CHECK_STATUS(DefineXnnNodeForReshape(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
     case MLOperator::OperatorKind::kSoftmax:
