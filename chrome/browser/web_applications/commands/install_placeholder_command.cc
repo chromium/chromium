@@ -131,7 +131,6 @@ void InstallPlaceholderCommand::FinalizeInstall(
         bitmaps) {
   WebAppInstallInfo web_app_info;
 
-#if defined(CHROMEOS)
   web_app_info.title =
       install_options_.override_name
           ? base::UTF8ToUTF16(install_options_.override_name.value())
@@ -145,13 +144,6 @@ void InstallPlaceholderCommand::FinalizeInstall(
                       bitmaps.value());
     PopulateProductIcons(&web_app_info, &icons_map);
   }
-
-#else   // defined(CHROMEOS)
-  web_app_info.title =
-      install_options_.fallback_app_name
-          ? base::UTF8ToUTF16(install_options_.fallback_app_name.value())
-          : base::UTF8ToUTF16(install_options_.install_url.spec());
-#endif  // defined(CHROMEOS)
 
   web_app_info.start_url = install_options_.install_url;
   web_app_info.install_url = install_options_.install_url;
