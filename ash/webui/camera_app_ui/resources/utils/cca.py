@@ -247,6 +247,8 @@ def lint(args):
     ]
     if args.fix:
         cmd.append('--fix')
+    if args.eslintrc:
+        cmd.extend(['--config', args.eslintrc])
     try:
         run_node(cmd)
     except subprocess.CalledProcessError as e:
@@ -392,6 +394,7 @@ def parse_args(args):
         help='check code with eslint',
         description='Check coding styles with eslint.')
     lint_parser.add_argument('--fix', action='store_true')
+    lint_parser.add_argument('--eslintrc', help='use alternative eslintrc')
     lint_parser.set_defaults(func=lint)
 
     tsc_parser = subparsers.add_parser('tsc',
