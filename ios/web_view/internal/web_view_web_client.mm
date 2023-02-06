@@ -19,6 +19,7 @@
 #include "components/ssl_errors/error_info.h"
 #include "components/strings/grit/components_strings.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
+#import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/components/security_interstitials/ios_security_interstitial_java_script_feature.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_error.h"
@@ -184,6 +185,12 @@ void WebViewWebClient::PrepareErrorPage(
 
 bool WebViewWebClient::EnableLongPressUIContextMenu() const {
   return CWVWebView.chromeContextMenuEnabled;
+}
+
+bool WebViewWebClient::IsMixedContentAutoupgradeEnabled(
+    web::BrowserState* browser_state) const {
+  return base::FeatureList::IsEnabled(
+      security_interstitials::features::kMixedContentAutoupgrade);
 }
 
 }  // namespace ios_web_view

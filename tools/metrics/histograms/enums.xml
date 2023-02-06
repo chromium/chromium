@@ -32511,6 +32511,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1068" label="WindowManagementAllowedForUrls"/>
   <int value="1069" label="WindowManagementBlockedForUrls"/>
   <int value="1070" label="OutOfProcessSystemDnsResolutionEnabled"/>
+  <int value="1072" label="MixedContentAutoupgradeEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

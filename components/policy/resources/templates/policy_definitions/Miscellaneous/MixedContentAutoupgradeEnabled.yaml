@@ -1,0 +1,29 @@
+caption: Enable mixed content autoupgrading on HTTPS sites
+desc: |-
+  Chrome will attempt to upgrade some types of mixed content (HTTP on an HTTPS site) subresources on iOS.
+  See https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md for details.
+
+  The feature will be enabled by default. Setting the policy to Enabled or leaving it unset will leave the feature enabled.
+
+  Setting the policy to Disabled disables the feature.
+
+  This policy is a temporary workaround and will be removed in a few milestones (the removal is tentatively planned to happen in M113).
+
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: true
+items:
+- caption: Enable mixed content autoupgrading
+  value: true
+- caption: Disable mixed content autoupgrading
+  value: false
+owners:
+- meacer@chromium.org
+- trusty-transport@chromium.org
+schema:
+  type: boolean
+supported_on:
+- ios:111-
+tags: []
+type: main

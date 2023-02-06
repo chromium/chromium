@@ -7,7 +7,6 @@
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 
-#import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/web_state/ui/wk_content_rule_list_util.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
@@ -18,7 +17,8 @@
 
 namespace web {
 
-WKContentRuleListProvider::WKContentRuleListProvider()
+WKContentRuleListProvider::WKContentRuleListProvider(
+    bool mixed_content_autoupgrade_enabled)
     : weak_ptr_factory_(this) {
   base::WeakPtr<WKContentRuleListProvider> weak_this =
       weak_ptr_factory_.GetWeakPtr();
@@ -34,8 +34,7 @@ WKContentRuleListProvider::WKContentRuleListProvider()
                           InstallContentRuleLists();
                         }];
 
-  if (base::FeatureList::IsEnabled(
-          security_interstitials::features::kMixedContentAutoupgrade)) {
+  if (mixed_content_autoupgrade_enabled) {
     // Auto-upgrade mixed content.
     [WKContentRuleListStore.defaultStore
         compileContentRuleListForIdentifier:@"mixed-content-autoupgrade"

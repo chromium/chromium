@@ -200,6 +200,11 @@ class WebClient {
 
   // Stops the ongoing text search in `web_state`.
   virtual void StopTextSearchInWebState(web::WebState* web_state);
+
+  // Returns true if mixed content on HTTPS documents should be upgraded if
+  // possible.
+  virtual bool IsMixedContentAutoupgradeEnabled(
+      web::BrowserState* browser_state) const;
 };
 
 }  // namespace web

@@ -65,6 +65,9 @@ class ChromeWebClient : public web::WebClient {
   void StartTextSearchInWebState(web::WebState* web_state) override;
   void StopTextSearchInWebState(web::WebState* web_state) override;
 
+  bool IsMixedContentAutoupgradeEnabled(
+      web::BrowserState* browser_state) const override;
+
  private:
   // Reference to a view that is attached to a window.
   UIView* windowed_container_ = nil;

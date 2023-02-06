@@ -45,6 +45,8 @@ class WebViewWebClient : public web::WebClient {
                         int64_t navigation_id,
                         base::OnceCallback<void(NSString*)> callback) override;
   bool EnableLongPressUIContextMenu() const override;
+  bool IsMixedContentAutoupgradeEnabled(
+      web::BrowserState* browser_state) const override;
 };
 
 }  // namespace ios_web_view
