@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the tryserver.chromium.angle builder group."""
 
-load("//lib/builders.star", "goma", "os", "reclient")
+load("//lib/builders.star", "os", "reclient")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
@@ -52,8 +52,6 @@ try_.builder(
 try_.builder(
     name = "linux-angle-chromium-try",
     executable = "recipe:angle_chromium_trybot",
-    goma_backend = goma.backend.RBE_PROD,
-    goma_jobs = goma.jobs.J150,
     mirrors = [
         "ci/linux-angle-chromium-builder",
         "ci/linux-angle-chromium-intel",

@@ -193,7 +193,6 @@ try_.builder(
     mirrors = [
         "ci/chromeos-amd64-generic-lacros-dbg",
     ],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(

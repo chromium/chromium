@@ -263,7 +263,6 @@ try_.builder(
 
 try_.builder(
     name = "win10-code-coverage",
-    goma_backend = goma.backend.RBE_PROD,
     mirrors = ["ci/win10-code-coverage"],
     execution_timeout = 20 * time.hour,
 )

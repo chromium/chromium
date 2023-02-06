@@ -80,7 +80,6 @@ try_.compilator_builder(
     name = "android-12-x64-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
@@ -745,12 +744,10 @@ try_.builder(
     name = "android-code-coverage",
     mirrors = ["ci/android-code-coverage"],
     execution_timeout = 20 * time.hour,
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
     name = "android-code-coverage-native",
     mirrors = ["ci/android-code-coverage-native"],
     execution_timeout = 20 * time.hour,
-    goma_backend = goma.backend.RBE_PROD,
 )

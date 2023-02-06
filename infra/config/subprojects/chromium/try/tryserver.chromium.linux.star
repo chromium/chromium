@@ -53,8 +53,6 @@ try_.builder(
         is_compile_only = True,
     ),
     builderless = False,
-    goma_backend = goma.backend.RBE_PROD,
-    goma_jobs = goma.jobs.J150,
     properties = {
         "bot_update_experiments": [
             "no_sync",
@@ -186,7 +184,6 @@ try_.builder(
     branch_selector = branches.STANDARD_MILESTONE,
     executable = "recipe:chromium_libfuzzer_trybot",
     builderless = not settings.is_main,
-    goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -237,7 +234,6 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "linux-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
-    goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
     check_for_flakiness = True,
 )
@@ -295,7 +291,6 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "linux-wayland-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
-    goma_backend = goma.backend.RBE_PROD,
     ssd = True,
     main_list_view = "try",
 )
@@ -437,7 +432,6 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "linux_chromium_asan_rel_ng-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
-    goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
 )
 
@@ -512,7 +506,6 @@ try_.builder(
             path = "linux_debug",
         ),
     ],
-    goma_backend = goma.backend.RBE_PROD,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
 )
@@ -607,7 +600,6 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "linux_chromium_tsan_rel_ng-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
-    goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
 )
 
@@ -701,7 +693,6 @@ try_.gpu.optional_tests_builder(
         ),
         build_gs_bucket = "chromium-gpu-fyi-archive",
     ),
-    goma_backend = goma.backend.RBE_PROD,
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
@@ -735,28 +726,24 @@ try_.gpu.optional_tests_builder(
 
 try_.builder(
     name = "linux-code-coverage",
-    goma_backend = goma.backend.RBE_PROD,
     mirrors = ["ci/linux-code-coverage"],
     execution_timeout = 20 * time.hour,
 )
 
 try_.builder(
     name = "linux-chromeos-code-coverage",
-    goma_backend = goma.backend.RBE_PROD,
     mirrors = ["ci/linux-chromeos-code-coverage"],
     execution_timeout = 20 * time.hour,
 )
 
 try_.builder(
     name = "linux-lacros-code-coverage",
-    goma_backend = goma.backend.RBE_PROD,
     mirrors = ["ci/linux-lacros-code-coverage"],
     execution_timeout = 20 * time.hour,
 )
 
 try_.builder(
     name = "linux-js-code-coverage",
-    goma_backend = goma.backend.RBE_PROD,
     mirrors = ["ci/linux-js-code-coverage"],
     execution_timeout = 20 * time.hour,
 )

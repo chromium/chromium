@@ -181,7 +181,6 @@ try_.builder(
 
 try_.builder(
     name = "fuchsia-code-coverage",
-    goma_backend = goma.backend.RBE_PROD,
     mirrors = ["ci/fuchsia-code-coverage"],
     execution_timeout = 20 * time.hour,
 )
