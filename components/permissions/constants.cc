@@ -11,19 +11,40 @@ const char kChooserBluetoothOverviewURL[] =
     "https://support.google.com/chrome?p=bluetooth";
 
 #if !BUILDFLAG(IS_ANDROID)
-const char kPermissionsPostPromptSurveyPromptDispositionKey[] =
-    "PromptDisposition";
+// The key in `Product Specific String Data` under which the disposition of the
+// permission prompt is recorded in the prompt HaTS survey.
+const char kPermissionsPromptSurveyPromptDispositionKey[] = "PromptDisposition";
 
-const char kPermissionsPostPromptSurveyPromptDispositionReasonKey[] =
+// The key in `Product Specific String Data` under which the quiet UI reason is
+// recorded in the prompt HaTS survey.
+const char kPermissionsPromptSurveyPromptDispositionReasonKey[] =
     "PromptDispositionReason";
 
-const char kPermissionsPostPromptSurveyActionKey[] = "Action";
+// The key in `Product Specific String Data` under which the request action is
+// recorded in the prompt HaTS survey.
+const char kPermissionsPromptSurveyActionKey[] = "Action";
 
-const char kPermissionsPostPromptSurveyRequestTypeKey[] = "RequestType";
+// The key in `Product Specific String Data` under which the request type is
+// recorded in the prompt HaTS survey.
+const char kPermissionsPromptSurveyRequestTypeKey[] = "RequestType";
 
-const char kPermissionsPostPromptSurveyHadGestureKey[] = "HadGesture";
+// The key in `Product Specific String Data` under which the display timing of
+// the survey is recorded in the prompt HaTS survey.
+extern const char kPermissionsPromptSurveyDisplayTimeKey[] =
+    "SurveyDisplayTime";
 
-const char kPermissionsPostPromptSurveyReleaseChannelKey[] = "ReleaseChannel";
+// The key in `Product Specific Bits Data` under which whether the prompt was
+// triggered by a user gestured is recorded in the prompt HaTS survey.
+const char kPermissionsPromptSurveyHadGestureKey[] = "HadGesture";
+
+// The key in `Product Specific String Data` under which the release channel on
+// which the prompt was triggered is recorded in the prompt HaTS survey.
+// Note that a finch config typically defines a min_version to run the
+// experiment. When Version V is stable, Beta (V+1), Dev (V+2) and Canary (V+3)
+// all have higher version numbers and will therefore be part of the experiment
+// with min_version V with the rollout plan for stable. This filter allows
+// restriction to specific channels (typically to stable).
+const char kPermissionsPromptSurveyReleaseChannelKey[] = "ReleaseChannel";
 #endif
 
 // TODO(crbug.com/1410489): Remove the code related to unused site permissions

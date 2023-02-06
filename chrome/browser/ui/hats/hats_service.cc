@@ -53,8 +53,7 @@ constexpr char kHatsSurveyTriggerPerformanceControlsHighEfficiencyOptOut[] =
     "performance-high-efficiency-opt-out";
 constexpr char kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut[] =
     "performance-battery-saver-opt-out";
-constexpr char kHatsSurveyTriggerPermissionsPostPrompt[] =
-    "permissions-post-prompt";
+constexpr char kHatsSurveyTriggerPermissionsPrompt[] = "permissions-prompt";
 constexpr char kHatsSurveyTriggerPrivacyGuide[] = "privacy-guide";
 constexpr char kHatsSurveyTriggerPrivacySandbox[] = "privacy-sandbox";
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
@@ -363,17 +362,18 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
 
   // Permissions surveys.
   survey_configs.emplace_back(
-      &permissions::features::kPermissionsPostPromptSurvey,
-      kHatsSurveyTriggerPermissionsPostPrompt,
-      permissions::feature_params::kPermissionsPostPromptSurveyTriggerId.Get(),
+      &permissions::features::kPermissionsPromptSurvey,
+      kHatsSurveyTriggerPermissionsPrompt,
+      permissions::feature_params::kPermissionsPromptSurveyTriggerId.Get(),
       std::vector<std::string>{
-          permissions::kPermissionsPostPromptSurveyHadGestureKey},
+          permissions::kPermissionsPromptSurveyHadGestureKey},
       std::vector<std::string>{
-          permissions::kPermissionsPostPromptSurveyPromptDispositionKey,
-          permissions::kPermissionsPostPromptSurveyPromptDispositionReasonKey,
-          permissions::kPermissionsPostPromptSurveyActionKey,
-          permissions::kPermissionsPostPromptSurveyRequestTypeKey,
-          permissions::kPermissionsPostPromptSurveyReleaseChannelKey});
+          permissions::kPermissionsPromptSurveyPromptDispositionKey,
+          permissions::kPermissionsPromptSurveyPromptDispositionReasonKey,
+          permissions::kPermissionsPromptSurveyActionKey,
+          permissions::kPermissionsPromptSurveyRequestTypeKey,
+          permissions::kPermissionsPromptSurveyReleaseChannelKey,
+          permissions::kPermissionsPromptSurveyDisplayTimeKey});
 
   // Performance Controls surveys.
   survey_configs.emplace_back(

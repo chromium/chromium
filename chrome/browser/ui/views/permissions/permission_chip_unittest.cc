@@ -65,6 +65,8 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   void PreIgnoreQuietPrompt() override { requests_.clear(); }
   void SetManageClicked() override { requests_.clear(); }
   void SetLearnMoreClicked() override { requests_.clear(); }
+  void SetHatsShownCallback(base::OnceCallback<void()> callback) override {}
+
   bool RecreateView() override { return false; }
 
   bool WasCurrentRequestAlreadyDisplayed() override {

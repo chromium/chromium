@@ -30,11 +30,12 @@ class PermissionHatsTriggerUnitTest : public testing::Test {
     std::string had_gesture_filter = "";
     std::string release_channel_filter = "beta";
     std::string ignored_prompts_maximum_age = "10m";
+    std::string survey_display_time = "OnPromptResolved";
   };
 
   void SetupFeatureParams(FeatureParams params) {
     feature_list()->InitWithFeaturesAndParameters(
-        {{permissions::features::kPermissionsPostPromptSurvey,
+        {{permissions::features::kPermissionsPromptSurvey,
           {{"action_filter", params.action_filter},
            {"request_type_filter", params.request_type_filter},
            {"prompt_disposition_filter", params.prompt_disposition_filter},
@@ -42,8 +43,8 @@ class PermissionHatsTriggerUnitTest : public testing::Test {
             params.prompt_disposition_reason_filter},
            {"had_gesture_filter", params.had_gesture_filter},
            {"release_channel_filter", params.release_channel_filter},
-           {"ignored_prompts_maximum_age",
-            params.ignored_prompts_maximum_age}}}},
+           {"ignored_prompts_maximum_age", params.ignored_prompts_maximum_age},
+           {"survey_display_time", params.survey_display_time}}}},
         {});
   }
 
@@ -68,7 +69,7 @@ TEST_F(PermissionHatsTriggerUnitTest, SingleValuedFiltersTriggerCorrectly) {
   // Matching call, should trigger
   EXPECT_TRUE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::GRANTED,
@@ -76,12 +77,12 @@ TEST_F(PermissionHatsTriggerUnitTest, SingleValuedFiltersTriggerCorrectly) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(1))));
+                  permissions::kOnPromptResolved, base::Minutes(1))));
 
   // // Wrong action, should not trigger
   EXPECT_FALSE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::DENIED,
@@ -89,12 +90,12 @@ TEST_F(PermissionHatsTriggerUnitTest, SingleValuedFiltersTriggerCorrectly) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(1))));
+                  permissions::kOnPromptResolved, base::Minutes(1))));
 
   // // Wrong request type, should not trigger
   EXPECT_FALSE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kCameraStream,
                   permissions::PermissionAction::GRANTED,
@@ -102,12 +103,12 @@ TEST_F(PermissionHatsTriggerUnitTest, SingleValuedFiltersTriggerCorrectly) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(1))));
+                  permissions::kOnPromptResolved, base::Minutes(1))));
 
   // Wrong prompt disposition, should not trigger
   EXPECT_FALSE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::GRANTED,
@@ -115,12 +116,12 @@ TEST_F(PermissionHatsTriggerUnitTest, SingleValuedFiltersTriggerCorrectly) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(1))));
+                  permissions::kOnPromptResolved, base::Minutes(1))));
 
   // Wrong prompt disposition reason, should not trigger
   EXPECT_FALSE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::GRANTED,
@@ -128,12 +129,12 @@ TEST_F(PermissionHatsTriggerUnitTest, SingleValuedFiltersTriggerCorrectly) {
                   permissions::PermissionPromptDispositionReason::
                       SAFE_BROWSING_VERDICT,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(1))));
+                  permissions::kOnPromptResolved, base::Minutes(1))));
 
   // No gesture, should not trigger
   EXPECT_FALSE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::GRANTED,
@@ -141,12 +142,12 @@ TEST_F(PermissionHatsTriggerUnitTest, SingleValuedFiltersTriggerCorrectly) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::NO_GESTURE, "beta",
-                  base::Minutes(1))));
+                  permissions::kOnPromptResolved, base::Minutes(1))));
 
   // Wrong channel, should not trigger
   EXPECT_FALSE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::GRANTED,
@@ -154,7 +155,7 @@ TEST_F(PermissionHatsTriggerUnitTest, SingleValuedFiltersTriggerCorrectly) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::NO_GESTURE,
-                  "stable", base::Minutes(1))));
+                  "stable", permissions::kOnPromptResolved, base::Minutes(1))));
 }
 
 TEST_F(PermissionHatsTriggerUnitTest, EmptyFiltersShouldAlwaysTrigger) {
@@ -175,7 +176,7 @@ TEST_F(PermissionHatsTriggerUnitTest, EmptyFiltersShouldAlwaysTrigger) {
 
   EXPECT_TRUE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::GRANTED,
@@ -183,12 +184,12 @@ TEST_F(PermissionHatsTriggerUnitTest, EmptyFiltersShouldAlwaysTrigger) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(1))));
+                  permissions::kOnPromptResolved, base::Minutes(1))));
 
   // Matching call, should trigger
   EXPECT_TRUE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::GRANTED_ONCE,
@@ -196,12 +197,12 @@ TEST_F(PermissionHatsTriggerUnitTest, EmptyFiltersShouldAlwaysTrigger) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(1))));
+                  permissions::kOnPromptResolved, base::Minutes(1))));
 
   // Matching call, should trigger
   EXPECT_TRUE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::DENIED,
@@ -209,12 +210,12 @@ TEST_F(PermissionHatsTriggerUnitTest, EmptyFiltersShouldAlwaysTrigger) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(1))));
+                  permissions::kOnPromptResolved, base::Minutes(1))));
 
   // Matching call, should trigger
   EXPECT_TRUE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::DISMISSED,
@@ -222,12 +223,12 @@ TEST_F(PermissionHatsTriggerUnitTest, EmptyFiltersShouldAlwaysTrigger) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(1))));
+                  permissions::kOnPromptResolved, base::Minutes(1))));
 
   // Matching call, should trigger
   EXPECT_TRUE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::IGNORED,
@@ -235,7 +236,7 @@ TEST_F(PermissionHatsTriggerUnitTest, EmptyFiltersShouldAlwaysTrigger) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(1))));
+                  permissions::kOnPromptResolved, base::Minutes(1))));
 }
 
 TEST_F(PermissionHatsTriggerUnitTest, CSVFiltersTriggerForAllConfiguredValues) {
@@ -253,7 +254,7 @@ TEST_F(PermissionHatsTriggerUnitTest, CSVFiltersTriggerForAllConfiguredValues) {
   // Matching call, should trigger
   EXPECT_TRUE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::GRANTED,
@@ -261,12 +262,12 @@ TEST_F(PermissionHatsTriggerUnitTest, CSVFiltersTriggerForAllConfiguredValues) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(1))));
+                  permissions::kOnPromptResolved, base::Minutes(1))));
 
   // Matching call, should trigger
   EXPECT_TRUE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::DISMISSED,
@@ -274,12 +275,12 @@ TEST_F(PermissionHatsTriggerUnitTest, CSVFiltersTriggerForAllConfiguredValues) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(1))));
+                  permissions::kOnPromptResolved, base::Minutes(1))));
 
   // Wrong action, should not trigger
   EXPECT_FALSE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::DENIED,
@@ -287,12 +288,12 @@ TEST_F(PermissionHatsTriggerUnitTest, CSVFiltersTriggerForAllConfiguredValues) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(1))));
+                  permissions::kOnPromptResolved, base::Minutes(1))));
 
   // Wrong action, should not trigger
   EXPECT_FALSE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::GRANTED_ONCE,
@@ -300,12 +301,12 @@ TEST_F(PermissionHatsTriggerUnitTest, CSVFiltersTriggerForAllConfiguredValues) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(1))));
+                  permissions::kOnPromptResolved, base::Minutes(1))));
 
   // Wrong action, should not trigger
   EXPECT_FALSE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::IGNORED,
@@ -313,7 +314,7 @@ TEST_F(PermissionHatsTriggerUnitTest, CSVFiltersTriggerForAllConfiguredValues) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(1))));
+                  permissions::kOnPromptResolved, base::Minutes(1))));
 }
 
 TEST_F(PermissionHatsTriggerUnitTest, FilterConfigurationHandlesEdgeCases) {
@@ -332,7 +333,7 @@ TEST_F(PermissionHatsTriggerUnitTest, FilterConfigurationHandlesEdgeCases) {
   // Matching call, should trigger
   EXPECT_TRUE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::GRANTED,
@@ -340,12 +341,12 @@ TEST_F(PermissionHatsTriggerUnitTest, FilterConfigurationHandlesEdgeCases) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(1))));
+                  permissions::kOnPromptResolved, base::Minutes(1))));
 
   // Matching call, should trigger
   EXPECT_TRUE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kGeolocation,
                   permissions::PermissionAction::GRANTED,
@@ -353,7 +354,7 @@ TEST_F(PermissionHatsTriggerUnitTest, FilterConfigurationHandlesEdgeCases) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(1))));
+                  permissions::kOnPromptResolved, base::Minutes(1))));
 }
 
 TEST_F(PermissionHatsTriggerUnitTest, ProductSpecificFieldsAreReported) {
@@ -374,26 +375,26 @@ TEST_F(PermissionHatsTriggerUnitTest, ProductSpecificFieldsAreReported) {
               permissions::PermissionPromptDisposition::ANCHORED_BUBBLE,
               permissions::PermissionPromptDispositionReason::DEFAULT_FALLBACK,
               permissions::PermissionRequestGestureType::GESTURE, "beta",
-              base::Minutes(1)));
+              permissions::kOnPromptResolved, base::Minutes(1)));
 
   EXPECT_EQ(survey_data.survey_bits_data.at(
-                permissions::kPermissionsPostPromptSurveyHadGestureKey),
+                permissions::kPermissionsPromptSurveyHadGestureKey),
             true);
   EXPECT_EQ(survey_data.survey_string_data.at(
-                permissions::kPermissionsPostPromptSurveyPromptDispositionKey),
+                permissions::kPermissionsPromptSurveyPromptDispositionKey),
             "AnchoredBubble");
   EXPECT_EQ(
       survey_data.survey_string_data.at(
-          permissions::kPermissionsPostPromptSurveyPromptDispositionReasonKey),
+          permissions::kPermissionsPromptSurveyPromptDispositionReasonKey),
       "DefaultFallback");
   EXPECT_EQ(survey_data.survey_string_data.at(
-                permissions::kPermissionsPostPromptSurveyActionKey),
+                permissions::kPermissionsPromptSurveyActionKey),
             "Accepted");
   EXPECT_EQ(survey_data.survey_string_data.at(
-                permissions::kPermissionsPostPromptSurveyRequestTypeKey),
+                permissions::kPermissionsPromptSurveyRequestTypeKey),
             "Notifications");
   EXPECT_EQ(survey_data.survey_string_data.at(
-                permissions::kPermissionsPostPromptSurveyReleaseChannelKey),
+                permissions::kPermissionsPromptSurveyReleaseChannelKey),
             "beta");
 }
 
@@ -412,7 +413,7 @@ TEST_F(PermissionHatsTriggerUnitTest, VerifyIgnoreSafeguardFunctionality) {
   // value. Thus, this should trigger.
   EXPECT_TRUE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::IGNORED,
@@ -420,13 +421,13 @@ TEST_F(PermissionHatsTriggerUnitTest, VerifyIgnoreSafeguardFunctionality) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(5))));
+                  permissions::kOnPromptResolved, base::Minutes(5))));
 
   // The safeguard is active, and the display time is higher than the configured
   // value. Thus, this should not trigger.
   EXPECT_FALSE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::IGNORED,
@@ -434,7 +435,7 @@ TEST_F(PermissionHatsTriggerUnitTest, VerifyIgnoreSafeguardFunctionality) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(15))));
+                  permissions::kOnPromptResolved, base::Minutes(15))));
 }
 
 TEST_F(PermissionHatsTriggerUnitTest, VerifyUnconfiguredFiltersSafeguard) {
@@ -446,12 +447,13 @@ TEST_F(PermissionHatsTriggerUnitTest, VerifyUnconfiguredFiltersSafeguard) {
   params.prompt_disposition_reason_filter = "";
   params.had_gesture_filter = "";
   params.release_channel_filter = "";
+  params.survey_display_time = "";
   SetupFeatureParams(params);
 
   // Matching call, but should not trigger due to safeguard
   EXPECT_FALSE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::IGNORED,
@@ -459,7 +461,7 @@ TEST_F(PermissionHatsTriggerUnitTest, VerifyUnconfiguredFiltersSafeguard) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(1))));
+                  permissions::kOnPromptResolved, base::Minutes(1))));
 }
 
 TEST_F(PermissionHatsTriggerUnitTest, VerifyMisconfiguredFiltersSafeguard) {
@@ -475,7 +477,7 @@ TEST_F(PermissionHatsTriggerUnitTest, VerifyMisconfiguredFiltersSafeguard) {
   // One filter is configured with a nonsensical value, should not trigger
   EXPECT_FALSE(
       permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(
+          ArePromptTriggerCriteriaSatisfied(
               permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
                   permissions::RequestType::kNotifications,
                   permissions::PermissionAction::IGNORED,
@@ -483,5 +485,5 @@ TEST_F(PermissionHatsTriggerUnitTest, VerifyMisconfiguredFiltersSafeguard) {
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
-                  base::Minutes(1))));
+                  permissions::kOnPromptResolved, base::Minutes(1))));
 }

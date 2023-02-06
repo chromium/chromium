@@ -9012,7 +9012,7 @@
             ]
         }
     ],
-    "PermissionsPostPromptSurveyv2": [
+    "PermissionsPromptSurvey": [
         {
             "platforms": [
                 "chromeos",
@@ -9031,7 +9031,7 @@
                         "trigger_id": "YU4bKoXZ40ugnJ3q1cK0QhGFeT4E"
                     },
                     "enable_features": [
-                        "PermissionsPostPromptSurvey"
+                        "PermissionsPromptSurvey"
                     ]
                 }
             ]

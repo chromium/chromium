@@ -106,6 +106,12 @@ class PermissionPrompt {
     // Set when the user made any decision for clicking on learn more link.
     virtual void SetLearnMoreClicked() = 0;
 
+    // HaTS surveys may display at an inconvenient time, such as when a chip
+    // shown collapses after a certain timeout. To prevent affecting
+    // usability, this setter sets a callback that is be called when a HaTS
+    // survey is triggered to take appropriate actions.
+    virtual void SetHatsShownCallback(base::OnceCallback<void()> callback) = 0;
+
     virtual base::WeakPtr<Delegate> GetWeakPtr() = 0;
 
     // Recreate the UI view because the UI flavor needs to change. Returns true

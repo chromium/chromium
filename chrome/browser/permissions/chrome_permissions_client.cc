@@ -251,31 +251,32 @@ permissions::IconId ChromePermissionsClient::GetOverrideIconId(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// Triggers the post-prompt HaTS survey if enabled by field trials for this
+// Triggers the prompt HaTS survey if enabled by field trials for this
 // combination of prompt parameters.
-void ChromePermissionsClient::TriggerPostPromptHatsSurveyIfEnabled(
-    Profile* profile,
+void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
+    content::BrowserContext* context,
     permissions::RequestType request_type,
-    permissions::PermissionAction action,
+    absl::optional<permissions::PermissionAction> action,
     permissions::PermissionPromptDisposition prompt_disposition,
     permissions::PermissionPromptDispositionReason prompt_disposition_reason,
     permissions::PermissionRequestGestureType gesture_type,
-    base::TimeDelta prompt_display_duration) {
-  if (!base::FeatureList::IsEnabled(
-          permissions::features::kPermissionsPostPromptSurvey)) {
-    return;
-  }
-
+    absl::optional<base::TimeDelta> prompt_display_duration,
+    bool is_post_prompt,
+    base::OnceCallback<void()> hats_shown_callback) {
   auto prompt_parameters =
       permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
           request_type, action, prompt_disposition, prompt_disposition_reason,
           gesture_type, version_info::GetChannelString(chrome::GetChannel()),
+          is_post_prompt ? permissions::kOnPromptResolved
+                         : permissions::kOnPromptAppearing,
           prompt_display_duration);
 
   if (!permissions::PermissionHatsTriggerHelper::
-          ArePostPromptTriggerCriteriaSatisfied(prompt_parameters)) {
+          ArePromptTriggerCriteriaSatisfied(prompt_parameters)) {
     return;
   }
+
+  Profile* profile = Profile::FromBrowserContext(context);
 
   auto* hats_service =
       HatsServiceFactory::GetForProfile(profile,
@@ -287,8 +288,8 @@ void ChromePermissionsClient::TriggerPostPromptHatsSurveyIfEnabled(
   auto survey_data = permissions::PermissionHatsTriggerHelper::
       SurveyProductSpecificData::PopulateFrom(prompt_parameters);
 
-  hats_service->LaunchSurvey(kHatsSurveyTriggerPermissionsPostPrompt,
-                             base::DoNothing(), base::DoNothing(),
+  hats_service->LaunchSurvey(kHatsSurveyTriggerPermissionsPrompt,
+                             std::move(hats_shown_callback), base::DoNothing(),
                              survey_data.survey_bits_data,
                              survey_data.survey_string_data);
 }
@@ -358,17 +359,21 @@ void ChromePermissionsClient::OnPromptResolved(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  TriggerPostPromptHatsSurveyIfEnabled(
-      profile, request_type, action, prompt_disposition,
-      prompt_disposition_reason, gesture_type, prompt_display_duration);
+  TriggerPromptHatsSurveyIfEnabled(
+      web_contents->GetBrowserContext(), request_type,
+      absl::make_optional(action), prompt_disposition,
+      prompt_disposition_reason, gesture_type,
+      absl::make_optional(prompt_display_duration), true, base::DoNothing());
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 absl::optional<bool>
 ChromePermissionsClient::HadThreeConsecutiveNotificationPermissionDenies(
     content::BrowserContext* browser_context) {
-  if (!QuietNotificationPermissionUiConfig::IsAdaptiveActivationDryRunEnabled())
+  if (!QuietNotificationPermissionUiConfig::
+          IsAdaptiveActivationDryRunEnabled()) {
     return absl::nullopt;
+  }
   return Profile::FromBrowserContext(browser_context)
       ->GetPrefs()
       ->GetBoolean(prefs::kHadThreeConsecutiveNotificationPermissionDenies);

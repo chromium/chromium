@@ -14,9 +14,6 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_uma_util.h"
 
-constexpr char kTrueStr[] = "true";
-constexpr char kFalseStr[] = "false";
-
 namespace {
 
 std::vector<std::string> SplitCsvString(const std::string& csv_string) {
@@ -25,7 +22,6 @@ std::vector<std::string> SplitCsvString(const std::string& csv_string) {
 }
 
 bool StringMatchesFilter(const std::string& string, const std::string& filter) {
-  DCHECK(!string.empty());
   return filter.empty() ||
          base::ranges::any_of(SplitCsvString(filter),
                               [string](base::StringPiece current_filter) {
@@ -40,37 +36,43 @@ GetKeyToValueFilterPairMap(
         prompt_parameters) {
   // configuration key -> {current value for key, configured filter for key}
   return {
-      {permissions::kPermissionsPostPromptSurveyPromptDispositionKey,
+      {permissions::kPermissionsPromptSurveyPromptDispositionKey,
        {permissions::PermissionUmaUtil::GetPromptDispositionString(
             prompt_parameters.prompt_disposition),
         permissions::feature_params::
-            kPermissionsPostPromptSurveyPromptDispositionFilter.Get()}},
-      {permissions::kPermissionsPostPromptSurveyPromptDispositionReasonKey,
+            kPermissionsPromptSurveyPromptDispositionFilter.Get()}},
+      {permissions::kPermissionsPromptSurveyPromptDispositionReasonKey,
        {permissions::PermissionUmaUtil::GetPromptDispositionReasonString(
             prompt_parameters.prompt_disposition_reason),
         permissions::feature_params::
-            kPermissionsPostPromptSurveyPromptDispositionReasonFilter.Get()}},
-      {permissions::kPermissionsPostPromptSurveyActionKey,
-       {permissions::PermissionUmaUtil::GetPermissionActionString(
-            prompt_parameters.action),
-        permissions::feature_params::kPermissionsPostPromptSurveyActionFilter
+            kPermissionsPromptSurveyPromptDispositionReasonFilter.Get()}},
+      {permissions::kPermissionsPromptSurveyActionKey,
+       {prompt_parameters.action.has_value()
+            ? permissions::PermissionUmaUtil::GetPermissionActionString(
+                  prompt_parameters.action.value())
+            : "",
+        permissions::feature_params::kPermissionsPromptSurveyActionFilter
             .Get()}},
-      {permissions::kPermissionsPostPromptSurveyRequestTypeKey,
+      {permissions::kPermissionsPromptSurveyRequestTypeKey,
        {permissions::PermissionUmaUtil::GetRequestTypeString(
             prompt_parameters.request_type),
-        permissions::feature_params::
-            kPermissionsPostPromptSurveyRequestTypeFilter.Get()}},
-      {permissions::kPermissionsPostPromptSurveyHadGestureKey,
+        permissions::feature_params::kPermissionsPromptSurveyRequestTypeFilter
+            .Get()}},
+      {permissions::kPermissionsPromptSurveyHadGestureKey,
        {prompt_parameters.gesture_type ==
                 permissions::PermissionRequestGestureType::GESTURE
-            ? kTrueStr
-            : kFalseStr,
-        permissions::feature_params::
-            kPermissionsPostPromptSurveyHadGestureFilter.Get()}},
-      {permissions::kPermissionsPostPromptSurveyReleaseChannelKey,
+            ? permissions::kTrueStr
+            : permissions::kFalseStr,
+        permissions::feature_params::kPermissionsPromptSurveyHadGestureFilter
+            .Get()}},
+      {permissions::kPermissionsPromptSurveyReleaseChannelKey,
        {prompt_parameters.channel,
-        permissions::feature_params::
-            kPermissionPostPromptSurveyReleaseChannelFilter.Get()}}};
+        permissions::feature_params::kPermissionPromptSurveyReleaseChannelFilter
+            .Get()}},
+      {permissions::kPermissionsPromptSurveyDisplayTimeKey,
+       {prompt_parameters.survey_display_time,
+        permissions::feature_params::kPermissionsPromptSurveyDisplayTime
+            .Get()}}};
 }
 
 // Typos in the gcl configuration cannot be verified and may be missed by
@@ -81,9 +83,17 @@ GetKeyToValueFilterPairMap(
 bool IsValidConfiguration(
     permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS
         prompt_parameters) {
+  auto filter_pair_map = GetKeyToValueFilterPairMap(prompt_parameters);
+
+  if (filter_pair_map[permissions::kPermissionsPromptSurveyDisplayTimeKey]
+          .second.empty()) {
+    // When no display time is configured, the survey should never be triggered.
+    return false;
+  }
+
   // Returns false if all filter parameters are empty.
   return !base::ranges::all_of(
-      GetKeyToValueFilterPairMap(prompt_parameters),
+      filter_pair_map,
       [](std::pair<std::string, std::pair<std::string, std::string>> entry) {
         return entry.second.second.empty();
       });
@@ -95,20 +105,25 @@ namespace permissions {
 
 PermissionHatsTriggerHelper::PromptParametersForHaTS::PromptParametersForHaTS(
     permissions::RequestType request_type,
-    permissions::PermissionAction action,
+    absl::optional<permissions::PermissionAction> action,
     permissions::PermissionPromptDisposition prompt_disposition,
     permissions::PermissionPromptDispositionReason prompt_disposition_reason,
     permissions::PermissionRequestGestureType gesture_type,
     std::string channel,
-    base::TimeDelta prompt_display_duration)
+    std::string survey_display_time,
+    absl::optional<base::TimeDelta> prompt_display_duration)
     : request_type(request_type),
       action(action),
       prompt_disposition(prompt_disposition),
       prompt_disposition_reason(prompt_disposition_reason),
       gesture_type(gesture_type),
       channel(channel),
+
+      survey_display_time(survey_display_time),
       prompt_display_duration(prompt_display_duration) {}
 
+PermissionHatsTriggerHelper::PromptParametersForHaTS::PromptParametersForHaTS(
+    const PromptParametersForHaTS& other) = default;
 PermissionHatsTriggerHelper::PromptParametersForHaTS::
     ~PromptParametersForHaTS() = default;
 
@@ -125,13 +140,14 @@ PermissionHatsTriggerHelper::SurveyProductSpecificData
 PermissionHatsTriggerHelper::SurveyProductSpecificData::PopulateFrom(
     PromptParametersForHaTS prompt_parameters) {
   const static std::vector<std::string> product_specific_bits_fields = {
-      kPermissionsPostPromptSurveyHadGestureKey};
+      kPermissionsPromptSurveyHadGestureKey};
   const static std::vector<std::string> product_specific_string_fields{
-      kPermissionsPostPromptSurveyPromptDispositionKey,
-      kPermissionsPostPromptSurveyPromptDispositionReasonKey,
-      kPermissionsPostPromptSurveyActionKey,
-      kPermissionsPostPromptSurveyRequestTypeKey,
-      kPermissionsPostPromptSurveyReleaseChannelKey};
+      kPermissionsPromptSurveyPromptDispositionKey,
+      kPermissionsPromptSurveyPromptDispositionReasonKey,
+      kPermissionsPromptSurveyActionKey,
+      kPermissionsPromptSurveyRequestTypeKey,
+      kPermissionsPromptSurveyReleaseChannelKey,
+      kPermissionsPromptSurveyDisplayTimeKey};
   auto key_to_value_filter_pair = GetKeyToValueFilterPairMap(prompt_parameters);
 
   std::map<std::string, bool> bits_data;
@@ -156,7 +172,7 @@ PermissionHatsTriggerHelper::SurveyProductSpecificData::PopulateFrom(
   return SurveyProductSpecificData(bits_data, string_data);
 }
 
-bool PermissionHatsTriggerHelper::ArePostPromptTriggerCriteriaSatisfied(
+bool PermissionHatsTriggerHelper::ArePromptTriggerCriteriaSatisfied(
     PromptParametersForHaTS prompt_parameters) {
   if (!IsValidConfiguration(prompt_parameters)) {
     return false;
@@ -165,7 +181,7 @@ bool PermissionHatsTriggerHelper::ArePostPromptTriggerCriteriaSatisfied(
   if (prompt_parameters.action == permissions::PermissionAction::IGNORED &&
       prompt_parameters.prompt_display_duration >
           permissions::feature_params::
-              kPermissionPostPromptSurveyIgnoredPromptsMaximumAge.Get()) {
+              kPermissionPromptSurveyIgnoredPromptsMaximumAge.Get()) {
     return false;
   }
 

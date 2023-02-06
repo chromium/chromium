@@ -247,6 +247,8 @@ class PermissionRequestManager
     return !pending_permission_requests_.IsEmpty();
   }
 
+  void SetHatsShownCallback(base::OnceCallback<void()> callback) override;
+
  private:
   friend class test::PermissionRequestManagerTestApi;
   friend class content::WebContentsUserData<PermissionRequestManager>;
@@ -476,6 +478,8 @@ class PermissionRequestManager
   // A timer is used to pre-ignore the permission request if it's been displayed
   // as a quiet chip.
   base::OneShotTimer preignore_timer_;
+
+  absl::optional<base::OnceCallback<void()>> hats_shown_callback_;
 
   base::WeakPtrFactory<PermissionRequestManager> weak_factory_{this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();
