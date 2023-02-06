@@ -1507,6 +1507,10 @@ BASE_FEATURE(kEarlyExitOnNoopClassOrStyleChange,
 // TODO(mahesh.ma): Enable for supported Android versions once feature is ready.
 BASE_FEATURE(kStylusWritingToInput,
              "StylusWritingToInput",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidExtendedEditingCommands,
+             "AndroidExtendedEditingCommands",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStylusPointerAdjustment,

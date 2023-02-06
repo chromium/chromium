@@ -182,6 +182,9 @@ const KeyboardCodeKeyDownEntry kKeyboardCodeKeyDownEntries[] = {
     {VKEY_BACK, kAltKey | kShiftKey, "Redo"},
 #endif
     {VKEY_INSERT, 0, "OverWrite"},
+#if BUILDFLAG(IS_ANDROID)
+    {VKEY_BACK, kAltKey, "DeleteToBeginningOfLine"},
+#endif
 };
 
 const KeyboardCodeKeyPressEntry kKeyboardCodeKeyPressEntries[] = {

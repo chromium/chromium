@@ -124,6 +124,8 @@ blink_core_sources_editing = [
   "editor.cc",
   "editor.h",
   "editor_key_bindings.cc",
+  "commands/editing_command_filter.h",
+  "commands/editing_command_filter.cc",
   "element_inner_text.cc",
   "ephemeral_range.cc",
   "ephemeral_range.h",
