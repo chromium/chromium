@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/code_coverage/create_js_source_maps/create_js_source_maps.gni")
+import(
+    "//tools/code_coverage/js_source_maps/create_js_source_maps/create_js_source_maps.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 
 template("preprocess_if_expr_sourcemaps") {

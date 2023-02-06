@@ -10,8 +10,8 @@
 import fs from 'fs';
 import path from 'path';
 
-import {ArgumentParser} from '../../../third_party/js_code_coverage/node_modules/argparse/argparse.js';
-import {SourceMapConsumer, SourceMapGenerator} from '../../../third_party/js_code_coverage/node_modules/source-map/source-map.js';
+import {ArgumentParser} from '../../../../third_party/js_code_coverage/node_modules/argparse/argparse.js';
+import {SourceMapConsumer, SourceMapGenerator} from '../../../../third_party/js_code_coverage/node_modules/source-map/source-map.js';
 
 /**
  * The prefix comment that indicates a data URL containing the sourcemap.

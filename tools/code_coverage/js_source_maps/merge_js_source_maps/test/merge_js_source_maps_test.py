@@ -11,7 +11,6 @@ import sys
 import tempfile
 import unittest
 
-from parameterized import parameterized
 from pathlib import Path
 
 _HERE_DIR = Path(__file__).parent.resolve()
@@ -22,9 +21,10 @@ _SOURCE_MAP_MERGER = (_HERE_DIR.parent / 'merge_js_source_maps.js').resolve()
 _SOURCE_MAP_TRANSLATOR = (_HERE_DIR.parent.parent / 'create_js_source_maps' /
                           'test' / 'translate_source_map.js').resolve()
 
-_NODE_PATH = (_HERE_DIR.parent.parent.parent.parent / 'third_party' /
+_NODE_PATH = (_HERE_DIR.parent.parent.parent.parent.parent / 'third_party' /
               'node').resolve()
 sys.path.append(str(_NODE_PATH))
+
 import node
 
 _SOURCE_MAPPING_DATA_URL_PREFIX = \
@@ -133,6 +133,12 @@ class MergeSourceMapsTest(unittest.TestCase):
       for line_num in range(len(original_file_lines)):
         stripped_original_line = original_file_lines[line_num].strip()
         stripped_source_line = source_file_lines[line_num].strip()
+        # TODO(b:265973389) The sourcemap was generated with old license and
+        # hence will have the old license header. Remove this
+        # once we have an updated sourcemap.
+        if (stripped_original_line == "// Copyright 2022 The Chromium Authors"):
+          stripped_original_line = (stripped_original_line +
+                                    ". All rights reserved.")
 
         # Verify line by line that the sourceContent matches the actual source.
         # This ensures the file are appropriately passed along the pipeline.

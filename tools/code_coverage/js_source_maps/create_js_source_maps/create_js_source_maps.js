@@ -12,8 +12,8 @@
 import fs from 'fs';
 import path from 'path';
 
-import {ArgumentParser} from '../../../third_party/js_code_coverage/node_modules/argparse/argparse.js';
-import {SourceMapGenerator} from '../../../third_party/js_code_coverage/node_modules/source-map/source-map.js';
+import {ArgumentParser} from '../../../../third_party/js_code_coverage/node_modules/argparse/argparse.js';
+import {SourceMapGenerator} from '../../../../third_party/js_code_coverage/node_modules/source-map/source-map.js';
 
 // Regex matching the comment indicating that preprocess_if_expr removed lines.
 // The capture group contains the number of lines removed. Must match the

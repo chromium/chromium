@@ -20,7 +20,7 @@ _SOURCE_MAP_PROCESSOR = (_HERE_DIR.parent /
 _SOURCE_MAP_TRANSLATOR = (_HERE_DIR / 'translate_source_map.js').resolve()
 _SOURCE_MAP_PREFIX = b'//# sourceMappingURL=data:application/json;base64,'
 
-_NODE_PATH = (_HERE_DIR.parent.parent.parent.parent / 'third_party' /
+_NODE_PATH = (_HERE_DIR.parent.parent.parent.parent.parent / 'third_party' /
               'node').resolve()
 sys.path.append(str(_NODE_PATH))
 import node

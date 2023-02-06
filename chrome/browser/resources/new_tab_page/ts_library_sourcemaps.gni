@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/code_coverage/merge_js_source_maps/merge_js_source_maps.gni")
+import(
+    "//tools/code_coverage/js_source_maps/merge_js_source_maps/merge_js_source_maps.gni")
 import("//tools/typescript/ts_library.gni")
 
 template("ts_library_sourcemaps") {

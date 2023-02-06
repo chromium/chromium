@@ -10,8 +10,8 @@
  * Helper for create_js_source_maps_test.py.
  */
 
-import {ArgumentParser} from '../../../../third_party/js_code_coverage/node_modules/argparse/argparse.js';
-import {SourceMapConsumer} from '../../../../third_party/js_code_coverage/node_modules/source-map/source-map.js';
+import {ArgumentParser} from '../../../../../third_party/js_code_coverage/node_modules/argparse/argparse.js';
+import {SourceMapConsumer} from '../../../../../third_party/js_code_coverage/node_modules/source-map/source-map.js';
 
 const parser = new ArgumentParser({
   description: 'Applies a JavaScript sourcemap to a line and column number',
