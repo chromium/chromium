@@ -107,7 +107,7 @@ std::unique_ptr<SystemNudgeLabel> ClipboardNudge::CreateLabelView() const {
           use_launcher_key),
       gfx::Size(kKeyboardShortcutIconSize, kKeyboardShortcutIconSize)));
   keyboard_shortcut_icon->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::TLBR(2, 4, 0, -2)));
+      views::CreateEmptyBorder(gfx::Insets::TLBR(2, 4, 0, 0)));
 
   // Transfer shortcut icon ownership to the label.
   label->AddCustomView(std::move(keyboard_shortcut_icon), offset);
