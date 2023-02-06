@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/containers/enum_set.h"
+#include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,6 +15,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -334,12 +336,20 @@ void SyncConfirmationUI::InitializeForSyncDisabled(
       "sync_disabled_confirmation_app.html.js",
       IDR_SIGNIN_SYNC_CONFIRMATION_SYNC_DISABLED_CONFIRMATION_APP_HTML_JS);
 
+  bool managed_account_signout_disallowed =
+      base::FeatureList::IsEnabled(kDisallowManagedProfileSignout) &&
+      chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
+
+  source->AddBoolean("signoutDisallowed", managed_account_signout_disallowed);
   AddStringResource(source, "syncDisabledConfirmationTitle",
                     IDS_SYNC_DISABLED_CONFIRMATION_CHROME_SYNC_TITLE);
   AddStringResource(source, "syncDisabledConfirmationDetails",
                     IDS_SYNC_DISABLED_CONFIRMATION_DETAILS);
-  AddStringResource(source, "syncDisabledConfirmationConfirmLabel",
-                    IDS_SYNC_DISABLED_CONFIRMATION_CONFIRM_BUTTON_LABEL);
+  AddStringResource(
+      source, "syncDisabledConfirmationConfirmLabel",
+      managed_account_signout_disallowed
+          ? IDS_SYNC_DISABLED_CONFIRMATION_CONFIRM_BUTTON_MANAGED_ACCOUNT_SIGNOUT_DISALLOWED_LABEL
+          : IDS_SYNC_DISABLED_CONFIRMATION_CONFIRM_BUTTON_LABEL);
   AddStringResource(source, "syncDisabledConfirmationUndoLabel",
                     IDS_SYNC_DISABLED_CONFIRMATION_UNDO_BUTTON_LABEL);
 }

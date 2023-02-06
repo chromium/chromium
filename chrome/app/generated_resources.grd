@@ -10528,6 +10528,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_SYNC_DISABLED_CONFIRMATION_CONFIRM_BUTTON_LABEL" desc="Label of the confirmation button in the sync confirmation dialog of the tab modal signin flow">
         Sign in anyway
       </message>
+      <message name="IDS_SYNC_DISABLED_CONFIRMATION_CONFIRM_BUTTON_MANAGED_ACCOUNT_SIGNOUT_DISALLOWED_LABEL" desc="Label of the confirmation button in the sync confirmation dialog of the tab modal signin flow">
+        Continue
+      </message>
       <message name="IDS_SYNC_DISABLED_CONFIRMATION_UNDO_BUTTON_LABEL" desc="Label of the undo button in the sync confirmation dialog of the tab modal signin flow">
         Cancel sign in
       </message>

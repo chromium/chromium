@@ -34,7 +34,8 @@
         consent-confirmation on-click="onConfirm_">
       $i18n{syncDisabledConfirmationConfirmLabel}
     </cr-button>
-    <cr-button id="undoButton" on-click="onUndo_">
+    <cr-button id="undoButton" on-click="onUndo_"
+        hidden="[[signoutDisallowed_]]">
       $i18n{syncDisabledConfirmationUndoLabel}
     </cr-button>
   </div>
