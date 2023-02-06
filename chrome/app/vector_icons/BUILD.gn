@@ -90,7 +90,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "navigate_stop_touch.icon",
     "new_tab_in_group.icon",
     "nfc.icon",
-    "note.icon",
+    "note_outline.icon",
     "overflow_chevron.icon",
     "paintbrush.icon",
     "palette.icon",
