@@ -20,6 +20,8 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {BaseMixin} from '../base_mixin.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckNotificationsModuleInteractions} from '../metrics_browser_proxy.js';
+import {routes} from '../route.js';
+import {Route, RouteObserverMixin} from '../router.js';
 import {MODEL_UPDATE_DELAY_MS} from '../site_settings/constants.js';
 import {TooltipMixin} from '../tooltip_mixin.js';
 
@@ -45,8 +47,8 @@ enum Actions {
 }
 
 const SettingsReviewNotificationPermissionsElementBase =
-    TooltipMixin(WebUiListenerMixin(
-        BaseMixin(SiteSettingsMixin(I18nMixin(PolymerElement)))));
+    TooltipMixin(WebUiListenerMixin(RouteObserverMixin(
+        BaseMixin(SiteSettingsMixin(I18nMixin(PolymerElement))))));
 
 export class SettingsReviewNotificationPermissionsElement extends
     SettingsReviewNotificationPermissionsElementBase {
@@ -127,7 +129,6 @@ export class SettingsReviewNotificationPermissionsElement extends
       MetricsBrowserProxyImpl.getInstance();
 
   override async connectedCallback() {
-    super.connectedCallback();
     // Register for review notification permission list updates.
     this.addWebUiListener(
         'notification-permission-review-list-maybe-changed',
@@ -135,22 +136,33 @@ export class SettingsReviewNotificationPermissionsElement extends
             this.onReviewNotificationPermissionListChanged_(sites));
 
     this.sites_ = await this.browserProxy_.getNotificationPermissionReview();
-    this.metricsBrowserProxy_.recordSafetyCheckNotificationsListCountHistogram(
-        this.sites_.length);
     this.sitesLoaded_ = true;
 
     this.eventTracker_.add(
         document, 'keydown', (e: Event) => this.onKeyDown_(e as KeyboardEvent));
 
-    this.metricsBrowserProxy_
-        .recordSafetyCheckNotificationsModuleInteractionsHistogram(
-            SafetyCheckNotificationsModuleInteractions.OPEN_REVIEW_UI);
+    // This should be called after the sites have been retrieved such that
+    // currentRouteChanged is called afterwards.
+    super.connectedCallback();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.eventTracker_.removeAll();
+  }
+
+  override currentRouteChanged(currentRoute: Route) {
+    if (currentRoute !== routes.SITE_SETTINGS_NOTIFICATIONS) {
+      return;
+    }
+    // Only record the metrics when the user navigates to the notification
+    // settings page that shows the review notifications module.
+    this.metricsBrowserProxy_.recordSafetyCheckNotificationsListCountHistogram(
+        this.sites_.length);
+    this.metricsBrowserProxy_
+        .recordSafetyCheckNotificationsModuleInteractionsHistogram(
+            SafetyCheckNotificationsModuleInteractions.OPEN_REVIEW_UI);
   }
 
   /* Show action menu when clicked to three dot menu. */

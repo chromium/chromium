@@ -23,6 +23,8 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckUnusedSitePermissionsModuleInteractions} from '../metrics_browser_proxy.js';
+import {routes} from '../route.js';
+import {Route, RouteObserverMixin} from '../router.js';
 import {ContentSettingsTypes, MODEL_UPDATE_DELAY_MS} from '../site_settings/constants.js';
 import {SiteSettingsMixin} from '../site_settings/site_settings_mixin.js';
 import {SiteSettingsPermissionsBrowserProxy, SiteSettingsPermissionsBrowserProxyImpl, UnusedSitePermissions} from '../site_settings/site_settings_permissions_browser_proxy.js';
@@ -51,8 +53,8 @@ interface UnusedSitePermissionsDisplay extends UnusedSitePermissions {
   visible: boolean;
 }
 
-const SettingsUnusedSitePermissionsElementBase = TooltipMixin(
-    I18nMixin(WebUiListenerMixin(SiteSettingsMixin(PolymerElement))));
+const SettingsUnusedSitePermissionsElementBase = TooltipMixin(I18nMixin(
+    RouteObserverMixin(WebUiListenerMixin(SiteSettingsMixin(PolymerElement)))));
 
 export class SettingsUnusedSitePermissionsElement extends
     SettingsUnusedSitePermissionsElementBase {
@@ -142,8 +144,6 @@ export class SettingsUnusedSitePermissionsElement extends
   private shouldRefocusExpandButton_: boolean = false;
 
   override async connectedCallback() {
-    super.connectedCallback();
-
     this.addWebUiListener(
         'unused-permission-review-list-maybe-changed',
         (sites: UnusedSitePermissions[]) =>
@@ -151,9 +151,22 @@ export class SettingsUnusedSitePermissionsElement extends
 
     const sites =
         await this.browserProxy_.getRevokedUnusedSitePermissionsList();
-    this.metricsBrowserProxy_
-        .recordSafetyCheckUnusedSitePermissionsListCountHistogram(sites.length);
+
     this.onUnusedSitePermissionListChanged_(sites);
+    // This should be called after the sites have been retrieved such that
+    // currentRouteChanged is called afterwards.
+    super.connectedCallback();
+  }
+  override currentRouteChanged(currentRoute: Route) {
+    if (currentRoute !== routes.SITE_SETTINGS) {
+      return;
+    }
+    // Only record the metrics when the user navigates to the site settings page
+    // that shows the unused sites module.
+    assert(this.sites_);
+    this.metricsBrowserProxy_
+        .recordSafetyCheckUnusedSitePermissionsListCountHistogram(
+            this.sites_.length);
     this.metricsBrowserProxy_
         .recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram(
             SafetyCheckUnusedSitePermissionsModuleInteractions.OPEN_REVIEW_UI);

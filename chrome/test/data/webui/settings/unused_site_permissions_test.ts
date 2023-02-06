@@ -8,7 +8,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {ContentSettingsTypes, SettingsUnusedSitePermissionsElement, SiteSettingsPermissionsBrowserProxyImpl, UnusedSitePermissions} from 'chrome://settings/lazy_load.js';
-import {MetricsBrowserProxyImpl, SafetyCheckUnusedSitePermissionsModuleInteractions} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxyImpl, Router, routes, SafetyCheckUnusedSitePermissionsModuleInteractions, SettingsRoutes} from 'chrome://settings/settings.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -21,6 +21,7 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   let testElement: SettingsUnusedSitePermissionsElement;
+  let testRoutes: SettingsRoutes;
 
   const permissions = [
     ContentSettingsTypes.GEOLOCATION,
@@ -100,6 +101,7 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-unused-site-permissions');
     testElement.setModelUpdateDelayMsForTesting(0);
+    Router.getInstance().navigateTo(testRoutes.SITE_SETTINGS);
     document.body.appendChild(testElement);
     // Wait until the element has asked for the list of revoked permissions
     // that will be shown for review.
@@ -113,6 +115,10 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
     SiteSettingsPermissionsBrowserProxyImpl.setInstance(browserProxy);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
+    testRoutes = {
+      SITE_SETTINGS: routes.SITE_SETTINGS,
+    } as unknown as SettingsRoutes;
+    Router.resetInstanceForTesting(new Router(routes));
     await createPage();
     // Clear the metrics that were recorded as part of the initial creation of
     // the page.
@@ -120,7 +126,7 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
     assertInitialUi();
   });
 
-  test('Capture metric on visit', async function() {
+  test('Capture metrics on visit', async function() {
     await createPage();
     const result = await metricsBrowserProxy.whenCalled(
         'recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram');
