@@ -6,8 +6,10 @@
 
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -86,12 +88,27 @@ AutofillWalletUsageDataSyncBridge::ApplySyncChanges(
 
 void AutofillWalletUsageDataSyncBridge::GetData(StorageKeyList storage_keys,
                                                 DataCallback callback) {
-  NOTIMPLEMENTED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::ranges::sort(storage_keys);
+  auto filter_by_keys = base::BindRepeating(
+      [](const StorageKeyList& storage_keys, const std::string& usage_data_id) {
+        return base::ranges::binary_search(storage_keys, usage_data_id);
+      },
+      storage_keys);
+  if (std::unique_ptr<syncer::MutableDataBatch> batch =
+          GetDataAndFilter(filter_by_keys)) {
+    std::move(callback).Run(std::move(batch));
+  }
 }
 
 void AutofillWalletUsageDataSyncBridge::GetAllDataForDebugging(
     DataCallback callback) {
-  NOTIMPLEMENTED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (std::unique_ptr<syncer::MutableDataBatch> batch =
+          GetDataAndFilter(base::BindRepeating(
+              [](const std::string& usage_data_id) { return true; }))) {
+    std::move(callback).Run(std::move(batch));
+  }
 }
 
 std::string AutofillWalletUsageDataSyncBridge::GetClientTag(
@@ -133,6 +150,39 @@ void AutofillWalletUsageDataSyncBridge::LoadMetadata() {
     return;
   }
   change_processor()->ModelReadyToSync(std::move(batch));
+}
+
+std::unique_ptr<syncer::MutableDataBatch>
+AutofillWalletUsageDataSyncBridge::GetDataAndFilter(
+    base::RepeatingCallback<bool(const std::string&)> filter) {
+  std::vector<std::unique_ptr<VirtualCardUsageData>>
+      virtual_card_usage_data_list;
+  if (!GetAutofillTable()->GetAllVirtualCardUsageData(
+          &virtual_card_usage_data_list)) {
+    change_processor()->ReportError(
+        {FROM_HERE,
+         "Failed to load Autofill Wallet usage data data from table."});
+    return nullptr;
+  }
+
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+  for (const std::unique_ptr<VirtualCardUsageData>& virtual_card_usage_data :
+       virtual_card_usage_data_list) {
+    if (filter.Run(*virtual_card_usage_data->usage_data_id())) {
+      AutofillWalletUsageData usage_data =
+          AutofillWalletUsageData::ForVirtualCard(*virtual_card_usage_data);
+      auto entity_data = std::make_unique<syncer::EntityData>();
+      sync_pb::AutofillWalletUsageSpecifics* usage_specifics =
+          entity_data->specifics.mutable_autofill_wallet_usage();
+      SetAutofillWalletUsageSpecificsFromAutofillWalletUsageData(
+          usage_data, usage_specifics);
+
+      std::string storage_key = GetStorageKey(*entity_data);
+      entity_data->name = storage_key;
+      batch->Put(storage_key, std::move(entity_data));
+    }
+  }
+  return batch;
 }
 
 }  // namespace autofill
