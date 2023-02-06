@@ -308,6 +308,9 @@ struct WebAppInstallInfo {
   blink::mojom::CaptureLinks capture_links =
       blink::mojom::CaptureLinks::kUndefined;
 
+  // Whether the app should be loaded in a dedicated storage partition.
+  bool is_storage_isolated = false;
+
   // The window selection behaviour of app launches.
   absl::optional<blink::Manifest::LaunchHandler> launch_handler;
 

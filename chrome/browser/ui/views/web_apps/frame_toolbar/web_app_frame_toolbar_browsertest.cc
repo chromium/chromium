@@ -37,12 +37,9 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
-#include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
-#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -71,7 +68,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
@@ -472,17 +468,11 @@ class WebAppFrameToolbarBrowserTest_Borderless
 
     if (uses_borderless) {
       web_app_info->display_override = {web_app::DisplayMode::kBorderless};
+      web_app_info->is_storage_isolated = true;
     }
 
     web_app::AppId app_id = helper()->InstallAndLaunchCustomWebApp(
         browser(), std::move(web_app_info), start_url);
-
-    // TODO(b/267797051): Use IWA installation commands to install the app.
-    auto* provider = static_cast<web_app::FakeWebAppProvider*>(
-        web_app::WebAppProvider::GetForTest(browser()->profile()));
-    provider->GetRegistrarMutable().registry()[app_id]->SetIsolationData(
-        web_app::IsolationData(web_app::IsolationData::DevModeProxy{
-            .proxy_url = url::Origin::Create(start_url)}));
 
     // Inside LoadBorderlessTestPageWithDataAndGetURL() the title is set on
     // window.onload. This is to make sure that the web contents have loaded

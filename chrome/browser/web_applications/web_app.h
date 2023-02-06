@@ -249,6 +249,8 @@ class WebApp {
     return manifest_id_;
   }
 
+  bool IsStorageIsolated() const { return is_storage_isolated_; }
+
   const absl::optional<LaunchHandler>& launch_handler() const {
     return launch_handler_;
   }
@@ -385,6 +387,7 @@ class WebApp {
   void SetManifestUrl(const GURL& manifest_url);
   void SetManifestId(const absl::optional<std::string>& manifest_id);
   void SetWindowControlsOverlayEnabled(bool enabled);
+  void SetStorageIsolated(bool is_storage_isolated);
   void SetLaunchHandler(absl::optional<LaunchHandler> launch_handler);
   void SetParentAppId(const absl::optional<AppId>& parent_app_id);
   void SetPermissionsPolicy(blink::ParsedPermissionsPolicy permissions_policy);
@@ -499,6 +502,7 @@ class WebApp {
   OsIntegrationState file_handler_os_integration_state_ =
       OsIntegrationState::kDisabled;
   bool window_controls_overlay_enabled_ = false;
+  bool is_storage_isolated_ = false;
   absl::optional<LaunchHandler> launch_handler_;
   absl::optional<AppId> parent_app_id_;
   blink::ParsedPermissionsPolicy permissions_policy_;
