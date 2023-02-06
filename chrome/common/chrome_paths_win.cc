@@ -32,8 +32,8 @@ bool GetUserDirectory(int csidl_folder, base::FilePath* result) {
   // so we don't bother handling it.
   wchar_t path_buf[MAX_PATH];
   path_buf[0] = 0;
-  if (FAILED(SHGetFolderPath(NULL, csidl_folder, NULL,
-                             SHGFP_TYPE_CURRENT, path_buf))) {
+  if (FAILED(::SHGetFolderPath(nullptr, csidl_folder, nullptr,
+                               SHGFP_TYPE_CURRENT, path_buf))) {
     return false;
   }
   *result = base::FilePath(path_buf);
@@ -80,16 +80,13 @@ bool GetUserDownloadsDirectorySafe(base::FilePath* result) {
   return true;
 }
 
-// On Vista and higher, use the downloads known folder. Since it can be
-// relocated to point to a "dangerous" folder, callers should validate that the
-// returned path is not dangerous before using it.
+// Get the downloads known folder. Since it can be relocated to point to a
+// "dangerous" folder, callers should validate that the returned path is not
+// dangerous before using it.
 bool GetUserDownloadsDirectory(base::FilePath* result) {
-  typedef HRESULT (WINAPI *GetKnownFolderPath)(
-      REFKNOWNFOLDERID, DWORD, HANDLE, PWSTR*);
-  GetKnownFolderPath f = reinterpret_cast<GetKnownFolderPath>(
-      GetProcAddress(GetModuleHandle(L"shell32.dll"), "SHGetKnownFolderPath"));
   base::win::ScopedCoMem<wchar_t> path_buf;
-  if (f && SUCCEEDED(f(FOLDERID_Downloads, 0, NULL, &path_buf))) {
+  if (SUCCEEDED(
+          ::SHGetKnownFolderPath(FOLDERID_Downloads, 0, nullptr, &path_buf))) {
     *result = base::FilePath(std::wstring(path_buf));
     return true;
   }
