@@ -8,7 +8,6 @@
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
-#include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
@@ -185,11 +184,7 @@ void OneDriveUploadHandler::OnIOTaskStatus(
     case file_manager::io_task::State::kSuccess:
       notification_manager_->ShowUploadProgress(100);
       DCHECK_EQ(status.outputs.size(), 1u);
-      file_manager::util::ShowItemInFolder(
-          profile_, status.outputs[0].url.path(),
-          base::BindOnce(&OneDriveUploadHandler::OnShowItemInFolder,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         status.outputs[0].url));
+      OnEndUpload(status.outputs[0].url);
       return;
     case file_manager::io_task::State::kCancelled:
       OnEndUpload(FileSystemURL(), "Move error: kCancelled");
@@ -201,13 +196,6 @@ void OneDriveUploadHandler::OnIOTaskStatus(
       OnEndUpload(FileSystemURL(), "Move error: kNeedPassword");
       return;
   }
-}
-
-void OneDriveUploadHandler::OnShowItemInFolder(
-    const FileSystemURL uploaded_file_url,
-    platform_util::OpenOperationResult result) {
-  LogErrorOnShowItemInFolder(result);
-  OnEndUpload(uploaded_file_url);
 }
 
 }  // namespace ash::cloud_upload

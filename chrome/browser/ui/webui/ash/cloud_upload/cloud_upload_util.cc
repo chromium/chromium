@@ -32,31 +32,4 @@ void CreateDirectoryOnIOThread(
       std::move(complete_callback));
 }
 
-void LogErrorOnShowItemInFolder(platform_util::OpenOperationResult result) {
-  if (result == platform_util::OPEN_SUCCEEDED) {
-    return;
-  }
-  std::string error_string = "";
-  switch (result) {
-    case platform_util::OpenOperationResult::OPEN_SUCCEEDED:
-      error_string = "OPEN_SUCCEEDED";
-      break;
-    case platform_util::OpenOperationResult::OPEN_FAILED_PATH_NOT_FOUND:
-      error_string = "OPEN_FAILED_PATH_NOT_FOUND";
-      break;
-    case platform_util::OpenOperationResult::OPEN_FAILED_INVALID_TYPE:
-      error_string = "OPEN_FAILED_INVALID_TYPE";
-      break;
-    case platform_util::OpenOperationResult::
-        OPEN_FAILED_NO_HANLDER_FOR_FILE_TYPE:
-      error_string = "OPEN_FAILED_NO_HANLDER_FOR_FILE_TYPE";
-      break;
-    case platform_util::OpenOperationResult::OPEN_FAILED_FILE_ERROR:
-      error_string = "OPEN_FAILED_FILE_ERROR";
-      break;
-  }
-  LOG(ERROR) << "Failed to show destination file in Files app : "
-             << error_string;
-}
-
 }  // namespace ash::cloud_upload

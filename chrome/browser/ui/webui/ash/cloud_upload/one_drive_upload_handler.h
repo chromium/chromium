@@ -63,11 +63,6 @@ class OneDriveUploadHandler
   void OnIOTaskStatus(
       const ::file_manager::io_task::ProgressStatus& status) override;
 
-  // Called after the the request has been made to open files app on the
-  // destination file.
-  void OnShowItemInFolder(const storage::FileSystemURL uploaded_file_url,
-                          platform_util::OpenOperationResult result);
-
   Profile* const profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   ::file_manager::io_task::IOTaskController* io_task_controller_;

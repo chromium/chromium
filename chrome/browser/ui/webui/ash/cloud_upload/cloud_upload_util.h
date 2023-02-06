@@ -32,10 +32,6 @@ void CreateDirectoryOnIOThread(
     storage::FileSystemURL destination_folder_url,
     base::OnceCallback<void(base::File::Error)> complete_callback);
 
-// After Files app has been opened on a given location, this is used as callback
-// to log any encountered error.
-void LogErrorOnShowItemInFolder(platform_util::OpenOperationResult result);
-
 }  // namespace ash::cloud_upload
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_UTIL_H_
