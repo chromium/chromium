@@ -76,6 +76,9 @@ constexpr char kUDPNetworkFailuresHistogramName[] =
 class MockOpenNetworkContext : public content::test::MockNetworkContext {
  public:
   explicit MockOpenNetworkContext(net::Error result) : result_(result) {}
+  MockOpenNetworkContext(net::Error result,
+                         base::StringPiece host_mapping_rules)
+      : MockNetworkContext(host_mapping_rules), result_(result) {}
 
   ~MockOpenNetworkContext() override = default;
 
@@ -200,8 +203,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_Success_Hostname) {
   const std::string mapping_rules =
       base::StringPrintf("MAP %s %s", kExampleHostname, kExampleAddress);
 
-  MockOpenNetworkContext mock_network_context(net::OK);
-  mock_network_context.set_host_mapping_rules(mapping_rules);
+  MockOpenNetworkContext mock_network_context(net::OK, mapping_rules);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
   const std::string expected_result = base::StringPrintf(
       "openTcp succeeded: {remoteAddress: \"%s\", remotePort: 993}",
@@ -332,8 +334,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_Success_Hostname) {
   const std::string mapping_rules =
       base::StringPrintf("MAP %s %s", kExampleHostname, kExampleAddress);
 
-  MockOpenNetworkContext mock_network_context(net::OK);
-  mock_network_context.set_host_mapping_rules(mapping_rules);
+  MockOpenNetworkContext mock_network_context(net::OK, mapping_rules);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
   const std::string expected_result = base::StringPrintf(
       "openUdp succeeded: {remoteAddress: \"%s\", remotePort: 993}",

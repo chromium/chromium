@@ -6,19 +6,15 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/host_port_pair.h"
 #include "net/dns/host_resolver.h"
-#include "net/dns/mock_host_resolver.h"
-#include "services/network/public/mojom/host_resolver.mojom.h"
+#include "services/network/test/test_network_context_with_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,20 +39,14 @@ std::string CreateMappingRules(
   return base::JoinString(map_rules, ",");
 }
 
-class MockHostResolver : public network::mojom::HostResolver {
+class MockNetworkContext : public TestNetworkContextWithHostResolver {
  public:
-  explicit MockHostResolver(
-      mojo::PendingReceiver<network::mojom::HostResolver> resolver_receiver,
-      std::unique_ptr<net::HostResolver> internal_resolver)
-      : receiver_(this), internal_resolver_(std::move(internal_resolver)) {
-    receiver_.Bind(std::move(resolver_receiver));
-  }
+  explicit MockNetworkContext(std::unique_ptr<net::HostResolver> host_resolver)
+      : TestNetworkContextWithHostResolver(std::move(host_resolver)) {}
 
-  static std::unique_ptr<MockHostResolver> CreateHostResolver(
-      base::StringPiece host_mapping_rules,
-      mojo::PendingReceiver<network::mojom::HostResolver> receiver) {
-    return std::make_unique<MockHostResolver>(
-        std::move(receiver),
+  static std::unique_ptr<MockNetworkContext> CreateNetworkContext(
+      base::StringPiece host_mapping_rules) {
+    return std::make_unique<MockNetworkContext>(
         net::HostResolver::CreateStandaloneResolver(
             net::NetLog::Get(), /*options=*/absl::nullopt, host_mapping_rules,
             /*enable_caching=*/false));
@@ -74,59 +64,16 @@ class MockHostResolver : public network::mojom::HostResolver {
       ::mojo::PendingRemote<network::mojom::ResolveHostClient>
           pending_response_client) override {
     DCHECK(host->is_host_port_pair());
-
-    mojo::Remote<network::mojom::ResolveHostClient> response_client;
-    response_client.Bind(std::move(pending_response_client));
-
     if (reset_client_for_ == host->get_host_port_pair()) {
-      response_client.reset();
+      pending_response_client.reset();
       return;
     }
-
-    auto internal_request = internal_resolver_->CreateRequest(
-        host->get_host_port_pair(), network_anonymization_key,
-        net::NetLogWithSource::Make(net::NetLog::Get(),
-                                    net::NetLogSourceType::NONE),
-        absl::nullopt);
-
-    auto* ptr = internal_request.get();
-    auto [async_callback, sync_calback] =
-        base::SplitOnceCallback(base::BindOnce(
-            &MockHostResolver::OnComplete, base::Unretained(this),
-            std::move(response_client), std::move(internal_request)));
-
-    // See ResolveHostRequest::Start() for an explanation why only one callback
-    // will be invoked.
-    int rv = ptr->Start(std::move(async_callback));
-    if (rv != net::ERR_IO_PENDING) {
-      std::move(sync_calback).Run(rv);
-    }
-  }
-
-  void MdnsListen(
-      const ::net::HostPortPair& host,
-      ::net::DnsQueryType query_type,
-      ::mojo::PendingRemote<network::mojom::MdnsListenClient> response_client,
-      MdnsListenCallback callback) override {
-    NOTREACHED();
-  }
-
- protected:
-  void OnComplete(
-      mojo::Remote<network::mojom::ResolveHostClient> response_client,
-      std::unique_ptr<net::HostResolver::ResolveHostRequest> internal_request,
-      int error) {
-    response_client->OnComplete(
-        error, internal_request->GetResolveErrorInfo(),
-        base::OptionalFromPtr(internal_request->GetAddressResults()),
-        /*endpoint_results_with_metadata=*/absl::nullopt);
-    response_client.reset();
+    ResolveHostImpl(std::move(host), network_anonymization_key,
+                    std::move(optional_parameters),
+                    std::move(pending_response_client));
   }
 
   absl::optional<net::HostPortPair> reset_client_for_;
-
-  mojo::Receiver<network::mojom::HostResolver> receiver_;
-  std::unique_ptr<net::HostResolver> internal_resolver_;
 };
 
 class SimpleHostResolverTest : public testing::Test {
@@ -158,16 +105,10 @@ using ResolveHostFuture = base::test::TestFuture<
     const absl::optional<net::HostResolverEndpointResults>&>;
 
 TEST_F(SimpleHostResolverTest, ResolveFourAddresses) {
-  mojo::PendingReceiver<network::mojom::HostResolver> resolver_receiver;
-  mojo::PendingRemote<network::mojom::HostResolver> resolver_remote =
-      resolver_receiver.InitWithNewPipeAndPassRemote();
-
-  auto mock_resolver = MockHostResolver::CreateHostResolver(
+  auto network_context = MockNetworkContext::CreateNetworkContext(
       CreateMappingRules({{"example.test", "98.76.54.32"},
-                          {"another-example.test", "11.22.33.44"}}),
-      std::move(resolver_receiver));
-  auto simple_resolver =
-      SimpleHostResolver::CreateForTesting(std::move(resolver_remote));
+                          {"another-example.test", "11.22.33.44"}}));
+  auto simple_resolver = SimpleHostResolver::Create(network_context.get());
 
   // Send four ResolveHost requests:
   //   * #1 passes
@@ -194,7 +135,7 @@ TEST_F(SimpleHostResolverTest, ResolveFourAddresses) {
   for (auto [request, result] : test_cases) {
     auto future = std::make_unique<ResolveHostFuture>();
     if (request.reset_client) {
-      mock_resolver->SetResetClientFor(request.host_port_pair);
+      network_context->SetResetClientFor(request.host_port_pair);
     }
     simple_resolver->ResolveHost(
         network::mojom::HostResolverHost::NewHostPortPair(

@@ -11,8 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
-#include "base/notreached.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/test/test_future.h"
 #include "base/token.h"
 #include "content/public/browser/web_contents.h"
@@ -22,11 +21,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/base/host_port_pair.h"
-#include "net/base/network_isolation_key.h"
-#include "net/dns/host_resolver.h"
-#include "services/network/public/mojom/host_resolver.mojom.h"
-#include "services/network/test/test_network_context.h"
+#include "services/network/test/test_network_context_with_host_resolver.h"
 #include "services/network/test/test_restricted_udp_socket.h"
 #include "services/network/test/test_udp_socket.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -36,40 +31,6 @@ class Origin;
 }  // namespace url
 
 namespace content::test {
-
-// Mock Host Resolver for Direct Sockets browsertests.
-class MockHostResolver : public network::mojom::HostResolver {
- public:
-  explicit MockHostResolver(
-      mojo::PendingReceiver<network::mojom::HostResolver> resolver_receiver,
-      net::HostResolver* internal_resolver);
-
-  ~MockHostResolver() override;
-
-  MockHostResolver(const MockHostResolver&) = delete;
-  MockHostResolver& operator=(const MockHostResolver&) = delete;
-
-  void ResolveHost(
-      network::mojom::HostResolverHostPtr host,
-      const ::net::NetworkAnonymizationKey& network_anonymization_key,
-      network::mojom::ResolveHostParametersPtr optional_parameters,
-      ::mojo::PendingRemote<network::mojom::ResolveHostClient>
-          pending_response_client) override;
-
-  void MdnsListen(
-      const ::net::HostPortPair& host,
-      ::net::DnsQueryType query_type,
-      ::mojo::PendingRemote<network::mojom::MdnsListenClient> response_client,
-      MdnsListenCallback callback) override;
-
- protected:
-  virtual void OnComplete(int error);
-
-  std::unique_ptr<net::HostResolver::ResolveHostRequest> internal_request_;
-  mojo::Remote<network::mojom::ResolveHostClient> response_client_;
-  mojo::Receiver<network::mojom::HostResolver> receiver_;
-  const raw_ptr<net::HostResolver> internal_resolver_;
-};
 
 // Mock UDP Socket for Direct Sockets browsertests.
 class MockUDPSocket : public network::TestUDPSocket {
@@ -127,9 +88,10 @@ class MockRestrictedUDPSocket : public network::TestRestrictedUDPSocket {
 };
 
 // Mock Network Context for Direct Sockets browsertests.
-class MockNetworkContext : public network::TestNetworkContext {
+class MockNetworkContext : public network::TestNetworkContextWithHostResolver {
  public:
   MockNetworkContext();
+  explicit MockNetworkContext(base::StringPiece host_mapping_rules);
 
   MockNetworkContext(const MockNetworkContext&) = delete;
   MockNetworkContext& operator=(const MockNetworkContext&) = delete;
@@ -146,25 +108,14 @@ class MockNetworkContext : public network::TestNetworkContext {
       mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
       CreateRestrictedUDPSocketCallback callback) override;
 
-  void CreateHostResolver(
-      const absl::optional<net::DnsConfigOverrides>& config_overrides,
-      mojo::PendingReceiver<network::mojom::HostResolver> receiver) override;
-
   MockUDPSocket* get_udp_socket() {
     return static_cast<MockUDPSocket*>(restricted_udp_socket_->udp_socket());
-  }
-
-  void set_host_mapping_rules(std::string host_mapping_rules) {
-    host_mapping_rules_ = std::move(host_mapping_rules);
   }
 
  protected:
   virtual std::unique_ptr<MockUDPSocket> CreateMockUDPSocket(
       mojo::PendingRemote<network::mojom::UDPSocketListener> listener);
 
-  std::string host_mapping_rules_;
-  std::unique_ptr<net::HostResolver> internal_resolver_;
-  std::unique_ptr<network::mojom::HostResolver> host_resolver_;
   std::unique_ptr<MockRestrictedUDPSocket> restricted_udp_socket_;
 };
 

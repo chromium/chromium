@@ -530,6 +530,8 @@ source_set("test_support") {
     "test/test_network_context.h",
     "test/test_network_context_client.cc",
     "test/test_network_context_client.h",
+    "test/test_network_context_with_host_resolver.cc",
+    "test/test_network_context_with_host_resolver.h",
     "test/test_network_quality_tracker.cc",
     "test/test_network_quality_tracker.h",
     "test/test_resource_scheduler.h",

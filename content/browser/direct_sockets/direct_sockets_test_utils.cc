@@ -6,86 +6,17 @@
 
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
-#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/test_future.h"
-#include "base/types/optional_util.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/web_contents_tester.h"
+#include "net/dns/host_resolver.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "url/origin.h"
 
 namespace content::test {
-
-// MockHostResolver implementation
-
-MockHostResolver::MockHostResolver(
-    mojo::PendingReceiver<network::mojom::HostResolver> resolver_receiver,
-    net::HostResolver* internal_resolver)
-    : receiver_(this), internal_resolver_(internal_resolver) {
-  receiver_.Bind(std::move(resolver_receiver));
-}
-
-MockHostResolver::~MockHostResolver() = default;
-
-void MockHostResolver::ResolveHost(
-    network::mojom::HostResolverHostPtr host,
-    const ::net::NetworkAnonymizationKey& network_anonymization_key,
-    network::mojom::ResolveHostParametersPtr optional_parameters,
-    ::mojo::PendingRemote<network::mojom::ResolveHostClient>
-        pending_response_client) {
-  DCHECK(!internal_request_);
-  DCHECK(!response_client_.is_bound());
-
-  internal_request_ =
-      host->is_host_port_pair()
-          ? internal_resolver_->CreateRequest(
-                host->get_host_port_pair(), network_anonymization_key,
-                net::NetLogWithSource::Make(net::NetLog::Get(),
-                                            net::NetLogSourceType::NONE),
-                absl::nullopt)
-          : internal_resolver_->CreateRequest(
-                host->get_scheme_host_port(), network_anonymization_key,
-                net::NetLogWithSource::Make(net::NetLog::Get(),
-                                            net::NetLogSourceType::NONE),
-                absl::nullopt);
-
-  mojo::Remote<network::mojom::ResolveHostClient> response_client(
-      std::move(pending_response_client));
-
-  int rv = internal_request_->Start(
-      base::BindOnce(&MockHostResolver::OnComplete, base::Unretained(this)));
-  if (rv != net::ERR_IO_PENDING) {
-    response_client->OnComplete(
-        rv, internal_request_->GetResolveErrorInfo(),
-        base::OptionalFromPtr(internal_request_->GetAddressResults()),
-        /*endpoint_results_with_metadata=*/absl::nullopt);
-    return;
-  }
-
-  response_client_ = std::move(response_client);
-}
-
-void MockHostResolver::MdnsListen(
-    const ::net::HostPortPair& host,
-    ::net::DnsQueryType query_type,
-    ::mojo::PendingRemote<network::mojom::MdnsListenClient> response_client,
-    MdnsListenCallback callback) {
-  NOTIMPLEMENTED();
-}
-
-void MockHostResolver::OnComplete(int error) {
-  DCHECK(response_client_.is_bound());
-  DCHECK(internal_request_);
-
-  response_client_->OnComplete(
-      error, internal_request_->GetResolveErrorInfo(),
-      base::OptionalFromPtr(internal_request_->GetAddressResults()),
-      /*endpoint_results_with_metadata=*/absl::nullopt);
-  response_client_.reset();
-}
 
 // MockUDPSocket implementation
 
@@ -139,7 +70,17 @@ MockRestrictedUDPSocket::~MockRestrictedUDPSocket() = default;
 
 // MockNetworkContext implementation
 
-MockNetworkContext::MockNetworkContext() = default;
+MockNetworkContext::MockNetworkContext()
+    : MockNetworkContext(/*host_mapping_rules=*/"") {}
+
+MockNetworkContext::MockNetworkContext(base::StringPiece host_mapping_rules)
+    : network::TestNetworkContextWithHostResolver(
+          net::HostResolver::CreateStandaloneResolver(
+              net::NetLog::Get(),
+              /*options=*/absl::nullopt,
+              host_mapping_rules,
+              /*enable_caching=*/false)) {}
+
 MockNetworkContext::~MockNetworkContext() = default;
 
 void MockNetworkContext::CreateRestrictedUDPSocket(
@@ -155,16 +96,6 @@ void MockNetworkContext::CreateRestrictedUDPSocket(
   socket->Connect(addr, std::move(options), std::move(callback));
   restricted_udp_socket_ = std::make_unique<MockRestrictedUDPSocket>(
       std::move(socket), std::move(receiver));
-}
-
-void MockNetworkContext::CreateHostResolver(
-    const absl::optional<net::DnsConfigOverrides>& config_overrides,
-    mojo::PendingReceiver<network::mojom::HostResolver> receiver) {
-  internal_resolver_ = net::HostResolver::CreateStandaloneResolver(
-      net::NetLog::Get(), /*options=*/absl::nullopt, host_mapping_rules_,
-      /*enable_caching=*/false);
-  host_resolver_ = std::make_unique<MockHostResolver>(std::move(receiver),
-                                                      internal_resolver_.get());
 }
 
 std::unique_ptr<MockUDPSocket> MockNetworkContext::CreateMockUDPSocket(
