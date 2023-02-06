@@ -12,6 +12,13 @@ DevToolsAgentCoverageObserver::DevToolsAgentCoverageObserver(
   content::DevToolsAgentHost::AddObserver(this);
 }
 
+DevToolsAgentCoverageObserver::DevToolsAgentCoverageObserver(
+    base::FilePath devtools_code_coverage_dir,
+    ShouldInspectDevToolsAgentHostCallback should_inspect_callback)
+    : DevToolsAgentCoverageObserver(devtools_code_coverage_dir) {
+  should_inspect_callback_ = std::move(should_inspect_callback);
+}
+
 DevToolsAgentCoverageObserver::~DevToolsAgentCoverageObserver() = default;
 
 bool DevToolsAgentCoverageObserver::CoverageEnabled() {
@@ -60,6 +67,14 @@ void DevToolsAgentCoverageObserver::DevToolsAgentHostNavigated(
     content::DevToolsAgentHost* host) {
   if (devtools_agents_.find(host) == devtools_agents_.end())
     return;
+
+  // If a filter has been supplied to only stay attached to certain
+  // `DevToolsAgentHost`, detach from any that don't match the filter.
+  if (!should_inspect_callback_.is_null() &&
+      !should_inspect_callback_.Run(host)) {
+    devtools_agents_.find(host)->second->Detach(host);
+    return;
+  }
 
   devtools_agents_.find(host)->second->Navigated(host);
 }

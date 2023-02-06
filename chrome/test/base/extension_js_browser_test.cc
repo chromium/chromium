@@ -35,8 +35,13 @@ void ExtensionJSBrowserTest::SetUpOnMainThread() {
   if (command_line->HasSwitch(switches::kDevtoolsCodeCoverage)) {
     base::FilePath devtools_code_coverage_dir =
         command_line->GetSwitchValuePath(switches::kDevtoolsCodeCoverage);
+    ShouldInspectDevToolsAgentHostCallback callback =
+        base::BindRepeating([](content::DevToolsAgentHost* host) {
+          return base::StartsWith(host->GetTitle(), "ChromeVox") &&
+                 host->GetType() == "background_page";
+        });
     coverage_handler_ = std::make_unique<DevToolsAgentCoverageObserver>(
-        devtools_code_coverage_dir);
+        devtools_code_coverage_dir, std::move(callback));
   }
 }
 
