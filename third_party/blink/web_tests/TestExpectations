@@ -2977,6 +2977,7 @@ crbug.com/webrtc/10567 external/wpt/webrtc/RTCRtpParameters-encodings.html [ Fai
 crbug.com/webrtc/10567 external/wpt/webrtc/simulcast/setParameters-encodings.https.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-063-print.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/descriptor-prefix.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/fallback-cycle.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/suffix-fallback.html [ Failure ]
