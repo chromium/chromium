@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
+import("//ui/file_manager/base/gn/files_webui_bundle/files_webui_bundle.gni")
 import("//ui/file_manager/base/gn/js_test_type_check.gni")
 
 js_type_check("closure_compile_jsmodules") {
@@ -193,11 +193,13 @@ image_loader_path =
     rebase_path("$root_gen_dir/ui/file_manager/preprocessed/image_loader",
                 root_build_dir)
 
-optimize_webui("build") {
+files_webui_bundle("build") {
   host = "image_loader"
 
   input = preprocess_folder
   js_module_in_files = [ "background.js" ]
+
+  js_out_files = [ "background.rollup.js" ]
 
   external_paths = [
     "chrome://file-manager|$files_app_path",
