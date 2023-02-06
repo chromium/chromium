@@ -23,6 +23,9 @@ class OzoneUIControlsTestHelper {
  public:
   virtual ~OzoneUIControlsTestHelper() = default;
 
+  // Returns true if the underlying platform supports screen coordinates;
+  virtual bool SupportsScreenCoordinates() const = 0;
+
   // Returns current button down mask.
   virtual unsigned ButtonDownMask() const = 0;
 

@@ -11,7 +11,6 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/aura/test/ui_controls_factory_aura.h"
 #include "ui/base/test/ui_controls.h"
-#include "ui/views/test/ui_controls_factory_desktop_aura_ozone.h"
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
@@ -42,9 +41,6 @@ std::string NameFromTestCase() {
 void InstallUIControlsAura() {
 #if BUILDFLAG(IS_WIN)
   ui_controls::InstallUIControlsAura(aura::test::CreateUIControlsAura(nullptr));
-#elif BUILDFLAG(IS_OZONE)
-  ui_controls::InstallUIControlsAura(
-      views::test::CreateUIControlsDesktopAuraOzone());
 #else
   ui_controls::EnableUIControls();
 #endif
