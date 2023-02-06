@@ -151,7 +151,7 @@ class GPU_GLES2_EXPORT TexturePassthrough final
 class GPU_GLES2_EXPORT Texture final : public TextureBase {
  public:
   enum ImageState {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
     // If an image is associated with the texture and image state is UNBOUND,
     // then sampling out of the texture or using it as a target for drawing
     // will not read/write from/to the image.
