@@ -19,7 +19,7 @@ class Browser;
 class ExtensionsContainer;
 class ExtensionsMenuPageView;
 class ExtensionsMenuMainPageView;
-class ExtensionsMenuSitePermissionsPage;
+class ExtensionsMenuSitePermissionsPageView;
 class ToolbarActionsModel;
 
 class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
@@ -56,7 +56,7 @@ class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
   // Returns the main page iff it's the `current_page_` one.
   ExtensionsMenuMainPageView* GetMainPageViewForTesting();
   // Returns the site permissions page iff it's the `current_page_` one.
-  ExtensionsMenuSitePermissionsPage* GetSitePermissionsPageForTesting();
+  ExtensionsMenuSitePermissionsPageView* GetSitePermissionsPageForTesting();
 
  private:
   // Switches the current page to `page`.

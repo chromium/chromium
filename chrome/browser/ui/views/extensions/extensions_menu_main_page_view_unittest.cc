@@ -79,7 +79,7 @@ class ExtensionsMenuMainPageViewUnitTest : public ExtensionsToolbarUnitTest {
   ExtensionsToolbarButton* extensions_button();
   ExtensionsMenuCoordinator* menu_coordinator();
   ExtensionsMenuMainPageView* main_page();
-  ExtensionsMenuSitePermissionsPage* site_permissions_page();
+  ExtensionsMenuSitePermissionsPageView* site_permissions_page();
   std::vector<InstalledExtensionMenuItemView*> menu_items();
 
   // ExtensionsToolbarUnitTest:
@@ -138,7 +138,7 @@ ExtensionsMenuMainPageView* ExtensionsMenuMainPageViewUnitTest::main_page() {
                          : nullptr;
 }
 
-ExtensionsMenuSitePermissionsPage*
+ExtensionsMenuSitePermissionsPageView*
 ExtensionsMenuMainPageViewUnitTest::site_permissions_page() {
   ExtensionsMenuViewController* menu_controller =
       menu_coordinator()->GetControllerForTesting();
@@ -314,7 +314,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 
   ClickSitePermissionsButton(items[0]);
 
-  ExtensionsMenuSitePermissionsPage* page = site_permissions_page();
+  ExtensionsMenuSitePermissionsPageView* page = site_permissions_page();
   ASSERT_TRUE(page);
   EXPECT_EQ(page->GetExtensionIdForTesting(), extensionA->id());
 }

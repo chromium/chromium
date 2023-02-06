@@ -84,7 +84,7 @@ void ExtensionsMenuViewController::OpenSitePermissionsPage(
       GetActiveWebContents(), gfx::Size(icon_size, icon_size));
 
   auto site_permissions_page =
-      std::make_unique<ExtensionsMenuSitePermissionsPage>(
+      std::make_unique<ExtensionsMenuSitePermissionsPageView>(
           extension_name, extension_icon, extension_id, this);
   SwitchToPage(std::move(site_permissions_page));
 }
@@ -128,10 +128,11 @@ ExtensionsMenuViewController::GetMainPageViewForTesting() {
   return views::AsViewClass<ExtensionsMenuMainPageView>(current_page_);
 }
 
-ExtensionsMenuSitePermissionsPage*
+ExtensionsMenuSitePermissionsPageView*
 ExtensionsMenuViewController::GetSitePermissionsPageForTesting() {
   DCHECK(current_page_);
-  return views::AsViewClass<ExtensionsMenuSitePermissionsPage>(current_page_);
+  return views::AsViewClass<ExtensionsMenuSitePermissionsPageView>(
+      current_page_);
 }
 
 void ExtensionsMenuViewController::SwitchToPage(

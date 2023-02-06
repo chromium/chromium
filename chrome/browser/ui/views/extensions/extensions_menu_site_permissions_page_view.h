@@ -14,18 +14,18 @@ class ImageModel;
 
 class ExtensionsMenuNavigationHandler;
 
-class ExtensionsMenuSitePermissionsPage : public ExtensionsMenuPageView {
+class ExtensionsMenuSitePermissionsPageView : public ExtensionsMenuPageView {
  public:
-  explicit ExtensionsMenuSitePermissionsPage(
+  explicit ExtensionsMenuSitePermissionsPageView(
       std::u16string extension_name,
       ui::ImageModel extension_icon,
       extensions::ExtensionId extension_id,
       ExtensionsMenuNavigationHandler* navigation_handler);
-  ExtensionsMenuSitePermissionsPage(const ExtensionsMenuSitePermissionsPage&) =
-      delete;
-  const ExtensionsMenuSitePermissionsPage& operator=(
-      const ExtensionsMenuSitePermissionsPage&) = delete;
-  ~ExtensionsMenuSitePermissionsPage() override = default;
+  ExtensionsMenuSitePermissionsPageView(
+      const ExtensionsMenuSitePermissionsPageView&) = delete;
+  const ExtensionsMenuSitePermissionsPageView& operator=(
+      const ExtensionsMenuSitePermissionsPageView&) = delete;
+  ~ExtensionsMenuSitePermissionsPageView() override = default;
 
   // ExtensionsMenuPageView:
   void Update(content::WebContents* web_contents) override;
@@ -38,10 +38,10 @@ class ExtensionsMenuSitePermissionsPage : public ExtensionsMenuPageView {
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,
-                   ExtensionsMenuSitePermissionsPage,
+                   ExtensionsMenuSitePermissionsPageView,
                    ExtensionsMenuPageView)
 END_VIEW_BUILDER
 
-DEFINE_VIEW_BUILDER(/* no export */, ExtensionsMenuSitePermissionsPage)
+DEFINE_VIEW_BUILDER(/* no export */, ExtensionsMenuSitePermissionsPageView)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_VIEW_H_

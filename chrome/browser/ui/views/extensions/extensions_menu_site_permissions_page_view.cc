@@ -25,7 +25,7 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 
-ExtensionsMenuSitePermissionsPage::ExtensionsMenuSitePermissionsPage(
+ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
     std::u16string extension_name,
     ui::ImageModel extension_icon,
     extensions::ExtensionId extension_id,
@@ -39,7 +39,7 @@ ExtensionsMenuSitePermissionsPage::ExtensionsMenuSitePermissionsPage(
                                /*adjust_height_for_width =*/true)
           .WithWeight(1);
 
-  views::Builder<ExtensionsMenuSitePermissionsPage>(this)
+  views::Builder<ExtensionsMenuSitePermissionsPageView>(this)
       .SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical))
       // TODO(crbug.com/1390952): Add margins after adding the menu
@@ -106,5 +106,5 @@ ExtensionsMenuSitePermissionsPage::ExtensionsMenuSitePermissionsPage(
 }
 
 // TODO(crbug.com/1390952): Update content once content is added to this page.
-void ExtensionsMenuSitePermissionsPage::Update(
+void ExtensionsMenuSitePermissionsPageView::Update(
     content::WebContents* web_contents) {}
