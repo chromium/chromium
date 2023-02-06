@@ -264,6 +264,15 @@ bool IsComputeAXModeEnabled() {
   return base::FeatureList::IsEnabled(::features::kComputeAXMode);
 }
 
+BASE_FEATURE(kAccessibilityFormControlsMode,
+             "AccessibilityFormControlsAXMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAccessibilityFormControlsAXModeEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityFormControlsMode);
+}
+
 BASE_FEATURE(kOptimizeAccessibilityUiThreadWork,
              "OptimizeAccessibilityUiThreadWork",
              base::FEATURE_ENABLED_BY_DEFAULT);

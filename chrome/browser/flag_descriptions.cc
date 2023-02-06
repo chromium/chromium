@@ -3403,6 +3403,12 @@ const char kDmTokenDeletionDescription[] =
 
 #if BUILDFLAG(IS_ANDROID)
 
+const char kAccessibilityFormControlsModeName[] =
+    "Experimental Accessibility Mode for Form Controls only";
+const char kAccessibilityFormControlsModeDescription[] =
+    "Enable experimental accessibility mode to support password managers and "
+    "form fillers when full assistive technology is not running.";
+
 const char kAccessibilityPageZoomName[] = "Accessibility Page Zoom";
 const char kAccessibilityPageZoomDescription[] =
     "Whether the UI and underlying code for page zoom should be enabled to"

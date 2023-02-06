@@ -1949,6 +1949,9 @@ extern const char kDmTokenDeletionDescription[];
 
 #if BUILDFLAG(IS_ANDROID)
 
+extern const char kAccessibilityFormControlsModeName[];
+extern const char kAccessibilityFormControlsModeDescription[];
+
 extern const char kAccessibilityPageZoomName[];
 extern const char kAccessibilityPageZoomDescription[];
 

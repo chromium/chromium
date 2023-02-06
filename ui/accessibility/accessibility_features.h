@@ -209,6 +209,13 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kComputeAXMode);
 // Returns true if the IChromeAccessible COM API is enabled.
 AX_BASE_EXPORT bool IsComputeAXModeEnabled();
 
+// Enable form controls AXMode based on running services. If disabled,
+// then form controls AXMode will not be available to be set.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFormControlsMode);
+
+// Returns true if the form controls AXMode is enabled.
+AX_BASE_EXPORT bool IsAccessibilityFormControlsAXModeEnabled();
+
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kOptimizeAccessibilityUiThreadWork);
 
 bool IsOptimizeAccessibilityUiThreadWorkEnabled();

@@ -1685,6 +1685,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-accessibility-form-controls-mode",
+    "owners": [ "mschillaci", "aldietz", "//ui/accessibility/OWNERS"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-accessibility-live-caption",
     "owners": [ "abigailbklein@google.com", "evliu@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 120
