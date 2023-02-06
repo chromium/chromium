@@ -5535,17 +5535,17 @@
   {
     "name": "page-info-about-this-page-persistent-side-panel-entry",
     "owners": [ "dullweber", "olesiamarukhno@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 115
   },
   {
     "name": "page-info-about-this-site-improved-bottomsheet",
     "owners": [ "dullweber", "eokoyomon", "zalmashni@google.com" ],
-    "expiry_milestone": 114
+    "expiry_milestone": 115
   },
   {
     "name": "page-info-about-this-site-non-en",
     "owners": [ "dullweber" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 115
   },
   {
     "name": "page-info-about-this-site-non-msbb",
@@ -5577,7 +5577,7 @@
   {
     "name": "page-info-more-about-this-page",
     "owners": [ "dullweber", "olesiamarukhno@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 115
   },
   {
     "name": "page-info-store-info",
