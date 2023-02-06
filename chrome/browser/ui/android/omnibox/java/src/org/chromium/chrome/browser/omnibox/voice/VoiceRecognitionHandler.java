@@ -26,7 +26,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.build.annotations.MockedInTests;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
@@ -58,7 +57,6 @@ import java.util.List;
 /**
  * Class containing functionality related to voice search.
  */
-@MockedInTests
 public class VoiceRecognitionHandler {
     private static final String TAG = "VoiceRecognition";
 

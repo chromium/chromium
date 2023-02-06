@@ -12,16 +12,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.ASSISTANT_INTENT_TRANSLATE_INFO;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH;
-import static org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.EXTRA_TRANSLATE_CURRENT_LANGUAGE;
-import static org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.EXTRA_TRANSLATE_ORIGINAL_LANGUAGE;
-import static org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.EXTRA_TRANSLATE_TARGET_LANGUAGE;
 
 import android.content.Intent;
 
@@ -35,22 +26,17 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
@@ -64,11 +50,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
 
-import java.lang.ref.WeakReference;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -81,29 +64,34 @@ import java.util.concurrent.ExecutionException;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AssistantActionsHandlerTest {
-    private static final String DEFAULT_URL = "https://example.com/";
-    private static final String DEFAULT_USER_EMAIL = "test@test.com";
-
-    public static @ClassRule ChromeTabbedActivityTestRule sActivityTestRule =
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
-    public @Rule HistogramTestRule mHistograms = new HistogramTestRule();
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public HistogramTestRule mHistograms = new HistogramTestRule();
 
-    private @Mock Intent mIntent;
-    private @Mock AssistantVoiceSearchService mAssistantVoiceSearchService;
-    private @Mock TranslateBridgeWrapper mTranslateBridgeWrapper;
-    private @Mock Tab mTab;
-    private @Mock VoiceRecognitionHandler.Delegate mDelegate;
-    private @Mock AutocompleteController mController;
-    private @Mock AutocompleteMatch mMatch;
-    private @Mock LocationBarDataProvider mDataProvider;
-    private @Mock AutocompleteCoordinator mAutocompleteCoordinator;
-    private @Mock AndroidPermissionDelegate mPermissionDelegate;
-    private @Captor ArgumentCaptor<WindowAndroid.IntentCallback> mIntentCallback;
+    @Mock
+    private Intent mIntent;
+    @Mock
+    private AssistantVoiceSearchService mAssistantVoiceSearchService;
+    @Mock
+    private TranslateBridgeWrapper mTranslateBridgeWrapper;
+    @Mock
+    private Tab mTab;
+    @Mock
+    private VoiceRecognitionHandler.Observer mObserver;
+    @Mock
+    private AutocompleteController mController;
+    @Mock
+    private AutocompleteMatch mMatch;
+    @Mock
+    private AutocompleteCoordinator mAutocompleteCoordinator;
 
-    private VoiceRecognitionHandler mHandler;
-
-    private WindowAndroid mWindowAndroid;
+    private RecognitionTestHelper.TestDataProvider mDataProvider;
+    private RecognitionTestHelper.TestDelegate mDelegate;
+    private RecognitionTestHelper.TestVoiceRecognitionHandler mHandler;
+    private RecognitionTestHelper.TestAndroidPermissionDelegate mPermissionDelegate;
+    private RecognitionTestHelper.TestWindowAndroid mWindowAndroid;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
     private FeatureList.TestValues mFeatures;
 
@@ -115,35 +103,36 @@ public class AssistantActionsHandlerTest {
 
     @Before
     public void setUp() throws InterruptedException, ExecutionException {
+        MockitoAnnotations.initMocks(this);
         AutocompleteControllerProvider.setControllerForTesting(mController);
         doReturn(mMatch).when(mController).classify(any(), anyBoolean());
         doReturn(new GURL("https://www.google.com/search?q=abc")).when(mMatch).getUrl();
         doReturn(true).when(mMatch).isSearchSuggestion();
-        doReturn(true).when(mPermissionDelegate).hasPermission(anyString());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mProfileSupplier = new ObservableSupplierImpl<>();
-            try (var ignore = StrictModeContext.allowAllThreadPolicies()) {
-                mWindowAndroid = spy(new WindowAndroid(sActivityTestRule.getActivity()));
-                mHandler = spy(new VoiceRecognitionHandler(
-                        mDelegate, () -> mAssistantVoiceSearchService, () -> {}, mProfileSupplier));
-            }
+            RecognitionTestHelper testHelper = new RecognitionTestHelper(mAutocompleteCoordinator,
+                    mAssistantVoiceSearchService, mProfileSupplier,
+                    sActivityTestRule.getActivity());
+            mDataProvider = testHelper.getDataProvider();
+            mDataProvider.setTab(mTab);
+            mPermissionDelegate = testHelper.getAndroidPermissionDelegate();
+            mWindowAndroid = testHelper.getWindowAndroid();
+
+            mWindowAndroid.setAndroidPermissionDelegate(mPermissionDelegate);
+            mDelegate = testHelper.getDelegate();
+            mHandler = testHelper.getVoiceRecognitionHandler();
+            mHandler.addObserver(mObserver);
         });
 
-        mWindowAndroid.setAndroidPermissionDelegate(mPermissionDelegate);
-        doReturn(new WeakReference(sActivityTestRule.getActivity()))
-                .when(mWindowAndroid)
-                .getActivity();
-        doReturn(mTab).when(mDataProvider).getTab();
-        doReturn(new GURL(DEFAULT_URL)).when(mTab).getUrl();
-        doReturn(mDataProvider).when(mDelegate).getLocationBarDataProvider();
-        doReturn(mAutocompleteCoordinator).when(mDelegate).getAutocompleteCoordinator();
-        doReturn(mWindowAndroid).when(mDelegate).getWindowAndroid();
+        doReturn(new GURL(RecognitionTestHelper.DEFAULT_URL)).when(mTab).getUrl();
 
         doReturn(false).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         doReturn(false).when(mAssistantVoiceSearchService).needsEnabledCheck();
         doReturn(mIntent).when(mAssistantVoiceSearchService).getAssistantVoiceSearchIntent();
-        doReturn(DEFAULT_USER_EMAIL).when(mAssistantVoiceSearchService).getUserEmail();
+        doReturn(RecognitionTestHelper.DEFAULT_USER_EMAIL)
+                .when(mAssistantVoiceSearchService)
+                .getUserEmail();
 
         doReturn(true).when(mTranslateBridgeWrapper).canManuallyTranslate(notNull());
         doReturn("fr").when(mTranslateBridgeWrapper).getSourceLanguage(notNull());
@@ -151,152 +140,200 @@ public class AssistantActionsHandlerTest {
         doReturn("ja").when(mTranslateBridgeWrapper).getTargetLanguage();
         mHandler.setTranslateBridgeWrapper(mTranslateBridgeWrapper);
 
-        mFeatures = new FeatureList.TestValues();
-        FeatureList.setTestValues(mFeatures);
+        mFeatures = RecognitionTestHelper.resetTestFeatures();
     }
 
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertNotNull(mHandler);
+            mHandler.removeObserver(mObserver);
             VoiceRecognitionHandler.setIsRecognitionIntentPresentForTesting(null);
             mWindowAndroid.destroy();
         });
         AutocompleteControllerProvider.setControllerForTesting(null);
-        FeatureList.setTestValues(null);
     }
 
     @Test
     @SmallTest
     @Feature("AssistantIntentTranslateInfo")
-    @UiThreadTest
     public void testStartVoiceRecognition_ToolbarButtonIncludesTranslateInfo() {
-        mFeatures.addFeatureFlagOverride(OMNIBOX_ASSISTANT_VOICE_SEARCH, true);
-        mFeatures.addFeatureFlagOverride(ASSISTANT_INTENT_TRANSLATE_INFO, true);
-        mFeatures.addFeatureFlagOverride(ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH, false);
-
+        RecognitionTestHelper.enableFeatures(mFeatures,
+                ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH,
+                ChromeFeatureList.ASSISTANT_INTENT_TRANSLATE_INFO);
+        RecognitionTestHelper.disableFeatures(
+                mFeatures, ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH);
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
         doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
-        mHandler.startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
+        RecognitionTestHelper.startVoiceRecognition(
+                mPermissionDelegate, mHandler, VoiceInteractionSource.TOOLBAR);
 
-        verify(mWindowAndroid, times(1)).showCancelableIntent(eq(mIntent), any(), any());
-        verify(mIntent).putExtra(EXTRA_TRANSLATE_ORIGINAL_LANGUAGE, "fr");
-        verify(mIntent).putExtra(EXTRA_TRANSLATE_CURRENT_LANGUAGE, "de");
-        verify(mIntent).putExtra(EXTRA_TRANSLATE_TARGET_LANGUAGE, "ja");
+        Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
+        Assert.assertEquals(mIntent, mWindowAndroid.getCancelableIntent());
+        verify(mIntent).putExtra(VoiceRecognitionHandler.EXTRA_TRANSLATE_ORIGINAL_LANGUAGE, "fr");
+        verify(mIntent).putExtra(VoiceRecognitionHandler.EXTRA_TRANSLATE_CURRENT_LANGUAGE, "de");
+        verify(mIntent).putExtra(VoiceRecognitionHandler.EXTRA_TRANSLATE_TARGET_LANGUAGE, "ja");
     }
 
     @Test
     @SmallTest
     @Feature("AssistantIntentTranslateInfo")
-    @UiThreadTest
     public void testStartVoiceRecognition_TranslateExtrasDisabled() {
-        mFeatures.addFeatureFlagOverride(ASSISTANT_INTENT_TRANSLATE_INFO, false);
-        mFeatures.addFeatureFlagOverride(OMNIBOX_ASSISTANT_VOICE_SEARCH, true);
-
+        RecognitionTestHelper.disableFeatures(
+                mFeatures, ChromeFeatureList.ASSISTANT_INTENT_TRANSLATE_INFO);
+        RecognitionTestHelper.enableFeatures(
+                mFeatures, ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH);
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
         doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
-        mHandler.startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
+        RecognitionTestHelper.startVoiceRecognition(
+                mPermissionDelegate, mHandler, VoiceInteractionSource.TOOLBAR);
 
-        verify(mWindowAndroid, times(1)).showCancelableIntent(eq(mIntent), any(), any());
-        verify(mIntent, never()).putExtra(eq(EXTRA_TRANSLATE_ORIGINAL_LANGUAGE), anyString());
-        verify(mIntent, never()).putExtra(eq(EXTRA_TRANSLATE_CURRENT_LANGUAGE), anyString());
-        verify(mIntent, never()).putExtra(eq(EXTRA_TRANSLATE_TARGET_LANGUAGE), anyString());
+        Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
+        verify(mIntent, never())
+                .putExtra(
+                        eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_ORIGINAL_LANGUAGE), anyString());
+        verify(mIntent, never())
+                .putExtra(
+                        eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_CURRENT_LANGUAGE), anyString());
+        verify(mIntent, never())
+                .putExtra(eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_TARGET_LANGUAGE), anyString());
     }
 
     @Test
     @SmallTest
     @Feature("AssistantIntentTranslateInfo")
-    @UiThreadTest
     public void testStartVoiceRecognition_NoTranslateExtrasForNonToolbar() {
-        mFeatures.addFeatureFlagOverride(OMNIBOX_ASSISTANT_VOICE_SEARCH, true);
-        mFeatures.addFeatureFlagOverride(ASSISTANT_INTENT_TRANSLATE_INFO, true);
-
+        RecognitionTestHelper.enableFeatures(mFeatures,
+                ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH,
+                ChromeFeatureList.ASSISTANT_INTENT_TRANSLATE_INFO);
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
         doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
-        mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
+        RecognitionTestHelper.startVoiceRecognition(
+                mPermissionDelegate, mHandler, VoiceInteractionSource.OMNIBOX);
 
-        verify(mWindowAndroid, times(1)).showCancelableIntent(eq(mIntent), any(), any());
-        verify(mIntent, never()).putExtra(eq(EXTRA_TRANSLATE_ORIGINAL_LANGUAGE), anyString());
-        verify(mIntent, never()).putExtra(eq(EXTRA_TRANSLATE_CURRENT_LANGUAGE), anyString());
-        verify(mIntent, never()).putExtra(eq(EXTRA_TRANSLATE_TARGET_LANGUAGE), anyString());
+        Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
+        verify(mIntent, never())
+                .putExtra(
+                        eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_ORIGINAL_LANGUAGE), anyString());
+        verify(mIntent, never())
+                .putExtra(
+                        eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_CURRENT_LANGUAGE), anyString());
+        verify(mIntent, never())
+                .putExtra(eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_TARGET_LANGUAGE), anyString());
     }
 
     @Test
     @SmallTest
     @Feature("AssistantIntentTranslateInfo")
-    @UiThreadTest
     public void testStartVoiceRecognition_NoTranslateExtrasForNonPersonalizedSearch() {
-        mFeatures.addFeatureFlagOverride(OMNIBOX_ASSISTANT_VOICE_SEARCH, true);
-        mFeatures.addFeatureFlagOverride(ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH, true);
-        mFeatures.addFeatureFlagOverride(ASSISTANT_INTENT_TRANSLATE_INFO, true);
-
+        RecognitionTestHelper.enableFeatures(mFeatures,
+                ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH,
+                ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH,
+                ChromeFeatureList.ASSISTANT_INTENT_TRANSLATE_INFO);
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
         doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
-        mHandler.startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
+        RecognitionTestHelper.startVoiceRecognition(
+                mPermissionDelegate, mHandler, VoiceInteractionSource.TOOLBAR);
 
-        verify(mWindowAndroid, times(1)).showCancelableIntent(eq(mIntent), any(), any());
-        verify(mIntent, never()).putExtra(eq(EXTRA_TRANSLATE_ORIGINAL_LANGUAGE), anyString());
-        verify(mIntent, never()).putExtra(eq(EXTRA_TRANSLATE_CURRENT_LANGUAGE), anyString());
-        verify(mIntent, never()).putExtra(eq(EXTRA_TRANSLATE_TARGET_LANGUAGE), anyString());
+        Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
+        verify(mIntent, never())
+                .putExtra(
+                        eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_ORIGINAL_LANGUAGE), anyString());
+        verify(mIntent, never())
+                .putExtra(
+                        eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_CURRENT_LANGUAGE), anyString());
+        verify(mIntent, never())
+                .putExtra(eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_TARGET_LANGUAGE), anyString());
     }
 
     @Test
     @SmallTest
     @Feature("AssistantIntentTranslateInfo")
-    @UiThreadTest
     public void testStartVoiceRecognition_NoTranslateExtrasForNonTranslatePage() {
-        mFeatures.addFeatureFlagOverride(OMNIBOX_ASSISTANT_VOICE_SEARCH, true);
-        mFeatures.addFeatureFlagOverride(ASSISTANT_INTENT_TRANSLATE_INFO, true);
-        mFeatures.addFeatureFlagOverride(ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH, false);
-
+        RecognitionTestHelper.enableFeatures(mFeatures,
+                ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH,
+                ChromeFeatureList.ASSISTANT_INTENT_TRANSLATE_INFO);
+        RecognitionTestHelper.disableFeatures(
+                mFeatures, ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH);
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
         doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         doReturn(false).when(mTranslateBridgeWrapper).canManuallyTranslate(notNull());
-        mHandler.startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
+        RecognitionTestHelper.startVoiceRecognition(
+                mPermissionDelegate, mHandler, VoiceInteractionSource.TOOLBAR);
 
-        verify(mWindowAndroid, times(1)).showCancelableIntent(eq(mIntent), any(), any());
-        verify(mIntent, never()).putExtra(eq(EXTRA_TRANSLATE_ORIGINAL_LANGUAGE), anyString());
-        verify(mIntent, never()).putExtra(eq(EXTRA_TRANSLATE_CURRENT_LANGUAGE), anyString());
-        verify(mIntent, never()).putExtra(eq(EXTRA_TRANSLATE_TARGET_LANGUAGE), anyString());
+        Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
+        verify(mIntent, never())
+                .putExtra(
+                        eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_ORIGINAL_LANGUAGE), anyString());
+        verify(mIntent, never())
+                .putExtra(
+                        eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_CURRENT_LANGUAGE), anyString());
+        verify(mIntent, never())
+                .putExtra(eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_TARGET_LANGUAGE), anyString());
     }
 
     @Test
     @SmallTest
     @Feature("AssistantIntentTranslateInfo")
-    @UiThreadTest
     public void testStartVoiceRecognition_NoTranslateExtrasWhenLanguagesUndetected() {
-        mFeatures.addFeatureFlagOverride(OMNIBOX_ASSISTANT_VOICE_SEARCH, true);
-        mFeatures.addFeatureFlagOverride(ASSISTANT_INTENT_TRANSLATE_INFO, true);
-        mFeatures.addFeatureFlagOverride(ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH, false);
+        RecognitionTestHelper.enableFeatures(mFeatures,
+                ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH,
+                ChromeFeatureList.ASSISTANT_INTENT_TRANSLATE_INFO);
+        RecognitionTestHelper.disableFeatures(
+                mFeatures, ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH);
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
         doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         doReturn(null).when(mTranslateBridgeWrapper).getSourceLanguage(notNull());
-        mHandler.startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
+        RecognitionTestHelper.startVoiceRecognition(
+                mPermissionDelegate, mHandler, VoiceInteractionSource.TOOLBAR);
 
-        verify(mWindowAndroid, times(1)).showCancelableIntent(eq(mIntent), any(), any());
-        verify(mIntent, never()).putExtra(eq(EXTRA_TRANSLATE_ORIGINAL_LANGUAGE), anyString());
-        verify(mIntent, never()).putExtra(eq(EXTRA_TRANSLATE_CURRENT_LANGUAGE), anyString());
-        verify(mIntent, never()).putExtra(eq(EXTRA_TRANSLATE_TARGET_LANGUAGE), anyString());
+        Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
+        verify(mIntent, never())
+                .putExtra(
+                        eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_ORIGINAL_LANGUAGE), anyString());
+        verify(mIntent, never())
+                .putExtra(
+                        eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_CURRENT_LANGUAGE), anyString());
+        verify(mIntent, never())
+                .putExtra(eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_TARGET_LANGUAGE), anyString());
     }
 
     @Test
     @SmallTest
     @Feature("AssistantIntentTranslateInfo")
-    @UiThreadTest
     public void testStartVoiceRecognition_TranslateInfoTargetLanguageOptional() {
-        mFeatures.addFeatureFlagOverride(OMNIBOX_ASSISTANT_VOICE_SEARCH, true);
-        mFeatures.addFeatureFlagOverride(ASSISTANT_INTENT_TRANSLATE_INFO, true);
-        mFeatures.addFeatureFlagOverride(ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH, false);
-
+        RecognitionTestHelper.enableFeatures(mFeatures,
+                ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH,
+                ChromeFeatureList.ASSISTANT_INTENT_TRANSLATE_INFO);
+        RecognitionTestHelper.disableFeatures(
+                mFeatures, ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH);
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
         doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         doReturn(null).when(mTranslateBridgeWrapper).getTargetLanguage();
-        mHandler.startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
+        RecognitionTestHelper.startVoiceRecognition(
+                mPermissionDelegate, mHandler, VoiceInteractionSource.TOOLBAR);
 
-        verify(mWindowAndroid, times(1)).showCancelableIntent(eq(mIntent), any(), any());
-        verify(mIntent).putExtra(EXTRA_TRANSLATE_ORIGINAL_LANGUAGE, "fr");
-        verify(mIntent).putExtra(EXTRA_TRANSLATE_CURRENT_LANGUAGE, "de");
-        verify(mIntent, never()).putExtra(eq(EXTRA_TRANSLATE_TARGET_LANGUAGE), anyString());
+        Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
+        verify(mIntent).putExtra(VoiceRecognitionHandler.EXTRA_TRANSLATE_ORIGINAL_LANGUAGE, "fr");
+        verify(mIntent).putExtra(VoiceRecognitionHandler.EXTRA_TRANSLATE_CURRENT_LANGUAGE, "de");
+        verify(mIntent, never())
+                .putExtra(eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_TARGET_LANGUAGE), anyString());
+    }
+
+    @Test
+    @SmallTest
+    @Feature("AssistantIntentPageUrl")
+    public void testCallback_pageUrlExtraDisabled() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mWindowAndroid.setVoiceResults(RecognitionTestHelper.createDummyBundle(
+                    "testing", VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD));
+            RecognitionTestHelper.startVoiceRecognition(
+                    mPermissionDelegate, mHandler, VoiceInteractionSource.TOOLBAR);
+            Assert.assertTrue(mHandler.getVoiceSearchResult());
+            // Ensure that we don't record UMA when the feature is disabled.
+            Assert.assertEquals(-1, mHandler.getAssistantActionPerformed());
+            Assert.assertEquals(-1, mHandler.getAssistantActionPerformedSource());
+        });
     }
 
     @Test
@@ -305,9 +342,12 @@ public class AssistantActionsHandlerTest {
         mHandler.setQueryStartTimeForTesting(100L);
         mHandler.recordSuccessMetrics(VoiceInteractionSource.OMNIBOX, VoiceIntentTarget.ASSISTANT,
                 AssistantActionPerformed.TRANSCRIPTION);
-        verify(mHandler, times(1))
-                .recordVoiceSearchFinishEvent(
-                        eq(VoiceInteractionSource.OMNIBOX), eq(VoiceIntentTarget.ASSISTANT));
+        Assert.assertEquals(
+                VoiceInteractionSource.OMNIBOX, mHandler.getVoiceSearchFinishEventSource());
+        Assert.assertEquals(
+                VoiceIntentTarget.ASSISTANT, mHandler.getVoiceSearchFinishEventTarget());
+        Assert.assertEquals(-1, mHandler.getAssistantActionPerformed());
+        Assert.assertEquals(-1, mHandler.getAssistantActionPerformedSource());
         Assert.assertEquals(
                 1, mHistograms.getHistogramTotalCount("VoiceInteraction.QueryDuration.Android"));
         // Split action metrics should not be recorded.
