@@ -18,15 +18,11 @@
 
 namespace policy {
 
-namespace {
+constexpr char DeviceCommandSetVolumeJob::kVolumeFieldName[] = "volume";
 
-const char kVolumeFieldName[] = "volume";
+DeviceCommandSetVolumeJob::DeviceCommandSetVolumeJob() = default;
 
-}  // namespace
-
-DeviceCommandSetVolumeJob::DeviceCommandSetVolumeJob() {}
-
-DeviceCommandSetVolumeJob::~DeviceCommandSetVolumeJob() {}
+DeviceCommandSetVolumeJob::~DeviceCommandSetVolumeJob() = default;
 
 enterprise_management::RemoteCommand_Type DeviceCommandSetVolumeJob::GetType()
     const {

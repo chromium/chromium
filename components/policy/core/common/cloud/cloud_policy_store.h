@@ -170,6 +170,8 @@ class POLICY_EXPORT CloudPolicyStore {
   void set_policy_data_for_testing(
       std::unique_ptr<enterprise_management::PolicyData> policy);
 
+  void set_policy_signature_public_key_for_testing(const std::string& key);
+
  protected:
   // Invokes the corresponding callback on all registered observers.
   void NotifyStoreLoaded();

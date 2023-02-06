@@ -122,4 +122,9 @@ void CloudPolicyStore::set_policy_data_for_testing(
   }
 }
 
+void CloudPolicyStore::set_policy_signature_public_key_for_testing(
+    const std::string& key) {
+  policy_signature_public_key_ = key;
+}
+
 }  // namespace policy

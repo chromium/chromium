@@ -12,10 +12,8 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -28,11 +26,10 @@
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/core/common/remote_commands/remote_commands_factory.h"
-#include "components/policy/core/common/remote_commands/remote_commands_queue.h"
 #include "components/policy/core/common/remote_commands/test_support/echo_remote_command_job.h"
+#include "components/policy/core/common/remote_commands/test_support/remote_command_builders.h"
 #include "components/policy/core/common/remote_commands/test_support/testing_remote_commands_server.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "crypto/signature_creator.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,143 +51,6 @@ const int kTestEchoCommandExecutionTimeInSeconds = 1;
 const char kDeviceId[] = "acme-device";
 
 #define EXPECT_NO_CALLS(args...) EXPECT_CALL(args).Times(0)
-
-// Builder class that constructs a |RemoteCommand|.
-class CommandBuilder {
- public:
-  CommandBuilder() = default;
-  CommandBuilder(const CommandBuilder&) = delete;
-  CommandBuilder& operator=(const CommandBuilder&) = delete;
-  CommandBuilder(CommandBuilder&&) = default;
-  CommandBuilder& operator=(CommandBuilder&&) = default;
-  ~CommandBuilder() = default;
-
-  em::RemoteCommand Build() { return result_; }
-
-  CommandBuilder& WithId(int id) {
-    result_.set_command_id(id);
-    return *this;
-  }
-
-  CommandBuilder& WithoutId() {
-    result_.clear_command_id();
-    return *this;
-  }
-
-  CommandBuilder& WithType(em::RemoteCommand::Type type) {
-    result_.set_type(type);
-    return *this;
-  }
-
-  CommandBuilder& WithoutType() {
-    result_.clear_type();
-    return *this;
-  }
-
-  CommandBuilder& WithPayload(const std::string& payload) {
-    result_.set_payload(payload);
-    return *this;
-  }
-
-  CommandBuilder& WithTargetDeviceId(const std::string& value) {
-    result_.set_target_device_id(value);
-    return *this;
-  }
-
- private:
-  em::RemoteCommand result_;
-};
-
-// Helper class that builds enterprise_management::SignedData.
-class SignedDataBuilder {
- public:
-  SignedDataBuilder() = default;
-  SignedDataBuilder(const SignedDataBuilder&) = delete;
-  SignedDataBuilder& operator=(const SignedDataBuilder&) = delete;
-  SignedDataBuilder(SignedDataBuilder&&) = default;
-  SignedDataBuilder& operator=(SignedDataBuilder&&) = default;
-  ~SignedDataBuilder() = default;
-
-  em::SignedData Build() { return BuildSignedData(command_.Build()); }
-
-  SignedDataBuilder& WithCommandId(int id) {
-    command_.WithId(id);
-    return *this;
-  }
-
-  SignedDataBuilder& WithoutCommandId() {
-    command_.WithoutId();
-    return *this;
-  }
-
-  SignedDataBuilder& WithCommandType(em::RemoteCommand::Type type) {
-    command_.WithType(type);
-    return *this;
-  }
-
-  SignedDataBuilder& WithoutCommandType() {
-    command_.WithoutType();
-    return *this;
-  }
-
-  SignedDataBuilder& WithCommandPayload(const std::string& value) {
-    command_.WithPayload(value);
-    return *this;
-  }
-
-  SignedDataBuilder& WithTargetDeviceId(const std::string& value) {
-    command_.WithTargetDeviceId(value);
-    return *this;
-  }
-
-  SignedDataBuilder& WithSignedData(const std::string& value) {
-    signed_data.set_data(value);
-    return *this;
-  }
-
-  SignedDataBuilder& WithSignature(const std::string& value) {
-    signed_data.set_signature(value);
-    return *this;
-  }
-
-  SignedDataBuilder& WithPolicyType(const std::string& value) {
-    policy_data.set_policy_type(value);
-    return *this;
-  }
-
-  SignedDataBuilder& WithPolicyValue(const std::string& value) {
-    policy_data.set_policy_value(value);
-    return *this;
-  }
-
- private:
-  // The signed data defaults to correctly signing the remote command,
-  // unless it was explicitly overwritten during this test.
-  em::SignedData BuildSignedData(const em::RemoteCommand& command) {
-    if (!policy_data.has_policy_type()) {
-      policy_data.set_policy_type("google/chromeos/remotecommand");
-    }
-
-    if (!policy_data.has_policy_value()) {
-      command.SerializeToString(policy_data.mutable_policy_value());
-    }
-
-    if (!signed_data.has_data()) {
-      policy_data.SerializeToString(signed_data.mutable_data());
-    }
-
-    if (!signed_data.has_signature()) {
-      signed_data.set_signature(SignDataWithTestKey(
-          signed_data.data(), RemoteCommandsService::GetSignatureType()));
-    }
-
-    return signed_data;
-  }
-
-  CommandBuilder command_;
-  em::PolicyData policy_data;
-  em::SignedData signed_data;
-};
 
 // Future value that waits for the remote command result that is sent to the
 // server.

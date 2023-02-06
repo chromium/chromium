@@ -412,6 +412,8 @@ static_library("test_support") {
     "policy_test_utils.h",
     "remote_commands/test_support/echo_remote_command_job.cc",
     "remote_commands/test_support/echo_remote_command_job.h",
+    "remote_commands/test_support/remote_command_builders.cc",
+    "remote_commands/test_support/remote_command_builders.h",
     "remote_commands/test_support/testing_remote_commands_server.cc",
     "remote_commands/test_support/testing_remote_commands_server.h",
   ]

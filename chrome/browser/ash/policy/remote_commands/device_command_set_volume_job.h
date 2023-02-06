@@ -13,6 +13,8 @@ namespace policy {
 
 class DeviceCommandSetVolumeJob : public RemoteCommandJob {
  public:
+  static const char kVolumeFieldName[];
+
   DeviceCommandSetVolumeJob();
 
   DeviceCommandSetVolumeJob(const DeviceCommandSetVolumeJob&) = delete;
