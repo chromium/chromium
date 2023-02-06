@@ -44,7 +44,8 @@ _disable_partition_alloc_everywhere = is_component_build || (is_win && is_debug)
 # - NaCl: No plans to support it.
 # - iOS: Depends on ios_partition_alloc_enabled.
 if (is_ios) {
-  _is_partition_alloc_everywhere_platform = ios_partition_alloc_enabled
+  # Temporarily enable for rollout -- see crbug.com/1412190 for details.
+  _is_partition_alloc_everywhere_platform = true
 } else {
   _is_partition_alloc_everywhere_platform = !is_nacl
 }
