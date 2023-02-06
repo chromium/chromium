@@ -153,9 +153,9 @@ void SerializeAuthInput(const AuthFactorRef& ref,
         proto_input->set_recovery_response(recovery_auth.recovery_data);
       } else {
         const auto& recovery_creation = auth_input.GetRecoveryCreationInput();
-        DCHECK(
-            base::HexStringToString(recovery_creation.pub_key,
-                                    proto_input->mutable_mediator_pub_key()));
+        const bool result = base::HexStringToString(
+            recovery_creation.pub_key, proto_input->mutable_mediator_pub_key());
+        CHECK(result);
         proto_input->set_user_gaia_id(recovery_creation.user_gaia_id);
         proto_input->set_device_user_id(recovery_creation.device_user_id);
       }
