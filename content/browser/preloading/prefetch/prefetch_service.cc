@@ -23,7 +23,6 @@
 #include "content/browser/preloading/prefetch/prefetch_proxy_configurator.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
-#include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
 #include "content/browser/preloading/prefetch/proxy_lookup_client_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -807,42 +806,18 @@ void PrefetchService::StartSinglePrefetch(
             policy_exception_justification: "Not implemented."
         })");
 
-  if (PrefetchUseStreamingURLLoader()) {
-    std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
-        std::make_unique<PrefetchStreamingURLLoader>(
-            GetURLLoaderFactory(prefetch_container), std::move(request),
-            traffic_annotation, PrefetchTimeoutDuration(),
-            base::BindOnce(&PrefetchService::OnPrefetchResponseStarted,
-                           base::Unretained(this), prefetch_container),
-            base::BindOnce(
-                &PrefetchService::OnStreamingPrefetchResponseCompleted,
-                base::Unretained(this), prefetch_container),
-            base::BindRepeating(&PrefetchService::OnPrefetchRedirect,
-                                base::Unretained(this), prefetch_container));
+  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
+      std::make_unique<PrefetchStreamingURLLoader>(
+          GetURLLoaderFactory(prefetch_container), std::move(request),
+          traffic_annotation, PrefetchTimeoutDuration(),
+          base::BindOnce(&PrefetchService::OnPrefetchResponseStarted,
+                         base::Unretained(this), prefetch_container),
+          base::BindOnce(&PrefetchService::OnPrefetchResponseCompleted,
+                         base::Unretained(this), prefetch_container),
+          base::BindRepeating(&PrefetchService::OnPrefetchRedirect,
+                              base::Unretained(this), prefetch_container));
 
-    prefetch_container->TakeStreamingURLLoader(std::move(streaming_loader));
-  } else {
-    std::unique_ptr<network::SimpleURLLoader> loader =
-        network::SimpleURLLoader::Create(std::move(request),
-                                         traffic_annotation);
-
-    loader->SetOnRedirectCallback(
-        base::BindRepeating(&PrefetchService::OnPrefetchRedirect,
-                            base::Unretained(this), prefetch_container));
-    loader->SetAllowHttpErrorResults(true);
-    loader->SetTimeoutDuration(PrefetchTimeoutDuration());
-    loader->SetURLLoaderFactoryOptions(
-        network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
-        network::mojom::kURLLoadOptionSniffMimeType |
-        network::mojom::kURLLoadOptionSendSSLInfoForCertificateError);
-    loader->DownloadToString(
-        GetURLLoaderFactory(prefetch_container),
-        base::BindOnce(&PrefetchService::OnPrefetchComplete,
-                       base::Unretained(this), prefetch_container,
-                       isolation_info),
-        PrefetchMainframeBodyLengthLimit());
-    prefetch_container->TakeURLLoader(std::move(loader));
-  }
+  prefetch_container->TakeStreamingURLLoader(std::move(streaming_loader));
 
   active_prefetches_.insert(prefetch_container->GetPrefetchContainerKey());
 
@@ -901,11 +876,7 @@ void PrefetchService::OnPrefetchRedirect(
       PrefetchStatus::kPrefetchFailedRedirectsDisabled);
 
   // Cancels current request.
-  if (PrefetchUseStreamingURLLoader()) {
-    prefetch_container->ResetStreamingLoader();
-  } else {
-    prefetch_container->ResetURLLoader();
-  }
+  prefetch_container->ResetStreamingLoader();
 
   // Send DevTools event
   const auto& devtools_observer = prefetch_container->GetDevToolsObserver();
@@ -923,138 +894,10 @@ void PrefetchService::OnPrefetchRedirect(
   Prefetch();
 }
 
-void PrefetchService::OnPrefetchComplete(
-    base::WeakPtr<PrefetchContainer> prefetch_container,
-    const net::IsolationInfo& isolation_info,
-    std::unique_ptr<std::string> body) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!PrefetchUseStreamingURLLoader());
-
-  if (!prefetch_container)
-    return;
-
-  DCHECK(
-      active_prefetches_.find(prefetch_container->GetPrefetchContainerKey()) !=
-      active_prefetches_.end());
-  active_prefetches_.erase(prefetch_container->GetPrefetchContainerKey());
-
-  prefetch_container->OnPrefetchComplete();
-
-  if (prefetch_container->IsDecoy()) {
-    prefetch_container->SetPrefetchStatus(
-        PrefetchStatus::kPrefetchIsPrivacyDecoy);
-    // Since this prefetch was a decoy, we don't cache the response.
-    prefetch_container->ResetURLLoader();
-    Prefetch();
-    return;
-  }
-
-  RecordPrefetchProxyPrefetchMainframeNetError(
-      prefetch_container->GetLoader()->NetError());
-
-  const auto& devtools_observer = prefetch_container->GetDevToolsObserver();
-  if (devtools_observer) {
-    if (prefetch_container->GetLoader()->ResponseInfo()) {
-      devtools_observer->OnPrefetchResponseReceived(
-          prefetch_container->GetURL(), prefetch_container->RequestId(),
-          *prefetch_container->GetLoader()->ResponseInfo());
-    }
-
-    if (body) {
-      devtools_observer->OnPrefetchBodyDataReceived(
-          prefetch_container->RequestId(), *body, /*is_base64_encoded=*/false);
-    }
-
-    devtools_observer->OnPrefetchRequestComplete(
-        prefetch_container->RequestId(),
-        prefetch_container->GetLoader()->CompletionStatus().value_or(
-            network::URLLoaderCompletionStatus(
-                prefetch_container->GetLoader()->NetError())));
-  }
-
-  if (prefetch_container->GetLoader()->NetError() != net::OK) {
-    prefetch_container->SetPrefetchStatus(
-        PrefetchStatus::kPrefetchFailedNetError);
-  }
-
-  if (prefetch_container->GetLoader()->NetError() == net::OK && body &&
-      prefetch_container->GetLoader()->ResponseInfo()) {
-    network::mojom::URLResponseHeadPtr head =
-        prefetch_container->GetLoader()->ResponseInfo()->Clone();
-    head->navigation_delivery_type =
-        network::mojom::NavigationDeliveryType::kNavigationalPrefetch;
-
-    // Verifies that the request was made using the prefetch proxy if required,
-    // or made directly if the proxy was not required.
-    DCHECK(prefetch_container->GetPrefetchType().IsProxyBypassedForTesting() ||
-           !head->proxy_server.is_direct() ==
-               prefetch_container->GetPrefetchType().IsProxyRequired());
-
-    HandlePrefetchedResponse(prefetch_container, isolation_info,
-                             std::move(head), std::move(body));
-  }
-
-  prefetch_container->ResetURLLoader();
-  Prefetch();
-}
-
-void PrefetchService::HandlePrefetchedResponse(
-    base::WeakPtr<PrefetchContainer> prefetch_container,
-    const net::IsolationInfo& isolation_info,
-    network::mojom::URLResponseHeadPtr head,
-    std::unique_ptr<std::string> body) {
-  DCHECK(prefetch_container);
-  DCHECK(!head->was_fetched_via_cache);
-  DCHECK(!PrefetchUseStreamingURLLoader());
-
-  if (!head->headers)
-    return;
-
-  RecordPrefetchProxyPrefetchMainframeBodyLength(body->size());
-  RecordPrefetchProxyPrefetchMainframeTotalTime(head.get());
-  RecordPrefetchProxyPrefetchMainframeConnectTime(head.get());
-
-  int response_code = head->headers->response_code();
-  RecordPrefetchProxyPrefetchMainframeRespCode(response_code);
-  if (response_code < 200 | response_code >= 300) {
-    prefetch_container->SetPrefetchStatus(
-        PrefetchStatus::kPrefetchFailedNon2XX);
-
-    if (response_code == net::HTTP_SERVICE_UNAVAILABLE) {
-      base::TimeDelta retry_after;
-      std::string retry_after_string;
-      if (head->headers->EnumerateHeader(nullptr, "Retry-After",
-                                         &retry_after_string) &&
-          net::HttpUtil::ParseRetryAfterHeader(
-              retry_after_string, base::Time::Now(), &retry_after) &&
-          delegate_) {
-        delegate_->ReportOriginRetryAfter(prefetch_container->GetURL(),
-                                          retry_after);
-      }
-    }
-    return;
-  }
-
-  if (PrefetchServiceHTMLOnly() && head->mime_type != "text/html") {
-    prefetch_container->SetPrefetchStatus(
-        PrefetchStatus::kPrefetchFailedMIMENotSupported);
-    return;
-  }
-
-  head->was_in_prefetch_cache = true;
-
-  prefetch_container->TakePrefetchedResponse(
-      std::make_unique<PrefetchedMainframeResponseContainer>(
-          isolation_info, std::move(head), std::move(body)));
-  prefetch_container->OnPrefetchedResponseHeadReceived();
-  prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
-}
-
 PrefetchStreamingURLLoaderStatus PrefetchService::OnPrefetchResponseStarted(
     base::WeakPtr<PrefetchContainer> prefetch_container,
     network::mojom::URLResponseHead* head) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(PrefetchUseStreamingURLLoader());
 
   if (!prefetch_container || prefetch_container->IsDecoy()) {
     return PrefetchStreamingURLLoaderStatus::kPrefetchWasDecoy;
@@ -1108,11 +951,10 @@ PrefetchStreamingURLLoaderStatus PrefetchService::OnPrefetchResponseStarted(
   return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
 }
 
-void PrefetchService::OnStreamingPrefetchResponseCompleted(
+void PrefetchService::OnPrefetchResponseCompleted(
     base::WeakPtr<PrefetchContainer> prefetch_container,
     const network::URLLoaderCompletionStatus& completion_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(PrefetchUseStreamingURLLoader());
 
   if (!prefetch_container) {
     return;

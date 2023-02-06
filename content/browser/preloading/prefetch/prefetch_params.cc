@@ -218,11 +218,6 @@ int PrefetchCanaryCheckRetries() {
       features::kPrefetchUseContentRefactor, "canary_check_retries", 1);
 }
 
-bool PrefetchUseStreamingURLLoader() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      features::kPrefetchUseContentRefactor, "use_streaming_url_loader", true);
-}
-
 bool PrefetchShouldBlockUntilHead(
     blink::mojom::SpeculationEagerness prefetch_eagerness) {
   switch (prefetch_eagerness) {

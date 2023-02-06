@@ -13,14 +13,12 @@
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
-#include "content/browser/preloading/prefetch/prefetch_from_string_url_loader.h"
 #include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
-#include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/prefetch_metrics.h"
@@ -255,33 +253,20 @@ void PrefetchURLLoaderInterceptor::InterceptPrefetchedNavigation(
         PrefetchStatus::kPrefetchResponseUsed);
   }
 
-  // Set up URL loader that will serve the prefetched data, and URL loader
-  // factory that will "create" this loader.
-  scoped_refptr<network::SingleRequestURLLoaderFactory>
-      single_request_url_loader_factory;
-  std::unique_ptr<PrefetchFromStringURLLoader> url_loader;
-  if (prefetch_container->GetStreamingLoader()) {
-    // The streaming URL loader manages its own lifetime after this point. It
-    // will delete itself once the prefetch response is completed and the
-    // prefetched response is served.
-    std::unique_ptr<PrefetchStreamingURLLoader> prefetch_streaming_url_loader =
-        prefetch_container->ReleaseStreamingLoader();
-    auto* raw_prefetch_streaming_url_loader =
-        prefetch_streaming_url_loader.get();
+  // Set up a URL loader factory to "create" the streaming URL loader from the
+  // prefetch. After this point, the streaming URL loader will manager its own
+  // lifetime, and will delete itself once the prefetch response is completed
+  // and served.
+  DCHECK(prefetch_container->GetStreamingLoader());
+  std::unique_ptr<PrefetchStreamingURLLoader> prefetch_streaming_url_loader =
+      prefetch_container->ReleaseStreamingLoader();
+  auto* raw_prefetch_streaming_url_loader = prefetch_streaming_url_loader.get();
 
-    single_request_url_loader_factory =
-        base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
-            raw_prefetch_streaming_url_loader->ServingResponseHandler(
-                std::move(prefetch_streaming_url_loader)));
-  } else {
-    url_loader = std::make_unique<PrefetchFromStringURLLoader>(
-        prefetch_container->ReleasePrefetchedResponse(),
-        prefetch_container->GetPrefetchResponseSizes(),
-        tenative_resource_request);
-    single_request_url_loader_factory =
-        base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
-            url_loader->ServingResponseHandler());
-  }
+  scoped_refptr<network::SingleRequestURLLoaderFactory>
+      single_request_url_loader_factory =
+          base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
+              raw_prefetch_streaming_url_loader->ServingResponseHandler(
+                  std::move(prefetch_streaming_url_loader)));
 
   // Create URL loader factory pipe that can be possibly proxied by Extensions.
   mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver;
@@ -316,11 +301,6 @@ void PrefetchURLLoaderInterceptor::InterceptPrefetchedNavigation(
       .Run(network::SharedURLLoaderFactory::Create(
           std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
               std::move(pending_remote))));
-
-  // url_loader manages its own lifetime once bound to the mojo pipes.
-  if (url_loader) {
-    url_loader.release();
-  }
 }
 
 void PrefetchURLLoaderInterceptor::DoNotInterceptNavigation() {

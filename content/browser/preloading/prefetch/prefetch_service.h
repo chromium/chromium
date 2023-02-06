@@ -29,10 +29,6 @@ class NetworkContext;
 class URLLoaderFactory;
 }  // namespace network::mojom
 
-namespace net {
-class IsolationInfo;
-}  // namespace net
-
 namespace content {
 
 class BrowserContext;
@@ -190,21 +186,6 @@ class CONTENT_EXPORT PrefetchService {
                           const net::RedirectInfo& redirect_info,
                           const network::mojom::URLResponseHead& response_head,
                           std::vector<std::string>* removed_headers);
-
-  // Called when the request for |prefetch_container| is completed.
-  void OnPrefetchComplete(base::WeakPtr<PrefetchContainer> prefetch_container,
-                          const net::IsolationInfo& isolation_info,
-                          std::unique_ptr<std::string> body);
-
-  // Checks the response form |OnPrefechComplete| for success or failure. On
-  // success, the response is moved to a |PrefetchedMainframeResponseContainer|
-  // and cached in |prefetch_contianer|.
-  void HandlePrefetchedResponse(
-      base::WeakPtr<PrefetchContainer> prefetch_container,
-      const net::IsolationInfo& isolation_info,
-      network::mojom::URLResponseHeadPtr head,
-      std::unique_ptr<std::string> body);
-
   // Called when the response for |prefetch_container| has started. Based on
   // |head|, returns a status to inform the |PrefetchStreamingURLLoader| whether
   // the prefetch is servable. If servable, then |kHeadReceivedWaitingOnBody|
@@ -216,7 +197,7 @@ class CONTENT_EXPORT PrefetchService {
   // Called when the response for |prefetch_container| has completed when using
   // the streaming URL loader. Only used if |PrefetchUseStreamingURLLoader| is
   // true.
-  void OnStreamingPrefetchResponseCompleted(
+  void OnPrefetchResponseCompleted(
       base::WeakPtr<PrefetchContainer> prefetch_container,
       const network::URLLoaderCompletionStatus& completion_status);
 

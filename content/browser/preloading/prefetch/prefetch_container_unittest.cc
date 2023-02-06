@@ -8,8 +8,9 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
+#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
+#include "content/browser/preloading/prefetch/prefetch_test_utils.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
-#include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/storage_partition.h"
@@ -151,10 +152,9 @@ TEST_F(PrefetchContainerTest, Servable) {
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(), nullptr);
 
-  prefetch_container.TakePrefetchedResponse(
-      std::make_unique<PrefetchedMainframeResponseContainer>(
-          net::IsolationInfo(), network::mojom::URLResponseHead::New(),
-          std::make_unique<std::string>("test body")));
+  prefetch_container.TakeStreamingURLLoader(
+      MakeServableStreamingURLLoaderForTest(
+          network::mojom::URLResponseHead::New(), "test body"));
 
   task_environment()->FastForwardBy(base::Minutes(2));
 
@@ -261,10 +261,9 @@ TEST_F(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
   UpdatePrefetchRequestMetrics(prefetch_container.get(), completion_status,
                                head.get());
 
-  prefetch_container->TakePrefetchedResponse(
-      std::make_unique<PrefetchedMainframeResponseContainer>(
-          net::IsolationInfo(), std::move(head),
-          std::make_unique<std::string>("test body")));
+  prefetch_container->TakeStreamingURLLoader(
+      MakeServableStreamingURLLoaderForTest(
+          network::mojom::URLResponseHead::New(), "test body"));
 
   // Simulates the URL of the prefetch being navigated to and the prefetch being
   // considered for serving.

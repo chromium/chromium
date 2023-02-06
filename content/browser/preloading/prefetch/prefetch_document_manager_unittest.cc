@@ -11,7 +11,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
-#include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
+#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
+#include "content/browser/preloading/prefetch/prefetch_test_utils.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_web_contents.h"
@@ -149,7 +150,6 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
     const auto& helper = prefetch_document_manager->GetNoVarySearchHelper();
 
     // Now call TakePrefetchedResponse
-    auto body = std::make_unique<std::string>("empty");
     network::mojom::URLResponseHeadPtr head =
         network::mojom::URLResponseHead::New();
     head->parsed_headers = network::mojom::ParsedHeaders::New();
@@ -158,9 +158,8 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
     head->parsed_headers->no_vary_search->search_variance =
         network::mojom::SearchParamsVariance::NewVaryParams({"a"});
 
-    auto response = std::make_unique<PrefetchedMainframeResponseContainer>(
-        info, std::move(head), std::move(body));
-    GetPrefetches()[0]->TakePrefetchedResponse(std::move(response));
+    GetPrefetches()[0]->TakeStreamingURLLoader(
+        MakeServableStreamingURLLoaderForTest(std::move(head), "empty"));
     GetPrefetches()[0]->OnPrefetchedResponseHeadReceived();
 
     const auto* urls_with_no_vary_search =
@@ -194,14 +193,12 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
     prefetch_document_manager->ProcessCandidates(candidates,
                                                  /*devtools_observer=*/nullptr);
 
-    auto body = std::make_unique<std::string>("empty");
     network::mojom::URLResponseHeadPtr head =
         network::mojom::URLResponseHead::New();
     head->parsed_headers = network::mojom::ParsedHeaders::New();
 
-    auto response = std::make_unique<PrefetchedMainframeResponseContainer>(
-        info, std::move(head), std::move(body));
-    GetPrefetches().back()->TakePrefetchedResponse(std::move(response));
+    GetPrefetches().back()->TakeStreamingURLLoader(
+        MakeServableStreamingURLLoaderForTest(std::move(head), "empty"));
     GetPrefetches().back()->OnPrefetchedResponseHeadReceived();
 
     const auto& helper = prefetch_document_manager->GetNoVarySearchHelper();

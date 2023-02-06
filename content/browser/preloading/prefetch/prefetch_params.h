@@ -109,10 +109,6 @@ base::TimeDelta PrefetchCanaryCheckTimeout();
 // The number of retries to allow for canary checks.
 int PrefetchCanaryCheckRetries();
 
-// Whether or not to use |PrefetchStreamingURLLoader| to fetch and serve
-// prefetches.
-bool PrefetchUseStreamingURLLoader();
-
 // Whether or not |PrefetchService| should block until the head of a prefetch
 // request is received when considering to serve a prefetch for a navigation.
 bool PrefetchShouldBlockUntilHead(

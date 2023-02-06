@@ -17,8 +17,9 @@
 #include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
+#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
+#include "content/browser/preloading/prefetch/prefetch_test_utils.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
-#include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -372,10 +373,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           blink::mojom::Referrer(), nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
-  prefetch_container->TakePrefetchedResponse(
-      std::make_unique<PrefetchedMainframeResponseContainer>(
-          net::IsolationInfo(), network::mojom::URLResponseHead::New(),
-          std::make_unique<std::string>("test body")));
+  prefetch_container->TakeStreamingURLLoader(
+      MakeServableStreamingURLLoaderForTest(
+          network::mojom::URLResponseHead::New(), "test body"));
 
   // Simulate the cookie copy process starting and finishing before
   // |MaybeCreateLoader| is called.
@@ -447,10 +447,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           blink::mojom::Referrer(), nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
-  prefetch_container->TakePrefetchedResponse(
-      std::make_unique<PrefetchedMainframeResponseContainer>(
-          net::IsolationInfo(), network::mojom::URLResponseHead::New(),
-          std::make_unique<std::string>("test body")));
+  prefetch_container->TakeStreamingURLLoader(
+      MakeServableStreamingURLLoaderForTest(
+          network::mojom::URLResponseHead::New(), "test body"));
 
   // Simulate the cookie copy process starting, but not finishing until after
   // |MaybeCreateLoader| is called.
@@ -529,10 +528,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           blink::mojom::Referrer(), nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
-  prefetch_container->TakePrefetchedResponse(
-      std::make_unique<PrefetchedMainframeResponseContainer>(
-          net::IsolationInfo(), network::mojom::URLResponseHead::New(),
-          std::make_unique<std::string>("test body")));
+  prefetch_container->TakeStreamingURLLoader(
+      MakeServableStreamingURLLoaderForTest(
+          network::mojom::URLResponseHead::New(), "test body"));
 
   interceptor()->AddPrefetch(prefetch_container->GetWeakPtr());
 
@@ -674,10 +672,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           blink::mojom::Referrer(), nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
-  prefetch_container->TakePrefetchedResponse(
-      std::make_unique<PrefetchedMainframeResponseContainer>(
-          net::IsolationInfo(), network::mojom::URLResponseHead::New(),
-          std::make_unique<std::string>("test body")));
+  prefetch_container->TakeStreamingURLLoader(
+      MakeServableStreamingURLLoaderForTest(
+          network::mojom::URLResponseHead::New(), "test body"));
 
   // Advance time enough so that the response is considered stale.
   task_environment()->FastForwardBy(2 * PrefetchCacheableDuration());
@@ -730,10 +727,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           blink::mojom::Referrer(), nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
-  prefetch_container->TakePrefetchedResponse(
-      std::make_unique<PrefetchedMainframeResponseContainer>(
-          net::IsolationInfo(), network::mojom::URLResponseHead::New(),
-          std::make_unique<std::string>("test body")));
+  prefetch_container->TakeStreamingURLLoader(
+      MakeServableStreamingURLLoaderForTest(
+          network::mojom::URLResponseHead::New(), "test body"));
 
   // Since the cookies associated with |kTestUrl| have changed, the prefetch can
   // no longer be served.
@@ -801,10 +797,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
           blink::mojom::Referrer(), nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
-  prefetch_container->TakePrefetchedResponse(
-      std::make_unique<PrefetchedMainframeResponseContainer>(
-          net::IsolationInfo(), network::mojom::URLResponseHead::New(),
-          std::make_unique<std::string>("test body")));
+  prefetch_container->TakeStreamingURLLoader(
+      MakeServableStreamingURLLoaderForTest(
+          network::mojom::URLResponseHead::New(), "test body"));
 
   prefetch_container->OnIsolatedCookieCopyStart();
   prefetch_container->OnIsolatedCookieCopyComplete();
@@ -854,10 +849,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeFailure)) {
           blink::mojom::Referrer(), nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
-  prefetch_container->TakePrefetchedResponse(
-      std::make_unique<PrefetchedMainframeResponseContainer>(
-          net::IsolationInfo(), network::mojom::URLResponseHead::New(),
-          std::make_unique<std::string>("test body")));
+  prefetch_container->TakeStreamingURLLoader(
+      MakeServableStreamingURLLoaderForTest(
+          network::mojom::URLResponseHead::New(), "test body"));
 
   prefetch_container->OnIsolatedCookieCopyStart();
   prefetch_container->OnIsolatedCookieCopyComplete();

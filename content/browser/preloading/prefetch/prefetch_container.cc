@@ -19,7 +19,6 @@
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
-#include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
 #include "content/browser/preloading/prefetch/proxy_lookup_client_impl.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_data_impl.h"
@@ -29,7 +28,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/gurl.h"
 
@@ -422,36 +420,20 @@ void PrefetchContainer::SetOnCookieCopyCompleteCallback(
   on_cookie_copy_complete_callback_ = std::move(callback);
 }
 
-void PrefetchContainer::TakeURLLoader(
-    std::unique_ptr<network::SimpleURLLoader> loader) {
-  DCHECK(!loader_);
-  DCHECK(!PrefetchUseStreamingURLLoader());
-  loader_ = std::move(loader);
-}
-
-void PrefetchContainer::ResetURLLoader() {
-  DCHECK(loader_);
-  DCHECK(!PrefetchUseStreamingURLLoader());
-  loader_.reset();
-}
-
 void PrefetchContainer::TakeStreamingURLLoader(
     std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader) {
   DCHECK(!streaming_loader_);
-  DCHECK(PrefetchUseStreamingURLLoader());
   streaming_loader_ = std::move(streaming_loader);
 }
 
 std::unique_ptr<PrefetchStreamingURLLoader>
 PrefetchContainer::ReleaseStreamingLoader() {
   DCHECK(streaming_loader_);
-  DCHECK(PrefetchUseStreamingURLLoader());
   return std::move(streaming_loader_);
 }
 
 void PrefetchContainer::ResetStreamingLoader() {
   DCHECK(streaming_loader_);
-  DCHECK(PrefetchUseStreamingURLLoader());
 
   // The streaming URL loader can be deleted in one of its callbacks, so instead
   // of deleting it immediately, it is made self owned and then deletes itself.
@@ -488,21 +470,12 @@ void PrefetchContainer::OnPrefetchedResponseHeadReceived() {
 }
 
 void PrefetchContainer::OnPrefetchComplete() {
-  if (!loader_ && !streaming_loader_) {
+  if (!streaming_loader_) {
     return;
   }
 
-  absl::optional<network::URLLoaderCompletionStatus> completion_status;
-  const network::mojom::URLResponseHead* head;
-  if (loader_) {
-    completion_status = loader_->CompletionStatus();
-    head = loader_->ResponseInfo();
-  } else if (streaming_loader_) {
-    completion_status = streaming_loader_->GetCompletionStatus();
-    head = streaming_loader_->GetHead();
-  }
-
-  UpdatePrefetchRequestMetrics(completion_status, head);
+  UpdatePrefetchRequestMetrics(streaming_loader_->GetCompletionStatus(),
+                               streaming_loader_->GetHead());
   UpdateServingPageMetrics();
 }
 
@@ -539,47 +512,11 @@ bool PrefetchContainer::IsPrefetchServable(
     base::TimeDelta cacheable_duration) const {
   // Whether or not the response (either full or partial) from the streaming URL
   // loader is servable.
-  bool streaming_loader_servable =
-      streaming_loader_ && streaming_loader_->Servable(cacheable_duration);
-
-  // Whether or not there is a valid response from the non-streaming URL loader.
-  bool valid_response =
-      prefetched_response_ != nullptr && prefetch_received_time_.has_value() &&
-      base::TimeTicks::Now() <
-          prefetch_received_time_.value() + cacheable_duration;
-
-  return streaming_loader_servable || valid_response;
-}
-
-void PrefetchContainer::TakePrefetchedResponse(
-    std::unique_ptr<PrefetchedMainframeResponseContainer> prefetched_response) {
-  DCHECK(!prefetched_response_);
-  DCHECK(!is_decoy_);
-
-  prefetch_received_time_ = base::TimeTicks::Now();
-  prefetched_response_ = std::move(prefetched_response);
-
-  if (prefetch_document_manager_) {
-    prefetch_document_manager_->OnPrefetchSuccessful();
-  }
-}
-
-std::unique_ptr<PrefetchedMainframeResponseContainer>
-PrefetchContainer::ReleasePrefetchedResponse() {
-  prefetch_received_time_.reset();
-  return std::move(prefetched_response_);
+  return streaming_loader_ && streaming_loader_->Servable(cacheable_duration);
 }
 
 const network::mojom::URLResponseHead* PrefetchContainer::GetHead() {
-  if (prefetched_response_) {
-    return prefetched_response_->GetHead();
-  }
-
-  if (streaming_loader_) {
-    return streaming_loader_->GetHead();
-  }
-
-  return nullptr;
+  return streaming_loader_ ? streaming_loader_->GetHead() : nullptr;
 }
 
 void PrefetchContainer::SetServingPageMetrics(
