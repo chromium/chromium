@@ -49,14 +49,8 @@ class UseCounterPageLoadMetricsObserverBrowserTest
 
 }  // namespace
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1224355
-#define MAYBE_RecordFeatures DISABLED_RecordFeatures
-#else
-#define MAYBE_RecordFeatures RecordFeatures
-#endif
 IN_PROC_BROWSER_TEST_F(UseCounterPageLoadMetricsObserverBrowserTest,
-                       MAYBE_RecordFeatures) {
+                       RecordFeatures) {
   std::vector<WebFeature> features_0(
       {WebFeature::kFetch, WebFeature::kFetchBodyStream});
   std::vector<WebFeature> features_1({WebFeature::kWindowFind});
