@@ -162,8 +162,8 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
       base::BindRepeating(&TestEncryptionKeyAttached::Call,
                           base::Unretained(&encryption_key_attached));
 
-  auto client = std::make_unique<MockCloudPolicyClient>();
-  client->SetDMToken(
+  ReportingServerConnector::TestEnvironment test_env;
+  test_env.client()->SetDMToken(
       policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
 
   static constexpr char matched_record_template[] =
@@ -176,29 +176,30 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   }
 }
 )JSON";
-  EXPECT_CALL(*client, UploadEncryptedReport(
-                           AllOf(IsDataUploadRequestValid(),
-                                 DoesRequestContainRecord(base::StringPrintf(
-                                     matched_record_template, 0)),
-                                 DoesRequestContainRecord(base::StringPrintf(
-                                     matched_record_template, 1)),
-                                 DoesRequestContainRecord(base::StringPrintf(
-                                     matched_record_template, 2)),
-                                 DoesRequestContainRecord(base::StringPrintf(
-                                     matched_record_template, 3)),
-                                 DoesRequestContainRecord(base::StringPrintf(
-                                     matched_record_template, 4)),
-                                 DoesRequestContainRecord(base::StringPrintf(
-                                     matched_record_template, 5)),
-                                 DoesRequestContainRecord(base::StringPrintf(
-                                     matched_record_template, 6)),
-                                 DoesRequestContainRecord(base::StringPrintf(
-                                     matched_record_template, 7)),
-                                 DoesRequestContainRecord(base::StringPrintf(
-                                     matched_record_template, 8)),
-                                 DoesRequestContainRecord(base::StringPrintf(
-                                     matched_record_template, 9))),
-                           _, _))
+  EXPECT_CALL(
+      *test_env.client(),
+      UploadEncryptedReport(AllOf(IsDataUploadRequestValid(),
+                                  DoesRequestContainRecord(base::StringPrintf(
+                                      matched_record_template, 0)),
+                                  DoesRequestContainRecord(base::StringPrintf(
+                                      matched_record_template, 1)),
+                                  DoesRequestContainRecord(base::StringPrintf(
+                                      matched_record_template, 2)),
+                                  DoesRequestContainRecord(base::StringPrintf(
+                                      matched_record_template, 3)),
+                                  DoesRequestContainRecord(base::StringPrintf(
+                                      matched_record_template, 4)),
+                                  DoesRequestContainRecord(base::StringPrintf(
+                                      matched_record_template, 5)),
+                                  DoesRequestContainRecord(base::StringPrintf(
+                                      matched_record_template, 6)),
+                                  DoesRequestContainRecord(base::StringPrintf(
+                                      matched_record_template, 7)),
+                                  DoesRequestContainRecord(base::StringPrintf(
+                                      matched_record_template, 8)),
+                                  DoesRequestContainRecord(base::StringPrintf(
+                                      matched_record_template, 9))),
+                            _, _))
       .WillOnce(MakeUploadEncryptedReportAction(
           std::move(ResponseBuilder().SetForceConfirm(force_confirm()))));
 
@@ -208,7 +209,6 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   const SequenceInformation last_record_seq_info =
       records.back().sequence_information();
 
-  ReportingServerConnector::TestEnvironment test_env(client.get());
   test::TestEvent<StatusOr<std::unique_ptr<UploadClient>>> e;
   UploadClient::Create(e.cb());
   StatusOr<std::unique_ptr<UploadClient>> upload_client_result = e.result();

@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
+#include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 
@@ -95,6 +96,9 @@ class ReportingServerConnector : public ::policy::CloudPolicyCore::Observer {
   // Constructor to be used by singleton only.
   ReportingServerConnector();
 
+  // Returns cloud policy manager or Status in case of error.
+  StatusOr<::policy::CloudPolicyManager*> GetUserCloudPolicyManager();
+
   // Returns OK if `CloudPolicyCore` instance is usable, or error status
   // otherwise. If successful, caches the core and registers `this` as its
   // observer.
@@ -104,24 +108,20 @@ class ReportingServerConnector : public ::policy::CloudPolicyCore::Observer {
   // error status otherwise. If successful, caches the client.
   Status EnsureUsableClient();
 
-  // ::policy::CloudPolicyCore::Observer implementation
+  // ::policy::CloudPolicyCore::Observer implementation.
   void OnCoreConnected(::policy::CloudPolicyCore* core) override;
   void OnRefreshSchedulerStarted(::policy::CloudPolicyCore* core) override;
   void OnCoreDisconnecting(::policy::CloudPolicyCore* core) override;
   void OnCoreDestruction(::policy::CloudPolicyCore* core) override;
 
-  // Gets `payload_size_per_hour_uma_reporter_`'s weak pointer.
-  base::WeakPtr<PayloadSizePerHourUmaReporter>
-  GetPayloadSizePerHourUmaReporter();
-
   // Manages reporting accumulated payload sizes per hour via UMA.
   PayloadSizePerHourUmaReporter payload_size_per_hour_uma_reporter_;
 
-  // Set only in production (on UI task runner), not in tests.
+  // Onwed by CloudPolicyManager. Cached here (only on UI task runner).
   raw_ptr<::policy::CloudPolicyCore> core_ = nullptr;
 
-  // Used by `UploadEncryptedReport` - must be non-null by then.
-  // Set only on UI task runner.
+  // Onwed by CloudPolicyCore. Used by `UploadEncryptedReport` - must be
+  // non-null by then. Cached here (only on UI task runner).
   raw_ptr<::policy::CloudPolicyClient> client_ = nullptr;
 };
 }  // namespace reporting

@@ -87,7 +87,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
     }
 
     // Provide a mock cloud policy client.
-    mock_client_.SetDMToken(kDMToken);
+    test_env_.client()->SetDMToken(kDMToken);
     test_reporting_ = std::make_unique<ReportingClient::TestEnvironment>(
         base::FilePath(location_.GetPath()),
         base::StringPiece(
@@ -284,8 +284,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
   scoped_refptr<test::Decryptor> decryptor_;
   SignedEncryptionInfo signed_encryption_key_;
 
-  MockCloudPolicyClient mock_client_;
-  ReportingServerConnector::TestEnvironment test_env_{&mock_client_};
+  ReportingServerConnector::TestEnvironment test_env_;
   raw_ptr<ReportQueueConfiguration> report_queue_config_;
   const Destination destination_ = Destination::UPLOAD_EVENTS;
   ReportQueueConfiguration::PolicyCheckCallback policy_checker_callback_ =
@@ -364,7 +363,7 @@ TEST_P(ReportClientTest, EnqueueMessageAndUpload) {
 
     // Uploader is available, let it set the key.
     EXPECT_CALL(
-        mock_client_,
+        *test_env_.client(),
         UploadEncryptedReport(IsEncryptionKeyRequestUploadRequestValid(), _, _))
         .WillOnce(WithArgs<0, 2>(Invoke(GetEncryptionKeyInvocation())))
         .RetiresOnSaturation();
@@ -378,7 +377,7 @@ TEST_P(ReportClientTest, EnqueueMessageAndUpload) {
 
   if (StorageSelector::is_uploader_required() &&
       !StorageSelector::is_use_missive()) {
-    EXPECT_CALL(mock_client_,
+    EXPECT_CALL(*test_env_.client(),
                 UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
         .WillOnce(WithArgs<0, 2>(Invoke(GetVerifyDataInvocation())));
   }
@@ -406,12 +405,12 @@ TEST_P(ReportClientTest, SpeculativelyEnqueueMessageAndUpload) {
   if (StorageSelector::is_uploader_required() &&
       !StorageSelector::is_use_missive()) {
     if (is_encryption_enabled()) {
-      EXPECT_CALL(mock_client_,
+      EXPECT_CALL(*test_env_.client(),
                   UploadEncryptedReport(
                       IsEncryptionKeyRequestUploadRequestValid(), _, _))
           .WillOnce(WithArgs<0, 2>(Invoke(GetEncryptionKeyInvocation())));
     }
-    EXPECT_CALL(mock_client_,
+    EXPECT_CALL(*test_env_.client(),
                 UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
         .WillOnce(WithArgs<0, 2>(Invoke(GetVerifyDataInvocation())));
   }

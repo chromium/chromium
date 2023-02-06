@@ -19,8 +19,6 @@
 #include "chrome/browser/policy/messaging_layer/util/test_response_payload.h"
 #include "chromeos/ash/components/dbus/services/service_provider_test_helper.h"
 #include "chromeos/dbus/missive/missive_client.h"
-#include "components/policy/core/common/cloud/dm_token.h"
-#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/proto/synced/interface.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "dbus/exported_object.h"
@@ -99,8 +97,6 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
  protected:
   void SetUp() override {
     chromeos::MissiveClient::InitializeFake();
-    mock_client_.SetDMToken(
-        policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
 
     auto successful_upload_cb = base::BindRepeating(
         &EncryptedReportingServiceProviderTest::ReportSuccessfulUpload,
@@ -158,9 +154,7 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
   // Must be initialized before any other class member.
   content::BrowserTaskEnvironment task_environment_;
 
-  policy::MockCloudPolicyClient mock_client_;
-  ::reporting::ReportingServerConnector::TestEnvironment test_env_{
-      &mock_client_};
+  ::reporting::ReportingServerConnector::TestEnvironment test_env_;
   ::reporting::EncryptedRecord record_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -174,8 +168,9 @@ TEST_F(EncryptedReportingServiceProviderTest, SuccessfullyUploadsRecord) {
   EXPECT_CALL(*this, ReportSuccessfulUpload(
                          EqualsProto(record_.sequence_information()), _))
       .Times(1);
-  EXPECT_CALL(mock_client_, UploadEncryptedReport(
-                                ::reporting::IsDataUploadRequestValid(), _, _))
+  EXPECT_CALL(
+      *test_env_.client(),
+      UploadEncryptedReport(::reporting::IsDataUploadRequestValid(), _, _))
       .WillOnce(::reporting::MakeUploadEncryptedReportAction());
 
   ::reporting::UploadEncryptedRecordRequest request;
@@ -190,7 +185,7 @@ TEST_F(EncryptedReportingServiceProviderTest, SuccessfullyUploadsRecord) {
 TEST_F(EncryptedReportingServiceProviderTest,
        NoRecordUploadWhenUploaderDisabled) {
   SetupForRequestUploadEncryptedRecord();
-  EXPECT_CALL(mock_client_, UploadEncryptedReport(_, _, _)).Times(0);
+  EXPECT_CALL(*test_env_.client(), UploadEncryptedReport(_, _, _)).Times(0);
 
   ::reporting::UploadEncryptedRecordRequest request;
   request.add_encrypted_record()->CheckTypeAndMergeFrom(record_);

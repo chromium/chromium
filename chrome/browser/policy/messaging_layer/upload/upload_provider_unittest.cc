@@ -73,8 +73,6 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
   void SetUp() override {
     memory_resource_ =
         base::MakeRefCounted<ResourceManager>(4u * 1024LLu * 1024LLu);  // 4 MiB
-    cloud_policy_client_.SetDMToken(
-        policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
     service_provider_ = std::make_unique<TestEncryptedReportingUploadProvider>(
         base::BindRepeating(
             &EncryptedReportingUploadProviderTest::ReportSuccessfulUpload,
@@ -109,8 +107,7 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
   // Must be initialized before any other class member.
   content::BrowserTaskEnvironment task_envrionment_;
 
-  policy::MockCloudPolicyClient cloud_policy_client_;
-  ReportingServerConnector::TestEnvironment test_env_{&cloud_policy_client_};
+  ReportingServerConnector::TestEnvironment test_env_;
   EncryptedRecord record_;
 
   scoped_refptr<ResourceManager> memory_resource_;
@@ -124,7 +121,7 @@ TEST_F(EncryptedReportingUploadProviderTest, SuccessfullyUploadsRecord) {
       .WillOnce([&uploaded_event](SequenceInformation seq_info, bool force) {
         std::move(uploaded_event.cb()).Run(std::move(seq_info), force);
       });
-  EXPECT_CALL(cloud_policy_client_,
+  EXPECT_CALL(*test_env_.client(),
               UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
       .WillOnce(MakeUploadEncryptedReportAction());
 

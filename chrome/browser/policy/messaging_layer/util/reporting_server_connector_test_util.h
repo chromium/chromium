@@ -8,21 +8,23 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
+#include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 
 namespace reporting {
 
 class ReportingServerConnector::TestEnvironment {
  public:
-  explicit TestEnvironment(::policy::MockCloudPolicyClient* client);
+  TestEnvironment();
   TestEnvironment(const TestEnvironment& other) = delete;
   TestEnvironment& operator=(const TestEnvironment& other) = delete;
   ~TestEnvironment();
 
+  ::policy::MockCloudPolicyClient* client() const;
+
  private:
-  const raw_ptr<::policy::MockCloudPolicyClient> test_client_;
-  const raw_ptr<::policy::CloudPolicyClient> saved_client_;
-  const raw_ptr<::policy::CloudPolicyCore> saved_core_;
+  std::unique_ptr<::policy::CloudPolicyStore> store_;
+  std::unique_ptr<::policy::CloudPolicyCore> core_;
 };
 }  // namespace reporting
 

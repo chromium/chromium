@@ -43,7 +43,7 @@ class ReportingServerConnectorTest : public ::testing::Test {
     // Prepare to respond to `ReportingServerConnector::UploadEncryptedReport`.
     // Callback is expected to be called exactly once on UI task runner,
     // regardless of the launching thread.
-    EXPECT_CALL(mock_client_, UploadEncryptedReport(_, _, _))
+    EXPECT_CALL(*test_env_.client(), UploadEncryptedReport(_, _, _))
         .WillOnce(WithArg<2>(
             Invoke([](::policy::CloudPolicyClient::ResponseCallback callback) {
               ASSERT_TRUE(::content::BrowserThread::CurrentlyOn(
@@ -53,8 +53,7 @@ class ReportingServerConnectorTest : public ::testing::Test {
   }
   content::BrowserTaskEnvironment task_environment_;
 
-  policy::MockCloudPolicyClient mock_client_;
-  ReportingServerConnector::TestEnvironment test_env_{&mock_client_};
+  ReportingServerConnector::TestEnvironment test_env_;
 };
 
 TEST_F(ReportingServerConnectorTest,

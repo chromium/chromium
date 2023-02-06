@@ -4,25 +4,49 @@
 
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
 
+#include <memory>
+
 #include "base/memory/singleton.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/cloud_policy_core.h"
+#include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
+#include "components/policy/core/common/cloud/cloud_policy_store.h"
+#include "components/policy/core/common/cloud/dm_token.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_service.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "services/network/test/test_network_connection_tracker.h"
 
 namespace reporting {
 
-ReportingServerConnector::TestEnvironment::TestEnvironment(
-    ::policy::MockCloudPolicyClient* client)
-    : test_client_(client),
-      saved_client_(GetInstance()->client_),
-      saved_core_(GetInstance()->core_) {
-  client->SetDMToken("DUMMY_DM_TOKEN");  // Register mock client
-  GetInstance()->client_ = client;
+ReportingServerConnector::TestEnvironment::TestEnvironment()
+    : store_(std::make_unique<::policy::MockCloudPolicyStore>()),
+      core_(std::make_unique<::policy::CloudPolicyCore>(
+          ::policy::dm_protocol::kChromeDevicePolicyType,
+          std::string(),
+          store_.get(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          network::TestNetworkConnectionTracker::CreateGetter())) {
+  auto mock_client = std::make_unique<::policy::MockCloudPolicyClient>();
+  mock_client->SetDMToken(
+      ::policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
+  auto service = std::make_unique<::policy::MockCloudPolicyService>(
+      mock_client.get(), store_.get());
+  GetInstance()->core_ = core_.get();
+  GetInstance()->core_->ConnectForTesting(std::move(service),
+                                          std::move(mock_client));
 }
 
 ReportingServerConnector::TestEnvironment::~TestEnvironment() {
-  DCHECK_EQ(GetInstance()->client_, test_client_)
-      << "Client was illegally altered by the test";
-  GetInstance()->core_ = saved_core_;
-  GetInstance()->client_ = saved_client_;
   base::Singleton<ReportingServerConnector>::OnExit(nullptr);
+}
+
+::policy::MockCloudPolicyClient*
+ReportingServerConnector::TestEnvironment::client() const {
+  return reinterpret_cast<::policy::MockCloudPolicyClient*>(
+      GetInstance()->core_->client());
 }
 }  // namespace reporting
