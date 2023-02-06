@@ -668,6 +668,19 @@ class BASE_EXPORT GSL_OWNER Value {
     std::vector<Value> storage_;
   };
 
+  // ===== DEPRECATED methods that require `type() == Type::LIST` =====
+
+  // Appends `value` to the end of the list.
+  //
+  // DEPRECATED: prefer `Value::List::Append()`.
+  void Append(Value&& value);
+  // DEPRECATED: prefer `Value::List::Append()`.
+  void Append(StringPiece value);
+  // DEPRECATED: prefer `Value::List::Append()`.
+  void Append(const char* value);
+  // DEPRECATED: prefer `Value::List::Append()`.
+  void Append(std::string&& value);
+
   // ===== DEPRECATED methods that require `type() == Type::DICT` =====
 
   // `FindKey` looks up `key` in the underlying dictionary. If found, it returns
