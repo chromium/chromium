@@ -61,20 +61,33 @@ std::vector<base::FilePath> GetInputs() {
 }
 
 class AttributionInteropTest : public ::testing::TestWithParam<base::FilePath> {
+ public:
+  static void SetUpTestSuite() {
+    auto maybe_config = ParseAttributionConfig(
+        ReadJsonFromFile(GetInputDir().AppendASCII(kDefaultConfigFileName)));
+    ASSERT_TRUE(maybe_config.has_value()) << maybe_config.error();
+    g_config_ = *maybe_config;
+  }
+
+ protected:
+  static AttributionConfig GetConfig() { return g_config_; }
+
+ private:
+  static AttributionConfig g_config_;
 };
+
+// static
+AttributionConfig AttributionInteropTest::g_config_;
 
 // See //content/test/data/attribution_reporting/interop/README.md for the
 // JSON schema.
 TEST_P(AttributionInteropTest, HasExpectedOutput) {
-  auto config = ParseAttributionConfig(
-      ReadJsonFromFile(GetInputDir().AppendASCII(kDefaultConfigFileName)));
-  ASSERT_TRUE(config.has_value()) << config.error();
-
+  AttributionConfig config = GetConfig();
   base::Value::Dict dict = ReadJsonFromFile(GetParam());
 
   if (const base::Value* api_config = dict.Find("api_config")) {
     ASSERT_TRUE(api_config->is_dict());
-    ASSERT_EQ("", MergeAttributionConfig(api_config->GetDict(), *config));
+    ASSERT_EQ("", MergeAttributionConfig(api_config->GetDict(), config));
   }
 
   absl::optional<base::Value> expected_output = dict.Extract("output");
@@ -83,7 +96,7 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
   auto input = AttributionSimulatorInputFromInteropInput(std::move(dict));
   ASSERT_TRUE(input.has_value()) << input.error();
 
-  auto simulator_output = RunAttributionSimulation(std::move(*input), *config);
+  auto simulator_output = RunAttributionSimulation(std::move(*input), config);
   ASSERT_TRUE(simulator_output.has_value()) << simulator_output.error();
 
   auto actual_output =
