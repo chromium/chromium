@@ -226,7 +226,7 @@ export class SettingsSecurityPageElement extends
 
     this.registerHelpBubble(
         'kEnhancedProtectionSettingElementId',
-        this.$.safeBrowsingEnhanced.getBubbleAnchor(), {top: 10});
+        this.$.safeBrowsingEnhanced.getBubbleAnchor(), {anchorPaddingTop: 10});
   }
 
   /**

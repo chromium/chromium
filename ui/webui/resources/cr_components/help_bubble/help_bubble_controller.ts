@@ -10,9 +10,62 @@ import {HelpBubbleParams} from './help_bubble.mojom-webui.js';
 
 type Root = HTMLElement|ShadowRoot&{shadowRoot?: ShadowRoot};
 
-export type Trackable = string|string[]|HTMLElement;
+export type Trackable = string|string[]|HTMLElement|Element;
 
 export const ANCHOR_HIGHLIGHT_CLASS = 'help-anchor-highlight';
+
+interface Options {
+  padding: InsetsF;
+  fixed: boolean;
+}
+
+/**
+ * Function used to test ancestor elements
+ *
+ * Returning true signals we want to return this element
+ * Returning false will continue to traverse ancestors
+ */
+type ElementTestFn = (element: Element) => boolean;
+
+/**
+ * Traverse ancestor elements to find a parent that passes the `testFn`,
+ * crossing shadowRoot boundaries when encountered
+ *
+ * The traversal starts with the parent of the `child` element
+ *
+ * Traversal ends either when the `root` shadowRoot is encountered or
+ * an element produces `true` from the `testFn`.
+ */
+function getAncestor(child: Element, root: ShadowRoot, testFn: ElementTestFn):
+    Element|ShadowRoot {
+  let parent: Element|ShadowRoot|null = child.parentElement;
+  while (parent && !testFn(parent)) {
+    if (!parent.parentElement && parent.parentNode instanceof ShadowRoot) {
+      if (parent.parentNode === root) {
+        return root;
+      }
+      parent = parent.parentNode.host;
+    } else {
+      parent = parent.parentElement;
+    }
+  }
+  return parent ? parent : root;
+}
+
+const relativePositionValues = [
+  'absolute',
+  'fixed',
+  'relative',
+];
+
+const isRelativePosition: ElementTestFn = (element) => {
+  const positionVal = getComputedStyle(element).getPropertyValue('position');
+  return relativePositionValues.includes(positionVal);
+};
+
+const isFixedPosition: ElementTestFn = (element) => {
+  return getComputedStyle(element).getPropertyValue('position') === 'fixed';
+};
 
 /**
  * HelpBubble controller class
@@ -25,7 +78,7 @@ export class HelpBubbleController {
   private root_: ShadowRoot;
   private anchor_: HTMLElement|null = null;
   private bubble_: HelpBubbleElement|null = null;
-  private padding_: InsetsF = new InsetsF();
+  private options_: Options = {padding: new InsetsF(), fixed: false};
 
   /**
    * Whether a help bubble (webui or external) is being shown for this
@@ -43,7 +96,12 @@ export class HelpBubbleController {
   private isExternal_: boolean = false;
 
   constructor(nativeId: string, root: ShadowRoot) {
-    assert(nativeId && root);
+    assert(
+        nativeId,
+        'HelpBubble: nativeId was not defined when registering help bubble');
+    assert(
+        root,
+        'HelpBubble: shadowRoot was not defined when registering help bubble');
 
     this.nativeId_ = nativeId;
     this.root_ = root;
@@ -78,7 +136,7 @@ export class HelpBubbleController {
   }
 
   getPadding() {
-    return this.padding_;
+    return this.options_.padding;
   }
 
   getAnchorVisibility() {
@@ -87,6 +145,10 @@ export class HelpBubbleController {
 
   cacheAnchorVisibility(isVisible: boolean) {
     this.isAnchorVisible_ = isVisible;
+  }
+
+  isAnchorFixed(): boolean {
+    return this.options_.fixed;
   }
 
   isExternal() {
@@ -99,7 +161,7 @@ export class HelpBubbleController {
     this.setAnchorHighlight_(isShowing);
   }
 
-  track(trackable: Trackable, padding: InsetsF): boolean {
+  track(trackable: Trackable, options: Options): boolean {
     assert(!this.anchor_);
 
     let anchor: HTMLElement|null = null;
@@ -110,7 +172,9 @@ export class HelpBubbleController {
     } else if (trackable instanceof HTMLElement) {
       anchor = trackable;
     } else {
-      assertNotReached('HelpBubbleController.track() - anchor is unrecognized');
+      assertNotReached(
+          'HelpBubble: anchor argument was unrecognized when registering ' +
+          'help bubble');
     }
 
     if (!anchor) {
@@ -119,7 +183,7 @@ export class HelpBubbleController {
 
     anchor.dataset['nativeId'] = this.nativeId_;
     this.anchor_ = anchor;
-    this.padding_ = padding;
+    this.options_ = options;
     return true;
   }
 
@@ -162,7 +226,9 @@ export class HelpBubbleController {
   }
 
   createBubble(params: HelpBubbleParams): HelpBubbleElement {
-    assert(this.anchor_);
+    assert(
+        this.anchor_,
+        'HelpBubble: anchor was not defined when showing help bubble');
 
     this.bubble_ = document.createElement('help-bubble');
     this.bubble_.nativeId = this.nativeId_;
@@ -175,7 +241,7 @@ export class HelpBubbleController {
     this.bubble_.titleText = params.titleText || '';
     this.bubble_.progress = params.progress || null;
     this.bubble_.buttons = params.buttons;
-    this.bubble_.padding = this.padding_;
+    this.bubble_.padding = this.options_.padding;
 
     if (params.timeout) {
       this.bubble_.timeoutMs = Number(params.timeout!.microseconds / 1000n);
@@ -187,7 +253,25 @@ export class HelpBubbleController {
         this.bubble_.progress.total >= this.bubble_.progress.current);
 
     assert(this.root_);
-    this.root_.appendChild(this.bubble_);
+    if (this.options_.fixed) {
+      if (isFixedPosition(this.anchor_)) {
+        // anchor is fixed so bubble needs to be fixed
+        // insert bubble into root
+        this.bubble_.fixed = true;
+        const relativeRoot =
+            getAncestor(this.anchor_, this.root_, isRelativePosition);
+        relativeRoot.appendChild(this.bubble_);
+      } else {
+        // ancestor of anchor should be fixed
+        // insert bubble into fixed ancestor
+        const fixedRoot =
+            getAncestor(this.anchor_, this.root_, isFixedPosition);
+        fixedRoot.appendChild(this.bubble_);
+      }
+    } else {
+      // insert bubble into root
+      this.root_.appendChild(this.bubble_);
+    }
 
     return this.bubble_;
   }

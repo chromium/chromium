@@ -107,6 +107,7 @@ export class HelpBubbleElement extends PolymerElement {
   debouncedUpdate: ResizeListener|EventListenerOrEventListenerObject|null =
       null;
   padding: InsetsF = new InsetsF();
+  fixed: boolean = false;
 
   /**
    * HTMLElement corresponding to |this.nativeId|.
@@ -142,6 +143,7 @@ export class HelpBubbleElement extends PolymerElement {
     // Reset the aria-hidden attribute as screen readers need to access the
     // contents of an opened bubble.
     this.style.display = 'block';
+    this.style.position = this.fixed ? 'fixed' : 'absolute';
     this.removeAttribute('aria-hidden');
     this.updatePosition_();
 
