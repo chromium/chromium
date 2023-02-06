@@ -2670,7 +2670,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.AvailableBSSesAtConnect" units="units"
-    expires_after="2023-02-12">
+    expires_after="2024-02-12">
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2896,7 +2896,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.MBOSupport" enum="MBOSupport"
-    expires_after="2023-02-12">
+    expires_after="2024-02-12">
   <owner>matthewmwang@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -3015,7 +3015,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.RememberedUserNetworkCount" units="units"
-    expires_after="2023-02-12">
+    expires_after="2024-02-12">
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
