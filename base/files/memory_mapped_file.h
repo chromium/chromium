@@ -140,8 +140,7 @@ class BASE_EXPORT MemoryMappedFile {
 
   File file_;
 
-  // TODO(crbug.com/1298696): Breaks one of the test suites.
-  raw_ptr<uint8_t, DanglingUntriagedDegradeToNoOpWhenMTE> data_ = nullptr;
+  raw_ptr<uint8_t, DanglingUntriaged> data_ = nullptr;
   size_t length_ = 0;
 
 #if BUILDFLAG(IS_WIN)

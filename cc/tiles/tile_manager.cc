@@ -179,9 +179,7 @@ class RasterTaskImpl : public TileTask {
   TileResolution tile_resolution_;
   int layer_id_;
   uint64_t source_prepare_tiles_id_;
-  // TODO(crbug.com/1298696): views_unittests breaks with MTECheckedPtr
-  // enabled. Triage.
-  raw_ptr<void, DanglingUntriagedDegradeToNoOpWhenMTE> tile_tracing_id_;
+  raw_ptr<void, DanglingUntriaged> tile_tracing_id_;
   uint64_t new_content_id_;
   int source_frame_number_;
   std::unique_ptr<RasterBuffer> raster_buffer_;

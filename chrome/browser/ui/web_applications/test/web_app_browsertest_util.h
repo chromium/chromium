@@ -140,10 +140,7 @@ class BrowserWaiter : public BrowserListObserver {
   raw_ptr<Browser, DanglingUntriaged> added_browser_ = nullptr;
 
   base::RunLoop removed_run_loop_;
-  // TODO(crbug.com/1298696): browser_tests breaks with MTECheckedPtr
-  // enabled. Triage.
-  raw_ptr<Browser, DanglingUntriagedDegradeToNoOpWhenMTE> removed_browser_ =
-      nullptr;
+  raw_ptr<Browser, DanglingUntriaged> removed_browser_ = nullptr;
 };
 
 class UpdateAwaiter : public WebAppInstallManagerObserver {

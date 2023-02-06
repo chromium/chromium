@@ -313,9 +313,7 @@ class BrowserChangeObserver : public BrowserListObserver {
   void OnBrowserRemoved(Browser* browser) override;
 
  private:
-  // TODO(crbug.com/1298696): browser_tests (pixel_browser_tests)
-  // breaks with MTECheckedPtr enabled. Triage.
-  raw_ptr<Browser, DanglingUntriagedDegradeToNoOpWhenMTE> browser_;
+  raw_ptr<Browser, DanglingUntriaged> browser_;
   ChangeType type_;
   base::RunLoop run_loop_;
 };

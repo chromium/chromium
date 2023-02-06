@@ -471,10 +471,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
   raw_ptr<Profile, DanglingUntriaged> active_profile_ = nullptr;
   AppId active_app_id_;
-  // TODO(crbug.com/1298696): browser_tests breaks with MTECheckedPtr
-  // enabled. Triage.
-  raw_ptr<Browser, DanglingUntriagedDegradeToNoOpWhenMTE> app_browser_ =
-      nullptr;
+  raw_ptr<Browser, DanglingUntriaged> app_browser_ = nullptr;
 
   bool in_tear_down_ = false;
   bool is_performing_manifest_update_ = false;
