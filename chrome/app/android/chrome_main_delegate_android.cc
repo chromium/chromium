@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/chrome_startup_flags.h"
 #include "chrome/browser/android/metrics/uma_utils.h"
@@ -44,6 +45,15 @@ absl::optional<int> ChromeMainDelegateAndroid::BasicStartupComplete() {
 
 void ChromeMainDelegateAndroid::PreSandboxStartup() {
   ChromeMainDelegate::PreSandboxStartup();
+
+  // PoissonAllocationSampler's TLS slots need to be set up before
+  // MainThreadStackSamplingProfiler, which can allocate TLS slots of its own.
+  // On some platforms pthreads can malloc internally to access higher-numbered
+  // TLS slots, which can cause reentry in the heap profiler. (See the comment
+  // on ReentryGuard::InitTLSSlot().)
+  // TODO(https://crbug.com/1411454): Clean up other paths that call this Init()
+  // function, which are now redundant.
+  base::PoissonAllocationSampler::Init();
 
   // Start the sampling profiler after crashpad initialization.
   sampling_profiler_ = std::make_unique<MainThreadStackSamplingProfiler>();

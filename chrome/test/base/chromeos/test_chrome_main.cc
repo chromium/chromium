@@ -5,6 +5,7 @@
 #include <cstdint>
 
 #include "base/command_line.h"
+#include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/time/time.h"
 #include "chrome/app/chrome_main_delegate.h"
 #include "chrome/common/chrome_switches.h"
@@ -23,6 +24,18 @@ int ChromeMain(int argc, const char** argv) {
   params.argc = argc;
   params.argv = argv;
   base::CommandLine::Init(params.argc, params.argv);
+
+  // PoissonAllocationSampler's TLS slots need to be set up before
+  // MainThreadStackSamplingProfiler, which can allocate TLS slots of its own.
+  // On some platforms pthreads can malloc internally to access higher-numbered
+  // TLS slots, which can cause reentry in the heap profiler. (See the comment
+  // on ReentryGuard::InitTLSSlot().) If the MainThreadStackSamplingProfiler
+  // below is removed, this could theoretically be moved later in startup, but
+  // it needs to be initialized fairly early because browser tests of the heap
+  // profiler use the PoissonAllocationSampler.
+  // TODO(https://crbug.com/1411454): Clean up other paths that call this Init()
+  // function, which are now redundant.
+  base::PoissonAllocationSampler::Init();
 
   // Start the sampling profiler as early as possible - namely, once the command
   // line data is available. Allocated as an object on the stack to ensure that
