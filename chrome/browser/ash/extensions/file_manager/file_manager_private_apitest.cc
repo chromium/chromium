@@ -17,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
@@ -724,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, SearchFiles) {
     ASSERT_TRUE(jan_15_file.IsValid());
     base::Time jan_15_2020_noon;
     ASSERT_TRUE(base::Time::FromUTCExploded(
-        base::Time::Exploded(2020, 1, 3, 15, 12, 0, 0, 0), &jan_15_2020_noon));
+        base::Time::Exploded{2020, 1, 3, 15, 12, 0, 0, 0}, &jan_15_2020_noon));
     jan_15_file.SetTimes(jan_15_2020_noon, jan_15_2020_noon);
 
     base::File jan_01_file(downloads_dir.Append("bar_01012020.jpg"),
@@ -732,7 +733,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, SearchFiles) {
     ASSERT_TRUE(jan_01_file.IsValid());
     base::Time jan_01_2020_noon;
     ASSERT_TRUE(base::Time::FromUTCExploded(
-        base::Time::Exploded(2020, 1, 3, 1, 12, 0, 0, 0), &jan_01_2020_noon));
+        base::Time::Exploded{2020, 1, 3, 1, 12, 0, 0, 0}, &jan_01_2020_noon));
     jan_01_file.SetTimes(jan_01_2020_noon, jan_01_2020_noon);
   }
 
