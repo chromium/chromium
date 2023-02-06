@@ -335,7 +335,6 @@ public class TabListMediatorUnitTest {
 
     @Before
     public void setUp() {
-
         MockitoAnnotations.initMocks(this);
         mMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
         mMocker.mock(EndpointFetcherJni.TEST_HOOKS, mEndpointFetcherJniMock);
@@ -985,6 +984,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void tabAddition_GTS_delayAdd() {
+        mMediator.setComponentNameForTesting(TabSwitcherCoordinator.COMPONENT_NAME);
         initAndAssertAllProperties();
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
 
