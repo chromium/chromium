@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+function resolveOnMessage(resolve) {
+  chrome.runtime.onMessage.addListener(function local(message) {
+    chrome.runtime.onMessage.removeListener(local);
+    assertEq('did_run_unload_1', message);
+    resolve();
+  });
+}
+
 var secondTabId;
 chrome.test.runTests([
   function createSecondTab() {
@@ -20,11 +28,14 @@ chrome.test.runTests([
       });
   },
   function removeSecondTab() {
-    chrome.tabs.remove(secondTabId, () => {
-      // The second tab should've set the 'did_run_unload_1' value from
-      // its unload handler, which is accessible from the first tab too.
-      assertEq('yes', localStorage.getItem('did_run_unload_1'));
-      chrome.test.succeed();
+    let onMessagePromise = new Promise(resolveOnMessage);
+
+    let removePromise = new Promise((resolve) => {
+      chrome.tabs.remove(secondTabId, () => {
+      resolve();
+      });
     });
+
+    Promise.all([onMessagePromise, removePromise]).then(chrome.test.succeed);
   }
 ]);

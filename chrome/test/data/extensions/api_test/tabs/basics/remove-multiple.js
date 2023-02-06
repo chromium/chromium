@@ -7,6 +7,15 @@ var secondTabId;
 var thirdTabId;
 var fourthTabId;
 
+function resolveOnMessage(expected_message, resolve) {
+  chrome.runtime.onMessage.addListener(function local(message) {
+    if (message == expected_message) {
+      chrome.runtime.onMessage.removeListener(local);
+      resolve();
+    }
+  });
+}
+
 function createTab(createParams) {
   return new Promise((resolve) => {
     chrome.tabs.create(createParams, (tab) => {
@@ -56,19 +65,25 @@ chrome.test.runTests([
       });
   },
   function removeCreatedTabs() {
-    chrome.tabs.remove([secondTabId, thirdTabId, fourthTabId], () => {
-      // The tabs should've set the 'did_run_unload_1' and
-      // 'did_run_unload_2' values to 'yes' from their unload handler,
-      //  which are accessible from the first tab.
-      assertEq('yes', localStorage.getItem('did_run_unload_1'));
-      assertEq('yes', localStorage.getItem('did_run_unload_2'));
-      chrome.tabs.query({ windowId: chrome.windows.WINDOW_ID_CURRENT },
-        (tabs) => {
-          // Make sure we only have one tab left (the first tab) in the window.
-          assertEq(1, tabs.length);
-          assertEq(firstTabId, tabs[0].id);
-          chrome.test.succeed();
+    let onMessagePromise1 =
+        new Promise(resolveOnMessage.bind(this, 'did_run_unload_1'));
+    let onMessagePromise2 =
+        new Promise(resolveOnMessage.bind(this, 'did_run_unload_2'));
+
+    let removePromise = new Promise((resolve) => {
+      chrome.tabs.remove([secondTabId, thirdTabId, fourthTabId], () => {
+        chrome.tabs.query({ windowId: chrome.windows.WINDOW_ID_CURRENT },
+          (tabs) => {
+            // Make sure we only have one tab left (the first tab) in the
+            // window.
+            assertEq(1, tabs.length);
+            assertEq(firstTabId, tabs[0].id);
+            resolve();
+          });
       });
     });
+
+    Promise.all([onMessagePromise1, onMessagePromise2, removePromise]).then(
+        chrome.test.succeed);
   }
 ]);
