@@ -1134,7 +1134,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
         }],
 "adComponents": [{"renderUrl": "https://example.com/component_url",
                   "metadata": {"new_c": "d"}
-                 }]
+                 }],
+"adSizes": {"size_new": {"width": "300px", "height": "150px"}},
+"sizeGroups": {"group_new": ["size_new"]}
 })",
                          kOriginStringA, kOriginStringA, kOriginStringA,
                          kOriginStringA, kOriginStringA));
@@ -1160,6 +1162,14 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
       /*render_url=*/GURL("https://example.com/render"),
       /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
+  interest_group.ad_sizes.emplace();
+  interest_group.ad_sizes->emplace(
+      "size_old", blink::InterestGroup::Size(
+                      640, blink::InterestGroup::Size::LengthUnit::kPixels, 480,
+                      blink::InterestGroup::Size::LengthUnit::kPixels));
+  interest_group.size_groups.emplace();
+  std::vector<std::string> size_list = {"size_old"};
+  interest_group.size_groups->emplace("group_old", size_list);
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
@@ -1220,6 +1230,15 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   EXPECT_EQ(group.ad_components.value()[0].render_url.spec(),
             "https://example.com/component_url");
   EXPECT_EQ(group.ad_components.value()[0].metadata, "{\"new_c\":\"d\"}");
+  ASSERT_TRUE(group.ad_sizes.has_value());
+  ASSERT_EQ(group.ad_sizes->size(), 1u);
+  EXPECT_EQ(group.ad_sizes->at("size_new"),
+            blink::InterestGroup::Size(
+                300, blink::InterestGroup::Size::LengthUnit::kPixels, 150,
+                blink::InterestGroup::Size::LengthUnit::kPixels));
+  ASSERT_TRUE(group.size_groups.has_value());
+  ASSERT_EQ(group.size_groups->size(), 1u);
+  EXPECT_EQ(group.size_groups->at("group_new")[0], "size_new");
 }
 
 // Only set the ads field -- the other fields shouldn't be changed.

@@ -13,6 +13,11 @@ enum WorkletExecutionMode {
   // "frozenContext",
 };
 
+dictionary AuctionAdInterestGroupSize {
+  required USVString width;
+  required USVString height;
+};
+
 dictionary AuctionAdInterestGroup {
   required USVString owner;
   required USVString name;
@@ -32,4 +37,6 @@ dictionary AuctionAdInterestGroup {
   any userBiddingSignals;
   sequence<AuctionAd> ads;
   sequence<AuctionAd> adComponents;
+  record<USVString, AuctionAdInterestGroupSize> adSizes;
+  record<USVString, sequence<USVString>> sizeGroups;
 };

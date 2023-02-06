@@ -691,6 +691,101 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeSellerCapabilities) {
   ExpectInterestGroupIsValid(blink_interest_group);
 }
 
+TEST_F(ValidateBlinkInterestGroupTest, TooLargeAdSizes) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->name = "";
+
+  size_t initial_estimate =
+      EstimateBlinkInterestGroupSize(*blink_interest_group);
+  blink_interest_group->ad_sizes.emplace();
+  // Set 510 entries with 100-byte origin values. This should be estimated to be
+  // 51000 bytes.
+  for (int i = 0; i < 510; ++i) {
+    // Use a unique 100-byte value for each name -- 5 bytes for the
+    // "size ", and 100 - 8 - 8 - 4 - 4 - 5 = 71 bytes of numerical characters,
+    // where 8 is the size of the each double value in the size, 4 is the
+    // size of the length unit, and 5 is the length of the string "size ".
+    String name_string = String::FromUTF8(base::StringPrintf("size %.71i", i));
+    blink_interest_group->ad_sizes->insert(
+        name_string, mojom::blink::InterestGroupSize::New(
+                         150, blink::InterestGroup::Size::LengthUnit::kPixels,
+                         100, blink::InterestGroup::Size::LengthUnit::kPixels));
+  }
+  size_t current_estimate =
+      EstimateBlinkInterestGroupSize(*blink_interest_group);
+  EXPECT_EQ(51000 + initial_estimate, current_estimate);
+
+  // Name that should cause the group to exactly exceed the maximum name length.
+  // Need to call into ExpectInterestGroupIsNotValid() to make sure name length
+  // estimate for mojom::blink::InterestGroupPtr and blink::InterestGroup
+  // equivalent values exactly match.
+  const size_t kTooLongNameLength =
+      mojom::blink::kMaxInterestGroupSize - current_estimate;
+  std::string too_long_name(kTooLongNameLength, 'n');
+  blink_interest_group->name = String(too_long_name);
+
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group, /*expected_error_field_name=*/"size",
+      /*expected_error_field_value=*/"51200",
+      /*expected_error=*/"interest groups must be less than 51200 bytes");
+
+  // Almost too long should still work.
+  too_long_name = std::string(kTooLongNameLength - 1, 'n');
+  blink_interest_group->name = String(too_long_name);
+  ExpectInterestGroupIsValid(blink_interest_group);
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, TooLargeSizeGroups) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->name = "";
+
+  // There must be at least 1 ad size for the size groups to map to.
+  blink_interest_group->ad_sizes.emplace();
+  blink_interest_group->ad_sizes->insert(
+      "size1", blink::mojom::blink::InterestGroupSize::New(
+                   100, blink::InterestGroup::Size::LengthUnit::kPixels, 100,
+                   blink::InterestGroup::Size::LengthUnit::kPixels));
+
+  size_t initial_estimate =
+      EstimateBlinkInterestGroupSize(*blink_interest_group);
+
+  blink_interest_group->size_groups.emplace();
+  // Set 510 entries with 100-byte origin values. This should be estimated to be
+  // 51000 bytes.
+  for (int i = 0; i < 510; ++i) {
+    // Use a unique 100-byte value for each name -- 6 bytes for the
+    // "group ", and 100 - 6 - 5 = 89 bytes of numerical characters, where the 5
+    // represents the length of the 1 size name being stored in the vector.
+    String name_string = String::FromUTF8(base::StringPrintf("group %.89i", i));
+    blink_interest_group->size_groups->insert(
+        name_string, WTF::Vector<WTF::String>{"size1"});
+  }
+  size_t current_estimate =
+      EstimateBlinkInterestGroupSize(*blink_interest_group);
+  EXPECT_EQ(51000 + initial_estimate, current_estimate);
+
+  // Name that should cause the group to exactly exceed the maximum name length.
+  // Need to call into ExpectInterestGroupIsNotValid() to make sure name length
+  // estimate for mojom::blink::InterestGroupPtr and blink::InterestGroup
+  // equivalent values exactly match.
+  const size_t kTooLongNameLength =
+      mojom::blink::kMaxInterestGroupSize - current_estimate;
+  std::string too_long_name(kTooLongNameLength, 'n');
+  blink_interest_group->name = String(too_long_name);
+
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group, /*expected_error_field_name=*/"size",
+      /*expected_error_field_value=*/"51200",
+      /*expected_error=*/"interest groups must be less than 51200 bytes");
+
+  // Almost too long should still work.
+  too_long_name = std::string(kTooLongNameLength - 1, 'n');
+  blink_interest_group->name = String(too_long_name);
+  ExpectInterestGroupIsValid(blink_interest_group);
+}
+
 TEST_F(ValidateBlinkInterestGroupTest, TooLargeAds) {
   mojom::blink::InterestGroupPtr blink_interest_group =
       CreateMinimalInterestGroup();
@@ -754,6 +849,95 @@ TEST_F(ValidateBlinkInterestGroupTest, InvalidExecutionMode) {
         blink_interest_group, "executionMode" /* expected_error_field_name */,
         test_case.execution_mode_text, /*expected_error_field_value */
         "execution mode is not valid." /* expected_error */);
+  }
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, InvalidAdSizes) {
+  constexpr char kSizeError[] =
+      "Ad sizes must have a valid (non-zero/non-infinite) width and height.";
+  constexpr char kNameError[] = "Ad sizes cannot map from an empty event name.";
+  constexpr char kUnitError[] =
+      "Ad size dimensions must be a valid number either in pixels (px) "
+      "or screen width (sw).";
+  struct {
+    const char* ad_name;
+    const double width;
+    const blink::InterestGroup::Size::LengthUnit width_units;
+    const double height;
+    const blink::InterestGroup::Size::LengthUnit height_units;
+    const char* expected_error;
+    const char* expected_error_field_value;
+  } test_cases[] = {
+      {"ad_name", 0, blink::InterestGroup::Size::LengthUnit::kPixels, 0,
+       blink::InterestGroup::Size::LengthUnit::kPixels, kSizeError,
+       "0.000000 x 0.000000"},
+      {"ad_name", 300, blink::InterestGroup::Size::LengthUnit::kPixels, 0,
+       blink::InterestGroup::Size::LengthUnit::kPixels, kSizeError,
+       "300.000000 x 0.000000"},
+      {"ad_name", 0, blink::InterestGroup::Size::LengthUnit::kScreenWidth, 300,
+       blink::InterestGroup::Size::LengthUnit::kScreenWidth, kSizeError,
+       "0.000000 x 300.000000"},
+      {"ad_name", -300, blink::InterestGroup::Size::LengthUnit::kScreenWidth,
+       300, blink::InterestGroup::Size::LengthUnit::kPixels, kSizeError,
+       "-300.000000 x 300.000000"},
+      {"", 300, blink::InterestGroup::Size::LengthUnit::kScreenWidth, 300,
+       blink::InterestGroup::Size::LengthUnit::kPixels, kNameError, ""},
+      {"ad_name", std::numeric_limits<double>::infinity(),
+       blink::InterestGroup::Size::LengthUnit::kPixels,
+       std::numeric_limits<double>::infinity(),
+       blink::InterestGroup::Size::LengthUnit::kPixels, kSizeError,
+       "inf x inf"},
+      {"ad_name", 300, blink::InterestGroup::Size::LengthUnit::kInvalid, 300,
+       blink::InterestGroup::Size::LengthUnit::kPixels, kUnitError, ""},
+  };
+  for (const auto& test_case : test_cases) {
+    mojom::blink::InterestGroupPtr blink_interest_group =
+        CreateMinimalInterestGroup();
+    blink_interest_group->ad_sizes.emplace();
+    blink_interest_group->ad_sizes->insert(
+        test_case.ad_name, blink::mojom::blink::InterestGroupSize::New(
+                               test_case.width, test_case.width_units,
+                               test_case.height, test_case.height_units));
+    ExpectInterestGroupIsNotValid(
+        blink_interest_group, "adSizes" /* expected_error_field_name */,
+        test_case.expected_error_field_value, test_case.expected_error);
+  }
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, InvalidSizeGroups) {
+  struct {
+    const char* size_group;
+    const char* size_name;
+    const bool has_ad_sizes;
+    const char* expected_error_field_value;
+    const char* expected_error;
+  } test_cases[] = {
+      {"group_name", "", true, "",
+       "Size groups cannot map to an empty ad size name."},
+      {"", "size_name", true, "",
+       "Size groups cannot map from an empty group name."},
+      {"group_name", "nonexistant", true, "nonexistant",
+       "Size does not exist in adSizes map."},
+      {"group_name", "size_name", false, "",
+       "An adSizes map must exist for sizeGroups to work."},
+  };
+  for (const auto& test_case : test_cases) {
+    mojom::blink::InterestGroupPtr blink_interest_group =
+        CreateMinimalInterestGroup();
+    if (test_case.has_ad_sizes) {
+      blink_interest_group->ad_sizes.emplace();
+      blink_interest_group->ad_sizes->insert(
+          "size_name",
+          blink::mojom::blink::InterestGroupSize::New(
+              300, blink::InterestGroup::Size::LengthUnit::kPixels, 150,
+              blink::InterestGroup::Size::LengthUnit::kPixels));
+    }
+    blink_interest_group->size_groups.emplace();
+    blink_interest_group->size_groups->insert(
+        test_case.size_group, WTF::Vector<WTF::String>(1, test_case.size_name));
+    ExpectInterestGroupIsNotValid(
+        blink_interest_group, "sizeGroups" /* expected_error_field_name */,
+        test_case.expected_error_field_value, test_case.expected_error);
   }
 }
 

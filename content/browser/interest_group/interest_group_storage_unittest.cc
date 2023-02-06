@@ -124,7 +124,18 @@ class InterestGroupStorageTest : public testing::Test {
             blink::InterestGroup::Ad(
                 GURL("https://full.example.com/adcomponent1"), "metadata1c"),
             blink::InterestGroup::Ad(
-                GURL("https://full.example.com/adcomponent2"), "metadata2c")});
+                GURL("https://full.example.com/adcomponent2"), "metadata2c")},
+        /*ad_sizes=*/
+        {{{"size_1", blink::InterestGroup::Size(
+                         300, blink::InterestGroup::Size::LengthUnit::kPixels,
+                         150, blink::InterestGroup::Size::LengthUnit::kPixels)},
+          {"size_2",
+           blink::InterestGroup::Size(
+               640, blink::InterestGroup::Size::LengthUnit::kPixels, 480,
+               blink::InterestGroup::Size::LengthUnit::kPixels)}}},
+        /*size_groups=*/
+        {{{"group_1", std::vector<std::string>{"size_1"}},
+          {"group_2", std::vector<std::string>{"size_1", "size_2"}}}});
 
     std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
@@ -1111,6 +1122,10 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                                 Field("metadata", &InterestGroup::Ad::metadata,
                                       "[\"4\",\"5\",null,\"6\"]"))))),
                   Field("ad_components", &InterestGroup::ad_components,
+                        absl::nullopt),
+                  Field("ad_sizes", &InterestGroup::ad_components,
+                        absl::nullopt),
+                  Field("size_groups", &InterestGroup::ad_components,
                         absl::nullopt))),
           Field(
               "bidding_browser_signals",
@@ -1199,6 +1214,10 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                                 Field("metadata", &InterestGroup::Ad::metadata,
                                       "[\"4\",\"5\",null,\"6\"]"))))),
                   Field("ad_components", &InterestGroup::ad_components,
+                        absl::nullopt),
+                  Field("ad_sizes", &InterestGroup::ad_components,
+                        absl::nullopt),
+                  Field("size_groups", &InterestGroup::ad_components,
                         absl::nullopt))),
           Field(
               "bidding_browser_signals",
@@ -1287,6 +1306,10 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                                 Field("metadata", &InterestGroup::Ad::metadata,
                                       "[\"4\",\"5\",null,\"6\"]"))))),
                   Field("ad_components", &InterestGroup::ad_components,
+                        absl::nullopt),
+                  Field("ad_sizes", &InterestGroup::ad_components,
+                        absl::nullopt),
+                  Field("size_groups", &InterestGroup::ad_components,
                         absl::nullopt))),
           Field(
               "bidding_browser_signals",

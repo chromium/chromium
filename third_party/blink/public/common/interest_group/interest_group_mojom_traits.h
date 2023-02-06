@@ -37,6 +37,31 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::InterestGroupAdDataView,
 };
 
 template <>
+struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::InterestGroupSizeDataView,
+                                        blink::InterestGroup::Size> {
+  static double width(const blink::InterestGroup::Size& size) {
+    return size.width;
+  }
+
+  static blink::InterestGroup::Size::LengthUnit width_units(
+      const blink::InterestGroup::Size& size) {
+    return size.width_units;
+  }
+
+  static double height(const blink::InterestGroup::Size& size) {
+    return size.height;
+  }
+
+  static blink::InterestGroup::Size::LengthUnit height_units(
+      const blink::InterestGroup::Size& size) {
+    return size.height_units;
+  }
+
+  static bool Read(blink::mojom::InterestGroupSizeDataView data,
+                   blink::InterestGroup::Size* out);
+};
+
+template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::SellerCapabilitiesDataView,
                  blink::InterestGroup::SellerCapabilitiesType> {
@@ -145,6 +170,18 @@ struct BLINK_COMMON_EXPORT
   static const absl::optional<std::vector<blink::InterestGroup::Ad>>&
   ad_components(const blink::InterestGroup& interest_group) {
     return interest_group.ad_components;
+  }
+
+  static const absl::optional<
+      base::flat_map<std::string, blink::InterestGroup::Size>>&
+  ad_sizes(const blink::InterestGroup& interest_group) {
+    return interest_group.ad_sizes;
+  }
+
+  static const absl::optional<
+      base::flat_map<std::string, std::vector<std::string>>>&
+  size_groups(const blink::InterestGroup& interest_group) {
+    return interest_group.size_groups;
   }
 
   static bool Read(blink::mojom::InterestGroupDataView data,

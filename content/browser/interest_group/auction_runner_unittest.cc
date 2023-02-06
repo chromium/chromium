@@ -1580,7 +1580,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
         /*bidding_wasm_helper_url=*/absl::nullopt,
         /*update_url=*/absl::nullopt, std::move(trusted_bidding_signals_url),
         std::move(trusted_bidding_signals_keys), absl::nullopt, std::move(ads),
-        std::move(ad_components));
+        std::move(ad_components),
+        /*ad_sizes=*/{},
+        /*size_groups=*/{});
     storage_group.bidding_browser_signals =
         auction_worklet::mojom::BiddingBrowserSignals::New(
             3, 5, std::move(previous_wins));

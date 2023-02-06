@@ -129,6 +129,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_auction_report_buyers_config.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_auction_report_buyers_config.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group_size.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group_size.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_audio_buffer_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_audio_buffer_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_audio_buffer_source_options.cc",

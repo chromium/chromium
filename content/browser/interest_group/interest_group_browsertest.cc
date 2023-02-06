@@ -159,6 +159,50 @@ base::Value::Dict SellerCapabilitiesToDict(
   return dict;
 }
 
+std::string InterestGroupSizeUnitToString(
+    const blink::InterestGroup::Size::LengthUnit unit) {
+  if (unit == blink::InterestGroup::Size::LengthUnit::kPixels) {
+    return "px";
+  }
+  if (unit == blink::InterestGroup::Size::LengthUnit::kScreenWidth) {
+    return "sw";
+  }
+  // kInvalid and default case
+  return "";
+}
+
+base::Value::Dict InterestGroupSizeToDict(
+    const blink::InterestGroup::Size& size) {
+  base::Value::Dict output;
+  output.Set("width", base::NumberToString(size.width) +
+                          InterestGroupSizeUnitToString(size.width_units));
+  output.Set("height", base::NumberToString(size.height) +
+                           InterestGroupSizeUnitToString(size.height_units));
+  return output;
+}
+
+base::Value::Dict AdSizesToDict(
+    const base::flat_map<std::string, blink::InterestGroup::Size>& map) {
+  base::Value::Dict dict;
+  for (const auto& [size_name, size] : map) {
+    dict.Set(size_name, InterestGroupSizeToDict(size));
+  }
+  return dict;
+}
+
+base::Value::Dict SizeGroupsToDict(
+    const base::flat_map<std::string, std::vector<std::string>>& map) {
+  base::Value::Dict dict;
+  for (const auto& [group_name, group] : map) {
+    base::Value::List size_list;
+    for (const std::string& size : group) {
+      size_list.Append(size);
+    }
+    dict.Set(group_name, std::move(size_list));
+  }
+  return dict;
+}
+
 class AllowlistedOriginContentBrowserClient : public TestContentBrowserClient {
  public:
   explicit AllowlistedOriginContentBrowserClient() = default;
@@ -661,6 +705,12 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
       dict.Set("ads", MakeAdsValue(*group.ads));
     if (group.ad_components)
       dict.Set("adComponents", MakeAdsValue(*group.ad_components));
+    if (group.ad_sizes) {
+      dict.Set("adSizes", AdSizesToDict(*group.ad_sizes));
+    }
+    if (group.size_groups) {
+      dict.Set("sizeGroups", SizeGroupsToDict(*group.size_groups));
+    }
     switch (group.execution_mode) {
       case blink::InterestGroup::ExecutionMode::kCompatibilityMode:
         dict.Set("executionMode", "compatibility");
@@ -894,7 +944,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
             /*trusted_bidding_signals_url=*/absl::nullopt,
             /*trusted_bidding_signals_keys=*/absl::nullopt,
             /*user_bidding_signals=*/absl::nullopt, std::move(ads),
-            std::move(ad_components)),
+            std::move(ad_components),
+            /*ad_sizes=*/{},
+            /*size_groups=*/{}),
         execution_target);
   }
 
@@ -2604,6 +2656,57 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupValidSizeFields) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  auto origin = url::Origin::Create(url);
+  std::string origin_string = origin.Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(blink::InterestGroup(
+          /*expiry=*/base::Time(),
+          /*owner=*/origin,
+          /*name=*/"cars",
+          /*priority=*/0.0, /*enable_bidding_signals_prioritization=*/false,
+          /*priority_vector=*/absl::nullopt,
+          /*priority_signals_overrides=*/absl::nullopt,
+          /*seller_capabilities=*/{},
+          /*all_sellers_capabilities=*/
+          blink::InterestGroup::SellerCapabilities::
+              kLatencyStats, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/absl::nullopt,
+          /*bidding_wasm_helper_url=*/absl::nullopt,
+          /*daily_update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/absl::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/absl::nullopt,
+          /*ads=*/absl::nullopt,
+          /*ad_components=*/absl::nullopt,
+          /*ad_sizes=*/
+          {{{"size_1",
+             blink::InterestGroup::Size(
+                 150, blink::InterestGroup::Size::LengthUnit::kPixels, 75,
+                 blink::InterestGroup::Size::LengthUnit::kPixels)}}},
+          /*size_groups=*/{{{"group_1", {"size_1"}}}})));
+
+  WaitForAccessObserved({});
+
+  std::vector<StorageInterestGroup> groups = GetInterestGroupsForOwner(origin);
+  ASSERT_EQ(groups.size(), 1u);
+  const blink::InterestGroup& group = groups[0].interest_group;
+  EXPECT_EQ(group.ad_sizes->size(), 1u);
+  ASSERT_EQ(group.ad_sizes->at("size_1"),
+            blink::InterestGroup::Size(
+                150, blink::InterestGroup::Size::LengthUnit::kPixels, 75,
+                blink::InterestGroup::Size::LengthUnit::kPixels));
+  EXPECT_EQ(group.size_groups->size(), 1u);
+  ASSERT_EQ(group.size_groups->at("group_1").size(), 1u);
+  ASSERT_EQ(group.size_groups->at("group_1").at(0), "size_1");
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupInvalidBiddingLogicUrl) {
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
@@ -2846,6 +2949,166 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   }
   return 'done';
 })())"));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupInvalidAdSize) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      base::StringPrintf(
+          "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+          "adSizes '0.000000 x 50.000000' for AuctionAdInterestGroup with "
+          "owner '%s' and name 'cars' Ad sizes must have a valid "
+          "(non-zero/non-infinite) width and height.",
+          origin_string.c_str()),
+      EvalJs(shell(), JsReplace(R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+          adSizes: {"my_size": {"width": "0px", "height": "50px"}},
+        },
+        /*joinDurationSec=*/1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                                origin_string.c_str())));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupInvalidAdSizeUnits) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      base::StringPrintf(
+          "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+          "adSizes '' for AuctionAdInterestGroup with owner '%s' and name "
+          "'cars' Ad size dimensions must be a valid number either in pixels "
+          "(px) or screen width (sw).",
+          origin_string.c_str()),
+      EvalJs(shell(), JsReplace(R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+          adSizes: {"my_size": {"width": "500px", "height": "400bad"}},
+        },
+        /*joinDurationSec=*/1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                                origin_string.c_str())));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupInvalidAdSizeNoNumber) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      base::StringPrintf(
+          "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+          "adSizes '' for AuctionAdInterestGroup with "
+          "owner '%s' and name 'cars' Ad size dimensions must be a valid "
+          "number either in pixels (px) or screen width (sw).",
+          origin_string.c_str()),
+      EvalJs(shell(), JsReplace(R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+          adSizes: {"my_size": {"width": "500px", "height": "px"}},
+        },
+        /*joinDurationSec=*/1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                                origin_string.c_str())));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupInvalidSizeGroup) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      base::StringPrintf(
+          "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+          "sizeGroups '' for AuctionAdInterestGroup with owner '%s' and name "
+          "'cars' Size groups cannot map from an empty group name.",
+          origin_string.c_str()),
+      EvalJs(shell(), JsReplace(R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+          adSizes: {"size_1": {"width": "300 px", "height": "150 px"}},
+          sizeGroups: {"": ["size_1"]},
+        },
+        /*joinDurationSec=*/1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                                origin_string.c_str())));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupInvalidSizeGroupSize) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      base::StringPrintf(
+          "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+          "sizeGroups 'nonexistant' for AuctionAdInterestGroup with owner '%s' "
+          "and name 'cars' Size does not exist in adSizes map.",
+          origin_string.c_str()),
+      EvalJs(shell(), JsReplace(R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+          adSizes: {"size_1": {"width": "300px", "height": "150px"}},
+          sizeGroups: {"my_group": ["nonexistant"]},
+        },
+        /*joinDurationSec=*/1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                                origin_string.c_str())));
   WaitForAccessObserved({});
 }
 
@@ -7050,7 +7313,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
              R"({"ad":"metadata","here":[1,2,3]})"}}},
           /*ad_components=*/
           {{{GURL("https://example.com/render-component"),
-             /*metadata=*/absl::nullopt}}})));
+             /*metadata=*/absl::nullopt}}},
+          /*ad_sizes=*/{},
+          /*size_groups=*/{})));
 
   // For `directFromSellerSignals` to work, we need to navigate to a page that
   // declares the subresource bundle resources we pass to those fields.
@@ -7171,7 +7436,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
              R"({"ad":"metadata","here":[1,2,3]})"}}},
           /*ad_components=*/
           {{{GURL("https://example.com/render-component"),
-             /*metadata=*/absl::nullopt}}})));
+             /*metadata=*/absl::nullopt}}},
+          /*ad_sizes=*/{},
+          /*size_groups=*/{})));
 
   // For `directFromSellerSignals` to work, we need to navigate to a page that
   // declares the subresource bundle resources we pass to those fields.
@@ -7298,7 +7565,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
              R"({"ad":"metadata","here":[1,2,3]})"}}},
           /*ad_components=*/
           {{{GURL("https://example.com/render-component"),
-             /*metadata=*/absl::nullopt}}})));
+             /*metadata=*/absl::nullopt}}},
+          /*ad_sizes=*/{},
+          /*size_groups=*/{})));
 
   // For `directFromSellerSignals` to work, we need to navigate to a page that
   // declares the subresource bundle resources we pass to those fields.
@@ -8137,7 +8406,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Update) {
           /*ads=*/
           {{{GURL("https://example.com/render"),
              R"({"ad":"metadata","here":[1,2,3]})"}}},
-          /*ad_components=*/absl::nullopt)));
+          /*ad_components=*/absl::nullopt,
+          /*ad_sizes=*/{},
+          /*size_groups=*/{})));
 
   EXPECT_EQ("done", UpdateInterestGroupsInJS());
 
@@ -8212,7 +8483,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*ads=*/
           {{{GURL("https://example.com/render"),
              R"({"ad":"metadata","here":[1,2,3]})"}}},
-          /*ad_components=*/absl::nullopt)));
+          /*ad_components=*/absl::nullopt,
+          /*ad_sizes=*/{},
+          /*size_groups=*/{})));
 
   EXPECT_EQ("done", UpdateInterestGroupsInJS());
 

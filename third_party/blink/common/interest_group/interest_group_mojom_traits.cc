@@ -20,6 +20,19 @@ bool StructTraits<
   return true;
 }
 
+bool StructTraits<blink::mojom::InterestGroupSizeDataView,
+                  blink::InterestGroup::Size>::
+    Read(blink::mojom::InterestGroupSizeDataView data,
+         blink::InterestGroup::Size* out) {
+  if (!data.ReadWidthUnits(&out->width_units) ||
+      !data.ReadHeightUnits(&out->height_units)) {
+    return false;
+  }
+  out->width = data.width();
+  out->height = data.height();
+  return true;
+}
+
 bool StructTraits<blink::mojom::SellerCapabilitiesDataView,
                   blink::InterestGroup::SellerCapabilitiesType>::
     Read(blink::mojom::SellerCapabilitiesDataView data,
@@ -49,7 +62,9 @@ bool StructTraits<blink::mojom::InterestGroupDataView, blink::InterestGroup>::
       !data.ReadTrustedBiddingSignalsUrl(&out->trusted_bidding_signals_url) ||
       !data.ReadTrustedBiddingSignalsKeys(&out->trusted_bidding_signals_keys) ||
       !data.ReadUserBiddingSignals(&out->user_bidding_signals) ||
-      !data.ReadAds(&out->ads) || !data.ReadAdComponents(&out->ad_components)) {
+      !data.ReadAds(&out->ads) || !data.ReadAdComponents(&out->ad_components) ||
+      !data.ReadAdSizes(&out->ad_sizes) ||
+      !data.ReadSizeGroups(&out->size_groups)) {
     return false;
   }
   return out->IsValid();

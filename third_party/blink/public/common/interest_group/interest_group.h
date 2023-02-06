@@ -54,6 +54,28 @@ struct BLINK_COMMON_EXPORT InterestGroup {
     bool operator==(const Ad& other) const;
   };
 
+  struct BLINK_COMMON_EXPORT Size {
+    using LengthUnit = blink::mojom::InterestGroupSize_LengthUnit;
+
+    Size();
+    Size(double width,
+         LengthUnit width_units,
+         double height,
+         LengthUnit height_units);
+    ~Size();
+
+    double width;
+    LengthUnit width_units;
+
+    double height;
+    LengthUnit height_units;
+
+    // Only used in tests, but provided as an operator instead of as
+    // IsEqualForTesting() to make it easier to implement InterestGroup's
+    // IsEqualForTesting().
+    bool operator==(const Size& other) const;
+  };
+
   enum class SellerCapabilities : uint32_t {
     kInterestGroupCounts,
     kLatencyStats,
@@ -90,7 +112,10 @@ struct BLINK_COMMON_EXPORT InterestGroup {
       absl::optional<std::vector<std::string>> trusted_bidding_signals_keys,
       absl::optional<std::string> user_bidding_signals,
       absl::optional<std::vector<InterestGroup::Ad>> ads,
-      absl::optional<std::vector<InterestGroup::Ad>> ad_components);
+      absl::optional<std::vector<InterestGroup::Ad>> ad_components,
+      absl::optional<base::flat_map<std::string, InterestGroup::Size>> ad_sizes,
+      absl::optional<base::flat_map<std::string, std::vector<std::string>>>
+          size_groups);
 
   ~InterestGroup();
 
@@ -125,8 +150,11 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   absl::optional<std::vector<std::string>> trusted_bidding_signals_keys;
   absl::optional<std::string> user_bidding_signals;
   absl::optional<std::vector<InterestGroup::Ad>> ads, ad_components;
+  absl::optional<base::flat_map<std::string, InterestGroup::Size>> ad_sizes;
+  absl::optional<base::flat_map<std::string, std::vector<std::string>>>
+      size_groups;
 
-  static_assert(__LINE__ == 129, R"(
+  static_assert(__LINE__ == 157, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and IsEqualForTesting() in this class

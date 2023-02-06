@@ -19,6 +19,23 @@ struct InterestGroupAd {
   string? metadata;
 };
 
+// The dimensions that an ad for an interest group can be. Note that an interest
+// group can have more than one `InterestGroupSize` associated with it.
+struct InterestGroupSize {
+  //  This is stable because it is persisted to storage.
+  [Stable, Extensible]
+  enum LengthUnit {
+    [Default] kInvalid,
+    kPixels,
+    kScreenWidth,
+  };
+  // Must be valid dimensions (ex. 100px, 50sw)
+  double width;
+  LengthUnit width_units;
+  double height;
+  LengthUnit height_units;
+};
+
 // The maximum size of a valid interest group in bytes.
 const uint32 kMaxInterestGroupSize = 51200; // 50 * 1024
 
@@ -105,6 +122,8 @@ struct InterestGroup {
   string?        user_bidding_signals;
   array<InterestGroupAd>? ads;
   array<InterestGroupAd>? ad_components;
+  map<string, InterestGroupSize>? ad_sizes;
+  map<string, array<string>>? size_groups;
 };
 
 // Packages the details necessary for the browser process to retrieve a

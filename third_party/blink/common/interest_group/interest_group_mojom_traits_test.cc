@@ -207,4 +207,38 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdComponents) {
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
+TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdSizes) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.ad_sizes.emplace();
+  interest_group.ad_sizes->emplace(
+      "size_1", blink::InterestGroup::Size(
+                    300, blink::InterestGroup::Size::LengthUnit::kPixels, 150,
+                    blink::InterestGroup::Size::LengthUnit::kPixels));
+  interest_group.ad_sizes->emplace(
+      "size_2", blink::InterestGroup::Size(
+                    640, blink::InterestGroup::Size::LengthUnit::kPixels, 480,
+                    blink::InterestGroup::Size::LengthUnit::kPixels));
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
+TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeSizeGroups) {
+  InterestGroup interest_group = CreateInterestGroup();
+  // The size names must be in adSizes. Otherwise, the sizeGroups will fail
+  // validation.
+  interest_group.ad_sizes.emplace();
+  interest_group.ad_sizes->emplace(
+      "size_1", blink::InterestGroup::Size(
+                    300, blink::InterestGroup::Size::LengthUnit::kPixels, 150,
+                    blink::InterestGroup::Size::LengthUnit::kPixels));
+  interest_group.ad_sizes->emplace(
+      "size_2", blink::InterestGroup::Size(
+                    640, blink::InterestGroup::Size::LengthUnit::kPixels, 480,
+                    blink::InterestGroup::Size::LengthUnit::kPixels));
+  std::vector<std::string> size_list = {"size_1", "size_2"};
+  interest_group.size_groups.emplace();
+  interest_group.size_groups->emplace("group_1", size_list);
+  interest_group.size_groups->emplace("group_2", size_list);
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
 }  // namespace blink

@@ -20,6 +20,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
+#include "third_party/blink/public/common/interest_group/interest_group_utils.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
 #include "third_party/blink/public/mojom/parakeet/ad_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
@@ -37,6 +38,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group_size.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_report_buyers_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_adproperties_adpropertiessequence.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -586,6 +588,43 @@ bool CopyAdComponentsFromIdlToMojo(const ExecutionContext& context,
       }
     }
     output.ad_components->push_back(std::move(mojo_ad));
+  }
+  return true;
+}
+
+bool CopyAdSizesFromIdlToMojo(const ExecutionContext& context,
+                              const ScriptState& script_state,
+                              ExceptionState& exception_state,
+                              const AuctionAdInterestGroup& input,
+                              mojom::blink::InterestGroup& output) {
+  if (!input.hasAdSizes()) {
+    return true;
+  }
+  output.ad_sizes.emplace();
+  for (const auto& [name, size] : input.adSizes()) {
+    auto [width_val, width_units] =
+        blink::ParseInterestGroupSizeString(size->width().Ascii());
+    auto [height_val, height_units] =
+        blink::ParseInterestGroupSizeString(size->height().Ascii());
+
+    output.ad_sizes->insert(
+        name, mojom::blink::InterestGroupSize::New(width_val, width_units,
+                                                   height_val, height_units));
+  }
+  return true;
+}
+
+bool CopySizeGroupsFromIdlToMojo(const ExecutionContext& context,
+                                 const ScriptState& script_state,
+                                 ExceptionState& exception_state,
+                                 const AuctionAdInterestGroup& input,
+                                 mojom::blink::InterestGroup& output) {
+  if (!input.hasSizeGroups()) {
+    return true;
+  }
+  output.size_groups.emplace();
+  for (const auto& group : input.sizeGroups()) {
+    output.size_groups->insert(group.first, group.second);
   }
   return true;
 }
@@ -1824,6 +1863,14 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
   }
   if (!CopyAdComponentsFromIdlToMojo(*context, *script_state, exception_state,
                                      *group, *mojo_group)) {
+    return ScriptPromise();
+  }
+  if (!CopyAdSizesFromIdlToMojo(*context, *script_state, exception_state,
+                                *group, *mojo_group)) {
+    return ScriptPromise();
+  }
+  if (!CopySizeGroupsFromIdlToMojo(*context, *script_state, exception_state,
+                                   *group, *mojo_group)) {
     return ScriptPromise();
   }
 

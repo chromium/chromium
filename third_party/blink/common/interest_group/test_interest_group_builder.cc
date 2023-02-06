@@ -41,7 +41,9 @@ TestInterestGroupBuilder::TestInterestGroupBuilder(url::Origin owner,
           /*trusted_bidding_signals_keys=*/absl::nullopt,
           /*user_bidding_signals=*/absl::nullopt,
           /*ads=*/absl::nullopt,
-          /*ad_components=*/absl::nullopt) {}
+          /*ad_components=*/absl::nullopt,
+          /*ad_sizes=*/{},
+          /*size_groups=*/{}) {}
 
 TestInterestGroupBuilder::~TestInterestGroupBuilder() = default;
 
