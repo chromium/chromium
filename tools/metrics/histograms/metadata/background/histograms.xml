@@ -260,7 +260,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Event.BatchSize" units="units"
-    expires_after="2021-10-31">
+    expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -273,7 +273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Event.FromWakeupTask"
-    enum="BackgroundSyncWakeupTask" expires_after="2023-04-30">
+    enum="BackgroundSyncWakeupTask" expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -283,7 +283,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Event.OneShotResultPattern"
-    enum="BackgroundSyncResultPattern" expires_after="2023-07-30">
+    enum="BackgroundSyncResultPattern" expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -296,7 +296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Event.OneShotStartedInForeground"
-    enum="BooleanInForeground" expires_after="2022-01-02">
+    enum="BooleanInForeground" expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -306,7 +306,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Event.PeriodicResultPattern"
-    enum="BackgroundSyncResultPattern" expires_after="2022-07-31">
+    enum="BackgroundSyncResultPattern" expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
@@ -320,7 +320,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Event.PeriodicStartedInForeground"
-    enum="BooleanInForeground" expires_after="2022-07-31">
+    enum="BooleanInForeground" expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
@@ -331,7 +331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Event.Time" units="ms"
-    expires_after="2021-10-31">
+    expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -344,7 +344,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.LaunchTask.PlayServicesAvailable"
-    enum="Boolean" expires_after="2022-08-19">
+    enum="Boolean" expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -355,7 +355,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.NetworkObserver.HasPermission" enum="Boolean"
-    expires_after="2022-06-30">
+    expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -367,7 +367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Periodic.Wakeup.DelayTime" units="ms"
-    expires_after="2022-07-31">
+    expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
@@ -379,7 +379,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Registration.OneShot"
-    enum="BackgroundSyncStatus" expires_after="2022-02-20">
+    enum="BackgroundSyncStatus" expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -388,7 +388,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Registration.OneShot.CouldFire"
-    enum="BooleanCouldFireImmediately" expires_after="2022-08-09">
+    enum="BooleanCouldFireImmediately" expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -399,7 +399,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BackgroundSync.Registration.OneShot.EventSucceededAtCompletion"
-    enum="BooleanSuccess" expires_after="2021-11-14">
+    enum="BooleanSuccess" expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
@@ -410,7 +410,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Registration.OneShot.IsDuplicate"
-    enum="BooleanRegistrationIsDuplicate" expires_after="2022-06-30">
+    enum="BooleanRegistrationIsDuplicate" expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -421,7 +421,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BackgroundSync.Registration.OneShot.NumAttemptsForSuccessfulEvent"
-    units="attempts" expires_after="2022-01-16">
+    units="attempts" expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -431,7 +431,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Registration.Periodic"
-    enum="BackgroundSyncStatus" expires_after="2021-12-12">
+    enum="BackgroundSyncStatus" expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -441,7 +441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Registration.Periodic.IsDuplicate"
-    enum="BooleanRegistrationIsDuplicate" expires_after="2022-07-31">
+    enum="BooleanRegistrationIsDuplicate" expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -452,7 +452,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Registration.Periodic.MinInterval"
-    units="seconds" expires_after="2022-07-31">
+    units="seconds" expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -462,7 +462,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Unregistration.Periodic"
-    enum="BackgroundSyncStatus" expires_after="2022-07-31">
+    enum="BackgroundSyncStatus" expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>platform-capabilities@chromium.org</owner>
   <summary>
@@ -471,7 +471,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Wakeup.DelayTime" units="ms"
-    expires_after="2022-07-31">
+    expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
@@ -484,7 +484,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.WakeupTaskFiredEvents.OneShot"
-    enum="BackgroundSyncFiredEvents" expires_after="2022-07-31">
+    enum="BackgroundSyncFiredEvents" expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
@@ -497,7 +497,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.WakeupTaskFiredEvents.Periodic"
-    enum="BackgroundSyncFiredEvents" expires_after="2022-07-31">
+    enum="BackgroundSyncFiredEvents" expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
