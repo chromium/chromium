@@ -1,0 +1,84 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package webnn_proto;
+
+enum MLOperandType {
+  FLOAT32 = 0;
+  FLOAT16 = 1;
+  INT32 = 2;
+  UINT32 = 3;
+  INT8 = 4;
+  UINT8 = 5;
+}
+
+enum MLInputOperandLayout {
+  NCHW = 0;
+  NHWC = 1;
+}
+
+enum MLAutoPad {
+  EXPLICIT = 0;
+  SAME_UPPER = 1;
+  SAME_LOWER = 2;
+}
+
+enum MLConv2dFilterOperandLayout {
+  OIHW = 0;
+  HWIO = 1;
+  OHWI = 2;
+  IHWO = 3;
+}
+
+enum MLRoundingType {
+  FLOOR = 0;
+  CEIL = 1;
+}
+
+enum MLPool2dKind {
+  AVERAGE = 0;
+  MAX = 1;
+}
+
+message conv2dOptions {
+  repeated uint32 padding = 1;
+  repeated uint32 strides = 2;
+  repeated uint32 dilations = 3;
+  optional MLAutoPad auto_pad = 4 [default = EXPLICIT];
+  optional uint32 groups = 5 [default = 1];
+  optional MLInputOperandLayout input_layout = 6 [default = NCHW];
+  optional MLConv2dFilterOperandLayout filter_layout = 7 [default = OIHW];
+}
+
+message pool2dOptions {
+  repeated uint32 windows_dimensions = 1;
+  repeated uint32 padding = 2;
+  repeated uint32 strides = 3;
+  repeated uint32 dilations = 4;
+  optional MLAutoPad auto_pad = 5 [default = EXPLICIT];
+  optional MLInputOperandLayout layout = 6 [default = NCHW];
+  optional MLRoundingType rounding_type = 7 [default = FLOOR];
+  repeated uint32 output_size = 8;
+}
+
+message conv2d {
+  repeated uint32 input_dimensions = 1;
+  required MLOperandType input_type = 2;
+
+  repeated uint32 filter_dimensions = 3;
+  required MLOperandType filter_type = 4;
+
+  optional conv2dOptions conv2d_options = 5;
+}
+
+message pool2d {
+  repeated uint32 input_dimensions = 1;
+  required MLOperandType input_type = 2;
+
+  required MLPool2dKind pool2d_kind = 3;
+
+  optional pool2dOptions pool2d_options = 4;
+}
