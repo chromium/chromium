@@ -28,21 +28,10 @@ std::unique_ptr<AbstractTextureAndroid> CreateTexture(
 
   gles2::FeatureInfo* feature_info = context_state->feature_info();
   if (feature_info && feature_info->is_passthrough_cmd_decoder()) {
-    return std::make_unique<AbstractTextureImplPassthrough>(
-        GL_TEXTURE_EXTERNAL_OES, GL_RGBA,
-        0,  // width
-        0,  // height
-        1,  // depth
-        0,  // border
-        GL_RGBA, GL_UNSIGNED_BYTE);
+    return std::make_unique<AbstractTextureImplPassthrough>(gfx::Size());
   }
 
-  return std::make_unique<AbstractTextureImpl>(GL_TEXTURE_EXTERNAL_OES, GL_RGBA,
-                                               0,  // width
-                                               0,  // height
-                                               1,  // depth
-                                               0,  // border
-                                               GL_RGBA, GL_UNSIGNED_BYTE);
+  return std::make_unique<AbstractTextureImpl>(gfx::Size());
 }
 
 }  // namespace

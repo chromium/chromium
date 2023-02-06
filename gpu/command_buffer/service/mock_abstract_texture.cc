@@ -9,11 +9,12 @@ namespace gpu {
 MockAbstractTexture::MockAbstractTexture() = default;
 
 MockAbstractTexture::MockAbstractTexture(GLuint service_id)
-    : texture_base_(std::make_unique<gpu::TextureBase>(service_id)) {
-  ON_CALL(*this, GetTextureBase())
-      .WillByDefault(::testing::Return(texture_base_.get()));
-}
+    : texture_base_(std::make_unique<gpu::TextureBase>(service_id)) {}
 
 MockAbstractTexture::~MockAbstractTexture() = default;
+
+gpu::TextureBase* MockAbstractTexture::GetTextureBase() const {
+  return texture_base_.get();
+}
 
 }  // namespace gpu

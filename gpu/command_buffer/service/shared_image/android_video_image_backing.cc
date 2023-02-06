@@ -98,13 +98,9 @@ std::unique_ptr<AbstractTextureAndroid>
 AndroidVideoImageBacking::GenAbstractTexture(const bool passthrough) {
   std::unique_ptr<AbstractTextureAndroid> texture;
   if (passthrough) {
-    texture = std::make_unique<AbstractTextureImplPassthrough>(
-        GL_TEXTURE_EXTERNAL_OES, GL_RGBA, size().width(), size().height(), 1, 0,
-        GL_RGBA, GL_UNSIGNED_BYTE);
+    texture = std::make_unique<AbstractTextureImplPassthrough>(size());
   } else {
-    texture = std::make_unique<AbstractTextureImpl>(
-        GL_TEXTURE_EXTERNAL_OES, GL_RGBA, size().width(), size().height(), 1, 0,
-        GL_RGBA, GL_UNSIGNED_BYTE);
+    texture = std::make_unique<AbstractTextureImpl>(size());
   }
   return texture;
 }

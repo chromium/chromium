@@ -5,7 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_ABSTRACT_TEXTURE_ANDROID_H_
 #define GPU_COMMAND_BUFFER_SERVICE_ABSTRACT_TEXTURE_ANDROID_H_
 
-#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/texture_base.h"
 #include "gpu/gpu_gles2_export.h"
@@ -16,33 +15,14 @@ typedef int GLsizei;
 typedef int GLint;
 typedef unsigned int GLuint;
 
-namespace gl {
-class GLImage;
-}  // namespace gl
-
 namespace gpu {
 
 // An AbstractTexture enables access to GL textures from the GPU process, for
 // things that set up textures using some client's decoder.  Creating an
 // AbstractTexture is similar to "glGenTexture", and deleting it is similar to
 // calling "glDeleteTextures".
-//
-// There are some subtle differences.  Deleting an AbstractTexture doesn't
-// guarantee that the underlying platform texture has been deleted if it's
-// referenced elsewhere.  For example, if it has been sent via mailbox to some
-// other context, then it might still be around after the AbstractTexture has
-// been destroyed.
-//
-// Also, an AbstractTexture is tied to the decoder that created it, in the sense
-// that destroying the decoder drops the reference to the texture just as if the
-// AbstractTexture were destroyed.  While it's okay for the AbstractTexture to
-// exist beyond decoder destruction, it won't actually refer to a texture after
-// that.  This makes it easier for the holder to ignore stub destruction; the
-// texture will be cleaned up properly, as needed.
 class GPU_GLES2_EXPORT AbstractTextureAndroid {
  public:
-  using CleanupCallback = base::OnceCallback<void(AbstractTextureAndroid*)>;
-
   // The texture is guaranteed to be around while |this| exists, as long as
   // the decoder isn't destroyed / context isn't lost.
   virtual ~AbstractTextureAndroid() = default;
@@ -51,10 +31,6 @@ class GPU_GLES2_EXPORT AbstractTextureAndroid {
   // return null if the texture has been destroyed.
   virtual TextureBase* GetTextureBase() const = 0;
 
-  // Set a texture parameter.  The GL context must be current.
-  virtual void SetParameteri(GLenum pname, GLint param) = 0;
-
-#if BUILDFLAG(IS_ANDROID)
   // Binds the texture to |service_id|. This will do nothing if the texture has
   // been destroyed.
   //
@@ -62,46 +38,6 @@ class GPU_GLES2_EXPORT AbstractTextureAndroid {
   //
   // The context must be current.
   virtual void BindToServiceId(GLuint service_id) = 0;
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  // Attaches |image| to the AbstractTexture. The decoder will call
-  // GLImage::Copy/Bind. Further, the decoder guarantees that
-  // ScheduleOverlayPlane will be called if the texture is ever promoted to an
-  // overlay.
-  //
-  // It is not required to SetCleared() if one binds an image.
-  //
-  // The context must be current.
-  virtual void SetUnboundImage(gl::GLImage* image) = 0;
-#elif !BUILDFLAG(IS_ANDROID)
-  // Attaches |image| to the AbstractTexture. The decoder does not call
-  // GLImage::Copy/Bind. Further, the decoder guarantees that
-  // ScheduleOverlayPlane will be called if the texture is ever promoted to an
-  // overlay.
-  //
-  // It is not required to SetCleared() if one binds an image.
-  //
-  // The context must be current.
-  virtual void SetBoundImage(gl::GLImage* image) = 0;
-#endif
-
-  // Return the image, if any, for testing purposes.
-  virtual gl::GLImage* GetImageForTesting() const = 0;
-
-  // Marks the texture as cleared, to help prevent sending an uninitialized
-  // texture to the (untrusted) renderer.  One should call this only when one
-  // has actually initialized the texture.
-  virtual void SetCleared() = 0;
-
-  // Set a callback that will be called when the AbstractTexture is going to
-  // drop its reference to the underlying TextureBase.  We can't guarantee that
-  // the TextureBase will be destroyed, but it is the last time that we can
-  // guarantee that it won't be.  Typically, this callback will happen when the
-  // AbstractTexture is destroyed, or when our stub is destroyed.  Do not change
-  // the current context during this callback.  Also, do not assume that one
-  // has a current context.
-  virtual void SetCleanupCallback(CleanupCallback cleanup_callback) = 0;
 
   // Used to notify the AbstractTexture if the context is lost.
   virtual void NotifyOnContextLost() = 0;

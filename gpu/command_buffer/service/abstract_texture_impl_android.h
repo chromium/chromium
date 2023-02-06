@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/abstract_texture_android.h"
 #include "gpu/gpu_gles2_export.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace gl {
 class GLApi;
@@ -25,30 +26,12 @@ class TexturePassthrough;
 // current context.
 class GPU_GLES2_EXPORT AbstractTextureImpl : public AbstractTextureAndroid {
  public:
-  AbstractTextureImpl(GLenum target,
-                      GLenum internal_format,
-                      GLsizei width,
-                      GLsizei height,
-                      GLsizei depth,
-                      GLint border,
-                      GLenum format,
-                      GLenum type);
+  explicit AbstractTextureImpl(gfx::Size size);
   ~AbstractTextureImpl() override;
 
   // AbstractTextureAndroid implementation.
   TextureBase* GetTextureBase() const override;
-  void SetParameteri(GLenum pname, GLint param) override;
-#if BUILDFLAG(IS_ANDROID)
   void BindToServiceId(GLuint service_id) override;
-#endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-  void SetUnboundImage(gl::GLImage* image) override;
-#elif !BUILDFLAG(IS_ANDROID)
-  void SetBoundImage(gl::GLImage* image) override;
-#endif
-  gl::GLImage* GetImageForTesting() const override;
-  void SetCleared() override;
-  void SetCleanupCallback(CleanupCallback cb) override;
   void NotifyOnContextLost() override;
 
  private:
@@ -62,30 +45,12 @@ class GPU_GLES2_EXPORT AbstractTextureImpl : public AbstractTextureAndroid {
 class GPU_GLES2_EXPORT AbstractTextureImplPassthrough
     : public AbstractTextureAndroid {
  public:
-  AbstractTextureImplPassthrough(GLenum target,
-                                 GLenum internal_format,
-                                 GLsizei width,
-                                 GLsizei height,
-                                 GLsizei depth,
-                                 GLint border,
-                                 GLenum format,
-                                 GLenum type);
+  explicit AbstractTextureImplPassthrough(gfx::Size size);
   ~AbstractTextureImplPassthrough() override;
 
   // AbstractTextureAndroid implementation.
   TextureBase* GetTextureBase() const override;
-  void SetParameteri(GLenum pname, GLint param) override;
-#if BUILDFLAG(IS_ANDROID)
   void BindToServiceId(GLuint service_id) override;
-#endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-  void SetUnboundImage(gl::GLImage* image) override;
-#elif !BUILDFLAG(IS_ANDROID)
-  void SetBoundImage(gl::GLImage* image) override;
-#endif
-  gl::GLImage* GetImageForTesting() const override;
-  void SetCleared() override;
-  void SetCleanupCallback(CleanupCallback cb) override;
   void NotifyOnContextLost() override;
 
  private:

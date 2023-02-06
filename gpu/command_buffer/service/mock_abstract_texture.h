@@ -12,9 +12,8 @@
 namespace gpu {
 
 // SupportsWeakPtr so it's easy to tell when it has been destroyed.
-class MockAbstractTexture
-    : public ::testing::NiceMock<gpu::AbstractTextureAndroid>,
-      public base::SupportsWeakPtr<MockAbstractTexture> {
+class MockAbstractTexture : public AbstractTextureAndroid,
+                            public base::SupportsWeakPtr<MockAbstractTexture> {
  public:
   MockAbstractTexture();
   // If provided, we'll make a TextureBase that returns this id.  We do not
@@ -22,20 +21,13 @@ class MockAbstractTexture
   explicit MockAbstractTexture(GLuint service_id);
   ~MockAbstractTexture() override;
 
-  MOCK_METHOD0(ForceContextLost, void());
-  MOCK_CONST_METHOD0(GetTextureBase, gpu::TextureBase*());
-  MOCK_METHOD2(SetParameteri, void(GLenum pname, GLint param));
-  MOCK_METHOD1(BindToServiceId, void(GLuint service_id));
-  MOCK_METHOD0(ReleaseImage, void());
-  MOCK_CONST_METHOD0(GetImageForTesting, gl::GLImage*());
-  MOCK_METHOD0(SetCleared, void());
-  MOCK_METHOD1(SetCleanupCallback, void(CleanupCallback));
-  MOCK_METHOD0(NotifyOnContextLost, void());
+  gpu::TextureBase* GetTextureBase() const override;
+  void BindToServiceId(GLuint service_id) override {}
+  void NotifyOnContextLost() override {}
 
  private:
   // May be null.
   std::unique_ptr<gpu::TextureBase> texture_base_;
-  CleanupCallback cleanup_callback_;
 };
 
 }  // namespace gpu

@@ -17,14 +17,8 @@
 
 namespace gpu {
 
-AbstractTextureImpl::AbstractTextureImpl(GLenum target,
-                                         GLenum internal_format,
-                                         GLsizei width,
-                                         GLsizei height,
-                                         GLsizei depth,
-                                         GLint border,
-                                         GLenum format,
-                                         GLenum type) {
+AbstractTextureImpl::AbstractTextureImpl(gfx::Size size) {
+  const auto target = GL_TEXTURE_EXTERNAL_OES;
   // Create a gles2 Texture.
   GLuint service_id = 0;
   api_ = gl::g_current_gl_context;
@@ -37,8 +31,9 @@ AbstractTextureImpl::AbstractTextureImpl(GLenum target,
 
   texture_ = gpu::gles2::CreateGLES2TextureWithLightRef(service_id, target);
   gfx::Rect cleared_rect;
-  texture_->SetLevelInfo(target, 0, internal_format, width, height, depth,
-                         border, format, type, cleared_rect);
+  texture_->SetLevelInfo(GL_TEXTURE_EXTERNAL_OES, 0, GL_RGBA, size.width(),
+                         size.height(), 1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                         cleared_rect);
   texture_->SetImmutable(true, false);
 }
 
@@ -56,54 +51,18 @@ TextureBase* AbstractTextureImpl::GetTextureBase() const {
   return texture_;
 }
 
-void AbstractTextureImpl::SetParameteri(GLenum pname, GLint param) {
-  NOTIMPLEMENTED();
-}
-
-#if BUILDFLAG(IS_ANDROID)
 void AbstractTextureImpl::BindToServiceId(GLuint service_id) {
   texture_->BindToServiceId(service_id);
   texture_->SetLevelCleared(texture_->target(), /*level=*/0, true);
-}
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-void AbstractTextureImpl::SetUnboundImage(gl::GLImage* image) {
-  NOTIMPLEMENTED();
-}
-#elif !BUILDFLAG(IS_ANDROID)
-void AbstractTextureImpl::SetBoundImage(gl::GLImage* image) {
-  NOTIMPLEMENTED();
-}
-#endif
-
-gl::GLImage* AbstractTextureImpl::GetImageForTesting() const {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
-void AbstractTextureImpl::SetCleared() {
-  NOTIMPLEMENTED();
-}
-
-void AbstractTextureImpl::SetCleanupCallback(CleanupCallback cb) {
-  NOTIMPLEMENTED();
 }
 
 void AbstractTextureImpl::NotifyOnContextLost() {
   have_context_ = false;
 }
 
-AbstractTextureImplPassthrough::AbstractTextureImplPassthrough(
-    GLenum target,
-    GLenum internal_format,
-    GLsizei width,
-    GLsizei height,
-    GLsizei depth,
-    GLint border,
-    GLenum format,
-    GLenum type) {
-  // Create a gles2 Texture.
+AbstractTextureImplPassthrough::AbstractTextureImplPassthrough(gfx::Size size) {
+  const auto target = GL_TEXTURE_EXTERNAL_OES;
+
   GLuint service_id = 0;
   api_ = gl::g_current_gl_context;
   api_->glGenTexturesFn(1, &service_id);
@@ -119,9 +78,9 @@ AbstractTextureImplPassthrough::AbstractTextureImplPassthrough(
 
   glBindTexture(target, prev_texture);
 
-  texture_ =
-      new gles2::TexturePassthrough(service_id, target, internal_format, width,
-                                    height, depth, border, format, type);
+  texture_ = new gles2::TexturePassthrough(service_id, target, GL_RGBA,
+                                           size.width(), size.height(), 1, 0,
+                                           GL_RGBA, GL_UNSIGNED_BYTE);
 }
 
 AbstractTextureImplPassthrough::~AbstractTextureImplPassthrough() {
@@ -136,37 +95,8 @@ TextureBase* AbstractTextureImplPassthrough::GetTextureBase() const {
   return texture_.get();
 }
 
-void AbstractTextureImplPassthrough::SetParameteri(GLenum pname, GLint param) {
-  NOTIMPLEMENTED();
-}
-
-#if BUILDFLAG(IS_ANDROID)
 void AbstractTextureImplPassthrough::BindToServiceId(GLuint service_id) {
   texture_->BindToServiceId(service_id);
-}
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-void AbstractTextureImplPassthrough::SetUnboundImage(gl::GLImage* image) {
-  NOTIMPLEMENTED();
-}
-#elif !BUILDFLAG(IS_ANDROID)
-void AbstractTextureImplPassthrough::SetBoundImage(gl::GLImage* image) {
-  NOTIMPLEMENTED();
-}
-#endif
-
-gl::GLImage* AbstractTextureImplPassthrough::GetImageForTesting() const {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
-void AbstractTextureImplPassthrough::SetCleared() {
-  NOTIMPLEMENTED();
-}
-
-void AbstractTextureImplPassthrough::SetCleanupCallback(CleanupCallback cb) {
-  NOTIMPLEMENTED();
 }
 
 void AbstractTextureImplPassthrough::NotifyOnContextLost() {

@@ -55,16 +55,6 @@ class GPU_GLES2_EXPORT AbstractTexture {
   // Set a texture parameter.  The GL context must be current.
   virtual void SetParameteri(GLenum pname, GLint param) = 0;
 
-#if BUILDFLAG(IS_ANDROID)
-  // Binds the texture to |service_id|. This will do nothing if the texture has
-  // been destroyed.
-  //
-  // It is not required to SetCleared() if one calls this method.
-  //
-  // The context must be current.
-  virtual void BindToServiceId(GLuint service_id) = 0;
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   // Attaches |image| to the AbstractTexture. The decoder will call
   // GLImage::Copy/Bind. Further, the decoder guarantees that
@@ -75,7 +65,7 @@ class GPU_GLES2_EXPORT AbstractTexture {
   //
   // The context must be current.
   virtual void SetUnboundImage(gl::GLImage* image) = 0;
-#elif !BUILDFLAG(IS_ANDROID)
+#else
   // Attaches |image| to the AbstractTexture. The decoder does not call
   // GLImage::Copy/Bind. Further, the decoder guarantees that
   // ScheduleOverlayPlane will be called if the texture is ever promoted to an
