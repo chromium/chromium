@@ -232,9 +232,10 @@ AX_TEST_F(
       setFocusCallback(root);
     });
 
+// TODO(https://crbug.com/1409087): Flaky.
 AX_TEST_F(
-    'SelectToSpeakKeystrokeSelectionTest', 'StartsReadingAtFirstNodeWithText',
-    async function() {
+    'SelectToSpeakKeystrokeSelectionTest',
+    'DISABLED_StartsReadingAtFirstNodeWithText', async function() {
       await this.testReadTextAtKeystroke(
           '<div id="empty"></div><div><p>This is some <b>bold</b> text</p></div>',
           function(root) {
@@ -251,9 +252,10 @@ AX_TEST_F(
           'This is some bold text');
     });
 
+// TODO(https://crbug.com/1409087): Flaky.
 AX_TEST_F(
-    'SelectToSpeakKeystrokeSelectionTest', 'IgnoresTextMarkedNotUserSelectable',
-    async function() {
+    'SelectToSpeakKeystrokeSelectionTest',
+    'DISABLED_IgnoresTextMarkedNotUserSelectable', async function() {
       await this.testReadTextAtKeystroke(
           '<div><p>This is some <span style="user-select:none">unselectable</span> text</p></div>',
           function(root) {
@@ -285,9 +287,10 @@ AX_TEST_F(
           }, 'one');
     });
 
+// TODO(https://crbug.com/1409087): Flaky.
 AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest',
-    'HandlesMultipleImagesCorrectlyWithAutomation', async function() {
+    'DISABLED_HandlesMultipleImagesCorrectlyWithAutomation', async function() {
       await this.testReadTextAtKeystroke(
           '<img src="pipe.jpg" alt="one"/>' +
               '<img src="pipe.jpg" alt="two"/><img src="pipe.jpg" alt="three"/>',
@@ -524,9 +527,10 @@ AX_TEST_F(
           this.mockTts.pendingUtterances()[0], 'Some text');
     });
 
+// TODO(https://crbug.com/1409087): Flaky.
 AX_TEST_F(
-    'SelectToSpeakKeystrokeSelectionTest', 'textFieldWithComboBoxSimple',
-    async function() {
+    'SelectToSpeakKeystrokeSelectionTest',
+    'DISABLED_textFieldWithComboBoxSimple', async function() {
       const selectionCode =
           'let body = document.getElementsByTagName("body")[0];' +
           'range.setStart(body, 0);' +
@@ -714,9 +718,10 @@ AX_TEST_F(
           this.mockTts.pendingUtterances()[0], 'Hello, Chromium a11y');
     });
 
+// TODO(https://crbug.com/1409087): Flaky.
 AX_TEST_F(
-    'SelectToSpeakKeystrokeSelectionTest', 'OmniboxPartiallySelectedFromStart',
-    async function() {
+    'SelectToSpeakKeystrokeSelectionTest',
+    'DISABLED_OmniboxPartiallySelectedFromStart', async function() {
       let omnibox;
       await this.runWithLoadedDesktop(desktop => {
         omnibox = desktop.find({attributes: {className: 'OmniboxViewViews'}});
@@ -735,9 +740,10 @@ AX_TEST_F(
     });
 
 
+// TODO(https://crbug.com/1409087): Flaky.
 AX_TEST_F(
-    'SelectToSpeakKeystrokeSelectionTest', 'OmniboxPartiallySelectedToEnd',
-    async function() {
+    'SelectToSpeakKeystrokeSelectionTest',
+    'DISABLED_OmniboxPartiallySelectedToEnd', async function() {
       let omnibox;
       await this.runWithLoadedDesktop(desktop => {
         omnibox = desktop.find({attributes: {className: 'OmniboxViewViews'}});

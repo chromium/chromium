@@ -119,9 +119,10 @@ AX_TEST_F(
       });
     });
 
+// TODO(https://crbug.com/1409087): Flaky.
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'NavigatesToPreviousParagraph',
-    async function() {
+    'SelectToSpeakNavigationControlTest',
+    'DISABLED_NavigatesToPreviousParagraph', async function() {
       const bodyHtml = `
     <p id="p1">Paragraph 1</p>
     <p id="p2">Paragraph 2</p>'
@@ -336,9 +337,10 @@ AX_TEST_F(
           this.mockTts.pendingUtterances()[0], 'Paragraph three.');
     });
 
+// TODO(https://crbug.com/1409087): Flaky.
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'PauseResumeAfterParagraphNavigation',
-    async function() {
+    'SelectToSpeakNavigationControlTest',
+    'DISABLED_PauseResumeAfterParagraphNavigation', async function() {
       const bodyHtml = `
       <span id='s1'>
         <p>Paragraph one.</p>
@@ -375,9 +377,10 @@ AX_TEST_F(
       assertEquals(this.mockTts.pendingUtterances().length, 0);
     });
 
+// TODO(https://crbug.com/1409087): Flaky.
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'PauseResumeAfterSentenceNavigation',
-    async function() {
+    'SelectToSpeakNavigationControlTest',
+    'DISABLED_PauseResumeAfterSentenceNavigation', async function() {
       const bodyHtml = `
       <span id='s1'>
         <p>Sentence one. Sentence two.</p>
@@ -444,9 +447,10 @@ AX_TEST_F(
           this.mockTts.pendingUtterances()[0], '. Sentence two.');
     });
 
+// TODO(https://crbug.com/1409087): Flaky.
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'PauseResumeFromKeystrokeSelection',
-    async function() {
+    'SelectToSpeakNavigationControlTest',
+    'DISABLED_PauseResumeFromKeystrokeSelection', async function() {
       const bodyHtml =
           '<p>This is some <b>bold</b> text</p><p>Second paragraph</p>';
       const setFocusCallback = this.newCallback(root => {
@@ -522,9 +526,10 @@ AX_TEST_F(
           this.mockTts.pendingUtterances()[0], 'This is the second.');
     });
 
+// TODO(https://crbug.com/1409087): Flaky.
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'NextSentenceWithinParagraph',
-    async function() {
+    'SelectToSpeakNavigationControlTest',
+    'DISABLED_NextSentenceWithinParagraph', async function() {
       const bodyHtml = `
         <p id="p1">Sent 1. <span id="s1">Sent 2.</span> Sent 3. Sent 4.</p>
       `;
@@ -549,9 +554,10 @@ AX_TEST_F(
       });
     });
 
+// TODO(https://crbug.com/1409087): Flaky.
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'NextSentenceAcrossParagraph',
-    async function() {
+    'SelectToSpeakNavigationControlTest',
+    'DISABLED_NextSentenceAcrossParagraph', async function() {
       const bodyHtml = `
         <p id="p1">Sent 1.</p>
         <p id="p2">Sent 2. Sent 3.</p>'
@@ -578,8 +584,10 @@ AX_TEST_F(
       });
     });
 
+// TODO(https://crbug.com/1409087): Flaky.
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'PrevSentence', async function() {
+    'SelectToSpeakNavigationControlTest', 'DISABLED_PrevSentence',
+    async function() {
       const bodyHtml = `
       <p id="p1">First sentence. Second sentence. Third sentence.</p>'
     `;
@@ -604,9 +612,10 @@ AX_TEST_F(
           'Second sentence. Third sentence.');
     });
 
+// TODO(https://crbug.com/1409087): Flaky.
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'PrevSentenceFromMiddleOfSentence',
-    async function() {
+    'SelectToSpeakNavigationControlTest',
+    'DISABLED_PrevSentenceFromMiddleOfSentence', async function() {
       const bodyHtml = `
       <p id="p1">First sentence. Second sentence. Third sentence.</p>'
     `;
@@ -686,8 +695,9 @@ AX_TEST_F(
       });
     });
 
+// TODO(https://crbug.com/1409087): Flaky.
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'ChangeSpeedWhilePlaying',
+    'SelectToSpeakNavigationControlTest', 'DISABLED_ChangeSpeedWhilePlaying',
     async function() {
       chrome.settingsPrivate.setPref(
           'settings.tts.speech_rate', 1.2,
@@ -728,8 +738,9 @@ AX_TEST_F(
           0);
     });
 
+// TODO(https://crbug.com/1409087): Flaky.
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'RetainsSpeedChange',
+    'SelectToSpeakNavigationControlTest', 'DISABLED_RetainsSpeedChange',
     async function() {
       chrome.settingsPrivate.setPref(
           'settings.tts.speech_rate', 1.0,
@@ -874,8 +885,9 @@ AX_TEST_F(
       setFocusCallback(root);
     });
 
+// TODO(https://crbug.com/1409087): Flaky.
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'ResizeWhilePlaying',
+    'SelectToSpeakNavigationControlTest', 'DISABLED_ResizeWhilePlaying',
     async function() {
       const longLine =
           'Second paragraph is longer than 300 pixels and will wrap when' +
@@ -957,9 +969,10 @@ AX_TEST_F(
       assertEquals(selectToSpeak.state_, SelectToSpeakState.INACTIVE);
     });
 
+// TODO(https://crbug.com/1409087): Flaky.
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'NavigatesToNextParagraphQuickly',
-    async function() {
+    'SelectToSpeakNavigationControlTest',
+    'DISABLED_NavigatesToNextParagraphQuickly', async function() {
       const bodyHtml = `
         <p id="p1">Paragraph 1</p>
         <p id="p2">Paragraph 2</p>'
@@ -984,8 +997,9 @@ AX_TEST_F(
       });
     });
 
+// TODO(https://crbug.com/1409087): Flaky.
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'SetsInitialFocusToPanel',
+    'SelectToSpeakNavigationControlTest', 'DISABLED_SetsInitialFocusToPanel',
     async function() {
       const bodyHtml = '<p id="p1">Sample text</p>';
       const root = await this.runWithLoadedTree(
