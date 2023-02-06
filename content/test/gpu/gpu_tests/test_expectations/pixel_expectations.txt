@@ -316,8 +316,6 @@ crbug.com/1392819 [ mac nvidia no-asan ] Pixel_WebGPUDisplayP3 [ Failure ]
 crbug.com/1268144 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] Pixel_BackgroundImage [ Skip ]
 crbug.com/1268144 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] Pixel_SolidColorBackground [ Skip ]
 
-# Flaky failures on Win10 AMD RX 5500 XT
-crbug.com/1288134 [ win10 amd-0x7340 renderer-skia-gl ] Pixel_DirectComposition_Video_VP9_YUY2 [ Failure ]
 
 # Pixel 6 failures.
 crbug.com/1286915 [ android android-pixel-6 angle-disabled no-passthrough ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
@@ -348,10 +346,7 @@ crbug.com/1395227 [ asan intel mac-x86_64 monterey release ] Pixel_WebGPUImportV
 crbug.com/1395227 [ mac-x86_64 mojave no-asan nvidia-0xfe9 release ] Pixel_WebGPUImportVideoFrame [ Failure ]
 crbug.com/1395227 [ amd-0x679e mac-x86_64 monterey no-asan release ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
 crbug.com/1395227 [ asan intel mac-x86_64 monterey release ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
-crbug.com/1395227 [ amd-0x7340 release-x64 target-cpu-64 win ] Pixel_WebGPUImportVideoFrameUnaccelerated [ Failure ]
 crbug.com/1395227 [ win ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
-crbug.com/1395227 [ amd-0x7340 release-x64 target-cpu-64 win ] Pixel_WebGPUImportVideoFrame [ Failure ]
-crbug.com/1395227 [ amd-0x7340 release-x64 target-cpu-64 win ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
 crbug.com/1395227 [ linux renderer-skia-vulkan ] Pixel_VulkanSwiftShader_WebGPUImportVideoFrame [ Failure ]
 crbug.com/1395227 [ linux renderer-skia-vulkan ] Pixel_VulkanSwiftShader_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
 crbug.com/1395227 [ linux renderer-skia-vulkan ] Pixel_VulkanSwiftShader_WebGPUImportVideoFrameUnaccelerated [ Failure ]
