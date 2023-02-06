@@ -59,12 +59,6 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetInfoResponse {
   absl::optional<bool> force_pin_change;
   absl::optional<uint32_t> min_pin_length;
   absl::optional<base::flat_set<FidoTransportProtocol>> transports;
-
-  // max_cred_blob_length is the maximum size credBlob that the authenticator
-  // supports per credential, or nullopt if credBlob is not supported. If
-  // present, this value will be >= 32.
-  absl::optional<uint32_t> max_cred_blob_length;
-
   AuthenticatorSupportedOptions options;
 };
 

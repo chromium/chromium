@@ -57,6 +57,12 @@ AuthenticatorSupportedOptions WinWebAuthnApiOptions(int api_version) {
   options.supports_large_blobs = api_version >= WEBAUTHN_API_VERSION_3;
   options.supports_min_pin_length_extension =
       api_version >= WEBAUTHN_API_VERSION_3;
+  if (api_version >= WEBAUTHN_API_VERSION_3) {
+    // The 256-byte maximum length here is an arbitrary sanity limit. Blobs are
+    // generally 32 bytes so this is intended to be larger than any reasonable
+    // request.
+    options.max_cred_blob_length = 256;
+  }
   return options;
 }
 
@@ -360,11 +366,6 @@ bool WinWebAuthnApiAuthenticator::SupportsHMACSecretExtension() const {
 }
 
 bool WinWebAuthnApiAuthenticator::SupportsEnterpriseAttestation() const {
-  return win_api_->Version() >= WEBAUTHN_API_VERSION_3;
-}
-
-bool WinWebAuthnApiAuthenticator::SupportsCredBlobOfSize(
-    size_t num_bytes) const {
   return win_api_->Version() >= WEBAUTHN_API_VERSION_3;
 }
 

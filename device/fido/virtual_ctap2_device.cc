@@ -625,7 +625,7 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
 
   if (config.cred_blob_support) {
     extensions.emplace_back(device::kExtensionCredBlob);
-    device_info_->max_cred_blob_length = kMaxCredBlob;
+    device_info_->options.max_cred_blob_length = kMaxCredBlob;
   }
 
   if (config.large_blob_support) {

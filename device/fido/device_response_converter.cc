@@ -665,13 +665,13 @@ absl::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     if (!it->second.is_unsigned()) {
       return absl::nullopt;
     }
-    const uint32_t max_cred_blob_length =
-        base::saturated_cast<uint32_t>(it->second.GetUnsigned());
+    const uint16_t max_cred_blob_length =
+        base::saturated_cast<uint16_t>(it->second.GetUnsigned());
     // CTAP 2.1 requires at least 32 bytes of credBlob to be supported.
     if (max_cred_blob_length < 32) {
       return absl::nullopt;
     }
-    response.max_cred_blob_length = max_cred_blob_length;
+    response.options.max_cred_blob_length = max_cred_blob_length;
   }
 
   it = response_map.find(CBOR(0x14));

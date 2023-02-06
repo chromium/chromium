@@ -115,6 +115,9 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorSupportedOptions {
   // If true, indicates that the authenticator supports the minPinLength
   // extension.
   bool supports_min_pin_length_extension = false;
+  // max_cred_blob_length is the longest credBlob value that this authenticator
+  // can store. A value of `nullopt` indicates no support for credBlob.
+  absl::optional<uint16_t> max_cred_blob_length;
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)

@@ -282,7 +282,8 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
     specialized_request.user_verification =
         UserVerificationRequirement::kRequired;
   }
-  if (request.get_cred_blob && !authenticator.SupportsCredBlobOfSize(0)) {
+  if (request.get_cred_blob &&
+      !authenticator.Options().max_cred_blob_length.has_value()) {
     specialized_request.get_cred_blob = false;
   }
   if (request.device_public_key && !authenticator.SupportsDevicePublicKey()) {

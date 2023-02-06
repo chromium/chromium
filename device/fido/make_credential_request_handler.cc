@@ -1051,7 +1051,9 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
   }
 
   if (request->cred_blob &&
-      !authenticator->SupportsCredBlobOfSize(request->cred_blob->size())) {
+      (!authenticator->Options().max_cred_blob_length.has_value() ||
+       authenticator->Options().max_cred_blob_length.value() <
+           request->cred_blob->size())) {
     request->cred_blob.reset();
   }
 
