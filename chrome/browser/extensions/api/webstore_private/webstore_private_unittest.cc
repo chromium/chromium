@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/values.h"
 #include "chrome/browser/extensions/api/webstore_private/webstore_private_api.h"
 
 #include <vector>
@@ -99,23 +100,23 @@ void VerifyPendingList(const std::map<ExtensionId, ExtensionRequestData>&
       profile->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds);
   ASSERT_EQ(expected_pending_requests.size(), actual_pending_requests.size());
   for (const auto& expected_request : expected_pending_requests) {
-    auto* actual_pending_request =
-        actual_pending_requests.Find(expected_request.first);
+    const base::Value::Dict* actual_pending_request =
+        actual_pending_requests.FindDict(expected_request.first);
     ASSERT_NE(nullptr, actual_pending_request);
 
     // All extensions in the pending list are expected to have a timestamp.
     EXPECT_EQ(::base::TimeToValue(expected_request.second.timestamp),
-              *actual_pending_request->FindKey(
+              *actual_pending_request->Find(
                   extension_misc::kExtensionRequestTimestamp));
 
     // Extensions in the pending list may not have justification.
     if (!expected_request.second.justification_text.empty()) {
       EXPECT_EQ(expected_request.second.justification_text,
-                *actual_pending_request->FindStringKey(
+                *actual_pending_request->FindString(
                     extension_misc::kExtensionWorkflowJustification));
     } else {
-      EXPECT_EQ(nullptr, actual_pending_request->FindKey(
-                             extension_misc::kExtensionWorkflowJustification));
+      EXPECT_FALSE(actual_pending_request->contains(
+          extension_misc::kExtensionWorkflowJustification));
     }
   }
 }
