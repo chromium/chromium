@@ -24,13 +24,13 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/ca_renderer_layer_params.h"
-#include "ui/gl/gl_context.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gpu_switching_manager.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/accelerated_widget_mac/io_surface_context.h"
 #include "ui/base/cocoa/remote_layer_api.h"
+#include "ui/gl/gl_context.h"
 #include "ui/gl/scoped_cgl.h"
 #endif
 
@@ -298,6 +298,7 @@ bool ImageTransportSurfaceOverlayMacEGL::Resize(
 
 void ImageTransportSurfaceOverlayMacEGL::OnGpuSwitched(
     gl::GpuPreference active_gpu_heuristic) {
+#if BUILDFLAG(IS_MAC)
   // Create a new context, and use the GL renderer ID that the new context gets.
   scoped_refptr<ui::IOSurfaceContext> context_on_new_gpu =
       ui::IOSurfaceContext::Get(ui::IOSurfaceContext::kCALayerContext);
@@ -317,6 +318,7 @@ void ImageTransportSurfaceOverlayMacEGL::OnGpuSwitched(
   // surface that is observing the GPU switch.
   base::SingleThreadTaskRunner::GetCurrentDefault()->ReleaseSoon(
       FROM_HERE, std::move(context_on_new_gpu));
+#endif
 }
 
 void ImageTransportSurfaceOverlayMacEGL::SetCALayerErrorCode(
