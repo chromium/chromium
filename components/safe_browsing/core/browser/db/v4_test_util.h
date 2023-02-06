@@ -113,6 +113,40 @@ class TestV4GetHashProtocolManagerFactory
   raw_ptr<TestV4GetHashProtocolManager, DanglingUntriaged> pm_ = nullptr;
 };
 
+struct TestV4HashResponseInfo {
+  explicit TestV4HashResponseInfo(FullHashStr full_hash,
+                                  ListIdentifier list_id);
+  TestV4HashResponseInfo(const TestV4HashResponseInfo& other);
+  TestV4HashResponseInfo& operator=(const TestV4HashResponseInfo& other) =
+      default;
+  ~TestV4HashResponseInfo();
+
+  struct KeyValue {
+   public:
+    explicit KeyValue(const std::string key, const std::string value);
+    KeyValue(const KeyValue& other);
+    KeyValue& operator=(const KeyValue& other) = default;
+    ~KeyValue();
+
+    std::string key;
+    std::string value;
+
+   private:
+    KeyValue();
+  };
+
+  FullHashStr full_hash;
+  ListIdentifier list_id;
+  std::vector<KeyValue> key_values;
+
+ private:
+  TestV4HashResponseInfo();
+};
+// Converts the |response_infos| into a serialized version of a
+// |FindFullHashesResponse|. It also adds values for the cache durations.
+std::string GetV4HashResponse(
+    std::vector<TestV4HashResponseInfo> response_infos);
+
 // Returns FullHashInfo object for the basic host+path pattern for a given URL
 // after canonicalization.
 FullHashInfo GetFullHashInfo(const GURL& url, const ListIdentifier& list_id);

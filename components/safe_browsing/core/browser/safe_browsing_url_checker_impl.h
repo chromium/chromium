@@ -104,7 +104,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       UrlRealTimeMechanism::WebUIDelegate* webui_delegate,
       base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
       scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
-          mechanism_experimenter);
+          mechanism_experimenter,
+      bool is_mechanism_experiment_allowed);
 
   // Constructor that takes only a RequestDestination, a UrlCheckerDelegate, and
   // real-time lookup-related arguments, omitting other arguments that never
@@ -336,9 +337,16 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
 
   // If eligible, this class will run a SafeBrowsingLookupMechanism experiment
   // instead of just running a real-time URL check. It will check if the
-  // experiment is eligible and then perform it through this object.
+  // experiment is eligible and then perform it through this object. This can
+  // only be populated if |is_mechanism_experiment_allowed_| = true, though it
+  // may not be populated even if it is true (if the URL is non-mainframe).
   scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
       mechanism_experimenter_;
+
+  // When true, instructs the V4 protocol manager to keep multiple separate
+  // copies of the cache for use by the experiment. See comments defined above
+  // MechanismExperimentHashDatabaseCache for more details.
+  bool is_mechanism_experiment_allowed_ = false;
 
   base::WeakPtrFactory<SafeBrowsingUrlCheckerImpl> weak_factory_{this};
 };

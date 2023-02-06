@@ -20,7 +20,8 @@ class HashDatabaseMechanism : public SafeBrowsingLookupMechanism,
       const GURL& url,
       const SBThreatTypeSet& threat_types,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
-      bool can_check_db);
+      bool can_check_db,
+      MechanismExperimentHashDatabaseCache experiment_cache_selection);
 
   HashDatabaseMechanism(const HashDatabaseMechanism&) = delete;
   HashDatabaseMechanism& operator=(const HashDatabaseMechanism&) = delete;

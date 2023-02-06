@@ -64,9 +64,11 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
       network::mojom::RequestDestination request_destination) const override;
   bool CanCheckUrl(const GURL& url) const override;
   bool ChecksAreAlwaysAsync() const override;
-  bool CheckBrowseUrl(const GURL& url,
-                      const SBThreatTypeSet& threat_types,
-                      Client* client) override;
+  bool CheckBrowseUrl(
+      const GURL& url,
+      const SBThreatTypeSet& threat_types,
+      Client* client,
+      MechanismExperimentHashDatabaseCache experiment_cache_selection) override;
   AsyncMatch CheckCsdAllowlistUrl(const GURL& url, Client* client) override;
   bool CheckDownloadUrl(const std::vector<GURL>& url_chain,
                         Client* client) override;
@@ -149,10 +151,12 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // The information we need to process a URL safety reputation request and
   // respond to the SafeBrowsing client that asked for it.
   struct PendingCheck {
-    PendingCheck(Client* client,
-                 ClientCallbackType client_callback_type,
-                 const StoresToCheck& stores_to_check,
-                 const std::vector<GURL>& urls);
+    PendingCheck(
+        Client* client,
+        ClientCallbackType client_callback_type,
+        const StoresToCheck& stores_to_check,
+        const std::vector<GURL>& urls,
+        MechanismExperimentHashDatabaseCache experiment_cache_selection);
 
     PendingCheck(Client* client,
                  ClientCallbackType client_callback_type,
@@ -206,6 +210,11 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
     // The full hash that matched for a blocklisted resource URL. Used only for
     // |CheckResourceUrl| case.
     FullHashStr matching_full_hash;
+
+    // Specifies which cache to use for reads/writes. See comments above
+    // MechanismExperimentHashDatabaseCache's definition for more details.
+    MechanismExperimentHashDatabaseCache mechanism_experiment_cache_selection =
+        MechanismExperimentHashDatabaseCache::kNoExperiment;
 
     // Specifies whether the PendingCheck is in the V4LocalDatabaseManager's
     // |pending_checks_| set. This property is for sanity-checking that when the

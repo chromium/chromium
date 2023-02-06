@@ -50,7 +50,8 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
       const GURL& last_committed_url,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
-      WebUIDelegate* webui_delegate);
+      WebUIDelegate* webui_delegate,
+      MechanismExperimentHashDatabaseCache experiment_cache_selection);
   UrlRealTimeMechanism(const UrlRealTimeMechanism&) = delete;
   UrlRealTimeMechanism& operator=(const UrlRealTimeMechanism&) = delete;
   ~UrlRealTimeMechanism() override;

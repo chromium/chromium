@@ -91,6 +91,34 @@ std::string GetReportUrl(
     const ExtendedReportingLevel* reporting_level = nullptr,
     const bool is_enhanced_protection = false);
 
+// For the SafeBrowsingLookoupMechanismExperiment, all 3 lookup mechanisms can
+// be run simultaneously. Since URL real-time checks and hash real-time checks
+// can fall back to hash database checks, their hash database cache must be
+// maintained separately to avoid one lookup benefitting from a different
+// lookup's caching, since that would incorrectly reflect performance results.
+// TODO(crbug.com/1410253): Delete enum once temporary experiment is complete.
+enum class MechanismExperimentHashDatabaseCache {
+  // Used only outside the context of the experiment. Specifies that the primary
+  // cache should be used for reads, and all three of the caches should be used
+  // for writes. The latter is true so that within the context of the
+  // experiment, URL real-time lookups don't have an advantage over the other
+  // two mechanisms for URLs that overlap with other V4 checks.
+  kNoExperiment = 0,
+  // Used only within the context of the experiment. Specifies that the primary
+  // cache should be used for cache reads and writes. It uses the primary cache
+  // because the experiment intercepts URL real-time lookups and conducts the
+  // two background lookups as well.
+  kUrlRealTimeOnly = 1,
+  // Used only within the context of the experiment. Specifies that one of the
+  // two background caches (the hash real-time lookup one) should be used for
+  // cache reads and writes.
+  kHashRealTimeOnly = 2,
+  // Used only within the context of the experiment. Specifies that one of the
+  // two background caches (the hash database lookup one) should be used for
+  // cache reads and writes.
+  kHashDatabaseOnly = 3
+};
+
 // Different types of threats that SafeBrowsing protects against. This is the
 // type that's returned to the clients of SafeBrowsing in Chromium.
 // These values are persisted to logs. Entries should not be renumbered and

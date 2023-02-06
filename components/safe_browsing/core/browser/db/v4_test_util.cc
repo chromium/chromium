@@ -143,6 +143,46 @@ TestV4GetHashProtocolManagerFactory::CreateProtocolManager(
   return std::move(pm);
 }
 
+TestV4HashResponseInfo::KeyValue::KeyValue(const std::string key,
+                                           const std::string value)
+    : key(key), value(value) {}
+TestV4HashResponseInfo::KeyValue::KeyValue(const KeyValue& other) = default;
+TestV4HashResponseInfo::KeyValue::~KeyValue() = default;
+
+TestV4HashResponseInfo::TestV4HashResponseInfo(FullHashStr full_hash,
+                                               ListIdentifier list_id)
+    : full_hash(full_hash), list_id(list_id) {}
+TestV4HashResponseInfo::TestV4HashResponseInfo(
+    const TestV4HashResponseInfo& other) = default;
+TestV4HashResponseInfo::~TestV4HashResponseInfo() = default;
+
+std::string GetV4HashResponse(
+    std::vector<TestV4HashResponseInfo> response_infos) {
+  FindFullHashesResponse res;
+  res.mutable_negative_cache_duration()->set_seconds(600);
+  for (const TestV4HashResponseInfo& info : response_infos) {
+    ThreatMatch* m = res.add_matches();
+    m->set_platform_type(info.list_id.platform_type());
+    m->set_threat_entry_type(info.list_id.threat_entry_type());
+    m->set_threat_type(info.list_id.threat_type());
+    m->mutable_cache_duration()->set_seconds(300);
+    m->mutable_threat()->set_hash(info.full_hash);
+
+    for (const TestV4HashResponseInfo::KeyValue& key_value : info.key_values) {
+      ThreatEntryMetadata::MetadataEntry* e =
+          m->mutable_threat_entry_metadata()->add_entries();
+      e->set_key(key_value.key);
+      e->set_value(key_value.value);
+    }
+  }
+
+  // Serialize.
+  std::string res_data;
+  res.SerializeToString(&res_data);
+
+  return res_data;
+}
+
 FullHashInfo GetFullHashInfo(const GURL& url, const ListIdentifier& list_id) {
   return FullHashInfo(V4ProtocolManagerUtil::GetFullHash(url), list_id,
                       base::Time::Now() + base::Minutes(5));
