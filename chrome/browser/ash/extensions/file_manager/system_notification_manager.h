@@ -136,7 +136,7 @@ class SystemNotificationManager {
       const std::u16string& message);
 
   /**
-   * Returns an instance of an 'ash' Notiifcation with progress value.
+   * Returns an instance of an 'ash' Notification with progress value.
    */
   std::unique_ptr<message_center::Notification> CreateProgressNotification(
       const std::string& notification_id,
@@ -290,16 +290,19 @@ class SystemNotificationManager {
   std::map<std::string, enum SystemNotificationManagerMountStatus>
       mount_status_;
 
+  // User profile.
   Profile* const profile_;
-  // Reference to non-owned DriveFS event router.
-  DriveFsEventRouter* drivefs_event_router_;
+
+  // Application name (used for notification display source).
+  std::u16string const app_name_;
+
+  // DriveFS event router: not owned.
+  DriveFsEventRouter* drivefs_event_router_ = nullptr;
 
   // IOTaskController is owned by VolumeManager.
-  file_manager::io_task::IOTaskController* io_task_controller_;
+  file_manager::io_task::IOTaskController* io_task_controller_ = nullptr;
 
-  // Cache the application name (used for notification display source).
-  std::u16string app_name_;
-
+  // base::WeakPtr{this} factory.
   base::WeakPtrFactory<SystemNotificationManager> weak_ptr_factory_{this};
 };
 
