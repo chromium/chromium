@@ -15,7 +15,9 @@
 #include "chrome/browser/apps/user_type_filter.h"
 #include "components/version_info/channel.h"
 #include "google_apis/google_api_keys.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -127,15 +129,18 @@ void AppPreloadServerConnector::GetAppsForFirstLogin(
 
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
-  loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
-                                             kTrafficAnnotation);
-  loader_->AttachStringForUpload(
+  std::unique_ptr<network::SimpleURLLoader> loader =
+      network::SimpleURLLoader::Create(std::move(resource_request),
+                                       kTrafficAnnotation);
+  auto* loader_ptr = loader.get();
+  loader_ptr->AttachStringForUpload(
       BuildGetAppsForFirstLoginRequestBody(device_info),
       "application/x-protobuf");
-  loader_->DownloadToString(
+  loader_ptr->DownloadToString(
       url_loader_factory.get(),
       base::BindOnce(&AppPreloadServerConnector::OnGetAppsForFirstLoginResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(loader),
+                     std::move(callback)),
       kMaxResponseSizeInBytes);
 }
 
@@ -145,32 +150,25 @@ GURL AppPreloadServerConnector::GetServerUrl() {
 }
 
 void AppPreloadServerConnector::OnGetAppsForFirstLoginResponse(
+    std::unique_ptr<network::SimpleURLLoader> loader,
     GetInitialAppsCallback callback,
     std::unique_ptr<std::string> response_body) {
   int response_code = 0;
-  if (loader_->ResponseInfo()) {
-    response_code = loader_->ResponseInfo()->headers->response_code();
+  if (loader->ResponseInfo()) {
+    response_code = loader->ResponseInfo()->headers->response_code();
   }
-  const int net_error = loader_->NetError();
-  loader_.reset();
+
+  const int net_error = loader->NetError();
 
   // If there is no response code, there was a net error.
   base::UmaHistogramSparse(kAppPreloadServiceServerErrorHistogramName,
                            response_code > 0 ? response_code : net_error);
 
-  if (net_error == net::Error::ERR_INSUFFICIENT_RESOURCES) {
-    LOG(ERROR) << "Network request failed due to insufficent resources.";
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
   // HTTP error codes in the 500-599 range represent server errors.
-  const bool server_error =
-      net_error != net::OK || (response_code >= 500 && response_code < 600);
-  if (server_error) {
+  if (net_error != net::OK || (response_code >= 500 && response_code < 600)) {
     LOG(ERROR) << "Server error. "
                << "Response code: " << response_code
-               << ". Net error: " << net_error;
+               << ". Net error: " << net::ErrorToString(net_error);
     std::move(callback).Run(absl::nullopt);
     return;
   }

@@ -12,11 +12,12 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
 namespace network {
+class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
 
@@ -54,10 +55,9 @@ class AppPreloadServerConnector {
 
  private:
   void OnGetAppsForFirstLoginResponse(
+      std::unique_ptr<network::SimpleURLLoader> loader,
       GetInitialAppsCallback callback,
       std::unique_ptr<std::string> response_body);
-
-  std::unique_ptr<network::SimpleURLLoader> loader_;
 
   // Weak Factory should go last.
   base::WeakPtrFactory<AppPreloadServerConnector> weak_ptr_factory_{this};
