@@ -339,7 +339,7 @@ bool PinManager::Add(const Id id,
     progress_.syncing_files++;
     DCHECK_EQ(progress_.syncing_files, CountPinnedFiles());
   } else {
-    files_to_pin_.push_back(id);
+    files_to_pin_.insert(id);
     DCHECK_LE(files_to_pin_.size(),
               static_cast<size_t>(progress_.files_to_pin));
   }
@@ -401,7 +401,7 @@ void PinManager::Remove(const Files::iterator it,
     if (file.pinned) {
       progress_.syncing_files--;
     } else {
-      std::erase(files_to_pin_, id);
+      files_to_pin_.erase(id);
     }
   }
 
@@ -681,8 +681,7 @@ void PinManager::PinSomeFiles() {
   }
 
   while (progress_.syncing_files < 50 && !files_to_pin_.empty()) {
-    const Id id = files_to_pin_.back();
-    files_to_pin_.pop_back();
+    const Id id = files_to_pin_.extract(files_to_pin_.begin()).value();
 
     const Files::iterator it = files_to_track_.find(id);
     if (it == files_to_track_.end()) {
@@ -1010,7 +1009,7 @@ void PinManager::OnMetadataForModifiedFile(
   if (!md.pinned) {
     if (!file.pinned) {
       VLOG(1) << "To be pinned: " << id << " " << Quote(path);
-      DCHECK_GT(std::count(files_to_pin_.begin(), files_to_pin_.end(), id), 0);
+      DCHECK(files_to_pin_.contains(id));
       return;
     }
 

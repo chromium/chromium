@@ -47,11 +47,11 @@ using std::vector;
 using testing::_;
 using testing::AnyNumber;
 using testing::DoAll;
-using testing::ElementsAre;
 using testing::Field;
 using testing::IsEmpty;
 using testing::Return;
 using testing::SizeIs;
+using testing::UnorderedElementsAre;
 
 using Id = PinManager::Id;
 using Path = base::FilePath;
@@ -330,13 +330,13 @@ TEST_F(DriveFsPinManagerTest, Add) {
 
   // Add an item.
   EXPECT_TRUE(manager.Add(id1, path1, size1, false));
-  EXPECT_THAT(manager.files_to_pin_, ElementsAre(id1));
+  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(id1));
   EXPECT_THAT(manager.files_to_track_, SizeIs(1));
 
   // Try to add a conflicting item with the same ID, but different path and
   // size.
   EXPECT_FALSE(manager.Add(id1, path2, size2, true));
-  EXPECT_THAT(manager.files_to_pin_, ElementsAre(id1));
+  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(id1));
   EXPECT_THAT(manager.files_to_track_, SizeIs(1));
 
   {
@@ -363,7 +363,7 @@ TEST_F(DriveFsPinManagerTest, Add) {
 
   // Add a second item, but which is already pinned this time.
   EXPECT_TRUE(manager.Add(id2, path2, size2, true));
-  EXPECT_THAT(manager.files_to_pin_, ElementsAre(id1));
+  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(id1));
   EXPECT_THAT(manager.files_to_track_, SizeIs(2));
 
   {

@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <ostream>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -364,7 +365,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   base::ElapsedTimer timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Stable IDs of the files to pin, and which are not already marked as pinned.
-  std::vector<Id> files_to_pin_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unordered_set<Id> files_to_pin_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Map that tracks the in-progress files indexed by their stable ID. This
   // contains all the files, either pinned or not, that are not completely
