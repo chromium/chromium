@@ -928,8 +928,7 @@ fyi_ios_builder(
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
-    # TODO(crbug.com/1351820): Enable scheduler when machine has been allocated.
-    schedule = "triggered",
+    schedule = "with 5h interval",
 )
 
 # This is launching & collecting entirely isolated tests.
