@@ -266,7 +266,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // `transferred` is negative, use the total expected size. Returns whether an
   // item was actually removed.
   bool Remove(Id id, const Path& path, int64_t transferred = -1);
-  void Remove(Files::iterator it, const Path& path, int64_t transferred = -1);
+  void Remove(Files::iterator it, const Path& path, int64_t transferred);
 
   // Updates an item in the files to track. Does nothing if the item is not in
   // the map. Updates the total number of bytes transferred so far. Updates the
