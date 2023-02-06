@@ -902,8 +902,14 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
     // To be safe, ignore schemes that aren't allowed to register service
     // workers. We assume that importScripts and fetch() should fail on such
     // schemes.
-    if (!base::Contains(GetServiceWorkerSchemes(), scheme))
+    // data: URLs are allowed here, because importScripts() and fetch() to data:
+    // URLs are anyway successful, and in order to allow Extension's WebRequest
+    // redirects to data: URLs in ServiceWorkerGlobalScope
+    // (https://crbug.com/1334249).
+    if (scheme != url::kDataScheme &&
+        !base::Contains(GetServiceWorkerSchemes(), scheme)) {
       continue;
+    }
 
     factory_bundle->pending_scheme_specific_factories().emplace(
         scheme, std::move(pending_remote));

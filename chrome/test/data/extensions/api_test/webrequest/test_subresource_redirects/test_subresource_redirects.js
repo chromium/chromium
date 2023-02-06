@@ -47,11 +47,6 @@ function assertRedirectFails(url, callback) {
 }
 
 const nonServiceWorkerTests = [
-  // TODO(crbug.com/1375880): These tests cause the browser to crash when run
-  // with a service worker-based extension.
-  'subresourceRedirectToDataUrlOnHeadersReceived',
-  'subresourceRedirectToDataUrlOnBeforeRequest',
-  'subresourceRedirectToDataUrlWithServerRedirect',
   // TODO(crbug.com/1376106): These two tests hang.
   'subresourceRedirectHasSameRequestIdOnHeadersReceived',
   'subresourceRedirectHasSameRequestIdOnBeforeRequest'

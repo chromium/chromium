@@ -1,0 +1,13 @@
+{
+  "name": "test_redirects_workers",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description":
+      "Tests the webRequest API redirects to data: URLs around workers.",
+  "permissions": ["webRequest", "webRequestBlocking",
+                  "tabs", "<all_urls>"],
+  "background": {
+    "scripts": ["test_redirects_workers.js"],
+    "persistent": true
+  }
+}

@@ -1037,6 +1037,28 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
       << message_;
 }
 
+// Tests redirects around workers. To test service workers, the HTTPS test
+// server is used.
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+                       WebRequestRedirectsWorkers) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  net::EmbeddedTestServer https_test_server(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_test_server.ServeFilesFromDirectory(test_data_dir_);
+  ASSERT_TRUE(https_test_server.Start());
+
+  GURL base_url =
+      https_test_server.GetURL("/webrequest/test_redirects_workers/page/");
+  base::Value::Dict custom_args;
+  custom_args.Set("base_url", base_url.spec());
+  std::string config_string;
+  base::JSONWriter::Write(custom_args, &config_string);
+
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_redirects_workers",
+                               {.custom_arg = config_string.c_str()}))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WebRequestSubresourceRedirects) {
   ASSERT_TRUE(StartEmbeddedTestServer());

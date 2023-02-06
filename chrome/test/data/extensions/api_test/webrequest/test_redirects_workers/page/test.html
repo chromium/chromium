@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+<body>
+<div id="status">not set</div>
+<script src="helper.js"></script>
+<script>
+async function runWorkerTest(workerUrl, subresourceUrl) {
+  const worker = new Worker(workerUrl);
+  worker.postMessage(subresourceUrl);
+  const message = await new Promise((resolve, reject) => {
+    worker.onmessage = resolve;
+    worker.onerror = (e) => { reject(e.message); return false; };
+    window.onerror = (message) => { reject(message); return false };
+  });
+  return message.data;
+}
+
+async function runSharedWorkerTest(workerUrl, subresourceUrl) {
+  const worker = new SharedWorker(workerUrl);
+  worker.port.start();
+  worker.port.postMessage(subresourceUrl);
+  const message = await new Promise((resolve, reject) => {
+    worker.port.onmessage = resolve;
+    worker.onerror = (e) => { reject(e.message); return false; };
+    window.onerror = (message) => { reject(message); return false };
+  });
+  return message.data;
+}
+
+async function runServiceWorkerTest(workerUrl, subresourceUrl) {
+  let registration;
+  try {
+    registration = await navigator.serviceWorker.register(workerUrl);
+    const worker = registration.installing;
+    await wait_for_state(worker, 'activated');
+    worker.postMessage(subresourceUrl);
+    const result = await new Promise(resolve => {
+      navigator.serviceWorker.onmessage = event => {
+        resolve(event.data);
+      };
+    });
+    await registration.unregister();
+    return result;
+  } catch(error) {
+    if (registration) {
+      await registration.unregister();
+    }
+    throw error.message;
+  }
+}
+
+(async () => {
+  const params = new URL(location.href).searchParams;
+  const workerUrl = params.get('workerUrl');
+  const workerClass = params.get('workerClass');
+  const subresourceUrl = params.get('subresourceUrl');
+  let result;
+  try {
+    if (workerClass === 'Worker')
+      result = await runWorkerTest(workerUrl, subresourceUrl);
+    else if (workerClass === 'SharedWorker')
+      result = await runSharedWorkerTest(workerUrl, subresourceUrl);
+    else if (workerClass === 'ServiceWorker')
+      result = await runServiceWorkerTest(workerUrl, subresourceUrl);
+    else
+      throw new Error(`Unrecognized class: ${workerClass}`);
+  } catch (error) {
+    result = `Error: ${error}`;
+  }
+  document.getElementById('status').textContent = result;
+})();
+</script>
+</body>
+</html>
