@@ -400,22 +400,12 @@ std::vector<FileInfo> FilesFromPasteboard(NSPasteboard* pboard) {
     }
     NSURL* file_url = [NSURL URLWithString:file_url_string].filePathURL;
 
-    // Do not check for file existence here; tests verify if they're able to put
-    // paths of non-existent files on the pasteboard.
-
-    NSString* filename;
-    BOOL success = [file_url getResourceValue:&filename
-                                       forKey:NSURLLocalizedNameKey
-                                        error:nil];
-
-    if (success) {
-      results.emplace_back(base::mac::NSURLToFilePath(file_url),
-                           base::mac::NSStringToFilePath(filename));
-    } else {
-      results.emplace_back(
-          base::mac::NSURLToFilePath(file_url),
-          base::mac::NSStringToFilePath(file_url.lastPathComponent));
-    }
+    // Despite the second value being the "display name", it must be the full
+    // filename because deep in Blink it's used to determine the file's type.
+    // See https://crbug.com/1412205.
+    results.emplace_back(
+        base::mac::NSURLToFilePath(file_url),
+        base::mac::NSStringToFilePath(file_url.lastPathComponent));
   }
 
   return results;
