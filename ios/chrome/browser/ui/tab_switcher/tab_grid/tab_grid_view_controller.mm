@@ -415,7 +415,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView*)scrollView {
   TabGridPage currentPage = GetPageFromScrollView(scrollView);
-  if (currentPage != self.currentPage) {
+  if (currentPage != self.currentPage && self.isDragSeesionInProgress) {
     // This happens when the user drags an item from one scroll view into
     // another.
     self.pageChangeInteraction = PageChangeInteractionItemDrag;
