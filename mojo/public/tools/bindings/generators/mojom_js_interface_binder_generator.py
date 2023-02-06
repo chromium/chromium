@@ -99,36 +99,41 @@ class Generator(generator.Generator):
         'binder_variable_name': self._GetBinderMemberVariableName,
     }
 
-  def _GetInterfaceBinders(self):
-    """Returns a list of Interface objects that are JsInterfaceBinders.
+  def _GetValidatedInterfaceBinder(self):
+    """Returns an Interface object for the JsInterfaceBinder..
 
-    Raises an Exception if any JsInterfaceBinder don't satisfy JsInterfaceBinder
+    Raises an Exception if the interface doesn't satisfy JsInterfaceBinder
     constraints.
     """
-    # TODO(ortuno): Remove support for multiple JsInterfaceBinders.
     interface_binders = [
         interface for interface in self.module.interfaces if
         (interface.attributes and interface.attributes.get('JsInterfaceBinder'))
     ]
+    if len(interface_binders) > 1:
+      raise Exception('Found more than one JsInterfaceBinder in '
+                      f'{self.module.path}. Only one JsInterfaceBinder is '
+                      'supported per mojom target.')
+    if len(interface_binders) == 0:
+      raise Exception(f'Found no JsInterfaceBinder in {self.module.path}.')
 
     # Enforce JsInterfaceBinders constraints.
-    for interface_binder in interface_binders:
-      for method in interface_binder.methods:
-        if method.response_parameters != None:
-          raise Exception(f'{interface_binder.name}.{method.name} has a '
-                          'response. JsInterfaceBinder\'s methods should not '
-                          'have responses.')
+    interface_binder = interface_binders[0]
+    for method in interface_binder.methods:
+      if method.response_parameters != None:
+        raise Exception(f'{interface_binder.name}.{method.name} has a '
+                        'response. JsInterfaceBinder\'s methods should not '
+                        'have responses.')
 
-        for param in method.parameters:
-          if not (mojom.IsPendingReceiverKind(param.kind)
-                  or mojom.IsPendingRemoteKind(param.kind)):
-            raise Exception(f'{interface_binder.name}.{method.name}\'s '
-                            f'"{param.name}" is not a pending_receiver or a '
-                            'pending_remote. JSInterfaceBinder\'s methods '
-                            'should only have pending_receiver or '
-                            'pending_remote parameters.')
+      for param in method.parameters:
+        if not (mojom.IsPendingReceiverKind(param.kind)
+                or mojom.IsPendingRemoteKind(param.kind)):
+          raise Exception(f'{interface_binder.name}.{method.name}\'s '
+                          f'"{param.name}" is not a pending_receiver or a '
+                          'pending_remote. JSInterfaceBinder\'s methods '
+                          'should only have pending_receiver or '
+                          'pending_remote parameters.')
 
-    return interface_binders
+    return interface_binder
 
   def _GetParameters(self):
     webui_controller_namespace = None
@@ -145,7 +150,7 @@ class Generator(generator.Generator):
 
     return {
         'module': self.module,
-        'interface_binders': self._GetInterfaceBinders(),
+        'interface_binder': self._GetValidatedInterfaceBinder(),
         'webui_controller_name': webui_controller_name,
         'webui_controller_namespace': webui_controller_namespace,
         'webui_controller_header': self.webui_controller_header,

@@ -29,8 +29,6 @@ class {{webui_controller_name}};
 
 namespace {{module.namespace}} {
 
-{%  for interface_binder in interface_binders -%}
-
 {%- set class_name = "%sImpl" % interface_binder.name %}
 
 class {{class_name}} : public {{interface_binder.name}} {
@@ -70,7 +68,6 @@ class {{class_name}} : public {{interface_binder.name}} {
   BinderFor{{method.name}} {{method|binder_variable_name}}_;
 {% endfor %}
 };
-{% endfor %}
 }  // {{module.namespace}}
 
 #endif // {{header_guard}}

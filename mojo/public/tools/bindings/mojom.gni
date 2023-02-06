@@ -339,18 +339,8 @@ if (enable_scrambled_message_ids) {
 #       true.
 #
 #   js_interface_binder_config (optional)
-#       A JsInterfaceBinder is a Mojo interface that contains binders for all
-#       interfaces that can be bound from a WebUI's JavaScript. Defining this
-#       variable will generate a C++ implementation of the JSInterfaceBinder
-#       and a {target_name}_js_interface_binder_impl target that can be depended
-#       on. A mojom target can only contain a single JsInterfaceBinder.
-#
-#       This variable should be a scope with two parameters:
-#        - `webui_controller`: The name of the WebUIController associated with
-#          JsInterfaceBinder.
-#        - `webui_controller_header`: The header where the WebUIController
-#          is declared.
-#        - `webui_controller_deps`: The target containing the WebUIController.
+#       Prefer to use the `mojom_with_js_interface_binder` target below instead
+#       of using this argument directly.
 #
 #   js_generate_struct_deserializers (optional)
 #       Generates JS deerialize methods for structs.
@@ -1814,15 +1804,6 @@ template("mojom") {
   if (defined(invoker.js_interface_binder_config)) {
     if (sources_list != []) {
       binder_config = invoker.js_interface_binder_config
-      assert(defined(binder_config.webui_controller),
-             "js_interface_binder_config should have a " +
-                 "`webui_controller` parameter e.g. `foo::FooUI`.")
-      assert(defined(binder_config.webui_controller_header),
-             "js_interface_binder_config should have a " +
-                 "`webui_controller_header` parameter.")
-      assert(defined(binder_config.webui_controller_deps),
-             "js_interface_binder_config should have a " +
-                 "`webui_controller_dep` parameter.")
 
       generator_js_interface_binder_impl_target_name =
           "${target_name}_js_interface_binder_impl__generator"
@@ -1879,7 +1860,7 @@ template("mojom") {
 
         sources = []
         foreach(base_path, output_file_base_paths) {
-          sources = [
+          sources += [
             "$root_gen_dir/${base_path}-js-interface-binder-impl.cc",
             "$root_gen_dir/${base_path}-js-interface-binder-impl.h",
           ]
@@ -2181,5 +2162,55 @@ template("mojom_component") {
                            ])
     component_output_prefix = invoker.output_prefix
     component_macro_prefix = invoker.macro_prefix
+  }
+}
+
+# A helper for the mojom() template above for defining a JsInterfaceBinder.
+# Supports all the same arguments as mojom() except for `sources` and adds
+# `source`, `webui_controller`, `webui_controller_header`, and
+# `webui_controller_deps` which are *required*. See below for more details.
+#
+# A JsInterfaceBinder is a Mojo interface that contains binders for all
+# interfaces that can be bound from a WebUI's JavaScript. This taret
+# will generate a C++ implementation of the JSInterfaceBinder interface
+# and a {target_name}_js_interface_binder_impl target that can be depended
+# on.
+#
+# The following arguments are required:
+#  - `source`: The mojom file that defines the JsInterfaceBinder interface. It's
+#    allowed to define other interfaces.
+#  - `webui_controller`: The name of the WebUIController associated with the
+#    JsInterfaceBinder.
+#  - `webui_controller_header`: The header where the WebUIController
+#    is declared.
+#  - `webui_controller_deps`: The target containing the WebUIController.
+template("mojom_with_js_interface_binder") {
+  assert(defined(invoker.source))
+  assert(defined(invoker.webui_controller),
+         "mojom_with_js_interface_binder should have a " +
+             "`webui_controller` parameter e.g. `foo::FooUI`.")
+  assert(defined(invoker.webui_controller_header),
+         "mojom_with_js_interface_binder should have a " +
+             "`webui_controller_header` parameter.")
+  assert(defined(invoker.webui_controller_deps),
+         "mojom_with_js_interface_binder should have a " +
+             "`webui_controller_deps` parameter.")
+
+  mojom(target_name) {
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "source",
+                             "webui_controller",
+                             "webui_controller_header",
+                             "webui_controller_deps",
+                           ])
+    sources = [ invoker.source ]
+
+    js_interface_binder_config = {
+      webui_controller = invoker.webui_controller
+      webui_controller_header = invoker.webui_controller_header
+      webui_controller_deps = invoker.webui_controller_deps
+    }
   }
 }

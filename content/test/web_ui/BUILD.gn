@@ -4,23 +4,29 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-mojom("test_js_interface_binder") {
+mojom_with_js_interface_binder("test_js_interface_binder") {
   testonly = true
-  sources = [ "js_interface_binder_unittest.test-mojom" ]
-  public_deps = [
-    ":test_js_interface_binder_secondary",
-    "//mojo/public/mojom/base",
-  ]
-  js_interface_binder_config = {
-    webui_controller = "content::TestJsInterfaceBinderUI"
-    webui_controller_header =
-        "//content/browser/webui/test_js_interface_binder_ui.h"
-    webui_controller_deps = [ "//content/test:test_support" ]
-  }
+  source = "js_interface_binder_unittest.test-mojom"
+
+  webui_controller = "content::TestJsInterfaceBinderUI"
+  webui_controller_header =
+      "//content/browser/webui/test_js_interface_binder_ui.h"
+  webui_controller_deps = [ "//content/test:test_support" ]
 }
 
-mojom("test_js_interface_binder_secondary") {
+mojom_with_js_interface_binder("test_js_interface_binder2") {
   testonly = true
-  sources = [ "js_interface_binder_secondary_unittest.test-mojom" ]
+  source = "js_interface_binder_unittest2.test-mojom"
+  public_deps = [ ":test_secondary_interface" ]
+
+  webui_controller = "content::TestJsInterfaceBinderUI"
+  webui_controller_header =
+      "//content/browser/webui/test_js_interface_binder_ui.h"
+  webui_controller_deps = [ "//content/test:test_support" ]
+}
+
+mojom("test_secondary_interface") {
+  testonly = true
+  sources = [ "test_secondary_interface.test-mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
 }

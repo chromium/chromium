@@ -6,6 +6,7 @@
 #include "base/test/task_environment.h"
 #include "content/browser/webui/test_js_interface_binder_ui.h"
 #include "content/test/web_ui/js_interface_binder_unittest.test-mojom-js-interface-binder-impl.h"
+#include "content/test/web_ui/js_interface_binder_unittest2.test-mojom-js-interface-binder-impl.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -129,7 +130,7 @@ TEST_F(JsInterfaceBinderTest, Bind) {
 // binds interfaces in a separate mojom.
 TEST_F(JsInterfaceBinderTest, CrossModule) {
   TestJsInterfaceBinderUI controller;
-  mojom::Interface1InterfaceBinderImpl binder(&controller, base::DoNothing());
+  mojom::TestInterfaceBinder2Impl binder(&controller, base::DoNothing());
   binder.BindSecondaryInterface(mojo::NullReceiver());
 }
 
@@ -137,9 +138,9 @@ TEST_F(JsInterfaceBinderTest, CrossModule) {
 // JsInterfaceBinder.
 TEST_F(JsInterfaceBinderTest, IncorrectWebUIControllerCrash) {
   TestJsInterfaceBinderIncorrectUI controller;
-  EXPECT_DEATH_IF_SUPPORTED(mojom::Interface1InterfaceBinderImpl binder(
-                                &controller, base::DoNothing()),
-                            "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      mojom::TestInterfaceBinder2Impl binder(&controller, base::DoNothing()),
+      "");
 }
 
 }  // namespace content

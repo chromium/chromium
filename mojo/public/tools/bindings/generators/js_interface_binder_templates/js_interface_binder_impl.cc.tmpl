@@ -9,8 +9,6 @@
 
 namespace {{module.namespace}} {
 
-{%  for interface_binder in interface_binders -%}
-
 {%- set class_name = "%sImpl" % interface_binder.name -%}
 
 {{class_name}}::{{class_name}}(
@@ -38,7 +36,6 @@ namespace {{module.namespace}} {
 {%-   endfor -%}
   );
 }
-{% endfor %}
 {% endfor %}
 
 }  // {{module.namespace}}

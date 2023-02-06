@@ -2713,6 +2713,7 @@ test("content_unittests") {
     ":run_all_unittests",
     ":test_interfaces",
     ":test_support",
+    "web_ui:test_js_interface_binder2_js_interface_binder_impl",
     "web_ui:test_js_interface_binder_js_interface_binder_impl",
     "//base",
     "//base/allocator:buildflags",
