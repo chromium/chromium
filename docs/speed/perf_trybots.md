@@ -49,15 +49,21 @@ Per [this explanation](https://bugs.chromium.org/p/chromium/issues/detail?id=101
 **Job Configuration**| **Description**
 --- | ---
 Attempt Count | The number of iterations Pinpoint will run on both arms. Pinpoint will spread iterations evenly across all available devices. Pinpoint will also randomize which arm runs first and ensure that the number of iterations going first are the same for both arms.
-Base Git Hash | The Git Hash of the control arm. Default is `HEAD`.
-Exp Git Hash | The Git Hash of the experiment arm. Default is `HEAD`.
-Base Patch | (optional) The patch you want the control arm to run the benchmark on. Patches in dependent repos (e.g. v8, skia) are supported. Pinpoint will also post updates on the Gerrit comment list.
+Base Git Hash | The Git Hash of the control arm. This git hash must have already landed on main or a release branch and cannot be the git hash associated with a gerrit CL in flight. Default is `HEAD`.
+Exp Git Hash | Same as Base Git Hash for the experiment arm. Default is `HEAD`.
+Base Patch | (optional) The patch you want the control arm to run the benchmark on. Patches in dependent repos (e.g. v8, skia) are supported. Pinpoint will also post updates on the Gerrit comment list. Must be entered as a URL.
 Exp Patch | (optional) Same as Base Patch for the experiment arm.
 Extra arguments on base commit | (optional) Extra arguments for the test. E.g. `--extra-chrome-categories=foo,bar`<br>or`--enable-features=foo,bar`(shortening the args by omitting "--extra-browser-args" prefix)<br><br>To see all arguments, run `tools/perf/run_benchmark run --help`
 Extra arguments on experiment commit | (optional) Same as base commit for the experiment arm. Note that some arguments will apply to both arms.
 Monorail Project | The repo the Git hashes are from. Default is `chromium`.
 Bug ID | (optional) A bug ID. Pinpoint will post updates on the bug.
 Batch ID | (optional) A batch ID used to track relevant jobs for the Chrome Health Initiative. We recommend leaving this blank.
+
+### Example: Evaluating a CL's impact on the performance of Speedometer2 on Mac M1
+
+Here is an example of a try job that would evaluate the impact of a [patch CL](https://chromium-review.googlesource.com/c/chromium/src/+/3498915/1) at the tip of main on Speedometer2 on Mac M1. This experiment set up can also be used to see if the patch CL can address a performance regression as long as the regression is visible at HEAD.
+
+![Perf Try Dialog](images/example-try-job.png)
 
 ## Interpreting the results
 
@@ -70,3 +76,8 @@ On the Job result page, click the "Analyze benchmark results" link at the top. S
 On the Job result page, there is a chart containing two dots. The left dot represents HEAD and the right dot represents the patch. Clicking on the right dot reveals some colored bars; each box represents one benchmark run. Click on one of the runs to see trace links.
 
 ![Trace links](images/pinpoint-trace-links.png)
+
+# Contact
+
+* For more questions, email browser-perf-engprod@google.com
+* Bugs on Pinpoint issues should have Component: [Speed>Bisection](https://bugs.chromium.org/p/chromium/issues/list?q=component:Speed%3EBisection).
