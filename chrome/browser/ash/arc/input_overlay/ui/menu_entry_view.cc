@@ -17,6 +17,7 @@
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -69,6 +70,7 @@ MenuEntryView::MenuEntryView(
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetBackgroundBlur(kBackgroundBlur);
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kMenuEntryCornerRadius));
 
   SetSize(allow_reposition_
               ? gfx::Size(kMenuEntrySize, kMenuEntrySize)
