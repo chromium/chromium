@@ -259,13 +259,18 @@ OnDeviceHeadProvider::GetSuggestionsFromModel(
         previous_query = query_str;
       }
 
-      // TODO(crbug.com/1372112): make probability threshold tunable by using a
-      // field trial param.
+      double probability_threshold = base::GetFieldTrialParamByFeatureAsDouble(
+          omnibox::kOnDeviceTailModel, "ProbabilityThreshold", 0.01);
       std::vector<OnDeviceTailModelExecutor::Prediction> predictions =
           tail_model_executor->GenerateSuggestionsForPrefix(
               sanitized_input, previous_query, provider_max_matches,
-              /*max_rnn_steps =*/20,
-              /*probability_threshold =*/0.01);
+              /*max_rnn_steps =*/20, probability_threshold);
+
+      bool should_reset_executor = base::GetFieldTrialParamByFeatureAsBool(
+          omnibox::kOnDeviceTailModel, "ResetAfterExecution", false);
+      if (should_reset_executor) {
+        tail_model_executor->Reset();
+      }
 
       params->suggestion_type = SuggestionType::TAIL;
       for (const auto& prediction : predictions) {
