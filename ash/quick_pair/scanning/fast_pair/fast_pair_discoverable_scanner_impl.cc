@@ -235,16 +235,22 @@ void FastPairDiscoverableScannerImpl::NotifyDeviceFound(
   device::BluetoothDevice* ble_device =
       adapter_->GetDevice(device->ble_address());
 
+  // V1 Devices are expected to hit this case while Fast pairing, as
+  // pairing is handled by the BT Pairing Dialog, which starts a
+  // discovery session that briefly disables and enables Fast Pair
+  // scanning, causing the device to be found again. The second time
+  // the device is found, this statement is true and no second
+  // notification is shown.
   if (ble_device && ble_device->IsPaired()) {
-    QP_LOG(ERROR) << __func__
-                  << ": A discoverable advertisement "
-                     "was notified for a paired BLE device.";
+    QP_LOG(INFO) << __func__
+                 << ": A discoverable advertisement "
+                    "was found and ignored for a paired BLE device.";
     return;
   }
 
   // TODO(b/242100708): We currently have no way to tell if a device in pairing
   // mode is already paired to the Chromebook; the BLE device has no information
-  // on the pairing state of the Classic device.
+  // on the pairing state of the Classic device (except for V1 devices).
 
   QP_LOG(INFO) << __func__ << ": Running found callback";
   notified_devices_[device->ble_address()] = device;
