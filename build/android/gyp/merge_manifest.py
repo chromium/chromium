@@ -7,6 +7,7 @@
 """Merges dependency Android manifests into a root manifest."""
 
 import argparse
+import collections
 import contextlib
 import os
 import sys
@@ -37,15 +38,24 @@ def _ProcessMainManifest(manifest_path, min_sdk_version, target_sdk_version,
 
 
 @contextlib.contextmanager
-def _ProcessOtherManifest(manifest_path, target_sdk_version):
-  """Patches an Android manifest's TargetApi if not set.
-
-  We do this to avoid the manifest merger assuming we have a targetSdkVersion
-  of 1 and inserting unnecessary permission requests into our merged manifests.
-  See b/222331337 for more details.
-  """
+def _ProcessOtherManifest(manifest_path, target_sdk_version,
+                          seen_package_names):
+  """Patches non-main AndroidManifest.xml if necessary."""
+  # 1. Ensure targetSdkVersion is set to the expected value to avoid
+  #    spurious permissions being added (b/222331337).
+  # 2. Ensure all manifests have a unique package name so that the merger
+  #    does not fail when this happens.
   doc, manifest, _ = manifest_utils.ParseManifest(manifest_path)
-  if manifest_utils.SetTargetApiIfUnset(manifest, target_sdk_version):
+
+  changed_api = manifest_utils.SetTargetApiIfUnset(manifest, target_sdk_version)
+
+  package_name = manifest_utils.GetPackage(manifest)
+  package_count = seen_package_names[package_name]
+  seen_package_names[package_name] += 1
+  if package_count > 0:
+    manifest.set('package', f'{package_name}_{package_count}')
+
+  if package_count > 0 or changed_api:
     tmp_prefix = manifest_path.replace(os.path.sep, '-')
     with tempfile.NamedTemporaryFile(prefix=tmp_prefix) as patched_manifest:
       manifest_utils.SaveManifest(doc, patched_manifest.name)
@@ -112,10 +122,11 @@ def main(argv):
                                args.target_sdk_version, args.max_sdk_version,
                                args.manifest_package))
       if extras:
+        seen_package_names = collections.Counter()
         extras_processed = [
             stack.enter_context(
-                _ProcessOtherManifest(e, args.target_sdk_version))
-            for e in extras
+                _ProcessOtherManifest(e, args.target_sdk_version,
+                                      seen_package_names)) for e in extras
         ]
         cmd += ['--libs', ':'.join(extras_processed)]
       cmd += [
