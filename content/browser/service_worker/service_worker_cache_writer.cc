@@ -631,7 +631,7 @@ int ServiceWorkerCacheWriter::DoReadDataForCopyDone(int result) {
 
 int ServiceWorkerCacheWriter::DoWriteDataForCopy(int result) {
   state_ = STATE_WRITE_DATA_FOR_COPY_DONE;
-  DCHECK_GT(result, 0);
+  CHECK_GT(result, 0);
   return WriteData(data_to_copy_, result);
 }
 
@@ -845,7 +845,7 @@ int ServiceWorkerCacheWriter::WriteResponseHead(
 
 int ServiceWorkerCacheWriter::WriteDataToResponseWriter(
     scoped_refptr<net::IOBuffer> data,
-    int length) {
+    size_t length) {
   if (!writer_.is_connected()) {
     state_ = STATE_DONE;
     return net::ERR_FAILED;
@@ -869,7 +869,7 @@ int ServiceWorkerCacheWriter::WriteDataToResponseWriter(
 }
 
 int ServiceWorkerCacheWriter::WriteData(scoped_refptr<net::IOBuffer> data,
-                                        int length) {
+                                        size_t length) {
   if (!write_observer_)
     return WriteDataToResponseWriter(std::move(data), length);
 
@@ -892,7 +892,7 @@ int ServiceWorkerCacheWriter::WriteData(scoped_refptr<net::IOBuffer> data,
 // AsyncDoLoop() may need to be called to continue the state machine.
 void ServiceWorkerCacheWriter::OnWillWriteDataCompleted(
     scoped_refptr<net::IOBuffer> data,
-    int length,
+    size_t length,
     net::Error error) {
   DCHECK_NE(error, net::ERR_IO_PENDING);
   io_pending_ = false;

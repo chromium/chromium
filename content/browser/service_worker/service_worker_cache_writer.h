@@ -284,14 +284,15 @@ class CONTENT_EXPORT ServiceWorkerCacheWriter {
   // to observer then WriteResponseHeadToResponseWriter() or
   // WriteDataToResponseWriter() is called.
   int WriteResponseHead(network::mojom::URLResponseHeadPtr response_head);
-  int WriteData(scoped_refptr<net::IOBuffer> data, int length);
+  int WriteData(scoped_refptr<net::IOBuffer> data, size_t length);
   int WriteResponseHeadToResponseWriter(
       network::mojom::URLResponseHeadPtr response_head);
-  int WriteDataToResponseWriter(scoped_refptr<net::IOBuffer> data, int length);
+  int WriteDataToResponseWriter(scoped_refptr<net::IOBuffer> data,
+                                size_t length);
 
   // Called when |write_observer_| finishes its WillWriteData() operation.
   void OnWillWriteDataCompleted(scoped_refptr<net::IOBuffer> data,
-                                int length,
+                                size_t length,
                                 net::Error error);
 
   void OnRemoteDisconnected();
