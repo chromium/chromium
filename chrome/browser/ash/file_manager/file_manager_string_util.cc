@@ -1201,6 +1201,9 @@ void AddFileManagerFeatureStrings(const std::string& locale,
 
   dict->Set("JELLY", base::FeatureList::IsEnabled(ash::features::kJelly));
 
+  dict->Set("DRIVE_SHORTCUTS",
+            base::FeatureList::IsEnabled(ash::features::kFilesDriveShortcuts));
+
   if (base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy) &&
       base::FeatureList::IsEnabled(
           features::kDataLeakPreventionFilesRestriction)) {

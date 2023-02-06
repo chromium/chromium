@@ -1180,6 +1180,16 @@ util.isInlineSyncStatusEnabled = () => {
 };
 
 /**
+ * Returns true if FilesDriveShortcuts flag is enabled.
+ * @return {boolean}
+ */
+util.isDriveShortcutsEnabled = () => {
+  return loadTimeData.isInitialized() &&
+      loadTimeData.valueExists('DRIVE_SHORTCUTS') &&
+      loadTimeData.getBoolean('DRIVE_SHORTCUTS');
+};
+
+/**
  * Retrieves all entries inside the given |rootEntry|.
  * @param {!DirectoryEntry} rootEntry
  * @param {function(!Array<!Entry>)} entriesCallback Called when some chunk of

@@ -3110,6 +3110,9 @@ extern const char kFilesAppExperimentalDescription[];
 extern const char kFilesConflictDialogName[];
 extern const char kFilesConflictDialogDescription[];
 
+extern const char kFilesDriveShortcutsName[];
+extern const char kFilesDriveShortcutsDescription[];
+
 extern const char kFilesExtractArchiveName[];
 extern const char kFilesExtractArchiveDescription[];
 

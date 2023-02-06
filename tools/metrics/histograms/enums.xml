@@ -61348,6 +61348,7 @@ from previous Chrome versions.
   <int value="-74964571" label="EcheCustomWidget:enabled"/>
   <int value="-73282711" label="EnableAppListSearchAutocomplete:enabled"/>
   <int value="-72904030" label="ChromeRefresh2023:enabled"/>
+  <int value="-72581685" label="FilesDriveShortcuts:disabled"/>
   <int value="-72455054" label="WebVrAutopresent:disabled"/>
   <int value="-70595606" label="ash-enable-unified-desktop"/>
   <int value="-70434056" label="UseGles2ForOopR:enabled"/>
@@ -61920,6 +61921,7 @@ from previous Chrome versions.
   <int value="261245835" label="ContextualSearchLiteralTapSearch:disabled"/>
   <int value="261903398" label="CertificateTransparency2022Policy:disabled"/>
   <int value="262382944" label="GuestViewCrossProcessFrames:disabled"/>
+  <int value="264534322" label="FilesDriveShortcuts:enabled"/>
   <int value="264609083" label="PasswordDomainCapabilitiesFetching:disabled"/>
   <int value="265140282" label="Prerender2:disabled"/>
   <int value="265449858" label="WebBluetoothRequestLargerMtu:enabled"/>

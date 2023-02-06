@@ -893,6 +893,12 @@ BASE_FEATURE(kFilesConflictDialog,
              "FilesConflictDialog",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables shortcut icons to be shown in Google Drive when an item is a
+// shortcut.
+BASE_FEATURE(kFilesDriveShortcuts,
+             "FilesDriveShortcuts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable inline sync status in Files app.
 BASE_FEATURE(kFilesInlineSyncStatus,
              "FilesInlineSyncStatus",

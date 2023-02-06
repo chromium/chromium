@@ -9,8 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-namespace ash {
-namespace features {
+namespace ash::features {
 
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file. If a feature is
@@ -254,6 +253,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFederatedTimezoneCodePhh);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFilesAppExperimental);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFilesConflictDialog);
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFilesDriveShortcuts);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFilesInlineSyncStatus);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFilesSearchV2);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -873,7 +873,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseV2DeviceSync();
 COMPONENT_EXPORT(ASH_CONSTANTS) void SetWebUITabStripEnabled(bool enabled);
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWebUITabStripEnabled();
 
-}  // namespace features
-}  // namespace ash
+}  // namespace ash::features
 
 #endif  // ASH_CONSTANTS_ASH_FEATURES_H_
