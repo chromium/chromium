@@ -94,9 +94,6 @@ v8::EmbedderGraph::Node::Detachedness V8GCController::DetachednessFromWrapper(
 void V8GCController::GcPrologue(v8::Isolate* isolate,
                                 v8::GCType type,
                                 v8::GCCallbackFlags flags) {
-  // Disable code to avoid getting the current time at non-deterministic points.
-  // FIXME update ThreadHeapStatsCollector instead.
-  /*
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kGcPrologue);
   auto* per_isolate_data = V8PerIsolateData::From(isolate);
   per_isolate_data->EnterGC();
@@ -124,15 +121,11 @@ void V8GCController::GcPrologue(v8::Isolate* isolate,
     default:
       break;
   }
-  */
 }
 
 void V8GCController::GcEpilogue(v8::Isolate* isolate,
                                 v8::GCType type,
                                 v8::GCCallbackFlags flags) {
-  // Disable code to avoid getting the current time at non-deterministic points.
-  // FIXME update ThreadHeapStatsCollector instead.
-  /*
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kGcEpilogue);
 
   V8PerIsolateData::From(isolate)->LeaveGC();
@@ -149,7 +142,6 @@ void V8GCController::GcEpilogue(v8::Isolate* isolate,
       TRACE_EVENT_SCOPE_THREAD, "data", [&](perfetto::TracedValue context) {
         inspector_update_counters_event::Data(std::move(context));
       });
-  */
 }
 
 }  // namespace blink
