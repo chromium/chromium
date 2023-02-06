@@ -87,12 +87,6 @@ void LoadablePluginPlaceholder::ReplacePlugin(blink::WebPlugin* new_plugin) {
   plugin()->Destroy();
 }
 
-void LoadablePluginPlaceholder::SetMessage(const std::u16string& message) {
-  message_ = message;
-  if (finished_loading_)
-    UpdateMessage();
-}
-
 void LoadablePluginPlaceholder::UpdateMessage() {
   if (!plugin())
     return;
@@ -163,10 +157,6 @@ const content::WebPluginInfo& LoadablePluginPlaceholder::GetPluginInfo() const {
 
 void LoadablePluginPlaceholder::SetIdentifier(const std::string& identifier) {
   identifier_ = identifier;
-}
-
-const std::string& LoadablePluginPlaceholder::GetIdentifier() const {
-  return identifier_;
 }
 
 bool LoadablePluginPlaceholder::LoadingBlocked() const {

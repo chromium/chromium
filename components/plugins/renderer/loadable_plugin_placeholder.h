@@ -11,10 +11,14 @@
 #include "base/timer/timer.h"
 #include "components/plugins/renderer/plugin_placeholder.h"
 #include "content/public/common/webplugininfo.h"
-#include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 
+namespace content {
+class RenderFrame;
+}
+
 namespace plugins {
+
 // Placeholders can be used if a plugin is missing or not available
 // (blocked or disabled).
 class LoadablePluginPlaceholder : public PluginPlaceholderBase {
@@ -40,11 +44,9 @@ class LoadablePluginPlaceholder : public PluginPlaceholderBase {
 
   void OnSetIsPrerendering(bool is_prerendering);
 
-  void SetMessage(const std::u16string& message);
   void SetPluginInfo(const content::WebPluginInfo& plugin_info);
   const content::WebPluginInfo& GetPluginInfo() const;
   void SetIdentifier(const std::string& identifier);
-  const std::string& GetIdentifier() const;
   bool LoadingAllowed() const { return allow_loading_; }
 
   // Replace this placeholder with a different plugin (which could be
@@ -68,11 +70,6 @@ class LoadablePluginPlaceholder : public PluginPlaceholderBase {
 
   // Plugin creation is embedder-specific.
   virtual blink::WebPlugin* CreatePlugin() = 0;
-
-  // Embedder-specific behavior. This will only be called once per placeholder.
-  virtual void OnBlockedContent(
-      content::RenderFrame::PeripheralContentStatus status,
-      bool is_same_origin) = 0;
 
   content::WebPluginInfo plugin_info_;
 

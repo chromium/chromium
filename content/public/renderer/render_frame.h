@@ -98,29 +98,6 @@ class CONTENT_EXPORT RenderFrame : public IPC::Listener,
                                    public IPC::Sender,
                                    public base::SupportsUserData {
  public:
-  // These numeric values are used in UMA logs; do not change them.
-  enum PeripheralContentStatus {
-    // Content is peripheral, and should be throttled, but is not tiny.
-    CONTENT_STATUS_PERIPHERAL = 0,
-    // Content is essential because it's same-origin with the top-level frame.
-    CONTENT_STATUS_ESSENTIAL_SAME_ORIGIN = 1,
-    // Content is essential even though it's cross-origin, because it's large.
-    CONTENT_STATUS_ESSENTIAL_CROSS_ORIGIN_BIG = 2,
-    // Content is essential because there's large content from the same origin.
-    CONTENT_STATUS_ESSENTIAL_CROSS_ORIGIN_ALLOWLISTED = 3,
-    // Content is tiny in size. These are usually blocked.
-    CONTENT_STATUS_TINY = 4,
-    // Deprecated, as now entirely obscured content is treated as tiny.
-    DEPRECATED_CONTENT_STATUS_UNKNOWN_SIZE = 5,
-    // Must be last.
-    CONTENT_STATUS_NUM_ITEMS
-  };
-
-  enum RecordPeripheralDecision {
-    DONT_RECORD_DECISION = 0,
-    RECORD_DECISION = 1
-  };
-
   // Returns the RenderFrame given a WebLocalFrame.
   static RenderFrame* FromWebFrame(blink::WebLocalFrame* web_frame);
 

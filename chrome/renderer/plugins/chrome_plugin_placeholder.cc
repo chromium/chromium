@@ -313,23 +313,6 @@ blink::WebPlugin* ChromePluginPlaceholder::CreatePlugin() {
   return render_frame()->CreatePlugin(GetPluginInfo(), GetPluginParams());
 }
 
-void ChromePluginPlaceholder::OnBlockedContent(
-    content::RenderFrame::PeripheralContentStatus status,
-    bool is_same_origin) {
-  DCHECK(render_frame());
-
-  std::string message = base::StringPrintf(
-      is_same_origin ? "Same-origin plugin content from %s must have a visible "
-                       "size larger than 6 x 6 pixels, or it will be blocked. "
-                       "Invisible content is always blocked."
-                     : "Cross-origin plugin content from %s must have a "
-                       "visible size larger than 400 x 300 pixels, or it will "
-                       "be blocked. Invisible content is always blocked.",
-      GetPluginParams().url.GetString().Utf8().c_str());
-  render_frame()->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kInfo,
-                                      message);
-}
-
 gin::ObjectTemplateBuilder ChromePluginPlaceholder::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   gin::ObjectTemplateBuilder builder =

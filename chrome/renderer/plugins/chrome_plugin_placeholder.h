@@ -58,8 +58,6 @@ class ChromePluginPlaceholder final
 
   // content::LoadablePluginPlaceholder overrides.
   blink::WebPlugin* CreatePlugin() override;
-  void OnBlockedContent(content::RenderFrame::PeripheralContentStatus status,
-                        bool is_same_origin) override;
 
   // gin::Wrappable (via PluginPlaceholder) method
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
