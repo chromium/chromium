@@ -500,8 +500,11 @@ public final class AwBrowserProcess {
             uploader.initialize();
             AndroidMetricsLogUploader.setUploader(uploader);
         } else {
-            AndroidMetricsLogUploader.setUploader(
-                    (byte[] data) -> { PlatformServiceBridge.getInstance().logMetrics(data); });
+            boolean useDefaultUploadQos = AwFeatureList.isEnabled(
+                    AwFeatures.WEBVIEW_UMA_UPLOAD_QUALITY_OF_SERVICE_SET_TO_DEFAULT);
+            AndroidMetricsLogUploader.setUploader((byte[] data) -> {
+                PlatformServiceBridge.getInstance().logMetrics(data, useDefaultUploadQos);
+            });
         }
     }
 
