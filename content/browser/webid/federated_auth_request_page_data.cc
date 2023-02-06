@@ -11,13 +11,14 @@ FederatedAuthRequestPageData::FederatedAuthRequestPageData(Page& page)
 
 PAGE_USER_DATA_KEY_IMPL(FederatedAuthRequestPageData);
 
-bool FederatedAuthRequestPageData::HasPendingWebIdentityRequest() {
-  return has_pending_web_identity_request_;
+FederatedAuthRequestImpl*
+FederatedAuthRequestPageData::PendingWebIdentityRequest() {
+  return pending_web_identity_request_;
 }
 
-void FederatedAuthRequestPageData::SetHasPendingWebIdentityRequest(
-    bool has_pending_request) {
-  has_pending_web_identity_request_ = has_pending_request;
+void FederatedAuthRequestPageData::SetPendingWebIdentityRequest(
+    FederatedAuthRequestImpl* request) {
+  pending_web_identity_request_ = request;
 }
 
 }  // namespace content

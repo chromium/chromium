@@ -361,7 +361,7 @@ FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
     // PendingWebIdentityRequest on the Page so that other frames in the
     // same Page may still trigger new requests after the current
     // RenderFrameHost is destroyed.
-    GetPageData(&render_frame_host())->SetHasPendingWebIdentityRequest(false);
+    GetPageData(&render_frame_host())->SetPendingWebIdentityRequest(nullptr);
   }
 }
 
@@ -448,7 +448,7 @@ void FederatedAuthRequestImpl::RequestToken(
   }
 
   auth_request_token_callback_ = std::move(callback);
-  GetPageData(&render_frame_host())->SetHasPendingWebIdentityRequest(true);
+  GetPageData(&render_frame_host())->SetPendingWebIdentityRequest(this);
   network_manager_ = CreateNetworkManager();
   request_dialog_controller_ = CreateDialogController();
   start_time_ = base::TimeTicks::Now();
@@ -607,7 +607,7 @@ void FederatedAuthRequestImpl::LogoutRps(
   DCHECK(logout_requests_.empty());
 
   logout_callback_ = std::move(callback);
-  GetPageData(&render_frame_host())->SetHasPendingWebIdentityRequest(true);
+  GetPageData(&render_frame_host())->SetPendingWebIdentityRequest(this);
 
   if (logout_requests.empty()) {
     CompleteLogoutRequest(LogoutRpsStatus::kError);
@@ -682,7 +682,7 @@ void FederatedAuthRequestImpl::OnIdpSigninStatusChanged(
 
 bool FederatedAuthRequestImpl::HasPendingRequest() const {
   bool has_pending_request =
-      GetPageData(&render_frame_host())->HasPendingWebIdentityRequest();
+      GetPageData(&render_frame_host())->PendingWebIdentityRequest() != nullptr;
   DCHECK(has_pending_request ||
          (!auth_request_token_callback_ && !logout_callback_));
   return has_pending_request;
@@ -1407,7 +1407,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
   CleanUp();
 
   if (!should_delay_callback || ShouldCompleteRequestImmediately()) {
-    GetPageData(&render_frame_host())->SetHasPendingWebIdentityRequest(false);
+    GetPageData(&render_frame_host())->SetPendingWebIdentityRequest(nullptr);
     errors_logged_to_console_ = false;
 
     RequestTokenStatus status =
@@ -1514,7 +1514,7 @@ void FederatedAuthRequestImpl::CompleteLogoutRequest(
   if (logout_callback_) {
     std::move(logout_callback_).Run(status);
     logout_callback_.Reset();
-    GetPageData(&render_frame_host())->SetHasPendingWebIdentityRequest(false);
+    GetPageData(&render_frame_host())->SetPendingWebIdentityRequest(nullptr);
   }
 }
 

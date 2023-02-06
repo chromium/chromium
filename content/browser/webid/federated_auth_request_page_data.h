@@ -8,17 +8,19 @@
 #include "content/public/browser/page_user_data.h"
 
 namespace content {
+class FederatedAuthRequestImpl;
 
 class FederatedAuthRequestPageData
     : public PageUserData<FederatedAuthRequestPageData> {
  public:
   ~FederatedAuthRequestPageData() override = default;
 
-  // Whether there is some Web Identity API request currently pending on |this|.
+  // The currently pending web identity request, if any.
   // Used to ensure that we do not allow two separate calls on the same page.
-  bool HasPendingWebIdentityRequest();
-  // Sets whether we have some Web Identity API request.
-  void SetHasPendingWebIdentityRequest(bool has_pending_request);
+  FederatedAuthRequestImpl* PendingWebIdentityRequest();
+  // Sets the pending web identity request, or nullptr when a pending request
+  // has finished.
+  void SetPendingWebIdentityRequest(FederatedAuthRequestImpl* request);
 
  private:
   explicit FederatedAuthRequestPageData(Page& page);
@@ -26,9 +28,10 @@ class FederatedAuthRequestPageData
   friend class PageUserData<FederatedAuthRequestPageData>;
   PAGE_USER_DATA_KEY_DECL();
 
-  // Whether there is some Web Identity API request currently pending. Used to
-  // ensure that we do not allow two separate calls on the same page.
-  bool has_pending_web_identity_request_ = false;
+  // Non-null when there is some Web Identity API request currently pending.
+  // Used to ensure that we do not allow two separate calls on the same page
+  // and to access the currently pending request.
+  raw_ptr<FederatedAuthRequestImpl> pending_web_identity_request_ = nullptr;
 };
 
 }  // namespace content
