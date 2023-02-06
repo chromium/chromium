@@ -663,9 +663,34 @@ void BrowserAccessibilityManagerWin::FireUiaStructureChangedEvent(
   }
 }
 
+// static
+bool BrowserAccessibilityManagerWin::
+    IsUiaActiveTextPositionChangedEventSupported() {
+  return GetUiaActiveTextPositionChangedEventFunction();
+}
+
+// static
+UiaRaiseActiveTextPositionChangedEventFunction
+BrowserAccessibilityManagerWin::GetUiaActiveTextPositionChangedEventFunction() {
+  // This API is only supported from Win8.1 onwards. On older platforms (such as
+  // Windows 7), we will return nullptr for the querying result for the address
+  // of the method "UiaRaiseActiveTextPositionChangedEvent" in
+  // uiautomationcore.dll.
+  return reinterpret_cast<UiaRaiseActiveTextPositionChangedEventFunction>(
+      ::GetProcAddress(::GetModuleHandle(L"uiautomationcore.dll"),
+                       "UiaRaiseActiveTextPositionChangedEvent"));
+}
+
 void BrowserAccessibilityManagerWin::FireUiaActiveTextPositionChangedEvent(
     BrowserAccessibility* node) {
   if (!ShouldFireEventForNode(node))
+    return;
+
+  UiaRaiseActiveTextPositionChangedEventFunction
+      active_text_position_changed_func =
+          GetUiaActiveTextPositionChangedEventFunction();
+
+  if (!active_text_position_changed_func)
     return;
 
   // Create the text range contained by the target node.
@@ -675,7 +700,7 @@ void BrowserAccessibilityManagerWin::FireUiaActiveTextPositionChangedEvent(
           target_node);
 
   // Fire the UiaRaiseActiveTextPositionChangedEvent.
-  ::UiaRaiseActiveTextPositionChangedEvent(target_node, text_range.Get());
+  active_text_position_changed_func(target_node, text_range.Get());
 }
 
 bool BrowserAccessibilityManagerWin::CanFireEvents() const {
