@@ -64,11 +64,13 @@ suite('SafetyCheckUnusedSitePermissionsUiTests', function() {
           ContentSettingsTypes.GEOLOCATION,
           ContentSettingsTypes.CAMERA,
         ],
+        expiration: '13317004800000000',  // Represents 2023-01-01T00:00:00.
       },
       {
         origin: origin2,
         permissions:
             [ContentSettingsTypes.POPUPS, ContentSettingsTypes.SENSORS],
+        expiration: '13348540800000000',  // Represents 2024-01-01T00:00:00.
       },
     ];
     createPage(mockData);
@@ -234,6 +236,7 @@ suite('SafetyCheckPagePermissionModulesTest', function() {
       origin: 'www.example1.com',
       permissions:
           [ContentSettingsTypes.GEOLOCATION, ContentSettingsTypes.CAMERA],
+      expiration: '13317004800000000',  // Represents 2023-01-01T00:00:00.
     },
   ];
 

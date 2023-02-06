@@ -248,6 +248,7 @@ suite('PrivacySandboxSettings4Disabled', function() {
 const unusedSitePermissionMockData = [{
   origin: 'www.example.com',
   permissions: [ContentSettingsTypes.CAMERA],
+  expiration: '13317004800000000',  // Represents 2023-01-01T00:00:00.
 }];
 
 suite('UnusedSitePermissionsReview', function() {

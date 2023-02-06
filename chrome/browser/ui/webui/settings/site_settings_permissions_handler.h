@@ -50,6 +50,12 @@ class SiteSettingsPermissionsHandler : public settings::SettingsPageUIHandler {
   void HandleAcknowledgeRevokedUnusedSitePermissionsList(
       const base::Value::List& args);
 
+  // Reverse the changes made by
+  // |HandleAcknowledgeRevokedUnusedSitePermissionsList|. List of revoked
+  // permissions is repopulated. Permission settings are not changed.
+  void HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(
+      const base::Value::List& args);
+
   // Returns the list of revoked permissions that belongs to origins which
   // haven't been visited recently.
   base::Value::List PopulateUnusedSitePermissionsData();

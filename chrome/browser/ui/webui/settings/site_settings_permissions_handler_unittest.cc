@@ -171,4 +171,11 @@ TEST_F(SiteSettingsPermissionsHandlerTest,
   const auto& revoked_permissions_after =
       handler()->PopulateUnusedSitePermissionsData();
   EXPECT_EQ(revoked_permissions_after.size(), 0U);
+
+  // Undo reverts the list to its initial state.
+  base::Value::List undo_args;
+  undo_args.Append(revoked_permissions_before.Clone());
+  handler()->HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(undo_args);
+  EXPECT_EQ(revoked_permissions_before,
+            handler()->PopulateUnusedSitePermissionsData());
 }
