@@ -46,10 +46,6 @@ class FormGroup {
   // conversions.
   virtual int GetRawInfoAsInt(ServerFieldType type) const;
 
-  // Finalization routine that should be called after importing a FormGroup.
-  // Returns true if the finalization was successful.
-  bool FinalizeAfterImport();
-
   // Sets this FormGroup object's data for |type| to |value|, without
   // canonicalizing the |value|.  For data that has not already been
   // canonicalized, use SetInfo() instead.
