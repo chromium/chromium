@@ -22,7 +22,7 @@ if (current_cpu == "mipsel" || current_cpu == "mips64el") {
   import("//build/config/mips.gni")
 }
 
-skia_support_gpu = !is_ios
+skia_support_gpu = use_blink
 skia_support_pdf = !is_ios && enable_printing
 
 buildflag_header("buildflags") {
@@ -48,7 +48,7 @@ config("skia_config") {
 
   include_dirs = [ "//third_party/skia" ]
 
-  if (!is_ios) {
+  if (use_blink) {
     include_dirs += [ "//third_party/wuffs/src/release/c" ]
   }
   if (enable_vulkan) {
@@ -61,7 +61,7 @@ config("skia_config") {
     defines += [ "SK_GL" ]
   }
 
-  if (!is_ios) {
+  if (use_blink) {
     defines += [
       "SK_CODEC_DECODES_JPEG",
       "SK_ENCODE_JPEG",
@@ -107,6 +107,12 @@ config("skia_config") {
       "SK_METAL",
     ]
   }
+  if (is_ios) {
+    defines += [
+      "SK_BUILD_FOR_IOS",
+      "SK_METAL",
+    ]
+  }
 
   if (is_win) {
     defines += [ "GR_GL_FUNCTION_TYPE=__stdcall" ]
@@ -126,7 +132,7 @@ config("skia_library_config") {
   cflags_cc = [ "-Wno-c++17-extensions" ]
   cflags_objcc = [ "-Wno-c++17-extensions" ]
 
-  if (!is_ios && !use_system_freetype) {
+  if (use_blink && !use_system_freetype) {
     defines += [ "SK_FREETYPE_MINIMUM_RUNTIME_VERSION=(((FREETYPE_MAJOR) * 0x01000000) | ((FREETYPE_MINOR) * 0x00010000) | ((FREETYPE_PATCH) * 0x00000100))" ]
   }
 
@@ -273,7 +279,7 @@ component("skia") {
     ]
   }
 
-  if (!is_ios) {
+  if (use_blink) {
     public += [ "ext/platform_canvas.h" ]
     sources += [ "ext/platform_canvas.cc" ]
   }
@@ -326,7 +332,7 @@ component("skia") {
     "//third_party/skia/src/sfnt/SkOTTable_name.cpp",
     "//third_party/skia/src/sfnt/SkOTUtils.cpp",
   ]
-  if (!is_ios) {
+  if (use_blink) {
     sources -= [ "//third_party/skia/src/ports/SkImageGenerator_none.cpp" ]
     sources += skia_codec_core
     sources += skia_codec_decode_bmp
@@ -367,9 +373,9 @@ component("skia") {
 
   # Select Skia ports.
 
-  # FreeType is needed everywhere (except on iOS), on Linux and Android as main
+  # FreeType is needed everywhere where blink is used, on Linux and Android as main
   # font backend, on Windows and Mac as fallback backend for Variations.
-  if (!is_ios) {
+  if (use_blink) {
     sources += [
       "//third_party/skia/src/ports/SkFontHost_FreeType.cpp",
       "//third_party/skia/src/ports/SkFontHost_FreeType_common.cpp",
@@ -420,7 +426,7 @@ component("skia") {
     ]
   }
 
-  if (is_win || is_mac) {
+  if (is_win || (is_apple && use_blink)) {
     sources += [
       # Add the FreeType custom font manager as a fallback backend for variable fonts.
       "//third_party/skia/src/ports/SkFontMgr_custom.cpp",
@@ -508,25 +514,30 @@ component("skia") {
     configs += [ "//build/config/compiler:optimize_max" ]
   }
 
-  if (is_mac) {
+  if (use_blink && is_apple) {
     deps += [ ":skia_metal" ]
     defines += [ "SK_METAL" ]
     sources += skia_gpu_metal_cpp
     frameworks = [
-      "AppKit.framework",
       "CoreFoundation.framework",
       "CoreGraphics.framework",
       "CoreText.framework",
       "Metal.framework",
       "Foundation.framework",
     ]
+    if (is_mac) {
+      frameworks += [ "AppKit.framework" ]
+    }
+    if (is_ios) {
+      frameworks += [ "ImageIO.framework" ]
+    }
+  } else if (is_ios) {
+    frameworks = [ "ImageIO.framework" ]
   }
+
   if (skia_use_dawn) {
     public += skia_gpu_dawn_public
     sources += skia_gpu_dawn_private
-  }
-  if (is_ios) {
-    frameworks = [ "ImageIO.framework" ]
   }
 
   if (is_fuchsia) {
@@ -755,7 +766,7 @@ skia_source_set("skia_opts") {
 }
 
 # Split out metal sources, because they require ARC.
-if (is_mac) {
+if (use_blink && is_apple) {
   skia_source_set("skia_metal") {
     defines = [ "SK_METAL" ]
     public = skia_gpu_metal_public
