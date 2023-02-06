@@ -124,24 +124,22 @@ int KioskBaseTest::WaitForWidthChange(content::DOMMessageQueue* message_queue,
   std::string message;
   while (message_queue->WaitForMessage(&message)) {
     absl::optional<base::Value> message_value = base::JSONReader::Read(message);
-
-    if (!message_value.has_value() || !message_value.value().is_dict())
+    if (!message_value || !message_value->is_dict()) {
       continue;
+    }
 
-    const std::string* name = message_value.value().FindStringKey("name");
-    if (!name || *name != kSizeChangedMessage)
+    const base::Value::Dict& message_dict = message_value->GetDict();
+    const std::string* name = message_dict.FindString("name");
+    if (!name || *name != kSizeChangedMessage) {
       continue;
+    }
 
-    const base::Value* data = message_value->FindKey("data");
-
-    if (!data || !data->is_int())
+    const absl::optional<int> data = message_dict.FindInt("data");
+    if (!data || data == current_width) {
       continue;
+    }
 
-    const int new_width = data->GetInt();
-    if (new_width == current_width)
-      continue;
-
-    return new_width;
+    return data.value();
   }
 
   ADD_FAILURE() << "Message wait failed " << kSizeChangedMessage;
