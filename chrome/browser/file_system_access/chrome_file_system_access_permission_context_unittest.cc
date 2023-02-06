@@ -426,25 +426,76 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 #if BUILDFLAG(IS_WIN)
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_UNCPath) {
+  if (!base::FeatureList::IsEnabled(
+          features::kFileSystemAccessLocalUNCPathBlock)) {
+    return;
+  }
+
+  EXPECT_EQ(
+      SensitiveDirectoryResult::kAllowed,
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(), PathType::kLocal,
+          base::FilePath(FILE_PATH_LITERAL("\\\\server\\share\\foo\\bar")),
+          HandleType::kDirectory, UserAction::kOpen));
+
+  EXPECT_EQ(SensitiveDirectoryResult::kAllowed,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal,
+                base::FilePath(FILE_PATH_LITERAL("c:\\\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen));
+
   EXPECT_EQ(
       SensitiveDirectoryResult::kAbort,
       ConfirmSensitiveEntryAccessSync(
           permission_context(), PathType::kLocal,
-          base::FilePath(FILE_PATH_LITERAL("\\\\127.0.0.1\\c:\\Program Files")),
+          base::FilePath(FILE_PATH_LITERAL("\\\\localhost\\c$\\foo\\bar")),
           HandleType::kDirectory, UserAction::kOpen));
 
   EXPECT_EQ(
       SensitiveDirectoryResult::kAbort,
       ConfirmSensitiveEntryAccessSync(
           permission_context(), PathType::kLocal,
-          base::FilePath(FILE_PATH_LITERAL("\\\\127.0.0.1\\c:\\foo\\bar")),
+          base::FilePath(FILE_PATH_LITERAL("\\\\LOCALHOST\\c$\\foo\\bar")),
           HandleType::kDirectory, UserAction::kOpen));
 
   EXPECT_EQ(
       SensitiveDirectoryResult::kAbort,
       ConfirmSensitiveEntryAccessSync(
           permission_context(), PathType::kLocal,
-          base::FilePath(FILE_PATH_LITERAL("\\\\localhost\\c:\\Program Files")),
+          base::FilePath(FILE_PATH_LITERAL("\\\\127.0.0.1\\c$\\foo\\bar")),
+          HandleType::kDirectory, UserAction::kOpen));
+
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal,
+                base::FilePath(FILE_PATH_LITERAL("\\\\.\\c:\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen));
+
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal,
+                base::FilePath(FILE_PATH_LITERAL("\\\\?\\c:\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen));
+
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal,
+                base::FilePath(FILE_PATH_LITERAL(
+                    "\\\\;LanmanRedirector\\localhost\\c$\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen));
+
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal,
+                base::FilePath(
+                    FILE_PATH_LITERAL("\\\\.\\UNC\\LOCALHOST\\c:\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen));
+
+  EXPECT_EQ(
+      SensitiveDirectoryResult::kAbort,
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(), PathType::kLocal,
+          base::FilePath(FILE_PATH_LITERAL("\\\\myhostname\\c$\\foo\\bar")),
           HandleType::kDirectory, UserAction::kOpen));
 }
 #endif
