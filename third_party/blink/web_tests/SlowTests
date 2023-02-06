@@ -1000,7 +1000,6 @@ crbug.com/1043792 [ Release Win ] http/tests/devtools/template-content-inspect-c
 crbug.com/1043792 [ Mac10.15 Release ] http/tests/devtools/template-content-inspect-crash.js [ Slow ]
 crbug.com/1043792 [ Mac11 Release ] http/tests/devtools/template-content-inspect-crash.js [ Slow ]
 crbug.com/1043792 [ Mac12 Release ] http/tests/devtools/template-content-inspect-crash.js [ Slow ]
-crbug.com/1043792 [ Mac12-arm64 Release ] http/tests/devtools/template-content-inspect-crash.js [ Slow ]
 crbug.com/1043893 [ Release ] webexposed/global-interface-listing-dedicated-worker.html [ Slow ]
 crbug.com/1043920 [ Release Win ] http/tests/devtools/stylesheet-source-mapping.js [ Slow ]
 crbug.com/1043920 [ Mac10.15 Release ] http/tests/devtools/stylesheet-source-mapping.js [ Slow ]
