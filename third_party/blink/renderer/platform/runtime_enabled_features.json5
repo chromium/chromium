@@ -2358,7 +2358,7 @@
       // reduced.
       name: "ReduceUserAgentPlatformOsCpu",
       depends_on: ["ReduceUserAgentMinorVersion"],
-      status: "experimental",
+      status: {"Android": "", "default": "stable"},
       base_feature: "ReduceUserAgentPlatformOsCpu",
     },
     {
