@@ -265,7 +265,7 @@ component("wtf") {
     libs = [ "log" ]
   }
 
-  if (is_mac) {
+  if (is_apple) {
     frameworks = [
       "CoreFoundation.framework",
       "Foundation.framework",

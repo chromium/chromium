@@ -233,7 +233,7 @@ class WTF_EXPORT AtomicString {
   }
   static scoped_refptr<StringImpl> AddSlowCase(scoped_refptr<StringImpl>&&);
   static scoped_refptr<StringImpl> AddSlowCase(StringImpl*);
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   static scoped_refptr<StringImpl> Add(CFStringRef);
 #endif
 };

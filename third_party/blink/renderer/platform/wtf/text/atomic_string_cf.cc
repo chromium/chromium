@@ -28,7 +28,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_table.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 
 #include <CoreFoundation/CoreFoundation.h>
 
@@ -59,4 +59,4 @@ scoped_refptr<StringImpl> AtomicString::Add(CFStringRef string) {
 
 }  // namespace WTF
 
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
