@@ -63,11 +63,10 @@ void TestInterestGroupManagerImpl::EnqueueReports(
 void TestInterestGroupManagerImpl::OnInterestGroupAccessed(
     const base::Time& access_time,
     AccessType type,
-    const std::string& owner_origin,
+    const url::Origin& owner_origin,
     const std::string& name) {
   if (type == AccessType::kBid) {
-    interest_groups_that_bid_.emplace_back(
-        url::Origin::Create(GURL(owner_origin)), name);
+    interest_groups_that_bid_.emplace_back(owner_origin, name);
   }
 }
 

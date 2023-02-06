@@ -192,8 +192,8 @@ void InterestGroupManagerImpl::CheckPermissionsAndLeaveInterestGroup(
 
 void InterestGroupManagerImpl::JoinInterestGroup(blink::InterestGroup group,
                                                  const GURL& joining_url) {
-  NotifyInterestGroupAccessed(InterestGroupObserverInterface::kJoin,
-                              group.owner.Serialize(), group.name);
+  NotifyInterestGroupAccessed(InterestGroupObserver::kJoin, group.owner,
+                              group.name);
   blink::InterestGroupKey group_key(group.owner, group.name);
   impl_.AsyncCall(&InterestGroupStorage::JoinInterestGroup)
       .WithArgs(std::move(group), std::move(joining_url));
@@ -209,8 +209,8 @@ void InterestGroupManagerImpl::JoinInterestGroup(blink::InterestGroup group,
 void InterestGroupManagerImpl::LeaveInterestGroup(
     const blink::InterestGroupKey& group_key,
     const ::url::Origin& main_frame) {
-  NotifyInterestGroupAccessed(InterestGroupObserverInterface::kLeave,
-                              group_key.owner.Serialize(), group_key.name);
+  NotifyInterestGroupAccessed(InterestGroupObserver::kLeave, group_key.owner,
+                              group_key.name);
   impl_.AsyncCall(&InterestGroupStorage::LeaveInterestGroup)
       .WithArgs(group_key, main_frame);
 }
@@ -235,8 +235,8 @@ void InterestGroupManagerImpl::RecordInterestGroupBids(
     return;
   }
   for (const auto& group_key : group_keys) {
-    NotifyInterestGroupAccessed(InterestGroupObserverInterface::kBid,
-                                group_key.owner.Serialize(), group_key.name);
+    NotifyInterestGroupAccessed(InterestGroupObserver::kBid, group_key.owner,
+                                group_key.name);
   }
   impl_.AsyncCall(&InterestGroupStorage::RecordInterestGroupBids)
       .WithArgs(group_keys);
@@ -245,8 +245,8 @@ void InterestGroupManagerImpl::RecordInterestGroupBids(
 void InterestGroupManagerImpl::RecordInterestGroupWin(
     const blink::InterestGroupKey& group_key,
     const std::string& ad_json) {
-  NotifyInterestGroupAccessed(InterestGroupObserverInterface::kWin,
-                              group_key.owner.Serialize(), group_key.name);
+  NotifyInterestGroupAccessed(InterestGroupObserver::kWin, group_key.owner,
+                              group_key.name);
   impl_.AsyncCall(&InterestGroupStorage::RecordInterestGroupWin)
       .WithArgs(group_key, std::move(ad_json));
 }
@@ -447,8 +447,8 @@ void InterestGroupManagerImpl::UpdateInterestGroup(
     const blink::InterestGroupKey& group_key,
     InterestGroupUpdate update,
     base::OnceCallback<void(bool)> callback) {
-  NotifyInterestGroupAccessed(InterestGroupObserverInterface::kUpdate,
-                              group_key.owner.Serialize(), group_key.name);
+  NotifyInterestGroupAccessed(InterestGroupObserver::kUpdate, group_key.owner,
+                              group_key.name);
   impl_.AsyncCall(&InterestGroupStorage::UpdateInterestGroup)
       .WithArgs(group_key, std::move(update))
       .Then(std::move(callback));
@@ -465,22 +465,22 @@ void InterestGroupManagerImpl::OnGetInterestGroupsComplete(
     base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback,
     std::vector<StorageInterestGroup> groups) {
   for (const auto& group : groups) {
-    NotifyInterestGroupAccessed(InterestGroupObserverInterface::kLoaded,
-                                group.interest_group.owner.Serialize(),
+    NotifyInterestGroupAccessed(InterestGroupObserver::kLoaded,
+                                group.interest_group.owner,
                                 group.interest_group.name);
   }
   std::move(callback).Run(std::move(groups));
 }
 
 void InterestGroupManagerImpl::NotifyInterestGroupAccessed(
-    InterestGroupObserverInterface::AccessType type,
-    const std::string& owner_origin,
+    InterestGroupObserver::AccessType type,
+    const url::Origin& owner_origin,
     const std::string& name) {
   // Don't bother getting the time if there are no observers.
   if (observers_.empty())
     return;
   base::Time now = base::Time::Now();
-  for (InterestGroupObserverInterface& observer : observers_) {
+  for (InterestGroupObserver& observer : observers_) {
     observer.OnInterestGroupAccessed(now, type, owner_origin, name);
   }
 }

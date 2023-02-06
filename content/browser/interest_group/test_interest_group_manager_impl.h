@@ -29,7 +29,7 @@ struct StorageInterestGroup;
 // InterestGroupManagerImpl.
 class TestInterestGroupManagerImpl
     : public InterestGroupManagerImpl,
-      public InterestGroupManagerImpl::InterestGroupObserverInterface {
+      public InterestGroupManagerImpl::InterestGroupObserver {
  public:
   // Information about a report queued by an EnqueueReports() call. Doesn't
   // include values that are passed to the TestInterestGroupManagerImpl()
@@ -63,13 +63,13 @@ class TestInterestGroupManagerImpl
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       override;
 
-  // InterestGroupManagerImpl::InterestGroupObserverInterface implementation:
+  // InterestGroupManagerImpl::InterestGroupObserver implementation:
   //
   // This is used instead of a virtual method for tracking bids, since it has
   // all the information that's needed.
   void OnInterestGroupAccessed(const base::Time& access_time,
                                AccessType type,
-                               const std::string& owner_origin,
+                               const url::Origin& owner_origin,
                                const std::string& name) override;
 
   // Clears all logged data. Does not affect state of the interest group

@@ -781,12 +781,12 @@ void StorageHandler::GetTrustTokens(
 
 void StorageHandler::OnInterestGroupAccessed(
     const base::Time& access_time,
-    InterestGroupManagerImpl::InterestGroupObserverInterface::AccessType type,
-    const std::string& owner_origin,
+    InterestGroupManagerImpl::InterestGroupObserver::AccessType type,
+    const url::Origin& owner_origin,
     const std::string& name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   using AccessType =
-      InterestGroupManagerImpl::InterestGroupObserverInterface::AccessType;
+      InterestGroupManagerImpl::InterestGroupObserver::AccessType;
   std::string type_enum;
   switch (type) {
     case AccessType::kJoin:
@@ -809,7 +809,7 @@ void StorageHandler::OnInterestGroupAccessed(
       break;
   };
   frontend_->InterestGroupAccessed(access_time.ToDoubleT(), type_enum,
-                                   owner_origin, name);
+                                   owner_origin.Serialize(), name);
 }
 
 namespace {

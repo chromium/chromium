@@ -83,13 +83,12 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   InterestGroupManagerImpl& operator=(const InterestGroupManagerImpl& other) =
       delete;
 
-  class CONTENT_EXPORT InterestGroupObserverInterface
-      : public base::CheckedObserver {
+  class CONTENT_EXPORT InterestGroupObserver : public base::CheckedObserver {
    public:
     enum AccessType { kJoin, kLeave, kUpdate, kLoaded, kBid, kWin };
     virtual void OnInterestGroupAccessed(const base::Time& access_time,
                                          AccessType type,
-                                         const std::string& owner_origin,
+                                         const url::Origin& owner_origin,
                                          const std::string& name) = 0;
   };
 
@@ -256,11 +255,11 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     return *auction_process_manager_;
   }
 
-  void AddInterestGroupObserver(InterestGroupObserverInterface* observer) {
+  void AddInterestGroupObserver(InterestGroupObserver* observer) {
     observers_.AddObserver(observer);
   }
 
-  void RemoveInterestGroupObserver(InterestGroupObserverInterface* observer) {
+  void RemoveInterestGroupObserver(InterestGroupObserver* observer) {
     observers_.RemoveObserver(observer);
   }
 
@@ -393,10 +392,9 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // To be called only by `update_manager_`.
   void ReportUpdateFailed(const blink::InterestGroupKey& group_key,
                           bool parse_failure);
-  void NotifyInterestGroupAccessed(
-      InterestGroupObserverInterface::AccessType type,
-      const std::string& owner_origin,
-      const std::string& name);
+  void NotifyInterestGroupAccessed(InterestGroupObserver::AccessType type,
+                                   const url::Origin& owner_origin,
+                                   const std::string& name);
 
   void OnGetInterestGroupsComplete(
       base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback,
@@ -427,7 +425,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Stored as pointer so that tests can override it.
   std::unique_ptr<AuctionProcessManager> auction_process_manager_;
 
-  base::ObserverList<InterestGroupObserverInterface> observers_;
+  base::ObserverList<InterestGroupObserver> observers_;
 
   // Manages the logic required to support UpdateInterestGroupsOfOwner().
   //
