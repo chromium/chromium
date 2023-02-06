@@ -258,7 +258,7 @@ std::string Serialize(
   }
   base::Value::Dict dict;
   for (const auto& key_value_pair : *size_groups) {
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     for (const auto& s : key_value_pair.second) {
       list.Append(s);
     }
