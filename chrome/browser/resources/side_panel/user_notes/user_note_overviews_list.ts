@@ -30,6 +30,13 @@ export class UserNoteOverviewsListElement extends PolymerElement {
   private userNotesApi_: UserNotesApiProxy =
       UserNotesApiProxyImpl.getInstance();
 
+  private sortByModificationTime_(
+      overview1: NoteOverview, overview2: NoteOverview): number {
+    return Number(
+        overview2.lastModificationTime.internalValue -
+        overview1.lastModificationTime.internalValue);
+  }
+
   private onRowClicked_(
       event: CustomEvent<{overview: NoteOverview, event: MouseEvent}>) {
     event.preventDefault();

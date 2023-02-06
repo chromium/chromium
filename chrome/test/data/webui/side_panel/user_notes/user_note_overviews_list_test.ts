@@ -24,7 +24,7 @@ suite('UserNoteOverviewsListTest', () => {
       text: 'sample note text',
       numNotes: 5,
       isCurrentTab: true,
-      lastModificationTime: {internalValue: 5n},
+      lastModificationTime: {internalValue: 50n},
     },
     {
       url: {url: 'www.foo.com'},

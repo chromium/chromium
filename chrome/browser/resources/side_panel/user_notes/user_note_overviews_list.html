@@ -1,4 +1,5 @@
-<template id="noteOverviewsList" is="dom-repeat" items="[[overviews]]">
+<template id="noteOverviewsList" is="dom-repeat" items="[[overviews]]"
+    sort="sortByModificationTime_">
   <user-note-overview-row overview="[[item]]" description="[[item.text]]"
       on-row-clicked="onRowClicked_" on-context-menu="onShowContextMenuClicked_"
       on-trailing-icon-clicked="onShowContextMenuClicked_">
