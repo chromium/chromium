@@ -16,7 +16,7 @@ SwitchAccess*
 VpnExtensionObserverBrowserTest*
 WebAppsCrosapiBrowserTest*
 WebKioskAshRequiresLacrosTest*
-# TODO(crbug.com/1245416) Enable more accessibility tests.
+# TODO(b/262789941) Enable more accessibility tests.
 -ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery
 -ChromeVoxBackgroundTest.TextSelectionAndLiveRegion
 -ChromeVoxBackgroundTest.TouchEditingState
@@ -55,7 +55,14 @@ WebKioskAshRequiresLacrosTest*
 -DesksTemplatesClientLacrosTest.SystemUILaunchBrowser
 # TODO(crbug.com/1356103) Disabled when switch to LacrosOnly.
 -SwitchAccessPointScanManagerTest.PointScanRightClick
-# TODO(crbug.com/1383146) Flaky
+# TODO(b/262594550) Flaky
 -ChromeVoxBackgroundTest.CrossWindowNextPreviousFocus
 -ChromeVoxBackgroundTest.MultipleListBoxes
 -ChromeVoxBackgroundTest.SelectOptionSelected
+# TODO(b/268051293) Flaky
+-SelectToSpeakKeystrokeSelectionTest.NonReorderedSvgPreservesSelectionStartEnd
+-SelectToSpeakKeystrokeSelectionTest.OmniboxPartiallySelectedInMid
+-SelectToSpeakKeystrokeSelectionTest.SpeakTextSurroundedByBrs
+-SelectToSpeakKeystrokeSelectionTest.SpeaksTextAtKeystrokeSingleWord
+# TODO(b/268056158) Flaky
+-SelectToSpeakTestWithVoiceSwitching.BreaksAtLanguageBounds
