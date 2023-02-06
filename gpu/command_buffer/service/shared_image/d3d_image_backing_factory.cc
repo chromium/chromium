@@ -53,36 +53,39 @@ bool ClearBackBuffer(Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain,
   return true;
 }
 
-// Only RGBA formats supported by CreateSharedImage.
-absl::optional<DXGI_FORMAT> GetSupportedRGBAFormat(
-    viz::SharedImageFormat format) {
-  if (!format.is_single_plane()) {
-    return {};
+// Formats supported by CreateSharedImage() with no GpuMemoryBufferHandle.
+DXGI_FORMAT GetDXGIFormatForCreateTexture(viz::SharedImageFormat format) {
+  if (format.is_single_plane()) {
+    switch (format.resource_format()) {
+      case viz::ResourceFormat::RGBA_F16:
+        return DXGI_FORMAT_R16G16B16A16_FLOAT;
+      case viz::ResourceFormat::BGRA_8888:
+        return DXGI_FORMAT_B8G8R8A8_UNORM;
+      case viz::ResourceFormat::RGBA_8888:
+        return DXGI_FORMAT_R8G8B8A8_UNORM;
+      case viz::ResourceFormat::RED_8:
+        return DXGI_FORMAT_R8_UNORM;
+      case viz::ResourceFormat::RG_88:
+        return DXGI_FORMAT_R8G8_UNORM;
+      case viz::ResourceFormat::R16_EXT:
+        return DXGI_FORMAT_R16_UNORM;
+      case viz::ResourceFormat::RG16_EXT:
+        return DXGI_FORMAT_R16G16_UNORM;
+      default:
+        break;
+    }
   }
 
-  switch (format.resource_format()) {
-    case viz::ResourceFormat::RGBA_F16:
-      return DXGI_FORMAT_R16G16B16A16_FLOAT;
-    case viz::ResourceFormat::BGRA_8888:
-      return DXGI_FORMAT_B8G8R8A8_UNORM;
-    case viz::ResourceFormat::RGBA_8888:
-      return DXGI_FORMAT_R8G8B8A8_UNORM;
-    case viz::ResourceFormat::RED_8:
-      return DXGI_FORMAT_R8_UNORM;
-    case viz::ResourceFormat::RG_88:
-      return DXGI_FORMAT_R8G8_UNORM;
-    case viz::ResourceFormat::R16_EXT:
-      return DXGI_FORMAT_R16_UNORM;
-    case viz::ResourceFormat::RG16_EXT:
-      return DXGI_FORMAT_R16G16_UNORM;
-    default:
-      NOTREACHED();
-      return {};
+  if (format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR) {
+    return DXGI_FORMAT_NV12;
   }
+
+  NOTREACHED();
+  return DXGI_FORMAT_UNKNOWN;
 }
 
 // Formats supported by CreateSharedImage(GMB).
-DXGI_FORMAT GetDXGIFormat(viz::SharedImageFormat format) {
+DXGI_FORMAT GetDXGIFormatForGMB(viz::SharedImageFormat format) {
   if (format.is_single_plane()) {
     switch (format.resource_format()) {
       case viz::ResourceFormat::RGBA_8888:
@@ -153,7 +156,7 @@ scoped_refptr<DXGISharedHandleState> ValidateAndOpenSharedHandle(
     return nullptr;
   }
 
-  if ((desc.Format != GetDXGIFormat(format)) &&
+  if ((desc.Format != GetDXGIFormatForGMB(format)) &&
       (desc.Format != GetDXGITypelessFormat(format))) {
     LOG(ERROR) << "Format must match texture being opened";
     return nullptr;
@@ -352,23 +355,32 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     return nullptr;
   }
 
-  const absl::optional<DXGI_FORMAT> dxgi_format =
-      GetSupportedRGBAFormat(format);
-  DCHECK(dxgi_format.has_value());
+  DXGI_FORMAT dxgi_format = GetDXGIFormatForCreateTexture(format);
+  DCHECK_NE(dxgi_format, DXGI_FORMAT_UNKNOWN);
 
   // SHARED_IMAGE_USAGE_CPU_UPLOAD is set for shared memory GMBs.
   const bool is_shm_gmb = usage & SHARED_IMAGE_USAGE_CPU_UPLOAD;
+
+  // TODO(https://anglebug.com/7998): Binding a GL texture that represents one
+  // plane of a multi-planar D3D to the GL framebuffer doesn't work correctly.
+  // This sets the texture target to GL_TEXTURE_EXTERNAL_OES to prevent that
+  // until the issue is fixed.
+  const GLenum texture_target =
+      format.is_single_plane() ? GL_TEXTURE_2D : GL_TEXTURE_EXTERNAL_OES;
 
   D3D11_TEXTURE2D_DESC desc;
   desc.Width = size.width();
   desc.Height = size.height();
   desc.MipLevels = 1;
   desc.ArraySize = 1;
-  desc.Format = dxgi_format.value();
+  desc.Format = dxgi_format;
   desc.SampleDesc.Count = 1;
   desc.SampleDesc.Quality = 0;
   desc.Usage = D3D11_USAGE_DEFAULT;
   desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+  desc.CPUAccessFlags = 0;
+  desc.MiscFlags = 0;
+
   // WebGPU can use RGBA_8888 and RGBA_16 for STORAGE_BINDING.
   if ((usage & gpu::SHARED_IMAGE_USAGE_WEBGPU) &&
       (format == viz::SinglePlaneFormat::kRGBA_8888 ||
@@ -376,17 +388,17 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
   }
   if (is_shm_gmb) {
-    desc.CPUAccessFlags = UseMapOnDefaultTextures()
-                              ? (D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE)
-                              : 0;
-    desc.MiscFlags = 0;
+    // D3D doesn't support mappable+default YUV textures.
+    if (format.is_single_plane() && UseMapOnDefaultTextures()) {
+      desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
+    }
   } else {
-    desc.CPUAccessFlags = 0;
     desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_NTHANDLE |
                      (D3DSharedFence::IsSupported(d3d11_device_.Get())
                           ? D3D11_RESOURCE_MISC_SHARED
                           : D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX);
   }
+
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
   HRESULT hr = d3d11_device_->CreateTexture2D(&desc, nullptr, &d3d11_texture);
   if (FAILED(hr)) {
@@ -401,9 +413,9 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
 
   if (is_shm_gmb) {
     // Early return before creating DXGI keyed mutex.
-    return D3DImageBacking::Create(mailbox, format, size, color_space,
-                                   surface_origin, alpha_type, usage,
-                                   std::move(d3d11_texture));
+    return D3DImageBacking::Create(
+        mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+        std::move(d3d11_texture), nullptr, texture_target);
   }
 
   Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
@@ -430,7 +442,8 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
 
   return D3DImageBacking::Create(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(d3d11_texture), std::move(dxgi_shared_handle_state));
+      std::move(d3d11_texture), std::move(dxgi_shared_handle_state),
+      texture_target);
 }
 
 std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
@@ -521,11 +534,11 @@ bool D3DImageBackingFactory::IsSupported(uint32_t usage,
   }
 
   if (gmb_type == gfx::EMPTY_BUFFER) {
-    // We only support rendering or uploading to RGBA formats.
-    if (!GetSupportedRGBAFormat(format))
+    if (GetDXGIFormatForCreateTexture(format) == DXGI_FORMAT_UNKNOWN) {
       return false;
+    }
   } else if (gmb_type == gfx::DXGI_SHARED_HANDLE) {
-    if (GetDXGIFormat(format) == DXGI_FORMAT_UNKNOWN) {
+    if (GetDXGIFormatForGMB(format) == DXGI_FORMAT_UNKNOWN) {
       return false;
     }
   } else {

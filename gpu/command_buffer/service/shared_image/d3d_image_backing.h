@@ -61,8 +61,8 @@ class GPU_GLES2_EXPORT D3DImageBacking
       SkAlphaType alpha_type,
       uint32_t usage,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-      scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state = nullptr,
-      GLenum texture_target = GL_TEXTURE_2D,
+      scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
+      GLenum texture_target,
       size_t array_slice = 0u,
       size_t plane_index = 0u);
 

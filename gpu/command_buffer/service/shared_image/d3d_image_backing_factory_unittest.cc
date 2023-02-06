@@ -13,6 +13,8 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/test_timeouts.h"
+#include "cc/test/pixel_comparator.h"
+#include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -24,12 +26,16 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_angle_util_win.h"
@@ -2153,6 +2159,129 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
     CheckNV12(overlay_image->nv12_pixmap(), overlay_image->pixmap_stride(),
               size, kYClearValue, kUClearValue, kVClearValue);
   }
+}
+
+// Verifies that a multi-planar NV12 image can be created without DXGI handle
+// for use with software GMBs.
+TEST_F(D3DImageBackingFactoryTest, MultiplanarUploadAndReadback) {
+  constexpr gfx::Size size(32, 32);
+  constexpr size_t kDataSize = size.width() * size.height() * 3 / 2;
+  constexpr SkAlphaType alpha_type = kPremul_SkAlphaType;
+  constexpr gfx::ColorSpace color_space;
+  constexpr uint32_t usage =
+      gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
+      gpu::SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  constexpr auto format = viz::MultiPlaneFormat::kYUV_420_BIPLANAR;
+  const gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+
+  auto owned_backing = shared_image_factory_->CreateSharedImage(
+      mailbox, format, kNullSurfaceHandle, size, color_space,
+      kTopLeft_GrSurfaceOrigin, alpha_type, usage,
+      /*is_thread_safe=*/false);
+  ASSERT_NE(owned_backing, nullptr);
+  SharedImageBacking* backing = owned_backing.get();
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image_ref =
+      shared_image_manager_.Register(std::move(owned_backing),
+                                     memory_type_tracker_.get());
+  ASSERT_TRUE(shared_image_ref);
+
+  constexpr uint8_t kInitialY = 255;
+  constexpr uint8_t kInitialU = 255;
+  constexpr uint8_t kInitialV = 0;
+
+  std::vector<uint8_t> buffer(kDataSize);
+  FillNV12(buffer.data(), size, kInitialY, kInitialU, kInitialV);
+
+  // Make pixmaps that point to each plane for use with upload/readback.
+  std::vector<SkPixmap> pixmaps;
+  {
+    size_t plane_offset = 0;
+    for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
+      gfx::Size plane_size = format.GetPlaneSize(plane, size);
+      auto info =
+          SkImageInfo::Make(gfx::SizeToSkISize(plane_size),
+                            viz::ToClosestSkColorType(
+                                /*gpu_compositing=*/true, format, plane),
+                            alpha_type, color_space.ToSkColorSpace());
+      DCHECK_LE(info.computeMinByteSize() + plane_offset, kDataSize);
+      pixmaps.emplace_back(info, buffer.data() + plane_offset,
+                           info.minRowBytes());
+      plane_offset += info.computeMinByteSize();
+    }
+  }
+
+  // Upload initial data into the image.
+  backing->UploadFromMemory(pixmaps);
+  backing->SetCleared();
+
+  auto skia_representation = shared_image_representation_factory_->ProduceSkia(
+      mailbox, context_state_);
+  ASSERT_TRUE(skia_representation);
+
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
+      scoped_read_access =
+          skia_representation->BeginScopedReadAccess(nullptr, nullptr);
+  ASSERT_TRUE(scoped_read_access);
+
+  // Using glReadPixels() to check each plane has expected data after upload
+  // doesn't work due to https://anglebug.com/7998. Instead draw from NV12
+  // textures into a RGBA texture and readback from the RGBA texture.
+  SkImageInfo rgba_image_info =
+      SkImageInfo::Make(size.width(), size.height(), kRGBA_8888_SkColorType,
+                        alpha_type, color_space.ToSkColorSpace());
+
+  SkBitmap dst_bitmap;
+  dst_bitmap.allocPixels(rgba_image_info);
+  {
+    auto source_image =
+        scoped_read_access->CreateSkImage(context_state_->gr_context());
+    ASSERT_TRUE(source_image);
+
+    SkSurfaceProps surface_props(0, kUnknown_SkPixelGeometry);
+    sk_sp<SkSurface> dest_surface = SkSurface::MakeRenderTarget(
+        context_state_->gr_context(), skgpu::Budgeted::kNo, rgba_image_info, 0,
+        kTopLeft_GrSurfaceOrigin, &surface_props);
+    ASSERT_NE(dest_surface, nullptr);
+
+    {
+      auto* canvas = dest_surface->getCanvas();
+      SkPaint paint;
+      paint.setBlendMode(SkBlendMode::kSrc);
+
+      canvas->drawImageRect(source_image, gfx::RectToSkRect(gfx::Rect(size)),
+                            gfx::RectToSkRect(gfx::Rect(size)),
+                            SkSamplingOptions(), &paint,
+                            SkCanvas::kStrict_SrcRectConstraint);
+    }
+
+    GrBackendTexture backend_texture = dest_surface->getBackendTexture(
+        SkSurface::kFlushWrite_BackendHandleAccess);
+    auto dst_image = SkImage::MakeFromTexture(
+        context_state_->gr_context(), backend_texture, kTopLeft_GrSurfaceOrigin,
+        kRGBA_8888_SkColorType, alpha_type, nullptr);
+    ASSERT_TRUE(dst_image);
+
+    EXPECT_TRUE(dst_image->readPixels(rgba_image_info, dst_bitmap.getPixels(),
+                                      rgba_image_info.minRowBytes(), 0, 0));
+  }
+
+  // YUV(255, 255, 0) maps to RGB(255, 74, 255).
+  SkColor expected_rgba_color = SkColorSetARGB(255, 74, 255, 255);
+
+  SkBitmap expected_bitmap;
+  expected_bitmap.allocPixels(rgba_image_info);
+  expected_bitmap.eraseColor(expected_rgba_color);
+
+  EXPECT_TRUE(cc::MatchesBitmap(dst_bitmap, expected_bitmap,
+                                cc::ExactPixelComparator()));
+
+  // Clear out `buffer` and then readback into it and verify YUV(255, 255, 0)
+  // was read back.
+  FillNV12(buffer.data(), size, 0, 0, 0);
+  ASSERT_TRUE(backing->ReadbackToMemory(pixmaps));
+  CheckNV12(buffer.data(), size.width(), size, kInitialY, kInitialU, kInitialV);
 }
 
 }  // namespace gpu
