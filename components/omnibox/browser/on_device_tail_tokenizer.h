@@ -75,6 +75,9 @@ class OnDeviceTailTokenizer {
   bool IsBeginQueryTokenId(TokenId token_id) const;
   TokenId GetEndQueryTokenId() const;
 
+  // Determines if the token related to the given ID can be properly printed.
+  bool IsTokenPrintable(TokenId token_id) const;
+
  private:
   // Determines if the given token is ambiguous.
   bool IsAmbiguousToken(const std::string& token) const;

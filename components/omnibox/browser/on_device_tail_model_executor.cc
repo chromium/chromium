@@ -418,7 +418,6 @@ void OnDeviceTailModelExecutor::CreateNewBeams(
   return;
 }
 
-// static
 void OnDeviceTailModelExecutor::InsertBeamNodeToCandidateQueue(
     const TokenIdAndProb& token_id_and_prob,
     const RnnCellStates& states,
@@ -436,6 +435,13 @@ void OnDeviceTailModelExecutor::InsertBeamNodeToCandidateQueue(
   }
 
   const OnDeviceTailTokenizer::TokenId& new_token_id = token_id_and_prob.first;
+  // Drop the candidate if the given token cannot be properly displayed to
+  // users, unless it is the end query token.
+  if (!(tokenizer_->IsEndQueryTokenId(new_token_id) ||
+        tokenizer_->IsTokenPrintable(new_token_id))) {
+    return;
+  }
+
   // Check if there are enough candidates in the queue and drop the lowest
   // probability candidate from the queue if needed.
   if (queue->size() >= max_num_suggestions) {

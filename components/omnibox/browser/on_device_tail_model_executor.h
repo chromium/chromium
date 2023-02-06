@@ -169,13 +169,12 @@ class OnDeviceTailModelExecutor {
   // Builds and maybe insert new beam nodes from the given token ID &
   // probability pair into the candidate queue and drop low probability node
   // from the queue if needed.
-  static void InsertBeamNodeToCandidateQueue(
-      const TokenIdAndProb& token_id_and_prob,
-      const RnnCellStates& states,
-      const BeamNode& current_beam,
-      float log_prob_threshold,
-      size_t max_num_suggestions,
-      CandidateQueue* queue);
+  void InsertBeamNodeToCandidateQueue(const TokenIdAndProb& token_id_and_prob,
+                                      const RnnCellStates& states,
+                                      const BeamNode& current_beam,
+                                      float log_prob_threshold,
+                                      size_t max_num_suggestions,
+                                      CandidateQueue* queue);
 
   // Gets the root beam node by feeding all unambiguous token IDs (except the
   // last token) into the model.

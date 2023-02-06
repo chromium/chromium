@@ -52,6 +52,10 @@ class OnDeviceTailModelExecutorPublic : public OnDeviceTailModelExecutor {
   using OnDeviceTailModelExecutor::vocab_size_;
 };
 
+// Note: suggestions which contain unprintable tokens (see definition at
+// OnDeviceTailTokenizer::IsTokenPrintable) will not be outputted by the
+// executor and be dropped in the private member function
+// OnDeviceTailModelExecutor::InsertBeamNodeToCandidateQueue.
 class OnDeviceTailModelExecutorTest : public ::testing::Test {
  public:
   OnDeviceTailModelExecutorTest() {
@@ -102,7 +106,7 @@ class OnDeviceTailModelExecutorTest : public ::testing::Test {
 };
 
 TEST_F(OnDeviceTailModelExecutorTest, TestEncodePreviousQuery) {
-  OnDeviceTailTokenizer::TokenIds ids1({16}), ids2({16, 17});
+  OnDeviceTailTokenizer::TokenIds ids1({66}), ids2({66, 67});
   std::vector<float> encoding1, encoding2, cached_encoding;
 
   EXPECT_TRUE(executor_->EncodePreviousQuery(ids1, &encoding1));
@@ -115,9 +119,9 @@ TEST_F(OnDeviceTailModelExecutorTest, TestEncodePreviousQuery) {
 }
 
 TEST_F(OnDeviceTailModelExecutorTest, TestRunRnnStep) {
-  OnDeviceTailTokenizer::TokenIds cache_key1({16, 17, 18}),
-      cache_key2({16, 17, 19}), prev_query_ids({16, 17});
-  OnDeviceTailTokenizer::TokenId input_id1 = 18, input_id2 = 19;
+  OnDeviceTailTokenizer::TokenIds cache_key1({66, 67, 68}),
+      cache_key2({66, 67, 69}), prev_query_ids({66, 67});
+  OnDeviceTailTokenizer::TokenId input_id1 = 68, input_id2 = 69;
   OnDeviceTailModelExecutorPublic::RnnCellStates previous_states(kNumLayer,
                                                                  kStateSize);
   std::vector<float> prev_query_encoding(kEmbeddingDim);
@@ -145,8 +149,8 @@ TEST_F(OnDeviceTailModelExecutorTest, TestCreateNewBeams) {
 
   output.states.c_i[0][10] = -0.77;
   output.states.m_i[0][11] = 0.88;
-  current_beam.token_ids = {16, 17};
-  current_beam.rnn_step_cache_key = {14, 15, 16, 17};
+  current_beam.token_ids = {66, 67};
+  current_beam.rnn_step_cache_key = {64, 65, 66, 67};
   current_beam.log_prob =
       OnDeviceTailModelExecutorPublic::GetLogProbability(0.9);
 
@@ -161,10 +165,10 @@ TEST_F(OnDeviceTailModelExecutorTest, TestCreateNewBeams) {
     OnDeviceTailModelExecutorPublic::CandidateQueue partial_candidates,
         completed_candidates;
 
-    output.probs[19] = 0.8;
-    output.probs[20] = 0.7;
-    output.probs[21] = 0.6;
-    output.probs[22] = 0.3;
+    output.probs[69] = 0.8;
+    output.probs[70] = 0.7;
+    output.probs[71] = 0.6;
+    output.probs[72] = 0.3;
     output.probs[executor_->tokenizer_->GetEndQueryTokenId()] = 0.7;
     executor_->CreateNewBeams(output, current_beam, max_num_suggestions,
                               log_prob_threshold, &partial_candidates,
@@ -172,30 +176,30 @@ TEST_F(OnDeviceTailModelExecutorTest, TestCreateNewBeams) {
     EXPECT_EQ(3U, partial_candidates.size());
     EXPECT_EQ(1U, completed_candidates.size());
 
-    expected_beam.token_ids = {16, 17,
+    expected_beam.token_ids = {66, 67,
                                executor_->tokenizer_->GetEndQueryTokenId()};
     expected_beam.rnn_step_cache_key = {
-        14, 15, 16, 17, executor_->tokenizer_->GetEndQueryTokenId()};
+        64, 65, 66, 67, executor_->tokenizer_->GetEndQueryTokenId()};
     expected_beam.log_prob =
         OnDeviceTailModelExecutorPublic::GetLogProbability(0.9 * 0.7);
     AreBeamNodesEqual(expected_beam, completed_candidates.top());
 
-    expected_beam.token_ids = {16, 17, 21};
-    expected_beam.rnn_step_cache_key = {14, 15, 16, 17, 21};
+    expected_beam.token_ids = {66, 67, 71};
+    expected_beam.rnn_step_cache_key = {64, 65, 66, 67, 71};
     expected_beam.log_prob =
         OnDeviceTailModelExecutorPublic::GetLogProbability(0.9 * 0.6);
     AreBeamNodesEqual(expected_beam, partial_candidates.top());
 
     partial_candidates.pop();
-    expected_beam.token_ids = {16, 17, 20};
-    expected_beam.rnn_step_cache_key = {14, 15, 16, 17, 20};
+    expected_beam.token_ids = {66, 67, 70};
+    expected_beam.rnn_step_cache_key = {64, 65, 66, 67, 70};
     expected_beam.log_prob =
         OnDeviceTailModelExecutorPublic::GetLogProbability(0.9 * 0.7);
     AreBeamNodesEqual(expected_beam, partial_candidates.top());
 
     partial_candidates.pop();
-    expected_beam.token_ids = {16, 17, 19};
-    expected_beam.rnn_step_cache_key = {14, 15, 16, 17, 19};
+    expected_beam.token_ids = {66, 67, 69};
+    expected_beam.rnn_step_cache_key = {64, 65, 66, 67, 69};
     expected_beam.log_prob =
         OnDeviceTailModelExecutorPublic::GetLogProbability(0.9 * 0.8);
     AreBeamNodesEqual(expected_beam, partial_candidates.top());
@@ -206,9 +210,9 @@ TEST_F(OnDeviceTailModelExecutorTest, TestCreateNewBeams) {
     OnDeviceTailModelExecutorPublic::CandidateQueue partial_candidates,
         completed_candidates;
     current_beam.constraint_prefix = "a";
-    output.probs[19] = 0.9;
-    output.probs[20] = 0.8;
-    output.probs[21] = 0.7;
+    output.probs[69] = 0.9;
+    output.probs[70] = 0.8;
+    output.probs[71] = 0.7;
     output.probs[261] = 0.08;  // token#261: "ab"
     output.probs[262] = 0.07;  // token#262: "ac"
     output.probs[263] = 0.01;  // token#262: "ad"
@@ -217,8 +221,8 @@ TEST_F(OnDeviceTailModelExecutorTest, TestCreateNewBeams) {
                               log_prob_threshold, &partial_candidates,
                               &completed_candidates);
 
-    expected_beam.token_ids = {16, 17, 262};
-    expected_beam.rnn_step_cache_key = {14, 15, 16, 17, 262};
+    expected_beam.token_ids = {66, 67, 262};
+    expected_beam.rnn_step_cache_key = {64, 65, 66, 67, 262};
     expected_beam.log_prob =
         OnDeviceTailModelExecutorPublic::GetLogProbability(0.9 * (0.07 / 0.16));
 
@@ -228,8 +232,8 @@ TEST_F(OnDeviceTailModelExecutorTest, TestCreateNewBeams) {
     AreBeamNodesEqual(expected_beam, partial_candidates.top());
     partial_candidates.pop();
 
-    expected_beam.token_ids = {16, 17, 261};
-    expected_beam.rnn_step_cache_key = {14, 15, 16, 17, 261};
+    expected_beam.token_ids = {66, 67, 261};
+    expected_beam.rnn_step_cache_key = {64, 65, 66, 67, 261};
     expected_beam.log_prob =
         OnDeviceTailModelExecutorPublic::GetLogProbability(0.9 * (0.08 / 0.16));
     AreBeamNodesEqual(expected_beam, partial_candidates.top());
@@ -243,8 +247,8 @@ TEST_F(OnDeviceTailModelExecutorTest, TestInsertBeamNodeToCandidateQueue) {
 
   OnDeviceTailModelExecutorPublic::BeamNode current_beam(kNumLayer, kStateSize),
       expected_beam(kNumLayer, kStateSize);
-  current_beam.token_ids = {16, 17};
-  current_beam.rnn_step_cache_key = {14, 15, 16, 17};
+  current_beam.token_ids = {66, 67};
+  current_beam.rnn_step_cache_key = {64, 65, 66, 67};
   current_beam.log_prob =
       OnDeviceTailModelExecutorPublic::GetLogProbability(0.9);
 
@@ -255,9 +259,9 @@ TEST_F(OnDeviceTailModelExecutorTest, TestInsertBeamNodeToCandidateQueue) {
   // Empty candidate queue.
   {
     OnDeviceTailModelExecutorPublic::CandidateQueue queue;
-    OnDeviceTailModelExecutorPublic::TokenIdAndProb token_id_and_prob{18, 0.8};
-    expected_beam.token_ids = {16, 17, 18};
-    expected_beam.rnn_step_cache_key = {14, 15, 16, 17, 18};
+    OnDeviceTailModelExecutorPublic::TokenIdAndProb token_id_and_prob{68, 0.8};
+    expected_beam.token_ids = {66, 67, 68};
+    expected_beam.rnn_step_cache_key = {64, 65, 66, 67, 68};
     expected_beam.states = states;
     expected_beam.log_prob =
         OnDeviceTailModelExecutorPublic::GetLogProbability(0.9 * 0.8);
@@ -272,9 +276,9 @@ TEST_F(OnDeviceTailModelExecutorTest, TestInsertBeamNodeToCandidateQueue) {
   // Candidate queue with already 2 candidates inside.
   {
     OnDeviceTailModelExecutorPublic::CandidateQueue queue;
-    OnDeviceTailModelExecutorPublic::TokenIdAndProb token_id_and_prob{18, 0.8};
-    expected_beam.token_ids = {16, 17, 18};
-    expected_beam.rnn_step_cache_key = {14, 15, 16, 17, 18};
+    OnDeviceTailModelExecutorPublic::TokenIdAndProb token_id_and_prob{68, 0.8};
+    expected_beam.token_ids = {66, 67, 68};
+    expected_beam.rnn_step_cache_key = {64, 65, 66, 67, 68};
     expected_beam.states = states;
     expected_beam.log_prob =
         OnDeviceTailModelExecutorPublic::GetLogProbability(0.9 * 0.8);
@@ -282,9 +286,9 @@ TEST_F(OnDeviceTailModelExecutorTest, TestInsertBeamNodeToCandidateQueue) {
     OnDeviceTailModelExecutorPublic::BeamNode beam1(kNumLayer, kStateSize),
         beam2(kNumLayer, kStateSize);
 
-    beam1.token_ids = {19};
+    beam1.token_ids = {69};
     beam1.log_prob = OnDeviceTailModelExecutorPublic::GetLogProbability(0.5);
-    beam2.token_ids = {20};
+    beam2.token_ids = {70};
     beam2.log_prob = OnDeviceTailModelExecutorPublic::GetLogProbability(0.4);
     queue.emplace(beam1);
     queue.emplace(beam2);
@@ -319,8 +323,8 @@ TEST_F(OnDeviceTailModelExecutorTest, TestGetRootBeamNode) {
   states.c_i[0][25] = 25;
   states.m_i[0][35] = 35;
   rnn_output.states = states;
-  rnn_output.probs[0] = 0.7;
-  rnn_output.probs[10] = 0.6;
+  rnn_output.probs[60] = 0.7;
+  rnn_output.probs[70] = 0.6;
   OnDeviceTailTokenizer::TokenIds rnn_step_cache_key = {474, 475, 257, 468,
                                                         469};
   executor_->rnn_step_cache_.Put(rnn_step_cache_key, rnn_output);

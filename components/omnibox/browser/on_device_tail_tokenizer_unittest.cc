@@ -36,6 +36,18 @@ class OnDeviceTailTokenizerTest : public ::testing::Test {
   OnDeviceTailTokenizer tokenizer_;
 };
 
+TEST_F(OnDeviceTailTokenizerTest, IsTokenPrintable) {
+  tokenizer_.Init(GetTestVocabFilePath());
+
+  EXPECT_TRUE(tokenizer_.IsReady());
+
+  EXPECT_TRUE(tokenizer_.IsTokenPrintable(33));
+  EXPECT_TRUE(tokenizer_.IsTokenPrintable(260));
+  EXPECT_FALSE(tokenizer_.IsTokenPrintable(1));
+  EXPECT_FALSE(tokenizer_.IsTokenPrintable(257));
+  EXPECT_FALSE(tokenizer_.IsTokenPrintable(600));
+}
+
 TEST_F(OnDeviceTailTokenizerTest, CreatePrefixTokenization) {
   tokenizer_.Init(GetTestVocabFilePath());
 
