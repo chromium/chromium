@@ -30,11 +30,6 @@ class BrowserContext;
 namespace features {
 // Enables persistent permissions for the File System Access API.
 BASE_DECLARE_FEATURE(kFileSystemAccessPersistentPermissions);
-
-#if BUILDFLAG(IS_WIN)
-// Enables blocking local UNC path on Windows for the File System Access API.
-BASE_DECLARE_FEATURE(kFileSystemAccessLocalUNCPathBlock);
-#endif
 }  // namespace features
 
 // Chrome implementation of FileSystemAccessPermissionContext. This class
