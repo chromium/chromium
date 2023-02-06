@@ -5,12 +5,12 @@
   await dp.Network.enable();
   testRunner.log('Network Enabled');
 
-  dp.Network.onResponseReceivedExtraInfo(event => {
-    testRunner.log(event.params.statusCode);
-  });
-
-  await session.evaluateAsync(`fetch('index.html');`);
-  await session.evaluateAsync(
+  session.evaluateAsync(`fetch('index.html');`);
+  let event = await dp.Network.onceResponseReceivedExtraInfo();
+  testRunner.log(event.params.statusCode);
+  session.evaluateAsync(
       `fetch('/inspector-protocol/network/resources/hello-world.html');`);
+  event = await dp.Network.onceResponseReceivedExtraInfo();
+  testRunner.log(event.params.statusCode);
   testRunner.completeTest();
 })
