@@ -433,28 +433,7 @@ id<GREYMatcher> EditDoneButton() {
   config.features_disabled.push_back(
       password_manager::features::kPasswordsGrouping);
 
-  if ([self isRunningTest:@selector
-            (testNoOndeviceEncryptionSetupWhenSignedOut)]) {
-    config.features_enabled.push_back(syncer::kSyncTrustedVaultPassphrasePromo);
-  }
-  if ([self isRunningTest:@selector(testNoOndeviceEncryptionWithoutFlag)]) {
-    config.features_disabled.push_back(
-        syncer::kSyncTrustedVaultPassphrasePromo);
-  }
-
   return config;
-}
-
-// Verifies that a signed out account has no option related to
-// on device encryption.
-- (void)testNoOndeviceEncryptionWithoutFlag {
-  OpenPasswordSettings();
-
-  // Check that the menus related to on-device encryptions are not displayed.
-  [OptedInTrustedVaultLink() assertWithMatcher:grey_nil()];
-  [OptedInTrustedVaultText() assertWithMatcher:grey_nil()];
-  [OptInTrustedVaultLink() assertWithMatcher:grey_nil()];
-  [SetUpTrustedVaultLink() assertWithMatcher:grey_nil()];
 }
 
 // Check that a user which is not logged in any account do not get

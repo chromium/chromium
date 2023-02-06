@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_mediator.h"
 
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
@@ -103,10 +102,6 @@ class PasswordSettingsMediatorTest : public PlatformTest {
 
 TEST_F(PasswordSettingsMediatorTest,
        SyncChangeTriggersChangeOnDeviceEncryption) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      syncer::kSyncTrustedVaultPassphrasePromo);
-
   // This was populated when the consumer was initially set.
   [[consumer_ verify] setOnDeviceEncryptionState:
                           PasswordSettingsOnDeviceEncryptionStateNotShown];
