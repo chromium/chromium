@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/crostini/crostini_upgrade_available_notification.h"
 
 #include "base/metrics/histogram_base.h"
-#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -79,10 +79,10 @@ class CrostiniUpgradeAvailableNotificationTest
     }
 
     // Now there should be enough WebUI hooked up to close properly.
-    base::RunLoop run_loop;
-    upgrader_dialog->SetDeletionClosureForTesting(run_loop.QuitClosure());
+    base::test::TestFuture<void> result_future;
+    upgrader_dialog->SetDeletionClosureForTesting(result_future.GetCallback());
     upgrader_dialog->Close();
-    run_loop.Run();
+    ASSERT_TRUE(result_future.Wait());
   }
 
   void ExpectDialog() {
@@ -128,16 +128,16 @@ TEST_F(CrostiniUpgradeAvailableNotificationTest, ShowsWhenNotified) {
 
   DowngradeOSRelease();
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> result_future;
   auto notification = CrostiniUpgradeAvailableNotification::Show(
-      profile(), run_loop.QuitClosure());
+      profile(), result_future.GetCallback());
 
   ExpectNoDialog();
 
   // Wait for notification, press Upgrade
   ASSERT_TRUE(notification);
   notification->Get()->delegate()->Click(0, absl::nullopt);
-  run_loop.Run();
+  ASSERT_TRUE(result_future.Wait());
 
   // Dialog should show because we clicked button 0 (Upgrade).
   ExpectDialog();

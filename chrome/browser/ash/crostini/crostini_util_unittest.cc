@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
@@ -32,15 +33,6 @@ namespace crostini {
 
 class CrostiniUtilTest : public testing::Test {
  public:
-  void SuccessCallback(bool expected_success,
-                       const std::string& expected_failure_reason,
-                       bool success,
-                       const std::string& failure_reason) {
-    EXPECT_EQ(expected_success, success);
-    EXPECT_EQ(expected_failure_reason, failure_reason);
-    run_loop_->Quit();
-  }
-
   CrostiniUtilTest()
       : app_id_(crostini::CrostiniTestHelper::GenerateAppId(kDesktopFileId)),
         task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
@@ -80,7 +72,6 @@ class CrostiniUtilTest : public testing::Test {
             base::FilePath("/install/path"), base::FilePath("/mount/path")));
     browser_part_.InitializeCrosComponentManager(component_manager_);
 
-    run_loop_ = std::make_unique<base::RunLoop>();
     profile_ = std::make_unique<TestingProfile>();
     test_helper_ = std::make_unique<CrostiniTestHelper>(profile_.get());
     test_helper_->SetupDummyApps();
@@ -91,7 +82,6 @@ class CrostiniUtilTest : public testing::Test {
   void TearDown() override {
     g_browser_process->platform_part()->ShutdownSchedulerConfigurationManager();
     test_helper_.reset();
-    run_loop_.reset();
     profile_.reset();
     browser_part_.ShutdownCrosComponentManager();
     component_manager_.reset();
@@ -101,7 +91,6 @@ class CrostiniUtilTest : public testing::Test {
  protected:
   ash::FakeConciergeClient* fake_concierge_client_;
 
-  std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniTestHelper> test_helper_;
   std::string app_id_;
@@ -117,15 +106,15 @@ TEST_F(CrostiniUtilTest, LaunchCallbackRunsOnRestartError) {
   // Set Restart to fail.
   fake_concierge_client_->set_start_vm_response({});
 
+  base::test::TestFuture<bool, const std::string&> result_future;
   // Launch should fail and invoke callback.
-  LaunchCrostiniApp(
-      profile_.get(), app_id_, kDisplayId, {},
-      base::BindOnce(&CrostiniUtilTest::SuccessCallback, base::Unretained(this),
-                     false,
-                     "crostini restart to launch app "
-                     "pfdnkhehloenlegacemoalhjljmpllpc failed: 5"));
-
-  run_loop_->Run();
+  LaunchCrostiniApp(profile_.get(), app_id_, kDisplayId, {},
+                    result_future.GetCallback());
+  EXPECT_FALSE(result_future.Get<0>());
+  EXPECT_EQ(
+      "crostini restart to launch app "
+      "pfdnkhehloenlegacemoalhjljmpllpc failed: 5",
+      result_future.Get<1>());
 }
 
 TEST_F(CrostiniUtilTest, ShouldStopVm) {
