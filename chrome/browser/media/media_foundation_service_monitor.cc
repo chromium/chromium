@@ -199,8 +199,13 @@ void MediaFoundationServiceMonitor::OnServiceProcessCrashed(
   base::UmaHistogramBoolean("Media.EME.MediaFoundationService.Crash",
                             is_after_power_or_display_change);
 
+  // Site should always be set when launching MediaFoundationService, but it
+  // could be empty, e.g. during capability checking or when
+  // `media::kCdmProcessSiteIsolation` is disabled.
+  DVLOG(1) << __func__ << ": MediaFoundationService process ("
+           << info.site().value() << ") crashed!";
+
   // Not checking `last_power_or_display_change_time_`; crashes are always bad.
-  DVLOG(1) << __func__ << ": MediaFoundationService process crashed!";
   AddSample(kCrash);
 }
 

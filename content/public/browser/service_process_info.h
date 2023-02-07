@@ -12,6 +12,8 @@
 #include "base/process/process.h"
 #include "base/types/id_type.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -32,6 +34,7 @@ using ServiceProcessId =
 class CONTENT_EXPORT ServiceProcessInfo {
  public:
   ServiceProcessInfo(const std::string& name,
+                     const absl::optional<GURL>& site,
                      const ServiceProcessId& id,
                      base::Process process);
   ServiceProcessInfo(const ServiceProcessInfo&) = delete;
@@ -58,11 +61,15 @@ class CONTENT_EXPORT ServiceProcessInfo {
   const std::string service_interface_name() const {
     return service_interface_name_;
   }
+  const absl::optional<GURL>& site() const { return site_; }
   const base::Process& GetProcess() const { return process_; }
 
  private:
   // The name of the service interface for which the process was launched.
   std::string service_interface_name_;
+
+  // Optional site associated with the process for per-site service processes.
+  absl::optional<GURL> site_;
 
   // A unique identifier for this service process instance. ServiceProcessIds
   // are never reused.

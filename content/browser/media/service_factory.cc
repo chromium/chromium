@@ -250,6 +250,7 @@ T& GetService(const media::CdmType& cdm_type,
   if (!remote) {
     ServiceProcessHost::Options options;
     options.WithDisplayName(display_name);
+    options.WithSite(site);
     ServiceProcessHost::Launch(broker_remote.BindNewPipeAndPassReceiver(),
                                options.Pass());
 

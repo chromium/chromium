@@ -21,6 +21,8 @@
 
 namespace content {
 
+constexpr char kTestUrl[] = "https://foo.bar";
+
 using ServiceProcessHostBrowserTest = ContentBrowserTest;
 
 class EchoServiceProcessObserver : public ServiceProcessHost::Observer {
@@ -58,8 +60,10 @@ class EchoServiceProcessObserver : public ServiceProcessHost::Observer {
   }
 
   void OnServiceProcessCrashed(const ServiceProcessInfo& info) override {
-    if (info.IsService<echo::mojom::EchoService>())
+    if (info.IsService<echo::mojom::EchoService>()) {
+      ASSERT_EQ(info.site(), GURL(kTestUrl));
       crash_loop_.Quit();
+    }
   }
 
   base::RunLoop launch_loop_;
@@ -146,7 +150,8 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, AllMessagesReceived) {
 
 IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, ObserveCrash) {
   EchoServiceProcessObserver observer;
-  auto echo_service = ServiceProcessHost::Launch<echo::mojom::EchoService>();
+  auto echo_service = ServiceProcessHost::Launch<echo::mojom::EchoService>(
+      ServiceProcessHost::Options().WithSite(GURL(kTestUrl)).Pass());
   observer.WaitForLaunch();
   echo_service->Crash();
   observer.WaitForCrash();

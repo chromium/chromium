@@ -33,6 +33,12 @@ ServiceProcessHost::Options& ServiceProcessHost::Options::WithDisplayName(
   return *this;
 }
 
+ServiceProcessHost::Options& ServiceProcessHost::Options::WithSite(
+    const GURL& url) {
+  site = url;
+  return *this;
+}
+
 ServiceProcessHost::Options& ServiceProcessHost::Options::WithChildFlags(
     int flags) {
   child_flags = flags;

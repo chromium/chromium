@@ -21,9 +21,9 @@ namespace content {
 namespace {
 
 ServiceProcessInfo MakeFakeAudioServiceProcessInfo() {
-  ServiceProcessInfo fake_audio_process_info(audio::mojom::AudioService::Name_,
-                                             content::ServiceProcessId(),
-                                             base::Process::Current());
+  ServiceProcessInfo fake_audio_process_info(
+      audio::mojom::AudioService::Name_, /*site=*/absl::nullopt,
+      content::ServiceProcessId(), base::Process::Current());
   return fake_audio_process_info;
 }
 

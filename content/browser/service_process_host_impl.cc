@@ -54,10 +54,12 @@ class ServiceProcessTracker {
   ~ServiceProcessTracker() = default;
 
   ServiceProcessInfo AddProcess(base::Process process,
+                                const absl::optional<GURL>& site,
                                 const std::string& service_interface_name) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     auto id = GenerateNextId();
-    ServiceProcessInfo info(service_interface_name, id, std::move(process));
+    ServiceProcessInfo info(service_interface_name, site, id,
+                            std::move(process));
     auto info_dup = info.Duplicate();
     processes_.insert({id, std::move(info)});
     for (auto& observer : observers_)
@@ -130,8 +132,10 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
  public:
   UtilityProcessClient(
       const std::string& service_interface_name,
+      const absl::optional<GURL>& site,
       base::OnceCallback<void(const base::Process&)> process_callback)
       : service_interface_name_(service_interface_name),
+        site_(std::move(site)),
         process_callback_(std::move(process_callback)) {}
 
   UtilityProcessClient(const UtilityProcessClient&) = delete;
@@ -143,7 +147,7 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
   void OnProcessLaunched(const base::Process& process) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     process_info_.emplace(GetServiceProcessTracker().AddProcess(
-        process.Duplicate(), service_interface_name_));
+        process.Duplicate(), site_, service_interface_name_));
     if (process_callback_) {
       std::move(process_callback_).Run(process);
     }
@@ -167,6 +171,10 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
 
  private:
   const std::string service_interface_name_;
+
+  // Optional site GURL for per-site utility processes.
+  const absl::optional<GURL> site_;
+
   base::OnceCallback<void(const base::Process&)> process_callback_;
   absl::optional<ServiceProcessInfo> process_info_;
 };
@@ -178,7 +186,8 @@ void LaunchServiceProcess(mojo::GenericPendingReceiver receiver,
                           sandbox::mojom::Sandbox sandbox) {
   UtilityProcessHost* host =
       new UtilityProcessHost(std::make_unique<UtilityProcessClient>(
-          *receiver.interface_name(), std::move(options.process_callback)));
+          *receiver.interface_name(), options.site,
+          std::move(options.process_callback)));
   host->SetName(!options.display_name.empty()
                     ? options.display_name
                     : base::UTF8ToUTF16(*receiver.interface_name()));
