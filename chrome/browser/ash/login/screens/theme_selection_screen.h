@@ -26,10 +26,15 @@ class ThemeSelectionScreen : public BaseScreen {
     kNotApplicable,
   };
 
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+  // change one without changing the other). Entries should be never modified
+  // or deleted. Only additions possible.
   enum class SelectedTheme {
     kAuto = 0,
     kDark = 1,
     kLight = 2,
+    kMaxValue = kLight,
   };
 
   static std::string GetResultString(Result result);
@@ -46,6 +51,10 @@ class ThemeSelectionScreen : public BaseScreen {
 
   void set_exit_callback_for_testing(const ScreenExitCallback& callback) {
     exit_callback_ = callback;
+  }
+
+  const ScreenExitCallback& get_exit_callback_for_testing() {
+    return exit_callback_;
   }
 
  private:

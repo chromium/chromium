@@ -92066,6 +92066,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
       label="Open new tab in group is first, selected open new tab in group"/>
 </enum>
 
+<enum name="SelectedTheme">
+  <int value="0" label="Auto Mode"/>
+  <int value="1" label="Dark Mode"/>
+  <int value="2" label="Light Mode"/>
+</enum>
+
 <enum name="SelectFileDialogContent">
   <int value="0" label="Photo uploaded by MediaPicker (as per MIME type)"/>
   <int value="1" label="Video uploaded by MediaPicker (as per MIME type)"/>

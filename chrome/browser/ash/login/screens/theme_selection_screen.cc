@@ -8,6 +8,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -23,16 +24,33 @@ namespace {
 constexpr const char kUserActionNext[] = "next";
 constexpr const char kUserActionSelect[] = "select";
 
-std::string GetSelectedTheme(Profile* profile) {
+ThemeSelectionScreen::SelectedTheme GetSelectedTheme(Profile* profile) {
   if (profile->GetPrefs()->GetInteger(prefs::kDarkModeScheduleType) ==
       static_cast<int>(ScheduleType::kSunsetToSunrise)) {
-    return ThemeSelectionScreenView::kAutoMode;
+    return ThemeSelectionScreen::SelectedTheme::kAuto;
   }
 
   if (profile->GetPrefs()->GetBoolean(prefs::kDarkModeEnabled)) {
-    return ThemeSelectionScreenView::kDarkMode;
+    return ThemeSelectionScreen::SelectedTheme::kDark;
   }
-  return ThemeSelectionScreenView::kLightMode;
+  return ThemeSelectionScreen::SelectedTheme::kLight;
+}
+
+std::string GetSelectedThemeString(Profile* profile) {
+  ThemeSelectionScreen::SelectedTheme theme = GetSelectedTheme(profile);
+  switch (theme) {
+    case ThemeSelectionScreen::SelectedTheme::kAuto:
+      return ThemeSelectionScreenView::kAutoMode;
+    case ThemeSelectionScreen::SelectedTheme::kDark:
+      return ThemeSelectionScreenView::kDarkMode;
+    case ThemeSelectionScreen::SelectedTheme::kLight:
+      return ThemeSelectionScreenView::kLightMode;
+  }
+}
+
+void RecordSelectedTheme(Profile* profile) {
+  base::UmaHistogramEnumeration("OOBE.ThemeSelectionScreen.SelectedTheme",
+                                GetSelectedTheme(profile));
 }
 
 }  // namespace
@@ -90,7 +108,7 @@ void ThemeSelectionScreen::ShowImpl() {
   if (!view_)
     return;
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  view_->Show(GetSelectedTheme(profile));
+  view_->Show(GetSelectedThemeString(profile));
 }
 
 void ThemeSelectionScreen::HideImpl() {}
@@ -118,6 +136,7 @@ void ThemeSelectionScreen::OnUserAction(const base::Value::List& args) {
                                       selected_theme == SelectedTheme::kDark);
     }
   } else if (action_id == kUserActionNext) {
+    RecordSelectedTheme(profile);
     exit_callback_.Run(Result::kProceed);
   } else {
     BaseScreen::OnUserAction(args);

@@ -71,6 +71,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Recommend-apps"/>
   <variant name="Reset"/>
   <variant name="Sync-consent"/>
+  <variant name="Theme-selection"/>
   <variant name="Tos"/>
   <variant name="Update-required"/>
   <variant name="User-creation"/>
@@ -184,6 +185,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Sync-consent.Next"/>
   <variant name="Terms-of-service.Accepted"/>
   <variant name="Terms-of-service.Declined"/>
+  <variant name="Theme-selection.NotApplicable"/>
+  <variant name="Theme-selection.Proceed"/>
   <variant name="User-creation.Cancel"/>
   <variant name="User-creation.CreateChildAccount"/>
   <variant name="User-creation.EnterpriseEnroll"/>
@@ -725,6 +728,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Which button the user clicked on the out-of-box sync consent screen.
     Recorded when the user clicks the button, which also closes the screen.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.ThemeSelectionScreen.SelectedTheme" enum="SelectedTheme"
+    expires_after="2024-02-07">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Theme selected from OOBE theme selection screen. Recorded after the next
+    button is clicked.
   </summary>
 </histogram>
 
