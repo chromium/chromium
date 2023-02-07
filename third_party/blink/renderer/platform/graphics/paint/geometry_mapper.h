@@ -223,6 +223,11 @@ class PLATFORM_EXPORT GeometryMapper {
       const PropertyTreeState& local_state,
       const PropertyTreeState& ancestor_state);
 
+  static void MapFixedVisualRectInScrollForCompositingOverlap(
+      const TransformPaintPropertyNode& scroll_translation,
+      gfx::RectF& rect,
+      PropertyTreeState& state);
+
   static void MapVisualRectAboveScrollForCompositingOverlap(
       const TransformPaintPropertyNode& scroll_translation,
       gfx::RectF& rect,
