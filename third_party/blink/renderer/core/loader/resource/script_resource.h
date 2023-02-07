@@ -113,10 +113,6 @@ class CORE_EXPORT ScriptResource final : public TextResource {
 
   const ParkableString& SourceText();
 
-  const ParkableString& RawSourceText();
-
-  bool IsWebSnapshot() const;
-
   // Get the resource's current text. This can return partial data, so should
   // not be used outside of the inspector.
   String TextForInspector() const;
@@ -247,8 +243,6 @@ class CORE_EXPORT ScriptResource final : public TextResource {
 
   void OnDataPipeReadable(MojoResult result,
                           const mojo::HandleSignalsState& state);
-
-  bool DataHasPrefix(const base::span<const char>& prefix) const;
 
   ParkableString source_text_;
 

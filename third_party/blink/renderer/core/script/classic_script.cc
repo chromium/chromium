@@ -111,16 +111,10 @@ ClassicScript* ClassicScript::CreateFromResource(
   // ... the URL from which the script was obtained, ...</spec>
   KURL base_url = resource->GetResponse().ResponseUrl();
 
-  ParkableString source;
-  if (resource->IsWebSnapshot()) {
-    source = resource->RawSourceText();
-  } else {
-    source = resource->SourceText();
-  }
   // We lose the encoding information from ScriptResource.
   // Not sure if that matters.
   return MakeGarbageCollected<ClassicScript>(
-      source, source_url, base_url, fetch_options,
+      resource->SourceText(), source_url, base_url, fetch_options,
       ScriptSourceLocationType::kExternalFile,
       resource->GetResponse().IsCorsSameOrigin()
           ? SanitizeScriptErrors::kDoNotSanitize

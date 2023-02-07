@@ -1211,13 +1211,6 @@
       depends_on: ["DocumentPolicy"],
       status: "experimental"
     },
-    // Prototype implementation of web snapshots - blink integration. Suitable
-    // for local testing, *not* suitable for origin trials. Replacing the
-    // current implementation with the real Blink integration is expected
-    // before M102. See crbug.com/1173534.
-    {
-      name: "ExperimentalWebSnapshots",
-    },
     {
       name: "ExposeRenderTimeNonTaoDelayedImage",
     },
