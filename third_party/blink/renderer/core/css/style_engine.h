@@ -347,7 +347,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void SetRuleUsageTracker(StyleRuleUsageTracker*);
 
   Font ComputeFont(Element& element,
-                   ComputedStyle& font_style,
+                   const ComputedStyle& font_style,
                    const CSSPropertyValueSet& font_properties);
 
   PendingInvalidations& GetPendingNodeInvalidations() {

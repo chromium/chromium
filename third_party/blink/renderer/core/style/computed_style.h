@@ -2755,7 +2755,8 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   friend class MatchedPropertiesCache;
 
   explicit ComputedStyleBuilder(const ComputedStyle& style) {
-    SetStyle(ComputedStyle::Clone(style));
+    style_ = ComputedStyle::Clone(style);
+    SetStyleBase(*style_);
   }
   ComputedStyleBuilder(const ComputedStyleBuilder& builder) = delete;
   ComputedStyleBuilder(ComputedStyleBuilder&&) = default;
@@ -3431,13 +3432,6 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   ComputedStyleBuilder() = default;
 
   CORE_EXPORT void ClearVariableNamesCache();
-
-  // TODO(andruud): This should be part of the constructor, but
-  // StyleResolverState does not work that way.
-  void SetStyle(scoped_refptr<ComputedStyle> style) {
-    style_ = std::move(style);
-    SetStyleBase(*style_);
-  }
 
   scoped_refptr<ComputedStyle> style_;
 };

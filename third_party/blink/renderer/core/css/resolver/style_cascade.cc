@@ -175,6 +175,7 @@ void StyleCascade::AddInterpolations(const ActiveInterpolationsMap* map,
 
 void StyleCascade::Apply(CascadeFilter filter) {
   AnalyzeIfNeeded();
+  state_.UpdateLengthConversionData();
 
   CascadeResolver resolver(filter, ++generation_);
 

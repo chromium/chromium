@@ -2969,14 +2969,11 @@ TEST_F(StyleResolverTestCQ, ContainerUnitContext) {
   Element* div = GetDocument().getElementById("div");
   ASSERT_TRUE(div);
 
-  scoped_refptr<ComputedStyle> style =
-      ComputedStyle::Clone(div->ComputedStyleRef());
-
   // Don't provide a StyleRecalcContext here.
   StyleResolverState state(GetDocument(), *div);
 
   // To make UpdateLengthConversionData happen.
-  state.SetStyle(style);
+  state.SetStyle(div->ComputedStyleRef());
 
   EXPECT_DOUBLE_EQ(200.0, state.CssToLengthConversionData().ContainerWidth());
   EXPECT_DOUBLE_EQ(200.0, state.CssToLengthConversionData().ContainerHeight());

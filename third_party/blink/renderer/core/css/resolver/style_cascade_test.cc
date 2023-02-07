@@ -226,7 +226,7 @@ class TestCascade {
   Element* Body() const { return GetDocument().body(); }
 
   static StyleResolverState& InitState(StyleResolverState& state) {
-    state.SetStyle(InitialStyle(state.GetDocument()));
+    state.SetStyle(*InitialStyle(state.GetDocument()));
     state.SetParentStyle(InitialStyle(state.GetDocument()));
     return state;
   }

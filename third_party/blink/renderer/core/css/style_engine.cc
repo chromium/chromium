@@ -712,7 +712,7 @@ void StyleEngine::SetRuleUsageTracker(StyleRuleUsageTracker* tracker) {
 }
 
 Font StyleEngine::ComputeFont(Element& element,
-                              ComputedStyle& font_style,
+                              const ComputedStyle& font_style,
                               const CSSPropertyValueSet& font_properties) {
   UpdateActiveStyle();
   return GetStyleResolver().ComputeFont(element, font_style, font_properties);

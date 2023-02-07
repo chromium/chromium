@@ -86,9 +86,13 @@ class CORE_EXPORT StyleResolverState {
     return element_context_;
   }
 
-  void SetStyle(scoped_refptr<ComputedStyle>);
-  ComputedStyleBuilder& StyleBuilder() { return style_builder_; }
-  const ComputedStyleBuilder& StyleBuilder() const { return style_builder_; }
+  void SetStyle(const ComputedStyle& style) {
+    // FIXME: Improve RAII of StyleResolverState to remove this function.
+    style_builder_ = ComputedStyleBuilder(style);
+    UpdateLengthConversionData();
+  }
+  ComputedStyleBuilder& StyleBuilder() { return *style_builder_; }
+  const ComputedStyleBuilder& StyleBuilder() const { return *style_builder_; }
   scoped_refptr<ComputedStyle> TakeStyle();
 
   const CSSToLengthConversionData& CssToLengthConversionData() const {
@@ -203,15 +207,16 @@ class CORE_EXPORT StyleResolverState {
   // Update computed line-height and font used for 'lh' unit resolution.
   void UpdateLineHeight();
 
- private:
   void UpdateLengthConversionData();
+
+ private:
   CSSToLengthConversionData UnzoomedLengthConversionData(const FontSizeStyle&);
 
   ElementResolveContext element_context_;
   Document* document_;
 
   // The primary output for each element's style resolve.
-  ComputedStyleBuilder style_builder_;
+  absl::optional<ComputedStyleBuilder> style_builder_;
 
   CSSToLengthConversionData::Flags length_conversion_flags_ = 0;
   CSSToLengthConversionData css_to_length_conversion_data_;

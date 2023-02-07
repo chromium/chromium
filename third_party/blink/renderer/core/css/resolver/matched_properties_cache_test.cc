@@ -70,7 +70,7 @@ class MatchedPropertiesCacheTestCache {
     StyleResolverState state(document_, *document_.body(),
                              nullptr /* StyleRecalcContext */,
                              StyleRequest(&parent_style));
-    state.SetStyle(ComputedStyle::Clone(style));
+    state.SetStyle(style);
     return cache_.Find(key.InnerKey(), state);
   }
 

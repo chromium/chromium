@@ -40,7 +40,7 @@ class CSSPropertyTest : public PageTestBase {
       const CSSProperty& property,
       const CSSValue& value) {
     StyleResolverState state(GetDocument(), *GetDocument().body());
-    state.SetStyle(GetDocument().GetStyleResolver().CreateComputedStyle());
+    state.SetStyle(GetDocument().GetStyleResolver().InitialStyle());
 
     // The border-style needs to be non-hidden and non-none, otherwise
     // the computed values of border-width properties are always zero.

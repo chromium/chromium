@@ -1093,23 +1093,20 @@ void StyleResolver::ApplyInheritance(Element& element,
     // entirely (leaving the scoped_refptr untouched). The bad news is that if
     // the element has rules but no matched properties, we currently clone.
 
-    state.SetStyle(ComputedStyle::Clone(*state.ParentStyle()));
+    state.SetStyle(*state.ParentStyle());
   } else {
     // We use a different initial_style for img elements to match the overrides
     // in html.css. This avoids allocation overhead from copy-on-write when
     // these properties are set only via UA styles. The overhead shows up on
     // motionmark which stress tests this code. See crbub.com/1369454 for
     // details.
-    ComputedStyleBuilder builder(IsA<HTMLImageElement>(element)
-                                     ? *initial_style_for_img_
-                                     : *initial_style_);
-
-    builder.InheritFrom(
+    state.SetStyle(IsA<HTMLImageElement>(element) ? *initial_style_for_img_
+                                                  : *initial_style_);
+    state.StyleBuilder().InheritFrom(
         *state.ParentStyle(),
         (!style_request.IsPseudoStyleRequest() && IsAtShadowBoundary(&element))
             ? ComputedStyleBuilder::kAtShadowBoundary
             : ComputedStyleBuilder::kNotAtShadowBoundary);
-    state.SetStyle(builder.TakeStyle());
 
     // contenteditable attribute (implemented by -webkit-user-modify) should
     // be propagated from shadow host to distributed node.
@@ -1131,9 +1128,9 @@ void StyleResolver::InitStyleAndApplyInheritance(
   if (AllowsInheritance(style_request, state.ParentStyle())) {
     ApplyInheritance(element, style_request, state);
   } else {
-    state.SetStyle(InitialStyleForElement());
-    state.SetParentStyle(
-        ComputedStyle::Clone(*state.StyleBuilder().InternalStyle()));
+    scoped_refptr<const ComputedStyle> initial_style = InitialStyleForElement();
+    state.SetStyle(*initial_style);
+    state.SetParentStyle(initial_style);
     state.SetLayoutParentStyle(state.ParentStyle());
     if (!style_request.IsPseudoStyleRequest() &&
         element != GetDocument().documentElement()) {
@@ -1513,7 +1510,7 @@ void StyleResolver::ApplyBaseStyle(
                                animation_base_computed_style, *style_snapshot));
 #endif
 
-    state.SetStyle(ComputedStyle::Clone(*animation_base_computed_style));
+    state.SetStyle(*animation_base_computed_style);
     state.StyleBuilder().SetBaseData(
         scoped_refptr<StyleBaseData>(GetBaseData(state)));
     state.StyleBuilder().SetStyleType(style_request.pseudo_id);
@@ -1532,7 +1529,7 @@ void StyleResolver::ApplyBaseStyle(
     // We are in a situation where we can reuse the old style
     // and just apply the element's inline style on top of it
     // (see the function comment).
-    state.SetStyle(ComputedStyle::Clone(*element->GetComputedStyle()));
+    state.SetStyle(*element->GetComputedStyle());
 
     const CSSPropertyValueSet* inline_style = element->InlineStyle();
     if (inline_style) {
@@ -1619,7 +1616,7 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
   StyleResolverState state(element.GetDocument(), element,
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(parent_style));
-  state.SetStyle(ComputedStyle::Clone(base_style));
+  state.SetStyle(base_style);
   if (value) {
     STACK_UNINITIALIZED StyleCascade cascade(state);
     auto* set =
@@ -1645,14 +1642,12 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForPage(
     return initial_style;
   }
 
+  const ComputedStyle* document_style = GetDocument().GetComputedStyle();
   StyleResolverState state(GetDocument(), *GetDocument().documentElement(),
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(initial_style.get()));
-
-  const ComputedStyle* document_style = GetDocument().GetComputedStyle();
-  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
-  builder.InheritFrom(*document_style);
-  state.SetStyle(builder.TakeStyle());
+  state.SetStyle(*initial_style);
+  state.StyleBuilder().InheritFrom(*document_style);
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
@@ -1765,7 +1760,7 @@ StyleRuleList* StyleResolver::StyleRulesForElement(Element* element,
 HeapHashMap<CSSPropertyName, Member<const CSSValue>>
 StyleResolver::CascadedValuesForElement(Element* element, PseudoId pseudo_id) {
   StyleResolverState state(GetDocument(), *element);
-  state.SetStyle(CreateComputedStyle());
+  state.SetStyle(InitialStyle());
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
   ElementRuleCollector collector(state.ElementContext(),
@@ -2193,7 +2188,7 @@ const CSSValue* StyleResolver::ComputeValue(
   const ComputedStyle* base_style = element->GetComputedStyle();
   StyleResolverState state(element->GetDocument(), *element);
   STACK_UNINITIALIZED StyleCascade cascade(state);
-  state.SetStyle(ComputedStyle::Clone(*base_style));
+  state.SetStyle(*base_style);
   auto* set =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(state.GetParserMode());
   set->SetProperty(property_name, value);
@@ -2223,7 +2218,7 @@ FilterOperations StyleResolver::ComputeFilterOperations(
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(parent.get()));
 
-  state.SetStyle(ComputedStyle::Clone(*parent));
+  state.SetStyle(*parent);
 
   StyleBuilder::ApplyProperty(GetCSSPropertyFilter(), state,
                               filter_value.EnsureScopedValue(&GetDocument()));
@@ -2267,7 +2262,7 @@ StyleResolver::BeforeChangeStyleForTransitionUpdate(
     ActiveInterpolationsMap& transition_interpolations) {
   StyleResolverState state(GetDocument(), element);
   STACK_UNINITIALIZED StyleCascade cascade(state);
-  state.SetStyle(ComputedStyle::Clone(base_style));
+  state.SetStyle(base_style);
 
   // Various property values may depend on the parent style. A valid parent
   // style is required, even if animating the root element, in order to
@@ -2391,7 +2386,7 @@ StyleRuleList* StyleResolver::CollectMatchingRulesFromRuleSet(
 // thread. If you add/remove properties here, make sure they are also properly
 // handled by FontStyleResolver.
 Font StyleResolver::ComputeFont(Element& element,
-                                ComputedStyle& style,
+                                const ComputedStyle& style,
                                 const CSSPropertyValueSet& property_set) {
   static const CSSProperty* properties[6] = {
       &GetCSSPropertyFontSize(),        &GetCSSPropertyFontFamily(),
@@ -2403,7 +2398,7 @@ Font StyleResolver::ComputeFont(Element& element,
   StyleResolverState state(GetDocument(), element,
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(&style));
-  state.SetStyle(&style);
+  state.SetStyle(style);
   if (const ComputedStyle* parent_style = element.GetComputedStyle()) {
     state.SetParentStyle(parent_style);
   }
@@ -2781,7 +2776,7 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForFormattedText(
       GetDocument(), EnsureElementForFormattedText(),
       nullptr /* StyleRecalcContext */,
       StyleRequest{parent_style ? parent_style : &InitialStyle()});
-  state.SetStyle(builder.TakeStyle());
+  state.SetStyle(*builder.TakeStyle());
 
   // Use StyleCascade to apply inheritance in the correct order.
   STACK_UNINITIALIZED StyleCascade cascade(state);
@@ -2905,7 +2900,7 @@ scoped_refptr<const ComputedStyle> StyleResolver::ResolvePositionFallbackStyle(
 
   StyleRuleTry* try_rule = position_fallback_rule->TryRules()[index];
   StyleResolverState state(GetDocument(), element);
-  state.SetStyle(ComputedStyle::Clone(base_style));
+  state.SetStyle(base_style);
   const CSSPropertyValueSet& properties = try_rule->Properties();
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
