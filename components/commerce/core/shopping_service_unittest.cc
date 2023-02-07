@@ -474,9 +474,6 @@ TEST_F(ShoppingServiceTest, TestShoppingListEligible_Policy) {
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
-  checker.SetSignedIn(true);
-  checker.SetAnonymizedUrlDataCollectionEnabled(true);
-  checker.SetWebAndAppActivityEnabled(true);
 
   ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
                                      kEligibleLocale));
@@ -495,9 +492,6 @@ TEST_F(ShoppingServiceTest, TestShoppingListEligible_FeatureFlagOff) {
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
-  checker.SetSignedIn(true);
-  checker.SetAnonymizedUrlDataCollectionEnabled(true);
-  checker.SetWebAndAppActivityEnabled(true);
 
   ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
                                       kEligibleLocale));
@@ -512,9 +506,6 @@ TEST_F(ShoppingServiceTest, TestShoppingListEligible_MSBB) {
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
-  checker.SetSignedIn(true);
-  checker.SetAnonymizedUrlDataCollectionEnabled(true);
-  checker.SetWebAndAppActivityEnabled(true);
 
   ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
                                      kEligibleLocale));
@@ -534,9 +525,6 @@ TEST_F(ShoppingServiceTest, TestShoppingListEligible_SignIn) {
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
-  checker.SetSignedIn(true);
-  checker.SetAnonymizedUrlDataCollectionEnabled(true);
-  checker.SetWebAndAppActivityEnabled(true);
 
   ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
                                      kEligibleLocale));
@@ -556,14 +544,30 @@ TEST_F(ShoppingServiceTest, TestShoppingListEligible_WAA) {
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
-  checker.SetSignedIn(true);
-  checker.SetAnonymizedUrlDataCollectionEnabled(true);
-  checker.SetWebAndAppActivityEnabled(true);
 
   ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
                                      kEligibleLocale));
 
   checker.SetWebAndAppActivityEnabled(false);
+
+  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
+                                      kEligibleLocale));
+}
+
+TEST_F(ShoppingServiceTest, TestShoppingListEligible_ChildAccount) {
+  test_features_.InitWithFeatures({kShoppingList},
+                                  {kShoppingListRegionLaunched});
+
+  TestingPrefServiceSimple prefs;
+  RegisterPrefs(prefs.registry());
+  SetShoppingListEnterprisePolicyPref(&prefs, true);
+
+  MockAccountChecker checker;
+
+  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
+                                     kEligibleLocale));
+
+  checker.SetIsSubjectToParentalControls(true);
 
   ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
                                       kEligibleLocale));
@@ -578,9 +582,6 @@ TEST_F(ShoppingServiceTest, TestShoppingListEligible_CountryAndLocale) {
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
-  checker.SetSignedIn(true);
-  checker.SetAnonymizedUrlDataCollectionEnabled(true);
-  checker.SetWebAndAppActivityEnabled(true);
 
   ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
                                      kEligibleLocale));
@@ -600,9 +601,6 @@ TEST_F(ShoppingServiceTest,
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
-  checker.SetSignedIn(true);
-  checker.SetAnonymizedUrlDataCollectionEnabled(true);
-  checker.SetWebAndAppActivityEnabled(true);
 
   ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
                                      kEligibleLocale));
@@ -621,9 +619,6 @@ TEST_F(ShoppingServiceTest, TestShoppingListEligible_CountryAndLocale_NoFlags) {
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
-  checker.SetSignedIn(true);
-  checker.SetAnonymizedUrlDataCollectionEnabled(true);
-  checker.SetWebAndAppActivityEnabled(true);
 
   ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
                                       kEligibleLocale));
@@ -641,9 +636,6 @@ TEST_F(ShoppingServiceTest,
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
-  checker.SetSignedIn(true);
-  checker.SetAnonymizedUrlDataCollectionEnabled(true);
-  checker.SetWebAndAppActivityEnabled(true);
 
   ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
                                      kEligibleLocale));

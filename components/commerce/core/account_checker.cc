@@ -12,6 +12,8 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -78,6 +80,21 @@ bool AccountChecker::IsAnonymizedUrlDataCollectionEnabled() {
 bool AccountChecker::IsWebAndAppActivityEnabled() {
   return pref_service_ &&
          pref_service_->GetBoolean(kWebAndAppActivityEnabledForShopping);
+}
+
+bool AccountChecker::IsSubjectToParentalControls() {
+  if (!identity_manager_) {
+    return false;
+  }
+
+  AccountCapabilities capabilities =
+      identity_manager_
+          ->FindExtendedAccountInfo(identity_manager_->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin))
+          .capabilities;
+
+  return capabilities.is_subject_to_parental_controls() ==
+         signin::Tribool::kTrue;
 }
 
 void AccountChecker::OnPrimaryAccountChanged(

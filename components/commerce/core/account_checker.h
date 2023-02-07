@@ -40,6 +40,8 @@ class AccountChecker : public signin::IdentityManager::Observer {
 
   virtual bool IsWebAndAppActivityEnabled();
 
+  virtual bool IsSubjectToParentalControls();
+
  protected:
   friend class ShoppingService;
   friend class MockAccountChecker;

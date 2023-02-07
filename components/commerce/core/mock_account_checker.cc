@@ -22,6 +22,10 @@ bool MockAccountChecker::IsWebAndAppActivityEnabled() {
   return web_and_app_activity_enabled_;
 }
 
+bool MockAccountChecker::IsSubjectToParentalControls() {
+  return is_subject_to_parental_controls_;
+}
+
 void MockAccountChecker::SetSignedIn(bool signed_in) {
   signed_in_ = signed_in;
 }
@@ -32,6 +36,11 @@ void MockAccountChecker::SetAnonymizedUrlDataCollectionEnabled(bool enabled) {
 
 void MockAccountChecker::SetWebAndAppActivityEnabled(bool enabled) {
   web_and_app_activity_enabled_ = enabled;
+}
+
+void MockAccountChecker::SetIsSubjectToParentalControls(
+    bool subject_to_parental_controls) {
+  is_subject_to_parental_controls_ = subject_to_parental_controls;
 }
 
 }  // namespace commerce

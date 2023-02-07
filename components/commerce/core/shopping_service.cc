@@ -755,7 +755,8 @@ bool ShoppingService::IsShoppingListEligible(AccountChecker* account_checker,
   // store data.
   if (!account_checker || !account_checker->IsSignedIn() ||
       !account_checker->IsAnonymizedUrlDataCollectionEnabled() ||
-      !account_checker->IsWebAndAppActivityEnabled()) {
+      !account_checker->IsWebAndAppActivityEnabled() ||
+      account_checker->IsSubjectToParentalControls()) {
     return false;
   }
 

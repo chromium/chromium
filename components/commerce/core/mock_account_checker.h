@@ -12,6 +12,7 @@ namespace commerce {
 // Used to mock user account status in tests.
 class MockAccountChecker : public AccountChecker {
  public:
+  // Construct an AccountChecker with the fewest restrictions by default.
   MockAccountChecker();
   MockAccountChecker(const MockAccountChecker&) = delete;
   ~MockAccountChecker() override;
@@ -22,16 +23,21 @@ class MockAccountChecker : public AccountChecker {
 
   bool IsWebAndAppActivityEnabled() override;
 
+  bool IsSubjectToParentalControls() override;
+
   void SetSignedIn(bool signed_in);
 
   void SetAnonymizedUrlDataCollectionEnabled(bool enabled);
 
   void SetWebAndAppActivityEnabled(bool enabled);
 
+  void SetIsSubjectToParentalControls(bool subject_to_parental_controls);
+
  private:
-  bool signed_in_;
-  bool anonymized_url_data_collection_enabled_;
-  bool web_and_app_activity_enabled_;
+  bool signed_in_{true};
+  bool anonymized_url_data_collection_enabled_{true};
+  bool web_and_app_activity_enabled_{true};
+  bool is_subject_to_parental_controls_{false};
 };
 
 }  // namespace commerce
