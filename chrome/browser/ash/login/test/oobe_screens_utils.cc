@@ -16,7 +16,6 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enrollment_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/eula_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/guest_tos_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
@@ -125,11 +124,6 @@ void SkipToEnrollmentOnRecovery() {
   WaitForNetworkSelectionScreen();
   TapNetworkSelectionNext();
 
-  if (!features::IsOobeConsolidatedConsentEnabled()) {
-    WaitForEulaScreen();
-    TapEulaAccept();
-  }
-
   WaitForUpdateScreen();
   ExitUpdateScreenNoUpdate();
 
@@ -161,18 +155,6 @@ void WaitForOobeJSReady() {
           run_loop.QuitClosure())) {
     run_loop.Run();
   }
-}
-
-void WaitForEulaScreen() {
-  if (!LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build)
-    return;
-  WaitFor(EulaView::kScreenId);
-}
-
-void TapEulaAccept() {
-  if (!LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build)
-    return;
-  OobeJS().TapOnPath({"oobe-eula-md", "acceptButton"});
 }
 
 void WaitForSyncConsentScreen() {

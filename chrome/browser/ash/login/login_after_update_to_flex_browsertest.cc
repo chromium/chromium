@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -23,7 +21,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/eula_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/hardware_data_collection_screen_handler.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,8 +29,6 @@ namespace ash {
 
 namespace {
 
-const test::UIPath kEulaDialog = {"oobe-eula-md", "eulaDialog"};
-const test::UIPath kAcceptEulaButton = {"oobe-eula-md", "acceptButton"};
 const test::UIPath kAcceptHWDataCollectionButton = {"hw-data-collection",
                                                     "acceptButton"};
 const test::UIPath kAcceptConsolidatedConsentButton = {"consolidated-consent",
@@ -43,21 +38,10 @@ const test::UIPath kConsolidatedConsentDialog = {"consolidated-consent",
 
 }  // namespace
 
-// Boolean parameter represents OobeConsolidatedConsent feature state.
 class LoginAfterUpdateToFlexTest : public LoginManagerTest,
-                                   public LocalStateMixin::Delegate,
-                                   public ::testing::WithParamInterface<bool> {
+                                   public LocalStateMixin::Delegate {
  public:
-  LoginAfterUpdateToFlexTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kOobeConsolidatedConsent);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kOobeConsolidatedConsent);
-    }
-    login_manager_mixin_.AppendRegularUsers(2);
-  }
+  LoginAfterUpdateToFlexTest() { login_manager_mixin_.AppendRegularUsers(2); }
 
   LoginAfterUpdateToFlexTest(const LoginAfterUpdateToFlexTest&) = delete;
   LoginAfterUpdateToFlexTest& operator=(const LoginAfterUpdateToFlexTest&) =
@@ -105,49 +89,38 @@ class LoginAfterUpdateToFlexTest : public LoginManagerTest,
   FakeEulaMixin fake_eula_{&mixin_host_, embedded_test_server()};
   ScopedCrosSettingsTestHelper settings_helper_{
       /*create_settings_service=*/false};
-  base::test::ScopedFeatureList scoped_feature_list_;
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
-IN_PROC_BROWSER_TEST_P(LoginAfterUpdateToFlexTest, DeviceOwner) {
+IN_PROC_BROWSER_TEST_F(LoginAfterUpdateToFlexTest, DeviceOwner) {
   LoginUser(GetOwnerAccountId());
-  if (!features::IsOobeConsolidatedConsentEnabled()) {
-    OobeScreenWaiter(EulaView::kScreenId).Wait();
-    // Wait until the webview has finished loading.
-    test::OobeJS().CreateVisibilityWaiter(true, kEulaDialog)->Wait();
-    test::OobeJS().TapOnPath(kAcceptEulaButton);
-  } else {
-    EXPECT_FALSE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-        prefs::kRevenOobeConsolidatedConsentAccepted));
-    OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
-    test::OobeJS()
-        .CreateVisibilityWaiter(true, kConsolidatedConsentDialog)
-        ->Wait();
-    test::OobeJS().TapOnPath(kAcceptConsolidatedConsentButton);
-    EXPECT_TRUE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-        prefs::kRevenOobeConsolidatedConsentAccepted));
-  }
+  EXPECT_FALSE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
+      prefs::kRevenOobeConsolidatedConsentAccepted));
+  OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, kConsolidatedConsentDialog)
+      ->Wait();
+  test::OobeJS().TapOnPath(kAcceptConsolidatedConsentButton);
+  EXPECT_TRUE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
+      prefs::kRevenOobeConsolidatedConsentAccepted));
+
   OobeScreenWaiter(HWDataCollectionView::kScreenId).Wait();
   test::OobeJS().TapOnPath(kAcceptHWDataCollectionButton);
   test::WaitForPrimaryUserSessionStart();
 }
 
-IN_PROC_BROWSER_TEST_P(LoginAfterUpdateToFlexTest, RegularUser) {
+IN_PROC_BROWSER_TEST_F(LoginAfterUpdateToFlexTest, RegularUser) {
   LoginUser(GetRegularAccountId());
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    EXPECT_FALSE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-        prefs::kRevenOobeConsolidatedConsentAccepted));
-    OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
-    test::OobeJS()
-        .CreateVisibilityWaiter(true, kConsolidatedConsentDialog)
-        ->Wait();
-    test::OobeJS().TapOnPath(kAcceptConsolidatedConsentButton);
-    EXPECT_TRUE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-        prefs::kRevenOobeConsolidatedConsentAccepted));
-  }
+  EXPECT_FALSE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
+      prefs::kRevenOobeConsolidatedConsentAccepted));
+  OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, kConsolidatedConsentDialog)
+      ->Wait();
+  test::OobeJS().TapOnPath(kAcceptConsolidatedConsentButton);
+  EXPECT_TRUE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
+      prefs::kRevenOobeConsolidatedConsentAccepted));
   test::WaitForPrimaryUserSessionStart();
 }
-
-INSTANTIATE_TEST_SUITE_P(All, LoginAfterUpdateToFlexTest, testing::Bool());
 
 }  // namespace ash

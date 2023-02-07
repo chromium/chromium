@@ -194,33 +194,6 @@ class NetworkScreenTester extends ScreenElementApi {
   }
 }
 
-class EulaScreenTester extends ScreenElementApi {
-  constructor() {
-    super('oobe-eula-md');
-    this.eulaStep = new PolymerElementApi(this, '#eulaDialog');
-    this.nextButton = new PolymerElementApi(this, '#acceptButton');
-  }
-
-  /** @override */
-  shouldSkip() {
-    // Eula screen should skipped on non-branded build and on CfM devices.
-    return loadTimeData.getBoolean('testapi_shouldSkipEula');
-  }
-
-  /**
-   * Returns if the EULA Screen is ready for test interaction.
-   * @return {boolean}
-   */
-  isReadyForTesting() {
-    return this.isVisible() && this.eulaStep.isVisible() &&
-        this.nextButton.isVisible();
-  }
-
-  getNextButtonName() {
-    return loadTimeData.getString('oobeEulaAcceptAndContinueButtonText');
-  }
-}
-
 class UpdateScreenTester extends ScreenElementApi {
   constructor() {
     super('oobe-update');
@@ -808,7 +781,6 @@ export class OobeApiProvider {
       HIDDetectionScreen: new HIDDetectionScreenTester(),
       WelcomeScreen: new WelcomeScreenTester(),
       NetworkScreen: new NetworkScreenTester(),
-      EulaScreen: new EulaScreenTester(),
       UpdateScreen: new UpdateScreenTester(),
       EnrollmentScreen: new EnrollmentScreenTester(),
       UserCreationScreen: new UserCreationScreenTester(),

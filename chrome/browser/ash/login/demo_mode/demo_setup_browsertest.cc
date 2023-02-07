@@ -46,7 +46,6 @@
 #include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/demo_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/eula_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
@@ -116,7 +115,6 @@ const test::UIPath kDemoSetupErrorDialogMessage = {kDemoSetupId,
 
 const test::UIPath kArcTosDialog = {kArcTosId, "arcTosDialog"};
 const test::UIPath kArcTosAcceptButton = {kArcTosId, "arcTosAcceptButton"};
-const test::UIPath kArcTosDemoAppsNotice = {kArcTosId, "arcTosMetricsDemoApps"};
 const test::UIPath kArcTosBackButton = {kArcTosId, "arcTosBackButton"};
 const test::UIPath kArcTosNextButton = {kArcTosId, "arcTosNextButton"};
 
@@ -372,36 +370,14 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
     test::LockDemoDeviceInstallAttributes();
     // TODO(b/246012796): If possible, re-enable waiting on the setup screen to
     // be shown
-    if (features::IsOobeConsolidatedConsentEnabled()) {
-      WaitForConsolidatedConsentScreen();
-
-      test::TapConsolidatedConsentAccept();
-    } else {
-      test::WaitForEulaScreen();
-      test::TapEulaAccept();
-
-      WaitForArcTosScreen();
-
-      test::OobeJS().ExpectVisiblePath(kArcTosDemoAppsNotice);
-
-      AcceptArcTos();
-    }
+    WaitForConsolidatedConsentScreen();
+    test::TapConsolidatedConsentAccept();
   }
 
   void AcceptTermsAndExpectDemoSetupFailure() {
-    if (features::IsOobeConsolidatedConsentEnabled()) {
-      WaitForConsolidatedConsentScreen();
-      test::TapConsolidatedConsentAccept();
-    } else {
-      test::WaitForEulaScreen();
-      test::TapEulaAccept();
+    WaitForConsolidatedConsentScreen();
+    test::TapConsolidatedConsentAccept();
 
-      WaitForArcTosScreen();
-
-      test::OobeJS().ExpectVisiblePath(kArcTosDemoAppsNotice);
-
-      AcceptArcTos();
-    }
     // As we expect the error message to stay on the screen, it is safe to
     // wait for it in the usual manner.
     OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
@@ -774,11 +750,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, ClickNetworkOnNetworkScreen) {
 
   ProceedThroughDemoPreferencesScreen();
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    test::WaitForConsolidatedConsentScreen();
-  } else {
-    test::WaitForEulaScreen();
-  }
+  test::WaitForConsolidatedConsentScreen();
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
@@ -797,11 +769,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   ProceedThroughDemoPreferencesScreen();
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    test::WaitForConsolidatedConsentScreen();
-  } else {
-    test::WaitForEulaScreen();
-  }
+  test::WaitForConsolidatedConsentScreen();
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnNetworkScreen) {

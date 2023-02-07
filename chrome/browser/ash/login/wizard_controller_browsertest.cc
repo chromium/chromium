@@ -43,7 +43,6 @@
 #include "chrome/browser/ash/login/screens/mock_device_disabled_screen_view.h"
 #include "chrome/browser/ash/login/screens/mock_enable_adb_sideloading_screen.h"
 #include "chrome/browser/ash/login/screens/mock_enable_debugging_screen.h"
-#include "chrome/browser/ash/login/screens/mock_eula_screen.h"
 #include "chrome/browser/ash/login/screens/mock_network_screen.h"
 #include "chrome/browser/ash/login/screens/mock_update_screen.h"
 #include "chrome/browser/ash/login/screens/mock_welcome_screen.h"
@@ -574,13 +573,6 @@ class WizardControllerFlowTest : public WizardControllerTest {
             base::BindRepeating(&WizardController::OnUpdateScreenExit,
                                 base::Unretained(wizard_controller))));
 
-    mock_eula_view_ = std::make_unique<MockEulaView>();
-    mock_eula_screen_ =
-        MockScreenExpectLifecycle(std::make_unique<MockEulaScreen>(
-            mock_eula_view_.get()->AsWeakPtr(),
-            base::BindRepeating(&WizardController::OnEulaScreenExit,
-                                base::Unretained(wizard_controller))));
-
     mock_enrollment_screen_view_ = std::make_unique<MockEnrollmentScreenView>();
     mock_enrollment_screen_ =
         MockScreenExpectLifecycle(std::make_unique<MockEnrollmentScreen>(
@@ -736,21 +728,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
     InitNetworkPortalDetector();
 
     EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
-    if (features::IsOobeConsolidatedConsentEnabled()) {
-      // EULA screen is skipped when OobeConsolidatedConsent is enabled.
-      mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-    } else {
-      EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-      mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-
-      CheckCurrentScreen(EulaView::kScreenId);
-      // Login shelf should still be visible.
-      EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
-
-      EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-      mock_eula_screen_->ExitScreen(
-          EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-    }
+    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
 
     EXPECT_TRUE(GetGeolocationProvider());
 
@@ -764,7 +742,6 @@ class WizardControllerFlowTest : public WizardControllerTest {
 
     CheckCurrentScreen(UserCreationView::kScreenId);
     EXPECT_CALL(*mock_auto_enrollment_check_screen_, HideImpl()).Times(0);
-    EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(0);
 
     EXPECT_FALSE(ExistingUserController::current_controller() == nullptr);
 
@@ -784,9 +761,6 @@ class WizardControllerFlowTest : public WizardControllerTest {
 
   MockUpdateScreen* mock_update_screen_ = nullptr;
   std::unique_ptr<MockUpdateView> mock_update_view_;
-
-  MockEulaScreen* mock_eula_screen_ = nullptr;
-  std::unique_ptr<MockEulaView> mock_eula_view_;
 
   MockEnrollmentScreen* mock_enrollment_screen_ = nullptr;
   std::unique_ptr<MockEnrollmentScreenView> mock_enrollment_screen_view_;
@@ -848,18 +822,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    // EULA screen is skipped when OobeConsolidatedConsent is enabled.
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-  } else {
-    EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-
-    CheckCurrentScreen(EulaView::kScreenId);
-    EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-    mock_eula_screen_->ExitScreen(
-        EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-  }
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
 
   // Let update screen smooth time process (time = 0ms).
   content::RunAllPendingInMessageLoop();
@@ -871,7 +834,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest,
 
   CheckCurrentScreen(UserCreationView::kScreenId);
   EXPECT_CALL(*mock_auto_enrollment_check_screen_, HideImpl()).Times(0);
-  EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(0);
 
   EXPECT_FALSE(ExistingUserController::current_controller() == nullptr);
 }
@@ -891,25 +853,13 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    // EULA screen is skipped when OobeConsolidatedConsent is enabled.
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-  } else {
-    EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-
-    CheckCurrentScreen(EulaView::kScreenId);
-    EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-    mock_eula_screen_->ExitScreen(
-        EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-  }
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
 
   // Let update screen smooth time process (time = 0ms).
   content::RunAllPendingInMessageLoop();
 
   CheckCurrentScreen(UpdateView::kScreenId);
   EXPECT_CALL(*mock_update_screen_, HideImpl()).Times(1);
-  EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(0);
   EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl()).Times(0);
   EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(0);  // last transition
@@ -931,34 +881,15 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest, ControlFlowSkipUpdateEnroll) {
   CheckCurrentScreen(NetworkScreenView::kScreenId);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(0);
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    // EULA screen is skipped when OobeConsolidatedConsent is enabled.
-    WizardController::default_controller()
-        ->wizard_context_->enrollment_triggered_early = true;
-    EXPECT_CALL(*mock_enrollment_screen_view_,
-                SetEnrollmentConfig(EnrollmentModeMatches(
-                    policy::EnrollmentConfig::MODE_MANUAL)))
-        .Times(1);
-    EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl()).Times(0);
-    EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-  } else {
-    EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-
-    CheckCurrentScreen(EulaView::kScreenId);
-    EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-    WizardController::default_controller()
-        ->wizard_context_->enrollment_triggered_early = true;
-    EXPECT_CALL(*mock_enrollment_screen_view_,
-                SetEnrollmentConfig(EnrollmentModeMatches(
-                    policy::EnrollmentConfig::MODE_MANUAL)))
-        .Times(1);
-    EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl()).Times(0);
-    EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
-    mock_eula_screen_->ExitScreen(
-        EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-  }
+  WizardController::default_controller()
+      ->wizard_context_->enrollment_triggered_early = true;
+  EXPECT_CALL(*mock_enrollment_screen_view_,
+              SetEnrollmentConfig(
+                  EnrollmentModeMatches(policy::EnrollmentConfig::MODE_MANUAL)))
+      .Times(1);
+  EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl()).Times(0);
+  EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
 
   content::RunAllPendingInMessageLoop();
 
@@ -966,31 +897,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest, ControlFlowSkipUpdateEnroll) {
   EXPECT_CALL(*mock_auto_enrollment_check_screen_, HideImpl()).Times(0);
   EXPECT_CALL(*mock_enrollment_screen_, HideImpl()).Times(0);
   content::RunAllPendingInMessageLoop();
-}
-
-IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest, ControlFlowEulaDeclined) {
-  // EULA screen will be skipped if the OobeConsolidatedConsent is enabled.
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    return;
-  }
-
-  CheckCurrentScreen(WelcomeView::kScreenId);
-  EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
-  EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
-  mock_welcome_screen_->ExitScreen(WelcomeScreen::Result::NEXT);
-
-  CheckCurrentScreen(NetworkScreenView::kScreenId);
-  EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-  EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-  EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(0);
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-
-  CheckCurrentScreen(EulaView::kScreenId);
-  EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
-  EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-  mock_eula_screen_->ExitScreen(EulaScreen::Result::BACK);
-
-  CheckCurrentScreen(NetworkScreenView::kScreenId);
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest,
@@ -1090,20 +996,7 @@ IN_PROC_BROWSER_TEST_P(WizardControllerUpdateAfterCompletedOobeTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    // EULA screen is skipped when OobeConsolidatedConsent is enabled.
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-  } else {
-    EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-
-    CheckCurrentScreen(EulaView::kScreenId);
-
-    testing::Mock::VerifyAndClearExpectations(mock_eula_screen_);
-    EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-    mock_eula_screen_->ExitScreen(
-        EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-  }
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
 
   // Let update screen smooth time process (time = 0ms).
   content::RunAllPendingInMessageLoop();
@@ -1118,9 +1011,7 @@ IN_PROC_BROWSER_TEST_P(WizardControllerUpdateAfterCompletedOobeTest,
   CheckCurrentScreen(UserCreationView::kScreenId);
 
   testing::Mock::VerifyAndClearExpectations(mock_auto_enrollment_check_screen_);
-  testing::Mock::VerifyAndClearExpectations(mock_eula_screen_);
   EXPECT_CALL(*mock_auto_enrollment_check_screen_, HideImpl()).Times(0);
-  EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(0);
 
   EXPECT_NE(nullptr, ExistingUserController::current_controller());
 }
@@ -1214,18 +1105,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    // EULA screen is skipped when OobeConsolidatedConsent is enabled.
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-  } else {
-    EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-
-    CheckCurrentScreen(EulaView::kScreenId);
-    EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-    mock_eula_screen_->ExitScreen(
-        EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-  }
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
 
   // Let update screen smooth time process (time = 0ms).
   content::RunAllPendingInMessageLoop();
@@ -1255,18 +1135,13 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
                                             std::move(device_state));
 
   EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
-  if (!features::IsOobeConsolidatedConsentEnabled())
-    EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
 
   mock_welcome_screen_->ExitScreen(WelcomeScreen::Result::NEXT);
   mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-  if (!features::IsOobeConsolidatedConsentEnabled()) {
-    mock_eula_screen_->ExitScreen(
-        EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-  }
+
   base::RunLoop().RunUntilIdle();
   mock_update_screen_->RunExit(UpdateScreen::Result::UPDATE_NOT_REQUIRED);
   mock_auto_enrollment_check_screen_->ExitScreen();
@@ -1294,18 +1169,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    // EULA screen is skipped when OobeConsolidatedConsent is enabled.
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-  } else {
-    EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-
-    CheckCurrentScreen(EulaView::kScreenId);
-    EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-    mock_eula_screen_->ExitScreen(
-        EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-  }
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
 
   // Let update screen smooth time process (time = 0ms).
   content::RunAllPendingInMessageLoop();
@@ -1397,18 +1261,7 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    // EULA screen is skipped when OobeConsolidatedConsent is enabled.
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-  } else {
-    EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-
-    CheckCurrentScreen(EulaView::kScreenId);
-    EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-    mock_eula_screen_->ExitScreen(
-        EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-  }
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
 
   // Let update screen smooth time process (time = 0ms).
   base::RunLoop().RunUntilIdle();
@@ -1489,18 +1342,7 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    // EULA screen is skipped when OobeConsolidatedConsent is enabled.
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-  } else {
-    EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-
-    CheckCurrentScreen(EulaView::kScreenId);
-    EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-    mock_eula_screen_->ExitScreen(
-        EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-  }
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
 
   // Let update screen smooth time process (time = 0ms).
   base::RunLoop().RunUntilIdle();
@@ -1634,18 +1476,7 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
     EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
     EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-    if (features::IsOobeConsolidatedConsentEnabled()) {
-      // EULA screen is skipped when OobeConsolidatedConsent is enabled.
-      mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-    } else {
-      EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-      mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-
-      CheckCurrentScreen(EulaView::kScreenId);
-      EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-      mock_eula_screen_->ExitScreen(
-          EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-    }
+    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
 
     if (check_fre) {
       // Wait for auto-enrollment controller to encounter the connection error.
@@ -1751,18 +1582,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    // EULA screen is skipped when OobeConsolidatedConsent is enabled.
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-  } else {
-    EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-
-    CheckCurrentScreen(EulaView::kScreenId);
-    EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-    mock_eula_screen_->ExitScreen(
-        EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-  }
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
 
   // Let update screen smooth time process (time = 0ms).
   base::RunLoop().RunUntilIdle();
@@ -1842,18 +1662,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    // EULA screen is skipped when OobeConsolidatedConsent is enabled.
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-  } else {
-    EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-
-    CheckCurrentScreen(EulaView::kScreenId);
-    EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-    mock_eula_screen_->ExitScreen(
-        EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-  }
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
 
   // Let update screen smooth time process (time = 0ms).
   base::RunLoop().RunUntilIdle();
@@ -1886,18 +1695,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    // EULA screen is skipped when OobeConsolidatedConsent is enabled.
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-  } else {
-    EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-
-    CheckCurrentScreen(EulaView::kScreenId);
-    EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-    mock_eula_screen_->ExitScreen(
-        EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-  }
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
 
   // Let update screen smooth time process (time = 0ms).
   base::RunLoop().RunUntilIdle();
@@ -1944,18 +1742,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    // EULA screen is skipped when OobeConsolidatedConsent is enabled.
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-  } else {
-    EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-
-    CheckCurrentScreen(EulaView::kScreenId);
-    EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-    mock_eula_screen_->ExitScreen(
-        EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-  }
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
 
   // Let update screen smooth time process (time = 0ms).
   task_runner->RunUntilIdle();
@@ -2003,18 +1790,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    // EULA screen is skipped when OobeConsolidatedConsent is enabled.
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-  } else {
-    EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-
-    CheckCurrentScreen(EulaView::kScreenId);
-    EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-    mock_eula_screen_->ExitScreen(
-        EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-  }
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
 
   // Let update screen smooth time process (time = 0ms).
   base::RunLoop().RunUntilIdle();
@@ -2090,16 +1866,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerScreenPriorityOOBETest,
       NetworkScreenView::kScreenId);
   CheckCurrentScreen(NetworkScreenView::kScreenId);
 
-  if (!features::IsOobeConsolidatedConsentEnabled()) {
-    // Showing eula screen should pass it has default priority which is same as
-    // network screen.
-    WizardController::default_controller()->AdvanceToScreen(
-        EulaView::kScreenId);
-    CheckCurrentScreen(EulaView::kScreenId);
-  }
-
   // Showing update screen should pass it has default priority which is same as
-  // eula screen.
+  // network screen.
   WizardController::default_controller()->AdvanceToScreen(
       UpdateView::kScreenId);
   CheckCurrentScreen(UpdateView::kScreenId);
@@ -2286,18 +2054,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerKioskFlowTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    // EULA screen is skipped when OobeConsolidatedConsent is enabled.
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-  } else {
-    EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-
-    CheckCurrentScreen(EulaView::kScreenId);
-    EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-    mock_eula_screen_->ExitScreen(
-        EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-  }
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
 
   // Let update screen smooth time process (time = 0ms).
   content::RunAllPendingInMessageLoop();
@@ -2335,18 +2092,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerKioskFlowTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    // EULA screen is skipped when OobeConsolidatedConsent is enabled.
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-  } else {
-    EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
-
-    CheckCurrentScreen(EulaView::kScreenId);
-    EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-    mock_eula_screen_->ExitScreen(
-        EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-  }
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
 
   // Let update screen smooth time process (time = 0ms).
   content::RunAllPendingInMessageLoop();
@@ -2524,63 +2270,25 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest,
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
   EXPECT_CALL(*mock_demo_preferences_screen_, HideImpl()).Times(1);
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    // If OobeConsolidatedConsent is enabled, the flow will be updated to:
     // Network -> Update -> Consolidated Consent -> Auto Enrollment.
-    EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
-    mock_demo_preferences_screen_->ExitScreen(
-        DemoPreferencesScreen::Result::COMPLETED_CONSOLIDATED_CONSENT);
+  EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
+  mock_demo_preferences_screen_->ExitScreen(
+      DemoPreferencesScreen::Result::COMPLETED_CONSOLIDATED_CONSENT);
 
-    base::RunLoop().RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
 
-    CheckCurrentScreen(UpdateView::kScreenId);
-    EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
+  CheckCurrentScreen(UpdateView::kScreenId);
+  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 
-    EXPECT_CALL(*mock_consolidated_consent_screen_, ShowImpl()).Times(1);
-    EXPECT_CALL(*mock_update_screen_, HideImpl()).Times(1);
-    mock_update_screen_->RunExit(UpdateScreen::Result::UPDATE_NOT_REQUIRED);
+  EXPECT_CALL(*mock_consolidated_consent_screen_, ShowImpl()).Times(1);
+  EXPECT_CALL(*mock_update_screen_, HideImpl()).Times(1);
+  mock_update_screen_->RunExit(UpdateScreen::Result::UPDATE_NOT_REQUIRED);
 
-    EXPECT_CALL(*mock_consolidated_consent_screen_, HideImpl()).Times(1);
-    EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl()).Times(0);
-    EXPECT_CALL(*mock_demo_setup_screen_, ShowImpl()).Times(1);
-    mock_consolidated_consent_screen_->ExitScreen(
-        ConsolidatedConsentScreen::Result::ACCEPTED_DEMO_ONLINE);
-  } else {
-    // The flow when OobeConsolidatedConsent is disabled:
-    // Network -> EULA -> ARC ToS -> Update -> Auto Enrollment.
-    EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-    mock_demo_preferences_screen_->ExitScreen(
-        DemoPreferencesScreen::Result::COMPLETED);
-
-    CheckCurrentScreen(EulaView::kScreenId);
-    EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-
-    EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-    EXPECT_CALL(*mock_arc_terms_of_service_screen_, ShowImpl()).Times(1);
-
-    mock_eula_screen_->ExitScreen(
-        EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-
-    CheckCurrentScreen(ArcTermsOfServiceScreenView::kScreenId);
-    EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-
-    EXPECT_CALL(*mock_arc_terms_of_service_screen_, HideImpl()).Times(1);
-    EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
-
-    mock_arc_terms_of_service_screen_->ExitScreen(
-        ArcTermsOfServiceScreen::Result::ACCEPTED_DEMO_ONLINE);
-
-    base::RunLoop().RunUntilIdle();
-
-    CheckCurrentScreen(UpdateView::kScreenId);
-    EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-
-    EXPECT_CALL(*mock_update_screen_, HideImpl()).Times(1);
-    EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl()).Times(0);
-    EXPECT_CALL(*mock_demo_setup_screen_, ShowImpl()).Times(1);
-
-    mock_update_screen_->RunExit(UpdateScreen::Result::UPDATE_NOT_REQUIRED);
-  }
+  EXPECT_CALL(*mock_consolidated_consent_screen_, HideImpl()).Times(1);
+  EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl()).Times(0);
+  EXPECT_CALL(*mock_demo_setup_screen_, ShowImpl()).Times(1);
+  mock_consolidated_consent_screen_->ExitScreen(
+      ConsolidatedConsentScreen::Result::ACCEPTED_DEMO_ONLINE);
 
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 
@@ -2620,63 +2328,25 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, DemoSetupCanceled) {
   EXPECT_CALL(*mock_demo_preferences_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    // If OobeConsolidatedConsent is enabled, the flow will be updated to:
-    // Network -> Update -> Consolidated Consent -> Auto Enrollment.
-    mock_demo_preferences_screen_->ExitScreen(
-        DemoPreferencesScreen::Result::COMPLETED_CONSOLIDATED_CONSENT);
+  mock_demo_preferences_screen_->ExitScreen(
+      DemoPreferencesScreen::Result::COMPLETED_CONSOLIDATED_CONSENT);
 
-    CheckCurrentScreen(UpdateView::kScreenId);
-    EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
+  CheckCurrentScreen(UpdateView::kScreenId);
+  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 
-    EXPECT_CALL(*mock_update_screen_, HideImpl()).Times(1);
-    EXPECT_CALL(*mock_consolidated_consent_screen_, ShowImpl()).Times(1);
-    mock_update_screen_->RunExit(UpdateScreen::Result::UPDATE_NOT_REQUIRED);
+  EXPECT_CALL(*mock_update_screen_, HideImpl()).Times(1);
+  EXPECT_CALL(*mock_consolidated_consent_screen_, ShowImpl()).Times(1);
+  mock_update_screen_->RunExit(UpdateScreen::Result::UPDATE_NOT_REQUIRED);
 
-    CheckCurrentScreen(ConsolidatedConsentScreenView::kScreenId);
-    EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
+  CheckCurrentScreen(ConsolidatedConsentScreenView::kScreenId);
+  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 
-    EXPECT_CALL(*mock_consolidated_consent_screen_, HideImpl()).Times(1);
-    EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl()).Times(0);
-    EXPECT_CALL(*mock_demo_setup_screen_, ShowImpl()).Times(1);
+  EXPECT_CALL(*mock_consolidated_consent_screen_, HideImpl()).Times(1);
+  EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl()).Times(0);
+  EXPECT_CALL(*mock_demo_setup_screen_, ShowImpl()).Times(1);
 
-    mock_consolidated_consent_screen_->ExitScreen(
-        ConsolidatedConsentScreen::Result::ACCEPTED_DEMO_ONLINE);
-  } else {
-    // The flow when OobeConsolidatedConsent is disabled:
-    // Network -> EULA -> ARC ToS -> Update -> Auto Enrollment.
-    EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-
-    mock_demo_preferences_screen_->ExitScreen(
-        DemoPreferencesScreen::Result::COMPLETED);
-
-    CheckCurrentScreen(EulaView::kScreenId);
-    EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-
-    EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-    EXPECT_CALL(*mock_arc_terms_of_service_screen_, ShowImpl()).Times(1);
-
-    mock_eula_screen_->ExitScreen(
-        EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-
-    CheckCurrentScreen(ArcTermsOfServiceScreenView::kScreenId);
-    EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-
-    EXPECT_CALL(*mock_arc_terms_of_service_screen_, HideImpl()).Times(1);
-
-    mock_arc_terms_of_service_screen_->ExitScreen(
-        ArcTermsOfServiceScreen::Result::ACCEPTED_DEMO_ONLINE);
-
-    base::RunLoop().RunUntilIdle();
-
-    CheckCurrentScreen(UpdateView::kScreenId);
-    EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-
-    EXPECT_CALL(*mock_update_screen_, HideImpl()).Times(1);
-    EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl()).Times(0);
-    EXPECT_CALL(*mock_demo_setup_screen_, ShowImpl()).Times(1);
-    mock_update_screen_->RunExit(UpdateScreen::Result::UPDATE_NOT_REQUIRED);
-  }
+  mock_consolidated_consent_screen_->ExitScreen(
+      ConsolidatedConsentScreen::Result::ACCEPTED_DEMO_ONLINE);
 
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
   EXPECT_CALL(*mock_auto_enrollment_check_screen_, HideImpl()).Times(0);
@@ -2736,78 +2406,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, NetworkBackPressed) {
   EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 }
 
-IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, EulaBackPressed) {
-  // EULA screen will be skipped if the OobeConsolidatedConsent is enabled.
-  if (features::IsOobeConsolidatedConsentEnabled())
-    return;
-
-  CheckCurrentScreen(WelcomeView::kScreenId);
-  EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-  SkipToScreen(EulaView::kScreenId, mock_eula_screen_);
-
-  CheckCurrentScreen(EulaView::kScreenId);
-  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-
-  EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-  EXPECT_CALL(*mock_demo_preferences_screen_, ShowImpl()).Times(1);
-
-  mock_eula_screen_->ExitScreen(EulaScreen::Result::BACK_DEMO_MODE);
-
-  CheckCurrentScreen(DemoPreferencesScreenView::kScreenId);
-  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-}
-
-IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, ArcTosBackPressed) {
-  // ARC ToS screen will be skipped if the OobeConsolidatedConsent is enabled.
-  if (features::IsOobeConsolidatedConsentEnabled())
-    return;
-
-  CheckCurrentScreen(WelcomeView::kScreenId);
-  EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-
-  // User cannot go to ARC ToS screen without accepting eula - simulate that.
-  StartupUtils::MarkEulaAccepted();
-  SkipToScreen(ArcTermsOfServiceScreenView::kScreenId,
-               mock_arc_terms_of_service_screen_);
-
-  CheckCurrentScreen(ArcTermsOfServiceScreenView::kScreenId);
-  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-
-  EXPECT_CALL(*mock_arc_terms_of_service_screen_, HideImpl()).Times(1);
-  EXPECT_CALL(*mock_demo_preferences_screen_, ShowImpl()).Times(1);
-
-  mock_arc_terms_of_service_screen_->ExitScreen(
-      ArcTermsOfServiceScreen::Result::BACK);
-
-  CheckCurrentScreen(DemoPreferencesScreenView::kScreenId);
-  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-}
-
-IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest,
-                       ConsolidatedConsentBackPressed) {
-  if (!features::IsOobeConsolidatedConsentEnabled()) {
-    return;
-  }
-
-  CheckCurrentScreen(WelcomeView::kScreenId);
-  EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-
-  SkipToScreen(ConsolidatedConsentScreenView::kScreenId,
-               mock_consolidated_consent_screen_);
-
-  CheckCurrentScreen(ConsolidatedConsentScreenView::kScreenId);
-  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-
-  EXPECT_CALL(*mock_consolidated_consent_screen_, HideImpl()).Times(1);
-  EXPECT_CALL(*mock_demo_preferences_screen_, ShowImpl()).Times(1);
-
-  mock_consolidated_consent_screen_->ExitScreen(
-      ConsolidatedConsentScreen::Result::BACK_DEMO);
-
-  CheckCurrentScreen(DemoPreferencesScreenView::kScreenId);
-  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-}
-
 class WizardControllerDemoSetupDeviceDisabledTest
     : public WizardControllerDeviceStateTest {
  public:
@@ -2851,58 +2449,23 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupDeviceDisabledTest,
   EXPECT_CALL(*mock_demo_preferences_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    // If OobeConsolidatedConsent is enabled, the flow will be updated to:
-    // Network -> Update -> Consolidated Consent -> Auto Enrollment.
+  // Network -> Update -> Consolidated Consent -> Auto Enrollment.
+  mock_demo_preferences_screen_->ExitScreen(
+      DemoPreferencesScreen::Result::COMPLETED_CONSOLIDATED_CONSENT);
 
-    mock_demo_preferences_screen_->ExitScreen(
-        DemoPreferencesScreen::Result::COMPLETED_CONSOLIDATED_CONSENT);
+  CheckCurrentScreen(UpdateView::kScreenId);
+  EXPECT_CALL(*mock_update_screen_, HideImpl()).Times(1);
+  EXPECT_CALL(*mock_consolidated_consent_screen_, ShowImpl()).Times(1);
+  mock_update_screen_->RunExit(UpdateScreen::Result::UPDATE_NOT_REQUIRED);
 
-    CheckCurrentScreen(UpdateView::kScreenId);
-    EXPECT_CALL(*mock_update_screen_, HideImpl()).Times(1);
-    EXPECT_CALL(*mock_consolidated_consent_screen_, ShowImpl()).Times(1);
-    mock_update_screen_->RunExit(UpdateScreen::Result::UPDATE_NOT_REQUIRED);
+  CheckCurrentScreen(ConsolidatedConsentScreenView::kScreenId);
+  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 
-    CheckCurrentScreen(ConsolidatedConsentScreenView::kScreenId);
-    EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
+  EXPECT_CALL(*mock_consolidated_consent_screen_, HideImpl()).Times(1);
+  EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl()).Times(1);
 
-    EXPECT_CALL(*mock_consolidated_consent_screen_, HideImpl()).Times(1);
-    EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl()).Times(1);
-
-    mock_consolidated_consent_screen_->ExitScreen(
-        ConsolidatedConsentScreen::Result::ACCEPTED_DEMO_ONLINE);
-  } else {
-    // The flow when OobeConsolidatedConsent is disabled:
-    // Network -> EULA -> ARC ToS -> Update -> Auto Enrollment.
-    EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-
-    mock_demo_preferences_screen_->ExitScreen(
-        DemoPreferencesScreen::Result::COMPLETED);
-
-    CheckCurrentScreen(EulaView::kScreenId);
-    EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-
-    EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-    EXPECT_CALL(*mock_arc_terms_of_service_screen_, ShowImpl()).Times(1);
-    mock_eula_screen_->ExitScreen(
-        EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
-
-    CheckCurrentScreen(ArcTermsOfServiceScreenView::kScreenId);
-    EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-
-    EXPECT_CALL(*mock_arc_terms_of_service_screen_, HideImpl()).Times(1);
-
-    mock_arc_terms_of_service_screen_->ExitScreen(
-        ArcTermsOfServiceScreen::Result::ACCEPTED_DEMO_ONLINE);
-
-    base::RunLoop().RunUntilIdle();
-
-    CheckCurrentScreen(UpdateView::kScreenId);
-    EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-    EXPECT_CALL(*mock_update_screen_, HideImpl()).Times(1);
-    EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl()).Times(1);
-    mock_update_screen_->RunExit(UpdateScreen::Result::UPDATE_NOT_REQUIRED);
-  }
+  mock_consolidated_consent_screen_->ExitScreen(
+      ConsolidatedConsentScreen::Result::ACCEPTED_DEMO_ONLINE);
 
   CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());

@@ -30,8 +30,6 @@ void TapUserCreationNext();
 // Wait for OobeUI to finish loading.
 void WaitForOobeJSReady();
 
-void WaitForEulaScreen();
-void TapEulaAccept();
 void WaitForSyncConsentScreen();
 void ExitScreenSyncConsent();
 void WaitForConsolidatedConsentScreen();

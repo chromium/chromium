@@ -66,7 +66,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/eula_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
@@ -1273,11 +1272,6 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
     return server_ssl_info;
   }
 
-  void ShowEulaScreen() {
-    LoginDisplayHost::default_host()->StartWizard(EulaView::kScreenId);
-    OobeScreenWaiter(EulaView::kScreenId).Wait();
-  }
-
  protected:
   void SetUpInProcessBrowserTestFixture() override {
     // Override FakeSessionManagerClient. This will be shut down by the browser.
@@ -1387,8 +1381,6 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
   const std::vector<std::string> autoselect_patterns = {
       R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"};
   SetAutoSelectCertificatePatterns(autoselect_patterns);
-
-  ShowEulaScreen();
 
   // Use `watch_new_webcontents` because the EULA webview has not navigated yet.
   absl::optional<net::SSLInfo> ssl_info =

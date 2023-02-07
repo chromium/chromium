@@ -67,11 +67,6 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
             features::IsOobeNetworkScreenSkipEnabled() &&
                 !switches::IsOOBENetworkScreenSkippingDisabledForTesting() &&
                 helper_.IsConnectedToEthernet());
-  dict->Set("testapi_shouldSkipEula",
-            policy::EnrollmentRequisitionManager::IsRemoraRequisition() ||
-                StartupUtils::IsEulaAccepted() ||
-                features::IsOobeConsolidatedConsentEnabled() ||
-                !BUILDFLAG(GOOGLE_CHROME_BRANDING));
 
   dict->Set("testapi_shouldSkipGuestTos",
             StartupUtils::IsEulaAccepted() ||

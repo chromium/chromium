@@ -48,18 +48,6 @@ IN_PROC_BROWSER_TEST_F(OobeTestApiTest, OobeAPI) {
       .CreateWaiter("OobeAPI.screens.NetworkScreen.isVisible()")
       ->Wait();
   test::OobeJS().Evaluate("OobeAPI.screens.NetworkScreen.clickNext()");
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (!features::IsOobeConsolidatedConsentEnabled()) {
-    test::OobeJS().ExpectFalse("OobeAPI.screens.EulaScreen.shouldSkip()");
-    test::OobeJS()
-        .CreateWaiter("OobeAPI.screens.EulaScreen.isReadyForTesting()")
-        ->Wait();
-    test::OobeJS().Evaluate("OobeAPI.screens.EulaScreen.clickNext()");
-    return;
-  }
-#endif
-  test::OobeJS().ExpectTrue("OobeAPI.screens.EulaScreen.shouldSkip()");
 }
 
 class OobeTestApiTestChromebox : public OobeTestApiTest {
@@ -144,10 +132,6 @@ class OobeTestApiRemoraRequisitionTest : public OobeTestApiTest,
  private:
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
-
-IN_PROC_BROWSER_TEST_F(OobeTestApiRemoraRequisitionTest, SkipsEula) {
-  test::OobeJS().ExpectTrue("OobeAPI.screens.EulaScreen.shouldSkip()");
-}
 
 class OobeTestApiLoginPinTest : public OobeTestApiTest {
  public:

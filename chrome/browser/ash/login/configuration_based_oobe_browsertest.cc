@@ -18,7 +18,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/ui/webui/ash/login/eula_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
@@ -158,13 +157,13 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestSwitchLanguageIME) {
 // Check that configuration lets correctly select a network by GUID.
 IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestSelectNetwork) {
   LoadConfiguration();
-  OobeScreenWaiter(OobeBaseTest::GetScreenAfterNetworkScreen()).Wait();
+  OobeScreenWaiter(UpdateView::kScreenId).Wait();
 }
 
 // Check that configuration would proceed if there is a connected network.
 IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestSelectConnectedNetwork) {
   LoadConfiguration();
-  OobeScreenWaiter(OobeBaseTest::GetScreenAfterNetworkScreen()).Wait();
+  OobeScreenWaiter(UpdateView::kScreenId).Wait();
 }
 
 // Check that configuration would not proceed with connected network if
@@ -189,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestAcceptEula) {
 // beginning.
 IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestDeviceRequisition) {
   LoadConfiguration();
-  OobeScreenWaiter(OobeBaseTest::GetScreenAfterNetworkScreen()).Wait();
+  OobeScreenWaiter(UpdateView::kScreenId).Wait();
 
   EXPECT_EQ(policy::EnrollmentRequisitionManager::GetDeviceRequisition(),
             "some_requisition");

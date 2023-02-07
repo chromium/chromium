@@ -136,20 +136,6 @@ void RunNetworkSelectionScreenChecks() {
   EXPECT_TRUE(test::IsScanningRequestedOnNetworkScreen());
 }
 
-void RunEulaScreenChecks() {
-  // Wait for actual EULA to appear.
-  test::OobeJS()
-      .CreateVisibilityWaiter(true, {"oobe-eula-md", "eulaDialog"})
-      ->Wait();
-  test::OobeJS().ExpectEnabledPath({"oobe-eula-md", "acceptButton"});
-  test::OobeJS().CreateFocusWaiter({"oobe-eula-md", "acceptButton"})->Wait();
-
-  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
-  EXPECT_FALSE(test::IsScanningRequestedOnNetworkScreen());
-}
-
 void WaitForGaiaSignInScreen(bool wait_for_arc_preloading) {
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   test::OobeJS()
@@ -703,12 +689,6 @@ void OobeInteractiveUITest::PerformStepsBeforeEnrollmentCheck() {
   test::WaitForNetworkSelectionScreen();
   RunNetworkSelectionScreenChecks();
   test::TapNetworkSelectionNext();
-
-  if (!features::IsOobeConsolidatedConsentEnabled()) {
-    test::WaitForEulaScreen();
-    RunEulaScreenChecks();
-    test::TapEulaAccept();
-  }
 
   test::WaitForUpdateScreen();
   test::ExitUpdateScreenNoUpdate();
