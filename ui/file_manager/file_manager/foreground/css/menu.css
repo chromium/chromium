@@ -116,7 +116,8 @@ cr-menu.files-menu > cr-menu-item > .icon {
   z-index: 1;
 }
 
-cr-menu.files-menu > cr-menu-item > span {
+cr-menu.files-menu > cr-menu-item > span,
+cr-menu.files-menu > cr-menu-item > div:not(.icon) {
   flex-grow: 1;
   z-index: 1;
 }
