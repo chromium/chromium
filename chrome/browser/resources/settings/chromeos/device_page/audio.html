@@ -4,6 +4,7 @@
   }
 
   .audio-options-container {
+    align-items: center;
     display: flex;
     flex-direction: row;
   }
@@ -87,16 +88,26 @@
           $i18n{audioVolumeTitle}
         </div>
         <div class="audio-options-container">
+          <template is="dom-if" if="[[isOutputMutedByPolicy_(
+                audioSystemProperties_.outputMuteState
+              )]]">
+            <cr-policy-indicator id="audioOutputMuteByPolicyIndicator"
+                indicator-type="userPolicy">
+            </cr-policy-indicator>
+          </template>
           <cr-icon-button class="audio-mute-button"
               id="audioOutputMuteButton"
               iron-icon="[[getOutputIcon_(isOutputMuted_, outputVolume_)]]"
-              on-click="onOutputMuteButtonClicked">
+              on-click="onOutputMuteButtonClicked"
+              disabled="[[isOutputMutedByPolicy_(
+                  audioSystemProperties_.outputMuteState
+                )]]">
           </cr-icon-button>
           <cr-slider class="audio-slider"
               id ="outputVolumeSlider"
               min="0"
               max="100"
-              disabled="[[isOutputVolumeSliderDisabled_(
+              disabled="[[isOutputMutedByPolicy_(
                   audioSystemProperties_.outputMuteState
                 )]]"
               value="[[audioSystemProperties_.outputVolumePercent]]"

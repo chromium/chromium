@@ -9,6 +9,7 @@
  */
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import '../../icons.html.js';
 import '../../settings_shared.css.js';
@@ -112,8 +113,6 @@ class SettingsAudioElement extends SettingsAudioElementBase {
   onPropertiesUpdated(properties: AudioSystemProperties): void {
     this.audioSystemProperties_ = properties;
 
-    // TODO(crbug.com/1092970): Create and show managed by policy badge if
-    // kMutedByPolicy.
     this.isOutputMuted_ =
         this.audioSystemProperties_.outputMuteState !== MuteState.kNotMuted;
     this.isInputMuted_ =
@@ -150,7 +149,8 @@ class SettingsAudioElement extends SettingsAudioElementBase {
             .bindNewPipeAndPassRemote());
   }
 
-  private isOutputVolumeSliderDisabled_(): boolean {
+  /** Determines if audio output is muted by policy. */
+  protected isOutputMutedByPolicy_(): boolean {
     return this.audioSystemProperties_.outputMuteState ===
         MuteState.kMutedByPolicy;
   }

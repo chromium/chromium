@@ -844,7 +844,7 @@ suite('SettingsDevicePage', function() {
     };
 
     /**
-     * Simuates clicking at a given point on cr-slider element.
+     * Simulates clicking at a given point on cr-slider element.
      * @param {string} crSliderSelector
      * @param {number} percent
      * @return {Promise}
@@ -853,6 +853,7 @@ suite('SettingsDevicePage', function() {
       /** @type {!CrSliderElement} */
       const crSlider = audioPage.shadowRoot.querySelector(crSliderSelector);
       assertTrue(isVisible(crSlider));
+      assertFalse(crSlider.disabled);
       const rect = crSlider.$.container.getBoundingClientRect();
       crSlider.dispatchEvent(new PointerEvent('pointerdown', {
         buttons: 1,
@@ -1287,6 +1288,29 @@ suite('SettingsDevicePage', function() {
       assertTrue(inputMuteButton.disabled);
       assertTrue(inputSlider.disabled);
       assertTrue(audioPage.getIsInputMutedForTest());
+    });
+
+    test('simulate output mute-by-policy', async function() {
+      const enterpriseIconSelector = '#audioOutputMuteByPolicyIndicator';
+      assertFalse(isVisible(
+          audioPage.shadowRoot.querySelector(enterpriseIconSelector)));
+      const outputMuteButtonSelector = '#audioOutputMuteButton';
+      const outputMuteButton =
+          audioPage.shadowRoot.querySelector(outputMuteButtonSelector);
+      assertFalse(outputMuteButton.disabled);
+      const outputSliderSelector = '#outputVolumeSlider';
+      const outputSlider =
+          audioPage.shadowRoot.querySelector(outputSliderSelector);
+      assertFalse(outputSlider.disabled);
+
+      crosAudioConfig.setAudioSystemProperties(
+          mutedByPolicyFakeAudioSystemProperties);
+      await flushTasks();
+
+      assertTrue(isVisible(
+          audioPage.shadowRoot.querySelector(enterpriseIconSelector)));
+      assertTrue(outputMuteButton.disabled);
+      assertTrue(outputSlider.disabled);
     });
   });
 
