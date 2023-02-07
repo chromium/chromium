@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/webui/eche_app_ui/eche_stream_orientation_observer.h"
 #include "ash/webui/eche_app_ui/eche_stream_status_change_handler.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "ash/webui/eche_app_ui/system_info.h"
@@ -146,6 +147,11 @@ class EcheAppManagerTest : public testing::Test {
     return display_stream_handler_remote_;
   }
 
+  mojo::Remote<mojom::StreamOrientationObserver>&
+  stream_orientation_observer_remote() {
+    return stream_orientation_observer_remote_;
+  }
+
   void Bind() {
     manager_->BindSignalingMessageExchangerInterface(
         signaling_message_exchanger_remote_.BindNewPipeAndPassReceiver());
@@ -157,6 +163,8 @@ class EcheAppManagerTest : public testing::Test {
         notification_generator_remote_.BindNewPipeAndPassReceiver());
     manager_->BindDisplayStreamHandlerInterface(
         display_stream_handler_remote_.BindNewPipeAndPassReceiver());
+    manager_->BindStreamOrientationObserverInterface(
+        stream_orientation_observer_remote_.BindNewPipeAndPassReceiver());
   }
 
  private:
@@ -178,6 +186,8 @@ class EcheAppManagerTest : public testing::Test {
   mojo::Remote<mojom::UidGenerator> uid_generator_remote_;
   mojo::Remote<mojom::NotificationGenerator> notification_generator_remote_;
   mojo::Remote<mojom::DisplayStreamHandler> display_stream_handler_remote_;
+  mojo::Remote<mojom::StreamOrientationObserver>
+      stream_orientation_observer_remote_;
 };
 
 TEST_F(EcheAppManagerTest, BindCheck) {
@@ -186,6 +196,7 @@ TEST_F(EcheAppManagerTest, BindCheck) {
   EXPECT_FALSE(uid_generator_remote());
   EXPECT_FALSE(notification_generator_remote());
   EXPECT_FALSE(display_stream_handler_remote());
+  EXPECT_FALSE(stream_orientation_observer_remote());
 
   Bind();
 
@@ -194,6 +205,7 @@ TEST_F(EcheAppManagerTest, BindCheck) {
   EXPECT_TRUE(uid_generator_remote());
   EXPECT_TRUE(notification_generator_remote());
   EXPECT_TRUE(display_stream_handler_remote());
+  EXPECT_TRUE(stream_orientation_observer_remote());
 }
 
 }  // namespace eche_app

@@ -54,6 +54,7 @@ class AppsAccessManager;
 class EcheStreamStatusChangeHandler;
 class EcheTrayStreamStatusObserver;
 class EcheConnectionScheduler;
+class EcheStreamOrientationObserver;
 
 // Implements the core logic of the EcheApp and exposes interfaces via its
 // public API. Implemented as a KeyedService since it depends on other
@@ -91,6 +92,9 @@ class EcheAppManager : public KeyedService {
   void BindDisplayStreamHandlerInterface(
       mojo::PendingReceiver<mojom::DisplayStreamHandler> receiver);
 
+  void BindStreamOrientationObserverInterface(
+      mojo::PendingReceiver<mojom::StreamOrientationObserver> receiver);
+
   AppsAccessManager* GetAppsAccessManager();
 
   // This trigger Eche Web to release connection resource.
@@ -123,6 +127,8 @@ class EcheAppManager : public KeyedService {
   std::unique_ptr<AppsAccessManager> apps_access_manager_;
   std::unique_ptr<EcheTrayStreamStatusObserver>
       eche_tray_stream_status_observer_;
+  std::unique_ptr<EcheStreamOrientationObserver>
+      eche_stream_orientation_observer_;
 };
 
 }  // namespace eche_app

@@ -206,6 +206,11 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   // started. 2. Purges and closes the bubble when the streaming is stopped.
   void OnStreamStatusChanged(eche_app::mojom::StreamStatus status);
 
+  // Receives the `orientation` change when the stream switches between
+  // landscape and portrait.
+  void OnStreamOrientationChanged(
+      eche_app::mojom::StreamOrientation orientation);
+
   // Set up the params and init the bubble.
   // Note: This function makes the bubble active and makes the
   // TrayBackgroundView's background inkdrop activate.
@@ -216,6 +221,9 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   void StartGracefulClose();
 
   // Test helpers
+  eche_app::mojom::StreamOrientation get_stream_orientation_for_test() {
+    return stream_orientation_;
+  }
   TrayBubbleWrapper* get_bubble_wrapper_for_test() { return bubble_.get(); }
   AshWebView* get_web_view_for_test() { return web_view_; }
   views::ImageButton* GetIcon();
@@ -225,6 +233,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   FRIEND_TEST_ALL_PREFIXES(EcheTrayTest, EcheTrayOnDisplayConfigurationChanged);
   FRIEND_TEST_ALL_PREFIXES(EcheTrayTest,
                            EcheTrayKeyboardShowHideUpdateBubbleBounds);
+  FRIEND_TEST_ALL_PREFIXES(EcheTrayTest, EcheTrayOnStreamOrientationChanged);
 
   // Intercepts all the events targeted to the internal webview in order to
   // process the accelerator keys.
@@ -324,6 +333,11 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   // The time a stream is initializing. Used to record the elapsed time from
   // when the stream is initializing to when the stream is closed by user.
   absl::optional<base::TimeTicks> init_stream_timestamp_;
+
+  // The orientation of the stream (portrait vs landscape). The default
+  // orientation is portrait.
+  eche_app::mojom::StreamOrientation stream_orientation_ =
+      eche_app::mojom::StreamOrientation::kPortrait;
 
   bool is_stream_started_ = false;
   std::u16string phone_name_;

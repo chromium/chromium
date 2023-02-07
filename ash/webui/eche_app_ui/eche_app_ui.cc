@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/webui/eche_app_ui/eche_app_ui.h"
+
 #include <memory>
 
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
-#include "ash/webui/eche_app_ui/eche_app_ui.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "ash/webui/eche_app_ui/url_constants.h"
 #include "ash/webui/grit/ash_eche_app_resources.h"
@@ -18,21 +19,24 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/webui/webui_allowlist.h"
 
-namespace ash {
-namespace eche_app {
+namespace ash::eche_app {
 
-EcheAppUI::EcheAppUI(content::WebUI* web_ui,
-                     BindSignalingMessageExchangerCallback exchanger_callback,
-                     BindSystemInfoProviderCallback system_info_callback,
-                     BindUidGeneratorCallback generator_callback,
-                     BindNotificationGeneratorCallback notification_callback,
-                     BindDisplayStreamHandlerCallback stream_handler_callback)
+EcheAppUI::EcheAppUI(
+    content::WebUI* web_ui,
+    BindSignalingMessageExchangerCallback exchanger_callback,
+    BindSystemInfoProviderCallback system_info_callback,
+    BindUidGeneratorCallback generator_callback,
+    BindNotificationGeneratorCallback notification_callback,
+    BindDisplayStreamHandlerCallback stream_handler_callback,
+    BindStreamOrientationObserverCallback stream_orientation_callback)
     : ui::MojoWebUIController(web_ui),
       bind_exchanger_callback_(std::move(exchanger_callback)),
       bind_system_info_callback_(std::move(system_info_callback)),
       bind_generator_callback_(std::move(generator_callback)),
       bind_notification_callback_(std::move(notification_callback)),
-      bind_stream_handler_callback_(std::move(stream_handler_callback)) {
+      bind_stream_handler_callback_(std::move(stream_handler_callback)),
+      bind_stream_orientation_callback_(
+          std::move(stream_orientation_callback)) {
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(browser_context,
@@ -124,7 +128,11 @@ void EcheAppUI::BindInterface(
   bind_stream_handler_callback_.Run(std::move(receiver));
 }
 
+void EcheAppUI::BindInterface(
+    mojo::PendingReceiver<mojom::StreamOrientationObserver> receiver) {
+  bind_stream_orientation_callback_.Run(std::move(receiver));
+}
+
 WEB_UI_CONTROLLER_TYPE_IMPL(EcheAppUI)
 
-}  // namespace eche_app
-}  // namespace ash
+}  // namespace ash::eche_app
