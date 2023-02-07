@@ -33,6 +33,8 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
   // crosapi::mojom::BrowserService:
   void REMOVED_0(REMOVED_0Callback callback) override;
   void REMOVED_2(crosapi::mojom::BrowserInitParamsPtr) override;
+  void REMOVED_7(bool should_trigger_session_restore,
+                 NewTabCallback callback) override;
   void REMOVED_16(base::flat_map<policy::PolicyNamespace, std::vector<uint8_t>>
                       policy) override;
   void NewWindow(bool incognito,
@@ -48,9 +50,7 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
       const std::u16string& tab_id,
       const std::u16string& group_id,
       NewWindowForDetachingTabCallback callback) override;
-  void NewTab(bool should_trigger_session_restore,
-              NewTabCallback callback) override;
-  void NewTabWithoutParameter(NewTabWithoutParameterCallback callback) override;
+  void NewTab(NewTabCallback callback) override;
   void Launch(int64_t target_display_id, LaunchCallback callback) override;
   void OpenUrl(const GURL& url,
                crosapi::mojom::OpenUrlParamsPtr params,

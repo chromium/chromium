@@ -131,12 +131,17 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
         << "NewWindow did not trigger the callback.";
   }
 
-  void NewTabSync(bool should_trigger_session_restore) {
+  void NewTabSync() {
     base::test::TestFuture<void> new_tab_future;
-    browser_service()->NewTab(should_trigger_session_restore,
-                              new_tab_future.GetCallback());
+    browser_service()->NewTab(new_tab_future.GetCallback());
     ASSERT_TRUE(new_tab_future.Wait())
-        << "NewWindow did not trigger the callback.";
+        << "NewTab did not trigger the callback.";
+  }
+
+  void LaunchSync() {
+    base::test::TestFuture<void> launch_future;
+    browser_service()->Launch(0, launch_future.GetCallback());
+    ASSERT_TRUE(launch_future.Wait()) << "Launch did not trigger the callback.";
   }
 
   BrowserServiceLacros* browser_service() const {
@@ -252,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
 
   // `NewTab()` should create a new window if the system has only one
   // profile.
-  NewTabSync(/*should_trigger_session_restore=*/true);
+  NewTabSync();
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   EXPECT_FALSE(ProfilePicker::IsOpen());
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -263,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   EXPECT_EQ(1, tab_strip->count());
 
   // Consequent `NewTab()` should add a new tab to an existing browser.
-  NewTabSync(/*should_trigger_session_restore=*/true);
+  NewTabSync();
   EXPECT_EQ(2, tab_strip->count());
   EXPECT_FALSE(ProfilePicker::IsOpen());
 }
@@ -289,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   EXPECT_EQ(1, tab_strip->count());
 
   // `NewTab()` should add a tab to the main profile window;
-  NewTabSync(/*should_trigger_session_restore=*/true);
+  NewTabSync();
   EXPECT_EQ(2, tab_strip->count());
 
   chrome::CloseAllBrowsers();
@@ -299,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
 
   // `NewTab()` should open the profile picker.
-  NewTabSync(/*should_trigger_session_restore=*/true);
+  NewTabSync();
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
   EXPECT_TRUE(ProfilePicker::IsOpen());
 }
@@ -395,11 +400,11 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
   CloseBrowserSynchronously(browser);
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
 
-  // Trigger a new tab with session restore.
+  // Open browser with session restore.
   base::test::TestFuture<void> restore_waiter_future;
   testing::SessionsRestoredWaiter restore_waiter(
       restore_waiter_future.GetCallback(), 1);
-  NewTabSync(/*should_trigger_session_restore=*/true);
+  LaunchSync();
   ASSERT_TRUE(restore_waiter_future.Wait())
       << "restore_waiter did not trigger the callback.";
 
@@ -407,21 +412,18 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
   auto* new_browser = chrome::FindBrowserWithProfile(profile);
   ASSERT_TRUE(new_browser);
   auto* new_tab_strip = new_browser->tab_strip_model();
-  ASSERT_EQ(3, new_tab_strip->count());
+  ASSERT_EQ(2, new_tab_strip->count());
 
   EXPECT_EQ("/title1.html",
             new_tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
   EXPECT_EQ("/title2.html",
             new_tab_strip->GetWebContentsAt(1)->GetLastCommittedURL().path());
-  EXPECT_EQ("",  // The new tab.
-            new_tab_strip->GetWebContentsAt(2)->GetLastCommittedURL().path());
 
-  // A second call to NewTab() ignores session restore and adds yet another new
-  // tab to the existing browser.
-  NewTabSync(/*should_trigger_session_restore=*/true);
-
+  // A second call to Launch() ignores session restore and adds a new tab to the
+  // existing browser.
+  LaunchSync();
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
-  ASSERT_EQ(4, new_tab_strip->count());
+  ASSERT_EQ(3, new_tab_strip->count());
 }
 
 // Tests that requesting an incognito window when incognito mode is disallowed
@@ -559,7 +561,6 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
 
   base::test::TestFuture<void> new_tab_future;
   browser_service()->NewTab(
-      /*should_trigger_session_restore=*/false,
       /*callback=*/new_tab_future.GetCallback());
   profiles::testing::CompleteLacrosFirstRun(LoginUIService::ABORT_SYNC);
 

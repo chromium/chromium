@@ -82,7 +82,7 @@ class NewTabAction final : public BrowserAction {
   NewTabAction() : BrowserAction(true) {}
 
   void Perform(const VersionedBrowserService& service) override {
-    service.service->NewTabWithoutParameter(base::DoNothing());
+    service.service->NewTab(base::DoNothing());
   }
 };
 
@@ -95,7 +95,7 @@ class LaunchAction final : public BrowserAction {
     if (service.interface_version < mojom::BrowserService::kLaunchMinVersion) {
       LOG(WARNING)
           << "Lacros too old for Launch action - falling back to NewTab";
-      service.service->NewTabWithoutParameter(base::DoNothing());
+      service.service->NewTab(base::DoNothing());
       return;
     }
     service.service->Launch(target_display_id_, base::DoNothing());

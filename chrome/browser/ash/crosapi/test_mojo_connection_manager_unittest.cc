@@ -67,6 +67,10 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
   void REMOVED_2(crosapi::mojom::BrowserInitParamsPtr) override {
     NOTIMPLEMENTED();
   }
+  void REMOVED_7(bool should_trigger_session_restore,
+                 NewTabCallback callback) override {
+    NOTIMPLEMENTED();
+  }
   void REMOVED_16(
       base::flat_map<policy::PolicyNamespace, std::vector<uint8_t>>) override {
     NOTIMPLEMENTED();
@@ -85,10 +89,7 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
                            NewFullscreenWindowCallback callback) override {}
   void NewGuestWindow(int64_t target_display_id,
                       NewGuestWindowCallback callback) override {}
-  void NewTab(bool should_trigger_session_restore,
-              NewTabCallback callback) override {}
-  void NewTabWithoutParameter(
-      NewTabWithoutParameterCallback callback) override {}
+  void NewTab(NewTabCallback callback) override {}
   void Launch(int64_t target_display_id, LaunchCallback callback) override {}
   void OpenUrl(const GURL& url,
                crosapi::mojom::OpenUrlParamsPtr params,
