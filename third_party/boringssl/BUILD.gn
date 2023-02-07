@@ -169,12 +169,7 @@ if (build_with_chromium) {
     ]
 
     # Chromium infrastructure does not support GTest, only the //base wrapper.
-    sources -= [
-      "src/crypto/test/gtest_main.cc",
-
-      # //base includes its own conflicting malloc shim.
-      "src/crypto/test/malloc.cc",
-    ]
+    sources -= [ "src/crypto/test/gtest_main.cc" ]
     sources += [
       "gtest_main_chromium.cc",
       "test_data_chromium.cc",
@@ -201,12 +196,7 @@ if (build_with_chromium) {
     ]
 
     # Chromium infrastructure does not support GTest, only the //base wrapper.
-    sources -= [
-      "src/crypto/test/gtest_main.cc",
-
-      # //base includes its own conflicting malloc shim.
-      "src/crypto/test/malloc.cc",
-    ]
+    sources -= [ "src/crypto/test/gtest_main.cc" ]
     sources += [ "gtest_main_chromium.cc" ]
     deps += [ "//base/test:test_support" ]
   }

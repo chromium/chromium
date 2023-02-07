@@ -19,7 +19,6 @@ test_support_sources = [
   "src/crypto/test/file_test.cc",
   "src/crypto/test/file_test.h",
   "src/crypto/test/gtest_main.h",
-  "src/crypto/test/malloc.cc",
   "src/crypto/test/test_util.cc",
   "src/crypto/test/test_util.h",
   "src/crypto/test/wycheproof_util.cc",
