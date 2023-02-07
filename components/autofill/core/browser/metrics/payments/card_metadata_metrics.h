@@ -9,6 +9,15 @@
 
 namespace autofill::autofill_metrics {
 
+constexpr char kAmericanExpress[] = "Amex";
+constexpr char kCapitalOne[] = "CapitalOne";
+
+constexpr char kProductNameAndArtImageBothShownSuffix[] =
+    ".ProductDescriptionAndArtImageShown";
+constexpr char kProductNameShownOnlySuffix[] = ".ProductDescriptionShown";
+constexpr char kArtImageShownOnlySuffix[] = ".ArtImageShown";
+constexpr char kProductNameAndArtImageNotShownSuffix[] = ".MetadataNotShown";
+
 // Struct that groups some metadata related information together. Used for
 // metrics logging.
 struct CardMetadataLoggingContext {
@@ -17,12 +26,15 @@ struct CardMetadataLoggingContext {
   bool card_art_image_shown = false;
 };
 
+// Get the CardMetadataLoggingContext for the given credit cards.
+CardMetadataLoggingContext GetMetadataLoggingContext(
+    const std::vector<CreditCard*>& cards);
+
 // Log the latency between suggestions being shown and a suggestion was
-// selected, in milliseconds. Only logged when at least one card in the
-// suggestion list has available card metadata.
-void LogCardSuggestionAcceptanceLatencyMetric(
-    base::TimeDelta latency,
-    const CardMetadataLoggingContext& context);
+// selected, in milliseconds.
+void LogAcceptanceLatency(base::TimeDelta latency,
+                          const CardMetadataLoggingContext& suggestion_context,
+                          const CreditCard& selected_card);
 
 }  // namespace autofill::autofill_metrics
 

@@ -105,13 +105,9 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
       break;
   }
 
-  // Log the latency between suggestion being shown and suggestion being
-  // selected.
-  if (metadata_logging_context_.card_metadata_available) {
-    autofill_metrics::LogCardSuggestionAcceptanceLatencyMetric(
-        AutofillTickClock::NowTicks() - suggestion_shown_timestamp_,
-        metadata_logging_context_);
-  }
+  autofill_metrics::LogAcceptanceLatency(
+      AutofillTickClock::NowTicks() - suggestion_shown_timestamp_,
+      metadata_logging_context_, credit_card);
 }
 
 void CreditCardFormEventLogger::OnDidFillSuggestion(
