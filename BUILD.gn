@@ -49,7 +49,7 @@ if (is_linux) {
   import("build/config/linux/gtk/gtk.gni")
 }
 
-if (!is_ios) {
+if (use_blink) {
   import("//v8/gni/snapshot_toolchain.gni")
 }
 
@@ -177,6 +177,10 @@ group("gn_all") {
     deps += [ "//chrome/test:unit_tests" ]
   }
 
+  if (use_blink) {
+    deps += [ "//content/shell:content_shell" ]
+  }
+
   if (!is_ios) {
     deps += [
       ":chromedriver_group",
@@ -186,7 +190,6 @@ group("gn_all") {
       "//components/url_formatter/tools:format_url",
       "//components/viz:viz_perftests",
       "//components/viz:viz_unittests",
-      "//content/shell:content_shell",
       "//content/test:content_browsertests",
       "//content/test:content_unittests",
       "//device:device_unittests",
