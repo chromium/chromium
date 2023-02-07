@@ -47,14 +47,6 @@ GetAttributeForKeyExecutionWaiter::GetCallback() {
   return TestFuture::GetCallback<const absl::optional<std::string>&, Status>();
 }
 
-const std::vector<std::string>& GetAllKeysExecutionWaiter::public_keys() {
-  return Get<0>();
-}
-
-Status GetAllKeysExecutionWaiter::status() {
-  return Get<1>();
-}
-
 absl::optional<bool> IsKeyOnTokenExecutionWaiter::on_slot() {
   return Get<0>();
 }

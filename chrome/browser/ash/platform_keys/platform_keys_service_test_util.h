@@ -71,14 +71,6 @@ class GetAttributeForKeyExecutionWaiter
 // Supports waiting for the result of the PlatformKeysService::RemoveKey.
 using RemoveKeyExecutionWaiter = StatusWaiter;
 
-class GetAllKeysExecutionWaiter
-    : public base::test::TestFuture<std::vector<std::string>,
-                                    chromeos::platform_keys::Status> {
- public:
-  const std::vector<std::string>& public_keys();
-  chromeos::platform_keys::Status status();
-};
-
 class IsKeyOnTokenExecutionWaiter
     : public base::test::TestFuture<absl::optional<bool>,
                                     chromeos::platform_keys::Status> {

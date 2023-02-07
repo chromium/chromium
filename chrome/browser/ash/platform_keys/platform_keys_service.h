@@ -55,9 +55,9 @@ using GetCertificatesCallback =
 // be empty if no key pairs exist). Each available key pair is represented as a
 // DER-encoded SubjectPublicKeyInfo. If an error occurred,
 // |public_key_spki_der_list| will be empty.
-using GetAllKeysCallback =
-    base::OnceCallback<void(std::vector<std::string> public_key_spki_der_list,
-                            chromeos::platform_keys::Status status)>;
+using GetAllKeysCallback = base::OnceCallback<void(
+    std::vector<std::vector<uint8_t>> public_key_spki_der_list,
+    chromeos::platform_keys::Status status)>;
 
 using ImportCertificateCallback =
     base::OnceCallback<void(chromeos::platform_keys::Status status)>;

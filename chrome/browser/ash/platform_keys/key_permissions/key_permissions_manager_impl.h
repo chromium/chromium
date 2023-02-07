@@ -69,7 +69,7 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
 
    private:
     void UpdateWithAllKeys(
-        std::vector<std::string> public_key_spki_der_list,
+        std::vector<std::vector<uint8_t>> public_key_spki_der_list,
         chromeos::platform_keys::Status keys_retrieval_status);
     void UpdateNextKey();
     void OnUpdateFinished();

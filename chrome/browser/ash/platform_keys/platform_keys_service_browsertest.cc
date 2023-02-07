@@ -312,15 +312,17 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerProfileBrowserTest, GetAllKeys) {
 
   // Only keys in the requested token should be retrieved.
   for (TokenId token_id : GetParam().token_ids) {
-    test_util::GetAllKeysExecutionWaiter get_all_keys_waiter;
+    base::test::TestFuture<std::vector<std::vector<uint8_t>>, Status>
+        get_all_keys_waiter;
     platform_keys_service()->GetAllKeys(token_id,
                                         get_all_keys_waiter.GetCallback());
     ASSERT_TRUE(get_all_keys_waiter.Wait());
 
-    EXPECT_EQ(get_all_keys_waiter.status(), Status::kSuccess);
-    std::vector<std::string> public_keys = get_all_keys_waiter.public_keys();
+    EXPECT_EQ(get_all_keys_waiter.Get<Status>(), Status::kSuccess);
+    const auto& public_keys =
+        get_all_keys_waiter.Get<std::vector<std::vector<uint8_t>>>();
     ASSERT_EQ(public_keys.size(), 1U);
-    EXPECT_EQ(public_keys[0], BytesToStr(token_key_map[token_id]));
+    EXPECT_EQ(public_keys[0], token_key_map[token_id]);
   }
 }
 
@@ -722,13 +724,15 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
 IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
                        GetAllKeysWhenNoKeysGenerated) {
   const TokenId token_id = GetParam().token_id;
-  test_util::GetAllKeysExecutionWaiter get_all_keys_waiter;
+  base::test::TestFuture<std::vector<std::vector<uint8_t>>, Status>
+      get_all_keys_waiter;
   platform_keys_service()->GetAllKeys(token_id,
                                       get_all_keys_waiter.GetCallback());
   ASSERT_TRUE(get_all_keys_waiter.Wait());
 
-  EXPECT_EQ(get_all_keys_waiter.status(), Status::kSuccess);
-  std::vector<std::string> public_keys = get_all_keys_waiter.public_keys();
+  EXPECT_EQ(get_all_keys_waiter.Get<Status>(), Status::kSuccess);
+  const auto& public_keys =
+      get_all_keys_waiter.Get<std::vector<std::vector<uint8_t>>>();
   EXPECT_TRUE(public_keys.empty());
 }
 

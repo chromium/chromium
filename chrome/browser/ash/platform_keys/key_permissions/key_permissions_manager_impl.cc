@@ -126,7 +126,7 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::Update(
 }
 
 void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::UpdateWithAllKeys(
-    std::vector<std::string> public_key_spki_der_list,
+    std::vector<std::vector<uint8_t>> public_key_spki_der_list,
     Status keys_retrieval_status) {
   DCHECK(public_key_spki_der_queue_.empty());
 

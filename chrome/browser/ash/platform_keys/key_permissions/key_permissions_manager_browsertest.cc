@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -110,17 +111,12 @@ class KeyPermissionsManagerBrowserTestBase
 
   // Returns all keys on the token.
   std::vector<std::vector<uint8_t>> GetAllKeys() {
-    test_util::GetAllKeysExecutionWaiter get_all_keys_waiter;
+    base::test::TestFuture<std::vector<std::vector<uint8_t>>, Status>
+        get_all_keys_waiter;
     GetPlatformKeysService()->GetAllKeys(GetToken(),
                                          get_all_keys_waiter.GetCallback());
     EXPECT_TRUE(get_all_keys_waiter.Wait());
-
-    std::vector<std::vector<uint8_t>> result;
-    result.reserve(get_all_keys_waiter.public_keys().size());
-    for (const auto& pub_key_str : get_all_keys_waiter.public_keys()) {
-      result.emplace_back(pub_key_str.begin(), pub_key_str.end());
-    }
-    return result;
+    return std::get<0>(get_all_keys_waiter.Take());
   }
 
   // Sets |usage| of |public_key| to |allowed| by altering kKeyPermissions key

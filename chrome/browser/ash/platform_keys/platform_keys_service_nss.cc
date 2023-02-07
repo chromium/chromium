@@ -372,18 +372,19 @@ class GetAllKeysState : public NSSOperationState {
   ~GetAllKeysState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
-    CallBack(from, /*public_key_spki_der_list=*/std::vector<std::string>(),
+    CallBack(from,
+             /*public_key_spki_der_list=*/std::vector<std::vector<uint8_t>>(),
              status);
   }
 
   void OnSuccess(const base::Location& from,
-                 std::vector<std::string> public_key_spki_der_list) {
+                 std::vector<std::vector<uint8_t>> public_key_spki_der_list) {
     CallBack(from, std::move(public_key_spki_der_list), Status::kSuccess);
   }
 
  private:
   void CallBack(const base::Location& from,
-                std::vector<std::string> public_key_spki_der_list,
+                std::vector<std::vector<uint8_t>> public_key_spki_der_list,
                 Status status) {
     auto bound_callback = base::BindOnce(
         std::move(callback_), std::move(public_key_spki_der_list), status);
@@ -1105,7 +1106,7 @@ bool ShouldIncludePublicKey(SECKEYPublicKey* public_key) {
 void GetAllKeysOnWorkerThread(std::unique_ptr<GetAllKeysState> state) {
   DCHECK(state->slot_.get());
 
-  std::vector<std::string> public_key_spki_der_list;
+  std::vector<std::vector<uint8_t>> public_key_spki_der_list;
 
   // This assumes that all public keys on the slots are actually key pairs with
   // private + public keys, so it's sufficient to get the public keys (and also
@@ -1133,9 +1134,8 @@ void GetAllKeysOnWorkerThread(std::unique_ptr<GetAllKeysState> state) {
     }
 
     if (subject_public_key_info->len > 0) {
-      public_key_spki_der_list.push_back(std::string(
-          subject_public_key_info->data,
-          subject_public_key_info->data + subject_public_key_info->len));
+      public_key_spki_der_list.push_back(
+          ScopedSECItemToBytes(subject_public_key_info));
     }
   }
 
