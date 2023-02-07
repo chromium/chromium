@@ -86,7 +86,7 @@ contribution can be accepted:
 
 ## Initial git setup
 
-1. Visit <https://chromium-review.googlesource.com/new-password> and follow the
+1. Visit <https://chromium.googlesource.com/new-password> and follow the
    on-screen instructions to get credentials for uploading changes.
 2. Tell git about your name, email and some other settings.
    ```
