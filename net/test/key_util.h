@@ -22,6 +22,9 @@ namespace key_util {
 // Returns the new EVP_PKEY or nullptr on error.
 bssl::UniquePtr<EVP_PKEY> LoadEVP_PKEYFromPEM(const base::FilePath& filepath);
 
+// Returns a PEM-encoded string representing |key|.
+std::string PEMFromPrivateKey(EVP_PKEY* key);
+
 // Loads a PEM-encoded private key file into a SSLPrivateKey object.
 // |filepath| is the private key file path.
 // Returns the new SSLPrivateKey.

@@ -1004,6 +1004,12 @@ std::string CertBuilder::GetPEMFullChain() {
   return base::JoinString(pems, "\n");
 }
 
+std::string CertBuilder::GetPrivateKeyPEM() {
+  std::string pem_encoded = key_util::PEMFromPrivateKey(GetKey());
+  EXPECT_FALSE(pem_encoded.empty());
+  return pem_encoded;
+}
+
 CertBuilder::CertBuilder(CRYPTO_BUFFER* orig_cert,
                          CertBuilder* issuer,
                          bool unique_subject_key_identifier)

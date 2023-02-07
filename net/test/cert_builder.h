@@ -320,6 +320,11 @@ class CertBuilder {
   // created.
   std::string GetPEMFullChain();
 
+  // Returns the private key as PEM.
+  // Convenience method for debugging, to more easily log what certs are being
+  // created.
+  std::string GetPrivateKeyPEM();
+
  private:
   // Initializes the CertBuilder, if |orig_cert| is non-null it will be used as
   // a template. If |issuer| is null then the generated certificate will be
