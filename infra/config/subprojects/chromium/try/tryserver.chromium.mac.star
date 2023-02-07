@@ -85,6 +85,7 @@ try_.builder(
     name = "mac-builder-next-rel",
     mirrors = ["ci/Mac Builder Next"],
     builderless = False,
+    cpu = cpu.ARM64,
     os = os.MAC_13,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
