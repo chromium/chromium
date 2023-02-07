@@ -12,6 +12,10 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/scoped_canvas.h"
+#include "ui/gfx/skia_paint_util.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -40,6 +44,126 @@ const char16_t kLongText[] =
 }  // namespace
 
 namespace views::examples {
+
+// Creates a rounded rect with a border plus shadow. This is used by FabButton
+// to draw the button background.
+class SolidRoundRectPainterWithShadow : public Painter {
+ public:
+  SolidRoundRectPainterWithShadow(SkColor bg_color,
+                                  SkColor stroke_color,
+                                  float radius,
+                                  const gfx::Insets& insets,
+                                  SkBlendMode blend_mode,
+                                  bool antialias,
+                                  bool has_shadow)
+      : bg_color_(bg_color),
+        stroke_color_(stroke_color),
+        radius_(radius),
+        insets_(insets),
+        blend_mode_(blend_mode),
+        antialias_(antialias),
+        has_shadow_(has_shadow) {}
+
+  SolidRoundRectPainterWithShadow(const SolidRoundRectPainterWithShadow&) =
+      delete;
+  SolidRoundRectPainterWithShadow& operator=(
+      const SolidRoundRectPainterWithShadow&) = delete;
+
+  ~SolidRoundRectPainterWithShadow() override = default;
+
+  // Painter:
+  gfx::Size GetMinimumSize() const override { return gfx::Size(); }
+  void Paint(gfx::Canvas* canvas, const gfx::Size& size) override {
+    gfx::ScopedCanvas scoped_canvas(canvas);
+    const float scale = canvas->UndoDeviceScaleFactor();
+    float scaled_radius = radius_ * scale;
+
+    gfx::Rect inset_rect(size);
+    inset_rect.Inset(insets_);
+    cc::PaintFlags flags;
+    // Draw a shadow effect by shrinking the rect and then inserting a
+    // shadow looper.
+    if (has_shadow_) {
+      gfx::Rect shadow_bounds = inset_rect;
+      gfx::ShadowValues shadow;
+      constexpr int kOffset = 2;
+      constexpr int kBlur = 4;
+      shadow.emplace_back(gfx::Vector2d(kOffset, kOffset), kBlur,
+                          SkColorSetA(SK_ColorBLACK, 0x24));
+      shadow_bounds.Inset(-gfx::ShadowValue::GetMargin(shadow));
+      inset_rect.Inset(-gfx::ShadowValue::GetMargin(shadow));
+      flags.setAntiAlias(true);
+      flags.setLooper(gfx::CreateShadowDrawLooper(shadow));
+      canvas->DrawRoundRect(shadow_bounds, scaled_radius, flags);
+    }
+
+    gfx::RectF fill_rect(gfx::ScaleToEnclosingRect(inset_rect, scale));
+    gfx::RectF stroke_rect = fill_rect;
+
+    flags.setBlendMode(blend_mode_);
+    flags.setAntiAlias(antialias_);
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setColor(bg_color_);
+    canvas->DrawRoundRect(fill_rect, scaled_radius, flags);
+
+    if (stroke_color_ != SK_ColorTRANSPARENT && !has_shadow_) {
+      constexpr float kStrokeWidth = 1.0f;
+      stroke_rect.Inset(gfx::InsetsF(kStrokeWidth / 2));
+      scaled_radius -= kStrokeWidth / 2;
+      flags.setStyle(cc::PaintFlags::kStroke_Style);
+      flags.setStrokeWidth(kStrokeWidth);
+      flags.setColor(stroke_color_);
+      canvas->DrawRoundRect(stroke_rect, scaled_radius, flags);
+    }
+  }
+
+ private:
+  const SkColor bg_color_;
+  const SkColor stroke_color_;
+  const float radius_;
+  const gfx::Insets insets_;
+  const SkBlendMode blend_mode_;
+  const bool antialias_;
+  const bool has_shadow_;
+};
+
+// Floating Action Button (Fab) is a button that has a shadow around the button
+// to simulate a floating effect. This class is not used officially in the Views
+// library. This is a prototype of a potential way to implement such an effect
+// by overriding the hover effect to draw a new background with a shadow.
+class FabButton : public views::MdTextButton {
+ public:
+  using MdTextButton::MdTextButton;
+  FabButton(const FabButton&) = delete;
+  FabButton& operator=(const FabButton&) = delete;
+  ~FabButton() override = default;
+
+  void UpdateBackground() {
+    SkColor bg_color = GetColorProvider()->GetColor(
+        ExamplesColorIds::kColorButtonBackgroundFab);
+    SetBackground(CreateBackgroundFromPainter(
+        std::make_unique<SolidRoundRectPainterWithShadow>(
+            bg_color, SK_ColorTRANSPARENT, 2, gfx::Insets(),
+            SkBlendMode::kSrcOver, true, use_shadow_)));
+  }
+
+  void OnHoverChanged() {
+    use_shadow_ = !use_shadow_;
+    UpdateBackground();
+  }
+
+  void OnThemeChanged() override {
+    MdTextButton::OnThemeChanged();
+    UpdateBackground();
+  }
+
+ private:
+  base::CallbackListSubscription highlighted_changed_subscription_ =
+      InkDrop::Get(this)->AddHighlightedChangedCallback(
+          base::BindRepeating([](FabButton* host) { host->OnHoverChanged(); },
+                              base::Unretained(this)));
+  bool use_shadow_ = false;
+};
 
 class IconAndTextButton : public views::MdTextButton {
  public:
@@ -127,6 +251,10 @@ void ButtonExample::CreateExampleView(View* container) {
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_COLORED_DIALOG_CHOOSER_BUTTON),
       views::kInfoIcon));
+  view->AddChildView(std::make_unique<FabButton>(
+      base::BindRepeating(&ButtonExample::ImageButtonPressed,
+                          base::Unretained(this)),
+      u"Fab Prototype"));
 
   image_button_->SetImage(ImageButton::STATE_NORMAL,
                           rb.GetImageNamed(IDR_CLOSE).ToImageSkia());
@@ -136,7 +264,6 @@ void ButtonExample::CreateExampleView(View* container) {
                           rb.GetImageNamed(IDR_CLOSE_P).ToImageSkia());
 
   md_tonal_button_->SetStyle(MdTextButton::Style::kTonal);
-
   container->AddChildView(std::move(view));
 }
 

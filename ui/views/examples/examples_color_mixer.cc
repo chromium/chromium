@@ -15,6 +15,9 @@ namespace views::examples {
 
 void AddExamplesColorMixers(ui::ColorProvider* color_provider,
                             const ui::ColorProviderManager::Key& key) {
+  const bool dark_mode =
+      key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
+
   using Ids = ExamplesColorIds;
   ui::ColorMixer& mixer = color_provider->AddMixer();
   mixer[Ids::kColorAnimatedImageViewExampleBorder] = {SK_ColorBLACK};
@@ -64,6 +67,8 @@ void AddExamplesColorMixers(ui::ColorProvider* color_provider,
   mixer[Ids::kColorVectorExampleImageBorder] = {SK_ColorBLACK};
   mixer[Ids::kColorWidgetExampleContentBorder] = {SK_ColorGRAY};
   mixer[Ids::kColorWidgetExampleDialogBorder] = {SK_ColorGRAY};
+  mixer[Ids::kColorButtonBackgroundFab] = {dark_mode ? ui::kColorRefSecondary30
+                                                     : ui::kColorRefPrimary90};
 }
 
 }  // namespace views::examples
