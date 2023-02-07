@@ -150,8 +150,6 @@ TEST_F(PrefProviderTest, Observer) {
 // crbug.com/1275576), and obsolete content settings (plugins, mouselock,
 // installed web app metadata) are cleared.
 TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
-  static const char kFullscreenPrefPath[] =
-      "profile.content_settings.exceptions.fullscreen";
   static const char kNfcPrefPath[] = "profile.content_settings.exceptions.nfc";
 #if !BUILDFLAG(IS_ANDROID)
   static const char kMouselockPrefPath[] =
@@ -180,7 +178,6 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
   data_for_pattern.Set("setting", static_cast<int>(CONTENT_SETTING_ALLOW));
   base::Value::Dict pref_data;
   pref_data.Set(kPattern, std::move(data_for_pattern));
-  prefs->SetDict(kFullscreenPrefPath, pref_data.Clone());
   prefs->SetDict(kNfcPrefPath, pref_data.Clone());
 #if !BUILDFLAG(IS_ANDROID)
   prefs->SetDict(kMouselockPrefPath, pref_data.Clone());
@@ -199,8 +196,7 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
                         /*restore_session=*/false);
   provider.ShutdownOnUIThread();
 
-  // Check that fullscreen, nfc, and mouselock have been deleted.
-  EXPECT_FALSE(prefs->HasPrefPath(kFullscreenPrefPath));
+  // Check that nfc and mouselock have been deleted.
   EXPECT_FALSE(prefs->HasPrefPath(kNfcPrefPath));
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(prefs->HasPrefPath(kMouselockPrefPath));

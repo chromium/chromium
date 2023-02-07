@@ -129,8 +129,6 @@ TEST_F(ContentSettingsDefaultProviderTest, ObservePref) {
 // crbug.com/1275576), and obsolete content settings (plugins, mouselock,
 // installed web app metadata) are cleared.
 TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
-  static const char kFullscreenPrefPath[] =
-      "profile.default_content_setting_values.fullscreen";
   static const char kNfcPrefPath[] =
       "profile.default_content_setting_values.nfc";
 #if !BUILDFLAG(IS_ANDROID)
@@ -150,7 +148,6 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
 
   PrefService* prefs = profile_.GetPrefs();
   // Set some pref data.
-  prefs->SetInteger(kFullscreenPrefPath, CONTENT_SETTING_BLOCK);
 #if !BUILDFLAG(IS_ANDROID)
   prefs->SetInteger(kMouselockPrefPath, CONTENT_SETTING_ALLOW);
   prefs->SetInteger(kObsoletePluginsDefaultPref, CONTENT_SETTING_ALLOW);
@@ -166,7 +163,6 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   DefaultProvider provider(prefs, false, false);
 
   // Check that obsolete prefs have been deleted.
-  EXPECT_FALSE(prefs->HasPrefPath(kFullscreenPrefPath));
   EXPECT_FALSE(prefs->HasPrefPath(kNfcPrefPath));
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(prefs->HasPrefPath(kMouselockPrefPath));

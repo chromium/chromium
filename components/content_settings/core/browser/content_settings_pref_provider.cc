@@ -46,8 +46,6 @@ const char kObsoleteWebIdSharePref[] =
     "profile.content_settings.exceptions.webid_share";
 
 #if !BUILDFLAG(IS_IOS)
-const char kObsoleteFullscreenExceptionsPref[] =
-    "profile.content_settings.exceptions.fullscreen";
 // The "nfc" preference was superseded by "nfc-devices" once Web NFC gained the
 // ability to make NFC tags permanently read-only. See crbug.com/1275576
 const char kObsoleteNfcExceptionsPref[] =
@@ -99,9 +97,6 @@ void PrefProvider::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kObsoleteWebIdRequestPref);
   registry->RegisterDictionaryPref(kObsoleteWebIdSharePref);
 #if !BUILDFLAG(IS_IOS)
-  registry->RegisterDictionaryPref(
-      kObsoleteFullscreenExceptionsPref,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDictionaryPref(kObsoleteNfcExceptionsPref);
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterDictionaryPref(
@@ -337,7 +332,6 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
   // These prefs were never stored on iOS/Android so they don't need to be
   // deleted.
 #if !BUILDFLAG(IS_IOS)
-  prefs_->ClearPref(kObsoleteFullscreenExceptionsPref);
   prefs_->ClearPref(kObsoleteNfcExceptionsPref);
 #if !BUILDFLAG(IS_ANDROID)
   prefs_->ClearPref(kObsoleteMouseLockExceptionsPref);
