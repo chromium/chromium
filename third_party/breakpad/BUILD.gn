@@ -163,6 +163,14 @@ if (!is_win) {
         "breakpad/src/third_party/libdisasm/x86_operand_list.c",
         "breakpad/src/third_party/libdisasm/x86_operand_list.h",
       ]
+      if (is_linux || is_chromeos) {
+        sources += [
+          "breakpad/src/common/linux/scoped_pipe.cc",
+          "breakpad/src/common/linux/scoped_pipe.h",
+          "breakpad/src/common/linux/scoped_tmpfile.cc",
+          "breakpad/src/common/linux/scoped_tmpfile.h",
+        ]
+      }
 
       configs -= [ "//build/config/compiler:chromium_code" ]
       configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -171,8 +179,6 @@ if (!is_win) {
 
     fuzzer_test("minidump_fuzzer") {
       sources = [
-        "breakpad/src/processor/disassembler_objdump.cc",
-        "breakpad/src/processor/disassembler_objdump.h",
         "breakpad/src/processor/exploitability.cc",
         "breakpad/src/processor/minidump.cc",
         "breakpad/src/processor/minidump_processor.cc",
@@ -201,6 +207,13 @@ if (!is_win) {
         "breakpad/src/processor/symbolic_constants_win.cc",
         "breakpad/src/processor/symbolic_constants_win.h",
       ]
+
+      if (is_linux || is_chromeos) {
+        sources += [
+          "breakpad/src/processor/disassembler_objdump.cc",
+          "breakpad/src/processor/disassembler_objdump.h",
+        ]
+      }
     }
 
     executable("microdump_stackwalk") {
@@ -219,8 +232,6 @@ if (!is_win) {
 
     executable("minidump_stackwalk") {
       sources = [
-        "breakpad/src/processor/disassembler_objdump.cc",
-        "breakpad/src/processor/disassembler_objdump.h",
         "breakpad/src/processor/exploitability.cc",
         "breakpad/src/processor/minidump.cc",
         "breakpad/src/processor/minidump_processor.cc",
@@ -241,6 +252,13 @@ if (!is_win) {
         "breakpad/src/processor/symbolic_constants_win.cc",
         "breakpad/src/processor/symbolic_constants_win.h",
       ]
+
+      if (is_linux || is_chromeos) {
+        sources += [
+          "breakpad/src/processor/disassembler_objdump.cc",
+          "breakpad/src/processor/disassembler_objdump.h",
+        ]
+      }
     }
 
     executable("minidump_dump") {
@@ -734,8 +752,13 @@ if (is_linux || is_chromeos || is_android) {
       "breakpad/src/common/linux/elf_core_dump_unittest.cc",
       "breakpad/src/common/linux/file_id_unittest.cc",
       "breakpad/src/common/linux/linux_libc_support_unittest.cc",
+      "breakpad/src/common/linux/scoped_pipe.cc",
+      "breakpad/src/common/linux/scoped_pipe.h",
+      "breakpad/src/common/linux/scoped_pipe_unittest.cc",
+      "breakpad/src/common/linux/scoped_tmpfile.cc",
+      "breakpad/src/common/linux/scoped_tmpfile.h",
+      "breakpad/src/common/linux/scoped_tmpfile_unittest.cc",
       "breakpad/src/common/linux/synth_elf.cc",
-      "breakpad/src/common/linux/tests/auto_testfile.h",
       "breakpad/src/common/linux/tests/crash_generator.cc",
       "breakpad/src/common/linux/tests/crash_generator.h",
       "breakpad/src/common/memory_allocator_unittest.cc",
