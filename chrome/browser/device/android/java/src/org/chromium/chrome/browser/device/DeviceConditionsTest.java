@@ -21,6 +21,7 @@ import android.net.NetworkInfo;
 import android.os.BatteryManager;
 import android.os.PowerManager;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -90,6 +91,12 @@ public class DeviceConditionsTest {
 
         // Make sure context is shared with ContextUtils.
         ContextUtils.initApplicationContextForTests(mContext);
+    }
+
+    @After
+    public void tearDown() {
+        // Reset the network change notifier.
+        NetworkChangeNotifier.resetInstanceForTests();
     }
 
     private void setBatteryStatus(int batteryStatus) {

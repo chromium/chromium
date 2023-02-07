@@ -30,6 +30,7 @@ import android.telephony.TelephonyManager;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -519,6 +520,12 @@ public class NetworkChangeNotifierTest {
             setApplicationHasVisibleActivities(false);
             createTestNotifier(WatchForChanges.ONLY_WHEN_APP_IN_FOREGROUND);
         });
+    }
+
+    @After
+    public void tearDown() {
+        // Reset the network change notifier.
+        NetworkChangeNotifier.resetInstanceForTests();
     }
 
     /**
