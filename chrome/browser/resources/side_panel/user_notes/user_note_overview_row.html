@@ -1,3 +1,9 @@
+<style>
+  sp-list-item-badge {
+    align-items: center;
+  }
+</style>
+
 <cr-url-list-item
     role="listitem"
     size="[[size_]]"
@@ -5,11 +11,17 @@
     title="[[overview.title]]"
     on-click="onRowClicked_"
     on-contextmenu="onRowContextMenu_">
-  <button slot="title" id="title" aria-labelledby="title description">
+  <button slot="title" id="title" aria-labelledby="title description badges">
     [[getTitle_(overview)]]
   </button>
   <div slot="description" id="description" hidden$="[[!description]]">
     [[description]]
+  </div>
+  <div slot="badges">
+    <sp-list-item-badge>
+      <iron-icon icon="notes:note-outline"></iron-icon>
+      <div>[[notesCount_]]</div>
+    </sp-list-item-badge>
   </div>
   <cr-icon-button slot="suffix-icon" iron-icon="cr:more-vert"
       on-click="onTrailingIconClicked_">

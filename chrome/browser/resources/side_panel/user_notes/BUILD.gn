@@ -22,6 +22,8 @@ build_webui("build") {
 
   non_web_component_files = [ "user_notes_api_proxy.ts" ]
 
+  icons_html_files = [ "icons.html" ]
+
   mojo_files_deps = [ "//chrome/browser/ui/webui/side_panel/user_notes:mojo_bindings_ts__generator" ]
   mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/side_panel/user_notes/user_notes.mojom-webui.ts" ]
 

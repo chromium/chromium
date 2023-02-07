@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/side_panel/user_notes/user_notes_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -22,7 +23,7 @@
 #include "ui/base/ui_base_features.h"
 
 UserNotesSidePanelUI::UserNotesSidePanelUI(content::WebUI* web_ui)
-    : ui::MojoBubbleWebUIController(web_ui) {
+    : ui::MojoBubbleWebUIController(web_ui, true) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIUserNotesSidePanelHost);
@@ -54,6 +55,11 @@ UserNotesSidePanelUI::UserNotesSidePanelUI(content::WebUI* web_ui)
                               IDR_SIDE_PANEL_USER_NOTES_USER_NOTES_HTML);
   source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
                                            kSidePanelSharedResourcesSize));
+
+  // Add a handler to provide pluralized string.
+  auto plural_string_handler = std::make_unique<PluralStringHandler>();
+  plural_string_handler->AddLocalizedString("notesCount", IDS_NOTES_COUNT);
+  web_ui->AddMessageHandler(std::move(plural_string_handler));
 }
 
 UserNotesSidePanelUI::~UserNotesSidePanelUI() = default;
