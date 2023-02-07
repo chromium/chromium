@@ -239,11 +239,6 @@ mojom("mojom") {
           cpp = "::webapps::UninstallResultCode"
         },
         {
-          mojom = "crosapi.mojom.Shortcut"
-          cpp = "::apps::ShortcutPtr"
-          move_only = true
-        },
-        {
           mojom = "crosapi.mojom.CertInfo"
           cpp = "::chromeos::certificate_provider::CertificateInfo"
         },

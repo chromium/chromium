@@ -92,14 +92,10 @@ struct App {
   // surfaces.
   OptionalBool handles_intents@26;
 
-  [MinVersion=18]
-  // Shortcuts help users perform specific actions easily.
-  // This vector must be treated atomically, if there is a shortcut
-  // change, the publisher must send through the entire list of shortcuts.
-  // Should contain no duplicate IDs.
-  // If empty during updates, Subscriber can assume no changes.
-  // There is no guarantee that this is sorted by any criteria.
-  array<Shortcut>? shortcuts@27;
+  [MinVersion=18, RenamedFrom="shortcuts"]
+  // DEPRECATED, will be replaced by specific interfaces to update shortcuts.
+  // This struct is not used in production yet, so it's safe to deprecate.
+  array<Shortcut>? deprecated_shortcuts@27;
 
   [MinVersion=19]
   OptionalBool is_platform_app@28;

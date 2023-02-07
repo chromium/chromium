@@ -111,8 +111,10 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::AppPtr> {
 
   static crosapi::mojom::OptionalBool handles_intents(const apps::AppPtr& r);
 
-  static const apps::Shortcuts& shortcuts(const apps::AppPtr& r) {
-    return r->shortcuts;
+  // This method is required for Ash-Lacros backwards compatibility.
+  static std::vector<crosapi::mojom::ShortcutPtr> deprecated_shortcuts(
+      const apps::AppPtr& r) {
+    return {};
   }
 
   static crosapi::mojom::OptionalBool is_platform_app(const apps::AppPtr& r);
@@ -385,20 +387,6 @@ struct StructTraits<crosapi::mojom::PreferredAppChangesDataView,
 
   static bool Read(crosapi::mojom::PreferredAppChangesDataView,
                    apps::PreferredAppChangesPtr* out);
-};
-
-template <>
-struct StructTraits<crosapi::mojom::ShortcutDataView, apps::ShortcutPtr> {
-  static const std::string& shortcut_id(const apps::ShortcutPtr& r) {
-    return r->shortcut_id;
-  }
-
-  static const std::string& name(const apps::ShortcutPtr& r) { return r->name; }
-
-  static uint8_t position(const apps::ShortcutPtr& r) { return r->position; }
-
-  static bool Read(crosapi::mojom::ShortcutDataView data,
-                   apps::ShortcutPtr* out);
 };
 
 }  // namespace mojo

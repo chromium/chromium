@@ -252,10 +252,6 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::Read(
   if (!data.ReadHandlesIntents(&handles_intents))
     return false;
 
-  apps::Shortcuts shortcuts;
-  if (!data.ReadShortcuts(&shortcuts))
-    return false;
-
   crosapi::mojom::OptionalBool is_platform_app;
   if (!data.ReadIsPlatformApp(&is_platform_app))
     return false;
@@ -297,7 +293,6 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::Read(
       ConvertMojomOptionalBoolToOptionalBool(allow_uninstall);
   app->handles_intents =
       ConvertMojomOptionalBoolToOptionalBool(handles_intents);
-  app->shortcuts = std::move(shortcuts);
   app->is_platform_app =
       ConvertMojomOptionalBoolToOptionalBool(is_platform_app);
   *out = std::move(app);
@@ -1196,22 +1191,6 @@ bool StructTraits<crosapi::mojom::PreferredAppChangesDataView,
   preferred_app_changes->added_filters = std::move(added_filters);
   preferred_app_changes->removed_filters = std::move(removed_filters);
   *out = std::move(preferred_app_changes);
-  return true;
-}
-
-bool StructTraits<crosapi::mojom::ShortcutDataView, apps::ShortcutPtr>::Read(
-    crosapi::mojom::ShortcutDataView data,
-    apps::ShortcutPtr* out) {
-  std::string shortcut_id;
-  if (!data.ReadShortcutId(&shortcut_id))
-    return false;
-
-  std::string name;
-  if (!data.ReadName(&name))
-    return false;
-
-  *out = std::make_unique<apps::Shortcut>(shortcut_id, name, data.position());
-
   return true;
 }
 
