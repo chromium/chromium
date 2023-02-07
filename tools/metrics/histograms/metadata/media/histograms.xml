@@ -5613,6 +5613,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.WebmMuxer.DidAdjustTimestamp.{StreamTypesRecorded}.{Domain}"
+    enum="Boolean" expires_after="2023-06-26">
+  <owner>handellm@google.com</owner>
+  <owner>video-performance-team@google.com</owner>
+  <summary>
+    Boolean indicating if {Domain} stream timestamps had to be corrected during
+    a muxing session with {StreamTypesRecorded} present. Reported on muxer
+    destructor.
+  </summary>
+  <token key="StreamTypesRecorded">
+    <variant name="AudioOnly"/>
+    <variant name="AudioVideo"/>
+    <variant name="VideoOnly"/>
+  </token>
+  <token key="Domain">
+    <variant name="Audio"/>
+    <variant name="Muxer"/>
+    <variant name="Video"/>
+  </token>
+</histogram>
+
 <histogram name="Media.WebrtcVideoPerfHistory.GetPerfInfoCodecProfile"
     enum="VideoCodecProfile" expires_after="2024-02-01">
   <owner>kron@chromium.org</owner>

@@ -404,12 +404,12 @@ TEST_P(WebmMuxerTest, VideoIsStoredWhileWaitingForAudio) {
   const std::string encoded_audio("thisisanencodedaudiopacket");
 
   // Timestamped frames should come as:
-  // [video origin, audio origin, video origin + X, video origin + X + Y]
+  // [video origin, video origin + X, video origin + X + Y, audio origin]
   Sequence s;
   EXPECT_CALL(*this, WriteCallback(Eq(encoded_video))).Times(1).InSequence(s);
+  EXPECT_CALL(*this, WriteCallback(Eq(encoded_video))).Times(1).InSequence(s);
+  EXPECT_CALL(*this, WriteCallback(Eq(encoded_video))).Times(1).InSequence(s);
   EXPECT_CALL(*this, WriteCallback(Eq(encoded_audio))).Times(1).InSequence(s);
-  EXPECT_CALL(*this, WriteCallback(Eq(encoded_video))).Times(1).InSequence(s);
-  EXPECT_CALL(*this, WriteCallback(Eq(encoded_video))).Times(1).InSequence(s);
 
   // We'll also get lots of other header-related stuff.
   EXPECT_CALL(*this, WriteCallback(
@@ -590,10 +590,9 @@ TEST_F(WebmMuxerTestUnparametrized,
   AddAudioAtOffsetWithDuration(234 + 321, 10);
   AddVideoAtOffset(234 + 315, /*is_key_frame=*/false);
   EXPECT_TRUE(Parse());
-  EXPECT_THAT(
-      buffer_timestamps_ms_,
-      UnorderedElementsAre(Pair(1, ElementsAre(0, /*321 - 300=*/21)),
-                           Pair(2, ElementsAre(0, /*315 - 300 - 1=*/14))));
+  EXPECT_THAT(buffer_timestamps_ms_,
+              UnorderedElementsAre(Pair(1, ElementsAre(0, /*321 - 300=*/21)),
+                                   Pair(2, ElementsAre(1, /*315 - 300=*/15))));
 }
 
 TEST_F(WebmMuxerTestUnparametrized,
@@ -608,7 +607,7 @@ TEST_F(WebmMuxerTestUnparametrized,
   EXPECT_TRUE(Parse());
   EXPECT_THAT(buffer_timestamps_ms_,
               UnorderedElementsAre(Pair(1, ElementsAre(0, 10)),
-                                   Pair(2, ElementsAre(0, 5))));
+                                   Pair(2, ElementsAre(15, 20))));
 }
 
 TEST_F(WebmMuxerTestUnparametrized, HoldsDataUntilDurationExpiry) {
