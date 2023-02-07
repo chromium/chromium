@@ -100,7 +100,6 @@ void OnDidEnumeratePrintersFromPrintBackendService(
 void OnDidFetchCapabilitiesFromPrintBackendService(
     const std::string& device_name,
     bool elevated_privileges,
-    bool has_secure_protocol,
     PrinterHandler::GetCapabilityCallback callback,
     mojom::PrinterCapsAndInfoResultPtr printer_caps_and_info) {
   if (printer_caps_and_info->is_result_code()) {
@@ -125,8 +124,7 @@ void OnDidFetchCapabilitiesFromPrintBackendService(
           device_name,
           base::BindOnce(&OnDidFetchCapabilitiesFromPrintBackendService,
                          device_name,
-                         /*elevated_privileges=*/true, has_secure_protocol,
-                         std::move(callback)));
+                         /*elevated_privileges=*/true, std::move(callback)));
       return;
     }
 
@@ -141,7 +139,7 @@ void OnDidFetchCapabilitiesFromPrintBackendService(
       printer_caps_and_info->get_printer_caps_and_info();
   base::Value::Dict settings = AssemblePrinterSettings(
       device_name, caps_and_info->printer_info,
-      caps_and_info->user_defined_papers, has_secure_protocol,
+      caps_and_info->user_defined_papers, /*has_secure_protocol=*/false,
       &caps_and_info->printer_caps);
   std::move(callback).Run(std::move(settings));
 }
@@ -303,7 +301,7 @@ void LocalPrinterHandlerDefault::StartGetCapability(
                        device_name,
                        service_mgr.PrinterDriverFoundToRequireElevatedPrivilege(
                            device_name),
-                       /*has_secure_protocol=*/false, std::move(cb)));
+                       std::move(cb)));
     return;
   }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
