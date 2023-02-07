@@ -669,10 +669,11 @@ public class MainActivity
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder(session);
             prepareMenuItems(builder);
             prepareActionButton(builder);
+            boolean isPCCT = mCctType.equals("Partial CCT");
+            prepareAesthetics(builder, isPCCT);
             CustomTabsIntent customTabsIntent = builder.build();
-            if (mCctType.equals("Partial CCT")) {
+            if (isPCCT) {
                 editor.putString(SHARED_PREF_CCT, "Partial CCT");
-                prepareAesthetics(builder, /*isPcct=*/true);
                 int toolbarCornerRadiusDp = mToolbarCornerRadiusSlider.getProgress();
                 int toolbarCornerRadiusPx = Math.round(
                         toolbarCornerRadiusDp * getResources().getDisplayMetrics().density);
@@ -709,8 +710,8 @@ public class MainActivity
                             BACKGROUND_INTERACT_OFF_VALUE);
                 }
             } else {
-                editor.putString(SHARED_PREF_CCT, mCctType.equals("Incognito CCT") ? "Incognito CCT" : "CCT");
-                prepareAesthetics(builder, /*isPcct=*/false);
+                editor.putString(SHARED_PREF_CCT,
+                        mCctType.equals("Incognito CCT") ? "Incognito CCT" : "CCT");
                 if (session != null && mBottomToolbarCheckbox.isChecked()) {
                     prepareBottombar(builder);
                 }
