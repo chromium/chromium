@@ -94,14 +94,21 @@ class AttributionStorageSqlMigrationsTest : public testing::Test {
            base::ReadFileToString(source_path, contents);
   }
 
-  static int VersionFromDatabase(sql::Database* db) {
-    // Get version.
-    sql::Statement s(
-        db->GetUniqueStatement("SELECT value FROM meta WHERE key='version'"));
-    if (!s.Step()) {
-      return 0;
+  static void CheckVersionNumbers(sql::Database* db) {
+    {
+      sql::Statement s(
+          db->GetUniqueStatement("SELECT value FROM meta WHERE key='version'"));
+      ASSERT_TRUE(s.Step());
+      EXPECT_EQ(s.ColumnInt(0), AttributionStorageSql::kCurrentVersionNumber);
     }
-    return s.ColumnInt(0);
+
+    {
+      sql::Statement s(db->GetUniqueStatement(
+          "SELECT value FROM meta WHERE key='last_compatible_version'"));
+      ASSERT_TRUE(s.Step());
+      EXPECT_EQ(s.ColumnInt(0),
+                AttributionStorageSql::kCompatibleVersionNumber);
+    }
   }
 
   void LoadDatabase(const base::FilePath& file, const base::FilePath& db_path) {
@@ -134,9 +141,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateEmptyToCurrent) {
     sql::Database db;
     ASSERT_TRUE(db.Open(DbPath()));
 
-    // Check version.
-    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
-              VersionFromDatabase(&db));
+    CheckVersionNumbers(&db);
 
     // Check that expected tables are present.
     EXPECT_TRUE(db.DoesTableExist("event_level_reports"));
@@ -176,9 +181,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateLatestDeprecatedToCurrent) {
     sql::Database db;
     ASSERT_TRUE(db.Open(DbPath()));
 
-    // Check version.
-    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
-              VersionFromDatabase(&db));
+    CheckVersionNumbers(&db);
 
     EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
               NormalizeSchema(db.GetSchema()));
@@ -215,9 +218,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion35ToCurrent) {
     sql::Database db;
     ASSERT_TRUE(db.Open(DbPath()));
 
-    // Check version.
-    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
-              VersionFromDatabase(&db));
+    CheckVersionNumbers(&db);
 
     // Compare normalized schemas
     EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
@@ -257,9 +258,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion36ToCurrent) {
     sql::Database db;
     ASSERT_TRUE(db.Open(DbPath()));
 
-    // Check version.
-    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
-              VersionFromDatabase(&db));
+    CheckVersionNumbers(&db);
 
     // Compare normalized schemas
     EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
@@ -307,9 +306,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion37ToCurrent) {
     sql::Database db;
     ASSERT_TRUE(db.Open(DbPath()));
 
-    // Check version.
-    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
-              VersionFromDatabase(&db));
+    CheckVersionNumbers(&db);
 
     // Compare normalized schemas
     EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
@@ -360,9 +357,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion38ToCurrent) {
     sql::Database db;
     ASSERT_TRUE(db.Open(DbPath()));
 
-    // Check version.
-    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
-              VersionFromDatabase(&db));
+    CheckVersionNumbers(&db);
 
     // Compare normalized schemas
     EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
@@ -419,9 +414,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion39ToCurrent) {
     ASSERT_TRUE(db.Open(DbPath()));
     ASSERT_FALSE(db.DoesIndexExist("contribution_aggregation_id_idx"));
 
-    // Check version.
-    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
-              VersionFromDatabase(&db));
+    CheckVersionNumbers(&db);
 
     // Compare without quotes as sometimes migrations cause table names to be
     // string literals.
@@ -478,9 +471,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion40ToCurrent) {
     sql::Database db;
     ASSERT_TRUE(db.Open(DbPath()));
 
-    // Check version.
-    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
-              VersionFromDatabase(&db));
+    CheckVersionNumbers(&db);
 
     // Compare normalized schemas
     EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
@@ -533,9 +524,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion41ToCurrent) {
     sql::Database db;
     ASSERT_TRUE(db.Open(DbPath()));
 
-    // Check version.
-    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
-              VersionFromDatabase(&db));
+    CheckVersionNumbers(&db);
 
     // Compare normalized schemas
     EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
@@ -586,9 +575,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion42ToCurrent) {
     sql::Database db;
     ASSERT_TRUE(db.Open(DbPath()));
 
-    // Check version.
-    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
-              VersionFromDatabase(&db));
+    CheckVersionNumbers(&db);
 
     // Compare normalized schemas
     EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
@@ -663,9 +650,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion43ToCurrent) {
     sql::Database db;
     ASSERT_TRUE(db.Open(DbPath()));
 
-    // Check version.
-    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
-              VersionFromDatabase(&db));
+    CheckVersionNumbers(&db);
 
     // Compare normalized schemas
     EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
@@ -742,9 +727,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion44ToCurrent) {
     sql::Database db;
     ASSERT_TRUE(db.Open(DbPath()));
 
-    // Check version.
-    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
-              VersionFromDatabase(&db));
+    CheckVersionNumbers(&db);
 
     // Compare normalized schemas
     EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
@@ -783,9 +766,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion45ToCurrent) {
     sql::Database db;
     ASSERT_TRUE(db.Open(DbPath()));
 
-    // Check version.
-    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
-              VersionFromDatabase(&db));
+    CheckVersionNumbers(&db);
 
     // Compare normalized schemas
     EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
