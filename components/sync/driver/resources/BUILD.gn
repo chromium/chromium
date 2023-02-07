@@ -2,100 +2,44 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 
-grd_file = "$target_gen_dir/resources.grd"
-
-preprocess_if_expr("preprocess_css") {
-  in_folder = "./"
-  out_folder = "$target_gen_dir/preprocess"
-  out_manifest = "$target_gen_dir/css_manifest.json"
-  in_files = [
-    "sync_node_browser.css",
-    "sync_search.css",
-  ]
-}
-
-preprocessed_files = [ "sync_index.ts" ]
-non_preprocessed_files = [
-  "about.ts",
-  "chrome_sync.ts",
-  "data.ts",
-  "invalidations.ts",
-  "search.ts",
-  "sync_log.ts",
-  "sync_node_browser.ts",
-  "sync_search.ts",
-  "traffic_log.ts",
-  "user_events.ts",
-]
-
-preprocess_if_expr("preprocess") {
-  in_folder = "./"
-  out_folder = "$target_gen_dir/preprocess"
-  in_files = preprocessed_files
-}
-
-copy("copy_files") {
-  sources = non_preprocessed_files
-  outputs = [ "$target_gen_dir/preprocess/{{source_file_part}}" ]
-}
-
-ts_library("build_ts") {
-  root_dir = "$target_gen_dir/preprocess"
-  in_files = non_preprocessed_files + preprocessed_files
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-  definitions = [
-    "//tools/typescript/definitions/chrome_send.d.ts",
-    "//tools/typescript/definitions/pending.d.ts",
-    "jstemplate.d.ts",
-  ]
-  deps = [
-    "//ui/webui/resources/cr_elements:build_ts",
-    "//ui/webui/resources/js:build_ts",
-  ]
-  extra_deps = [
-    ":copy_files",
-    ":preprocess",
-  ]
-}
-
-generate_grd("build_grd") {
-  deps = [
-    ":build_ts",
-    ":preprocess_css",
-  ]
+build_webui("build") {
   grd_prefix = "sync_driver_sync_internals"
-  out_grd = grd_file
-  input_files = [
+
+  static_files = [
     "about.css",
     "index.html",
     "invalidations.css",
     "star_small.png",
+    "sync_node_browser.css",
+    "sync_search.css",
     "traffic_log.css",
   ]
-  input_files_base_dir = rebase_path("./", "//")
-  manifest_files =
-      [ "$target_gen_dir/css_manifest.json" ] +
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-}
 
-grit("resources") {
-  source = grd_file
-
-  # Required because the .grd is generated.
-  enable_input_discovery_for_gn_analyze = false
-
-  outputs = [
-    "grit/sync_driver_sync_internals_resources.h",
-    "grit/sync_driver_sync_internals_resources_map.cc",
-    "grit/sync_driver_sync_internals_resources_map.h",
-    "sync_driver_sync_internals_resources.pak",
+  non_web_component_files = [
+    "about.ts",
+    "chrome_sync.ts",
+    "data.ts",
+    "invalidations.ts",
+    "search.ts",
+    "sync_index.ts",
+    "sync_log.ts",
+    "sync_node_browser.ts",
+    "sync_search.ts",
+    "traffic_log.ts",
+    "user_events.ts",
   ]
-  output_dir = "$root_gen_dir/components"
-  deps = [ ":build_grd" ]
+
+  ts_deps = [
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+  ]
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+    "jstemplate.d.ts",
+  ]
+
+  grit_output_dir = "$root_gen_dir/components"
 }

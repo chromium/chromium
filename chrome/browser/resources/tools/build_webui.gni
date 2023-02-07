@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
+import("//build/config/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/css_to_wrapper.gni")
@@ -10,6 +10,10 @@ import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../tools/optimize_webui.gni")
+
+if (use_blink) {
+  import("//chrome/common/features.gni")
+}
 
 # See documentation at https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_build_configuration.md#build_webui
 
@@ -105,7 +109,11 @@ template("build_webui") {
   if (defined(invoker.static_files)) {
     preprocess_if_expr("preprocess_static_files") {
       visibility = [ ":build_grd" ]
-      defines = chrome_grit_defines
+
+      if (use_blink) {
+        defines = chrome_grit_defines
+      }
+
       in_folder = "."
       out_folder = preprocess_dir
       in_files = static_preprocessed_files
@@ -120,7 +128,10 @@ template("build_webui") {
       ":html_wrapper_files",
     ]
 
-    defines = chrome_grit_defines
+    if (use_blink) {
+      defines = chrome_grit_defines
+    }
+
     in_folder = "."
     out_folder = preprocess_dir
     in_files = ts_files
@@ -292,7 +303,9 @@ template("build_webui") {
   }
 
   grit("resources") {
-    defines = chrome_grit_defines
+    if (use_blink) {
+      defines = chrome_grit_defines
+    }
 
     # These arguments are needed since the grd is generated at build time.
     enable_input_discovery_for_gn_analyze = false
