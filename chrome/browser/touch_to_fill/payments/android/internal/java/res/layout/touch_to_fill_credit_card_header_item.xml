@@ -21,12 +21,12 @@ found in the LICENSE file.
       android:importantForAccessibility="no"
       android:layout_gravity="center_horizontal"/>
 
-    <org.chromium.ui.widget.TextViewWithLeading
+    <androidx.appcompat.widget.DialogTitle
         android:id="@+id/touch_to_fill_sheet_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.Headline.Primary"
+        android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"
         android:text="@string/autofill_credit_card_bottom_sheet_title"/>
 </LinearLayout>
