@@ -3938,11 +3938,6 @@ void RenderFrameHostImpl::DidNavigate(
     // owner element which contains child's required document policy, so there
     // is no need to store required document policy in proxies.
   }
-
-  // If an automatic "top_navigation" beacon is registered in the FencedFrame of
-  // the document initiator of the navigation, and the navigation destination is
-  // an outermost main frame, send the beacon.
-  MaybeSendFencedFrameReportingBeacon(*navigation_request);
 }
 
 void RenderFrameHostImpl::SetLastCommittedOrigin(const url::Origin& origin) {
@@ -7761,59 +7756,6 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
     const std::string& event_data,
     const std::string& event_type,
     blink::FencedFrame::ReportingDestination destination) {
-  SendFencedFrameReportingBeaconInternal(event_data, event_type, destination,
-                                         /*from_renderer=*/true);
-}
-
-void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
-    NavigationRequest& navigation_request) {
-  // The fenced frame "reserved.top_navigation" automatic beacon only cares
-  // about top-frame navigations.
-  if (!IsOutermostMainFrame()) {
-    return;
-  }
-
-  if (!navigation_request.GetInitiatorFrameToken().has_value()) {
-    return;
-  }
-
-  RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
-      navigation_request.GetInitiatorProcessID(),
-      navigation_request.GetInitiatorFrameToken().value());
-  if (!initiator_rfh) {
-    return;
-  }
-
-  RenderFrameHostImpl* initiator_main_rfh = initiator_rfh->GetMainFrame();
-
-  const absl::optional<FencedFrameProperties>& properties =
-      initiator_main_rfh->frame_tree_node()->GetFencedFrameProperties();
-  // Navigations that initiate from a fenced frame or iframe loaded with a urn
-  // and target either a new window or `_unfencedTop` should send an automatic
-  // beacon.
-  if (!properties.has_value() || !properties->fenced_frame_reporter_) {
-    return;
-  }
-
-  absl::optional<std::string> data =
-      properties->fenced_frame_reporter_->automatic_beacon_data();
-  if (!data) {
-    return;
-  }
-
-  for (blink::FencedFrame::ReportingDestination destination :
-       properties->fenced_frame_reporter_->automatic_beacon_destination()) {
-    initiator_main_rfh->SendFencedFrameReportingBeaconInternal(
-        data.value(), "reserved.top_navigation", destination,
-        /*from_renderer=*/false);
-  }
-}
-
-void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
-    const std::string& event_data,
-    const std::string& event_type,
-    blink::FencedFrame::ReportingDestination destination,
-    bool from_renderer) {
   // Get the reporting metadata associated with the fenced frame.
   const absl::optional<FencedFrameProperties>& fenced_frame_properties =
       frame_tree_node_->GetFencedFrameProperties();
@@ -7841,19 +7783,16 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
       !GetOutermostMainFrame()
            ->GetPage()
            .CheckAndMaybeDebitReportEventForSelectURLBudget(*this)) {
-    if (from_renderer) {
-      AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
-                          "The call to fence.reportEvent was blocked due to "
-                          "insufficient budget.");
-    }
+    AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
+                        "The call to fence.reportEvent was blocked due to "
+                        "insufficient budget.");
     return;
   }
 
   std::string error_message;
   if (!fenced_frame_properties->fenced_frame_reporter_->SendReport(
           event_type, event_data, destination,
-          /*request_initiator=*/GetLastCommittedOrigin(), error_message) &&
-      from_renderer) {
+          /*request_initiator=*/GetLastCommittedOrigin(), error_message)) {
     AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
                         error_message);
   }

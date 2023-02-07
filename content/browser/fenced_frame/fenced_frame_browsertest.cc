@@ -4551,9 +4551,6 @@ class FencedFrameReportEventBrowserTest
     // Whether the navigation should be embedder-initiated or fenced-frame
     // initiated.
     bool is_embedder_initiated = false;
-    // Whether the navigation should target _unfencedTop rather than the fenced
-    // frame root
-    bool is_target_unfenced_top = false;
     // Whether the navigation should be via a urn:uuid or a normal URL.
     // (This should always be false when `!is_embedder_initiated`.
     bool is_opaque = false;
@@ -4725,11 +4722,10 @@ class FencedFrameReportEventBrowserTest
     FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                               ->GetPrimaryFrameTree()
                               .root();
-    EXPECT_TRUE(
-        ExecJs(root,
-               "var fenced_frame = document.createElement('fencedframe');"
-               "fenced_frame.mode = 'opaque-ads';"
-               "document.body.appendChild(fenced_frame);"));
+    EXPECT_TRUE(ExecJs(root,
+                       "var f = document.createElement('fencedframe');"
+                       "f.mode = 'opaque-ads';"
+                       "document.body.appendChild(f);"));
     EXPECT_EQ(1U, root->child_count());
     FrameTreeNode* fenced_frame_root_node =
         GetFencedFrameRootNode(root->child_at(0));
@@ -4744,10 +4740,7 @@ class FencedFrameReportEventBrowserTest
     // Set valid reporting metadata for buyer.
     fenced_frame_reporter->OnUrlMappingReady(
         blink::FencedFrame::ReportingDestination::kBuyer,
-        {
-            {"click", reporting_url},
-            {"reserved.top_navigation", reporting_url},
-        });
+        {{"click", reporting_url}});
     // Set empty reporting url for seller.
     fenced_frame_reporter->OnUrlMappingReady(
         blink::FencedFrame::ReportingDestination::kSeller, {{"click", GURL()}});
@@ -4794,28 +4787,13 @@ class FencedFrameReportEventBrowserTest
       }
 
       // Initiate the navigation.
-      TestFrameNavigationObserver target_observer(navigation_target_node);
-      TestFrameNavigationObserver root_observer(root);
-
+      TestFrameNavigationObserver observer(navigation_target_node);
       if (step.is_target_nested_iframe) {
         EXPECT_TRUE(
             ExecJs(fenced_frame_root_node,
                    JsReplace("iframe_within_ff.src = $1", navigate_url)));
-      } else if (step.is_target_unfenced_top) {
-        EXPECT_TRUE(ExecJs(
-            fenced_frame_root_node,
-            JsReplace("window.fence.setReportEventDataForAutomaticBeacons({"
-                      "eventType: 'reserved.top_navigation',"
-                      "eventData: $2 + ' $1',"
-                      "destination: ['seller', 'buyer']"
-                      "});",
-                      navigation_index, step.event.type)));
-        EXPECT_TRUE(ExecJs(
-            fenced_frame_root_node,
-            JsReplace("window.open($1, '_unfencedTop');", navigate_url)));
       } else if (step.is_embedder_initiated) {
-        EXPECT_TRUE(
-            ExecJs(root, JsReplace("fenced_frame.src = $1", navigate_url)));
+        EXPECT_TRUE(ExecJs(root, JsReplace("f.src = $1", navigate_url)));
       } else {
         EXPECT_TRUE(ExecJs(fenced_frame_root_node,
                            JsReplace("location.href = $1", navigate_url)));
@@ -4837,17 +4815,14 @@ class FencedFrameReportEventBrowserTest
       }
 
       // Check that the navigation worked as intended.
-      if (step.is_target_unfenced_top) {
-        root_observer.Wait();
-      } else {
-        target_observer.WaitForCommit();
-        EXPECT_EQ(expect_url, navigation_target_node->current_frame_host()
-                                  ->GetLastCommittedURL());
-        EXPECT_EQ(url::Origin::Create(expect_url),
-                  navigation_target_node->current_frame_host()
-                      ->GetLastCommittedOrigin());
-        navigation_index++;
-      }
+      observer.WaitForCommit();
+      EXPECT_EQ(
+          expect_url,
+          navigation_target_node->current_frame_host()->GetLastCommittedURL());
+      EXPECT_EQ(url::Origin::Create(expect_url),
+                navigation_target_node->current_frame_host()
+                    ->GetLastCommittedOrigin());
+      navigation_index++;
 
       // Monitor the console warnings.
       WebContentsConsoleObserver console_observer(web_contents());
@@ -4862,21 +4837,18 @@ class FencedFrameReportEventBrowserTest
             GetConsoleWarningPattern(step.report_event_result));
       }
 
-      // An unfenced top navigation should be reported automatically.
-      if (!step.is_target_unfenced_top) {
-        // Perform the reportEvent call, with a unique body.
-        const char report_event_script[] = R"(
-            window.fence.reportEvent({
-            eventType: $2,
-            eventData: $2 + ' $1',
-            destination: [$3],
-            });
-        )";
-        EXPECT_TRUE(ExecJs(
-            navigation_target_node,
-            JsReplace(report_event_script, navigation_index, step.event.type,
-                      step.event.reporting_destination)));
-      }
+      // Perform the reportEvent call, with a unique body.
+      const char report_event_script[] = R"(
+        window.fence.reportEvent({
+          eventType: $2,
+          eventData: $2 + ' $1',
+          destination: [$3],
+        });
+      )";
+      EXPECT_TRUE(
+          ExecJs(navigation_target_node,
+                 JsReplace(report_event_script, navigation_index,
+                           step.event.type, step.event.reporting_destination)));
 
       // If relevant, check that the event report succeeded.
       if (step.report_event_result == Step::Result::kSuccess) {
@@ -4921,18 +4893,12 @@ class FencedFrameReportEventBrowserTest
       }
     }
 
-    // An unfenced top navigation will navigate to a new page, removing the
-    // `fenced_frame` object. Make sure the object exists before doing the last
-    // check.
-    if (EvalJs(root, "typeof fenced_frame") == "FencedFrame") {
-      // Check for any spurious waiting reported events.
-      EXPECT_TRUE(
-          ExecJs(root, JsReplace("fenced_frame.src = $1", reporting_url)));
-      auto& response = *responses[response_index];
-      response.WaitForRequest();
-      EXPECT_EQ(response.http_request()->content, "");
-      response.Done();
-    }
+    // Check for any spurious waiting reported events.
+    EXPECT_TRUE(ExecJs(root, JsReplace("f.src = $1", reporting_url)));
+    auto& response = *responses[response_index];
+    response.WaitForRequest();
+    EXPECT_EQ(response.http_request()->content, "");
+    response.Done();
   }
 
  private:
@@ -5836,44 +5802,6 @@ IN_PROC_BROWSER_TEST_F(
                   "Attribution-Reporting-Support"),
               "web");
   }
-}
-
-// Test same-origin automatic beacon sent for _unfencedTop navigations.
-IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
-                       FencedFrameReportEventUnfencedTopSameOrigin) {
-  std::vector<Step> config = {
-      {
-          .is_embedder_initiated = true,
-          .is_opaque = true,
-          .destination = {"a.test", "/fenced_frames/title1.html"},
-          .report_event_result = Step::Result::kSuccess,
-      },
-      {
-          .is_target_unfenced_top = true,
-          .destination = {"a.test", "/fenced_frames/title1.html"},
-          .report_event_result = Step::Result::kSuccess,
-      },
-  };
-  RunTest(config);
-}
-
-// Test cross-origin automatic beacon sent for _unfencedTop navigations.
-IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
-                       FencedFrameReportEventUnfencedTopCrossOrigin) {
-  std::vector<Step> config = {
-      {
-          .is_embedder_initiated = true,
-          .is_opaque = true,
-          .destination = {"a.test", "/fenced_frames/title1.html"},
-          .report_event_result = Step::Result::kSuccess,
-      },
-      {
-          .is_target_unfenced_top = true,
-          .destination = {"b.test", "/fenced_frames/title1.html"},
-          .report_event_result = Step::Result::kSuccess,
-      },
-  };
-  RunTest(config);
 }
 
 // Parameterized on whether the feature is enabled or not.
