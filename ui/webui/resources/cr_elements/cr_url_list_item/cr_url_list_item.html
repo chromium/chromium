@@ -1,4 +1,4 @@
-<style include="cr-icons">
+<style include="cr-hidden-style cr-icons">
   :host {
     align-items: center;
     box-sizing: border-box;
@@ -94,10 +94,34 @@
     width: 16px;
   }
 
+  :host([size=large]) .folder-and-count {
+    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    height: 100%;
+    justify-items: center;
+    width: 100%;
+  }
+
   .folder {
     height: 16px;
     margin: 0;
     width: 16px;
+  }
+
+  .count {
+    display: none;
+  }
+
+  :host([size=large]) .count {
+    align-items: center;
+    display: flex;
+    grid-column: 2;
+    grid-row: 2;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
   }
 
   .metadata {
@@ -223,8 +247,9 @@
   <div class="favicon" hidden$="[[!shouldShowFavicon_(url, count)]]"
       style$="background-image: [[getFavicon_(url)]];">
   </div>
-  <div class="folder cr-icon icon-folder-open"
-      hidden$="[[shouldShowFavicon_(url, count)]]">
+  <div class="folder-and-count" hidden$="[[shouldShowFavicon_(url, count)]]">
+    <div class="folder cr-icon icon-folder-open"></div>
+    <div class="count">[[getDisplayedCount_(count)]]</div>
   </div>
 </div>
 <div class="metadata">

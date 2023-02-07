@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../cr_hidden_style.css.js';
 import '../cr_icons.css.js';
 import '../cr_shared_vars.css.js';
 
@@ -56,6 +57,15 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   override ready() {
     super.ready();
     FocusOutlineManager.forDocument(document);
+  }
+
+  private getDisplayedCount_() {
+    if (this.count && this.count > 999) {
+      // The square to display the count only fits 3 characters.
+      return '99+';
+    }
+
+    return this.count;
   }
 
   private getFavicon_(): string {

@@ -20,7 +20,7 @@ suite('CrUrlListItemTest', () => {
   test('TogglesBetweenIcons', () => {
     const favicon = element.shadowRoot!.querySelector<HTMLElement>('.favicon')!;
     const folderIcon =
-        element.shadowRoot!.querySelector<HTMLElement>('.folder')!;
+        element.shadowRoot!.querySelector<HTMLElement>('.folder-and-count')!;
 
     element.count = 4;
     assertTrue(favicon.hasAttribute('hidden'));
@@ -33,5 +33,13 @@ suite('CrUrlListItemTest', () => {
         getFaviconForPageURL('http://google.com', false),
         favicon.style.backgroundImage);
     assertTrue(folderIcon.hasAttribute('hidden'));
+  });
+
+  test('TruncatesAndDisplaysCount', () => {
+    const count = element.shadowRoot!.querySelector('.count')!;
+    element.count = 11;
+    assertEquals('11', count.textContent);
+    element.count = 2983;
+    assertEquals('99+', count.textContent);
   });
 });
