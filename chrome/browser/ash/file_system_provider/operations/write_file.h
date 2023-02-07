@@ -22,7 +22,7 @@ namespace ash {
 namespace file_system_provider {
 namespace operations {
 
-// Bridge between fileapi write file and providing extension's write fil
+// Bridge between fileapi write file and providing extension's write file
 // request.
 // Created per request.
 class WriteFile : public Operation {
@@ -32,7 +32,7 @@ class WriteFile : public Operation {
             int file_handle,
             scoped_refptr<net::IOBuffer> buffer,
             int64_t offset,
-            int length,
+            size_t length,
             storage::AsyncFileUtil::StatusCallback callback);
 
   WriteFile(const WriteFile&) = delete;
@@ -53,7 +53,7 @@ class WriteFile : public Operation {
   int file_handle_;
   scoped_refptr<net::IOBuffer> buffer_;
   int64_t offset_;
-  int length_;
+  size_t length_;
   storage::AsyncFileUtil::StatusCallback callback_;
 };
 

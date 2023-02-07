@@ -437,12 +437,17 @@ AbortCallback ProvidedFileSystem::WriteFile(
                "ProvidedFileSystem::WriteFile",
                "length",
                length);
+  if (length < 0) {
+    std::move(callback).Run(base::File::FILE_ERROR_INVALID_OPERATION);
+    return AbortCallback();
+  }
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
-      WRITE_FILE, std::make_unique<operations::WriteFile>(
-                      request_dispatcher_.get(), file_system_info_, file_handle,
-                      base::WrapRefCounted(buffer), offset, length,
-                      std::move(split_callback.first)));
+      WRITE_FILE,
+      std::make_unique<operations::WriteFile>(
+          request_dispatcher_.get(), file_system_info_, file_handle,
+          base::WrapRefCounted(buffer), offset, static_cast<size_t>(length),
+          std::move(split_callback.first)));
   if (!request_id) {
     std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
