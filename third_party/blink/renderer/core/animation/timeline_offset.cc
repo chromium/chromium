@@ -84,7 +84,7 @@ Length TimelineOffset::ResolveLength(Element* element, const CSSValue* value) {
   // TODO(kevers): Re-resolve any value that is not px or % on a style change.
   CSSToLengthConversionData::Flags ignored_flags = 0;
   CSSToLengthConversionData length_conversion_data(
-      element->GetComputedStyle(), element_resolve_context.ParentStyle(),
+      element->ComputedStyleRef(), element_resolve_context.ParentStyle(),
       element_resolve_context.RootElementStyle(), document.GetLayoutView(),
       CSSToLengthConversionData::ContainerSizes(element),
       element->GetComputedStyle()->EffectiveZoom(), ignored_flags);

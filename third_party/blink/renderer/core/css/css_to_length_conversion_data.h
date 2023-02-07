@@ -63,7 +63,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
               const Font* root_font,
               float font_zoom,
               float root_font_zoom);
-    FontSizes(const ComputedStyle*, const ComputedStyle* root_style);
+    FontSizes(const ComputedStyle&, const ComputedStyle* root_style);
 
     float Em(float zoom) const { return em_ * zoom; }
     float Rem(float zoom) const { return rem_ * zoom; }
@@ -234,7 +234,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
                             const ContainerSizes&,
                             float zoom,
                             Flags&);
-  CSSToLengthConversionData(const ComputedStyle* element_style,
+  CSSToLengthConversionData(const ComputedStyle& element_style,
                             const ComputedStyle* parent_style,
                             const ComputedStyle* root_style,
                             const LayoutView*,

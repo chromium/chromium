@@ -103,16 +103,16 @@ CSSToLengthConversionData::FontSizes::FontSizes(float em,
   DCHECK(root_font_);
 }
 
-CSSToLengthConversionData::FontSizes::FontSizes(const ComputedStyle* style,
+CSSToLengthConversionData::FontSizes::FontSizes(const ComputedStyle& style,
                                                 const ComputedStyle* root_style)
     : FontSizes(
-          style->SpecifiedFontSize(),
+          style.SpecifiedFontSize(),
           root_style ? root_style->SpecifiedFontSize()
-                     : style->SpecifiedFontSize(),
-          &style->GetFont(),
-          root_style ? &root_style->GetFont() : &style->GetFont(),
-          style->EffectiveZoom(),
-          root_style ? root_style->EffectiveZoom() : style->EffectiveZoom()) {}
+                     : style.SpecifiedFontSize(),
+          &style.GetFont(),
+          root_style ? &root_style->GetFont() : &style.GetFont(),
+          style.EffectiveZoom(),
+          root_style ? root_style->EffectiveZoom() : style.EffectiveZoom()) {}
 
 float CSSToLengthConversionData::FontSizes::Ex(float zoom) const {
   DCHECK(font_);
@@ -296,7 +296,7 @@ CSSToLengthConversionData::CSSToLengthConversionData(
       flags_(&flags) {}
 
 CSSToLengthConversionData::CSSToLengthConversionData(
-    const ComputedStyle* element_style,
+    const ComputedStyle& element_style,
     const ComputedStyle* parent_style,
     const ComputedStyle* root_style,
     const LayoutView* layout_view,
@@ -304,9 +304,9 @@ CSSToLengthConversionData::CSSToLengthConversionData(
     float zoom,
     Flags& flags)
     : CSSToLengthConversionData(
-          element_style->GetWritingMode(),
+          element_style.GetWritingMode(),
           FontSizes(element_style, root_style),
-          LineHeightSize(parent_style ? *parent_style : *element_style,
+          LineHeightSize(parent_style ? *parent_style : element_style,
                          root_style),
           ViewportSize(layout_view),
           container_sizes,

@@ -163,7 +163,7 @@ Length InsetValueToLength(const CSSValue* inset_value,
     // percentage, see IsStyleDependent.
     CSSToLengthConversionData::Flags ignored_flags = 0;
     CSSToLengthConversionData length_conversion_data(
-        subject->GetComputedStyle(), element_resolve_context.ParentStyle(),
+        subject->ComputedStyleRef(), element_resolve_context.ParentStyle(),
         element_resolve_context.RootElementStyle(), document.GetLayoutView(),
         CSSToLengthConversionData::ContainerSizes(subject),
         subject->GetComputedStyle()->EffectiveZoom(), ignored_flags);

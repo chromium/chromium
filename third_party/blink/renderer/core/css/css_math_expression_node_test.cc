@@ -97,7 +97,7 @@ TEST(CSSCalculationValue, AccumulatePixelsAndPercent) {
   scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
   CSSToLengthConversionData::Flags ignored_flags = 0;
   CSSToLengthConversionData conversion_data(
-      style.get(), style.get(), style.get(), nullptr,
+      *style, style.get(), style.get(), nullptr,
       CSSToLengthConversionData::ContainerSizes(), style->EffectiveZoom(),
       ignored_flags);
 

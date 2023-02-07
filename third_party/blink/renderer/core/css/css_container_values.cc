@@ -20,7 +20,7 @@ CSSContainerValues::CSSContainerValues(Document& document,
       height_(height),
       writing_mode_(container.ComputedStyleRef().GetWritingMode()),
       font_sizes_(CSSToLengthConversionData::FontSizes(
-          container.GetComputedStyle(),
+          container.ComputedStyleRef(),
           document.documentElement()->GetComputedStyle())),
       line_height_size_(CSSToLengthConversionData::LineHeightSize(
           container.ComputedStyleRef(),

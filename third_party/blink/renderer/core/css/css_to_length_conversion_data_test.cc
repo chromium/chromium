@@ -50,7 +50,7 @@ class CSSToLengthConversionDataTest : public PageTestBase {
     UpdateAllLifecyclePhasesForTest();
 
     return CSSToLengthConversionData(
-        div->GetComputedStyle(), GetDocument().body()->GetComputedStyle(),
+        div->ComputedStyleRef(), GetDocument().body()->GetComputedStyle(),
         GetDocument().documentElement()->GetComputedStyle(),
         GetDocument().GetLayoutView(),
         CSSToLengthConversionData::ContainerSizes(),

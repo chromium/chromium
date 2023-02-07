@@ -93,7 +93,7 @@ float ObjectBoundingBoxUnitToUserUnits(const Length& length,
 
 SVGLengthConversionData::SVGLengthConversionData(const Element& context,
                                                  const ComputedStyle& style)
-    : CSSToLengthConversionData(&style,
+    : CSSToLengthConversionData(style,
                                 &style,
                                 RootElementStyle(context),
                                 context.GetDocument().GetLayoutView(),
