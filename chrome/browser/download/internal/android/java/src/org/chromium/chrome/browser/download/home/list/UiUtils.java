@@ -11,6 +11,7 @@ import android.text.format.Formatter;
 
 import androidx.annotation.DrawableRes;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.download.StringUtils;
@@ -354,6 +355,11 @@ public final class UiUtils {
 
     /** @return Whether the given {@link OfflineItem} can be shared. */
     public static boolean canShare(OfflineItem item) {
+        // Sharing functionality that leads directly to the Android share sheet is
+        // currently disabled.
+        if (BuildInfo.getInstance().isAutomotive) {
+            return false;
+        }
         return (item.state == OfflineItemState.COMPLETE)
                 && (LegacyHelpers.isLegacyDownload(item.id)
                         || LegacyHelpers.isLegacyOfflinePage(item.id));

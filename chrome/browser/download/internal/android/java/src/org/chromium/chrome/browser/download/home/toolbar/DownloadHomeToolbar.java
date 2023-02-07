@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.View;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.internal.R;
@@ -64,8 +65,15 @@ public class DownloadHomeToolbar extends SelectableListToolbar<ListItem> {
             // action, there may not be views associated with them.
             View shareButton = findViewById(R.id.selection_mode_share_menu_id);
             if (shareButton != null) {
-                shareButton.setContentDescription(getResources().getQuantityString(
-                        R.plurals.accessibility_share_selected_items, numSelected, numSelected));
+                // Sharing functionality that leads directly to the Android share sheet is
+                // currently disabled.
+                if (BuildInfo.getInstance().isAutomotive) {
+                    shareButton.setVisibility(View.GONE);
+                } else {
+                    shareButton.setContentDescription(getResources().getQuantityString(
+                            R.plurals.accessibility_share_selected_items, numSelected,
+                            numSelected));
+                }
             }
 
             View deleteButton = findViewById(R.id.selection_mode_delete_menu_id);

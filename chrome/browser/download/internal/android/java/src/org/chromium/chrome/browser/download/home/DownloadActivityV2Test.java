@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.download.home.toolbar.DownloadHomeToolbar;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.util.date.StringUtils;
@@ -101,6 +102,9 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     public JniMocker mJniMocker = new JniMocker();
     @Mock
     private UrlFormatter.Natives mUrlFormatterJniMock;
+    @Rule
+    public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
+            new AutomotiveContextWrapperTestRule();
 
     private ModalDialogManager.Presenter mAppModalPresenter;
 
@@ -400,6 +404,56 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
+    public void testShowToolbarMenu_noShareOnAutomotive() throws Exception {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { setUpUi(); });
+
+        // In non-selection state settings, search and close menu should be showing, the selection
+        // toolbar should not exist.
+        onView(withId(R.id.settings_menu_id)).check(matches(isDisplayed()));
+        onView(withId(R.id.search_menu_id)).check(matches(isDisplayed()));
+        onView(withId(R.id.close_menu_id)).check(matches(isDisplayed()));
+        onView(withId(R.id.selection_mode_number)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.selection_mode_share_menu_id)).check(doesNotExist());
+        onView(withId(R.id.selection_mode_delete_menu_id)).check(doesNotExist());
+
+        // The last item may be outside the view port, that recycler view won't create the view
+        // holder, so scroll to that view holder first.
+        onView(withId(R.id.download_home_recycler_view))
+                .perform(RecyclerViewActions.scrollToHolder(hasTextInViewHolder("page 1")));
+
+        // Select an item.
+        onView(withText("page 1")).perform(ViewActions.longClick());
+
+        // Selection toolbar should be showing. Settings, search, and close menu should be gone.
+        onView(withId(R.id.settings_menu_id)).check(doesNotExist());
+        onView(withId(R.id.search_menu_id)).check(doesNotExist());
+        onView(withId(R.id.close_menu_id)).check(doesNotExist());
+        onView(withId(R.id.selection_mode_number)).check(matches(isDisplayed()));
+        onView(withId(R.id.selection_mode_delete_menu_id)).check(matches(isDisplayed()));
+        // Sharing downloads is currently disabled on Automotive, so the share menu should never
+        // be displayed.
+        onView(withId(R.id.selection_mode_share_menu_id)).check(matches(not(isDisplayed())));
+
+        // The last item may be outside the view port, that recycler view won't create the view
+        // holder, so scroll to that view holder first.
+        onView(withId(R.id.download_home_recycler_view))
+                .perform(RecyclerViewActions.scrollToHolder(hasTextInViewHolder("page 1")));
+
+        // Deselect the same item.
+        onView(withText("page 1")).perform(ViewActions.longClick());
+
+        // The toolbar should flip back to non-selection state.
+        onView(withId(R.id.settings_menu_id)).check(matches(isDisplayed()));
+        onView(withId(R.id.search_menu_id)).check(matches(isDisplayed()));
+        onView(withId(R.id.close_menu_id)).check(matches(isDisplayed()));
+        onView(withId(R.id.selection_mode_number)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.selection_mode_share_menu_id)).check(doesNotExist());
+        onView(withId(R.id.selection_mode_delete_menu_id)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
     public void testDeleteItem() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> { setUpUi(); });
         SnackbarManager.setDurationForTesting(1);
@@ -475,6 +529,20 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         onView(withText("Share")).check(matches(isDisplayed()));
 
         // TODO(shaktisahu): Perform a click, capture the Intent and check its contents.
+    }
+
+    @Test
+    @MediumTest
+    public void testShareItem_noSharingOptionOnAutomotive() throws Exception {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { setUpUi(); });
+
+        // Open menu for a list item.
+        onView(allOf(withId(R.id.more), hasSibling(withText("page 4"))))
+                .perform(ViewActions.click());
+
+        // There should not be an option to share.
+        onView(withText("Share")).check(doesNotExist());
     }
 
     @Test

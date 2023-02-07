@@ -302,6 +302,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/download/home/list/DateOrderedListMutatorTest.java",
     "java/src/org/chromium/chrome/browser/download/home/list/ItemUtilsTest.java",
     "java/src/org/chromium/chrome/browser/download/home/list/ShareUtilsTest.java",
+    "java/src/org/chromium/chrome/browser/download/home/list/UiUtilsTest.java",
   ]
 
   deps = [
@@ -314,6 +315,7 @@ robolectric_library("junit") {
     "//components/browser_ui/util/android:java",
     "//components/offline_items_collection/core:core_java",
     "//components/url_formatter/android:url_formatter_java",
+    "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
