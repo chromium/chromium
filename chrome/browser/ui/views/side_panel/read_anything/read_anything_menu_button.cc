@@ -22,6 +22,7 @@ ReadAnythingMenuButton::ReadAnythingMenuButton(
                                      base::Unretained(this))) {
   ConfigureInkDropForToolbar(this);
   views::InstallCircleHighlightPathGenerator(this);
+  views::InkDrop::Get(this)->SetBaseColorCallback({});
   SetIcon(icon, kIconSize, gfx::kPlaceholderColor);
   SetAccessibleName(tooltip);
   SetTooltipText(tooltip);
@@ -62,6 +63,7 @@ void ReadAnythingMenuButton::SetIcon(const gfx::VectorIcon& icon,
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromImageSkia(
                     gfx::CreateVectorIcon(icon, icon_size, icon_color)));
+  views::InkDrop::Get(this)->SetBaseColor(icon_color);
 }
 
 BEGIN_METADATA(ReadAnythingMenuButton, MenuButton)
