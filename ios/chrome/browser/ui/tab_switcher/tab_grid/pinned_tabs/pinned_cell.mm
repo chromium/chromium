@@ -10,8 +10,8 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_animation.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -66,8 +66,20 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 
 @interface PinnedCell ()
 
+// Title is displayed by this label.
+@property(nonatomic, weak) UILabel* titleLabel;
+// View that holds the WebState's snapshot image.
 @property(nonatomic, weak) TopAlignedImageView* snapshotView;
-
+// Container view that holds favicon and title.
+//
+// Note: This view is a counterpart of the GridCell's `topBar`. It is named as
+// a `header` since there are no top and bottom parts (bars) in the pinned
+// cell.
+@property(nonatomic, weak) UIView* headerView;
+// Snapshot view's top constraint.
+@property(nonatomic, strong) NSLayoutConstraint* snapshotViewTopConstraint;
+// Header view's height constraint.
+@property(nonatomic, strong) NSLayoutConstraint* headerViewHeightConstraint;
 @end
 
 @implementation PinnedCell {
@@ -75,8 +87,6 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   UIView* _faviconContainerView;
   // View for displaying the favicon.
   UIImageView* _faviconView;
-  // Title is displayed by this label.
-  UILabel* _titleLabel;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -88,6 +98,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 
     [self setupSelectedBackgroundView];
     [self setupSnapshotView];
+    [self setupHeaderView];
     [self setupFaviconContainerView];
     [self setupFaviconView];
     [self setupTitleLabel];
@@ -190,15 +201,44 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   UIView* contentView = self.contentView;
   [contentView addSubview:snapshotView];
 
+  _snapshotViewTopConstraint = [snapshotView.topAnchor
+      constraintEqualToAnchor:contentView.topAnchor
+                     constant:kPinnedCellSnapshotTopPadding];
+
   NSArray* constraints = @[
-    [snapshotView.topAnchor constraintEqualToAnchor:contentView.topAnchor
-                                           constant:32.0f],
+    _snapshotViewTopConstraint,
     [snapshotView.leadingAnchor
         constraintEqualToAnchor:contentView.leadingAnchor],
     [snapshotView.trailingAnchor
         constraintEqualToAnchor:contentView.trailingAnchor],
     [snapshotView.bottomAnchor
         constraintEqualToAnchor:contentView.bottomAnchor],
+  ];
+  [NSLayoutConstraint activateConstraints:constraints];
+}
+
+- (void)setupHeaderView {
+  UIView* headerView = [[UIView alloc] init];
+  headerView.translatesAutoresizingMaskIntoConstraints = NO;
+  headerView.clipsToBounds = YES;
+  headerView.backgroundColor = GetInterfaceStyleDarkColor(
+      [UIColor colorNamed:kSecondaryBackgroundColor]);
+  headerView.layer.cornerRadius = kPinnedCellCornerRadius;
+  _headerView = headerView;
+
+  UIView* contentView = self.contentView;
+  [contentView addSubview:headerView];
+
+  _headerViewHeightConstraint =
+      [headerView.heightAnchor constraintEqualToConstant:kPinnedCellHeight];
+
+  NSArray* constraints = @[
+    _headerViewHeightConstraint,
+    [headerView.topAnchor constraintEqualToAnchor:contentView.topAnchor],
+    [headerView.leadingAnchor
+        constraintEqualToAnchor:contentView.leadingAnchor],
+    [headerView.trailingAnchor
+        constraintEqualToAnchor:contentView.trailingAnchor],
   ];
   [NSLayoutConstraint activateConstraints:constraints];
 }
@@ -220,14 +260,14 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 
   [NSLayoutConstraint activateConstraints:@[
     [faviconContainerView.leadingAnchor
-        constraintEqualToAnchor:self.contentView.leadingAnchor
+        constraintEqualToAnchor:_headerView.leadingAnchor
                        constant:kPinnedCellHorizontalPadding],
     [faviconContainerView.widthAnchor
         constraintEqualToConstant:kPinnedCellFaviconContainerWidth],
     [faviconContainerView.heightAnchor
         constraintEqualToAnchor:faviconContainerView.widthAnchor],
     [faviconContainerView.centerYAnchor
-        constraintEqualToAnchor:self.contentView.centerYAnchor]
+        constraintEqualToAnchor:_headerView.centerYAnchor]
   ]];
 
   _faviconContainerView = faviconContainerView;
@@ -269,7 +309,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
         constraintEqualToAnchor:_faviconContainerView.trailingAnchor
                        constant:kPinnedCellTitleLeadingPadding],
     [titleLabel.trailingAnchor
-        constraintLessThanOrEqualToAnchor:self.contentView.trailingAnchor
+        constraintLessThanOrEqualToAnchor:_headerView.trailingAnchor
                                  constant:-kPinnedCellHorizontalPadding],
     [titleLabel.centerYAnchor
         constraintEqualToAnchor:_faviconContainerView.centerYAnchor],
@@ -298,17 +338,6 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   proxy.title = cell.title;
   proxy.snapshot = cell.snapshot;
 
-  // Remove dark corners from the transition animtation cell.
-  proxy.backgroundColor = [UIColor clearColor];
-
-  // Pinned transition cell does the transition to the Tab view, which uses
-  // not static but dynamic colors. Therefore, in order to match the background
-  // colors of the Tab view, all pinned transtion cell colors must be dynamic.
-  proxy.contentView.backgroundColor =
-      [UIColor colorNamed:kSecondaryBackgroundColor];
-
-  proxy.snapshotView.hidden = NO;
-
   return proxy;
 }
 
@@ -320,7 +349,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 }
 
 - (UIView*)topCellView {
-  return self.contentView;
+  return self.headerView;
 }
 
 - (void)setTopTabView:(UIView*)topTabView {
@@ -367,8 +396,23 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 
 #pragma mark - GridToTabTransitionView methods
 
+- (void)prepareForTransitionWithAnimationDirection:
+    (GridAnimationDirection)animationDirection {
+  switch (animationDirection) {
+    case GridAnimationDirectionContracting:
+      [self prepareForContractingAnimation];
+      break;
+    case GridAnimationDirectionExpanding:
+      [self prepareForExpandingAnimation];
+      break;
+  }
+}
+
 - (void)positionTabViews {
   [self scaleTabViews];
+
+  self.snapshotViewTopConstraint.constant = self.topTabView.frame.size.height;
+  self.headerViewHeightConstraint.constant = self.topTabView.frame.size.height;
 
   [self setNeedsUpdateConstraints];
   [self layoutIfNeeded];
@@ -390,6 +434,9 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 - (void)positionCellViews {
   [self scaleTabViews];
 
+  self.snapshotViewTopConstraint.constant = kPinnedCellSnapshotTopPadding;
+  self.headerViewHeightConstraint.constant = kPinnedCellHeight;
+
   [self setNeedsUpdateConstraints];
   [self layoutIfNeeded];
 
@@ -403,9 +450,9 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 
   if (self.bottomTabView.frame.origin.y > 0) {
     // Position the bottom tab so it's equivalently located.
-    CGFloat scale = self.bounds.size.width / _previousTabViewWidth;
     PositionView(self.bottomTabView,
-                 CGPointMake(0, self.bottomTabView.frame.origin.y * scale));
+                 CGPointMake(0, CGRectGetMaxY(self.mainCellView.frame) +
+                                    CGRectGetHeight(self.mainCellView.frame)));
   } else {
     // Position the bottom tab view below the main content view.
     CGFloat bottomYOffset = CGRectGetMaxY(self.mainCellView.frame);
@@ -414,6 +461,34 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 }
 
 #pragma mark - Private helper methods
+
+// Prepares the cell for contracting animation.
+- (void)prepareForContractingAnimation {
+  [self preapreForAnimation];
+}
+
+// Prepares the cell for expanding animation.
+- (void)prepareForExpandingAnimation {
+  [self preapreForAnimation];
+
+  self.headerView.backgroundColor =
+      [UIColor colorNamed:kSecondaryBackgroundColor];
+  self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+}
+
+// Common logic for the cell animation preparation.
+- (void)preapreForAnimation {
+  // Remove dark corners from the transition animtation cell.
+  self.backgroundColor = [UIColor clearColor];
+
+  // Pinned transition cell does the transition to the Tab view, which uses
+  // not static but dynamic colors. Therefore, in order to match the background
+  // colors of the Tab view, all pinned transtion cell colors must be dynamic.
+  self.contentView.backgroundColor =
+      [UIColor colorNamed:kSecondaryBackgroundColor];
+
+  self.snapshotView.hidden = NO;
+}
 
 // Scales the tab views relative to the current width of the cell.
 - (void)scaleTabViews {

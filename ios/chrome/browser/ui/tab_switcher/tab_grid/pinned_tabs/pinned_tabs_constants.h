@@ -28,7 +28,7 @@ extern const NSTimeInterval kPinnedViewInsetAnimationTime;
 extern NSString* const kPinnedCellIdentifier;
 
 // Pinned cell dimensions.
-extern const CGFloat kPinnedCelldHeight;
+extern const CGFloat kPinnedCellHeight;
 extern const CGFloat kPinnedCellMaxWidth;
 extern const CGFloat kPinnedCellMinWidth;
 extern const CGFloat kPinnedCellInteritemSpacing;
@@ -37,6 +37,7 @@ extern const CGFloat kPinnedCellInteritemSpacing;
 extern const CGFloat kPinnedCellCornerRadius;
 extern const CGFloat kPinnedCellHorizontalPadding;
 extern const CGFloat kPinnedCellTitleLeadingPadding;
+extern const CGFloat kPinnedCellSnapshotTopPadding;
 extern const CGFloat kPinnedCellFaviconWidth;
 extern const CGFloat kPinnedCellFaviconContainerWidth;
 extern const CGFloat kPinnedCellFaviconBorderWidth;

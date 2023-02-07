@@ -39,7 +39,7 @@
       (collectionViewWidth - itemSpacingSum - horizontalPaddingSum) / itemCount;
   itemWidth = MAX(itemWidth, kPinnedCellMinWidth);
   itemWidth = MIN(itemWidth, kPinnedCellMaxWidth);
-  self.itemSize = CGSize{itemWidth, kPinnedCelldHeight};
+  self.itemSize = CGSize{itemWidth, kPinnedCellHeight};
 
   // Center items if there is enough available space.
   CGFloat availableHorizontalLayoutInsets =

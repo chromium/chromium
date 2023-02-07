@@ -75,6 +75,9 @@ const CGFloat kInactiveItemScale = 0.95;
 - (void)didMoveToSuperview {
   if (!self.superview)
     return;
+
+  [self prepareForTransition];
+
   // Positioning the animating items depends on converting points to this
   // view's coordinate system, so wait until it's in a view hierarchy.
   switch (self.direction) {
@@ -378,6 +381,12 @@ const CGFloat kInactiveItemScale = 0.95;
 
   // Add the active item last so it's always the top subview.
   [self addSubview:self.layout.activeItem.cell];
+}
+
+// Prepares the the views for a transition.
+- (void)prepareForTransition {
+  UIView<GridToTabTransitionView>* cell = self.layout.activeItem.cell;
+  [cell prepareForTransitionWithAnimationDirection:self.direction];
 }
 
 // Positions the active item in the expanded grid position with a zero corner

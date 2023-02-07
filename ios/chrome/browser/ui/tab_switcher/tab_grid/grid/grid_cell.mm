@@ -664,8 +664,6 @@ void PositionView(UIView* view, CGPoint point) {
   proxy.titleHidden = cell.titleHidden;
   proxy.priceCardView = cell.priceCardView;
   proxy.opacity = cell.opacity;
-  // Remove dark corners from the transition animtation cell.
-  proxy.backgroundColor = [UIColor clearColor];
   return proxy;
 }
 #pragma mark - GridToTabTransitionView properties.
@@ -720,6 +718,12 @@ void PositionView(UIView* view, CGPoint point) {
 
 #pragma mark - GridToTabTransitionView methods
 
+- (void)prepareForTransitionWithAnimationDirection:
+    (GridAnimationDirection)animationDirection {
+  // Use the same animation set up for both directions.
+  [self prepareForAnimation];
+}
+
 - (void)positionTabViews {
   [self scaleTabViews];
   self.topBarHeightConstraint.constant = self.topTabView.frame.size.height;
@@ -763,6 +767,12 @@ void PositionView(UIView* view, CGPoint point) {
 }
 
 #pragma mark - Private helper methods
+
+// Common logic for the cell animation preparation.
+- (void)prepareForAnimation {
+  // Remove dark corners from the transition animtation cell.
+  self.backgroundColor = [UIColor clearColor];
+}
 
 // Scales the tab views relative to the current width of the cell.
 - (void)scaleTabViews {
