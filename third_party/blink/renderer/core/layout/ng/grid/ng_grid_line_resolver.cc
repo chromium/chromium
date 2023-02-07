@@ -215,8 +215,7 @@ NGGridLineResolver::NGGridLineResolver(
 
   // TODO(kschmi) - Account for orthogonal writing modes and swap rows/columns.
   const bool is_opposite_direction_to_parent =
-      (grid_style.GetWritingDirection() !=
-       parent_line_resolver.style_->GetWritingDirection());
+      (grid_style.Direction() != parent_line_resolver.style_->Direction());
 
   if (subgrid_area.columns.IsTranslatedDefinite()) {
     MergeNamedGridLinesWithParent(
