@@ -34,9 +34,9 @@ export interface BookmarksFolderNodeElement {
 export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
   constructor() {
     super();
-    // TODO(dizhangg): With KeyboardFocusableScrollers enabled, need
-    // delegatesFocus=true so bookmarks-folder-node shadow root doesn't get
-    // focused.
+    // TODO(dizhangg): Need delegatesFocus=true so bookmarks-folder-node shadow
+    // root doesn't get focused. Delete this comment when
+    // KeyboardFocusableScrollers is enabled by default.
     this.attachShadow({mode: 'open', delegatesFocus: true});
   }
 
