@@ -24,6 +24,10 @@ class SafeBrowsingLookupMechanismRunner {
       absl::optional<std::unique_ptr<
           SafeBrowsingLookupMechanism::CompleteCheckResult>> result)>;
 
+  // |lookup_mechanism| is the mechanism that the runner will use to perform the
+  // lookup. |complete_check_callback| is the callback that will be called if
+  // the run does not complete synchronously. Its |result| parameter will only
+  // be populated if the run did not time out.
   SafeBrowsingLookupMechanismRunner(
       std::unique_ptr<SafeBrowsingLookupMechanism> lookup_mechanism,
       CompleteCheckCallbackWithTimeout complete_check_callback);
@@ -64,7 +68,8 @@ class SafeBrowsingLookupMechanismRunner {
   std::unique_ptr<SafeBrowsingLookupMechanism> lookup_mechanism_;
   // The callback passed in through the constructor that should be called either
   // when the mechanism completes or when it times out, unless the run completes
-  // synchronously.
+  // synchronously. Its |result| parameter will only be populated if the run did
+  // not time out.
   CompleteCheckCallbackWithTimeout complete_check_callback_;
   // Timer to abort the SafeBrowsing check if it takes too long.
   std::unique_ptr<base::OneShotTimer> timer_ =

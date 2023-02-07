@@ -142,12 +142,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
                         const std::string& method,
                         NativeCheckUrlCallback callback);
 
- protected:
-  // This is created when a specific mechanism check needs to be run, and is
-  // destroyed once the check completes. This handles running the check and
-  // responding back to this class once the check is complete or has timed out.
-  std::unique_ptr<SafeBrowsingLookupMechanismRunner> lookup_mechanism_runner_;
-
  private:
   using CompleteCheckResult = SafeBrowsingLookupMechanism::CompleteCheckResult;
 
@@ -334,6 +328,11 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // This object is used to perform the hash-prefix real-time lookup. It can
   // only be accessed on the UI thread.
   base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui_;
+
+  // This is created when a specific mechanism check needs to be run, and is
+  // destroyed once the check completes. This handles running the check and
+  // responding back to this class once the check is complete or has timed out.
+  std::unique_ptr<SafeBrowsingLookupMechanismRunner> lookup_mechanism_runner_;
 
   // If eligible, this class will run a SafeBrowsingLookupMechanism experiment
   // instead of just running a real-time URL check. It will check if the
