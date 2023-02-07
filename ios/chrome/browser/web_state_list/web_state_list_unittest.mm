@@ -901,7 +901,7 @@ TEST_F(WebStateListTest, SetWebStatePinned_InRandomOrder) {
   // Pin kURL0 WebState.
   EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(2, true), 2);
   // Unpin kURL3 WebState.
-  EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(1, false), 2);
+  EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(1, false), 3);
 
   EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(0));
   EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(1));
@@ -910,8 +910,8 @@ TEST_F(WebStateListTest, SetWebStatePinned_InRandomOrder) {
 
   EXPECT_EQ(web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec(), kURL2);
   EXPECT_EQ(web_state_list_.GetWebStateAt(1)->GetVisibleURL().spec(), kURL0);
-  EXPECT_EQ(web_state_list_.GetWebStateAt(2)->GetVisibleURL().spec(), kURL3);
-  EXPECT_EQ(web_state_list_.GetWebStateAt(3)->GetVisibleURL().spec(), kURL1);
+  EXPECT_EQ(web_state_list_.GetWebStateAt(2)->GetVisibleURL().spec(), kURL1);
+  EXPECT_EQ(web_state_list_.GetWebStateAt(3)->GetVisibleURL().spec(), kURL3);
 }
 
 // Tests GetIndexOfFirstNonPinnedWebState returns correct index.
@@ -936,11 +936,11 @@ TEST_F(WebStateListTest, GetIndexOfFirstNonPinnedWebState) {
   EXPECT_EQ(web_state_list_.GetIndexOfFirstNonPinnedWebState(), 4);
 
   EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(0, false), 3);
-  EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(0, false), 2);
-  EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(0, false), 1);
+  EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(0, false), 3);
+  EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(0, false), 3);
   EXPECT_EQ(web_state_list_.GetIndexOfFirstNonPinnedWebState(), 1);
 
-  EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(0, false), 0);
+  EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(0, false), 3);
   EXPECT_EQ(web_state_list_.GetIndexOfFirstNonPinnedWebState(), 0);
 }
 

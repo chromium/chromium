@@ -623,9 +623,10 @@ int WebStateList::SetWebStatePinnedImpl(int index, bool pinned) {
   if (pinned && index != non_pinned_web_state_index) {
     MoveWebStateAtImpl(index, non_pinned_web_state_index);
     index = non_pinned_web_state_index;
-  } else if (!pinned && index + 1 != non_pinned_web_state_index) {
-    MoveWebStateAtImpl(index, non_pinned_web_state_index - 1);
-    index = non_pinned_web_state_index - 1;
+  } else if (!pinned) {
+    // Unpinned WebStates should be moved to the end of the list.
+    MoveWebStateAtImpl(index, count() - 1);
+    index = count() - 1;
   }
 
   for (auto& observer : observers_) {
