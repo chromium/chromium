@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
@@ -64,21 +63,24 @@ std::vector<std::string> DoGetStoredEvents(const base::FilePath& file_path) {
   }
 
   size_t file_size = events_file.GetLength();
-  if (file_size <= 0)
+  if (file_size <= 0) {
     return std::vector<std::string>();
+  }
 
   // Do not read more than |kPersistedFilesizeInBytes|, in case the file was
   // corrupted. If |kPersistedFilesizeInBytes| has been reduced since the last
   // breadcrumbs file was saved, this could result in a one time loss of the
   // oldest breadcrumbs which is ok because the decision has already been made
   // to reduce the size of the stored breadcrumbs.
-  if (file_size > kPersistedFilesizeInBytes)
+  if (file_size > kPersistedFilesizeInBytes) {
     file_size = kPersistedFilesizeInBytes;
+  }
 
   std::vector<uint8_t> data;
   data.resize(file_size);
-  if (!events_file.ReadAndCheck(/*offset=*/0, data))
+  if (!events_file.ReadAndCheck(/*offset=*/0, data)) {
     return std::vector<std::string>();
+  }
 
   const std::string persisted_events(data.begin(), data.end());
   const std::string all_events =
@@ -94,25 +96,29 @@ std::vector<std::string> DoGetStoredEvents(const base::FilePath& file_path) {
 size_t DoGetStoredEventsLength(const base::FilePath& file_path) {
   base::File events_file(file_path,
                          base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!events_file.IsValid())
+  if (!events_file.IsValid()) {
     return 0;
+  }
 
   size_t file_size = events_file.GetLength();
-  if (file_size <= 0)
+  if (file_size <= 0) {
     return 0;
+  }
 
   // Do not read more than |kPersistedFilesizeInBytes|, in case the file was
   // corrupted. If |kPersistedFilesizeInBytes| has been reduced since the last
   // breadcrumbs file was saved, this could result in a one time loss of the
   // oldest breadcrumbs which is ok because the decision has already been made
   // to reduce the size of the stored breadcrumbs.
-  if (file_size > kPersistedFilesizeInBytes)
+  if (file_size > kPersistedFilesizeInBytes) {
     file_size = kPersistedFilesizeInBytes;
+  }
 
   std::vector<uint8_t> data;
   data.resize(file_size);
-  if (!events_file.ReadAndCheck(/*offset=*/0, data))
+  if (!events_file.ReadAndCheck(/*offset=*/0, data)) {
     return 0;
+  }
 
   const std::string persisted_events(data.begin(), data.end());
   return strlen(persisted_events.c_str());
@@ -174,8 +180,9 @@ void BreadcrumbPersistentStorageManager::GetStoredEvents(
 
 void BreadcrumbPersistentStorageManager::Write(const std::string& events,
                                                bool append) {
-  if (!CheckForFileConsent())
+  if (!CheckForFileConsent()) {
     return;
+  }
   if (!append) {
     file_position_ = 0;
   }
@@ -220,8 +227,9 @@ void BreadcrumbPersistentStorageManager::InitializeFilePosition(
 void BreadcrumbPersistentStorageManager::WriteEvents() {
   // No events can be written to the file until the size of existing breadcrumbs
   // is known.
-  if (!file_position_)
+  if (!file_position_) {
     return;
+  }
 
   write_timer_.Stop();
 
