@@ -325,34 +325,20 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Domain_20221003",
+                    "name": "Enabled_Default_On_With_Zoom_20221114",
                     "params": {
-                        "SubdomainSettings": "false"
+                        "default_on_display_size_threshold_inches": "10.0",
+                        "default_on_on_low_end_devices": "true",
+                        "show_message_on_default_on": "true",
+                        "show_opt_in_message": "false"
                     },
                     "enable_features": [
-                        "RequestDesktopSiteExceptions",
-                        "RequestDesktopSiteExceptionsDowngrade"
-                    ],
-                    "disable_features": [
                         "RequestDesktopSiteDefaults",
-                        "RequestDesktopSiteDefaultsControl",
-                        "RequestDesktopSiteDefaultsDowngrade"
-                    ]
-                },
-                {
-                    "name": "Enabled_SubDomain_With_Zoom_20221114",
-                    "params": {
-                        "SubdomainSettings": "true"
-                    },
-                    "enable_features": [
-                        "RequestDesktopSiteExceptions",
-                        "RequestDesktopSiteExceptionsDowngrade",
+                        "RequestDesktopSiteDefaultsDowngrade",
                         "RequestDesktopSiteZoom"
                     ],
                     "disable_features": [
-                        "RequestDesktopSiteDefaults",
-                        "RequestDesktopSiteDefaultsControl",
-                        "RequestDesktopSiteDefaultsDowngrade"
+                        "RequestDesktopSiteDefaultsControl"
                     ]
                 }
             ]

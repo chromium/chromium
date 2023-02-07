@@ -136,7 +136,7 @@ public class AddExceptionPreference
             checkBox.setChecked(true);
             if (ContentFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS,
-                        PARAM_SUBDOMAIN_SETTINGS, false)) {
+                        PARAM_SUBDOMAIN_SETTINGS, true)) {
                 checkBox.setVisibility(View.VISIBLE);
                 checkBox.setPrimaryText(getContext().getString(
                         R.string.website_settings_domain_desktop_site_exception_checkbox_primary));
