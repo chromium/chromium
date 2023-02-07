@@ -269,8 +269,8 @@ export class ChromeHelper {
   /**
    * Sends the broadcast to ARC to notify the new photo/video is captured.
    */
-  async sendNewCaptureBroadcast(
-      {isVideo, name}: {isVideo: boolean, name: string}): Promise<void> {
+  sendNewCaptureBroadcast({isVideo, name}: {isVideo: boolean, name: string}):
+      void {
     this.remote.sendNewCaptureBroadcast(isVideo, name);
   }
 
