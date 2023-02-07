@@ -55,7 +55,7 @@ using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TextFieldForCellWithLabelId;
 using chrome_test_util::TurnTableViewSwitchOn;
-using testing::ElementWithAccessibilityLabelSubtring;
+using testing::ElementWithAccessibilityLabelSubstring;
 
 namespace {
 
@@ -2777,7 +2777,7 @@ id<GREYMatcher> EditDoneButton() {
           grey_allOf(
               grey_descendant(grey_accessibilityID(
                   kPasswordSettingsAccountStorageSwitchTableViewId)),
-              ElementWithAccessibilityLabelSubtring(fakeIdentity.userEmail),
+              ElementWithAccessibilityLabelSubstring(fakeIdentity.userEmail),
               nil)];
 
   [accountStorageSwitch performAction:TurnTableViewSwitchOn(NO)];

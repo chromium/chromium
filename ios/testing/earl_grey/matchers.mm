@@ -29,15 +29,15 @@ id<GREYMatcher> ElementToDismissAlert(NSString* cancel_text) {
   }
 }
 
-id<GREYMatcher> ElementWithAccessibilityLabelSubtring(NSString* substring) {
+id<GREYMatcher> ElementWithAccessibilityLabelSubstring(NSString* substring) {
   GREYMatchesBlock matches = ^BOOL(NSObject* element) {
     NSString* accessibilityLabel =
-        [(UIAccessibilityElement*)element accessibilityIdentifier];
+        [(UIAccessibilityElement*)element accessibilityLabel];
     return [accessibilityLabel rangeOfString:substring].location != NSNotFound;
   };
   GREYDescribeToBlock describe = ^void(id<GREYDescription> description) {
     NSString* describeStr = [NSString
-        stringWithFormat:@"ElementWithAccessibilityLabelSubtring(\"%@\")",
+        stringWithFormat:@"ElementWithAccessibilityLabelSubstring(\"%@\")",
                          substring];
     [description appendText:describeStr];
   };

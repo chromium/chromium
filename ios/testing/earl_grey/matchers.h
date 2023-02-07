@@ -25,7 +25,7 @@ id<GREYMatcher> ButtonWithAccessibilityLabel(NSString* label);
 id<GREYMatcher> ElementToDismissAlert(NSString* cancel_text);
 
 // Matcher for an element whose accessibility label contains `substring`.
-id<GREYMatcher> ElementWithAccessibilityLabelSubtring(NSString* substring);
+id<GREYMatcher> ElementWithAccessibilityLabelSubstring(NSString* substring);
 
 }  // namespace testing
 
