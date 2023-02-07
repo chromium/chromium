@@ -26,6 +26,11 @@ this.ShimlessRmaBrowserTest = class extends PolymerTest {
       ],
     };
   }
+
+  /** @override */
+  get commandLineSwitches() {
+    return [{switchName: 'launch-rma'}];
+  }
 };
 
 const tests = [
