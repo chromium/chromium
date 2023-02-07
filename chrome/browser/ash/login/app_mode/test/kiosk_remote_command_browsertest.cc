@@ -15,11 +15,14 @@
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
 #include "components/policy/core/common/remote_commands/test_support/remote_command_builders.h"
 #include "components/policy/core/common/remote_commands/test_support/testing_remote_commands_server.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/cros_system_api/dbus/power_manager/dbus-constants.h"
 
 namespace ash {
 
@@ -31,6 +34,14 @@ using policy::TestingRemoteCommandsServer;
 
 const char kDMToken[] = "dmtoken";
 const char kDeviceId[] = "kiosk-device";
+
+// workflow: COM_KIOSK_CUJ8_TASK1_WF1
+constexpr char kKioskRemoteVolumeCommandTag[] =
+    "screenplay-6ba34335-2f1f-4f78-a115-9149348a59fe";
+
+// workflow: COM_KIOSK_CUJ8_TASK2_WF1
+constexpr char kKioskRemoteRebootCommandTag[] =
+    "screenplay-95efa645-3d98-4638-9e5c-c0fe6f2c150d";
 
 // Test `CloudPolicyClient` that interacts with `TestingRemoteCommandsServer`.
 class TestRemoteCommandsClient : public CloudPolicyClient {
@@ -69,13 +80,23 @@ class TestRemoteCommandsClient : public CloudPolicyClient {
   raw_ptr<TestingRemoteCommandsServer> server_;
 };
 
-// workflow: COM_KIOSK_CUJ8_TASK1_WF1
-constexpr char kKioskRemoteVolumeCommandTag[] =
-    "screenplay-6ba34335-2f1f-4f78-a115-9149348a59fe";
+class TestRebootObserver : public chromeos::PowerManagerClient::Observer {
+ public:
+  TestRebootObserver() = default;
+  ~TestRebootObserver() override = default;
+  TestRebootObserver(const TestRebootObserver&) = delete;
+  TestRebootObserver& operator=(const TestRebootObserver&) = delete;
 
-void AddScreenplayTag(const std::string& screenplay_tag) {
-  base::AddTagToTestResult("feature_id", screenplay_tag);
-}
+  power_manager::RequestRestartReason Get() { return reboot_future_.Get(); }
+
+  // chromeos::PowerManagerClient::Observer
+  void RestartRequested(power_manager::RequestRestartReason reason) override {
+    reboot_future_.SetValue(reason);
+  }
+
+ private:
+  base::test::TestFuture<power_manager::RequestRestartReason> reboot_future_;
+};
 
 }  // namespace
 
@@ -136,6 +157,16 @@ class KioskRemoteCommandTest : public KioskBaseTest {
     return signed_command;
   }
 
+  em::SignedData CreateRebootRemoteCommand() {
+    em::SignedData signed_command =
+        policy::SignedDataBuilder()
+            .WithCommandId(remote_command_server_->GetNextCommandId())
+            .WithTargetDeviceId(kDeviceId)
+            .WithCommandType(em::RemoteCommand_Type_DEVICE_REBOOT)
+            .Build();
+    return signed_command;
+  }
+
   em::RemoteCommandResult IssueCommandAndGetResponse(em::SignedData command) {
     using ServerResponseFuture =
         base::test::TestFuture<const em::RemoteCommandResult&>;
@@ -154,6 +185,8 @@ class KioskRemoteCommandTest : public KioskBaseTest {
   LoginManagerMixin login_manager_{
       &mixin_host_,
       {{LoginManagerMixin::TestUserInfo{test_owner_account_id_}}}};
+
+  // TODO(b/268172940): Change to OOBE_COMPLETED_CLOUD_ENROLLED mixin
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED};
 
@@ -162,7 +195,7 @@ class KioskRemoteCommandTest : public KioskBaseTest {
 };
 
 IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, SetVolumeWithRemoteCommand) {
-  AddScreenplayTag(kKioskRemoteVolumeCommandTag);
+  base::AddFeatureIdTagToTestResult(kKioskRemoteVolumeCommandTag);
 
   constexpr int kInitVolumePercent = 50;
   constexpr int kExpectedVolumePercent = 72;
@@ -170,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, SetVolumeWithRemoteCommand) {
   // Set audio handler and initial volume
   ash::CrasAudioHandler* audio_handler = ash::CrasAudioHandler::Get();
   audio_handler->SetOutputVolumePercent(kInitVolumePercent);
-  EXPECT_EQ(kInitVolumePercent, audio_handler->GetOutputVolumePercent());
+  ASSERT_EQ(kInitVolumePercent, audio_handler->GetOutputVolumePercent());
 
   // Launch kiosk app
   StartAppLaunchFromLoginScreen(
@@ -186,8 +219,37 @@ IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, SetVolumeWithRemoteCommand) {
   auto response = IssueCommandAndGetResponse(volume_command);
 
   // Check that remote command passed and the new volume level was set
-  EXPECT_EQ(response.result(),
-            em::RemoteCommandResult_ResultType_RESULT_SUCCESS);
-  EXPECT_EQ(audio_handler->GetOutputVolumePercent(), kExpectedVolumePercent);
+  EXPECT_EQ(em::RemoteCommandResult_ResultType_RESULT_SUCCESS,
+            response.result());
+  EXPECT_EQ(kExpectedVolumePercent, audio_handler->GetOutputVolumePercent());
+}
+
+IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, RebootWithRemoteCommand) {
+  base::AddFeatureIdTagToTestResult(kKioskRemoteRebootCommandTag);
+
+  // Launch kiosk app
+  StartAppLaunchFromLoginScreen(
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
+                              /*terminate_app=*/false,
+                              /*keep_app_open=*/true);
+
+  // Get PowerManagerClient and start observing a restart request
+  chromeos::PowerManagerClient* power_manager_client =
+      chromeos::PowerManagerClient::Get();
+  ASSERT_NE(power_manager_client, nullptr);
+
+  TestRebootObserver observer;
+  power_manager_client->AddObserver(&observer);
+
+  // Create a remote command, enqueue from the server, fetch from the client
+  em::SignedData reboot_command = CreateRebootRemoteCommand();
+  auto response = IssueCommandAndGetResponse(reboot_command);
+
+  // Check that remote cmd passed and reboot was requested (via observer event)
+  EXPECT_EQ(em::RemoteCommandResult_ResultType_RESULT_SUCCESS,
+            response.result());
+  EXPECT_EQ(power_manager::REQUEST_RESTART_REMOTE_ACTION_REBOOT,
+            observer.Get());
 }
 }  // namespace ash
