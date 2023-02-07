@@ -101,7 +101,6 @@ class MEDIA_EXPORT FileSource : public AudioOutputStream::AudioSourceCallback,
 
   std::unique_ptr<WavAudioHandler> wav_audio_handler_;
   std::unique_ptr<AudioConverter> file_audio_converter_;
-  int wav_file_read_pos_;
   bool load_failed_;
   bool looping_;
 

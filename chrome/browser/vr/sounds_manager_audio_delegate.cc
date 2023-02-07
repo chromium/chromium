@@ -33,7 +33,8 @@ bool SoundsManagerAudioDelegate::RegisterSound(
     audio::SoundsManager::Create(content::GetAudioServiceStreamFactoryBinder());
 
   sounds_[id] = std::move(data);
-  return audio::SoundsManager::Get()->Initialize(id, *sounds_[id]);
+  return audio::SoundsManager::Get()->Initialize(id, *sounds_[id],
+                                                 media::AudioCodec::kPCM);
 }
 
 void SoundsManagerAudioDelegate::PlaySound(SoundId id) {

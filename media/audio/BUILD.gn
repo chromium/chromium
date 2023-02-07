@@ -40,6 +40,7 @@ source_set("audio") {
   # is a roll-up target which is part of the //media component. Most other DEPs
   # should be using //media and not directly DEP this roll-up target.
   visibility = [
+    ":flac_audio_handler_fuzzer",
     ":wav_audio_handler_fuzzer",
     "//media",
     "//media/renderers",
@@ -74,6 +75,7 @@ source_set("audio") {
     "audio_device_thread.h",
     "audio_features.cc",
     "audio_features.h",
+    "audio_handler.h",
     "audio_input_delegate.cc",
     "audio_input_delegate.h",
     "audio_input_device.cc",
@@ -129,6 +131,8 @@ source_set("audio") {
     "fake_audio_manager.h",
     "fake_audio_output_stream.cc",
     "fake_audio_output_stream.h",
+    "flac_audio_handler.cc",
+    "flac_audio_handler.h",
     "null_audio_sink.cc",
     "null_audio_sink.h",
     "power_observer_helper.cc",
@@ -147,6 +151,7 @@ source_set("audio") {
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
     "//media/base",
+    "//third_party/flac",
     "//third_party/opus:opus",
     "//url",
   ]
@@ -437,6 +442,7 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash || is_castos || is_cast_android) {
     sources += [
+      "flac_audio_handler_unittest.cc",
       "test_data.h",
       "wav_audio_handler_unittest.cc",
     ]
@@ -481,6 +487,15 @@ source_set("unit_tests") {
 
 fuzzer_test("wav_audio_handler_fuzzer") {
   sources = [ "wav_audio_handler_fuzzer.cc" ]
+  deps = [
+    ":audio",
+    "//base",
+    "//media:test_support",
+  ]
+}
+
+fuzzer_test("flac_audio_handler_fuzzer") {
+  sources = [ "flac_audio_handler_fuzzer.cc" ]
   deps = [
     ":audio",
     "//base",

@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "media/base/audio_codecs.h"
 #include "services/audio/public/cpp/sounds/audio_stream_handler.h"
 
 namespace audio {
@@ -23,7 +24,7 @@ bool g_initialized_for_testing = false;
 
 class SoundsManagerImpl : public SoundsManager {
  public:
-  SoundsManagerImpl(StreamFactoryBinder stream_factory_binder)
+  explicit SoundsManagerImpl(StreamFactoryBinder stream_factory_binder)
       : stream_factory_binder_(std::move(stream_factory_binder)) {}
 
   SoundsManagerImpl(const SoundsManagerImpl&) = delete;
@@ -34,7 +35,9 @@ class SoundsManagerImpl : public SoundsManager {
   }
 
   // SoundsManager implementation:
-  bool Initialize(SoundKey key, const base::StringPiece& data) override;
+  bool Initialize(SoundKey key,
+                  const base::StringPiece& data,
+                  media::AudioCodec codec) override;
   bool Play(SoundKey key) override;
   bool Stop(SoundKey key) override;
   base::TimeDelta GetDuration(SoundKey key) override;
@@ -52,14 +55,15 @@ class SoundsManagerImpl : public SoundsManager {
 };
 
 bool SoundsManagerImpl::Initialize(SoundKey key,
-                                   const base::StringPiece& data) {
+                                   const base::StringPiece& data,
+                                   media::AudioCodec codec) {
   if (AudioStreamHandler* handler = GetHandler(key)) {
     DCHECK(handler->IsInitialized());
     return true;
   }
 
   std::unique_ptr<AudioStreamHandler> handler(
-      new AudioStreamHandler(stream_factory_binder_, data));
+      new AudioStreamHandler(stream_factory_binder_, data, codec));
   if (!handler->IsInitialized()) {
     LOG(WARNING) << "Can't initialize AudioStreamHandler for key=" << key;
     return false;

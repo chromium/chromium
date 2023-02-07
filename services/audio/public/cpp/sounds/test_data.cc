@@ -11,8 +11,7 @@ TestObserver::TestObserver(const base::RepeatingClosure& quit)
     : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       quit_(quit),
       num_play_requests_(0),
-      num_stop_requests_(0),
-      cursor_(0) {}
+      num_stop_requests_(0) {}
 
 TestObserver::~TestObserver() = default;
 
@@ -40,9 +39,8 @@ void TestObserver::Render() {
   }
 }
 
-void TestObserver::OnStop(size_t cursor) {
+void TestObserver::OnStop() {
   ++num_stop_requests_;
-  cursor_ = cursor;
   is_playing = false;
   task_runner_->PostTask(FROM_HERE, quit_);
 }

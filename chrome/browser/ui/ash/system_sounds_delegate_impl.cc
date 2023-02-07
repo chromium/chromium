@@ -21,16 +21,20 @@ void SystemSoundsDelegateImpl::Init() {
   // Initialize sounds used for power and battery.
   manager->Initialize(
       static_cast<int>(ash::Sound::kChargeHighBattery),
-      bundle.GetRawDataResource(IDR_SOUND_CHARGE_HIGH_BATTERY_WAV));
+      bundle.GetRawDataResource(IDR_SOUND_CHARGE_HIGH_BATTERY_WAV),
+      media::AudioCodec::kPCM);
   manager->Initialize(
       static_cast<int>(ash::Sound::kChargeMediumBattery),
-      bundle.GetRawDataResource(IDR_SOUND_CHARGE_MEDIUM_BATTERY_WAV));
+      bundle.GetRawDataResource(IDR_SOUND_CHARGE_MEDIUM_BATTERY_WAV),
+      media::AudioCodec::kPCM);
   manager->Initialize(
       static_cast<int>(ash::Sound::kChargeLowBattery),
-      bundle.GetRawDataResource(IDR_SOUND_CHARGE_LOW_BATTERY_WAV));
+      bundle.GetRawDataResource(IDR_SOUND_CHARGE_LOW_BATTERY_WAV),
+      media::AudioCodec::kPCM);
   manager->Initialize(
       static_cast<int>(ash::Sound::kNoChargeLowBattery),
-      bundle.GetRawDataResource(IDR_SOUND_NO_CHARGE_LOW_BATTERY_WAV));
+      bundle.GetRawDataResource(IDR_SOUND_NO_CHARGE_LOW_BATTERY_WAV),
+      media::AudioCodec::kPCM);
 }
 
 void SystemSoundsDelegateImpl::Play(ash::Sound sound_key) {

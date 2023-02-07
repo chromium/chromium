@@ -7,7 +7,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -17,7 +19,9 @@
 #include "media/audio/audio_io.h"
 #include "media/audio/simple_sources.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/base/audio_codecs.h"
 #include "media/base/channel_layout.h"
+#include "media/base/test_data_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/audio/public/cpp/output_device.h"
 #include "services/audio/public/cpp/sounds/test_data.h"
@@ -25,10 +29,63 @@
 
 namespace audio {
 
-class AudioStreamHandlerTest : public testing::Test {
+namespace {
+
+const char kTestBadWavAudioData[] = "RIFF1234WAVEjunkjunkjunkjunk";
+const size_t kTestBadWavAudioDataSize = std::size(kTestBadWavAudioData) - 1;
+
+struct TestParams {
+  const media::AudioCodec codec;
+  const bool is_bad;
+  const bool is_file;
+  const char* const source;
+  const size_t data_size = 0;
+};
+
+constexpr TestParams kTestParamsWav[] = {
+    {media::AudioCodec::kPCM, /*is_bad=*/false, /*is_file=*/false,
+     kTestAudioData, kTestAudioDataSize},
+    {media::AudioCodec::kPCM, /*is_bad=*/true, /*is_file=*/false,
+     kTestBadWavAudioData, kTestBadWavAudioDataSize},
+};
+
+constexpr TestParams kTestParamsFlac[] = {
+    {media::AudioCodec::kFLAC, /*is_bad=*/false, /*is_file=*/true, "bear.flac"},
+};
+
+}  // namespace
+
+class AudioStreamHandlerTest : public ::testing::TestWithParam<TestParams> {
  public:
-  AudioStreamHandlerTest() = default;
+  AudioStreamHandlerTest()
+      : codec_(GetParam().codec),
+        is_bad_(GetParam().is_bad),
+        is_file_(GetParam().is_file),
+        source_(GetParam().source),
+        data_size_(GetParam().data_size) {}
+
   ~AudioStreamHandlerTest() override = default;
+
+  bool is_bad() const { return is_bad_; }
+  AudioStreamHandler* handler() { return audio_stream_handler_.get(); }
+
+  void SetUp() override {
+    CreateHandler();
+    DCHECK(audio_stream_handler_);
+  }
+
+  void CreateHandler() {
+    if (is_file_) {
+      const base::FilePath file_path = media::GetTestDataFilePath(source_);
+      EXPECT_TRUE(base::ReadFileToString(file_path, &bitstream_));
+      audio_stream_handler_ = std::make_unique<AudioStreamHandler>(
+          base::DoNothing(), bitstream_, codec_);
+    } else {
+      base::StringPiece data(source_, data_size_);
+      audio_stream_handler_ =
+          std::make_unique<AudioStreamHandler>(base::DoNothing(), data, codec_);
+    }
+  }
 
   void SetObserverForTesting(AudioStreamHandler::TestObserver* observer) {
     AudioStreamHandler::SetObserverForTesting(observer);
@@ -36,75 +93,83 @@ class AudioStreamHandlerTest : public testing::Test {
 
  private:
   base::TestMessageLoop message_loop_;
+  const media::AudioCodec codec_;
+  const bool is_bad_;
+  const bool is_file_;
+  const char* const source_;
+  const size_t data_size_;
+  std::string bitstream_;
+  std::unique_ptr<AudioStreamHandler> audio_stream_handler_;
 };
 
-TEST_F(AudioStreamHandlerTest, Play) {
+TEST_P(AudioStreamHandlerTest, Play) {
+  if (is_bad()) {
+    return;
+  }
+
   base::RunLoop run_loop;
   TestObserver observer(run_loop.QuitClosure());
-  base::StringPiece data(kTestAudioData, kTestAudioDataSize);
-  std::unique_ptr<AudioStreamHandler> audio_stream_handler;
-
   SetObserverForTesting(&observer);
-  audio_stream_handler =
-      std::make_unique<AudioStreamHandler>(base::DoNothing(), data);
 
-  ASSERT_TRUE(audio_stream_handler->IsInitialized());
-  EXPECT_EQ(base::Microseconds(20u), audio_stream_handler->duration());
-
-  ASSERT_TRUE(audio_stream_handler->Play());
+  ASSERT_TRUE(handler()->IsInitialized());
+  ASSERT_TRUE(handler()->Play());
 
   run_loop.Run();
 
-  SetObserverForTesting(NULL);
+  SetObserverForTesting(nullptr);
 
   ASSERT_EQ(1, observer.num_play_requests());
   ASSERT_EQ(1, observer.num_stop_requests());
-  ASSERT_EQ(4, observer.cursor());
 }
 
-TEST_F(AudioStreamHandlerTest, ConsecutivePlayRequests) {
+TEST_P(AudioStreamHandlerTest, ConsecutivePlayRequests) {
+  if (is_bad()) {
+    return;
+  }
+
   base::RunLoop run_loop;
   TestObserver observer(run_loop.QuitClosure());
-  base::StringPiece data(kTestAudioData, kTestAudioDataSize);
-  std::unique_ptr<AudioStreamHandler> audio_stream_handler;
-
   SetObserverForTesting(&observer);
-  audio_stream_handler =
-      std::make_unique<AudioStreamHandler>(base::DoNothing(), data);
 
-  ASSERT_TRUE(audio_stream_handler->IsInitialized());
-  EXPECT_EQ(base::Microseconds(20u), audio_stream_handler->duration());
+  ASSERT_TRUE(handler()->IsInitialized());
+  ASSERT_TRUE(handler()->Play());
 
-  ASSERT_TRUE(audio_stream_handler->Play());
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(&AudioStreamHandler::Play),
-                     base::Unretained(audio_stream_handler.get())),
+                     base::Unretained(handler())),
       base::Seconds(1));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&AudioStreamHandler::Stop,
-                     base::Unretained(audio_stream_handler.get())),
+      base::BindOnce(&AudioStreamHandler::Stop, base::Unretained(handler())),
       base::Seconds(2));
 
   run_loop.Run();
 
-  SetObserverForTesting(NULL);
+  SetObserverForTesting(nullptr);
 
   ASSERT_EQ(1, observer.num_play_requests());
   ASSERT_EQ(1, observer.num_stop_requests());
 }
 
-TEST_F(AudioStreamHandlerTest, BadWavDataDoesNotInitialize) {
+TEST_P(AudioStreamHandlerTest, BadDataDoesNotInitialize) {
+  if (!is_bad()) {
+    return;
+  }
   // The class members and SetUp() will be ignored for this test. Create a
-  // handler on the stack with some bad WAV data.
-  AudioStreamHandler handler(base::DoNothing(), "RIFF1234WAVEjunkjunkjunkjunk");
-  EXPECT_FALSE(handler.IsInitialized());
-  EXPECT_FALSE(handler.Play());
-  EXPECT_EQ(base::TimeDelta(), handler.duration());
+  // handler on the stack with some bad WAV or FLAC data.
+  EXPECT_FALSE(handler()->IsInitialized());
+  EXPECT_FALSE(handler()->Play());
 
   // Call Stop() to ensure that there is no crash.
-  handler.Stop();
+  handler()->Stop();
 }
+
+INSTANTIATE_TEST_SUITE_P(Wav,
+                         AudioStreamHandlerTest,
+                         testing::ValuesIn(kTestParamsWav));
+INSTANTIATE_TEST_SUITE_P(Flac,
+                         AudioStreamHandlerTest,
+                         testing::ValuesIn(kTestParamsFlac));
 
 }  // namespace audio

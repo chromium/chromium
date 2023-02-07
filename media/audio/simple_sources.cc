@@ -164,7 +164,6 @@ FileSource::FileSource(const AudioParameters& params,
                        bool loop)
     : params_(params),
       path_to_wav_file_(path_to_wav_file),
-      wav_file_read_pos_(0),
       load_failed_(false),
       looping_(loop) {}
 
@@ -199,8 +198,8 @@ void FileSource::LoadWavFile(const base::FilePath& path_to_wav_file) {
   // of it at a time and not the whole thing (like 10 ms at a time).
   AudioParameters file_audio_slice(
       AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      ChannelLayoutConfig::Guess(wav_audio_handler_->num_channels()),
-      wav_audio_handler_->sample_rate(), params_.frames_per_buffer());
+      ChannelLayoutConfig::Guess(wav_audio_handler_->GetNumChannels()),
+      wav_audio_handler_->GetSampleRate(), params_.frames_per_buffer());
 
   file_audio_converter_ =
       std::make_unique<AudioConverter>(file_audio_slice, params_, false);
@@ -221,7 +220,7 @@ int FileSource::OnMoreData(base::TimeDelta /* delay */,
 
   DCHECK(wav_audio_handler_.get());
 
-  if (wav_audio_handler_->AtEnd(wav_file_read_pos_)) {
+  if (wav_audio_handler_->AtEnd()) {
     if (looping_)
       Rewind();
     else
@@ -234,17 +233,15 @@ int FileSource::OnMoreData(base::TimeDelta /* delay */,
 }
 
 void FileSource::Rewind() {
-  wav_file_read_pos_ = 0;
+  wav_audio_handler_->Reset();
 }
 
 double FileSource::ProvideInput(AudioBus* audio_bus_into_converter,
                                 uint32_t frames_delayed,
                                 const AudioGlitchInfo&) {
   // Unfilled frames will be zeroed by CopyTo.
-  size_t bytes_written;
-  wav_audio_handler_->CopyTo(audio_bus_into_converter, wav_file_read_pos_,
-                             &bytes_written);
-  wav_file_read_pos_ += bytes_written;
+  size_t frames_written;
+  wav_audio_handler_->CopyTo(audio_bus_into_converter, &frames_written);
   return 1.0;
 }
 

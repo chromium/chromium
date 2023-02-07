@@ -27,9 +27,13 @@ class MEDIA_EXPORT AudioFifo {
 
   virtual ~AudioFifo();
 
-  // Pushes all audio channel data from |source| to the FIFO.
+  // Pushes all audio channel data from `source` to the FIFO.
   // Push() will crash if the allocated space is insufficient.
   void Push(const AudioBus* source);
+
+  // Pushes the number of `source_size` of frames in all audio channel data from
+  // `source` to the FIFO.
+  void Push(const AudioBus* source, int source_size);
 
   // Consumes |frames_to_consume| audio frames from the FIFO and copies
   // them to |destination| starting at position |start_frame|.

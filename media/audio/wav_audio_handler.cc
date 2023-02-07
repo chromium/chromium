@@ -8,12 +8,15 @@
 #include <cstring>
 
 #include "base/big_endian.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "media/base/limits.h"
 
 namespace media {
@@ -203,7 +206,7 @@ WavAudioHandler::WavAudioHandler(base::StringPiece audio_data,
                                  uint32_t sample_rate,
                                  uint16_t bits_per_sample,
                                  AudioFormat audio_format)
-    : data_(audio_data),
+    : audio_data_(audio_data),
       num_channels_(num_channels),
       sample_rate_(sample_rate),
       bits_per_sample_(bits_per_sample),
@@ -211,9 +214,8 @@ WavAudioHandler::WavAudioHandler(base::StringPiece audio_data,
   DCHECK_NE(num_channels_, 0u);
   DCHECK_NE(sample_rate_, 0u);
   DCHECK_NE(bits_per_sample_, 0u);
-  total_frames_ = data_.size() * 8 / num_channels_ / bits_per_sample_;
+  total_frames_ = audio_data_.size() * 8 / num_channels_ / bits_per_sample_;
 }
-
 WavAudioHandler::~WavAudioHandler() = default;
 
 // static
@@ -231,27 +233,30 @@ std::unique_ptr<WavAudioHandler> WavAudioHandler::Create(
                           params.bits_per_sample, params.audio_format));
 }
 
-bool WavAudioHandler::AtEnd(size_t cursor) const {
-  return data_.size() <= cursor;
+int WavAudioHandler::GetNumChannels() const {
+  return static_cast<int>(num_channels_);
 }
 
-bool WavAudioHandler::CopyTo(AudioBus* bus,
-                             size_t cursor,
-                             size_t* bytes_written) const {
-  if (!bus)
-    return false;
-  if (bus->channels() != num_channels_) {
-    DVLOG(1) << "Number of channels mismatch.";
-    return false;
-  }
-  if (AtEnd(cursor)) {
+int WavAudioHandler::GetSampleRate() const {
+  return static_cast<int>(sample_rate_);
+}
+
+bool WavAudioHandler::AtEnd() const {
+  return audio_data_.size() <= cursor_;
+}
+
+bool WavAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
+  DCHECK(bus);
+  DCHECK_EQ(bus->channels(), num_channels_);
+
+  if (AtEnd()) {
     bus->Zero();
     return true;
   }
   const int bytes_per_frame = num_channels_ * bits_per_sample_ / 8;
-  const int remaining_frames = (data_.size() - cursor) / bytes_per_frame;
+  const int remaining_frames = (audio_data_.size() - cursor_) / bytes_per_frame;
   const int frames = std::min(bus->frames(), remaining_frames);
-  const auto* source = data_.data() + cursor;
+  const auto* source = audio_data_.data() + cursor_;
 
   switch (audio_format_) {
     case AudioFormat::kAudioFormatPCM:
@@ -297,14 +302,18 @@ bool WavAudioHandler::CopyTo(AudioBus* bus,
                    << static_cast<uint16_t>(audio_format_);
       bus->ZeroFrames(frames);
   }
-
-  *bytes_written = frames * bytes_per_frame;
+  *frames_written = frames;
+  cursor_ += frames * bytes_per_frame;
   bus->ZeroFramesPartial(frames, bus->frames() - frames);
   return true;
 }
 
 base::TimeDelta WavAudioHandler::GetDuration() const {
-  return base::Seconds(total_frames_ / static_cast<double>(sample_rate_));
+  return AudioTimestampHelper::FramesToTime(total_frames_, sample_rate_);
+}
+
+void WavAudioHandler::Reset() {
+  cursor_ = 0;
 }
 
 }  // namespace media

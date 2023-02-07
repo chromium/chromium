@@ -1,0 +1,236 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "media/audio/flac_audio_handler.h"
+
+#include <algorithm>
+#include <cstdlib>
+#include <cstring>
+
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/logging.h"
+#include "media/base/audio_bus.h"
+#include "media/base/audio_fifo.h"
+#include "media/base/audio_timestamp_helper.h"
+#include "third_party/flac/include/FLAC/ordinals.h"
+#include "third_party/flac/include/FLAC/stream_decoder.h"
+
+namespace media {
+
+namespace {
+
+// TODO(hongyulong): In audio_stream_handler.cc, it also has this const
+// variable. Should these two combine to one?
+constexpr int kDefaultFrameCount = 1024;
+
+}  // namespace
+
+FlacAudioHandler::FlacAudioHandler(base::StringPiece data)
+    : flac_data_(data), decoder_(FLAC__stream_decoder_new()) {
+  DCHECK(decoder_);
+
+  // Initialize the `decoder_`.
+  const FLAC__StreamDecoderInitStatus init_status =
+      FLAC__stream_decoder_init_stream(
+          /*decoder=*/decoder_.get(), /*read_callback=*/ReadCallback,
+          /*seek_callback=*/nullptr, /*tell_callback=*/nullptr,
+          /*length_callback=*/nullptr, /*eof_callback=*/nullptr,
+          /*write_callback=*/WriteCallback, /*metadata_callback=*/MetaCallback,
+          /*error_callback=*/ErrorCallback,
+          /*client_data=*/static_cast<void*>(this));
+  DCHECK_EQ(init_status, FLAC__STREAM_DECODER_INIT_STATUS_OK);
+
+  Initialize();
+}
+
+FlacAudioHandler::~FlacAudioHandler() = default;
+
+int FlacAudioHandler::GetNumChannels() const {
+  DCHECK(is_initialized());
+  return num_channels_;
+}
+
+int FlacAudioHandler::GetSampleRate() const {
+  DCHECK(is_initialized());
+  return sample_rate_;
+}
+
+base::TimeDelta FlacAudioHandler::GetDuration() const {
+  DCHECK(is_initialized());
+  return AudioTimestampHelper::FramesToTime(static_cast<int64_t>(total_frames_),
+                                            sample_rate_);
+}
+
+bool FlacAudioHandler::AtEnd() const {
+  return FLAC__StreamDecoderState::FLAC__STREAM_DECODER_END_OF_STREAM ==
+         FLAC__stream_decoder_get_state(decoder_.get());
+}
+
+bool FlacAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
+  DCHECK(bus);
+  DCHECK(decoder_);
+  DCHECK(is_initialized());
+
+  if (AtEnd()) {
+    DCHECK_EQ(fifo_->frames(), 0);
+    bus->Zero();
+    return true;
+  }
+
+  DCHECK_EQ(bus->frames(), kDefaultFrameCount);
+  DCHECK_EQ(bus->channels(), num_channels_);
+
+  while (!AtEnd() && fifo_->frames() < bus->frames()) {
+    if (!FLAC__stream_decoder_process_single(decoder_.get())) {
+      return false;
+    }
+  }
+
+  const int frames = std::min(bus->frames(), fifo_->frames());
+  fifo_->Consume(/*destination=*/bus, /*start_frame=*/0,
+                 /*frames_to_consume=*/frames);
+
+  *frames_written = frames;
+  return true;
+}
+
+void FlacAudioHandler::Reset() {
+  DCHECK(is_initialized());
+
+  FLAC__stream_decoder_reset(decoder_.get());
+  fifo_->Clear();
+  cursor_ = 0;
+}
+
+void FlacAudioHandler::Initialize() {
+  DCHECK(decoder_);
+  if (!AtEnd()) {
+    FLAC__stream_decoder_process_until_end_of_metadata(decoder_.get());
+  }
+
+  if (is_initialized()) {
+    // Avoid that `fifo_` will be unbounded if metadata isn't in the first
+    // packet.
+    Reset();
+  }
+}
+
+FLAC__StreamDecoderReadStatus FlacAudioHandler::ReadCallback(
+    const FLAC__StreamDecoder* decoder,
+    FLAC__byte buffer[],
+    size_t* bytes,
+    void* client_data) {
+  return reinterpret_cast<FlacAudioHandler*>(client_data)
+      ->ReadCallbackInternal(buffer, bytes);
+}
+
+FLAC__StreamDecoderWriteStatus FlacAudioHandler::WriteCallback(
+    const FLAC__StreamDecoder* decoder,
+    const FLAC__Frame* frame,
+    const FLAC__int32* const buffer[],
+    void* client_data) {
+  return reinterpret_cast<FlacAudioHandler*>(client_data)
+      ->WriteCallbackInternal(frame, buffer);
+}
+
+void FlacAudioHandler::MetaCallback(const FLAC__StreamDecoder* decoder,
+                                    const FLAC__StreamMetadata* metadata,
+                                    void* client_data) {
+  reinterpret_cast<FlacAudioHandler*>(client_data)
+      ->MetaCallbackInternal(metadata);
+}
+
+void FlacAudioHandler::ErrorCallback(const FLAC__StreamDecoder* decoder,
+                                     FLAC__StreamDecoderErrorStatus status,
+                                     void* client_data) {
+  LOG(ERROR) << "Got an error callback: "
+             << FLAC__StreamDecoderErrorStatusString[status];
+}
+
+FLAC__StreamDecoderReadStatus FlacAudioHandler::ReadCallbackInternal(
+    FLAC__byte buffer[],
+    size_t* bytes) {
+  // Abort to avoid a deadlock.
+  if (*bytes < 0) {
+    return FLAC__STREAM_DECODER_READ_STATUS_ABORT;
+  }
+
+  DCHECK_LE(cursor_, flac_data_.size());
+  // Check if there is enough data to read.
+  if (flac_data_.size() - cursor_ < *bytes) {
+    *bytes = flac_data_.size() - cursor_;
+  }
+
+  memcpy(buffer, flac_data_.data() + cursor_, *bytes);
+
+  // Update `cursor_`.
+  cursor_ += *bytes;
+
+  // Check for end of input.
+  return cursor_ >= flac_data_.size()
+             ? FLAC__STREAM_DECODER_READ_STATUS_END_OF_STREAM
+             : FLAC__STREAM_DECODER_READ_STATUS_CONTINUE;
+}
+
+FLAC__StreamDecoderWriteStatus FlacAudioHandler::WriteCallbackInternal(
+    const FLAC__Frame* frame,
+    const FLAC__int32* const buffer[]) {
+  // Get the number of channels and the number of samples per channel.
+  const int num_channels = frame->header.channels;
+  const int num_samples = frame->header.blocksize;
+
+  if (!bus_) {
+    bus_ = AudioBus::Create(num_channels, num_samples);
+  }
+  DCHECK_EQ(num_channels, bus_->channels());
+
+  // During the last time calling this callback, it may not have
+  // `bus_->frames()` frames.
+  DCHECK_LE(num_samples, bus_->frames());
+
+  for (int ch = 0; ch < num_channels; ++ch) {
+    float* channel_data = bus_->channel(ch);
+    const FLAC__int32* source_data = buffer[ch];
+    for (int s = 0; s < num_samples; ++s, ++channel_data, ++source_data) {
+      *channel_data = SignedInt16SampleTypeTraits::ToFloat(*source_data);
+    }
+  }
+
+  fifo_->Push(bus_.get(), num_samples);
+
+  return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
+}
+
+void FlacAudioHandler::MetaCallbackInternal(
+    const FLAC__StreamMetadata* metadata) {
+  DCHECK(metadata);
+  if (metadata->type == FLAC__METADATA_TYPE_STREAMINFO) {
+    // Stores the metadata for the audio.
+    num_channels_ = static_cast<int>(metadata->data.stream_info.channels);
+    sample_rate_ = static_cast<int>(metadata->data.stream_info.sample_rate);
+    total_frames_ = metadata->data.stream_info.total_samples;
+
+    DCHECK(num_channels_);
+
+    if (!fifo_) {
+      // There will be at most `max_blocksize` of frames for each call to the
+      // `WriteCallback()`. For the client bus in `CopyTo()`, it will always
+      // have `kDefaultFrameCount` frames. We want to make sure the `fifo_` can
+      // hold enough data to refill for a request. For example, we might have `N
+      // - 1` frames in the `fifo_` when a request for `N` frames comes in. Then
+      // we need to fill the new coming `N` frames into `fifo_`, as a result it
+      // requires a total capacity of `N + N - 1`. Technically, it can be
+      // `kDefaultFrameCount + kDefaultFrameCount - 1` and `max_blocksize +
+      // kDefaultFrameCount - 1`. 2 is just used for simplicity.
+      fifo_ = std::make_unique<AudioFifo>(
+          num_channels_,
+          std::max(
+              kDefaultFrameCount * 2,
+              static_cast<int>(metadata->data.stream_info.max_blocksize * 2)));
+    }
+  }
+}
+
+}  // namespace media

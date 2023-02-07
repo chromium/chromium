@@ -10,6 +10,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "media/base/audio_codecs.h"
 #include "media/base/media_export.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -40,10 +41,13 @@ class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) SoundsManager {
   // by the internal pointer and will be deleted by Shutdown().
   static void InitializeForTesting(SoundsManager* manager);
 
-  // Initializes SoundsManager with the wav data for the system
-  // sounds. Returns true if SoundsManager was successfully
+  // Initializes SoundsManager with the wav data or the flac data for the system
+  // sounds. The `codec` should be `kPCM` for the wav audio data or `kFLAC` for
+  // the flac audio data. Returns true if SoundsManager was successfully
   // initialized.
-  virtual bool Initialize(SoundKey key, const base::StringPiece& data) = 0;
+  virtual bool Initialize(SoundKey key,
+                          const base::StringPiece& data,
+                          media::AudioCodec codec) = 0;
 
   // Plays sound identified by |key|, returns false if SoundsManager
   // was not properly initialized.

@@ -15,6 +15,7 @@
 #include "base/test/test_message_loop.h"
 #include "media/audio/simple_sources.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/base/audio_codecs.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/audio/public/cpp/sounds/audio_stream_handler.h"
 #include "services/audio/public/cpp/sounds/test_data.h"
@@ -55,7 +56,8 @@ TEST_F(SoundsManagerTest, Play) {
 
   ASSERT_TRUE(SoundsManager::Get()->Initialize(
       kTestAudioKey,
-      base::StringPiece(kTestAudioData, std::size(kTestAudioData))));
+      base::StringPiece(kTestAudioData, std::size(kTestAudioData)),
+      media::AudioCodec::kPCM));
   ASSERT_EQ(20,
             SoundsManager::Get()->GetDuration(kTestAudioKey).InMicroseconds());
   ASSERT_TRUE(SoundsManager::Get()->Play(kTestAudioKey));
@@ -63,7 +65,6 @@ TEST_F(SoundsManagerTest, Play) {
 
   ASSERT_EQ(1, observer.num_play_requests());
   ASSERT_EQ(1, observer.num_stop_requests());
-  ASSERT_EQ(4, observer.cursor());
 
   SetObserverForTesting(NULL);
 }
@@ -78,7 +79,8 @@ TEST_F(SoundsManagerTest, Stop) {
 
   ASSERT_TRUE(SoundsManager::Get()->Initialize(
       kTestAudioKey,
-      base::StringPiece(kTestAudioData, std::size(kTestAudioData))));
+      base::StringPiece(kTestAudioData, std::size(kTestAudioData)),
+      media::AudioCodec::kPCM));
 
   ASSERT_EQ(0, observer.num_play_requests());
   ASSERT_EQ(0, observer.num_stop_requests());

@@ -38,10 +38,10 @@ TEST(WavAudioHandlerTest, SampleDataTest) {
   std::string data(kTestAudioData, kTestAudioDataSize);
   auto handler = WavAudioHandler::Create(data);
   ASSERT_TRUE(handler);
-  ASSERT_EQ(2, handler->num_channels());
-  ASSERT_EQ(16, handler->bits_per_sample());
-  ASSERT_EQ(48000, handler->sample_rate());
-  ASSERT_EQ(1, handler->total_frames());
+  ASSERT_EQ(2, handler->GetNumChannels());
+  ASSERT_EQ(16, handler->bits_per_sample_for_testing());
+  ASSERT_EQ(48000, handler->GetSampleRate());
+  ASSERT_EQ(1, handler->total_frames_for_testing());
   ASSERT_EQ(20u, handler->GetDuration().InMicroseconds());
 
   ASSERT_EQ(4U, handler->data().size());
@@ -49,22 +49,25 @@ TEST(WavAudioHandlerTest, SampleDataTest) {
   ASSERT_EQ(base::StringPiece(kData, std::size(kData) - 1), handler->data());
 
   std::unique_ptr<AudioBus> bus =
-      AudioBus::Create(handler->num_channels(),
-                       handler->data().size() / handler->num_channels());
+      AudioBus::Create(handler->GetNumChannels(),
+                       handler->data().size() / handler->GetNumChannels());
 
-  size_t bytes_written = 0u;
-  ASSERT_TRUE(handler->CopyTo(bus.get(), 0, &bytes_written));
-  ASSERT_EQ(static_cast<size_t>(handler->data().size()), bytes_written);
+  size_t frames_written = 0u;
+  ASSERT_TRUE(handler->CopyTo(bus.get(), &frames_written));
+  const int bytes_per_frame =
+      handler->GetNumChannels() * handler->bits_per_sample_for_testing() / 8;
+  ASSERT_EQ(static_cast<size_t>(handler->data().size()),
+            frames_written * bytes_per_frame);
 }
 
 TEST(WavAudioHandlerTest, SampleFloatDataTest) {
   std::string data(kTestFloatAudioData, kTestFloatAudioDataSize);
   auto handler = WavAudioHandler::Create(data);
   ASSERT_TRUE(handler);
-  ASSERT_EQ(2, handler->num_channels());
-  ASSERT_EQ(32, handler->bits_per_sample());
-  ASSERT_EQ(48000, handler->sample_rate());
-  ASSERT_EQ(1, handler->total_frames());
+  ASSERT_EQ(2, handler->GetNumChannels());
+  ASSERT_EQ(32, handler->bits_per_sample_for_testing());
+  ASSERT_EQ(48000, handler->GetSampleRate());
+  ASSERT_EQ(1, handler->total_frames_for_testing());
   ASSERT_EQ(20u, handler->GetDuration().InMicroseconds());
 
   ASSERT_EQ(8U, handler->data().size());
@@ -72,22 +75,25 @@ TEST(WavAudioHandlerTest, SampleFloatDataTest) {
   ASSERT_EQ(base::StringPiece(kData, std::size(kData) - 1), handler->data());
 
   std::unique_ptr<AudioBus> bus =
-      AudioBus::Create(handler->num_channels(),
-                       handler->data().size() / handler->num_channels());
+      AudioBus::Create(handler->GetNumChannels(),
+                       handler->data().size() / handler->GetNumChannels());
 
-  size_t bytes_written = 0u;
-  ASSERT_TRUE(handler->CopyTo(bus.get(), 0, &bytes_written));
-  ASSERT_EQ(static_cast<size_t>(handler->data().size()), bytes_written);
+  size_t frames_written = 0u;
+  ASSERT_TRUE(handler->CopyTo(bus.get(), &frames_written));
+  const int bytes_per_frame =
+      handler->GetNumChannels() * handler->bits_per_sample_for_testing() / 8;
+  ASSERT_EQ(static_cast<size_t>(handler->data().size()),
+            frames_written * bytes_per_frame);
 }
 
 TEST(WavAudioHandlerTest, SampleExtensibleDataTest) {
   std::string data(kTestExtensibleAudioData, kTestExtensibleAudioDataSize);
   auto handler = WavAudioHandler::Create(data);
   ASSERT_TRUE(handler);
-  ASSERT_EQ(2, handler->num_channels());
-  ASSERT_EQ(32, handler->bits_per_sample());
-  ASSERT_EQ(48000, handler->sample_rate());
-  ASSERT_EQ(1, handler->total_frames());
+  ASSERT_EQ(2, handler->GetNumChannels());
+  ASSERT_EQ(32, handler->bits_per_sample_for_testing());
+  ASSERT_EQ(48000, handler->GetSampleRate());
+  ASSERT_EQ(1, handler->total_frames_for_testing());
   ASSERT_EQ(20u, handler->GetDuration().InMicroseconds());
 
   ASSERT_EQ(8U, handler->data().size());
@@ -95,12 +101,15 @@ TEST(WavAudioHandlerTest, SampleExtensibleDataTest) {
   ASSERT_EQ(base::StringPiece(kData, std::size(kData) - 1), handler->data());
 
   std::unique_ptr<AudioBus> bus =
-      AudioBus::Create(handler->num_channels(),
-                       handler->data().size() / handler->num_channels());
+      AudioBus::Create(handler->GetNumChannels(),
+                       handler->data().size() / handler->GetNumChannels());
 
-  size_t bytes_written = 0u;
-  ASSERT_TRUE(handler->CopyTo(bus.get(), 0, &bytes_written));
-  ASSERT_EQ(static_cast<size_t>(handler->data().size()), bytes_written);
+  size_t frames_written = 0u;
+  ASSERT_TRUE(handler->CopyTo(bus.get(), &frames_written));
+  const int bytes_per_frame =
+      handler->GetNumChannels() * handler->bits_per_sample_for_testing() / 8;
+  ASSERT_EQ(static_cast<size_t>(handler->data().size()),
+            frames_written * bytes_per_frame);
 }
 
 TEST(WavAudioHandlerTest, TestZeroChannelsIsNotValid) {
@@ -143,10 +152,10 @@ TEST(WavAudioHandlerTest, TestTooBigTotalSizeIsOkay) {
   data[kWavDataSizeIndex + 3] = '\x00';
   auto handler = WavAudioHandler::Create(data);
   EXPECT_TRUE(handler);
-  ASSERT_EQ(2, handler->num_channels());
-  ASSERT_EQ(16, handler->bits_per_sample());
-  ASSERT_EQ(48000, handler->sample_rate());
-  ASSERT_EQ(1, handler->total_frames());
+  ASSERT_EQ(2, handler->GetNumChannels());
+  ASSERT_EQ(16, handler->bits_per_sample_for_testing());
+  ASSERT_EQ(48000, handler->GetSampleRate());
+  ASSERT_EQ(1, handler->total_frames_for_testing());
   ASSERT_EQ(20u, handler->GetDuration().InMicroseconds());
 
   ASSERT_EQ(4U, handler->data().size());
@@ -165,10 +174,10 @@ TEST(WavAudioHandlerTest, TestTooBigDataChunkSizeIsOkay) {
   data[kDataHeaderIndex + 7] = '\x00';
   auto handler = WavAudioHandler::Create(data);
   EXPECT_TRUE(handler);
-  ASSERT_EQ(2, handler->num_channels());
-  ASSERT_EQ(16, handler->bits_per_sample());
-  ASSERT_EQ(48000, handler->sample_rate());
-  ASSERT_EQ(1, handler->total_frames());
+  ASSERT_EQ(2, handler->GetNumChannels());
+  ASSERT_EQ(16, handler->bits_per_sample_for_testing());
+  ASSERT_EQ(48000, handler->GetSampleRate());
+  ASSERT_EQ(1, handler->total_frames_for_testing());
   ASSERT_EQ(20u, handler->GetDuration().InMicroseconds());
 
   ASSERT_EQ(4U, handler->data().size());
@@ -198,10 +207,10 @@ TEST(WavAudioHandlerTest, TestOtherSectionTypesIsOkay) {
 
   auto handler = WavAudioHandler::Create(data);
   EXPECT_TRUE(handler);
-  ASSERT_EQ(2, handler->num_channels());
-  ASSERT_EQ(16, handler->bits_per_sample());
-  ASSERT_EQ(48000, handler->sample_rate());
-  ASSERT_EQ(1, handler->total_frames());
+  ASSERT_EQ(2, handler->GetNumChannels());
+  ASSERT_EQ(16, handler->bits_per_sample_for_testing());
+  ASSERT_EQ(48000, handler->GetSampleRate());
+  ASSERT_EQ(1, handler->total_frames_for_testing());
   ASSERT_EQ(20u, handler->GetDuration().InMicroseconds());
   ASSERT_EQ(4u, handler->data().size());
 }
@@ -228,10 +237,10 @@ TEST(WavAudioHandlerTest, TestNoDataSectionIsOkay) {
   data[kDataHeaderIndex + 3] = 'd';
   auto handler = WavAudioHandler::Create(data);
   EXPECT_TRUE(handler);
-  ASSERT_EQ(2, handler->num_channels());
-  ASSERT_EQ(16, handler->bits_per_sample());
-  ASSERT_EQ(48000, handler->sample_rate());
-  ASSERT_EQ(0, handler->total_frames());
+  ASSERT_EQ(2, handler->GetNumChannels());
+  ASSERT_EQ(16, handler->bits_per_sample_for_testing());
+  ASSERT_EQ(48000, handler->GetSampleRate());
+  ASSERT_EQ(0, handler->total_frames_for_testing());
   ASSERT_EQ(0u, handler->GetDuration().InMicroseconds());
   ASSERT_EQ(0u, handler->data().size());
 }

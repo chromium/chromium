@@ -207,6 +207,7 @@ source_set("tests") {
       "public/cpp/sounds/audio_stream_handler_unittest.cc",
       "public/cpp/sounds/sounds_manager_unittest.cc",
     ]
+    data = [ "//media/test/data/" ]
   }
 
   if (chrome_wide_echo_cancellation_supported) {
