@@ -31,9 +31,8 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -105,6 +104,12 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
     @Test
     @MediumTest
     public void testPromoDismissedHistogramRecordedAfterBeingDismissed() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Signin.SyncPromo.Dismissed.Count.Bookmarks")
+                        .allowExtraRecordsForHistogramsAbove()
+                        .build();
+
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
         onActiveViewId(R.id.signin_promo_view_container).check(matches(isDisplayed()));
         onActiveViewId(R.id.sync_promo_close_button).perform(click());
@@ -113,10 +118,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
         closeBookmarkManager();
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
         onActiveViewId(R.id.signin_promo_view_container).check(doesNotExist());
-        int histogramRecordCount = RecordHistogram.getHistogramTotalCountForTesting(
-                "Signin.SyncPromo.Dismissed.Count.Bookmarks");
-        assertTrue("Expected at least one, but found " + histogramRecordCount,
-                histogramRecordCount >= 1);
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -140,8 +142,8 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
                 SharedPreferencesManager.getInstance().readInt(
                         SyncPromoController.getPromoShowCountPreferenceName(
                                 SigninAccessPoint.BOOKMARK_MANAGER)));
-        HistogramDelta showCountHistogram =
-                new HistogramDelta("Signin.SyncPromo.Shown.Count.Bookmarks", 1);
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                "Signin.SyncPromo.Shown.Count.Bookmarks", 1);
 
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
         onActiveViewId(R.id.signin_promo_view_container).check(matches(isDisplayed()));
@@ -157,7 +159,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
         int totalShownCount = SharedPreferencesManager.getInstance().readInt(
                 ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
         assertTrue("Expected at least one, but found " + totalShownCount, totalShownCount >= 1);
-        Assert.assertEquals(1, showCountHistogram.getDelta());
+        histogramWatcher.assertExpected();
     }
 
     private void closeBookmarkManager() {
