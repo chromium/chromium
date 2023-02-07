@@ -908,7 +908,7 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
     EXPECT_EQ(matches.size(), 2u);
     EXPECT_EQ(matches[0].destination_url.spec(), "https://only-urls.com/2");
     EXPECT_EQ(matches[1].destination_url.spec(), "https://only-urls.com/1");
-    EXPECT_LE(matches[0].relevance, 1300);
+    EXPECT_EQ(matches[0].relevance, 1300);
     EXPECT_LE(matches[1].relevance, kMaxUnboostedScore);
     EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
   }
@@ -948,6 +948,32 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
     EXPECT_EQ(matches[1].destination_url.spec(),
               "https://urls-before-searches.com/1");
     EXPECT_EQ(matches[0].relevance, 1300);
+    EXPECT_LE(matches[1].relevance, kMaxUnboostedScore);
+    EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
+  }
+
+  {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        omnibox::kShortcutBoost, {{
+                                      "ShortcutBoostUrlScore",
+                                      "1300",
+                                  },
+                                  {"ShortcutBoostCounterfactual", "true"}});
+
+    // Should not boost when counterfactual is enabled.
+    trigger_service->ResetSession();
+    AutocompleteInput input(u"urls-before-searches",
+                            metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    provider_->Start(input, false);
+    const auto& matches = provider_->matches();
+    EXPECT_EQ(matches.size(), 2u);
+    EXPECT_EQ(matches[0].destination_url.spec(),
+              "https://urls-before-searches.com/2");
+    EXPECT_EQ(matches[1].destination_url.spec(),
+              "https://urls-before-searches.com/1");
+    EXPECT_LE(matches[0].relevance, kMaxUnboostedScore);
     EXPECT_LE(matches[1].relevance, kMaxUnboostedScore);
     EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
   }

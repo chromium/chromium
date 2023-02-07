@@ -314,8 +314,10 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
     if (boost_score > best_match->relevance) {
       client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
           OmniboxTriggeredFeatureService::Feature::kShortcutBoost);
-      max_relevance = boost_score;
-      best_match->relevance = max_relevance;
+      if (!OmniboxFieldTrial::kShortcutBoostCounterfactual.Get()) {
+        max_relevance = boost_score;
+        best_match->relevance = max_relevance;
+      }
     }
   }
 

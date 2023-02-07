@@ -916,6 +916,11 @@ const base::FeatureParam<int> kShortcutBoostUrlScore(&omnibox::kShortcutBoost,
                                                      "ShortcutBoostUrlScore",
                                                      0);
 
+const base::FeatureParam<bool> kShortcutBoostCounterfactual(
+    &omnibox::kShortcutBoost,
+    "ShortcutBoostCounterfactual",
+    false);
+
 // Rich autocompletion.
 
 bool IsRichAutocompletionEnabled() {

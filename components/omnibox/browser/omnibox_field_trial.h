@@ -555,6 +555,7 @@ bool IsShortcutExpandingEnabled();
 // prevent boosting.
 extern const base::FeatureParam<int> kShortcutBoostSearchScore;
 extern const base::FeatureParam<int> kShortcutBoostUrlScore;
+extern const base::FeatureParam<bool> kShortcutBoostCounterfactual;
 
 // Rich autocompletion.
 bool IsRichAutocompletionEnabled();
