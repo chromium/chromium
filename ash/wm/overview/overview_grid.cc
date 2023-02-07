@@ -394,7 +394,7 @@ class DesksBarSlideAnimation {
         .Once()
         .SetDuration(duration)
         .SetTransform(desks_widget_->GetLayer(), transform,
-                      gfx::Tween::ACCEL_30_DECEL_20_85);
+                      gfx::Tween::ACCEL_20_DECEL_100);
   }
 
   DesksBarSlideAnimation(const DesksBarSlideAnimation&) = delete;

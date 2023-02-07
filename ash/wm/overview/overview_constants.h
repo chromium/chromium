@@ -15,6 +15,10 @@ namespace ash {
 // The time duration for transformation animations.
 constexpr base::TimeDelta kTransition = base::Milliseconds(300);
 
+// The duration for window restore animation when feature Jellyroll is Enabled.
+constexpr base::TimeDelta kWindowRestoreDurationCrOSNext =
+    base::Milliseconds(350);
+
 // In the conceptual overview table, the window margin is the space reserved
 // around the window within the cell. This margin does not overlap so the
 // closest distance between adjacent windows will be twice this amount.
