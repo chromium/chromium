@@ -77,7 +77,7 @@ class CertProvisioningWorkerStatic : public CertProvisioningWorker {
                       const std::string& invalidation_topic,
                       const std::string& va_challenge,
                       enterprise_management::HashingAlgorithm hashing_algorithm,
-                      const std::string& data_to_sign);
+                      std::vector<uint8_t> data_to_sign);
 
   void ProcessStartCsrResponse();
 

@@ -64,6 +64,10 @@ bool CheckCommonClientCertProvisioningResponse(
   return true;
 }
 
+std::vector<uint8_t> StrToBytes(const std::string& val) {
+  return std::vector<uint8_t>(val.begin(), val.end());
+}
+
 }  // namespace
 
 CertProvisioningClient::ProvisioningProcess::ProvisioningProcess(
@@ -296,10 +300,10 @@ void CertProvisioningClientImpl::OnStartCsrResponse(
                                           : empty_str;
 
     // Everything is ok, run |callback| with data.
-    return std::move(callback).Run(status, response_error, try_later,
-                                   invalidation_topic, va_challenge,
-                                   start_csr_response.hashing_algorithm(),
-                                   start_csr_response.data_to_sign());
+    return std::move(callback).Run(
+        status, response_error, try_later, invalidation_topic, va_challenge,
+        start_csr_response.hashing_algorithm(),
+        StrToBytes(start_csr_response.data_to_sign()));
   } while (false);
 
   // Something went wrong. Return error via |status|, |response_error|,
@@ -307,7 +311,7 @@ void CertProvisioningClientImpl::OnStartCsrResponse(
   const std::string empty_str;
   em::HashingAlgorithm hash_algo = {};
   return std::move(callback).Run(status, response_error, try_later, empty_str,
-                                 empty_str, hash_algo, empty_str);
+                                 empty_str, hash_algo, std::vector<uint8_t>());
 }
 
 void CertProvisioningClientImpl::OnFinishCsrResponse(

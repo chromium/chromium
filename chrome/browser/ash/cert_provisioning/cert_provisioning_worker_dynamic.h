@@ -217,8 +217,7 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   std::string va_challenge_response_;
 
   // Instruction payload and response for "Proof Of Possession".
-  // TODO(b/192071491): Switch these to `std::vector<uint8_t>`.
-  std::string data_to_sign_;
+  std::vector<uint8_t> data_to_sign_;
   std::vector<uint8_t> signature_;
 
   // Instruction payload for "Import Cert".

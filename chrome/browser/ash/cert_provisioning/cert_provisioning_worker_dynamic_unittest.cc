@@ -102,7 +102,6 @@ constexpr char kCertProfileVersion[] = "cert_profile_version_1";
 constexpr base::TimeDelta kCertProfileRenewalPeriod = base::Seconds(0);
 // Prefix + certificate profile name.
 constexpr char kInvalidationTopic[] = "fake_invalidation_topic_1";
-constexpr char kDataToSign[] = "fake_data_to_sign_1";
 constexpr char kChallenge[] = "fake_va_challenge_1";
 constexpr char kChallengeResponse[] = "fake_va_challenge_response_1";
 constexpr char kSignatureBase64[] = "AQIDBAU=";
@@ -125,6 +124,14 @@ const std::vector<uint8_t>& GetPublicKeyBin() {
     CHECK(public_key.has_value());
   }
   return public_key.value();
+}
+
+std::string GetDataToSignStr() {
+  return std::string({10, 11, 12, 13, 14});
+}
+
+std::vector<uint8_t> GetDataToSignBin() {
+  return std::vector<uint8_t>({10, 11, 12, 13, 14});
 }
 
 std::string GetSignatureStr() {
@@ -171,7 +178,7 @@ em::CertProvNextActionResponse NextActionProofOfPossession() {
   next_action_response.set_invalidation_topic(kInvalidationTopic);
 
   next_action_response.mutable_proof_of_possession_instruction()
-      ->set_data_to_sign(kDataToSign);
+      ->set_data_to_sign(GetDataToSignStr());
 
   return next_action_response;
 }
@@ -576,8 +583,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
         .WillOnce(VerifyNoBackendErrorsSeen);
 
     EXPECT_SIGN_RSAPKC1_RAW_OK(
-        SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), kDataToSign,
-                        GetPublicKey(), /*callback=*/_));
+        SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), GetDataToSignBin(),
+                        GetPublicKeyBin(), /*callback=*/_));
     // kSignCsrFinished
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
@@ -725,8 +732,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsNoWaiting) {
         .WillOnce(VerifyNoBackendErrorsSeen);
 
     EXPECT_SIGN_RSAPKC1_RAW_OK(
-        SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), kDataToSign,
-                        GetPublicKey(), /*callback=*/_));
+        SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), GetDataToSignBin(),
+                        GetPublicKeyBin(), /*callback=*/_));
     // kSignCsrFinished
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
@@ -923,8 +930,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, NoVaSuccess) {
         NextActionProofOfPossession());
 
     EXPECT_SIGN_RSAPKC1_RAW_OK(
-        SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), kDataToSign,
-                        GetPublicKey(), /*callback=*/_));
+        SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), GetDataToSignBin(),
+                        GetPublicKeyBin(), /*callback=*/_));
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
@@ -995,8 +1002,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, VaTooManyTwoProofsOfPossession) {
                      NextActionProofOfPossession());
 
     EXPECT_SIGN_RSAPKC1_RAW_OK(
-        SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), kDataToSign,
-                        GetPublicKey(), /*callback=*/_));
+        SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), GetDataToSignBin(),
+                        GetPublicKeyBin(), /*callback=*/_));
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
@@ -1059,8 +1066,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, NoVaTooManyTwoProofsOfPossession) {
         NextActionProofOfPossession());
 
     EXPECT_SIGN_RSAPKC1_RAW_OK(
-        SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), kDataToSign,
-                        GetPublicKey(), /*callback=*/_));
+        SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), GetDataToSignBin(),
+                        GetPublicKeyBin(), /*callback=*/_));
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
@@ -1161,8 +1168,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterManualRetry) {
         NextActionProofOfPossession());
 
     EXPECT_SIGN_RSAPKC1_RAW_OK(
-        SignRSAPKCS1Raw(::testing::Optional(TokenId::kSystem), kDataToSign,
-                        GetPublicKey(), /*callback=*/_));
+        SignRSAPKCS1Raw(::testing::Optional(TokenId::kSystem),
+                        GetDataToSignBin(), GetPublicKeyBin(), /*callback=*/_));
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
@@ -1287,8 +1294,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWait) {
         NextActionProofOfPossession());
 
     EXPECT_SIGN_RSAPKC1_RAW_OK(
-        SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), kDataToSign,
-                        GetPublicKey(), /*callback=*/_));
+        SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), GetDataToSignBin(),
+                        GetPublicKeyBin(), /*callback=*/_));
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
@@ -1663,8 +1670,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, RetryUploadProofOfPossession) {
         NextActionProofOfPossession());
 
     EXPECT_SIGN_RSAPKC1_RAW_OK(
-        SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), kDataToSign,
-                        GetPublicKey(), /*callback=*/_));
+        SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), GetDataToSignBin(),
+                        GetPublicKeyBin(), /*callback=*/_));
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION_TEMPORARY_UNAVAILABLE(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
@@ -2030,8 +2037,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
 
     EXPECT_SIGN_RSAPKC1_RAW_OK(
-        SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), kDataToSign,
-                        GetPublicKey(), /*callback=*/_));
+        SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), GetDataToSignBin(),
+                        GetPublicKeyBin(), /*callback=*/_));
 
     pref_val = ParseJsonDict(base::StringPrintf(
         R"({

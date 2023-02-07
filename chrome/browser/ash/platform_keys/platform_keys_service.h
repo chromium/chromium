@@ -158,8 +158,8 @@ class PlatformKeysService : public KeyedService {
   // signature or an error status.
   virtual void SignRSAPKCS1Digest(
       absl::optional<chromeos::platform_keys::TokenId> token_id,
-      const std::string& data,
-      const std::string& public_key_spki_der,
+      std::vector<uint8_t> data,
+      std::vector<uint8_t> public_key_spki_der,
       chromeos::platform_keys::HashAlgorithm hash_algorithm,
       SignCallback callback) = 0;
 
@@ -172,8 +172,8 @@ class PlatformKeysService : public KeyedService {
   // an error status.
   virtual void SignRSAPKCS1Raw(
       absl::optional<chromeos::platform_keys::TokenId> token_id,
-      const std::string& data,
-      const std::string& public_key_spki_der,
+      std::vector<uint8_t> data,
+      std::vector<uint8_t> public_key_spki_der,
       SignCallback callback) = 0;
 
   // Digests |data| and afterwards signs the data with the private key matching
@@ -183,8 +183,8 @@ class PlatformKeysService : public KeyedService {
   // status.
   virtual void SignECDSADigest(
       absl::optional<chromeos::platform_keys::TokenId> token_id,
-      const std::string& data,
-      const std::string& public_key_spki_der,
+      std::vector<uint8_t> data,
+      std::vector<uint8_t> public_key_spki_der,
       chromeos::platform_keys::HashAlgorithm hash_algorithm,
       SignCallback callback) = 0;
 
@@ -348,19 +348,19 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
                      GenerateKeyCallback callback) override;
   void SignRSAPKCS1Digest(
       absl::optional<chromeos::platform_keys::TokenId> token_id,
-      const std::string& data,
-      const std::string& public_key_spki_der,
+      std::vector<uint8_t> data,
+      std::vector<uint8_t> public_key_spki_der,
       chromeos::platform_keys::HashAlgorithm hash_algorithm,
       SignCallback callback) override;
   void SignRSAPKCS1Raw(
       absl::optional<chromeos::platform_keys::TokenId> token_id,
-      const std::string& data,
-      const std::string& public_key_spki_der,
+      std::vector<uint8_t> data,
+      std::vector<uint8_t> public_key_spki_der,
       SignCallback callback) override;
   void SignECDSADigest(
       absl::optional<chromeos::platform_keys::TokenId> token_id,
-      const std::string& data,
-      const std::string& public_key_spki_der,
+      std::vector<uint8_t> data,
+      std::vector<uint8_t> public_key_spki_der,
       chromeos::platform_keys::HashAlgorithm hash_algorithm,
       SignCallback callback) override;
   void SelectClientCertificates(

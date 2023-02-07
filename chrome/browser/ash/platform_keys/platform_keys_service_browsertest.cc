@@ -105,18 +105,21 @@ struct TestConfigPerToken {
 // AlgorithmIdentifier=id-sha256.
 // This is useful for testing PlatformKeysService::SignRSAPKCS1Raw which only
 // appends PKCS#1 v1.5 padding before signing.
-std::string PrependSHA256DigestInfo(base::StringPiece hash) {
+std::vector<uint8_t> PrependSHA256DigestInfo(base::span<const uint8_t> hash) {
   // DER-encoded PKCS#1 DigestInfo "prefix" with
   // AlgorithmIdentifier=id-sha256.
   // The encoding is taken from https://tools.ietf.org/html/rfc3447#page-43
-  const uint8_t kDigestInfoSha256DerData[] = {
+  const std::vector<uint8_t> kDigestInfoSha256DerData = {
       0x30, 0x31, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
       0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20};
-  const base::StringPiece kDigestInfoSha256Der(
-      reinterpret_cast<const char*>(kDigestInfoSha256DerData),
-      std::size(kDigestInfoSha256DerData));
 
-  return base::StrCat({kDigestInfoSha256Der, hash});
+  std::vector<uint8_t> result;
+  result.reserve(kDigestInfoSha256DerData.size() + hash.size());
+
+  result.insert(result.end(), kDigestInfoSha256DerData.begin(),
+                kDigestInfoSha256DerData.end());
+  result.insert(result.end(), hash.begin(), hash.end());
+  return result;
 }
 
 std::string BytesToStr(const std::vector<uint8_t>& val) {
@@ -431,7 +434,7 @@ class PlatformKeysServicePerTokenBrowserTest
 // Generates a Rsa key pair and tests signing using that key pair.
 IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
                        GenerateRsaAndSign) {
-  const std::string kDataToSign = "test";
+  const std::vector<uint8_t> kDataToSign({1, 2, 3, 4, 5});
   const unsigned int kKeySize = 2048;
   const HashAlgorithm kHashAlgorithm = HashAlgorithm::HASH_ALGORITHM_SHA256;
   const crypto::SignatureVerifier::SignatureAlgorithm kSignatureAlgorithm =
@@ -451,7 +454,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
 
   base::test::TestFuture<std::vector<uint8_t>, Status> sign_waiter;
   platform_keys_service()->SignRSAPKCS1Digest(
-      token_id, kDataToSign, BytesToStr(public_key_spki_der), kHashAlgorithm,
+      token_id, kDataToSign, public_key_spki_der, kHashAlgorithm,
       sign_waiter.GetCallback());
   ASSERT_TRUE(sign_waiter.Wait());
   EXPECT_EQ(sign_waiter.Get<Status>(), Status::kSuccess);
@@ -476,9 +479,10 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   // signature of |kDataToSign|, it is necessary to pass
   // (DigestInfo + hash(kDataToSign)) to SignRSAPKCS1Raw, where DigestInfo
   // describes the hash function.
-  const std::string kDataToSign = "test";
-  const std::string kDataToSignHash = crypto::SHA256HashString(kDataToSign);
-  const std::string kDigestInfoAndDataToSignHash =
+  const std::vector<uint8_t> kDataToSign({1, 2, 3, 4, 5});
+  const std::array<uint8_t, crypto::kSHA256Length> kDataToSignHash =
+      crypto::SHA256Hash(kDataToSign);
+  const std::vector<uint8_t> kDigestInfoAndDataToSignHash =
       PrependSHA256DigestInfo(kDataToSignHash);
 
   const crypto::SignatureVerifier::SignatureAlgorithm kSignatureAlgorithm =
@@ -489,7 +493,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
 
   base::test::TestFuture<std::vector<uint8_t>, Status> sign_waiter;
   platform_keys_service()->SignRSAPKCS1Raw(
-      token_id, kDigestInfoAndDataToSignHash, BytesToStr(public_key_spki_der),
+      token_id, kDigestInfoAndDataToSignHash, public_key_spki_der,
       sign_waiter.GetCallback());
   ASSERT_TRUE(sign_waiter.Wait());
   EXPECT_EQ(sign_waiter.Get<Status>(), Status::kSuccess);
@@ -499,7 +503,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
       kSignatureAlgorithm,
       base::as_bytes(base::make_span(sign_waiter.Get<std::vector<uint8_t>>())),
       base::as_bytes(base::make_span(public_key_spki_der))));
-  signature_verifier.VerifyUpdate(base::as_bytes(base::make_span(kDataToSign)));
+  signature_verifier.VerifyUpdate(kDataToSign);
   EXPECT_TRUE(signature_verifier.VerifyFinal());
 }
 
@@ -544,25 +548,24 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   // SignRSAPKCS1Raw performs PKCS#11 padding which adds at least 11 bytes.
   {
     // An input of |kKeySize in bytes - 11| should be fine.
-    std::string data_to_sign;
+    std::vector<uint8_t> data_to_sign;
     data_to_sign.resize(kKeySize / 8 - 11);
 
     base::test::TestFuture<std::vector<uint8_t>, Status> sign_waiter;
-    platform_keys_service()->SignRSAPKCS1Raw(token_id, data_to_sign,
-                                             BytesToStr(public_key_spki_der),
-                                             sign_waiter.GetCallback());
+    platform_keys_service()->SignRSAPKCS1Raw(
+        token_id, data_to_sign, public_key_spki_der, sign_waiter.GetCallback());
     ASSERT_TRUE(sign_waiter.Wait());
     EXPECT_EQ(sign_waiter.Get<Status>(), Status::kSuccess);
   }
 
   {
     // An input of |kKeySize in bytes - 10| should be too long.
-    std::string data_to_sign_too_long;
+    std::vector<uint8_t> data_to_sign_too_long;
     data_to_sign_too_long.resize(kKeySize / 8 - 10);
 
     base::test::TestFuture<std::vector<uint8_t>, Status> sign_waiter;
     platform_keys_service()->SignRSAPKCS1Raw(token_id, data_to_sign_too_long,
-                                             BytesToStr(public_key_spki_der),
+                                             public_key_spki_der,
                                              sign_waiter.GetCallback());
     ASSERT_TRUE(sign_waiter.Wait());
     EXPECT_EQ(sign_waiter.Get<Status>(), Status::kErrorInputTooLong);

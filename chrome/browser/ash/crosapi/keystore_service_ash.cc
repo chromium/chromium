@@ -757,23 +757,20 @@ void KeystoreServiceAsh::Sign(bool is_keystore_provided,
   }
 
   PlatformKeysService* service = GetPlatformKeys();
-  std::string data_str(data.begin(), data.end());
-  std::string public_key_str(public_key.begin(), public_key.end());
   auto cb = base::BindOnce(&KeystoreServiceAsh::DidSign, std::move(callback));
 
   switch (key_type) {
     case chromeos::platform_keys::KeyType::kRsassaPkcs1V15:
       if (hash_algorithm == chromeos::platform_keys::HASH_ALGORITHM_NONE) {
-        service->SignRSAPKCS1Raw(token_id, data_str, public_key_str,
-                                 std::move(cb));
+        service->SignRSAPKCS1Raw(token_id, data, public_key, std::move(cb));
         return;
       }
-      service->SignRSAPKCS1Digest(token_id, data_str, public_key_str,
-                                  hash_algorithm, std::move(cb));
+      service->SignRSAPKCS1Digest(token_id, data, public_key, hash_algorithm,
+                                  std::move(cb));
       return;
     case chromeos::platform_keys::KeyType::kEcdsa:
-      service->SignECDSADigest(token_id, data_str, public_key_str,
-                               hash_algorithm, std::move(cb));
+      service->SignECDSADigest(token_id, data, public_key, hash_algorithm,
+                               std::move(cb));
       return;
   }
 }

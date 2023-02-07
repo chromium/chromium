@@ -74,6 +74,10 @@ std::vector<uint8_t> ScopedSECItemToBytes(
   return std::vector<uint8_t>(sec_item->data, sec_item->data + sec_item->len);
 }
 
+std::vector<uint8_t> StrToBytes(const std::string& val) {
+  return std::vector<uint8_t>(val.begin(), val.end());
+}
+
 // Base class to store state that is common to all NSS database operations and
 // to provide convenience methods to call back.
 // Keeps track of the originating task runner.
@@ -236,14 +240,14 @@ class GenerateECKeyState : public NSSOperationState {
 class SignState : public NSSOperationState {
  public:
   SignState(ServiceWeakPtr weak_ptr,
-            const std::string& data,
-            const std::string& public_key_spki_der,
+            std::vector<uint8_t> data,
+            std::vector<uint8_t> public_key_spki_der,
             HashAlgorithm hash_algorithm,
             const KeyType key_type,
             SignCallback callback)
       : NSSOperationState(weak_ptr),
-        data_(data),
-        public_key_spki_der_(public_key_spki_der),
+        data_(std::move(data)),
+        public_key_spki_der_(std::move(public_key_spki_der)),
         hash_algorithm_(hash_algorithm),
         key_type_(key_type),
         callback_(std::move(callback)) {}
@@ -259,10 +263,10 @@ class SignState : public NSSOperationState {
   }
 
   // The data that will be signed.
-  const std::string data_;
+  const std::vector<uint8_t> data_;
 
   // Must be the DER encoding of a SubjectPublicKeyInfo.
-  const std::string public_key_spki_der_;
+  const std::vector<uint8_t> public_key_spki_der_;
 
   // Determines the hash algorithm that is used to digest |data| before signing.
   const HashAlgorithm hash_algorithm_;
@@ -689,13 +693,12 @@ class IsKeyOnTokenState : public NSSOperationState {
 // |public_key_spki_der| if found in |slot|. If |slot| is nullptr, the
 // private key will be searched in all slots.
 crypto::ScopedSECKEYPrivateKey GetPrivateKey(
-    const std::string& public_key_spki_der,
+    const std::vector<uint8_t>& public_key_spki_der,
     PK11SlotInfo* slot) {
-  auto public_key_bytes = base::as_bytes(base::make_span(public_key_spki_der));
   if (slot) {
-    return crypto::FindNSSKeyFromPublicKeyInfoInSlot(public_key_bytes, slot);
+    return crypto::FindNSSKeyFromPublicKeyInfoInSlot(public_key_spki_der, slot);
   }
-  return crypto::FindNSSKeyFromPublicKeyInfo(public_key_bytes);
+  return crypto::FindNSSKeyFromPublicKeyInfo(public_key_spki_der);
 }
 
 // Does the actual RSA key generation on a worker thread. Used by
@@ -833,10 +836,8 @@ void SignRSAPKCS1RawOnWorkerThread(std::unique_ptr<SignState> state,
   static_assert(
       sizeof(*state->data_.data()) == sizeof(char),
       "Can't reinterpret data if it's characters are not 8 bit large.");
-  SECItem input = {
-      siBuffer,
-      reinterpret_cast<unsigned char*>(const_cast<char*>(state->data_.data())),
-      static_cast<unsigned int>(state->data_.size())};
+  SECItem input = {siBuffer, const_cast<unsigned char*>(state->data_.data()),
+                   static_cast<unsigned int>(state->data_.size())};
 
   // Compute signature of hash.
   int signature_len = PK11_SignatureLen(rsa_key.get());
@@ -1243,8 +1244,8 @@ void RemoveCertificateWithDB(std::unique_ptr<RemoveCertificateState> state,
 void RemoveKeyOnWorkerThread(std::unique_ptr<RemoveKeyState> state) {
   DCHECK(state->slot_.get());
 
-  crypto::ScopedSECKEYPrivateKey private_key =
-      GetPrivateKey(state->public_key_spki_der_, state->slot_.get());
+  crypto::ScopedSECKEYPrivateKey private_key = GetPrivateKey(
+      StrToBytes(state->public_key_spki_der_), state->slot_.get());
 
   if (!private_key) {
     state->OnError(FROM_HERE, Status::kErrorKeyNotFound);
@@ -1389,8 +1390,8 @@ void SetAttributeForKeyWithDbOnWorkerThread(
     std::unique_ptr<SetAttributeForKeyState> state) {
   DCHECK(state->slot_.get());
 
-  crypto::ScopedSECKEYPrivateKey private_key =
-      GetPrivateKey(state->public_key_spki_der_, state->slot_.get());
+  crypto::ScopedSECKEYPrivateKey private_key = GetPrivateKey(
+      StrToBytes(state->public_key_spki_der_), state->slot_.get());
 
   if (!private_key) {
     state->OnError(FROM_HERE, Status::kErrorKeyNotFound);
@@ -1435,8 +1436,8 @@ void GetAttributeForKeyWithDbOnWorkerThread(
     std::unique_ptr<GetAttributeForKeyState> state) {
   DCHECK(state->slot_.get());
 
-  crypto::ScopedSECKEYPrivateKey private_key =
-      GetPrivateKey(state->public_key_spki_der_, state->slot_.get());
+  crypto::ScopedSECKEYPrivateKey private_key = GetPrivateKey(
+      StrToBytes(state->public_key_spki_der_), state->slot_.get());
 
   if (!private_key) {
     state->OnError(FROM_HERE, Status::kErrorKeyNotFound);
@@ -1496,8 +1497,8 @@ void IsKeyOnTokenWithDb(std::unique_ptr<IsKeyOnTokenState> state,
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(state->slot_.get());
 
-  bool key_on_slot =
-      GetPrivateKey(state->public_key_spki_der_, state->slot_.get()) != nullptr;
+  bool key_on_slot = GetPrivateKey(StrToBytes(state->public_key_spki_der_),
+                                   state->slot_.get()) != nullptr;
   state->OnSuccess(FROM_HERE, key_on_slot);
 }
 
@@ -1548,13 +1549,14 @@ void PlatformKeysServiceImpl::GenerateECKey(TokenId token_id,
 
 void PlatformKeysServiceImpl::SignRSAPKCS1Digest(
     absl::optional<TokenId> token_id,
-    const std::string& data,
-    const std::string& public_key_spki_der,
+    std::vector<uint8_t> data,
+    std::vector<uint8_t> public_key_spki_der,
     HashAlgorithm hash_algorithm,
     SignCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto state = std::make_unique<SignState>(
-      weak_factory_.GetWeakPtr(), data, public_key_spki_der, hash_algorithm,
+      weak_factory_.GetWeakPtr(), std::move(data),
+      std::move(public_key_spki_der), hash_algorithm,
       /*key_type=*/KeyType::kRsassaPkcs1V15, std::move(callback));
   if (delegate_->IsShutDown()) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);
@@ -1574,14 +1576,14 @@ void PlatformKeysServiceImpl::SignRSAPKCS1Digest(
 
 void PlatformKeysServiceImpl::SignRSAPKCS1Raw(
     absl::optional<TokenId> token_id,
-    const std::string& data,
-    const std::string& public_key_spki_der,
+    std::vector<uint8_t> data,
+    std::vector<uint8_t> public_key_spki_der,
     SignCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto state = std::make_unique<SignState>(
-      weak_factory_.GetWeakPtr(), data, public_key_spki_der,
-      HashAlgorithm::HASH_ALGORITHM_NONE, /*key_type=*/KeyType::kRsassaPkcs1V15,
-      std::move(callback));
+      weak_factory_.GetWeakPtr(), std::move(data),
+      std::move(public_key_spki_der), HashAlgorithm::HASH_ALGORITHM_NONE,
+      /*key_type=*/KeyType::kRsassaPkcs1V15, std::move(callback));
   if (delegate_->IsShutDown()) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);
     return;
@@ -1600,13 +1602,14 @@ void PlatformKeysServiceImpl::SignRSAPKCS1Raw(
 
 void PlatformKeysServiceImpl::SignECDSADigest(
     absl::optional<TokenId> token_id,
-    const std::string& data,
-    const std::string& public_key_spki_der,
+    std::vector<uint8_t> data,
+    std::vector<uint8_t> public_key_spki_der,
     HashAlgorithm hash_algorithm,
     SignCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto state = std::make_unique<SignState>(
-      weak_factory_.GetWeakPtr(), data, public_key_spki_der, hash_algorithm,
+      weak_factory_.GetWeakPtr(), std::move(data),
+      std::move(public_key_spki_der), hash_algorithm,
       /*key_type=*/KeyType::kEcdsa, std::move(callback));
   if (delegate_->IsShutDown()) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);

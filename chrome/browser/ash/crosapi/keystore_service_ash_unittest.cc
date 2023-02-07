@@ -292,7 +292,7 @@ TEST_F(KeystoreServiceAshTest, SignRsaSuccess) {
   // matter here.
   EXPECT_CALL(platform_keys_service_,
               SignRSAPKCS1Digest(absl::optional<TokenId>(TokenId::kUser),
-                                 GetDataStr(), GetPublicKeyStr(),
+                                 GetDataBin(), GetPublicKeyBin(),
                                  HashAlgorithm::HASH_ALGORITHM_SHA256,
                                  /*callback=*/_))
       .WillOnce(RunOnceCallback<4>(GetDataBin(), Status::kSuccess));
@@ -312,8 +312,8 @@ TEST_F(KeystoreServiceAshTest, SignEcSuccess) {
   // matter here.
   EXPECT_CALL(
       platform_keys_service_,
-      SignECDSADigest(absl::optional<TokenId>(TokenId::kSystem), GetDataStr(),
-                      GetPublicKeyStr(), HashAlgorithm::HASH_ALGORITHM_SHA512,
+      SignECDSADigest(absl::optional<TokenId>(TokenId::kSystem), GetDataBin(),
+                      GetPublicKeyBin(), HashAlgorithm::HASH_ALGORITHM_SHA512,
                       /*callback=*/_))
       .WillOnce(RunOnceCallback<4>(GetDataBin(), Status::kSuccess));
 
@@ -330,7 +330,7 @@ TEST_F(KeystoreServiceAshTest, SignEcSuccess) {
 TEST_F(KeystoreServiceAshTest, UsingkRsassaPkcs1V15NoneSignSuccess) {
   EXPECT_CALL(platform_keys_service_,
               SignRSAPKCS1Raw(absl::optional<TokenId>(TokenId::kSystem),
-                              GetDataStr(), GetPublicKeyStr(),
+                              GetDataBin(), GetPublicKeyBin(),
                               /*callback=*/_))
       .WillOnce(RunOnceCallback<3>(GetDataBin(), Status::kSuccess));
 

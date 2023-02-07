@@ -99,14 +99,14 @@ class StartCsrFuture
           std::string,
           std::string,
           em::HashingAlgorithm,
-          std::string> {
+          std::vector<uint8_t>> {
  public:
   CertProvisioningClient::StartCsrCallback GetStartCsrCallback() {
     return GetCallback<
         policy::DeviceManagementStatus,
         absl::optional<em::ClientCertificateProvisioningResponse::Error>,
         absl::optional<int64_t>, const std::string&, const std::string&,
-        em::HashingAlgorithm, const std::string&>();
+        em::HashingAlgorithm, std::vector<uint8_t>>();
   }
 
   policy::DeviceManagementStatus GetStatus() { return Get<0>(); }
@@ -123,7 +123,7 @@ class StartCsrFuture
 
   em::HashingAlgorithm GetHashingAlgorithm() { return Get<5>(); }
 
-  const std::string& GetDataToSign() { return Get<6>(); }
+  const std::vector<uint8_t>& GetDataToSign() { return Get<6>(); }
 };
 
 // A TestFuture that supports waiting for a
@@ -204,7 +204,8 @@ class CertProvisioningClientTestBase : public testing::Test {
 
   const std::string kInvalidationTopic = "fake_invalidation_topic_1";
   const std::string kVaChallange = "fake_va_challenge_1";
-  const std::string kDataToSign = "fake_data_to_sign_1";
+  const std::string kDataToSignStr = {10, 11, 12, 13, 14};
+  const std::vector<uint8_t> kDataToSignBin = {10, 11, 12, 13, 14};
   const em::HashingAlgorithm kHashAlgorithm = em::HashingAlgorithm::SHA256;
   const em::SigningAlgorithm kSignAlgorithm =
       em::SigningAlgorithm::RSA_PKCS1_V1_5;
@@ -350,7 +351,7 @@ TEST_P(CertProvisioningClientTest, StartCsrSuccess) {
     start_csr_response->set_va_challenge(kVaChallange);
     start_csr_response->set_hashing_algorithm(kHashAlgorithm);
     start_csr_response->set_signing_algorithm(kSignAlgorithm);
-    start_csr_response->set_data_to_sign(kDataToSign);
+    start_csr_response->set_data_to_sign(kDataToSignStr);
   }
   std::move(cert_prov_call.callback).Run(policy::DM_STATUS_SUCCESS, response);
 
@@ -362,7 +363,7 @@ TEST_P(CertProvisioningClientTest, StartCsrSuccess) {
   EXPECT_EQ(start_csr_future.GetInvalidationTopic(), kInvalidationTopic);
   EXPECT_EQ(start_csr_future.GetVaChallenge(), kVaChallange);
   EXPECT_EQ(start_csr_future.GetHashingAlgorithm(), kHashAlgorithm);
-  EXPECT_EQ(start_csr_future.GetDataToSign(), kDataToSign);
+  EXPECT_EQ(start_csr_future.GetDataToSign(), kDataToSignBin);
 }
 
 // Checks that CertProvisioningClient correctly reacts on the `try_later` field

@@ -69,7 +69,7 @@ class CertProvisioningClient {
       const std::string& invalidation_topic,
       const std::string& va_challenge,
       enterprise_management::HashingAlgorithm hash_algorithm,
-      const std::string& data_to_sign)>;
+      std::vector<uint8_t> data_to_sign)>;
 
   using FinishCsrCallback = base::OnceCallback<void(
       policy::DeviceManagementStatus status,
