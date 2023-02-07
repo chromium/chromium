@@ -20,30 +20,6 @@
 namespace ash::language_packs {
 namespace {
 
-// Feature IDs.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// See enum LanguagePackFeatureIds in tools/metrics/histograms/enums.xml.
-enum class FeatureIdsEnum {
-  kUnknown = 0,
-  kHandwriting = 1,
-  kTts = 2,
-  kMaxValue = kTts,
-};
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// See enum LanguagePackFeatureSuccess in tools/metrics/histograms/enums.xml.
-enum class FeatureSuccessEnum {
-  kUnknownSuccess = 0,
-  kUnknownFailure = 1,
-  kHandwritingSuccess = 2,
-  kHandwritingFailure = 3,
-  kTtsSuccess = 4,
-  kTtsFailure = 5,
-  kMaxValue = kTtsFailure,
-};
-
 // This function returns the enum value of a feature ID that matches the
 // corresponding value in the UMA Histogram enum.
 FeatureIdsEnum GetFeatureIdValueForUma(const std::string& feature_id) {

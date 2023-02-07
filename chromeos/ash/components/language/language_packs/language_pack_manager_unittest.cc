@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
@@ -25,6 +26,14 @@ namespace {
 
 constexpr char kFakeDlcId[] = "FakeDlc";
 constexpr char kSupportedLocale[] = "es";
+constexpr char kHistogramInstallPackSuccess[] =
+    "ChromeOS.LanguagePacks.InstallPack.Success";
+constexpr char kHistogramGetPackStateFeatureId[] =
+    "ChromeOS.LanguagePacks.GetPackState.FeatureId";
+constexpr char kHistogramInstallBasePackFeatureId[] =
+    "ChromeOS.LanguagePacks.InstallBasePack.FeatureId";
+constexpr char kHistogramUninstallCompleteSuccess[] =
+    "ChromeOS.LanguagePacks.UninstallComplete.Success";
 
 // We need a mock callback so that we can check that it gets called.
 class CallbackForTesting {
@@ -115,6 +124,13 @@ TEST_F(LanguagePackManagerTest, InstallSuccessTest) {
   dlcservice_client_->set_install_error(dlcservice::kErrorNone);
   dlcservice_client_->set_install_root_path("/path");
 
+  // Test UMA metrics: pre-condition.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kHistogramInstallPackSuccess, FeatureSuccessEnum::kHandwritingSuccess, 0);
+  histogram_tester.ExpectBucketCount(
+      kHistogramInstallPackSuccess, FeatureSuccessEnum::kHandwritingFailure, 0);
+
   // We need to use an existing Pack ID, so that we do get a result back.
   manager_->InstallPack(
       kHandwritingFeatureId, kSupportedLocale,
@@ -125,10 +141,23 @@ TEST_F(LanguagePackManagerTest, InstallSuccessTest) {
   EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorNone);
   EXPECT_EQ(pack_result_.pack_state, PackResult::INSTALLED);
   EXPECT_EQ(pack_result_.path, "/path");
+
+  // Test UMA metrics: post-condition.
+  histogram_tester.ExpectBucketCount(
+      kHistogramInstallPackSuccess, FeatureSuccessEnum::kHandwritingSuccess, 1);
+  histogram_tester.ExpectBucketCount(
+      kHistogramInstallPackSuccess, FeatureSuccessEnum::kHandwritingFailure, 0);
 }
 
 TEST_F(LanguagePackManagerTest, InstallFailureTest) {
   dlcservice_client_->set_install_error(dlcservice::kErrorInternal);
+
+  // Test UMA metrics: pre-condition.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kHistogramInstallPackSuccess, FeatureSuccessEnum::kHandwritingSuccess, 0);
+  histogram_tester.ExpectBucketCount(
+      kHistogramInstallPackSuccess, FeatureSuccessEnum::kHandwritingFailure, 0);
 
   // We need to use an existing Pack ID, so that we do get a result back.
   manager_->InstallPack(
@@ -139,9 +168,18 @@ TEST_F(LanguagePackManagerTest, InstallFailureTest) {
 
   EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorInternal);
   EXPECT_NE(pack_result_.pack_state, PackResult::INSTALLED);
+
+  // Test UMA metrics: post-condition.
+  histogram_tester.ExpectBucketCount(
+      kHistogramInstallPackSuccess, FeatureSuccessEnum::kHandwritingSuccess, 0);
+  histogram_tester.ExpectBucketCount(
+      kHistogramInstallPackSuccess, FeatureSuccessEnum::kHandwritingFailure, 1);
 }
 
 TEST_F(LanguagePackManagerTest, InstallWrongIdTest) {
+  // Note: no UMA metrics are reconded in this case, because there is no call to
+  // DLC Service, hence no success nor failure.
+
   manager_->InstallPack(
       kFakeDlcId, kSupportedLocale,
       base::BindOnce(&LanguagePackManagerTest::InstallTestCallback,
@@ -173,6 +211,11 @@ TEST_F(LanguagePackManagerTest, GetPackStateSuccessTest) {
   dlc_state.set_root_path("/path");
   dlcservice_client_->set_dlc_state(dlc_state);
 
+  // Test UMA metrics: pre-condition.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(kHistogramGetPackStateFeatureId,
+                                     FeatureIdsEnum::kHandwriting, 0);
+
   // We need to use an existing Pack ID, so that we do get a result back.
   manager_->GetPackState(
       kHandwritingFeatureId, kSupportedLocale,
@@ -183,10 +226,19 @@ TEST_F(LanguagePackManagerTest, GetPackStateSuccessTest) {
   EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorNone);
   EXPECT_EQ(pack_result_.pack_state, PackResult::INSTALLED);
   EXPECT_EQ(pack_result_.path, "/path");
+
+  // Test UMA metrics: post-condition.
+  histogram_tester.ExpectBucketCount(kHistogramGetPackStateFeatureId,
+                                     FeatureIdsEnum::kHandwriting, 1);
 }
 
 TEST_F(LanguagePackManagerTest, GetPackStateFailureTest) {
   dlcservice_client_->set_get_dlc_state_error(dlcservice::kErrorInternal);
+
+  // Test UMA metrics: pre-condition.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(kHistogramGetPackStateFeatureId,
+                                     FeatureIdsEnum::kHandwriting, 0);
 
   // We need to use an existing Pack ID, so that we do get a result back.
   manager_->GetPackState(
@@ -197,9 +249,16 @@ TEST_F(LanguagePackManagerTest, GetPackStateFailureTest) {
 
   EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorInternal);
   EXPECT_NE(pack_result_.pack_state, PackResult::INSTALLED);
+
+  // Test UMA metrics: post-condition.
+  histogram_tester.ExpectBucketCount(kHistogramGetPackStateFeatureId,
+                                     FeatureIdsEnum::kHandwriting, 1);
 }
 
 TEST_F(LanguagePackManagerTest, GetPackStateWrongIdTest) {
+  // Note: no UMA metrics are reconded in this case, because there is no call to
+  // DLC Service, hence no success nor failure.
+
   manager_->GetPackState(
       kFakeDlcId, kSupportedLocale,
       base::BindOnce(&LanguagePackManagerTest::GetPackStateTestCallback,
@@ -225,6 +284,13 @@ TEST_F(LanguagePackManagerTest, GetPackStateCallbackTest) {
 TEST_F(LanguagePackManagerTest, RemovePackSuccessTest) {
   dlcservice_client_->set_uninstall_error(dlcservice::kErrorNone);
 
+  // Test UMA metrics: pre-condition.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(kHistogramUninstallCompleteSuccess,
+                                     1 /* True */, 0);
+  histogram_tester.ExpectBucketCount(kHistogramUninstallCompleteSuccess,
+                                     0 /* False */, 0);
+
   // We need to use an existing Pack ID, so that we do get a result back.
   manager_->RemovePack(
       kHandwritingFeatureId, kSupportedLocale,
@@ -234,10 +300,23 @@ TEST_F(LanguagePackManagerTest, RemovePackSuccessTest) {
 
   EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorNone);
   EXPECT_EQ(pack_result_.pack_state, PackResult::NOT_INSTALLED);
+
+  // Test UMA metrics: post-condition.
+  histogram_tester.ExpectBucketCount(kHistogramUninstallCompleteSuccess,
+                                     1 /* True */, 1);
+  histogram_tester.ExpectBucketCount(kHistogramUninstallCompleteSuccess,
+                                     0 /* False */, 0);
 }
 
 TEST_F(LanguagePackManagerTest, RemovePackFailureTest) {
   dlcservice_client_->set_uninstall_error(dlcservice::kErrorInternal);
+
+  // Test UMA metrics: pre-condition.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(kHistogramUninstallCompleteSuccess,
+                                     1 /* True */, 0);
+  histogram_tester.ExpectBucketCount(kHistogramUninstallCompleteSuccess,
+                                     0 /* False */, 0);
 
   // We need to use an existing Pack ID, so that we do get a result back.
   manager_->RemovePack(
@@ -247,9 +326,18 @@ TEST_F(LanguagePackManagerTest, RemovePackFailureTest) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorInternal);
+
+  // Test UMA metrics: post-condition.
+  histogram_tester.ExpectBucketCount(kHistogramUninstallCompleteSuccess,
+                                     1 /* True */, 0);
+  histogram_tester.ExpectBucketCount(kHistogramUninstallCompleteSuccess,
+                                     0 /* False */, 1);
 }
 
 TEST_F(LanguagePackManagerTest, RemovePackWrongIdTest) {
+  // Note: no UMA metrics are reconded in this case, because there is no call to
+  // DLC Service, hence no success nor failure.
+
   manager_->RemovePack(
       kFakeDlcId, kSupportedLocale,
       base::BindOnce(&LanguagePackManagerTest::RemoveTestCallback,
@@ -337,6 +425,11 @@ TEST_F(LanguagePackManagerTest, InstallBasePackSuccess) {
   dlcservice_client_->set_install_error(dlcservice::kErrorNone);
   dlcservice_client_->set_install_root_path("/path");
 
+  // Test UMA metrics: pre-condition.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(kHistogramInstallBasePackFeatureId,
+                                     FeatureIdsEnum::kHandwriting, 0);
+
   // We need to use an existing Pack ID, so that we do get a result back.
   manager_->InstallBasePack(
       kHandwritingFeatureId,
@@ -347,10 +440,19 @@ TEST_F(LanguagePackManagerTest, InstallBasePackSuccess) {
   EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorNone);
   EXPECT_EQ(pack_result_.pack_state, PackResult::INSTALLED);
   EXPECT_EQ(pack_result_.path, "/path");
+
+  // Test UMA metrics: post-condition.
+  histogram_tester.ExpectBucketCount(kHistogramInstallBasePackFeatureId,
+                                     FeatureIdsEnum::kHandwriting, 1);
 }
 
 TEST_F(LanguagePackManagerTest, InstallBasePackFailureTestFailure) {
   dlcservice_client_->set_install_error(dlcservice::kErrorInternal);
+
+  // Test UMA metrics: pre-condition.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(kHistogramInstallBasePackFeatureId,
+                                     FeatureIdsEnum::kHandwriting, 0);
 
   // We need to use an existing Pack ID, so that we do get a result back.
   manager_->InstallBasePack(
@@ -361,6 +463,10 @@ TEST_F(LanguagePackManagerTest, InstallBasePackFailureTestFailure) {
 
   EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorInternal);
   EXPECT_NE(pack_result_.pack_state, PackResult::INSTALLED);
+
+  // Test UMA metrics: post-condition.
+  histogram_tester.ExpectBucketCount(kHistogramInstallBasePackFeatureId,
+                                     FeatureIdsEnum::kHandwriting, 1);
 }
 
 }  // namespace ash::language_packs
