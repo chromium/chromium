@@ -35,7 +35,7 @@ constexpr base::TimeDelta kOneHour = base::Hours(1);
 constexpr base::TimeDelta kOneDay = base::Days(1);
 constexpr base::TimeDelta kAdvanceWarningTime = base::Days(14);
 constexpr base::TimeDelta kOneYear = base::Days(365);
-constexpr base::TimeDelta kTenYears = base::Days(10 * 365);
+constexpr base::TimeDelta kThreeYears = base::Days(3 * 365);
 
 inline std::u16string utf16(const char* ascii) {
   return base::ASCIIToUTF16(ascii);
@@ -120,20 +120,13 @@ TEST_F(InSessionPasswordChangeManagerTest, MaybeShow_PolicyDisabled) {
   EXPECT_FALSE(Notification().has_value());
 }
 
-// TODO(crbug.com/1358349): re-enable this test. Flakily times out on debug
-// Linux and ChromeOS.
-#if !defined(NDEBUG) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-#define MAYBE_MaybeShow_WillNotExpire DISABLED_MaybeShow_WillNotExpire
-#else
-#define MAYBE_MaybeShow_WillNotExpire MaybeShow_WillNotExpire
-#endif
-TEST_F(InSessionPasswordChangeManagerTest, MAYBE_MaybeShow_WillNotExpire) {
+TEST_F(InSessionPasswordChangeManagerTest, MaybeShow_WillNotExpire) {
   SamlPasswordAttributes::DeleteFromPrefs(profile_->GetPrefs());
   manager_->MaybeShowExpiryNotification();
 
   EXPECT_FALSE(Notification().has_value());
-  // No notification shown now and nothing shown in the next 10 years.
-  test_environment_.FastForwardBy(kTenYears);
+  // No notification shown now and nothing shown in the next 3 years.
+  test_environment_.FastForwardBy(kThreeYears);
   EXPECT_FALSE(Notification().has_value());
 }
 
@@ -177,18 +170,11 @@ TEST_F(InSessionPasswordChangeManagerTest, MaybeShow_DeleteExpirationTime) {
 
   // Since expiration time is now removed, it is not shown later either.
   SamlPasswordAttributes::DeleteFromPrefs(profile_->GetPrefs());
-  test_environment_.FastForwardBy(kTenYears);
+  test_environment_.FastForwardBy(kThreeYears);
   EXPECT_FALSE(Notification().has_value());
 }
 
-// TODO(crbug.com/1358349): re-enable this test. Flakily times out on debug
-// Linux and ChromeOS.
-#if !defined(NDEBUG) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-#define MAYBE_MaybeShow_PasswordChanged DISABLED_MaybeShow_PasswordChanged
-#else
-#define MAYBE_MaybeShow_PasswordChanged MaybeShow_PasswordChanged
-#endif
-TEST_F(InSessionPasswordChangeManagerTest, MAYBE_MaybeShow_PasswordChanged) {
+TEST_F(InSessionPasswordChangeManagerTest, MaybeShow_PasswordChanged) {
   SetExpirationTime(base::Time::Now() + (kAdvanceWarningTime / 2) - kOneHour);
   manager_->MaybeShowExpiryNotification();
 
@@ -201,7 +187,7 @@ TEST_F(InSessionPasswordChangeManagerTest, MAYBE_MaybeShow_PasswordChanged) {
   manager_->DismissExpiryNotification();
 
   // From now on, notification will not be reshown.
-  test_environment_.FastForwardBy(kTenYears);
+  test_environment_.FastForwardBy(kThreeYears);
   EXPECT_FALSE(Notification().has_value());
 }
 
@@ -258,8 +244,7 @@ TEST_F(InSessionPasswordChangeManagerTest, TimePasses_NoUserActionTaken) {
   EXPECT_EQ(utf16("Choose a new one now"), Notification()->message());
 }
 
-TEST_F(InSessionPasswordChangeManagerTest,
-       DISABLED_TimePasses_NotificationDismissed) {
+TEST_F(InSessionPasswordChangeManagerTest, TimePasses_NotificationDismissed) {
   SetExpirationTime(base::Time::Now() + kOneYear + kAdvanceWarningTime / 2);
   manager_->MaybeShowExpiryNotification();
 
@@ -276,7 +261,7 @@ TEST_F(InSessionPasswordChangeManagerTest,
   ExpectNotificationAndDismiss();
 
   // This continues each day even once the password has long expired.
-  test_environment_.FastForwardBy(kTenYears);
+  test_environment_.FastForwardBy(kThreeYears);
   ExpectNotificationAndDismiss();
   test_environment_.FastForwardBy(kOneDay);
   ExpectNotificationAndDismiss();
