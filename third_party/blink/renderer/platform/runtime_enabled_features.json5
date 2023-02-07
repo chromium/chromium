@@ -637,7 +637,8 @@
       // https://drafts.csswg.org/css-conditional-4/#support-definition-ext
       // https://github.com/w3c/csswg-drafts/issues/7280#issuecomment-1143852187
       name: "CSSAtSupportsAlwaysNonForgivingParsing",
-      status: "experimental",
+      status: "stable",
+      base_feature: "CSSAtSupportsAlwaysNonForgivingParsing",
     },
     {
       name: "CSSBaselineSource",
@@ -856,7 +857,7 @@
     },
     {
       name: "CSSPseudoHasNonForgivingParsing",
-      status: "experimental",
+      status: "stable",
       base_feature: "CSSPseudoHasNonForgivingParsing",
     },
     {
