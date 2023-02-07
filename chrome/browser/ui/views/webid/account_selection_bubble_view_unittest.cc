@@ -46,8 +46,7 @@ const std::u16string kTitleSignIn =
     u"Sign in to rp-example.com with idp-example.com";
 const std::u16string kTitleSignInWithoutIdp = u"Sign in to rp-example.com";
 const std::u16string kTitleSigningIn = u"Verifying…";
-const std::u16string kTitleSigningInWithAutoSignin =
-    u"Signing in to rp-example.com with idp-example.com";
+const std::u16string kTitleSigningInWithAutoSignin = u"Signing in…";
 
 constexpr char kIdBase[] = "id";
 constexpr char kEmailBase[] = "email";
@@ -498,8 +497,8 @@ TEST_F(AccountSelectionBubbleViewTest, VerifyingForAutoSignin) {
 
   CreateAccountSelectionBubble(/*exclude_title=*/false,
                                /*show_auto_signin_checkbox=*/false);
-  const auto title = l10n_util::GetStringFUTF16(
-      IDS_VERIFY_SHEET_TITLE_AUTO_SIGNIN, kRpETLDPlusOne, kIdpETLDPlusOne);
+  const auto title =
+      l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE_AUTO_SIGNIN);
   dialog_->ShowVerifyingSheet(account, idp_data, title);
 
   const std::vector<views::View*> children = dialog()->children();

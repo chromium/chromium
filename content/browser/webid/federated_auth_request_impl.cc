@@ -938,10 +938,9 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     }
   }
 
-  // TODO(crbug.com/1408520): we should only show the checkbox when the user has
-  // not seen it before. This condition should be added once the user preference
-  // is correctly stored.
-  bool show_auto_signin_checkbox = prefer_auto_signin;
+  // TODO(crbug.com/1408520): opt-out affordance is not included in the origin
+  // trial. Should revisit based on the OT feedback.
+  bool show_auto_signin_checkbox = false;
 
   // TODO(crbug.com/1382863): Handle UI where some IDPs are successful and some
   // IDPs are failing in the multi IDP case.

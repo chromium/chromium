@@ -325,10 +325,9 @@ void FedCmAccountSelectionView::ShowVerifyingSheet(
   }
 
   const std::u16string title =
-      auto_signin ? l10n_util::GetStringFUTF16(
-                        IDS_VERIFY_SHEET_TITLE_AUTO_SIGNIN, rp_for_display_,
-                        idp_display_data.idp_etld_plus_one)
-                  : l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE);
+      auto_signin
+          ? l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE_AUTO_SIGNIN)
+          : l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE);
   GetBubbleView()->ShowVerifyingSheet(account, idp_display_data, title);
 }
 
