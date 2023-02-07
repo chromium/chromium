@@ -6944,29 +6944,6 @@
             ]
         }
     ],
-    "LinkCapturingPostNavUXStudy": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithDecisionInBrowser_V3",
-                    "enable_features": [
-                        "AppIconInIntentChip",
-                        "LinkCapturingUiUpdate"
-                    ],
-                    "disable_features": [
-                        "IPH_IntentChip",
-                        "IntentChipSkipsPicker",
-                        "LinkCapturingAutoDisplayIntentPicker",
-                        "LinkCapturingInfoBar"
-                    ]
-                }
-            ]
-        }
-    ],
     "LocalWebApprovals": [
         {
             "platforms": [
