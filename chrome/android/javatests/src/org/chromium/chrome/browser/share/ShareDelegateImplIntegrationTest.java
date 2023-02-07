@@ -19,7 +19,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -106,11 +106,11 @@ public class ShareDelegateImplIntegrationTest {
             String pageUrl, String expectedShareUrl, @CanonicalURLResult int expectedUrlResult)
             throws IllegalArgumentException, TimeoutException {
         mActivityTestRule.loadUrl(pageUrl);
-        HistogramDelta urlResultDelta = new HistogramDelta(
+        var urlResultHistogram = HistogramWatcher.newSingleRecordWatcher(
                 ShareDelegateImpl.CANONICAL_URL_RESULT_HISTOGRAM, expectedUrlResult);
         ShareParams params = triggerShare();
         Assert.assertTrue(params.getTextAndUrl().contains(expectedShareUrl));
-        Assert.assertEquals(1, urlResultDelta.getDelta());
+        urlResultHistogram.assertExpected();
     }
 
     private ShareParams triggerShare() throws TimeoutException {

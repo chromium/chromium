@@ -21,7 +21,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.TabbedModeTabDelegateFactory;
@@ -135,19 +135,19 @@ public class TabUmaTest {
         final Tab tab = createLazilyLoadedTab(/* show= */ false);
 
         String histogram = "Tab.StatusWhenSwitchedBackToForeground";
-        HistogramDelta lazyLoadCount =
-                new HistogramDelta(histogram, TabUma.TAB_STATUS_LAZY_LOAD_FOR_BG_TAB);
-        int offset = lazyLoadCount.getDelta();
+        var statusHistogram = HistogramWatcher.newSingleRecordWatcher(
+                histogram, TabUma.TAB_STATUS_LAZY_LOAD_FOR_BG_TAB);
 
         // Show the tab and verify that one sample was recorded in the lazy load bucket.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { tab.show(TabSelectionType.FROM_USER, LoadIfNeededCaller.OTHER); });
-        Assert.assertEquals(offset + 1, lazyLoadCount.getDelta());
+        statusHistogram.assertExpected();
 
         // Show the tab again and verify that we didn't record another sample.
+        statusHistogram = HistogramWatcher.newBuilder().expectNoRecords(histogram).build();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { tab.show(TabSelectionType.FROM_USER, LoadIfNeededCaller.OTHER); });
-        Assert.assertEquals(offset + 1, lazyLoadCount.getDelta());
+        statusHistogram.assertExpected();
     }
 
     /**

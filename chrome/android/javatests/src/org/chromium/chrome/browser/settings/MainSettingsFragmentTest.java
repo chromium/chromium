@@ -54,7 +54,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
@@ -506,8 +506,8 @@ public class MainSettingsFragmentTest {
     @Test
     @MediumTest
     public void testSyncPromoNotShownAfterBeingDismissed() throws Exception {
-        HistogramDelta dismissedHistogram =
-                new HistogramDelta("Signin.SyncPromo.Dismissed.Count.Settings", 1);
+        var dismissedCountHistogram = HistogramWatcher.newSingleRecordWatcher(
+                "Signin.SyncPromo.Dismissed.Count.Settings", 1);
         launchSettingsActivity();
         onViewWaiting(allOf(withId(R.id.signin_promo_view_container), isDisplayed()));
         onView(withId(R.id.sync_promo_close_button)).perform(click());
@@ -520,14 +520,14 @@ public class MainSettingsFragmentTest {
         // Launch settings activity again.
         mSettingsActivityTestRule.startSettingsActivity();
         onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
-        Assert.assertEquals(1, dismissedHistogram.getDelta());
+        dismissedCountHistogram.assertExpected();
     }
 
     @Test
     @MediumTest
     public void testSyncPromoShownIsNotOverCounted() {
-        HistogramDelta showCountHistogram =
-                new HistogramDelta("Signin.SyncPromo.Shown.Count.Settings", 1);
+        var showCountHistogram =
+                HistogramWatcher.newSingleRecordWatcher("Signin.SyncPromo.Shown.Count.Settings", 1);
         int promoShowCount = SharedPreferencesManager.getInstance().readInt(
                 SyncPromoController.getPromoShowCountPreferenceName(SigninAccessPoint.SETTINGS));
         Assert.assertEquals(0, promoShowCount);
@@ -543,7 +543,7 @@ public class MainSettingsFragmentTest {
         Assert.assertEquals(1,
                 SharedPreferencesManager.getInstance().readInt(
                         ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
-        Assert.assertEquals(1, showCountHistogram.getDelta());
+        showCountHistogram.assertExpected();
     }
 
     @Test

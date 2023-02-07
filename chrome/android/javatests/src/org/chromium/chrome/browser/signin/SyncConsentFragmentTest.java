@@ -50,7 +50,7 @@ import org.chromium.base.test.util.CommandLineFlags.Add;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.firstrun.SyncConsentFirstRunFragment;
@@ -361,8 +361,8 @@ public class SyncConsentFragmentTest {
     @Feature("RenderTest")
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
     public void testFRESyncConsentFragmentWithNoAccountsOnDevice() throws IOException {
-        HistogramDelta startPageHistogram =
-                new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
+        var startPageHistogram = HistogramWatcher.newSingleRecordWatcher(
+                "Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
         CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
         bundle.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, false);
@@ -370,7 +370,7 @@ public class SyncConsentFragmentTest {
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
 
         launchActivityWithFragment(fragment);
-        assertEquals(1, startPageHistogram.getDelta());
+        startPageHistogram.assertExpected();
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
                 "fre_sync_consent_fragment_with_no_account");
     }
@@ -380,8 +380,8 @@ public class SyncConsentFragmentTest {
     @Feature("RenderTest")
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
     public void testFRESyncConsentFragmentWithAdultAccount() throws IOException {
-        HistogramDelta startPageHistogram =
-                new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
+        var startPageHistogram = HistogramWatcher.newSingleRecordWatcher(
+                "Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
@@ -390,7 +390,7 @@ public class SyncConsentFragmentTest {
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
 
         launchActivityWithFragment(fragment);
-        assertEquals(1, startPageHistogram.getDelta());
+        startPageHistogram.assertExpected();
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
                 "fre_sync_consent_fragment_with_adult_account");
     }
@@ -400,8 +400,8 @@ public class SyncConsentFragmentTest {
     @Feature("RenderTest")
     @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
     public void testFRETangibleSyncConsentFragmentWithAdultAccount() throws IOException {
-        HistogramDelta startPageHistogram =
-                new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
+        var startPageHistogram = HistogramWatcher.newSingleRecordWatcher(
+                "Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
@@ -410,7 +410,7 @@ public class SyncConsentFragmentTest {
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
 
         launchActivityWithFragment(fragment);
-        assertEquals(1, startPageHistogram.getDelta());
+        startPageHistogram.assertExpected();
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
                 "fre_tangible_sync_consent_fragment_with_adult_account");
     }
@@ -420,8 +420,8 @@ public class SyncConsentFragmentTest {
     @Feature("RenderTest")
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
     public void testFRESyncConsentFragmentWithChildAccount() throws IOException {
-        HistogramDelta startPageHistogram =
-                new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
+        var startPageHistogram = HistogramWatcher.newSingleRecordWatcher(
+                "Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
@@ -430,7 +430,7 @@ public class SyncConsentFragmentTest {
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
 
         launchActivityWithFragment(fragment);
-        assertEquals(1, startPageHistogram.getDelta());
+        startPageHistogram.assertExpected();
         // TODO(https://crbug.com/1291903): Rewrite this test when RenderTestRule is integrated with
         // Espresso.
         // We check the button is enabled rather than visible, as it may be off-screen on small
@@ -446,8 +446,8 @@ public class SyncConsentFragmentTest {
     @CommandLineFlags.Remove({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
     public void testFRESyncConsentFragmentWithChildAccountLegacy() throws IOException {
-        HistogramDelta startPageHistogram =
-                new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
+        var startPageHistogram = HistogramWatcher.newSingleRecordWatcher(
+                "Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
@@ -456,7 +456,7 @@ public class SyncConsentFragmentTest {
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
 
         launchActivityWithFragment(fragment);
-        assertEquals(1, startPageHistogram.getDelta());
+        startPageHistogram.assertExpected();
         // TODO(https://crbug.com/1291903): Rewrite this test when RenderTestRule is integrated with
         // Espresso.
         // We check the button is enabled rather than visible, as it may be off-screen on small
@@ -668,8 +668,8 @@ public class SyncConsentFragmentTest {
     @MediumTest
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
     public void testSyncConsentFragmentWithDefaultFlow() {
-        HistogramDelta settingsHistogram =
-                new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.SETTINGS);
+        var settingsHistogram = HistogramWatcher.newSingleRecordWatcher(
+                "Signin.SigninStartedAccessPoint", SigninAccessPoint.SETTINGS);
         mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_CANCELED, null);
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
@@ -678,14 +678,14 @@ public class SyncConsentFragmentTest {
                 });
         onView(withId(R.id.positive_button)).check(matches(withText(R.string.signin_add_account)));
         onView(withId(R.id.negative_button)).check(matches(withText(R.string.cancel)));
-        assertEquals(1, settingsHistogram.getDelta());
+        settingsHistogram.assertExpected();
     }
 
     @Test
     @MediumTest
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
     public void testSelectNonDefaultAccountInAccountPickerDialog() {
-        HistogramDelta bookmarkHistogram = new HistogramDelta(
+        var bookmarkHistogram = HistogramWatcher.newSingleRecordWatcher(
                 "Signin.SigninStartedAccessPoint", SigninAccessPoint.BOOKMARK_MANAGER);
         CoreAccountInfo defaultAccountInfo =
                 mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
@@ -705,7 +705,7 @@ public class SyncConsentFragmentTest {
         // not shown anymore.
         onView(withText(defaultAccountInfo.getEmail())).check(doesNotExist());
         onView(withText(nonDefaultAccountName)).check(matches(isDisplayed()));
-        assertEquals(1, bookmarkHistogram.getDelta());
+        bookmarkHistogram.assertExpected();
     }
 
     @Test
