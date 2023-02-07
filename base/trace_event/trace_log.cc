@@ -885,15 +885,12 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config,
     source_chrome_config->set_convert_to_legacy_json(true);
   }
 
-  // Clear incremental state every 5 seconds, so that we lose at most the first
-  // 5 seconds of the trace (if we wrap around Perfetto's central buffer).
-  // For Android, we reset the incremental state every 0.5 seconds to reduce
-  // data loss in ring buffer mode.
-#if BUILDFLAG(IS_ANDROID)
+  // Clear incremental state every 0.5 seconds, so that we lose at most the
+  // first 0.5 seconds of the trace (if we wrap around Perfetto's central
+  // buffer).
+  // This value strikes balance between minimizing interned data overhead, and
+  // reducing the risk of data loss in ring buffer mode.
   perfetto_config.mutable_incremental_state_config()->set_clear_period_ms(500);
-#else
-  perfetto_config.mutable_incremental_state_config()->set_clear_period_ms(5000);
-#endif
 
   SetEnabledImpl(trace_config, perfetto_config);
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)

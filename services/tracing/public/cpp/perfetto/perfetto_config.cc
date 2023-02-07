@@ -248,15 +248,12 @@ perfetto::TraceConfig COMPONENT_EXPORT(TRACING_CPP)
   builtin_data_sources->set_disable_system_info(privacy_filtering_enabled);
   builtin_data_sources->set_disable_service_events(privacy_filtering_enabled);
 
-  // Clear incremental state every 5 seconds, so that we lose at most the first
-  // 5 seconds of the trace (if we wrap around perfetto's central buffer).
-  // For Android, we reset the incremental state every 0.5 seconds to reduce
-  // data loss in ring buffer mode.
-#if BUILDFLAG(IS_ANDROID)
+  // Clear incremental state every 0.5 seconds, so that we lose at most the
+  // first 0.5 seconds of the trace (if we wrap around Perfetto's central
+  // buffer).
+  // This value strikes balance between minimizing interned data overhead, and
+  // reducing the risk of data loss in ring buffer mode.
   perfetto_config.mutable_incremental_state_config()->set_clear_period_ms(500);
-#else
-  perfetto_config.mutable_incremental_state_config()->set_clear_period_ms(5000);
-#endif
 
   // We strip the process filter from the config string we send to Perfetto, so
   // perfetto doesn't reject it from a future TracingService::ChangeTraceConfig
