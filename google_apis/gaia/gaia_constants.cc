@@ -165,6 +165,10 @@ const char kFeedOAuth2Scope[] = "https://www.googleapis.com/auth/googlenow";
 const char kKAnonymityServiceOAuth2Scope[] =
     "https://www.googleapis.com/auth/chromekanonymity";
 
+// OAuth 2 scope for readonly access to Calendar.
+const char kCalendarReadOnlyOAuth2Scope[] =
+    "https://www.googleapis.com/auth/calendar.readonly";
+
 // Used to build ClientOAuth requests.  These are the names of keys used when
 // building base::DictionaryValue that represent the json data that makes up
 // the ClientOAuth endpoint protocol.  The comment above each constant explains

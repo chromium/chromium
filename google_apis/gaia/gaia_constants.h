@@ -59,6 +59,7 @@ extern const char kPhotosModuleImageOAuth2Scope[];
 extern const char kSecureConnectOAuth2Scope[];
 extern const char kFeedOAuth2Scope[];
 extern const char kKAnonymityServiceOAuth2Scope[];
+extern const char kCalendarReadOnlyOAuth2Scope[];
 
 // Used by wallet sign in helper.
 extern const char kClientOAuthEmailKey[];
