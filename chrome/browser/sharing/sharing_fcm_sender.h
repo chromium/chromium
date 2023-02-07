@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_SHARING_SHARING_FCM_SENDER_H_
 #define CHROME_BROWSER_SHARING_SHARING_FCM_SENDER_H_
 
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -14,6 +16,7 @@
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_message_sender.h"
 #include "chrome/browser/sharing/sharing_send_message_result.h"
+#include "chrome/browser/sharing/web_push/web_push_sender.h"
 #include "components/sync_device_info/device_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -32,7 +35,10 @@ class SharingMessageCommitError;
 }
 
 enum class SharingChannelType;
+enum class SendWebPushMessageResult;
 class SharingMessageBridge;
+class SharingSyncPreference;
+class VapidKeyManager;
 
 // Responsible for sending FCM messages within Sharing infrastructure.
 class SharingFCMSender : public SharingMessageSender::SendMessageDelegate {
@@ -43,7 +49,10 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate {
                               absl::optional<std::string> message_id,
                               SharingChannelType channel_type)>;
 
-  SharingFCMSender(SharingMessageBridge* sharing_message_bridge,
+  SharingFCMSender(std::unique_ptr<WebPushSender> web_push_sender,
+                   SharingMessageBridge* sharing_message_bridge,
+                   SharingSyncPreference* sync_preference,
+                   VapidKeyManager* vapid_key_manager,
                    gcm::GCMDriver* gcm_driver,
                    syncer::LocalDeviceInfoProvider* local_device_info_provider,
                    syncer::SyncService* sync_service);
@@ -68,6 +77,10 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate {
       const chrome_browser_sharing::ServerChannelConfiguration& server_channel,
       SharingMessage message,
       SendMessageCallback callback);
+
+  // Used to inject fake WebPushSender in integration tests.
+  void SetWebPushSenderForTesting(
+      std::unique_ptr<WebPushSender> web_push_sender);
 
   // Used to inject fake SharingMessageBridge in integration tests.
   void SetSharingMessageBridgeForTesting(
@@ -98,6 +111,15 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate {
                           gcm::GCMEncryptionResult result,
                           std::string message);
 
+  void DoSendMessageToVapidTarget(const std::string& fcm_token,
+                                  base::TimeDelta time_to_live,
+                                  std::string message,
+                                  SendMessageCallback callback);
+
+  void OnMessageSentToVapidTarget(SendMessageCallback callback,
+                                  SendWebPushMessageResult result,
+                                  absl::optional<std::string> message_id);
+
   void DoSendMessageToSenderIdTarget(const std::string& fcm_token,
                                      base::TimeDelta time_to_live,
                                      const std::string& message_id,
@@ -116,7 +138,10 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate {
 
   bool SetMessageSenderInfo(SharingMessage* message);
 
+  std::unique_ptr<WebPushSender> web_push_sender_;
   raw_ptr<SharingMessageBridge, DanglingUntriaged> sharing_message_bridge_;
+  raw_ptr<SharingSyncPreference, DanglingUntriaged> sync_preference_;
+  raw_ptr<VapidKeyManager, DanglingUntriaged> vapid_key_manager_;
   raw_ptr<gcm::GCMDriver, DanglingUntriaged> gcm_driver_;
   raw_ptr<syncer::LocalDeviceInfoProvider, DanglingUntriaged>
       local_device_info_provider_;

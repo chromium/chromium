@@ -28,11 +28,21 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+
+void FakeWebPushSender::SendMessage(const std::string& fcm_token,
+                                    crypto::ECPrivateKey* vapid_key,
+                                    WebPushMessage message,
+                                    WebPushCallback callback) {
+  fcm_token_ = fcm_token;
+  message_ = std::move(message);
+  std::move(callback).Run(SendWebPushMessageResult::kSuccessful, "message_id");
+}
 
 void FakeSharingMessageBridge::SendSharingMessage(
     std::unique_ptr<sync_pb::SharingMessageSpecifics> specifics,
@@ -52,7 +62,8 @@ SharingBrowserTest::SharingBrowserTest()
     : SyncTest(TWO_CLIENT),
       scoped_testing_factory_installer_(
           base::BindRepeating(&gcm::FakeGCMProfileService::Build)),
-      sharing_service_(nullptr) {}
+      sharing_service_(nullptr),
+      fake_web_push_sender_(nullptr) {}
 
 SharingBrowserTest::~SharingBrowserTest() = default;
 
@@ -78,6 +89,9 @@ void SharingBrowserTest::Init(
 
   SharingFCMSender* sharing_fcm_sender =
       sharing_service_->GetMessageSenderForTesting()->GetFCMSenderForTesting();
+  fake_web_push_sender_ = new FakeWebPushSender();
+  sharing_fcm_sender->SetWebPushSenderForTesting(
+      base::WrapUnique(fake_web_push_sender_.get()));
   sharing_fcm_sender->SetSharingMessageBridgeForTesting(
       &fake_sharing_message_bridge_);
 

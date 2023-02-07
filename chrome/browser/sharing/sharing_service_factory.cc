@@ -111,6 +111,9 @@ KeyedService* SharingServiceFactory::BuildServiceInstanceFor(
           profile->GetPrefs(), sync_prefs.get(), vapid_key_manager.get(),
           instance_id_service->driver(), sync_service);
 
+  auto web_push_sender = std::make_unique<WebPushSender>(
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess());
   SharingMessageBridge* message_bridge =
       SharingMessageBridgeFactory::GetForBrowserContext(profile);
   gcm::GCMDriver* gcm_driver =
@@ -119,7 +122,9 @@ KeyedService* SharingServiceFactory::BuildServiceInstanceFor(
   syncer::LocalDeviceInfoProvider* local_device_info_provider =
       device_info_sync_service->GetLocalDeviceInfoProvider();
   auto fcm_sender = std::make_unique<SharingFCMSender>(
-      message_bridge, gcm_driver, local_device_info_provider, sync_service);
+      std::move(web_push_sender), message_bridge, sync_prefs.get(),
+      vapid_key_manager.get(), gcm_driver, local_device_info_provider,
+      sync_service);
 
   auto sharing_message_sender =
       std::make_unique<SharingMessageSender>(local_device_info_provider);

@@ -34,6 +34,8 @@ std::string SharingChannelTypeToString(SharingChannelType channel_type) {
   switch (channel_type) {
     case SharingChannelType::kUnknown:
       return "Unknown";
+    case SharingChannelType::kFcmVapid:
+      return "FcmVapid";
     case SharingChannelType::kFcmSenderId:
       return "FcmSenderId";
     case SharingChannelType::kServer:
