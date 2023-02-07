@@ -58,6 +58,7 @@
 //third_party/ijar
 //third_party/jdk
 //third_party/jsoncpp
+//third_party/kotlin_stdlib
 //third_party/libevent
 //third_party/metrics_proto
 //third_party/modp_b64

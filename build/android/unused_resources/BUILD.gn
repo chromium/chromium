@@ -12,7 +12,7 @@ java_binary("unused_resources") {
     "//third_party/android_deps:com_android_tools_layoutlib_layoutlib_api_java",
     "//third_party/android_deps:com_android_tools_sdk_common_java",
     "//third_party/android_deps:com_google_guava_guava_java",
-    "//third_party/android_deps:org_jetbrains_kotlin_kotlin_stdlib_java",
+    "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     "//third_party/r8:r8_java",
   ]
   wrapper_script_name = "helper/unused_resources"

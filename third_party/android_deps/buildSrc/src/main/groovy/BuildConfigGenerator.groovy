@@ -50,6 +50,7 @@ class BuildConfigGenerator extends DefaultTask {
 
     // Use this to exclude a dep from being depended upon. Useful for deps like androidx_window_window_java.
     private static final String EXCLUDE_THIS_LIB = 'EXCLUDE_THIS_LIB'
+
     // Some libraries are hosted in Chromium's //third_party directory. This is a mapping between
     // them so they can be used instead of android_deps pulling in its own copy.
     static final Map<String, String> EXISTING_LIBS = [
@@ -59,6 +60,9 @@ class BuildConfigGenerator extends DefaultTask {
         org_hamcrest_hamcrest_core: '//third_party/hamcrest:hamcrest_core_java',
         org_hamcrest_hamcrest_integration: '//third_party/hamcrest:hamcrest_integration_java',
         org_hamcrest_hamcrest_library: '//third_party/hamcrest:hamcrest_library_java',
+        org_jetbrains_kotlin_kotlin_stdlib: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
+        org_jetbrains_annotations: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
+        org_jetbrains_kotlin_kotlin_stdlib_common: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
         // Remove androidx_window_window from being depended upon since it currently addes <uses-library>
         // to our AndroidManfest.xml, which we don't allow. http://crbug.com/1302987
         androidx_window_window: EXCLUDE_THIS_LIB,
@@ -619,9 +623,9 @@ class BuildConfigGenerator extends DefaultTask {
             sb.append('  resource_overlay = true\n')
         }
         if (dependencyExtension == 'jar' && (
-                dependencyId.contains('android') ||
+                dependencyId.startsWith('androidx') ||
                 dependencyId.startsWith('io_grpc_') ||
-                dependencyId == 'google_firebase_firebase_encoders')) {
+                dependencyId == 'com_google_firebase_firebase_encoders')) {
             sb.append('  # https://crbug.com/1412551\n')
             sb.append('  requires_android = true\n')
         }

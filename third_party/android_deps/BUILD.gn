@@ -61,6 +61,12 @@ if (!limit_android_deps) {
     sources = [ "util/org/chromium/gms/shadows/ShadowChromiumPlayServicesAvailability.java" ]
     deps = [ ":chromium_play_services_availability_java" ]
   }
+
+  # TODO(crbug.com/1412135): Remove the following java_group once all deps have
+  # been updated to //third_party/kotlin_stdlib:kotlin_stdlib_java.
+  java_group("org_jetbrains_kotlin_kotlin_stdlib_java") {
+    deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+  }
 }
 
 # TODO(crbug.com/1366370) Remove this once all depencencies are updated to
@@ -177,8 +183,8 @@ java_prebuilt("com_google_dagger_dagger_compiler_java") {
     ":javax_inject_javax_inject_java",
     ":net_ltgt_gradle_incap_incap_java",
     ":org_checkerframework_checker_compat_qual_java",
-    ":org_jetbrains_kotlin_kotlin_stdlib_java",
     ":org_jetbrains_kotlinx_kotlinx_metadata_jvm_java",
+    "//third_party/kotlin_stdlib:kotlin_stdlib_java",
   ]
 }
 
@@ -333,17 +339,6 @@ java_prebuilt("org_checkerframework_checker_qual_java") {
 
   # Needed to break dependency cycle for errorprone_plugin_java.
   enable_bytecode_checks = false
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_java") {
-  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib/kotlin-stdlib-1.8.0.jar"
-  output_name = "org_jetbrains_kotlin_kotlin_stdlib"
-  supports_android = true
-  deps = [
-    ":org_jetbrains_annotations_java",
-    ":org_jetbrains_kotlin_kotlin_stdlib_common_java",
-  ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -610,34 +605,6 @@ java_prebuilt("org_eclipse_jgit_org_eclipse_jgit_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("org_jetbrains_annotations_java") {
-  jar_path = "libs/org_jetbrains_annotations/annotations-13.0.jar"
-  output_name = "org_jetbrains_annotations"
-  supports_android = true
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [
-    ":*",
-    "//third_party/androidx:*",
-  ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_common_java") {
-  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_common/kotlin-stdlib-common-1.8.0.jar"
-  output_name = "org_jetbrains_kotlin_kotlin_stdlib_common"
-  supports_android = true
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [
-    ":*",
-    "//third_party/androidx:*",
-  ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_jetbrains_kotlinx_kotlinx_metadata_jvm_java") {
   jar_path = "libs/org_jetbrains_kotlinx_kotlinx_metadata_jvm/kotlinx-metadata-jvm-0.1.0.jar"
   output_name = "org_jetbrains_kotlinx_kotlinx_metadata_jvm"
@@ -649,7 +616,7 @@ java_prebuilt("org_jetbrains_kotlinx_kotlinx_metadata_jvm_java") {
     ":*",
     "//third_party/androidx:*",
   ]
-  deps = [ ":org_jetbrains_kotlin_kotlin_stdlib_java" ]
+  deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1439,7 +1406,7 @@ if (!limit_android_deps) {
     jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_jdk7/kotlin-stdlib-jdk7-1.8.0.jar"
     output_name = "org_jetbrains_kotlin_kotlin_stdlib_jdk7"
     supports_android = true
-    deps = [ ":org_jetbrains_kotlin_kotlin_stdlib_java" ]
+    deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1448,8 +1415,8 @@ if (!limit_android_deps) {
     output_name = "org_jetbrains_kotlin_kotlin_stdlib_jdk8"
     supports_android = true
     deps = [
-      ":org_jetbrains_kotlin_kotlin_stdlib_java",
       ":org_jetbrains_kotlin_kotlin_stdlib_jdk7_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -1471,8 +1438,8 @@ if (!limit_android_deps) {
     output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm"
     supports_android = true
     deps = [
-      ":org_jetbrains_kotlin_kotlin_stdlib_common_java",
       ":org_jetbrains_kotlin_kotlin_stdlib_jdk8_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 

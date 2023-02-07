@@ -25,6 +25,6 @@ android_library("java") {
     "//base:base_java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
-    "//third_party/android_deps:org_jetbrains_kotlin_kotlin_stdlib_java",
+    "//third_party/kotlin_stdlib:kotlin_stdlib_java",
   ]
 }
