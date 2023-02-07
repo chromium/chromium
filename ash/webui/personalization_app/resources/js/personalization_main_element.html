@@ -39,7 +39,7 @@
         <personalization-theme></personalization-theme>
       </template>
     </wallpaper-preview>
-    <template is="dom-if" if="[[isAmbientModeAllowed_]]">
+    <template is="dom-if" if="[[shouldShowAmbientPreview_]]">
       <ambient-preview-large>
       </ambient-preview-large>
     </template>

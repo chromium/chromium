@@ -15,7 +15,9 @@ import './ambient_zero_state_svg_element.js';
 import '../../css/common.css.js';
 import '../../css/cros_button_style.css.js';
 
-import {isScreenSaverPreviewEnabled} from '../load_time_booleans.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+
+import {isAmbientModeAllowed, isScreenSaverPreviewEnabled} from '../load_time_booleans.js';
 import {AmbientUiVisibility} from '../personalization_app.mojom-webui.js';
 
 import {startScreenSaverPreview} from './ambient_controller.js';
@@ -62,6 +64,9 @@ export class AmbientPreviewSmall extends AmbientPreviewBase {
   private isScreenSaverPreviewEnabled_: boolean;
 
   override connectedCallback() {
+    assert(
+        isAmbientModeAllowed(),
+        'ambient-preview-small requires ambient mode allowed');
     super.connectedCallback();
     this.watch(
         'ambientUiVisibility_', state => state.ambient.ambientUiVisibility);

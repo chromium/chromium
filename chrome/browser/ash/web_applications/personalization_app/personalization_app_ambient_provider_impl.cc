@@ -112,6 +112,11 @@ void PersonalizationAppAmbientProviderImpl::IsAmbientModeEnabled(
 void PersonalizationAppAmbientProviderImpl::SetAmbientObserver(
     mojo::PendingRemote<ash::personalization_app::mojom::AmbientObserver>
         observer) {
+  if (!AmbientClient::Get() || !AmbientClient::Get()->IsAmbientModeAllowed()) {
+    ambient_receiver_.ReportBadMessage(
+        "Ambient observer set when ambient is not allowed");
+    return;
+  }
   // May already be bound if user refreshes page.
   ambient_observer_remote_.reset();
   ambient_observer_remote_.Bind(std::move(observer));

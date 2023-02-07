@@ -6,6 +6,7 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {AmbientActionName, AmbientModeAlbum, AmbientObserver, emptyState, SetAlbumsAction, TopicSource} from 'chrome://personalization/js/personalization_app.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {baseSetup} from './personalization_app_test_utils.js';
@@ -17,6 +18,7 @@ suite('AmbientObserverTest', function() {
   let personalizationStore: TestPersonalizationStore;
 
   setup(() => {
+    loadTimeData.overrideValues({isAmbientModeAllowed: true});
     const mocks = baseSetup();
     ambientProvider = mocks.ambientProvider;
     personalizationStore = mocks.personalizationStore;

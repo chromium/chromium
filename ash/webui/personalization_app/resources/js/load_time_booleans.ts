@@ -38,7 +38,3 @@ export function isScreenSaverPreviewEnabled() {
 export function isPersonalizationJellyEnabled() {
   return loadTimeData.getBoolean('isPersonalizationJellyEnabled');
 }
-
-export function isAmbientModeManaged() {
-  return loadTimeData.getBoolean('isAmbientModeManaged');
-}

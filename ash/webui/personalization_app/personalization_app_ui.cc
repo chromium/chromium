@@ -380,9 +380,6 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
 
   source->AddBoolean("isPersonalizationJellyEnabled",
                      features::IsPersonalizationJellyEnabled());
-
-  // TODO(b/258838122): update when the screen saver policy code is ready.
-  source->AddBoolean("isAmbientModeManaged", false);
 }
 
 void PersonalizationAppUI::HandleWebUIRequest(

@@ -6,6 +6,7 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {AmbientObserver, AmbientPreviewSmall, PersonalizationRouter, TopicSource} from 'chrome://personalization/js/personalization_app.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -23,6 +24,7 @@ suite('AmbientPreviewSmallTest', function() {
   const routerMock = TestBrowserProxy.fromClass(PersonalizationRouter);
 
   setup(() => {
+    loadTimeData.overrideValues({isAmbientModeAllowed: true});
     const mocks = baseSetup();
     ambientProvider = mocks.ambientProvider;
     personalizationStore = mocks.personalizationStore;

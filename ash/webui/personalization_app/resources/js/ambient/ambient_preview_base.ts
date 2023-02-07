@@ -11,7 +11,7 @@
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 
-import {isAmbientModeManaged, isPersonalizationJellyEnabled} from '../load_time_booleans.js';
+import {isAmbientModeAllowed, isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {setErrorAction} from '../personalization_actions.js';
 import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -51,7 +51,7 @@ export class AmbientPreviewBase extends WithPersonalizationStore {
       loading_: {
         type: Boolean,
         computed:
-            'computeLoading_(ambientModeEnabled_, albums_, topicSource_, googlePhotosAlbumsPreviews_)',
+            'computeLoading_(isAmbientModeAllowed_, ambientModeEnabled_, albums_, topicSource_, googlePhotosAlbumsPreviews_)',
         observer: 'onLoadingChanged_',
       },
       googlePhotosAlbumsPreviews_: {
@@ -64,10 +64,10 @@ export class AmbientPreviewBase extends WithPersonalizationStore {
           return isPersonalizationJellyEnabled();
         },
       },
-      isAmbientModeManaged_: {
+      isAmbientModeAllowed_: {
         type: Boolean,
         value() {
-          return isAmbientModeManaged();
+          return isAmbientModeAllowed();
         },
       },
     };
@@ -81,7 +81,7 @@ export class AmbientPreviewBase extends WithPersonalizationStore {
 
   private albums_: AmbientModeAlbum[]|null;
   private firstPreviewAlbum_: AmbientModeAlbum|null;
-  private isAmbientModeManaged_: boolean;
+  private isAmbientModeAllowed_: boolean;
   private loading_: boolean;
 
   private loadingTimeoutId_: number|null = null;
@@ -104,8 +104,10 @@ export class AmbientPreviewBase extends WithPersonalizationStore {
   }
 
   private computeLoading_(): boolean {
-    return this.ambientModeEnabled_ === null || this.albums_ === null ||
-        this.topicSource_ === null || this.googlePhotosAlbumsPreviews_ === null;
+    return this.isAmbientModeAllowed_ &&
+        (this.ambientModeEnabled_ === null || this.albums_ === null ||
+         this.topicSource_ === null ||
+         this.googlePhotosAlbumsPreviews_ === null);
   }
 
   private onLoadingChanged_(value: boolean) {

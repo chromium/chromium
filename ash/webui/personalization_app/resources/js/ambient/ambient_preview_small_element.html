@@ -47,10 +47,6 @@
     grid-area: image;
   }
 
-  #imageContainer[ambient-mode-managed] img.disabled {
-    opacity: var(--cros-disabled-opacity);
-  }
-
   #imageContainer img.disabled {
     /**
      * Use 50% for image instead of default cros-disabled-opacity.
@@ -96,7 +92,9 @@
   </template>
   <template is="dom-if" if="[[!loading_]]" restamp>
     <template is="dom-if" if="[[!ambientModeEnabled_]]" restamp>
-      <div id="imageContainer" class="preview-image-container" ambient-mode-managed$="[[isAmbientModeManaged_]]" aria-hidden="true">
+      <div aria-hidden="true"
+          class="preview-image-container"
+          id="imageContainer">
         <div class="preview-image-border"></div>
         <img class="preview-image disabled" src="//personalization/images/slideshow.png">
       </div>

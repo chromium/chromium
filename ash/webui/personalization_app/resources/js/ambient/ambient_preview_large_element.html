@@ -304,7 +304,7 @@
     </defs>
   </svg>
   <template is="dom-if" if="[[isPersonalizationJellyEnabled_]]">
-    <template is="dom-if" if="[[isAmbientModeManaged_]]">
+    <template is="dom-if" if="[[!isAmbientModeAllowed_]]">
       <div id="ambientLabel" class="enterprise">
         <h2>$i18n{screensaverLabel}</h2>
         <cr-icon-button disabled
@@ -331,7 +331,7 @@
         </cr-button>
       </div>
     </template>
-    <template is="dom-if" if="[[!isAmbientModeManaged_]]">
+    <template is="dom-if" if="[[isAmbientModeAllowed_]]">
       <div id="ambientLabel">
         <h2 class="clickable" on-click="onClickAmbientSubpageLink_">
           $i18n{screensaverLabel}

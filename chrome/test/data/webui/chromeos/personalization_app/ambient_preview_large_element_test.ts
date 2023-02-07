@@ -40,7 +40,8 @@ suite('AmbientPreviewLargeTest', function() {
 
   test(
       'displays zero state message when ambient mode is disabled', async () => {
-        loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
+        loadTimeData.overrideValues(
+            {isPersonalizationJellyEnabled: true, isAmbientModeAllowed: true});
         personalizationStore.data.ambient.albums = ambientProvider.albums;
         personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
         personalizationStore.data.ambient.ambientModeEnabled = false;
@@ -267,34 +268,32 @@ suite('AmbientPreviewLargeTest', function() {
         textSpan.innerText.trim());
   });
 
-  test(
-      'displays not available message for enterprise controlled user',
-      async () => {
-        // Enable `isAmbientModeManaged` to mock an enterprise controlled user.
-        loadTimeData.overrideValues({
-          isPersonalizationJellyEnabled: true,
-          isAmbientModeManaged: true,
-        });
+  test('displays not available message for non-allowed user', async () => {
+    // Disable `isAmbientModeAllowed` to mock an enterprise controlled user.
+    loadTimeData.overrideValues({
+      isPersonalizationJellyEnabled: true,
+      isAmbientModeAllowed: false,
+    });
 
-        personalizationStore.data.ambient.albums = ambientProvider.albums;
-        personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
-        personalizationStore.data.ambient.ambientModeEnabled = false;
-        personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
-            ambientProvider.googlePhotosAlbumsPreviews;
-        ambientPreviewLargeElement = initElement(AmbientPreviewLarge);
-        personalizationStore.notifyObservers();
-        await waitAfterNextRender(ambientPreviewLargeElement);
+    personalizationStore.data.ambient.albums = ambientProvider.albums;
+    personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
+    personalizationStore.data.ambient.ambientModeEnabled = false;
+    personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
+        ambientProvider.googlePhotosAlbumsPreviews;
+    ambientPreviewLargeElement = initElement(AmbientPreviewLarge);
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientPreviewLargeElement);
 
-        const messageContainer =
-            ambientPreviewLargeElement.shadowRoot!.getElementById(
-                'messageContainer');
-        assertTrue(!!messageContainer);
-        const textSpan = messageContainer.querySelector<HTMLSpanElement>(
-            '#turnOnDescription');
-        assertTrue(!!textSpan);
-        assertEquals(
-            ambientPreviewLargeElement.i18n(
-                'ambientModeMainPageEnterpriseUserMessage'),
-            textSpan.innerText.trim());
-      });
+    const messageContainer =
+        ambientPreviewLargeElement.shadowRoot!.getElementById(
+            'messageContainer');
+    assertTrue(!!messageContainer);
+    const textSpan =
+        messageContainer.querySelector<HTMLSpanElement>('#turnOnDescription');
+    assertTrue(!!textSpan);
+    assertEquals(
+        ambientPreviewLargeElement.i18n(
+            'ambientModeMainPageEnterpriseUserMessage'),
+        textSpan.innerText.trim());
+  });
 });
