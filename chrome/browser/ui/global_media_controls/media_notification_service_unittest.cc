@@ -470,7 +470,7 @@ TEST_F(MediaNotificationServiceCastTest,
   auto session_info = MediaSessionInfo::New();
   session_info->remote_playback_metadata =
       media_session::mojom::RemotePlaybackMetadata::New("vp8", "opus", false,
-                                                        false, "");
+                                                        false, "", false);
   session_info->is_controllable = true;
   session_item->MediaSessionInfoChanged(std::move(session_info));
 

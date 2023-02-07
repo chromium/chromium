@@ -433,7 +433,8 @@ TEST_F(MediaSessionNotificationItemTest, GetMediaSessionActions) {
   auto session_info = media_session::mojom::MediaSessionInfo::New();
   auto remote_playback_metadata =
       media_session::mojom::RemotePlaybackMetadata::New(
-          "video_codec", "audio_codec", false, true, "device_friendly_name");
+          "video_codec", "audio_codec", false, true, "device_friendly_name",
+          false);
   session_info->remote_playback_metadata = std::move(remote_playback_metadata);
   item().MediaSessionInfoChanged(std::move(session_info));
   EXPECT_FALSE(item().GetMediaSessionActions().contains(
@@ -452,7 +453,8 @@ TEST_F(MediaSessionNotificationItemTest, GetSessionMetadata) {
   auto session_info = media_session::mojom::MediaSessionInfo::New();
   auto remote_playback_metadata =
       media_session::mojom::RemotePlaybackMetadata::New(
-          "video_codec", "audio_codec", false, true, "device_friendly_name");
+          "video_codec", "audio_codec", false, true, "device_friendly_name",
+          false);
   session_info->remote_playback_metadata = std::move(remote_playback_metadata);
   item().MediaSessionInfoChanged(std::move(session_info));
 
@@ -460,4 +462,42 @@ TEST_F(MediaSessionNotificationItemTest, GetSessionMetadata) {
             item().GetSessionMetadata().source_title);
 }
 
+TEST_F(MediaSessionNotificationItemTest, GetRemotePlaybackMetadata) {
+  auto session_info = media_session::mojom::MediaSessionInfo::New();
+  item().MediaSessionInfoChanged(session_info.Clone());
+  EXPECT_TRUE(item().GetRemotePlaybackMetadata().is_null());
+
+  // Remote Playback disabled.
+  session_info->remote_playback_metadata =
+      media_session::mojom::RemotePlaybackMetadata::New(
+          "video_codec", "audio_codec", /* remote_playback_disabled */ true,
+          /* remote_playback_started */ true, "device_friendly_name",
+          /* is_encrypted_media */ false);
+  item().MediaSessionInfoChanged(session_info.Clone());
+  EXPECT_TRUE(item().GetRemotePlaybackMetadata().is_null());
+
+  // Encrypted media.
+  session_info->remote_playback_metadata =
+      media_session::mojom::RemotePlaybackMetadata::New(
+          "video_codec", "audio_codec", /* remote_playback_disabled */ false,
+          /* remote_playback_started */ true, "device_friendly_name",
+          /* is_encrypted_media */ true);
+  item().MediaSessionInfoChanged(session_info.Clone());
+  EXPECT_TRUE(item().GetRemotePlaybackMetadata().is_null());
+
+  // All criteria are met.
+  session_info->remote_playback_metadata =
+      media_session::mojom::RemotePlaybackMetadata::New(
+          "video_codec", "audio_codec", /* remote_playback_disabled */ false,
+          /* remote_playback_started */ true, "device_friendly_name",
+          /* is_encrypted_media */ false);
+  item().MediaSessionInfoChanged(session_info.Clone());
+  EXPECT_FALSE(item().GetRemotePlaybackMetadata().is_null());
+
+  // Content's duration is too short.
+  item().MediaSessionPositionChanged(media_session::MediaPosition(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(10),
+      /*position=*/base::Seconds(1), /*end_of_media=*/false));
+  EXPECT_TRUE(item().GetRemotePlaybackMetadata().is_null());
+}
 }  // namespace global_media_controls

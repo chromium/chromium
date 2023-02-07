@@ -67,7 +67,8 @@ class MediaDialogViewWithRemotePlaybackTest : public ChromeViewsTestBase {
     auto session_info = media_session::mojom::MediaSessionInfo::New();
     session_info->remote_playback_metadata =
         media_session::mojom::RemotePlaybackMetadata::New(
-            "video_codec", "audio_codec", false, true, "device_friendly_name");
+            "video_codec", "audio_codec", false, true, "device_friendly_name",
+            false);
     content::MediaSession::Get(web_contents());
     return std::make_unique<
         global_media_controls::MediaSessionNotificationItem>(

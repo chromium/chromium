@@ -193,7 +193,8 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
       bool has_video,
       media::AudioCodec audio_codec,
       media::VideoCodec video_codec,
-      media::MediaContentType media_content_type) = 0;
+      media::MediaContentType media_content_type,
+      bool is_encrypted_media) = 0;
 
   // Notify the client that the playback position has changed.
   virtual void DidPlayerMediaPositionStateChange(double playback_rate,

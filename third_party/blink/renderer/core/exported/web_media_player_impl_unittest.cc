@@ -190,12 +190,13 @@ class MockWebMediaPlayerClient : public WebMediaPlayerClient {
   MOCK_METHOD0(DidPlayerStartPlaying, void());
   MOCK_METHOD1(DidPlayerPaused, void(bool));
   MOCK_METHOD1(DidPlayerMutedStatusChange, void(bool));
-  MOCK_METHOD5(DidMediaMetadataChange,
+  MOCK_METHOD6(DidMediaMetadataChange,
                void(bool,
                     bool,
                     media::AudioCodec,
                     media::VideoCodec,
-                    media::MediaContentType));
+                    media::MediaContentType,
+                    bool));
   MOCK_METHOD4(DidPlayerMediaPositionStateChange,
                void(double,
                     base::TimeDelta,

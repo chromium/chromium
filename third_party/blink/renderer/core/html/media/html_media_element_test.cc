@@ -403,9 +403,11 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
                                   bool has_video,
                                   media::AudioCodec audio_codec,
                                   media::VideoCodec video_codec,
-                                  media::MediaContentType media_content_type) {
+                                  media::MediaContentType media_content_type,
+                                  bool is_encrypted_media) {
     media_->DidMediaMetadataChange(has_audio, has_video, audio_codec,
-                                   video_codec, media_content_type);
+                                   video_codec, media_content_type,
+                                   is_encrypted_media);
     media_player_observer().WaitUntilReceivedMessage();
     // wait for OnRemotePlaybackMetadataChange() to be called.
     if (audio_codec != media::AudioCodec::kUnknown ||
@@ -1195,13 +1197,14 @@ TEST_P(HTMLMediaElementTest, SendMediaMetadataChangedToObserver) {
 
   bool has_audio = false;
   bool has_video = true;
+  bool is_encrypted_media = false;
   media::AudioCodec audio_codec = media::AudioCodec::kUnknown;
   media::VideoCodec video_codec = media::VideoCodec::kUnknown;
   media::MediaContentType media_content_type =
       media::MediaContentType::Transient;
 
   NotifyMediaMetadataChanged(has_audio, has_video, audio_codec, video_codec,
-                             media_content_type);
+                             media_content_type, is_encrypted_media);
   EXPECT_TRUE(ReceivedMessageMediaMetadataChanged(has_audio, has_video,
                                                   media_content_type));
   // Change values and test again.
@@ -1209,7 +1212,7 @@ TEST_P(HTMLMediaElementTest, SendMediaMetadataChangedToObserver) {
   has_video = false;
   media_content_type = media::MediaContentType::OneShot;
   NotifyMediaMetadataChanged(has_audio, has_video, audio_codec, video_codec,
-                             media_content_type);
+                             media_content_type, is_encrypted_media);
   EXPECT_TRUE(ReceivedMessageMediaMetadataChanged(has_audio, has_video,
                                                   media_content_type));
 
@@ -1217,12 +1220,12 @@ TEST_P(HTMLMediaElementTest, SendMediaMetadataChangedToObserver) {
   audio_codec = media::AudioCodec::kAAC;
   video_codec = media::VideoCodec::kH264;
   NotifyMediaMetadataChanged(has_audio, has_video, audio_codec, video_codec,
-                             media_content_type);
+                             media_content_type, is_encrypted_media);
   EXPECT_TRUE(ReceivedRemotePlaybackMetadataChange(
       media_session::mojom::blink::RemotePlaybackMetadata::New(
           WTF::String(media::GetCodecName(video_codec)),
           WTF::String(media::GetCodecName(audio_codec)), false, false,
-          WTF::String())));
+          WTF::String(), is_encrypted_media)));
 }
 
 TEST_P(HTMLMediaElementTest, SendMediaSizeChangeToObserver) {
@@ -1239,15 +1242,17 @@ TEST_P(HTMLMediaElementTest, SendRemotePlaybackMetadataChangeToObserver) {
   media::AudioCodec audio_codec = media::AudioCodec::kAAC;
   bool is_remote_playback_disabled = true;
   bool is_remote_playback_started = false;
+  bool is_encrypted_media = false;
   NotifyMediaMetadataChanged(true, true, audio_codec, video_codec,
-                             media::MediaContentType::Transient);
+                             media::MediaContentType::Transient,
+                             is_encrypted_media);
   NotifyRemotePlaybackDisabled(is_remote_playback_disabled);
   EXPECT_TRUE(ReceivedRemotePlaybackMetadataChange(
       media_session::mojom::blink::RemotePlaybackMetadata::New(
           WTF::String(media::GetCodecName(video_codec)),
           WTF::String(media::GetCodecName(audio_codec)),
           is_remote_playback_disabled, is_remote_playback_started,
-          WTF::String())));
+          WTF::String(), is_encrypted_media)));
 }
 
 TEST_P(HTMLMediaElementTest, SendUseAudioServiceChangedToObserver) {

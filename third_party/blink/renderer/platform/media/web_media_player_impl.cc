@@ -1094,7 +1094,8 @@ void WebMediaPlayerImpl::SetVolume(double volume) {
     client_->DidMediaMetadataChange(
         delegate_has_audio_, HasVideo(),
         pipeline_metadata_.audio_decoder_config.codec(),
-        pipeline_metadata_.video_decoder_config.codec(), content_type);
+        pipeline_metadata_.video_decoder_config.codec(), content_type,
+        pipeline_metadata_.video_decoder_config.is_encrypted());
     delegate_->DidMediaMetadataChange(delegate_id_, delegate_has_audio_,
                                       HasVideo(), content_type);
 
@@ -1939,7 +1940,8 @@ void WebMediaPlayerImpl::OnMetadata(const media::PipelineMetadata& metadata) {
   client_->DidMediaMetadataChange(
       delegate_has_audio_, HasVideo(),
       pipeline_metadata_.audio_decoder_config.codec(),
-      pipeline_metadata_.video_decoder_config.codec(), content_type);
+      pipeline_metadata_.video_decoder_config.codec(), content_type,
+      pipeline_metadata_.video_decoder_config.is_encrypted());
   delegate_->DidMediaMetadataChange(delegate_id_, delegate_has_audio_,
                                     HasVideo(), content_type);
 
@@ -2225,7 +2227,8 @@ void WebMediaPlayerImpl::OnDurationChange() {
   client_->DidMediaMetadataChange(
       delegate_has_audio_, HasVideo(),
       pipeline_metadata_.audio_decoder_config.codec(),
-      pipeline_metadata_.video_decoder_config.codec(), content_type);
+      pipeline_metadata_.video_decoder_config.codec(), content_type,
+      pipeline_metadata_.video_decoder_config.is_encrypted());
   delegate_->DidMediaMetadataChange(delegate_id_, delegate_has_audio_,
                                     HasVideo(), content_type);
 

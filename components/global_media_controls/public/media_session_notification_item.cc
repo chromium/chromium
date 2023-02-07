@@ -287,9 +287,11 @@ void MediaSessionNotificationItem::Freeze(base::OnceClosure unfrozen_callback) {
 
 media_session::mojom::RemotePlaybackMetadataPtr
 MediaSessionNotificationItem::GetRemotePlaybackMetadata() const {
-  // Return nullptr if Remote Playback is disabled.
+  // Return nullptr if Remote Playback is disabled or the media element is
+  // encrypted.
   if (!session_info_ || !session_info_->remote_playback_metadata ||
-      session_info_->remote_playback_metadata->remote_playback_disabled) {
+      session_info_->remote_playback_metadata->remote_playback_disabled ||
+      session_info_->remote_playback_metadata->is_encrypted_media) {
     return nullptr;
   }
 

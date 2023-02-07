@@ -581,12 +581,12 @@ class WebMediaPlayerMSTest
   void DidPlayerStartPlaying() override {}
   void DidPlayerPaused(bool) override {}
   void DidPlayerMutedStatusChange(bool muted) override {}
-  void DidMediaMetadataChange(
-      bool has_audio,
-      bool has_video,
-      media::AudioCodec audio_codec,
-      media::VideoCodec video_codec,
-      media::MediaContentType media_content_type) override {}
+  void DidMediaMetadataChange(bool has_audio,
+                              bool has_video,
+                              media::AudioCodec audio_codec,
+                              media::VideoCodec video_codec,
+                              media::MediaContentType media_content_type,
+                              bool is_encrypted_media) override {}
   void DidPlayerMediaPositionStateChange(double playback_rate,
                                          base::TimeDelta duration,
                                          base::TimeDelta position,

@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// Next MinVersion: 18
+// Next MinVersion: 19
 
 [Stable, Extensible]
 enum MediaPlaybackState {
@@ -137,6 +137,7 @@ struct RemotePlaybackMetadata {
   bool remote_playback_disabled;
   [MinVersion=17] bool remote_playback_started;
   [MinVersion=17] string? remoting_device_friendly_name;
+  [MinVersion=18] bool is_encrypted_media;
 };
 
 // Contains state information about a MediaSession.
