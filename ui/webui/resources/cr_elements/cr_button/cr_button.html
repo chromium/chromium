@@ -223,18 +223,26 @@
         line-height: 154%;
       }
 
-      :host-context([chrome-refresh-2023]):host(.tonal-button) {
+      :host-context([chrome-refresh-2023]):host(.tonal-button),
+      :host-context([chrome-refresh-2023]):host(.floating-button) {
         background-color: var(--color-button-background-tonal,
             var(--cr-fallback-color-secondary-container));
+        border: none;
         color: var(--color-button-foreground-tonal,
             var(--cr-fallback-color-on-secondary-container));
       }
 
-      :host-context([chrome-refresh-2023]):host(.tonal-button[disabled]) {
+      :host-context([chrome-refresh-2023]):host(.tonal-button[disabled]),
+      :host-context([chrome-refresh-2023]):host(.floating-button[disabled]) {
         background-color: var(--color-button-background-tonal-disabled,
             rgba(var(--cr-fallback-color-on-surface-rgb), .12));
         border: none;
         color: var(--disabled-text-color);
+      }
+
+      :host-context([chrome-refresh-2023]):host(.floating-button) {
+        border-radius: 8px;
+        height: 40px;
       }
 
       paper-ripple {

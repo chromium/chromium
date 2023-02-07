@@ -15,8 +15,10 @@
       }
 
       /* Some button styles are not available before Chrome Refresh 2023.
-       * These buttons fallback to the default style. */
-      html:not([chrome-refresh-2023]) .tonal-button {
+       * cr-buttons that use these classes will fallback to the default
+       * button styles for non-[chrome-refresh-2023]. */
+      html:not([chrome-refresh-2023]) .tonal-button,
+      html:not([chrome-refresh-2023]) .floating-button {
         display: none;
       }
     </style>
@@ -27,12 +29,16 @@
       <cr-button>Default button</cr-button>
       <cr-button class="action-button">Action button</cr-button>
       <cr-button class="tonal-button">Tonal button</cr-button>
+      <cr-button class="floating-button">Floating button</cr-button>
       <cr-button disabled>Disabled default button</cr-button>
       <cr-button disabled class="action-button">
         Disabled action button
       </cr-button>
       <cr-button disabled class="tonal-button">
         Disabled tonal button
+      </cr-button>
+      <cr-button disabled class="floating-button">
+        Disabled floating button
       </cr-button>
       <div class="flex">
         <cr-button class="cancel-button">Cancel</cr-button>

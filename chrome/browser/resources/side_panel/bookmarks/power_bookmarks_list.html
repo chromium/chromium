@@ -185,7 +185,7 @@
   </sp-empty-state>
   <sp-footer
       pinned="[[shouldPinFooter_(shownBookmarks_.length)]]">
-    <cr-button
+    <cr-button class="floating-button"
         hidden="[[hideAddTabButton_(editing_)]]"
         on-click="onAddTabClicked_"
         disabled="[[!canAddCurrentUrl_(shownBookmarks_.*, activeFolderPath_.*,
