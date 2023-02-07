@@ -6,20 +6,41 @@ found in the LICENSE file.
 -->
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Name of the card (type + obfuscated number) -->
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="match_parent"
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/pref_autofill_field_large_top_margin"
-        style="@style/PreferenceTitle" />
+        android:layout_marginBottom="@dimen/pref_autofill_field_bottom_margin"
+        android:layout_marginStart="@dimen/pref_autofill_field_start_margin">
 
-    <TextView
-        android:id="@+id/summary"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/PreferenceSummary"
-        android:layout_marginBottom="@dimen/pref_autofill_field_bottom_margin" />
+        <ImageView
+            android:id="@+id/card_icon"
+            android:layout_width="@dimen/settings_page_card_icon_width"
+            android:layout_height="@dimen/settings_page_card_icon_height"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/settings_page_card_icon_end_margin"
+            android:scaleType="fitCenter"
+            android:importantForAccessibility="no" />
+
+        <!-- Name of the card (type + obfuscated number) -->
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@id/card_icon"
+            style="@style/PreferenceTitle" />
+
+        <TextView
+            android:id="@+id/summary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/title"
+            android:layout_toEndOf="@id/card_icon"
+            style="@style/PreferenceSummary" />
+    </RelativeLayout>
 
     <include layout="@layout/autofill_billing_address_dropdown" />
 
