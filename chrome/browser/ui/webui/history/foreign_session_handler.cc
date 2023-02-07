@@ -130,15 +130,12 @@ void ForeignSessionHandler::RegisterProfilePrefs(
 void ForeignSessionHandler::OpenForeignSessionTab(
     content::WebUI* web_ui,
     const std::string& session_string_value,
-    int window_num,
     SessionID tab_id,
     const WindowOpenDisposition& disposition) {
   sync_sessions::OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(web_ui);
   if (!open_tabs)
     return;
 
-  // We don't actually care about |window_num|, this is just a sanity check.
-  DCHECK_LE(0, window_num);
   const ::sessions::SessionTab* tab;
   if (!open_tabs->GetForeignTab(session_string_value, tab_id, &tab)) {
     LOG(ERROR) << "Failed to load foreign tab.";
@@ -156,7 +153,7 @@ void ForeignSessionHandler::OpenForeignSessionTab(
 void ForeignSessionHandler::OpenForeignSessionWindows(
     content::WebUI* web_ui,
     const std::string& session_string_value,
-    int window_num) {
+    size_t window_num) {
   sync_sessions::OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(web_ui);
   if (!open_tabs)
     return;
@@ -168,14 +165,13 @@ void ForeignSessionHandler::OpenForeignSessionWindows(
                   "OpenTabsUIDelegate.";
     return;
   }
-  std::vector<const ::sessions::SessionWindow*>::const_iterator iter_begin =
-      windows.begin() + (window_num < 0 ? 0 : window_num);
-  auto iter_end =
-      window_num < 0
-          ? std::vector<const ::sessions::SessionWindow*>::const_iterator(
-                windows.end())
-          : iter_begin + 1;
 
+  // Bounds check `window_num` before using it anywhere. crbug.com/1408120
+  CHECK_LT(window_num, windows.size());
+  auto iter_begin = windows.begin() + window_num;
+  DCHECK(iter_begin != windows.end())
+      << "Because we CHECKed that windows_num is less than the size.";
+  auto iter_end = iter_begin + 1;
   SessionRestore::RestoreForeignSessionWindows(Profile::FromWebUI(web_ui),
                                                iter_begin, iter_end);
 
@@ -356,9 +352,10 @@ void ForeignSessionHandler::HandleOpenForeignSession(
   const std::string& session_string_value = args[0].GetString();
 
   // Extract window number.
-  int window_num = -1;
-  if (num_args >= 2 && (!args[1].is_string() ||
-                        !base::StringToInt(args[1].GetString(), &window_num))) {
+  size_t window_num = 0;
+  if (num_args >= 2 &&
+      (!args[1].is_string() ||
+       !base::StringToSizeT(args[1].GetString(), &window_num))) {
     LOG(ERROR) << "Failed to extract window number.";
     return;
   }
@@ -375,8 +372,7 @@ void ForeignSessionHandler::HandleOpenForeignSession(
   SessionID tab_id = SessionID::FromSerializedValue(tab_id_value);
   if (tab_id.is_valid()) {
     WindowOpenDisposition disposition = webui::GetDispositionFromClick(args, 3);
-    OpenForeignSessionTab(web_ui(), session_string_value, window_num, tab_id,
-                          disposition);
+    OpenForeignSessionTab(web_ui(), session_string_value, tab_id, disposition);
   } else {
     OpenForeignSessionWindows(web_ui(), session_string_value, window_num);
   }

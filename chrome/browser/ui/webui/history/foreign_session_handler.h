@@ -65,13 +65,12 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
 
   static void OpenForeignSessionTab(content::WebUI* web_ui,
                                     const std::string& session_string_value,
-                                    int window_num,
                                     SessionID tab_id,
                                     const WindowOpenDisposition& disposition);
 
   static void OpenForeignSessionWindows(content::WebUI* web_ui,
                                         const std::string& session_string_value,
-                                        int window_num);
+                                        size_t window_num);
 
   // Returns a pointer to the current session model associator or nullptr.
   static sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate(
