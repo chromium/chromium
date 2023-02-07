@@ -79,8 +79,7 @@ MediaControlsSharedHelpers::GetCurrentBufferedTimeRange(
 
   DCHECK(buffered_time_ranges);
 
-  if (std::isnan(duration) || std::isinf(duration) || !duration ||
-      std::isnan(current_time)) {
+  if (!std::isfinite(duration) || !duration || std::isnan(current_time)) {
     return absl::nullopt;
   }
 

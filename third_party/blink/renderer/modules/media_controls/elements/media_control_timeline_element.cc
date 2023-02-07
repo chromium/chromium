@@ -262,8 +262,7 @@ void MediaControlTimelineElement::RenderBarSegments() {
                GetFloatingPointAttribute(html_names::kMinAttr);
   }
 
-  if (std::isnan(duration) || std::isinf(duration) || !duration ||
-      std::isnan(current_time)) {
+  if (!std::isfinite(duration) || !duration || std::isnan(current_time)) {
     SetBeforeSegmentPosition(MediaControlSliderElement::Position(0, 0));
     SetAfterSegmentPosition(MediaControlSliderElement::Position(0, 0));
     return;
