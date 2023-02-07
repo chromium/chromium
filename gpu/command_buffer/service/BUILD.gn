@@ -492,12 +492,9 @@ target(link_target_type, "gles2_sources") {
 
     # Required by gles2_cmd_decoder.cc on Apple.
     frameworks = [
-      "Cocoa.framework",
       "IOSurface.framework",
       "Metal.framework",
-      "OpenGL.framework",
     ]
-
     if (is_mac) {
       frameworks += [
         "Cocoa.framework",
