@@ -21,8 +21,9 @@
 
   /* Buttons */
   iron-selector {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: auto auto auto auto;
     margin: 16px 0;
   }
 
@@ -32,7 +33,6 @@
     border-radius: 16px;
     height: 76px;
     padding: 0;
-    width: 76px;
   }
 
   /* TODO(b/254478525) Replace with an icon button component. */
