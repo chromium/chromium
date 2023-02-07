@@ -18,23 +18,27 @@ import java.util.Objects;
 /**
  * Watches a number of histograms in tests to assert later that the expected values were recorded.
  *
- * Uses the delta of records between startWatching() and assertExpectedHistogramsRecorded(), so
- * that records logged in previous tests (in batched tests) don't interfere with the counting.
+ * Uses the delta of records between build() and assertExpected(), so that records logged in
+ * previous tests (in batched tests) don't interfere with the counting as would happen with direct
+ * calls to {@link RecordHistogram}.
  *
  * Usage:
  *
- * HistogramWatcher histogramWatcher = HistogramWatcher.newBuilder()
+ * // Arrange
+ * var histogramWatcher = HistogramWatcher.newBuilder()
  *     .expectIntRecord("Histogram1", 555)
  *     .expectIntRecord("Histogram1", 666)
  *     .expectBooleanRecord("Histogram2", true)
  *     .expectAnyRecord("Histogram3")
  *     .build();
+ * or:
+ * var histogramWatcher = HistogramWatcher.newSingleRecordWatcher("Histogram1", 555);
  *
  * // Act
  * [code under test that is expected to record the histograms above]
  *
  * // Assert
- * histogramWatcher.assertExpectedHistogramsRecorded();
+ * histogramWatcher.assertExpected();
  */
 public class HistogramWatcher {
     /**
