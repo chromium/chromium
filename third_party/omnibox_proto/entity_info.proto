@@ -41,6 +41,9 @@ message EntityInfo {
 
   // Distance to the point of interest.
   optional uint32 distance_km = 13;
+
+  // List of categories this entity belongs to.
+  repeated CategoryInfo.Category category = 14;
 }
 
 // Entity Suggestion Action descriptor.
@@ -71,4 +74,29 @@ enum ActionType {
   ACTION_PHONE_CALL = 1;
   ACTION_NAVIGATE = 7;
   ACTION_WEBPAGE = 9;
+}
+
+// Entity Suggestion Category info.
+message CategoryInfo {
+  enum Category {
+    UNKNOWN = 0;
+    MUSIC = 2;
+    GAMES = 4;
+    PEOPLE = 6;
+    SPORTS = 7;
+    BOOKS = 9;
+    GEO = 12;
+    NATURAL_WORLD = 13;
+    FOOD = 15;
+    PRODUCTS = 16;
+    UNIVERSITIES = 17;
+    CARS_US = 18;
+    TV = 19;
+    MOVIES = 20;
+    CARS_MODEL_US = 21;
+    LOCAL_POIS_AND_CHAINS = 22;
+    COMPANIES = 23;
+    PRODUCT_LINES = 24;
+    LOCAL_POI = 25;
+  }
 }
