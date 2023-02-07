@@ -89,7 +89,7 @@ std::string WindowToAppId(Profile* profile, const aura::Window* window) {
   if (IsBorealisWindowIdLegacy(window_id)) {
     base::ReplaceFirstSubstringAfterOffset(
         &window_id, 0, borealis::kBorealisWindowPrefixLegacy,
-        "org.chromium.guest_os.termina.");
+        "org.chromium.termina.");
   }
   std::string guest_os_shelf_app_id =
       guest_os::GetGuestOsShelfAppId(profile, &window_id, nullptr);

@@ -27,14 +27,19 @@ namespace {
 // kCrostiniInstallerShelfId and kCrostiniUpgraderShelfId.
 constexpr char kCrostiniShelfIdPrefix[] = "crostini:";
 
+// TODO(b/244651040): Once the migration to new window ID format is complete,
+// the Crostini window ID prefix will be removed.
+// Prefix of the WindowAppId set on exo windows for Crostini X apps.
+constexpr char kCrostiniWindowAppIdPrefixLegacy[] = "org.chromium.termina.";
 // Prefix of the WindowAppId set on exo windows for GuestOS X apps.
 constexpr char kGuestOsWindowAppIdPrefix[] = "org.chromium.guest_os.";
 // This comes after kGuestOsWindowAppIdPrefix+token for GuestOS Wayland apps.
 constexpr char kWaylandPrefix[] = "wayland.";
-// This comes after kGuestOsWindowAppIdPrefix+token.
+// This comes after kCrostiniWindowAppIdPrefixLegacy or
+// kGuestOsWindowAppIdPrefix+token.
 constexpr char kWmClassPrefix[] = "wmclass.";
 
-// TODO(b/267377562): Borealis windows have a hardcoded "borealis" token.
+// Token types for container-less VMs.
 constexpr char kBorealisToken[] = "borealis";
 
 const std::string* GetAppNameForWMClass(base::StringPiece wmclass) {
@@ -90,11 +95,19 @@ FindAppIdResult FindAppId(const base::Value::Dict& prefs,
       }
     }
 
-    // If guest_id is provided, also check that it matches. The guest_id is
-    // considered matched if its vm_name and container_name matches
-    // corresponding entries in the dictionary.
-    if (guest_id && !MatchContainerDict(item.second, *guest_id)) {
-      continue;
+    // If guest_id is provided, also check that it matches.
+    if (guest_id) {
+      const std::string* vm_name =
+          item.second.GetDict().FindString(guest_os::prefs::kVmNameKey);
+      const std::string* container_name =
+          item.second.GetDict().FindString(guest_os::prefs::kContainerNameKey);
+      if (!vm_name || !container_name) {
+        continue;
+      }
+      if (*vm_name != guest_id->vm_name ||
+          *container_name != guest_id->container_name) {
+        continue;
+      }
     }
 
     const base::Value* value = item.second.GetDict().Find(prefs_key);
@@ -141,6 +154,7 @@ std::string GetGuestTokenForWindowId(const std::string* window_app_id) {
   }
   const auto token_start = strlen(kGuestOsWindowAppIdPrefix);
   // Find the first "." after the kGuestOsWindowAppIdPrefix
+  // This should be an iterator
   const auto token_end = window_app_id->find(".", token_start);
 
   auto token = window_app_id->substr(token_start, token_end - token_start);
@@ -150,6 +164,12 @@ std::string GetGuestTokenForWindowId(const std::string* window_app_id) {
 
 std::string GetUnregisteredAppIdPrefix(
     const absl::optional<std::string> token) {
+  // For window_ids using the old format, token is not provided, so use the old
+  // default of "crostini:"
+  if (!token) {
+    return kCrostiniShelfIdPrefix;
+  }
+
   if (token == kBorealisToken) {
     return borealis::kBorealisAnonymousPrefix;
   }
@@ -161,24 +181,33 @@ std::string GetUnregisteredAppIdPrefix(
 
 }  // namespace
 
+// TODO(b/244651040): GuestOS Team is currently migrating guest window app IDs
+// to a different format. Until the migration is complete, this function will
+// support window IDs with the old (org.chromium.termina.) and new
+// (org.chromium.guest_os.<token>.) formats. Most of the logic remains the
+// same as before, with new or modified steps labelled with *.
+//
 // The code follows these steps to identify apps and returns the first match:
 // 1) If the |window_startup_id| is set, look for a matching desktop file id.
 // 2) Ignore windows if the |window_app_id| is not set.
-// 3) The |window_app_id| is prefixed by org.chromium.guest_os.<token>., so we
-//    should be able to obtain a guest token from it. This will be used to find
-//    a guest_id to which the app window belongs to. In the following steps, the
-//    container_name and vm_name from the guest_id will be used to find a unique
-//    match if available.
-// 4) Remove the org.chromium.guest_os.<token>. prefix and use the remaining
-//    string (the suffix) for the next steps.
-// 5) If the suffix is prefixed by wayland., it's a native Wayland app. Look for
-//    a matching desktop file id.
-// 6) If the suffix from step 4 is prefixed by wmclass.:
-// 6.1) Look for an app where StartupWMClass matches the remaining string.
-// 6.2) Look for an app where the desktop file id matches the remaining string.
-// 6.3) Look for an app where the unlocalized name matches the remaining
+// 3) If the |window_app_id| is not prefixed by org.chromium.termina., it's an
+//    app with native Wayland support. Look for a matching desktop file id.
+// 4) Grab the suffix after one of the following prefixes:
+// 4.1) If the |window_app_id| is prefixed by org.chromium.termina.,
+// 4.2*) If the |window_app_id| prefixed by org.chromium.guest_os.<token>.,
+//      we should be able to obtain a guest token from it. This will be
+//      used to find a guest_id of the guest to which the app window belongs
+//      to. In the following steps, the container_name and vm_name from
+//      guest_id will be used to find a unique match if available.
+// 4.2.1*) If the |window_app_id| is prefixed by
+//         org.chromium.guest_os.<token>.wayland., it's a native Wayland app.
+//         Look for a matching desktop file id.
+// 5) If the suffix from step 4 is prefixed by wmclass.:
+// 5.1) Look for an app where StartupWMClass matches the remaining string.
+// 5.2) Look for an app where the desktop file id matches the remaining string.
+// 5.3) Look for an app where the unlocalized name matches the remaining
 //      string. This handles the xterm & uxterm examples.
-// 7) If we couldn't find a match, prefix the |window_app_id| with a generic
+// 6*) If we couldn't find a match, prefix the |window_app_id| with a generic
 //    prefix of 'crostini:' or 'borealis:"', so we can easily identify
 //    shelf entries as GuestOs apps. If we could not identify the VM, default
 //    to using "crostini:".
@@ -214,30 +243,45 @@ std::string GetGuestOsShelfAppId(Profile* profile,
   const auto guest_id =
       GuestOsSessionTracker::GetForProfile(profile)->GetGuestIdForToken(token);
 
-  // If the window_id does not follow the expected format, return a generic id.
-  if (!base::StartsWith(*window_app_id, kGuestOsWindowAppIdPrefix,
+  // (Legacy) Wayland apps won't be prefixed with org.chromium.termina. or
+  // org.chromium.guest_os
+  if (!base::StartsWith(*window_app_id, kCrostiniWindowAppIdPrefixLegacy,
+                        base::CompareCase::SENSITIVE) &&
+      !base::StartsWith(*window_app_id, kGuestOsWindowAppIdPrefix,
                         base::CompareCase::SENSITIVE)) {
-    LOG(ERROR) << "window_app_id provided is not prefixed with "
-               << kGuestOsWindowAppIdPrefix;
-    return GetUnregisteredAppIdPrefix(token) + *window_app_id;
-  }
-
-  // Get the suffix by stripping "org.chromium.guest_os.<token>.".
-  // token.length() + 1 is used since the '.' separator was not included in the
-  // token.
-  base::StringPiece suffix = base::MakeStringPiece(
-      window_app_id->begin() + strlen(kGuestOsWindowAppIdPrefix) +
-          token.length() + 1,
-      window_app_id->end());
-
-  // Wayland apps will have a "wayland." identifier.
-  if (base::StartsWith(suffix, kWaylandPrefix, base::CompareCase::SENSITIVE)) {
-    const base::StringPiece wayland_app = suffix.substr(strlen(kWaylandPrefix));
-    if (FindAppId(apps, guest_os::prefs::kAppDesktopFileIdKey, wayland_app,
+    if (FindAppId(apps, guest_os::prefs::kAppDesktopFileIdKey, *window_app_id,
                   guest_id, &app_id) == FindAppIdResult::UniqueMatch) {
       return app_id;
     }
     return GetUnregisteredAppIdPrefix(token) + *window_app_id;
+  }
+
+  base::StringPiece suffix;
+  // Get the suffix by stripping "org.chromium.guest_os.<token>."
+  if (base::StartsWith(*window_app_id, kGuestOsWindowAppIdPrefix,
+                       base::CompareCase::SENSITIVE)) {
+    // token.length() + 1 since the '.' separator was not included in the token
+    suffix = base::MakeStringPiece(window_app_id->begin() +
+                                       strlen(kGuestOsWindowAppIdPrefix) +
+                                       token.length() + 1,
+                                   window_app_id->end());
+
+    // Wayland apps will have a "wayland." identifier.
+    if (base::StartsWith(suffix, kWaylandPrefix,
+                         base::CompareCase::SENSITIVE)) {
+      const base::StringPiece wayland_app =
+          suffix.substr(strlen(kWaylandPrefix));
+      if (FindAppId(apps, guest_os::prefs::kAppDesktopFileIdKey, wayland_app,
+                    guest_id, &app_id) == FindAppIdResult::UniqueMatch) {
+        return app_id;
+      }
+      return GetUnregisteredAppIdPrefix(token) + *window_app_id;
+    }
+  } else {
+    // (Legacy) Grab the suffix by stripping "org.chromium.termina."
+    suffix = base::MakeStringPiece(
+        window_app_id->begin() + strlen(kCrostiniWindowAppIdPrefixLegacy),
+        window_app_id->end());
   }
 
   // If we don't have an id to match to a desktop file, use the window app id.
