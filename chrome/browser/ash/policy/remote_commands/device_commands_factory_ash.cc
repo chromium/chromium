@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_wipe_users_job.h"
 #include "chrome/browser/ash/policy/remote_commands/screenshot_delegate.h"
-#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -40,8 +39,7 @@ std::unique_ptr<RemoteCommandJob> DeviceCommandsFactoryAsh::BuildJobForType(
     RemoteCommandsService* service) {
   switch (type) {
     case RemoteCommand::DEVICE_REBOOT:
-      return std::make_unique<DeviceCommandRebootJob>(
-          chromeos::PowerManagerClient::Get());
+      return std::make_unique<DeviceCommandRebootJob>();
     case RemoteCommand::DEVICE_SCREENSHOT:
       return std::make_unique<DeviceCommandScreenshotJob>(
           std::make_unique<ScreenshotDelegate>());

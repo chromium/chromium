@@ -5410,6 +5410,7 @@ source_set("unit_tests") {
     "policy/remote_commands/device_command_fetch_crd_availability_info_job_unittest.cc",
     "policy/remote_commands/device_command_get_available_routines_job_unittest.cc",
     "policy/remote_commands/device_command_get_routine_update_job_unittest.cc",
+    "policy/remote_commands/device_command_reboot_job_unittest.cc",
     "policy/remote_commands/device_command_refresh_machine_certificate_job_unittest.cc",
     "policy/remote_commands/device_command_remote_powerwash_job_unittest.cc",
     "policy/remote_commands/device_command_reset_euicc_job_unittest.cc",
