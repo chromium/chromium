@@ -9,6 +9,8 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/signin/system_identity.h"
 
+class ChromeAccountManagerService;
+
 namespace ios {
 
 // iOS implementation of `AccountCapabilitiesFetcher`.
@@ -16,8 +18,8 @@ class AccountCapabilitiesFetcherIOS : public AccountCapabilitiesFetcher {
  public:
   AccountCapabilitiesFetcherIOS(
       const CoreAccountInfo& account_info,
-      AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback,
-      id<SystemIdentity> system_identity);
+      ChromeAccountManagerService* account_manager_service,
+      OnCompleteCallback on_complete_callback);
   ~AccountCapabilitiesFetcherIOS() override;
 
   AccountCapabilitiesFetcherIOS(const AccountCapabilitiesFetcherIOS&) = delete;
@@ -29,7 +31,7 @@ class AccountCapabilitiesFetcherIOS : public AccountCapabilitiesFetcher {
   void StartImpl() override;
 
  private:
-  __strong id<SystemIdentity> const system_identity_ = nil;
+  raw_ptr<ChromeAccountManagerService> account_manager_service_ = nil;
   base::WeakPtrFactory<AccountCapabilitiesFetcherIOS> weak_ptr_factory_{this};
 };
 

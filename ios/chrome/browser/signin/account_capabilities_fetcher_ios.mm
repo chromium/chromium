@@ -8,6 +8,7 @@
 
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/signin/capabilities_types.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/system_identity_manager.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -51,12 +52,22 @@ AccountCapabilitiesFetcherIOS::~AccountCapabilitiesFetcherIOS() = default;
 
 AccountCapabilitiesFetcherIOS::AccountCapabilitiesFetcherIOS(
     const CoreAccountInfo& account_info,
-    AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback,
-    id<SystemIdentity> system_identity)
+    ChromeAccountManagerService* account_manager_service,
+    AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback)
     : AccountCapabilitiesFetcher(account_info, std::move(on_complete_callback)),
-      system_identity_(system_identity) {}
+      account_manager_service_(account_manager_service) {}
 
 void AccountCapabilitiesFetcherIOS::StartImpl() {
+  id<SystemIdentity> identity =
+      account_manager_service_->GetIdentityWithGaiaID(account_info().gaia);
+
+  // If the `account_manager_service_` and system identity manager are out of
+  // sync the `identity` may not have been written yet to the latter. In this
+  // case do not fetch capabilities.
+  if (!identity) {
+    return;
+  }
+
   auto callback =
       base::BindOnce(&AccountCapabilitiesFromCapabilitiesMap)
           .Then(base::BindOnce(
@@ -64,7 +75,7 @@ void AccountCapabilitiesFetcherIOS::StartImpl() {
               weak_ptr_factory_.GetWeakPtr()));
 
   GetApplicationContext()->GetSystemIdentityManager()->FetchCapabilities(
-      system_identity_,
+      identity,
       SetFromVector(AccountCapabilities::GetSupportedAccountCapabilityNames()),
       std::move(callback));
 }

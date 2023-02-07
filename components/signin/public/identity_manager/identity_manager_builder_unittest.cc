@@ -10,12 +10,15 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
+#include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
+#include "components/signin/internal/identity_manager/account_capabilities_fetcher_factory.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -31,6 +34,19 @@
 #endif
 
 namespace signin {
+
+class MockAccountCapabilitiesFetcherFactory
+    : public AccountCapabilitiesFetcherFactory {
+ public:
+  MockAccountCapabilitiesFetcherFactory() = default;
+  ~MockAccountCapabilitiesFetcherFactory() override = default;
+
+  MOCK_METHOD2(
+      CreateAccountCapabilitiesFetcher,
+      std::unique_ptr<AccountCapabilitiesFetcher>(
+          const CoreAccountInfo& account_info,
+          AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback));
+};
 
 class IdentityManagerBuilderTest : public testing::Test {
  protected:
@@ -83,6 +99,8 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
 #if BUILDFLAG(IS_IOS)
   params.device_accounts_provider =
       std::make_unique<FakeDeviceAccountsProvider>();
+  params.account_capabilities_fetcher_factory =
+      std::make_unique<MockAccountCapabilitiesFetcherFactory>();
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

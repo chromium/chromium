@@ -21,6 +21,7 @@
 #include "base/functional/callback.h"
 #endif
 
+class AccountCapabilitiesFetcherFactory;
 class PrefService;
 class SigninClient;
 
@@ -61,6 +62,8 @@ struct IdentityManagerBuildParams {
   raw_ptr<PrefService> pref_service = nullptr;
   base::FilePath profile_path;
   raw_ptr<SigninClient> signin_client = nullptr;
+  std::unique_ptr<AccountCapabilitiesFetcherFactory>
+      account_capabilities_fetcher_factory;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   bool delete_signin_cookies_on_exit = false;
