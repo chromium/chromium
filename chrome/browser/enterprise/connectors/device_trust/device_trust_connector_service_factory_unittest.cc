@@ -6,12 +6,14 @@
 
 #include <memory>
 
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,7 +29,25 @@ using ::testing::_;
 
 namespace enterprise_connectors {
 
-class DeviceTrustConnectorServiceFactoryBase {
+class DeviceTrustConnectorServiceFactoryBaseTest {
+ public:
+  DeviceTrustConnectorServiceFactoryBaseTest() {
+    RedirectTestingFactoryToRealFactory(profile());
+  }
+
+  // TestingProfiles create use a TestingFactory for service
+  // `DeviceTrustConnectorService`. To test the real factory behavior via a unit
+  // test, we redirect the testing factory to the real factory
+  // `BuildServiceInstanceFor` method.
+  void RedirectTestingFactoryToRealFactory(Profile* profile) {
+    DeviceTrustConnectorServiceFactory::GetInstance()->SetTestingFactory(
+        profile,
+        base::BindLambdaForTesting([](content::BrowserContext* context) {
+          return DeviceTrustConnectorServiceFactory::GetInstance()
+              ->BuildServiceInstanceForBrowserContext(context);
+        }));
+  }
+
  protected:
   Profile* profile() { return &profile_; }
 
@@ -38,7 +58,7 @@ class DeviceTrustConnectorServiceFactoryBase {
 };
 
 class DeviceTrustConnectorServiceFactoryTest
-    : public DeviceTrustConnectorServiceFactoryBase,
+    : public DeviceTrustConnectorServiceFactoryBaseTest,
       public ::testing::Test {
  protected:
   void SetUp() override {
@@ -72,7 +92,7 @@ TEST_F(DeviceTrustConnectorServiceFactoryTest, NullForIncognitoProfile) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class DeviceTrustConnectorServiceFactoryParamTest
-    : public DeviceTrustConnectorServiceFactoryBase,
+    : public DeviceTrustConnectorServiceFactoryBaseTest,
       public ::testing::TestWithParam<bool> {
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features{
@@ -99,6 +119,7 @@ TEST_P(DeviceTrustConnectorServiceFactoryParamTest,
 
   Profile* signin_profile =
       testing_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  RedirectTestingFactoryToRealFactory(signin_profile);
 
   ASSERT_TRUE(signin_profile);
   EXPECT_TRUE(signin_profile->IsOffTheRecord());

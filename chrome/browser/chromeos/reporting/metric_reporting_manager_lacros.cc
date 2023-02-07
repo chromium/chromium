@@ -37,9 +37,13 @@ class MetricReportingManagerLacrosFactory : public ProfileKeyedServiceFactory {
 
   // Returns an instance of `MetricReportingManagerLacros` for the
   // given profile.
-  MetricReportingManagerLacros* GetForProfile(Profile* profile);
+  static MetricReportingManagerLacros* GetForProfile(Profile* profile);
+
+  static void EnsureFactoryBuilt();
 
  private:
+  static MetricReportingManagerLacrosFactory* GetInstance();
+
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 };
@@ -58,7 +62,19 @@ MetricReportingManagerLacrosFactory::GetForProfile(Profile* profile) {
     return nullptr;
   }
   return static_cast<MetricReportingManagerLacros*>(
-      GetServiceForBrowserContext(profile, true));
+      GetInstance()->GetServiceForBrowserContext(profile, true));
+}
+
+// static
+void MetricReportingManagerLacrosFactory::EnsureFactoryBuilt() {
+  GetInstance();
+}
+
+// static
+MetricReportingManagerLacrosFactory*
+MetricReportingManagerLacrosFactory::GetInstance() {
+  static base::NoDestructor<MetricReportingManagerLacrosFactory> g_factory;
+  return g_factory.get();
 }
 
 KeyedService* MetricReportingManagerLacrosFactory::BuildServiceInstanceFor(
@@ -101,10 +117,7 @@ void MetricReportingManagerLacros::Delegate::RegisterObserverWithCrosApiClient(
 // static
 MetricReportingManagerLacros* MetricReportingManagerLacros::GetForProfile(
     Profile* profile) {
-  static base::NoDestructor<MetricReportingManagerLacrosFactory> g_factory;
-  auto* const metric_reporting_manager_factory =
-      static_cast<MetricReportingManagerLacrosFactory*>(g_factory.get());
-  return metric_reporting_manager_factory->GetForProfile(profile);
+  return MetricReportingManagerLacrosFactory::GetForProfile(profile);
 }
 
 MetricReportingManagerLacros::MetricReportingManagerLacros(
@@ -233,4 +246,10 @@ void MetricReportingManagerLacros::UploadTelemetry() {
   }
   telemetry_report_queue_->Upload();
 }
+
+// static
+void MetricReportingManagerLacros::EnsureFactoryBuilt() {
+  MetricReportingManagerLacrosFactory::EnsureFactoryBuilt();
+}
+
 }  // namespace reporting::metrics

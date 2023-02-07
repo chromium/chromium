@@ -189,6 +189,7 @@
 #include "components/payments/content/can_make_payment_query_factory.h"
 #include "components/permissions/features.h"
 #include "components/policy/content/policy_blocklist_service.h"
+#include "components/policy/content/safe_search_service.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -220,6 +221,7 @@
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
+#include "chrome/browser/media_galleries/gallery_watch_manager.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
 #include "chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade_factory.h"
 #include "chrome/browser/profiles/profile_theme_update_service_factory.h"
@@ -316,6 +318,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager_lacros_factory.h"
+#include "chrome/browser/chromeos/reporting/metric_reporting_manager_lacros.h"
 #include "chrome/browser/lacros/account_manager/profile_account_manager_factory.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
 #include "chrome/browser/lacros/remote_apps/remote_apps_proxy_lacros_factory.h"
@@ -333,6 +336,12 @@
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/idle/idle_service_factory.h"
 #endif
@@ -340,6 +349,10 @@
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/browser_switcher/browser_switcher_service_factory.h"
 #include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
+#endif
+
+#if defined(TOOLKIT_VIEWS)
+#include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service_factory.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -472,14 +485,18 @@ void ChromeBrowserMainExtraPartsProfiles::
   BluetoothChooserContextFactory::GetInstance();
   BookmarkModelFactory::GetInstance();
   BookmarkUndoServiceFactory::GetInstance();
-  if (breadcrumbs::IsEnabled())
+  if (breadcrumbs::IsEnabled()) {
     BreadcrumbManagerKeyedServiceFactory::GetInstance();
+  }
   browser_sync::UserEventServiceFactory::GetInstance();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   browser_switcher::BrowserSwitcherServiceFactory::GetInstance();
 #endif
   BrowsingDataHistoryObserverService::Factory::GetInstance();
   browsing_topics::BrowsingTopicsServiceFactory::GetInstance();
+#if defined(TOOLKIT_VIEWS)
+  BubbleContentsWrapperServiceFactory::GetInstance();
+#endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::CleanupManagerLacrosFactory::GetInstance();
   chromeos::RemoteAppsProxyLacrosFactory::GetInstance();
@@ -491,8 +508,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   CartServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(commerce::kCommerceMerchantViewer))
+  if (base::FeatureList::IsEnabled(commerce::kCommerceMerchantViewer)) {
     MerchantViewerDataManagerFactory::GetInstance();
+  }
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   CertDbInitializerFactory::GetInstance();
@@ -538,6 +556,12 @@ void ChromeBrowserMainExtraPartsProfiles::
   enterprise_signals::SignalsAggregatorFactory::GetInstance();
 #endif
   enterprise::ProfileIdServiceFactory::GetInstance();
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
+  enterprise_connectors::DeviceTrustServiceFactory::GetInstance();
+  enterprise_connectors::DeviceTrustConnectorServiceFactory::GetInstance();
+#endif
+
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   ExitTypeServiceFactory::GetInstance();
 #endif
@@ -563,6 +587,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   GAIAInfoUpdateServiceFactory::GetInstance();
 #endif
 #if !BUILDFLAG(IS_ANDROID)
+  GalleryWatchManager::EnsureFactoryBuilt();
   GlobalErrorServiceFactory::GetInstance();
 #endif
   GoogleSearchDomainMixingMetricsEmitterFactory::GetInstance();
@@ -593,8 +618,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
   captions::LiveCaptionControllerFactory::GetInstance();
 #endif
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate))
+  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
     captions::LiveTranslateControllerFactory::GetInstance();
+  }
 #endif
   login_detection::LoginDetectionKeyedServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
@@ -606,18 +632,21 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_ANDROID)
   MediaDrmOriginIdManagerFactory::GetInstance();
 #endif
-  if (MediaEngagementService::IsEnabled())
+  if (MediaEngagementService::IsEnabled()) {
     MediaEngagementServiceFactory::GetInstance();
+  }
 #if !BUILDFLAG(IS_ANDROID)
   MediaGalleriesPreferencesFactory::GetInstance();
 #endif
-  if (base::FeatureList::IsEnabled(media::kUseMediaHistoryStore))
+  if (base::FeatureList::IsEnabled(media::kUseMediaHistoryStore)) {
     media_history::MediaHistoryKeyedServiceFactory::GetInstance();
+  }
   media_router::ChromeLocalPresentationManagerFactory::GetInstance();
   media_router::ChromeMediaRouterFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kAccessCodeCastUI))
+  if (base::FeatureList::IsEnabled(features::kAccessCodeCastUI)) {
     media_router::AccessCodeCastSinkServiceFactory::GetInstance();
+  }
   media_router::MediaRouterUIServiceFactory::GetInstance();
 #endif
 #if !BUILDFLAG(IS_ANDROID)
@@ -663,8 +692,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   ProfileStatisticsFactory::GetInstance();
 #endif
-  if (optimization_guide::switches::ShouldValidateModel())
+  if (optimization_guide::switches::ShouldValidateModel()) {
     optimization_guide::ModelValidatorKeyedServiceFactory::GetInstance();
+  }
   OriginKeyedPermissionActionServiceFactory::GetInstance();
   OriginTrialsFactory::GetInstance();
   page_load_metrics::PageLoadMetricsMemoryTrackerFactory::GetInstance();
@@ -706,6 +736,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   ReopenTabInProductHelpFactory::GetInstance();
 #endif
+  SafeSearchFactory::GetInstance();
   SearchPrefetchServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   SessionProtoDBFactory<cart_db::ChromeCartContentProto>::GetInstance();
@@ -781,6 +812,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_CHROMEOS)
   reporting::ManualTestHeartbeatEventFactory::GetInstance();
 #endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  reporting::metrics::MetricReportingManagerLacros::EnsureFactoryBuilt();
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   performance_manager::SiteDataCacheFacadeFactory::GetInstance();
@@ -798,8 +832,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   safe_browsing::SafeBrowsingNavigationObserverManagerFactory::GetInstance();
   safe_browsing::VerdictCacheManagerFactory::GetInstance();
 #if BUILDFLAG(IS_MAC)
-  if (screentime::IsScreenTimeEnabled())
+  if (screentime::IsScreenTimeEnabled()) {
     screentime::HistoryBridgeFactory::GetInstance();
+  }
 #endif
   SCTReportingServiceFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)
@@ -818,8 +853,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   commerce::ShoppingServiceFactory::GetInstance();
   ShortcutsBackendFactory::GetInstance();
   SigninProfileAttributesUpdaterFactory::GetInstance();
-  if (site_engagement::SiteEngagementService::IsEnabled())
+  if (site_engagement::SiteEngagementService::IsEnabled()) {
     site_engagement::SiteEngagementServiceFactory::GetInstance();
+  }
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   SigninManagerFactory::GetInstance();
 #endif

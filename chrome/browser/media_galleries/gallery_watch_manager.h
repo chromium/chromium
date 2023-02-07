@@ -87,6 +87,8 @@ class GalleryWatchManager
   MediaGalleryPrefIdSet GetWatchSet(content::BrowserContext* browser_context,
                                     const std::string& extension_id);
 
+  static void EnsureFactoryBuilt();
+
  private:
   class FileWatchManager;
 

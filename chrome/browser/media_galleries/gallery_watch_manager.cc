@@ -55,6 +55,7 @@ class GalleryWatchManagerShutdownNotifierFactory
       : BrowserContextKeyedServiceShutdownNotifierFactory(
             "GalleryWatchManager") {
     DependsOn(MediaGalleriesPreferencesFactory::GetInstance());
+    DependsOn(MediaFileSystemRegistry::GetFactoryInstance());
   }
   ~GalleryWatchManagerShutdownNotifierFactory() override {}
 };
@@ -503,4 +504,9 @@ void GalleryWatchManager::OnRemovableStorageDetached(
       ++it;
     }
   }
+}
+
+// static
+void GalleryWatchManager::EnsureFactoryBuilt() {
+  GalleryWatchManagerShutdownNotifierFactory::GetInstance();
 }

@@ -32,6 +32,8 @@ class DeviceTrustConnectorServiceFactory : public ProfileKeyedServiceFactory {
   friend struct base::DefaultSingletonTraits<
       DeviceTrustConnectorServiceFactory>;
 
+  friend class DeviceTrustConnectorServiceFactoryBaseTest;
+
   DeviceTrustConnectorServiceFactory();
   ~DeviceTrustConnectorServiceFactory() override;
 

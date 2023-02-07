@@ -41,6 +41,7 @@
 #include "chrome/browser/net/chrome_network_delegate.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -247,6 +248,10 @@ class IdentityExtraSetUp : public ChromeBrowserMainExtraParts {
   std::unique_ptr<ScopedAshAccountManagerForTests> scoped_ash_account_manager_;
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+void EnsureBrowserContextKeyedServiceFactoriesForTestingBuilt() {
+  NotificationDisplayServiceTester::EnsureFactoryBuilt();
+}
 
 }  // namespace
 
@@ -473,6 +478,8 @@ void InProcessBrowserTest::SetUp() {
   // profile on browser start, which is unexpected by mosts tests. Tests which
   // expect this can allow the prompt as desired.
   PrivacySandboxService::SetPromptDisabledForTests(true);
+
+  EnsureBrowserContextKeyedServiceFactoriesForTestingBuilt();
 
   BrowserTestBase::SetUp();
 }

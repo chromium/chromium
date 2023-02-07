@@ -155,3 +155,8 @@ void NotificationDisplayServiceTester::OnProfileShutdown() {
   profile_ = nullptr;
   profile_shutdown_subscription_ = {};
 }
+
+// static
+void NotificationDisplayServiceTester::EnsureFactoryBuilt() {
+  NotificationDisplayServiceShutdownNotifierFactory::GetInstance();
+}

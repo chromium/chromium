@@ -485,6 +485,7 @@ include_rules = [
   # TODO(crbug.com/1112591): Remove the exceptions below.
   "-chrome/browser/ui/views",
   "+chrome/browser/ui/views/ash/chrome_browser_main_extra_parts_ash.h",
+  "+chrome/browser/ui/views/bubble/bubble_contents_wrapper_service_factory.h",
   "+chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h",
   "+chrome/browser/ui/views/chrome_browser_main_extra_parts_views_lacros.h",
   "+chrome/browser/ui/views/chrome_browser_main_extra_parts_views_linux.h",

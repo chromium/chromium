@@ -19,6 +19,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -166,6 +167,8 @@ ChunkedPolicyPrefsTest::ChunkedPolicyPrefsTest() {
 // IMPORTANT: Please add hendrich@chromium.org on any related bugs when
 // disabling this test.
 IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, PolicyToPrefsMapping) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage storage;
   policy::BrowserDMTokenStorage::SetForTesting(&storage);

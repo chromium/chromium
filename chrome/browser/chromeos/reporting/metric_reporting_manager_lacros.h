@@ -73,6 +73,8 @@ class MetricReportingManagerLacros : public KeyedService,
   // DeviceSettingsLacros::Observer:
   void OnDeviceSettingsUpdated() override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   void Shutdown() override;
 

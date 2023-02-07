@@ -88,6 +88,8 @@ class NotificationDisplayServiceTester {
       const StubNotificationDisplayService::
           ProcessNotificationOperationCallback& delegate);
 
+  static void EnsureFactoryBuilt();
+
  private:
   void OnProfileShutdown();
 
