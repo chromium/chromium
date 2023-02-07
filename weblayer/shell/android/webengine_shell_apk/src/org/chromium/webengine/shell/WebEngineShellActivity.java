@@ -202,7 +202,7 @@ public class WebEngineShellActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 String query = v.getText().toString();
-                activeTab.getNavigationController().navigate(query);
+                mTabManager.getActiveTab().getNavigationController().navigate(query);
                 // Hides keyboard on Enter key pressed
                 InputMethodManager imm =
                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
