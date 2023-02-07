@@ -75,9 +75,14 @@ RemotingSender::RemotingSender(
       error_callback_(std::move(error_callback)),
       data_pipe_reader_(new media::MojoDataPipeReader(std::move(pipe))),
       stream_sender_(this, std::move(stream_sender)),
+      rtp_timebase_(config.rtp_timebase),
       input_queue_discards_remaining_(0),
       is_reading_(false),
       flow_restart_pending_(true) {
+  // TODO(crbug.com/1413561): validate that we can use an arbitrary timebase
+  // here. Some receivers may require us to use the hardcoded remoting RTP
+  // timebase.
+  DCHECK_EQ(rtp_timebase_, media::cast::kRemotingRtpTimebase);
   stream_sender_.set_disconnect_handler(base::BindOnce(
       &RemotingSender::OnRemotingDataStreamError, base::Unretained(this)));
 }
@@ -201,9 +206,9 @@ void RemotingSender::TrySendFrame() {
   const media::cast::RtpTimeTicks rtp_timestamp =
       last_frame_rtp_timestamp +
       std::max(media::cast::RtpTimeDelta::FromTicks(1),
-               ToRtpTimeDelta(
+               media::cast::ToRtpTimeDelta(
                    remoting_frame->reference_time - last_frame_reference_time,
-                   media::cast::kRemotingRtpTimebase));
+                   rtp_timebase_));
   remoting_frame->rtp_timestamp = rtp_timestamp;
   remoting_frame->data.swap(next_frame_data_);
 

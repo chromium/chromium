@@ -131,6 +131,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RemotingSender final
   // this RemotingSender consumes from |pipe_|.
   mojo::Receiver<media::mojom::RemotingDataStreamSender> stream_sender_;
 
+  // The RTP timebase for this sender, set from the FrameSenderConfig.
+  int rtp_timebase_;
+
   // The next frame's payload data. Populated by call to OnFrameRead() when
   // reading succeeded.
   std::string next_frame_data_;
