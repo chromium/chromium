@@ -3,14 +3,12 @@
 // found in the LICENSE file.
 
 (async function(testRunner) {
-  const html = `<!doctype html>
-    <html><body>
-    <input type="text" id="input" value="input_value" autofocus>
-    </body></html>
-  `;
+  const {page, session, dp} = await testRunner.startBlank(
+      `Tests input field clipboard operations.`);
 
-  const {page, session, dp} = await testRunner.startHTML(
-      html, `Tests input field clipboard operations.`);
+  await dp.Page.enable();
+  dp.Page.navigate({url: testRunner.url('/resources/input.html')});
+  await dp.Page.onceLoadEventFired();
 
   async function logElementValue(id) {
     const value = await session.evaluate(`
@@ -36,23 +34,19 @@
     });
   }
 
-  const modControl = 2;
-  const modCommand = 4;
-  const mod = navigator.platform.includes('Mac') ? modCommand : modControl;
-
   await logElementValue("input");
-  await sendKey('a', 65, mod, ['selectAll']);
-  await sendKey('c', 67, mod, ['copy']);
+  await sendKey('a', 65, 2, ["selectAll"]);
+  await sendKey('c', 67, 2, ["copy"]);
 
-  await sendKey('1', 61);
-  await sendKey('2', 62);
-  await sendKey('3', 63);
+  await sendKey('a', 65);
+  await sendKey('b', 66);
+  await sendKey('c', 67);
   await logElementValue("input");
 
-  // Don't send Ctrl+A here because this would cause clipboard copy on
-  // systems that support selection clipboard, e.g. Linux.
-  await sendKey('v', 86, mod, ['paste']);
+  await sendKey('a', 65, 2, ["selectAll"]);
+  await sendKey('c', 67, 2, ["paste"]);
   await logElementValue("input");
 
   testRunner.completeTest();
 })
+
