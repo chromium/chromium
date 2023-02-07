@@ -72,6 +72,11 @@ VmUI::VmUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddResourcePath("vm.mojom-webui.js", IDR_VM_MOJOM_WEBUI_JS);
   source->AddResourcePath("guest_os_diagnostics.mojom-webui.js",
                           IDR_GUEST_OS_DIAGNOSTICS_MOJOM_WEBUI_JS);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types "
+      // Add TrustedTypes policies necessary for using Polymer.
+      "polymer-html-literal polymer-template-event-attribute-policy;");
 }
 
 VmUI::~VmUI() = default;
