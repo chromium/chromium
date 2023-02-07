@@ -71,6 +71,7 @@ source_set("util") {
     "Accelerate.framework",
     "CoreGraphics.framework",
     "QuartzCore.framework",
+    "UniformTypeIdentifiers.framework",
   ]
 }
 

@@ -4,7 +4,7 @@
 
 #import "ios/web/shell/view_controller.h"
 
-#import <MobileCoreServices/MobileCoreServices.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import <stdint.h>
 
@@ -275,8 +275,8 @@ using web::NavigationManager;
   GURL link = params.link_url;
   void (^copyHandler)(UIAction*) = ^(UIAction* action) {
     NSDictionary* item = @{
-      (NSString*)(kUTTypeURL) : net::NSURLWithGURL(link),
-      (NSString*)(kUTTypeUTF8PlainText) : [base::SysUTF8ToNSString(link.spec())
+      UTTypeURL.identifier : net::NSURLWithGURL(link),
+      UTTypeUTF8PlainText.identifier : [base::SysUTF8ToNSString(link.spec())
           dataUsingEncoding:NSUTF8StringEncoding],
     };
     [[UIPasteboard generalPasteboard] setItems:@[ item ]];

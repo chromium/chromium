@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
 
-#import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "base/strings/sys_string_conversions.h"
 #import "net/base/mac/url_conversions.h"
@@ -37,8 +37,8 @@ void StoreURLsInPasteboard(const std::vector<const GURL>& urls) {
     NSData* plainText = [base::SysUTF8ToNSString(URL.spec())
         dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary* copiedItem = @{
-      (NSString*)kUTTypeURL : net::NSURLWithGURL(URL),
-      (NSString*)kUTTypeUTF8PlainText : plainText,
+      UTTypeURL.identifier : net::NSURLWithGURL(URL),
+      UTTypeUTF8PlainText.identifier : plainText,
     };
 
     [pasteboard_items addObject:copiedItem];
@@ -61,14 +61,14 @@ void StoreInPasteboard(NSString* text, const GURL& URL) {
   NSData* plainText = [base::SysUTF8ToNSString(URL.spec())
       dataUsingEncoding:NSUTF8StringEncoding];
   NSDictionary* copiedURL = @{
-    (NSString*)kUTTypeURL : net::NSURLWithGURL(URL),
-    (NSString*)kUTTypeUTF8PlainText : plainText,
+    UTTypeURL.identifier : net::NSURLWithGURL(URL),
+    UTTypeUTF8PlainText.identifier : plainText,
   };
 
   NSDictionary* copiedText = @{
-    (NSString*)kUTTypeText : text,
-    (NSString*)
-    kUTTypeUTF8PlainText : [text dataUsingEncoding:NSUTF8StringEncoding],
+    UTTypeText.identifier : text,
+    UTTypeUTF8PlainText.
+    identifier : [text dataUsingEncoding:NSUTF8StringEncoding],
   };
 
   UIPasteboard.generalPasteboard.items = @[ copiedURL, copiedText ];

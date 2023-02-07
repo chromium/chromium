@@ -4,7 +4,7 @@
 
 #import "ios/chrome/credential_provider_extension/ui/credential_details_view_controller.h"
 
-#import <MobileCoreServices/UTCoreTypes.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
@@ -213,7 +213,7 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
 
 // Copy password to clipboard.
 - (void)copyPassword {
-  NSDictionary* item = @{(NSString*)kUTTypePlainText : self.clearPassword};
+  NSDictionary* item = @{UTTypePlainText.identifier : self.clearPassword};
   NSDate* expirationDate =
       [NSDate dateWithTimeIntervalSinceNow:kSecurePasteboardExpiration];
   NSDictionary* options = @{UIPasteboardOptionExpirationDate : expirationDate};

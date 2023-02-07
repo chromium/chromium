@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
 
-#import <MobileCoreServices/MobileCoreServices.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "base/strings/sys_string_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -45,14 +45,14 @@ TEST_F(PasteboardUtilTest, StoreInPasteboardWorks) {
   ASSERT_TRUE(UIPasteboard.generalPasteboard.hasStrings);
   ASSERT_TRUE(UIPasteboard.generalPasteboard.hasURLs);
 
-  NSString* plainTextType = (NSString*)kUTTypeUTF8PlainText;
+  NSString* plainTextType = UTTypeUTF8PlainText.identifier;
 
   // URL is stored as the first pasteboard item as both URL and plain text; the
   // latter being required on iOS 12 to be pasted in text boxes in other apps.
   NSIndexSet* firstIndex = [NSIndexSet indexSetWithIndex:0];
   EXPECT_TRUE(
       [test_ns_url isEqual:[UIPasteboard.generalPasteboard
-                               valuesForPasteboardType:(NSString*)kUTTypeURL
+                               valuesForPasteboardType:UTTypeURL.identifier
                                              inItemSet:firstIndex][0]]);
   EXPECT_TRUE(
       [url_as_data isEqualToData:[UIPasteboard.generalPasteboard
@@ -67,7 +67,7 @@ TEST_F(PasteboardUtilTest, StoreInPasteboardWorks) {
                                                   inItemSet:secondIndex][0]]);
   EXPECT_TRUE([test_text
       isEqualToString:[UIPasteboard.generalPasteboard
-                          valuesForPasteboardType:(NSString*)kUTTypeText
+                          valuesForPasteboardType:UTTypeText.identifier
                                         inItemSet:secondIndex][0]]);
 }
 

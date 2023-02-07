@@ -69,6 +69,7 @@ ios_appex_bundle("share_extension") {
     "CoreGraphics.framework",
     "MobileCoreServices.framework",
     "UIKit.framework",
+    "UniformTypeIdentifiers.framework",
   ]
 
   extra_substitutions = [

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <MobileCoreServices/MobileCoreServices.h>
-
 #import "ios/chrome/share_extension/share_view_controller.h"
+
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "base/ios/block_types.h"
 #import "base/mac/foundation_util.h"
@@ -219,7 +219,7 @@ const CGFloat kMediumAlpha = 0.5;
 }
 
 - (void)loadElementsFromContext {
-  NSString* typeURL = (__bridge NSString*)(kUTTypeURL);
+  NSString* typeURL = UTTypeURL.identifier;
   for (NSExtensionItem* item in self.extensionContext.inputItems) {
     for (NSItemProvider* itemProvider in item.attachments) {
       if ([itemProvider hasItemConformingToTypeIdentifier:typeURL]) {
