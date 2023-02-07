@@ -1264,6 +1264,7 @@
       name: "FedCmAutoReauthn",
       depends_on: ["FedCm"],
       public: true,
+      status: "test",
     },
     {
       // This only exists so we can use RuntimeEnabled in the IDL file

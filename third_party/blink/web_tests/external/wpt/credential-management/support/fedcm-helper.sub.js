@@ -65,6 +65,17 @@ credential-management/support/fedcm/${manifest_filename}`;
   };
 }
 
+// Returns FedCM CredentialRequestOptions with auto re-authentication.
+// succeeds.
+export function request_options_with_auto_reauthn(manifest_filename) {
+  let options = default_request_options(manifest_filename);
+  // Approved client
+  options.identity.providers[0].clientId = '123';
+  options.identity.autoReauthn = true;
+
+  return options;
+}
+
 // Test wrapper which does FedCM-specific setup.
 export function fedcm_test(test_func, test_name) {
   promise_test(async t => {
