@@ -28,6 +28,8 @@ class UserNoteServiceFactory : public ProfileKeyedServiceFactory {
   // by `GetForContext` every time, even if `context` is null.
   static void SetServiceForTesting(std::unique_ptr<UserNoteService> service);
 
+  static void EnsureFactoryBuilt();
+
   UserNoteServiceFactory(const UserNoteServiceFactory&) = delete;
   UserNoteServiceFactory& operator=(const UserNoteServiceFactory&) = delete;
 

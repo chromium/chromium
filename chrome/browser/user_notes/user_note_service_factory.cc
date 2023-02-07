@@ -55,4 +55,9 @@ KeyedService* UserNoteServiceFactory::BuildServiceInstanceFor(
       std::make_unique<UserNoteStorageImpl>(context->GetPath()));
 }
 
+// static
+void UserNoteServiceFactory::EnsureFactoryBuilt() {
+  GetInstance();
+}
+
 }  // namespace user_notes

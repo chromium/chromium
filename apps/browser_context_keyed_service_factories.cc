@@ -16,6 +16,7 @@ namespace apps {
 void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   AppLifetimeMonitorFactory::GetInstance();
   AppRestoreServiceFactory::GetInstance();
+  SavedFilesServiceFactory::GetInstance();
 }
 
 void NotifyApplicationTerminating(content::BrowserContext* browser_context) {

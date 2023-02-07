@@ -88,3 +88,10 @@ void AutocompleteControllerEmitter::OnResultChanged(
     observer.OnResultChanged(controller, default_match_changed);
   }
 }
+
+#if !BUILDFLAG(IS_IOS)
+// static
+void AutocompleteControllerEmitter::EnsureFactoryBuilt() {
+  AutocompleteControllerEmitterFactory::GetInstance();
+}
+#endif  // !BUILDFLAG(IS_IOS)

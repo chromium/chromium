@@ -71,3 +71,8 @@ void OmniboxInputWatcher::NotifyInputEntered() {
   for (auto& observer : observers_)
     observer.OnOmniboxInputEntered();
 }
+
+// static
+void OmniboxInputWatcher::EnsureFactoryBuilt() {
+  OmniboxInputWatcherFactory::GetInstance();
+}

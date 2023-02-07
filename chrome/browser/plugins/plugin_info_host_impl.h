@@ -105,6 +105,8 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
                      const std::string& mime_type,
                      GetPluginInfoCallback callback) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   void ShutdownOnUIThread();
 

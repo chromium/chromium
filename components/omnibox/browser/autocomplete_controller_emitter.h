@@ -42,6 +42,10 @@ class AutocompleteControllerEmitter : public KeyedService,
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
 
+#if !BUILDFLAG(IS_IOS)
+  static void EnsureFactoryBuilt();
+#endif  // !BUILDFLAG(IS_IOS)
+
  private:
   base::ObserverList<AutocompleteController::Observer> observers_;
 };

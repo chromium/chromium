@@ -166,6 +166,8 @@ class TurnSyncOnHelper {
   // Public for testing.
   void OnSyncStartupStateChanged(SyncStartupTracker::ServiceStartupState state);
 
+  static void EnsureFactoryBuilt();
+
  private:
   enum class ProfileMode {
     // Attempts to sign the user in |profile_|. Note that if the account to be

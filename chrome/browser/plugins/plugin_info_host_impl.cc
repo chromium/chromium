@@ -383,6 +383,11 @@ void PluginInfoHostImpl::GetPluginInfoFinish(
   std::move(callback).Run(std::move(output));
 }
 
+// static
+void PluginInfoHostImpl::EnsureFactoryBuilt() {
+  PluginInfoHostImplShutdownNotifierFactory::GetInstance();
+}
+
 void PluginInfoHostImpl::Context::MaybeGrantAccess(
     chrome::mojom::PluginStatus status,
     const base::FilePath& path) const {

@@ -69,3 +69,8 @@ KeyedService* HistoryClustersServiceFactory::BuildServiceInstanceFor(
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
       profile->GetPrefs());
 }
+
+// static
+void HistoryClustersServiceFactory::EnsureFactoryBuilt() {
+  GetInstance();
+}

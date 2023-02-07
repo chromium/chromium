@@ -22,6 +22,8 @@ class SpeechRecognitionClientBrowserInterfaceFactory
   static speech::SpeechRecognitionClientBrowserInterface* GetForProfile(
       Profile* profile);
 
+  static void EnsureFactoryBuilt();
+
  private:
   friend class base::NoDestructor<
       SpeechRecognitionClientBrowserInterfaceFactory>;

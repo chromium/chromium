@@ -57,6 +57,8 @@ class OmniboxSuggestionsWatcher : public KeyedService {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  static void EnsureFactoryBuilt();
+
  private:
   base::ObserverList<Observer> observers_;
 };

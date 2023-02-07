@@ -24,6 +24,8 @@ class ImageServiceFactory : public ProfileKeyedServiceFactory {
   static ImageService* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
+  static void EnsureFactoryBuilt();
+
  private:
   friend base::NoDestructor<ImageServiceFactory>;
   static ImageServiceFactory& GetInstance();

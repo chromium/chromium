@@ -730,3 +730,8 @@ void TurnSyncOnHelper::AbortAndDelete() {
 
   delete this;
 }
+
+// static
+void TurnSyncOnHelper::EnsureFactoryBuilt() {
+  TurnSyncOnHelperShutdownNotifierFactory::GetInstance();
+}

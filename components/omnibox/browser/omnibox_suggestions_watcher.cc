@@ -79,3 +79,8 @@ void OmniboxSuggestionsWatcher::NotifyDefaultSuggestionChanged() {
   for (auto& observer : observers_)
     observer.OnOmniboxDefaultSuggestionChanged();
 }
+
+// static
+void OmniboxSuggestionsWatcher::EnsureFactoryBuilt() {
+  OmniboxSuggestionsWatcherFactory::GetInstance();
+}

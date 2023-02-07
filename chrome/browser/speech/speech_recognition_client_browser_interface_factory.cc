@@ -46,3 +46,8 @@ SpeechRecognitionClientBrowserInterfaceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new speech::SpeechRecognitionClientBrowserInterface(context);
 }
+
+// static
+void SpeechRecognitionClientBrowserInterfaceFactory::EnsureFactoryBuilt() {
+  SpeechRecognitionClientBrowserInterfaceFactory::GetInstance();
+}

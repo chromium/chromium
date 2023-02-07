@@ -40,4 +40,9 @@ KeyedService* ImageServiceFactory::BuildServiceInstanceFor(
       SyncServiceFactory::GetForProfile(profile));
 }
 
+// static
+void ImageServiceFactory::EnsureFactoryBuilt() {
+  GetInstance();
+}
+
 }  // namespace image_service

@@ -36,3 +36,8 @@ KeyedService* SpeechRecognitionServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new speech::ChromeSpeechRecognitionService(context);
 }
+
+// static
+void SpeechRecognitionServiceFactory::EnsureFactoryBuilt() {
+  SpeechRecognitionServiceFactory::GetInstance();
+}

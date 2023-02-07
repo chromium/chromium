@@ -371,3 +371,8 @@ void LookalikeUrlService::OnUIDisabledFirstVisit(const GURL& url) {
 void LookalikeUrlService::ResetWarningDismissedETLDPlusOnesForTesting() {
   warning_dismissed_etld1s_.clear();
 }
+
+// static
+void LookalikeUrlService::EnsureFactoryBuilt() {
+  LookalikeUrlServiceFactory::GetInstance();
+}

@@ -420,3 +420,8 @@ void DiceResponseHandler::OnTokenExchangeFailure(
 
   DeleteTokenFetcher(token_fetcher);
 }
+
+// static
+void DiceResponseHandler::EnsureFactoryBuilt() {
+  DiceResponseHandlerFactory::GetInstance();
+}

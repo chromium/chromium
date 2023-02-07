@@ -697,3 +697,9 @@ void MediaFileSystemRegistry::OnProfileShutdown(Profile* profile) {
   DCHECK(profile_subscription_it != profile_subscription_map_.end());
   profile_subscription_map_.erase(profile_subscription_it);
 }
+
+// static
+BrowserContextKeyedServiceShutdownNotifierFactory*
+MediaFileSystemRegistry::GetFactoryInstance() {
+  return MediaFileSystemRegistryShutdownNotifierFactory::GetInstance();
+}

@@ -150,6 +150,8 @@ class LookalikeUrlService : public KeyedService {
   // for testing.
   void ResetWarningDismissedETLDPlusOnesForTesting();
 
+  static void EnsureFactoryBuilt();
+
  private:
   // Called when an async engaged site computation is finished.
   void OnUpdateEngagedSitesCompleted(
