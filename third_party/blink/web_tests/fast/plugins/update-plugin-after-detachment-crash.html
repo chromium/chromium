@@ -28,7 +28,7 @@ function embedLoaded() {
   // This will cause detach the embed and iframe element, which will cause the
   // window load event to fire, since all loading subframes will have been
   // detached.
-  document.body.innerText = "";
+  document.body.remove();
 
   t.step(function() {
     assert_true(docLoaded, "document onload should already be done synchronously within the above innerText change.");

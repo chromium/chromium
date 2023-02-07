@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/dom/element_rare_data.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
+#include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
@@ -910,6 +911,11 @@ String HTMLElement::innerText() {
 
 void HTMLElement::setInnerText(const String& text) {
   // FIXME: This doesn't take whitespace collapsing into account at all.
+
+  // The usage of ASSERT_NO_EXCEPTION in this function is subject to mutation
+  // events being fired while removing elements. By delaying them to the end of
+  // the function, we can guarantee that no exceptions will be thrown.
+  EventQueueScope delay_mutation_events;
 
   if (!text.Contains('\n') && !text.Contains('\r')) {
     if (text.empty()) {
