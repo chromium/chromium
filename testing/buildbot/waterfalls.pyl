@@ -3182,35 +3182,6 @@
           'isolated_scripts': 'chromeos_isolated_scripts',
         },
       },
-      # A temporary builder to test new Fuchsia testing scripts on arm64.
-      'fuchsia-fyi-arm64-cfv2-script': {
-        'os_type': 'fuchsia',
-        'mixins': [
-          'arm64',
-          'docker',
-          'linux-focal',
-        ],
-        'test_suites': {
-          'gtest_tests': 'fuchsia_gtests',
-        },
-      },
-      'fuchsia-fyi-cfv2-script': {
-        'browser_config': 'web-engine-shell',
-        'os_type': 'fuchsia',
-        'mixins': [
-          'linux-bionic',
-        ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'kvm': '1',
-            },
-          ],
-        },
-        'test_suites': {
-          'gtest_tests': 'fuchsia_gtests',
-        },
-      },
       'ios-fieldtrial-rel': {
         'mixins': [
           'finch-chromium-swarming-pool',
