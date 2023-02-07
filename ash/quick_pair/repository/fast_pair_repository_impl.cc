@@ -8,7 +8,7 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/proto/fastpair_data.pb.h"
-#include "ash/quick_pair/repository/fast_pair/device_id_map.h"
+#include "ash/quick_pair/repository/fast_pair/device_address_map.h"
 #include "ash/quick_pair/repository/fast_pair/device_image_store.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata_fetcher.h"
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.h"
@@ -85,6 +85,7 @@ FastPairRepositoryImpl::FastPairRepositoryImpl()
     : device_metadata_fetcher_(std::make_unique<DeviceMetadataFetcher>()),
       footprints_fetcher_(std::make_unique<FootprintsFetcherImpl>()),
       image_decoder_(std::make_unique<FastPairImageDecoderImpl>()),
+      device_address_map_(std::make_unique<DeviceAddressMap>()),
       device_image_store_(
           std::make_unique<DeviceImageStore>(image_decoder_.get())),
       footprints_last_updated_(base::Time::UnixEpoch()) {
@@ -96,7 +97,6 @@ FastPairRepositoryImpl::FastPairRepositoryImpl()
 void FastPairRepositoryImpl::OnGetAdapter(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   adapter_ = adapter;
-  device_id_map_ = std::make_unique<DeviceIdMap>(adapter_);
   saved_device_registry_ = std::make_unique<SavedDeviceRegistry>(adapter_);
 }
 
@@ -105,7 +105,7 @@ FastPairRepositoryImpl::FastPairRepositoryImpl(
     std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher,
     std::unique_ptr<FootprintsFetcher> footprints_fetcher,
     std::unique_ptr<FastPairImageDecoder> image_decoder,
-    std::unique_ptr<DeviceIdMap> device_id_map,
+    std::unique_ptr<DeviceAddressMap> device_address_map,
     std::unique_ptr<DeviceImageStore> device_image_store,
     std::unique_ptr<SavedDeviceRegistry> saved_device_registry,
     std::unique_ptr<PendingWriteStore> pending_write_store)
@@ -113,7 +113,7 @@ FastPairRepositoryImpl::FastPairRepositoryImpl(
       device_metadata_fetcher_(std::move(device_metadata_fetcher)),
       footprints_fetcher_(std::move(footprints_fetcher)),
       image_decoder_(std::move(image_decoder)),
-      device_id_map_(std::move(device_id_map)),
+      device_address_map_(std::move(device_address_map)),
       device_image_store_(std::move(device_image_store)),
       saved_device_registry_(std::move(saved_device_registry)),
       pending_write_store_(std::move(pending_write_store)),
@@ -772,7 +772,7 @@ void FastPairRepositoryImpl::FetchDeviceImages(scoped_refptr<Device> device) {
   // Save a record of the device ID -> model ID for this device so that we can
   // display images for device objects that lack a model ID, such as
   // device::BluetoothDevice.
-  if (!device_id_map_->SaveModelIdForDevice(device)) {
+  if (!device_address_map_->SaveModelIdForDevice(device)) {
     QP_LOG(WARNING) << __func__
                     << ": Unable to save device ID -> model ID"
                        " mapping for model ID "
@@ -832,7 +832,7 @@ void FastPairRepositoryImpl::CompleteFetchDeviceImages(
 bool FastPairRepositoryImpl::PersistDeviceImages(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": Persisting device images for model ID "
                << device->metadata_id();
-  if (!device_id_map_->PersistRecordsForDevice(device)) {
+  if (!device_address_map_->PersistRecordsForDevice(device)) {
     QP_LOG(WARNING) << __func__
                     << ": Unable to persist address -> model ID"
                        " mapping for model ID "
@@ -843,16 +843,22 @@ bool FastPairRepositoryImpl::PersistDeviceImages(scoped_refptr<Device> device) {
 
 bool FastPairRepositoryImpl::EvictDeviceImages(
     const device::BluetoothDevice* device) {
-  const std::string device_id = device->GetIdentifier();
+  const std::string mac_address = device->GetAddress();
+  QP_LOG(VERBOSE) << __func__
+                  << ": Evicting mac address to model ID record for: "
+                  << device->GetAddress();
+
+  // TODO(235117226): Remove the records associated with the BLE address.
   absl::optional<const std::string> hex_model_id =
-      device_id_map_->GetModelIdForDeviceId(device_id);
+      device_address_map_->GetModelIdForMacAddress(mac_address);
   if (!hex_model_id) {
     return false;
   }
-  device_id_map_->EvictDeviceIdRecord(device_id);
+  device_address_map_->EvictMacAddressRecord(mac_address);
 
   // Before evicting images, check if other device IDs map to this model ID.
-  if (device_id_map_->HasPersistedRecordsForModelId(hex_model_id.value())) {
+  if (device_address_map_->HasPersistedRecordsForModelId(
+          hex_model_id.value())) {
     return false;
   }
 
@@ -862,7 +868,7 @@ bool FastPairRepositoryImpl::EvictDeviceImages(
 absl::optional<bluetooth_config::DeviceImageInfo>
 FastPairRepositoryImpl::GetImagesForDevice(const std::string& device_id) {
   absl::optional<const std::string> hex_model_id =
-      device_id_map_->GetModelIdForDeviceId(device_id);
+      device_address_map_->GetModelIdForMacAddress(device_id);
   if (!hex_model_id) {
     return absl::nullopt;
   }

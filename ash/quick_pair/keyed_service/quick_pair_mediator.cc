@@ -22,7 +22,7 @@
 #include "ash/quick_pair/message_stream/message_stream_lookup_impl.h"
 #include "ash/quick_pair/pairing/pairer_broker_impl.h"
 #include "ash/quick_pair/pairing/retroactive_pairing_detector_impl.h"
-#include "ash/quick_pair/repository/fast_pair/device_id_map.h"
+#include "ash/quick_pair/repository/fast_pair/device_address_map.h"
 #include "ash/quick_pair/repository/fast_pair/device_image_store.h"
 #include "ash/quick_pair/repository/fast_pair/pending_write_store.h"
 #include "ash/quick_pair/repository/fast_pair/saved_device_registry.h"
@@ -137,7 +137,7 @@ void Mediator::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 // static
 void Mediator::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  DeviceIdMap::RegisterLocalStatePrefs(registry);
+  DeviceAddressMap::RegisterLocalStatePrefs(registry);
   DeviceImageStore::RegisterLocalStatePrefs(registry);
 }
 

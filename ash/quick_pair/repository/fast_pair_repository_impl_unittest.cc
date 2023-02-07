@@ -9,7 +9,7 @@
 #include "ash/quick_pair/common/mock_quick_pair_browser_delegate.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/repository/fake_device_metadata_http_fetcher.h"
-#include "ash/quick_pair/repository/fast_pair/device_id_map.h"
+#include "ash/quick_pair/repository/fast_pair/device_address_map.h"
 #include "ash/quick_pair/repository/fast_pair/device_image_store.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata_fetcher.h"
@@ -163,8 +163,8 @@ class FastPairRepositoryImplTest : public AshTestBase {
     ON_CALL(*image_decoder_, DecodeImage(_, _, _))
         .WillByDefault(RunOnceCallback<2>(test_image_));
 
-    auto device_id_map = std::make_unique<DeviceIdMap>(adapter_.get());
-    device_id_map_ = device_id_map.get();
+    auto device_address_map = std::make_unique<DeviceAddressMap>();
+    device_address_map_ = device_address_map.get();
 
     auto device_image_store =
         std::make_unique<DeviceImageStore>(image_decoder_);
@@ -180,7 +180,7 @@ class FastPairRepositoryImplTest : public AshTestBase {
     fast_pair_repository_ = std::make_unique<FastPairRepositoryImpl>(
         adapter_, std::move(device_metadata_fetcher),
         std::move(footprints_fetcher), std::move(image_decoder),
-        std::move(device_id_map), std::move(device_image_store),
+        std::move(device_address_map), std::move(device_image_store),
         std::move(saved_device_registry), std::move(pending_write_store));
 
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
@@ -188,7 +188,7 @@ class FastPairRepositoryImplTest : public AshTestBase {
         .WillByDefault(testing::Return(pref_service_.get()));
     PendingWriteStore::RegisterProfilePrefs(pref_service_->registry());
     SavedDeviceRegistry::RegisterProfilePrefs(pref_service_->registry());
-    DeviceIdMap::RegisterLocalStatePrefs(pref_service_->registry());
+    DeviceAddressMap::RegisterLocalStatePrefs(pref_service_->registry());
   }
 
   void TearDown() override {
@@ -253,7 +253,7 @@ class FastPairRepositoryImplTest : public AshTestBase {
   FakeDeviceMetadataHttpFetcher* metadata_http_fetcher_;
   FakeFootprintsFetcher* footprints_fetcher_;
   MockFastPairImageDecoder* image_decoder_;
-  DeviceIdMap* device_id_map_;
+  DeviceAddressMap* device_address_map_;
   DeviceImageStore* device_image_store_;
   PendingWriteStore* pending_write_store_;
   SavedDeviceRegistry* saved_device_registry_;
@@ -852,7 +852,8 @@ TEST_F(FastPairRepositoryImplTest, RetriesForgetDevice_MultipleDevices) {
 }
 
 TEST_F(FastPairRepositoryImplTest, FetchDeviceImages) {
-  ASSERT_FALSE(device_id_map_->GetModelIdForDeviceId(kTestDeviceId));
+  ASSERT_FALSE(
+      device_address_map_->GetModelIdForMacAddress(kTestClassicAddress1));
   ASSERT_FALSE(device_image_store_->GetImagesForDeviceModel(kValidModelId));
 
   AccountKeyFilter filter(kFilterBytes1, {salt});
@@ -865,12 +866,14 @@ TEST_F(FastPairRepositoryImplTest, FetchDeviceImages) {
   fast_pair_repository_->FetchDeviceImages(device);
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_TRUE(device_id_map_->GetModelIdForDeviceId(kTestDeviceId));
-  ASSERT_TRUE(fast_pair_repository_->GetImagesForDevice(kTestDeviceId));
+  ASSERT_TRUE(
+      device_address_map_->GetModelIdForMacAddress(kTestClassicAddress1));
+  ASSERT_TRUE(fast_pair_repository_->GetImagesForDevice(kTestClassicAddress1));
 }
 
 TEST_F(FastPairRepositoryImplTest, PersistDeviceImages) {
-  ASSERT_FALSE(device_id_map_->GetModelIdForDeviceId(kTestDeviceId));
+  ASSERT_FALSE(
+      device_address_map_->GetModelIdForMacAddress(kTestClassicAddress1));
   ASSERT_FALSE(device_image_store_->GetImagesForDeviceModel(kValidModelId));
 
   AccountKeyFilter filter(kFilterBytes1, {salt});
@@ -884,8 +887,9 @@ TEST_F(FastPairRepositoryImplTest, PersistDeviceImages) {
   fast_pair_repository_->PersistDeviceImages(device);
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_TRUE(device_id_map_->GetModelIdForDeviceId(kTestDeviceId));
-  ASSERT_TRUE(fast_pair_repository_->GetImagesForDevice(kTestDeviceId));
+  ASSERT_TRUE(
+      device_address_map_->GetModelIdForMacAddress(kTestClassicAddress1));
+  ASSERT_TRUE(fast_pair_repository_->GetImagesForDevice(kTestClassicAddress1));
 }
 
 TEST_F(FastPairRepositoryImplTest, EvictDeviceImages) {
@@ -900,14 +904,16 @@ TEST_F(FastPairRepositoryImplTest, EvictDeviceImages) {
   fast_pair_repository_->PersistDeviceImages(device);
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_TRUE(device_id_map_->GetModelIdForDeviceId(kTestDeviceId));
+  ASSERT_TRUE(
+      device_address_map_->GetModelIdForMacAddress(kTestClassicAddress1));
   ASSERT_TRUE(device_image_store_->GetImagesForDeviceModel(kValidModelId));
 
   fast_pair_repository_->EvictDeviceImages(&classic_bluetooth_device_);
   base::RunLoop().RunUntilIdle();
 
-  device_id_map_->RefreshCacheForTest();
-  ASSERT_FALSE(device_id_map_->GetModelIdForDeviceId(kTestDeviceId));
+  device_address_map_->RefreshCacheForTest();
+  ASSERT_FALSE(
+      device_address_map_->GetModelIdForMacAddress(kTestClassicAddress1));
 }
 
 TEST_F(FastPairRepositoryImplTest, UpdateOptInStatus_OptedIn) {

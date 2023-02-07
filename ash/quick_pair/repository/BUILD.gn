@@ -9,8 +9,8 @@ assert(is_chromeos_ash,
 
 source_set("repository") {
   sources = [
-    "fast_pair/device_id_map.cc",
-    "fast_pair/device_id_map.h",
+    "fast_pair/device_address_map.cc",
+    "fast_pair/device_address_map.h",
     "fast_pair/device_image_store.cc",
     "fast_pair/device_image_store.h",
     "fast_pair/device_metadata.cc",
@@ -107,7 +107,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "fast_pair/device_id_map_unittest.cc",
+    "fast_pair/device_address_map_unittest.cc",
     "fast_pair/device_image_store_unittest.cc",
     "fast_pair/device_metadata_fetcher_unittest.cc",
     "fast_pair/pending_write_store_unittest.cc",

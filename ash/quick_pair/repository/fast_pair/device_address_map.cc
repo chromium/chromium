@@ -1,0 +1,170 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/quick_pair/repository/fast_pair/device_address_map.h"
+
+#include "ash/quick_pair/common/logging.h"
+#include "ash/shell.h"
+#include "base/values.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
+
+namespace ash::quick_pair {
+
+// static
+constexpr char DeviceAddressMap::kDeviceAddressMapPref[];
+
+// static
+void DeviceAddressMap::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(kDeviceAddressMapPref);
+}
+
+DeviceAddressMap::DeviceAddressMap() = default;
+
+DeviceAddressMap::~DeviceAddressMap() = default;
+
+bool DeviceAddressMap::SaveModelIdForDevice(scoped_refptr<Device> device) {
+  // In some cases, BLE and classic address can map to different devices (with
+  // the same model ID) so we want to capture both mac address -> model ID
+  // records.
+  bool did_save = false;
+  if (!device->ble_address().empty()) {
+    did_save = true;
+    mac_address_to_model_id_[device->ble_address()] = device->metadata_id();
+  }
+
+  if (!device->classic_address()) {
+    return did_save;
+  }
+
+  mac_address_to_model_id_[device->classic_address().value()] =
+      device->metadata_id();
+  return true;
+}
+
+bool DeviceAddressMap::PersistRecordsForDevice(scoped_refptr<Device> device) {
+  // TODO(235117226): See if we really need to persist for both addresses.
+  // In some cases, BLE and classic address can map to different devices (with
+  // the same model ID) so we want to capture both mac address -> model ID
+  // records.
+  bool did_persist = false;
+  if (!device->ble_address().empty()) {
+    did_persist = PersistMacAddressRecord(device->ble_address());
+  }
+
+  if (!device->classic_address()) {
+    return did_persist;
+  }
+
+  return PersistMacAddressRecord(device->classic_address().value()) ||
+         did_persist;
+}
+
+bool DeviceAddressMap::PersistMacAddressRecord(const std::string& mac_address) {
+  const std::string& model_id = mac_address_to_model_id_[mac_address];
+
+  if (model_id.empty()) {
+    QP_LOG(VERBOSE) << __func__
+                    << ": Can't persist null mac address -> model ID record "
+                       "for mac address: " +
+                           mac_address;
+    return false;
+  }
+
+  PrefService* local_state = Shell::Get()->local_state();
+  if (!local_state) {
+    QP_LOG(WARNING) << __func__ << ": No shell local state available.";
+    return false;
+  }
+
+  ScopedDictPrefUpdate device_address_map_dict(local_state,
+                                               kDeviceAddressMapPref);
+  if (!device_address_map_dict->Set(mac_address, model_id)) {
+    QP_LOG(VERBOSE) << __func__
+                    << ": Failed to persist mac address -> model ID record for "
+                       "mac address: " +
+                           mac_address;
+    return false;
+  }
+  return true;
+}
+
+bool DeviceAddressMap::EvictMacAddressRecord(const std::string& mac_address) {
+  PrefService* local_state = Shell::Get()->local_state();
+  if (!local_state) {
+    QP_LOG(WARNING) << __func__ << ": No shell local state available.";
+    return false;
+  }
+
+  ScopedDictPrefUpdate device_address_map_dict(local_state,
+                                               kDeviceAddressMapPref);
+  if (!device_address_map_dict->Remove(mac_address)) {
+    QP_LOG(VERBOSE) << __func__
+                    << ": Failed to evict mac address -> model ID record from "
+                       "prefs for mac address: " +
+                           mac_address;
+    return false;
+  }
+  return true;
+}
+
+absl::optional<const std::string> DeviceAddressMap::GetModelIdForMacAddress(
+    const std::string& mac_address) {
+  // Lazily load saved records from prefs the first time we get a model ID.
+  if (!loaded_records_from_prefs_) {
+    loaded_records_from_prefs_ = true;
+    LoadPersistedRecordsFromPrefs();
+  }
+
+  std::string& saved_model_id = mac_address_to_model_id_[mac_address];
+  if (saved_model_id.empty()) {
+    return absl::nullopt;
+  }
+  return saved_model_id;
+}
+
+bool DeviceAddressMap::HasPersistedRecordsForModelId(
+    const std::string& model_id) {
+  QP_LOG(INFO) << __func__;
+  PrefService* local_state = Shell::Get()->local_state();
+  if (!local_state) {
+    QP_LOG(WARNING) << __func__ << ": No shell local state available.";
+    return false;
+  }
+
+  const base::Value::Dict& device_address_map_dict =
+      local_state->GetDict(kDeviceAddressMapPref);
+  for (std::pair<const std::string&, const base::Value&> record :
+       device_address_map_dict) {
+    if (record.second.GetString() == model_id) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void DeviceAddressMap::RefreshCacheForTest() {
+  QP_LOG(INFO) << __func__;
+  mac_address_to_model_id_.clear();
+  LoadPersistedRecordsFromPrefs();
+}
+
+void DeviceAddressMap::LoadPersistedRecordsFromPrefs() {
+  QP_LOG(INFO) << __func__;
+  PrefService* local_state = Shell::Get()->local_state();
+  if (!local_state) {
+    QP_LOG(WARNING) << __func__ << ": No shell local state available.";
+    return;
+  }
+
+  const base::Value::Dict& device_address_map_dict =
+      local_state->GetDict(kDeviceAddressMapPref);
+  for (std::pair<const std::string&, const base::Value&> record :
+       device_address_map_dict) {
+    mac_address_to_model_id_[record.first] = record.second.GetString();
+  }
+}
+
+}  // namespace ash::quick_pair
