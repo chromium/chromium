@@ -43,8 +43,8 @@ declare_args() {
   # decoding of VP9 and VP8A type content.
   media_use_libvpx = true
 
-  # iOS doesn't use ffmpeg, libvpx.
-  if (is_ios) {
+  # non-blink builds doesn't use ffmpeg, libvpx.
+  if (!use_blink) {
     media_use_ffmpeg = false
     media_use_libvpx = false
   }
@@ -98,7 +98,7 @@ declare_args() {
   # When enabled on Fuchsia, these are logged as VLOGs.
   enable_logging_override = is_cast_media_device
 
-  enable_dav1d_decoder = !is_ios
+  enable_dav1d_decoder = use_blink
 
   # Enable browser managed persistent metadata storage for EME persistent
   # session and persistent usage record session.

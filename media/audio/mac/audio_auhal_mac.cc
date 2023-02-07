@@ -19,7 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
-#include "media/audio/mac/audio_manager_mac.h"
+#include "media/audio/mac/core_audio_util_mac.h"
 #include "media/base/audio_pull_fifo.h"
 #include "media/base/audio_timestamp_helper.h"
 
@@ -162,11 +162,11 @@ void ReportFramesRequestedUma(int number_of_frames_requested) {
 
 }  // namespace
 
-AUHALStream::AUHALStream(AudioManagerMac* manager,
+AUHALStream::AUHALStream(AUHALStreamClient* client,
                          const AudioParameters& params,
                          AudioDeviceID device,
                          const AudioManager::LogCallback& log_callback)
-    : manager_(manager),
+    : client_(client),
       params_(params),
       source_(nullptr),
       device_(device),
@@ -179,9 +179,11 @@ AUHALStream::AUHALStream(AudioManagerMac* manager,
   // We must have a manager.
   DVLOG(1) << __FUNCTION__ << " this " << this << " params "
            << params.AsHumanReadableString();
-  DCHECK(manager_);
+  DCHECK(client_);
   DCHECK(params_.IsValid());
+#if BUILDFLAG(IS_MAC)
   DCHECK_NE(device, kAudioObjectUnknown);
+#endif
 }
 
 AUHALStream::~AUHALStream() {
@@ -202,8 +204,8 @@ bool AUHALStream::Open() {
   if (configured) {
     DCHECK(audio_unit_);
     DCHECK(audio_unit_->is_valid());
-    hardware_latency_ = AudioManagerMac::GetHardwareLatency(
-        audio_unit_->audio_unit(), device_, kAudioDevicePropertyScopeOutput,
+    hardware_latency_ = core_audio_mac::GetHardwareLatency(
+        audio_unit_->audio_unit(), device_, kAudioObjectPropertyScopeOutput,
         params_.sample_rate());
   }
 
@@ -234,7 +236,7 @@ void AUHALStream::Close() {
   // destruction. Also include the device ID as a signal to the audio manager
   // that it should try to increase the native I/O buffer size after the stream
   // has been closed.
-  manager_->ReleaseOutputStreamUsingRealDevice(this, device_);
+  client_->ReleaseOutputStreamUsingRealDevice(this, device_);
 }
 
 void AUHALStream::Start(AudioSourceCallback* callback) {
@@ -253,17 +255,19 @@ void AUHALStream::Start(AudioSourceCallback* callback) {
 
   DVLOG(1) << __FUNCTION__ << " this " << this;
 
+#if BUILDFLAG(IS_MAC)
   // Check if we should defer Start() for http://crbug.com/160920.
-  if (manager_->ShouldDeferStreamStart()) {
+  base::TimeDelta defer_start = client_->GetDeferStreamStartTimeout();
+  if (!defer_start.is_zero()) {
     // Use a cancellable closure so that if Stop() is called before Start()
     // actually runs, we can cancel the pending start.
     deferred_start_cb_.Reset(
         base::BindOnce(&AUHALStream::Start, base::Unretained(this), callback));
-    manager_->GetTaskRunner()->PostDelayedTask(
-        FROM_HERE, deferred_start_cb_.callback(),
-        base::Seconds(AudioManagerMac::kStartDelayInSecsForPowerEvents));
+    client_->GetTaskRunner()->PostDelayedTask(
+        FROM_HERE, deferred_start_cb_.callback(), defer_start);
     return;
   }
+#endif
 
   stopped_ = false;
 
@@ -485,8 +489,8 @@ bool AUHALStream::ConfigureAUHAL() {
     return false;
   }
 
-  if (!manager_->MaybeChangeBufferSize(device_, local_audio_unit->audio_unit(),
-                                       0, params_.frames_per_buffer())) {
+  if (!client_->MaybeChangeBufferSize(device_, local_audio_unit->audio_unit(),
+                                      0, params_.frames_per_buffer())) {
     return false;
   }
 

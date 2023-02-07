@@ -5,12 +5,20 @@
 #ifndef MEDIA_AUDIO_MAC_CORE_AUDIO_UTIL_MAC_H_
 #define MEDIA_AUDIO_MAC_CORE_AUDIO_UTIL_MAC_H_
 
-#include <CoreAudio/AudioHardware.h>
+#include <AudioUnit/AudioUnit.h>
 
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
+#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_MAC)
+#include <CoreAudio/CoreAudio.h>
+#else
+#include "media/audio/ios/audio_private_api.h"
+#endif
 
 namespace media {
 namespace core_audio_mac {
@@ -61,6 +69,14 @@ bool IsInputDevice(AudioObjectID device_id);
 // Returns whether or not the |device_id| corresponds to a device with output
 // streams.
 bool IsOutputDevice(AudioObjectID device_id);
+
+// Returns the latency for the given audio unit and device. Total latency is
+// the sum of the latency of the AudioUnit, device, and stream. If any one
+// component of the latency can't be retrieved it is considered as zero.
+base::TimeDelta GetHardwareLatency(AudioUnit audio_unit,
+                                   AudioDeviceID device_id,
+                                   AudioObjectPropertyScope scope,
+                                   int sample_rate);
 
 }  // namespace core_audio_mac
 }  // namespace media

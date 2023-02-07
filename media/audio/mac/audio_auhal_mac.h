@@ -18,7 +18,6 @@
 #define MEDIA_AUDIO_MAC_AUDIO_AUHAL_MAC_H_
 
 #include <AudioUnit/AudioUnit.h>
-#include <CoreAudio/CoreAudio.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -31,18 +30,40 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/mac/scoped_audio_unit.h"
 #include "media/audio/system_glitch_reporter.h"
 #include "media/base/audio_parameters.h"
 
+#if BUILDFLAG(IS_MAC)
+#include <CoreAudio/CoreAudio.h>
+#else
+#include "media/audio/ios/audio_private_api.h"
+#endif
+
 namespace media {
 
-class AudioManagerMac;
 class AudioPullFifo;
 
-// Implementation of AudioOuputStream for Mac OS X using the
+// A callback implementation for allowing this code to be used by both
+// AudioManagerIOS and AudioManagerMac.
+class AUHALStreamClient {
+ public:
+  virtual void ReleaseOutputStreamUsingRealDevice(AudioOutputStream* stream,
+                                                  AudioDeviceID device_id) = 0;
+  virtual bool MaybeChangeBufferSize(AudioDeviceID device_id,
+                                     AudioUnit audio_unit,
+                                     AudioUnitElement element,
+                                     size_t desired_buffer_size) = 0;
+#if BUILDFLAG(IS_MAC)
+  virtual base::TimeDelta GetDeferStreamStartTimeout() const = 0;
+  virtual base::SingleThreadTaskRunner* GetTaskRunner() const = 0;
+#endif
+};
+
+// Implementation of AudioOutputStream for Apple using the
 // AUHAL Audio Unit present in OS 10.4 and later.
 // It is useful for low-latency output.
 //
@@ -73,10 +94,10 @@ class AudioPullFifo;
 
 class AUHALStream : public AudioOutputStream {
  public:
-  // |manager| creates this object.
+  // |client| creates this object.
   // |device| is the CoreAudio device to use for the stream.
   // It will often be the default output device.
-  AUHALStream(AudioManagerMac* manager,
+  AUHALStream(AUHALStreamClient* client,
               const AudioParameters& params,
               AudioDeviceID device,
               const AudioManager::LogCallback& log_callback);
@@ -135,7 +156,7 @@ class AUHALStream : public AudioOutputStream {
   void UpdatePlayoutTimestamp(const AudioTimeStamp* timestamp);
 
   // Our creator, the audio manager needs to be notified when we close.
-  const raw_ptr<AudioManagerMac> manager_;
+  const raw_ptr<AUHALStreamClient> client_;
 
   const AudioParameters params_;
 

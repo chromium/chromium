@@ -4,7 +4,7 @@
 
 #include "media/audio/mac/core_audio_util_mac.h"
 
-#include <IOKit/audio/IOAudioTypes.h>
+#include "build/build_config.h"
 
 #include <utility>
 
@@ -12,9 +12,16 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "media/base/audio_timestamp_helper.h"
+
+#if BUILDFLAG(IS_MAC)
+#include <IOKit/audio/IOAudioTypes.h>
+#endif
 
 namespace media {
 namespace core_audio_mac {
+
+#if BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -353,6 +360,80 @@ bool IsInputDevice(AudioObjectID device_id) {
 
 bool IsOutputDevice(AudioObjectID device_id) {
   return GetNumStreams(device_id, false) > 0;
+}
+#endif
+
+// static
+base::TimeDelta GetHardwareLatency(AudioUnit audio_unit,
+                                   AudioDeviceID device_id,
+                                   AudioObjectPropertyScope scope,
+                                   int sample_rate) {
+#if BUILDFLAG(IS_MAC)
+  if (!audio_unit || device_id == kAudioObjectUnknown) {
+    DLOG(WARNING) << "Audio unit object is NULL or device ID is unknown";
+    return base::TimeDelta();
+  }
+
+  // Get audio unit latency.
+  Float64 audio_unit_latency_sec = 0.0;
+  UInt32 size = sizeof(audio_unit_latency_sec);
+  OSStatus result = AudioUnitGetProperty(audio_unit, kAudioUnitProperty_Latency,
+                                         kAudioUnitScope_Global, 0,
+                                         &audio_unit_latency_sec, &size);
+  OSSTATUS_DLOG_IF(WARNING, result != noErr, result)
+      << "Could not get audio unit latency";
+
+  // Get audio device latency.
+  AudioObjectPropertyAddress property_address = {
+      kAudioDevicePropertyLatency, scope, kAudioObjectPropertyElementMaster};
+  UInt32 device_latency_frames = 0;
+  size = sizeof(device_latency_frames);
+  result = AudioObjectGetPropertyData(device_id, &property_address, 0, nullptr,
+                                      &size, &device_latency_frames);
+  OSSTATUS_DLOG_IF(WARNING, result != noErr, result)
+      << "Could not get audio device latency.";
+
+  // Retrieve stream ids and take the stream latency from the first stream.
+  // There may be multiple streams with different latencies, but since we're
+  // likely using this delay information for a/v sync we must choose one of
+  // them; Apple recommends just taking the first entry.
+  //
+  // TODO(dalecurtis): Refactor all these "get data size" + "get data" calls
+  // into a common utility function that just returns a std::unique_ptr.
+  UInt32 stream_latency_frames = 0;
+  property_address.mSelector = kAudioDevicePropertyStreams;
+  result = AudioObjectGetPropertyDataSize(device_id, &property_address, 0,
+                                          nullptr, &size);
+  if (result == noErr && size >= sizeof(AudioStreamID)) {
+    std::unique_ptr<uint8_t[]> stream_id_storage(new uint8_t[size]);
+    AudioStreamID* stream_ids =
+        reinterpret_cast<AudioStreamID*>(stream_id_storage.get());
+    result = AudioObjectGetPropertyData(device_id, &property_address, 0,
+                                        nullptr, &size, stream_ids);
+    if (result == noErr) {
+      property_address.mSelector = kAudioStreamPropertyLatency;
+      size = sizeof(stream_latency_frames);
+      result =
+          AudioObjectGetPropertyData(stream_ids[0], &property_address, 0,
+                                     nullptr, &size, &stream_latency_frames);
+      OSSTATUS_DLOG_IF(WARNING, result != noErr, result)
+          << "Could not get stream latency for stream #0.";
+    } else {
+      OSSTATUS_DLOG(WARNING, result)
+          << "Could not get audio device stream ids.";
+    }
+  } else {
+    OSSTATUS_DLOG_IF(WARNING, result != noErr, result)
+        << "Could not get audio device stream ids size.";
+  }
+
+  return base::Seconds(audio_unit_latency_sec) +
+         AudioTimestampHelper::FramesToTime(
+             device_latency_frames + stream_latency_frames, sample_rate);
+#else
+  // TODO(crbug.com/1413450): Implement me.
+  return base::TimeDelta();
+#endif
 }
 
 }  // namespace core_audio_mac

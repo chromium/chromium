@@ -17,6 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "media/audio/audio_manager_base.h"
+#include "media/audio/mac/audio_auhal_mac.h"
 #include "media/audio/mac/audio_device_listener_mac.h"
 
 namespace media {
@@ -27,7 +28,8 @@ class AUHALStream;
 // Mac OS X implementation of the AudioManager singleton. This class is internal
 // to the audio output and only internal users can call methods not exposed by
 // the AudioManager class.
-class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase {
+class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase,
+                                     public AUHALStreamClient {
  public:
   AudioManagerMac(std::unique_ptr<AudioThread> audio_thread,
                   AudioLogFactory* audio_log_factory);
@@ -77,7 +79,19 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase {
   // manager and it ensures that we only try to increase the IO buffer size
   // for real streams and not for fake or mocked streams.
   void ReleaseOutputStreamUsingRealDevice(AudioOutputStream* stream,
-                                          AudioDeviceID device_id);
+                                          AudioDeviceID device_id) override;
+
+  // Changes the I/O buffer size for |device_id| if |desired_buffer_size| is
+  // lower than the current device buffer size. The buffer size can also be
+  // modified under other conditions. See comments in the corresponding cc-file
+  // for more details.
+  // Returns false if an error occurred.
+  bool MaybeChangeBufferSize(AudioDeviceID device_id,
+                             AudioUnit audio_unit,
+                             AudioUnitElement element,
+                             size_t desired_buffer_size) override;
+  base::TimeDelta GetDeferStreamStartTimeout() const override;
+  base::SingleThreadTaskRunner* GetTaskRunner() const override;
 
   static int HardwareSampleRateForDevice(AudioDeviceID device_id);
   static int HardwareSampleRate();
@@ -111,24 +125,6 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase {
 
   // True if the device is suspending.
   bool IsSuspending() const;
-
-  // Changes the I/O buffer size for |device_id| if |desired_buffer_size| is
-  // lower than the current device buffer size. The buffer size can also be
-  // modified under other conditions. See comments in the corresponding cc-file
-  // for more details.
-  // Returns false if an error occurred.
-  bool MaybeChangeBufferSize(AudioDeviceID device_id,
-                             AudioUnit audio_unit,
-                             AudioUnitElement element,
-                             size_t desired_buffer_size);
-
-  // Returns the latency for the given audio unit and device. Total latency is
-  // the sum of the latency of the AudioUnit, device, and stream. If any one
-  // component of the latency can't be retrieved it is considered as zero.
-  static base::TimeDelta GetHardwareLatency(AudioUnit audio_unit,
-                                            AudioDeviceID device_id,
-                                            AudioObjectPropertyScope scope,
-                                            int sample_rate);
 
   // Number of constructed output and input streams.
   size_t output_streams() const { return output_streams_.size(); }

@@ -276,7 +276,7 @@ AudioInputStream::OpenOutcome AUAudioInputStream::Open() {
     return OpenOutcome::kFailed;
 
   // The hardware latency is fixed and will not change during the call.
-  hardware_latency_ = AudioManagerMac::GetHardwareLatency(
+  hardware_latency_ = core_audio_mac::GetHardwareLatency(
       audio_unit_, input_device_id_, kAudioDevicePropertyScopeInput,
       format_.mSampleRate);
 
