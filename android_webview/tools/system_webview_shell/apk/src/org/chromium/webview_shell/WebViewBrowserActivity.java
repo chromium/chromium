@@ -204,24 +204,14 @@ public class WebViewBrowserActivity extends AppCompatActivity {
 
         @Override
         public String[] getResources() {
-            if (BuildInfo.isAtLeastT()) {
-                return new String[] {WebViewBrowserActivity.RESOURCE_IMAGES_URL,
-                        WebViewBrowserActivity.RESOURCE_VIDEO_URL};
-            } else {
-                return new String[] {WebViewBrowserActivity.RESOURCE_FILE_URL};
-            }
+            return new String[] {WebViewBrowserActivity.RESOURCE_FILE_URL};
         }
 
         @Override
         public void grant(String[] resources) {
-            if (BuildInfo.isAtLeastT()) {
-                assert resources.length == 2;
-                assert WebViewBrowserActivity.RESOURCE_IMAGES_URL.equals(resources[0])
-                        && WebViewBrowserActivity.RESOURCE_VIDEO_URL.equals(resources[1]);
-            } else {
-                assert resources.length == 1;
-                assert WebViewBrowserActivity.RESOURCE_FILE_URL.equals(resources[0]);
-            }
+            assert resources.length == 1;
+            assert WebViewBrowserActivity.RESOURCE_FILE_URL.equals(resources[0]);
+
             // Try again now that we have read access.
             WebViewBrowserActivity.this.mWebView.loadUrl(mOrigin);
         }
@@ -904,14 +894,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         // Request read access if necessary.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && "file".equals(Uri.parse(url).getScheme())) {
-            if (BuildInfo.isAtLeastT()) {
-                if (PackageManager.PERMISSION_DENIED
-                                == checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES)
-                        && PackageManager.PERMISSION_DENIED
-                                == checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO)) {
-                    requestPermissionsForPage(new FilePermissionRequest(url));
-                }
-            } else if (PackageManager.PERMISSION_DENIED
+            if (PackageManager.PERMISSION_DENIED
                     == checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
                 requestPermissionsForPage(new FilePermissionRequest(url));
             }
