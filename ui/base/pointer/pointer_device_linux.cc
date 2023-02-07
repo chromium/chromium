@@ -27,6 +27,14 @@ bool IsMouseOrTouchpadPresent() {
     if (device.enabled)
       return true;
   }
+  // We didn't find a mouse then let's look if there is a pointing stick
+  // connected.
+  for (const ui::InputDevice& device :
+       device_data_manager->GetPointingStickDevices()) {
+    if (device.enabled) {
+      return true;
+    }
+  }
   return false;
 }
 

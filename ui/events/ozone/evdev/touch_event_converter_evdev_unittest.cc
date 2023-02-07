@@ -171,8 +171,9 @@ class MockDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
   void DispatchTouchscreenDevicesUpdated(
       const std::vector<TouchscreenDevice>& devices) override {}
   void DispatchMouseDevicesUpdated(const std::vector<InputDevice>& devices,
-                                   bool has_mouse,
-                                   bool has_pointing_stick) override {}
+                                   bool has_mouse) override {}
+  void DispatchPointingStickDevicesUpdated(
+      const std::vector<InputDevice>& devices) override {}
   void DispatchTouchpadDevicesUpdated(const std::vector<InputDevice>& devices,
                                       bool has_haptic_touchpad) override {}
   void DispatchUncategorizedDevicesUpdated(

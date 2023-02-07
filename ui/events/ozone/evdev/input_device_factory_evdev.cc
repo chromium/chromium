@@ -458,8 +458,11 @@ void InputDeviceFactoryEvdev::UpdateDirtyFlags(
   if (converter->HasKeyboard())
     keyboard_list_dirty_ = true;
 
-  if (converter->HasMouse() || converter->HasPointingStick())
+  if (converter->HasMouse())
     mouse_list_dirty_ = true;
+
+  if (converter->HasPointingStick())
+    pointing_stick_list_dirty_ = true;
 
   if (converter->HasTouchpad())
     touchpad_list_dirty_ = true;
@@ -480,6 +483,8 @@ void InputDeviceFactoryEvdev::NotifyDevicesUpdated() {
     NotifyKeyboardsUpdated();
   if (mouse_list_dirty_)
     NotifyMouseDevicesUpdated();
+  if (pointing_stick_list_dirty_)
+    NotifyPointingStickDevicesUpdated();
   if (touchpad_list_dirty_)
     NotifyTouchpadDevicesUpdated();
   if (gamepad_list_dirty_)
@@ -493,6 +498,7 @@ void InputDeviceFactoryEvdev::NotifyDevicesUpdated() {
   touchscreen_list_dirty_ = false;
   keyboard_list_dirty_ = false;
   mouse_list_dirty_ = false;
+  pointing_stick_list_dirty_ = false;
   touchpad_list_dirty_ = false;
   gamepad_list_dirty_ = false;
   uncategorized_list_dirty_ = false;
@@ -542,20 +548,30 @@ void InputDeviceFactoryEvdev::NotifyKeyboardsUpdated() {
 
 void InputDeviceFactoryEvdev::NotifyMouseDevicesUpdated() {
   std::vector<InputDevice> mice;
-  bool has_mouse = false, has_pointing_stick = false;
-  for (auto it = converters_.begin(); it != converters_.end(); ++it) {
-    if (it->second->HasMouse()) {
-      mice.push_back(it->second->input_device());
+  bool has_mouse = false;
+  for (auto& converter : converters_) {
+    if (converter.second->HasMouse()) {
+      mice.push_back(converter.second->input_device());
       // Some I2C touchpads falsely claim to be mice, see b/205272718
-      if (it->second->type() != ui::InputDeviceType::INPUT_DEVICE_INTERNAL)
+      if (converter.second->type() !=
+          ui::InputDeviceType::INPUT_DEVICE_INTERNAL) {
         has_mouse = true;
-    } else if (it->second->HasPointingStick()) {
-      mice.push_back(it->second->input_device());
-      has_pointing_stick = true;
+      }
     }
   }
 
-  dispatcher_->DispatchMouseDevicesUpdated(mice, has_mouse, has_pointing_stick);
+  dispatcher_->DispatchMouseDevicesUpdated(mice, has_mouse);
+}
+
+void InputDeviceFactoryEvdev::NotifyPointingStickDevicesUpdated() {
+  std::vector<InputDevice> pointing_sticks;
+  for (auto& converter : converters_) {
+    if (converter.second->HasPointingStick()) {
+      pointing_sticks.push_back(converter.second->input_device());
+    }
+  }
+
+  dispatcher_->DispatchPointingStickDevicesUpdated(pointing_sticks);
 }
 
 void InputDeviceFactoryEvdev::NotifyTouchpadDevicesUpdated() {

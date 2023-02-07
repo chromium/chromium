@@ -43,7 +43,8 @@ void PointerDeviceObserver::RemoveObserver(Observer* observer) {
 void PointerDeviceObserver::OnInputDeviceConfigurationChanged(
     uint8_t input_device_types) {
   if (input_device_types & (ui::InputDeviceEventObserver::kMouse |
-                            ui::InputDeviceEventObserver::kTouchpad)) {
+                            ui::InputDeviceEventObserver::kTouchpad |
+                            ui::InputDeviceEventObserver::kPointingStick)) {
     CheckDevices();
   }
 }

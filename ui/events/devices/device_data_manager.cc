@@ -148,6 +148,11 @@ const std::vector<InputDevice>& DeviceDataManager::GetMouseDevices() const {
   return mouse_devices_;
 }
 
+const std::vector<InputDevice>& DeviceDataManager::GetPointingStickDevices()
+    const {
+  return pointing_stick_devices_;
+}
+
 const std::vector<InputDevice>& DeviceDataManager::GetTouchpadDevices() const {
   return touchpad_devices_;
 }
@@ -202,6 +207,16 @@ void DeviceDataManager::OnMouseDevicesUpdated(
   NotifyObserversMouseDeviceConfigurationChanged();
 }
 
+void DeviceDataManager::OnPointingStickDevicesUpdated(
+    const std::vector<InputDevice>& devices) {
+  if (base::ranges::equal(devices, pointing_stick_devices_,
+                          InputDeviceEquals)) {
+    return;
+  }
+  pointing_stick_devices_ = devices;
+  NotifyObserversPointingStickDeviceConfigurationChanged();
+}
+
 void DeviceDataManager::OnTouchpadDevicesUpdated(
     const std::vector<InputDevice>& devices) {
   if (base::ranges::equal(devices, touchpad_devices_, InputDeviceEquals)) {
@@ -240,6 +255,10 @@ NOTIFY_OBSERVERS(
     OnInputDeviceConfigurationChanged(InputDeviceEventObserver::kMouse))
 
 NOTIFY_OBSERVERS(
+    NotifyObserversPointingStickDeviceConfigurationChanged(),
+    OnInputDeviceConfigurationChanged(InputDeviceEventObserver::kPointingStick))
+
+NOTIFY_OBSERVERS(
     NotifyObserversTouchpadDeviceConfigurationChanged(),
     OnInputDeviceConfigurationChanged(InputDeviceEventObserver::kTouchpad))
 
@@ -268,6 +287,7 @@ void DeviceDataManager::ResetDeviceListsForTest() {
   touchscreen_devices_.clear();
   keyboard_devices_.clear();
   mouse_devices_.clear();
+  pointing_stick_devices_.clear();
   touchpad_devices_.clear();
   uncategorized_devices_.clear();
   device_lists_complete_ = false;

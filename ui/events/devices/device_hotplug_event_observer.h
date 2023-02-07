@@ -35,6 +35,11 @@ class EVENTS_DEVICES_EXPORT DeviceHotplugEventObserver {
   virtual void OnMouseDevicesUpdated(
       const std::vector<InputDevice>& devices) = 0;
 
+  // On a hotplug event this is called with the list of available pointing
+  // sticks. The set of pointing sticks may not have changed.
+  virtual void OnPointingStickDevicesUpdated(
+      const std::vector<InputDevice>& devices) = 0;
+
   // On a hotplug event this is called with the list of available touchpads. The
   // set of touchpads may not have changed.
   virtual void OnTouchpadDevicesUpdated(

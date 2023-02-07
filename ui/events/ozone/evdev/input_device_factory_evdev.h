@@ -119,6 +119,7 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
   void NotifyKeyboardsUpdated();
   void NotifyTouchscreensUpdated();
   void NotifyMouseDevicesUpdated();
+  void NotifyPointingStickDevicesUpdated();
   void NotifyTouchpadDevicesUpdated();
   void NotifyGamepadDevicesUpdated();
   void NotifyUncategorizedDevicesUpdated();
@@ -167,6 +168,7 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
   bool touchscreen_list_dirty_ = true;
   bool keyboard_list_dirty_ = true;
   bool mouse_list_dirty_ = true;
+  bool pointing_stick_list_dirty_ = true;
   bool touchpad_list_dirty_ = true;
   bool gamepad_list_dirty_ = true;
   bool uncategorized_list_dirty_ = true;

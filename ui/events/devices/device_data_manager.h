@@ -56,6 +56,7 @@ class EVENTS_DEVICES_EXPORT DeviceDataManager
   const std::vector<TouchscreenDevice>& GetTouchscreenDevices() const;
   const std::vector<InputDevice>& GetKeyboardDevices() const;
   const std::vector<InputDevice>& GetMouseDevices() const;
+  const std::vector<InputDevice>& GetPointingStickDevices() const;
   const std::vector<InputDevice>& GetTouchpadDevices() const;
 
   // Returns all the uncategorized input devices, which means input devices
@@ -86,6 +87,8 @@ class EVENTS_DEVICES_EXPORT DeviceDataManager
       const std::vector<InputDevice>& devices) override;
   void OnMouseDevicesUpdated(
       const std::vector<InputDevice>& devices) override;
+  void OnPointingStickDevicesUpdated(
+      const std::vector<InputDevice>& devices) override;
   void OnTouchpadDevicesUpdated(
       const std::vector<InputDevice>& devices) override;
   void OnUncategorizedDevicesUpdated(
@@ -105,6 +108,7 @@ class EVENTS_DEVICES_EXPORT DeviceDataManager
   void NotifyObserversTouchscreenDeviceConfigurationChanged();
   void NotifyObserversKeyboardDeviceConfigurationChanged();
   void NotifyObserversMouseDeviceConfigurationChanged();
+  void NotifyObserversPointingStickDeviceConfigurationChanged();
   void NotifyObserversTouchpadDeviceConfigurationChanged();
   void NotifyObserversUncategorizedDeviceConfigurationChanged();
   void NotifyObserversDeviceListsComplete();
@@ -115,6 +119,7 @@ class EVENTS_DEVICES_EXPORT DeviceDataManager
   std::vector<TouchscreenDevice> touchscreen_devices_;
   std::vector<InputDevice> keyboard_devices_;
   std::vector<InputDevice> mouse_devices_;
+  std::vector<InputDevice> pointing_stick_devices_;
   std::vector<InputDevice> touchpad_devices_;
   std::vector<InputDevice> uncategorized_devices_;
   bool device_lists_complete_ = false;

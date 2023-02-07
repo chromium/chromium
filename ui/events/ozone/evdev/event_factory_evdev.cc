@@ -109,13 +109,18 @@ class ProxyDeviceEventDispatcher : public DeviceEventDispatcherEvdev {
                        event_factory_evdev_, devices));
   }
   void DispatchMouseDevicesUpdated(const std::vector<InputDevice>& devices,
-                                   bool has_mouse,
-                                   bool has_pointing_stick) override {
+                                   bool has_mouse) override {
     ui_thread_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&EventFactoryEvdev::DispatchMouseDevicesUpdated,
-                       event_factory_evdev_, devices, has_mouse,
-                       has_pointing_stick));
+                       event_factory_evdev_, devices, has_mouse));
+  }
+  void DispatchPointingStickDevicesUpdated(
+      const std::vector<InputDevice>& devices) override {
+    ui_thread_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&EventFactoryEvdev::DispatchPointingStickDevicesUpdated,
+                       event_factory_evdev_, devices));
   }
   void DispatchTouchpadDevicesUpdated(const std::vector<InputDevice>& devices,
                                       bool has_haptic_touchpad) override {
@@ -420,15 +425,24 @@ void EventFactoryEvdev::DispatchTouchscreenDevicesUpdated(
 
 void EventFactoryEvdev::DispatchMouseDevicesUpdated(
     const std::vector<InputDevice>& devices,
-    bool has_mouse,
-    bool has_pointing_stick) {
+    bool has_mouse) {
   TRACE_EVENT0("evdev", "EventFactoryEvdev::DispatchMouseDevicesUpdated");
 
   // There's no list of mice in DeviceDataManager.
   input_controller_.set_has_mouse(has_mouse);
-  input_controller_.set_has_pointing_stick(has_pointing_stick);
   DeviceHotplugEventObserver* observer = DeviceDataManager::GetInstance();
   observer->OnMouseDevicesUpdated(devices);
+}
+
+void EventFactoryEvdev::DispatchPointingStickDevicesUpdated(
+    const std::vector<InputDevice>& devices) {
+  TRACE_EVENT0("evdev",
+               "EventFactoryEvdev::DispatchPointingStickDevicesUpdated");
+
+  // There's no list of mice in DeviceDataManager.
+  input_controller_.set_has_pointing_stick(devices.empty());
+  DeviceHotplugEventObserver* observer = DeviceDataManager::GetInstance();
+  observer->OnPointingStickDevicesUpdated(devices);
 }
 
 void EventFactoryEvdev::DispatchTouchpadDevicesUpdated(

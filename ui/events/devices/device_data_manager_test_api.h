@@ -29,6 +29,8 @@ class DeviceDataManagerTestApi {
 
   void NotifyObserversDeviceListsComplete();
   void NotifyObserversKeyboardDeviceConfigurationChanged();
+  void NotifyObserversMouseDeviceConfigurationChanged();
+  void NotifyObserversPointingStickDeviceConfigurationChanged();
   void NotifyObserversStylusStateChanged(StylusState stylus_state);
   void NotifyObserversTouchscreenDeviceConfigurationChanged();
   void NotifyObserversTouchpadDeviceConfigurationChanged();
@@ -36,6 +38,7 @@ class DeviceDataManagerTestApi {
 
   void SetKeyboardDevices(const std::vector<InputDevice>& devices);
   void SetMouseDevices(const std::vector<InputDevice>& devices);
+  void SetPointingStickDevices(const std::vector<InputDevice>& devices);
   void SetTouchpadDevices(const std::vector<InputDevice>& devices);
   void SetUncategorizedDevices(const std::vector<InputDevice>& devices);
 

@@ -24,6 +24,18 @@ void DeviceDataManagerTestApi::
       ->NotifyObserversKeyboardDeviceConfigurationChanged();
 }
 
+void DeviceDataManagerTestApi::
+    NotifyObserversMouseDeviceConfigurationChanged() {
+  DeviceDataManager::instance_
+      ->NotifyObserversMouseDeviceConfigurationChanged();
+}
+
+void DeviceDataManagerTestApi::
+    NotifyObserversPointingStickDeviceConfigurationChanged() {
+  DeviceDataManager::instance_
+      ->NotifyObserversPointingStickDeviceConfigurationChanged();
+}
+
 void DeviceDataManagerTestApi::NotifyObserversStylusStateChanged(
     StylusState stylus_state) {
   DeviceDataManager::instance_->NotifyObserversStylusStateChanged(stylus_state);
@@ -53,6 +65,11 @@ void DeviceDataManagerTestApi::SetKeyboardDevices(
 void DeviceDataManagerTestApi::SetMouseDevices(
     const std::vector<InputDevice>& devices) {
   DeviceDataManager::instance_->OnMouseDevicesUpdated(devices);
+}
+
+void DeviceDataManagerTestApi::SetPointingStickDevices(
+    const std::vector<InputDevice>& devices) {
+  DeviceDataManager::instance_->OnPointingStickDevicesUpdated(devices);
 }
 
 void DeviceDataManagerTestApi::SetTouchscreenDevices(

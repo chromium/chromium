@@ -761,11 +761,15 @@ void TabletModeController::SuspendDone(base::TimeDelta sleep_duration) {
 void TabletModeController::OnInputDeviceConfigurationChanged(
     uint8_t input_device_types) {
   if (input_device_types & (ui::InputDeviceEventObserver::kMouse |
-                            ui::InputDeviceEventObserver::kTouchpad)) {
+                            ui::InputDeviceEventObserver::kTouchpad |
+                            ui::InputDeviceEventObserver::kPointingStick)) {
     if (input_device_types & ui::InputDeviceEventObserver::kMouse)
       VLOG(1) << "Mouse device configuration changed.";
     if (input_device_types & ui::InputDeviceEventObserver::kTouchpad)
       VLOG(1) << "Touchpad device configuration changed.";
+    if (input_device_types & ui::InputDeviceEventObserver::kPointingStick)
+      VLOG(1) << "Pointing stick device configuration changed.";
+
     HandlePointingDeviceAddedOrRemoved();
   }
 }
@@ -1081,6 +1085,12 @@ void TabletModeController::HandlePointingDeviceAddedOrRemoved() {
   if (!has_external_pointing_device || !has_internal_pointing_device) {
     CheckHasPointingDevices(
         ui::DeviceDataManager::GetInstance()->GetTouchpadDevices(),
+        bluetooth_devices_observer_.get(), &has_external_pointing_device,
+        &has_internal_pointing_device);
+  }
+  if (!has_external_pointing_device || !has_internal_pointing_device) {
+    CheckHasPointingDevices(
+        ui::DeviceDataManager::GetInstance()->GetPointingStickDevices(),
         bluetooth_devices_observer_.get(), &has_external_pointing_device,
         &has_internal_pointing_device);
   }
