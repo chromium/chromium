@@ -288,6 +288,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           SourceBuilder(now + base::Hours(2))
               .SetActiveState(
                   StoredSource::ActiveState::kReachedEventLevelAttributionLimit)
+              .BuildStored(),
+          SourceBuilder(now + base::Hours(8))
+              .SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
               .BuildStored()}));
 
   // This shouldn't result in a row, as registration succeeded.
@@ -314,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     const table = document.querySelector('#sourceTable')
         .shadowRoot.querySelector('tbody');
     const obs = new MutationObserver((_, obs) => {
-      if (table.children.length === 7 &&
+      if (table.children.length === 8 &&
           table.children[0].children[3]?.children[0]?.children.length === 2 &&
           table.children[0].children[3]?.children[0]?.children[0]?.innerText === 'https://a.test' &&
           table.children[0].children[3]?.children[0]?.children[1]?.innerText === 'https://b.test' &&
@@ -339,13 +342,14 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[0].children[16]?.innerText === '' &&
           table.children[1].children[16]?.children[0]?.children[0]?.innerText === '14' &&
           table.children[1].children[16]?.children[0]?.children[1]?.innerText === '18' &&
-          table.children[0].children[1]?.innerText === 'Unattributable: noised' &&
+          table.children[0].children[1]?.innerText === 'Unattributable: noised with no reports' &&
           table.children[1].children[1]?.innerText === 'Attributable' &&
           table.children[2].children[1]?.innerText === 'Attributable: reached event-level attribution limit' &&
           table.children[3].children[1]?.innerText === 'Rejected: internal error' &&
           table.children[4].children[1]?.innerText === 'Rejected: insufficient source capacity' &&
           table.children[5].children[1]?.innerText === 'Rejected: insufficient unique destination capacity' &&
           table.children[6].children[1]?.innerText === 'Rejected: excessive reporting origins' &&
+          table.children[7].children[1]?.innerText === 'Unattributable: noised with fake reports' &&
           table.children[0].children[17]?.innerText === 'N/A' &&
           table.children[5].children[17]?.innerText === 'Disabled' &&
           table.children[6].children[17]?.innerText === 'Enabled') {

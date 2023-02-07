@@ -134,7 +134,9 @@ struct WebUISource {
   enum Attributability {
     kAttributable,
     // The source was dropped due to `CommonSourceInfo::AttributionLogic::kNever`.
-    kNoised,
+    kNoisedNever,
+    // The source was dropped due to `CommonSourceInfo::AttributionLogic::kFalsely`.
+    kNoisedFalsely,
     kReachedEventLevelAttributionLimit,
     kInternalError,
     kInsufficientSourceCapacity,

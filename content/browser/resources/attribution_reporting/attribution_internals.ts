@@ -974,8 +974,10 @@ function attributabilityToText(attributability: WebUISource_Attributability):
   switch (attributability) {
     case WebUISource_Attributability.kAttributable:
       return 'Attributable';
-    case WebUISource_Attributability.kNoised:
-      return 'Unattributable: noised';
+    case WebUISource_Attributability.kNoisedNever:
+      return 'Unattributable: noised with no reports';
+    case WebUISource_Attributability.kNoisedFalsely:
+      return 'Unattributable: noised with fake reports';
     case WebUISource_Attributability.kReachedEventLevelAttributionLimit:
       return 'Attributable: reached event-level attribution limit';
     case WebUISource_Attributability.kInternalError:

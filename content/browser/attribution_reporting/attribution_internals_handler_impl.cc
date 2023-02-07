@@ -115,9 +115,19 @@ void ForwardSourcesToWebUI(
 
   for (const StoredSource& source : active_sources) {
     Attributability attributability;
-    if (source.attribution_logic() == StoredSource::AttributionLogic::kNever) {
-      attributability = Attributability::kNoised;
-    } else {
+    switch (source.attribution_logic()) {
+      case StoredSource::AttributionLogic::kTruthfully:
+        attributability = Attributability::kAttributable;
+        break;
+      case StoredSource::AttributionLogic::kNever:
+        attributability = Attributability::kNoisedNever;
+        break;
+      case StoredSource::AttributionLogic::kFalsely:
+        attributability = Attributability::kNoisedFalsely;
+        break;
+    }
+
+    if (attributability == Attributability::kAttributable) {
       switch (source.active_state()) {
         case StoredSource::ActiveState::kActive:
           attributability = Attributability::kAttributable;
@@ -326,7 +336,6 @@ void AttributionInternalsHandlerImpl::OnSourceHandled(
   Attributability attributability;
   switch (result) {
     case StorableSource::Result::kSuccess:
-    // TODO(linnan): Consider displaying source noised in internals UI.
     case StorableSource::Result::kSuccessNoised:
       return;
     case StorableSource::Result::kInternalError:
