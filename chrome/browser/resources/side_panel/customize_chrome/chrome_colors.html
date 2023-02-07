@@ -26,7 +26,7 @@
     --cr-grid-gap: 16px 12px;
     --cr-grid-width: 100%;
     display: block;
-    padding: 16px 16px 32px;
+    padding: 0 16px 32px;
   }
 
   .tile {
@@ -77,7 +77,7 @@
   </cr-icon-button>
   <h1 id="header">$i18n{chromeColors}</h1>
 </div>
-<cr-grid columns="3">
+<cr-grid columns="3" disable-arrow-navigation>
   <div id="customColorContainer"
       class="tile"
       title="$i18n{colorPickerLabel}"

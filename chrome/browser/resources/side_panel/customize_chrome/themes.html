@@ -100,7 +100,7 @@
       on-change="onRefreshDailyToggleChange_">
   </cr-toggle>
 </div>
-<cr-grid columns="3">
+<cr-grid columns="3" disable-arrow-navigation>
   <template is="dom-repeat" id="themesRepeat" items="[[themes_]]">
     <div class="tile theme" tabindex="0" role="button"
         on-click="onSelectTheme_" title$="[[item.attribution1]]"
@@ -116,4 +116,4 @@
       </customize-chrome-check-mark-wrapper>
     </div>
   </template>
-</cr-grid>
+<cr-grid>
