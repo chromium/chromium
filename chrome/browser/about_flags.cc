@@ -4910,7 +4910,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(arc::kArcUpdateO4CListViaA2C2)},
     {"arc-vmm-swap", flag_descriptions::kArcVmmSwapName,
      flag_descriptions::kArcVmmSwapDesc, kOsCrOS,
-     PLATFORM_FEATURE_NAME_TYPE("CrOSArcVmmSwap")},
+     PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootArcVmmSwap")},
     {"arc-vmm-swap-keyboard-shortcut",
      flag_descriptions::kArcVmmSwapKBShortcutName,
      flag_descriptions::kArcVmmSwapKBShortcutDesc, kOsCrOS,
