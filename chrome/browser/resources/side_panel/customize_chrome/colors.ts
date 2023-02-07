@@ -164,6 +164,14 @@ export class ColorsElement extends PolymerElement {
         this.selectedColor_.chromeColor!.value === color.value;
   }
 
+  private boolToString_(value: boolean): string {
+    return value ? 'true' : 'false';
+  }
+
+  private getChromeColorCheckedStatus_(color: SkColor): string {
+    return this.boolToString_(this.isChromeColorSelected_(color));
+  }
+
   private tabIndex_(selected: boolean): string {
     return selected ? '0' : '-1';
   }

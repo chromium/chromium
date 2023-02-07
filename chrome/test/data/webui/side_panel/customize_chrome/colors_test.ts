@@ -245,6 +245,7 @@ suite('ColorsTest', () => {
     let checkedColors = colorsElement.shadowRoot!.querySelectorAll('[checked]');
     assertEquals(1, checkedColors.length);
     assertEquals(defaultColorElement, checkedColors[0]);
+    assertEquals(defaultColorElement.getAttribute('aria-checked'), 'true');
     let indexedColors =
         colorsElement.shadowRoot!.querySelectorAll('[tabindex="0"]');
     assertEquals(1, indexedColors.length);
@@ -264,6 +265,7 @@ suite('ColorsTest', () => {
     checkedColors = colorsElement.shadowRoot!.querySelectorAll('[checked]');
     assertEquals(1, checkedColors.length);
     assertEquals(mainColorElement, checkedColors[0]);
+    assertEquals(mainColorElement.getAttribute('aria-checked'), 'true');
     indexedColors =
         colorsElement.shadowRoot!.querySelectorAll('[tabindex="0"]');
     assertEquals(1, indexedColors.length);
@@ -279,6 +281,7 @@ suite('ColorsTest', () => {
     checkedColors = colorsElement.shadowRoot!.querySelectorAll('[checked]');
     assertEquals(1, checkedColors.length);
     assertEquals('chrome-color', checkedColors[0]!.className);
+    assertEquals(checkedColors[0]!.getAttribute('aria-checked'), 'true');
     assertEquals(2, (checkedColors[0]! as ColorElement).foregroundColor.value);
     indexedColors =
         colorsElement.shadowRoot!.querySelectorAll('[tabindex="0"]');
@@ -295,6 +298,9 @@ suite('ColorsTest', () => {
     checkedColors = colorsElement.shadowRoot!.querySelectorAll('[checked]');
     assertEquals(1, checkedColors.length);
     assertEquals(colorsElement.$.customColor, checkedColors[0]);
+    assertEquals(
+        colorsElement.$.customColorContainer.getAttribute('aria-checked'),
+        'true');
     indexedColors =
         colorsElement.shadowRoot!.querySelectorAll('[tabindex="0"]');
     assertEquals(1, indexedColors.length);
