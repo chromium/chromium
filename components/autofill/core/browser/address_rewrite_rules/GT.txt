@@ -1,0 +1,32 @@
+\bjacobo\s+arbenz\s+guzman\b	jacob arbenz
+\binterconnection\b	interconexion
+\bjacobo\s+arbenz\b	jacob arbenz
+\bruta\s+nacional\b	rn
+\bboulevard\b	blvd
+\bcarretera\b	ca
+\bnortheast\b	noreste
+\bnorthwest\b	noroeste
+\boccidente\b	o
+\bsoutheast\b	sureste
+\bsouthwest\b	suroeste
+\bdiagonal\b	diag
+\bavenida\b	av
+\bbulevar\b	blvd
+\bhighway\b	ca
+\boriente\b	e
+\bavenue\b	av
+\bcamino\b	road
+\bstreet\b	calle
+\bnorte\b	n
+\bnorth\b	n
+\boeste\b	o
+\broute\b	ruta
+\bsouth\b	s
+\beast\b	e
+\beste\b	e
+\blote\b	lot
+\bwest\b	o
+\bsur\b	s
+\bno\b	
+\bn°\b	
+\b\#\b	

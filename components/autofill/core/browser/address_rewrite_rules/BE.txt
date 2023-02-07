@@ -2,6 +2,7 @@
 \barrondissement\s+administratif\s+d\b	
 \bbrussels\s+hoofdstedelijk\s+gewest\b	brussel
 \bbrussel\s+hoofdstedelijk\s+gewest\b	brussel
+\barrondissement\s+administratif\b	
 \bregion\s+de\s+bruxelles\s+capitale\b	brussel
 \bseptieme\s+division\s+francaise\b	7eme division frcse
 \bonze\s+lieve\s+heersebeestjes\b	onze lieve heersbeestjes
@@ -58,7 +59,9 @@
 \bprofondeville\b	profondville
 \bsint\s+lenaerts\b	sint lenaarts
 \bsualem\s+renkin\b	renkin sualem
+\bburgemeester\b	burg
 \bdendermondse\b	dendermonde
+\bfahrstreifen\b	voie
 \bminnezangers\b	menestrelen
 \bvooruitgangs\b	vooruitgang
 \bwaals\s+gewest\b	wallonie
@@ -79,13 +82,16 @@
 \bboulevard\b	bd
 \bbruxelles\b	brussel
 \bluitenant\b	liutenant
+\brijstrook\b	voie
 \bwallonien\b	wallonie
 \bwestphael\b	wesphal
 \bbelgique\b	be
 \bbrussels\b	brussel
 \bchaussee\b	chee
+\bdoorgang\b	passage
 \bhennegau\b	hainaut
 \blimbourg\b	limburg
+\bprovince\b	
 \bsteenweg\b	stwg
 \bterrasse\b	tsse
 \bwestphal\b	wesphal
@@ -97,28 +103,60 @@
 \bjettese\b	jetse
 \bluttich\b	luik
 \bprovinz\b	
+\bsteegje\b	gasse
 \bstrasse\b	str
 \ballees\b	all
 \bavenue\b	av
 \bbelgie\b	be
+\bburgem\b	burg
 \bcentre\b	ctre
-\bsainte\b	st
+\bchemin\b	weg
+\bnorden\b	n
+\bplaats\b	pl
+\bruelle\b	gasse
+\bsainte\b	
 \bsquare\b	sq
 \bstraat\b	str
+\bwesten\b	o
 \ballee\b	all
 \bliege\b	luik
 \bnamur\b	namen
+\bnoord\b	n
+\bosten\b	
+\bouest\b	o
 \bpiein\b	pl
 \bplace\b	pl
 \bplatz\b	pl
 \bplein\b	pl
 \broute\b	rte
-\bsaint\b	st
-\bsankt\b	st
+\bsaint\b	
+\bsankt\b	
+\bsteeg\b	gasse
+\bsuden\b	s
 \bthier\b	their
-\bsint\b	st
+\bclos\b	hof
+\bieme\b	
+\blaan\b	av
+\bnord\b	n
+\boost\b	
+\bquai\b	kaai
+\bsint\b	
+\bwest\b	o
+\bzuid\b	s
 \bdes\b	d
+\beme\b	
+\bere\b	
+\best\b	
 \brue\b	r
-\bste\b	st
+\bste\b	
+\bsud\b	s
 \bde\b	d
 \bdu\b	d
+\ber\b	
+\bnd\b	
+\brd\b	
+\bre\b	
+\bst\b	
+\bth\b	
+\be\b	
+\bw\b	o

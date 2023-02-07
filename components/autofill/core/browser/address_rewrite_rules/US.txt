@@ -14,10 +14,12 @@
 \barmed\s+forces\s+americas\b	aa
 \bmartin\s+luther\s+king\s+jr\b	mlk
 \barmed\s+forces\s+pacific\b	ap
+\bcounty\s+truck\s+highway\b	cth
 \bdistrict\s+of\s+columbia\b	dc
 \barmed\s+forces\s+africa\b	ae
 \barmed\s+forces\s+canada\b	ae
 \barmed\s+forces\s+europe\b	ae
+\bfarm\s+to\s+market\s+road\b	fm
 \bnat\s+for\s+development\b	nat for dev
 \bnational\s+forest\s+dev\b	nat for dev
 \bjoint\s+reserve\s+base\b	jrb
@@ -35,6 +37,7 @@
 \badministration\b	admn
 \bair\s+force\s+base\b	afb
 \bamerican\s+samoa\b	as
+\ban\s+county\s+road\b	ck
 \bbradford\s+woods\b	bradfordwoods
 \bchristiansberg\b	christiansbrg
 \bcrawfordsville\b	crawfordsvlle
@@ -50,6 +53,8 @@
 \bnew\s+york\s+state\b	ny
 \bnorth\s+carolina\b	nc
 \bnorthumberland\b	northumberlnd
+\broosevelt\s+road\b	rr
+\brs\s+county\s+road\b	ck
 \bsalt\s+lake\s+city\b	slc
 \bsouth\s+carolina\b	sc
 \bvirgin\s+islands\b	vi
@@ -65,6 +70,7 @@
 \bwashington\s+dc\b	dc
 \bwest\s+virginia\b	wv
 \bbristle\s+cone\b	bristlecone
+\bforest\s+route\b	frst rte
 \bfrst\s+service\b	frst srvc
 \bminers\s+mills\b	miners mill
 \bnorth\s+dakota\b	nd
@@ -73,6 +79,7 @@
 \bservice\s+road\b	service rd
 \bsouth\s+dakota\b	sd
 \bswan\s+quarter\b	swanquarter
+\bwhippoorwill\b	whipoorwill
 \bbloomington\b	blmngtn
 \bchevy\s+chase\b	chevy chs
 \bclutch\s+city\b	houston
@@ -88,6 +95,7 @@
 \bpuerto\s+rico\b	pr
 \brural\s+route\b	rr
 \bspringfield\b	spfld
+\bstate\s+route\b	nys route
 \byellowstone\b	yelwstn
 \balpen\s+glow\b	alpenglow
 \bambassador\b	amb
@@ -102,8 +110,11 @@
 \bcottonwood\b	ctwd
 \bcrossroads\b	xrds
 \bexpressway\b	exp
-\bextensions\b	exts
+\bextensions\b	exd
 \bfarmington\b	farmingtn
+\bforest\s+rte\b	frst rte
+\bfrst\s+route\b	frst rte
+\blightening\b	lightning
 \bnew\s+jersey\b	nj
 \bnew\s+mexico\b	nm
 \bpittsburgh\b	pgh
@@ -115,6 +126,7 @@
 \buniversity\b	univ
 \bwashington\b	wa
 \bwest\s+point\b	westpoint
+\bapartment\b	apt
 \bbellerose\b	bellrs
 \bboulevard\b	blvd
 \bburlingtn\b	burlngtn
@@ -124,12 +136,13 @@
 \bcleveland\b	cleve
 \bcommunity\b	cmnty
 \bcrossroad\b	xrd
-\bextension\b	ext
+\bextension\b	exd
 \bfairmount\b	fairmt
 \bfernandez\b	fdez
 \bfrancisco\b	fran
+\bhawthorne\b	hawthorn
 \bhighlands\b	hlds
-\bho\'olehua\b	hoolehua
+\bho'olehua\b	hoolehua
 \bhomestead\b	hmstd
 \bjunctions\b	jcts
 \blexington\b	lxngtn
@@ -149,6 +162,7 @@
 \bbig\s+bend\b	bg bnd
 \bblooming\b	blmng
 \bbullrush\b	bulrush
+\bbusiness\b	b
 \bcauseway\b	cswy
 \bcolorado\b	co
 \bcottonwd\b	ctwd
@@ -193,6 +207,7 @@
 \bcircles\b	cirs
 \bcollege\b	clg
 \bcolonel\b	col
+\bcommons\b	cmns
 \bcorners\b	cors
 \bcountry\b	cntry
 \bcrecent\b	cres
@@ -202,19 +217,21 @@
 \bestates\b	ests
 \bexpress\b	exp
 \bflorida\b	fl
+\bforrest\b	frst
 \bfreeway\b	fwy
 \bgardens\b	gdns
 \bgateway\b	gtwy
 \bgeorgia\b	ga
 \bharbors\b	hbrs
+\bharbour\b	hbr
 \bheights\b	ht
-\bhighway\b	hwy
+\bhighway\b	hw
 \bhollows\b	hllw
 \bindiana\b	in
 \bislands\b	is
 \bjohnson\b	jhnsn
 \bjuncton\b	jt
-\blanding\b	lndg
+\blanding\b	lnd
 \bmeadows\b	mdws
 \bmission\b	msn
 \bmontana\b	mt
@@ -228,7 +245,6 @@
 \bprairie\b	pr
 \branches\b	rnchs
 \branchos\b	rnchs
-\bseventh\b	7
 \bsprings\b	spg
 \bsquares\b	sqs
 \bstation\b	sta
@@ -260,6 +276,7 @@
 \bcarlin\b	carlan
 \bcenter\b	cen
 \bcentre\b	cen
+\bcharge\b	chrg
 \bcircle\b	cir
 \bcliffs\b	clfs
 \bcommon\b	cmn
@@ -274,23 +291,22 @@
 \bdesert\b	dsrt
 \bdivide\b	dv
 \bdrives\b	drs
-\beighth\b	8
 \bestate\b	est
-\bextnsn\b	ext
+\bextnsn\b	exd
 \bfields\b	flds
 \bforest\b	frst
 \bforges\b	frgs
-\bfourth\b	4
 \bfreewy\b	fwy
 \bgarden\b	gdn
 \bgatewy\b	gtwy
 \bgatway\b	gtwy
+\bgrande\b	grnd
 \bgreens\b	grns
 \bgroves\b	grvs
 \bharbor\b	hbr
 \bhawaii\b	hi
 \bheight\b	ht
-\bhighwy\b	hwy
+\bhighwy\b	hw
 \bhollow\b	hllw
 \bisland\b	is
 \bislnds\b	is
@@ -313,6 +329,7 @@
 \bparish\b	
 \bparkwy\b	pky
 \bplains\b	plns
+\bpointe\b	pt
 \bpoints\b	pts
 \bpuerto\b	pto
 \bquarry\b	qry
@@ -323,12 +340,12 @@
 \brapids\b	rpds
 \bridges\b	rdgs
 \bschool\b	sch
-\bsecond\b	2
 \bsenior\b	sr
 \bshoals\b	shls
 \bshoars\b	shrs
 \bshores\b	shrs
 \bskyway\b	skwy
+\bsloope\b	sloop
 \bspring\b	spg
 \bsprngs\b	spg
 \bsquare\b	sq
@@ -386,12 +403,9 @@
 \bcurve\b	curv
 \bdepot\b	dep
 \bdrive\b	dr
-\beight\b	8
 \bfalls\b	fls
 \bferry\b	fry
 \bfield\b	fld
-\bfifth\b	5
-\bfirst\b	1
 \bflats\b	flts
 \bfords\b	frds
 \bforge\b	frg
@@ -408,7 +422,7 @@
 \bharbr\b	hbr
 \bhaven\b	hvn
 \bhills\b	hl
-\bhiway\b	hwy
+\bhiway\b	hw
 \bholws\b	hllw
 \bhouse\b	hse
 \bhrbor\b	hbr
@@ -421,7 +435,7 @@
 \blakes\b	lks
 \blanes\b	la
 \blight\b	lgt
-\blndng\b	lndg
+\blndng\b	lnd
 \blocks\b	lcks
 \blodge\b	ldg
 \bloops\b	loop
@@ -434,8 +448,9 @@
 \bmntns\b	mtns
 \bmount\b	mt
 \bn\s+y\s+c\b	ny
-\bninth\b	9
+\bnorte\b	n
 \bnorth\b	n
+\boeste\b	w
 \bpalau\b	pw
 \bpalms\b	plms
 \bpaseo\b	pso
@@ -456,11 +471,9 @@
 \broads\b	rds
 \broute\b	rt
 \bsaint\b	st
-\bseven\b	7
 \bshoal\b	shl
 \bshoar\b	shr
 \bshore\b	shr
-\bsixth\b	6
 \bsouth\b	s
 \bspace\b	sp
 \bspngs\b	spg
@@ -469,11 +482,9 @@
 \bstatn\b	sta
 \bstrav\b	stra
 \bstrvn\b	stra
+\bsuite\b	ste
 \bsumit\b	smt
-\btenth\b	10
 \btexas\b	tx
-\bthird\b	3
-\bthree\b	3
 \btrace\b	trce
 \btrack\b	trk
 \btrail\b	tr
@@ -500,6 +511,7 @@
 \bbend\b	bnd
 \bbluf\b	blf
 \bboul\b	blvd
+\bbuoy\b	bouy
 \bburg\b	bg
 \bbyng\b	bing
 \bbypa\b	byp
@@ -519,18 +531,19 @@
 \bdale\b	dl
 \bdriv\b	dr
 \beast\b	e
+\beste\b	e
 \bexpr\b	exp
 \bexpw\b	exp
 \bexpy\b	exp
-\bextn\b	ext
+\bextd\b	exd
+\bextn\b	exd
+\bexts\b	exd
 \bfarm\b	frm
-\bfive\b	5
 \bflat\b	flt
 \bford\b	frd
 \bforg\b	frg
 \bfork\b	frk
 \bfort\b	ft
-\bfour\b	4
 \bfrks\b	fks
 \bfrry\b	fry
 \bfrwy\b	fwy
@@ -543,9 +556,9 @@
 \bhght\b	ht
 \bhgts\b	ht
 \bhill\b	hl
-\bhiwy\b	hwy
+\bhiwy\b	hw
 \bholw\b	hllw
-\bhway\b	hwy
+\bhway\b	hw
 \biowa\b	ia
 \bjctn\b	jt
 \bjnct\b	jt
@@ -556,6 +569,7 @@
 \blane\b	la
 \bldge\b	ldg
 \blitl\b	ltl
+\blndg\b	lnd
 \bloaf\b	lf
 \block\b	lck
 \blodg\b	ldg
@@ -570,7 +584,6 @@
 \bmtin\b	mnt
 \bnebr\b	ne
 \bneck\b	nck
-\bnine\b	9
 \bohio\b	oh
 \bokla\b	ok
 \boreg\b	or
@@ -604,6 +617,7 @@
 \btrpk\b	tpk
 \btwln\b	t l
 \btwsp\b	tp
+\bunit\b	u
 \butah\b	ut
 \bvdct\b	via
 \bview\b	vw
@@ -616,9 +630,11 @@
 \bwest\b	w
 \bx\s+rd\b	xrd
 \bala\b	al
+\bark\b	ar
 \bave\b	av
 \bavn\b	av
 \bbtm\b	bot
+\bbus\b	b
 \bcam\b	cm
 \bcmp\b	cp
 \bcrk\b	ck
@@ -631,11 +647,13 @@
 \bdpt\b	dep
 \bdrv\b	dr
 \bdvd\b	dv
+\bext\b	exd
 \bfla\b	fl
 \bfrt\b	ft
 \bhei\b	ht
 \bhls\b	hl
 \bhts\b	ht
+\bhwy\b	hw
 \bill\b	il
 \bind\b	in
 \bisl\b	is
@@ -655,11 +673,11 @@
 \bn\s+y\b	ny
 \bneb\b	ne
 \bnev\b	nv
+\bnte\b	n
 \bnth\b	n
 \bntl\b	nl
 \bnyc\b	ny
 \bnys\b	ny
-\bone\b	1
 \bore\b	or
 \bp\s+r\b	pr
 \bprk\b	pk
@@ -670,16 +688,16 @@
 \bs\s+c\b	sc
 \bs\s+d\b	sd
 \bsan\b	sn
-\bsix\b	6
+\bspc\b	sp
 \bspr\b	spg
 \bsqr\b	sq
 \bsqu\b	sq
 \bsth\b	s
 \bstn\b	sta
 \bstr\b	st
-\bten\b	10
+\bsur\b	s
+\btex\b	tx
 \btrl\b	tr
-\btwo\b	2
 \btwp\b	tp
 \bu\s+s\b	us
 \busa\b	us
@@ -692,6 +710,7 @@
 \bwis\b	wi
 \bwva\b	wv
 \bcr\b	ck
+\bhy\b	hw
 \bln\b	la
 \btn\b	
 \btw\b	tp

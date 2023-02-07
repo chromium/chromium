@@ -1,4 +1,10 @@
-\bwesterhaar\s+vriezenveensewijk\b	westerhaar-vriezenv wijk
+\bwesterhaar\s+vriezenveensewyk\b	westerhaar-vriezenv wyk
+\bpieter\s+corneliszoon\s+hooft\b	p c hooft
+\bjohan\s+fabricius\b	joh fabricius
+\bgysbert\s+japicx\b	g japicx
+\bgysbert\s+japiks\b	g japicx
+\bpieter\s+c\s+hooft\b	p c hooft
+\bgysbert\s+japix\b	g japicx
 \bnoord\s+brabant\b	nb
 \bnoord\s+holland\b	nh
 \bnoord\-brabant\b	nb
@@ -12,37 +18,33 @@
 \bmonseigneur\b	mgr
 \bnetherlands\b	nl
 \bnordholland\b	nh
+\bp\s+czn\s+hooft\b	p c hooft
 \bzuidholland\b	zh
 \bgelderland\b	ge
-\bnoordzijde\b	nz
-\boverijssel\b	ov
+\bsecretaris\b	secr
 \bflevoland\b	fl
 \bfriesland\b	fr
 \bgroningen\b	gn
 \bnederland\b	nl
-\boostzijde\b	oz
+\bnoordzyde\b	nz
+\boveryssel\b	ov
 \bprofessor\b	prof
 \brotterdam\b	rt
-\bwestzijde\b	wz
-\bzuidzijde\b	zz
+\bg\s+japiks\b	g japicx
+\boostzyde\b	oz
+\bwestzyde\b	wz
+\bzuidzyde\b	zz
 \baan\s+den\b	ad
-\bachtste\b	8
 \bdominee\b	ds
 \bdrenthe\b	dr
 \blimburg\b	l
 \bmeester\b	mr
-\bnegende\b	9
+\bpastoor\b	past
 \butrecht\b	u
 \bzeeland\b	z
-\bzevende\b	7
 \baan\s+de\b	ad
 \bdoctor\b	dr
-\beerste\b	1
 \bstraat\b	str
-\btweede\b	2
-\bvierde\b	4
-\bvijfde\b	5
-\bderde\b	3
 \bnl\-dr\b	dr
 \bnl\-fl\b	fl
 \bnl\-fr\b	fr
@@ -55,7 +57,6 @@
 \bnl\-ut\b	u
 \bnl\-ze\b	z
 \bnl\-zh\b	zh
-\bzesde\b	6
 \bsint\b	st
 \ba\s+d\b	ad
 \bgld\b	ge

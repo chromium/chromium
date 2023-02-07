@@ -16,6 +16,7 @@
 \bcolombie\s+britannique\b	bc
 \bprince\s+edward\s+island\b	pe
 \bregional\s+district\s+of\b	
+\bforest\s+service\s+road\b	fsr
 \bfrench\s+village\s+york\b	french village
 \bhead\s+of\s+bay\s+despoir\b	head bay d'espoir
 \bterritoire\s+du\s+yukon\b	yt
@@ -46,6 +47,7 @@
 \btrinity\s+bay\b	tb
 \bbelliveaus\b	belliveau
 \bconcession\b	conc
+\bcrossroads\b	croisement
 \bcul\s+de\s+sac\b	cds
 \bcul\-de\-sac\b	cds
 \bde\s+riviere\b	riviere
@@ -69,15 +71,17 @@
 \bhighlands\b	hghlds
 \bkuskonook\b	kuskanook
 \bpromenade\b	prom
+\bside\s+road\b	sideroad
 \bturnabout\b	trnabt
 \bbusiness\b	bus
-\bcrescent\b	cres
+\bcrescent\b	cr
 \bcrossing\b	cross
 \bjunction\b	
 \bmanitoba\b	mb
 \bmountain\b	mtn
 \boak\s+hill\b	oakhill
 \bpleasent\b	pleasant
+\bstairway\b	escalier
 \bterrasse\b	tsse
 \btownline\b	tline
 \btownship\b	
@@ -88,15 +92,15 @@
 \bcorners\b	crnrs
 \bestates\b	estate
 \bfreeway\b	fwy
-\bgardens\b	gdns
+\bgardens\b	gd
 \bgrounds\b	grnds
 \bharbour\b	harbr
-\bheights\b	hts
+\bheights\b	ht
 \bherbert\b	hebert
 \bhighway\b	hwy
 \bimpasse\b	imp
 \bkeenans\b	keenan
-\bl\'islet\b	
+\bl'islet\b	
 \bla\s+have\b	lahave
 \blanding\b	landng
 \blookout\b	lkout
@@ -111,12 +115,13 @@
 \breserve\b	
 \bsentier\b	sent
 \bstation\b	
-\bterrace\b	terr
+\bterrace\b	tc
 \bthicket\b	thick
 \btown\s+of\b	
 \bvillage\b	
 \bavenue\b	av
 \bbakers\b	baker
+\bbridge\b	pt
 \bcanada\b	ca
 \bcanton\b	
 \bcenter\b	
@@ -126,10 +131,11 @@
 \bcounty\b	
 \bharbor\b	harbr
 \bisland\b	
-\bl\'isle\b	isle
+\bl'isle\b	isle
 \blimits\b	lmts
 \bmackay\b	mckay
 \bmcgrey\b	mcgray
+\bmontee\b	mtee
 \bpointe\b	pte
 \bquebec\b	qc
 \bruelle\b	rle
@@ -141,35 +147,48 @@
 \bvalley\b	
 \bcarre\b	car
 \bclose\b	cl
-\bcourt\b	crt
+\bcourt\b	
 \bdrive\b	dr
 \bfirst\b	fst
 \bforks\b	
-\bgrove\b	grv
+\bgreen\b	gr
+\bgrove\b	gv
 \bmanns\b	mann
+\bmanor\b	mr
 \bmetro\b	
 \bmount\b	mt
 \bnorth\b	n
 \bouest\b	o
+\bpiste\b	tr
 \bplace\b	pl
 \bpoint\b	pt
 \brange\b	rg
+\bridge\b	rg
 \broute\b	rt
 \bsaint\b	
 \bsouth\b	s
-\btrail\b	trl
+\btrail\b	tr
 \byukon\b	yt
 \bboul\b	blvd
 \bcity\b	
 \bcove\b	
-\beast\b	
+\bcres\b	cr
+\beast\b	e
 \bfrst\b	fst
+\bgate\b	ga
+\bgdns\b	gd
 \blake\b	
 \blane\b	ln
+\blink\b	li
+\bmews\b	me
+\bmont\b	mt
 \bnord\b	n
 \bpark\b	
 \bpkwy\b	pky
+\bpont\b	pt
+\brise\b	ri
 \broad\b	
+\bterr\b	tc
 \bwest\b	o
 \bave\b	av
 \bbay\b	
@@ -177,32 +196,41 @@
 \bblp\b	
 \bcan\b	ca
 \bcbd\b	
+\bcrt\b	
 \bctr\b	
 \bdes\b	
 \bere\b	
-\best\b	
+\best\b	e
+\bgrn\b	gr
+\bgrv\b	gv
+\bhts\b	ht
 \bile\b	
 \blab\b	
+\bmac\b	mc
 \bndb\b	
 \bnth\b	n
 \bont\b	on
 \bpei\b	pe
+\brge\b	rg
 \brte\b	rt
+\brue\b	
 \bsal\b	
 \bsmb\b	
 \bste\b	
 \bsth\b	s
 \bsud\b	s
+\btrl\b	tr
 \bbb\b	
 \bcb\b	
 \bco\b	
-\bd\'\b	
+\bd'\b	
 \bde\b	
 \bdu\b	
 \ber\b	
 \bfn\b	
 \bgb\b	
 \bnd\b	
+\bpa\b	
 \bpk\b	
 \brd\b	
 \bre\b	
@@ -211,5 +239,4 @@
 \bwb\b	
 \bc\b	
 \bd\b	
-\be\b	
 \bw\b	o

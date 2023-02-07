@@ -1,0 +1,75 @@
+\bkhalifa\s+bin\s+zayed\s+bin\s+sultan\s+al\s+nahyan\b	khalifah bin zayed
+\bkhalifa\s+bin\s+zayed\s+the\s+first\b	khalifah bin zayed
+\bsheikh\s+khalifah\s+bin\s+zayed\b	khalifah bin zayed
+\bkhalid\s+bin\s+al\s+waleed\b	خالد بن الوليد
+\bkhalid\s+bin\s+al\s+walid\b	خالد بن الوليد
+\bomar\s+bin\s+al\s+khattab\b	عمر بن الخطاب
+\bomar\s+ibn\s+al\s+khattab\b	عمر بن الخطاب
+\bumar\s+ibn\s+al\s+khattab\b	عمر بن الخطاب
+\bالشيخ\s+خليفة\s+بن\s+زايد\b	khalifah bin zayed
+\bع\s+خالد\s+بن\s+الوليد\b	خالد بن الوليد
+\bnaseem\s+al\s+barr\b	نسيم البر
+\bاثنان\s+وعشرون\b	22
+\bal\s+dhiyafah\b	الضيافة
+\bal\s+khamaari\b	al khaamari
+\bal\s+zoubaidi\b	al zubaidi
+\binterchange\b	تقاطع
+\bواحد\s+وعشرون\b	21
+\bal\s+diyafah\b	الضيافة
+\bal\s+faheide\b	الفهيدي
+\bal\s+ittihad\b	alltihad
+\bal\s+marmouq\b	المرموق
+\bثمانية\s+عشر\b	18
+\bشارع\s+رئيسي\b	highway
+\bطريق\s+رئيسي\b	highway
+\bal\s+fahidi\b	الفهيدي
+\bأربعة\s+عشر\b	14
+\bثلاثة\s+عشر\b	13
+\bشارع\s+سريع\b	freeway
+\bطريق\s+سريع\b	freeway
+\bal\s+wasel\b	الوصل
+\bjumeirah\b	جميرا
+\bjunction\b	تقاطع
+\bmeleekah\b	مِليكَة
+\bاثنا\s+عشر\b	12
+\bتسعة\s+عشر\b	19
+\bخمسة\s+عشر\b	15
+\bسبعة\s+عشر\b	17
+\bal\s+wasl\b	الوصل
+\bbeniyas\b	baniyas
+\bjumeria\b	جميرا
+\bأحد\s+عشر\b	11
+\bالقاهرة\b	cairo
+\bبني\s+ياس\b	baniyas
+\bستة\s+عشر\b	16
+\bnumber\b	no.
+\bstreet\b	st
+\bأربعون\b	40
+\bتحويلة\b	detour
+\bثامنية\b	8
+\bثلاثون\b	30
+\bثمانون\b	80
+\bnorth\b	n
+\bsouth\b	s
+\bأربعة\b	4
+\bإثنان\b	2
+\bتسعون\b	90
+\bثلاثة\b	3
+\bخمسون\b	50
+\bسبعون\b	70
+\bعشرون\b	20
+\bوا\s+حد\b	1
+\beast\b	e
+\broad\b	st
+\bwest\b	w
+\bتعسة\b	9
+\bخمسة\b	5
+\bسبعة\b	7
+\bستون\b	60
+\bستّة\b	6
+\bشارع\b	st
+\bعشرة\b	10
+\bمائة\b	100
+\bnum\b	no.
+\bصفر\b	0
+\bمئة\b	100

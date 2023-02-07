@@ -7,23 +7,34 @@
 \bnordrhein\s+westfalen\b	nw
 \bschleswig\s+holstein\b	sh
 \bbaden\s+wurttemberg\b	bw
+\bjohann\s+sebastian\b	joh seb
 \bregionalverband\b	
 \brheinland\s+pfalz\b	rp
-\bsachsen\s+anhalt\b	st
+\bsachsen\s+anhalt\b	s
+\bbundesstrasse\b	b
+\beuropastrasse\b	e
+\blandesstrasse\b	l
 \bniedersachsen\b	ni
-\bsaxony\s+anhalt\b	st
+\bsaxony\s+anhalt\b	s
+\bstaatsstrasse\b	s
+\bkreisstrasse\b	k
 \blower\s+saxony\b	ni
 \bstadtverband\b	
 \bbrandenburg\b	bb
 \bdeutschland\b	de
+\bbundesstr\b	b
+\blandesstr\b	l
 \blandkreis\b	
 \bthuringen\b	th
 \bthuringia\b	th
+\bautobahn\b	a
+\beuropean\b	e
 \bsaarland\b	sl
 \bbavaria\b	by
 \bcologne\b	koln
 \bgermany\b	de
 \bhamburg\b	hh
+\bkolonie\b	kol
 \bsachsen\b	sn
 \bstrasse\b	str
 \bbayern\b	by
@@ -32,10 +43,16 @@
 \bhessen\b	he
 \bsaxony\b	sn
 \bsudost\b	se
+\ballee\b	all
 \bhesse\b	he
-\bsankt\b	st
+\bsankt\b	s
 \bstadt\b	
 \bnord\b	n
 \bwest\b	w
+\bnes\b	k
 \bost\b	o
+\bovp\b	k
 \bsud\b	s
+\bin\b	k
+\bnu\b	k
+\bst\b	s

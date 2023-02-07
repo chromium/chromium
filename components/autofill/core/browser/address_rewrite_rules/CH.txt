@@ -1,6 +1,9 @@
 \bappenzell\s+rhodes\s+exterieures\b	ar
+\bfaubourg\s+philippe\s+suchard\b	fbg ph suchard
 \bappenzell\s+ausserrhoden\b	ar
 \bappenzell\s+innerrhoden\b	ai
+\bjacques\s+rene\s+fiechter\b	jacq rene fiechter
+\bfaubourg\s+ph\s+suchard\b	fbg ph suchard
 \bjura\s+north\s+vaudois\b	jura nord vaudois
 \bprettigovia\s+davos\b	davos
 \bbasel\s+landschaft\b	bl
@@ -10,15 +13,13 @@
 \bbasilea\s+citta\b	bs
 \bsankt\s+stephan\b	st stephan
 \bwallis\s+valais\b	vs
-\bdix\s+huitieme\b	18
-\bdix\s+neuvieme\b	19
-\bdix\s+septieme\b	17
+\bintersection\b	crocevia
+\bintersezione\b	crocevia
 \bsaint\s+gallen\b	sg
 \bsankt\s+gallen\b	sg
 \bschaffhausen\b	sh
 \bbasel\s+stadt\b	bs
 \bbelinzonese\b	bellinzona
-\bquatorzieme\b	14
 \bsaint\s+gallo\b	sg
 \bsan\s+nazzaro\b	s nazzaro
 \bsan\s+vittore\b	s vittore
@@ -32,6 +33,8 @@
 \bbasel\s+stad\b	bs
 \bbazel\s+stad\b	bs
 \bbellinzone\b	bellinzona
+\bcroisement\b	crocevia
+\bdeviazione\b	umweg
 \benclave\s+de\b	
 \bgraubunden\b	gr
 \bsaint\s+gall\b	sg
@@ -40,13 +43,12 @@
 \bst\.\s+gallen\b	sg
 \bvaud\s+waadt\b	vd
 \bwaadt\s+vaud\b	vd
-\bcinquieme\b	5
+\bcarrefour\b	crocevia
 \blaufental\b	laufen
 \bneuchatel\b	ne
 \bneuenburg\b	ne
 \bnidwalden\b	nw
-\bquatrieme\b	4
-\bquinzieme\b	15
+\brotatoria\b	rotonda
 \bsan\s+gallo\b	sg
 \bsciaffusa\b	sh
 \bsolothurn\b	so
@@ -54,33 +56,32 @@
 \bst\.\s+gallo\b	sg
 \bthurgovia\b	tg
 \bthurgovie\b	tg
-\btreizieme\b	13
-\btroisieme\b	3
-\bvingtieme\b	20
-\bd\\\'uster\b	uster
-\bdeuxieme\b	2
-\bdouzieme\b	12
+\bumleitung\b	umweg
+\bauffahrt\b	rampa
+\bausfahrt\b	rampa
+\bavvocato\b	avv
+\bbanchina\b	kai
+\bd\\'uster\b	uster
 \bfreiburg\b	fr
 \bfribourg\b	fr
 \bfriburgo\b	fr
 \bgessenay\b	saanen
 \bgrigioni\b	gr
-\bhuitieme\b	8
+\bincrocio\b	crocevia
+\bkreuzung\b	crocevia
 \bmaloggia\b	maloja
-\bneuvieme\b	9
 \bnidvaldo\b	nw
 \bobwalden\b	ow
-\bpremiere\b	1
 \bsan\s+gall\b	sg
-\bseizième\b	16
-\bseptieme\b	7
 \bst\s+gallo\b	sg
 \bst\.\s+gall\b	sg
+\bterrazza\b	terrasse
 \bturgovia\b	tg
 \bzofingue\b	zofingen
+\babfahrt\b	rampa
 \bargovia\b	ag
 \bargovie\b	ag
-\bdixieme\b	x
+\bdocteur\b	dr
 \bfriburg\b	fr
 \bginevra\b	ge
 \bglarona\b	gl
@@ -89,13 +90,12 @@
 \blucerne\b	lu
 \bnidwald\b	nw
 \bobvaldo\b	ow
-\bonzieme\b	11
 \bschweiz\b	ch
 \bschwytz\b	sz
-\bsixieme\b	6
 \bsoletta\b	so
 \bsoleure\b	so
 \bst\s+gall\b	sg
+\bstrasse\b	ch
 \bthurgau\b	tg
 \bturicum\b	zh
 \bvallais\b	vs
@@ -105,6 +105,9 @@
 \bbienna\b	biel
 \bbienne\b	biel
 \bbrigue\b	brig
+\bchemin\b	ch
+\bdetour\b	umweg
+\bdoctor\b	dr
 \bgeneva\b	ge
 \bgeneve\b	ge
 \bglaris\b	gl
@@ -112,14 +115,19 @@
 \blaufon\b	laufen
 \bluzern\b	lu
 \bobwald\b	ow
+\bpiazza\b	place
 \bregion\b	
+\bruelle\b	gasse
 \bsainte\b	
 \bschwyz\b	sz
+\bsortie\b	rampa
+\bstrada\b	via
 \bsvitto\b	sz
 \btessin\b	ti
 \bthoune\b	thun
 \bticino\b	ti
 \bvalais\b	vs
+\bvicolo\b	gasse
 \bwallis\b	vs
 \bzurich\b	zh
 \bzurigo\b	zh
@@ -127,73 +135,58 @@
 \bberna\b	be
 \bberne\b	be
 \bbriga\b	brig
-\bde\s+l\'\b	
-\bde\s+la\b	
-\bet\s+du\b	
+\bcorso\b	ch
+\bcorte\b	clos
 \bgiura\b	ju
+\bmaria\b	m
 \bmount\b	mt
 \bnorth\b	n
 \bouest\b	o
+\bplatz\b	place
+\bponte\b	pont
+\brampe\b	rampa
 \bsaint\b	
+\bsant'\b	s
+\bsanta\b	s
 \bsouth\b	s
 \bstadt\b	
+\bviale\b	ch
 \bviege\b	visp
 \bwaadt\b	vd
-\bxviii\b	18
 \bbern\b	be
 \bgenf\b	ge
 \bieme\b	
 \bjura\b	ju
 \bnord\b	n
+\bquai\b	kai
 \bstad\b	
+\bsteg\b	pont
 \bvaud\b	vd
-\bviii\b	8
 \bwest\b	o
-\bxiii\b	13
-\bxvii\b	17
 \bzoug\b	zg
 \bzugo\b	zg
-\bdes\b	
+\bdes\b	d'
 \beme\b	
 \bere\b	
 \best\b	
-\biii\b	3
-\bles\b	
+\bles\b	l'
 \bmte\b	mt
+\brue\b	ch
 \bste\b	
 \bsud\b	s
-\bsur\b	
 \buri\b	ur
-\bvii\b	7
-\bxii\b	12
-\bxiv\b	14
-\bxix\b	19
-\bxvi\b	16
+\bweg\b	ch
 \bzug\b	zg
-\b10\b	x
-\bd\'\b	
-\bde\b	
-\bdu\b	
-\ben\b	
+\bde\b	d'
+\bdu\b	d'
 \ber\b	
-\bii\b	2
-\bin\b	
-\biv\b	4
-\bix\b	9
-\bl\'\b	
-\bla\b	
-\ble\b	
+\bin\b	en
+\bla\b	l'
+\ble\b	l'
 \bnd\b	
-\bof\b	
 \brd\b	
 \bre\b	
 \bst\b	
 \bth\b	
-\bvi\b	6
-\bxi\b	11
-\bxv\b	15
-\bxx\b	20
 \be\b	
-\bi\b	1
-\bv\b	5
 \bw\b	o

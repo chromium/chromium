@@ -1,0 +1,58 @@
+\bseptiembre\b	sep
+\bcarretera\b	ca
+\bdiciembre\b	december
+\bnortheast\b	noreste
+\bnorthwest\b	noroeste
+\bnoviembre\b	nov
+\boccidente\b	o
+\bseptember\b	sep
+\bsoutheast\b	sureste
+\bsouthwest\b	suroeste
+\bdiagonal\b	diag
+\bfebruary\b	feb
+\bnovember\b	nov
+\bnovembre\b	nov
+\bponiente\b	o
+\bavenida\b	av
+\bfebrero\b	feb
+\bhighway\b	ca
+\bjanuary\b	enero
+\boctober\b	oct
+\boctobre\b	oct
+\boctubre\b	oct
+\boriente\b	e
+\baugust\b	agosto
+\bavenue\b	av
+\bcamino\b	road
+\bde\s+los\b	
+\bstreet\b	calle
+\bapril\b	abril
+\bdiag\.\b	diag
+\bjulio\b	jul
+\bjunio\b	jun
+\bmarch\b	mar
+\bmarzo\b	mar
+\bnorte\b	n
+\bnorth\b	n
+\boeste\b	o
+\bsouth\b	s
+\bave\.\b	av
+\beast\b	e
+\beste\b	e
+\bjuly\b	jul
+\bjune\b	jun
+\bmayo\b	may
+\bwest\b	o
+\bav\.\b	av
+\bave\b	av
+\bca\.\b	ca
+\bdel\b	
+\blas\b	
+\blos\b	
+\bnte\b	n
+\bote\b	e
+\bpte\b	o
+\bsur\b	s
+\bde\b	
+\bel\b	
+\bla\b	

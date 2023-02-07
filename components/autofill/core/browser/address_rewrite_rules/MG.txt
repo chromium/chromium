@@ -1,0 +1,40 @@
+\bboulevard\b	bd
+\bavenue\b	ave
+\bnumber\b	n'
+\bsainte\b	
+\bde\s+l'\b	
+\bde\s+la\b	
+\bmount\b	mt
+\bnorth\b	n
+\bouest\b	o
+\bsaint\b	
+\bsouth\b	s
+\beast\b	
+\bieme\b	
+\bnord\b	n
+\bwest\b	o
+\bdes\b	
+\beme\b	
+\bere\b	
+\best\b	
+\bles\b	
+\bmte\b	mt
+\brua\b	r
+\brue\b	r
+\bste\b	
+\bsud\b	s
+\bd'\b	
+\bde\b	
+\bdu\b	
+\ber\b	
+\bl'\b	
+\bla\b	
+\ble\b	
+\bnd\b	
+\bn°\b	n'
+\brd\b	
+\bre\b	
+\bst\b	
+\bth\b	
+\be\b	
+\bw\b	o

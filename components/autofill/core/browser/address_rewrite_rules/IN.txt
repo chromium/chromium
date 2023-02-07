@@ -1,19 +1,43 @@
+\bchinnaswami\s+subramania\s+bharathi\b	bharatiar
+\bnetaji\s+subhash\s+chandra\s+bose\b	netaji subhas
+\bnetaji\s+subhas\s+chandra\s+bose\b	netaji subhas
+\bsardar\s+vallabhbhai\s+patel\b	sardar patel
+\bmoulana\s+abul\s+kalam\s+azad\b	maulana azad
+\bsardar\s+vallabhai\s+patel\b	sardar patel
+\bsubhash\s+chandra\s+bose\b	netaji subhas
+\bkumaraswami\s+kamaraj\b	k kamaraj
+\bnational\s+expressway\b	ne
+\bsubhas\s+chandra\s+bose\b	netaji subhas
+\bsubramania\s+bharati\b	bharatiar
+\bswami\s+vivekanandha\b	vivekananda
 \bthiruvananthapuram\b	tvpm
 \bazimabad\s+kusumpur\b	patna
 \bjammu\s+and\s+kashmir\b	j&k
+\bswami\s+vivekananda\b	vivekananda
 \btiruvananthapuram\b	tvpm
+\bjawaharlal\s+nehru\b	j nehru
+\bnational\s+highway\b	nh
 \bchandigarh\s+city\b	ch
 \bjammu\s+\&\s+kashmir\b	j&k
+\bvallabhai\s+patel\b	sardar patel
+\bmajor\s+district\b	md
+\bnetaji\s+subhash\b	netaji subhas
+\basian\s+highway\b	ah
+\bbharathidasan\b	dasan
 \bgovt\s+of\s+india\b	goi
 \binternational\b	intl
+\bstate\s+highway\b	sh
 \bvisakhapatnam\b	vskp
 \bchickmagalur\b	chicmagalur
 \bchikmagaluru\b	chicmagalur
+\bvivekanandha\b	vivekananda
+\bbharathiyar\b	bharatiar
 \bchikmagalur\b	chicmagalur
 \bcross\-roads\b	xrd
 \bpataliputra\b	patna
 \branga\s+reddy\b	rangareddi
 \bchandigarh\b	ch
+\bcross\s+road\b	cross rd
 \bcross\-road\b	xrd
 \bcrossroads\b	xrd
 \bgovernment\b	goi
@@ -29,12 +53,16 @@
 \bcrossroad\b	xrd
 \bhyderabad\b	hyd
 \bi\.n\.d\.i\.a\b	in
+\bkamarajar\b	k kamaraj
+\bkasthurba\b	kasturba
+\bmain\s+road\b	main rd
 \bvijaywada\b	bza
 \bcalcutta\b	kol
 \bchourast\b	chaurah
 \bchowrast\b	chaurah
 \bcrossing\b	xrd
 \bcrossrds\b	xrd
+\bgandhiji\b	gandhi
 \bjunction\b	jn.
 \bkolkatta\b	kol
 \bvaranasi\b	banaras
@@ -48,7 +76,8 @@
 \bkeralam\b	kl
 \bkolkata\b	kol
 \bkolkota\b	kol
-\bseventh\b	7
+\bm\s+a\s+i\s+n\b	main
+\bshastri\b	sastri
 \bvruttha\b	cir.
 \bx\s+roads\b	xrd
 \bbombay\b	bom
@@ -56,20 +85,19 @@
 \bcentre\b	cen
 \bchowdi\b	chok
 \bcircle\b	cir.
-\beighth\b	8
+\bdoctor\b	dr
 \bforest\b	frst
-\bfourth\b	4
 \bgarden\b	gdn
 \bgatewy\b	gtwy
 \bgatway\b	gtwy
 \bheight\b	hts
+\bindira\b	indra
 \bkavala\b	jn.
 \bkerala\b	kl
 \bmadras\b	che
 \bmumbai\b	bom
 \bnumber\b	#
 \braasta\b	rasta
-\bsecond\b	2
 \bstreet\b	st
 \bx\s+road\b	xrd
 \bxroads\b	xrd
@@ -79,25 +107,21 @@
 \bchowk\b	chok
 \bcnter\b	cen
 \bdelhi\b	del
-\bfifth\b	5
-\bfirst\b	1
 \bgalli\b	gali
 \bgardn\b	gdn
 \bgrden\b	gdn
 \bgtway\b	gtwy
+\bgulli\b	gali
+\bgully\b	gali
 \bindia\b	in
 \bj\s+\&\s+k\b	j&k
 \bmukku\b	jn.
 \bnaaka\b	jn.
-\bninth\b	9
-\bnorth\b	n
 \bpally\b	palli
 \bround\b	cir.
 \broute\b	rt
-\bsixth\b	6
+\bshree\b	sri
 \bsouth\b	s
-\btenth\b	10
-\bthird\b	3
 \bvizag\b	vskp
 \bxroad\b	xrd
 \bcent\b	cen
@@ -113,6 +137,8 @@
 \bpeth\b	pet
 \brnd\.\b	cir.
 \broad\b	rd
+\bshri\b	sri
+\bsree\b	sri
 \bstr\.\b	st
 \buniv\b	uni
 \bwest\b	w
@@ -120,10 +146,13 @@
 \bxrds\b	xrd
 \bcha\b	ch
 \bctr\b	cen
+\bdoc\b	dr
 \bmum\b	bom
 \bno\.\b	#
+\bno:\b	#
 \bnum\b	#
 \brte\b	rt
 \bst\.\b	st
 \bstr\b	st
 \bno\b	#
+\bn\b	#

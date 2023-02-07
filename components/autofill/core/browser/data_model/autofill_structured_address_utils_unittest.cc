@@ -228,7 +228,7 @@ TEST(AutofillStructuredAddressUtils, NormalizeValue) {
 }
 
 TEST(AutofillStructuredAddressUtils, TestGetRewriter) {
-  EXPECT_EQ(RewriterCache::Rewrite(u"us", u"unit #3"), u"unit 3");
+  EXPECT_EQ(RewriterCache::Rewrite(u"us", u"unit #3"), u"u 3");
   EXPECT_EQ(RewriterCache::Rewrite(u"us", u"california"), u"ca");
 }
 

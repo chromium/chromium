@@ -1,0 +1,19 @@
+\bboulevard\b	blvd
+\bponiente\b	pte
+\bavenida\b	av
+\boriente\b	ote
+\bde\s+los\b	
+\bnumero\b	#
+\bcalle\b	c
+\bnorte\b	#
+\boeste\b	pte
+\bavda\b	av
+\beste\b	ote
+\bdel\b	
+\blas\b	
+\blos\b	
+\bnte\b	#
+\bde\b	
+\bel\b	
+\bla\b	
+\bno\b	#

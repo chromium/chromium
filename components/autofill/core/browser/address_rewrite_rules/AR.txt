@@ -1,42 +1,40 @@
 \btierra\s+del\s+fuego\s+antartida\s+e\s+islas\s+del\s+atlantico\s+sur\b	tierra del fuego
 \bciudad\s+autonoma\s+de\s+buenos\s+aires\b	caba
+\bdomingo\s+faustino\s+sarmiento\b	d sarmiento
 \bla\s+ciudad\s+de\s+buenos\s+aires\b	caba
+\bbernardino\s+rivadavia\b	rivadavia
+\bpresidente\s+sarmiento\b	d sarmiento
+\bdomingo\s+f\s+sarmiento\b	d sarmiento
+\bjose\s+de\s+san\s+martin\b	san martin
+\bdomingo\s+sarmiento\b	d sarmiento
+\bbelgrano\s+manuel\b	belgrano
 \bcapital\s+federal\b	caba
-\bdiecinueve\b	19
-\bdiecisiete\b	17
+\bmanuel\s+belgrano\b	belgrano
+\bruta\s+provincial\b	e
+\bd\s+f\s+sarmiento\b	d sarmiento
+\bruta\s+nacional\b	rn
+\bb\s+rivadavia\b	rivadavia
+\bm\s+belgrano\b	belgrano
 \bargentina\b	ar
+\bautopista\b	ap
 \bboulevard\b	bv
-\bdieciocho\b	18
-\bdieciseis\b	16
-\bavenida\b	av
-\bcatorce\b	14
-\bprimera\b	1a
-\bsegunda\b	2a
-\bseptima\b	7a
-\btercera\b	3a
-\bcuarta\b	4a
-\bcuatro\b	4
-\boctava\b	8a
+\bpresident\b	pres
+\bdiagonal\b	diag
+\bautovia\b	ap
+\blateral\b	lat
+\bcamino\b	cno
+\bde\s+los\b	
+\bdoctor\b	dr
 \bpasaje\b	pje
-\bquince\b	15
-\bquinta\b	5a
-\bveinte\b	20
-\bcinco\b	5
-\bnueve\b	9
-\bsexta\b	6a
-\bsiete\b	7
-\btrece\b	13
-\bdiez\b	10
-\bdoce\b	12
-\bocho\b	8
-\bonce\b	11
-\bseis\b	6
-\btres\b	3
+\bnorte\b	n
+\boeste\b	o
+\beste\b	e
 \bdel\b	
-\bdos\b	2
 \blas\b	
 \blos\b	
-\buno\b	1
+\bsur\b	s
+\bau\b	ap
 \bde\b	
 \bel\b	
 \ble\b	
+\brp\b	e

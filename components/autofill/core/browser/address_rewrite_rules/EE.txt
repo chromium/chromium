@@ -1,0 +1,39 @@
+\bfriedrich\s+robert\s+faehlmanni\b	faehlmanni
+\bkarl\s+ernst\s+von\s+baer\b	k. e.von baeri
+\bfr\.\s+r\.\s+faehlmanni\b	faehlmanni
+\bf\.\s+r\.\s+faehlmanni\b	faehlmanni
+\bkristjan\s+karberi\b	k. karberi
+\bk\.\s+e\.\s+von\s+baeri\b	k. e.von baeri
+\bf\.r\.faehlmanni\b	faehlmanni
+\bk\.e\.\s+von\s+baeri\b	k. e.von baeri
+\beduard\s+vilde\b	e. vilde
+\bpoikuulits\b	poik
+\bveehoidla\b	vh
+\bpeakraav\b	pkr
+\bpoolsaar\b	ps
+\bpuiestee\b	pst
+\bmaantee\b	mnt
+\blaanes\b	w
+\bvaljak\b	vk
+\bkraav\b	kr
+\blouna\b	s
+\bnorth\b	n
+\bplats\b	pl
+\bpohja\b	n
+\bsouth\b	s
+\btanav\b	tn
+\beast\b	e
+\bitta\b	e
+\bjarv\b	jv
+\bjogi\b	j
+\blaht\b	l
+\bmagi\b	m
+\bneem\b	n
+\bsaar\b	s
+\btalu\b	t
+\btiik\b	tk
+\bwest\b	w
+\be\.\b	e
+\bn\.\b	n
+\bs\.\b	s
+\bw\.\b	w

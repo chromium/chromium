@@ -1,0 +1,38 @@
+\bexpressway\b	快 速 公 路
+\bboulevard\b	大 道
+\bmotorway\b	highway
+\bsection\b	段
+\b高\s+速\s+公\s+路\b	highway
+\bavenue\b	大 道
+\bstreet\b	街
+\balley\b	弄
+\bnorth\b	北
+\bsouth\b	南
+\beast\b	東
+\blane\b	巷
+\broad\b	路
+\bwest\b	西
+\b一\s+百\b	1
+\b壹\s+佰\b	1
+\b〇\b	0
+\b一\b	1
+\b七\b	7
+\b三\b	3
+\b九\b	9
+\b二\b	2
+\b五\b	5
+\b伍\b	5
+\b八\b	8
+\b六\b	6
+\b十\b	1
+\b參\b	3
+\b四\b	4
+\b壹\b	1
+\b拾\b	1
+\b捌\b	8
+\b柒\b	7
+\b玖\b	9
+\b肆\b	4
+\b貳\b	2
+\b陆\b	6
+\b零\b	0

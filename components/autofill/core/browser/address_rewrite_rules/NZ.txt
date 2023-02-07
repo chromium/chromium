@@ -1,4 +1,5 @@
 \brural\s+delivery\b	
+\bstate\s+highway\b	sh
 \bocean\s+beach\b	oceanbeach
 \blong\s+beach\b	longbeach
 \bboulevard\b	blvd
@@ -13,10 +14,12 @@
 \bstreet\b	st
 \bcourt\b	ct
 \bdrive\b	dr
+\bgrove\b	gr
 \bmount\b	mt
 \bnorth\b	n
 \bplace\b	pl
 \bpoint\b	pt
+\broute\b	rt
 \bsaint\b	st
 \bsouth\b	s
 \beast\b	e
@@ -24,6 +27,7 @@
 \bn\.z\.\b	nz
 \broad\b	rd
 \bwest\b	w
+\bgrv\b	gr
 \bmt\.\b	mt
 \bn\.z\b	nz
 \bnth\b	n

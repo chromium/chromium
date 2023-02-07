@@ -85,10 +85,6 @@ TEST(AddressRewriterTest, CH) {
 
 TEST(AddressRewriterTest, CL) {
   AddressRewriter cl = AddressRewriter::ForCountryCode(u"cl");
-  EXPECT_EQ(cl.Rewrite(u"aisen del general carlos ibanez del campo"),
-            cl.Rewrite(u"xi"));
-  EXPECT_EQ(cl.Rewrite(u"libertador general bernardo o'higgins"),
-            cl.Rewrite(u"vi"));
   EXPECT_EQ(cl.Rewrite(u"metropolitana de santiago de chile"),
             cl.Rewrite(u"metropolitana de santiago"));
 }
@@ -117,7 +113,7 @@ TEST(AddressRewriterTest, ES) {
 
 TEST(AddressRewriterTest, FR) {
   AddressRewriter fr = AddressRewriter::ForCountryCode(u"fr");
-  EXPECT_EQ(fr.Rewrite(u"quatorzieme"), fr.Rewrite(u"14"));
+  EXPECT_EQ(fr.Rewrite(u"couffouleux"), fr.Rewrite(u"coufouleux"));
 }
 
 TEST(AddressRewriterTest, GB) {

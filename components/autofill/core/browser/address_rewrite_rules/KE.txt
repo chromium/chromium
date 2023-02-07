@@ -1,0 +1,12 @@
+\bhighway\b	hwy
+\bavenue\b	ave
+\bstreet\b	st
+\bdrive\b	dr
+\bnorth\b	n
+\bsouth\b	s
+\beast\b	e
+\blane\b	ln
+\broad\b	rd
+\bwest\b	w
+\bnth\b	n
+\bsth\b	s

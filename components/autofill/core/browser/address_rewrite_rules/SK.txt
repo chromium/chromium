@@ -1,0 +1,59 @@
+\bslovenskeho\s+narodneho\s+povstania\b	snp
+\bmilana\s+rastislava\s+stefanika\b	m r stefanika
+\bpavla\s+orszagha\s+hviezdoslava\b	p o hviezdoslava
+\bbozeny\s+slancikovej\s+timravy\b	b s timravy
+\bjozefa\s+gregora\s+tajovskeho\b	j g tajovskeho
+\bmatusa\s+caka\s+trencianskeho\b	m c trencianskeho
+\beleny\s+marothy\s+soltesovej\b	e m soltesovej
+\btomasa\s+garrigue\s+masaryka\b	t g masaryka
+\bceskoslovenskej\s+armady\b	csa
+\bludmily\s+podjavorinskej\b	l podjavorinskej
+\bjana\s+amosa\s+komenskeho\b	j a komenskeho
+\bandreja\s+sladkovica\b	a sladkovica
+\bladislav\s+novomesky\b	l novomeskeho
+\bslov\s+nar\s+povstania\b	snp
+\bkalmana\s+mikszatha\b	k mikszatha
+\bmestske\s+opevnenie\b	hradby
+\bantona\s+bernolaka\b	a bernolaka
+\bjanka\s+jesenskeho\b	j jesenskeho
+\bterezie\s+vansovej\b	t vansovej
+\bbozeny\s+nemcovej\b	b nemcovej
+\bceskoslovenskej\b	csl
+\bjana\s+komenskeho\b	j a komenskeho
+\bjuraja\s+fandlyho\b	j fandlyho
+\bjurija\s+gagarina\b	j gagarina
+\bandreja\s+hlinku\b	a hlinku
+\bjozefa\s+murgasa\b	j murgasa
+\bludovita\s+stura\b	l stura
+\bslov\s+nar\s+povst\b	snp
+\bandreja\s+kmeta\b	a kmeta
+\bmartin\s+razusa\b	m razusa
+\bivana\s+krasku\b	i krasku
+\bjana\s+kollara\b	j kollara
+\bjanka\s+krala\b	j krala
+\bprofesora\b	prof
+\bgenerala\b	gen
+\bkapitana\b	kpt
+\bnabrezie\b	nabr
+\bnamestie\b	nam
+\bdoktora\b	dr
+\bprechod\b	pasaz
+\bsvateho\b	sv
+\beszaki\b	n
+\bhradza\b	nabr
+\bkeleti\b	e
+\bmostik\b	lavka
+\bnyugat\b	w
+\bvychod\b	e
+\bnorth\b	n
+\bsever\b	n
+\bsouth\b	s
+\bsvate\b	sv
+\bulica\b	ul
+\bzapad\b	w
+\bdeli\b	s
+\beast\b	e
+\butca\b	ul
+\bwest\b	w
+\bjuh\b	s
+\but\b	ul

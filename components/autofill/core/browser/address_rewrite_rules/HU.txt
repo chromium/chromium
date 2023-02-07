@@ -1,0 +1,25 @@
+\btancsics\s+mihaly\b	tancsics
+\btancsics\s+m\.\b	tancsics
+\bexpressway\b	autout
+\btancsics\s+m\b	tancsics
+\bady\s+endre\b	ady e
+\bautopalya\b	motorway
+\bautoplaya\b	motorway
+\bnyugati\b	ny
+\brakpart\b	rkpt
+\bsugarut\b	sgt
+\bady\s+e\.\b	ady e
+\beszaki\b	e
+\bkeleti\b	k
+\bnyugat\b	ny
+\beszak\b	e
+\bkelet\b	k
+\bkorut\b	krt
+\bdeli\b	d
+\bsgt\.\b	sgt
+\butca\b	u
+\bdel\b	d
+\bsor\b	sav
+\but\.\b	u
+\bu\.\b	u
+\but\b	u

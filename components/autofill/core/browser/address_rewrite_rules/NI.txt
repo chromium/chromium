@@ -1,0 +1,26 @@
+\bboulevard\b	bv
+\bnoroeste\b	nw
+\bponiente\b	pte
+\bsuroeste\b	sw
+\bavenida\b	av
+\blateral\b	lat
+\bnoreste\b	ne
+\boriente\b	ote
+\bsureste\b	se
+\bcamino\b	cno
+\bde\s+los\b	
+\bpasaje\b	pje
+\bnorte\b	no
+\bnorth\b	no
+\boeste\b	pte
+\bsouth\b	sur
+\beast\b	ote
+\beste\b	ote
+\bwest\b	pte
+\bdel\b	
+\blas\b	
+\blos\b	
+\bnte\b	no
+\bde\b	
+\bel\b	
+\bla\b	

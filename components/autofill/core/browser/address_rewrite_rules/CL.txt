@@ -1,32 +1,98 @@
-\baisen\s+del\s+general\s+carlos\s+ibanez\s+del\s+campo\b	11
-\blibertador\s+general\s+bernardo\s+o\'higgins\b	6
+\blibertador\s+general\s+bernardo\s+o'higgins\b	6
 \bmetropolitana\s+de\s+santiago\s+de\s+chile\b	rm
-\bmagallanes\s+y\s+la\s+antartica\s+chilena\b	12
 \bmetropolitana\s+de\s+santiago\b	rm
-\barica\s+y\s+parinacota\b	15
+\bbernardo\s+o\s+higgins\b	b o'higgins
+\bbernardo\s+o'higgins\b	b o'higgins
+\bbernardo\s+ohiggins\b	b o'higgins
 \bmetropolitana\b	rm
-\bla\s+araucania\b	9
-\bantofagasta\b	2
-\bvalparaiso\b	5
-\blos\s+lagos\b	x
-\bcoquimbo\b	4
-\blos\s+rios\b	14
-\btarapaca\b	1
-\batacama\b	3
-\bbio\s+bio\b	8
+\bgran\s+avenida\b	gran av
+\bprolongacion\b	prol
+\bgobernador\b	gob
+\blibertador\b	lib
+\blicenciado\b	lic
+\bpresbitero\b	pbro
+\bpresidente\b	pdte
+\bsan\s+isidro\b	s isidro
+\bseptiembre\b	sep
+\balmirante\b	almte
+\bboulevard\b	blvd
+\bcostanera\b	cost
+\bfrancisco\b	fco
+\bgran\s+avda\b	gran av
+\bingeniero\b	ing
+\bprofesora\b	prof
+\brepublica\b	rep
+\barticulo\b	art
+\bcapitana\b	cap
+\bcardenal\b	card
+\bhacienda\b	hda
+\bmonsenor\b	mons
+\bponiente\b	pte
+\bprofesor\b	prof
+\bsan\s+juan\b	s juan
+\bteniente\b	tte
+\balcalde\b	alc
+\bavenida\b	av
+\bcapitan\b	cap
+\bcaptain\b	cap
+\bcoronel\b	crnel
+\bfebrero\b	feb
+\bgeneral\b	gral
+\boficina\b	of
+\boriente\b	ote
+\bprivada\b	priv
+\bsoldado\b	sold
+\bciudad\b	cd
+\bdoctor\b	dr
+\bpasaje\b	pje
+\bpuerto\b	pto
 \bchile\b	cl
-\bmaule\b	7
-\bviii\b	8
-\biii\b	3
-\bvii\b	7
-\bxii\b	12
-\bxiv\b	14
-\b10\b	x
-\bii\b	2
-\biv\b	4
-\bix\b	9
-\bvi\b	6
-\bxi\b	11
-\bxv\b	15
-\bi\b	1
-\bv\b	5
+\bliber\b	lib
+\bnorte\b	nte
+\bnueva\b	nva
+\bnuevo\b	nvo
+\boeste\b	pte
+\bsanta\b	sta
+\bsanto\b	sto
+\bavda\b	av
+\beste\b	ote
+\bpsje\b	pje
+\bsept\b	sep
+\bxiii\b	rm
+\b10a\b	10
+\b10o\b	10
+\b10º\b	10
+\bdel\b	
+\blas\b	
+\blos\b	
+\b1a\b	1
+\b1o\b	1
+\b1º\b	1
+\b2a\b	2
+\b2o\b	2
+\b2º\b	2
+\b3a\b	3
+\b3o\b	3
+\b3º\b	3
+\b4a\b	4
+\b4o\b	4
+\b4º\b	4
+\b5a\b	5
+\b5o\b	5
+\b5º\b	5
+\b6a\b	6
+\b6o\b	6
+\b6º\b	6
+\b7a\b	7
+\b7o\b	7
+\b7º\b	7
+\b8a\b	8
+\b8o\b	8
+\b8º\b	8
+\b9a\b	9
+\b9o\b	9
+\b9º\b	9
+\bde\b	
+\bel\b	
+\bla\b	
+\bnº\b	#

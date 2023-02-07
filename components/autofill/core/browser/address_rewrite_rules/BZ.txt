@@ -1,0 +1,13 @@
+\bboulevard\b	blvd
+\bhighway\b	hwy
+\bavenue\b	ave
+\bstreet\b	st
+\bblvd\.\b	blvd
+\bnorth\b	n
+\bsouth\b	s
+\bave\.\b	ave
+\beast\b	e
+\broad\b	rd
+\bwest\b	w
+\brd\.\b	rd
+\bst\.\b	st

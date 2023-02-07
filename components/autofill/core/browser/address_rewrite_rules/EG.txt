@@ -1,0 +1,10 @@
+\bking\s+faisal\b	فيصل
+\bالملك\s+فيصل\b	فيصل
+\bfaisal\b	فيصل
+\bstreet\b	ش
+\bnorth\b	n
+\bsouth\b	s
+\beast\b	e
+\bwest\b	w
+\bشارع\b	ش
+\bst\b	ش

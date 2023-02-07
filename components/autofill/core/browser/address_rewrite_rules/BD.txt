@@ -1,0 +1,11 @@
+\bavenue\b	av
+\bnumber\b	#
+\bstreet\b	st
+\blane\b	ln
+\broad\b	rd
+\bave\b	av
+\bno\#\b	#
+\bno\.\b	#
+\bnum\b	#
+\bstr\b	st
+\bno\b	#

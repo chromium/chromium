@@ -1,0 +1,28 @@
+\bdiagonal\b	diag
+\bponiente\b	pte
+\bavenida\b	av
+\boriente\b	ote
+\bpassage\b	pje
+\bavenue\b	av
+\bcamino\b	road
+\bde\s+los\b	
+\bpasaje\b	pje
+\bstreet\b	c
+\bcalle\b	c
+\bdiag\.\b	diag
+\bnorte\b	no
+\boeste\b	pte
+\broute\b	ruta
+\bave\.\b	av
+\beste\b	ote
+\bpje\.\b	pje
+\bav\.\b	av
+\bave\b	av
+\bdel\b	
+\blas\b	
+\blos\b	
+\bnte\b	no
+\bc\.\b	c
+\bde\b	
+\bel\b	
+\bla\b	

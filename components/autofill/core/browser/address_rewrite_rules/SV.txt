@@ -1,0 +1,78 @@
+\bcoronel\s+jose\s+arturo\s+castellanos\b	jose castellanos
+\bcoronel\s+jose\s+castellanos\b	jose castellanos
+\bjose\s+arturo\s+castellanos\b	jose castellanos
+\bcoronel\s+castellanos\b	jose castellanos
+\binterconnection\b	interconexion
+\bruta\s+nacional\b	rn
+\bseptiembre\b	sep
+\bboulevard\b	blvd
+\bcarretera\b	ca
+\bdiciembre\b	december
+\bnortheast\b	noreste
+\bnorthwest\b	noroeste
+\bnoviembre\b	nov
+\boccidente\b	o
+\bseptember\b	sep
+\bsoutheast\b	sureste
+\bsouthwest\b	suroeste
+\bdiagonal\b	diag
+\bfebruary\b	feb
+\bnovember\b	nov
+\bnovembre\b	nov
+\bponiente\b	o
+\balameda\b	mall
+\bavenida\b	av
+\bbulevar\b	blvd
+\bfebrero\b	feb
+\bhighway\b	ca
+\bjanuary\b	enero
+\boctober\b	oct
+\boctobre\b	oct
+\boctubre\b	oct
+\boriente\b	e
+\bpassage\b	pje
+\bacesso\b	access
+\baugust\b	agosto
+\bavenue\b	av
+\bcamino\b	road
+\bde\s+los\b	
+\bpasaje\b	pje
+\bstreet\b	c
+\bapril\b	abril
+\bblvd\.\b	blvd
+\bcalle\b	c
+\bdiag\.\b	diag
+\bjulio\b	jul
+\bjunio\b	jun
+\bmarch\b	mar
+\bmarzo\b	mar
+\bnorte\b	n
+\bnorth\b	n
+\boeste\b	o
+\bpaseo\b	drive
+\broute\b	ruta
+\bsouth\b	s
+\btrack\b	senda
+\bave\.\b	av
+\beast\b	e
+\beste\b	e
+\bjuly\b	jul
+\bjune\b	jun
+\bmayo\b	may
+\bpje\.\b	pje
+\bwest\b	o
+\bav\.\b	av
+\bave\b	av
+\bca\.\b	ca
+\bdel\b	
+\blas\b	
+\blos\b	
+\bnte\b	n
+\bote\b	e
+\bpte\b	o
+\brn\.\b	rn
+\bsur\b	s
+\bc\.\b	c
+\bde\b	
+\bel\b	
+\bla\b	

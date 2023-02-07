@@ -1,0 +1,22 @@
+\bomar\s+torrijos\s+herrera\b	omar torrijos
+\bmiguel\s+angel\s+brenes\b	miguel a. brenes
+\bomar\s+torrijos\s+h\.\b	omar torrijos
+\bomar\s+torrijos\s+h\b	omar torrijos
+\bdomingo\s+diaz\b	domigo diaz
+\bponiente\b	pte
+\bavenida\b	av
+\boriente\b	ote
+\bde\s+los\b	
+\bcalle\b	c
+\bnorte\b	no
+\boeste\b	pte
+\bavda\b	av
+\bave\.\b	av
+\beste\b	ote
+\bdel\b	
+\blas\b	
+\blos\b	
+\bnte\b	no
+\bde\b	
+\bel\b	
+\bla\b	

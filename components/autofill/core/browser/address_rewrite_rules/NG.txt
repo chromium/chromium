@@ -1,0 +1,16 @@
+\bfederal\s+capital\s+territory\b	fct
+\bboulevard\b	blvd
+\bcrescent\b	cr
+\bnigeria\b	ng
+\bavenue\b	av
+\bnumber\b	#
+\bstreet\b	st
+\bblock\b	blk
+\bclose\b	cl
+\blane\b	ln
+\broad\b	rd
+\bave\b	av
+\bno\.\b	#
+\bnum\b	#
+\bstr\b	st
+\bno\b	#

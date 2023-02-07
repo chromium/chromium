@@ -1,31 +1,45 @@
+\bartur\s+de\s+sacadura\s+freire\s+cabral\b	sacadura cabral
+\bmanuel\s+maria\s+barbosa\s+du\s+bocage\b	barbosa du bocage
+\bjose\s+maria\s+de\s+eca\s+de\s+queiros\b	eca de queiros
+\bhumberto\s+da\s+silva\s+delgado\b	humberto delgado
+\bdom\s+nuno\s+alvares\s+pereira\b	nuno alvares pereira
+\bmovimento\s+forcas\s+armadas\b	mfa
+\bmiguel\s+auguato\s+bombarda\b	miguel bombarda
+\bcamilo\s+castelo\s+branco\b	castelo branco
+\bfrancisco\s+sa\s+carneiro\b	sa carneiro
+\bestrada\s+municipal\b	m
 \bestrada\s+nacional\b	n
-\bviana\s+do\s+castelo\b	18
-\bcastelo\s+branco\b	09
-\bportalegre\b	08
-\bvila\s+real\b	15
-\bbraganca\b	14
+\beca\s+de\s+queiroz\b	eca de queiros
+\bentrocamento\b	cruzamento
+\bjulio\s+diniz\b	julio dinis
+\bcomandante\b	commander
+\bengenheiro\b	engineer
+\bocidente\b	w
 \bportugal\b	pt
-\bsantarem\b	03
-\bcoimbra\b	11
-\bsetubal\b	04
-\baveiro\b	12
+\bcaptain\b	capitao
+\bgeneral\b	gen
+\boriente\b	
+\brotunda\b	rot
+\barcada\b	arc.
+\bdesvio\b	desv.
 \bdoctor\b	dr
 \bdoutor\b	dr
-\bguarda\b	10
-\bleiria\b	02
-\blisbon\b	01
-\bbraga\b	17
-\bevora\b	07
+\bleste\b	
+\bm\s+f\s+a\b	mfa
+\bnorte\b	n
 \bnorth\b	n
-\bporto\b	16
+\boeste\b	w
 \bsouth\b	s
-\bviseu\b	13
-\bbeja\b	05
-\bfaro\b	06
+\beast\b	
+\beste\b	
+\brota\b	r.
 \bwest\b	w
 \bdas\b	
 \bdos\b	
+\brt\.\b	rot
+\brta\b	rot
 \bsao\b	s
+\bsul\b	s
 \bda\b	
 \bde\b	
 \bdo\b	

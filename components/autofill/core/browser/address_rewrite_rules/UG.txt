@@ -1,0 +1,10 @@
+\bnumber\b	n
+\bfloor\b	flr
+\bnorth\b	n
+\bplot\.\b	p
+\bsouth\b	s
+\beast\b	e
+\bplot\b	p
+\bwest\b	w
+\bno\.\b	n
+\bp\.\b	p

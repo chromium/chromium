@@ -1,100 +1,286 @@
+\bcarretera\s+dera\s+circunvalacio\b	autobia
 \bsanta\s+cruz\s+de\s+tenerife\b	tf
+\bcarrero\s+sense\s+sortida\b	tzucac
+\bcarrer\s+sense\s+gessuda\b	tzucac
+\bcarrer\s+sense\s+sortida\b	tzucac
+\bcallejon\s+sin\s+salida\b	tzucac
+\bcarretera\s+nacional\b	autobia
 \bbalearic\s+islands\b	pm
+\bpont\s+de\s+vianants\b	zaldain
+\bpuente\s+peatonal\b	zaldain
+\bcircunvalacion\b	autobia
 \bislas\s+baleares\b	pm
+\bnuestra\s+senora\b	ntra s
+\bpont\s+de\s+pedons\b	zaldain
+\bcasa\s+de\s+campo\b	cottage
 \billes\s+balears\b	pm
+\brua\s+sen\s+saída\b	tzucac
+\bayuntamiento\b	ayto
+\bbidegurutzea\b	cruce
+\bbiribilgunea\b	rotonda
+\bcasa\s+de\s+camp\b	cottage
+\bdesbideratze\b	desvio
+\binterseccion\b	cruce
+\bintersection\b	cruce
+\bautoestrada\b	autobia
 \bciudad\s+real\b	cr
+\bencreuament\b	cruce
 \bguadalajara\b	gu
+\binterseccio\b	cruce
+\bntra\s+senora\b	ntra s
+\bnuestra\s+sra\b	ntra s
+\bside\s+street\b	travesia
+\bcasa\s+rural\b	cottage
+\bcomandante\b	cte
+\bdesviament\b	desvio
+\belkargunea\b	cruce
+\benparantza\b	placa
+\bfootbridge\b	zaldain
+\bkalea\s+itsu\b	tzucac
 \bla\s+corunna\b	c
 \bla\s+corunya\b	c
 \blas\s+palmas\b	gc
+\bpasealekua\b	paseo
 \bpontevedra\b	po
+\broundabout\b	rotonda
+\btrauessera\b	travesia
+\btravessera\b	travesia
 \bvalladolid\b	va
+\bzeharbidea\b	travesia
+\bzeharkalea\b	travesia
+\bautobidea\b	autobia
+\bautopista\b	autobia
 \bbarcelona\b	b
-\bcantabria\b	s
+\bboulevard\b	rambla
+\bbulevarra\b	rambla
+\bcantabria\b	
+\bcarretera\b	road
 \bcastellon\b	cs
+\bcrossroad\b	cruce
+\berrepidea\b	road
+\berrotonda\b	rotonda
 \besplugues\b	esplugas
+\betorbidea\b	paseo
 \bguipuscoa\b	ss
 \bguipuzcoa\b	ss
+\bhiribidea\b	rambla
+\bibilbidea\b	rota
+\bkale\s+itsu\b	tzucac
 \bla\s+coruna\b	c
-\bsalamanca\b	sa
+\bnuestra\s+s\b	ntra s
+\bpasabidea\b	zaldain
+\bpasalekua\b	paso
+\breverendo\b	rvdo
+\bsalamanca\b	
 \bsaragossa\b	z
 \btarragona\b	t
+\btravessia\b	travesia
+\bway\s+above\b	aldapa
+\bway\s+below\b	costa
+\bzeharbide\b	travesia
+\bzeharkale\b	travesia
 \ba\s+coruna\b	c
 \balbacete\b	ab
 \balicante\b	
-\basturias\b	o
+\balleyway\b	paso
+\basturias\b	
+\bavenguda\b	paseo
+\bavinguda\b	paseo
+\bbaishada\b	aldapa
+\bbarriada\b	bda
+\bbulevard\b	rambla
+\bcallejon\b	paso
 \bcastello\b	cs
+\bcastillo\b	castle
+\bcrossing\b	cruce
+\bdead\s+end\b	tzucac
+\bestacion\b	est
+\bgaztelua\b	castle
 \bgipuzkoa\b	ss
-\bla\s+rioja\b	lo
-\bnafarroa\b	na
+\bhorcadís\b	cruce
+\biglasias\b	iglesia
+\bla\s+rioja\b	
+\blandetxe\b	cottage
+\bmotorway\b	autobia
+\bnafarroa\b	
+\bntra\s+sra\b	ntra s
 \bpalencia\b	p
+\bpasabide\b	zaldain
+\bpasarela\b	zaldain
+\bpassatge\b	paso
 \bvalencia\b	v
+\bway\s+down\b	aldapa
 \bzaragoza\b	z
 \balacant\b	
 \balmeria\b	
-\bavenida\b	av
+\bautovia\b	autobia
+\bavenida\b	paseo
 \bbadajoz\b	ba
+\bbaixada\b	aldapa
 \bbizkaia\b	bi
+\bbulevar\b	rambla
 \bcaceres\b	cc
-\bcordoba\b	co
-\bcordova\b	co
+\bcalexon\b	paso
+\bcapitan\b	
+\bcarrero\b	paso
+\bcastell\b	castle
+\bcastelo\b	castle
+\bcasteth\b	castle
+\bcordoba\b	
+\bcordova\b	
+\bcoronel\b	cnel
+\bcruilla\b	cruce
+\bdoctora\b	dra
+\bestrada\b	road
+\bgaztelu\b	castle
+\bgeneral\b	gral
 \bgranada\b	gr
-\bnavarra\b	na
-\bnavarre\b	na
+\bhighway\b	autobia
+\bkalexka\b	paso
+\bkarrika\b	rua
+\bmalgrat\b	
+\bnavarra\b	
+\bnavarre\b	
 \bourense\b	or
+\bpassage\b	paso
+\bpasseig\b	paseo
 \bsegovia\b	sg
 \bsevilla\b	se
 \bseville\b	se
 \bvizcaya\b	bi
+\bavenue\b	paseo
+\bbajada\b	aldapa
+\bbarrio\b	bo
+\bbelena\b	paso
 \bbiscay\b	bi
+\bbridge\b	pont
 \bburgos\b	bu
+\bcamino\b	way
+\bcarrer\b	rua
+\bcontra\b	
 \bcoruna\b	c
 \bcuenca\b	cu
-\bespana\b	es
+\bcuesta\b	costa
+\bdetour\b	desvio
+\bdevers\b	
+\bdoctor\b	dr
+\benvers\b	
+\bespana\b	
 \bgerona\b	gi
 \bgirona\b	gi
 \bhuelva\b	h
 \bhuesca\b	hu
+\bigoera\b	costa
 \blerida\b	
 \blleida\b	
 \bmadrid\b	m
 \bmalaga\b	ma
 \bmurcia\b	mu
 \borense\b	or
+\bpasaje\b	paso
+\bpasseg\b	paseo
+\bpuente\b	pont
+\bpujada\b	costa
+\bsegons\b	
+\bsquare\b	placa
+\bstreet\b	rua
+\bsubida\b	costa
 \bteruel\b	te
 \btoledo\b	to
+\btunela\b	tunel
+\btunnel\b	tunel
+\bway\s+up\b	costa
 \bzamora\b	za
 \balava\b	vi
 \baraba\b	vi
 \bavila\b	av
+\bbarda\b	bda
+\bbarri\b	bo
+\bbarro\b	bo
+\bbeato\b	bto
+\bbidea\b	way
 \bcadiz\b	ca
+\bcalle\b	rua
+\bcamin\b	way
+\bcomte\b	cte
+\bentre\b	
+\bkalea\b	rua
 \bnorte\b	n
 \bnorth\b	n
-\boeste\b	o
-\bsoria\b	so
-\bsouth\b	s
-\bspain\b	es
+\boeste\b	
+\bplaza\b	placa
+\bponte\b	pont
+\bpraza\b	placa
+\broute\b	rota
+\bsanta\b	sta
+\bsanto\b	sto
+\bsense\b	
+\bsoria\b	
+\bspain\b	
+\bultra\b	
+\bxeito\b	way
+\bzubia\b	pont
+\bcami\b	way
+\bcmdt\b	cte
+\bcmte\b	cte
+\bdels\b	
 \beast\b	e
 \beste\b	e
+\bfins\b	
 \bjaen\b	j
+\blane\b	way
 \bleon\b	le
 \blugo\b	lu
-\bwest\b	o
-\bc\.\/\b	c
-\bc\/\.\b	c
+\bpath\b	way
+\bpels\b	
+\bruta\b	rota
+\bsant\b	st
+\bunes\b	
+\bvers\b	
+\bals\b	
+\bamb\b	
+\bc\s+/\b	c
+\bcap\b	
+\bcoa\b	
 \bdal\b	
 \bdel\b	
+\bdes\b	
+\bels\b	
+\bets\b	
 \blas\b	
 \bles\b	
 \blos\b	
-\bsur\b	s
+\bpel\b	
+\bper\b	
+\bses\b	
+\bsos\b	
+\bsur\b	
+\buna\b	
+\buns\b	
 \bal\b	
-\bc\/\b	c
+\bao\b	
+\bc/\b	c
+\bco\b	
+\bda\b	
 \bde\b	
+\bdo\b	
 \bel\b	
 \ben\b	
+\bes\b	
 \bla\b	
+\blo\b	
+\bna\b	
+\bni\b	
+\bno\b	
 \bof\b	
+\bsa\b	
+\bso\b	
+\bun\b	
+\b\#\b	
 \ba\b	
 \bd\b	
+\bi\b	
 \bl\b	
+\bo\b	
+\bs\b	
+\by\b	

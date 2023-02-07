@@ -1,0 +1,64 @@
+\bleon\s+febres\s+cordero\s+ribadeneyra\b	leon febres cordero
+\bantonio\s+jose\s+de\s+sucre\b	sucre
+\bgabriel\s+garcia\s+moreno\b	garcia moreno
+\bvicente\s+solano\s+vargas\b	solano
+\bvicente\s+solano\b	solano
+\bnorth\s+east\b	ne
+\bnorth\s+west\b	no
+\bsouth\s+east\b	se
+\bsouth\s+west\b	so
+\bcarretera\b	carr
+\bingeniero\b	ing
+\bnor\s+oeste\b	no
+\bnortheast\b	ne
+\bnorthwest\b	no
+\bsoutheast\b	se
+\bsouthwest\b	so
+\bsur\s+oeste\b	so
+\bcallejon\b	cjon
+\bnor\s+este\b	ne
+\bnoroeste\b	no
+\bponiente\b	o
+\bsur\s+este\b	se
+\bsur\-este\b	se
+\bsuroeste\b	so
+\bavenida\b	av
+\bcerrada\b	cda
+\bmanzana\b	mz
+\bnoreste\b	ne
+\boriente\b	e
+\bsureste\b	se
+\bavenue\b	av
+\bde\s+las\b	
+\bde\s+los\b	
+\bdoctor\b	doc
+\bpasaje\b	pj
+\bcalle\b	c
+\bde\s+la\b	
+\bnorte\b	nte
+\bnorth\b	nte
+\boeste\b	o
+\bpaseo\b	pa
+\bsolar\b	sl
+\bsouth\b	sur
+\bvilla\b	v
+\bavda\b	av
+\beast\b	e
+\beste\b	e
+\blote\b	lt
+\bpsje\b	pj
+\bwest\b	o
+\bdel\b	
+\blas\b	
+\blos\b	
+\bn\-e\b	ne
+\bn\-o\b	no
+\bote\b	e
+\bpje\b	pj
+\bpte\b	o
+\bs\-o\b	so
+\bde\b	
+\bel\b	
+\bla\b	
+\bnw\b	no
+\bsw\b	so

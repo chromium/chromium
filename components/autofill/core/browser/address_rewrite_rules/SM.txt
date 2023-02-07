@@ -1,0 +1,6 @@
+\bgiovanni\s+guiduccio\b	g guiduccio
+\bg\.\s+guiduccio\b	g guiduccio
+\bnorth\b	n
+\bsouth\b	s
+\beast\b	e
+\bwest\b	w
