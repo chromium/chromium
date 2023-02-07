@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
 import("//build/config/rust.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
@@ -323,8 +324,8 @@ source_set("common") {
     deps += [ "//third_party/blink/common/rust_crash" ]
   }
 
-  # iOS doesn't use and must not depend on //media
-  if (!is_ios) {
+  # If use_blink is used then it needs to depend on //media
+  if (use_blink) {
     deps += [ "//media" ]
   }
 

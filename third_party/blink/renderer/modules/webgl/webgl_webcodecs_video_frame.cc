@@ -66,7 +66,7 @@ WebGLWebCodecsVideoFrame::WebGLWebCodecsVideoFrame(
   auto& components_nv12 = format_to_components_map_[media::PIXEL_FORMAT_NV12];
   components_nv12[media::VideoFrame::kYPlane] = "r";
   components_nv12[media::VideoFrame::kUPlane] = "rg";
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   formats_supported[media::PIXEL_FORMAT_XRGB] = true;
   auto& components_xrgb = format_to_components_map_[media::PIXEL_FORMAT_XRGB];
   components_xrgb[media::VideoFrame::kYPlane] = "rgba";
@@ -105,9 +105,9 @@ bool WebGLWebCodecsVideoFrame::Supported(WebGLRenderingContextBase* context) {
     BUILDFLAG(IS_FUCHSIA)
   // TODO(jie.a.chen@intel.com): Add Linux support.
   return false;
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   // This extension is only supported on the passthrough command
-  // decoder on macOS.
+  // decoder on Apple platforms.
   DrawingBuffer* drawing_buffer = context->GetDrawingBuffer();
   if (!drawing_buffer)
     return false;
