@@ -4742,10 +4742,10 @@ IN_PROC_BROWSER_TEST_P(
   // This is the default icon list (all green icons) and is overridden below,
   // if need be.
   starting_stage =
-      GenerateColoredIconList({{kInstallabilityIconSize, SK_ColorGREEN},
+      GenerateColoredIconList({{kUnimportantIconSize, SK_ColorRED},
+                               {kInstallIconSize, SK_ColorYELLOW},
                                {kLauncherIconSize, SK_ColorGREEN},
-                               {kInstallIconSize, SK_ColorGREEN},
-                               {kUnimportantIconSize, SK_ColorGREEN}});
+                               {kInstallabilityIconSize, SK_ColorBLUE}});
 
   // This is the resulting shortcut colors (per size) for the default icon list
   // above, and similar to `starting_stage` it is overridden below when needed.
@@ -4760,18 +4760,19 @@ IN_PROC_BROWSER_TEST_P(
   // that size therefore does not always feature in the shortcut expectations.
   std::vector<std::pair<std::pair<int, int>, SkColor>>
       expected_shortcut_colors_before = {
-          {{32, kAll}, SK_ColorGREEN},
-          {{48, kAll}, SK_ColorGREEN},
+          {{32, kAll}, SK_ColorYELLOW},
+          {{48, kAll}, SK_ColorYELLOW},
           // Although sizes 64 and 96 are within the SizesToGenerate() list they
           // are listed in `kDesiredIconSizesForShortcut` on Windows only.
           {{64, kWin}, SK_ColorGREEN},
           {{96, kWin}, SK_ColorGREEN},
           {{128, kAll}, SK_ColorGREEN},
-          {{256, kAll}, SK_ColorGREEN},
+          {{256, kMac}, SK_ColorGREEN},
+          {{256, kNotMac}, SK_ColorBLUE},
           // The tests use size 512 as the icon size that guarantees that the
           // installability requirements are met, but that size is not listed as
           // a desired shortcut size on Windows.
-          {{512, kNotWin}, SK_ColorGREEN}};
+          {{512, kNotWin}, SK_ColorBLUE}};
 
   // This needs to be populated for each test below.
   std::vector<std::pair<std::pair<int, int>, SkColor>>
@@ -4779,192 +4780,146 @@ IN_PROC_BROWSER_TEST_P(
 
   if (LauncherIconUpdate() && InstallIconUpdate()) {
     ending_stage =
-        GenerateColoredIconList({{kInstallabilityIconSize, SK_ColorGREEN},
-                                 {kLauncherIconSize, SK_ColorRED},
-                                 {kInstallIconSize, SK_ColorRED},
-                                 {kUnimportantIconSize, SK_ColorGREEN}});
+        GenerateColoredIconList({{kUnimportantIconSize, SK_ColorRED},
+                                 {kInstallIconSize, SK_ColorBLACK},
+                                 {kLauncherIconSize, SK_ColorWHITE},
+                                 {kInstallabilityIconSize, SK_ColorBLUE}});
 
     expected_shortcut_colors_if_updated = {
-        {{32, kAll}, SK_ColorRED},
-        {{48, kAll}, SK_ColorRED},
-        {{64, kWin}, SK_ColorRED},
-        {{96, kWin}, SK_ColorRED},
-        {{128, kAll}, SK_ColorRED},
-        // On Mac, this size is the launcher icon, so red is expected.
-        {{256, kMac}, SK_ColorRED},
+        {{32, kAll}, SK_ColorBLACK},
+        {{48, kAll}, SK_ColorBLACK},
+        {{64, kWin}, SK_ColorWHITE},
+        {{96, kWin}, SK_ColorWHITE},
+        {{128, kAll}, SK_ColorWHITE},
+        // On Mac, this size is the launcher icon, so white is expected.
+        {{256, kMac}, SK_ColorWHITE},
         // On other platforms, there is no size 256 specified, so this is
-        // generated from the installability icon (size 512), which is green.
-        {{256, kNotMac}, SK_ColorGREEN},
-        {{512, kNotWin}, SK_ColorGREEN}};
+        // generated from the installability icon (size 512), which is blue.
+        {{256, kNotMac}, SK_ColorBLUE},
+        {{512, kNotWin}, SK_ColorBLUE}};
   } else if (IconSwitchFromLauncher()) {
     // Starting stage is with a launcher icon but without an unimportant icon.
     starting_stage =
-        GenerateColoredIconList({{kInstallabilityIconSize, SK_ColorRED},
+        GenerateColoredIconList({{kInstallIconSize, SK_ColorYELLOW},
                                  {kLauncherIconSize, SK_ColorGREEN},
-                                 {kInstallIconSize, SK_ColorGREEN}});
+                                 {kInstallabilityIconSize, SK_ColorBLUE}});
 
     expected_shortcut_colors_before = {
-        {{32, kAll}, SK_ColorGREEN},
-        {{48, kAll}, SK_ColorGREEN},
-        {{64, kWin}, SK_ColorGREEN},
-        {{96, kWin}, SK_ColorGREEN},
-        {{128, kAll}, SK_ColorGREEN},
-        // On Mac, this size is the launcher icon, so green is expected.
-        {{256, kMac}, SK_ColorGREEN},
-        // On other platforms, there is no size 256 specified, so this is
-        // generated from the installability icon (size 512), which is red.
-        {{256, kNotMac}, SK_ColorRED},
-        {{512, kNotWin}, SK_ColorRED}};
+        {{32, kAll}, SK_ColorYELLOW},   {{48, kAll}, SK_ColorYELLOW},
+        {{64, kWin}, SK_ColorGREEN},    {{96, kWin}, SK_ColorGREEN},
+        {{128, kAll}, SK_ColorGREEN},   {{256, kMac}, SK_ColorGREEN},
+        {{256, kNotMac}, SK_ColorBLUE}, {{512, kNotWin}, SK_ColorBLUE}};
 
     // Ending stage is without a launcher icon but with an unimportant icon.
     ending_stage =
-        GenerateColoredIconList({{kInstallabilityIconSize, SK_ColorRED},
-
-                                 {kInstallIconSize, SK_ColorGREEN},
-                                 {kUnimportantIconSize, SK_ColorGREEN}});
+        GenerateColoredIconList({{kUnimportantIconSize, SK_ColorRED},
+                                 {kLauncherIconSize, SK_ColorGREEN},
+                                 {kInstallabilityIconSize, SK_ColorBLUE}});
 
     expected_shortcut_colors_if_updated = {
-        {{32, kAll}, SK_ColorGREEN},  {{48, kAll}, SK_ColorGREEN},
-        {{64, kWin}, SK_ColorRED},    {{96, kWin}, SK_ColorRED},
-        {{128, kAll}, SK_ColorRED},   {{256, kAll}, SK_ColorRED},
-        {{512, kNotWin}, SK_ColorRED}};
+        {{32, kAll}, SK_ColorGREEN},    {{48, kAll}, SK_ColorGREEN},
+        {{64, kWin}, SK_ColorGREEN},    {{96, kWin}, SK_ColorGREEN},
+        {{128, kAll}, SK_ColorGREEN},   {{256, kMac}, SK_ColorGREEN},
+        {{256, kNotMac}, SK_ColorBLUE}, {{512, kNotWin}, SK_ColorBLUE}};
   } else if (IconSwitchToLauncher()) {
     // Starting stage is without a launcher icon but with an unimportant icon.
-    starting_stage =
-        GenerateColoredIconList({{kInstallabilityIconSize, SK_ColorRED},
-
-                                 {kInstallIconSize, SK_ColorGREEN},
-                                 {kUnimportantIconSize, SK_ColorGREEN}});
+    starting_stage = GenerateColoredIconList({
+        {kUnimportantIconSize, SK_ColorRED},
+        {kInstallIconSize, SK_ColorYELLOW},
+        {kInstallabilityIconSize, SK_ColorBLUE},
+    });
 
     expected_shortcut_colors_before = {
-        {{32, kAll}, SK_ColorGREEN},  {{48, kAll}, SK_ColorGREEN},
-        {{64, kWin}, SK_ColorRED},    {{96, kWin}, SK_ColorRED},
-        {{128, kAll}, SK_ColorRED},   {{256, kAll}, SK_ColorRED},
-        {{512, kNotWin}, SK_ColorRED}};
+        {{32, kAll}, SK_ColorYELLOW},   {{48, kAll}, SK_ColorYELLOW},
+        {{64, kWin}, SK_ColorYELLOW},   {{96, kWin}, SK_ColorYELLOW},
+        {{128, kAll}, SK_ColorBLUE},    {{256, kMac}, SK_ColorBLUE},
+        {{256, kNotMac}, SK_ColorBLUE}, {{512, kNotWin}, SK_ColorBLUE}};
 
-    // Ending stage is with the a icon but without an unimportant icon.
+    // Ending stage is with the launcher icon but without an unimportant icon.
     ending_stage =
-        GenerateColoredIconList({{kInstallabilityIconSize, SK_ColorRED},
+        GenerateColoredIconList({{kInstallIconSize, SK_ColorYELLOW},
                                  {kLauncherIconSize, SK_ColorGREEN},
-                                 {kInstallIconSize, SK_ColorGREEN}});
+                                 {kInstallabilityIconSize, SK_ColorBLUE}});
 
     expected_shortcut_colors_if_updated = {
-        {{32, kAll}, SK_ColorGREEN},
-        {{48, kAll}, SK_ColorGREEN},
-        {{64, kWin}, SK_ColorGREEN},
-        {{96, kWin}, SK_ColorGREEN},
-        {{128, kAll}, SK_ColorGREEN},
-        // On Mac, this size is the launcher icon, so green is expected.
-        {{256, kMac}, SK_ColorGREEN},
-        // On other platforms, this is inherited from the installability icon.
-        {{256, kNotMac}, SK_ColorRED},
-        {{512, kNotWin}, SK_ColorRED}};
+        {{32, kAll}, SK_ColorYELLOW},   {{48, kAll}, SK_ColorYELLOW},
+        {{64, kWin}, SK_ColorGREEN},    {{96, kWin}, SK_ColorGREEN},
+        {{128, kAll}, SK_ColorGREEN},   {{256, kMac}, SK_ColorGREEN},
+        {{256, kNotMac}, SK_ColorBLUE}, {{512, kNotWin}, SK_ColorBLUE}};
   } else if (LauncherIconUpdate()) {
-    ending_stage =
-        GenerateColoredIconList({{kInstallabilityIconSize, SK_ColorGREEN},
-                                 {kLauncherIconSize, SK_ColorRED},
-                                 {kInstallIconSize, SK_ColorGREEN},
-                                 {kUnimportantIconSize, SK_ColorGREEN}});
+    ending_stage = GenerateColoredIconList({
+        {kUnimportantIconSize, SK_ColorRED},
+        {kInstallIconSize, SK_ColorYELLOW},
+        {kLauncherIconSize, SK_ColorWHITE},
+        {kInstallabilityIconSize, SK_ColorBLUE},
+    });
     expected_shortcut_colors_if_updated = {
-        {{32, kAll}, SK_ColorGREEN},
-        {{48, kAll}, SK_ColorGREEN},
-        {{64, kWin}, SK_ColorRED},
-        {{96, kWin}, SK_ColorRED},
-        {{128, kAll}, SK_ColorRED},
-        // On Mac, this size is the launcher icon, so red is expected.
-        {{256, kMac}, SK_ColorRED},
-        // On other platforms, this is inherited from the installability icon.
-        {{256, kNotMac}, SK_ColorGREEN},
-        {{512, kNotWin}, SK_ColorGREEN}};
+        {{32, kAll}, SK_ColorYELLOW},   {{48, kAll}, SK_ColorYELLOW},
+        {{64, kWin}, SK_ColorWHITE},    {{96, kWin}, SK_ColorWHITE},
+        {{128, kAll}, SK_ColorWHITE},   {{256, kMac}, SK_ColorWHITE},
+        {{256, kNotMac}, SK_ColorBLUE}, {{512, kNotWin}, SK_ColorBLUE}};
   } else if (InstallIconUpdate()) {
     ending_stage =
-        GenerateColoredIconList({{kInstallabilityIconSize, SK_ColorGREEN},
+        GenerateColoredIconList({{kUnimportantIconSize, SK_ColorRED},
+                                 {kInstallIconSize, SK_ColorWHITE},
                                  {kLauncherIconSize, SK_ColorGREEN},
-                                 {kInstallIconSize, SK_ColorRED},
-                                 {kUnimportantIconSize, SK_ColorGREEN}});
+                                 {kInstallabilityIconSize, SK_ColorBLUE}});
     expected_shortcut_colors_if_updated = {
-        {{32, kAll}, SK_ColorRED},      {{48, kAll}, SK_ColorRED},
+        {{32, kAll}, SK_ColorWHITE},    {{48, kAll}, SK_ColorWHITE},
         {{64, kWin}, SK_ColorGREEN},    {{96, kWin}, SK_ColorGREEN},
-        {{128, kAll}, SK_ColorGREEN},   {{256, kAll}, SK_ColorGREEN},
-        {{512, kNotWin}, SK_ColorGREEN}};
+        {{128, kAll}, SK_ColorGREEN},   {{256, kMac}, SK_ColorGREEN},
+        {{256, kNotMac}, SK_ColorBLUE}, {{512, kNotWin}, SK_ColorBLUE}};
   } else if (UnimportantIconUpdate()) {
     ending_stage =
-        GenerateColoredIconList({{kInstallabilityIconSize, SK_ColorGREEN},
+        GenerateColoredIconList({{kUnimportantIconSize, SK_ColorWHITE},
+                                 {kInstallIconSize, SK_ColorYELLOW},
                                  {kLauncherIconSize, SK_ColorGREEN},
-                                 {kInstallIconSize, SK_ColorGREEN},
-                                 {kUnimportantIconSize, SK_ColorRED}});
+                                 {kInstallabilityIconSize, SK_ColorBLUE}});
 
     // There should be no effect on the shortcut icons when an unimportant icon
     // updates.
     expected_shortcut_colors_if_updated = expected_shortcut_colors_before;
   } else if (LauncherIconRemove()) {
-    starting_stage =
-        GenerateColoredIconList({{kInstallabilityIconSize, SK_ColorGREEN},
-                                 {kLauncherIconSize, SK_ColorRED},
-                                 {kInstallIconSize, SK_ColorGREEN},
-                                 {kUnimportantIconSize, SK_ColorGREEN}});
-    expected_shortcut_colors_before = {
-        {{32, kAll}, SK_ColorGREEN},
-        {{48, kAll}, SK_ColorGREEN},
-        {{64, kWin}, SK_ColorRED},
-        {{96, kWin}, SK_ColorRED},
-        {{128, kAll}, SK_ColorRED},
-        // On Mac, this size is the launcher icon, so red is expected.
-        {{256, kMac}, SK_ColorRED},
-        // On other platforms, this is inherited from the installability icon.
-        {{256, kNotMac}, SK_ColorGREEN},
-        {{512, kNotWin}, SK_ColorGREEN}};
-
-    // Note that the starting stage for this request is not a set of icons that
-    // are all green, but instead the launcher icon is red. Then, when the
-    // launcher icon is removed, we can verify that it becomes auto-generated
-    // from other icons (and therefore turns green).
     ending_stage =
-        GenerateColoredIconList({{kInstallabilityIconSize, SK_ColorGREEN},
+        GenerateColoredIconList({{kUnimportantIconSize, SK_ColorRED},
+                                 {kInstallIconSize, SK_ColorYELLOW},
+                                 {kInstallabilityIconSize, SK_ColorBLUE}});
 
-                                 {kInstallIconSize, SK_ColorGREEN},
-                                 {kUnimportantIconSize, SK_ColorGREEN}});
-
+    expected_shortcut_colors_if_updated = {
+        {{32, kAll}, SK_ColorYELLOW},   {{48, kAll}, SK_ColorYELLOW},
+        {{64, kWin}, SK_ColorBLUE},     {{96, kWin}, SK_ColorBLUE},
+        {{128, kAll}, SK_ColorBLUE},    {{256, kMac}, SK_ColorBLUE},
+        {{256, kNotMac}, SK_ColorBLUE}, {{512, kNotWin}, SK_ColorBLUE}};
+  } else if (InstallIconRemove()) {
+    ending_stage =
+        GenerateColoredIconList({{kUnimportantIconSize, SK_ColorRED},
+                                 {kLauncherIconSize, SK_ColorGREEN},
+                                 {kInstallabilityIconSize, SK_ColorBLUE}});
     expected_shortcut_colors_if_updated = {
         {{32, kAll}, SK_ColorGREEN},    {{48, kAll}, SK_ColorGREEN},
         {{64, kWin}, SK_ColorGREEN},    {{96, kWin}, SK_ColorGREEN},
-        {{128, kAll}, SK_ColorGREEN},   {{256, kAll}, SK_ColorGREEN},
-        {{512, kNotWin}, SK_ColorGREEN}};
-  } else if (InstallIconRemove()) {
-    // The install icon size is not a size that is auto-generated for the
-    // shortcut when missing, so when removed there should be
-    // no effect.
-    ending_stage =
-        GenerateColoredIconList({{kInstallabilityIconSize, SK_ColorGREEN},
-                                 {kLauncherIconSize, SK_ColorGREEN},
-
-                                 {kUnimportantIconSize, SK_ColorGREEN}});
-    expected_shortcut_colors_if_updated = expected_shortcut_colors_before;
+        {{128, kAll}, SK_ColorGREEN},   {{256, kMac}, SK_ColorGREEN},
+        {{256, kNotMac}, SK_ColorBLUE}, {{512, kNotWin}, SK_ColorBLUE}};
   } else if (UnimportantIconRemove()) {
     starting_stage =
-        GenerateColoredIconList({{kInstallabilityIconSize, SK_ColorGREEN},
+        GenerateColoredIconList({{kUnimportantIconSize, SK_ColorBLACK},
+                                 {kUnimportantIconSize2, SK_ColorRED},
+                                 {kInstallIconSize, SK_ColorYELLOW},
                                  {kLauncherIconSize, SK_ColorGREEN},
-                                 {kInstallIconSize, SK_ColorGREEN},
-                                 {kUnimportantIconSize, SK_ColorGREEN},
-                                 {kUnimportantIconSize2, SK_ColorGREEN}});
+                                 {kInstallabilityIconSize, SK_ColorBLUE}});
     expected_shortcut_colors_before = {
-        {{32, kAll}, SK_ColorGREEN},    {{48, kAll}, SK_ColorGREEN},
+        {{32, kAll}, SK_ColorYELLOW},   {{48, kAll}, SK_ColorYELLOW},
         {{64, kWin}, SK_ColorGREEN},    {{96, kWin}, SK_ColorGREEN},
-        {{128, kAll}, SK_ColorGREEN},   {{256, kAll}, SK_ColorGREEN},
-        {{512, kNotWin}, SK_ColorGREEN}};
+        {{128, kAll}, SK_ColorGREEN},   {{256, kMac}, SK_ColorGREEN},
+        {{256, kNotMac}, SK_ColorBLUE}, {{512, kNotWin}, SK_ColorBLUE}};
 
     // Removing an unimportant icon should have no effect on other icons.
     ending_stage =
-        GenerateColoredIconList({{kInstallabilityIconSize, SK_ColorGREEN},
+        GenerateColoredIconList({{kUnimportantIconSize2, SK_ColorRED},
+                                 {kInstallIconSize, SK_ColorYELLOW},
                                  {kLauncherIconSize, SK_ColorGREEN},
-                                 {kInstallIconSize, SK_ColorGREEN},
-
-                                 {kUnimportantIconSize2, SK_ColorGREEN}});
-    expected_shortcut_colors_if_updated = {
-        {{32, kAll}, SK_ColorGREEN},    {{48, kAll}, SK_ColorGREEN},
-        {{64, kWin}, SK_ColorGREEN},    {{96, kWin}, SK_ColorGREEN},
-        {{128, kAll}, SK_ColorGREEN},   {{256, kAll}, SK_ColorGREEN},
-        {{512, kNotWin}, SK_ColorGREEN}};
+                                 {kInstallabilityIconSize, SK_ColorBLUE}});
+    expected_shortcut_colors_if_updated = expected_shortcut_colors_before;
   } else if (TitleUpdate()) {
     ending_stage = starting_stage;  // No icon change.
     expected_shortcut_colors_if_updated = expected_shortcut_colors_before;
