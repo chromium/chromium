@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -83,12 +82,10 @@ bool IsMetricsEnabled(const base::FilePath& file_path) {
   if (!root || !root->is_dict())
     return false;
 
-  auto path =
-      base::SplitStringPiece(metrics::prefs::kMetricsReportingEnabled, ".",
-                             base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  const auto* value = root->FindPathOfType(path, base::Value::Type::BOOLEAN);
+  const absl::optional<bool> value = root->GetDict().FindBoolByDottedPath(
+      metrics::prefs::kMetricsReportingEnabled);
 
-  return value && value->GetBool();
+  return value.value_or(false);
 }
 
 }  // namespace
