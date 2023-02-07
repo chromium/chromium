@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
@@ -73,7 +74,10 @@ class WebAppBrowserController : public AppBrowserController,
   ~WebAppBrowserController() override;
 
   // AppBrowserController:
+  using HomeTabCallbackList = base::OnceCallbackList<void()>;
   bool HasMinimalUiButtons() const override;
+  bool DoesHomeTabIconExist() const;
+  gfx::ImageSkia GetHomeTabIcon() const;
   ui::ImageModel GetWindowAppIcon() const override;
   ui::ImageModel GetWindowIcon() const override;
   absl::optional<SkColor> GetThemeColor() const override;
@@ -119,6 +123,8 @@ class WebAppBrowserController : public AppBrowserController,
                                base::StringPiece old_name) override;
   void OnWebAppInstallManagerDestroyed() override;
 
+  base::CallbackListSubscription AddHomeTabIconLoadCallbackForTesting(
+      const base::OnceClosure callback);
   static void SetIconLoadCallbackForTesting(base::OnceClosure callback);
   static void SetManifestUpdateAppliedCallbackForTesting(
       base::OnceClosure callback);
@@ -129,14 +135,16 @@ class WebAppBrowserController : public AppBrowserController,
   void OnTabRemoved(content::WebContents* contents) override;
 
  private:
+  mutable HomeTabCallbackList home_tab_callback_list_;
   const WebAppRegistrar& registrar() const;
   const WebAppInstallManager& install_manager() const;
 
   // Helper function to call AppServiceProxy to load icon.
   void LoadAppIcon(bool allow_placeholder_icon) const;
+
   // Invoked when the icon is loaded.
   void OnLoadIcon(apps::IconValuePtr icon_value);
-
+  void OnReadHomeTabIcon(HomeTabIconBitmaps home_tab_icon_bitmaps) const;
   void OnReadIcon(IconPurpose purpose, SkBitmap bitmap);
   void PerformDigitalAssetLinkVerification(Browser* browser);
 
@@ -168,6 +176,7 @@ class WebAppBrowserController : public AppBrowserController,
   raw_ptr<const ash::SystemWebAppDelegate> system_app_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   mutable absl::optional<ui::ImageModel> app_icon_;
+  mutable absl::optional<gfx::ImageSkia> home_tab_icon_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // The result of digital asset link verification of the web app.

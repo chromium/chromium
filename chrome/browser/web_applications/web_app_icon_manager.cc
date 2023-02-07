@@ -215,6 +215,19 @@ base::FilePath GetManifestResourcesShortcutsMenuIconFileName(
       base::NumberToString(icon_size_px) + ".png");
 }
 
+// `web_apps_directory` is the path to the directory where all web app data is
+// stored for the relevant profile.
+base::FilePath GetManifestResourcesOtherIconsFileName(
+    const base::FilePath& web_apps_directory,
+    const AppId& app_id,
+    const GURL& url,
+    int icon_size_px) {
+  return GetManifestResourcesDirectoryForApp(web_apps_directory, app_id)
+      .Append(GetOtherIconsRelativeDirectory())
+      .AppendASCII(GetDirectoryNameForUrl(url))
+      .AppendASCII(base::StringPrintf("%i.png", icon_size_px));
+}
+
 // Performs blocking I/O. May be called on another thread.
 // Returns empty SkBitmap if any errors occurred.
 TypedResult<SkBitmap> ReadIconBlocking(scoped_refptr<FileUtilsWrapper> utils,
@@ -278,6 +291,33 @@ TypedResult<SkBitmap> ReadShortcutsMenuIconBlocking(
 
   TypedResult<SkBitmap> result;
 
+  if (!gfx::PNGCodec::Decode(
+          reinterpret_cast<const unsigned char*>(icon_data.c_str()),
+          icon_data.size(), &result.value)) {
+    return {.error_log = {CreateError({"Could not decode icon data for file: ",
+                                       icon_file.AsUTF8Unsafe()})}};
+  }
+
+  return result;
+}
+
+// Returns empty SkBitmap if any errors occurred.
+TypedResult<SkBitmap> ReadHomeTabIconBlocking(
+    scoped_refptr<FileUtilsWrapper> utils,
+    const base::FilePath& web_apps_directory,
+    const AppId& app_id,
+    const GURL& url,
+    int icon_size_px) {
+  base::FilePath icon_file = GetManifestResourcesOtherIconsFileName(
+      web_apps_directory, app_id, url, icon_size_px);
+
+  std::string icon_data;
+  if (!utils->ReadFileToString(icon_file, &icon_data)) {
+    return {.error_log = {CreateError(
+                {"Could not read icon file: ", icon_file.AsUTF8Unsafe()})}};
+  }
+
+  TypedResult<SkBitmap> result;
   if (!gfx::PNGCodec::Decode(
           reinterpret_cast<const unsigned char*>(icon_data.c_str()),
           icon_data.size(), &result.value)) {
@@ -415,7 +455,23 @@ TypedResult<ShortcutsMenuIconBitmaps> ReadShortcutsMenuIconsBlocking(
   return results;
 }
 
-// Performs blocking I/O. May be called on another thread.
+TypedResult<HomeTabIconBitmaps> ReadHomeTabIconsBlocking(
+    scoped_refptr<FileUtilsWrapper> utils,
+    const base::FilePath& web_apps_directory,
+    const AppId& app_id,
+    const std::vector<blink::Manifest::ImageResource>& icons) {
+  TypedResult<HomeTabIconBitmaps> results;
+  for (const blink::Manifest::ImageResource& icon : icons) {
+    TypedResult<SkBitmap> result = ReadHomeTabIconBlocking(
+        utils, web_apps_directory, app_id, icon.src, icon.sizes[0].width());
+    result.DepositErrorLog(results.error_log);
+    if (!result.value.empty()) {
+      results.value.push_back(std::move(result.value));
+    }
+  }
+  return results;
+}
+
 TypedResult<WebAppIconManager::ShortcutIconDataVector>
 ReadShortcutMenuIconsWithTimestampBlocking(
     scoped_refptr<FileUtilsWrapper> utils,
@@ -786,6 +842,7 @@ class WriteIconsJob {
   AppId app_id_;
   IconBitmaps icon_bitmaps_;
   ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps_;
+  HomeTabIconBitmaps home_tab_icon_bitmaps_;
   IconsMap other_icons_;
 };
 
@@ -997,6 +1054,24 @@ void WebAppIconManager::ReadAllShortcutsMenuIcons(
                      web_app->downloaded_shortcuts_menu_icons_sizes()),
       base::BindOnce(&LogErrorsCallCallback<ShortcutsMenuIconBitmaps>,
                      GetWeakPtr(), std::move(callback)));
+}
+
+void WebAppIconManager::ReadAllHomeTabIcons(
+    const AppId& app_id,
+    const std::vector<blink::Manifest::ImageResource>& icons,
+    ReadHomeTabIconsCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const WebApp* web_app = registrar_->GetAppById(app_id);
+  if (!web_app) {
+    std::move(callback).Run(HomeTabIconBitmaps{});
+    return;
+  }
+  icon_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(ReadHomeTabIconsBlocking, utils_, web_apps_directory_,
+                     app_id, icons),
+      base::BindOnce(&LogErrorsCallCallback<HomeTabIconBitmaps>, GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void WebAppIconManager::ReadSmallestIcon(

@@ -9,11 +9,14 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
+#include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -40,6 +43,17 @@ TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
   TabRendererData data;
   TabUIHelper* const tab_ui_helper = TabUIHelper::FromWebContents(contents);
   data.favicon = tab_ui_helper->GetFavicon().AsImageSkia();
+
+  // Finding the relevant WebApp to get the correct home tab icon.
+  Browser* app_browser = chrome::FindBrowserWithWebContents(contents);
+  if (app_browser && app_browser->app_controller()) {
+    web_app::WebAppBrowserController* app_controller =
+        app_browser->app_controller()->AsWebAppBrowserController();
+    if (app_controller && app_controller->DoesHomeTabIconExist()) {
+      data.favicon = app_controller->GetHomeTabIcon();
+    }
+  }
+
   ThumbnailTabHelper* const thumbnail_tab_helper =
       ThumbnailTabHelper::FromWebContents(contents);
   if (thumbnail_tab_helper) {

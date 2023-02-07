@@ -39,6 +39,7 @@ namespace web_app {
 class FileUtilsWrapper;
 class WebAppRegistrar;
 
+using HomeTabIconBitmaps = std::vector<SkBitmap>;
 using SquareSizeDip = int;
 
 // Exclusively used from the UI thread.
@@ -133,6 +134,17 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   // Returns empty vector in |callback| if we hit any error.
   void ReadAllShortcutsMenuIcons(const AppId& app_id,
                                  ReadShortcutsMenuIconsCallback callback);
+
+  using ReadHomeTabIconsCallback =
+      base::OnceCallback<void(HomeTabIconBitmaps home_tab_icon_bitmaps)>;
+
+  // Reads bitmap for the home tab icon. Returns a SkBitmap
+  // in |callback| if the icon exists. Otherwise, if it doesn't
+  // exist, the SkBitmap is empty.
+  void ReadAllHomeTabIcons(
+      const AppId& app_id,
+      const std::vector<blink::Manifest::ImageResource>& icons,
+      ReadHomeTabIconsCallback callback);
 
   using ReadIconWithPurposeCallback =
       base::OnceCallback<void(IconPurpose, SkBitmap)>;

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -298,6 +300,73 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, InstallingPinsHomeTab) {
   EXPECT_TRUE(tab_strip->IsTabPinned(0));
   // The URL of the pinned home tab should include the query params.
   EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NoHomeTabIcons) {
+  GURL start_url = embedded_test_server()->GetURL(
+      "/web_apps/get_manifest.html?tab_strip_no_home_tab_icon.json");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+
+  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  EXPECT_EQ(tab_strip->count(), 1);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  // The URL of the pinned home tab should include the query params.
+  content::WebContents* contents = tab_strip->GetWebContentsAt(0);
+
+  gfx::ImageSkia favicon = app_browser->app_controller()
+                               ->AsWebAppBrowserController()
+                               ->GetHomeTabIcon();
+  const SkBitmap* favicon_bitmap = favicon.bitmap();
+  const SkBitmap* expected_bitmap = app_browser->app_controller()
+                                        ->GetWindowAppIcon()
+                                        .Rasterize(nullptr)
+                                        .bitmap();
+
+  EXPECT_EQ(favicon_bitmap->width(), expected_bitmap->width());
+  EXPECT_EQ(favicon_bitmap->height(), expected_bitmap->height());
+  EXPECT_EQ(favicon_bitmap->getColor(0, 0), expected_bitmap->getColor(0, 0));
+
+  EXPECT_EQ(contents->GetVisibleURL(), start_url);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, HomeTabIcons) {
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+
+  WebAppBrowserController* const web_app_browser_controller =
+      app_browser->app_controller()->AsWebAppBrowserController();
+
+  base::RunLoop run_loop;
+  base::CallbackListSubscription home_tab_callback_list_subscription =
+      web_app_browser_controller->AddHomeTabIconLoadCallbackForTesting(
+          run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  EXPECT_EQ(tab_strip->count(), 1);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  // The URL of the pinned home tab should include the query params.
+  content::WebContents* contents = tab_strip->GetWebContentsAt(0);
+
+  gfx::ImageSkia favicon = web_app_browser_controller->GetHomeTabIcon();
+  const SkBitmap* favicon_bitmap = favicon.bitmap();
+
+  EXPECT_EQ(favicon_bitmap->width(), 192);
+  EXPECT_EQ(favicon_bitmap->height(), 192);
+  EXPECT_EQ(SK_ColorBLUE, favicon_bitmap->getColor(0, 0));
+
+  EXPECT_EQ(contents->GetVisibleURL(), start_url);
   EXPECT_EQ(tab_strip->active_index(), 0);
 }
 
