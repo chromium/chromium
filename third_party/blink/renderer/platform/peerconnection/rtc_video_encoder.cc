@@ -453,6 +453,33 @@ void RecordEncoderShutdownReasonUMA(RTCVideoEncoderShutdownReason reason,
                                     reason);
   }
 }
+
+bool IsZeroCopyEnabled(webrtc::VideoContentType content_type) {
+  if (content_type == webrtc::VideoContentType::SCREENSHARE) {
+    // Zero copy screen capture.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // The zero-copy capture is available for all sources in ChromeOS
+    // Ash-chrome.
+    return base::FeatureList::IsEnabled(features::kZeroCopyTabCapture);
+#else
+    // Currently, zero copy capture screenshare is available only for tabs.
+    // Since it is impossible to determine the content source, tab, window or
+    // monitor, we don't configure VideoEncodeAccelerator with NV12
+    // GpuMemoryBuffer instead we configure I420 SHMEM as if it is not zero
+    // copy, and we convert the NV12 GpuMemoryBuffer to I420 SHMEM in
+    // RtcVideoEncoder::Impl::Encode().
+    // TODO(b/267995715): Solve this problem by calling Initialize() in the
+    // first frame.
+    return false;
+#endif
+  }
+  // Zero copy video capture from other sources (e.g. camera).
+  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kDisableVideoCaptureUseGpuMemoryBuffer) &&
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kVideoCaptureUseGpuMemoryBuffer);
+}
+
 }  // namespace
 
 namespace features {
@@ -761,11 +788,7 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
   media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_I420;
   auto storage_type =
       media::VideoEncodeAccelerator::Config::StorageType::kShmem;
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableVideoCaptureUseGpuMemoryBuffer) &&
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kVideoCaptureUseGpuMemoryBuffer) &&
-      video_content_type_ != webrtc::VideoContentType::SCREENSHARE) {
+  if (IsZeroCopyEnabled(video_content_type_)) {
     // Use import mode for camera when GpuMemoryBuffer-based video capture is
     // enabled.
     pixel_format = media::PIXEL_FORMAT_NV12;
