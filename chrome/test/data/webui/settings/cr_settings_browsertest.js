@@ -903,7 +903,6 @@ TEST_F('CrSettingsMenuTest', 'All', function() {
  ['PasswordView', 'password_view_test.js'],
  ['PasswordsExportDialog', 'passwords_export_dialog_test.js'],
  ['PasswordsImportDialog', 'passwords_import_dialog_test.js'],
- ['PaymentsSection', 'payments_section_test.js'],
  ['PeoplePage', 'people_page_test.js'],
  ['PeoplePageSyncControls', 'people_page_sync_controls_test.js'],
  ['Prefs', 'prefs_tests.js'],
@@ -947,6 +946,12 @@ TEST_F('CrSettingsMenuTest', 'All', function() {
 // Timeout on Linux dbg bots: https://crbug.com/1394737
 GEN('#if !(BUILDFLAG(IS_LINUX) && !defined(NDEBUG))');
 [['PeoplePageSyncPage', 'people_page_sync_page_test.js']].forEach(
+    test => registerTest(...test));
+GEN('#endif');
+
+// Flaky on Linux dbg bots: https://crbug.com/1411294
+GEN('#if !(BUILDFLAG(IS_LINUX) && !defined(NDEBUG))');
+[['PaymentsSection', 'payments_section_test.js']].forEach(
     test => registerTest(...test));
 GEN('#endif');
 
