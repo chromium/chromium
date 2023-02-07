@@ -52,6 +52,15 @@ test(
     '[' + testPrefix +
         '] document.requestStorageAccessForOrigin() should be supported on the document interface');
 
+promise_test(
+  t => {
+    return promise_rejects_js(t, TypeError,
+      document.requestStorageAccessForOrigin(),
+      'document.requestStorageAccessForOrigin() call without origin argument');
+  },
+  '[' + testPrefix +
+      '] document.requestStorageAccessForOrigin() should be rejected when called with no argument');
+
 if (topLevelDocument) {
   promise_test(
       t => {
