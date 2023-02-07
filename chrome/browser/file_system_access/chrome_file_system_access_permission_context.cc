@@ -62,14 +62,16 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/shlwapi.h"
-#endif
-
 namespace features {
 BASE_FEATURE(kFileSystemAccessPersistentPermissions,
              "kFileSystemAccessPersistentPermissions",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kFileSystemAccessLocalUNCPathBlock,
+             "kFileSystemAccessLocalUNCPathBlock",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 }  // namespace features
 
 namespace {
@@ -170,6 +172,51 @@ void ShowFileSystemAccessDangerousFileDialogOnUIThread(
   ShowFileSystemAccessDangerousFileDialog(origin, path, std::move(callback),
                                           web_contents);
 }
+
+#if BUILDFLAG(IS_WIN)
+bool ContainsInvalidDNSCharacter(base::FilePath::StringType hostname) {
+  for (base::FilePath::CharType c : hostname) {
+    if (!((c >= L'A' && c <= L'Z') || (c >= L'a' && c <= L'z') ||
+          (c >= L'0' && c <= L'9') || (c == L'.') || (c == L'-'))) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool MaybeIsLocalUNCPath(const base::FilePath& path) {
+  if (!path.IsNetwork()) {
+    return false;
+  }
+
+  const std::vector<base::FilePath::StringType> components =
+      path.GetComponents();
+
+  // Check for server name that could represent a local system. We only
+  // check for a very short list, as it is impossible to cover all different
+  // variants on Windows.
+  if (components.size() >= 2 &&
+      (base::FilePath::CompareEqualIgnoreCase(components[1],
+                                              FILE_PATH_LITERAL("localhost")) ||
+       components[1] == FILE_PATH_LITERAL("127.0.0.1") ||
+       components[1] == FILE_PATH_LITERAL(".") ||
+       components[1] == FILE_PATH_LITERAL("?") ||
+       ContainsInvalidDNSCharacter(components[1]))) {
+    return true;
+  }
+
+  // In case we missed the server name check above, we also check for shares
+  // ending with '$' as they represent pre-defined shares, including the local
+  // drives.
+  for (size_t i = 2; i < components.size(); ++i) {
+    if (components[i].back() == L'$') {
+      return true;
+    }
+  }
+
+  return false;
+}
+#endif
 
 // Sentinel used to indicate that no PathService key is specified for a path in
 // the struct below.
@@ -288,9 +335,13 @@ bool ShouldBlockAccessToPath(const base::FilePath& check_path,
   DCHECK(check_path.IsAbsolute());
 
 #if BUILDFLAG(IS_WIN)
-  // On Windows, UNC paths are rejected to avoid bypassing the block list.
-  if (PathIsUNC(check_path.value().c_str()))
+  // On Windows, local UNC paths are rejected, as UNC path can be written in a
+  // way that can bypass the blocklist.
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessLocalUNCPathBlock) &&
+      MaybeIsLocalUNCPath(check_path)) {
     return true;
+  }
 #endif
 
   base::FilePath nearest_ancestor;
