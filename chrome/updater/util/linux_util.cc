@@ -25,6 +25,8 @@ constexpr base::FilePath::CharType kUserRelativeDataPath[] =
 
 }  // namespace
 
+const char kLauncherName[] = "launcher";
+
 base::FilePath GetExecutableRelativePath() {
   return base::FilePath(base::StrCat({kExecutableName, kExecutableSuffix}));
 }

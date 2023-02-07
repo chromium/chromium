@@ -11,7 +11,7 @@ namespace updater {
 
 // Filename of the non side-by-side launcher. The file is a hardlink to the
 // qualified version of the updater.
-constexpr char kLauncherName[] = "launcher";
+extern const char kLauncherName[];
 
 }  // namespace updater
 
