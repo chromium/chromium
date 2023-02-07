@@ -533,6 +533,7 @@ CastActivity* CastActivityManager::AddMirroringActivity(
                             route, app_id, message_handler_, session_tracker_,
                             frame_tree_node_id, cast_data, std::move(on_stop));
   activity->CreateMojoBindings(media_router_);
+  activity->CreateMirroringServiceHost();
   auto* const activity_ptr = activity.get();
   activities_.emplace(route.media_route_id(), std::move(activity));
   return activity_ptr;

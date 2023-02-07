@@ -17,12 +17,6 @@ mojom("common") {
   ]
 }
 
-mojom("host") {
-  sources = [ "mirroring_service_host.mojom" ]
-
-  public_deps = [ ":common" ]
-}
-
 mojom("service") {
   sources = [
     "mirroring_service.mojom",

@@ -9,7 +9,6 @@ import "components/media_router/common/mojom/media_controller.mojom";
 import "components/media_router/common/mojom/media_route_provider_id.mojom";
 import "components/media_router/common/mojom/media_status.mojom";
 import "components/media_router/common/mojom/route_request_result_code.mojom";
-import "components/mirroring/mojom/mirroring_service_host.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
@@ -401,15 +400,4 @@ interface MediaRouter {
   // called under limited circumstances, such as when the user is submitting a
   // feedback report.
   GetLogsAsString() => (string logs);
-
-  // Called to get a mirroring.mojom.MirroringServiceHost.
- GetMirroringServiceHostForTab(int32 frame_tree_node_id,
-      pending_receiver<mirroring.mojom.MirroringServiceHost> receiver);
-  GetMirroringServiceHostForDesktop(
-      string desktop_stream_id,
-      pending_receiver<mirroring.mojom.MirroringServiceHost> receiver);
-  GetMirroringServiceHostForOffscreenTab(
-      url.mojom.Url presentation_url,
-      string presentation_id,
-      pending_receiver<mirroring.mojom.MirroringServiceHost> receiver);
 };

@@ -271,14 +271,6 @@ class MediaRouterMojoImpl : public MediaRouterBase,
     base::ObserverList<MediaRoutesObserver> observers_;
   };
 
-  // See note in OnDesktopPickerDone().
-  struct PendingStreamRequest {
-    std::string stream_id;
-    int render_process_id;
-    int render_frame_id;
-    url::Origin origin;
-  };
-
   // A MediaRoutesObserver that maintains state about the current set of media
   // routes.
   class InternalMediaRoutesObserver : public MediaRoutesObserver {
@@ -334,19 +326,6 @@ class MediaRouterMojoImpl : public MediaRouterBase,
   void GetLogsAsString(GetLogsAsStringCallback callback) override;
   void GetMediaSinkServiceStatus(
       mojom::MediaRouter::GetMediaSinkServiceStatusCallback callback) override;
-  void GetMirroringServiceHostForTab(
-      int32_t frame_tree_node_id,
-      mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost> receiver)
-      override;
-  void GetMirroringServiceHostForDesktop(
-      const std::string& desktop_stream_id,
-      mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost> receiver)
-      override;
-  void GetMirroringServiceHostForOffscreenTab(
-      const GURL& presentation_url,
-      const std::string& presentation_id,
-      mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost> receiver)
-      override;
 
   // Result callback when Mojo TerminateRoute is invoked.
   // |route_id|: ID of MediaRoute passed to the TerminateRoute request.
@@ -444,8 +423,6 @@ class MediaRouterMojoImpl : public MediaRouterBase,
   const raw_ptr<content::BrowserContext> context_;
 
   DesktopMediaPickerController desktop_picker_;
-
-  absl::optional<PendingStreamRequest> pending_stream_request_;
 
   // Collects logs from the Media Router and the native Media Route Providers.
   // TODO(crbug.com/1077138): Limit logging before Media Router usage.

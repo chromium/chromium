@@ -101,7 +101,6 @@ static_library("router") {
       "//chrome/browser:browser_process",
       "//chrome/browser/profiles:profile",
       "//components/embedder_support:browser_util",
-      "//components/mirroring/mojom:host",
       "//components/mirroring/mojom:service",
       "//components/ukm/content:content",
       "//components/version_info:version_info",

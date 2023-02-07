@@ -34,7 +34,7 @@ mojom("media_router") {
     ":media_controller",
     ":media_route_provider_id",
     ":route_request_result_code",
-    "//components/mirroring/mojom:host",
+    "//components/mirroring/mojom:common",
     "//media/mojo/mojom:remoting",
     "//mojo/public/mojom/base",
     "//services/network/public/mojom:mojom_ip_address",

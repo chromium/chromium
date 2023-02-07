@@ -6396,6 +6396,10 @@ static_library("browser") {
     sources += [
       "media/cast_mirroring_service_host.cc",
       "media/cast_mirroring_service_host.h",
+      "media/cast_mirroring_service_host_factory.cc",
+      "media/cast_mirroring_service_host_factory.h",
+      "media/mirroring_service_host.cc",
+      "media/mirroring_service_host.h",
       "media/offscreen_tab.cc",
       "media/offscreen_tab.h",
       "payments/chrome_payment_request_delegate.cc",
@@ -6411,7 +6415,6 @@ static_library("browser") {
       "//chrome/browser/ui/webui/discards:mojo_bindings",
       "//components/media_router/browser",
       "//components/mirroring/browser",
-      "//components/mirroring/mojom:host",
       "//components/mirroring/mojom:service",
       "//components/mirroring/service:mirroring_service",
       "//components/payments/content",
@@ -6929,7 +6932,6 @@ static_library("browser") {
 
       # TODO(crbug.com/879012): mirroring shouldn't depend on enable_extensions.
       "//components/mirroring/browser",
-      "//components/mirroring/mojom:host",
       "//components/mirroring/mojom:service",
       "//components/mirroring/service:mirroring_service",
       "//extensions/common:common_constants",

@@ -112,12 +112,10 @@ MediaSource MediaSource::ForRemotePlayback(int tab_id,
 }
 
 // static
-MediaSource MediaSource::ForDesktop(
-    const std::string& registered_desktop_stream_id,
-    bool with_audio) {
-  DCHECK(!registered_desktop_stream_id.empty());
-  std::string id =
-      std::string(kDesktopMediaUrnPrefix) + registered_desktop_stream_id;
+MediaSource MediaSource::ForDesktop(const std::string& desktop_media_id,
+                                    bool with_audio) {
+  DCHECK(!desktop_media_id.empty());
+  std::string id = std::string(kDesktopMediaUrnPrefix) + desktop_media_id;
   if (with_audio) {
     id += std::string(kDesktopMediaUrnAudioParam);
   }

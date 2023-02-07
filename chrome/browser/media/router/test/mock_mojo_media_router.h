@@ -61,22 +61,6 @@ class MockMojoMediaRouter : public MockMediaRouter, public mojom::MediaRouter {
       GetMediaSinkServiceStatusInternal,
       void(mojom::MediaRouter::GetMediaSinkServiceStatusCallback& callback));
   MOCK_METHOD0(GetMediaSinkServiceStatus, std::string());
-  MOCK_METHOD2(
-      GetMirroringServiceHostForTab,
-      void(int32_t frame_tree_node_id,
-           mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost>
-               receiver));
-  MOCK_METHOD2(
-      GetMirroringServiceHostForDesktop,
-      void(const std::string& desktop_stream_id,
-           mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost>
-               receiver));
-  MOCK_METHOD3(
-      GetMirroringServiceHostForOffscreenTab,
-      void(const GURL& presentation_url,
-           const std::string& presentation_id,
-           mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost>
-               receiver));
 };
 
 }  // namespace media_router

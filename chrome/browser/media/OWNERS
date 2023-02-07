@@ -3,8 +3,8 @@ sergeyu@chromium.org
 tommi@chromium.org
 
 # For Cast-related changes.
-per-file cast_*=mfoltz@chromium.org
-per-file cast_*=jophba@chromium.org
+per-file cast_*, mirroring_service*=mfoltz@chromium.org
+per-file cast_*, mirroring_service*=jophba@chromium.org
 
 # For Media Engagement changes.
 per-file *media_engagement*=evliu@google.com

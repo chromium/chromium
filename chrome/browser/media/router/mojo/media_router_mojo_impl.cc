@@ -29,7 +29,6 @@
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/desktop_streams_registry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -754,46 +753,6 @@ void MediaRouterMojoImpl::GetMediaSinkServiceStatus(
   std::move(callback).Run(status.GetStatusAsJSONString());
 }
 
-void MediaRouterMojoImpl::GetMirroringServiceHostForTab(
-    int32_t frame_tree_node_id,
-    mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost> receiver) {
-  mirroring::CastMirroringServiceHost::GetForTab(
-      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id),
-      std::move(receiver));
-}
-
-// TODO(crbug.com/809249): This method is currently part of a Mojo interface,
-// but eventually it won't be.  When that happens, change the sigature so it can
-// report errors.  Also remove the |initiator_tab_id| parameter.
-void MediaRouterMojoImpl::GetMirroringServiceHostForDesktop(
-    const std::string& desktop_stream_id,
-    mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost> receiver) {
-  if (!pending_stream_request_ ||
-      pending_stream_request_->stream_id != desktop_stream_id) {
-    return;
-  }
-  const PendingStreamRequest& request = *pending_stream_request_;
-  const auto media_id =
-      content::DesktopStreamsRegistry::GetInstance()->RequestMediaForStreamId(
-          request.stream_id, request.render_process_id, request.render_frame_id,
-          request.origin, nullptr, content::kRegistryStreamTypeDesktop);
-  if (media_id.is_null()) {
-    return;
-  }
-  mirroring::CastMirroringServiceHost::GetForDesktop(media_id,
-                                                     std::move(receiver));
-}
-
-void MediaRouterMojoImpl::GetMirroringServiceHostForOffscreenTab(
-    const GURL& presentation_url,
-    const std::string& presentation_id,
-    mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost> receiver) {
-  if (IsValidPresentationUrl(presentation_url)) {
-    mirroring::CastMirroringServiceHost::GetForOffscreenTab(
-        context_, presentation_url, presentation_id, std::move(receiver));
-  }
-}
-
 void MediaRouterMojoImpl::BindToMojoReceiver(
     mojo::PendingReceiver<mojom::MediaRouter> receiver) {
   receivers_.Add(this, std::move(receiver));
@@ -933,50 +892,20 @@ void MediaRouterMojoImpl::CreateRouteWithSelectedDesktop(
     return;
   }
 
-  // TODO(crbug.com/1291738): This is kind of ridiculous.  The
-  // PendingStreamRequest struct only exists to store the arguments given to
-  // DesktopStreamsRegistry::RegisterStream() so they can later be passed back
-  // to DesktopStreamsRegistry::RequestMediaForStreamId(), but the saved values
-  // aren't actually needed in RequestMediaForStreamId() except to prove that
-  // the request is legitimate.  Creating a more lenient version of the methods
-  // in DesktopStreamsRegistry, or simply storing |media_id| directly, is likely
-  // a better solution, but the security implications aren't entirely clear to
-  // me, so for now I'm going with a clumsy solution that works and doesn't
-  // require altering DesktopStreamsRegistry.
-  DCHECK(!pending_stream_request_);
-  pending_stream_request_.emplace();
-  PendingStreamRequest& request = *pending_stream_request_;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  DCHECK(web_contents);
-  content::RenderFrameHost* const main_frame =
-      web_contents->GetPrimaryMainFrame();
-  request.render_process_id = main_frame->GetProcess()->GetID();
-  request.render_frame_id = main_frame->GetRoutingID();
-  request.origin = url::Origin::Create(web_contents->GetVisibleURL());
-#endif
-  request.stream_id =
-      content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
-          request.render_process_id, request.render_frame_id, request.origin,
-          media_id, "ChromeMediaRouter", content::kRegistryStreamTypeDesktop);
-
   media_route_providers_[provider_id]->CreateRoute(
-      MediaSource::ForDesktop(request.stream_id, media_id.audio_share).id(),
+      MediaSource::ForDesktop(media_id.ToString(), media_id.audio_share).id(),
       sink_id, presentation_id, origin, kDefaultFrameTreeNodeId, timeout,
       off_the_record,
       base::BindOnce(
           [](mojom::MediaRouteProvider::CreateRouteCallback inner_callback,
-             base::WeakPtr<MediaRouterMojoImpl> self,
-             const std::string& stream_id,
              const absl::optional<media_router::MediaRoute>& route,
              mojom::RoutePresentationConnectionPtr connection,
              const absl::optional<std::string>& error_text,
              mojom::RouteRequestResultCode result_code) {
-            if (self)
-              self->pending_stream_request_.reset();
             std::move(inner_callback)
                 .Run(route, std::move(connection), error_text, result_code);
           },
-          std::move(mr_callback), AsWeakPtr(), request.stream_id));
+          std::move(mr_callback)));
 }
 
 }  // namespace media_router

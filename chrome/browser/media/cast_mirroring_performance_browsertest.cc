@@ -36,6 +36,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/cast_mirroring_service_host.h"
+#include "chrome/browser/media/cast_mirroring_service_host_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -44,7 +45,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
-#include "components/mirroring/mojom/mirroring_service_host.mojom.h"
 #include "components/mirroring/mojom/session_observer.mojom.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -881,8 +881,8 @@ class TestTabMirroringSession : public mirroring::mojom::SessionObserver,
 
     receiver_endpoint_ = endpoint;
     udp_port_ = port;
-    mirroring::CastMirroringServiceHost::GetForTab(
-        contents, host_.BindNewPipeAndPassReceiver());
+    host_ = mirroring::CastMirroringServiceHostFactory::GetInstance().GetForTab(
+        contents->GetPrimaryMainFrame()->GetFrameTreeNodeId());
 
     mojo::PendingRemote<mirroring::mojom::SessionObserver> observer_remote;
     observer_receiver_.Bind(observer_remote.InitWithNewPipeAndPassReceiver());
@@ -1045,7 +1045,7 @@ class TestTabMirroringSession : public mirroring::mojom::SessionObserver,
     channel_to_service_->OnMessage(std::move(request_message));
   }
 
-  mojo::Remote<mirroring::mojom::MirroringServiceHost> host_;
+  std::unique_ptr<mirroring::MirroringServiceHost> host_;
   mojo::Remote<mirroring::mojom::CastMessageChannel> channel_to_service_;
   mojo::Receiver<mirroring::mojom::SessionObserver> observer_receiver_{this};
   mojo::Receiver<mirroring::mojom::CastMessageChannel> channel_receiver_{this};

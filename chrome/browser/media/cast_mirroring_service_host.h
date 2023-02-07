@@ -10,9 +10,9 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/media/mirroring_service_host.h"
 #include "chrome/browser/media/offscreen_tab.h"
 #include "components/mirroring/mojom/mirroring_service.mojom.h"
-#include "components/mirroring/mojom/mirroring_service_host.mojom.h"
 #include "components/mirroring/mojom/resource_provider.mojom.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
@@ -44,25 +44,11 @@ namespace mirroring {
 
 // CastMirroringServiceHost starts/stops a mirroring session through Mirroring
 // Service, and provides the resources to the Mirroring Service as requested.
-class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
+class CastMirroringServiceHost final : public MirroringServiceHost,
                                        public mojom::ResourceProvider,
                                        public OffscreenTab::Owner,
                                        public content::WebContentsObserver {
  public:
-  static void GetForTab(
-      content::WebContents* target_contents,
-      mojo::PendingReceiver<mojom::MirroringServiceHost> receiver);
-
-  static void GetForDesktop(
-      const content::DesktopMediaID& media_id,
-      mojo::PendingReceiver<mojom::MirroringServiceHost> receiver);
-
-  static void GetForOffscreenTab(
-      content::BrowserContext* context,
-      const GURL& presentation_url,
-      const std::string& presentation_id,
-      mojo::PendingReceiver<mojom::MirroringServiceHost> receiver);
-
   // |source_media_id| indicates the mirroring source.
   explicit CastMirroringServiceHost(content::DesktopMediaID source_media_id);
 
@@ -71,14 +57,13 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
 
   ~CastMirroringServiceHost() override;
 
-  // mojom::MirroringServiceHost implementation.
+  // MirroringServiceHost implementation.
   void Start(mojom::SessionParametersPtr session_params,
              mojo::PendingRemote<mojom::SessionObserver> observer,
              mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel,
              mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel,
              const std::string& sink_name) override;
-  void GetTabSourceId(
-      GetTabSourceIdCallback get_tab_source_id_callback) override;
+  absl::optional<int> GetTabSourceId() const override;
 
  private:
   friend class CastMirroringServiceHostBrowserTest;
@@ -86,6 +71,10 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
                            TestGetClampedResolution);
   friend class CastV2PerformanceTest;
   FRIEND_TEST_ALL_PREFIXES(CastV2PerformanceTest, Performance);
+  friend class CastMirroringServiceHostFactory;
+
+  static content::DesktopMediaID BuildMediaIdForWebContents(
+      content::WebContents* contents);
 
   static gfx::Size GetCaptureResolutionConstraint();
   // Clamp resolution constraint to the screen size.
@@ -132,7 +121,6 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
   // used for metrics collection.
   void RecordTabUIUsageMetricsIfNeededAndReset();
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // OffscreenTab::Owner implementation.
   void DestroyTab(OffscreenTab* tab) override;
 
@@ -140,7 +128,6 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
   void OpenOffscreenTab(content::BrowserContext* context,
                         const GURL& presentation_url,
                         const std::string& presentation_id);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Describes the media source for this mirroring session.
   content::DesktopMediaID source_media_id_;
@@ -168,9 +155,7 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
   // of |media_stream_ui_|.
   std::unique_ptr<content::MediaStreamUI> media_stream_ui_;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<OffscreenTab> offscreen_tab_;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   const bool tab_switching_ui_enabled_;
 

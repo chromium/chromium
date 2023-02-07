@@ -102,9 +102,8 @@ class MediaSource {
                                        media::AudioCodec audio_codec);
 
   // Creates a media source for a specific desktop.
-  // |registered_desktop_stream_id| is the string returned by
-  // content::DesktopStreamsRegistry::RegisterStream().
-  static MediaSource ForDesktop(const std::string& registered_desktop_stream_id,
+  // `desktop_media_id` is the string representing content::DesktopMediaID.
+  static MediaSource ForDesktop(const std::string& desktop_media_id,
                                 bool with_audio);
 
   // Creates a media source representing a yet-to-be-chosen desktop, screen or
@@ -136,9 +135,8 @@ class MediaSource {
   // non-RemotePlayback sources or invalid formats.
   absl::optional<int> TabIdFromRemotePlaybackSource() const;
 
-  // When this source was created by ForDesktop(), returns the stream ID to pass
-  // to content::DesktopStreamsRegistry::RequestMediaForStreamId(). Otherwise,
-  // returns absl::nullopt.
+  // When this source was created by ForDesktop(), returns the string
+  // representing content::DesktopMediaID. Otherwise, returns absl::nullopt.
   absl::optional<std::string> DesktopStreamId() const;
 
   // Returns true if this source represents desktop capture that also provides

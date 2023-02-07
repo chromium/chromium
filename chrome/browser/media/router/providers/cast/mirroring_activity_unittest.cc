@@ -71,7 +71,23 @@ class MockCastSessionTrackerObserver : public CastSessionTracker::Observer {
                int frame_tree_node_id));
 };
 
-class MockMirroringServiceHost : public mirroring::mojom::MirroringServiceHost {
+class MockMirroringServiceHostFactory
+    : public mirroring::MirroringServiceHostFactory {
+ public:
+  MOCK_METHOD(std::unique_ptr<mirroring::MirroringServiceHost>,
+              GetForTab,
+              (int32_t frame_tree_node_id));
+  MOCK_METHOD(std::unique_ptr<mirroring::MirroringServiceHost>,
+              GetForDesktop,
+              (const absl::optional<std::string>& media_id));
+  MOCK_METHOD(std::unique_ptr<mirroring::MirroringServiceHost>,
+              GetForOffscreenTab,
+              (const GURL& presentation_url,
+               const std::string& presentation_id,
+               int32_t frame_tree_node_id));
+};
+
+class MockMirroringServiceHost : public mirroring::MirroringServiceHost {
  public:
   MOCK_METHOD(void,
               Start,
@@ -82,7 +98,7 @@ class MockMirroringServiceHost : public mirroring::mojom::MirroringServiceHost {
                mojo::PendingReceiver<mirroring::mojom::CastMessageChannel>
                    inbound_channel,
                const std::string& sink_name));
-  MOCK_METHOD(void, GetTabSourceId, (GetTabSourceIdCallback callback));
+  MOCK_METHOD(absl::optional<int>, GetTabSourceId, (), (const));
 };
 
 class MockCastMessageChannel : public mirroring::mojom::CastMessageChannel {
@@ -100,20 +116,21 @@ class MirroringActivityTest
     CastActivityTestBase::SetUp();
 
     auto make_mirroring_service =
-        [this](mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost>
-                   receiver) {
-          ASSERT_FALSE(mirroring_service_);
-          auto mirroring_service = std::make_unique<MockMirroringServiceHost>();
-          mirroring_service_ = mirroring_service.get();
-          mojo::MakeSelfOwnedReceiver(std::move(mirroring_service),
-                                      std::move(receiver));
-        };
-    ON_CALL(media_router_, GetMirroringServiceHostForDesktop)
-        .WillByDefault(WithArg<1>(make_mirroring_service));
-    ON_CALL(media_router_, GetMirroringServiceHostForTab)
-        .WillByDefault(WithArg<1>(make_mirroring_service));
-    ON_CALL(media_router_, GetMirroringServiceHostForOffscreenTab)
-        .WillByDefault(WithArg<2>(make_mirroring_service));
+        [this]() -> std::unique_ptr<MockMirroringServiceHost> {
+      if (!mirroring_service_) {
+        auto mirroring_service = std::make_unique<MockMirroringServiceHost>();
+        mirroring_service_ = mirroring_service.get();
+        return mirroring_service;
+      }
+      return nullptr;
+    };
+
+    ON_CALL(mirroring_service_host_factory_, GetForTab)
+        .WillByDefault(make_mirroring_service);
+    ON_CALL(mirroring_service_host_factory_, GetForDesktop)
+        .WillByDefault(make_mirroring_service);
+    ON_CALL(mirroring_service_host_factory_, GetForOffscreenTab)
+        .WillByDefault(make_mirroring_service);
   }
 
   void MakeActivity() { MakeActivity(MediaSource::ForTab(kTabId)); }
@@ -133,6 +150,8 @@ class MirroringActivityTest
         cast_data, on_stop_.Get());
 
     activity_->CreateMojoBindings(&media_router_);
+    activity_->CreateMirroringServiceHost(&mirroring_service_host_factory_);
+    RunUntilIdle();
 
     if (route_is_local_) {
       EXPECT_CALL(*mirroring_service_, Start)
@@ -158,6 +177,7 @@ class MirroringActivityTest
   bool route_is_local_ = true;
   raw_ptr<MockCastMessageChannel> channel_to_service_ = nullptr;
   raw_ptr<MockMirroringServiceHost> mirroring_service_ = nullptr;
+  NiceMock<MockMirroringServiceHostFactory> mirroring_service_host_factory_;
   NiceMock<MockMojoMediaRouter> media_router_;
   base::MockCallback<MirroringActivity::OnStopCallback> on_stop_;
   std::unique_ptr<MirroringActivity> activity_;
@@ -170,8 +190,8 @@ INSTANTIATE_TEST_SUITE_P(Namespaces,
 
 TEST_F(MirroringActivityTest, MirrorDesktop) {
   base::HistogramTester uma_recorder;
-  EXPECT_CALL(media_router_,
-              GetMirroringServiceHostForDesktop(kDesktopMediaId, _));
+  EXPECT_CALL(mirroring_service_host_factory_,
+              GetForDesktop(absl::optional<std::string>(kDesktopMediaId)));
   MediaSource source = MediaSource::ForDesktop(kDesktopMediaId, true);
   ASSERT_TRUE(source.IsDesktopMirroringSource());
   MakeActivity(source);
@@ -188,8 +208,7 @@ TEST_F(MirroringActivityTest, MirrorDesktop) {
 
 TEST_F(MirroringActivityTest, MirrorTab) {
   base::HistogramTester uma_recorder;
-  EXPECT_CALL(media_router_,
-              GetMirroringServiceHostForTab(kFrameTreeNodeId, _));
+  EXPECT_CALL(mirroring_service_host_factory_, GetForTab(kFrameTreeNodeId));
   MediaSource source = MediaSource::ForTab(kTabId);
   ASSERT_TRUE(source.IsTabMirroringSource());
   MakeActivity(source);
@@ -206,8 +225,7 @@ TEST_F(MirroringActivityTest, MirrorTab) {
 
 TEST_F(MirroringActivityTest, CreateMojoBindingsForTabWithCastAppUrl) {
   base::HistogramTester uma_recorder;
-  EXPECT_CALL(media_router_,
-              GetMirroringServiceHostForTab(kFrameTreeNodeId, _));
+  EXPECT_CALL(mirroring_service_host_factory_, GetForTab(kFrameTreeNodeId));
   auto site_initiated_mirroring_source =
       CastMediaSource::ForSiteInitiatedMirroring();
   MediaSource source(site_initiated_mirroring_source->source_id());
@@ -228,8 +246,8 @@ TEST_F(MirroringActivityTest, MirrorOffscreenTab) {
   base::HistogramTester uma_recorder;
   static constexpr char kUrl[] = "http://wikipedia.org";
   GURL url(kUrl);
-  EXPECT_CALL(media_router_,
-              GetMirroringServiceHostForOffscreenTab(url, kPresentationId, _));
+  EXPECT_CALL(mirroring_service_host_factory_,
+              GetForOffscreenTab(url, kPresentationId, kFrameTreeNodeId));
   MediaSource source = MediaSource::ForPresentationUrl(url);
   ASSERT_FALSE(source.IsCastPresentationUrl());
   MakeActivity(source);
@@ -246,8 +264,7 @@ TEST_F(MirroringActivityTest, MirrorOffscreenTab) {
 
 TEST_F(MirroringActivityTest, MirrorAccessCode) {
   base::HistogramTester uma_recorder;
-  EXPECT_CALL(media_router_,
-              GetMirroringServiceHostForTab(kFrameTreeNodeId, _));
+  EXPECT_CALL(mirroring_service_host_factory_, GetForTab(kFrameTreeNodeId));
   MediaSource source = MediaSource::ForTab(kTabId);
   ASSERT_TRUE(source.IsTabMirroringSource());
   MakeActivity(source, kFrameTreeNodeId,
@@ -468,24 +485,24 @@ TEST_F(MirroringActivityTest, OnSourceChanged) {
   // A random int indicating the new tab source.
   const int new_tab_source = 3;
 
-  EXPECT_CALL(*mirroring_service_, GetTabSourceId(_))
-      .WillOnce([](MockMirroringServiceHost::GetTabSourceIdCallback callback) {
-        std::move(callback).Run(new_tab_source);
-      });
-
   EXPECT_CALL(session_tracker_observer_,
               OnSourceChanged(kRouteId, kFrameTreeNodeId, new_tab_source));
 
+  EXPECT_CALL(*mirroring_service_, GetTabSourceId())
+      .WillOnce(testing::Return(new_tab_source));
+
   EXPECT_EQ(activity_->frame_tree_node_id_, kFrameTreeNodeId);
   activity_->OnSourceChanged();
-  RunUntilIdle();
   EXPECT_EQ(activity_->frame_tree_node_id_, new_tab_source);
   testing::Mock::VerifyAndClearExpectations(mirroring_service_);
   testing::Mock::VerifyAndClearExpectations(&session_tracker_observer_);
 
-  // Nothing should happen as -1 is invalid value for tab source.
-  activity_->UpdateSourceTab(-1);
+  // Nothing should happen as no value was returned for tab source.
+  EXPECT_CALL(*mirroring_service_, GetTabSourceId())
+      .WillOnce(testing::Return(absl::nullopt));
+  activity_->OnSourceChanged();
   EXPECT_EQ(activity_->frame_tree_node_id_, new_tab_source);
+  testing::Mock::VerifyAndClearExpectations(mirroring_service_);
 }
 
 }  // namespace media_router

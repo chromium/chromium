@@ -130,19 +130,6 @@ bool IsAccessCodeCastTabSwitchingUIEnabled(
              Profile::FromBrowserContext(web_contents->GetBrowserContext()));
 }
 
-content::DesktopMediaID BuildMediaIdForWebContents(
-    content::WebContents* contents) {
-  content::DesktopMediaID media_id;
-  if (!contents)
-    return media_id;
-  media_id.type = content::DesktopMediaID::TYPE_WEB_CONTENTS;
-  media_id.web_contents_id = content::WebContentsMediaCaptureId(
-      contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
-      contents->GetPrimaryMainFrame()->GetRoutingID(),
-      true /* disable_local_echo */);
-  return media_id;
-}
-
 // Returns the size of the primary display in pixels, or absl::nullopt if it
 // cannot be determined.
 absl::optional<gfx::Size> GetScreenResolution() {
@@ -155,42 +142,6 @@ absl::optional<gfx::Size> GetScreenResolution() {
 }
 
 }  // namespace
-
-// static
-void CastMirroringServiceHost::GetForTab(
-    content::WebContents* target_contents,
-    mojo::PendingReceiver<mojom::MirroringServiceHost> receiver) {
-  if (target_contents) {
-    const content::DesktopMediaID media_id =
-        BuildMediaIdForWebContents(target_contents);
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<CastMirroringServiceHost>(media_id),
-        std::move(receiver));
-  }
-}
-
-// static
-void CastMirroringServiceHost::GetForDesktop(
-    const content::DesktopMediaID& media_id,
-    mojo::PendingReceiver<mojom::MirroringServiceHost> receiver) {
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<CastMirroringServiceHost>(media_id),
-      std::move(receiver));
-}
-
-// static
-void CastMirroringServiceHost::GetForOffscreenTab(
-    content::BrowserContext* context,
-    const GURL& presentation_url,
-    const std::string& presentation_id,
-    mojo::PendingReceiver<mojom::MirroringServiceHost> receiver) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  auto host =
-      std::make_unique<CastMirroringServiceHost>(content::DesktopMediaID());
-  host->OpenOffscreenTab(context, presentation_url, presentation_id);
-  mojo::MakeSelfOwnedReceiver(std::move(host), std::move(receiver));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-}
 
 CastMirroringServiceHost::CastMirroringServiceHost(
     content::DesktopMediaID source_media_id)
@@ -252,14 +203,26 @@ void CastMirroringServiceHost::Start(
   ShowCaptureIndicator();
 }
 
-void CastMirroringServiceHost::GetTabSourceId(
-    GetTabSourceIdCallback get_tab_source_id_callback) {
+absl::optional<int> CastMirroringServiceHost::GetTabSourceId() const {
   if (web_contents()) {
-    std::move(get_tab_source_id_callback)
-        .Run(web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId());
-  } else {
-    std::move(get_tab_source_id_callback).Run(-1);
+    return web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId();
   }
+  return absl::nullopt;
+}
+
+// static
+content::DesktopMediaID CastMirroringServiceHost::BuildMediaIdForWebContents(
+    content::WebContents* contents) {
+  content::DesktopMediaID media_id;
+  if (!contents) {
+    return media_id;
+  }
+  media_id.type = content::DesktopMediaID::TYPE_WEB_CONTENTS;
+  media_id.web_contents_id = content::WebContentsMediaCaptureId(
+      contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      contents->GetPrimaryMainFrame()->GetRoutingID(),
+      true /* disable_local_echo */);
+  return media_id;
 }
 
 // static
@@ -587,7 +550,6 @@ void CastMirroringServiceHost::RecordTabUIUsageMetricsIfNeededAndReset() {
   tab_switching_count_.reset();
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 void CastMirroringServiceHost::DestroyTab(OffscreenTab* tab) {
   if (offscreen_tab_ && (offscreen_tab_.get() == tab))
     offscreen_tab_.reset();
@@ -605,6 +567,5 @@ void CastMirroringServiceHost::OpenOffscreenTab(
   DCHECK_EQ(content::DesktopMediaID::TYPE_WEB_CONTENTS, source_media_id_.type);
   Observe(offscreen_tab_->web_contents());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace mirroring

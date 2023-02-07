@@ -21,6 +21,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/media/cast_mirroring_service_host_factory.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
@@ -54,6 +55,7 @@ using blink::mojom::PresentationConnectionMessagePtr;
 using cast_channel::Result;
 using media_router::mojom::MediaRouteProvider;
 using media_router::mojom::MediaRouter;
+using mirroring::MirroringServiceHostFactory;
 using mirroring::mojom::SessionError;
 using mirroring::mojom::SessionParameters;
 using mirroring::mojom::SessionType;
@@ -233,36 +235,59 @@ MirroringActivity::~MirroringActivity() {
     base::UmaHistogramLongTimes(kHistogramSessionLengthAccessCode,
                                 cast_duration);
   }
+
+  content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, std::move(host_));
 }
 
 void MirroringActivity::CreateMojoBindings(mojom::MediaRouter* media_router) {
+  media_router->GetLogger(logger_.BindNewPipeAndPassReceiver());
+
+  DCHECK(!channel_to_service_receiver_);
+  channel_to_service_receiver_ =
+      channel_to_service_.BindNewPipeAndPassReceiver();
+}
+
+void MirroringActivity::CreateMirroringServiceHost(
+    mirroring::MirroringServiceHostFactory* host_factory_for_test) {
   if (!mirroring_type_)
     return;
+
+  // base::Unretained use is fine, since it is used with a
+  // base::NoDestructor<mirroring::CastMirroringServiceHostFactory> instance.
+  auto host_factory = base::Unretained(
+      host_factory_for_test
+          ? host_factory_for_test
+          : &mirroring::CastMirroringServiceHostFactory::GetInstance());
+
+  base::OnceCallback<std::unique_ptr<mirroring::MirroringServiceHost>()>
+      host_creation_task;
 
   // Get a reference to the mirroring service host.
   switch (*mirroring_type_) {
     case MirroringType::kDesktop: {
       auto stream_id = route_.media_source().DesktopStreamId();
       DCHECK(stream_id);
-      media_router->GetMirroringServiceHostForDesktop(
-          *stream_id, host_.BindNewPipeAndPassReceiver());
+      host_creation_task = base::BindOnce(
+          &MirroringServiceHostFactory::GetForDesktop, host_factory, stream_id);
       break;
     }
     case MirroringType::kTab:
-      media_router->GetMirroringServiceHostForTab(
-          frame_tree_node_id_, host_.BindNewPipeAndPassReceiver());
+      host_creation_task =
+          base::BindOnce(&MirroringServiceHostFactory::GetForTab, host_factory,
+                         frame_tree_node_id_);
       break;
     case MirroringType::kOffscreenTab:
-      media_router->GetMirroringServiceHostForOffscreenTab(
-          route_.media_source().url(), route_.presentation_id(),
-          host_.BindNewPipeAndPassReceiver());
+      host_creation_task =
+          base::BindOnce(&MirroringServiceHostFactory::GetForOffscreenTab,
+                         host_factory, route_.media_source().url(),
+                         route_.presentation_id(), frame_tree_node_id_);
       break;
   }
-  media_router->GetLogger(logger_.BindNewPipeAndPassReceiver());
 
-  DCHECK(!channel_to_service_receiver_);
-  channel_to_service_receiver_ =
-      channel_to_service_.BindNewPipeAndPassReceiver();
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, std::move(host_creation_task)
+                     .Then(base::BindOnce(&MirroringActivity::set_host,
+                                          weak_ptr_factory_.GetWeakPtr())));
 }
 
 void MirroringActivity::OnError(SessionError error) {
@@ -338,17 +363,15 @@ void MirroringActivity::LogErrorMessage(const std::string& message) {
 }
 
 void MirroringActivity::OnSourceChanged() {
-  host_->GetTabSourceId(base::BindOnce(&MirroringActivity::UpdateSourceTab,
-                                       weak_ptr_factory_.GetWeakPtr()));
-}
-
-void MirroringActivity::UpdateSourceTab(int32_t frame_tree_node_id) {
-  if (frame_tree_node_id == -1 || frame_tree_node_id == frame_tree_node_id_)
+  DCHECK(host_);
+  absl::optional<int> frame_tree_node_id = host_->GetTabSourceId();
+  if (!frame_tree_node_id || frame_tree_node_id == frame_tree_node_id_) {
     return;
+  }
 
   session_tracker_->OnSourceChanged(route_.media_route_id(),
-                                    frame_tree_node_id_, frame_tree_node_id);
-  frame_tree_node_id_ = frame_tree_node_id;
+                                    frame_tree_node_id_, *frame_tree_node_id);
+  frame_tree_node_id_ = *frame_tree_node_id;
 
   // Posting to UI thread, as while obtaining WebContents instance through
   // `FromFrameTreeNodeId()`, a call to `GloballyFindByID()` would happen and
@@ -535,16 +558,20 @@ void MirroringActivity::OnSessionSet(const CastSession& session) {
   // If this fails, it's probably because CreateMojoBindings() hasn't been
   // called.
   DCHECK(channel_to_service_receiver_);
-
-  host_->Start(
-      SessionParameters::New(
-          session_type, cast_data_.ip_endpoint.address(), cast_data_.model_name,
-          sink_.sink().name(), session.destination_id(),
-          message_handler_->source_id(), cast_source->target_playout_delay(),
-          route().media_source().IsRemotePlaybackSource(),
-          ShouldForceLetterboxing(cast_data_.model_name)),
-      std::move(observer_remote), std::move(channel_remote),
-      std::move(channel_to_service_receiver_), route_.media_sink_name());
+  DCHECK(host_);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &mirroring::MirroringServiceHost::Start, host_->GetWeakPtr(),
+          SessionParameters::New(
+              session_type, cast_data_.ip_endpoint.address(),
+              cast_data_.model_name, sink_.sink().name(),
+              session.destination_id(), message_handler_->source_id(),
+              cast_source->target_playout_delay(),
+              route().media_source().IsRemotePlaybackSource(),
+              ShouldForceLetterboxing(cast_data_.model_name)),
+          std::move(observer_remote), std::move(channel_remote),
+          std::move(channel_to_service_receiver_), route_.media_sink_name()));
 }
 
 void MirroringActivity::StopMirroring() {
