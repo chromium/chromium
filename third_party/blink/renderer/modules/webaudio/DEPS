@@ -7,7 +7,9 @@ include_rules = [
     "+third_party/blink/renderer/modules/event_target_modules.h",
     "+third_party/blink/renderer/modules/modules_export.h",
     "+third_party/blink/renderer/modules/mediastream",
+    "+third_party/blink/renderer/modules/peerconnection",
     "+third_party/blink/renderer/modules/permissions",
     "+third_party/blink/renderer/modules/webaudio",
+    "+third_party/blink/renderer/modules/webrtc",
     "+third_party/blink/renderer/modules/worklet",
 ]

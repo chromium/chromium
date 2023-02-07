@@ -153,6 +153,8 @@ void WebRtcAudioDeviceImpl::SetOutputDeviceForAec(
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   SendLogMessage(base::StringPrintf("%s({output_device_id=%s})", __func__,
                                     output_device_id.Utf8().c_str()));
+  DVLOG(1) << __func__ << " current id=[" << output_device_id_for_aec_
+           << "], new id [" << output_device_id << "]";
   output_device_id_for_aec_ = output_device_id;
   base::AutoLock lock(lock_);
   for (auto* capturer : capturers_) {

@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
+#include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_listener.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_sink_info.h"
@@ -32,6 +33,7 @@
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_destination_node.h"
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_source_node.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_node.h"
+#include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
@@ -49,6 +51,10 @@
 namespace blink {
 
 namespace {
+
+BASE_FEATURE(kWebAudioSetSinkEchoCancellation,
+             "WebAudioSetSinkEchoCancellation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Number of AudioContexts still alive.  It's incremented when an
 // AudioContext is created and decremented when the context is closed.
@@ -236,6 +242,9 @@ AudioContext::AudioContext(Document& document,
       media_device_service_receiver_(this, document.GetExecutionContext()) {
   SendLogMessage(GetAudioContextLogString(latency_hint, sample_rate));
 
+  // TODO(http://crbug.com/1410553) update the echo cancellation reference
+  // if the client explicitly specified the sink and there are no issuess
+  // accessing it.
   destination_node_ = RealtimeAudioDestinationNode::Create(
       this, sink_descriptor_, latency_hint, sample_rate);
 
@@ -982,6 +991,19 @@ double AudioContext::GetOutputLatencyQuantizingFactor() const {
 void AudioContext::NotifySetSinkIdIsDone(
     WebAudioSinkDescriptor pending_sink_descriptor) {
   sink_descriptor_ = pending_sink_descriptor;
+  if (sink_descriptor_.Type() ==
+          WebAudioSinkDescriptor::AudioSinkType::kAudible &&
+      base::FeatureList::IsEnabled(kWebAudioSetSinkEchoCancellation)) {
+    // Note: in order to not break echo cancellation of PeerConnection audio, we
+    // are heavily relying on the fact that setSinkId() path of AudioContext is
+    // not triggered unless the sink ID is explicitly specified. I.e. we assume
+    // we don't end up here when AudioContext is being created by default.
+    if (auto* execution_context = GetExecutionContext()) {
+      PeerConnectionDependencyFactory::From(*execution_context)
+          .GetWebRtcAudioDevice()
+          ->SetOutputDeviceForAec(sink_descriptor_.SinkId());
+    }
+  }
   UpdateV8SinkId();
   DispatchEvent(*Event::Create(event_type_names::kSinkchange));
 }
