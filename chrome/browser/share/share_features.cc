@@ -11,9 +11,6 @@ namespace share {
 BASE_FEATURE(kScreenshotsForAndroidV2,
              "ScreenshotsForAndroidV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kSharingDesktopScreenshotsEdit,
-             "SharingDesktopScreenshotsEdit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUpcomingSharingFeatures,
              "UpcomingSharingFeatures",
              base::FEATURE_DISABLED_BY_DEFAULT);

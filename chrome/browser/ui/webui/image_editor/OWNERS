@@ -1,4 +1,0 @@
-file://components/send_tab_to_self/OWNERS
-
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS

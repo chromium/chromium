@@ -6,7 +6,6 @@
 
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/webui/feed/feed_ui_config.h"
-#include "chrome/browser/ui/webui/image_editor/image_editor_untrusted_ui.h"
 #include "components/lens/buildflags.h"
 #include "content/public/browser/webui_config_map.h"
 
@@ -20,8 +19,6 @@ void RegisterDesktopChromeUntrustedWebUIConfigs() {
   // Add untrusted `WebUIConfig`s common across all platforms excluding Android
   // here.
   map.AddUntrustedWebUIConfig(std::make_unique<feed::FeedUIConfig>());
-  map.AddUntrustedWebUIConfig(
-      std::make_unique<image_editor::ImageEditorUntrustedUIConfig>());
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   map.AddUntrustedWebUIConfig(std::make_unique<lens::LensUntrustedUIConfig>());
 #endif

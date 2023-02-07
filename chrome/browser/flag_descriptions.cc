@@ -4393,11 +4393,6 @@ const char kSCTAuditingDescription[] =
     "Enables SCT auditing for users who have opted in to Safe Browsing "
     "Extended Reporting.";
 
-const char kSharingDesktopScreenshotsEditName[] =
-    "Desktop Screenshots Edit Mode";
-const char kSharingDesktopScreenshotsEditDescription[] =
-    "Enables an edit flow for users who create screenshots on desktop";
-
 const char kSharingDesktopSharePreviewName[] = "Desktop share hub preview";
 const char kSharingDesktopSharePreviewDescription[] =
     "Adds a preview section to the desktop sharing hub to make it clearer what "

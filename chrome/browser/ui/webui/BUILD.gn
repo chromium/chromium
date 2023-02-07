@@ -35,10 +35,7 @@ source_set("configs") {
       "chrome_untrusted_web_ui_configs_desktop.h",
     ]
 
-    deps += [
-      "//build:branding_buildflags",
-      "//chrome/browser/ui/webui/image_editor:image_editor_ui",
-    ]
+    deps += [ "//build:branding_buildflags" ]
   }
 
   # Includes Ash Chrome and Lacros Chrome

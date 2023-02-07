@@ -34,8 +34,6 @@ group("resources") {
       "feedback:resources",
       "gaia_auth_host:resources",
       "history:resources",
-      "image_editor:trusted_resources",
-      "image_editor:untrusted_resources",
       "inline_login:resources",
       "management:resources",
       "new_tab_page:resources",

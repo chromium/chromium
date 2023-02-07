@@ -1540,9 +1540,6 @@ extern const char kSidePanelWebViewDescription[];
 extern const char kSharingDesktopScreenshotsName[];
 extern const char kSharingDesktopScreenshotsDescription[];
 
-extern const char kSharingDesktopScreenshotsEditName[];
-extern const char kSharingDesktopScreenshotsEditDescription[];
-
 extern const char kShelfDragToPinName[];
 extern const char kShelfDragToPinDescription[];
 
