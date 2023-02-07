@@ -16,7 +16,19 @@ namespace spellcheck {
 bool UseBrowserSpellChecker();
 
 #if BUILDFLAG(IS_WIN)
-BASE_DECLARE_FEATURE(kWinUseBrowserSpellChecker);
+// Makes UseBrowserSpellChecker() return false in a scope.
+//
+// The non-browser spell checker (Hunspell) is used when the user hasn't
+// installed the required Language Packs in the Windows settings. Disabling the
+// browser spell checker allows testing it.
+class ScopedDisableBrowserSpellCheckerForTesting {
+ public:
+  ScopedDisableBrowserSpellCheckerForTesting();
+  ~ScopedDisableBrowserSpellCheckerForTesting();
+
+ private:
+  const bool previous_value_;
+};
 
 // If the kWinDelaySpellcheckServiceInit feature flag is enabled, don't
 // initialize the spellcheck dictionaries when the SpellcheckService is
@@ -30,11 +42,11 @@ BASE_DECLARE_FEATURE(kWinUseBrowserSpellChecker);
 // dictionaries. The command line for launching the browser with Windows hybrid
 // spellchecking enabled but no initialization of the spellcheck service is:
 //    chrome
-//    --enable-features=WinUseBrowserSpellChecker,WinDelaySpellcheckServiceInit
+//    --enable-features=WinDelaySpellcheckServiceInit
 // and if instantiation of the spellcheck service needs to be completely
 // disabled:
 //     chrome
-//    --enable-features=WinUseBrowserSpellChecker,WinDelaySpellcheckServiceInit
+//    --enable-features=WinDelaySpellcheckServiceInit
 //    --disable-sync-types="Dictionary"
 BASE_DECLARE_FEATURE(kWinDelaySpellcheckServiceInit);
 

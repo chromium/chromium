@@ -50,7 +50,8 @@ class LanguageSettingsPrivateDelegateTest
 #if BUILDFLAG(IS_WIN)
     // Tests were designed assuming Hunspell dictionary used and may fail when
     // Windows spellcheck is enabled by default.
-    feature_list_.InitAndDisableFeature(spellcheck::kWinUseBrowserSpellChecker);
+    spellcheck::ScopedDisableBrowserSpellCheckerForTesting
+        disable_browser_spell_checker;
 #endif  // BUILDFLAG(IS_WIN)
 
     base::Value::List language_codes;

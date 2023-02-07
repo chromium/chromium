@@ -106,10 +106,8 @@ class WindowsSpellCheckerTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker,
-                              spellcheck::kWinRetrieveSuggestionsOnlyOnDemand},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(
+        spellcheck::kWinRetrieveSuggestionsOnlyOnDemand);
   }
 
   void RunRequestTextCheckTest(const RequestTextCheckTestCase& test_case);
@@ -191,10 +189,8 @@ class WindowsSpellCheckerRequestTextCheckWithSuggestionsTest
   void SetUp() override {
     // Want to maintain test coverage for requesting suggestions on call to
     // RequestTextCheck.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker},
-        /*disabled_features=*/{
-            spellcheck::kWinRetrieveSuggestionsOnlyOnDemand});
+    feature_list_.InitAndDisableFeature(
+        spellcheck::kWinRetrieveSuggestionsOnlyOnDemand);
   }
 };
 

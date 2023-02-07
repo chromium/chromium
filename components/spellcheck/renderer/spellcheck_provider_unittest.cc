@@ -67,9 +67,8 @@ class HybridSpellCheckTest
 
   void SetUp() override {
     // Don't delay initialization of the SpellcheckService on browser launch.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker},
-        /*disabled_features=*/{spellcheck::kWinDelaySpellcheckServiceInit});
+    feature_list_.InitAndDisableFeature(
+        spellcheck::kWinDelaySpellcheckServiceInit);
   }
 
   void RunShouldUseBrowserSpellCheckOnlyWhenNeededTest();
@@ -89,10 +88,8 @@ class HybridSpellCheckTestDelayInit : public HybridSpellCheckTest {
 
   void SetUp() override {
     // Don't initialize the SpellcheckService on browser launch.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker,
-                              spellcheck::kWinDelaySpellcheckServiceInit},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(
+        spellcheck::kWinDelaySpellcheckServiceInit);
   }
 };
 
@@ -163,8 +160,8 @@ TEST_F(SpellCheckProviderCacheTest, ResetCacheOnCustomDictionaryUpdate) {
 // Tests that the SpellCheckProvider does not call into the native spell checker
 // on Windows when the native spell checker flags are disabled.
 TEST_F(SpellCheckProviderTest, ShouldNotUseBrowserSpellCheck) {
-  base::test::ScopedFeatureList local_feature;
-  local_feature.InitAndDisableFeature(spellcheck::kWinUseBrowserSpellChecker);
+  spellcheck::ScopedDisableBrowserSpellCheckerForTesting
+      disable_browser_spell_checker;
 
   FakeTextCheckingResult completion;
   std::u16string text = u"This is a test";
@@ -581,8 +578,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(CombineSpellCheckResultsTest, ShouldCorrectlyCombineHybridResults) {
   const auto& test_case = GetParam();
-  base::test::ScopedFeatureList local_features;
-  local_features.InitAndEnableFeature(spellcheck::kWinUseBrowserSpellChecker);
   const bool has_browser_check = !test_case.browser_locale.empty();
   const bool has_renderer_check = !test_case.renderer_locale.empty();
 

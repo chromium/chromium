@@ -109,12 +109,7 @@ class LanguageSettingsPrivateApiTest : public ExtensionServiceTestBase {
  protected:
   void RunGetLanguageListTest();
 
-  virtual void InitFeatures() {
-#if BUILDFLAG(IS_WIN)
-    // Force Windows hybrid spellcheck to be enabled.
-    feature_list_.InitAndEnableFeature(spellcheck::kWinUseBrowserSpellChecker);
-#endif  // BUILDFLAG(IS_WIN)
-  }
+  virtual void InitFeatures() {}
 
 #if BUILDFLAG(IS_WIN)
   virtual void AddSpellcheckLanguagesForTesting(
@@ -302,12 +297,10 @@ class LanguageSettingsPrivateApiGetLanguageListTest
  protected:
   void InitFeatures() override {
 #if BUILDFLAG(IS_WIN)
-    // Force Windows hybrid spellcheck to be enabled, and disable the delayed
-    // init feature since that case is tested in
+    // Disable the delayed init feature since that case is tested in
     // LanguageSettingsPrivateApiTestDelayInit below.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker},
-        /*disabled_features=*/{spellcheck::kWinDelaySpellcheckServiceInit});
+    feature_list_.InitAndDisableFeature(
+        spellcheck::kWinDelaySpellcheckServiceInit);
 #endif  // BUILDFLAG(IS_WIN)
   }
 };
@@ -722,10 +715,8 @@ class LanguageSettingsPrivateApiTestDelayInit
   void InitFeatures() override {
     // Force Windows hybrid spellcheck and delayed initialization of the
     // spellcheck service to be enabled.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker,
-                              spellcheck::kWinDelaySpellcheckServiceInit},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(
+        spellcheck::kWinDelaySpellcheckServiceInit);
   }
 
   void AddSpellcheckLanguagesForTesting(

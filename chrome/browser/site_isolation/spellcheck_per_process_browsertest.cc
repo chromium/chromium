@@ -273,9 +273,8 @@ class ChromeSitePerProcessSpellCheckTest : public ChromeSitePerProcessTest {
     // When delayed initialization of the spellcheck service is enabled by
     // default, want to maintain test coverage for the older code path that
     // initializes spellcheck on browser startup.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker},
-        /*disabled_features=*/{spellcheck::kWinDelaySpellcheckServiceInit});
+    feature_list_.InitAndDisableFeature(
+        spellcheck::kWinDelaySpellcheckServiceInit);
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
     ChromeSitePerProcessTest::SetUp();
@@ -395,10 +394,8 @@ class ChromeSitePerProcessSpellCheckTestDelayInit
 
   void SetUp() override {
     // Don't initialize the SpellcheckService on browser launch.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker,
-                              spellcheck::kWinDelaySpellcheckServiceInit},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(
+        spellcheck::kWinDelaySpellcheckServiceInit);
 
     ChromeSitePerProcessTest::SetUp();
   }

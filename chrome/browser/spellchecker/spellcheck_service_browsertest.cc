@@ -52,6 +52,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -67,24 +68,22 @@ using content::RenderProcessHost;
 class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
                                      public spellcheck::mojom::SpellChecker {
  public:
+#if BUILDFLAG(IS_WIN)
+  explicit SpellcheckServiceBrowserTest(
+      bool use_browser_spell_checker = false) {
+    if (!use_browser_spell_checker) {
+      // Tests were designed assuming Hunspell dictionary used and many fail
+      // when Windows spellcheck is enabled.
+      disable_browser_spell_checker_.emplace();
+    }
+  }
+#else
   SpellcheckServiceBrowserTest() = default;
+#endif
 
   SpellcheckServiceBrowserTest(const SpellcheckServiceBrowserTest&) = delete;
   SpellcheckServiceBrowserTest& operator=(const SpellcheckServiceBrowserTest&) =
       delete;
-
-#if BUILDFLAG(IS_WIN)
-  void SetUp() override {
-    // Tests were designed assuming Hunspell dictionary used and many fail when
-    // Windows spellcheck is enabled by default. The feature flag needs to be
-    // disabled in SetUp() instead of the constructor because the derived class
-    // SpellcheckServiceWindowsHybridBrowserTest overrides the base class
-    // behavior and sets the spellcheck::kWinUseBrowserSpellChecker feature
-    // flag. You can't use ScopedFeatureList to initialize a feature flag twice.
-    feature_list_.InitAndDisableFeature(spellcheck::kWinUseBrowserSpellChecker);
-    InProcessBrowserTest::SetUp();
-  }
-#endif  // BUILDFLAG(IS_WIN)
 
   void SetUpOnMainThread() override {
     renderer_ = std::make_unique<content::MockRenderProcessHost>(GetContext());
@@ -261,6 +260,11 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
+#if BUILDFLAG(IS_WIN)
+  absl::optional<spellcheck::ScopedDisableBrowserSpellCheckerForTesting>
+      disable_browser_spell_checker_;
+#endif
+
   // Mocked RenderProcessHost.
   std::unique_ptr<content::MockRenderProcessHost> renderer_;
 
@@ -697,12 +701,8 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
 class SpellcheckServiceWindowsHybridBrowserTest
     : public SpellcheckServiceBrowserTest {
  public:
-  SpellcheckServiceWindowsHybridBrowserTest() = default;
-
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(spellcheck::kWinUseBrowserSpellChecker);
-    InProcessBrowserTest::SetUp();
-  }
+  SpellcheckServiceWindowsHybridBrowserTest()
+      : SpellcheckServiceBrowserTest(/* use_browser_spell_checker=*/true) {}
 };
 
 IN_PROC_BROWSER_TEST_F(SpellcheckServiceWindowsHybridBrowserTest,
@@ -734,14 +734,13 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceWindowsHybridBrowserTest,
 class SpellcheckServiceWindowsHybridBrowserTestDelayInit
     : public SpellcheckServiceBrowserTest {
  public:
-  SpellcheckServiceWindowsHybridBrowserTestDelayInit() = default;
+  SpellcheckServiceWindowsHybridBrowserTestDelayInit()
+      : SpellcheckServiceBrowserTest(/* use_browser_spell_checker=*/true) {}
 
   void SetUp() override {
     // Don't initialize the SpellcheckService on browser launch.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker,
-                              spellcheck::kWinDelaySpellcheckServiceInit},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(
+        spellcheck::kWinDelaySpellcheckServiceInit);
 
     // Add command line switch that forces first run state, to test whether
     // primary preferred language has its spellcheck dictionary enabled by

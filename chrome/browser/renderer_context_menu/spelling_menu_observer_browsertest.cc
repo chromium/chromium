@@ -170,8 +170,7 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 SpellingMenuObserverTest::SpellingMenuObserverTest() {
   feature_list_.InitWithFeatures(
-      /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker,
-                            spellcheck::kWinRetrieveSuggestionsOnlyOnDemand},
+      /*enabled_features=*/{spellcheck::kWinRetrieveSuggestionsOnlyOnDemand},
       /*disabled_features=*/{spellcheck::kWinDelaySpellcheckServiceInit});
 }
 #else

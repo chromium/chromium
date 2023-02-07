@@ -34,9 +34,8 @@ class SpellCheckHostChromeImplWinBrowserTest : public InProcessBrowserTest {
 
   void SetUp() override {
     // Don't delay initialization of the SpellcheckService on browser launch.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker},
-        /*disabled_features=*/{spellcheck::kWinDelaySpellcheckServiceInit});
+    feature_list_.InitAndDisableFeature(
+        spellcheck::kWinDelaySpellcheckServiceInit);
     InProcessBrowserTest::SetUp();
   }
 
@@ -138,10 +137,8 @@ class SpellCheckHostChromeImplWinBrowserTestDelayInit
 
   void SetUp() override {
     // Don't initialize the SpellcheckService on browser launch.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker,
-                              spellcheck::kWinDelaySpellcheckServiceInit},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(
+        spellcheck::kWinDelaySpellcheckServiceInit);
     InProcessBrowserTest::SetUp();
   }
 
