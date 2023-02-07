@@ -81,6 +81,7 @@
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/context_menu_provider.h"
+#include "third_party/blink/renderer/core/page/dom_path_utils.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -481,6 +482,9 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   }
   data.link_url = result.AbsoluteLinkURL();
 
+  DomPathUtils dom_path_utils;
+  std::string dom_path = dom_path_utils.cssPath(result.InnerNode(), true);
+  LOG(ERROR) << "ContextMenuController::ShowContextMenu dom_path=" << dom_path;
   auto* html_element = DynamicTo<HTMLElement>(result.InnerNode());
   if (html_element) {
     data.title_text = html_element->title().Utf8();

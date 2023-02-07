@@ -16,6 +16,8 @@ blink_core_sources_page = [
   "context_menu_provider.h",
   "create_window.cc",
   "create_window.h",
+  "dom_path_utils.cc",
+  "dom_path_utils.h",
   "drag_actions.h",
   "drag_controller.cc",
   "drag_controller.h",
