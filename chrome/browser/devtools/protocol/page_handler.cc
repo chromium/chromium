@@ -72,7 +72,7 @@ protocol::Response PageHandler::Enable() {
 protocol::Response PageHandler::Disable() {
   enabled_ = false;
   ToggleAdBlocking(false /* enable */);
-  SetSPCTransactionMode(protocol::Page::SetSPCTransactionMode::ModeEnum::None);
+  SetSPCTransactionMode(protocol::Page::AutoResponseModeEnum::None);
   // Do not mark the command as handled. Let it fall through instead, so that
   // the handler in content gets a chance to process the command.
   return protocol::Response::FallThrough();
@@ -91,15 +91,13 @@ protocol::Response PageHandler::SetSPCTransactionMode(
     return protocol::Response::ServerError("No web contents to host a dialog.");
 
   payments::SPCTransactionMode spc_mode = payments::SPCTransactionMode::NONE;
-  if (mode == protocol::Page::SetSPCTransactionMode::ModeEnum::AutoAccept) {
+  if (mode == protocol::Page::AutoResponseModeEnum::AutoAccept) {
     spc_mode = payments::SPCTransactionMode::AUTOACCEPT;
-  } else if (mode ==
-             protocol::Page::SetSPCTransactionMode::ModeEnum::AutoReject) {
+  } else if (mode == protocol::Page::AutoResponseModeEnum::AutoReject) {
     spc_mode = payments::SPCTransactionMode::AUTOREJECT;
-  } else if (mode ==
-             protocol::Page::SetSPCTransactionMode::ModeEnum::AutoOptOut) {
+  } else if (mode == protocol::Page::AutoResponseModeEnum::AutoOptOut) {
     spc_mode = payments::SPCTransactionMode::AUTOOPTOUT;
-  } else if (mode != protocol::Page::SetSPCTransactionMode::ModeEnum::None) {
+  } else if (mode != protocol::Page::AutoResponseModeEnum::None) {
     return protocol::Response::ServerError("Unrecognized mode value");
   }
 
@@ -118,12 +116,11 @@ protocol::Response PageHandler::SetRPHRegistrationMode(
 
   custom_handlers::RphRegistrationMode rph_mode =
       custom_handlers::RphRegistrationMode::kNone;
-  if (mode == protocol::Page::SetRPHRegistrationMode::ModeEnum::Autoaccept) {
+  if (mode == protocol::Page::AutoResponseModeEnum::AutoAccept) {
     rph_mode = custom_handlers::RphRegistrationMode::kAutoAccept;
-  } else if (mode ==
-             protocol::Page::SetRPHRegistrationMode::ModeEnum::Autoreject) {
+  } else if (mode == protocol::Page::AutoResponseModeEnum::AutoReject) {
     rph_mode = custom_handlers::RphRegistrationMode::kAutoReject;
-  } else if (mode != protocol::Page::SetRPHRegistrationMode::ModeEnum::None) {
+  } else if (mode != protocol::Page::AutoResponseModeEnum::None) {
     return protocol::Response::ServerError("Unrecognized mode value");
   }
 

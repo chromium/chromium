@@ -719,7 +719,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
         self.GetHttpUrlForFile('/chromedirver/page_test.html'))
 
     # The command expect no results if succeeded.
-    result = self._driver.SetRPHRegistrationMode('autoaccept');
+    result = self._driver.SetRPHRegistrationMode('autoAccept');
     self.assertEqual({}, result)
 
   def testSwitchToWindow(self):

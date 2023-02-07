@@ -291,16 +291,24 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetRPHRegistrationMode) {
   EXPECT_EQ(custom_handlers::RphRegistrationMode::kNone,
             registry->registration_mode());
 
-  // Set an invalid value
+  // Set a value not defined in AutoResponseMode enum
+  base::Value::Dict params_invalid_enum;
+  params_invalid_enum.Set("mode", "accept");
+  SendCommandAsync("Page.setRPHRegistrationMode",
+                   std::move(params_invalid_enum));
+  EXPECT_EQ(custom_handlers::RphRegistrationMode::kNone,
+            registry->registration_mode());
+
+  // Set a invalid value, but defined in the AutoResponseMode enum
   base::Value::Dict params_invalid;
-  params_invalid.Set("mode", "accept");
+  params_invalid.Set("mode", "autoOptOut");
   SendCommandAsync("Page.setRPHRegistrationMode", std::move(params_invalid));
   EXPECT_EQ(custom_handlers::RphRegistrationMode::kNone,
             registry->registration_mode());
 
-  // Set an value value
+  // Set a valid value
   base::Value::Dict params;
-  params.Set("mode", "autoaccept");
+  params.Set("mode", "autoAccept");
   SendCommandAsync("Page.setRPHRegistrationMode", std::move(params));
   EXPECT_EQ(custom_handlers::RphRegistrationMode::kAutoAccept,
             registry->registration_mode());
