@@ -6993,3 +6993,6 @@ crbug.com/1001078 external/wpt/css/mediaqueries/mq-non-matching-lazy-load.html [
 
 crbug.com/1412910 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
 crbug.com/1412910 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
+
+# Sheriff 2023-02-07
+crbug.com/1413726 [ Mac10.15 ] http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
