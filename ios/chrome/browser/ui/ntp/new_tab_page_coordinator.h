@@ -11,6 +11,10 @@
 #import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_configuring.h"
 
+namespace web {
+class WebState;
+}
+
 @class BubblePresenter;
 @protocol NewTabPageControllerDelegate;
 @protocol ThumbStripSupporting;
@@ -34,6 +38,9 @@
 // ViewController associated with this coordinator.
 @property(nonatomic, strong, readonly) UIViewController* viewController;
 
+// Webstate associated with this coordinator.
+@property(nonatomic, assign) web::WebState* webState;
+
 // The toolbar delegate to pass to ContentSuggestionsCoordinator.
 @property(nonatomic, weak) id<NewTabPageControllerDelegate> toolbarDelegate;
 
@@ -53,10 +60,6 @@
 // Currently selected feed.
 @property(nonatomic, assign, readonly) FeedType selectedFeed;
 
-// Tracks the visibility of the NTP to report NTP usage metrics.
-// True if the NTP view is currently displayed to the user.
-@property(nonatomic, assign, readonly) BOOL visible;
-
 // Animates the NTP fakebox to the focused position and focuses the real
 // omnibox.
 - (void)focusFakebox;
@@ -73,11 +76,8 @@
 // Reloads the content of the NewTabPage. Does not do anything on Incognito.
 - (void)reload;
 
-// Called when the user navigates to the NTP.
-- (void)didNavigateToNTP;
-
-// Called when the user navigates away from the NTP.
-- (void)didNavigateAwayFromNTP;
+// Calls when the visibility of the NTP changes.
+- (void)ntpDidChangeVisibility:(BOOL)visible;
 
 // The location bar has lost focus.
 - (void)locationBarDidResignFirstResponder;

@@ -2669,9 +2669,15 @@ enum class ToolbarKind {
   NewTabPageCoordinator* NTPCoordinator = self.NTPCoordinator;
   DCHECK(NTPCoordinator);
   if (NTPHelper->IsActive()) {
-    [NTPCoordinator didNavigateToNTP];
+    [NTPCoordinator ntpDidChangeVisibility:YES];
+    NTPCoordinator.webState = webState;
+    [NTPCoordinator selectFeedType:NTPHelper->GetNextNTPFeedType()];
+    NTPCoordinator.shouldScrollIntoFeed = NTPHelper->GetNextNTPScrolledToFeed();
   } else {
-    [NTPCoordinator didNavigateAwayFromNTP];
+    [NTPCoordinator ntpDidChangeVisibility:NO];
+    // This set needs to come after ntpDidChangeVisibility: so that the previous
+    // state can be cleaned up (e.g. if moving away from the Start surface).
+    NTPCoordinator.webState = nullptr;
     [self stopNTPIfNeeded];
   }
   if (self.isActive) {
