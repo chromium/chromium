@@ -4,6 +4,7 @@
 
 #include "content/browser/download/mhtml_generation_manager.h"
 
+#include <tuple>
 #include <utility>
 
 #include "base/containers/queue.h"
@@ -39,6 +40,13 @@
 #include "net/base/mime_util.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "base/win/security_util.h"
+#include "base/win/sid.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace {
 
 // Callback to notify the UI thread that writing to the MHTML file is complete.
@@ -48,6 +56,19 @@ using MHTMLWriteCompleteCallback =
 const char kContentLocation[] = "Content-Location: ";
 const char kContentType[] = "Content-Type: ";
 int kInvalidFileSize = -1;
+
+#if BUILDFLAG(IS_WIN)
+// Attempts to deny execute access to the file at `path`.
+bool DenyExecuteAccessToMHTMLFile(const base::FilePath& path) {
+  static constexpr wchar_t kEveryoneSid[] = L"WD";
+  auto sids = base::win::Sid::FromSddlStringVector({kEveryoneSid});
+  if (!sids) {
+    return false;
+  }
+  return base::win::DenyAccessToPath(path, *sids, FILE_EXECUTE,
+                                     /*NO_INHERITANCE=*/0, /*recursive=*/false);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 // CloseFileResult holds the result of closing the generated file using the
 // status of the operation, a file size and a pointer to a file digest. It
@@ -83,13 +104,36 @@ base::File CreateMHTMLFile(const base::FilePath& file_path) {
   // principals).
   uint32_t file_flags = base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE;
 
-  file_flags = base::File::AddFlagsForPassingToUntrustedProcess(file_flags);
-
   base::File browser_file(file_path, file_flags);
   if (!browser_file.IsValid()) {
     DLOG(ERROR) << "Failed to create file to save MHTML at: "
                 << file_path.value();
   }
+#if BUILDFLAG(IS_WIN)
+  // SECURITY NOTE: On Windows, it is not safe to pass a writeable file handle
+  // to a renderer that could be re-opened executable. Attempting to do so will
+  // cause a DCHECK in mojo.
+  //
+  // Normally it would be best to use base::PreventExecuteMapping or the
+  // base::File::Flags::FLAG_WIN_NO_EXECUTE flag, but both of these will
+  // DCHECK if the File is outside of a set of safe directories, and the MHTML
+  // files are usually located in a user-controlled directory e.g.
+  // the Downloads directory.
+  //
+  // In this case, however, the file is an MHTML file, which we can mark
+  // no-execute with no side-effects as it will never be mapped into memory
+  // executable and it is not a real 'executable' file.
+  //
+  // It's important to note that this does not prevent the file being
+  // double-clicked on or opened in any application, since that is done via
+  // ShellExecute which does not need the FILE_EXECUTE permission on the file.
+  //
+  // If this fails, then it's likely other filesystem operations will also fail,
+  // so there isn't much that can be done. In this case, mojo will also deny the
+  // transit of the file handle to the renderer, and the MHTML file creation
+  // will fail.
+  std::ignore = DenyExecuteAccessToMHTMLFile(file_path);
+#endif
   return browser_file;
 }
 
