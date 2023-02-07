@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/crostini_browser_test_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
@@ -42,17 +40,10 @@ class CrostiniBrowserTest : public CrostiniBrowserTestBase {
   }
 
   void LaunchApp() {
-    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    base::test::TestFuture<bool, const std::string&> result_future;
     LaunchCrostiniApp(browser()->profile(), kAppId, display::kInvalidDisplayId,
-                      {},
-                      base::BindOnce(
-                          [](base::OnceClosure quit_closure, bool success,
-                             const std::string& failure_reason) {
-                            EXPECT_TRUE(success) << failure_reason;
-                            std::move(quit_closure).Run();
-                          },
-                          run_loop.QuitClosure()));
-    run_loop.Run();
+                      {}, result_future.GetCallback());
+    EXPECT_TRUE(result_future.Get<0>()) << result_future.Get<1>();
   }
 
   const std::string kAppId = guest_os::GuestOsRegistryService::GenerateAppId(

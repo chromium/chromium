@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_util.h"
@@ -19,14 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace {
-void ExpectResult(base::OnceClosure closure,
-                  bool expected_result,
-                  bool actual_result) {
-  EXPECT_EQ(expected_result, actual_result);
-  std::move(closure).Run();
-}
-}  // namespace
+using base::test::TestFuture;
 
 namespace crostini {
 
@@ -55,8 +49,6 @@ class AnsibleManagementServiceTest : public testing::Test,
       delete;
 
   ~AnsibleManagementServiceTest() override {
-    base::RunLoop().RunUntilIdle();
-
     TearDownViewsEnvironmentForTesting();
 
     test_helper_.reset();
@@ -71,25 +63,13 @@ class AnsibleManagementServiceTest : public testing::Test,
   }
 
   void SetUp() override {
-    run_loop_ = std::make_unique<base::RunLoop>();
     is_install_ansible_success_ = true;
     is_apply_ansible_success_ = true;
     ansible_management_service_->AddObserver(this);
   }
 
   void TearDown() override {
-    run_loop_.reset();
     ansible_management_service_->RemoveObserver(this);
-  }
-
-  void ExpectTrueResult(bool success) {
-    EXPECT_TRUE(success);
-    run_loop()->Quit();
-  }
-
-  void ExpectFalseResult(bool success) {
-    EXPECT_FALSE(success);
-    run_loop()->Quit();
   }
 
   CrostiniAnsibleSoftwareConfigView* ActiveView(
@@ -134,7 +114,6 @@ class AnsibleManagementServiceTest : public testing::Test,
   }
 
  private:
-  std::unique_ptr<base::RunLoop> run_loop_;
   CrostiniManager* crostini_manager_;
   AnsibleManagementService* ansible_management_service_;
   bool is_install_ansible_success_;
@@ -144,8 +123,6 @@ class AnsibleManagementServiceTest : public testing::Test,
   AnsibleManagementService* ansible_management_service() {
     return ansible_management_service_;
   }
-
-  base::RunLoop* run_loop() { return run_loop_.get(); }
 
   void SetInstallAnsibleStatus(bool status) {
     is_install_ansible_success_ = status;
@@ -167,26 +144,26 @@ TEST_F(AnsibleManagementServiceTest, ConfigureContainerSuccess) {
   test_helper_->SetUpPlaybookApplication(
       vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
 
+  TestFuture<bool> result_future;
   ansible_management_service()->ConfigureContainer(
       DefaultContainerId(),
       profile_->GetPrefs()->GetFilePath(
           prefs::kCrostiniAnsiblePlaybookFilePath),
-      base::BindOnce(&AnsibleManagementServiceTest::ExpectTrueResult,
-                     weak_ptr_factory_.GetWeakPtr()));
-  run_loop()->Run();
+      result_future.GetCallback());
+  EXPECT_TRUE(result_future.Get());
 }
 
 TEST_F(AnsibleManagementServiceTest, ConfigureContainerInstallFail) {
   test_helper_->SetUpAnsibleInstallation(
       vm_tools::cicerone::InstallLinuxPackageResponse::FAILED);
 
+  TestFuture<bool> result_future;
   ansible_management_service()->ConfigureContainer(
       DefaultContainerId(),
       profile_->GetPrefs()->GetFilePath(
           prefs::kCrostiniAnsiblePlaybookFilePath),
-      base::BindOnce(&AnsibleManagementServiceTest::ExpectFalseResult,
-                     weak_ptr_factory_.GetWeakPtr()));
-  run_loop()->Run();
+      result_future.GetCallback());
+  EXPECT_FALSE(result_future.Get());
 }
 
 TEST_F(AnsibleManagementServiceTest, ConfigureContainerInstallSignalFail) {
@@ -194,13 +171,13 @@ TEST_F(AnsibleManagementServiceTest, ConfigureContainerInstallSignalFail) {
       vm_tools::cicerone::InstallLinuxPackageResponse::STARTED);
   SetInstallAnsibleStatus(false);
 
+  TestFuture<bool> result_future;
   ansible_management_service()->ConfigureContainer(
       DefaultContainerId(),
       profile_->GetPrefs()->GetFilePath(
           prefs::kCrostiniAnsiblePlaybookFilePath),
-      base::BindOnce(&AnsibleManagementServiceTest::ExpectFalseResult,
-                     weak_ptr_factory_.GetWeakPtr()));
-  run_loop()->Run();
+      result_future.GetCallback());
+  EXPECT_FALSE(result_future.Get());
 }
 
 TEST_F(AnsibleManagementServiceTest, ConfigureContainerApplyFail) {
@@ -209,13 +186,13 @@ TEST_F(AnsibleManagementServiceTest, ConfigureContainerApplyFail) {
   test_helper_->SetUpPlaybookApplication(
       vm_tools::cicerone::ApplyAnsiblePlaybookResponse::FAILED);
 
+  TestFuture<bool> result_future;
   ansible_management_service()->ConfigureContainer(
       DefaultContainerId(),
       profile_->GetPrefs()->GetFilePath(
           prefs::kCrostiniAnsiblePlaybookFilePath),
-      base::BindOnce(&AnsibleManagementServiceTest::ExpectFalseResult,
-                     weak_ptr_factory_.GetWeakPtr()));
-  run_loop()->Run();
+      result_future.GetCallback());
+  EXPECT_FALSE(result_future.Get());
 }
 
 TEST_F(AnsibleManagementServiceTest, ConfigureContainerApplySignalFail) {
@@ -225,13 +202,13 @@ TEST_F(AnsibleManagementServiceTest, ConfigureContainerApplySignalFail) {
       vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
   SetApplyAnsibleStatus(false);
 
+  TestFuture<bool> result_future;
   ansible_management_service()->ConfigureContainer(
       DefaultContainerId(),
       profile_->GetPrefs()->GetFilePath(
           prefs::kCrostiniAnsiblePlaybookFilePath),
-      base::BindOnce(&AnsibleManagementServiceTest::ExpectFalseResult,
-                     weak_ptr_factory_.GetWeakPtr()));
-  run_loop()->Run();
+      result_future.GetCallback());
+  EXPECT_FALSE(result_future.Get());
 }
 
 TEST_F(AnsibleManagementServiceTest,
@@ -241,20 +218,21 @@ TEST_F(AnsibleManagementServiceTest,
   test_helper_->SetUpPlaybookApplication(
       vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
 
+  TestFuture<bool> result_future;
   ansible_management_service()->ConfigureContainer(
       DefaultContainerId(),
       profile_->GetPrefs()->GetFilePath(
           prefs::kCrostiniAnsiblePlaybookFilePath),
-      base::BindOnce(&ExpectResult, base::BindLambdaForTesting([&]() {
-        ansible_management_service()->ConfigureContainer(
-            DefaultContainerId(),
-            profile_->GetPrefs()->GetFilePath(
-                prefs::kCrostiniAnsiblePlaybookFilePath),
-            base::BindOnce(&AnsibleManagementServiceTest::ExpectFalseResult,
-                           weak_ptr_factory_.GetWeakPtr()));
-      }),
-                     true));
-  run_loop()->Run();
+      result_future.GetCallback());
+  EXPECT_TRUE(result_future.Get());
+
+  TestFuture<bool> result_future2;
+  ansible_management_service()->ConfigureContainer(
+      DefaultContainerId(),
+      profile_->GetPrefs()->GetFilePath(
+          prefs::kCrostiniAnsiblePlaybookFilePath),
+      result_future2.GetCallback());
+  EXPECT_FALSE(result_future2.Get());
 }
 
 TEST_F(AnsibleManagementServiceTest,
@@ -262,26 +240,26 @@ TEST_F(AnsibleManagementServiceTest,
   test_helper_->SetUpAnsibleInstallation(
       vm_tools::cicerone::InstallLinuxPackageResponse::FAILED);
 
+  TestFuture<bool> result_future;
   // Unsuccessful sequence of events.
   ansible_management_service()->ConfigureContainer(
       DefaultContainerId(),
       profile_->GetPrefs()->GetFilePath(
           prefs::kCrostiniAnsiblePlaybookFilePath),
-      base::BindOnce(&ExpectResult, base::BindLambdaForTesting([&]() {
-        // Setup for success.
-        test_helper_->SetUpAnsibleInstallation(
-            vm_tools::cicerone::InstallLinuxPackageResponse::STARTED);
-        test_helper_->SetUpPlaybookApplication(
-            vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
-        ansible_management_service()->ConfigureContainer(
-            DefaultContainerId(),
-            profile_->GetPrefs()->GetFilePath(
-                prefs::kCrostiniAnsiblePlaybookFilePath),
-            base::BindOnce(&AnsibleManagementServiceTest::ExpectTrueResult,
-                           weak_ptr_factory_.GetWeakPtr()));
-      }),
-                     false));
-  run_loop()->Run();
+      result_future.GetCallback());
+  EXPECT_FALSE(result_future.Get());
+
+  TestFuture<bool> result_future2;
+  test_helper_->SetUpAnsibleInstallation(
+      vm_tools::cicerone::InstallLinuxPackageResponse::STARTED);
+  test_helper_->SetUpPlaybookApplication(
+      vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
+  ansible_management_service()->ConfigureContainer(
+      DefaultContainerId(),
+      profile_->GetPrefs()->GetFilePath(
+          prefs::kCrostiniAnsiblePlaybookFilePath),
+      result_future2.GetCallback());
+  EXPECT_TRUE(result_future2.Get());
 }
 
 }  // namespace crostini
