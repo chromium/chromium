@@ -16,7 +16,7 @@
 #include "base/fuchsia/startup_context.h"
 #include "base/functional/callback.h"
 #include "fuchsia_web/runners/cast/cast_component.h"
-#include "fuchsia_web/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
+#include "fuchsia_web/runners/cast/fidl/fidl/hlcpp/chromium/cast/cpp/fidl.h"
 #include "fuchsia_web/runners/cast/pending_cast_component.h"
 #include "fuchsia_web/runners/common/web_content_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

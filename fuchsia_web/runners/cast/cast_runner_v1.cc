@@ -26,7 +26,7 @@
 #include "base/guid.h"
 #include "base/logging.h"
 #include "components/fuchsia_component_support/dynamic_component_host.h"
-#include "fuchsia_web/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
+#include "fuchsia_web/runners/cast/fidl/fidl/hlcpp/chromium/cast/cpp/fidl.h"
 #include "fuchsia_web/runners/common/modular/agent_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"

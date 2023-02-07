@@ -12,7 +12,7 @@
 #include <string>
 
 #include "chromecast/bindings/bindings_manager.h"
-#include "fuchsia_web/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
+#include "fuchsia_web/runners/cast/fidl/fidl/hlcpp/chromium/cast/cpp/fidl.h"
 
 namespace chromecast {
 namespace bindings {

@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "fuchsia_web/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
+#include "fuchsia_web/runners/cast/fidl/fidl/hlcpp/chromium/cast/cpp/fidl.h"
 #include "url/gurl.h"
 
 // Test cast.ApplicationConfigManager implementation which maps a test Cast
