@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_service_factory.h"
+#include "chrome/browser/apps/app_deduplication_service/proto/deduplication_data.pb.h"
 #include "chrome/browser/apps/app_provisioning_service/app_provisioning_data_manager.h"
 #include "chrome/browser/apps/app_provisioning_service/proto/app_data.pb.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -438,6 +439,70 @@ TEST_F(AppDeduplicationServiceTest, AppPromisioningDataManagerUpdate) {
   EXPECT_TRUE(service->GetDuplicates(not_duplicate_app_id).empty());
   EXPECT_FALSE(
       service->AreDuplicates(not_duplicate_app_id, skype_web_entry_id));
+}
+
+TEST_F(AppDeduplicationServiceTest, DeduplicateDataToEntries) {
+  proto::DeduplicateData data;
+
+  auto* skype_group = data.add_app_group();
+  auto* skype_app_1 = skype_group->add_app();
+  skype_app_1->set_app_id("com.skype.raider");
+  skype_app_1->set_platform("phonehub");
+  auto* skype_app_2 = skype_group->add_app();
+  skype_app_2->set_app_id("https://web.skype.com/");
+  skype_app_2->set_platform("website");
+
+  auto* duo_group = data.add_app_group();
+  auto* duo_app_1 = duo_group->add_app();
+  duo_app_1->set_app_id("com.google.android.apps.tachyon");
+  duo_app_1->set_platform("arc");
+  auto* duo_app_2 = duo_group->add_app();
+  duo_app_2->set_app_id("https://duo.google.com/?lfhs=2");
+  duo_app_2->set_platform("web");
+
+  TestingProfile profile;
+  ASSERT_TRUE(AppDeduplicationServiceFactory::
+                  IsAppDeduplicationServiceAvailableForProfile(&profile));
+  auto* service = AppDeduplicationServiceFactory::GetForProfile(&profile);
+  EXPECT_NE(nullptr, service);
+
+  service->DeduplicateDataToEntries(data);
+
+  uint32_t skype_test_index = 1;
+  std::string skype_phonehub_app_id = "com.skype.raider";
+  auto it = service->entry_to_group_map_.find(EntryId(skype_phonehub_app_id));
+  ASSERT_NE(it, service->entry_to_group_map_.end());
+  EXPECT_EQ(skype_test_index, it->second);
+
+  std::string skype_website_id = "https://web.skype.com/";
+  it = service->entry_to_group_map_.find(EntryId(GURL(skype_website_id)));
+  ASSERT_NE(it, service->entry_to_group_map_.end());
+  EXPECT_EQ(skype_test_index, it->second);
+
+  auto map_it = service->duplication_map_.find(skype_test_index);
+  ASSERT_FALSE(map_it == service->duplication_map_.end());
+  EXPECT_THAT(map_it->second.entries,
+              ElementsAre(Entry(EntryId(skype_phonehub_app_id)),
+                          Entry(EntryId(GURL(skype_website_id)))));
+
+  uint32_t duo_test_index = 2;
+  std::string duo_arc_app_id = "com.google.android.apps.tachyon";
+  it =
+      service->entry_to_group_map_.find(EntryId(duo_arc_app_id, AppType::kArc));
+  ASSERT_NE(it, service->entry_to_group_map_.end());
+  EXPECT_EQ(duo_test_index, it->second);
+
+  std::string duo_web_app_id = "https://duo.google.com/?lfhs=2";
+  it =
+      service->entry_to_group_map_.find(EntryId(duo_web_app_id, AppType::kWeb));
+  ASSERT_NE(it, service->entry_to_group_map_.end());
+  EXPECT_EQ(duo_test_index, it->second);
+
+  map_it = service->duplication_map_.find(duo_test_index);
+  ASSERT_FALSE(map_it == service->duplication_map_.end());
+  EXPECT_THAT(map_it->second.entries,
+              ElementsAre(Entry(EntryId(duo_arc_app_id, AppType::kArc)),
+                          Entry(EntryId(duo_web_app_id, AppType::kWeb))));
 }
 
 }  // namespace apps::deduplication

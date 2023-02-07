@@ -45,6 +45,8 @@ class AppDeduplicationService : public KeyedService,
                            ExactDuplicateAllInstalled);
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest, Installation);
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest, Websites);
+  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest,
+                           DeduplicateDataToEntries);
 
   enum class EntryStatus {
     // This entry is not an app entry (could be website, phonehub, etc.).
@@ -85,6 +87,11 @@ class AppDeduplicationService : public KeyedService,
   // Process data read from cache and converts it into `Entry`s.
   void OnReadDeduplicationCacheCompleted(
       absl::optional<proto::DeduplicateData> data);
+
+  // Maps deduplicate data read from disk to `Entry`s which are then stored
+  // inside the class as maps.
+  void DeduplicateDataToEntries(
+      const absl::optional<proto::DeduplicateData> data);
 
   std::map<uint32_t, DuplicateGroup> duplication_map_;
   std::map<EntryId, uint32_t> entry_to_group_map_;
