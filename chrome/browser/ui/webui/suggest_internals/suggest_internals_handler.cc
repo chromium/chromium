@@ -17,10 +17,12 @@ SuggestInternalsHandler::SuggestInternalsHandler(
     : profile_(profile),
       web_contents_(web_contents),
       page_handler_(this, std::move(pending_page_handler)) {
-  remote_suggestions_service_observation_.Observe(
-      RemoteSuggestionsServiceFactory::GetForProfile(
-          profile_,
-          /*create_if_necessary=*/true));
+  if (auto* remote_suggestions_service =
+          RemoteSuggestionsServiceFactory::GetForProfile(
+              profile_,
+              /*create_if_necessary=*/true)) {
+    remote_suggestions_service_observation_.Observe(remote_suggestions_service);
+  }
 }
 
 SuggestInternalsHandler::~SuggestInternalsHandler() = default;
