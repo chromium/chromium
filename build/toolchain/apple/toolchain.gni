@@ -276,10 +276,6 @@ template("single_apple_toolchain") {
       rust_sysroot_relative_to_out = rebase_path(rust_sysroot, root_out_dir)
       rustc_wrapper = rebase_path("//build/rust/rustc_wrapper.py")
 
-      # Ideally, we'd add  -Clink-args=\"{{ldflags}}\" to each of the Rust
-      # tools below which may link (i.e. rust_bin, rust_cdylib, rust_macro).
-      # However, it seems -fuse-ld=lld causes difficulties.
-
       tool("rust_staticlib") {
         rust_outfile = "{{output_dir}}/{{target_output_name}}.a"
         depfile = "{{output}}.d"

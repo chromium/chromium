@@ -307,15 +307,9 @@ template("single_msvc_toolchain") {
 
     if (toolchain_has_rust) {
       rustc_wrapper = rebase_path("//build/rust/rustc_wrapper.py")
-
-      # TODO(https://crbug.com/1271215)
-      # Other toolchains (Linux, Mac) pass {{ldflags}} to rustc.
-      # This is necessary for some types of build such as
-      # LTO and sanitizers. However, such ldflags are not yet fully
-      # compatible with the arguments passed from rustc to the linker,
-      # so we'll do this at a later stage.
       rustc = rebase_path("${rust_sysroot}/bin/rustc", root_build_dir)
       rust_sysroot_relative_to_out = rebase_path(rust_sysroot, root_out_dir)
+
       tool("rust_staticlib") {
         rust_outfile = "{{output_dir}}/{{target_output_name}}.lib"
         depfile = "{{output}}.d"
@@ -345,7 +339,7 @@ template("single_msvc_toolchain") {
         depfile = "{{output}}.d"
         rspfile = "$rust_outfile.rsp"
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
+        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
         rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
@@ -356,7 +350,7 @@ template("single_msvc_toolchain") {
         depfile = "{{output}}.d"
         rspfile = "$rust_outfile.rsp"
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
+        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
         rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
@@ -367,7 +361,7 @@ template("single_msvc_toolchain") {
         depfile = "{{output}}.d"
         rspfile = "$rust_outfile.rsp"
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
+        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
         rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
