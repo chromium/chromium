@@ -449,16 +449,11 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // defocuses the omnibox works.
 - (void)testDefocusOmniboxTapWorks {
   [self focusFakebox];
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // Tap on a space in the collectionView that is not a Feed card.
-    [[EarlGrey selectElementWithMatcher:
-                   grey_accessibilityID(
-                       ntp_home::DiscoverHeaderTitleAccessibilityID())]
-        performAction:grey_tap()];
-  } else {
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
-        performAction:grey_tap()];
-  }
+  // Tap on a space in the collectionView that is not a Feed card.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(ntp_home::DiscoverHeaderTitleAccessibilityID())]
+      performAction:grey_tap()];
 
   [ChromeEarlGreyUI waitForAppToIdle];
   // Check the fake omnibox is displayed again at the same position.
