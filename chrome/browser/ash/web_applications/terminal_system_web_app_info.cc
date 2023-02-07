@@ -7,9 +7,11 @@
 #include <memory>
 
 #include "base/strings/strcat.h"
+#include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
-#include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider_registry.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -82,10 +84,15 @@ bool TerminalSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
 }
 
 bool TerminalSystemAppDelegate::ShouldShowInLauncher() const {
-  // Hide from launcher if VMs disabled, and SSH disabled.
-  return virtual_machines::AreVirtualMachinesAllowedByPolicy() ||
-         profile()->GetPrefs()->GetBoolean(
-             crostini::prefs::kTerminalSshAllowedByPolicy);
+  // Show if SSH is enabled, or crostini enabled, or any other terminal exists.
+  std::string reason;
+  return profile()->GetPrefs()->GetBoolean(
+             crostini::prefs::kTerminalSshAllowedByPolicy) ||
+         crostini::CrostiniFeatures::Get()->IsAllowedNow(profile(), &reason) ||
+         !guest_os::GuestOsService::GetForProfile(profile())
+              ->TerminalProviderRegistry()
+              ->List()
+              .empty();
 }
 
 bool TerminalSystemAppDelegate::IsAppEnabled() const {
