@@ -140,11 +140,11 @@ class TestAppHomePageHandler : public AppHomePageHandler {
   base::OnceClosure run_on_os_login_mode_changed_handle_;
 };
 
-std::unique_ptr<WebAppInstallInfo> BuildWebAppInfo() {
+std::unique_ptr<WebAppInstallInfo> BuildWebAppInfo(std::string test_app_name) {
   auto app_info = std::make_unique<WebAppInstallInfo>();
   app_info->start_url = GURL(kTestAppUrl);
   app_info->scope = GURL(kTestAppUrl);
-  app_info->title = base::UTF8ToUTF16(base::StringPiece(kTestAppName));
+  app_info->title = base::UTF8ToUTF16(base::StringPiece(test_app_name));
   app_info->manifest_url = GURL(kTestManifestUrl);
 
   return app_info;
@@ -181,9 +181,10 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
   }
 
   AppId InstallTestWebApp(WebappInstallSource install_source =
-                              WebappInstallSource::OMNIBOX_INSTALL_ICON) {
+                              WebappInstallSource::OMNIBOX_INSTALL_ICON,
+                          std::string test_app_name = kTestAppName) {
     AppId installed_app_id = web_app::test::InstallWebApp(
-        profile(), BuildWebAppInfo(),
+        profile(), BuildWebAppInfo(test_app_name),
         /*overwrite_existing_manifest_fields=*/false, install_source);
 
     return installed_app_id;
@@ -287,6 +288,23 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, GetApps) {
   EXPECT_EQ(kTestAppUrl, app_infos[0]->start_url);
   EXPECT_EQ(kTestAppName, app_infos[0]->name);
   EXPECT_TRUE(app_infos[0]->may_uninstall);
+}
+
+IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, LongAppName) {
+  AppId installed_app_id =
+      InstallTestWebApp(WebappInstallSource::OMNIBOX_INSTALL_ICON,
+                        "Long App Title Test This Title Is Longer Than 45 "
+                        "Characters So Should Get Cut Off");
+
+  std::unique_ptr<TestAppHomePageHandler> page_handler =
+      GetAppHomePageHandler();
+
+  base::test::TestFuture<std::vector<app_home::mojom::AppInfoPtr>> future;
+  page_handler->GetApps(future.GetCallback());
+  auto app_infos = future.Take();
+
+  EXPECT_EQ("Long App Title Test This Title Is Longer Than\xE2\x80\xA6",
+            app_infos[0]->name);
 }
 
 IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, ForceInstalledApp) {
