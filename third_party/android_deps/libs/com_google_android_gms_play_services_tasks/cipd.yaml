@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@18.0.1.cr1
+# cipd create --pkg-def cipd.yaml -tag version:2@18.0.2.cr1
 package: chromium/third_party/android_deps/libs/com_google_android_gms_play_services_tasks
 description: "play-services-tasks"
 data:
-- file: play-services-tasks-18.0.1.aar
+- file: play-services-tasks-18.0.2.aar
