@@ -5911,7 +5911,7 @@
   {
     "name": "quick-commands",
     "owners": [ "lgrey" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "quick-delete-for-android",
