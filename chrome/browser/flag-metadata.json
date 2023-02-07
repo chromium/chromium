@@ -621,11 +621,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "autofill-save-card-dismiss-on-navigation",
-    "owners": [ "sczs", "bling-flags@google.com" ],
-    "expiry_milestone": 82
-  },
-  {
     "name": "autofill-show-manual-fallbacks-in-context-menu",
     "owners": [ "vidhanj", "koerber"],
     "expiry_milestone": 112

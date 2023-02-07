@@ -37,7 +37,6 @@ BASE_DECLARE_FEATURE(kAutofillOfferToSaveCardWithSameLastFour);
 BASE_DECLARE_FEATURE(kAutofillParseIBANFields);
 BASE_DECLARE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields);
 BASE_DECLARE_FEATURE(kAutofillRemoveCardExpirationAndTypeTitles);
-BASE_DECLARE_FEATURE(kAutofillSaveCardDismissOnNavigation);
 BASE_DECLARE_FEATURE(kAutofillSaveCardInfobarEditSupport);
 BASE_DECLARE_FEATURE(kAutofillSaveCardUiExperiment);
 extern const base::FeatureParam<int>

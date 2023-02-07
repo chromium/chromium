@@ -185,12 +185,6 @@ BASE_FEATURE(kAutofillRemoveCardExpirationAndTypeTitles,
              "AutofillRemoveCardExpirationAndTypeTitles",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, the Save Card infobar will be dismissed by a user initiated
-// navigation other than one caused by submitted form.
-BASE_FEATURE(kAutofillSaveCardDismissOnNavigation,
-             "AutofillSaveCardDismissOnNavigation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, the Save Card infobar supports editing before submitting.
 BASE_FEATURE(kAutofillSaveCardInfobarEditSupport,
              "AutofillSaveCardInfobarEditSupport",

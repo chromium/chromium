@@ -108,12 +108,6 @@ const char kAutofillPruneSuggestionsName[] = "Autofill Prune Suggestions";
 const char kAutofillPruneSuggestionsDescription[] =
     "Further limits the number of suggestions in the Autofill dropdown.";
 
-const char kAutofillSaveCardDismissOnNavigationName[] =
-    "Save Card Dismiss on Navigation";
-const char kAutofillSaveCardDismissOnNavigationDescription[] =
-    "Dismisses the Save Card Infobar on a user initiated Navigation, other "
-    "than one caused by submitted form.";
-
 const char kAutofillSuggestServerCardInsteadOfLocalCardName[] =
     "Suggest Server card instead of Local card for deduped cards";
 const char kAutofillSuggestServerCardInsteadOfLocalCardDescription[] =

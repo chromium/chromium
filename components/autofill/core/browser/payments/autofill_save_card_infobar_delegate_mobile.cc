@@ -147,15 +147,9 @@ AutofillSaveCardInfoBarDelegateMobile::GetIdentifier() const {
 bool AutofillSaveCardInfoBarDelegateMobile::ShouldExpire(
     const NavigationDetails& details) const {
 #if BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillSaveCardDismissOnNavigation)) {
-    // Expire the Infobar unless the navigation was triggered by the form that
-    // presented the Infobar, or the navigation is a redirect.
-    return !details.is_form_submission && !details.is_redirect;
-  } else {
-    // Use the default behavior used by Android.
-    return false;
-  }
+  // Expire the Infobar unless the navigation was triggered by the form that
+  // presented the Infobar, or the navigation is a redirect.
+  return !details.is_form_submission && !details.is_redirect;
 #else   // BUILDFLAG(IS_IOS)
   // The user has submitted a form, causing the page to navigate elsewhere. We
   // don't want the infobar to be expired at this point, because the user won't
