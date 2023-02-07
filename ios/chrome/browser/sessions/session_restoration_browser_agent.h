@@ -32,9 +32,9 @@ class WebUsageEnablerBrowserAgent;
 // save sessions when the active webState changes, and when each web state
 // completes a navigation.
 class SessionRestorationBrowserAgent
-    : BrowserObserver,
+    : public BrowserObserver,
       public BrowserUserData<SessionRestorationBrowserAgent>,
-      WebStateListObserver,
+      public WebStateListObserver,
       public web::WebStateObserver {
  public:
   ~SessionRestorationBrowserAgent() override;
