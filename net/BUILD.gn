@@ -1456,8 +1456,7 @@ component("net") {
 
   if (is_fuchsia) {
     deps += [ "//third_party/fuchsia-sdk/sdk/pkg/async-loop-cpp" ]
-    public_deps +=
-        [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces" ]
+    public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces:fuchsia.net.interfaces_hlcpp" ]
     sources += [
       "base/fuchsia/network_interface_cache.cc",
       "base/fuchsia/network_interface_cache.h",
@@ -1673,8 +1672,8 @@ source_set("net_deps") {
 
   if (is_fuchsia) {
     public_deps += [
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.hardware.network",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.hardware.network:fuchsia.hardware.network_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces:fuchsia.net.interfaces_hlcpp",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
   }
@@ -2993,7 +2992,7 @@ test("net_unittests") {
   if (is_fuchsia) {
     use_test_server = true
     deps += [
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces:fuchsia.net.interfaces_hlcpp",
       "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
     ]
     sources += [

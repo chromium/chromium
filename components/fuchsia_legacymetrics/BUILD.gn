@@ -21,7 +21,7 @@ source_set("fuchsia_legacymetrics") {
   ]
   public = [ "legacymetrics_client.h" ]
   deps = [ "//base" ]
-  public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.legacymetrics" ]
+  public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.legacymetrics:fuchsia.legacymetrics_hlcpp" ]
   friend = [ ":unit_tests" ]  # For access to private headers.
 }
 

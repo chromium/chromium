@@ -155,7 +155,9 @@ component("ozone_base") {
   }
 
   if (is_fuchsia) {
-    public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.images" ]
+    public_deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.images:fuchsia.images_hlcpp",
+    ]
   }
 
   visibility += [

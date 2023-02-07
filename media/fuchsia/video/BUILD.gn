@@ -27,8 +27,8 @@ source_set("video") {
     "//media/fuchsia/common",
     "//media/fuchsia/mojom:fuchsia_media",
     "//mojo/public/cpp/bindings",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media:fuchsia.media_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec:fuchsia.mediacodec_hlcpp",
     "//ui/gfx",
   ]
   deps = [
@@ -38,8 +38,8 @@ source_set("video") {
     "//gpu/ipc/common",
     "//media/fuchsia/cdm",
     "//third_party/blink/public/common",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec:fuchsia.mediacodec_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_hlcpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//third_party/libyuv:libyuv",
     "//ui/ozone",
@@ -61,8 +61,8 @@ source_set("unittests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public/common",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec:fuchsia.mediacodec_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_hlcpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
   ]
 }

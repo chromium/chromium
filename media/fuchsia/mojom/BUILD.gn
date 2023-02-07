@@ -32,8 +32,8 @@ mojom("fuchsia_media") {
     traits_headers = [ "fuchsia_media_mojom_traits.h" ]
     traits_public_deps = [
       "//mojo/public/cpp/base/fuchsia:traits",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.drm",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media:fuchsia.media_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.drm:fuchsia.media.drm_hlcpp",
     ]
   }
 

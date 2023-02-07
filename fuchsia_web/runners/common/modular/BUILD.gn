@@ -29,7 +29,7 @@ source_set("modular") {
   ]
   deps = [ "//base" ]
   public_deps = [
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular:fuchsia.modular_hlcpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
   ]
 }

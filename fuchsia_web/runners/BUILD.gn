@@ -42,10 +42,10 @@ source_set("common") {
     "//url",
   ]
   public_deps = [
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.app",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular:fuchsia.modular_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys:fuchsia.sys_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.app:fuchsia.ui.app_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web:fuchsia.web_hlcpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
   ]
 }
@@ -85,11 +85,11 @@ source_set("cast_runner_core") {
     "//fuchsia_web/cast_streaming",
     "//fuchsia_web/runners/common/modular",
     "//fuchsia_web/webinstance_host",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component.decl",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.diagnostics",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.legacymetrics",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component.decl:fuchsia.component.decl_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.diagnostics:fuchsia.diagnostics_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.legacymetrics:fuchsia.legacymetrics_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem:fuchsia.mem_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular:fuchsia.modular_hlcpp",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//url",
@@ -97,10 +97,10 @@ source_set("cast_runner_core") {
 
   public_deps = [
     ":common",
-    "./cast/fidl",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component.resolution",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component.runner",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "./cast/fidl:fidl_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component.resolution:fuchsia.component.resolution_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component.runner:fuchsia.component.runner_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web:fuchsia.web_hlcpp",
   ]
 
   visibility += [ "//fuchsia_web/runners/cast/test:*" ]
@@ -196,9 +196,9 @@ source_set("cast_runner_test_core") {
   ]
   deps = [ ":cast_runner_core" ]
   public_deps = [
-    "./cast/fidl",
+    "./cast/fidl:fidl_hlcpp",
     "//base",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys:fuchsia.sys_hlcpp",
     "//url",
   ]
 }
@@ -216,7 +216,7 @@ test("cast_runner_unittests") {
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web:fuchsia.web_hlcpp",
   ]
   data_deps = [ ":cast_runner_core" ]
 }
@@ -244,9 +244,9 @@ test("cast_runner_integration_tests") {
     "//fuchsia_web/runners/common/modular",
     "//net:test_support",
     "//testing/gtest",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.legacymetrics",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3:fuchsia.camera3_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.legacymetrics:fuchsia.legacymetrics_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular:fuchsia.modular_hlcpp",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
   ]
@@ -355,7 +355,7 @@ test("web_runner_integration_tests") {
     "//fuchsia_web/runners/common/modular",
     "//net:test_support",
     "//testing/gtest",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys:fuchsia.sys_hlcpp",
   ]
   package_deps = [
     [

@@ -42,8 +42,8 @@ if (is_fuchsia) {
     ]
     public_deps = [
       ":bindings_manager",
-      "//fuchsia_web/runners/cast/fidl",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
+      "//fuchsia_web/runners/cast/fidl:fidl_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem:fuchsia.mem_hlcpp",
     ]
     deps = [
       "//base",

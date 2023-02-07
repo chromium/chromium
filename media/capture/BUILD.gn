@@ -356,7 +356,7 @@ component("capture_lib") {
     ]
     deps += [
       "//media/fuchsia/common",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3:fuchsia.camera3_hlcpp",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
       "//third_party/libyuv",
     ]
@@ -471,8 +471,8 @@ test("capture_unittests") {
   if (is_fuchsia) {
     deps += [
       "//media/fuchsia/camera:test_support",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3:fuchsia.camera3_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_hlcpp",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
     sources += [

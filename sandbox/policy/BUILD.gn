@@ -153,29 +153,29 @@ component("policy") {
     ]
 
     public_deps += [
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io:fuchsia.io_hlcpp",
       "//third_party/fuchsia-sdk/sdk/pkg/fidl",
       "//third_party/fuchsia-sdk/sdk/pkg/zx",
     ]
 
     deps += [
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.buildinfo",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.hwinfo",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.kernel",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.buildinfo:fuchsia.buildinfo_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3:fuchsia.camera3_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts:fuchsia.fonts_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.hwinfo:fuchsia.hwinfo_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl:fuchsia.intl_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.kernel:fuchsia.kernel_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger:fuchsia.logger_hlcpp",
 
       # TODO(crbug.com/1224707): Remove after switching to fuchsia.scheduler API.
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.memorypressure",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.tracing.perfetto",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.tracing.provider",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media:fuchsia.media_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec:fuchsia.mediacodec_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.memorypressure:fuchsia.memorypressure_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces:fuchsia.net.interfaces_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.tracing.perfetto:fuchsia.tracing.perfetto_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.tracing.provider:fuchsia.tracing.provider_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic:fuchsia.ui.scenic_hlcpp",
     ]
   }
 }

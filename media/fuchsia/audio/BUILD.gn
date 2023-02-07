@@ -7,8 +7,8 @@ source_set("test_support") {
   deps = [ "//testing/gtest" ]
   public_deps = [
     "//base",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.audio",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media:fuchsia.media_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.audio:fuchsia.media.audio_hlcpp",
     "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
   ]
   sources = [
@@ -26,7 +26,7 @@ source_set("test_support_components") {
   public = [ "fake_audio_device_enumerator_local_component.h" ]
   sources = [ "fake_audio_device_enumerator_local_component.cc" ]
   public_deps = [
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media:fuchsia.media_hlcpp",
     "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_component_cpp_testing",
   ]

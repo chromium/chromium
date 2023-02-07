@@ -37,7 +37,7 @@ source_set("memory_pressure") {
 
   if (is_fuchsia) {
     deps += [
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.memorypressure",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.memorypressure:fuchsia.memorypressure_hlcpp",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
     sources += [
@@ -80,7 +80,7 @@ source_set("unit_tests") {
   }
 
   if (is_fuchsia) {
-    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.memorypressure" ]
+    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.memorypressure:fuchsia.memorypressure_hlcpp" ]
     sources += [ "system_memory_pressure_evaluator_fuchsia_unittest.cc" ]
   }
 

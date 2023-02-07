@@ -26,7 +26,7 @@ source_set("common") {
   deps = [
     "//base",
     "//media/base",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media:fuchsia.media_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_hlcpp",
   ]
 }

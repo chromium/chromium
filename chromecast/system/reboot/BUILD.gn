@@ -49,10 +49,10 @@ test("cast_reboot_unittests") {
     deps += [
       ":fuchsia",
       "//chromecast/public",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.hardware.power.statecontrol",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.recovery",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback:fuchsia.feedback_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.hardware.power.statecontrol:fuchsia.hardware.power.statecontrol_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io:fuchsia.io_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.recovery:fuchsia.recovery_hlcpp",
       "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
       "//third_party/fuchsia-sdk/sdk/pkg/fit-promise",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
@@ -80,9 +80,9 @@ if (is_fuchsia) {
     public_deps = [ "//chromecast/public" ]
     deps = [
       "//base",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.hardware.power.statecontrol",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.recovery",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback:fuchsia.feedback_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.hardware.power.statecontrol:fuchsia.hardware.power.statecontrol_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.recovery:fuchsia.recovery_hlcpp",
       "//third_party/fuchsia-sdk/sdk/pkg/fidl",
       "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",

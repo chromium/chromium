@@ -753,7 +753,7 @@ static_library("test_support") {
   }
 
   if (is_fuchsia) {
-    public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec" ]
+    public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec:fuchsia.mediacodec_hlcpp" ]
   }
 }
 
@@ -2894,8 +2894,7 @@ test("content_unittests") {
   }
 
   if (is_fuchsia) {
-    deps +=
-        [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics" ]
+    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics:fuchsia.accessibility.semantics_hlcpp" ]
   }
 
   if (enable_printing) {

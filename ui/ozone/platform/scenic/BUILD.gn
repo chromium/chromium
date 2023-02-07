@@ -62,10 +62,10 @@ source_set("scenic") {
     "//services/service_manager/public/cpp",
     "//skia",
     "//third_party/angle/src/common/fuchsia_egl",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.images",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element:fuchsia.element_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.images:fuchsia.images_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem:fuchsia.mem_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_hlcpp",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//ui/base",
@@ -79,9 +79,9 @@ source_set("scenic") {
     "//ui/ozone/platform/scenic/mojom",
   ]
   public_deps = [
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.gfx",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.gfx:fuchsia.ui.gfx_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input:fuchsia.ui.input_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic:fuchsia.ui.scenic_hlcpp",
     "//ui/gfx/geometry",
     "//ui/platform_window",
   ]

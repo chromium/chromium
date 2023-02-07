@@ -81,7 +81,7 @@ if (is_fuchsia) {
       ":public",
       "//base",
       "//third_party/abseil-cpp:absl",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web:fuchsia.web_hlcpp",
     ]
 
     deps = [ "//third_party/fuchsia-sdk/sdk/pkg/fit-promise" ]

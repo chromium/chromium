@@ -10,8 +10,8 @@ source_set("test_support") {
   public_deps = [
     "//base",
     "//testing/gtest",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3:fuchsia.camera3_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_hlcpp",
     "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
     "//ui/gfx/geometry",
   ]

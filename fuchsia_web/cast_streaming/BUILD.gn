@@ -16,6 +16,6 @@ source_set("cast_streaming") {
   data = [ "data/receiver.html" ]
   deps = [
     "//base",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web:fuchsia.web_hlcpp",
   ]
 }

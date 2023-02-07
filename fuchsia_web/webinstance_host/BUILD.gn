@@ -39,8 +39,8 @@ source_set("webinstance_host") {
     "//gpu/command_buffer/service",
     "//gpu/config",
     "//services/network/public/cpp",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component.decl",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component.decl:fuchsia.component.decl_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io:fuchsia.io_hlcpp",
     "//third_party/fuchsia-sdk/sdk/pkg/fit",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/vfs_cpp",
@@ -53,8 +53,8 @@ source_set("webinstance_host") {
 
   public_deps = [
     "//base",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component:fuchsia.component_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web:fuchsia.web_hlcpp",
     "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
   ]
 }
@@ -106,9 +106,9 @@ source_set("webinstance_host_v1") {
   }
 
   public_deps = [
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io:fuchsia.io_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys:fuchsia.sys_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web:fuchsia.web_hlcpp",
     "//third_party/fuchsia-sdk/sdk/pkg/fidl",
   ]
 }

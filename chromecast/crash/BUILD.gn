@@ -36,7 +36,7 @@ cast_source_set("crash_storage") {
       "//chromecast/crash/fuchsia",
     ]
 
-    public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback" ]
+    public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback:fuchsia.feedback_hlcpp" ]
   } else {
     sources += [
       "cast_crash_storage.cc",

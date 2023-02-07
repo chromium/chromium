@@ -166,7 +166,7 @@ component("events_base") {
       "keycodes/keyboard_code_conversion_fuchsia.h",
     ]
 
-    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3" ]
+    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3:fuchsia.ui.input3_hlcpp" ]
   }
 
   if (ozone_platform_x11) {
@@ -379,8 +379,8 @@ component("events") {
     ]
     sources += [ "fuchsia/pointer_events_handler.cc" ]
     public_deps += [
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input:fuchsia.ui.input_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer:fuchsia.ui.pointer_hlcpp",
     ]
   }
 }
@@ -605,7 +605,7 @@ static_library("test_support") {
       "fuchsia/util/pointer_event_utility.h",
     ]
 
-    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer" ]
+    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer:fuchsia.ui.pointer_hlcpp" ]
   }
 }
 
@@ -728,9 +728,9 @@ if (!is_ios) {
       ]
 
       deps += [
-        "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input",
-        "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3",
-        "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer",
+        "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input:fuchsia.ui.input_hlcpp",
+        "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3:fuchsia.ui.input3_hlcpp",
+        "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer:fuchsia.ui.pointer_hlcpp",
         "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp_testing",
       ]
     }

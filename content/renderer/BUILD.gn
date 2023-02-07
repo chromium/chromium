@@ -353,7 +353,7 @@ target(link_target_type, "renderer") {
       "media/codec_factory_fuchsia.h",
       "renderer_main_platform_delegate_fuchsia.cc",
     ]
-    public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec" ]
+    public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec:fuchsia.mediacodec_hlcpp" ]
 
     deps += [
       "//media/fuchsia/cdm/client",
