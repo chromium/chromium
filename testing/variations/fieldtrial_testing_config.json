@@ -5874,6 +5874,21 @@
             ]
         }
     ],
+    "IOSFeedImageCaching": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230207",
+                    "enable_features": [
+                        "EnableFeedImageCaching"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSFeedSyncPromo": [
         {
             "platforms": [
