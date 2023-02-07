@@ -1165,10 +1165,14 @@
         },
       },
       'win-asan': {
+         # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
+        'args': [
+          '--test-launcher-jobs=3',
+        ],
         # These are very slow on the ASAN trybot for some reason.
         # crbug.com/1257927
         'swarming': {
-          'shards': 40,
+          'shards': 60,
         },
       },
       'win-backuprefptr-x64-fyi-rel': {
@@ -1888,6 +1892,15 @@
           ],
         },
       },
+      'win-asan': {
+         # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
+        'args': [
+          '--test-launcher-jobs=3',
+        ],
+        'swarming': {
+          'shards': 16,
+        },
+      },
       'win-rel-cft': {
         # crbug.com/868082
         'args': [
@@ -2579,6 +2592,15 @@
         'swarming': {
           'shards': 6,
           'inverse_quickrun_shards': 12,
+        },
+      },
+      'win-asan': {
+         # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
+        'args': [
+          '--test-launcher-jobs=3',
+        ],
+        'swarming': {
+          'shards': 6,
         },
       },
       'win-rel-cft': {
@@ -3389,6 +3411,15 @@
         'ci_only': True,
         'swarming': {
           'shards': 4,
+        },
+      },
+      'win-asan': {
+         # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
+        'args': [
+          '--test-launcher-jobs=3',
+        ],
+        'swarming': {
+          'shards': 2,
         },
       },
       'win-rel-cft': {
