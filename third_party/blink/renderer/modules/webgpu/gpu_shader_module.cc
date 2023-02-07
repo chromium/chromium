@@ -38,7 +38,11 @@ GPUShaderModule* GPUShaderModule::Create(
   const auto* wgsl_or_spirv = webgpu_desc->code();
   switch (wgsl_or_spirv->GetContentType()) {
     case V8UnionUSVStringOrUint32Array::ContentType::kUSVString: {
-      wgsl_code = wgsl_or_spirv->GetAsUSVString().Utf8();
+      // `\0` is not allowed in WGSL but it is allowed in USVString
+      // By replacing `\0` with `\0xFFFD` we can safely pass this string
+      // to Dawn and it should generate an error.
+      wgsl_code = UTF8StringFromUSVStringWithNullReplacedByReplacementCodePoint(
+          wgsl_or_spirv->GetAsUSVString());
       wgsl_desc.chain.sType = WGPUSType_ShaderModuleWGSLDescriptor;
       wgsl_desc.source = wgsl_code.c_str();
       dawn_desc.nextInChain = reinterpret_cast<WGPUChainedStruct*>(&wgsl_desc);

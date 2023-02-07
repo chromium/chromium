@@ -18,6 +18,12 @@ namespace blink {
 // to display something.
 WTF::String StringFromASCIIAndUTF8(const char* message);
 
+// Create a utf8 std::string from a WTF:String and replace `\0` with `\0xFFFD`
+// which is the unicode replacement codepoint. This used for some strings passed
+// to Dawn which expects null terminated strings.
+std::string UTF8StringFromUSVStringWithNullReplacedByReplacementCodePoint(
+    const String& s);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_STRING_UTILS_H_
