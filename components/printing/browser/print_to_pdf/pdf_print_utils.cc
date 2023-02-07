@@ -164,6 +164,7 @@ GetPrintPagesParams(const GURL& page_url,
   print_pages_params->params = printing::mojom::PrintParams::New();
   printing::RenderParamsFromPrintSettings(print_settings,
                                           print_pages_params->params.get());
+  print_pages_params->params->print_to_pdf = true;
   print_pages_params->params->document_cookie =
       printing::PrintSettings::NewCookie();
   print_pages_params->params->header_template =
