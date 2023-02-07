@@ -75,7 +75,8 @@ class KeyboardAccessoryModernViewBinder {
                             FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE)) {
                     if (iconId != 0) {
                         showHelpBubble(item.getFeatureForIPH(), chipView.getStartIconViewRect(),
-                                mRootViewForIPH, item.getSuggestion().getItemTag());
+                                chipView.getContext(), mRootViewForIPH,
+                                item.getSuggestion().getItemTag());
                     } else {
                         showHelpBubble(item.getFeatureForIPH(), chipView, mRootViewForIPH,
                                 item.getSuggestion().getItemTag());
@@ -194,7 +195,7 @@ class KeyboardAccessoryModernViewBinder {
             if (model.get(SHOW_SWIPING_IPH) && swipingIphRectProvider != null
                     && hasShownAnyAutofillIphBefore()) {
                 showHelpBubble(FeatureConstants.KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE,
-                        swipingIphRectProvider, modernView.mBarItemsView);
+                        swipingIphRectProvider, modernView.getContext(), modernView.mBarItemsView);
             }
         } else if (propertyKey == HAS_SUGGESTIONS) {
             modernView.setAccessibilityMessage(model.get(HAS_SUGGESTIONS));
