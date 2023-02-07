@@ -3749,7 +3749,11 @@ error::Error GLES2DecoderPassthroughImpl::DoEndTransformFeedback() {
 
 error::Error GLES2DecoderPassthroughImpl::DoSetDisjointValueSyncCHROMIUM(
     DisjointValueSync* sync) {
-  NOTIMPLEMENTED();
+  GLint disjoint = 0;
+  api()->glGetIntegervFn(GL_GPU_DISJOINT_EXT, &disjoint);
+  if (disjoint > 0) {
+    sync->SetDisjointCount(disjoint);
+  }
   return error::kNoError;
 }
 
