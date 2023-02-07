@@ -15,8 +15,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/attribution_reporting/source_type.h"
 #include "components/attribution_reporting/suitable_origin.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "net/http/http_request_headers.h"
@@ -164,7 +164,7 @@ base::Value::Dict AttributionReport::ReportBody() const {
 
             dict.Set("trigger_data", base::NumberToString(data.trigger_data));
 
-            dict.Set("source_type", AttributionSourceTypeToString(
+            dict.Set("source_type", attribution_reporting::SourceTypeName(
                                         common_source_info.source_type()));
 
             dict.Set("report_id",

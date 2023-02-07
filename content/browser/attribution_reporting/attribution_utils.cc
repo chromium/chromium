@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/source_type.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 
@@ -141,7 +142,8 @@ bool AttributionFilterDataMatch(const attribution_reporting::FilterData& source,
             attribution_reporting::FilterData::kSourceTypeFilterKey) {
           bool has_intersection = base::ranges::any_of(
               trigger_filter.second, [&](const std::string& value) {
-                return value == AttributionSourceTypeToString(source_type);
+                return value ==
+                       attribution_reporting::SourceTypeName(source_type);
               });
 
           return negated != has_intersection;

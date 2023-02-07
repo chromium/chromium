@@ -39,6 +39,8 @@ component("attribution_reporting") {
     "parsing_utils.h",
     "source_registration.cc",
     "source_registration.h",
+    "source_type.cc",
+    "source_type.h",
     "suitable_origin.cc",
     "suitable_origin.h",
     "trigger_attestation.cc",
@@ -49,6 +51,7 @@ component("attribution_reporting") {
 
   public_deps = [
     ":mojom",
+    ":source_type_mojom",
     "//base",
     "//components/aggregation_service",
     "//components/aggregation_service:mojom",
@@ -276,4 +279,9 @@ component("registration_mojom_traits") {
     "//url",
     "//url/mojom:mojom_traits",
   ]
+}
+
+mojom("source_type_mojom") {
+  sources = [ "source_type.mojom" ]
+  webui_module_path = "/"
 }

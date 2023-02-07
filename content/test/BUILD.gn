@@ -482,6 +482,7 @@ static_library("test_support") {
     "//cc:test_support",
     "//components/aggregation_service:mojom",
     "//components/attribution_reporting:mojom",
+    "//components/attribution_reporting:source_type_mojom",
     "//components/breadcrumbs/core",
     "//components/browsing_topics/common:common",
     "//components/network_session_configurator/common:common",

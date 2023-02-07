@@ -28,6 +28,7 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/source_type.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_attestation.h"
 #include "components/attribution_reporting/trigger_registration.h"
@@ -1494,7 +1495,7 @@ attribution_reporting::Filters AttributionFiltersForSourceType(
     AttributionSourceType source_type) {
   std::vector<std::string> values;
   values.reserve(1);
-  values.push_back(AttributionSourceTypeToString(source_type));
+  values.push_back(attribution_reporting::SourceTypeName(source_type));
 
   attribution_reporting::FilterValues filter_values;
   filter_values.reserve(1);

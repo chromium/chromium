@@ -12,10 +12,3 @@ enum ReportType {
   // https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md
   kAggregatableAttribution = 1,
 };
-
-enum SourceType {
-  // A source that was associated with a top-level navigation.
-  kNavigation = 0,
-  // A source that was not associated with a top-level navigation.
-  kEvent = 1,
-};

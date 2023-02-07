@@ -6,6 +6,7 @@ module attribution_internals.mojom;
 
 import "components/attribution_reporting/registration.mojom";
 import "components/attribution_reporting/source_registration_error.mojom";
+import "components/attribution_reporting/source_type.mojom";
 import "content/browser/attribution_reporting/attribution_reporting.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 import "url/mojom/origin.mojom";
