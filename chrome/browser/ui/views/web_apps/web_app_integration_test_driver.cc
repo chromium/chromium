@@ -92,6 +92,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -2466,36 +2467,69 @@ void WebAppIntegrationTestDriver::CheckFilesLoadedInSite(
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  AppId app_id = GetAppIdBySiteMode(site);
 
-  // TODO(cliffordcheng): Wait for multiple browsers and
-  //                      support multiple client file handling.
-  DisplayMode display_mode =
-      provider()->registrar_unsafe().GetAppEffectiveDisplayMode(app_id);
-  content::WebContents* web_contents;
-  if (display_mode == blink::mojom::DisplayMode::kBrowser) {
-    web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  } else {
-    web_contents = app_browser()->tab_strip_model()->GetActiveWebContents();
-  }
+  std::vector<std::string> expected_foo_files;
+  std::vector<std::string> expected_bar_files;
+  std::vector<std::string> found_foo_files;
+  std::vector<std::string> found_bar_files;
+  const std::string foo_file_extension = GetFileExtension(FileExtension::kFoo);
+  const std::string bar_file_extension = GetFileExtension(FileExtension::kBar);
 
-  base::flat_set<std::string> expected_content_list;
   std::vector<base::FilePath> file_paths = GetTestFilePaths(files_options);
   for (const base::FilePath& path : file_paths) {
     std::string content;
     base::ScopedAllowBlockingForTesting scoped_allow_blocking;
     base::ReadFileToString(path, &content);
-    expected_content_list.insert(content);
+
+    if (base::EndsWith(path.AsUTF8Unsafe(), foo_file_extension)) {
+      expected_foo_files.push_back(content);
+    } else if (base::EndsWith(path.AsUTF8Unsafe(), bar_file_extension)) {
+      expected_bar_files.push_back(content);
+    }
   }
 
-  base::Value test_contents =
-      EvalJs(web_contents, "launchFinishedPromise").ExtractList();
-  auto& test_content_list = test_contents.GetList();
-  for (const auto& test_content : test_content_list) {
-    EXPECT_TRUE(std::find(expected_content_list.begin(),
-                          expected_content_list.end(),
-                          test_content) != expected_content_list.end());
+  auto* browser_list = BrowserList::GetInstance();
+  // Opening multiple files at the same time can result in multiple app windows.
+  // All browser windows are checked.
+  for (Browser* browser : *browser_list) {
+    for (int i = 0; i < browser->tab_strip_model()->GetTabCount(); i++) {
+      auto site_config = GetSiteConfiguration(site);
+      content::WebContents* web_contents =
+          browser->tab_strip_model()->GetWebContentsAt(i);
+
+      if (!WebAppTabHelper::GetAppId(web_contents)) {
+        continue;
+      }
+
+      const static std::string kFooHandler  = "foo_handler.html";
+      const static std::string kBarHandler  = "bar_handler.html";
+      AppId app_id = *WebAppTabHelper::GetAppId(web_contents);
+      std::string url_str = web_contents->GetURL().spec();
+
+      if (app_id != GetAppIdBySiteMode(site) ||
+          !(base::EndsWith(url_str, kFooHandler) ||
+            base::EndsWith(url_str, kBarHandler))) {
+        continue;
+      }
+
+      base::Value test_contents =
+          EvalJs(web_contents, "launchFinishedPromise").ExtractList();
+      auto& test_content_list = test_contents.GetList();
+
+      for (const auto& test_content : test_content_list) {
+        if (base::EndsWith(url_str, kFooHandler)) {
+          found_foo_files.push_back(test_content.GetString());
+        } else {
+          DCHECK(base::EndsWith(url_str, kBarHandler));
+          found_bar_files.push_back(test_content.GetString());
+        }
+      }
+    }
   }
+  ASSERT_THAT(expected_foo_files,
+              ::testing::UnorderedElementsAreArray(found_foo_files));
+  ASSERT_THAT(expected_bar_files,
+              ::testing::UnorderedElementsAreArray(found_bar_files));
   AfterStateCheckAction();
 }
 
