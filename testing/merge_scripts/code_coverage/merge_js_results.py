@@ -23,6 +23,11 @@ def _MergeAPIArgumentParser(*args, **kwargs):
     parser.add_argument('--task-output-dir', help=argparse.SUPPRESS)
     parser.add_argument('--javascript-coverage-dir',
                         help='directory for JavaScript coverage data')
+    parser.add_argument('--chromium-src-dir',
+                        help='directory for chromium/src checkout')
+    parser.add_argument(
+        '--build-dir',
+        help='directory for the build directory in chromium/src')
     return parser
 
 
@@ -65,6 +70,13 @@ def main():
 
         logging.info('Excluding uninteresting lines from coverage')
         javascript_merger.exclude_uninteresting_lines(coverage_file_path)
+
+        logging.info(
+            'Remapping all paths relative to the src dir and removing any ' +
+            'files in the out dir')
+        javascript_merger.remap_paths_to_relative(coverage_file_path,
+                                                  params.chromium_src_dir,
+                                                  params.build_dir)
 
         logging.info('Creating lcov report at %s',
                      params.javascript_coverage_dir)

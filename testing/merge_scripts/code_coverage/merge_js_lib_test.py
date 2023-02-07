@@ -241,6 +241,45 @@ export const add = (a, b) => a + b;
         finally:
             shutil.rmtree(test_dir)
 
+    def test_paths_are_remapped_and_removed(self):
+        test_file_data = """{
+          "/path/to/checkout/chrome/browser/fileA.js": {
+            "path": "/path/to/checkout/chrome/browser/fileA.js"
+          },
+          "/path/to/checkout/out/dir/chrome/browser/fileB.js": {
+            "path": "/path/to/checkout/out/dir/chrome/browser/fileB.js"
+          },
+          "/some/random/path/fileC.js": {
+            "path": "/some/random/path/fileC.js"
+          }
+        }"""
+
+        expected_after_remap = {
+            "chrome/browser/fileA.js": {
+                "path": "chrome/browser/fileA.js"
+            }
+        }
+
+        try:
+            test_dir = tempfile.mkdtemp()
+            coverage_file_path = os.path.join(test_dir,
+                                              'coverage.json').replace(
+                                                  '\\', '/')
+
+            with open(coverage_file_path, 'w') as f:
+                f.write(test_file_data)
+
+            merger.remap_paths_to_relative(coverage_file_path,
+                                           "/path/to/checkout",
+                                           "/path/to/checkout/out/dir")
+
+            with open(coverage_file_path, 'rb') as f:
+                coverage_json = json.load(f)
+                self.assertEqual(coverage_json, expected_after_remap)
+
+        finally:
+            shutil.rmtree(test_dir)
+
 
 if __name__ == '__main__':
     unittest.main()

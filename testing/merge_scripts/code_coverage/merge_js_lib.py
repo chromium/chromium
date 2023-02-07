@@ -203,6 +203,47 @@ def exclude_uninteresting_lines(coverage_file_path):
         json.dump(coverage, f)
 
 
+def remap_paths_to_relative(coverage_file_path, chromium_src_dir, build_dir):
+    """Remap paths to be relative to the chromium_src_dir.
+
+  Args:
+    coverage_file_path (str): The path to the merged coverage.json file.
+    chromium_src_dir (str): The absolute location to chromium/src.
+    build_dir (str): The absolute path to the output dir in chromium/src.
+  """
+    with open(coverage_file_path, 'r+') as f:
+        coverage_json = json.load(f)
+        excluded_paths = 0
+        remapped_paths = 0
+
+        for key in list(coverage_json.keys()):
+
+            if key.startswith(build_dir):
+                del coverage_json[key]
+                excluded_paths += 1
+                continue
+
+            if not key.startswith(chromium_src_dir):
+                del coverage_json[key]
+                excluded_paths += 1
+                continue
+
+            relative_src_path = os.path.relpath(key, chromium_src_dir)
+            value = coverage_json[key]
+            value['path'] = relative_src_path
+            coverage_json[relative_src_path] = value
+            del coverage_json[key]
+            remapped_paths += 1
+
+        logging.info('Remapped %s paths' % (remapped_paths))
+        logging.info('Excluded %s paths' % (excluded_paths))
+
+        # Overwrite the current coverage file with new contents.
+        f.seek(0)
+        f.truncate()
+        json.dump(coverage_json, f)
+
+
 def get_raw_coverage_dirs(task_output_dir):
     """Returns a list of directories containing raw v8 coverage.
 
