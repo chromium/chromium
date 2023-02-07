@@ -52,6 +52,7 @@ source_set("promos_manager") {
   public_deps = [
     ":promos",
     "//base",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/promos_manager:types",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",

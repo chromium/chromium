@@ -46,6 +46,11 @@ bool DisableGeolocation() {
   return true;
 }
 
+bool DisablePromoManagerFullScreenPromos() {
+  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kEnablePromoManagerFullscreenPromos);
+}
+
 bool DisableUpgradeSigninPromo() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kEnableUpgradeSigninPromo);

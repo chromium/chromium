@@ -28,6 +28,9 @@ bool DisableFirstRun() {
 bool DisableGeolocation() {
   return false;
 }
+bool DisablePromoManagerFullScreenPromos() {
+  return false;
+}
 bool DisableUpgradeSigninPromo() {
   return false;
 }

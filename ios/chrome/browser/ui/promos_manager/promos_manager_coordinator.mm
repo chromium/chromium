@@ -12,6 +12,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
 #import "ios/chrome/browser/flags/system_flags.h"
@@ -146,6 +147,10 @@
 }
 
 - (void)displayPromo:(promos_manager::Promo)promo {
+  if (tests_hook::DisablePromoManagerFullScreenPromos()) {
+    return;
+  }
+
   auto handler_it = _displayHandlerPromos.find(promo);
   auto provider_it = _viewProviderPromos.find(promo);
   auto bannered_provider_it = _banneredViewProviderPromos.find(promo);

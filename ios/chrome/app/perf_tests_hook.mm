@@ -38,6 +38,10 @@ bool DisableFirstRun() {
 bool DisableGeolocation() {
   return false;
 }
+bool DisablePromoManagerFullScreenPromos() {
+  // Always disable full-screen promos for perf tests.
+  return true;
+}
 bool DisableUpgradeSigninPromo() {
   // Always disable upgrade sign-in promo for perf tests.
   return true;

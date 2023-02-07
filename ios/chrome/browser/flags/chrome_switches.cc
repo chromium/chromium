@@ -21,6 +21,10 @@ const char kDisableIOSPasswordSuggestions[] =
 const char kDisableThirdPartyKeyboardWorkaround[] =
     "disable-third-party-keyboard-workaround";
 
+// Enables the Promo Manager to display full-screen promos on app startup.
+const char kEnablePromoManagerFullscreenPromos[] =
+    "enable-promo-manager-fullscreen-promos";
+
 // Enables support for Handoff from Chrome on iOS to the default browser of
 // other Apple devices.
 const char kEnableIOSHandoffToOtherDevices[] =

@@ -40,6 +40,10 @@ bool DisableFirstRun();
 // prompt displaying for the omnibox.
 bool DisableGeolocation();
 
+// Returns true if the Promo Manager should avoid displaying full-screen promos
+// on app startup to allow tests to run unimpeded.
+bool DisablePromoManagerFullScreenPromos();
+
 // Returns true if the upgrade sign-in promo should be disabled to allow other
 // tests to run unimpeded.
 bool DisableUpgradeSigninPromo();

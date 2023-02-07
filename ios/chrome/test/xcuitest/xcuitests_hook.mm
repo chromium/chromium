@@ -34,6 +34,10 @@ bool DisableGeolocation() {
   return true;
 }
 
+bool DisablePromoManagerFullScreenPromos() {
+  return true;
+}
+
 bool DisableUpgradeSigninPromo() {
   return true;
 }
