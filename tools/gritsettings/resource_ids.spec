@@ -211,7 +211,7 @@
     "META": {"sizes": {"includes": [15]}},
     "includes": [1580],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/discards/discards_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/discards/resources.grd": {
     "META": {"sizes": {"includes": [20],}},
     "includes": [1585],
   },

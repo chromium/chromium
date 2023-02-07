@@ -2,43 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 
-ts_library("build_ts") {
-  root_dir = "."
-  out_dir = "$target_gen_dir/tsc"
-  in_files = [ "about_webapks.ts" ]
-  deps = [ "//ui/webui/resources/js:build_ts" ]
+assert(is_android)
 
-  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
-}
-
-generate_grd("build_grd") {
+build_webui("build") {
   grd_prefix = "webapks"
-  out_grd = "$target_gen_dir/resources.grd"
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  input_files = [
+  static_files = [
     "about_webapks.css",
     "about_webapks.html",
   ]
-  input_files_base_dir = rebase_path(".", "//")
-}
+  non_web_component_files = [ "about_webapks.ts" ]
 
-grit("resources") {
-  source = "$target_gen_dir/resources.grd"
-  deps = [ ":build_grd" ]
-  enable_input_discovery_for_gn_analyze = false
-  defines = chrome_grit_defines
-  outputs = [
-    "grit/webapks_resources.h",
-    "grit/webapks_resources_map.cc",
-    "grit/webapks_resources_map.h",
-    "webapks_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
+  ts_use_local_config = false
+  ts_deps = [ "//ui/webui/resources/js:build_ts" ]
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 }

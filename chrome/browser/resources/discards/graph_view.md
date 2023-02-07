@@ -38,14 +38,11 @@ Communication to the webview is done with one-way postMessage, from WebUI to
 webview.
 
 ## Incidental Detail
-In order to allow type checking the main body javascript code with the closure
-compiler, it is hosted in a separate file named `graph_doc.js`. At build time,
-the javascript is merged into the `graph_doc.html.template` file, and the
-whole lot is encoded in a data URL, which is merged into the `graph_tab.html`
-file.
-While GRIT does have an include (`<include src="">`) and a flattening mechanism,
-which will flatten resources to a data URL, this doesn't at present allow
-flattening HTML.
+In order to allow type checking the main body TypeScript code with the
+TypeScript compiler, it is hosted in a separate file named `graph_doc.ts`. At
+build time, the TypeScript code is merged into the `graph_doc_template.html`
+file, and the whole lot is encoded in a data URL, which is merged into the
+`graph_tab.html` file.
 
 ## How to debug
 To debug the contents in the webview, navigate to the development tools
