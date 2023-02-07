@@ -70,6 +70,8 @@ CreatePlatformSpecificVideoCaptureDeviceFactory(
   return std::make_unique<VideoCaptureDeviceFactoryAndroid>();
 #elif BUILDFLAG(IS_FUCHSIA)
   return std::make_unique<VideoCaptureDeviceFactoryFuchsia>();
+#elif BUILDFLAG(IS_IOS)
+  return CreateFakeVideoCaptureDeviceFactory();
 #else
   NOTIMPLEMENTED();
   return nullptr;
