@@ -35,7 +35,30 @@ class FullSystemLockDescription;
 class LockDescription;
 class WebAppUninstallJob;
 
-// Uninstall the web app.
+// This command is used to uninstall a web_app. Once started, this command will:
+// 1. Start maintaining a queue of all app_ids that need to be uninstalled.
+// 2. For each app_id:
+//     a. If an app was triggered by an external install source (like policy,
+//     default or system) and was installed by multiple sources, it will
+//     remove the source that triggered the uninstallation. Sometimes doing so
+//     might change the behavior of an app from being user uninstallable to not
+//     being user uninstallable in which case, OS integration for user
+//     uninstallation is unregistered.
+//     b. If an app uninstallation was triggered by any other source and if the
+//     app was a default app, the app_id is stored in the
+//     UserUninstalledPreinstalledWebAppPrefs so that the
+//     ExternallyManagedAppManager does not auto synchronize and reinstall the
+//     default app on next step. See
+//     `ExternallyManagedAppManager::SynchronizeInstalledApps()` for more info.
+//     c. If the app being uninstalled is a parent app with multiple sub apps,
+//     all sub app IDs are queued onto the overall uninstallation queue.
+// 3. For all other use-cases, a WebAppUninstallJob is initialized and kicked
+//    off per app_id. The job is owned by the command, and the command keeps
+//    track of all currently running jobs.
+// 4. The command ends only when both of the conditions below are successful:
+//    a. All running WebAppUninstallJobs have been completed.
+//    b. The queue that was keeping track of app_ids that needed to be
+//    uninstalled is empty.
 class WebAppUninstallCommand : public WebAppCommandTemplate<FullSystemLock> {
  public:
   using UninstallWebAppCallback =
