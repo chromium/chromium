@@ -5173,6 +5173,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.Win.DeviceFactory.CaptureApi"
+    enum="VideoCaptureApi" expires_after="2023-08-03">
+  <owner>ilnik@google.com</owner>
+  <owner>handellm@google.com</owner>
+  <owner>video-performance-team@google.com</owner>
+  <summary>
+    The Capture API that is used on Windows. This is recorded when the camera is
+    opened.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.Win.ErrorEvent" enum="Hresult"
     expires_after="2023-07-02">
   <owner>toprice@chromium.org</owner>

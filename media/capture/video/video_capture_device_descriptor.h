@@ -15,20 +15,23 @@ namespace media {
 
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class VideoCaptureApi {
-  LINUX_V4L2_SINGLE_PLANE,
-  WIN_MEDIA_FOUNDATION,
-  WIN_MEDIA_FOUNDATION_SENSOR,
-  WIN_DIRECT_SHOW,
-  MACOSX_AVFOUNDATION,
-  MACOSX_DECKLINK,
-  ANDROID_API1,
-  ANDROID_API2_LEGACY,
-  ANDROID_API2_FULL,
-  ANDROID_API2_LIMITED,
-  FUCHSIA_CAMERA3,
-  VIRTUAL_DEVICE,
-  UNKNOWN
+  UNKNOWN = 0,
+  LINUX_V4L2_SINGLE_PLANE = 1,
+  WIN_MEDIA_FOUNDATION = 2,
+  WIN_MEDIA_FOUNDATION_SENSOR = 3,
+  WIN_DIRECT_SHOW = 4,
+  MACOSX_AVFOUNDATION = 5,
+  MACOSX_DECKLINK = 6,
+  ANDROID_API1 = 7,
+  ANDROID_API2_LEGACY = 8,
+  ANDROID_API2_FULL = 9,
+  ANDROID_API2_LIMITED = 10,
+  FUCHSIA_CAMERA3 = 11,
+  VIRTUAL_DEVICE = 12,
+  kMaxValue = VIRTUAL_DEVICE,
 };
 
 // Represents capture device's support for different controls.

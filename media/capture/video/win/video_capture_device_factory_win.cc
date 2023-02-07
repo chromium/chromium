@@ -347,6 +347,9 @@ VideoCaptureDeviceFactoryWin::~VideoCaptureDeviceFactoryWin() {
 VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryWin::CreateDevice(
     const VideoCaptureDeviceDescriptor& device_descriptor) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  UMA_HISTOGRAM_ENUMERATION("Media.VideoCapture.Win.DeviceFactory.CaptureApi",
+                            device_descriptor.capture_api);
+
   switch (device_descriptor.capture_api) {
     case VideoCaptureApi::WIN_MEDIA_FOUNDATION:
       [[fallthrough]];
