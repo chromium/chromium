@@ -187,6 +187,7 @@ class ViewTransitionStyleTracker
   // These state transitions are executed in a serial order unless the
   // transition is aborted.
   enum class State { kIdle, kCapturing, kCaptured, kStarted, kFinished };
+  static const char* StateToString(State state);
 
   struct ElementData : public GarbageCollected<ElementData> {
     void Trace(Visitor* visitor) const;

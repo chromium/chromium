@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
+#include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -98,6 +99,24 @@ absl::optional<String> ComputeInsetDifference(PhysicalRect reference_rect,
 
   return String::Format("inset(%.3fpx %.3fpx %.3fpx %.3fpx);", top_offset,
                         right_offset, bottom_offset, left_offset);
+}
+
+gfx::Transform ComputeViewportTransform(const LayoutObject& object) {
+  DCHECK(object.HasLayer());
+  auto& first_fragment = object.FirstFragment();
+  DCHECK(ToRoundedPoint(first_fragment.PaintOffset()).IsOrigin())
+      << first_fragment.PaintOffset();
+  auto paint_properties = first_fragment.LocalBorderBoxProperties();
+
+  auto& root_fragment = object.GetDocument().GetLayoutView()->FirstFragment();
+  const auto& root_properties = root_fragment.LocalBorderBoxProperties();
+
+  auto transform = GeometryMapper::SourceToDestinationProjection(
+      paint_properties.Transform(), root_properties.Transform());
+  if (!transform.HasPerspective()) {
+    transform.Round2dTranslationComponents();
+  }
+  return transform;
 }
 
 }  // namespace
@@ -642,13 +661,6 @@ bool ViewTransitionStyleTracker::Start() {
   DCHECK_GE(document_->Lifecycle().GetState(),
             DocumentLifecycle::kPrePaintClean);
 
-  // We need to run post prepaint steps here to ensure that the style would be
-  // correct if computed by either the main frame or by getComputedStyle call.
-  // TODO(vmpstr): Rename to something like UpdatePseudoGeometry.
-  const bool continue_transition = RunPostPrePaintSteps();
-  DCHECK(continue_transition)
-      << "The transition should've been skipped by FlattenAndVerifyElements";
-
   // We need a style invalidation to generate new content pseudo elements for
   // new elements in the DOM.
   InvalidateStyle();
@@ -834,7 +846,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
       return false;
     }
 
-    gfx::Transform snapshot_matrix = layout_object->LocalToAbsoluteTransform();
+    auto snapshot_matrix = ComputeViewportTransform(*layout_object);
 
     if (document_->GetLayoutView()
             ->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()) {
@@ -1527,6 +1539,23 @@ bool ViewTransitionStyleTracker::SnapshotRootDidChangeSize() const {
   }
 
   return true;
+}
+
+const char* ViewTransitionStyleTracker::StateToString(State state) {
+  switch (state) {
+    case State::kIdle:
+      return "Idle";
+    case State::kCapturing:
+      return "Capturing";
+    case State::kCaptured:
+      return "Captured";
+    case State::kStarted:
+      return "Started";
+    case State::kFinished:
+      return "Finished";
+  }
+  NOTREACHED();
+  return "???";
 }
 
 }  // namespace blink

@@ -6987,3 +6987,6 @@ crbug.com/1413112 [ Mac10.15 ] virtual/reduce-accept-language/http/tests/inspect
 
 # WPT for checking if the browser supports lazy loading of non matching media queries
 crbug.com/1001078 external/wpt/css/mediaqueries/mq-non-matching-lazy-load.html [ Failure ]
+
+crbug.com/1412910 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
+crbug.com/1412910 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
