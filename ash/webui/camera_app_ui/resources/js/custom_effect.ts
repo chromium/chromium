@@ -50,7 +50,7 @@ class RippleEffect {
     this.addRipple();
   }
 
-  private async addRipple(): Promise<void> {
+  private addRipple(): void {
     const rect = this.anchor.getBoundingClientRect();
     if (rect.width === 0) {
       return;
@@ -63,8 +63,11 @@ class RippleEffect {
     style.set('width', CSS.px(this.width));
     style.set('height', CSS.px(this.height));
     this.parent.appendChild(template);
-    await animation.play(ripple);
-    ripple.remove();
+    // We don't care about waiting for the single ripple animation to end
+    // before returning.
+    void animation.play(ripple).then(() => {
+      ripple.remove();
+    });
   }
 
   /**
