@@ -117,6 +117,10 @@ html {
   width: 17vw;
 }
 
+.tangible-sync-style .title {
+  font-family: 'Google Sans', arial, sans-serif;
+}
+
 @media (prefers-color-scheme: dark) {
   :host {
     --scrollbar-background: var(--google-grey-800);

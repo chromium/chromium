@@ -159,8 +159,9 @@
 </style>
 
 <div class="flex-container">
-  <div id="leftBanner" class="banner"></div>
-  <div class="title-container">
+  <div id="leftBanner" class="banner" hidden="[[isTangibleSyncEnabled_]]"></div>
+  <img id="tangible-sync-style-left-banner" hidden="[[!isTangibleSyncEnabled_]]">
+  <div class$="title-container [[getTangibleSyncStyleClass_()]]">
     <img id="product-logo" on-click="onProductLogoTap_"
         srcset="chrome://theme/current-channel-logo@1x 1x,
                 chrome://theme/current-channel-logo@2x 2x"
@@ -187,7 +188,8 @@
       </cr-button>
     </div>
   </div>
-  <div id="rightBanner" class="banner"></div>
+  <div id="rightBanner" class="banner" hidden="[[isTangibleSyncEnabled_]]"></div>
+  <img id="tangible-sync-style-right-banner" hidden="[[!isTangibleSyncEnabled_]]">
 </div>
 <div class="footer">
   <cr-button id="browseAsGuestButton" on-click="onLaunchGuestProfileClick_">
