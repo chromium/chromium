@@ -317,6 +317,8 @@ extensions::AppLaunchSource GetAppLaunchSource(LaunchSource launch_source) {
       return extensions::AppLaunchSource::kSourceUrlHandler;
     case apps::LaunchSource::kFromLockScreen:
       return extensions::AppLaunchSource::kSourceUntracked;
+    case apps::LaunchSource::kFromAppHomePage:
+      return extensions::AppLaunchSource::kSourceAppHomePage;
   }
 }
 

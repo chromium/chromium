@@ -910,6 +910,7 @@ EnumTraits<crosapi::mojom::LaunchSource, apps::LaunchSource>::ToMojom(
     case apps::LaunchSource::kFromLockScreen:
     case apps::LaunchSource::kFromCommandLine:
     case apps::LaunchSource::kFromBackgroundMode:
+    case apps::LaunchSource::kFromAppHomePage:
       NOTREACHED();
       return crosapi::mojom::LaunchSource::kUnknown;
   }

@@ -191,7 +191,7 @@ void AppHomePageHandler::LaunchAppInternal(
         disposition == WindowOpenDisposition::NEW_WINDOW
             ? apps::LaunchContainer::kLaunchContainerWindow
             : apps::LaunchContainer::kLaunchContainerTab,
-        disposition, apps::LaunchSource::kFromNewTabPage);
+        disposition, apps::LaunchSource::kFromAppHomePage);
     params.override_url = override_url;
     apps::AppServiceProxyFactory::GetForProfile(profile_)
         ->BrowserAppLauncher()
@@ -214,7 +214,7 @@ void AppHomePageHandler::LaunchAppInternal(
         app_id, launch_container,
         old_contents ? WindowOpenDisposition::CURRENT_TAB
                      : WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        apps::LaunchSource::kFromNewTabPage);
+        apps::LaunchSource::kFromAppHomePage);
     params.override_url = override_url;
     apps::AppServiceProxyFactory::GetForProfile(profile_)
         ->BrowserAppLauncher()

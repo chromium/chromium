@@ -148,6 +148,7 @@ void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
       break;
     case apps::LaunchSource::kFromCommandLine:
     case apps::LaunchSource::kFromBackgroundMode:
+    case apps::LaunchSource::kFromAppHomePage:
       NOTREACHED();
       break;
   }
@@ -197,6 +198,7 @@ void RecordBuiltInAppLaunch(apps::BuiltInAppName built_in_app_name,
     case apps::LaunchSource::kFromProtocolHandler:
     case apps::LaunchSource::kFromUrlHandler:
     case apps::LaunchSource::kFromLockScreen:
+    case apps::LaunchSource::kFromAppHomePage:
       break;
   }
 }

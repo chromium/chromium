@@ -55,10 +55,11 @@ enum class LaunchSource {
   kFromProtocolHandler = 30,           // Protocol handler.
   kFromUrlHandler = 31,                // Url handler.
   kFromLockScreen = 32,                // Lock screen app launcher.
+  kFromAppHomePage = 33,               // App Home (chrome://apps) page.
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kFromLockScreen,
+  kMaxValue = kFromAppHomePage,
 };
 
 // Don't remove items or change the order of this enum.  It's used in

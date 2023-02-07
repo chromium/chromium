@@ -188,10 +188,11 @@ enum class AppLaunchSource {
   kSourceRunOnOsLogin = 24,     // App launched during OS login.
   kSourceProtocolHandler = 25,  // App launch via protocol handler.
   kSourceReparenting = 26,      // APP launch via reparenting.
+  kSourceAppHomePage = 27,      // App launch from chrome://apps (App Home).
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kSourceReparenting,
+  kMaxValue = kSourceAppHomePage,
 };
 
 // This enum is used for the launch type the user wants to use for an

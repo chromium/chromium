@@ -45,7 +45,8 @@ namespace app.runtime {
     installed_notification,
     context_menu,
     arc,
-    intent_url
+    intent_url,
+    app_home_page
   };
 
   // An app can be launched with a specific action in mind, for example, to

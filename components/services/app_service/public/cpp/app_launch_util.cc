@@ -86,6 +86,8 @@ ApplicationLaunchSource ConvertLaunchSourceToProtoApplicationLaunchSource(
       return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_URL_HANDLER;
     case LaunchSource::kFromLockScreen:
       return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_LOCK_SCREEN;
+    case LaunchSource::kFromAppHomePage:
+      return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_APP_HOME_PAGE;
   }
 }
 
