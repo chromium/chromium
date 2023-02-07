@@ -7,26 +7,16 @@
 #include <memory>
 
 #include "ash/public/cpp/assistant/assistant_state.h"
-#include "ash/public/cpp/shelf_config.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/root_window_controller.h"
-#include "ash/shelf/hotseat_widget.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/system_nudge_label.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/events/keyboard_capability.h"
-#include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/gfx/color_palette.h"
-#include "ui/gfx/paint_vector_icon.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/controls/styled_label.h"
-#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
@@ -55,6 +45,17 @@ bool IsAssistantAvailable() {
          state->settings_enabled().value_or(false);
 }
 
+// Determines the clipboard history keyboard shortcut icon for the user's
+// keyboard layout and Assistant availability.
+const gfx::VectorIcon& GetKeyboardShortcutIcon(bool use_launcher_key) {
+  if (use_launcher_key) {
+    return IsAssistantAvailable() ? kClipboardLauncherIcon
+                                  : kClipboardLauncherNoAssistantIcon;
+  }
+
+  return kClipboardSearchIcon;
+}
+
 }  // namespace
 
 ClipboardNudge::ClipboardNudge(ClipboardNudgeType nudge_type,
@@ -81,37 +82,17 @@ std::unique_ptr<SystemNudgeLabel> ClipboardNudge::CreateLabelView() const {
           : IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE,
       shortcut_key, &offset);
   offset = offset + shortcut_key.length();
-  // Set the label's text.
   auto label = std::make_unique<SystemNudgeLabel>(label_text, kMinLabelWidth);
 
-  // Set the keyboard shortcut icon depending on whether search button
-  // or launcher button is being used.
-  auto keyboard_shortcut_icon = std::make_unique<views::ImageView>();
-  keyboard_shortcut_icon->SetImage(ui::ImageModel::FromImageGenerator(
-      base::BindRepeating(
-          [](bool use_launcher_key, const ui::ColorProvider*) {
-            SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorPrimary);
-            if (use_launcher_key) {
-              return IsAssistantAvailable()
-                         ? gfx::CreateVectorIcon(kClipboardLauncherIcon,
-                                                 kKeyboardShortcutIconSize,
-                                                 icon_color)
-                         : gfx::CreateVectorIcon(
-                               kClipboardLauncherNoAssistantIcon,
-                               kKeyboardShortcutIconSize, icon_color);
-            }
-            return gfx::CreateVectorIcon(kClipboardSearchIcon,
-                                         kKeyboardShortcutIconSize, icon_color);
-          },
-          use_launcher_key),
-      gfx::Size(kKeyboardShortcutIconSize, kKeyboardShortcutIconSize)));
-  keyboard_shortcut_icon->SetBorder(
+  auto keyboard_shortcut_icon_image_view =
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          GetKeyboardShortcutIcon(use_launcher_key), cros_tokens::kColorPrimary,
+          kKeyboardShortcutIconSize));
+  keyboard_shortcut_icon_image_view->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::TLBR(2, 4, 0, 0)));
 
   // Transfer shortcut icon ownership to the label.
-  label->AddCustomView(std::move(keyboard_shortcut_icon), offset);
-
+  label->AddCustomView(std::move(keyboard_shortcut_icon_image_view), offset);
   return label;
 }
 
