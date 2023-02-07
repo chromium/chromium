@@ -1160,8 +1160,6 @@ void Shell::Init(
       peripheral_battery_listener_.get());
   power_event_observer_ = std::make_unique<PowerEventObserver>();
   window_cycle_controller_ = std::make_unique<WindowCycleController>();
-  multitask_menu_nudge_controller_ =
-      std::make_unique<MultitaskMenuNudgeController>();
 
   capture_mode_controller_ = std::make_unique<CaptureModeController>(
       shell_delegate_->CreateCaptureModeDelegate());
@@ -1262,6 +1260,11 @@ void Shell::Init(
   focus_rules_ = new AshFocusRules();
   focus_controller_ = std::make_unique<::wm::FocusController>(focus_rules_);
   focus_controller_->AddObserver(this);
+
+  // Needs to be constructed after `focus_controller_` as it adds itself as an
+  // observer on construction.
+  multitask_menu_nudge_controller_ =
+      std::make_unique<MultitaskMenuNudgeController>();
 
   overview_controller_ = std::make_unique<OverviewController>();
 

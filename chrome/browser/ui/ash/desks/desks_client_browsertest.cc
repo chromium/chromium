@@ -467,6 +467,10 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
                               ash::features::kEnableSavedDesks,
                               chromeos::wm::features::kWindowLayoutMenu},
         /*disabled_features=*/{ash::features::kDeskTemplateSync});
+
+    // Suppress the multitask menu nudge as we'll be checking the stacking order
+    // and the count of the active desk children.
+    ash::MultitaskMenuNudgeController::SetSuppressNudgeForTesting(true);
   }
   DesksClientTest(const DesksClientTest&) = delete;
   DesksClientTest& operator=(const DesksClientTest&) = delete;
@@ -1808,10 +1812,6 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
 // Tests that launching a template that contains a system web app will move the
 // existing instance of the system web app to the current desk.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithSWAExisting) {
-  // Suppress the multitask menu nudge as we'll be checking the stacking order
-  // of the active desk children in this test.
-  ash::MultitaskMenuNudgeController::SetSuppressNudgeForTesting(true);
-
   Profile* profile = browser()->profile();
 
   // Create the settings and help apps, which are system web apps.

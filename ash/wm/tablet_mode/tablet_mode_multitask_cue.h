@@ -11,7 +11,7 @@
 #include "ash/wm/window_state_observer.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/wm/public/activation_change_observer.h"
 
@@ -23,6 +23,9 @@ class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
                                           wm::ActivationChangeObserver,
                                           WindowStateObserver {
  public:
+  static constexpr int kCueHeight = 4;
+  static constexpr int kCueYOffset = 6;
+
   TabletModeMultitaskCue();
 
   TabletModeMultitaskCue(const TabletModeMultitaskCue&) = delete;

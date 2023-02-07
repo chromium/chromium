@@ -23,7 +23,6 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/fullscreen_window_finder.h"
-#include "ash/wm/multitask_menu_nudge_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_positioner.h"
 #include "ash/wm/window_properties.h"
@@ -394,11 +393,6 @@ void WorkspaceLayoutManager::OnPostWindowStateTypeChange(
 
   UpdateShelfVisibility();
   backdrop_controller_->OnPostWindowStateTypeChange(window_state->window());
-
-  if (window_state->IsNormalOrSnapped() || window_state->IsMaximized()) {
-    Shell::Get()->multitask_menu_nudge_controller()->MaybeShowNudge(
-        window_state->window());
-  }
 }
 
 //////////////////////////////////////////////////////////////////////////////

@@ -6,6 +6,7 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/shell.h"
+#include "ash/wm/multitask_menu_nudge_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "chromeos/ui/wm/features.h"
@@ -19,9 +20,7 @@ namespace {
 
 // Cue layout values.
 constexpr float kCornerRadius = 2;
-constexpr int kCueYOffset = 6;
 constexpr int kCueWidth = 48;
-constexpr int kCueHeight = 4;
 
 // Cue timing values.
 constexpr base::TimeDelta kCueDismissTimeout = base::Seconds(6);
@@ -61,6 +60,7 @@ void TabletModeMultitaskCue::MaybeShowCue(aura::Window* active_window) {
   // dismissed before it can be shown again. If the user activates a floatable
   // or non-maximizable window, any existing cue should still be dismissed.
   DismissCue();
+  Shell::Get()->multitask_menu_nudge_controller()->DismissNudge();
 
   // Floated windows do not have the multitask menu.
   // TODO(hewer): Consolidate checks with ones for multitask menu in a helper.
@@ -99,6 +99,9 @@ void TabletModeMultitaskCue::MaybeShowCue(aura::Window* active_window) {
 
   cue_dismiss_timer_.Start(FROM_HERE, kCueDismissTimeout, this,
                            &TabletModeMultitaskCue::OnTimerFinished);
+
+  // Show the education nudge a maximum of three times with 24h in between.
+  Shell::Get()->multitask_menu_nudge_controller()->MaybeShowNudge(window_);
 }
 
 void TabletModeMultitaskCue::DismissCue() {
@@ -111,6 +114,9 @@ void TabletModeMultitaskCue::DismissCue() {
   }
 
   cue_layer_.reset();
+
+  // The education nudge should not appear without the cue.
+  Shell::Get()->multitask_menu_nudge_controller()->DismissNudge();
 }
 
 void TabletModeMultitaskCue::OnWindowDestroying(aura::Window* window) {

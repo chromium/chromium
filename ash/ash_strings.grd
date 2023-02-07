@@ -6162,8 +6162,11 @@ New install
       </message>
 
       <!-- Multitask menu -->
-      <message name="IDS_MULTITASK_MENU_NUDGE_TEXT" desc="Text that is shown when the multitask menu nudge is displayed.">
+      <message name="IDS_MULTITASK_MENU_NUDGE_TEXT" desc="Text that is shown when the clamshell multitask menu nudge is displayed.">
         Keep hovering for more layout options
+      </message>
+      <message name="IDS_TABLET_MULTITASK_MENU_NUDGE_TEXT" desc="Text that is shown when the tablet multitask menu nudge is displayed.">
+        Swipe down for more layout options
       </message>
 
       <!-- Glanceables -->

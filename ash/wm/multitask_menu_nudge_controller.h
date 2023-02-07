@@ -6,13 +6,15 @@
 #define ASH_WM_MULTITASK_MENU_NUDGE_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
 #include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
-#include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/display/display_observer.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/wm/public/activation_change_observer.h"
 
 class PrefRegistrySimple;
 
@@ -23,10 +25,14 @@ class Layer;
 namespace ash {
 
 // Controller for showing the user education nudge for the multitask menu.
-// TODO(sammiequon|shidi): This will be extended for the multitask menu in
-// tablet mode too once that is implemented.
-class MultitaskMenuNudgeController : public aura::WindowObserver {
+class MultitaskMenuNudgeController : public aura::WindowObserver,
+                                     public wm::ActivationChangeObserver,
+                                     public display::DisplayObserver {
  public:
+  static constexpr int kTabletNudgeYOffset =
+      6 + TabletModeMultitaskCue::kCueHeight +
+      TabletModeMultitaskCue::kCueYOffset;
+
   MultitaskMenuNudgeController();
   MultitaskMenuNudgeController(const MultitaskMenuNudgeController&) = delete;
   MultitaskMenuNudgeController& operator=(const MultitaskMenuNudgeController&) =
@@ -39,10 +45,12 @@ class MultitaskMenuNudgeController : public aura::WindowObserver {
   // been shown 3 times already, or shown in the last 24 hours.
   void MaybeShowNudge(aura::Window* window);
 
+  // Closes the widget and cleans up all pointers in this class.
+  void DismissNudge();
+
   // aura::WindowObserver:
   void OnWindowParentChanged(aura::Window* window,
                              aura::Window* parent) override;
-  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
   void OnWindowBoundsChanged(aura::Window* window,
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
@@ -52,6 +60,14 @@ class MultitaskMenuNudgeController : public aura::WindowObserver {
       const gfx::Transform& new_transform) override;
   void OnWindowStackingChanged(aura::Window* window) override;
   void OnWindowDestroying(aura::Window* window) override;
+
+  // wm::ActivationChangeObserver:
+  void OnWindowActivated(ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
+
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   ASH_EXPORT static void SetSuppressNudgeForTesting(bool val);
 
@@ -65,19 +81,18 @@ class MultitaskMenuNudgeController : public aura::WindowObserver {
   // being shown.
   void OnDismissTimerEnded();
 
-  // Closes the widget and cleans up all pointers and observers in this class.
-  void DismissNudgeInternal();
-
-  // Dismisses the widget and pulse if `anchor_view` is not drawn, or `window`
-  // is not visible. Otherwise updates the bounds and reparents the two if
-  // necessary.
+  // Dismisses the widget and pulse if `window_` is not visible, or if
+  // `anchor_view_` is not drawn in clamshell mode. Otherwise updates the bounds
+  // and reparents the two if necessary.
   void UpdateWidgetAndPulse();
 
   // The animation associated with `pulse_layer_`. Runs until `pulse_layer_` is
   // destroyed or `pulse_count` reaches 3.
   void PerformPulseAnimation(int pulse_count);
 
-  base::OneShotTimer nudge_dismiss_timer_;
+  // Dismisses the clamshell nudge at the end of the timer if it is still
+  // visible. Tablet nudge is handled by the `TabletModeMultitaskCue` timer.
+  base::OneShotTimer clamshell_nudge_dismiss_timer_;
 
   views::UniqueWidgetPtr nudge_widget_;
   std::unique_ptr<ui::Layer> pulse_layer_;
