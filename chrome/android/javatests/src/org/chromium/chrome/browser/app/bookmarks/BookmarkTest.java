@@ -648,6 +648,46 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Features.DisableFeatures({ChromeFeatureList.SHOPPING_LIST})
+    public void testSearchBookmarks_DeleteFolderWithChildrenInResults() throws Exception {
+        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        BookmarkId testFolder = addFolder(TEST_FOLDER_TITLE);
+        addBookmark(TEST_PAGE_TITLE_FOO, mTestPageFoo, testFolder);
+        openBookmarkManager();
+
+        RecyclerView.Adapter adapter = getAdapter();
+        BookmarkManager manager = getBookmarkManager();
+
+        // Start searching, enter a query.
+        TestThreadUtils.runOnUiThreadBlocking(manager::openSearchUI);
+        Assert.assertEquals("Wrong state, should be searching", BookmarkUIState.STATE_SEARCHING,
+                manager.getCurrentState());
+        searchBookmarks("test");
+        Assert.assertEquals("Wrong number of items after searching.", 2,
+                mItemsContainer.getAdapter().getItemCount());
+
+        // Remove the bookmark.
+        removeBookmark(testFolder);
+
+        // The user should still be searching, and the bookmark should be gone.
+        Assert.assertEquals("Wrong state, should be searching", BookmarkUIState.STATE_SEARCHING,
+                manager.getCurrentState());
+        Assert.assertEquals("Wrong number of items after searching.", 0,
+                mItemsContainer.getAdapter().getItemCount());
+
+        // Undo the deletion.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> manager.getUndoControllerForTests().onAction(null));
+
+        // The user should still be searching, and the bookmark should reappear.
+        Assert.assertEquals("Wrong state, should be searching", BookmarkUIState.STATE_SEARCHING,
+                manager.getCurrentState());
+        Assert.assertEquals("Wrong number of items after searching.", 2,
+                mItemsContainer.getAdapter().getItemCount());
+    }
+
+    @Test
+    @MediumTest
     @Feature({"RenderTest"})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testBookmarkFolderIcon(boolean nightModeEnabled) throws Exception {

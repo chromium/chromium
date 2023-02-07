@@ -86,9 +86,17 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
             assert mDelegate != null;
             clearHighlight();
 
-            if (mDelegate.getCurrentState() == BookmarkUIState.STATE_SEARCHING
-                    && TextUtils.equals(mSearchText, EMPTY_QUERY)) {
-                mDelegate.closeSearchUI();
+            if (mDelegate.getCurrentState() == BookmarkUIState.STATE_SEARCHING) {
+                if (TextUtils.equals(mSearchText, EMPTY_QUERY)) {
+                    mDelegate.closeSearchUI();
+                } else {
+                    // We cannot rely on removing the specific list item that corresponds to the
+                    // removed node because the node might be a parent with children also shown
+                    // in the list.
+                    search(mSearchText);
+                }
+
+                return;
             }
 
             if (node.isFolder()) {
