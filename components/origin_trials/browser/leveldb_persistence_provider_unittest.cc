@@ -328,7 +328,7 @@ TEST_F(LevelDbPersistenceProviderUnitTest, QueriesBeforeDbLoad) {
 TEST_F(LevelDbPersistenceProviderUnitTest,
        LoadFromDbDoesNotOverwriteInMemoryData) {
   base::HistogramTester ht;
-  url::Origin origin = url::Origin::Create(GURL(kExampleComOrigin));
+  url::Origin db_origin = url::Origin::Create(GURL(kExampleComOrigin));
   base::flat_set<std::string> partition_sites = {kExampleComDomain};
 
   base::Time expiry = base::Time::Now() + base::Days(365);
@@ -337,18 +337,20 @@ TEST_F(LevelDbPersistenceProviderUnitTest,
   db_tokens.emplace(kTrialName, expiry,
                     blink::TrialToken::UsageRestriction::kNone, kTrialSignature,
                     partition_sites);
-  base::flat_set<PersistedTrialToken> live_tokens;
-  live_tokens.emplace(kTrialName, expiry,
-                      blink::TrialToken::UsageRestriction::kNone,
-                      kTrialSignatureAlternate, partition_sites);
 
-  db_entries_[origin.Serialize()] =
-      origin_trials_pb::ProtoFromTokens(origin, db_tokens);
+  db_entries_[db_origin.Serialize()] =
+      origin_trials_pb::ProtoFromTokens(db_origin, db_tokens);
 
   CreatePersistenceProvider();
 
   // The website used a new token, which should be saved
-  persistence_provider_->SavePersistentTrialTokens(origin, live_tokens);
+  base::flat_set<PersistedTrialToken> live_tokens;
+  url::Origin live_origin =
+      url::Origin::Create(GURL(kSecondaryExampleComOrigin));
+  live_tokens.emplace(kTrialName, expiry,
+                      blink::TrialToken::UsageRestriction::kNone,
+                      kTrialSignatureAlternate, partition_sites);
+  persistence_provider_->SavePersistentTrialTokens(live_origin, live_tokens);
 
   // Finish loading the DB
   InitLevelDb(true);
@@ -364,20 +366,73 @@ TEST_F(LevelDbPersistenceProviderUnitTest,
   ht.ExpectUniqueSample(
       "OriginTrials.PersistentOriginTrial.OriginLookupsBeforeDbLoad", 0, 1);
 
-  // We expect that a read will see the value set most recently, i.e. that set
-  // before DB load.
+  // After the load, we still expect to see the new token
   base::flat_set<PersistedTrialToken> stored_tokens =
-      persistence_provider_->GetPersistentTrialTokens(origin);
+      persistence_provider_->GetPersistentTrialTokens(live_origin);
   EXPECT_EQ(live_tokens, stored_tokens);
 
   // Check that the DB is updated with the new value as well after update
+  EXPECT_FALSE(db_entries_.empty());
+  auto lookup = db_entries_.find(live_origin.Serialize());
+  ASSERT_NE(db_entries_.end(), lookup);
+  auto db_token_array = lookup->second.tokens();
+  ASSERT_EQ(1, db_token_array.size());
+  origin_trials_pb::TrialTokenDbEntry& entry = *(db_token_array.begin());
+  EXPECT_EQ(kTrialSignatureAlternate, entry.token_signature());
+}
+
+TEST_F(LevelDbPersistenceProviderUnitTest,
+       WriteBeforeLoadShouldMergePartitions) {
+  url::Origin origin = url::Origin::Create(GURL(kExampleComOrigin));
+  base::flat_set<std::string> db_partitions = {kExampleComDomain};
+
+  base::Time expiry = base::Time::Now() + base::Days(365);
+
+  // The database has a token stored in a single partition |kExampleComDomain|.
+  base::flat_set<PersistedTrialToken> db_tokens;
+  db_tokens.emplace(kTrialName, expiry,
+                    blink::TrialToken::UsageRestriction::kNone, kTrialSignature,
+                    db_partitions);
+
+  db_entries_[origin.Serialize()] =
+      origin_trials_pb::ProtoFromTokens(origin, db_tokens);
+
+  CreatePersistenceProvider();
+
+  // Persist the same token in a new partition |kGoogleComDomain| before the
+  // database has loaded.
+  base::flat_set<std::string> live_partitions = {kGoogleComDomain};
+  base::flat_set<PersistedTrialToken> live_tokens;
+  live_tokens.emplace(kTrialName, expiry,
+                      blink::TrialToken::UsageRestriction::kNone,
+                      kTrialSignature, live_partitions);
+  persistence_provider_->SavePersistentTrialTokens(origin, live_tokens);
+
+  // Finish loading the DB
+  InitLevelDb(true);
+  FlushLoadCallback(true);
+  // Process any queued update operations
+  FlushUpdateCallback();
+
+  // We expect to see both the stored and the newly persisted partitions when
+  // we read from the persistence provider.
+  base::flat_set<PersistedTrialToken> stored_tokens =
+      persistence_provider_->GetPersistentTrialTokens(origin);
+  EXPECT_EQ(1UL, stored_tokens.size());
+  base::flat_set<std::string> expected_partitions = {kExampleComDomain,
+                                                     kGoogleComDomain};
+  EXPECT_EQ(expected_partitions, stored_tokens.begin()->partition_sites);
+
+  // Check that the DB is updated with the new value as well.
   EXPECT_FALSE(db_entries_.empty());
   auto lookup = db_entries_.find(origin.Serialize());
   ASSERT_NE(db_entries_.end(), lookup);
   auto db_token_array = lookup->second.tokens();
   ASSERT_EQ(1, db_token_array.size());
   origin_trials_pb::TrialTokenDbEntry& entry = *(db_token_array.begin());
-  ASSERT_EQ(kTrialSignatureAlternate, entry.token_signature());
+  base::flat_set<std::string> saved_partitions(entry.partition_sites().begin(),
+                                               entry.partition_sites().end());
+  EXPECT_EQ(expected_partitions, saved_partitions);
 }
 
 }  // namespace

@@ -203,16 +203,14 @@ void LevelDbPersistenceProvider::OnMapBuild(
       "OriginTrials.PersistentOriginTrial.OriginsAddedBeforeDbLoad",
       trial_status_cache_->size());
 
-  // Add/update any keys that were inserted after the data load was triggered,
-  // and persist them to the database.
-  for (const auto& pair : *trial_status_cache_) {
-    result->result_map->insert_or_assign(pair.first, pair.second);
-    result->updated_entries->insert_or_assign(pair.first, pair.second);
-  }
+  // Add/update any keys that were inserted after the data load was triggered.
+  MergeCacheIntoLoadResult(*result);
+
+  // Activate the new cache.
   trial_status_cache_.swap(result->result_map);
 
   // Update the database with any changes or deletions caused by expired
-  // tokens.
+  // tokens or pre-load writes.
   if (!result->updated_entries->empty() || !result->expired_keys->empty()) {
     std::unique_ptr<ProtoKeyEntryVector> update_vector =
         std::make_unique<ProtoKeyEntryVector>();
@@ -232,6 +230,41 @@ void LevelDbPersistenceProvider::OnMapBuild(
       "OriginTrials.PersistentOriginTrial.OriginLookupsBeforeDbLoad",
       lookups_before_db_loaded_);
   db_loaded_ = true;  // Stop counting
+}
+
+void LevelDbPersistenceProvider::MergeCacheIntoLoadResult(
+    DbLoadResult& result) {
+  // Merge the |trial_status_cache_| into the |result.result_map| to update the
+  // entries loaded from the database.
+  for (const auto& [cache_origin, cache_tokens] : *trial_status_cache_) {
+    auto find_iter = result.result_map->find(cache_origin);
+    if (find_iter == result.result_map->end()) {
+      // This is a completely new origin, add it directly.
+      (*result.result_map)[cache_origin] = cache_tokens;
+    } else {
+      // The |result.result_map| already has a set of tokens for the
+      // |cache_origin|, merge the |cache_tokens| into the |result.result_map|.
+      base::flat_set<PersistedTrialToken>& destination_set = find_iter->second;
+      for (const PersistedTrialToken& token : cache_tokens) {
+        auto token_iter = destination_set.find(token);
+        if (token_iter == destination_set.end()) {
+          // No comparable token exists in the set, insert the new one
+          destination_set.insert(token);
+        } else {
+          // The token already exists, insert the cached partition sites.
+          token_iter->partition_sites.insert(token.partition_sites.begin(),
+                                             token.partition_sites.end());
+        }
+      }
+    }
+  }
+
+  // Ensure changes are written back to the database as well by updating
+  // modified entries in |result.updated_entries|.
+  for (const auto& [cache_origin, ignored] : *trial_status_cache_) {
+    (*result.updated_entries)[cache_origin] =
+        (*result.result_map)[cache_origin];
+  }
 }
 
 base::flat_set<PersistedTrialToken>
