@@ -241,6 +241,12 @@ RecordInfo* RecordCache::Lookup(CXXRecordDecl* record) {
   // Ignore classes annotated with the GC_PLUGIN_IGNORE macro.
   if (!record || Config::IsIgnoreAnnotated(record))
     return 0;
+  // crbug.com/1412769: if we are given a declaration, get its definition before
+  // caching the record. Otherwise, this could lead to having incomplete
+  // information while inspecting the record (see bug for more information).
+  if (record->hasDefinition()) {
+    record = record->getDefinition();
+  }
   Cache::iterator it = cache_.find(record);
   if (it != cache_.end())
     return &it->second;
