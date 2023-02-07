@@ -8,10 +8,11 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/app_mode/app_session.h"
+#include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/ui/browser.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_params_proxy.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -66,6 +67,9 @@ void KioskSessionServiceLacros::InitWebKioskSession(Browser* browser,
                      weak_factory_.GetWeakPtr()),
       g_browser_process->local_state());
   app_session_->InitForWebKiosk(browser->app_name());
+  browser->profile()
+      ->GetExtensionSpecialStoragePolicy()
+      ->AddOriginWithUnlimitedStorage(url::Origin::Create(install_url));
   install_url_ = install_url;
 }
 
