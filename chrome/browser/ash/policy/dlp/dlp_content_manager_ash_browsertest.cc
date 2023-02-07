@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/time/time.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 
 #include <functional>
@@ -98,6 +99,8 @@ constexpr char kChromeUrl[] = "https://chromium.org";
 constexpr char kSrcPattern[] = "example.com";
 constexpr char kLabel[] = "label";
 const std::u16string kApplicationTitle = u"example.com";
+
+const base::TimeDelta kScreenShareResumeDelayForTesting = base::Milliseconds(0);
 
 content::MediaStreamRequest CreateMediaStreamRequest(
     content::WebContents* web_contents,
@@ -948,6 +951,19 @@ class DlpContentManagerAshScreenShareBrowserTest
         /*shift=*/false, /*alt=*/false, /*command=*/false));
   }
 
+  // Blocks the test execution to wait for a screen share to be resumed.
+  void WaitForScreenShareResume() {
+    // Changing the confidentiality or calling CheckRunningScreenShares() posts
+    // a delayed task to resume the screen share to the default task runner. By
+    // posting another task to the same runner with the same delay, we guarantee
+    // that the expectations are checked at the right time, as the tasks are
+    // executed in a sequenced manner.
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), kScreenShareResumeDelayForTesting);
+    run_loop.Run();
+  }
+
   testing::StrictMock<
       base::MockCallback<content::MediaStreamUI::StateChangeCallback>>
       state_change_cb_;
@@ -1050,6 +1066,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
                        ScreenShareNotification) {
+  helper_->SetScreenShareResumeDelay(kScreenShareResumeDelayForTesting);
   SetupReporting();
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
@@ -1089,6 +1106,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
       GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 0);
 
   helper_->ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
+  WaitForScreenShareResume();
 
   EXPECT_FALSE(
       display_service_tester.GetNotification(kScreenSharePausedNotificationId));
@@ -1319,6 +1337,7 @@ IN_PROC_BROWSER_TEST_P(CheckAndStartScreenShareTest, TabShare) {
 
 IN_PROC_BROWSER_TEST_P(CheckRunningScreenShareTest, FullScreenShare) {
   const ScreenShareTestParams& param = GetParam();
+  helper_->SetScreenShareResumeDelay(kScreenShareResumeDelayForTesting);
   SetupReporting();
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
@@ -1378,10 +1397,12 @@ IN_PROC_BROWSER_TEST_P(CheckRunningScreenShareTest, FullScreenShare) {
                         /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
 
   helper_->ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
+  WaitForScreenShareResume();
 }
 
 IN_PROC_BROWSER_TEST_P(CheckRunningScreenShareTest, TabShare) {
   const ScreenShareTestParams& param = GetParam();
+  helper_->SetScreenShareResumeDelay(kScreenShareResumeDelayForTesting);
   SetupReporting();
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
@@ -1441,6 +1462,7 @@ IN_PROC_BROWSER_TEST_P(CheckRunningScreenShareTest, TabShare) {
                         /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
 
   helper_->ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
+  WaitForScreenShareResume();
 }
 
 // Tests that a paused screen share is resumed when the user navigates to
@@ -1806,6 +1828,7 @@ class ScreenShareNavigateWebContentsTest
 IN_PROC_BROWSER_TEST_P(ScreenShareNavigateWebContentsTest, Reporting) {
   const ScreenshareNavigateTestParams& param = GetParam();
 
+  helper_->SetScreenShareResumeDelay(kScreenShareResumeDelayForTesting);
   SetupReporting();
   const GURL restricted_url(kGoogleUrl);
   const GURL reported_url(kExampleUrl);
@@ -1889,6 +1912,7 @@ IN_PROC_BROWSER_TEST_P(ScreenShareNavigateWebContentsTest, Reporting) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), reported_url));
   helper_->CheckRunningScreenShares();
   EXPECT_EQ(events_.size(), prev_events_size);
+  WaitForScreenShareResume();
 
   // Expect resume notification.
   EXPECT_TRUE(display_service_tester.GetNotification(

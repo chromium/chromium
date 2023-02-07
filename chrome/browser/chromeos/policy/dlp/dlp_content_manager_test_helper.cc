@@ -111,6 +111,12 @@ base::TimeDelta DlpContentManagerTestHelper::GetPrivacyScreenOffDelay() const {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+void DlpContentManagerTestHelper::SetScreenShareResumeDelay(
+    base::TimeDelta delay) const {
+  DCHECK(manager_);
+  manager_->SetScreenShareResumeDelayForTesting(delay);
+}
+
 DlpContentManager* DlpContentManagerTestHelper::GetContentManager() const {
   return manager_;
 }

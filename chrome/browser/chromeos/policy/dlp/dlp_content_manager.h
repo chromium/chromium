@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_observer.h"
@@ -123,6 +124,9 @@ class DlpContentManager : public DlpContentObserver,
   void SetWarnNotifierForTesting(
       std::unique_ptr<DlpWarnNotifier> warn_notifier);
   void ResetWarnNotifierForTesting();
+
+  // Sets the delay before resuming a screen share.
+  static void SetScreenShareResumeDelayForTesting(base::TimeDelta delay);
 
   // Structure that relates a list of confidential contents to the
   // corresponding restriction level.
@@ -351,6 +355,9 @@ class DlpContentManager : public DlpContentObserver,
   // Checks and stops the running screen shares if restricted content appeared
   // in the corresponding areas.
   void CheckRunningScreenShares();
+
+  // Resumes the |screen_share| after a delay if it's still necessary.
+  void MaybeResumeScreenShare(base::WeakPtr<ScreenShareInfo> screen_share);
 
   // Called back from Screen Share warning dialogs that are shown during the
   // screen share. Passes along the user's response, reflected in the value of
