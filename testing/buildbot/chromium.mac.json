@@ -22774,6 +22774,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
               "os": "Mac-12"
             }
           ],
@@ -23330,6 +23331,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
               "os": "Mac-12"
             }
           ],
@@ -23610,6 +23612,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
               "os": "Mac-12"
             }
           ],
@@ -23889,6 +23892,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
               "os": "Mac-12"
             }
           ],
@@ -24165,6 +24169,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
               "os": "Mac-12"
             }
           ],
@@ -24652,6 +24657,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
               "os": "Mac-12"
             }
           ],
@@ -25190,6 +25196,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
               "os": "Mac-12"
             }
           ],

@@ -213,6 +213,27 @@
       'ios_runtime_cache_16_2',
     ],
   },
+  'SIM_IPAD_PRO_3RD_GEN_16_2_T2': {
+    'args': [
+      '--platform',
+      'iPad Pro (12.9-inch) (3rd generation)',
+      '--version',
+      '16.2',
+    ],
+    'identifier': 'iPad Pro (12.9-inch) (3rd generation) 16.2',
+    'mixins': [
+      'ios_runtime_cache_16_2',
+    ],
+    'swarming': {
+      'dimension_sets': [
+        {
+          'cpu': 'x86-64',
+          'mac_model': 'Macmini8,1',
+          'os': 'Mac-12'
+        }
+      ],
+    }
+  },
   'SIM_IPAD_PRO_3RD_GEN_15_5': {
     'args': [
       '--platform',
