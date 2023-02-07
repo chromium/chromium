@@ -65,6 +65,8 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
   }
 
   if (!client_->IsOptimizationGuideAllowed() && allow_non_msbb_users_) {
+    RecordAboutThisSiteInteraction(AboutThisSiteInteraction::kShownWithoutMsbb);
+
     GURL more_about_url = GURL("https://www.google.com/search");
     more_about_url =
         net::AppendQueryParameter(more_about_url, "q", "About " + url.spec());

@@ -57,8 +57,9 @@ class AboutThisSiteService : public KeyedService {
     kNotShownNonGoogleDSE = 6,
     kNotShownLocalHost = 7,
     kNotShownOptimizationGuideNotAllowed = 8,
+    kShownWithoutMsbb = 9,
 
-    kMaxValue = kNotShownOptimizationGuideNotAllowed,
+    kMaxValue = kShownWithoutMsbb,
   };
 
   explicit AboutThisSiteService(std::unique_ptr<Client> client,

@@ -270,7 +270,9 @@ INSTANTIATE_TEST_SUITE_P(AllowNonMsbbUsers,
 // Tests the local creation of the Diner URL when non-MSBB users are supported.
 TEST_P(AboutThisSiteNonMsbbUsersAllowedServiceTest,
        OptimizationNotAllowedAndNonMsbbUsersAllowed) {
+  base::HistogramTester t;
   SetOptimizationGuideAllowed(false);
+
   auto info = service()->GetAboutThisSiteInfo(
       GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID());
   EXPECT_TRUE(info.has_value());
@@ -278,13 +280,19 @@ TEST_P(AboutThisSiteNonMsbbUsersAllowedServiceTest,
             "https://www.google.com/search?"
             "q=About+https%3A%2F%2Ffoo.com%2F"
             "&tbm=ilp&ctx=chrome");
+
+  t.ExpectTotalCount("Security.PageInfo.AboutThisSiteStatus", 0);
+  t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteInteraction",
+                       AboutThisSiteInteraction::kShownWithoutMsbb, 1);
 }
 
 // Tests the local creation of the Diner URL with an anchor when when non-MSBB
 // users are supported.
 TEST_P(AboutThisSiteNonMsbbUsersAllowedServiceTest,
        OptimizationNotAllowedAndNonMsbbUsersAllowedWithAnchor) {
+  base::HistogramTester t;
   SetOptimizationGuideAllowed(false);
+
   auto info = service()->GetAboutThisSiteInfo(
       GURL("https://foo.com#anchor"), ukm::UkmRecorder::GetNewSourceID());
   EXPECT_TRUE(info.has_value());
@@ -292,6 +300,10 @@ TEST_P(AboutThisSiteNonMsbbUsersAllowedServiceTest,
             "https://www.google.com/search?"
             "q=About+https%3A%2F%2Ffoo.com%2F%23anchor"
             "&tbm=ilp&ctx=chrome");
+
+  t.ExpectTotalCount("Security.PageInfo.AboutThisSiteStatus", 0);
+  t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteInteraction",
+                       AboutThisSiteInteraction::kShownWithoutMsbb, 1);
 }
 
 }  // namespace page_info
