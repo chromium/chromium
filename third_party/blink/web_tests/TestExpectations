@@ -6996,3 +6996,4 @@ crbug.com/1412910 [ Mac ] virtual/view-transition/external/wpt/css/css-view-tran
 
 # Sheriff 2023-02-07
 crbug.com/1413726 [ Mac10.15 ] http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
+crbug.com/1413770 wpt_internal/storage/estimate-usage-details-filesystem.https.tentative.any.worker.html [ Failure Pass ]
