@@ -236,8 +236,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       override;
   bool ShouldUrlUseApplicationIsolationLevel(
       content::BrowserContext* browser_context,
-      const GURL& url,
-      bool origin_matches_flag) override;
+      const GURL& url) override;
   bool IsIsolatedContextAllowedForUrl(content::BrowserContext* browser_context,
                                       const GURL& lock_url) override;
   bool IsGetDisplayMediaSetSelectAllScreensAllowed(

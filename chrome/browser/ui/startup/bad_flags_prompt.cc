@@ -142,11 +142,6 @@ static const char* kBadFlags[] = {
     // A flag to bypass the WebHID blocklist for testing purposes.
     switches::kDisableHidBlocklist,
 
-    // This flag enables restricted APIs (which unlock capabilities
-    // with a high potential for security / privacy abuse) for specified
-    // origins.
-    switches::kIsolatedAppOrigins,
-
     // This flag tells Chrome to automatically install an Isolated Web App in
     // developer mode. The flag should contain the path to an unsigned Web
     // Bundle containing the IWA. Paths will be resolved relative to the

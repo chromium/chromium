@@ -154,7 +154,6 @@ CONTENT_EXPORT extern const char kGpuStartupDialog[];
 extern const char kHideScrollbars[];
 CONTENT_EXPORT extern const char kInProcessGPU[];
 CONTENT_EXPORT extern const char kIPCConnectionTimeout[];
-CONTENT_EXPORT extern const char kIsolatedAppOrigins[];
 CONTENT_EXPORT extern const char kIsolateOrigins[];
 CONTENT_EXPORT extern const char kIsolationByDefault[];
 CONTENT_EXPORT extern const char kJavaScriptHarmony[];

@@ -4455,11 +4455,6 @@
     "expiry_milestone": 122
   },
   {
-    "name": "isolated-app-origins",
-    "owners": [ "peletskyi@google.com", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "isolation-by-default",
     "owners": [ "mkwst", "clamy" ],
     "expiry_milestone": 95

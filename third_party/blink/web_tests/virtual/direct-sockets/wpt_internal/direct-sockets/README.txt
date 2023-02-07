@@ -1,2 +1,2 @@
 # This suite runs wpt_internal/direct-sockets/ with
-# --isolated-app-origins=https://web-platform.test
+# --isolated-context-origins=https://web-platform.test

@@ -704,10 +704,8 @@ class ScopedIsolatedAppBrowserClient : public ContentBrowserClient {
     SetBrowserClientForTesting(old_client_);
   }
 
-  bool ShouldUrlUseApplicationIsolationLevel(
-      BrowserContext* browser_context,
-      const GURL& url,
-      bool origin_matches_flag) override {
+  bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
+                                             const GURL& url) override {
     return url.host() == isolated_host_;
   }
 

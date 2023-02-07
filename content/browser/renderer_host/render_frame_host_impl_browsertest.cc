@@ -5534,10 +5534,8 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
  public:
   IsolatedWebAppContentBrowserClient() = default;
 
-  bool ShouldUrlUseApplicationIsolationLevel(
-      BrowserContext* browser_context,
-      const GURL& url,
-      bool origin_matches_flag) override {
+  bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
+                                             const GURL& url) override {
     return url.host() == kAppHost;
   }
 };

@@ -2448,8 +2448,7 @@ void ChromeContentBrowserClient::PersistIsolatedOrigin(
 
 bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     content::BrowserContext* browser_context,
-    const GURL& url,
-    bool origin_matches_flag) {
+    const GURL& url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
   if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(

@@ -506,11 +506,6 @@ const char kInProcessGPU[]                  = "in-process-gpu";
 // connection from the browser before killing itself.
 const char kIPCConnectionTimeout[]          = "ipc-connection-timeout";
 
-// Enable Isolated App restrictions for a set of origins, specified as a
-// comma-separated list. For example:
-//   --isolated-app-origins=https://www.foo.com,https://www.bar.com
-const char kIsolatedAppOrigins[] = "isolated-app-origins";
-
 // Require dedicated processes for a set of origins, specified as a
 // comma-separated list. For example:
 //   --isolate-origins=https://www.foo.com,https://www.bar.com

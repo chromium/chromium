@@ -763,12 +763,6 @@ const char kDisruptiveNotificationPermissionRevocationDescription[] =
     "disruptive notifications unless the permission was granted through a "
     "prompt that informed the user about this possibility.";
 
-const char kIsolatedAppOriginsName[] = "Isolated App Origins";
-const char kIsolatedAppOriginsDescription[] =
-    "Enables Isolated App policy enforcement and related APIs (e.g. Direct "
-    "Sockets API) for development purposes for a set of origins, specified as "
-    "a comma-separated list.";
-
 const char kDoubleBufferCompositingName[] = "Double buffered compositing";
 const char kDoubleBufferCompositingDescription[] =
     "Use double buffer for compositing (instead of triple-buffering). "

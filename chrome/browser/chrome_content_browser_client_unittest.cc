@@ -856,8 +856,7 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest,
   EXPECT_EQ(CreateDefaultStoragePartitionConfig(), config);
   EXPECT_FALSE(
       test_content_browser_client.ShouldUrlUseApplicationIsolationLevel(
-          &profile_, GURL(kHttpsScope),
-          /*origin_matches_flag=*/false));
+          &profile_, GURL(kHttpsScope)));
 }
 
 TEST_F(ChromeContentBrowserClientStoragePartitionTest,
@@ -866,10 +865,9 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kIsolatedWebApps);
 
-  EXPECT_THAT(
-      test_content_browser_client.ShouldUrlUseApplicationIsolationLevel(
-          &profile_, GURL(kIsolatedAppScope), /*origin_matches_flag=*/false),
-      IsTrue());
+  EXPECT_THAT(test_content_browser_client.ShouldUrlUseApplicationIsolationLevel(
+                  &profile_, GURL(kIsolatedAppScope)),
+              IsTrue());
 }
 
 TEST_F(
@@ -881,8 +879,7 @@ TEST_F(
   scoped_feature_list.InitAndDisableFeature(features::kIsolatedWebApps);
 
   EXPECT_THAT(test_content_browser_client.ShouldUrlUseApplicationIsolationLevel(
-                  &profile_, GURL(kIsolatedAppScope),
-                  /*origin_matches_flag=*/false),
+                  &profile_, GURL(kIsolatedAppScope)),
               IsFalse());
 }
 
@@ -894,8 +891,7 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest,
   scoped_feature_list.InitAndEnableFeature(features::kIsolatedWebApps);
 
   EXPECT_THAT(test_content_browser_client.ShouldUrlUseApplicationIsolationLevel(
-                  &profile_, GURL(kHttpsScope),
-                  /*origin_matches_flag=*/false),
+                  &profile_, GURL(kHttpsScope)),
               IsFalse());
 }
 
@@ -909,17 +905,13 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest,
   EXPECT_EQ(CreateDefaultStoragePartitionConfig(), config);
   EXPECT_FALSE(
       test_content_browser_client.ShouldUrlUseApplicationIsolationLevel(
-          &profile_, GURL(kIsolatedAppScope),
-          /*origin_matches_flag=*/false));
+          &profile_, GURL(kIsolatedAppScope)));
 }
 
 TEST_F(ChromeContentBrowserClientStoragePartitionTest,
        DedicatedPartitionIsUsedForIsolatedApps) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kIsolatedWebApps);
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kIsolatedAppOrigins, kIsolatedAppScope);
 
   TestChromeContentBrowserClient test_content_browser_client;
   content::StoragePartitionConfig config =
@@ -933,8 +925,7 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest,
       /*in_memory=*/false);
   EXPECT_EQ(expected_config, config);
   EXPECT_TRUE(test_content_browser_client.ShouldUrlUseApplicationIsolationLevel(
-      &profile_, GURL(kIsolatedAppScope),
-      /*origin_matches_flag=*/false));
+      &profile_, GURL(kIsolatedAppScope)));
 }
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

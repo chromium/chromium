@@ -78,48 +78,6 @@ bool IsSiteIsolationDisabled(SiteIsolationMode site_isolation_mode) {
              site_isolation_mode);
 }
 
-url::Origin RemovePort(const url::Origin& origin) {
-  return url::Origin::CreateFromNormalizedTuple(origin.scheme(), origin.host(),
-                                                /*port=*/0);
-}
-
-base::flat_set<url::Origin> CreateIsolatedAppOriginSet() {
-  std::string cmdline_origins(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kIsolatedAppOrigins));
-
-  std::vector<std::string> origin_strings = base::SplitString(
-      cmdline_origins, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  base::flat_set<url::Origin> origin_set;
-  for (const std::string& origin_string : origin_strings) {
-    GURL allowed_url(origin_string);
-    url::Origin allowed_origin = url::Origin::Create(allowed_url);
-    if (!allowed_origin.opaque()) {
-      // Site isolation is currently based on Site URLs, which don't include
-      // ports. Ideally we'd use origin-based isolation for the origins in
-      // kIsolatedAppOrigins, but long term the origins used in the flag will
-      // be equivalent to their Site URL-ified version. Because of this, we
-      // just remove the port here instead of hooking up origin-based isolation
-      // that won't be needed long term.
-      if (allowed_url.has_port()) {
-        LOG(WARNING) << "Ignoring port number for Isolated App origin: "
-                     << allowed_origin;
-      }
-      origin_set.insert(RemovePort(allowed_origin));
-    } else {
-      LOG(ERROR) << "Error parsing Isolated App origin: " << origin_string;
-    }
-  }
-  return origin_set;
-}
-
-const base::flat_set<url::Origin>& GetIsolatedAppOriginSet() {
-  static base::NoDestructor<base::flat_set<url::Origin>> kIsolatedAppOrigins(
-      CreateIsolatedAppOriginSet());
-  return *kIsolatedAppOrigins;
-}
-
 }  // namespace
 
 // static
@@ -342,12 +300,8 @@ bool SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
     BrowserContext* browser_context,
     const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  url::Origin origin = RemovePort(url::Origin::Create(url));
-  bool origin_matches_flag = g_disable_flag_caching_for_tests
-                                 ? CreateIsolatedAppOriginSet().contains(origin)
-                                 : GetIsolatedAppOriginSet().contains(origin);
   return GetContentClient()->browser()->ShouldUrlUseApplicationIsolationLevel(
-      browser_context, url, origin_matches_flag);
+      browser_context, url);
 }
 
 // static

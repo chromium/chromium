@@ -39,10 +39,8 @@ static constexpr RenderFrameHost::WebExposedIsolationLevel
 
 class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
  public:
-  bool ShouldUrlUseApplicationIsolationLevel(
-      BrowserContext* browser_context,
-      const GURL& url,
-      bool origin_matches_flag) override {
+  bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
+                                             const GURL& url) override {
     return url.host() == GURL(kAppUrl).host();
   }
 

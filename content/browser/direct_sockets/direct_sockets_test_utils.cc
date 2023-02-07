@@ -162,8 +162,7 @@ IsolatedWebAppContentBrowserClient::IsolatedWebAppContentBrowserClient(
 
 bool IsolatedWebAppContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     BrowserContext* browser_context,
-    const GURL& url,
-    bool origin_matches_flag) {
+    const GURL& url) {
   return isolated_app_origin_ == url::Origin::Create(url);
 }
 

@@ -177,8 +177,7 @@ class IsolatedWebAppContentBrowserClient : public ShellContentBrowserClient {
       const url::Origin& isolated_app_origin);
 
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
-                                             const GURL& url,
-                                             bool origin_matches_flag) override;
+                                             const GURL& url) override;
 
   absl::optional<blink::ParsedPermissionsPolicy>
   GetPermissionsPolicyForIsolatedWebApp(

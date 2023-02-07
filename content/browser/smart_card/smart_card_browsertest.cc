@@ -78,8 +78,7 @@ class SmartCardTestContentBrowserClient : public ContentBrowserClient {
   SmartCardDelegate* GetSmartCardDelegate(
       content::BrowserContext* browser_context) override;
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
-                                             const GURL& url,
-                                             bool origin_matches_flag) override;
+                                             const GURL& url) override;
   absl::optional<blink::ParsedPermissionsPolicy>
   GetPermissionsPolicyForIsolatedWebApp(
       content::BrowserContext* browser_context,
@@ -186,8 +185,7 @@ void SmartCardTestContentBrowserClient::SetSmartCardDelegate(
 
 bool SmartCardTestContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     BrowserContext* browser_context,
-    const GURL& url,
-    bool origin_matches_flag) {
+    const GURL& url) {
   return true;
 }
 
