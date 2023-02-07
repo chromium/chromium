@@ -1701,6 +1701,22 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_InsufficientAddress) {
   ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
 }
 
+TEST_P(FormDataImporterTest, ImportAddressProfiles_MissingName) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillRequireNameForProfileImport);
+  // A full profile will be imported as usual.
+  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(
+      *ConstructDefaultProfileFormStructure());
+  // The same profile won't be imported if its name component is empty.
+  personal_data_manager_->ClearAllLocalData();
+  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
+  SetValueForType(type_value_pairs, NAME_FIRST, "");
+  SetValueForType(type_value_pairs, NAME_LAST, "");
+  ImportAddressProfileAndVerifyImportOfNoProfile(
+      *ConstructFormStructureFromTypeValuePairs(type_value_pairs));
+}
+
 // Ensure that if a verified profile already exists, aggregated profiles cannot
 // modify it in any way. This also checks the profile merging/matching algorithm
 // works: if either the full name OR all the non-empty name pieces match, the

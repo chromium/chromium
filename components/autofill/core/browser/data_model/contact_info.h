@@ -54,7 +54,7 @@ class NameInfo : public FormGroup {
 
   // Returns true if the structured-name information in |this| and |newer| are
   // mergeable. Note, returns false if |newer| is variant of |this| or vice
-  // verda. A name variant is a variation that allows for abbreviations, a
+  // versa. A name variant is a variation that allows for abbreviations, a
   // reordering and omission of the tokens.
   bool IsStructuredNameMergeable(const NameInfo& newer) const;
 

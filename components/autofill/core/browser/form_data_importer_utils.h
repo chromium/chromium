@@ -107,9 +107,9 @@ class TimestampedSameOriginQueue {
 
 // Returns true if minimum requirements for import of a given `profile` have
 // been met. An address submitted via a form must have at least the fields
-// required as determined by its country code.
-// No verification of validity of the contents is performed. This is an
-// existence check only.
+// required as determined by its country code. No verification of validity of
+// the contents is performed. This is an existence check only. Assumes `profile`
+// has been finalized.
 bool IsMinimumAddress(const AutofillProfile& profile,
                       const std::string& predicted_country_code,
                       const std::string& app_locale,

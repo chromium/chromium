@@ -726,7 +726,7 @@ void AddressComponent::RecursivelyCompleteTree() {
   for (auto* subcomponent : subcomponents_)
     subcomponent->RecursivelyCompleteTree();
 
-  // Finally format the value from the sucomponents if it is not already
+  // Finally format the value from the subcomponents if it is not already
   // assigned.
   if (GetValue().empty())
     FormatValueFromSubcomponents();
@@ -1072,7 +1072,7 @@ bool AddressComponent::MergeWithComponent(
         (comparison_values_are_substrings_of_each_other ||
          token_comparison_result.ContainEachOther())) {
       // Copy the new component if it has a canoniscalized name and a status
-      // that is not worse of it if has a better stastus even if it is not
+      // that is not worse of it if has a better status even if it is not
       // canoniscalized.
       if ((!this_has_canonical_value &&
            newer_component_has_better_or_equal_status) ||

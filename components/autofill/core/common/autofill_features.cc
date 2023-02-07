@@ -35,7 +35,7 @@ BASE_FEATURE(kAutofillAccountProfilesUnionView,
              "AutofillAccountProfilesUnionView",
              base::FEATURE_DISABLED_BY_DEFAULT);
 // Account profiles are not considered for regular updates on import, but if
-// this parameter is enabeld, they are considered for silent updates.
+// this parameter is enabled, they are considered for silent updates.
 const base::FeatureParam<bool> kAutofillEnableSilentUpdatesForAccountProfiles{
     &kAutofillAccountProfilesUnionView, "enable_silent_updates", true};
 
@@ -447,7 +447,7 @@ BASE_FEATURE(kAutofillProbableFormSubmissionInBrowser,
 
 // If we observe a sequence of fields of (street address, house number), these
 // get rationalized to (street name, house number).
-// TODO(crbug.com/1326425): Remove once feature is lanuched.
+// TODO(crbug.com/1326425): Remove once feature is launched.
 BASE_FEATURE(kAutofillRationalizeStreetAddressAndHouseNumber,
              "AutofillRationalizeStreetAddressAndHouseNumber",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -456,6 +456,12 @@ BASE_FEATURE(kAutofillRationalizeStreetAddressAndHouseNumber,
 // TODO(crbug.com/1300548): Cleanup when launched.
 BASE_FEATURE(kAutofillRemoveInaccessibleProfileValuesOnStartup,
              "AutofillRemoveInaccessibleProfileValuesOnStartup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Requires a profile to have non-empty full name to import it from a form.
+// TODO(crbug.com/1413205): Cleanup when launched.
+BASE_FEATURE(kAutofillRequireNameForProfileImport,
+             "AutofillRequireNameForProfileImport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether or not overall prediction are retrieved from the cache.

@@ -526,12 +526,12 @@ class AutofillMetrics {
   enum WalletErrorMetric {
     // Baseline metric: Issued a request to the Wallet server.
     WALLET_ERROR_BASELINE_ISSUED_REQUEST = 0,
-    // A fatal error occured while communicating with the Wallet server. This
+    // A fatal error occurred while communicating with the Wallet server. This
     // value has been deprecated.
     WALLET_FATAL_ERROR_DEPRECATED,
     // Received a malformed response from the Wallet server.
     WALLET_MALFORMED_RESPONSE,
-    // A network error occured while communicating with the Wallet server.
+    // A network error occurred while communicating with the Wallet server.
     WALLET_NETWORK_ERROR,
     // The request was malformed.
     WALLET_BAD_REQUEST,
@@ -595,53 +595,59 @@ class AutofillMetrics {
   // To record whether the upload event was sent.
   enum class UploadEventStatus { kNotSent, kSent, kMaxValue = kSent };
 
-  // Enumerates the status of the  different requirements to successfully import
-  // an address profile from a form submission.
+  // These values are persisted to UMA logs. Entries should not be renumbered
+  // and numeric values should never be reused. These values enumerates the
+  // status of the different requirements to successfully import an address
+  // profile from a form submission.
   enum class AddressProfileImportRequirementMetric {
     // The form must contain either no or only a single unique email address.
-    EMAIL_ADDRESS_UNIQUE_REQUIREMENT_FULFILLED = 0,
-    EMAIL_ADDRESS_UNIQUE_REQUIREMENT_VIOLATED = 1,
+    kEmailAddressUniqueRequirementFulfilled = 0,
+    kEmailAddressUniqueRequirementViolated = 1,
     // The form is not allowed to contain invalid field types.
-    NO_INVALID_FIELD_TYPES_REQUIREMENT_FULFILLED = 2,
-    NO_INVALID_FIELD_TYPES_REQUIREMENT_VIOLATED = 3,
+    kNoInvalidFieldTypesRequirementFulfilled = 2,
+    kNoInvalidFieldTypesRequirementViolated = 3,
     // If required by |CountryData|, the form must contain a city entry.
-    CITY_REQUIREMENT_FULFILLED = 4,
-    CITY_REQUIREMENT_VIOLATED = 5,
+    kCityRequirementFulfilled = 4,
+    kCityRequirementViolated = 5,
     // If required by |CountryData|, the form must contain a state entry.
-    STATE_REQUIREMENT_FULFILLED = 6,
-    STATE_REQUIREMENT_VIOLATED = 7,
+    kStateRequirementFulfilled = 6,
+    kStateRequirementViolated = 7,
     // If required by |CountryData|, the form must contain a ZIP entry.
-    ZIP_REQUIREMENT_FULFILLED = 8,
-    ZIP_REQUIREMENT_VIOLATED = 9,
+    kZipRequirementFulfilled = 8,
+    kZipRequirementViolated = 9,
     // If present, the email address must be valid.
-    EMAIL_VALID_REQUIREMENT_FULFILLED = 10,
-    EMAIL_VALID_REQUIREMENT_VIOLATED = 11,
+    kEmailValidRequirementFulfilled = 10,
+    kEmailValidRequirementViolated = 11,
     // If present, the country must be valid.
-    COUNTRY_VALID_REQUIREMENT_FULFILLED = 12,
-    COUNTRY_VALID_REQUIREMENT_VIOLATED = 13,
+    kCountryValidRequirementFulfilled = 12,
+    kCountryValidRequirementViolated = 13,
     // If present, the state must be valid (if verifiable).
-    STATE_VALID_REQUIREMENT_FULFILLED = 14,
-    STATE_VALID_REQUIREMENT_VIOLATED = 15,
+    kStateValidRequirementFulfilled = 14,
+    kStateValidRequirementViolated = 15,
     // If present, the ZIP must be valid (if verifiable).
-    ZIP_VALID_REQUIREMENT_FULFILLED = 16,
-    ZIP_VALID_REQUIREMENT_VIOLATED = 17,
+    kZipValidRequirementFulfilled = 16,
+    kZipValidRequirementViolated = 17,
     // 18 and 19 are deprecated, as phone numbers are not a requirement anymore.
     // Indicates the overall status of the import requirements check.
-    OVERALL_REQUIREMENT_FULFILLED = 20,
-    OVERALL_REQUIREMENT_VIOLATED = 21,
+    kOverallRequirementFulfilled = 20,
+    kOverallRequirementViolated = 21,
     // If required by |CountryData|, the form must contain a line1 entry.
-    LINE1_REQUIREMENT_FULFILLED = 22,
-    LINE1_REQUIREMENT_VIOLATED = 23,
+    kLine1RequirementFulfilled = 22,
+    kLine1RequirementViolated = 23,
     // If required by |CountryData|, the form must contain a either a zip or a
     // state entry.
-    ZIP_OR_STATE_REQUIREMENT_FULFILLED = 24,
-    ZIP_OR_STATE_REQUIREMENT_VIOLATED = 25,
+    kZipOrStateRequirementFulfilled = 24,
+    kZipOrStateRequirementViolated = 25,
     // If required by |CountryData|, the form must contain a either an address
     // line 1 or a house number.
-    LINE1_OR_HOUSE_NUMBER_REQUIREMENT_FULFILLED = 26,
-    LINE1_OR_HOUSE_NUMBER_REQUIREMENT_VIOLATED = 27,
+    kLine1OrHouseNumberRequirementFulfilled = 26,
+    kLine1OrHouseNumberRequirementViolated = 27,
+    // If required by `kAutofillRequireNameForProfileImportsFromForms` feature,
+    // the form must contain a non-empty name.
+    kNameRequirementFulfilled = 28,
+    kNameRequirementViolated = 29,
     // Must be set to the last entry.
-    kMaxValue = LINE1_OR_HOUSE_NUMBER_REQUIREMENT_VIOLATED,
+    kMaxValue = kNameRequirementViolated,
   };
 
   // Represents the status of the field type requirements that are specific to

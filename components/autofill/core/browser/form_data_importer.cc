@@ -649,25 +649,22 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   // Collect metrics regarding the requirements for an address profile import.
   AutofillMetrics::LogAddressFormImportRequirementMetric(
       has_multiple_distinct_email_addresses
-          ? AddressImportRequirement::EMAIL_ADDRESS_UNIQUE_REQUIREMENT_VIOLATED
-          : AddressImportRequirement::
-                EMAIL_ADDRESS_UNIQUE_REQUIREMENT_FULFILLED);
+          ? AddressImportRequirement::kEmailAddressUniqueRequirementViolated
+          : AddressImportRequirement::kEmailAddressUniqueRequirementFulfilled);
 
   AutofillMetrics::LogAddressFormImportRequirementMetric(
       has_invalid_field_types
-          ? AddressImportRequirement::
-                NO_INVALID_FIELD_TYPES_REQUIREMENT_VIOLATED
-          : AddressImportRequirement::
-                NO_INVALID_FIELD_TYPES_REQUIREMENT_FULFILLED);
+          ? AddressImportRequirement::kNoInvalidFieldTypesRequirementViolated
+          : AddressImportRequirement::kNoInvalidFieldTypesRequirementFulfilled);
 
   AutofillMetrics::LogAddressFormImportRequirementMetric(
       has_invalid_country
-          ? AddressImportRequirement::COUNTRY_VALID_REQUIREMENT_VIOLATED
-          : AddressImportRequirement::COUNTRY_VALID_REQUIREMENT_FULFILLED);
+          ? AddressImportRequirement::kCountryValidRequirementViolated
+          : AddressImportRequirement::kCountryValidRequirementFulfilled);
 
   AutofillMetrics::LogAddressFormImportRequirementMetric(
-      all_fulfilled ? AddressImportRequirement::OVERALL_REQUIREMENT_FULFILLED
-                    : AddressImportRequirement::OVERALL_REQUIREMENT_VIOLATED);
+      all_fulfilled ? AddressImportRequirement::kOverallRequirementFulfilled
+                    : AddressImportRequirement::kOverallRequirementViolated);
 
   bool candidate_has_structured_data =
       base::FeatureList::IsEnabled(
@@ -692,7 +689,7 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   import_candidate.import_metadata = import_metadata;
   address_profile_import_candidates->push_back(import_candidate);
 
-  // Return true if a compelete importable profile was found.
+  // Return true if a complete importable profile was found.
   return all_fulfilled;
 }
 

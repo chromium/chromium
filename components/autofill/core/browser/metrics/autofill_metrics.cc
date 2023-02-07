@@ -216,7 +216,7 @@ const char* GetSaveAndUpdatePromptDecisionMetricsSuffix(
 // }.
 //
 // Clients must ensure that |field_type| is one of the types Chrome supports
-// natively, e.g. |field_type| must not be a billng address.
+// natively, e.g. |field_type| must not be a billing address.
 // NOTE: This is defined outside of the anonymous namespace so that it can be
 // accessed from the unit test file. It is not exposed in the header file,
 // however, because it is not intended for consumption outside of the metrics
@@ -448,7 +448,7 @@ int GetFieldTypeGroupPredictionQualityMetric(
 }
 
 // This function encodes the integer value of a |ServerFieldType| and the
-// metric value of an |AutofilledFieldUserEdtingStatus| into a 16 bit integer.
+// metric value of an |AutofilledFieldUserEditingStatus| into a 16 bit integer.
 // The lower four bits are used to encode the editing status and the higher
 // 12 bits are used to encode the field type.
 int GetFieldTypeUserEditStatusMetric(
@@ -549,7 +549,7 @@ ServerFieldType GetActualFieldType(const ServerFieldTypeSet& possible_types,
 
 // Check if the value of |field| is same as one of the previously autofilled
 // values. This indicates a bad rationalization if |field| has
-// only_fill_when_focued set to true.
+// only_fill_when_focused set to true.
 bool DuplicatedFilling(const FormStructure& form, const AutofillField& field) {
   for (const auto& form_field : form) {
     if (field.value == form_field->value && form_field->is_autofilled)

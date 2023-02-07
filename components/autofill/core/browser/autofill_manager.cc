@@ -266,8 +266,9 @@ void AutofillManager::OnDidFillAutofillFormData(
 void AutofillManager::OnFormSubmitted(const FormData& form,
                                       const bool known_success,
                                       const mojom::SubmissionSource source) {
-  if (!IsValidFormData(form))
+  if (!IsValidFormData(form)) {
     return;
+  }
 
   NotifyObservers(&Observer::OnBeforeFormSubmitted);
   NotifyObservers(&Observer::OnFormSubmitted);
