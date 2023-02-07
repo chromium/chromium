@@ -42,6 +42,7 @@ class VirtualTimeTest : public SimTest {
     return WebView().Scheduler()->GetVirtualTimeController();
   }
   void SetUp() override {
+    ThreadState::Current()->CollectAllGarbageForTesting();
     SimTest::SetUp();
     GetVirtualTimeController()->EnableVirtualTime(base::Time());
   }

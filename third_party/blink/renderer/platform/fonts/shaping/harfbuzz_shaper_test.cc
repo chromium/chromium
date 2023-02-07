@@ -1870,7 +1870,13 @@ TEST_F(HarfBuzzShaperTest, ShapeVerticalWithSubpixelPositionIsRounded) {
   }
 }
 
-TEST_F(HarfBuzzShaperTest, EmojiPercentage) {
+// Broken on iOS: https://crbug.com/1194323
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_EmojiPercentage DISABLED_EmojiPercentage
+#else
+#define MAYBE_EmojiPercentage EmojiPercentage
+#endif
+TEST_F(HarfBuzzShaperTest, MAYBE_EmojiPercentage) {
 #if BUILDFLAG(IS_MAC)
   if (base::mac::IsAtLeastOS11())
     GTEST_SKIP() << "Broken on macOS >= 11: https://crbug.com/1194323";
