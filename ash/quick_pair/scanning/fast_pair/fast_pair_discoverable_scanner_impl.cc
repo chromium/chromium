@@ -59,6 +59,17 @@ bool IsSupportedNotificationType(const nearby::fastpair::Device& device) {
              nearby::fastpair::NotificationType::FAST_PAIR_ONE;
 }
 
+bool IsSupportedInteractionType(const nearby::fastpair::Device& device) {
+  // We only allow-list interaction types that should trigger a pairing
+  // notification, since we currently only support pairing. Currently, we
+  // need to exclude AUTO_LAUNCH since that is used for Smart Setup (Quick
+  // Start).
+  return device.interaction_type() ==
+             nearby::fastpair::InteractionType::INTERACTION_TYPE_UNKNOWN ||
+         device.interaction_type() ==
+             nearby::fastpair::InteractionType::NOTIFICATION;
+}
+
 }  // namespace
 
 namespace ash {
@@ -206,6 +217,16 @@ void FastPairDiscoverableScannerImpl::OnDeviceMetadataRetrieved(
   if (!IsSupportedNotificationType(device_metadata->GetDetails())) {
     QP_LOG(WARNING) << __func__
                     << ": Unsupported notification type for Fast Pair. "
+                       "Ignoring this advertisement";
+    return;
+  }
+
+  // Ignore advertisements for unsupported interaction types, such as
+  // AUTO_LAUNCH which should trigger Smart Setup (Quick Start) instead of
+  // beginning Fast Pair.
+  if (!IsSupportedInteractionType(device_metadata->GetDetails())) {
+    QP_LOG(WARNING) << __func__
+                    << ": Unsupported interaction type for Fast Pair. "
                        "Ignoring this advertisement";
     return;
   }

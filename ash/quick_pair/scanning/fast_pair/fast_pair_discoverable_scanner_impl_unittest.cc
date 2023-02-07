@@ -260,15 +260,17 @@ TEST_F(FastPairDiscoverableScannerImplTest, WrongDeviceType) {
 }
 
 TEST_F(FastPairDiscoverableScannerImplTest, UnspecifiedNotificationType) {
-  // Set metadata to mimic a device that doesn't specify the notification
-  // or device type. Since we aren't sure what this device is, we'll show
-  // the notification to be safe.
+  // Set metadata to mimic a device that doesn't specify the notification type,
+  // interaction type, or device type. Since we aren't sure what this device is,
+  // we'll show the notification to be safe.
   nearby::fastpair::Device metadata;
   metadata.set_trigger_distance(2);
   metadata.set_device_type(
       nearby::fastpair::DeviceType::DEVICE_TYPE_UNSPECIFIED);
   metadata.set_notification_type(
       nearby::fastpair::NotificationType::NOTIFICATION_TYPE_UNSPECIFIED);
+  metadata.set_interaction_type(
+      nearby::fastpair::InteractionType::INTERACTION_TYPE_UNKNOWN);
   repository_->SetFakeMetadata(kValidModelId, metadata);
 
   EXPECT_CALL(found_device_callback_, Run).Times(1);
@@ -279,13 +281,16 @@ TEST_F(FastPairDiscoverableScannerImplTest, UnspecifiedNotificationType) {
 
 TEST_F(FastPairDiscoverableScannerImplTest, V1NotificationType) {
   // Set metadata to mimic a V1 device which advertises with no device
-  // type and a notification type of FAST_PAIR_ONE.
+  // type, interaction type of notification, and a notification type of
+  // FAST_PAIR_ONE.
   nearby::fastpair::Device metadata;
   metadata.set_trigger_distance(2);
   metadata.set_device_type(
       nearby::fastpair::DeviceType::DEVICE_TYPE_UNSPECIFIED);
   metadata.set_notification_type(
       nearby::fastpair::NotificationType::FAST_PAIR_ONE);
+  metadata.set_interaction_type(
+      nearby::fastpair::InteractionType::NOTIFICATION);
   repository_->SetFakeMetadata(kValidModelId, metadata);
 
   EXPECT_CALL(found_device_callback_, Run).Times(1);
@@ -296,12 +301,15 @@ TEST_F(FastPairDiscoverableScannerImplTest, V1NotificationType) {
 
 TEST_F(FastPairDiscoverableScannerImplTest, V2NotificationType) {
   // Set metadata to mimic a V2 device which advertises with a device
-  // type of TRUE_WIRELESS_HEADPHONES and a notification type of FAST_PAIR.
+  // type of TRUE_WIRELESS_HEADPHONES, interaction type of notification, and a
+  // notification type of FAST_PAIR.
   nearby::fastpair::Device metadata;
   metadata.set_trigger_distance(2);
   metadata.set_device_type(
       nearby::fastpair::DeviceType::TRUE_WIRELESS_HEADPHONES);
   metadata.set_notification_type(nearby::fastpair::NotificationType::FAST_PAIR);
+  metadata.set_interaction_type(
+      nearby::fastpair::InteractionType::NOTIFICATION);
   repository_->SetFakeMetadata(kValidModelId, metadata);
 
   EXPECT_CALL(found_device_callback_, Run).Times(1);
@@ -312,13 +320,35 @@ TEST_F(FastPairDiscoverableScannerImplTest, V2NotificationType) {
 
 TEST_F(FastPairDiscoverableScannerImplTest, WrongNotificationType) {
   // Set metadata to mimic a Fitbit wearable which advertises with no
-  // device type and a notification type of APP_LAUNCH.
+  // device type, interaction type of notification, and a notification type of
+  // APP_LAUNCH.
   nearby::fastpair::Device metadata;
   metadata.set_trigger_distance(2);
   metadata.set_device_type(
       nearby::fastpair::DeviceType::DEVICE_TYPE_UNSPECIFIED);
   metadata.set_notification_type(
       nearby::fastpair::NotificationType::APP_LAUNCH);
+  metadata.set_interaction_type(
+      nearby::fastpair::InteractionType::NOTIFICATION);
+  repository_->SetFakeMetadata(kValidModelId, metadata);
+
+  EXPECT_CALL(found_device_callback_, Run).Times(0);
+  device::BluetoothDevice* device = GetDevice(kValidModelId);
+  scanner_->NotifyDeviceFound(device);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairDiscoverableScannerImplTest, WrongInteractionType) {
+  // Set metadata to mimic a Smart Setup advertisement which advertises with
+  // no device type, interaction type of AUTO_LAUNCH, and a notification type of
+  // FAST_PAIR_ONE.
+  nearby::fastpair::Device metadata;
+  metadata.set_trigger_distance(2);
+  metadata.set_device_type(
+      nearby::fastpair::DeviceType::DEVICE_TYPE_UNSPECIFIED);
+  metadata.set_notification_type(
+      nearby::fastpair::NotificationType::FAST_PAIR_ONE);
+  metadata.set_interaction_type(nearby::fastpair::InteractionType::AUTO_LAUNCH);
   repository_->SetFakeMetadata(kValidModelId, metadata);
 
   EXPECT_CALL(found_device_callback_, Run).Times(0);
