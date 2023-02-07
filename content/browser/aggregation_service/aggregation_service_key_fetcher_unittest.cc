@@ -81,7 +81,10 @@ class AggregationServiceKeyFetcherTest : public testing::Test {
     run_loop.Run();
   }
 
-  void ResetKeyFetcher() { fetcher_.reset(); }
+  void ResetKeyFetcher() {
+    network_fetcher_ = nullptr;
+    fetcher_.reset();
+  }
 
  protected:
   const base::Clock& clock() const { return *task_environment_.GetMockClock(); }
@@ -90,7 +93,6 @@ class AggregationServiceKeyFetcherTest : public testing::Test {
   TestAggregationServiceStorageContext storage_context_;
   std::unique_ptr<AggregationServiceKeyFetcher> fetcher_;
   raw_ptr<MockNetworkFetcher> network_fetcher_;
-
   base::MockCallback<FetchCallback> callback_;
 };
 
