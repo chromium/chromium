@@ -88,6 +88,8 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // mojom::AutofillAgent:
   void TriggerReparse() override;
+  void TriggerReparseWithResponse(
+      base::OnceCallback<void(bool)> callback) override;
   void FillOrPreviewForm(const FormData& form,
                          mojom::RendererFormDataAction action) override;
   void FieldTypePredictionsAvailable(
@@ -377,6 +379,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   base::OneShotTimer select_option_change_batch_timer_;
   base::OneShotTimer datalist_option_change_batch_timer_;
   base::OneShotTimer reparse_timer_;
+  base::OneShotTimer reparse_with_response_timer_;
 
   // Will be set when accessibility mode changes, depending on what the new mode
   // is.

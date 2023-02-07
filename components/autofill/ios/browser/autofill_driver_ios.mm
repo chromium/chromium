@@ -145,7 +145,8 @@ void AutofillDriverIOS::SetShouldSuppressKeyboard(bool suppress) {
   NOTIMPLEMENTED();
 }
 
-void AutofillDriverIOS::TriggerReparseInAllFrames() {
+void AutofillDriverIOS::TriggerReparseInAllFrames(
+    base::OnceCallback<void(bool)> trigger_reparse_finished_callback) {
   NOTIMPLEMENTED();
 }
 

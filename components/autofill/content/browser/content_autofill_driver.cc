@@ -8,6 +8,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/barrier_callback.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
@@ -71,9 +72,30 @@ void ContentAutofillDriver::TriggerReparse() {
   GetAutofillAgent()->TriggerReparse();
 }
 
-void ContentAutofillDriver::TriggerReparseInAllFrames() {
-  // TODO(crbug.com/1334642): Implement.
-  NOTIMPLEMENTED();
+void ContentAutofillDriver::TriggerReparseInAllFrames(
+    base::OnceCallback<void(bool success)> trigger_reparse_finished_callback) {
+  std::vector<ContentAutofillDriver*> drivers;
+  render_frame_host()->GetMainFrame()->ForEachRenderFrameHost(
+      [&drivers](content::RenderFrameHost* rfh) {
+        if (rfh->IsActive()) {
+          if (auto* driver = GetForRenderFrameHost(rfh)) {
+            drivers.push_back(driver);
+          }
+        }
+      });
+  auto barrier_callback = base::BarrierCallback<bool>(
+      drivers.size(),
+      base::BindOnce(
+          [](base::OnceCallback<void(bool success)>
+                 trigger_reparse_finished_callback,
+             const std::vector<bool>& successes) {
+            std::move(trigger_reparse_finished_callback)
+                .Run(base::ranges::all_of(successes, base::identity()));
+          },
+          std::move(trigger_reparse_finished_callback)));
+  for (ContentAutofillDriver* driver : drivers) {
+    driver->GetAutofillAgent()->TriggerReparseWithResponse(barrier_callback);
+  }
 }
 
 // static

@@ -163,7 +163,6 @@ class ContentAutofillDriver : public AutofillDriver,
   void PopupHidden() override;
   net::IsolationInfo IsolationInfo() override;
   void SetShouldSuppressKeyboard(bool suppress) override;
-  void TriggerReparseInAllFrames() override;
 
   // Called to inform the browser that in the field with `form_global_id` and
   // `field_global_id`, the context menu was triggered. This is different from
@@ -254,6 +253,9 @@ class ContentAutofillDriver : public AutofillDriver,
       const mojom::AutofillState state) override;
   void SendFieldsEligibleForManualFillingToRenderer(
       const std::vector<FieldGlobalId>& fields) override;
+  void TriggerReparseInAllFrames(
+      base::OnceCallback<void(bool success)> trigger_reparse_finished_callback)
+      override;
 
   // mojom::AutofillDriver:
   // Events triggered by the renderer. These events are routed by

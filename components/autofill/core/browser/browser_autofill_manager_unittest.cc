@@ -9924,7 +9924,6 @@ TEST_F(BrowserAutofillManagerTest, HideAutofillPopupAndOtherPopups) {
               HideAutofillPopup(PopupHidingReason::kRendererEvent));
   EXPECT_CALL(*touch_to_fill_delegate_, HideTouchToFill);
   EXPECT_CALL(autofill_client_, HideFastCheckout(/*allow_further_runs=*/false));
-  EXPECT_CALL(autofill_client_, HideFastCheckout(/*allow_further_runs=*/true));
   browser_autofill_manager_->OnHidePopup();
 }
 
@@ -9935,7 +9934,6 @@ TEST_F(BrowserAutofillManagerTest, OnDidEndTextFieldEditing) {
   EXPECT_CALL(*touch_to_fill_delegate_, HideTouchToFill).Times(0);
   EXPECT_CALL(autofill_client_, HideFastCheckout(/*allow_further_runs=*/false))
       .Times(0);
-  EXPECT_CALL(autofill_client_, HideFastCheckout(/*allow_further_runs=*/true));
   browser_autofill_manager_->OnDidEndTextFieldEditing();
 }
 

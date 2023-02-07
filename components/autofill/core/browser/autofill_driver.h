@@ -73,8 +73,13 @@ class AutofillDriver {
   // the last-queried source remembered by `ContentAutofillRouter`.
   virtual void SetShouldSuppressKeyboard(bool suppress) = 0;
 
-  // Triggers a reparse on all frames of the same frame tree.
-  virtual void TriggerReparseInAllFrames() = 0;
+  // Triggers a reparse on all frames of the same frame tree. Calls
+  // `trigger_reparse_finished_callback` when all frames reported back being
+  // done. If `success == false`, reparse was triggered while another reparse
+  // was ongoing.
+  virtual void TriggerReparseInAllFrames(
+      base::OnceCallback<void(bool success)>
+          trigger_reparse_finished_callback) = 0;
 
   // Returns the ax tree id associated with this driver.
   virtual ui::AXTreeID GetAxTreeId() const = 0;

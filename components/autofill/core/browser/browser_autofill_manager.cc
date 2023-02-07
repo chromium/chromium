@@ -569,12 +569,6 @@ BrowserAutofillManager::~BrowserAutofillManager() {
   // SimpleURLLoaders, which would immediately cancel the uploads.
   // As a consequence of this, votes are lost if the user generates blur votes
   // and closes the tab before the votes are sent (due to a navigation).
-
-  // Hides Fast Checkout UI, if required. Needs to use `unsafe_client()` instead
-  // of `client()` because the destructor can be called during prerendering.
-  // This call is also important to communicate the destruction of the
-  // `AutofillDriver` object to `FastCheckoutClient`.
-  unsafe_client()->HideFastCheckout(/*allow_further_runs=*/true);
 }
 
 base::WeakPtr<AutofillManager> BrowserAutofillManager::GetWeakPtr() {
@@ -2062,7 +2056,6 @@ void BrowserAutofillManager::Reset() {
   initial_interaction_timestamp_ = TimeTicks();
   autofill_suggestion_method_ = AutofillSuggestionMethod::kUnknown;
   external_delegate_->Reset();
-  unsafe_client()->HideFastCheckout(/*allow_further_runs=*/true);
   touch_to_fill_delegate_->Reset();
   filling_context_.clear();
 }

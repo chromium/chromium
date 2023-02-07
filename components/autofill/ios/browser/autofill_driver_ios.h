@@ -75,7 +75,9 @@ class AutofillDriverIOS : public AutofillDriver {
   void SendFieldsEligibleForManualFillingToRenderer(
       const std::vector<FieldGlobalId>& fields) override;
   void SetShouldSuppressKeyboard(bool suppress) override;
-  void TriggerReparseInAllFrames() override;
+  void TriggerReparseInAllFrames(
+      base::OnceCallback<void(bool)> trigger_reparse_finished_callback)
+      override;
 
   AutofillClient* client() { return client_; }
 

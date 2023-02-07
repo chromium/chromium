@@ -14,6 +14,11 @@ interface AutofillAgent {
   // a subframe and it is not known which form is its parent.
   TriggerReparse();
 
+  // Triggers a reparse of the new forms and notifies the caller when it's done.
+  // If `success == false`, reparse-with-response was triggered while another
+  // reparse-with-response was ongoing.
+  TriggerReparseWithResponse() => (bool success);
+
   // Instructs the renderer to fill or preview the active form with the given
   // form data.
   FillOrPreviewForm(FormData form,

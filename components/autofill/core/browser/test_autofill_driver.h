@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_driver.h"
@@ -76,7 +77,9 @@ class TestAutofillDriver : public ContentAutofillDriver {
   void SendFieldsEligibleForManualFillingToRenderer(
       const std::vector<FieldGlobalId>& fields) override {}
   void SetShouldSuppressKeyboard(bool suppress) override {}
-  void TriggerReparseInAllFrames() override {}
+  void TriggerReparseInAllFrames(
+      base::OnceCallback<void(bool)> trigger_reparse_finished_callback)
+      override {}
 
   // Methods unique to TestAutofillDriver that tests can use to specialize
   // functionality.

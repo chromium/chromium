@@ -9,7 +9,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/content/renderer/autofill_agent_test_api.h"
@@ -275,6 +277,24 @@ TEST_F(AutofillAgentTestWithFeatures, FormsSeen_RemovedForm) {
     // Called explicitly because the event is throttled.
     test_api().DidAssociateFormControlsDynamically();
   }
+}
+
+TEST_F(AutofillAgentTestWithFeatures, TriggerReparseWithResponse) {
+  base::MockOnceCallback<void(bool)> mock_callback;
+  EXPECT_CALL(autofill_driver_, FormsSeen).Times(0);
+  EXPECT_CALL(mock_callback, Run).Times(0);
+  autofill_agent_->TriggerReparseWithResponse(mock_callback.Get());
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+  EXPECT_CALL(autofill_driver_, FormsSeen);
+  EXPECT_CALL(mock_callback, Run(true));
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+}
+
+TEST_F(AutofillAgentTestWithFeatures, TriggerReparseWithResponse_CalledTwice) {
+  base::MockOnceCallback<void(bool)> mock_callback;
+  autofill_agent_->TriggerReparseWithResponse(mock_callback.Get());
+  EXPECT_CALL(mock_callback, Run(false));
+  autofill_agent_->TriggerReparseWithResponse(mock_callback.Get());
 }
 
 }  // namespace autofill
