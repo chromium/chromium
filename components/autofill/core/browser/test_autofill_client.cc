@@ -45,6 +45,10 @@ bool TestAutofillClient::IsOffTheRecord() {
   return is_off_the_record_;
 }
 
+AutofillDownloadManager* TestAutofillClient::GetDownloadManager() {
+  return download_manager_.get();
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 TestAutofillClient::GetURLLoaderFactory() {
   return test_shared_loader_factory_;

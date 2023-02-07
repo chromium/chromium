@@ -521,10 +521,7 @@ BrowserAutofillManager::BrowserAutofillManager(
     AutofillClient* client,
     const std::string& app_locale,
     EnableDownloadManager enable_download_manager)
-    : AutofillManager(driver,
-                      client,
-                      client->GetChannel(),
-                      enable_download_manager),
+    : AutofillManager(driver, client),
       external_delegate_(
           std::make_unique<AutofillExternalDelegate>(this, driver)),
       touch_to_fill_delegate_(std::make_unique<TouchToFillDelegateImpl>(this)),

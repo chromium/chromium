@@ -1223,10 +1223,7 @@ void TabImpl::InitializeAutofillDriver() {
   autofill::ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
       web_contents, AutofillClientImpl::FromWebContents(web_contents),
       base::BindRepeating(&autofill::AndroidDriverInitHook,
-                          AutofillClientImpl::FromWebContents(web_contents),
-                          autofill::AutofillManager::EnableDownloadManager(
-                              !autofill::AutofillProvider::
-                                  is_download_manager_disabled_for_testing())));
+                          AutofillClientImpl::FromWebContents(web_contents)));
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

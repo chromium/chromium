@@ -54,8 +54,6 @@ class AutofillDownloadManager {
     REQUEST_QUERY,
     REQUEST_UPLOAD,
   };
-  using IsRawMetadataUploadingEnabled =
-      base::StrongAlias<class IsRawMetadataUploadingEnabledTag, bool>;
 
   // An interface used to notify clients of AutofillDownloadManager.
   class Observer {
@@ -84,19 +82,18 @@ class AutofillDownloadManager {
     virtual ~Observer() = default;
   };
 
-  // |driver| must outlive this instance.
-  // |observer| - observer to notify on successful completion or error.
-  // |api_key| - API key to add to API request query parameters. Will only take
-  //   effect if using API.
-  AutofillDownloadManager(
-      AutofillClient* client,
-      const std::string& api_key,
-      IsRawMetadataUploadingEnabled is_raw_metadata_uploading_enabled,
-      LogManager* log_manager);
-  // |driver| must outlive this instance.
-  // |observer| - observer to notify on successful completion or error.
-  // Uses an API callback function that gives an empty string.
-  explicit AutofillDownloadManager(AutofillClient* client);
+  // `client` owns (and hence survives) this AutofillDownloadManager.
+  // `channel` determines the value for the the Google-API-key HTTP header and
+  // whether raw metadata uploading is enabled.
+  AutofillDownloadManager(AutofillClient* client,
+                          version_info::Channel channel,
+                          LogManager* log_manager);
+
+  AutofillDownloadManager(AutofillClient* client,
+                          const std::string& api_key,
+                          bool is_raw_metadata_uploading_enabled,
+                          LogManager* log_manager);
+
   virtual ~AutofillDownloadManager();
 
   // Starts a query request to Autofill servers. The observer is called with the

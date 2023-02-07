@@ -157,11 +157,10 @@ class MockAutofillClient : public TestAutofillClient {
 class MockAutofillDownloadManager : public AutofillDownloadManager {
  public:
   explicit MockAutofillDownloadManager(AutofillClient* client)
-      : AutofillDownloadManager(
-            client,
-            /*api_key=*/"",
-            AutofillDownloadManager::IsRawMetadataUploadingEnabled(false),
-            /*log_manager=*/nullptr) {}
+      : AutofillDownloadManager(client,
+                                /*api_key=*/"",
+                                /*is_raw_metadata_uploading_enabled=*/false,
+                                /*log_manager=*/nullptr) {}
 
   MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
   MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =
@@ -459,8 +458,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     auto download_manager =
         std::make_unique<MockAutofillDownloadManager>(&autofill_client_);
     download_manager_ = download_manager.get();
-    browser_autofill_manager_->set_download_manager_for_test(
-        std::move(download_manager));
+    autofill_client_.set_download_manager(std::move(download_manager));
 
     auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
         browser_autofill_manager_.get(), autofill_driver_.get(),

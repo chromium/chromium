@@ -15,7 +15,7 @@ namespace autofill {
 class AndroidAutofillManagerTestHelper : public AndroidAutofillManager {
  public:
   explicit AndroidAutofillManagerTestHelper(AutofillProvider* autofill_provider)
-      : AndroidAutofillManager(nullptr, nullptr, EnableDownloadManager(false)) {
+      : AndroidAutofillManager(nullptr, nullptr) {
     set_autofill_provider_for_testing(autofill_provider);
   }
 

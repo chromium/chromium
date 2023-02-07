@@ -33,6 +33,11 @@ AutofillClientImpl::GetURLLoaderFactory() {
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 
+autofill::AutofillDownloadManager* AutofillClientImpl::GetDownloadManager() {
+  NOTREACHED();
+  return nullptr;
+}
+
 autofill::PersonalDataManager* AutofillClientImpl::GetPersonalDataManager() {
   NOTREACHED();
   return nullptr;

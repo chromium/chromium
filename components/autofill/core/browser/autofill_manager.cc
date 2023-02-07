@@ -24,7 +24,6 @@
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "components/translate/core/common/translate_constants.h"
-#include "google_apis/google_api_keys.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace autofill {
@@ -96,19 +95,6 @@ bool CachedFormNeedsUpdate(const FormData& live_form,
   return false;
 }
 
-std::string GetAPIKeyForUrl(version_info::Channel channel) {
-  // First look if we can get API key from command line flag.
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  if (command_line.HasSwitch(switches::kAutofillAPIKey))
-    return command_line.GetSwitchValueASCII(switches::kAutofillAPIKey);
-
-  // Get the API key from Chrome baked keys.
-  if (channel == version_info::Channel::STABLE)
-    return google_apis::GetAPIKey();
-  return google_apis::GetNonStableAPIKey();
-}
-
 }  // namespace
 
 // static
@@ -129,28 +115,11 @@ void AutofillManager::LogAutofillTypePredictionsAvailable(
                       << std::move(buffer);
 }
 
-// static
-bool AutofillManager::IsRawMetadataUploadingEnabled(
-    version_info::Channel channel) {
-  return channel == version_info::Channel::CANARY ||
-         channel == version_info::Channel::DEV;
-}
-
-AutofillManager::AutofillManager(AutofillDriver* driver,
-                                 AutofillClient* client,
-                                 version_info::Channel channel,
-                                 EnableDownloadManager enable_download_manager)
+AutofillManager::AutofillManager(AutofillDriver* driver, AutofillClient* client)
     : driver_(driver),
       client_(client),
       log_manager_(client ? client->GetLogManager() : nullptr),
       form_interactions_ukm_logger_(CreateFormInteractionsUkmLogger()) {
-  if (enable_download_manager) {
-    download_manager_ = std::make_unique<AutofillDownloadManager>(
-        client, GetAPIKeyForUrl(channel),
-        AutofillDownloadManager::IsRawMetadataUploadingEnabled(
-            IsRawMetadataUploadingEnabled(channel)),
-        log_manager_);
-  }
   if (client) {
     translate::TranslateDriver* translate_driver = client->GetTranslateDriver();
     if (translate_driver) {
@@ -970,10 +939,5 @@ void AutofillManager::OnLoadedServerPredictions(
   PropagateAutofillPredictions(queried_forms);
   NotifyObservers(&Observer::OnAfterLoadedServerPredictions);
 }
-
-void AutofillManager::OnServerRequestError(
-    FormSignature form_signature,
-    AutofillDownloadManager::RequestType request_type,
-    int http_error) {}
 
 }  // namespace autofill

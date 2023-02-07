@@ -14,26 +14,19 @@ namespace autofill {
 
 using base::TimeTicks;
 
-void AndroidDriverInitHook(
-    AutofillClient* client,
-    AutofillManager::EnableDownloadManager enable_download_manager,
-    ContentAutofillDriver* driver) {
-  driver->set_autofill_manager(base::WrapUnique(
-      new AndroidAutofillManager(driver, client, enable_download_manager)));
+void AndroidDriverInitHook(AutofillClient* client,
+                           ContentAutofillDriver* driver) {
+  driver->set_autofill_manager(
+      base::WrapUnique(new AndroidAutofillManager(driver, client)));
   driver->GetAutofillAgent()->SetUserGestureRequired(false);
   driver->GetAutofillAgent()->SetSecureContextRequired(true);
   driver->GetAutofillAgent()->SetFocusRequiresScroll(false);
   driver->GetAutofillAgent()->SetQueryPasswordSuggestion(true);
 }
 
-AndroidAutofillManager::AndroidAutofillManager(
-    AutofillDriver* driver,
-    AutofillClient* client,
-    EnableDownloadManager enable_download_manager)
-    : AutofillManager(driver,
-                      client,
-                      version_info::Channel::UNKNOWN,
-                      enable_download_manager) {}
+AndroidAutofillManager::AndroidAutofillManager(AutofillDriver* driver,
+                                               AutofillClient* client)
+    : AutofillManager(driver, client) {}
 
 AndroidAutofillManager::~AndroidAutofillManager() = default;
 

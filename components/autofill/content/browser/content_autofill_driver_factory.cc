@@ -42,9 +42,8 @@ bool ShouldEnableHeavyFormDataScraping(const version_info::Channel channel) {
 void BrowserDriverInitHook(AutofillClient* client,
                            const std::string& app_locale,
                            ContentAutofillDriver* driver) {
-  driver->set_autofill_manager(std::make_unique<BrowserAutofillManager>(
-      driver, client, app_locale,
-      AutofillManager::EnableDownloadManager(true)));
+  driver->set_autofill_manager(
+      std::make_unique<BrowserAutofillManager>(driver, client, app_locale));
   if (client && ShouldEnableHeavyFormDataScraping(client->GetChannel()))
     driver->GetAutofillAgent()->EnableHeavyFormDataScraping();
 }

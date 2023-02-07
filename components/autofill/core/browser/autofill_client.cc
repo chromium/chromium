@@ -44,6 +44,10 @@ bool AutofillClient::IsOffTheRecord() {
   return false;
 }
 
+AutofillDownloadManager* AutofillClient::GetDownloadManager() {
+  return nullptr;
+}
+
 IBANManager* AutofillClient::GetIBANManager() {
   return nullptr;
 }

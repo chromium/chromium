@@ -64,6 +64,7 @@ class AddressNormalizer;
 class AutocompleteHistoryManager;
 class AutofillAblationStudy;
 class AutofillDriver;
+class AutofillDownloadManager;
 struct AutofillErrorDialogContext;
 class AutofillManager;
 class AutofillOfferData;
@@ -347,6 +348,10 @@ class AutofillClient : public RiskDataLoader {
   // Returns the URL loader factory associated with this driver.
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;
+
+  // Returns the AutofillDownloadManager for communication with the Autofill
+  // crowdsourcing server.
+  virtual AutofillDownloadManager* GetDownloadManager();
 
   // Gets the PersonalDataManager instance associated with the client.
   virtual PersonalDataManager* GetPersonalDataManager() = 0;

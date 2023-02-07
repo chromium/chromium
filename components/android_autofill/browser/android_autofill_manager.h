@@ -23,10 +23,8 @@ class ContentAutofillDriver;
 //
 // Other embedders (which don't want to use AndroidAutofillManager) shall use
 // other implementations.
-void AndroidDriverInitHook(
-    AutofillClient* client,
-    AutofillManager::EnableDownloadManager enable_download_manager,
-    ContentAutofillDriver* driver);
+void AndroidDriverInitHook(AutofillClient* client,
+                           ContentAutofillDriver* driver);
 
 // This class forwards AutofillManager calls to AutofillProvider.
 class AndroidAutofillManager : public AutofillManager {
@@ -82,15 +80,10 @@ class AndroidAutofillManager : public AutofillManager {
                          const url::Origin& triggered_origin);
 
  protected:
-  friend void AndroidDriverInitHook(
-      AutofillClient* client,
-      AutofillManager::EnableDownloadManager enable_download_manager,
-      ContentAutofillDriver* driver);
+  friend void AndroidDriverInitHook(AutofillClient* client,
+                                    ContentAutofillDriver* driver);
 
-  AndroidAutofillManager(
-      AutofillDriver* driver,
-      AutofillClient* client,
-      AutofillManager::EnableDownloadManager enable_download_manager);
+  AndroidAutofillManager(AutofillDriver* driver, AutofillClient* client);
 
   void OnFormSubmittedImpl(const FormData& form,
                            bool known_success,

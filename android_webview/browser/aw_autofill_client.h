@@ -66,6 +66,7 @@ class AwAutofillClient : public autofill::AutofillClient,
   // AutofillClient:
   bool IsOffTheRecord() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
+  autofill::AutofillDownloadManager* GetDownloadManager() override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;
   autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager()
       override;
@@ -179,6 +180,7 @@ class AwAutofillClient : public autofill::AutofillClient,
   // The current Autofill query values.
   std::vector<autofill::Suggestion> suggestions_;
   base::WeakPtr<autofill::AutofillPopupDelegate> delegate_;
+  std::unique_ptr<autofill::AutofillDownloadManager> download_manager_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
@@ -66,6 +67,7 @@ class TestAutofillClient : public AutofillClient {
   version_info::Channel GetChannel() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   bool IsOffTheRecord() override;
+  AutofillDownloadManager* GetDownloadManager() override;
   TestPersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   IBANManager* GetIBANManager() override;
@@ -360,6 +362,11 @@ class TestAutofillClient : public AutofillClient {
     is_off_the_record_ = is_off_the_record;
   }
 
+  void set_download_manager(
+      std::unique_ptr<AutofillDownloadManager> download_manager) {
+    download_manager_ = std::move(download_manager);
+  }
+
   void set_shared_url_loader_factory(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
     test_shared_loader_factory_ = url_loader_factory;
@@ -433,6 +440,8 @@ class TestAutofillClient : public AutofillClient {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_ =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_);
+
+  std::unique_ptr<AutofillDownloadManager> download_manager_;
 
   // Populated if credit card local save or upload was offered.
   absl::optional<SaveCreditCardOptions> save_credit_card_options_;

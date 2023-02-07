@@ -170,7 +170,10 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
 
 class MockAutofillDownloadManager : public autofill::AutofillDownloadManager {
  public:
-  MockAutofillDownloadManager() : AutofillDownloadManager(nullptr) {}
+  MockAutofillDownloadManager()
+      : AutofillDownloadManager(nullptr,
+                                version_info::Channel::UNKNOWN,
+                                nullptr) {}
   MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
   MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =
       delete;

@@ -32,23 +32,23 @@ with `AutofillAgent` extracting a form from the DOM.
 │FormDataImporter ◄─────────────────────┐
 │1 per WebContents│               events│
 └─▲───────────────┘                     │
-  │                                     │                                  ┌───────────────┐
-  │ ┌────────────────────────┐        ┌─┴────────────────────┐             │Autofill server│
-  │ │AutofillExternalDelegate◄────────┤BrowserAutofillManager├───────┐     └─────────────▲─┘
-  │ │1 per RenderFrameHost   │  owns 1│1 per RenderFrameHost │  votes│               HTTP│
-  │ └──────────────────────┬─┘        └─▲──────────────────┬─┘     ┌─▼───────────────────▼─┐
-  │                  events│            │            events│       │AutofillDownloadManager│
-  │                        │            │                  │       │1 per RenderFrameHost  │
+  │                                     │
+  │ ┌────────────────────────┐        ┌─┴────────────────────┐
+  │ │AutofillExternalDelegate◄────────┤BrowserAutofillManager├───────┐     ┌───────────────┐
+  │ │1 per RenderFrameHost   │  owns 1│1 per RenderFrameHost │  votes│     │Autofill server│
+  │ └──────────────────────┬─┘        └─▲──────────────────┬─┘       │     └─────────────▲─┘
+  │                  events│            │            events│         │               HTTP│
+  │                        │            │                  │       ┌─▼───────────────────▼─┐
+  ├────────────────────────┼────────────┼──────────────────┼───────►AutofillDownloadManager│
+  │                        │            │                  │       │1 per WebContents      │
   │                        │            │                  │       └─────────────────────▲─┘
   │                        │            │                  │                             │
-  │                        │            │                  │                             │
-  │                        │            │                  └──┐ ┌──────────────┐         │
-  │                        │            │                     │ │FormStructure │         │
-  │                        │            │                     │ │1 per FormData│         │
-  │                        │            │                     │ └─▲────────────┘         │
-  │                        │            │                     │   │                      │
-  │owns 1                  │            │events               │   │sets types     queries│
-┌─┴──────────────────┐     │          ┌─┴───────────────────┐ │   │owns N          owns 1│
+  │                        │            │                  │    ┌──────────────┐         │
+  │                        │            │                  │    │FormStructure │         │
+  │                        │            │                  │    │1 per FormData│         │
+  │                        │            │                  └──┐ └─▲────────────┘         │
+  │owns 1                  │            │events               │   │sets types            │
+┌─┴──────────────────┐     │          ┌─┴───────────────────┐ │   │owns N         queries│
 │ChromeAutofillClient◄─────┼──────────┤AutofillManager      ├─┼───┴──────────────────────┘
 │1 per WebContents   │     │  weak ref│1 per RenderFrameHost│ │
 └────────────────────┘     │          └─▲─────────────────┬─┘ │

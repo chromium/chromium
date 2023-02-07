@@ -16,6 +16,8 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/notreached.h"
+#include "components/android_autofill/browser/autofill_provider_android.h"
+#include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -61,6 +63,18 @@ AwAutofillClient::GetURLLoaderFactory() {
       .GetBrowserContext()
       ->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess();
+}
+
+autofill::AutofillDownloadManager* AwAutofillClient::GetDownloadManager() {
+  if (autofill::AutofillProvider::is_download_manager_disabled_for_testing()) {
+    return nullptr;
+  }
+  if (!download_manager_) {
+    // Lazy initialization to avoid virtual function calls in the constructor.
+    download_manager_ = std::make_unique<autofill::AutofillDownloadManager>(
+        this, GetChannel(), GetLogManager());
+  }
+  return download_manager_.get();
 }
 
 autofill::PersonalDataManager* AwAutofillClient::GetPersonalDataManager() {

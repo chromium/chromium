@@ -225,6 +225,12 @@ class AutofillControllerTest : public PlatformTest {
   ~AutofillControllerTest() override {}
 
  protected:
+  class TestAutofillClient : public ChromeAutofillClientIOS {
+   public:
+    using ChromeAutofillClientIOS::ChromeAutofillClientIOS;
+    AutofillDownloadManager* GetDownloadManager() override { return nullptr; }
+  };
+
   class TestAutofillManager : public BrowserAutofillManager {
    public:
     TestAutofillManager(AutofillDriverIOS* driver, AutofillClient* client)
@@ -288,7 +294,7 @@ class AutofillControllerTest : public PlatformTest {
   // Histogram tester for these tests.
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
-  std::unique_ptr<autofill::ChromeAutofillClientIOS> autofill_client_;
+  std::unique_ptr<autofill::AutofillClient> autofill_client_;
 
   AutofillAgent* autofill_agent_;
 
@@ -323,9 +329,9 @@ void AutofillControllerTest::SetUp() {
   InfoBarManagerImpl::CreateForWebState(web_state());
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state());
-  autofill_client_.reset(new autofill::ChromeAutofillClientIOS(
+  autofill_client_ = std::make_unique<TestAutofillClient>(
       browser_state_.get(), web_state(), infobar_manager, autofill_agent_,
-      /*password_generation_manager=*/nullptr));
+      /*password_generation_manager=*/nullptr);
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillUseAlternativeStateNameMap)) {

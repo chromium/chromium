@@ -101,7 +101,9 @@ class BrowserAutofillManager : public AutofillManager,
   BrowserAutofillManager(AutofillDriver* driver,
                          AutofillClient* client,
                          const std::string& app_locale,
-                         EnableDownloadManager enable_download_manager);
+                         // TODO(crbug.com/1394786): Remove parameter.
+                         EnableDownloadManager enable_download_manager =
+                             EnableDownloadManager(true));
 
   BrowserAutofillManager(const BrowserAutofillManager&) = delete;
   BrowserAutofillManager& operator=(const BrowserAutofillManager&) = delete;

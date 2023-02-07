@@ -25,7 +25,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_protobufs.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -45,6 +45,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -110,8 +111,6 @@ constexpr char kGoogApiKey[] = "X-Goog-Api-Key";
 // Header to get base64 encoded serialized proto from API for safety.
 constexpr char kGoogEncodeResponseIfExecutable[] =
     "X-Goog-Encode-Response-If-Executable";
-
-constexpr char kDefaultAPIKey[] = "";
 
 // The maximum number of attempts for a given autofill request.
 const base::FeatureParam<int> kAutofillMaxServerAttempts(
@@ -564,6 +563,28 @@ bool GetAPIQueryPayload(const AutofillPageQueryRequest& query,
   return true;
 }
 
+// Raw metadata uploading enabled iff this Chrome instance is on Canary or Dev
+// channel.
+bool IsRawMetadataUploadingEnabled(version_info::Channel channel) {
+  return channel == version_info::Channel::CANARY ||
+         channel == version_info::Channel::DEV;
+}
+
+std::string GetAPIKeyForUrl(version_info::Channel channel) {
+  // First look if we can get API key from command line flag.
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  if (command_line.HasSwitch(switches::kAutofillAPIKey)) {
+    return command_line.GetSwitchValueASCII(switches::kAutofillAPIKey);
+  }
+
+  // Get the API key from Chrome baked keys.
+  if (channel == version_info::Channel::STABLE) {
+    return google_apis::GetAPIKey();
+  }
+  return google_apis::GetNonStableAPIKey();
+}
+
 }  // namespace
 
 struct AutofillDownloadManager::FormRequestData {
@@ -586,10 +607,18 @@ ScopedActiveAutofillExperiments::~ScopedActiveAutofillExperiments() {
 std::vector<variations::VariationID>*
     AutofillDownloadManager::active_experiments_ = nullptr;
 
+AutofillDownloadManager::AutofillDownloadManager(AutofillClient* client,
+                                                 version_info::Channel channel,
+                                                 LogManager* log_manager)
+    : AutofillDownloadManager(client,
+                              GetAPIKeyForUrl(channel),
+                              IsRawMetadataUploadingEnabled(channel),
+                              log_manager) {}
+
 AutofillDownloadManager::AutofillDownloadManager(
     AutofillClient* client,
     const std::string& api_key,
-    IsRawMetadataUploadingEnabled is_raw_metadata_uploading_enabled,
+    bool is_raw_metadata_uploading_enabled,
     LogManager* log_manager)
     : client_(client),
       api_key_(api_key),
@@ -599,12 +628,6 @@ AutofillDownloadManager::AutofillDownloadManager(
       max_form_cache_size_(kAutofillDownloadManagerMaxFormCacheSize),
       loader_backoff_(&kAutofillBackoffPolicy),
       is_raw_metadata_uploading_enabled_(is_raw_metadata_uploading_enabled) {}
-
-AutofillDownloadManager::AutofillDownloadManager(AutofillClient* client)
-    : AutofillDownloadManager(client,
-                              kDefaultAPIKey,
-                              IsRawMetadataUploadingEnabled(false),
-                              /*log_manager=*/nullptr) {}
 
 AutofillDownloadManager::~AutofillDownloadManager() = default;
 

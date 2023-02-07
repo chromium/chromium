@@ -36,11 +36,10 @@ namespace {
 class MockAutofillDownloadManager : public AutofillDownloadManager {
  public:
   explicit MockAutofillDownloadManager(AutofillClient* client)
-      : AutofillDownloadManager(
-            client,
-            /*api_key=*/"",
-            AutofillDownloadManager::IsRawMetadataUploadingEnabled(false),
-            /*log_manager=*/nullptr) {}
+      : AutofillDownloadManager(client,
+                                /*api_key=*/"",
+                                /*is_raw_metadata_uploading_enabled=*/false,
+                                /*log_manager=*/nullptr) {}
 
   MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
   MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =
@@ -77,10 +76,7 @@ class MockAutofillDriver : public TestAutofillDriver {
 class MockAutofillManager : public AutofillManager {
  public:
   MockAutofillManager(AutofillDriver* driver, AutofillClient* client)
-      : AutofillManager(driver,
-                        client,
-                        client->GetChannel(),
-                        EnableDownloadManager(false)) {}
+      : AutofillManager(driver, client) {}
 
   base::WeakPtr<AutofillManager> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
@@ -323,7 +319,7 @@ class AutofillManagerTest_OnLoadedServerPredictionsObserver
         std::make_unique<MockAutofillDownloadManager>(&client_);
     ON_CALL(*download_manager, StartQueryRequest)
         .WillByDefault(Return(successful_request));
-    manager_->set_download_manager_for_test(std::move(download_manager));
+    client_.set_download_manager(std::move(download_manager));
     manager_->AddObserver(&observer_);
   }
 };
