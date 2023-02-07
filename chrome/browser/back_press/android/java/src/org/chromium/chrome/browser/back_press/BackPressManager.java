@@ -29,8 +29,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
  * {@link BackPressHandler} with the new defined {@link Type}.
  */
 public class BackPressManager implements Destroyable {
-    @VisibleForTesting
-    static final SparseIntArray sMetricsMap;
+    private static final SparseIntArray sMetricsMap;
     static {
         SparseIntArray map = new SparseIntArray(17);
         map.put(Type.TEXT_BUBBLE, 0);

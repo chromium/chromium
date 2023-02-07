@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.back_press;
 import androidx.test.filters.SmallTest;
 
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +14,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -50,8 +49,8 @@ public class BackPressManagerTest {
     @Test
     @SmallTest
     public void testBasic() {
-        HistogramDelta d1 = new HistogramDelta(BackPressManager.HISTOGRAM,
-                BackPressManager.sMetricsMap.get(BackPressHandler.Type.FIND_TOOLBAR));
+        var histogramWatcher =
+                HistogramWatcher.newBuilder().expectNoRecords(BackPressManager.HISTOGRAM).build();
 
         BackPressManager manager = new BackPressManager();
         EmptyBackPressHandler h1 =
@@ -61,29 +60,30 @@ public class BackPressManagerTest {
 
         manager.getCallback().handleOnBackPressed();
 
-        Assert.assertEquals("Handler's histogram should be not recorded if it is not executed", 0,
-                d1.getDelta());
+        histogramWatcher.assertExpected(
+                "Handler's histogram should be not recorded if it is not executed");
 
+        histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                BackPressManager.HISTOGRAM, 16); // 16 is FIND_TOOLBAR
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { h1.getHandleBackPressChangedSupplier().set(true); });
         manager.getCallback().handleOnBackPressed();
-        Assert.assertEquals(
-                "Handler's histogram should be recorded if it is executed", 1, d1.getDelta());
+        histogramWatcher.assertExpected("Handler's histogram should be recorded if it is executed");
 
+        histogramWatcher =
+                HistogramWatcher.newBuilder().expectNoRecords(BackPressManager.HISTOGRAM).build();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { h1.getHandleBackPressChangedSupplier().set(false); });
         manager.getCallback().handleOnBackPressed();
-        Assert.assertEquals("Handler's histogram should be not recorded if it is not executed", 1,
-                d1.getDelta());
+        histogramWatcher.assertExpected(
+                "Handler's histogram should be not recorded if it is not executed");
     }
 
     @Test
     @SmallTest
     public void testMultipleHandlers() {
-        HistogramDelta d1 = new HistogramDelta(BackPressManager.HISTOGRAM,
-                BackPressManager.sMetricsMap.get(BackPressHandler.Type.VR_DELEGATE));
-        HistogramDelta d2 = new HistogramDelta(BackPressManager.HISTOGRAM,
-                BackPressManager.sMetricsMap.get(BackPressHandler.Type.AR_DELEGATE));
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                BackPressManager.HISTOGRAM, 2); // 2 is AR_DELEGATE
         BackPressManager manager = new BackPressManager();
         EmptyBackPressHandler h1 =
                 TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
@@ -97,17 +97,15 @@ public class BackPressManagerTest {
         });
 
         manager.getCallback().handleOnBackPressed();
-        Assert.assertEquals("Handler's histogram should be not recorded if it is not executed", 0,
-                d1.getDelta());
-        Assert.assertEquals(
-                "Handler's histogram should be recorded if it is executed", 1, d2.getDelta());
+        histogramWatcher.assertExpected(
+                "Only record to handler's histogram should have value 2 (AR_DELEGATE).");
 
+        histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                BackPressManager.HISTOGRAM, 1); // 1 is VR_DELEGATE
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { h1.getHandleBackPressChangedSupplier().set(true); });
         manager.getCallback().handleOnBackPressed();
-        Assert.assertEquals(
-                "Handler's histogram should be recorded if it is executed", 1, d1.getDelta());
-        Assert.assertEquals("Handler's histogram should be not recorded if it is not executed", 1,
-                d2.getDelta());
+        histogramWatcher.assertExpected(
+                "Only record to handler's histogram should have value 1 (VR_DELEGATE).");
     }
 }
