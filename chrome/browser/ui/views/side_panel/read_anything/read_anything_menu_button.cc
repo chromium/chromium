@@ -21,7 +21,7 @@ ReadAnythingMenuButton::ReadAnythingMenuButton(
     : MenuButton(base::BindRepeating(&ReadAnythingMenuButton::ButtonPressed,
                                      base::Unretained(this))) {
   ConfigureInkDropForToolbar(this);
-  views::InstallPillHighlightPathGenerator(this);
+  views::InstallCircleHighlightPathGenerator(this);
   SetIcon(icon, kIconSize, gfx::kPlaceholderColor);
   SetAccessibleName(tooltip);
   SetTooltipText(tooltip);
