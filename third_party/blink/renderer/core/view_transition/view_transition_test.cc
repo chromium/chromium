@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_style_resolver.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -981,6 +982,38 @@ TEST_P(ViewTransitionTest, DocumentWithNoDocumentElementHasNullTransition) {
       script_state, *document,
       V8ViewTransitionCallback::Create(start_setup_callback), exception_state);
   ASSERT_FALSE(transition);
+}
+
+TEST_P(ViewTransitionTest, RootEffectLifetime) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      /* TODO(crbug.com/1336462): html.css is parsed before runtime flags are enabled */
+      html { view-transition-name: root; }
+    </style>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
+
+  auto start_setup_lambda =
+      [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
+
+  // This callback sets the elements for the start phase of the transition.
+  auto start_setup_callback =
+      v8::Function::New(v8_scope.GetContext(), start_setup_lambda, {})
+          .ToLocalChecked();
+
+  auto* transition = ViewTransitionSupplement::startViewTransition(
+      script_state, GetDocument(),
+      V8ViewTransitionCallback::Create(start_setup_callback), exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  EXPECT_TRUE(GetDocument().GetLayoutView()->NeedsPaintPropertyUpdate());
+  EXPECT_TRUE(transition->NeedsViewTransitionEffectNode(
+      *GetDocument().GetLayoutView()));
 }
 
 }  // namespace blink
