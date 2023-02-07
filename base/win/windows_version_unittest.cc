@@ -5,6 +5,10 @@
 #include "base/win/windows_version.h"
 
 #include "base/check_op.h"
+#include "base/file_version_info_win.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,6 +25,22 @@ TEST(WindowsVersion, GetVersionExAndKernelOsVersionMatch) {
             OSInfo::GetInstance()->version_number().major);
   EXPECT_EQ(OSInfo::Kernel32VersionNumber().minor,
             OSInfo::GetInstance()->version_number().minor);
+}
+
+TEST(WindowsVersion, CheckDbgHelpVersion) {
+  // Make sure that dbghelp.dll is present and is a recent enough version to
+  // handle large-page PDBs. This requires dbghelp.dll from the Windows 11 SDK
+  // or later.
+  base::FilePath exe_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_dir));
+  FilePath dbghelp_path = exe_dir.Append(FILE_PATH_LITERAL("dbghelp.dll"));
+  ASSERT_TRUE(base::PathExists(dbghelp_path));
+  auto file_version =
+      FileVersionInfoWin::CreateFileVersionInfoWin(dbghelp_path);
+  ASSERT_TRUE(file_version);
+  auto version = file_version->GetFileVersion();
+  // Check against Windows 11 SDK version.
+  EXPECT_GE(version, base::Version({10, 0, 22621, 755}));
 }
 
 TEST(OSInfo, MajorMinorBuildToVersion) {

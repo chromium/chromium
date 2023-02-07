@@ -18,7 +18,7 @@ import sys
 
 from gn_helpers import ToGNString
 
-# VS 2019 16.61 with 10.0.20348.0 SDK, 10.0.19041 version of Debuggers
+# VS 2019 16.61 with 10.0.20348.0 SDK, 10.0.22621.755 version of Debuggers,
 # with ARM64 libraries and UWP support.
 # See go/chromium-msvc-toolchain for instructions about how to update the
 # toolchain.
@@ -32,7 +32,7 @@ from gn_helpers import ToGNString
 #   Affects the availability of APIs in the toolchain headers.
 # * //docs/windows_build_instructions.md mentions of VS or Windows SDK.
 #   Keeps the document consistent with the toolchain version.
-TOOLCHAIN_HASH = '1023ce2e82'
+TOOLCHAIN_HASH = '0b5ee4d2b1'
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 json_data_file = os.path.join(script_dir, 'win_toolchain.json')
@@ -412,17 +412,21 @@ def CopyDlls(target_dir, configuration, target_cpu):
 
 
 def _CopyDebugger(target_dir, target_cpu):
-  """Copy dbghelp.dll and dbgcore.dll into the requested directory as needed.
+  """Copy dbghelp.dll, dbgcore.dll, and msdia140.dll into the requested
+  directory.
 
   target_cpu is one of 'x86', 'x64' or 'arm64'.
 
   dbghelp.dll is used when Chrome needs to symbolize stacks. Copying this file
   from the SDK directory avoids using the system copy of dbghelp.dll which then
-  ensures compatibility with recent debug information formats, such as VS
-  2017 /debug:fastlink PDBs.
+  ensures compatibility with recent debug information formats, such as
+  large-page PDBs. Note that for these DLLs to be deployed to swarming bots they
+  also need to be listed in group("runtime_libs").
 
   dbgcore.dll is needed when using some functions from dbghelp.dll (like
   MinidumpWriteDump).
+
+  msdia140.dll is needed for tools like symupload.exe and dump_syms.exe.
   """
   win_sdk_dir = SetEnvironmentAndGetSDKDir()
   if not win_sdk_dir:
@@ -447,6 +451,12 @@ def _CopyDebugger(target_dir, target_cpu):
                         (debug_file, full_path))
     target_path = os.path.join(target_dir, debug_file)
     _CopyRuntimeImpl(target_path, full_path)
+
+  # The x64 version of msdia140.dll is always used because symupload and
+  # dump_syms are always built as x64 binaries.
+  dia_path = os.path.join(NormalizePath(os.environ['GYP_MSVS_OVERRIDE_PATH']),
+                          'DIA SDK', 'bin', 'amd64', 'msdia140.dll')
+  _CopyRuntimeImpl(os.path.join(target_dir, 'msdia140.dll'), dia_path)
 
 
 def _GetDesiredVsToolchainHashes():
