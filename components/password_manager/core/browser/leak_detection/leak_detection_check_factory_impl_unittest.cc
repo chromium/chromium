@@ -49,6 +49,23 @@ class LeakDetectionCheckFactoryImplTest : public testing::Test {
 
 }  // namespace
 
+TEST_F(LeakDetectionCheckFactoryImplTest,
+       NoIdentityManagerWithFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kLeakDetectionUnauthenticated);
+  EXPECT_CALL(delegate(), OnError(LeakDetectionError::kNotSignIn));
+  EXPECT_FALSE(request_factory().TryCreateLeakCheck(
+      &delegate(), /*identity_manager=*/nullptr, url_loader_factory(),
+      kChannel));
+}
+
+TEST_F(LeakDetectionCheckFactoryImplTest, NoIdentityManager) {
+  EXPECT_CALL(delegate(), OnError(LeakDetectionError::kNotSignIn));
+  EXPECT_FALSE(request_factory().TryCreateLeakCheck(
+      &delegate(), /*identity_manager=*/nullptr, url_loader_factory(),
+      kChannel));
+}
+
 TEST_F(LeakDetectionCheckFactoryImplTest, SignedOut) {
   EXPECT_TRUE(request_factory().TryCreateLeakCheck(
       &delegate(), identity_env().identity_manager(), url_loader_factory(),

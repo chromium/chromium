@@ -46,8 +46,9 @@ LeakDetectionCheckFactoryImpl::TryCreateLeakCheck(
     version_info::Channel channel) const {
   bool has_account_for_request =
       LeakDetectionCheckImpl::HasAccountForRequest(identity_manager);
-  if (!has_account_for_request &&
-      !base::FeatureList::IsEnabled(features::kLeakDetectionUnauthenticated)) {
+  if (!identity_manager || (!has_account_for_request &&
+                            !base::FeatureList::IsEnabled(
+                                features::kLeakDetectionUnauthenticated))) {
     delegate->OnError(LeakDetectionError::kNotSignIn);
     return nullptr;
   }
