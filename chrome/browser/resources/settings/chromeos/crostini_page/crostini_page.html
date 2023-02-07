@@ -48,7 +48,7 @@
 
     <template is="dom-if" if="[[showBruschetta_]]">
       <div id="bruschetta" class="settings-box two-line"
-          actionable$="[[isBruschettaInstalled_]]"
+          actionable$="[[prefs.bruschetta.installed.value]]"
           on-click="onBruschettaSubpageTap_">
         <div class="start">
           $i18n{bruschettaPageLabel}
@@ -58,14 +58,14 @@
             </localized-link>
           </div>
         </div>
-        <template is="dom-if" if="[[isBruschettaInstalled_]]">
+        <template is="dom-if" if="[[prefs.bruschetta.installed.value]]">
           <cr-icon-button class="subpage-arrow"
               aria-label="$i18n{bruschettaPageLabel}"
               aria-describedby="secondaryText"
               aria-roledescription="$i18n{subpageArrowRoleDescription}">
           </cr-icon-button>
         </template>
-        <template is="dom-if" if="[[!isBruschettaInstalled_]]">
+        <template is="dom-if" if="[[!prefs.bruschetta.installed.value]]">
           <div class="separator"></div>
           <cr-button id="enable"
               on-click="onBruschettaEnableTap_"

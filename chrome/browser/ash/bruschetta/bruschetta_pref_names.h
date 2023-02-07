@@ -9,6 +9,9 @@ class PrefRegistrySimple;
 
 namespace bruschetta::prefs {
 
+// Set to true if Bruschetta is installed.
+extern const char kBruschettaInstalled[];
+
 // Mapped pref for the enterprise policy BruschettaVMConfiguration.
 extern const char kBruschettaVMConfiguration[];
 extern const char kPolicyNameKey[];

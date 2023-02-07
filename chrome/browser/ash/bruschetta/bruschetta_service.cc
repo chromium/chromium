@@ -54,16 +54,18 @@ BruschettaService::BruschettaService(Profile* profile) : profile_(profile) {
                           base::Unretained(this)));
 
   bool registered_guests = false;
+  bool bruschetta_installed = false;
   // Register all bruschetta instances that have already been installed.
   for (auto& guest_id :
        guest_os::GetContainers(profile, guest_os::VmType::BRUSCHETTA)) {
     RegisterWithTerminal(std::move(guest_id));
     registered_guests = true;
+    bruschetta_installed = true;
   }
 
   // Migrate VMs installed during the alpha. These will have been set up by hand
   // using vmc so chrome doesn't know about this, but we know what the VM name
-  // should be, so register it here is nothing has been registered from prefs
+  // should be, so register it here if nothing has been registered from prefs
   // and the migration flag is turned on. Note that we do not call
   // `RegisterInPrefs` because these VMs are currently outside of enterprise
   // policy.
@@ -72,6 +74,13 @@ BruschettaService::BruschettaService(Profile* profile) : profile_(profile) {
     auto guest_id = GetBruschettaAlphaId();
     guest_os::AddContainerToPrefs(profile_, guest_id, {});
     RegisterWithTerminal(std::move(guest_id));
+    bruschetta_installed = true;
+  }
+
+  // Set the pref if Bruschetta is installed.
+  if (bruschetta_installed) {
+    profile_->GetPrefs()->SetBoolean(bruschetta::prefs::kBruschettaInstalled,
+                                     true);
   }
 
   OnPolicyChanged();

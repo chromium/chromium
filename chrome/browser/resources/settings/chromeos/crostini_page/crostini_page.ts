@@ -125,17 +125,11 @@ class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
         type: Boolean,
         value: loadTimeData.getBoolean('showBruschetta'),
       },
-
-      isBruschettaInstalled_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('isBruschettaInstalled'),
-      },
     };
   }
 
   private browserProxy_: CrostiniBrowserProxy;
   private disableCrostiniInstall_: boolean;
-  private isBruschettaInstalled_: boolean;
 
   constructor() {
     super();
@@ -191,7 +185,7 @@ class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
 
   private onBruschettaSubpageTap_() {
     // This function is called on-click even if actionable=false.
-    if (this.isBruschettaInstalled_) {
+    if (this.getPref('bruschetta.installed.value')) {
       Router.getInstance().navigateTo(routes.BRUSCHETTA_DETAILS);
     }
   }

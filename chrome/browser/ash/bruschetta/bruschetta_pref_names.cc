@@ -8,6 +8,8 @@
 
 namespace bruschetta::prefs {
 
+const char kBruschettaInstalled[] = "bruschetta.installed";
+
 const char kBruschettaVMConfiguration[] = "bruschetta.vm_configuration";
 
 const char kPolicyNameKey[] = "name";
@@ -22,6 +24,7 @@ const char kPolicyVTPMEnabledKey[] = "enabled";
 const char kPolicyVTPMUpdateActionKey[] = "policy_update_action";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(kBruschettaInstalled, false);
   registry->RegisterDictionaryPref(kBruschettaVMConfiguration);
 }
 

@@ -10,6 +10,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/content_settings/generated_cookie_prefs.h"
@@ -666,6 +667,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_NUMBER;
 
   // Guest OS
+  (*s_allowlist)[bruschetta::prefs::kBruschettaInstalled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[crostini::prefs::kCrostiniEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[crostini::prefs::kCrostiniMicAllowed] =

@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/webui/settings/ash/guest_os_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -452,12 +451,6 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   // for existing users, make showBruschetta check for both bru_feature &&
   // bru_config.
   html_source->AddBoolean("showBruschetta", bru_feature);
-
-  // Is Bruschetta installed? If yes, we have a subpage of settings. If not, we
-  // show an install button.
-  html_source->AddBoolean(
-      "isBruschettaInstalled",
-      bruschetta::IsInstalled(profile_, bruschetta::GetBruschettaAlphaId()));
 
   html_source->AddString(
       "bruschettaSharedPathsInstructionsLocate",

@@ -28,6 +28,7 @@
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/clients.h"
 #include "components/download/public/background_service/download_params.h"
+#include "components/prefs/pref_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace bruschetta {
@@ -540,6 +541,8 @@ void BruschettaInstallerImpl::OnStartVm(
 
   BruschettaService::GetForProfile(profile_)->RegisterVmLaunch(vm_name_,
                                                                launch_policy);
+  profile_->GetPrefs()->SetBoolean(bruschetta::prefs::kBruschettaInstalled,
+                                   true);
 
   LaunchTerminal();
 }
