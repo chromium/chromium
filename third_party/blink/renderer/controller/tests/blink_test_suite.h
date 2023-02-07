@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "v8/include/v8.h"
 
 template <class Parent>
@@ -47,6 +48,7 @@ class BlinkUnitTestSuite : public Parent {
     Parent::Shutdown();
   }
 
+  STACK_ALLOCATED_IGNORE("https://crbug.com/1409156")
   absl::optional<blink::HeapPointersOnStackScope> conservative_gc_scope_;
 };
 

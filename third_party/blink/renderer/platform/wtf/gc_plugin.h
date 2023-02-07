@@ -11,9 +11,13 @@
 // where the bug describes what needs to happen to remove the GC_PLUGIN_IGNORE
 // again.
 #if defined(__clang__)
-#define GC_PLUGIN_IGNORE(reason) \
-  __attribute__((annotate("blink_gc_plugin_ignore")))
+#define STACK_ALLOCATED_IGNORE(reason) \
+  __attribute__((annotate("stack_allocated_ignore")))
+#define GC_PLUGIN_IGNORE(reason)                     \
+  __attribute__((annotate("blink_gc_plugin_ignore"), \
+                 annotate("stack_allocated_ignore")))
 #else  // !defined(__clang__)
+#define STACK_ALLOCATED_IGNORE(reason)
 #define GC_PLUGIN_IGNORE(reason)
 #endif  // !defined(__clang__)
 

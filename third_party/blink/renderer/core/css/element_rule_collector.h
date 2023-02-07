@@ -190,6 +190,8 @@ class CORE_EXPORT ElementRuleCollector {
   // Temporarily swap the StyleRecalcContext with one which points to the
   // closest query container for matching ::slotted rules for a given slot.
   class SlottedRulesScope {
+    STACK_ALLOCATED();
+
    public:
     SlottedRulesScope(ElementRuleCollector& collector, HTMLSlotElement& slot)
         : context_(&collector.style_recalc_context_,
@@ -202,6 +204,8 @@ class CORE_EXPORT ElementRuleCollector {
   // Temporarily swap the StyleRecalcContext with one which points to the
   // closest query container for matching ::part rules for a given host.
   class PartRulesScope {
+    STACK_ALLOCATED();
+
    public:
     PartRulesScope(ElementRuleCollector& collector, Element& host)
         : context_(&collector.style_recalc_context_,

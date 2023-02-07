@@ -2016,8 +2016,59 @@ HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::TraceTable(
 
 // iterator adapters
 
-template <typename HashTableType, typename Traits>
+template <typename HashTableType, typename Traits, typename Enable = void>
 struct HashTableConstIteratorAdapter {
+  static_assert(!IsTraceable<typename Traits::TraitType>::value);
+
+  using iterator_category = std::bidirectional_iterator_tag;
+  using value_type = HashTableType;
+  using difference_type = ptrdiff_t;
+  using pointer = value_type*;
+  using reference = value_type&;
+
+  HashTableConstIteratorAdapter() = default;
+  HashTableConstIteratorAdapter(
+      const typename HashTableType::const_iterator& impl)
+      : impl_(impl) {}
+  typedef typename Traits::IteratorConstGetType GetType;
+  typedef
+      typename HashTableType::ValueTraits::IteratorConstGetType SourceGetType;
+
+  GetType Get() const {
+    return const_cast<GetType>(SourceGetType(impl_.Get()));
+  }
+  typename Traits::IteratorConstReferenceType operator*() const {
+    return *Get();
+  }
+  GetType operator->() const { return Get(); }
+
+  HashTableConstIteratorAdapter& operator++() {
+    ++impl_;
+    return *this;
+  }
+  HashTableConstIteratorAdapter operator++(int) {
+    HashTableConstIteratorAdapter copy = *this;
+    ++*this;
+    return copy;
+  }
+  HashTableConstIteratorAdapter& operator--() {
+    --impl_;
+    return *this;
+  }
+  HashTableConstIteratorAdapter operator--(int) {
+    HashTableConstIteratorAdapter copy = *this;
+    --*this;
+    return copy;
+  }
+  typename HashTableType::const_iterator impl_;
+};
+
+template <typename HashTableType, typename Traits>
+struct HashTableConstIteratorAdapter<
+    HashTableType,
+    Traits,
+    typename std::enable_if_t<IsTraceable<typename Traits::TraitType>::value>> {
+  static_assert(IsTraceable<typename Traits::TraitType>::value);
   STACK_ALLOCATED();
 
  public:
@@ -2064,16 +2115,16 @@ struct HashTableConstIteratorAdapter {
   typename HashTableType::const_iterator impl_;
 };
 
-template <typename HashTable, typename Traits>
+template <typename HashTable, typename Traits, typename Enable>
 std::ostream& operator<<(
     std::ostream& stream,
-    const HashTableConstIteratorAdapter<HashTable, Traits>& iterator) {
+    const HashTableConstIteratorAdapter<HashTable, Traits, Enable>& iterator) {
   return stream << iterator.impl_;
 }
 
-template <typename HashTableType, typename Traits>
+template <typename HashTableType, typename Traits, typename Enable = void>
 struct HashTableIteratorAdapter {
-  STACK_ALLOCATED();
+  static_assert(!IsTraceable<typename Traits::TraitType>::value);
   typedef typename Traits::IteratorGetType GetType;
   typedef typename HashTableType::ValueTraits::IteratorGetType SourceGetType;
 
@@ -2099,7 +2150,7 @@ struct HashTableIteratorAdapter {
   }
   // postfix -- intentionally omitted
 
-  operator HashTableConstIteratorAdapter<HashTableType, Traits>() {
+  operator HashTableConstIteratorAdapter<HashTableType, Traits, Enable>() {
     typename HashTableType::const_iterator i = impl_;
     return i;
   }
@@ -2107,10 +2158,52 @@ struct HashTableIteratorAdapter {
   typename HashTableType::iterator impl_;
 };
 
-template <typename HashTable, typename Traits>
+template <typename HashTableType, typename Traits>
+struct HashTableIteratorAdapter<
+    HashTableType,
+    Traits,
+    typename std::enable_if_t<IsTraceable<typename Traits::TraitType>::value>> {
+  static_assert(IsTraceable<typename Traits::TraitType>::value);
+  STACK_ALLOCATED();
+
+ public:
+  typedef typename Traits::IteratorGetType GetType;
+  typedef typename HashTableType::ValueTraits::IteratorGetType SourceGetType;
+
+  HashTableIteratorAdapter() = default;
+  HashTableIteratorAdapter(const typename HashTableType::iterator& impl)
+      : impl_(impl) {}
+
+  GetType Get() const {
+    return const_cast<GetType>(SourceGetType(impl_.get()));
+  }
+  typename Traits::IteratorReferenceType operator*() const { return *Get(); }
+  GetType operator->() const { return Get(); }
+
+  HashTableIteratorAdapter& operator++() {
+    ++impl_;
+    return *this;
+  }
+  // postfix ++ intentionally omitted
+
+  HashTableIteratorAdapter& operator--() {
+    --impl_;
+    return *this;
+  }
+  // postfix -- intentionally omitted
+
+  operator HashTableConstIteratorAdapter<HashTableType, Traits, void>() {
+    typename HashTableType::const_iterator i = impl_;
+    return i;
+  }
+
+  typename HashTableType::iterator impl_;
+};
+
+template <typename HashTable, typename Traits, typename Enable>
 std::ostream& operator<<(
     std::ostream& stream,
-    const HashTableIteratorAdapter<HashTable, Traits>& iterator) {
+    const HashTableIteratorAdapter<HashTable, Traits, Enable>& iterator) {
   return stream << iterator.impl_;
 }
 

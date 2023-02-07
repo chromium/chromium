@@ -12,6 +12,9 @@ namespace blink {
 namespace {
 
 struct SameSizeAsNGInlineChildLayoutContext {
+  STACK_ALLOCATED();
+
+ public:
   NGFragmentItemsBuilder items_builder_;
   absl::optional<NGInlineLayoutStateStack> box_states_;
   void* pointers[3];
