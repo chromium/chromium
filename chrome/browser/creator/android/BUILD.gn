@@ -71,6 +71,7 @@ android_resources("creator_java_resources") {
     "java/res/layout/creator_activity.xml",
     "java/res/layout/creator_bottomsheet_toolbar.xml",
     "java/res/layout/creator_layout.xml",
+    "java/res/layout/creator_privacy.xml",
     "java/res/layout/creator_profile.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",

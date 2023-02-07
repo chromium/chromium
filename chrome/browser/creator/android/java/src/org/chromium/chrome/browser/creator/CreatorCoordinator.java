@@ -123,6 +123,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     int mEntryPoint;
 
     private static final String CREATOR_PROFILE_ID = "CreatorProfileView";
+    private static final String CREATOR_PRIVACY_ID = "CreatorPrivacyId";
 
     /**
      * Constructor for the CreatorCoordinator.
@@ -163,8 +164,11 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         List<NtpListContentManager.FeedContent> contentPreviewsList = new ArrayList<>();
         contentPreviewsList.add(new NtpListContentManager.NativeViewContent(
                 getContentPreviewsPaddingPx(), CREATOR_PROFILE_ID, mProfileView));
+        View privacyView = LayoutInflater.from(mActivity).inflate(R.layout.creator_privacy, null);
+        contentPreviewsList.add(new NtpListContentManager.NativeViewContent(
+                getContentPreviewsPaddingPx(), CREATOR_PRIVACY_ID, privacyView));
         mContentManager.addContents(0, contentPreviewsList);
-        mHeaderCount = 1;
+        mHeaderCount = 2;
 
         // Inflate the XML
         mCreatorViewGroup =

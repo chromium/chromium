@@ -319,6 +319,9 @@
       <message name="IDS_SORT_BY" desc="Generic label for a prompt to sort something.">
         Sort by:
       </message>
+      <message name="IDS_PROVIDED_BY_GOOGLE" desc="Generic label for something that comes from Google servers.">
+        Provided by Google
+      </message>
 
       <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_MENU" desc="Content description for the settings menu button.">
         More options
