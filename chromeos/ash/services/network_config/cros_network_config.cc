@@ -1159,18 +1159,17 @@ std::string MojoApnStateTypeToOnc(mojom::ApnState state) {
 
 std::string MojoApnAuthenticationTypeToOnc(
     mojom::ApnAuthenticationType authentication_type) {
-  DCHECK(features::IsApnRevampEnabled());
   switch (authentication_type) {
     case mojom::ApnAuthenticationType::kAutomatic:
-      return ::onc::cellular_apn::kAuthenticationTypeAutomatic;
+      return ::onc::cellular_apn::kAuthenticationAutomatic;
     case mojom::ApnAuthenticationType::kPap:
-      return ::onc::cellular_apn::kAuthenticationTypePap;
+      return ::onc::cellular_apn::kAuthenticationPap;
     case mojom::ApnAuthenticationType::kChap:
-      return ::onc::cellular_apn::kAuthenticationTypeChap;
+      return ::onc::cellular_apn::kAuthenticationChap;
   }
   NOTREACHED() << "Unexpected mojo AuthenticationType type: "
                << authentication_type;
-  return ::onc::cellular_apn::kAuthenticationTypeAutomatic;
+  return ::onc::cellular_apn::kAuthenticationAutomatic;
 }
 
 std::string MojoApnIpTypeToOnc(mojom::ApnIpType ip_type) {
@@ -2031,8 +2030,8 @@ base::Value GetEAPProperties(const mojom::EAPConfigProperties& eap) {
 base::Value::Dict MojoApnToOnc(const mojom::ApnProperties& apn_props) {
   base::Value::Dict apn;
   apn.Set(::onc::cellular_apn::kAccessPointName, apn_props.access_point_name);
-  SetString(::onc::cellular_apn::kAuthentication, apn_props.authentication,
-            &apn);
+  apn.Set(::onc::cellular_apn::kAuthentication,
+          MojoApnAuthenticationTypeToOnc(apn_props.authentication));
   SetString(::onc::cellular_apn::kLanguage, apn_props.language, &apn);
   SetString(::onc::cellular_apn::kLocalizedName, apn_props.localized_name,
             &apn);
@@ -2044,8 +2043,6 @@ base::Value::Dict MojoApnToOnc(const mojom::ApnProperties& apn_props) {
     SetString(::onc::cellular_apn::kId, apn_props.id, &apn);
     apn.Set(::onc::cellular_apn::kState,
             MojoApnStateTypeToOnc(apn_props.state));
-    apn.Set(::onc::cellular_apn::kAuthenticationType,
-            MojoApnAuthenticationTypeToOnc(apn_props.authentication_type));
     apn.Set(::onc::cellular_apn::kIpType,
             MojoApnIpTypeToOnc(apn_props.ip_type));
     base::Value::List apn_types;

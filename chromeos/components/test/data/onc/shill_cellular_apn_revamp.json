@@ -6,7 +6,7 @@
     "apn": "test-apn",
     "apn_source": "ui",
     "apn_types": "DEFAULT",
-    "authentication": "chap",
+    "authentication": "",
     "username": "test-username",
     "password": "test-password"
   },
@@ -15,13 +15,21 @@
       "apn": "test-apn-1",
       "apn_source": "ui",
       "apn_types": "IA",
-      "authentication": "chap",
       "ip_type": "",
       "username": "test-username",
       "password": "test-password"
     },
     {
       "apn": "test-apn-3",
+      "apn_source": "ui",
+      "apn_types": "DEFAULT,IA",
+      "authentication": "pap",
+      "ip_type": "ipv4v6",
+      "username": "test-username",
+      "password": "test-password"
+    },
+    {
+      "apn": "test-apn-4",
       "apn_source": "ui",
       "apn_types": "DEFAULT,IA",
       "authentication": "chap",

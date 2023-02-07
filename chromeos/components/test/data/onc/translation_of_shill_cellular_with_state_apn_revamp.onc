@@ -26,7 +26,6 @@
     "APN": {
       "AccessPointName": "test-apn",
       "ApnTypes": ["Default"],
-      "Authentication": "chap",
       "Name": "test-apn-name",
       "Username": "test-username",
       "Password": "test-password"
@@ -34,7 +33,7 @@
     "LastConnectedAttachApnProperty": {
       "AccessPointName": "test-apn-2",
       "ApnTypes": ["Attach"],
-      "Authentication": "pap",
+      "Authentication": "PAP",
       "Name": "test-apn-name-2",
       "Username": "test-username-2",
       "Password": "test-password-2"
@@ -42,7 +41,7 @@
     "LastConnectedDefaultApnProperty": {
       "AccessPointName": "test-apn-3",
       "ApnTypes": ["Default"],
-      "Authentication": "chap",
+      "Authentication": "CHAP",
       "IpType": "IPv6",
       "Name": "test-apn-name-3",
       "Username": "test-username-3",
@@ -51,7 +50,7 @@
     "LastGoodAPN": {
       "AccessPointName": "test-apn-4",
       "ApnTypes": ["Default", "Attach"],
-      "Authentication": "pap",
+      "Authentication": "PAP",
       "IpType": "IPv4orIPv6",
       "Name": "test-apn-name-4",
       "Username": "test-username-4",

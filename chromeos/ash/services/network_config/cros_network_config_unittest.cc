@@ -198,7 +198,7 @@ std::string CreateApnShillDict() {
   test_apn_data.password = kCellularTestApnPassword1;
   test_apn_data.attach = kCellularTestApnAttach1;
   test_apn_data.id = kCellularTestApnId1;
-  test_apn_data.onc_authentication_type = kCellularTestApnAuthenticationType1;
+  test_apn_data.onc_authentication = kCellularTestApnAuthenticationType1;
   test_apn_data.onc_ip_type = kCellularTestApnIpType1;
   test_apn_data.onc_apn_types.emplace_back(kCellularTestApnTypes1);
   return test_apn_data.AsApnShillDict();
@@ -2371,9 +2371,8 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
   test_apn1.attach = kCellularTestApnAttach1;
   test_apn1.mojo_ip_type = mojom::ApnIpType::kIpv4;
   test_apn1.onc_ip_type = ::onc::cellular_apn::kIpTypeIpv4;
-  test_apn1.mojo_authentication_type = mojom::ApnAuthenticationType::kPap;
-  test_apn1.onc_authentication_type =
-      ::onc::cellular_apn::kAuthenticationTypePap;
+  test_apn1.mojo_authentication = mojom::ApnAuthenticationType::kPap;
+  test_apn1.onc_authentication = ::onc::cellular_apn::kAuthenticationPap;
   test_apn1.mojo_apn_types = {mojom::ApnType::kDefault,
                               mojom::ApnType::kAttach};
   test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault,
@@ -2405,9 +2404,8 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
   test_apn2.attach = kCellularTestApnAttach2;
   test_apn2.mojo_ip_type = mojom::ApnIpType::kIpv4Ipv6;
   test_apn2.onc_ip_type = ::onc::cellular_apn::kIpTypeIpv4Ipv6;
-  test_apn2.mojo_authentication_type = mojom::ApnAuthenticationType::kChap;
-  test_apn2.onc_authentication_type =
-      ::onc::cellular_apn::kAuthenticationTypeChap;
+  test_apn2.mojo_authentication = mojom::ApnAuthenticationType::kChap;
+  test_apn2.onc_authentication = ::onc::cellular_apn::kAuthenticationChap;
   test_apn2.mojo_apn_types = {mojom::ApnType::kDefault,
                               mojom::ApnType::kAttach};
   test_apn2.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault,

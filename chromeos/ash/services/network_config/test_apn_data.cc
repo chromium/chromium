@@ -34,9 +34,8 @@ bool IsPropertyEquals(const base::Value::Dict& apn,
 TestApnData::TestApnData()
     : mojo_state(mojom::ApnState::kEnabled),
       onc_state(::onc::cellular_apn::kStateEnabled),
-      mojo_authentication_type(mojom::ApnAuthenticationType::kAutomatic),
-      onc_authentication_type(
-          ::onc::cellular_apn::kAuthenticationTypeAutomatic),
+      mojo_authentication(mojom::ApnAuthenticationType::kAutomatic),
+      onc_authentication(::onc::cellular_apn::kAuthenticationAutomatic),
       mojo_ip_type(mojom::ApnIpType::kAutomatic),
       onc_ip_type(::onc::cellular_apn::kIpTypeAutomatic) {}
 
@@ -48,8 +47,8 @@ TestApnData::TestApnData(std::string access_point_name,
                          std::string id,
                          mojom::ApnState mojo_state,
                          std::string onc_state,
-                         mojom::ApnAuthenticationType mojo_authentication_type,
-                         std::string onc_authentication_type,
+                         mojom::ApnAuthenticationType mojo_authentication,
+                         std::string onc_authentication,
                          mojom::ApnIpType mojo_ip_type,
                          std::string onc_ip_type,
                          const std::vector<mojom::ApnType>& mojo_apn_types,
@@ -62,8 +61,8 @@ TestApnData::TestApnData(std::string access_point_name,
       id(id),
       mojo_state(mojo_state),
       onc_state(onc_state),
-      mojo_authentication_type(mojo_authentication_type),
-      onc_authentication_type(onc_authentication_type),
+      mojo_authentication(mojo_authentication),
+      onc_authentication(onc_authentication),
       mojo_ip_type(mojo_ip_type),
       onc_ip_type(onc_ip_type),
       mojo_apn_types(mojo_apn_types),
@@ -78,9 +77,9 @@ mojom::ApnPropertiesPtr TestApnData::AsMojoApn() const {
   apn->username = username;
   apn->password = password;
   apn->attach = attach;
+  apn->authentication = mojo_authentication;
   if (features::IsApnRevampEnabled()) {
     apn->id = id.empty() ? absl::nullopt : absl::optional<std::string>(id);
-    apn->authentication_type = mojo_authentication_type;
     apn->ip_type = mojo_ip_type;
     apn->apn_types = mojo_apn_types;
     apn->state = mojo_state;
@@ -95,10 +94,10 @@ base::Value::Dict TestApnData::AsOncApn() const {
   apn.Set(::onc::cellular_apn::kUsername, username);
   apn.Set(::onc::cellular_apn::kPassword, password);
   apn.Set(::onc::cellular_apn::kAttach, attach);
+  apn.Set(::onc::cellular_apn::kAuthentication, onc_authentication);
   if (features::IsApnRevampEnabled()) {
     apn.Set(::onc::cellular_apn::kId, id);
     apn.Set(::onc::cellular_apn::kState, onc_state);
-    apn.Set(::onc::cellular_apn::kAuthenticationType, onc_authentication_type);
     apn.Set(::onc::cellular_apn::kIpType, onc_ip_type);
 
     base::Value::List apn_types;
@@ -116,9 +115,9 @@ base::Value::Dict TestApnData::AsShillApn() const {
   apn.Set(shill::kApnUsernameProperty, username);
   apn.Set(shill::kApnPasswordProperty, password);
   apn.Set(shill::kApnAttachProperty, attach);
+  apn.Set(kShillApnAuthenticationType, onc_authentication);
   if (features::IsApnRevampEnabled()) {
     apn.Set(kShillApnId, id);
-    apn.Set(kShillApnAuthenticationType, onc_authentication_type);
     apn.Set(shill::kApnIpTypeProperty, onc_ip_type);
 
     std::string apn_types;
@@ -156,9 +155,9 @@ bool TestApnData::MojoApnEquals(const mojom::ApnProperties& apn) const {
   ret &= MatchOptionalString(username, apn.username);
   ret &= MatchOptionalString(password, apn.password);
   ret &= MatchOptionalString(attach, apn.attach);
+  ret &= mojo_authentication == apn.authentication;
 
   if (features::IsApnRevampEnabled()) {
-    ret &= mojo_authentication_type == apn.authentication_type;
     ret &= mojo_ip_type == apn.ip_type;
     ret &= mojo_apn_types == apn.apn_types;
   }
@@ -183,6 +182,8 @@ bool TestApnData::OncApnEquals(const base::Value::Dict& onc_apn,
   }
 
   ret &= IsPropertyEquals(onc_apn, ::onc::cellular_apn::kAttach, attach);
+  ret &= IsPropertyEquals(onc_apn, ::onc::cellular_apn::kAuthentication,
+                          onc_authentication);
   if (features::IsApnRevampEnabled()) {
     const std::string* state = onc_apn.FindString(::onc::cellular_apn::kState);
     if (has_state_field) {
@@ -191,8 +192,6 @@ bool TestApnData::OncApnEquals(const base::Value::Dict& onc_apn,
       ret &= !state;
     }
 
-    ret &= IsPropertyEquals(onc_apn, ::onc::cellular_apn::kAuthenticationType,
-                            onc_authentication_type);
     ret &= IsPropertyEquals(onc_apn, ::onc::cellular_apn::kIpType, onc_ip_type);
 
     if (const base::Value::List* apn_types =

@@ -68,7 +68,7 @@ void CellularNetworkMetricsLogger::LogCreateCustomApnResult(
     return;
 
   base::UmaHistogramEnumeration(kCreateCustomApnAuthenticationTypeHistogram,
-                                apn->authentication_type);
+                                apn->authentication);
   base::UmaHistogramEnumeration(kCreateCustomApnIpTypeHistogram, apn->ip_type);
 
   absl::optional<CellularNetworkMetricsLogger::ApnTypes> apn_types =

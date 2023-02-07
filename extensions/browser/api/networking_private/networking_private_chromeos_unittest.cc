@@ -1122,7 +1122,7 @@ TEST_F(NetworkingPrivateApiTest, GetCellularPropertiesFromWebUi) {
                                        .Set("AccessPointName", "test-apn")
                                        .Set("Username", "test-user")
                                        .Set("Password", "test-password")
-                                       .Set("Authentication", "chap")
+                                       .Set("Authentication", "CHAP")
                                        .Build();
   base::Value::Dict expected_result =
       DictionaryBuilder()

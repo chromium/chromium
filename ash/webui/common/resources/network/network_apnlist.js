@@ -85,7 +85,7 @@ Polymer({
           accessPointName: kDefaultAccessPointName,
           name: kOtherAccessPointName,
           state: ApnState.kEnabled,
-          authenticationType: ApnAuthenticationType.kAutomatic,
+          authentication: ApnAuthenticationType.kAutomatic,
           ipType: ApnIpType.kAutomatic,
           apnTypes: [ApnType.kDefault],
         };
@@ -148,11 +148,11 @@ Polymer({
       name: OncMojo.getActiveString(apn.name),
       password: OncMojo.getActiveString(apn.password),
       username: OncMojo.getActiveString(apn.username),
+      authentication: ApnAuthenticationType.kAutomatic,
       // Because this UI is for kApnRevamp=false, these are all default
       // values for fields to pass compilation. None of these fields
       // should be used by CrosNetworkConfig.
       state: ApnState.kEnabled,
-      authenticationType: ApnAuthenticationType.kAutomatic,
       ipType: ApnIpType.kAutomatic,
       apnTypes: [ApnType.kDefault],
     };
@@ -253,11 +253,11 @@ Polymer({
       name: kOtherAccessPointName,
       username: otherApn.username,
       password: otherApn.password,
+      authentication: ApnAuthenticationType.kAutomatic,
       // Because this UI is for kApnRevamp=false, these are all default
       // values for fields to pass compilation. None of these fields
       // should be used by CrosNetworkConfig.
       state: ApnState.kEnabled,
-      authenticationType: ApnAuthenticationType.kAutomatic,
       ipType: ApnIpType.kAutomatic,
       apnTypes: [ApnType.kDefault],
     };

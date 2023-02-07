@@ -238,8 +238,7 @@ base::Value::Dict ShillToONCTranslator::CreateTranslatedONCObject() {
     TranslateStaticIPConfig();
   } else if (onc_signature_ == &chromeos::onc::kEAPSignature) {
     TranslateEap();
-  } else if (ash::features::IsApnRevampEnabled() &&
-             onc_signature_ == &chromeos::onc::kCellularApnSignature) {
+  } else if (onc_signature_ == &chromeos::onc::kCellularApnSignature) {
     TranslateApnProperties();
   } else {
     CopyPropertiesAccordingToSignature();
@@ -600,11 +599,16 @@ void ShillToONCTranslator::TranslateCellularDevice() {
   }
 }
 
-// TODO(b/162365553) Add translation for the other APN properties when they are
-// added to Shill
 void ShillToONCTranslator::TranslateApnProperties() {
-  DCHECK(ash::features::IsApnRevampEnabled());
   CopyPropertiesAccordingToSignature();
+
+  TranslateWithTableAndSet(shill::kApnAuthenticationProperty,
+                           kApnAuthenticationTranslationTable,
+                           ::onc::cellular_apn::kAuthentication);
+
+  if (!ash::features::IsApnRevampEnabled()) {
+    return;
+  }
 
   TranslateWithTableAndSet(shill::kApnIpTypeProperty,
                            kApnIpTypeTranslationTable,

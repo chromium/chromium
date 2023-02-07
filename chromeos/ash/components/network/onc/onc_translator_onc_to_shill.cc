@@ -151,8 +151,7 @@ void LocalTranslator::TranslateFields() {
     TranslateNetworkConfiguration();
   } else if (onc_signature_ == &chromeos::onc::kCellularSignature) {
     TranslateCellular();
-  } else if (ash::features::IsApnRevampEnabled() &&
-             onc_signature_ == &chromeos::onc::kCellularApnSignature) {
+  } else if (onc_signature_ == &chromeos::onc::kCellularApnSignature) {
     TranslateApn();
   } else if (onc_signature_ == &chromeos::onc::kEthernetSignature) {
     TranslateEthernet();
@@ -507,7 +506,18 @@ void LocalTranslator::TranslateCellular() {
 }
 
 void LocalTranslator::TranslateApn() {
-  DCHECK(ash::features::IsApnRevampEnabled());
+  const std::string* authentication =
+      onc_object_->FindString(::onc::cellular_apn::kAuthentication);
+  if (authentication) {
+    TranslateWithTableAndSet(*authentication,
+                             kApnAuthenticationTranslationTable,
+                             shill::kApnAuthenticationProperty);
+  }
+
+  if (!ash::features::IsApnRevampEnabled()) {
+    CopyFieldsAccordingToSignature();
+    return;
+  }
 
   const std::string* ip_type =
       onc_object_->FindString(::onc::cellular_apn::kIpType);

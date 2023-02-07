@@ -21,7 +21,7 @@ const TEST_APN = {
   accessPointName: 'apn',
   username: 'username',
   password: 'password',
-  authenticationType: ApnAuthenticationType.kAutomatic,
+  authentication: ApnAuthenticationType.kAutomatic,
   ipType: ApnIpType.kAutomatic,
   apnTypes: [ApnType.kDefault],
   state: ApnState.kEnabled,
@@ -206,7 +206,7 @@ suite('ApnDetailDialog', function() {
     assertEquals(TEST_APN.accessPointName, apn.accessPointName);
     assertEquals(TEST_APN.username, apn.username);
     assertEquals(TEST_APN.password, apn.password);
-    assertEquals(TEST_APN.authenticationType, apn.authenticationType);
+    assertEquals(TEST_APN.authentication, apn.authentication);
     assertEquals(TEST_APN.ipType, apn.ipType);
     assertEquals(TEST_APN.apnTypes.length, apn.apnTypes.length);
     assertEquals(TEST_APN.apnTypes[0], apn.apnTypes[0]);
@@ -428,7 +428,7 @@ suite('ApnDetailDialog', function() {
     assertEquals(apnWithId.id, apn.id);
     assertEquals(apnWithId.username, apn.username);
     assertEquals(apnWithId.password, apn.password);
-    assertEquals(apnWithId.authenticationType, apn.authenticationType);
+    assertEquals(apnWithId.authentication, apn.authentication);
     assertEquals(apnWithId.ipType, apn.ipType);
     assertEquals(apnWithId.apnTypes.length, apn.apnTypes.length);
     assertEquals(apnWithId.apnTypes[0], apn.apnTypes[0]);

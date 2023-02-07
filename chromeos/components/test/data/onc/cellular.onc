@@ -5,7 +5,7 @@
     "AllowRoaming": true,
     "APN": {
       "AccessPointName": "test-apn",
-      "Authentication": "chap",
+      "Authentication": "",
       "Username": "test-username",
       "Password": "test-password"
     },

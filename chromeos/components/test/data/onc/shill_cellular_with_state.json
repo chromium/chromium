@@ -20,7 +20,6 @@
   },
   "Cellular.APN": {
     "apn": "test-apn",
-    "authentication": "chap",
     "name": "test-apn-name",
     "username": "test-username",
     "password": "test-password"

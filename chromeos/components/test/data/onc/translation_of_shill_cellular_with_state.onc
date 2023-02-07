@@ -25,28 +25,27 @@
     },
     "APN": {
       "AccessPointName": "test-apn",
-      "Authentication": "chap",
       "Name": "test-apn-name",
       "Username": "test-username",
       "Password": "test-password"
     },
     "LastConnectedAttachApnProperty": {
       "AccessPointName": "test-apn-2",
-      "Authentication": "pap",
+      "Authentication": "PAP",
       "Name": "test-apn-name-2",
       "Username": "test-username-2",
       "Password": "test-password-2"
     },
     "LastConnectedDefaultApnProperty": {
       "AccessPointName": "test-apn-3",
-      "Authentication": "chap",
+      "Authentication": "CHAP",
       "Name": "test-apn-name-3",
       "Username": "test-username-3",
       "Password": "test-password-3"
     },
     "LastGoodAPN": {
       "AccessPointName": "test-apn-4",
-      "Authentication": "pap",
+      "Authentication": "PAP",
       "Name": "test-apn-name-4",
       "Username": "test-username-4",
       "Password": "test-password-4"

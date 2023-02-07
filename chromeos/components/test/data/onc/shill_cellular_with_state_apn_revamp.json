@@ -21,7 +21,6 @@
   "Cellular.APN": {
     "apn": "test-apn",
     "apn_types": "DEFAULT",
-    "authentication": "chap",
     "name": "test-apn-name",
     "username": "test-username",
     "password": "test-password"

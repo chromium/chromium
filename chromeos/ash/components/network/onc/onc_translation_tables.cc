@@ -23,7 +23,6 @@ namespace {
 
 // TODO(b/162365553) Remove when shill constants are added.
 constexpr char kShillApnId[] = "id";
-constexpr char kShillApnAuthenticationType[] = "authentication_type";
 
 const FieldTranslationEntry eap_fields[] = {
     {::onc::eap::kAnonymousIdentity, shill::kEapAnonymousIdentityProperty},
@@ -183,14 +182,15 @@ const FieldTranslationEntry cellular_apn_fields[] = {
     {::onc::cellular_apn::kName, shill::kApnNameProperty},
     {::onc::cellular_apn::kUsername, shill::kApnUsernameProperty},
     {::onc::cellular_apn::kPassword, shill::kApnPasswordProperty},
-    {::onc::cellular_apn::kAuthentication, shill::kApnAuthenticationProperty},
+    // This field is converted during translation, see onc_translator_*.
+    // {::onc::cellular_apn::kAuthentication,
+    // shill::kApnAuthenticationProperty},
     {::onc::cellular_apn::kLocalizedName, shill::kApnLocalizedNameProperty},
     {::onc::cellular_apn::kLanguage, shill::kApnLanguageProperty},
     {::onc::cellular_apn::kAttach, shill::kApnAttachProperty},
     // This field is converted during translation, see onc_translator_*.
     // {::onc::cellular_apn::kIpType, shill::kApnIpTypeProperty},
     {::onc::cellular_apn::kId, kShillApnId},
-    {::onc::cellular_apn::kAuthenticationType, kShillApnAuthenticationType},
     // This field is converted during translation, see onc_translator_*.
     // {::onc::cellular_apn::kApnTypes, shill::kApnTypesProperty},
     {nullptr}};
@@ -439,6 +439,12 @@ const StringTranslationEntry kIKEv2AuthenticationTypeTable[] = {
     {::onc::ipsec::kPSK, shill::kIKEv2AuthenticationTypePSK},
     {::onc::ipsec::kCert, shill::kIKEv2AuthenticationTypeCert},
     {::onc::ipsec::kEAP, shill::kIKEv2AuthenticationTypeEAP},
+    {nullptr}};
+
+const StringTranslationEntry kApnAuthenticationTranslationTable[] = {
+    {::onc::cellular_apn::kAuthenticationAutomatic, ""},
+    {::onc::cellular_apn::kAuthenticationPap, shill::kApnAuthenticationPap},
+    {::onc::cellular_apn::kAuthenticationChap, shill::kApnAuthenticationChap},
     {nullptr}};
 
 const StringTranslationEntry kApnIpTypeTranslationTable[] = {

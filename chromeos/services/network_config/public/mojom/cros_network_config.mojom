@@ -368,7 +368,7 @@ struct ApnProperties {
   string access_point_name;
   // This id will only be set for custom APNs.
   string? id;
-  string? authentication;
+  ApnAuthenticationType authentication;
   string? language;
   string? localized_name;
   string? name;
@@ -384,7 +384,6 @@ struct ApnProperties {
   // is disabled by the user or not. Chrome will filter out disabled APNs before
   // passing them to Shill.
   ApnState state;
-  ApnAuthenticationType authentication_type;
   ApnIpType ip_type;
   array<ApnType> apn_types;
 };

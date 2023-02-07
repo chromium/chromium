@@ -216,7 +216,7 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
     this.username_ = /** @type {string}*/ (this.apnProperties.username);
     this.password_ = /** @type {string}*/ (this.apnProperties.password);
     this.selectedIpType_ = this.apnProperties.ipType.toString();
-    this.selectedAuthType_ = this.apnProperties.authenticationType.toString();
+    this.selectedAuthType_ = this.apnProperties.authentication.toString();
     this.isDefaultApnType_ = false;
     this.isAttachApnType_ = false;
 
@@ -353,7 +353,7 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
     apnProperties.accessPointName = this.apn_;
     apnProperties.username = this.username_;
     apnProperties.password = this.password_;
-    apnProperties.authenticationType = Number(this.selectedAuthType_);
+    apnProperties.authentication = Number(this.selectedAuthType_);
     apnProperties.ipType = Number(this.selectedIpType_);
     // TODO(b/162365553): Check that ApnTypes is non-empty
     apnProperties.apnTypes = this.getSelectedApnTypes_();
