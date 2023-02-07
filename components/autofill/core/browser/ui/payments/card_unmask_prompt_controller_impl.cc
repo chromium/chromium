@@ -265,8 +265,18 @@ std::u16string CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
                                    ->challenge_input_length),
         GetSideOfCardTranslationString(IsCvcInFront()));
   }
-  return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS);
+
+  // Instruction message for expired cards.
+  if (ShouldRequestExpirationDate()) {
+    return l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_EXPIRED_CARD,
+        GetSideOfCardTranslationString(IsCvcInFront()));
+  }
+
+  // Default instruction message.
+  return l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_DEFAULT,
+      GetSideOfCardTranslationString(IsCvcInFront()));
 #endif
 }
 

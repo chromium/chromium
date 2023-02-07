@@ -340,8 +340,11 @@
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_EXPIRED_TITLE" desc="Title for the credit card unmasking dialog when the credit card is expired.">
       Enter the expiration date and CVC for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph>
     </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS" desc="Text explaining what the user should do in the card unmasking dialog.">
-      After you confirm, card details from your Google Account will be shared with this site.
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_DEFAULT" desc="Instructions for users shown on the credit card unmasking dialog. This dialog is triggered when users attempt autofilling credit cards saved in their payments profile, and prompts them for the CVC to unmask the card.">
+      To help keep your card secure, enter the CVC on the <ph name="SIDE_OF_CARD">$1<ex>back of your card</ex></ph>
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_EXPIRED_CARD" desc="Instructions for users shown on the credit card unmasking dialog. This dialog is triggered when users attempt autofilling expired credit cards saved in their payments profile, and prompts them for the new expiration date and the CVC to unmask the card.">
+      Enter your new expiration date and CVC on the <ph name="SIDE_OF_CARD">$1<ex>back of your card</ex></ph>
     </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_VIRTUAL_CARD" desc="Text providing instructions on how to unmask virtual card.">
       Enter the <ph name="NUMBER_OF_DIGITS">$1<ex>3</ex></ph>-digit security code on the <ph name="SIDE_OF_CARD">$2<ex>back of your card</ex></ph> so your bank can verify it's you

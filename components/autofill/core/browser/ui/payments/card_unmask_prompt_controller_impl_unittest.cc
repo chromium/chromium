@@ -357,10 +357,40 @@ TEST_P(CardUnmaskPromptContentTest, TitleAndInstructionMessage) {
         controller_->GetWindowTitle(),
         u"Enter the CVC for " + card_.CardIdentifierStringForAutofillDisplay());
   }
-  EXPECT_EQ(controller_->GetInstructionsMessage(),
-            u"After you confirm, card details from your Google Account will be "
-            u"shared with this site.");
+  // On Desktop/Android, if the issuer is not Amex, the instructions message
+  // prompts users to enter the CVC located on the back of the card.
+  EXPECT_EQ(
+      controller_->GetInstructionsMessage(),
+      u"To help keep your card secure, enter the CVC on the back of your card");
 #endif
+  controller_->OnUnmaskDialogClosed();
+
+  // On Amex cards, the CVC is present on the front of the card. Test that the
+  // dialog relays this information to the users.
+  card_ = test::GetMaskedServerCardAmex();
+  ShowPrompt();
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(controller_->GetWindowTitle(), u"Confirm Card");
+  EXPECT_EQ(controller_->GetInstructionsMessage(),
+            u"Enter the CVC for " +
+                card_.CardIdentifierStringForAutofillDisplay() +
+                u". After you confirm, card details from your Google Account "
+                u"will be shared with this site.");
+#else
+  if (touch_to_fill_for_credit_cards_enabled()) {
+    EXPECT_EQ(controller_->GetWindowTitle(), u"Enter your CVC");
+  } else {
+    EXPECT_EQ(
+        controller_->GetWindowTitle(),
+        u"Enter the CVC for " + card_.CardIdentifierStringForAutofillDisplay());
+  }
+  // On Desktop/Android, if the issuer is Amex, the instructions message prompts
+  // users to enter the CVC located on the front of the card.
+  EXPECT_EQ(controller_->GetInstructionsMessage(),
+            u"To help keep your card secure, enter the CVC on the front of "
+            u"your card");
+#endif
+  controller_->OnUnmaskDialogClosed();
 }
 
 // Tests the title and instructions message in the credit card unmask dialog for
@@ -385,8 +415,7 @@ TEST_P(CardUnmaskPromptContentTest, ExpiredCardTitleAndInstructionMessage) {
                   card_.CardIdentifierStringForAutofillDisplay());
   }
   EXPECT_EQ(controller_->GetInstructionsMessage(),
-            u"After you confirm, card details from your Google Account will be "
-            u"shared with this site.");
+            u"Enter your new expiration date and CVC on the back of your card");
 #endif
   controller_->OnUnmaskDialogClosed();
 }
