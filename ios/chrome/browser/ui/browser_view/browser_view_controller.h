@@ -54,6 +54,7 @@ class PrerenderService;
 @class ToolbarAccessoryPresenter;
 @protocol ToolbarCommands;
 @protocol IncognitoReauthCommands;
+@protocol LoadQueryCommands;
 
 // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
 typedef struct {
@@ -78,6 +79,7 @@ typedef struct {
   id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler;
   id<FindInPageCommands> findInPageCommandsHandler;
   id<ToolbarCommands> toolbarCommandsHandler;
+  id<LoadQueryCommands> loadQueryCommandsHandler;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers

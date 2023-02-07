@@ -802,6 +802,8 @@ enum class ToolbarKind {
 
   // SnackbarCoordinator is not created yet and therefore not dispatching
   // SnackbarCommands.
+  // TODO(crbug.com/1413769) Typecast should be performed using
+  // HandlerForProtocol method.
   _snackbarCommandsHandler = static_cast<id<SnackbarCommands>>(_dispatcher);
 
   _viewControllerDependencies.prerenderService = _prerenderService;
@@ -834,6 +836,10 @@ enum class ToolbarKind {
   _viewControllerDependencies.findInPageCommandsHandler =
       _findInPageCommandsHandler;
   _viewControllerDependencies.toolbarCommandsHandler = _toolbarCommandsHandler;
+  // TODO(crbug.com/1413769) Typecast should be performed using
+  // HandlerForProtocol method.
+  _viewControllerDependencies.loadQueryCommandsHandler =
+      static_cast<id<LoadQueryCommands>>(_dispatcher);
 }
 
 - (void)updateViewControllerDependencies {
@@ -889,6 +895,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.browserCoordinatorCommandsHandler = nil;
   _viewControllerDependencies.findInPageCommandsHandler = nil;
   _viewControllerDependencies.toolbarCommandsHandler = nil;
+  _viewControllerDependencies.loadQueryCommandsHandler = nil;
 
   [_bookmarksCoordinator shutdown];
   _bookmarksCoordinator = nil;

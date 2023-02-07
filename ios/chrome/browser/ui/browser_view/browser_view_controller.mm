@@ -55,7 +55,6 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/help_commands.h"
-#import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
@@ -388,6 +387,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 @property(nonatomic, strong)
     ToolbarAccessoryPresenter* toolbarAccessoryPresenter;
 
+// Command handler for load query commands
+@property(nonatomic, weak) id<LoadQueryCommands> loadQueryCommandsHandler;
+
 // Command handler for text zoom commands
 @property(nonatomic, weak) id<TextZoomCommands> textZoomHandler;
 
@@ -511,6 +513,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         dependencies.browserCoordinatorCommandsHandler;
     self.findInPageCommandsHandler = dependencies.findInPageCommandsHandler;
     self.toolbarCommandsHandler = dependencies.toolbarCommandsHandler;
+    self.loadQueryCommandsHandler = dependencies.loadQueryCommandsHandler;
+
     dependencies.lensCoordinator.delegate = self;
 
     _inNewTabAnimation = NO;
@@ -1565,10 +1569,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   [self updateBroadcastState];
   if (_voiceSearchController) {
-    // TODO(crbug.com/1329089): Inject LoadQueryCommands as a handler and pass
-    // into the voice search controller.
-    _voiceSearchController.dispatcher =
-        HandlerForProtocol(self.commandDispatcher, LoadQueryCommands);
+    _voiceSearchController.dispatcher = self.loadQueryCommandsHandler;
   }
 
   // TODO(crbug.com/1329097): Move tab strip setup to BrowserCoordinator.
@@ -2192,8 +2193,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   _voiceSearchController =
       ios::provider::CreateVoiceSearchController(self.browser);
   if (self.primaryToolbarCoordinator) {
-    _voiceSearchController.dispatcher =
-        HandlerForProtocol(self.commandDispatcher, LoadQueryCommands);
+    _voiceSearchController.dispatcher = self.loadQueryCommandsHandler;
   }
 }
 
