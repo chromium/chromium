@@ -76,8 +76,11 @@
   <message name="IDS_MULTIDEVICE_SETUP_DIALOG_ACCESSIBILITY_TITLE" desc="Accessibility title for the multidevice setup dialog with a '- Dialog' appended to inform screen reader users they are in a dialog. This is a work around to deal with the fact that we cannot annotate the window's role as a dialog another way.">
     Connect to your phone - Dialog
   </message>
-  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_HEADER" desc="Header for welcome page.">
+  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_HEADER" desc="Header for multidevice setup page.">
     Connect to your phone
+  </message>
+  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_AFTER_QUICK_START_HEADER" desc="Header for multidevice setup page for users who have already connected their phone earlier with Quick Start.">
+    Stay connected with your phone
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MESSAGE" desc="Summary to tell user that they can share their Android's capabilities with their ChromeOS device; includes details on specific features that can be used and a link to an information page">
     You can text from your computer, share your internet connection, reply to conversation notifications and unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> with your phone.<ph name="FOOTNOTE_POINTER">$2<ex>*</ex></ph> <ph name="LINK_BEGIN">&lt;a href="$3<ex>https://support.google.com/chromebook/?p=multidevice</ex>" target="_blank"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
