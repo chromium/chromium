@@ -1992,7 +1992,7 @@ deps = {
   },
 
   'src/third_party/android_prebuilts/build_tools': {
-      'url': Var('android_git') + '/platform/prebuilts/build-tools.git' + '@' + '5794e96eb8bae47bb48feee915d99583573b3887',
+      'url': Var('android_git') + '/platform/prebuilts/build-tools.git' + '@' + '673c20b524a83b662d8c1057fd3eec8fd0f93f9d',
       'condition': 'checkout_android_prebuilts_build_tools',
   },
 

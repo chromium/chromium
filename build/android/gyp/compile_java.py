@@ -413,6 +413,11 @@ def _OnStaleMd5(changes, options, javac_cmd, javac_args, java_files, kt_files):
                       'KYTHE_ROOT_DIRECTORY and KYTHE_OUTPUT_DIRECTORY '
                       'environment variables to be set.')
     javac_extractor_cmd = build_utils.JavaCmd() + [
+        '--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
+        '--add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED',
+        '--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED',
+        '--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
+        '--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED',
         '-jar',
         _JAVAC_EXTRACTOR,
     ]
