@@ -1496,6 +1496,7 @@ component("base") {
     "//base/allocator/partition_allocator:raw_ptr",
     "//base/third_party/double_conversion",
     "//base/third_party/dynamic_annotations",
+    "//build:blink_buildflags",
     "//build:branding_buildflags",
     "//build/config/compiler:compiler_buildflags",
     "//third_party/modp_b64",

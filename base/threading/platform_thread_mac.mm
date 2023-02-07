@@ -24,6 +24,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "base/threading/threading_features.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -394,7 +395,14 @@ ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
 
 size_t GetDefaultThreadStackSize(const pthread_attr_t& attributes) {
 #if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
+  // For iOS 512kB (the default) isn't sufficient, but using the code
+  // for Mac OS X below will return 8MB. So just be a little more conservative
+  // and return 1MB for now.
+  return 1024 * 1024;
+#else
   return 0;
+#endif
 #else
   // The Mac OS X default for a pthread stack size is 512kB.
   // Libc-594.1.4/pthreads/pthread.c's pthread_attr_init uses
