@@ -1693,6 +1693,46 @@ TEST(SafeNumerics, CompoundNumericOperations) {
   EXPECT_FALSE(too_large.IsValid());
 }
 
+TEST(SafeNumerics, TemplatedSafeMath) {
+  // CheckMul and friends can be confusing, as they change behavior depending on
+  // where the template is specified.
+  uint64_t result;
+  short short_one_thousand = 1000;
+  // In this case, CheckMul uses template deduction to use the <short> variant,
+  // and this will overflow even if assigned to a uint64_t.
+  EXPECT_FALSE(CheckMul(short_one_thousand, short_one_thousand)
+                   .AssignIfValid<uint64_t>(&result));
+  EXPECT_FALSE(CheckMul(short_one_thousand, short_one_thousand).IsValid());
+  // In both cases, CheckMul is forced to use the uint64_t template and will not
+  // overflow.
+  EXPECT_TRUE(CheckMul<uint64_t>(short_one_thousand, short_one_thousand)
+                  .AssignIfValid(&result));
+  EXPECT_TRUE(CheckMul<uint64_t>(short_one_thousand, short_one_thousand)
+                  .AssignIfValid<uint64_t>(&result));
+
+  uint64_t big_one_thousand = 1000u;
+  // Order doesn't matter here: if one of the parameters is uint64_t then the
+  // operation is done on a uint64_t.
+  EXPECT_TRUE(
+      CheckMul(big_one_thousand, short_one_thousand).AssignIfValid(&result));
+  EXPECT_TRUE(
+      CheckMul(short_one_thousand, big_one_thousand).AssignIfValid(&result));
+
+  // Checked math functions can also take two template type parameters. Here are
+  // the results of all four combinations.
+  EXPECT_TRUE((CheckMul<short, uint64_t>(1000, 1000).AssignIfValid(&result)));
+
+  // Note: Order here does not matter.
+  EXPECT_TRUE((CheckMul<uint64_t, short>(1000, 1000).AssignIfValid(&result)));
+
+  // Only if both are short will the operation be invalid.
+  EXPECT_FALSE((CheckMul<short, short>(1000, 1000).AssignIfValid(&result)));
+
+  // Same as above.
+  EXPECT_TRUE(
+      (CheckMul<uint64_t, uint64_t>(1000, 1000).AssignIfValid(&result)));
+}
+
 TEST(SafeNumerics, VariadicNumericOperations) {
   {  // Synthetic scope to avoid variable naming collisions.
     auto a = CheckAdd(1, 2UL, MakeCheckedNum(3LL), 4).ValueOrDie();
