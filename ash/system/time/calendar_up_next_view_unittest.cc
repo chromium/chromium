@@ -54,8 +54,9 @@ class CalendarUpNextViewTest : public AshTestBase {
       std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>> events,
       views::Button::PressedCallback callback =
           views::Button::PressedCallback()) {
-    if (!widget_)
+    if (!widget_) {
       widget_ = CreateFramelessTestWidget();
+    }
 
     // Mock events being fetched.
     Shell::Get()->system_tray_model()->calendar_model()->OnEventsFetched(

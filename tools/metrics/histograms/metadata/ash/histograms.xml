@@ -1013,13 +1013,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Ash.CalendarView.CloseEventList.AnimationSmoothness" units="%"
-    expires_after="2023-09-18">
+<histogram
+    name="Ash.CalendarView.CloseEventList.{CalendarChildView}.AnimationSmoothness"
+    units="%" expires_after="2023-09-18">
   <owner>newcomer@google.com</owner>
   <owner>jiamingc@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
-  <owner>cros-status-area-eng@google.com</owner>
   <summary>Recorded when the close event list animation is finished.</summary>
+  <token key="CalendarChildView">
+    <variant name="CalendarSlidingSurface"
+        summary="calendar sliding surface container for event list and up
+                 next"/>
+    <variant name="EventListItem" summary="event list item"/>
+    <variant name="UpNextView"
+        summary="if up next view is showing, track animating from the event
+                 list view closing to the up next view showing"/>
+  </token>
 </histogram>
 
 <histogram name="Ash.CalendarView.ConstructionTime" units="ms"
@@ -1052,9 +1061,15 @@ chromium-metrics-reviews@google.com.
     {CalendarChildView}.
   </summary>
   <token key="CalendarChildView">
+    <variant name="CalendarSlidingSurface"
+        summary="calendar sliding surface container for event list and up
+                 next"/>
     <variant name="EventListView" summary="event list view"/>
     <variant name="LabelView" summary="label view"/>
     <variant name="MonthView" summary="month view"/>
+    <variant name="UpNextView"
+        summary="if up next view is showing, track animating from it to the
+                 event list view opening"/>
   </token>
 </histogram>
 

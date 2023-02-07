@@ -20,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
@@ -110,7 +111,7 @@ class ScrollingAnimation : public gfx::LinearAnimation,
 std::unique_ptr<views::Button> CreateTodaysEventsButton(
     views::Button::PressedCallback callback) {
   return views::Builder<views::Button>(
-             std::make_unique<ash::IconButton>(
+             std::make_unique<IconButton>(
                  std::move(callback), IconButton::Type::kXSmall,
                  &kCalendarUpNextTodaysEventsButtonIcon,
                  IDS_ASH_CALENDAR_UP_NEXT_TODAYS_EVENTS_BUTTON))
@@ -142,8 +143,10 @@ int GetFirstVisibleChildIndex(std::vector<views::View*> event_views,
                               views::View* scroll_view) {
   for (size_t i = 0; i < event_views.size(); ++i) {
     auto* child = event_views[i];
-    if (scroll_view->GetBoundsInScreen().Intersects(child->GetBoundsInScreen()))
+    if (scroll_view->GetBoundsInScreen().Intersects(
+            child->GetBoundsInScreen())) {
       return i;
+    }
   }
 
   return 0;
@@ -166,9 +169,12 @@ CalendarUpNextView::CalendarUpNextView(
       cros_tokens::kCrosSysSystemOnBase));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kContainerInsets, 0));
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
 
-  if (!gfx::Animation::ShouldRenderRichAnimation())
+  if (!gfx::Animation::ShouldRenderRichAnimation()) {
     bounds_animator_.SetAnimationDuration(base::TimeDelta());
+  }
 
   on_contents_scrolled_subscription_ =
       scroll_view_->AddContentsScrolledCallback(
@@ -246,8 +252,9 @@ void CalendarUpNextView::Layout() {
   // scrollable, we need to set it's preferred size here so it's bigger
   // than the `scroll_view_` and therefore scrolls. See
   // https://crbug.com/1384131.
-  if (content_view_)
+  if (content_view_) {
     content_view_->SizeToPreferredSize();
+  }
 
   // `content_view_` is a child of this class so we need to Layout after
   // changing its width.
@@ -312,8 +319,9 @@ void CalendarUpNextView::UpdateEvents(
 
 void CalendarUpNextView::OnScrollLeftButtonPressed(const ui::Event& event) {
   const Views& event_views = content_view_->children();
-  if (event_views.empty())
+  if (event_views.empty()) {
     return;
+  }
 
   const int first_visible_child_index =
       GetFirstVisibleChildIndex(event_views, scroll_view_);
@@ -341,8 +349,9 @@ void CalendarUpNextView::OnScrollLeftButtonPressed(const ui::Event& event) {
 
 void CalendarUpNextView::OnScrollRightButtonPressed(const ui::Event& event) {
   const Views& event_views = content_view_->children();
-  if (event_views.empty())
+  if (event_views.empty()) {
     return;
+  }
 
   const int first_visible_child_index =
       GetFirstVisibleChildIndex(event_views, scroll_view_);
@@ -375,8 +384,9 @@ void CalendarUpNextView::ToggleScrollButtonState() {
 void CalendarUpNextView::ScrollViewByOffset(int offset) {
   absl::optional<gfx::Rect> visible_content_rect =
       scroll_view_->GetVisibleRect();
-  if (!visible_content_rect.has_value() || offset == 0)
+  if (!visible_content_rect.has_value() || offset == 0) {
     return;
+  }
 
   // Set the `start_edge` depending on the offset.
   // If the offset is negative ie. we're scrolling left, we should use the x
@@ -391,8 +401,9 @@ void CalendarUpNextView::ScrollViewByOffset(int offset) {
 
 void CalendarUpNextView::AnimateScrollToShowXCoordinate(const int start_edge,
                                                         const int target_edge) {
-  if (scrolling_animation_)
+  if (scrolling_animation_) {
     scrolling_animation_->Stop();
+  }
 
   scrolling_animation_ = std::make_unique<ScrollingAnimation>(
       content_view_, bounds_animator_.container(),

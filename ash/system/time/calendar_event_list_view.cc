@@ -45,7 +45,7 @@ const auto kCloseButtonContainerInsetsJelly = gfx::Insets::TLBR(8, 16, 8, 26);
 
 // The paddings in `CalendarEventListView`.
 constexpr auto kContentInsets = gfx::Insets::TLBR(0, 0, 20, 0);
-constexpr auto kContentInsetsJelly = gfx::Insets::TLBR(0, 16, 20, 16);
+constexpr auto kContentInsetsJelly = gfx::Insets::TLBR(0, 14, 20, 14);
 
 // The insets for `CalendarEmptyEventListView`.
 constexpr auto kOpenGoogleCalendarContainerInsets = gfx::Insets::VH(20, 60);

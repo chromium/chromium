@@ -79,7 +79,6 @@ class ASH_EXPORT CalendarUpNextView : public views::View {
 
   // Helper class for animating the `scroll_view_` when a scroll button is
   // pressed.
-
   std::unique_ptr<gfx::LinearAnimation> scrolling_animation_;
 
   // Bounds animator used in the `scrolling_animation_` class.
