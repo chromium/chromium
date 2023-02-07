@@ -347,9 +347,6 @@ crbug.com/1395227 [ mac-x86_64 mojave no-asan nvidia-0xfe9 release ] Pixel_WebGP
 crbug.com/1395227 [ amd-0x679e mac-x86_64 monterey no-asan release ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
 crbug.com/1395227 [ asan intel mac-x86_64 monterey release ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
 crbug.com/1395227 [ win ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
-crbug.com/1395227 [ linux renderer-skia-vulkan ] Pixel_VulkanSwiftShader_WebGPUImportVideoFrame [ Failure ]
-crbug.com/1395227 [ linux renderer-skia-vulkan ] Pixel_VulkanSwiftShader_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
-crbug.com/1395227 [ linux renderer-skia-vulkan ] Pixel_VulkanSwiftShader_WebGPUImportVideoFrameUnaccelerated [ Failure ]
 
 # Pixel_VideoStreamFromWebGL* tests sporadically fail on Linux FYI Release (NVIDIA) bot
 crbug.com/1348002 [ angle-opengl linux nvidia release ] Pixel_VideoStreamFromWebGLAlphaCanvas [ Failure ]
