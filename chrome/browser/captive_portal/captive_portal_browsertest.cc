@@ -2571,19 +2571,10 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
       GURL(kMockHttpsUrl));
 }
 
-// Fails on Windows only, mostly on Win7. http://crbug.com/170033
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_NavigateLoadingTabToTimeoutTwoSites \
-        DISABLED_NavigateLoadingTabToTimeoutTwoSites
-#else
-#define MAYBE_NavigateLoadingTabToTimeoutTwoSites \
-        NavigateLoadingTabToTimeoutTwoSites
-#endif
-
 // Checks that captive portal detection triggers correctly when a same-site
 // navigation is cancelled by a navigation to another site.
 IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
-                       MAYBE_NavigateLoadingTabToTimeoutTwoSites) {
+                       NavigateLoadingTabToTimeoutTwoSites) {
   RunNavigateLoadingTabToTimeoutTest(
       browser(),
       GURL(kMockHttpsUrl),
@@ -2921,13 +2912,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
             GetInterstitialType(broken_tab_contents));
 }
 
-// Fails on Windows only, mostly on Win7. http://crbug.com/170033
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_SecureDnsCaptivePortal DISABLED_SecureDnsCaptivePortal
-#else
-#define MAYBE_SecureDnsCaptivePortal SecureDnsCaptivePortal
-#endif
-IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, MAYBE_SecureDnsCaptivePortal) {
+IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, SecureDnsCaptivePortal) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kDnsOverHttpsMode,
                          SecureDnsConfig::kModeSecure);
@@ -2962,17 +2947,10 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, MAYBE_SecureDnsCaptivePortal) {
         1 /* expected_portal_checks */);
 }
 
-// Fails on Windows only, mostly on Win7. http://crbug.com/170033
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_SecureDnsErrorTriggersCheck DISABLED_SecureDnsErrorTriggersCheck
-#else
-#define MAYBE_SecureDnsErrorTriggersCheck SecureDnsErrorTriggersCheck
-#endif
 // An HTTP load results in a secure DNS error, which triggers a captive portal
 // probe that fails. After logging in, the secure DNS error happens again,
 // triggering a captive portal probe that now succeeds.
-IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
-                       MAYBE_SecureDnsErrorTriggersCheck) {
+IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, SecureDnsErrorTriggersCheck) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kDnsOverHttpsTemplates,
                          "https://bar.test/dns-query{?dns}");
@@ -3007,20 +2985,12 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
                   ->GetPageType() == content::PAGE_TYPE_ERROR);
 }
 
-// Fails on Windows only, mostly on Win7. http://crbug.com/170033
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_SlowLoadSecureDnsErrorWithCaptivePortal \
-  DISABLED_SlowLoadSecureDnsErrorWithCaptivePortal
-#else
-#define MAYBE_SlowLoadSecureDnsErrorWithCaptivePortal \
-  SlowLoadSecureDnsErrorWithCaptivePortal
-#endif
 // An HTTPS load happens slowly. The reloader triggers a captive portal check,
 // which finds a captive portal. The HTTPS load finally completes with a secure
 // DNS error, which does not trigger another captive portal check. Only one
 // login tab should exist.
 IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
-                       MAYBE_SlowLoadSecureDnsErrorWithCaptivePortal) {
+                       SlowLoadSecureDnsErrorWithCaptivePortal) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kDnsOverHttpsTemplates,
                          "https://bar.test/dns-query{?dns}");
@@ -3044,19 +3014,12 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
   EXPECT_EQ(2, NumTabs());
 }
 
-// Fails on Windows only, more frequently on Win7. https://crbug.com/1225823
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_SlowLoadSecureDnsErrorAfterLogin \
-  DISABLED_SlowLoadSecureDnsErrorAfterLogin
-#else
-#define MAYBE_SlowLoadSecureDnsErrorAfterLogin SlowLoadSecureDnsErrorAfterLogin
-#endif
 // An HTTPS load happens slowly. The reloader triggers a captive portal check,
 // which finds a captive portal. After logging in, the HTTPS load finally
 // completes with a secure DNS error, which triggers another captive portal
 // check that should succeed.
 IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
-                       MAYBE_SlowLoadSecureDnsErrorAfterLogin) {
+                       SlowLoadSecureDnsErrorAfterLogin) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kDnsOverHttpsTemplates,
                          "https://bar.test/dns-query{?dns}");
