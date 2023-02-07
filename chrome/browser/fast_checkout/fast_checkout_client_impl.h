@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_CLIENT_IMPL_H_
 #define CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_CLIENT_IMPL_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
 #include "chrome/browser/fast_checkout/fast_checkout_client.h"
@@ -28,7 +29,8 @@ class FastCheckoutClientImpl
     : public content::WebContentsUserData<FastCheckoutClientImpl>,
       public FastCheckoutClient,
       public FastCheckoutControllerImpl::Delegate,
-      public autofill::PersonalDataManagerObserver {
+      public autofill::PersonalDataManagerObserver,
+      public autofill::AutofillManager::Observer {
  public:
   ~FastCheckoutClientImpl() override;
 
@@ -51,6 +53,15 @@ class FastCheckoutClientImpl
       std::unique_ptr<autofill::CreditCard> selected_credit_card) override;
   void OnDismiss() override;
 
+  // AutofillManager::Observer:
+  void OnAfterLoadedServerPredictions() override;
+  void OnAfterDidFillAutofillFormData() override;
+  // Is owned by a `ContentAutofillDriver` instance and its lifecycle thus is
+  // dependent on the one of `RenderFrameHost`.
+  void OnAutofillManagerDestroyed() override;
+  // Is called on navigation and resets its internal state.
+  void OnAutofillManagerReset() override;
+
   // Filling state of a form during a run.
   enum class FillingState {
     // Form was not attempted to be filled.
@@ -64,34 +75,6 @@ class FastCheckoutClientImpl
     kFilled = 2
   };
 
-#if defined(UNIT_TEST)
-  void set_trigger_validator_for_test(
-      std::unique_ptr<FastCheckoutTriggerValidator> trigger_validator) {
-    trigger_validator_ = std::move(trigger_validator);
-  }
-
-  void set_autofill_client_for_test(autofill::AutofillClient* autofill_client) {
-    autofill_client_ = autofill_client;
-  }
-
-  base::WeakPtr<autofill::AutofillManager> get_autofill_manager_for_test() {
-    return autofill_manager_;
-  }
-
-  autofill::AutofillProfile* get_autofill_profile_for_test() {
-    return selected_autofill_profile_.get();
-  }
-
-  autofill::CreditCard* get_credit_card_for_test() {
-    return selected_credit_card_.get();
-  }
-
-  const base::flat_map<autofill::FormSignature, FillingState>&
-  get_forms_to_fill_for_test() {
-    return forms_to_fill_;
-  }
-#endif
-
  protected:
   explicit FastCheckoutClientImpl(content::WebContents* web_contents);
 
@@ -101,6 +84,18 @@ class FastCheckoutClientImpl
 
  private:
   friend class content::WebContentsUserData<FastCheckoutClientImpl>;
+  friend class FastCheckoutClientImplTest;
+  FRIEND_TEST_ALL_PREFIXES(
+      FastCheckoutClientImplTest,
+      DestroyingAutofillDriver_ResetsAutofillManagerPointer);
+  FRIEND_TEST_ALL_PREFIXES(
+      FastCheckoutClientImplTest,
+      OnOptionsSelected_SavesFormsAndAutofillDataSelections);
+  FRIEND_TEST_ALL_PREFIXES(FastCheckoutClientImplTest,
+                           OnAfterLoadedServerPredictions_FillsForms);
+  FRIEND_TEST_ALL_PREFIXES(
+      FastCheckoutClientImplTest,
+      OnAfterDidFillAutofillFormData_SetsFillingFormsToFilledAndStops);
 
   // From autofill::PersonalDataManagerObserver.
   void OnPersonalDataChanged() override;
@@ -128,12 +123,49 @@ class FastCheckoutClientImpl
   // Populates map with forms to fill at the beginning of the run.
   void SetFormsToFill();
 
-  // The `ChromeAutofillClient` instanced attached to the same `WebContents`.
+  // Returns `true` if all forms in `forms_to_fill_` have
+  // `FillingState::kFilled`.
+  bool AllFormsAreFilled() const;
+
+  // Returns `true` if the ongoing run is in filling mode. That means if
+  // `is_running_ == true`, there are unfilled `forms_to_fill_` and selections
+  // of Autofill profile and credit card are present.
+  bool IsFilling() const;
+
+  // Populates `form_filling_states_` according to the forms cache of
+  // `AutofillManager` and `form_signatures_to_fill_`.
+  void SetFormFillingStates();
+
+  // Returns `true` if `form` is an unfilled form of type `expected_form_type`.
+  // Also sets initial filling state in `form_filling_states_`.
+  bool ShouldFillForm(const autofill::FormStructure& form,
+                      autofill::FormType expected_form_type) const;
+
+  // Will be called when reparse has been triggered in all frames.
+  void OnTriggerReparseFinished(bool success);
+
+  // Tries to fill all unfilled forms cached by `autofill_manager_` if they are
+  // part of the ongoing run's funnel.
+  void TryToFillForms();
+
+  // Updates filling states of forms in `forms_to_fill_` on form filled
+  // notification.
+  void UpdateFillingStates();
+
+  // Triggers reparse with a delay of `kSleepBetweenTriggerReparseCalls`.
+  // Reparsing updates the forms cache `autofill_manager_->form_structures()`
+  // with current data from the renderer, eventually calling
+  // `OnAfterLoadedServerPredictions()` if there were any updates. This is
+  // necessary e.g. for the case when a form has been cached when it was not
+  // visible to the user and became visible in the meantime.
+  base::OneShotTimer reparse_timer_;
+
+  // The `ChromeAutofillClient` instance attached to the same `WebContents`.
   raw_ptr<autofill::AutofillClient> autofill_client_ = nullptr;
 
   // The `AutofillManager` instance invoking the fast checkout run. Note that
   // `this` class generally outlives `AutofillManager`.
-  base::WeakPtr<autofill::AutofillManager> autofill_manager_ = nullptr;
+  base::WeakPtr<autofill::AutofillManager> autofill_manager_;
 
   // Weak reference to the `FastCheckoutCapabilitiesFetcher` instance attached
   // to `this` web content's browser context.
@@ -162,7 +194,13 @@ class FastCheckoutClientImpl
   url::Origin origin_;
 
   // Maps forms to fill during the run to their filling state.
-  base::flat_map<autofill::FormSignature, FillingState> forms_to_fill_;
+  base::flat_map<std::pair<autofill::FormSignature, autofill::FormType>,
+                 FillingState>
+      form_filling_states_;
+
+  // Signatures of forms the run intends to fill as retrieved from the
+  // `FastCheckoutCapabilitiesFetcher`.
+  base::flat_set<autofill::FormSignature> form_signatures_to_fill_;
 
   // The current state of the bottomsheet.
   FastCheckoutUIState fast_checkout_ui_state_ =
@@ -172,8 +210,14 @@ class FastCheckoutClientImpl
                           autofill::PersonalDataManagerObserver>
       personal_data_manager_observation_{this};
 
+  base::ScopedObservation<autofill::AutofillManager,
+                          autofill::AutofillManager::Observer>
+      autofill_manager_observation_{this};
+
   // content::WebContentsUserData:
   WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  base::WeakPtrFactory<FastCheckoutClientImpl> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_CLIENT_IMPL_H_

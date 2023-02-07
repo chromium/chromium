@@ -14,6 +14,13 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+namespace {
+bool IsCartOrCheckoutUrl(const GURL& url) {
+  return commerce_heuristics::IsVisitCheckout(url) ||
+         commerce_heuristics::IsVisitCart(url);
+}
+}  // namespace
+
 FastCheckoutTabHelper::FastCheckoutTabHelper(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<FastCheckoutTabHelper>(*web_contents) {}
@@ -33,7 +40,9 @@ void FastCheckoutTabHelper::DidStartNavigation(
     return;
   }
 
-  if (commerce_heuristics::IsVisitCheckout(navigation_handle->GetURL())) {
+  // Check for both checkout and cart URLs because some websites use cart URLs
+  // throughout their whole checkout funnel.
+  if (IsCartOrCheckoutUrl(navigation_handle->GetURL())) {
     PrefService* pref_service =
         Profile::FromBrowserContext(web_contents()->GetBrowserContext())
             ->GetPrefs();

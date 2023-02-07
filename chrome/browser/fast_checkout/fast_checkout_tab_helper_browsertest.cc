@@ -82,14 +82,26 @@ class FastCheckoutTabHelperBrowserTest : public PlatformBrowserTest {
   raw_ptr<MockFastCheckoutCapabilitiesFetcher> fetcher_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_F(FastCheckoutTabHelperBrowserTest,
-                       FetchScriptAvailabilityOnNavigateToCheckoutPage) {
+IN_PROC_BROWSER_TEST_F(
+    FastCheckoutTabHelperBrowserTest,
+    DidStartNavigation_NoShoppingURL_NoFetchCapabilitiesCall) {
   // No availability request was started or the `StrickMock` would have failed.
   GURL no_shopping_url("http://www.example.com/empty.html");
   NavigateToUrl(no_shopping_url);
+}
 
+IN_PROC_BROWSER_TEST_F(
+    FastCheckoutTabHelperBrowserTest,
+    DidStartNavigation_CheckoutURL_MakesFetchCapabilitiesCall) {
   GURL shopping_url("http://www.example2.co.uk/checkout.html");
-  url::Origin request_origin;
   EXPECT_CALL(*fetcher(), FetchCapabilities);
   NavigateToUrl(shopping_url);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    FastCheckoutTabHelperBrowserTest,
+    DidStartNavigation_CartShoppingURL_MakesFetchCapabilitiesCall) {
+  GURL shopping_cart_url("http://www.example2.co.uk/cart.html");
+  EXPECT_CALL(*fetcher(), FetchCapabilities);
+  NavigateToUrl(shopping_cart_url);
 }

@@ -8,10 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/guid.h"
-#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -38,6 +36,7 @@ using ::autofill::AutofillDriver;
 using ::autofill::AutofillProfile;
 using ::autofill::CreditCard;
 using ::testing::_;
+using ::testing::Pair;
 using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::SaveArg;
@@ -112,6 +111,23 @@ class MockBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
   ~MockBrowserAutofillManager() override = default;
 
   MOCK_METHOD(void, SetShouldSuppressKeyboard, (bool), (override));
+  MOCK_METHOD(void,
+              TriggerReparseInAllFrames,
+              (base::OnceCallback<void(bool)>),
+              (override));
+  MOCK_METHOD(void,
+              FillProfileFormImpl,
+              (const autofill::FormData&,
+               const autofill::FormFieldData&,
+               const autofill::AutofillProfile&),
+              (override));
+  MOCK_METHOD(void,
+              FillCreditCardFormImpl,
+              (const autofill::FormData&,
+               const autofill::FormFieldData&,
+               const autofill::CreditCard&,
+               const std::u16string&),
+              (override));
 };
 
 class TestFastCheckoutClientImpl : public FastCheckoutClientImpl {
@@ -211,10 +227,10 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
     auto trigger_validator =
         std::make_unique<MockFastCheckoutTriggerValidator>();
     validator_ = trigger_validator.get();
-    test_client_->set_trigger_validator_for_test(std::move(trigger_validator));
+    test_client_->trigger_validator_ = std::move(trigger_validator);
     ON_CALL(*validator(), ShouldRun).WillByDefault(Return(true));
 
-    test_client_->set_autofill_client_for_test(autofill_client_.get());
+    test_client_->autofill_client_ = autofill_client_.get();
   }
 
   autofill::TestPersonalDataManager* personal_data_manager() {
@@ -222,7 +238,7 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
         autofill::PersonalDataManagerFactory::GetForProfile(profile()));
   }
 
-  TestFastCheckoutClientImpl* fast_checkout_client() { return test_client_; }
+  FastCheckoutClientImpl* fast_checkout_client() { return test_client_; }
 
   MockFastCheckoutController* fast_checkout_controller() {
     return fast_checkout_controller_;
@@ -237,7 +253,68 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
 
+  // Sets up test data, calls `TryToStart(..)` and `OnOptionsSelected(..)`.
+  std::tuple<autofill::AutofillProfile*, autofill::CreditCard*>
+  StartRunAndSelectOptions(
+      const base::flat_set<autofill::FormSignature>& forms_to_fill) {
+    auto autofill_profile_unique_ptr =
+        std::make_unique<autofill::AutofillProfile>(
+            autofill::test::GetFullProfile());
+    auto credit_card_unique_ptr =
+        std::make_unique<autofill::CreditCard>(autofill::test::GetCreditCard());
+    autofill::AutofillProfile* autofill_profile =
+        autofill_profile_unique_ptr.get();
+    autofill::CreditCard* credit_card = credit_card_unique_ptr.get();
+
+    MockFastCheckoutCapabilitiesFetcher* fetcher =
+        static_cast<MockFastCheckoutCapabilitiesFetcher*>(
+            FastCheckoutCapabilitiesFetcherFactory::GetForBrowserContext(
+                profile()));
+
+    EXPECT_CALL(*fetcher, GetFormsToFill(url::Origin::Create(GURL(kUrl))))
+        .WillOnce(Return(forms_to_fill));
+    EXPECT_TRUE(fast_checkout_client()->TryToStart(
+        GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
+        autofill_manager()->GetWeakPtr()));
+    fast_checkout_client()->OnOptionsSelected(
+        std::move(autofill_profile_unique_ptr),
+        std::move(credit_card_unique_ptr));
+    return {autofill_profile, credit_card};
+  }
+
+  std::unique_ptr<autofill::FormStructure> SetUpCreditCardForm() {
+    autofill::FormData credit_card_form_data;
+    autofill::test::CreateTestCreditCardFormData(&credit_card_form_data, true,
+                                                 false, true);
+    auto credit_card_form_structure =
+        std::make_unique<autofill::FormStructure>(credit_card_form_data);
+    credit_card_form_structure->field(0)->set_heuristic_type(
+        autofill::PatternSource::kLegacy,
+        autofill::ServerFieldType::CREDIT_CARD_NUMBER);
+    return credit_card_form_structure;
+  }
+
+  std::unique_ptr<autofill::FormStructure> SetUpAddressForm() {
+    autofill::FormData address_form_data;
+    autofill::test::CreateTestAddressFormData(&address_form_data);
+    auto address_form_structure =
+        std::make_unique<autofill::FormStructure>(address_form_data);
+    address_form_structure->field(0)->set_heuristic_type(
+        autofill::PatternSource::kLegacy,
+        autofill::ServerFieldType::NAME_FIRST);
+    return address_form_structure;
+  }
+
+  autofill::FormStructure* AddFormToAutofillManagerCache(
+      std::unique_ptr<autofill::FormStructure> form) {
+    autofill::FormStructure* form_ptr = form.get();
+    autofill_manager()->AddSeenFormStructure(std::move(form));
+    return form_ptr;
+  }
+
  private:
+  // Required for using some `autofill::test` functions inside the test class.
+  autofill::test::AutofillEnvironment autofill_environment_;
   std::unique_ptr<MockAutofillClient> autofill_client_;
   raw_ptr<MockFastCheckoutController> fast_checkout_controller_;
   std::unique_ptr<autofill::TestAutofillDriver> autofill_driver_;
@@ -433,7 +510,7 @@ TEST_F(FastCheckoutClientImplTest,
   autofill_driver->set_autofill_manager(std::move(browser_autofill_manager));
 
   // `FastCheckoutClientImpl::autofill_manager_` is `nullptr` initially.
-  EXPECT_FALSE(fast_checkout_client()->get_autofill_manager_for_test());
+  EXPECT_FALSE(fast_checkout_client()->autofill_manager_);
 
   // Starting the run successfully.
   EXPECT_TRUE(fast_checkout_client()->TryToStart(
@@ -441,14 +518,14 @@ TEST_F(FastCheckoutClientImplTest,
       autofill_manager->GetWeakPtr()));
 
   // `FastCheckoutClientImpl::autofill_manager_` is not `nullptr` anymore.
-  EXPECT_TRUE(fast_checkout_client()->get_autofill_manager_for_test());
+  EXPECT_TRUE(fast_checkout_client()->autofill_manager_);
 
   // Destroy `ContentAutofillDriver` instance, invoking
   // `~BrowserAutofillManager()` and thus `FastCheckoutClient::Stop(..)`.
   autofill_driver.reset();
 
   // `FastCheckoutClientImpl::autofill_manager_` is `nullptr` again.
-  EXPECT_FALSE(fast_checkout_client()->get_autofill_manager_for_test());
+  EXPECT_FALSE(fast_checkout_client()->autofill_manager_);
 
   // Expect this `Stop(..)` call to not crash the test.
   fast_checkout_client()->Stop(/*allow_further_runs=*/true);
@@ -456,41 +533,93 @@ TEST_F(FastCheckoutClientImplTest,
 
 TEST_F(FastCheckoutClientImplTest,
        OnOptionsSelected_SavesFormsAndAutofillDataSelections) {
-  auto autofill_profile = std::make_unique<autofill::AutofillProfile>(
-      autofill::test::GetFullProfile());
-  auto credit_card =
-      std::make_unique<autofill::CreditCard>(autofill::test::GetCreditCard());
-  autofill::AutofillProfile* autofill_profile_ptr = autofill_profile.get();
-  autofill::CreditCard* credit_card_ptr = credit_card.get();
-  autofill::FormSignature signature_1 = autofill::FormSignature(72322UL);
-  autofill::FormSignature signature_2 = autofill::FormSignature(1154UL);
-  base::flat_set<autofill::FormSignature> forms_to_fill{signature_1,
-                                                        signature_2};
-  const base::flat_map<autofill::FormSignature,
-                       FastCheckoutClientImpl::FillingState>
-      expected_forms_to_fill_map{
-          {signature_1, FastCheckoutClientImpl::FillingState::kNotFilled},
-          {signature_2, FastCheckoutClientImpl::FillingState::kNotFilled}};
+  std::unique_ptr<autofill::FormStructure> address_form = SetUpAddressForm();
+  std::unique_ptr<autofill::FormStructure> credit_card_form =
+      SetUpCreditCardForm();
 
-  MockFastCheckoutCapabilitiesFetcher* fetcher =
-      static_cast<MockFastCheckoutCapabilitiesFetcher*>(
-          FastCheckoutCapabilitiesFetcherFactory::GetForBrowserContext(
-              profile()));
-  EXPECT_TRUE(fetcher);
+  EXPECT_CALL(*autofill_manager(), TriggerReparseInAllFrames);
 
-  EXPECT_CALL(*fetcher, GetFormsToFill(url::Origin::Create(GURL(kUrl))))
-      .WillOnce(Return(forms_to_fill));
+  auto [autofill_profile, credit_card] = StartRunAndSelectOptions(
+      {address_form->form_signature(), credit_card_form->form_signature()});
+
+  EXPECT_EQ(*fast_checkout_client()->selected_autofill_profile_,
+            *autofill_profile);
+  EXPECT_EQ(*fast_checkout_client()->selected_credit_card_, *credit_card);
+  EXPECT_THAT(fast_checkout_client()->form_signatures_to_fill_,
+              UnorderedElementsAre(address_form->form_signature(),
+                                   credit_card_form->form_signature()));
+}
+
+TEST_F(FastCheckoutClientImplTest, OnAfterLoadedServerPredictions_FillsForms) {
+  autofill::FormStructure* address_form =
+      AddFormToAutofillManagerCache(SetUpAddressForm());
+  autofill::FormStructure* credit_card_form =
+      AddFormToAutofillManagerCache(SetUpCreditCardForm());
+
+  StartRunAndSelectOptions(
+      {address_form->form_signature(), credit_card_form->form_signature()});
+
+  // Reset filling states.
+  for (auto& [form_id, filling_state] :
+       fast_checkout_client()->form_filling_states_) {
+    filling_state = FastCheckoutClientImpl::FillingState::kNotFilled;
+  }
+
+  EXPECT_CALL(*autofill_manager(), FillProfileFormImpl);
+  EXPECT_CALL(*autofill_manager(), FillCreditCardFormImpl);
+  fast_checkout_client()->OnAfterLoadedServerPredictions();
+  EXPECT_THAT(fast_checkout_client()->form_filling_states_,
+              UnorderedElementsAre(
+                  Pair(Pair(address_form->form_signature(),
+                            autofill::FormType::kAddressForm),
+                       FastCheckoutClientImpl::FillingState::kFilling),
+                  Pair(Pair(credit_card_form->form_signature(),
+                            autofill::FormType::kCreditCardForm),
+                       FastCheckoutClientImpl::FillingState::kFilling)));
+}
+
+TEST_F(FastCheckoutClientImplTest,
+       OnAfterDidFillAutofillFormData_SetsFillingFormsToFilledAndStops) {
+  autofill::FormStructure* address_form =
+      AddFormToAutofillManagerCache(SetUpAddressForm());
+  autofill::FormStructure* credit_card_form =
+      AddFormToAutofillManagerCache(SetUpCreditCardForm());
+
+  StartRunAndSelectOptions(
+      {address_form->form_signature(), credit_card_form->form_signature()});
+
+  EXPECT_TRUE(fast_checkout_client()->IsRunning());
+
+  EXPECT_THAT(fast_checkout_client()->form_filling_states_,
+              UnorderedElementsAre(
+                  Pair(Pair(address_form->form_signature(),
+                            autofill::FormType::kAddressForm),
+                       FastCheckoutClientImpl::FillingState::kFilling),
+                  Pair(Pair(credit_card_form->form_signature(),
+                            autofill::FormType::kCreditCardForm),
+                       FastCheckoutClientImpl::FillingState::kFilling)));
+
+  fast_checkout_client()->OnAfterDidFillAutofillFormData();
+
+  EXPECT_FALSE(fast_checkout_client()->IsRunning());
+}
+
+TEST_F(FastCheckoutClientImplTest, OnAutofillManagerReset_ResetsState) {
   EXPECT_TRUE(fast_checkout_client()->TryToStart(
       GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
       autofill_manager()->GetWeakPtr()));
 
-  fast_checkout_client()->OnOptionsSelected(std::move(autofill_profile),
-                                            std::move(credit_card));
+  EXPECT_TRUE(fast_checkout_client()->IsRunning());
+  fast_checkout_client()->OnAutofillManagerReset();
+  EXPECT_FALSE(fast_checkout_client()->IsRunning());
+}
 
-  EXPECT_EQ(*fast_checkout_client()->get_autofill_profile_for_test(),
-            *autofill_profile_ptr);
-  EXPECT_EQ(*fast_checkout_client()->get_credit_card_for_test(),
-            *credit_card_ptr);
-  EXPECT_EQ(fast_checkout_client()->get_forms_to_fill_for_test(),
-            expected_forms_to_fill_map);
+TEST_F(FastCheckoutClientImplTest, OnAutofillManagerDestroyed_ResetsState) {
+  EXPECT_TRUE(fast_checkout_client()->TryToStart(
+      GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
+      autofill_manager()->GetWeakPtr()));
+
+  EXPECT_TRUE(fast_checkout_client()->IsRunning());
+  fast_checkout_client()->OnAutofillManagerDestroyed();
+  EXPECT_FALSE(fast_checkout_client()->IsRunning());
 }
