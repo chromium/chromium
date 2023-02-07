@@ -775,24 +775,10 @@ void ReconfigurePartitionForKnownProcess(const std::string& process_type) {
 
 PartitionAllocSupport::PartitionAllocSupport() = default;
 
-void PartitionAllocSupport::ReconfigureForTests() {
-  ReconfigureEarlyish("");
-  base::AutoLock scoped_lock(lock_);
-  called_for_tests_ = true;
-}
-
 void PartitionAllocSupport::ReconfigureEarlyish(
     const std::string& process_type) {
   {
     base::AutoLock scoped_lock(lock_);
-
-    // In tests, ReconfigureEarlyish() is called by ReconfigureForTest(), which
-    // is earlier than ContentMain().
-    if (called_for_tests_) {
-      DCHECK(called_earlyish_);
-      return;
-    }
-
     // TODO(bartekn): Switch to DCHECK once confirmed there are no issues.
     CHECK(!called_earlyish_)
         << "ReconfigureEarlyish was already called for process '"
@@ -843,11 +829,8 @@ void PartitionAllocSupport::ReconfigureAfterZygoteFork(
 }
 
 void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
-    const std::string& process_type,
-    bool configure_dangling_pointer_detector) {
-  if (configure_dangling_pointer_detector) {
-    base::allocator::InstallDanglingRawPtrChecks();
-  }
+    const std::string& process_type) {
+  base::allocator::InstallDanglingRawPtrChecks();
   base::allocator::InstallUnretainedDanglingRawPtrChecks();
   {
     base::AutoLock scoped_lock(lock_);
