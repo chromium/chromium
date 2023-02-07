@@ -51,8 +51,8 @@ namespace task_manager {
 
 namespace {
 
-base::LazyInstance<TaskManagerImpl>::DestructorAtExit
-    lazy_task_manager_instance = LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<TaskManagerImpl>::Leaky lazy_task_manager_instance =
+    LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 
