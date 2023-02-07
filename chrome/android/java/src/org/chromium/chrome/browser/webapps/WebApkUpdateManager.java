@@ -382,8 +382,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 + (TextUtils.isEmpty(oldInfo.manifestId()) ? "Empty" : "Same");
         RecordHistogram.recordBooleanHistogram(baseName + ".ManifestUrl",
                 TextUtils.equals(oldInfo.manifestUrl(), fetchedInfo.manifestUrl()));
-        RecordHistogram.recordBooleanHistogram(
-                baseName + ".StartUrl", TextUtils.equals(oldInfo.url(), fetchedInfo.url()));
+        RecordHistogram.recordBooleanHistogram(baseName + ".StartUrl",
+                TextUtils.equals(oldInfo.manifestStartUrl(), fetchedInfo.manifestStartUrl()));
     }
 
     /** Schedules update for when WebAPK is not running. */
