@@ -62,7 +62,6 @@
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enrollment_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/eula_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_password_changed_screen_handler.h"
@@ -350,8 +349,6 @@ void OobeUI::ConfigureOobeDisplay() {
       AddScreenHandler(std::make_unique<QuickStartScreenHandler>());
     }
   }
-
-  AddScreenHandler(std::make_unique<EulaScreenHandler>());
 
   AddScreenHandler(std::make_unique<NetworkScreenHandler>());
 

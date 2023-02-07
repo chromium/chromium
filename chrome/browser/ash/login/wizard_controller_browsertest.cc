@@ -2270,10 +2270,9 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest,
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
   EXPECT_CALL(*mock_demo_preferences_screen_, HideImpl()).Times(1);
 
-    // Network -> Update -> Consolidated Consent -> Auto Enrollment.
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
   mock_demo_preferences_screen_->ExitScreen(
-      DemoPreferencesScreen::Result::COMPLETED_CONSOLIDATED_CONSENT);
+      DemoPreferencesScreen::Result::COMPLETED);
 
   base::RunLoop().RunUntilIdle();
 
@@ -2329,7 +2328,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, DemoSetupCanceled) {
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
   mock_demo_preferences_screen_->ExitScreen(
-      DemoPreferencesScreen::Result::COMPLETED_CONSOLIDATED_CONSENT);
+      DemoPreferencesScreen::Result::COMPLETED);
 
   CheckCurrentScreen(UpdateView::kScreenId);
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
@@ -2449,9 +2448,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupDeviceDisabledTest,
   EXPECT_CALL(*mock_demo_preferences_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
-  // Network -> Update -> Consolidated Consent -> Auto Enrollment.
   mock_demo_preferences_screen_->ExitScreen(
-      DemoPreferencesScreen::Result::COMPLETED_CONSOLIDATED_CONSENT);
+      DemoPreferencesScreen::Result::COMPLETED);
 
   CheckCurrentScreen(UpdateView::kScreenId);
   EXPECT_CALL(*mock_update_screen_, HideImpl()).Times(1);

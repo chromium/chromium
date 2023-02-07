@@ -19,7 +19,7 @@ class DemoPreferencesScreenView;
 // allows user to choose preferences for retail demo mode.
 class DemoPreferencesScreen : public BaseScreen {
  public:
-  enum class Result { COMPLETED, COMPLETED_CONSOLIDATED_CONSENT, CANCELED };
+  enum class Result { COMPLETED, CANCELED };
 
   static std::string GetResultString(Result result);
 

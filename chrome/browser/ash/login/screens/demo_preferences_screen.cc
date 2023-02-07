@@ -30,7 +30,6 @@ constexpr char kUserActionSetDemoModeCountry[] = "set-demo-mode-country";
 std::string DemoPreferencesScreen::GetResultString(Result result) {
   switch (result) {
     case Result::COMPLETED:
-    case Result::COMPLETED_CONSOLIDATED_CONSENT:
       return "Completed";
     case Result::CANCELED:
       return "Canceled";
@@ -73,9 +72,7 @@ void DemoPreferencesScreen::OnUserAction(const base::Value::List& args) {
     demo_setup_controller->set_retailer_name(retailer_name_input);
     demo_setup_controller->set_store_number(store_number_input);
 
-    exit_callback_.Run(features::IsOobeConsolidatedConsentEnabled()
-                           ? Result::COMPLETED_CONSOLIDATED_CONSENT
-                           : Result::COMPLETED);
+    exit_callback_.Run(Result::COMPLETED);
   } else if (action_id == kUserActionClose) {
     exit_callback_.Run(Result::CANCELED);
   } else if (action_id == kUserActionSetDemoModeCountry) {

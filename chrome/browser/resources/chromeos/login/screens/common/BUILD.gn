@@ -49,7 +49,6 @@ js_type_check("closure_compile_local") {
     ":managed_terms_of_service",
     ":marketing_opt_in",
     ":offline_ad_login",
-    ":oobe_eula",
     ":oobe_reset",
     ":os_install",
     ":os_trial",
@@ -428,26 +427,6 @@ js_library("offline_ad_login") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("oobe_eula") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/oobe_eula.js" ]
-  deps = [
-    "../../:display_manager",
-    "../../components:web_view_helper",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_modal_dialog",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/webview_tag.js",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
 js_library("oobe_reset") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/oobe_reset.js" ]
   deps = [
@@ -722,7 +701,6 @@ html_to_js("web_components") {
     "marketing_opt_in.js",
     "multidevice_setup.js",
     "offline_ad_login.js",
-    "oobe_eula.js",
     "oobe_reset.js",
     "os_install.js",
     "os_trial.js",

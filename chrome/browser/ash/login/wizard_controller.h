@@ -35,7 +35,6 @@
 #include "chrome/browser/ash/login/screens/edu_coexistence_login_screen.h"
 #include "chrome/browser/ash/login/screens/enable_adb_sideloading_screen.h"
 #include "chrome/browser/ash/login/screens/enable_debugging_screen.h"
-#include "chrome/browser/ash/login/screens/eula_screen.h"
 #include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
 #include "chrome/browser/ash/login/screens/fingerprint_setup_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_password_changed_screen.h"
@@ -165,11 +164,10 @@ class WizardController : public OobeUI::Observer {
 
   // Starts Demo Mode setup flow. The flow starts from network screen and reuses
   // some of regular OOBE screens. It consists of the following screens:
-  //    ash::DemoPreferencesScreenView::kScreenId
   //    ash::NetworkScreenView::kScreenId
-  //    ash::EulaView::kScreenId
-  //    ash::ArcTermsOfServiceScreenView::kScreenId
+  //    ash::DemoPreferencesScreenView::kScreenId
   //    ash::UpdateView::kScreenId
+  //    ash::ConsolidatedConsentScreenView::kScreenId
   //    ash::DemoSetupScreenView::kScreenId
   void StartDemoModeSetup();
 
@@ -280,7 +278,6 @@ class WizardController : public OobeUI::Observer {
   void ShowWelcomeScreen();
   void ShowQuickStartScreen();
   void ShowNetworkScreen();
-  void ShowEulaScreen();
   void ShowEnrollmentScreen();
   void ShowDemoModeSetupScreen();
   void ShowDemoModePreferencesScreen();
@@ -349,9 +346,6 @@ class WizardController : public OobeUI::Observer {
   void OnWelcomeScreenExit(WelcomeScreen::Result result);
   void OnQuickStartScreenExit(QuickStartScreen::Result result);
   void OnNetworkScreenExit(NetworkScreen::Result result);
-  bool ShowEulaOrArcTosAfterNetworkScreen();
-  void OnEulaScreenExit(EulaScreen::Result result);
-  void OnEulaAccepted(bool usage_statistics_reporting_enabled);
   void OnUpdateScreenExit(UpdateScreen::Result result);
   void OnUpdateCompleted();
   void OnAutoEnrollmentCheckScreenExit(
@@ -428,10 +422,8 @@ class WizardController : public OobeUI::Observer {
   // Retrieve filtered OOBE configuration and apply relevant values.
   void UpdateOobeConfiguration();
 
-  // Actions that should be done right after Network Screen if
-  // OobeConsolidatedConsent is enabled, and should be done right after EULA is
-  // accepted if OobeConsolidatedConsent is disabled. These actions should be
-  // done before the update check.
+  // Actions that should be done right after Network Screen and before
+  // the update check.
   void PerformPostNetworkScreenActions();
 
   // Actions that should be done right after update stage is finished.
@@ -503,10 +495,9 @@ class WizardController : public OobeUI::Observer {
   // exist already).
   AutoEnrollmentController* GetAutoEnrollmentController();
 
-  // Requests owning TPM for branded builds with --tpm-is-dynamic switch unset
-  // when OobeConsolidatedConsent feature is enabled. When --tpm-is-dynamic
-  // switch is set, pre-enrollment TPM check relies on the TPM being un-owned
-  // until enrollment. b/187429309
+  // Requests owning TPM for branded builds with --tpm-is-dynamic switch unset.
+  // When --tpm-is-dynamic switch is set, pre-enrollment TPM check relies on
+  // the TPM being un-owned until enrollment. b/187429309
   void MaybeTakeTPMOwnership();
 
   std::unique_ptr<AutoEnrollmentController> auto_enrollment_controller_;
@@ -536,10 +527,6 @@ class WizardController : public OobeUI::Observer {
   // Whether the auto-enrollment check should be retried or the cached result
   // returned if present.
   bool retry_auto_enrollment_check_ = false;
-
-  // Time when the EULA was accepted. Used to measure the duration from the EULA
-  // acceptance until the Sign-In screen is displayed.
-  base::TimeTicks time_eula_accepted_;
 
   // Whether OOBE has yet been marked as completed.
   bool oobe_marked_completed_ = false;

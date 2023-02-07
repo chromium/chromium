@@ -45,7 +45,6 @@
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog.h"
-#include "chrome/browser/ui/webui/ash/login/eula_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/locale_switch_screen_handler.h"
@@ -531,11 +530,8 @@ void LoginDisplayHostCommon::ShowTosForExistingUser() {
 }
 
 void LoginDisplayHostCommon::ShowNewTermsForFlexUsers() {
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    SetScreenAfterManagedTos(ConsolidatedConsentScreenView::kScreenId);
-  } else {
-    SetScreenAfterManagedTos(EulaView::kScreenId);
-  }
+  SetScreenAfterManagedTos(ConsolidatedConsentScreenView::kScreenId);
+
   wizard_context_->is_cloud_ready_update_flow = true;
   StartWizard(TermsOfServiceScreenView::kScreenId);
 }

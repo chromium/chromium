@@ -70,7 +70,6 @@
 #include "chrome/browser/ash/login/screens/enable_debugging_screen.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
-#include "chrome/browser/ash/login/screens/eula_screen.h"
 #include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
 #include "chrome/browser/ash/login/screens/fingerprint_setup_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_password_changed_screen.h"
@@ -151,7 +150,6 @@
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enrollment_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/eula_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_password_changed_screen_handler.h"
@@ -251,9 +249,11 @@ constexpr char kLegacyUpdateScreenName[] = "update";
 
 // Stores the list of all screens that should be shown when resuming OOBE.
 const StaticOobeScreenId kResumableOobeScreens[] = {
-    WelcomeView::kScreenId,          NetworkScreenView::kScreenId,
-    UpdateView::kScreenId,           EulaView::kScreenId,
-    EnrollmentScreenView::kScreenId, AutoEnrollmentCheckScreenView::kScreenId,
+    WelcomeView::kScreenId,
+    NetworkScreenView::kScreenId,
+    UpdateView::kScreenId,
+    EnrollmentScreenView::kScreenId,
+    AutoEnrollmentCheckScreenView::kScreenId,
 };
 
 const StaticOobeScreenId kResumablePostLoginScreens[] = {
@@ -602,10 +602,6 @@ WizardController::CreateScreens() {
       oobe_ui->GetView<NetworkScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnNetworkScreenExit,
                           weak_factory_.GetWeakPtr())));
-  append(std::make_unique<EulaScreen>(
-      oobe_ui->GetView<EulaScreenHandler>()->AsWeakPtr(),
-      base::BindRepeating(&WizardController::OnEulaScreenExit,
-                          weak_factory_.GetWeakPtr())));
   append(std::make_unique<UpdateScreen>(
       oobe_ui->GetView<UpdateScreenHandler>()->AsWeakPtr(),
       oobe_ui->GetErrorScreen(),
@@ -932,10 +928,6 @@ void WizardController::OnSignInFatalErrorScreenExit() {
 }
 
 void WizardController::ShowLoginScreen() {
-  if (!time_eula_accepted_.is_null()) {
-    base::TimeDelta delta = base::TimeTicks::Now() - time_eula_accepted_;
-    base::UmaHistogramMediumTimes("OOBE.EULAToSignInTime", delta);
-  }
   VLOG(1) << "Showing login screen.";
   UpdateStatusAreaVisibilityForScreen(GaiaView::kScreenId);
   GetLoginDisplayHost()->StartSignInScreen();
@@ -960,10 +952,6 @@ void WizardController::ShowGaiaPasswordChangedScreen(
   DCHECK(features::IsCryptohomeRecoveryEnabled());
   wizard_context_->user_context = std::move(user_context);
   SetCurrentScreen(GetScreen<GaiaPasswordChangedScreen>());
-}
-
-void WizardController::ShowEulaScreen() {
-  SetCurrentScreen(GetScreen(EulaView::kScreenId));
 }
 
 void WizardController::ShowEnrollmentScreen() {
@@ -1518,10 +1506,6 @@ void WizardController::SkipToLoginForTesting() {
     return;
   wizard_context_->skip_to_login_for_tests = true;
 
-  if (!features::IsOobeConsolidatedConsentEnabled()) {
-    StartupUtils::MarkEulaAccepted();
-  }
-
   PerformPostNetworkScreenActions();
   OnDeviceDisabledChecked(false /* device_disabled */);
 }
@@ -1622,19 +1606,13 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
   }
 
   // OS Install flow.
-  bool is_consolidated_consent_enabled =
-      features::IsOobeConsolidatedConsentEnabled();
   if (switches::IsOsInstallAllowed()) {
     switch (result) {
       case NetworkScreen::Result::CONNECTED:
       case NetworkScreen::Result::NOT_APPLICABLE:
-        if (is_consolidated_consent_enabled) {
-          MaybeTakeTPMOwnership();
-          PerformPostNetworkScreenActions();
-          InitiateOOBEUpdate();
-        } else {
-          ShowEulaScreen();
-        }
+        MaybeTakeTPMOwnership();
+        PerformPostNetworkScreenActions();
+        InitiateOOBEUpdate();
         break;
       case NetworkScreen::Result::BACK:
         ShowOsTrialScreen();
@@ -1647,72 +1625,14 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
   switch (result) {
     case NetworkScreen::Result::CONNECTED:
     case NetworkScreen::Result::NOT_APPLICABLE:
-      if (is_consolidated_consent_enabled) {
-        MaybeTakeTPMOwnership();
-        PerformPostNetworkScreenActions();
-        InitiateOOBEUpdate();
-      } else {
-        ShowEulaScreen();
-      }
+      MaybeTakeTPMOwnership();
+      PerformPostNetworkScreenActions();
+      InitiateOOBEUpdate();
       break;
     case NetworkScreen::Result::BACK:
       ShowWelcomeScreen();
       break;
   }
-}
-
-void WizardController::OnEulaScreenExit(EulaScreen::Result result) {
-  OnScreenExit(EulaView::kScreenId, EulaScreen::GetResultString(result));
-
-  switch (result) {
-    case EulaScreen::Result::ACCEPTED_WITH_USAGE_STATS_REPORTING:
-      OnEulaAccepted(true /*usage_statistics_reporting_enabled*/);
-      break;
-    case EulaScreen::Result::ALREADY_ACCEPTED:
-      InitiateOOBEUpdate();
-      break;
-    case EulaScreen::Result::ALREADY_ACCEPTED_DEMO_MODE:
-      ShowArcTermsOfServiceScreen();
-      break;
-    case EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING:
-    case EulaScreen::Result::NOT_APPLICABLE:
-      OnEulaAccepted(false /*usage_statistics_reporting_enabled*/);
-      break;
-    case EulaScreen::Result::BACK:
-      DCHECK(!demo_setup_controller_);
-      ShowNetworkScreen();
-      break;
-    case EulaScreen::Result::BACK_DEMO_MODE:
-      DCHECK(demo_setup_controller_);
-      ShowDemoModePreferencesScreen();
-      break;
-  }
-}
-
-void WizardController::OnEulaAccepted(bool usage_statistics_reporting_enabled) {
-  time_eula_accepted_ = base::TimeTicks::Now();
-  StartupUtils::MarkEulaAccepted();
-  metrics::structured::NeutrinoDevicesLogWithLocalState(
-      GetLocalState(),
-      metrics::structured::NeutrinoDevicesLocation::kOnEulaAccepted);
-  ChangeMetricsReportingStateWithReply(
-      usage_statistics_reporting_enabled,
-      base::BindOnce(&WizardController::OnChangedMetricsReportingState,
-                     weak_factory_.GetWeakPtr()));
-  if (wizard_context_->is_cloud_ready_update_flow) {
-    AdvanceToScreen(HWDataCollectionView::kScreenId);
-    return;
-  }
-  PerformPostNetworkScreenActions();
-
-  if (arc::IsArcTermsOfServiceOobeNegotiationNeeded()) {
-    ShowArcTermsOfServiceScreen();
-    return;
-  } else if (demo_setup_controller_) {
-    ShowDemoModeSetupScreen();
-  }
-
-  InitiateOOBEUpdate();
 }
 
 void WizardController::OnUpdateScreenExit(UpdateScreen::Result result) {
@@ -1870,9 +1790,6 @@ void WizardController::OnDemoPreferencesScreenExit(
 
   switch (result) {
     case DemoPreferencesScreen::Result::COMPLETED:
-      ShowEulaScreen();
-      break;
-    case DemoPreferencesScreen::Result::COMPLETED_CONSOLIDATED_CONSENT:
       demo_setup_controller_->set_demo_config(
           DemoSession::DemoModeConfig::kOnline);
       MaybeTakeTPMOwnership();
@@ -2404,8 +2321,6 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowPackagedLicenseScreen();
   } else if (screen_id == UpdateView::kScreenId) {
     InitiateOOBEUpdate();
-  } else if (screen_id == EulaView::kScreenId) {
-    ShowEulaScreen();
   } else if (screen_id == ResetView::kScreenId) {
     ShowResetScreen();
   } else if (screen_id == KioskEnableScreenView::kScreenId) {
@@ -2424,10 +2339,10 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowDemoModePreferencesScreen();
   } else if (screen_id == TermsOfServiceScreenView::kScreenId) {
     ShowTermsOfServiceScreen();
-  } else if (screen_id == SyncConsentScreenView::kScreenId) {
-    ShowSyncConsentScreen();
   } else if (screen_id == ArcTermsOfServiceScreenView::kScreenId) {
     ShowArcTermsOfServiceScreen();
+  } else if (screen_id == SyncConsentScreenView::kScreenId) {
+    ShowSyncConsentScreen();
   } else if (screen_id == RecommendAppsScreenView::kScreenId) {
     ShowRecommendAppsScreen();
   } else if (screen_id == AppDownloadingScreenView::kScreenId) {

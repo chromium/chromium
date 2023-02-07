@@ -1751,8 +1751,6 @@ source_set("ash") {
     "login/screens/encryption_migration_screen.h",
     "login/screens/error_screen.cc",
     "login/screens/error_screen.h",
-    "login/screens/eula_screen.cc",
-    "login/screens/eula_screen.h",
     "login/screens/family_link_notice_screen.cc",
     "login/screens/family_link_notice_screen.h",
     "login/screens/fingerprint_setup_screen.cc",

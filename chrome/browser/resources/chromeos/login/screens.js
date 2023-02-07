@@ -29,7 +29,6 @@ import './screens/common/managed_terms_of_service.js';
 import './screens/common/marketing_opt_in.js';
 import './screens/common/multidevice_setup.js';
 import './screens/common/offline_ad_login.js';
-import './screens/common/oobe_eula.js';
 import './screens/common/oobe_reset.js';
 import './screens/common/os_install.js';
 import './screens/common/os_trial.js';
@@ -104,7 +103,6 @@ export const commonScreensList = [
   {tag: 'marketing-opt-in-element', id: 'marketing-opt-in'},
   {tag: 'multidevice-setup-element', id: 'multidevice-setup-screen'},
   {tag: 'offline-ad-login-element', id: 'offline-ad-login'},
-  {tag: 'oobe-eula-element', id: 'oobe-eula-md'},
   {tag: 'oobe-reset-element', id: 'reset'},
   {
     tag: 'os-install-element',

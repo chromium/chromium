@@ -313,13 +313,6 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       ],
     },
     {
-      id: 'oobe-eula-md',
-      kind: ScreenKind.NORMAL,
-      // TODO: Current logic triggers switching screens in focus(), making
-      // it impossible to trigger  installation settings dialog.
-      skipScreenshots: true,
-    },
-    {
       id: 'demo-setup',
       kind: ScreenKind.OTHER,
       suffix: 'demo',
