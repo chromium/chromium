@@ -327,7 +327,6 @@ non_web_component_files = [
   "chromeos/ensure_lazy_loaded.ts",
   "chromeos/google_assistant_page/google_assistant_browser_proxy.ts",
   "chromeos/guest_os/guest_os_browser_proxy.ts",
-  "chromeos/icon.js",
   "chromeos/internet_page/cellular_setup_settings_delegate.ts",
   "chromeos/internet_page/internet_page_browser_proxy.ts",
   "chromeos/kerberos_page/kerberos_accounts_browser_proxy.ts",

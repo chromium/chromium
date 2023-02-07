@@ -284,7 +284,6 @@ js_type_check("closure_compile_local_module") {
 
   deps = [
     ":deep_linking_behavior",
-    ":icon",
     ":lazy_load",
     ":metrics_recorder",
     ":os_page_visibility",
@@ -352,7 +351,4 @@ js_library("route_observer_behavior") {
     ":router",
     "//ash/webui/common/resources:assert",
   ]
-}
-
-js_library("icon") {
 }
