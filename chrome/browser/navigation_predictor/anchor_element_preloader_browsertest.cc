@@ -225,7 +225,13 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchorInaccurate) {
                                                          expected_entry);
 }
 
-IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, Duplicates) {
+// TODO(crbug.com/1413564): Flaky on Win10
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_Duplicates DISABLED_Duplicates
+#else
+#define MAYBE_Duplicates Duplicates
+#endif
+IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, MAYBE_Duplicates) {
   const GURL& url = GetTestURL("/many_anchors.html");
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
