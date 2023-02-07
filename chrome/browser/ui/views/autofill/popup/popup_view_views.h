@@ -60,6 +60,8 @@ class PopupViewViews : public PopupBaseView, public AutofillPopupView {
   base::WeakPtr<AutofillPopupController> controller() { return controller_; }
 
  private:
+  friend class PopupViewViewsBrowsertest;
+
   void OnSelectedRowChanged(absl::optional<int> previous_row_selection,
                             absl::optional<int> current_row_selection) override;
   void OnSuggestionsChanged() override;

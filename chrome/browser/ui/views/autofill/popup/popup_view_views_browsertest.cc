@@ -22,6 +22,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/render_text.h"
@@ -29,8 +30,28 @@
 
 namespace autofill {
 
+namespace {
+
 using testing::NiceMock;
 using testing::Return;
+
+std::vector<Suggestion> CreateAutofillProfileSuggestions() {
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back("123 Apple St.", "Charles", "accountIcon", 1);
+  suggestions.emplace_back("3734 Elvis Presley Blvd.", "Elvis", "accountIcon",
+                           2);
+
+  suggestions.emplace_back(POPUP_ITEM_ID_SEPARATOR);
+
+  Suggestion settings(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES));
+  settings.frontend_id = POPUP_ITEM_ID_AUTOFILL_OPTIONS;
+  settings.icon = "settingsIcon";
+  suggestions.push_back(std::move(settings));
+
+  return suggestions;
+}
+
+}  // namespace
 
 // If the boolean test parameter is `true`, dark mode is enforced.
 class PopupViewViewsBrowsertest : public UiBrowserTest,
@@ -59,12 +80,18 @@ class PopupViewViewsBrowsertest : public UiBrowserTest,
     controller_.set_suggestions(std::move(suggestions));
   }
 
+  void PrepareSelectedRow(int row) { selected_row_ = row; }
+
   void ShowUi(const std::string& name) override {
     EXPECT_CALL(controller_, ViewDestroyed());
     view_ = new PopupViewViews(controller_.GetWeakPtr(),
                                views::Widget::GetWidgetForNativeWindow(
                                    browser()->window()->GetNativeWindow()));
     view_->Show();
+    if (selected_row_) {
+      view_->OnSelectedRowChanged(/*previous_row_selection=*/absl::nullopt,
+                                  selected_row_);
+    }
   }
 
   bool VerifyUi() override {
@@ -100,6 +127,9 @@ class PopupViewViewsBrowsertest : public UiBrowserTest,
   std::unique_ptr<base::ScopedEnvironmentVariableOverride> scoped_env_override_;
   NiceMock<autofill::MockAutofillPopupController> controller_;
   raw_ptr<PopupViewViews> view_ = nullptr;
+
+  // The index of the selected row. No row is selected by default.
+  absl::optional<int> selected_row_;
 };
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Autocomplete) {
@@ -109,19 +139,21 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Autocomplete) {
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Autofill_Profile) {
-  std::vector<Suggestion> suggestions;
-  suggestions.emplace_back("123 Apple St.", "Charles", "accountIcon", 1);
-  suggestions.emplace_back("3734 Elvis Presley Blvd.", "Elvis", "accountIcon",
-                           2);
+  PrepareSuggestions(CreateAutofillProfileSuggestions());
+  ShowAndVerifyUi();
+}
 
-  suggestions.emplace_back(POPUP_ITEM_ID_SEPARATOR);
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       InvokeUi_Autofill_Profile_Selected_Profile) {
+  PrepareSuggestions(CreateAutofillProfileSuggestions());
+  PrepareSelectedRow(0);
+  ShowAndVerifyUi();
+}
 
-  Suggestion settings(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES));
-  settings.frontend_id = POPUP_ITEM_ID_AUTOFILL_OPTIONS;
-  settings.icon = "settingsIcon";
-  suggestions.push_back(std::move(settings));
-
-  PrepareSuggestions(std::move(suggestions));
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       InvokeUi_Autofill_Profile_Selected_Footer) {
+  PrepareSuggestions(CreateAutofillProfileSuggestions());
+  PrepareSelectedRow(3);
   ShowAndVerifyUi();
 }
 
