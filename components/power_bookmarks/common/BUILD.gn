@@ -23,6 +23,15 @@ static_library("common") {
   ]
 }
 
+static_library("test_support") {
+  sources = [
+    "power_test_util.cc",
+    "power_test_util.h",
+  ]
+
+  deps = [ ":common" ]
+}
+
 source_set("unit_tests") {
   testonly = true
 

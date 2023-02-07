@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "components/power_bookmarks/common/power_test_util.h"
 #include "components/power_bookmarks/common/search_params.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
 #include "sql/database.h"
@@ -33,47 +34,6 @@ const sync_pb::PowerBookmarkSpecifics::PowerType kMockType =
     sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK;
 const sync_pb::PowerBookmarkSpecifics::PowerType kNoteType =
     sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE;
-
-std::unique_ptr<Power> MakePower(
-    GURL url,
-    sync_pb::PowerBookmarkSpecifics::PowerType power_type,
-    base::Time time_modified,
-    std::unique_ptr<sync_pb::PowerEntity> power_specifics) {
-  std::unique_ptr<Power> power =
-      std::make_unique<Power>(std::move(power_specifics));
-  power->set_guid(base::GUID::GenerateRandomV4());
-  power->set_url(url);
-  power->set_power_type(power_type);
-  power->set_time_modified(time_modified);
-  return power;
-}
-
-std::unique_ptr<Power> MakePower(
-    GURL url,
-    sync_pb::PowerBookmarkSpecifics::PowerType power_type,
-    std::unique_ptr<sync_pb::PowerEntity> power_specifics) {
-  return MakePower(url, power_type, base::Time(), std::move(power_specifics));
-}
-
-std::unique_ptr<Power> MakePower(
-    GURL url,
-    sync_pb::PowerBookmarkSpecifics::PowerType power_type,
-    base::Time time_modified) {
-  return MakePower(url, power_type, time_modified,
-                   std::make_unique<sync_pb::PowerEntity>());
-}
-
-std::unique_ptr<Power> MakePower(
-    GURL url,
-    sync_pb::PowerBookmarkSpecifics::PowerType power_type) {
-  return MakePower(url, power_type, base::Time(),
-                   std::make_unique<sync_pb::PowerEntity>());
-}
-
-std::unique_ptr<Power> MakePower(GURL url, base::Time time_modified) {
-  return MakePower(url, kMockType, time_modified,
-                   std::make_unique<sync_pb::PowerEntity>());
-}
 
 std::string WritePower(PowerBookmarkDatabaseImpl* pbdb,
                        std::unique_ptr<Power> power) {

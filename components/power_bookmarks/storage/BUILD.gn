@@ -43,6 +43,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/power_bookmarks/common",
+    "//components/power_bookmarks/common:test_support",
     "//components/sync:test_support",
     "//components/sync/model",
     "//components/sync/protocol",

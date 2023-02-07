@@ -6,6 +6,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "components/power_bookmarks/common/power.h"
+#include "components/power_bookmarks/common/power_test_util.h"
 #include "components/power_bookmarks/storage/power_bookmark_backend.h"
 #include "components/power_bookmarks/storage/power_bookmark_sync_metadata_database.h"
 #include "components/sync/model/sync_metadata_store.h"
@@ -19,26 +20,6 @@ using testing::Return;
 using testing::SizeIs;
 
 namespace power_bookmarks {
-
-namespace {
-
-std::unique_ptr<Power> MakePower(
-    GURL url,
-    sync_pb::PowerBookmarkSpecifics::PowerType power_type,
-    std::unique_ptr<sync_pb::PowerEntity> power_specifics) {
-  std::unique_ptr<Power> power =
-      std::make_unique<Power>(std::move(power_specifics));
-  power->set_guid(base::GUID::GenerateRandomV4());
-  power->set_url(url);
-  power->set_power_type(power_type);
-  return power;
-}
-
-std::unique_ptr<Power> MakePower(
-    GURL url,
-    sync_pb::PowerBookmarkSpecifics::PowerType power_type) {
-  return MakePower(url, power_type, std::make_unique<sync_pb::PowerEntity>());
-}
 
 MATCHER_P(MatchesPowerByGUID, expected_guid, "") {
   return arg.guid() == expected_guid;
@@ -233,7 +214,5 @@ TEST_F(PowerBookmarkSyncBridgeTest, ApplySyncChangesFail) {
                                      std::move(entity_changes))
                   .has_value());
 }
-
-}  // namespace
 
 }  // namespace power_bookmarks

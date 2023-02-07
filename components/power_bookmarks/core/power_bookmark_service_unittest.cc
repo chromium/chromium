@@ -18,6 +18,7 @@
 #include "components/power_bookmarks/common/power.h"
 #include "components/power_bookmarks/common/power_bookmark_observer.h"
 #include "components/power_bookmarks/common/power_overview.h"
+#include "components/power_bookmarks/common/power_test_util.h"
 #include "components/power_bookmarks/common/search_params.h"
 #include "components/power_bookmarks/core/power_bookmark_data_provider.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
@@ -32,28 +33,6 @@ using testing::IsTrue;
 using testing::SizeIs;
 
 namespace power_bookmarks {
-
-namespace {
-
-std::unique_ptr<Power> MakePower(
-    GURL url,
-    sync_pb::PowerBookmarkSpecifics::PowerType power_type,
-    std::unique_ptr<sync_pb::PowerEntity> power_entity) {
-  std::unique_ptr<Power> power =
-      std::make_unique<Power>(std::move(power_entity));
-  power->set_guid(base::GUID::GenerateRandomV4());
-  power->set_url(url);
-  power->set_power_type(power_type);
-  return power;
-}
-
-std::unique_ptr<Power> MakePower(
-    GURL url,
-    sync_pb::PowerBookmarkSpecifics::PowerType power_type) {
-  return MakePower(url, power_type, std::make_unique<sync_pb::PowerEntity>());
-}
-
-}  // namespace
 
 // Tests for the power bookmark service.
 // In-depth tests for the actual storage can be found in

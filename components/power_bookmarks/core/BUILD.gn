@@ -82,6 +82,7 @@ source_set("unit_tests") {
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//components/power_bookmarks/common",
+    "//components/power_bookmarks/common:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
