@@ -232,7 +232,7 @@ BASE_FEATURE(kNormalizeSearchSuggestions,
 // OmniboxEditModel for triggering zero-suggest prefetching on Web/SRP.
 BASE_FEATURE(kOmniboxOnClobberFocusTypeOnContent,
              "OmniboxOnClobberFocusTypeOnContent",
-             enabled_by_default_desktop_only);
+             enabled_by_default_desktop_android);
 
 // If enabled, zero prefix suggestions will be stored using an in-memory caching
 // service, instead of using the existing prefs-based cache.
