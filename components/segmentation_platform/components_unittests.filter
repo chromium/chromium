@@ -1,4 +1,5 @@
 CachedResultProviderTest.*
+CachedResultWriterTest.*
 ClientResultPrefsTest.*
 ConfigParserTest.*
 ContextualPageActionsModelTest.*

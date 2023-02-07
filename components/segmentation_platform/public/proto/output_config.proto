@@ -25,7 +25,7 @@ enum TimeUnit {
 // classifier/regressor the model is in.
 message Predictor {
   // A classifier to interpret model results as a boolean. The final result
-  // supplied to the client `ordered_lables` of length one, with eithier
+  // supplied to the client `ordered_lables` of length one, with either
   // `positive_label` or `negative label`.
   message BinaryClassifier {
     // Model score below threshold is classified as `negative_label` else

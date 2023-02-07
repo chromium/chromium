@@ -4,6 +4,8 @@
 
 #include "components/segmentation_platform/internal/post_processor/post_processor.h"
 
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
+
 #include "base/check_op.h"
 #include "base/notreached.h"
 
@@ -100,6 +102,25 @@ ClassificationResult PostProcessor::GetPostProcessedClassificationResult(
   ClassificationResult classification_result = ClassificationResult(status);
   classification_result.ordered_labels = ordered_labels;
   return classification_result;
+}
+
+base::TimeDelta PostProcessor::GetTTLForPredictedResult(
+    const proto::PredictionResult& prediction_result) {
+  std::vector<std::string> ordered_labels;
+  if (prediction_result.result_size() > 0) {
+    ordered_labels = GetClassifierResults(prediction_result);
+    auto predicted_result_ttl =
+        prediction_result.output_config().predicted_result_ttl();
+    auto top_label_to_ttl_map = predicted_result_ttl.top_label_to_ttl_map();
+    auto default_ttl = predicted_result_ttl.default_ttl();
+    auto time_unit = predicted_result_ttl.time_unit();
+
+    const auto iter = top_label_to_ttl_map.find(ordered_labels[0]);
+    int64_t ttl_to_use =
+        iter == top_label_to_ttl_map.end() ? default_ttl : iter->second;
+    return ttl_to_use * metadata_utils::ConvertToTimeDelta(time_unit);
+  }
+  return base::TimeDelta();
 }
 
 }  // namespace segmentation_platform

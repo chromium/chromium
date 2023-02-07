@@ -18,6 +18,10 @@ namespace {
 const char kNotShowShare[] = "Not Show Share";
 const char kShowShare[] = "Show Share";
 
+// TTL for BinaryClassifier labels.
+const int kShowShareTTL = 3;
+const int kDefaultTTL = 5;
+
 // Labels for MultiClassClassifier.
 const char kNewTabUser[] = "NewTab";
 const char kShareUser[] = "Share";
@@ -37,6 +41,9 @@ proto::OutputConfig GetTestOutputConfigForBinaryClassifier() {
   writer.AddOutputConfigForBinaryClassifier(
       /*threshold=*/0.5, /*positive_label=*/kShowShare,
       /*negative_label=*/kNotShowShare);
+
+  writer.AddPredictedResultTTLInOutputConfig({{kShowShare, kShowShareTTL}},
+                                             kDefaultTTL, proto::TimeUnit::DAY);
 
   return model_metadata.output_config();
 }
@@ -224,6 +231,26 @@ TEST(PostProcessorTest,
   EXPECT_THAT(classification_result.status, PredictionStatus::kSucceeded);
   EXPECT_THAT(classification_result.ordered_labels,
               testing::ElementsAre(kShoppingUser, kShareUser));
+}
+
+TEST(PostProcessorTest, GetTTLWhenLabelTTLPresentInMap) {
+  PostProcessor post_processor;
+  proto::PredictionResult pred_result = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{0.5}, GetTestOutputConfigForBinaryClassifier(),
+      /*timestamp=*/base::Time::Now());
+  // ShowShare is selected based on score.
+  EXPECT_EQ(base::Days(1) * kShowShareTTL,
+            post_processor.GetTTLForPredictedResult(pred_result));
+}
+
+TEST(PostProcessorTest, GetTTLWhenLabelTTLNotPresentInMap) {
+  PostProcessor post_processor;
+  proto::PredictionResult pred_result = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{0.1}, GetTestOutputConfigForBinaryClassifier(),
+      /*timestamp=*/base::Time::Now());
+  // NotShowShare is selected based on score.
+  EXPECT_EQ(base::Days(1) * kDefaultTTL,
+            post_processor.GetTTLForPredictedResult(pred_result));
 }
 
 }  // namespace segmentation_platform

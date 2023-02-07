@@ -35,7 +35,7 @@ struct ClassificationResult {
   PredictionStatus status;
 
   // The list of labels arranged in descending order of result from model
-  // evaluation. For BinaryClassifier, it is eithier a `positive_label` or
+  // evaluation. For BinaryClassifier, it is either a `positive_label` or
   // `negative_label`. For MultiClassClassifier, it is list of `top_k_outputs`
   // labels based on the score for the label. For BinnedClassifier, it is a
   // label from one of the bin depending on where the score from the model

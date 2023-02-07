@@ -160,6 +160,12 @@ class MetadataWriter {
       const std::vector<std::pair<float, std::string>>& bins,
       std::string underflow_label);
 
+  // Adds a `PredictedResultTTL` in `OutputConfig`.
+  void AddPredictedResultTTLInOutputConfig(
+      std::vector<std::pair<std::string, std::int64_t>> top_label_to_ttl_list,
+      int64_t default_ttl,
+      proto::TimeUnit time_unit);
+
   // Append a delay trigger for training data collection.
   void AddDelayTrigger(uint64_t delay_sec);
 

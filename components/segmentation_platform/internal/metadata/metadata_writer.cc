@@ -189,6 +189,22 @@ void MetadataWriter::AddOutputConfigForBinnedClassifier(
   }
 }
 
+void MetadataWriter::AddPredictedResultTTLInOutputConfig(
+    std::vector<std::pair<std::string, std::int64_t>> top_label_to_ttl_list,
+    int64_t default_ttl,
+    proto::TimeUnit time_unit) {
+  proto::PredictedResultTTL* predicted_result_ttl =
+      metadata_->mutable_output_config()->mutable_predicted_result_ttl();
+  predicted_result_ttl->set_time_unit(time_unit);
+  predicted_result_ttl->set_default_ttl(default_ttl);
+  auto* top_label_to_ttl_map =
+      predicted_result_ttl->mutable_top_label_to_ttl_map();
+  for (const std::pair<std::string, int64_t>& label_to_ttl :
+       top_label_to_ttl_list) {
+    (*top_label_to_ttl_map)[label_to_ttl.first] = label_to_ttl.second;
+  }
+}
+
 void MetadataWriter::AddDelayTrigger(uint64_t delay_sec) {
   auto* config =
       metadata_->mutable_training_outputs()->mutable_trigger_config();
