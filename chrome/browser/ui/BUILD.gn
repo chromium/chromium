@@ -5386,7 +5386,6 @@ static_library("ui") {
       "//components/services/app_service/public/cpp:intents",
       "//components/soda",
       "//components/soda:constants",
-      "//components/tab_count_metrics",
       "//components/ui_devtools/views",
       "//components/user_education/views",
       "//components/user_notes:features",

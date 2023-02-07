@@ -236,7 +236,6 @@ test("components_unittests") {
     "//components/sync_preferences:unit_tests",
     "//components/sync_user_events:unit_tests",
     "//components/system_media_controls:unit_tests",
-    "//components/tab_count_metrics:unit_tests",
     "//components/test:run_all_unittests",
     "//components/translate/core/browser:unit_tests",
     "//components/translate/core/common:unit_tests",
