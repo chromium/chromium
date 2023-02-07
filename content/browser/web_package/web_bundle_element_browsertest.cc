@@ -131,9 +131,8 @@ class WebBundleElementBrowserTest : public ContentBrowserTest {
  public:
  protected:
   WebBundleElementBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {}, {net::features::kForceIsolationInfoFrameOriginToTopLevelFrame,
-             net::features::kEnableDoubleKeyNetworkAnonymizationKey});
+    feature_list_.InitAndDisableFeature(
+        net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
   }
   ~WebBundleElementBrowserTest() override = default;
 

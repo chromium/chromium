@@ -12885,13 +12885,13 @@ TEST_F(URLRequestTest, SetURLChain) {
   }
 }
 
-TEST_F(URLRequestTest, SetIsolationInfoFromNakTripleNikTripleNak) {
+TEST_F(URLRequestTest,
+       SetIsolationInfoFromNakTripleNikDoublePlusCrossSiteBitNak) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::vector<base::test::FeatureRef> enabled_features = {};
-  std::vector<base::test::FeatureRef> disabled_features = {
-      net::features::kEnableDoubleKeyNetworkAnonymizationKey,
-      net::features::kForceIsolationInfoFrameOriginToTopLevelFrame,
+  std::vector<base::test::FeatureRef> enabled_features = {
       net::features::kEnableCrossSiteFlagNetworkAnonymizationKey};
+  std::vector<base::test::FeatureRef> disabled_features = {
+      net::features::kForceIsolationInfoFrameOriginToTopLevelFrame};
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
   TestDelegate d;
@@ -12903,8 +12903,7 @@ TEST_F(URLRequestTest, SetIsolationInfoFromNakTripleNikTripleNak) {
   IsolationInfo expected_isolation_info_populated_cross_site_nak =
       IsolationInfo::Create(IsolationInfo::RequestType::kOther,
                             url::Origin::Create(GURL("https://a.com/")),
-                            url::Origin::Create(GURL("https://b.com/")),
-                            SiteForCookies(),
+                            url::Origin(), SiteForCookies(),
                             /*party_context=*/absl::nullopt, &nak_nonce);
 
   NetworkAnonymizationKey populated_same_site_nak(site_a, site_a, false,
@@ -12928,7 +12927,13 @@ TEST_F(URLRequestTest, SetIsolationInfoFromNakTripleNikTripleNak) {
   EXPECT_TRUE(r->is_created_from_network_anonymization_key());
   EXPECT_EQ(r->isolation_info().network_anonymization_key(),
             populated_cross_site_nak);
-  EXPECT_TRUE(r->isolation_info().IsEqualForTesting(
+  EXPECT_EQ(
+      r->isolation_info().top_frame_origin(),
+      expected_isolation_info_populated_cross_site_nak.top_frame_origin());
+  // The cross-site bit in the NAK causes the IsolationInfo's NIK to have, an
+  // anonymous origin, but the bit is not enough to reconstruct a different
+  // frame_site.
+  EXPECT_FALSE(r->isolation_info().IsEqualForTesting(
       expected_isolation_info_populated_cross_site_nak));
 
   r->set_isolation_info_from_network_anonymization_key(populated_same_site_nak);
@@ -12945,11 +12950,9 @@ TEST_F(URLRequestTest, SetIsolationInfoFromNakTripleNikTripleNak) {
   r->Start();
   d.RunUntilComplete();
 }
-
 TEST_F(URLRequestTest, SetIsolationInfoFromNakDoubleNikDoubleNak) {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::vector<base::test::FeatureRef> enabled_features = {
-      net::features::kEnableDoubleKeyNetworkAnonymizationKey,
       net::features::kForceIsolationInfoFrameOriginToTopLevelFrame};
   std::vector<base::test::FeatureRef> disabled_features = {
       net::features::kEnableCrossSiteFlagNetworkAnonymizationKey};
@@ -13006,8 +13009,7 @@ TEST_F(URLRequestTest, SetIsolationInfoFromNakDoubleNikDoubleNak) {
 
 TEST_F(URLRequestTest, SetIsolationInfoFromNakTripleNikDoubleNak) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::vector<base::test::FeatureRef> enabled_features = {
-      net::features::kEnableDoubleKeyNetworkAnonymizationKey};
+  std::vector<base::test::FeatureRef> enabled_features = {};
   std::vector<base::test::FeatureRef> disabled_features = {
       net::features::kForceIsolationInfoFrameOriginToTopLevelFrame,
       net::features::kEnableCrossSiteFlagNetworkAnonymizationKey};
@@ -13069,7 +13071,6 @@ TEST_F(URLRequestTest,
        SetIsolationInfoFromNakTripleNikDoubleWithCrossSiteFlagNak) {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::vector<base::test::FeatureRef> enabled_features = {
-      net::features::kEnableDoubleKeyNetworkAnonymizationKey,
       net::features::kEnableCrossSiteFlagNetworkAnonymizationKey};
   std::vector<base::test::FeatureRef> disabled_features = {
       net::features::kForceIsolationInfoFrameOriginToTopLevelFrame};
@@ -13241,34 +13242,24 @@ INSTANTIATE_TEST_SUITE_P(,
 namespace {
 
 struct EnabledFeatureFlagsTestingParam {
-  const bool enable_double_key_network_anonymization_key;
   const bool enable_cross_site_flag_network_anonymization_key;
   const bool enable_double_key_network_isolation_key;
 };
 
 const EnabledFeatureFlagsTestingParam kFlagsParam[] = {
-    // 0. Triple-keying is enabled for both IsolationInfo and
+    // 0. Double-keying is enabled for both IsolationInfo and
     // NetworkAnonymizationKey.
-    {/*enable_double_key_network_anonymization_key=*/false,
-     /*enable_cross_site_flag_network_anonymization_key=*/false,
-     /*enable_double_key_network_isolation_key=*/false},
-
-    // 1. Double-keying is enabled for both IsolationInfo and
-    // NetworkAnonymizationKey.
-    {/*enable_double_key_network_anonymization_key=*/true,
-     /*enable_cross_site_flag_network_anonymization_key=*/false,
+    {/*enable_cross_site_flag_network_anonymization_key=*/false,
      /*enable_double_key_network_isolation_key=*/true},
 
-    // 2. Triple-keying is enabled for IsolationInfo and double-keying is
+    // 1. Triple-keying is enabled for IsolationInfo and double-keying is
     // enabled for NetworkAnonymizationKey.
-    {/*enable_double_key_network_anonymization_key=*/true,
-     /*enable_cross_site_flag_network_anonymization_key=*/false,
+    {/*enable_cross_site_flag_network_anonymization_key=*/false,
      /*enable_double_key_network_isolation_key=*/false},
 
-    // 3. Triple-keying is enabled for IsolationInfo and double-keying +
+    // 2. Triple-keying is enabled for IsolationInfo and double-keying +
     // cross-site-bit is enabled for NetworkAnonymizationKey.
-    {/*enable_double_key_network_anonymization_key=*/false,
-     /*enable_cross_site_flag_network_anonymization_key=*/true,
+    {/*enable_cross_site_flag_network_anonymization_key=*/true,
      /*enable_double_key_network_isolation_key=*/false}};
 
 }  // namespace
@@ -13291,14 +13282,6 @@ class PartitionConnectionsByNetworkAnonymizationKey
           net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
     }
 
-    if (IsDoubleKeyNetworkAnonymizationKeyEnabled()) {
-      enabled_features.push_back(
-          net::features::kEnableDoubleKeyNetworkAnonymizationKey);
-    } else {
-      disabled_features.push_back(
-          net::features::kEnableDoubleKeyNetworkAnonymizationKey);
-    }
-
     if (IsCrossSiteFlagEnabled()) {
       enabled_features.push_back(
           net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
@@ -13312,10 +13295,6 @@ class PartitionConnectionsByNetworkAnonymizationKey
 
   bool IsDoubleKeyNetworkIsolationKeyEnabled() const {
     return GetParam().enable_double_key_network_isolation_key;
-  }
-
-  bool IsDoubleKeyNetworkAnonymizationKeyEnabled() const {
-    return GetParam().enable_double_key_network_anonymization_key;
   }
 
   bool IsCrossSiteFlagEnabled() const {
@@ -13448,8 +13427,7 @@ TEST_P(PartitionConnectionsByNetworkAnonymizationKey,
     EXPECT_THAT(d.request_status(), IsOk());
     // We should only share a connection with r1 if double key
     // NetworkAnonymizationKey scheme is enabled.
-    if (IsDoubleKeyNetworkAnonymizationKeyEnabled() &&
-        !IsCrossSiteFlagEnabled()) {
+    if (!IsCrossSiteFlagEnabled()) {
       EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, r2->ssl_info().handshake_type);
     } else {
       EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, r2->ssl_info().handshake_type);
@@ -13514,14 +13492,8 @@ TEST_P(
     d.RunUntilComplete();
 
     EXPECT_THAT(d.request_status(), IsOk());
-    // We should share a connection with r1 unless triple keyed
-    // NetworkAnonymizationKey scheme is enabled.
-    if (!IsDoubleKeyNetworkAnonymizationKeyEnabled() &&
-        !IsCrossSiteFlagEnabled()) {
-      EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, r2->ssl_info().handshake_type);
-    } else {
-      EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, r2->ssl_info().handshake_type);
-    }
+    // We should share a connection with r1
+    EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, r2->ssl_info().handshake_type);
   }
 }
 

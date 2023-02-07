@@ -28,17 +28,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return input.GetTopFrameSite();
   }
 
-  static const absl::optional<net::SchemefulSite>& frame_site(
-      const net::NetworkAnonymizationKey& input) {
-    // TODO(crbug/1343856): update to use OptionalAsPointer rather than
-    // NoDestructor.
-    static const base::NoDestructor<absl::optional<net::SchemefulSite>>
-        nullopt_origin;
-    return net::NetworkAnonymizationKey::IsFrameSiteEnabled()
-               ? input.GetFrameSite()
-               : *nullopt_origin;
-  }
-
   static bool is_cross_site(const net::NetworkAnonymizationKey& input) {
     if (!net::NetworkAnonymizationKey::IsCrossSiteFlagSchemeEnabled()) {
       return false;

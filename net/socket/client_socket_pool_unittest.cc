@@ -110,45 +110,45 @@ TEST(ClientSocketPool, GroupIdToString) {
   feature_list.InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
-  EXPECT_EQ("http://foo <null null>",
+  EXPECT_EQ("http://foo <null>",
             ClientSocketPool::GroupId(
                 url::SchemeHostPort(url::kHttpScheme, "foo", 80),
                 PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
                 SecureDnsPolicy::kAllow)
                 .ToString());
-  EXPECT_EQ("http://bar:443 <null null>",
+  EXPECT_EQ("http://bar:443 <null>",
             ClientSocketPool::GroupId(
                 url::SchemeHostPort(url::kHttpScheme, "bar", 443),
                 PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
                 SecureDnsPolicy::kAllow)
                 .ToString());
-  EXPECT_EQ("pm/http://bar <null null>",
+  EXPECT_EQ("pm/http://bar <null>",
             ClientSocketPool::GroupId(
                 url::SchemeHostPort(url::kHttpScheme, "bar", 80),
                 PrivacyMode::PRIVACY_MODE_ENABLED, NetworkAnonymizationKey(),
                 SecureDnsPolicy::kAllow)
                 .ToString());
 
-  EXPECT_EQ("https://foo:80 <null null>",
+  EXPECT_EQ("https://foo:80 <null>",
             ClientSocketPool::GroupId(
                 url::SchemeHostPort(url::kHttpsScheme, "foo", 80),
                 PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
                 SecureDnsPolicy::kAllow)
                 .ToString());
-  EXPECT_EQ("https://bar <null null>",
+  EXPECT_EQ("https://bar <null>",
             ClientSocketPool::GroupId(
                 url::SchemeHostPort(url::kHttpsScheme, "bar", 443),
                 PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
                 SecureDnsPolicy::kAllow)
                 .ToString());
-  EXPECT_EQ("pm/https://bar:80 <null null>",
+  EXPECT_EQ("pm/https://bar:80 <null>",
             ClientSocketPool::GroupId(
                 url::SchemeHostPort(url::kHttpsScheme, "bar", 80),
                 PrivacyMode::PRIVACY_MODE_ENABLED, NetworkAnonymizationKey(),
                 SecureDnsPolicy::kAllow)
                 .ToString());
 
-  EXPECT_EQ("https://foo <https://foo.test https://bar.test>",
+  EXPECT_EQ("https://foo <https://foo.test>",
             ClientSocketPool::GroupId(
                 url::SchemeHostPort(url::kHttpsScheme, "foo", 443),
                 PrivacyMode::PRIVACY_MODE_DISABLED,
@@ -158,7 +158,7 @@ TEST(ClientSocketPool, GroupIdToString) {
                 SecureDnsPolicy::kAllow)
                 .ToString());
 
-  EXPECT_EQ("dsd/pm/https://bar:80 <null null>",
+  EXPECT_EQ("dsd/pm/https://bar:80 <null>",
             ClientSocketPool::GroupId(
                 url::SchemeHostPort(url::kHttpsScheme, "bar", 80),
                 PrivacyMode::PRIVACY_MODE_ENABLED, NetworkAnonymizationKey(),

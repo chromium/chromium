@@ -17,9 +17,7 @@ bool StructTraits<network::mojom::NetworkAnonymizationKeyDataView,
   absl::optional<net::SchemefulSite> top_frame_site, frame_site;
 
   // If we fail to parse sites that we expect to be populated return false.
-  if (!data.ReadTopFrameSite(&top_frame_site) ||
-      (net::NetworkAnonymizationKey::IsFrameSiteEnabled() &&
-       !data.ReadFrameSite(&frame_site))) {
+  if (!data.ReadTopFrameSite(&top_frame_site)) {
     return false;
   }
 
@@ -33,13 +31,6 @@ bool StructTraits<network::mojom::NetworkAnonymizationKeyDataView,
   // Read nonce value.
   absl::optional<base::UnguessableToken> nonce;
   if (!data.ReadNonce(&nonce)) {
-    return false;
-  }
-
-  // If a non-empty key has frame_site is enabled it must be populated.
-  if (top_frame_site.has_value() &&
-      net::NetworkAnonymizationKey::IsFrameSiteEnabled() &&
-      !frame_site.has_value()) {
     return false;
   }
 

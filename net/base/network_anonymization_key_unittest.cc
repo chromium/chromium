@@ -19,31 +19,23 @@
 namespace net {
 
 struct EnabledFeatureFlagsTestingParam {
-  const bool enableDoubleKeyNetworkAnonymizationKeyEnabled;
+  // True = 2.5-keyed NAK, false = double-keyed NAK.
   const bool enableCrossSiteFlagNetworkAnonymizationKey;
   const bool enableDoubleKeyNetworkIsolationKey;
 };
 
-//    0. Triple-keying is enabled for both IsolationInfo and
+//    0. Double-keying is enabled for both IsolationInfo and
 //    NetworkAnonymizationKey.
-//    1. Double-keying is enabled for both IsolationInfo and
-//    NetworkAnonymizationKey.
-//    2. Triple-keying is enabled for IsolationInfo and double-keying is enabled
+//    1. Triple-keying is enabled for IsolationInfo and double-keying is enabled
 //    for NetworkAnonymizationKey.
-//    3. Triple-keying is enabled for IsolationInfo and double-keying +
+//    2. Triple-keying is enabled for IsolationInfo and double-keying +
 //    cross-site-bit is enabled for NetworkAnonymizationKey.
 const EnabledFeatureFlagsTestingParam kFlagsParam[] = {
-    {/*enableDoubleKeyNetworkAnonymizationKeyEnabled=*/false,
-     /*enableCrossSiteFlagNetworkAnonymizationKey=*/false,
-     /*enableDoubleKeyNetworkIsolationKey=*/false},
-    {/*enableDoubleKeyNetworkAnonymizationKeyEnabled=*/true,
-     /*enableCrossSiteFlagNetworkAnonymizationKey=*/false,
+    {/*enableCrossSiteFlagNetworkAnonymizationKey=*/false,
      /*enableDoubleKeyNetworkIsolationKey=*/true},
-    {/*enableDoubleKeyNetworkAnonymizationKeyEnabled=*/true,
-     /*enableCrossSiteFlagNetworkAnonymizationKey=*/false,
+    {/*enableCrossSiteFlagNetworkAnonymizationKey=*/false,
      /*enableDoubleKeyNetworkIsolationKey=*/false},
-    {/*enableDoubleKeyNetworkAnonymizationKeyEnabled=*/false,
-     /*enableCrossSiteFlagNetworkAnonymizationKey=*/true,
+    {/*enableCrossSiteFlagNetworkAnonymizationKey=*/true,
      /*enableDoubleKeyNetworkIsolationKey=*/false}};
 
 class NetworkAnonymizationKeyTest
@@ -62,14 +54,6 @@ class NetworkAnonymizationKeyTest
           net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
     }
 
-    if (IsDoubleKeyNetworkAnonymizationKeyEnabled()) {
-      enabled_features.push_back(
-          net::features::kEnableDoubleKeyNetworkAnonymizationKey);
-    } else {
-      disabled_features.push_back(
-          net::features::kEnableDoubleKeyNetworkAnonymizationKey);
-    }
-
     if (IsCrossSiteFlagEnabled()) {
       enabled_features.push_back(
           net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
@@ -83,10 +67,6 @@ class NetworkAnonymizationKeyTest
 
   static bool IsDoubleKeyNetworkIsolationKeyEnabled() {
     return GetParam().enableDoubleKeyNetworkIsolationKey;
-  }
-
-  bool IsDoubleKeyNetworkAnonymizationKeyEnabled() {
-    return GetParam().enableDoubleKeyNetworkAnonymizationKeyEnabled;
   }
 
   bool IsCrossSiteFlagEnabled() {
@@ -103,25 +83,14 @@ class NetworkAnonymizationKeyTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    NetworkAnonymizationKeyTest,
-    /*kEnableDoubleKeyNetworkAnonymizationKey*/ testing::ValuesIn(kFlagsParam));
-
-TEST_P(NetworkAnonymizationKeyTest, IsDoubleKeyingEnabled) {
-  if (IsDoubleKeyNetworkAnonymizationKeyEnabled() || IsCrossSiteFlagEnabled()) {
-    EXPECT_FALSE(NetworkAnonymizationKey::IsFrameSiteEnabled());
-  } else {
-    EXPECT_TRUE(NetworkAnonymizationKey::IsFrameSiteEnabled());
-  }
-}
+INSTANTIATE_TEST_SUITE_P(All,
+                         NetworkAnonymizationKeyTest,
+                         testing::ValuesIn(kFlagsParam));
 
 TEST_P(NetworkAnonymizationKeyTest, IsDoubleKeySchemeEnabled) {
   // Double key scheme is enabled only when
-  // `kEnableDoubleKeyNetworkAnonymizationKeyEnabled` is enabled but
   // `kEnableCrossSiteFlagNetworkAnonymizationKey` is not.
-  if (IsDoubleKeyNetworkAnonymizationKeyEnabled() &&
-      !IsCrossSiteFlagEnabled()) {
+  if (!IsCrossSiteFlagEnabled()) {
     EXPECT_TRUE(NetworkAnonymizationKey::IsDoubleKeySchemeEnabled());
   } else {
     EXPECT_FALSE(NetworkAnonymizationKey::IsDoubleKeySchemeEnabled());
@@ -130,9 +99,7 @@ TEST_P(NetworkAnonymizationKeyTest, IsDoubleKeySchemeEnabled) {
 
 TEST_P(NetworkAnonymizationKeyTest, IsCrossSiteFlagSchemeEnabled) {
   // Double key with cross site flag scheme is enabled whenever
-  // `kEnableCrossSiteFlagNetworkAnonymizationKey` is enabled
-  // regardless of the value of
-  // `kEnableDoubleKeyNetworkAnonymizationKeyEnabled`.
+  // `kEnableCrossSiteFlagNetworkAnonymizationKey` is enabled.
   if (IsCrossSiteFlagEnabled()) {
     EXPECT_TRUE(NetworkAnonymizationKey::IsCrossSiteFlagSchemeEnabled());
   } else {
@@ -163,8 +130,7 @@ TEST_P(NetworkAnonymizationKeyTest, CreateFromNetworkIsolationKey) {
 
   // Double-keyed NetworkIsolationKey + double-keyed NetworkAnonymizationKey
   // case.
-  if (IsDoubleKeyNetworkIsolationKeyEnabled() &&
-      IsDoubleKeyNetworkAnonymizationKeyEnabled()) {
+  if (IsDoubleKeyNetworkIsolationKeyEnabled() && !IsCrossSiteFlagEnabled()) {
     // Top site should be populated.
     EXPECT_EQ(nak_from_cross_site_nik.GetTopFrameSite(), site_a);
     EXPECT_EQ(nak_from_same_site_nik.GetTopFrameSite(), site_a);
@@ -173,42 +139,14 @@ TEST_P(NetworkAnonymizationKeyTest, CreateFromNetworkIsolationKey) {
     EXPECT_EQ(nak_from_same_site_nik.GetNonce(), nik_nonce);
     EXPECT_EQ(nak_from_cross_site_nik.GetNonce(), nik_nonce);
 
-    // Frame site getter should CHECK.
-    EXPECT_DEATH_IF_SUPPORTED(nak_from_cross_site_nik.GetFrameSite(), "");
-    EXPECT_DEATH_IF_SUPPORTED(nak_from_same_site_nik.GetFrameSite(), "");
-
     // Double-keyed NAKs created from different third party cross site contexts
     // should be equal.
     EXPECT_TRUE(nak_from_same_site_nik == nak_from_cross_site_nik);
   }
 
-  // Triple-keyed NetworkIsolationKey + triple-keyed NetworkAnonymizationKey
-  // case.
-  if (!IsDoubleKeyNetworkIsolationKeyEnabled() &&
-      !IsDoubleKeyNetworkAnonymizationKeyEnabled() &&
-      !IsCrossSiteFlagEnabled()) {
-    // Top site should be populated correctly.
-    EXPECT_EQ(nak_from_cross_site_nik.GetTopFrameSite(), site_a);
-    EXPECT_EQ(nak_from_same_site_nik.GetTopFrameSite(), site_a);
-
-    // Nonce should be populated correctly.
-    EXPECT_EQ(nak_from_same_site_nik.GetNonce(), nik_nonce);
-    EXPECT_EQ(nak_from_cross_site_nik.GetNonce(), nik_nonce);
-
-    // Frame site getter should be populated correctly.
-    EXPECT_EQ(nak_from_cross_site_nik.GetFrameSite(), site_b);
-    EXPECT_EQ(nak_from_same_site_nik.GetFrameSite(), site_a);
-
-    // Triple-keyed NAKs created from different third party cross site contexts
-    // should be different.
-    EXPECT_FALSE(nak_from_same_site_nik == nak_from_cross_site_nik);
-  }
-
   // Triple-keyed NetworkIsolationKey + double-keyed NetworkAnonymizationKey
   // case.
-  if (!IsDoubleKeyNetworkIsolationKeyEnabled() &&
-      IsDoubleKeyNetworkAnonymizationKeyEnabled() &&
-      !IsCrossSiteFlagEnabled()) {
+  if (!IsDoubleKeyNetworkIsolationKeyEnabled() && !IsCrossSiteFlagEnabled()) {
     // Top site should be populated correctly.
     EXPECT_EQ(nak_from_cross_site_nik.GetTopFrameSite(), site_a);
     EXPECT_EQ(nak_from_same_site_nik.GetTopFrameSite(), site_a);
@@ -216,11 +154,6 @@ TEST_P(NetworkAnonymizationKeyTest, CreateFromNetworkIsolationKey) {
     // Nonce should be populated correctly.
     EXPECT_EQ(nak_from_same_site_nik.GetNonce(), nik_nonce);
     EXPECT_EQ(nak_from_cross_site_nik.GetNonce(), nik_nonce);
-
-    // Frame site getter should not be accessible when the double keying is
-    // enabled.
-    EXPECT_DEATH_IF_SUPPORTED(nak_from_cross_site_nik.GetFrameSite(), "");
-    EXPECT_DEATH_IF_SUPPORTED(nak_from_same_site_nik.GetFrameSite(), "");
 
     // Double-keyed NAKs created from different third party cross site contexts
     // should be the same.
@@ -229,9 +162,7 @@ TEST_P(NetworkAnonymizationKeyTest, CreateFromNetworkIsolationKey) {
 
   // Triple-keyed NetworkIsolationKey + double-keyed + cross site bit
   // NetworkAnonymizationKey case.
-  if (!IsDoubleKeyNetworkIsolationKeyEnabled() &&
-      !IsDoubleKeyNetworkAnonymizationKeyEnabled() &&
-      IsCrossSiteFlagEnabled()) {
+  if (!IsDoubleKeyNetworkIsolationKeyEnabled() && IsCrossSiteFlagEnabled()) {
     // Top site should be populated correctly.
     EXPECT_EQ(nak_from_cross_site_nik.GetTopFrameSite(), site_a);
     EXPECT_EQ(nak_from_same_site_nik.GetTopFrameSite(), site_a);
@@ -239,11 +170,6 @@ TEST_P(NetworkAnonymizationKeyTest, CreateFromNetworkIsolationKey) {
     // Nonce should be populated correctly.
     EXPECT_EQ(nak_from_same_site_nik.GetNonce(), nik_nonce);
     EXPECT_EQ(nak_from_cross_site_nik.GetNonce(), nik_nonce);
-
-    // Frame site getter should not be accessible when the double keying is
-    // enabled.
-    EXPECT_DEATH_IF_SUPPORTED(nak_from_cross_site_nik.GetFrameSite(), "");
-    EXPECT_DEATH_IF_SUPPORTED(nak_from_same_site_nik.GetFrameSite(), "");
 
     // Is cross site boolean should be populated correctly.
     EXPECT_EQ(nak_from_same_site_nik.GetIsCrossSite(), false);
@@ -304,16 +230,12 @@ TEST_P(NetworkAnonymizationKeyTest, IsTransient) {
   EXPECT_TRUE(populated_key_with_nonce.IsTransient());
   EXPECT_TRUE(from_create_transient.IsTransient());
 
-  if (IsDoubleKeyNetworkAnonymizationKeyEnabled() || IsCrossSiteFlagEnabled()) {
-    NetworkAnonymizationKey populated_double_key(/*top_frame_site=*/kTestSiteA,
-                                                 /*frame_site=*/absl::nullopt,
-                                                 /*is_cross_site=*/false,
-                                                 /*nonce=*/absl::nullopt);
-    EXPECT_FALSE(data_frame_key.IsTransient());
-    EXPECT_FALSE(populated_double_key.IsTransient());
-  } else {
-    EXPECT_TRUE(data_frame_key.IsTransient());
-  }
+  NetworkAnonymizationKey populated_double_key(/*top_frame_site=*/kTestSiteA,
+                                               /*frame_site=*/absl::nullopt,
+                                               /*is_cross_site=*/false,
+                                               /*nonce=*/absl::nullopt);
+  EXPECT_FALSE(data_frame_key.IsTransient());
+  EXPECT_FALSE(populated_double_key.IsTransient());
 }
 
 TEST_P(NetworkAnonymizationKeyTest, IsFullyPopulated) {
@@ -329,13 +251,11 @@ TEST_P(NetworkAnonymizationKeyTest, IsFullyPopulated) {
       /*nonce=*/absl::nullopt);
   EXPECT_TRUE(populated_key.IsFullyPopulated());
   EXPECT_FALSE(empty_key.IsFullyPopulated());
-  if (IsDoubleKeyNetworkAnonymizationKeyEnabled() || IsCrossSiteFlagEnabled()) {
-    NetworkAnonymizationKey empty_frame_site_key(/*top_frame_site=*/kTestSiteA,
-                                                 /*frame_site=*/absl::nullopt,
-                                                 /*is_cross_site=*/false,
-                                                 /*nonce=*/absl::nullopt);
-    EXPECT_TRUE(empty_frame_site_key.IsFullyPopulated());
-  }
+  NetworkAnonymizationKey empty_frame_site_key(/*top_frame_site=*/kTestSiteA,
+                                               /*frame_site=*/absl::nullopt,
+                                               /*is_cross_site=*/false,
+                                               /*nonce=*/absl::nullopt);
+  EXPECT_TRUE(empty_frame_site_key.IsFullyPopulated());
 
   // is_cross_site is required when
   // `kEnableCrossSiteFlagNetworkAnonymizationKey` is enabled.
@@ -381,16 +301,6 @@ TEST_P(NetworkAnonymizationKeyTest, Getters) {
   EXPECT_EQ(key.GetTopFrameSite(), kTestSiteA);
   EXPECT_EQ(key.GetNonce(), kNonce);
 
-  // frame_site should be empty if any double key scheme is enabled. This
-  // includes when `kEnableCrossSiteFlagNetworkAnonymizationKey` or
-  // `kEnableDoubleKeyNetworkAnonymizationKey` are enabled.
-  if (IsDoubleKeyNetworkAnonymizationKeyEnabled() || IsCrossSiteFlagEnabled()) {
-    EXPECT_DEATH_IF_SUPPORTED(key.GetFrameSite(), "");
-    EXPECT_EQ(key.GetFrameSiteForTesting(), absl::nullopt);
-  } else {
-    EXPECT_EQ(key.GetFrameSite(), kTestSiteB);
-  }
-
   // is_cross_site should only be true when
   // `kEnableCrossSiteFlagNetworkAnonymizationKey` is enabled.
   if (IsCrossSiteFlagEnabled()) {
@@ -404,37 +314,24 @@ TEST_P(NetworkAnonymizationKeyTest, ToDebugString) {
                               /*is_cross_site=*/true, kNonce);
   NetworkAnonymizationKey empty_key;
 
-  if (IsDoubleKeyNetworkAnonymizationKeyEnabled() &&
-      !IsCrossSiteFlagEnabled()) {
+  if (!IsCrossSiteFlagEnabled()) {
     // When double key scheme is enabled, the `is_cross_site` flag is always
     // forced to false.
-    std::string double_key_expected_string_value = kTestSiteA.GetDebugString() +
-                                                   " null" + " (with nonce " +
-                                                   kNonce.ToString() + ")";
+    std::string double_key_expected_string_value =
+        kTestSiteA.GetDebugString() + " (with nonce " + kNonce.ToString() + ")";
     EXPECT_EQ(key.ToDebugString(), double_key_expected_string_value);
-    EXPECT_EQ(empty_key.ToDebugString(), "null null");
-  } else if (IsCrossSiteFlagEnabled()) {
+    EXPECT_EQ(empty_key.ToDebugString(), "null");
+  } else {
     // When double key + cross site flag scheme is enabled frame site is null,
     // but `is_cross_site` holds the value the key is created with.
     std::string double_key_with_cross_site_flag_expected_string_value =
-        kTestSiteA.GetDebugString() + " null" + " cross_site (with nonce " +
+        kTestSiteA.GetDebugString() + " cross_site (with nonce " +
         kNonce.ToString() + ")";
     EXPECT_EQ(key.ToDebugString(),
               double_key_with_cross_site_flag_expected_string_value);
     // is_cross_site_ will be stored as nullopt when it's not populated even if
     // IsCrossSiteFlagEnabled is enabled.
-    EXPECT_EQ(empty_key.ToDebugString(),
-              "null null with empty is_cross_site value");
-  } else {
-    // When neither `kEnableDoubleKeyNetworkAnonymizationKey` or
-    // `kEnableCrossSiteFlagNetworkAnonymizationKey` is enabled,
-    // the NAK is a triple key and the `is_cross_site` flag is always forced
-    // to false.
-    std::string key_expected_string_value =
-        kTestSiteA.GetDebugString() + " " + kTestSiteB.GetDebugString() +
-        " (with nonce " + kNonce.ToString() + ")";
-    EXPECT_EQ(key.ToDebugString(), key_expected_string_value);
-    EXPECT_EQ(empty_key.ToDebugString(), "null null");
+    EXPECT_EQ(empty_key.ToDebugString(), "null with empty is_cross_site value");
   }
 }
 
@@ -485,13 +382,8 @@ TEST_P(NetworkAnonymizationKeyTest, Equality) {
       /*top_frame_site=*/kTestSiteA, /*frame_site=*/kTestSiteA,
       /*is_cross_site=*/false, kNonce);
 
-  if (IsDoubleKeyNetworkAnonymizationKeyEnabled() || IsCrossSiteFlagEnabled()) {
-    EXPECT_TRUE(key == key_different_frame_site);
-    EXPECT_FALSE(key != key_different_frame_site);
-  } else {
-    EXPECT_FALSE(key == key_different_frame_site);
-    EXPECT_TRUE(key != key_different_frame_site);
-  }
+  EXPECT_TRUE(key == key_different_frame_site);
+  EXPECT_FALSE(key != key_different_frame_site);
   EXPECT_FALSE(key < key_different_frame_site);
 
   NetworkAnonymizationKey key_different_top_level_site(
@@ -540,39 +432,6 @@ TEST_P(NetworkAnonymizationKeyTest, ValueRoundTripSameSite) {
   EXPECT_EQ(original_key, from_value_key);
 }
 
-TEST_P(NetworkAnonymizationKeyTest, ValueRoundTripOpaqueFrameSite) {
-  const SchemefulSite kOpaqueSite = SchemefulSite(GURL("data:text/html,junk"));
-  NetworkAnonymizationKey original_key(/*top_frame_site=*/kTestSiteA,
-                                       /*frame_site=*/kOpaqueSite,
-                                       /*is_cross_site=*/false);
-  base::Value value;
-  if (!NetworkAnonymizationKey::IsFrameSiteEnabled()) {
-    ASSERT_TRUE(original_key.ToValue(&value));
-    NetworkAnonymizationKey from_value_key = NetworkAnonymizationKey();
-    EXPECT_TRUE(NetworkAnonymizationKey::FromValue(value, &from_value_key));
-    EXPECT_EQ(original_key, from_value_key);
-  } else {
-    // If we expect a valid frame site we should fail to serialize the garbage
-    // value.
-    ASSERT_FALSE(original_key.ToValue(&value));
-  }
-}
-
-TEST_P(NetworkAnonymizationKeyTest, DeserializeValueWIthGarbageFrameSite) {
-  const SchemefulSite kOpaqueSite = SchemefulSite(GURL("data:text/html,junk"));
-  base::Value::List invalid_value;
-  invalid_value.Append("http://a.test/");
-  invalid_value.Append("data:text/html,junk");
-
-  // If we expect a valid frame site we should fail to deserialize the garbage
-  // value.
-  if (NetworkAnonymizationKey::IsFrameSiteEnabled()) {
-    NetworkAnonymizationKey from_value_key = NetworkAnonymizationKey();
-    EXPECT_FALSE(NetworkAnonymizationKey::FromValue(
-        base::Value(std::move(invalid_value)), &from_value_key));
-  }
-}
-
 TEST_P(NetworkAnonymizationKeyTest, TransientValueRoundTrip) {
   const SchemefulSite kOpaqueSite = SchemefulSite(GURL("data:text/html,junk"));
   NetworkAnonymizationKey original_key =
@@ -601,38 +460,26 @@ TEST(NetworkAnonymizationKeyFeatureShiftTest,
   const SchemefulSite kTestSiteB = SchemefulSite(GURL("http://b.test/"));
   NetworkAnonymizationKey expected_failure_nak = NetworkAnonymizationKey();
 
-  // Turn double keying off.
-  scoped_feature_list_.InitAndDisableFeature(
-      net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
-
-  // Create a triple key.
-  NetworkAnonymizationKey original_triple_key(/*top_frame_site=*/kTestSiteA,
-                                              /*frame_site=*/kTestSiteB);
-
-  // Serialize key to value while triple keying is enabled.
-  base::Value triple_key_value;
-  ASSERT_TRUE(original_triple_key.ToValue(&triple_key_value));
-
-  // Convert it back to a triple keyed NetworkAnonymizationKey.
-  NetworkAnonymizationKey from_value_triple_key = NetworkAnonymizationKey();
-  EXPECT_TRUE(NetworkAnonymizationKey::FromValue(triple_key_value,
-                                                 &from_value_triple_key));
-  EXPECT_EQ(original_triple_key, from_value_triple_key);
-
-  // Turn double keying on.
+  // Turn double keying on (or disable 2.5-keying)
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndEnableFeature(
-      net::features::kEnableDoubleKeyNetworkAnonymizationKey);
-
-  // Check that deserializing the triple keyed value fails.
-  EXPECT_FALSE(NetworkAnonymizationKey::FromValue(triple_key_value,
-                                                  &expected_failure_nak));
+  scoped_feature_list_.InitAndDisableFeature(
+      net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
 
   // Create a double keyed NetworkAnonymizationKey.
   NetworkAnonymizationKey original_double_key(/*top_frame_site=*/kTestSiteA);
   // Serialize key to value while double keying is enabled.
   base::Value double_key_value;
   ASSERT_TRUE(original_double_key.ToValue(&double_key_value));
+
+  // Check that deserializing a triple keyed value fails.  Such values
+  // cannot be constructed, but may still exist on-disk.
+  base::Value serialized_site = double_key_value.GetList()[0].Clone();
+  base::Value::List triple_key_list;
+  triple_key_list.Append(serialized_site.Clone());
+  triple_key_list.Append(std::move(serialized_site));
+  base::Value triple_key_value = base::Value(std::move(triple_key_list));
+  EXPECT_FALSE(NetworkAnonymizationKey::FromValue(triple_key_value,
+                                                  &expected_failure_nak));
 
   // Convert it back to a double keyed NetworkAnonymizationKey.
   NetworkAnonymizationKey from_value_double_key = NetworkAnonymizationKey();
@@ -669,23 +516,10 @@ TEST(NetworkAnonymizationKeyFeatureShiftTest,
       cross_site_double_key_value, &from_value_cross_site_double_key));
   EXPECT_EQ(original_cross_site_double_key, from_value_cross_site_double_key);
 
-  // Turn double keying on.
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndEnableFeature(
-      net::features::kEnableDoubleKeyNetworkAnonymizationKey);
-
-  // Check that deserializing the cross site double keyed value fails.
-  EXPECT_FALSE(NetworkAnonymizationKey::FromValue(cross_site_double_key_value,
-                                                  &expected_failure_nak));
-
-  // Turn triple keying back on.
+  // Turn double keying on (or disable 2.5-keying)
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndDisableFeature(
-      net::features::kEnableDoubleKeyNetworkAnonymizationKey);
-
-  // Check that deserializing the double keyed value fails.
-  EXPECT_FALSE(NetworkAnonymizationKey::FromValue(double_key_value,
-                                                  &expected_failure_nak));
+      net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
 
   // Check that deserializing the cross site double keyed value fails.
   EXPECT_FALSE(NetworkAnonymizationKey::FromValue(cross_site_double_key_value,

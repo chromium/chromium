@@ -8619,7 +8619,6 @@
                         "SplitHostCacheByNetworkIsolationKey"
                     ],
                     "disable_features": [
-                        "EnableDoubleKeyNetworkAnonymizationKey",
                         "ForceIsolationInfoFrameOriginToTopLevelFrame"
                     ]
                 }

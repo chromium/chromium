@@ -30,35 +30,26 @@ namespace net {
 // flag that enables this scheme will be enabled for testing. When the bool
 // parameter is `false` the flag that enables the scheme will be disabled.
 struct IsolationInfoEnabledFeatureFlagsTestingParam {
-  const bool enableDoubleKeyNetworkAnonymizationKey;
   const bool enableDoubleKeyIsolationInfo;
   const bool enableDoubleKeyAndCrossSiteBitNetworkAnonymizationKey;
 };
 
 // The three cases we need to account for:
-//    0. Triple-keying is enabled for both IsolationInfo and
+//    0. Double-keying is enabled for both IsolationInfo and
 //    NetworkAnonymizationKey.
-//    1. Double-keying is enabled for both IsolationInfo and
-//    NetworkAnonymizationKey.
-//    2. Triple-keying is enabled for IsolationInfo and double-keying is enabled
+//    1. Triple-keying is enabled for IsolationInfo and double-keying is enabled
 //    for NetworkAnonymizationKey.
-//    3. Triple-keying is enabled for IsolationInfo and double-keying +
+//    2. Triple-keying is enabled for IsolationInfo and double-keying +
 //    cross-site-bit is enabled for NetworkAnonymizationKey.
 // Note: At the current time double-keyed IsolationInfo is only supported when
 // double-keying or double-keying + is cross site bit are enabled for
 // NetworkAnonymizationKey.
 const IsolationInfoEnabledFeatureFlagsTestingParam kFlagsParam[] = {
-    {/*enableDoubleKeyNetworkAnonymizationKey=*/false,
-     /*enableDoubleKeyIsolationInfo=*/false,
+    {/*enableDoubleKeyIsolationInfo=*/true,
      /*enableDoubleKeyAndCrossSiteBitNetworkAnonymizationKey=*/false},
-    {/*enableDoubleKeyNetworkAnonymizationKey=*/true,
-     /*enableDoubleKeyIsolationInfo=*/true,
+    {/*enableDoubleKeyIsolationInfo=*/false,
      /*enableDoubleKeyAndCrossSiteBitNetworkAnonymizationKey=*/false},
-    {/*enableDoubleKeyNetworkAnonymizationKey=*/true,
-     /*enableDoubleKeyIsolationInfo=*/false,
-     /*enableDoubleKeyAndCrossSiteBitNetworkAnonymizationKey=*/false},
-    {/*enableDoubleKeyNetworkAnonymizationKey=*/false,
-     /*enableDoubleKeyIsolationInfo=*/false,
+    {/*enableDoubleKeyIsolationInfo=*/false,
      /*enableDoubleKeyAndCrossSiteBitNetworkAnonymizationKey=*/true}};
 
 namespace {
@@ -79,14 +70,6 @@ class IsolationInfoTest : public testing::Test,
           net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
     }
 
-    if (IsDoubleKeyNetworkAnonymizationKeyEnabled()) {
-      enabled_features.push_back(
-          net::features::kEnableDoubleKeyNetworkAnonymizationKey);
-    } else {
-      disabled_features.push_back(
-          net::features::kEnableDoubleKeyNetworkAnonymizationKey);
-    }
-
     if (IsDoubleKeyAndCrossSiteBitNetworkAnonymizationKeyEnabled()) {
       enabled_features.push_back(
           net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
@@ -100,10 +83,6 @@ class IsolationInfoTest : public testing::Test,
 
   static bool IsDoubleKeyIsolationInfoEnabled() {
     return GetParam().enableDoubleKeyIsolationInfo;
-  }
-
-  static bool IsDoubleKeyNetworkAnonymizationKeyEnabled() {
-    return GetParam().enableDoubleKeyNetworkAnonymizationKey;
   }
 
   static bool IsDoubleKeyAndCrossSiteBitNetworkAnonymizationKeyEnabled() {
@@ -190,52 +169,20 @@ TEST_P(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfo) {
             kNonce1);
   EXPECT_EQ(isolation_info.nonce().value(), kNonce1);
 
-  if (IsDoubleKeyNetworkAnonymizationKeyEnabled() &&
-      !IsDoubleKeyAndCrossSiteBitNetworkAnonymizationKeyEnabled() &&
+  if (!IsDoubleKeyAndCrossSiteBitNetworkAnonymizationKeyEnabled() &&
       IsDoubleKeyIsolationInfoEnabled()) {
     // Double-keyed IsolationInfo + double-keyed NetworkAnonymizationKey case.
-    EXPECT_DEATH_IF_SUPPORTED(nak.GetFrameSite(), "");
-    EXPECT_EQ(absl::nullopt, nak.GetFrameSiteForTesting());
     EXPECT_EQ(kOrigin1, isolation_info.top_frame_origin());
     EXPECT_DEATH_IF_SUPPORTED(isolation_info.frame_origin(), "");
     EXPECT_EQ(absl::nullopt, isolation_info.frame_origin_for_testing());
-    EXPECT_DEATH_IF_SUPPORTED(
-        isolation_info.network_anonymization_key().GetFrameSite(), "");
-    EXPECT_EQ(
-        absl::nullopt,
-        isolation_info.network_anonymization_key().GetFrameSiteForTesting());
   } else if (!IsDoubleKeyIsolationInfoEnabled() &&
-             !IsDoubleKeyAndCrossSiteBitNetworkAnonymizationKeyEnabled() &&
-             IsDoubleKeyNetworkAnonymizationKeyEnabled()) {
+             !IsDoubleKeyAndCrossSiteBitNetworkAnonymizationKeyEnabled()) {
     // Triple-keyed IsolationInfo + double-keyed NetworkAnonymizationKey case.
-    EXPECT_DEATH_IF_SUPPORTED(nak.GetFrameSite(), "");
-    EXPECT_EQ(absl::nullopt, nak.GetFrameSiteForTesting());
-    EXPECT_DEATH_IF_SUPPORTED(
-        isolation_info.network_anonymization_key().GetFrameSite(), "");
-    EXPECT_EQ(
-        absl::nullopt,
-        isolation_info.network_anonymization_key().GetFrameSiteForTesting());
     EXPECT_EQ(isolation_info.frame_origin(), kOrigin2);
   } else if (!IsDoubleKeyIsolationInfoEnabled() &&
-             !IsDoubleKeyAndCrossSiteBitNetworkAnonymizationKeyEnabled() &&
-             !IsDoubleKeyNetworkAnonymizationKeyEnabled()) {
-    // Triple-keyed IsolationInfo + triple-keyed NetworkAnonymizationKey case.
-    EXPECT_EQ(nak.GetFrameSite(), net::SchemefulSite(kOrigin2));
-    EXPECT_EQ(isolation_info.network_anonymization_key().GetFrameSite(),
-              net::SchemefulSite(kOrigin2));
-    EXPECT_EQ(isolation_info.frame_origin(), kOrigin2);
-  } else if (!IsDoubleKeyIsolationInfoEnabled() &&
-             IsDoubleKeyAndCrossSiteBitNetworkAnonymizationKeyEnabled() &&
-             !IsDoubleKeyNetworkAnonymizationKeyEnabled()) {
+             IsDoubleKeyAndCrossSiteBitNetworkAnonymizationKeyEnabled()) {
     // Triple-keyed IsolationInfo + double-keyed + cross site bit
     // NetworkAnonymizationKey case.
-    EXPECT_DEATH_IF_SUPPORTED(nak.GetFrameSite(), "");
-    EXPECT_EQ(absl::nullopt, nak.GetFrameSiteForTesting());
-    EXPECT_DEATH_IF_SUPPORTED(
-        isolation_info.network_anonymization_key().GetFrameSite(), "");
-    EXPECT_EQ(
-        absl::nullopt,
-        isolation_info.network_anonymization_key().GetFrameSiteForTesting());
     EXPECT_EQ(isolation_info.frame_origin(), kOrigin2);
     EXPECT_EQ(isolation_info.network_anonymization_key().GetIsCrossSite(),
               true);
@@ -707,8 +654,6 @@ TEST_P(IsolationInfoTest, CreatePartialTransient) {
             isolation_info.network_anonymization_key().GetTopFrameSite());
 
   if (IsDoubleKeyIsolationInfoEnabled()) {
-    EXPECT_DEATH_IF_SUPPORTED(kNIK.GetFrameSite(), "");
-    EXPECT_EQ(kNIK.GetFrameSiteForTesting(), absl::nullopt);
     EXPECT_DEATH_IF_SUPPORTED(isolation_info.frame_origin(), "");
     EXPECT_EQ(isolation_info.frame_origin_for_testing(), absl::nullopt);
   } else {

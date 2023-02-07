@@ -1306,8 +1306,9 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
     EXPECT_EQ(2u, connection_tracker()->GetAcceptedSocketCount());
     EXPECT_EQ(2u, connection_tracker()->GetReadSocketCount());
   } else {
-    // Otherwise, the preconnected socket cannot be used.
-    EXPECT_EQ(3u, connection_tracker()->GetAcceptedSocketCount());
+    // Otherwise, the preconnected socket is used, so counts remain unchanged
+    // since the last check.
+    EXPECT_EQ(2u, connection_tracker()->GetAcceptedSocketCount());
     EXPECT_EQ(2u, connection_tracker()->GetReadSocketCount());
   }
 

@@ -1151,7 +1151,7 @@ TEST_P(NetworkErrorLoggingServiceTest, StatusAsValue) {
       {
         "originPolicies": [
           {
-            "NetworkAnonymizationKey": "https://example.com https://example.com",
+            "NetworkAnonymizationKey": "https://example.com",
             "origin": "https://example.com",
             "includeSubdomains": false,
             "expires": "86400000",
@@ -1160,7 +1160,7 @@ TEST_P(NetworkErrorLoggingServiceTest, StatusAsValue) {
             "failureFraction": 1.0,
           },
           {
-            "NetworkAnonymizationKey": "https://example.com https://example.com",
+            "NetworkAnonymizationKey": "https://example.com",
             "origin": "https://invalid-types.example.com",
             "includeSubdomains": false,
             "expires": "86400000",
@@ -1169,7 +1169,7 @@ TEST_P(NetworkErrorLoggingServiceTest, StatusAsValue) {
             "failureFraction": 1.0,
           },
           {
-            "NetworkAnonymizationKey": "https://example.com https://example.com",
+            "NetworkAnonymizationKey": "https://example.com",
             "origin": "https://somewhere-else.com",
             "includeSubdomains": false,
             "expires": "86400000",
@@ -1178,7 +1178,7 @@ TEST_P(NetworkErrorLoggingServiceTest, StatusAsValue) {
             "failureFraction": 1.0,
           },
           {
-            "NetworkAnonymizationKey": "https://somewhere-else.com https://somewhere-else.com",
+            "NetworkAnonymizationKey": "https://somewhere-else.com",
             "origin": "https://subdomain.example.com",
             "includeSubdomains": true,
             "expires": "86400000",

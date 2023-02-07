@@ -31,9 +31,6 @@ namespace net {
 // In order to separate first and third party context from each other this field
 // will always be populated.
 
-// `frame_site` represents the SchemefulSite of the requestor frame. This will
-// be empty when kEnableDoubleKeyNetworkAnonymizationKey is enabled.
-
 //`is_cross_site` is an expiremental boolean that will be used with the
 //`top_frame_site` to create a partition key that separates the
 //`top_frame_site`s first party partition from any cross-site iframes. This will
@@ -84,9 +81,8 @@ class NET_EXPORT NetworkAnonymizationKey {
 
   // Compare keys for equality, true if all enabled fields are equal.
   bool operator==(const NetworkAnonymizationKey& other) const {
-    return std::tie(top_frame_site_, frame_site_, is_cross_site_, nonce_) ==
-           std::tie(other.top_frame_site_, other.frame_site_,
-                    other.is_cross_site_, other.nonce_);
+    return std::tie(top_frame_site_, is_cross_site_, nonce_) ==
+           std::tie(other.top_frame_site_, other.is_cross_site_, other.nonce_);
   }
 
   // Compare keys for inequality, true if any enabled field varies.
@@ -96,9 +92,8 @@ class NET_EXPORT NetworkAnonymizationKey {
 
   // Provide an ordering for keys based on all enabled fields.
   bool operator<(const NetworkAnonymizationKey& other) const {
-    return std::tie(top_frame_site_, frame_site_, is_cross_site_, nonce_) <
-           std::tie(other.top_frame_site_, other.frame_site_,
-                    other.is_cross_site_, other.nonce_);
+    return std::tie(top_frame_site_, is_cross_site_, nonce_) <
+           std::tie(other.top_frame_site_, other.is_cross_site_, other.nonce_);
   }
 
   // Creates a NetworkAnonymizationKey from a NetworkIsolationKey. This is
@@ -132,30 +127,18 @@ class NET_EXPORT NetworkAnonymizationKey {
   // Returns true if all parts of the key are empty.
   bool IsEmpty() const;
 
-  // Returns true if `top_frame_site_` and `frame_site_` of the key are
-  // non-empty.
+  // Returns true if `top_frame_site_` is non-empty.
   bool IsFullyPopulated() const;
 
   // Returns true if this key's lifetime is short-lived. It may not make sense
   // to persist state to disk related to it (e.g., disk cache).
-  // A NetworkAnonymizationKey will be considered transient if either
-  // `top_frame_site_` or `frame_site_` are empty or opaque or if the key has a
-  // `nonce_`.
+  // A NetworkAnonymizationKey will be considered transient if
+  // `top_frame_site_` is empty or opaque or if the key has a `nonce_`.
   bool IsTransient() const;
 
   // Getters for the top frame, frame site, nonce and is cross site flag.
   const absl::optional<SchemefulSite>& GetTopFrameSite() const {
     return top_frame_site_;
-  }
-
-  const absl::optional<SchemefulSite>& GetFrameSite() const;
-
-  // Do not use outside of testing. Returns the `frame_site_` if neither
-  // `kEnableCrossSiteFlagNetworkAnonymizationKey` or
-  // `kEnableDoubleKeyNetworkAnonymizationKey` are enabled. Else it
-  // returns nullopt.
-  const absl::optional<SchemefulSite>& GetFrameSiteForTesting() const {
-    return frame_site_;
   }
 
   absl::optional<bool> GetIsCrossSite() const;
@@ -208,9 +191,6 @@ class NET_EXPORT NetworkAnonymizationKey {
   // The origin/etld+1 of the top frame of the page making the request. This
   // will always be populated unless all other fields are also nullopt.
   absl::optional<SchemefulSite> top_frame_site_;
-
-  // The origin/etld+1 of the frame that initiates the request.
-  absl::optional<SchemefulSite> frame_site_;
 
   // True if the frame site is cross site when compared to the top frame site.
   absl::optional<bool> is_cross_site_;

@@ -2452,7 +2452,7 @@ TEST_F(AlternateProtocolServerPropertiesTest,
       "{"
       "\"alternative_service\":"
       "[\"h2 foo2:443, expires 2018-01-25 15:12:53\"],"
-      "\"network_anonymization_key\":\"null null\","
+      "\"network_anonymization_key\":\"null\","
       "\"server\":\"http://test.com\""
       "},"
       "{"
@@ -2462,7 +2462,7 @@ TEST_F(AlternateProtocolServerPropertiesTest,
       " (broken until 2018-01-24 15:17:53)\","
       "\"quic baz:443, expires 2018-01-24 16:12:53"
       " (broken until 2018-01-24 15:17:53)\"],"
-      "\"network_anonymization_key\":\"null null\","
+      "\"network_anonymization_key\":\"null\","
       "\"server\":\"https://youtube.com\""
       "}"
       "]";

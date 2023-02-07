@@ -215,22 +215,15 @@ IsolationInfo IsolationInfo::DoNotUseCreatePartialFromNak(
       network_anonymization_key.GetTopFrameSite()->site_as_origin_;
 
   absl::optional<url::Origin> frame_origin;
-  if (NetworkAnonymizationKey::IsFrameSiteEnabled() &&
-      network_anonymization_key.GetFrameSite().has_value()) {
-    // If frame site is set on the network anonymization key, use it to set the
-    // frame origin on the isolation info.
-    frame_origin = network_anonymization_key.GetFrameSite()->site_as_origin_;
-  } else if (NetworkAnonymizationKey::IsCrossSiteFlagSchemeEnabled() &&
-             network_anonymization_key.GetIsCrossSite().value()) {
-    // If frame site is not set on the network anonymization key but we know
-    // that it is cross site to the top level site, create an empty origin to
-    // use as the frame origin for the isolation info. This should be cross site
-    // with the top level origin.
+  if (NetworkAnonymizationKey::IsCrossSiteFlagSchemeEnabled() &&
+      network_anonymization_key.GetIsCrossSite().value()) {
+    // If we know that the origin is cross site to the top level site, create an
+    // empty origin to use as the frame origin for the isolation info. This
+    // should be cross site with the top level origin.
     frame_origin = url::Origin();
   } else {
-    // If frame sit is not set on the network anonymization key and we don't
-    // know that it's cross site to the top level site, use the top frame site
-    // to set the frame origin.
+    // If we don't know that it's cross site to the top level site, use the top
+    // frame site to set the frame origin.
     frame_origin = top_frame_origin;
   }
 
@@ -352,18 +345,6 @@ IsolationInfo::CreateNetworkAnonymizationKeyForIsolationInfo(
     return NetworkAnonymizationKey();
   }
 
-  // When IsolationInfo::IsFrameSiteEnabled and
-  // NetworkAnonymizationKey::IsFrameSiteEnabled set the `nak_frame_site` to the
-  // passed value. When NetworkAnonymizationKey::IsFrameSiteEnabled is false set
-  // the `nak_frame_site` to nullopt. When IsolationInfo::IsFrameSiteEnabled is
-  // false but NetworkAnonymizationKey::IsFrameSiteEnabled is true we might have
-  // the frame_site passed correctly to the constructor OR we might have created
-  // a double key in which case we cannot determine the `nak_frame_site`.
-  absl::optional<SchemefulSite> nak_frame_site =
-      NetworkAnonymizationKey::IsFrameSiteEnabled() && frame_origin.has_value()
-          ? absl::make_optional((SchemefulSite(*frame_origin)))
-          : absl::nullopt;
-
   bool nak_is_cross_site;
   if (frame_origin) {
     SiteForCookies site_for_cookies =
@@ -376,7 +357,7 @@ IsolationInfo::CreateNetworkAnonymizationKeyForIsolationInfo(
   }
 
   return NetworkAnonymizationKey(
-      SchemefulSite(*top_frame_origin), nak_frame_site,
+      SchemefulSite(*top_frame_origin), absl::nullopt,
       absl::make_optional(nak_is_cross_site),
       nonce ? absl::make_optional(*nonce) : absl::nullopt);
 }

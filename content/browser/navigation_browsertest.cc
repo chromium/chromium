@@ -355,9 +355,7 @@ class NetworkDoubleKeyIsolationNavigationBrowserTest
  public:
   NetworkDoubleKeyIsolationNavigationBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {net::features::kForceIsolationInfoFrameOriginToTopLevelFrame,
-         net::features::kEnableDoubleKeyNetworkAnonymizationKey},
-        {});
+        {net::features::kForceIsolationInfoFrameOriginToTopLevelFrame}, {});
   }
 
  protected:
@@ -4526,8 +4524,7 @@ class NetworkIsolationSplitCacheAppendIframeOrigin
   NetworkIsolationSplitCacheAppendIframeOrigin() {
     feature_list_.InitWithFeatures(
         {net::features::kSplitCacheByNetworkIsolationKey},
-        {net::features::kForceIsolationInfoFrameOriginToTopLevelFrame,
-         net::features::kEnableDoubleKeyNetworkAnonymizationKey});
+        {net::features::kForceIsolationInfoFrameOriginToTopLevelFrame});
   }
 
  private:

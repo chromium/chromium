@@ -483,8 +483,7 @@ class NoStatePrefetchBrowserTestHttpCache
     if (split_cache_by_network_isolation_key) {
       feature_list_.InitWithFeatures(
           {net::features::kSplitCacheByNetworkIsolationKey},
-          {net::features::kForceIsolationInfoFrameOriginToTopLevelFrame,
-           net::features::kEnableDoubleKeyNetworkAnonymizationKey});
+          {net::features::kForceIsolationInfoFrameOriginToTopLevelFrame});
     } else {
       feature_list_.InitAndDisableFeature(
           net::features::kSplitCacheByNetworkIsolationKey);

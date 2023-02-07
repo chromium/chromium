@@ -10,7 +10,6 @@ import "services/network/public/mojom/schemeful_site.mojom";
 // Mapped to net::NetworkAnonymizationKey.
 struct NetworkAnonymizationKey {
   SchemefulSite? top_frame_site;
-  SchemefulSite? frame_site;
   // This has no effect unless
   //`NetworkAnonymizationKey::IsCrossSiteFlagSchemeEnabled()`
   // is true.

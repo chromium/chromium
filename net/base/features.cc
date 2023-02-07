@@ -109,10 +109,6 @@ BASE_FEATURE(kPartitionNelAndReportingByNetworkIsolationKey,
              "PartitionNelAndReportingByNetworkIsolationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableDoubleKeyNetworkAnonymizationKey,
-             "EnableDoubleKeyNetworkAnonymizationKey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableCrossSiteFlagNetworkAnonymizationKey,
              "EnableCrossSiteFlagNetworkAnonymizationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);

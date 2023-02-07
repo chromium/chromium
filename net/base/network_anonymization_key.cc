@@ -20,12 +20,10 @@ NetworkAnonymizationKey::NetworkAnonymizationKey(
     const absl::optional<bool> is_cross_site,
     const absl::optional<base::UnguessableToken> nonce)
     : top_frame_site_(top_frame_site),
-      frame_site_(!IsFrameSiteEnabled() ? absl::nullopt : frame_site),
       is_cross_site_(IsCrossSiteFlagSchemeEnabled() ? is_cross_site
                                                     : absl::nullopt),
       nonce_(nonce) {
   DCHECK(top_frame_site_.has_value());
-  DCHECK(!IsFrameSiteEnabled() || frame_site_.has_value());
   // If `is_cross_site` is enabled but the value is not populated, and we have
   // the information to calculate it, do calculate it.
   if (IsCrossSiteFlagSchemeEnabled() && !is_cross_site_.has_value() &&
@@ -43,21 +41,15 @@ NetworkAnonymizationKey::NetworkAnonymizationKey(
 
 NetworkAnonymizationKey NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
     const net::NetworkIsolationKey& network_isolation_key) {
-  // If NIK is a double key, NAK must also be a double key.
+  // If NIK is double-keyed, a 2.5-keyed NAK cannot be constructed from it.
   DCHECK(NetworkIsolationKey::IsFrameSiteEnabled() ||
-         (!NetworkIsolationKey::IsFrameSiteEnabled() &&
-          !NetworkAnonymizationKey::IsFrameSiteEnabled()));
+         IsDoubleKeySchemeEnabled());
 
   // We cannot create a valid NetworkAnonymizationKey from a NetworkIsolationKey
   // that is not fully populated.
   if (!network_isolation_key.IsFullyPopulated()) {
     return NetworkAnonymizationKey();
   }
-
-  absl::optional<SchemefulSite> nak_frame_site =
-      NetworkAnonymizationKey::IsFrameSiteEnabled()
-          ? network_isolation_key.GetFrameSite()
-          : absl::nullopt;
 
   // If we are unable to determine the value of `is_cross_site` from the
   // NetworkIsolationKey, we default the value to `nullopt`. Otherwise we
@@ -73,7 +65,7 @@ NetworkAnonymizationKey NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
   }
 
   return NetworkAnonymizationKey(
-      network_isolation_key.GetTopFrameSite().value(), nak_frame_site,
+      network_isolation_key.GetTopFrameSite().value(), absl::nullopt,
       nak_is_cross_site, network_isolation_key.GetNonce());
 }
 
@@ -101,7 +93,6 @@ NetworkAnonymizationKey NetworkAnonymizationKey::CreateTransient() {
 
 std::string NetworkAnonymizationKey::ToDebugString() const {
   std::string str = GetSiteDebugString(top_frame_site_);
-  str += " " + GetSiteDebugString(frame_site_);
   std::string cross_site_str =
       IsCrossSiteFlagSchemeEnabled()
           ? (!GetIsCrossSite().has_value() ? " with empty is_cross_site value"
@@ -126,7 +117,6 @@ bool NetworkAnonymizationKey::IsEmpty() const {
 
 bool NetworkAnonymizationKey::IsFullyPopulated() const {
   return top_frame_site_.has_value() &&
-         (!IsFrameSiteEnabled() || frame_site_.has_value()) &&
          (!IsCrossSiteFlagSchemeEnabled() || is_cross_site_.has_value());
 }
 
@@ -134,8 +124,7 @@ bool NetworkAnonymizationKey::IsTransient() const {
   if (!IsFullyPopulated())
     return true;
 
-  return top_frame_site_->opaque() ||
-         (IsFrameSiteEnabled() && frame_site_->opaque()) || nonce_.has_value();
+  return top_frame_site_->opaque() || nonce_.has_value();
 }
 
 absl::optional<bool> NetworkAnonymizationKey::GetIsCrossSite() const {
@@ -143,28 +132,9 @@ absl::optional<bool> NetworkAnonymizationKey::GetIsCrossSite() const {
   return is_cross_site_;
 }
 
-const absl::optional<SchemefulSite>& NetworkAnonymizationKey::GetFrameSite()
-    const {
-  // Frame site will be empty if double-keying is enabled.
-  CHECK(NetworkAnonymizationKey::IsFrameSiteEnabled());
-  return frame_site_;
-}
-
-bool NetworkAnonymizationKey::IsFrameSiteEnabled() {
-  return !base::FeatureList::IsEnabled(
-             net::features::kEnableDoubleKeyNetworkAnonymizationKey) &&
-         !base::FeatureList::IsEnabled(
-             net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
-}
-
 bool NetworkAnonymizationKey::IsDoubleKeySchemeEnabled() {
-  // There's no reason both of these will be enabled simultaneously but if
-  // someone manually enables both flags, double key with cross site flag scheme
-  // should take precedence.
-  return base::FeatureList::IsEnabled(
-             net::features::kEnableDoubleKeyNetworkAnonymizationKey) &&
-         !base::FeatureList::IsEnabled(
-             net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
+  return !base::FeatureList::IsEnabled(
+      net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
 }
 
 bool NetworkAnonymizationKey::IsCrossSiteFlagSchemeEnabled() {
@@ -188,18 +158,9 @@ bool NetworkAnonymizationKey::ToValue(base::Value* out_value) const {
   base::Value::List list;
   list.Append(std::move(top_frame_value).value());
 
-  absl::optional<std::string> frame_value =
-      IsFrameSiteEnabled() ? SerializeSiteWithNonce(*frame_site_)
-                           : absl::nullopt;
-
   // Append frame site for tripe key scheme or is_cross_site flag for double key
   // with cross site flag scheme.
-  if (IsFrameSiteEnabled()) {
-    if (!frame_value.has_value()) {
-      return false;
-    }
-    list.Append(std::move(frame_value).value());
-  } else if (IsCrossSiteFlagSchemeEnabled()) {
+  if (IsCrossSiteFlagSchemeEnabled()) {
     const absl::optional<bool> is_cross_site = GetIsCrossSite();
     if (is_cross_site.has_value()) {
       list.Append(is_cross_site.value());
@@ -241,7 +202,7 @@ bool NetworkAnonymizationKey::FromValue(
     if (list.size() != 1) {
       return false;
     }
-  } else if (IsCrossSiteFlagSchemeEnabled()) {
+  } else /* if (IsCrossSiteFlagSchemeEnabled()) */ {
     // If double key + is cross site scheme is enabled `list` must be of
     // length 2. list[0] will be top_frame_site and list[1] will be
     // is_cross_site.
@@ -249,17 +210,6 @@ bool NetworkAnonymizationKey::FromValue(
       return false;
     }
     is_cross_site = list[1].GetBool();
-  } else {
-    // If neither alternative scheme is enabled we expect a valid triple keyed
-    // NetworkAnonymizationKey. `list` must be of length 2. list[0] will be
-    // top_frame_site and list[1] will be frame_site.
-    if (list.size() != 2 || !list[1].is_string()) {
-      return false;
-    }
-    frame_site = SchemefulSite::DeserializeWithNonce(list[1].GetString());
-    if (!frame_site) {
-      return false;
-    }
   }
 
   *network_anonymization_key =
