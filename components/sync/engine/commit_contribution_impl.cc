@@ -281,15 +281,17 @@ void CommitContributionImpl::AdjustCommitProto(
     const sync_pb::PasswordSpecificsData& password_data =
         password_specifics.client_only_encrypted_data();
     sync_pb::EntitySpecifics encrypted_password;
-    if (!IsExplicitPassphrase(passphrase_type_) &&
-        password_specifics.unencrypted_metadata().url() !=
-            password_data.signon_realm()) {
+    if (!IsExplicitPassphrase(passphrase_type_)) {
       encrypted_password.mutable_password()
           ->mutable_unencrypted_metadata()
           ->set_url(password_data.signon_realm());
       encrypted_password.mutable_password()
           ->mutable_unencrypted_metadata()
           ->set_blacklisted(password_data.blacklisted());
+      encrypted_password.mutable_password()
+          ->mutable_unencrypted_metadata()
+          ->set_date_last_used_windows_epoch_micros(
+              password_data.date_last_used());
     }
 
     bool result = cryptographer_->Encrypt(

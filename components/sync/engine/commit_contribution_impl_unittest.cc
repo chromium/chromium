@@ -198,12 +198,14 @@ TEST(CommitContributionImplTest,
   const std::string kMetadataUrl = "http://foo.com";
   const std::string kSignonRealm = "signon_realm";
   const int64_t kBaseVersion = 7;
+  const int kDummyTimestamp = 123;
 
   auto data = std::make_unique<syncer::EntityData>();
   data->client_tag_hash = kTag;
   sync_pb::PasswordSpecificsData* password_data =
       data->specifics.mutable_password()->mutable_client_only_encrypted_data();
   password_data->set_signon_realm(kSignonRealm);
+  password_data->set_date_last_used(kDummyTimestamp);
 
   data->specifics.mutable_password()->mutable_unencrypted_metadata()->set_url(
       kMetadataUrl);
@@ -247,6 +249,10 @@ TEST(CommitContributionImplTest,
       entity.specifics().password().unencrypted_metadata().has_blacklisted());
   EXPECT_FALSE(
       entity.specifics().password().unencrypted_metadata().blacklisted());
+  EXPECT_EQ(kDummyTimestamp, entity.specifics()
+                                 .password()
+                                 .unencrypted_metadata()
+                                 .date_last_used_windows_epoch_micros());
   EXPECT_FALSE(entity.specifics().password().encrypted().blob().empty());
   EXPECT_TRUE(entity.parent_id_string().empty());
   EXPECT_FALSE(entity.unique_position().has_custom_compressed_v1());
