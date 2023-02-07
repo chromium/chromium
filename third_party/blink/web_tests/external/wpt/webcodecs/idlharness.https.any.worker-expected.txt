@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 303 tests; 288 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 311 tests; 301 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 FAIL AudioDecoder interface: existence and properties of interface object assert_equals: prototype of self's property "AudioDecoder" is not Function.prototype expected function "function () { [native code] }" but got function "function EventTarget() { [native code] }"
@@ -21,7 +21,7 @@ PASS AudioDecoder must be primary interface of new AudioDecoder(defaultCodecInit
 PASS Stringification of new AudioDecoder(defaultCodecInit)
 PASS AudioDecoder interface: new AudioDecoder(defaultCodecInit) must inherit property "state" with the proper type
 PASS AudioDecoder interface: new AudioDecoder(defaultCodecInit) must inherit property "decodeQueueSize" with the proper type
-FAIL AudioDecoder interface: new AudioDecoder(defaultCodecInit) must inherit property "ondequeue" with the proper type Right-hand side of 'instanceof' is not an object
+PASS AudioDecoder interface: new AudioDecoder(defaultCodecInit) must inherit property "ondequeue" with the proper type
 PASS AudioDecoder interface: new AudioDecoder(defaultCodecInit) must inherit property "configure(AudioDecoderConfig)" with the proper type
 PASS AudioDecoder interface: calling configure(AudioDecoderConfig) on new AudioDecoder(defaultCodecInit) with too few arguments must throw TypeError
 PASS AudioDecoder interface: new AudioDecoder(defaultCodecInit) must inherit property "decode(EncodedAudioChunk)" with the proper type
@@ -50,7 +50,7 @@ PASS VideoDecoder must be primary interface of new VideoDecoder(defaultCodecInit
 PASS Stringification of new VideoDecoder(defaultCodecInit)
 PASS VideoDecoder interface: new VideoDecoder(defaultCodecInit) must inherit property "state" with the proper type
 PASS VideoDecoder interface: new VideoDecoder(defaultCodecInit) must inherit property "decodeQueueSize" with the proper type
-FAIL VideoDecoder interface: new VideoDecoder(defaultCodecInit) must inherit property "ondequeue" with the proper type Right-hand side of 'instanceof' is not an object
+PASS VideoDecoder interface: new VideoDecoder(defaultCodecInit) must inherit property "ondequeue" with the proper type
 PASS VideoDecoder interface: new VideoDecoder(defaultCodecInit) must inherit property "configure(VideoDecoderConfig)" with the proper type
 PASS VideoDecoder interface: calling configure(VideoDecoderConfig) on new VideoDecoder(defaultCodecInit) with too few arguments must throw TypeError
 PASS VideoDecoder interface: new VideoDecoder(defaultCodecInit) must inherit property "decode(EncodedVideoChunk)" with the proper type
@@ -79,7 +79,7 @@ PASS AudioEncoder must be primary interface of new AudioEncoder(defaultCodecInit
 PASS Stringification of new AudioEncoder(defaultCodecInit)
 PASS AudioEncoder interface: new AudioEncoder(defaultCodecInit) must inherit property "state" with the proper type
 PASS AudioEncoder interface: new AudioEncoder(defaultCodecInit) must inherit property "encodeQueueSize" with the proper type
-FAIL AudioEncoder interface: new AudioEncoder(defaultCodecInit) must inherit property "ondequeue" with the proper type Right-hand side of 'instanceof' is not an object
+PASS AudioEncoder interface: new AudioEncoder(defaultCodecInit) must inherit property "ondequeue" with the proper type
 PASS AudioEncoder interface: new AudioEncoder(defaultCodecInit) must inherit property "configure(AudioEncoderConfig)" with the proper type
 PASS AudioEncoder interface: calling configure(AudioEncoderConfig) on new AudioEncoder(defaultCodecInit) with too few arguments must throw TypeError
 PASS AudioEncoder interface: new AudioEncoder(defaultCodecInit) must inherit property "encode(AudioData)" with the proper type
@@ -108,7 +108,7 @@ PASS VideoEncoder must be primary interface of new VideoEncoder(defaultCodecInit
 PASS Stringification of new VideoEncoder(defaultCodecInit)
 PASS VideoEncoder interface: new VideoEncoder(defaultCodecInit) must inherit property "state" with the proper type
 PASS VideoEncoder interface: new VideoEncoder(defaultCodecInit) must inherit property "encodeQueueSize" with the proper type
-FAIL VideoEncoder interface: new VideoEncoder(defaultCodecInit) must inherit property "ondequeue" with the proper type Right-hand side of 'instanceof' is not an object
+PASS VideoEncoder interface: new VideoEncoder(defaultCodecInit) must inherit property "ondequeue" with the proper type
 PASS VideoEncoder interface: new VideoEncoder(defaultCodecInit) must inherit property "configure(VideoEncoderConfig)" with the proper type
 PASS VideoEncoder interface: calling configure(VideoEncoderConfig) on new VideoEncoder(defaultCodecInit) with too few arguments must throw TypeError
 PASS VideoEncoder interface: new VideoEncoder(defaultCodecInit) must inherit property "encode(VideoFrame, optional VideoEncoderEncodeOptions)" with the proper type
@@ -207,25 +207,25 @@ PASS VideoFrame interface: operation allocationSize(optional VideoFrameCopyToOpt
 PASS VideoFrame interface: operation copyTo(BufferSource, optional VideoFrameCopyToOptions)
 PASS VideoFrame interface: operation clone()
 PASS VideoFrame interface: operation close()
-PASS VideoFrame must be primary interface of new VideoFrame(makeImageBitmap(32,16), {timestamp:100, duration:33})
-PASS Stringification of new VideoFrame(makeImageBitmap(32,16), {timestamp:100, duration:33})
-PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32,16), {timestamp:100, duration:33}) must inherit property "format" with the proper type
-PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32,16), {timestamp:100, duration:33}) must inherit property "codedWidth" with the proper type
-PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32,16), {timestamp:100, duration:33}) must inherit property "codedHeight" with the proper type
-PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32,16), {timestamp:100, duration:33}) must inherit property "codedRect" with the proper type
-PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32,16), {timestamp:100, duration:33}) must inherit property "visibleRect" with the proper type
-PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32,16), {timestamp:100, duration:33}) must inherit property "displayWidth" with the proper type
-PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32,16), {timestamp:100, duration:33}) must inherit property "displayHeight" with the proper type
-PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32,16), {timestamp:100, duration:33}) must inherit property "duration" with the proper type
-PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32,16), {timestamp:100, duration:33}) must inherit property "timestamp" with the proper type
-PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32,16), {timestamp:100, duration:33}) must inherit property "colorSpace" with the proper type
-FAIL VideoFrame interface: new VideoFrame(makeImageBitmap(32,16), {timestamp:100, duration:33}) must inherit property "metadata()" with the proper type assert_inherits: property "metadata" not found in prototype chain
-PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32,16), {timestamp:100, duration:33}) must inherit property "allocationSize(optional VideoFrameCopyToOptions)" with the proper type
-PASS VideoFrame interface: calling allocationSize(optional VideoFrameCopyToOptions) on new VideoFrame(makeImageBitmap(32,16), {timestamp:100, duration:33}) with too few arguments must throw TypeError
-PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32,16), {timestamp:100, duration:33}) must inherit property "copyTo(BufferSource, optional VideoFrameCopyToOptions)" with the proper type
-PASS VideoFrame interface: calling copyTo(BufferSource, optional VideoFrameCopyToOptions) on new VideoFrame(makeImageBitmap(32,16), {timestamp:100, duration:33}) with too few arguments must throw TypeError
-PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32,16), {timestamp:100, duration:33}) must inherit property "clone()" with the proper type
-PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32,16), {timestamp:100, duration:33}) must inherit property "close()" with the proper type
+PASS VideoFrame must be primary interface of new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33})
+PASS Stringification of new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33})
+PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "format" with the proper type
+PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "codedWidth" with the proper type
+PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "codedHeight" with the proper type
+PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "codedRect" with the proper type
+PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "visibleRect" with the proper type
+PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "displayWidth" with the proper type
+PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "displayHeight" with the proper type
+PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "duration" with the proper type
+PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "timestamp" with the proper type
+PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "colorSpace" with the proper type
+FAIL VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "metadata()" with the proper type assert_inherits: property "metadata" not found in prototype chain
+PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "allocationSize(optional VideoFrameCopyToOptions)" with the proper type
+PASS VideoFrame interface: calling allocationSize(optional VideoFrameCopyToOptions) on new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) with too few arguments must throw TypeError
+PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "copyTo(BufferSource, optional VideoFrameCopyToOptions)" with the proper type
+PASS VideoFrame interface: calling copyTo(BufferSource, optional VideoFrameCopyToOptions) on new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) with too few arguments must throw TypeError
+PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "clone()" with the proper type
+PASS VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "close()" with the proper type
 PASS VideoColorSpace interface: existence and properties of interface object
 PASS VideoColorSpace interface object length
 PASS VideoColorSpace interface object name
@@ -244,7 +244,15 @@ PASS VideoColorSpace interface: new VideoColorSpace() must inherit property "tra
 PASS VideoColorSpace interface: new VideoColorSpace() must inherit property "matrix" with the proper type
 PASS VideoColorSpace interface: new VideoColorSpace() must inherit property "fullRange" with the proper type
 PASS VideoColorSpace interface: new VideoColorSpace() must inherit property "toJSON()" with the proper type
-FAIL VideoColorSpace interface: default toJSON operation on new VideoColorSpace() assert_true: property "primaries" should be present in the output of VideoColorSpace.prototype.toJSON() expected true got false
+PASS VideoColorSpace interface: default toJSON operation on new VideoColorSpace()
+PASS VideoColorSpace must be primary interface of new VideoColorSpace({primaries: 'bt709', transfer: 'bt709', matrix: 'bt709', fullRange: true})
+PASS Stringification of new VideoColorSpace({primaries: 'bt709', transfer: 'bt709', matrix: 'bt709', fullRange: true})
+PASS VideoColorSpace interface: new VideoColorSpace({primaries: 'bt709', transfer: 'bt709', matrix: 'bt709', fullRange: true}) must inherit property "primaries" with the proper type
+PASS VideoColorSpace interface: new VideoColorSpace({primaries: 'bt709', transfer: 'bt709', matrix: 'bt709', fullRange: true}) must inherit property "transfer" with the proper type
+PASS VideoColorSpace interface: new VideoColorSpace({primaries: 'bt709', transfer: 'bt709', matrix: 'bt709', fullRange: true}) must inherit property "matrix" with the proper type
+PASS VideoColorSpace interface: new VideoColorSpace({primaries: 'bt709', transfer: 'bt709', matrix: 'bt709', fullRange: true}) must inherit property "fullRange" with the proper type
+PASS VideoColorSpace interface: new VideoColorSpace({primaries: 'bt709', transfer: 'bt709', matrix: 'bt709', fullRange: true}) must inherit property "toJSON()" with the proper type
+PASS VideoColorSpace interface: default toJSON operation on new VideoColorSpace({primaries: 'bt709', transfer: 'bt709', matrix: 'bt709', fullRange: true})
 PASS ImageDecoder interface: existence and properties of interface object
 PASS ImageDecoder interface object length
 PASS ImageDecoder interface object name
