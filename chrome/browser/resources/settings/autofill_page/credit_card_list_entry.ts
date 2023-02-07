@@ -58,24 +58,12 @@ class SettingsCreditCardListEntryElement extends
         },
         readOnly: true,
       },
-
-      /**
-       * Whether virtual card metadata on settings page is enabled.
-       */
-      virtualCardMetadataEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('virtualCardMetadataEnabled');
-        },
-        readOnly: true,
-      },
     };
   }
 
   creditCard: chrome.autofillPrivate.CreditCardEntry;
   private readonly showExpirationAsSecondaryLabelEnabled_: boolean;
   private readonly virtualCardEnrollmentEnabled_: boolean;
-  private readonly virtualCardMetadataEnabled_: boolean;
 
   /**
    * Opens the credit card action menu.
@@ -147,19 +135,34 @@ class SettingsCreditCardListEntryElement extends
   }
 
   private shouldShowVirtualCardLabel_(): boolean {
-    return this.isVirtualCardEnrolled_() && !this.virtualCardMetadataEnabled_;
+    return this.isVirtualCardEnrolled_() &&
+        !this.showExpirationAsSecondaryLabelEnabled_;
   }
 
-  private shouldShowSecondarySublabel_(): boolean {
-    return this.shouldShowVirtualCardSecondarySublabel_() ||
-        this.showExpirationAsSecondaryLabelEnabled_;
+  /**
+   * Returns a string of combination of expiration date and virtual card info if
+   * the card is eligible for enrollment or has already enrolled, or cardholder
+   * name otherwise.
+   * E.g., 11/2023 | Virtual card turned on
+   */
+  private getSummarySublabel_(): string {
+    let expirationDateString = '';
+    if (!!this.creditCard.expirationMonth && !!this.creditCard.expirationYear) {
+      expirationDateString = this.creditCard.expirationMonth.toString() + '/' +
+          this.creditCard.expirationYear.toString();
+    }
+
+    const secondarySubLabel = this.getSecondarySublabel_();
+    const verticalBar =
+        !!expirationDateString && !!secondarySubLabel ? '\u00a0|\u00a0' : '';
+
+    return expirationDateString + verticalBar + secondarySubLabel;
   }
 
   private shouldShowVirtualCardSecondarySublabel_(): boolean {
-    return !!(this.creditCard.metadata!.summarySublabel!.trim() !== '' ||
-              this.isVirtualCardEnrolled_() ||
-              this.isVirtualCardEnrollmentEligible_()) &&
-        this.virtualCardMetadataEnabled_;
+    return this.creditCard.metadata!.summarySublabel!.trim() !== '' ||
+        this.isVirtualCardEnrolled_() ||
+        this.isVirtualCardEnrollmentEligible_();
   }
 
   private getSecondarySublabel_(): string {
@@ -172,37 +175,14 @@ class SettingsCreditCardListEntryElement extends
     return this.creditCard.metadata!.summarySublabel!;
   }
 
-  /**
-   * Returns a string of expiration date and virtual card metadata.
-   * E.g., 11/2023 | Virtual card turned on
-   */
-  private getExpirationAndVirtualCardMetadata_(): string {
-    let expirationDateString = '';
-    if (this.showExpirationAsSecondaryLabelEnabled_ &&
-        !!this.creditCard.expirationMonth && !!this.creditCard.expirationYear) {
-      expirationDateString = this.creditCard.expirationMonth.toString() + '/' +
-          this.creditCard.expirationYear.toString();
-    }
-
-    let virtualCardMetadata = '';
-    if (this.shouldShowVirtualCardSecondarySublabel_()) {
-      virtualCardMetadata = this.getSecondarySublabel_();
-    }
-    const verticalBar =
-        !!expirationDateString && !!virtualCardMetadata ? '\u00a0|\u00a0' : '';
-
-
-    return expirationDateString + verticalBar + virtualCardMetadata;
-  }
-
   private shouldShowPaymentsLabel_(): boolean {
     return !this.creditCard.metadata!.isLocal &&
-        !this.virtualCardMetadataEnabled_;
+        !this.showExpirationAsSecondaryLabelEnabled_;
   }
 
   private shouldShowPaymentsIndicator_(): boolean {
     return !this.creditCard.metadata!.isLocal &&
-        this.virtualCardMetadataEnabled_;
+        this.showExpirationAsSecondaryLabelEnabled_;
   }
 
   private getPaymentsLabel_(): string {
