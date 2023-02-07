@@ -83,7 +83,9 @@ try_.orchestrator_builder(
         ),
     ),
     main_list_view = "try",
-    check_for_flakiness = True,
+    # TODO (crbug.com/1413505) - disabling due to high pending times. test
+    # history inaccuracies causing additional tests to be run.
+    # check_for_flakiness = True,
     coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(),
     experiments = {
@@ -236,7 +238,9 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    check_for_flakiness = True,
+    # TODO (crbug.com/1413505) - disabling due to high pending times. test
+    # history inaccuracies causing additional tests to be run.
+    # check_for_flakiness = True,
     coverage_test_types = ["unit", "overall"],
     experiments = {
         "chromium_rts.inverted_rts": 100,
