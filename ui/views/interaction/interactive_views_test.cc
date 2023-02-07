@@ -304,7 +304,10 @@ InteractiveViewsTestApi::GetPositionCallback(RelativePositionSpecifier spec) {
 
   CHECK(absl::holds_alternative<CenterPoint>(spec));
   return base::BindOnce([](ui::TrackedElement* el) {
-    return el->GetScreenBounds().CenterPoint();
+    return el->AsA<views::TrackedElementViews>()
+        ->view()
+        ->GetBoundsInScreen()
+        .CenterPoint();
   });
 }
 

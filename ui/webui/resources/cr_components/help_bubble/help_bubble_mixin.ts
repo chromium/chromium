@@ -52,8 +52,6 @@ export const HelpBubbleMixin = dedupingMixin(
             null;
         private helpBubbleDismissedEventTracker_: EventTracker =
             new EventTracker();
-        private helpBubbleAnchorClickEventTracker_: EventTracker =
-            new EventTracker();
         private helpBubbleScrollCallbackDebounced_:
             EventListenerOrEventListenerObject|null = null;
 
@@ -121,7 +119,6 @@ export const HelpBubbleMixin = dedupingMixin(
           assert(this.helpBubbleFixedAnchorObserver_);
           this.helpBubbleFixedAnchorObserver_.disconnect();
           this.helpBubbleFixedAnchorObserver_ = null;
-          this.helpBubbleAnchorClickEventTracker_.removeAll();
           this.helpBubbleControllerById_.clear();
           if (this.helpBubbleScrollCallbackDebounced_) {
             document.removeEventListener(
@@ -224,8 +221,6 @@ export const HelpBubbleMixin = dedupingMixin(
         private observeControllerAnchor_(controller: HelpBubbleController) {
           const anchor = controller.getAnchor();
           assert(anchor, 'Help bubble does not have anchor');
-          this.helpBubbleAnchorClickEventTracker_.add(
-              anchor, 'click', this.onHelpBubbleAnchorClicked_.bind(this));
           if (controller.isAnchorFixed()) {
             assert(this.helpBubbleFixedAnchorObserver_);
             this.helpBubbleFixedAnchorObserver_.observe(anchor);
@@ -238,7 +233,6 @@ export const HelpBubbleMixin = dedupingMixin(
         private unobserveControllerAnchor_(controller: HelpBubbleController) {
           const anchor = controller.getAnchor();
           assert(anchor, 'Help bubble does not have anchor');
-          this.helpBubbleAnchorClickEventTracker_.remove(anchor, 'click');
           if (controller.isAnchorFixed()) {
             assert(this.helpBubbleFixedAnchorObserver_);
             this.helpBubbleFixedAnchorObserver_.unobserve(anchor);
@@ -365,10 +359,13 @@ export const HelpBubbleMixin = dedupingMixin(
          * bubble anchor. This event will be processed in the browser and may
          * e.g. cause a Tutorial or interactive test to advance to the next
          * step.
+         *
+         * TODO(crbug.com/1376262): Figure out how to automatically send the
+         * activated event when an anchor element is clicked.
          */
         notifyHelpBubbleAnchorActivated(nativeId: string): boolean {
           const ctrl = this.helpBubbleControllerById_.get(nativeId);
-          if (!ctrl) {
+          if (!ctrl || !ctrl.isBubbleShowing()) {
             return false;
           }
           this.helpBubbleHandler_.helpBubbleAnchorActivated(nativeId);
@@ -543,56 +540,6 @@ export const HelpBubbleMixin = dedupingMixin(
                 nativeId, HelpBubbleClosedReason.kTimedOut);
           }
         }
-
-        /**
-         * This event is emitted by elements when they are clicked.
-         */
-        private onHelpBubbleAnchorClicked_(e: MouseEvent) {
-          // This loop is used to detect the situation where there is a 'click'
-          // event in a named help bubble anchor that should be handled by a
-          // nested element that could have its own identity. For example:
-          //
-          // ```
-          // <expanding-settings-box>
-          //   <h3>title</h3>
-          //   <input type="checkbox">the setting in question</input>
-          //   <p>further description</p>
-          //  </expanding-settings-box>
-          // ```
-          //
-          // In this case, clicking in the settings box might expand or collapse
-          // it, but clicking on the checkbox would not. So if the anchor
-          // element were the outer box, clicking anywhere *but* the checkbox
-          // should count as activation, but clicking in the checkbox should
-          // not.
-          //
-          // To capture clicks in the checkbox itself, register it separately
-          // with a different id.
-          let el = e.target as HTMLElement;
-          let nativeId: string|undefined;
-          while (el && !el.hasAttribute('disabled')) {
-            // If this is an anchor, send the appropriate event.
-            nativeId = el.dataset['nativeId'];
-            if (nativeId) {
-              this.notifyHelpBubbleAnchorActivated(nativeId);
-              break;
-            }
-
-            // If the click occurred inside a button or button-like element and
-            // the button isn't a named anchor, stop searching; this isn't a
-            // relevant element.
-            if (isButtonLikeElement(el)) {
-              break;
-            }
-
-            // Otherwise, move up the DOM.
-            if (el.parentElement) {
-              el = el.parentElement;
-            } else if (el.parentNode instanceof ShadowRoot) {
-              el = (el.parentNode as ShadowRoot).host as HTMLElement;
-            }
-          }
-        }
       }
 
       return HelpBubbleMixin;
@@ -633,28 +580,6 @@ export function parseOptions(options: Options) {
     padding,
     fixed: !!options.fixed,
   };
-}
-
-/**
- * Returns whether `el` is a button-like HTML element - either a button or an
- * input with a button-like type or role.
- */
-function isButtonLikeElement(el: HTMLElement) {
-  // These are a list of `<input>` `type` and `role` constants that correspond
-  // to button-like elements in HTML. The two lists are basically the same (and
-  // an input element that has `type="radio"` probably also has `role="radio"`
-  // but it's best to be safe rather than sorry).
-  const kButtonTypesAndRoles = [
-    'button',
-    'radio',
-    'checkbox',
-    'menuitem',
-    'menuitemcheckbox',
-    'menuitemradio',
-  ];
-  return el.tagName === 'BUTTON' ||
-      kButtonTypesAndRoles.includes(el.getAttribute('type') || '') ||
-      kButtonTypesAndRoles.includes(el.getAttribute('role') || '');
 }
 
 function clampPadding(n: number = 0) {

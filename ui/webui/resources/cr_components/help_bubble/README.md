@@ -27,7 +27,7 @@ Once you have performed setup on the backend:
  * Add [HelpBubbleMixin](./help_bubble_mixin.ts) to your Polymer component.
 
  * In your component's `ready()` or `connectedCallback()` method, call
-   `HelpBubbleMixin.registerHelpBubble()` one or more times.
+   `HelpBubbleMixin.registerHelpBubbleIdentifier()` one or more times.
  
    * The first parameter should be the name of an
      [ElementIdentifier](/ui/base/interaction/element_identifier.h) you
@@ -53,37 +53,8 @@ Once you have performed setup on the backend:
      interactive test.
 
    * It is rare, but if your anchor element is not immediately present in your
-     component, you can instead wait to call `registerHelpBubble()`
+     component, you can instead wait to call `registerHelpBubbleIdentifier()`
      until after the element is created.
-
-## Activation and Custom Events
-
-Once you have registered an HTML element as a help bubble anchor with
-`registerHelpBubble()`, when the user clicks the element, it will automatically
-send an "activated" event through the `ElementTracker` system. This only happens
-if all of the following conditions are met:
-
- * The click occurred within the anchor element or a nested element.
-
- * Neither the clicked element, nor the anchor element, nor any element in the
-   hierarchy between them are disabled.
-
- * The click does not occur within a nested element that is a button or
-   button-like element.
-
-These events can be used to, for example, move a tutorial forward, or as a
-precondition for a test step.
-
-If the default behavior is not sufficient, you may call either of the following
-methods on the mixin to generate an "activated" or custom event:
-
- * `notifyHelpBubbleAnchorActivated()` - sends an activated event on the
-   specified anchor element, regardless of its state; the element must still be
-   rendered (hidden elements cannot generate events).
-
- * `notifyHelpBubbleAnchorCustomEvent()` - sends the specified custom event via
-   the specified anchor element, regardless of its state; the element must still
-   be rendered (hidden elements cannot generate events).
 
 ## Limitations
 
@@ -93,7 +64,7 @@ relaxed or removed in the near future):
  * Whether the native code believes that a help bubble can be shown in your
    component is based on the visibility of the corresponding anchor HTML element
    - the one with the ID you passed to
-   `HelpBubbleMixin.registerHelpBubble()`.
+   `HelpBubbleMixin.registerHelpBubbleIdentifier()`.
 
    * Visibility is not determined relative to the current viewport but rather to
      the entire page. The viewport will automatically scroll to display the
