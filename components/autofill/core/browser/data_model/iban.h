@@ -71,8 +71,9 @@ class IBAN : public AutofillDataModel {
 
   // Converts value (E.g., CH12 1234 1234 1234 1234) of IBAN to a partially
   // masked text formatted by the following rules:
-  // 1. Reveal the first and the last four characters.
-  // 2. Mask the remaining digits.
+  // 1. Always reveal the first and the last four characters.
+  // 2. Mask the remaining digits if `is_value_masked` is true, otherwise,
+  //    display the digits.
   // 3. The identifier string will be arranged in groups of four with a space
   //    between each group.
   //
@@ -80,7 +81,8 @@ class IBAN : public AutofillDataModel {
   // BE71 0961 2345 6769 will be shown as: BE71 **** **** 6769.
   // CH56 0483 5012 3456 7800 9 will be shown as: CH56 **** **** **** *800 9.
   // DE91 1000 0000 0123 4567 89 will be shown as: DE91 **** **** **** **67 89.
-  std::u16string GetIdentifierStringForAutofillDisplay() const;
+  std::u16string GetIdentifierStringForAutofillDisplay(
+      bool is_value_masked = true) const;
 
  private:
   // Returns a version of |value_| which does not have any separator characters

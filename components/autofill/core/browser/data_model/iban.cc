@@ -16,8 +16,8 @@ namespace autofill {
 // Unicode characters used in IBAN value obfuscation:
 //  - \u2022 - Bullet.
 //  - \u2006 - SIX-PER-EM SPACE (small space between bullets).
-constexpr char16_t kEllipsisOneDot[] = u"\u2022";
-constexpr char16_t kEllipsisOneSpace[] = u"\u2006";
+constexpr char16_t kEllipsisOneDot = u'\u2022';
+constexpr char16_t kEllipsisOneSpace = u'\u2006';
 
 IBAN::IBAN(const std::string& guid)
     : AutofillDataModel(guid, /*origin=*/std::string()) {}
@@ -110,26 +110,27 @@ void IBAN::set_nickname(const std::u16string& nickname) {
                                /*trim_sequences_with_line_breaks=*/true);
 }
 
-std::u16string IBAN::GetIdentifierStringForAutofillDisplay() const {
+std::u16string IBAN::GetIdentifierStringForAutofillDisplay(
+    bool is_value_masked) const {
   const std::u16string stripped_value = GetStrippedValue();
   size_t value_length = stripped_value.size();
   // Directly return an empty string if the length of IBAN value is invalid.
   if (value_length < 9 || value_length > 34)
     return std::u16string();
 
-  auto ShouldObfuscate = [&](size_t i) {
+  auto ShouldMask = [&](size_t i) {
     // The first 2-letter country code and 2 IBAN check digits will stay
-    // unmasked, the last four digits will be shown as-is too.
-    return 4 <= i && i < value_length - 4;
+    // unmasked, the last four digits will be shown as-is too. The rest of the
+    // digits will not be masked if `is_value_masked` is false
+    return 4 <= i && i < value_length - 4 && is_value_masked;
   };
 
   std::u16string output;
   output.reserve(stripped_value.size() + (stripped_value.size() - 1) / 4);
   for (size_t i = 0; i < stripped_value.size(); ++i) {
     if (i % 4 == 0 && i > 0)
-      output.append(kEllipsisOneSpace);
-    output.append(ShouldObfuscate(i) ? kEllipsisOneDot
-                                     : stripped_value.substr(i, 1));
+      output.push_back(kEllipsisOneSpace);
+    output.push_back(ShouldMask(i) ? kEllipsisOneDot : stripped_value[i]);
   }
   return output;
 }

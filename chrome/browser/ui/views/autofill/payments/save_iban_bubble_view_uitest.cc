@@ -241,6 +241,27 @@ class SaveIbanBubbleViewFullFormBrowserTest
     CHECK(!GetSaveIbanBubbleView());
   }
 
+  void ClickOnIbanValueTogglelButton() {
+    SaveIbanBubbleView* save_iban_bubble_views = GetSaveIbanBubbleView();
+    CHECK(save_iban_bubble_views);
+    ClickOnDialogView(
+        FindViewInBubbleById(DialogViewId::TOGGLE_IBAN_VALUE_MASKING_BUTTON));
+  }
+
+  std::u16string GetDisplayedIbanValue() {
+    SaveIbanBubbleView* save_iban_bubble_views = GetSaveIbanBubbleView();
+    CHECK(save_iban_bubble_views);
+    views::Label* iban_value = static_cast<views::Label*>(
+        FindViewInBubbleById(DialogViewId::IBAN_VALUE_LABEL));
+    CHECK(iban_value);
+    std::u16string iban_value_label = iban_value->GetText();
+    // To simplify the expectations in tests, replaces the returned IBAN value
+    // ellipsis ('\u2006') with a whitespace and oneDot ('\u2022') with '*'.
+    base::ReplaceChars(iban_value_label, u"\u2022", u"*", &iban_value_label);
+    base::ReplaceChars(iban_value_label, u"\u2006", u" ", &iban_value_label);
+    return iban_value_label;
+  }
+
   SaveIbanBubbleView* GetSaveIbanBubbleView() {
     SaveIbanBubbleController* save_iban_bubble_controller =
         SaveIbanBubbleController::GetOrCreate(GetActiveWebContents());
@@ -416,6 +437,28 @@ IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
   ClickOnCloseButton();
   EXPECT_TRUE(GetSaveIbanIconView()->GetVisible());
   EXPECT_FALSE(GetSaveIbanBubbleView());
+}
+
+// Tests the local save bubble. Ensures that clicking the eye icon button
+// successfully causes the IBAN value to be hidden or shown.
+IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
+                       Local_ClickingHideOrShowIbanValueEyeIcon) {
+  FillForm(kIbanValue);
+  SubmitFormAndWaitForIbanLocalSaveBubble();
+
+  ResetEventWaiterForSequence({DialogEvent::ACCEPT_SAVE_IBAN_COMPLETE});
+
+  ClickOnIbanValueTogglelButton();
+  EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 1000 0000 0123 4567 89");
+
+  ClickOnIbanValueTogglelButton();
+  EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 **** **** **** **67 89");
+
+  ClickOnIbanValueTogglelButton();
+  EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 1000 0000 0123 4567 89");
+
+  ClickOnIbanValueTogglelButton();
+  EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 **** **** **** **67 89");
 }
 
 }  // namespace autofill

@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_bubble_controller.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace content {
@@ -33,9 +34,8 @@ class SaveIbanBubbleView : public AutofillBubbleBase,
 
   void Show(DisplayReason reason);
 
-  // Gets the masked IBAN value to be displayed to the user (e.g.,
-  // CH56 **** **** **** *800 9).
-  std::u16string GetIBANIdentifierString();
+  // Toggle displayed IBAN value to be masked or fully shown.
+  void ToggleIbanValueMasking();
 
   // AutofillBubbleBase:
   void Hide() override;
@@ -66,7 +66,16 @@ class SaveIbanBubbleView : public AutofillBubbleBase,
  private:
   friend class SaveIbanBubbleViewFullFormBrowserTest;
 
+  // If `is_value_masked` is true, gets the masked IBAN value to be displayed to
+  // the user (e.g., DE75 **** **** **** **61 99), otherwise, gets the unmasked
+  // IBAN valued grouped by four (e.g., DE75 5121 0800 1245 1261 99).
+  std::u16string GetIbanIdentifierString(bool is_value_masked) const;
+
   raw_ptr<views::Textfield> nickname_textfield_ = nullptr;
+
+  // The view that toggles the masking/unmasking of an IBAN value.
+  raw_ptr<views::ToggleImageButton> iban_value_masking_button_ = nullptr;
+  raw_ptr<views::Label> iban_value_ = nullptr;
   raw_ptr<SaveIbanBubbleController> controller_;
 };
 
