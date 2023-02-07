@@ -217,10 +217,10 @@
         <include name="IDR_SOUND_SPOKEN_FEEDBACK_TOGGLE_COUNTDOWN_HIGH_WAV" file="resources\chromeos\sounds\spoken_feedback_toggle_countdown_high.wav" type="BINDATA" />
         <include name="IDR_SOUND_SPOKEN_FEEDBACK_TOGGLE_COUNTDOWN_LOW_WAV" file="resources\chromeos\sounds\spoken_feedback_toggle_countdown_low.wav" type="BINDATA" />
         <include name="IDR_SOUND_TOUCH_TYPE_WAV" file="resources\chromeos\sounds\touch_type.wav" type="BINDATA" />
-        <include name="IDR_SOUND_CHARGE_HIGH_BATTERY_WAV" file="resources\chromeos\sounds\power\charging_started_high.wav" type="BINDATA" />
-        <include name="IDR_SOUND_CHARGE_MEDIUM_BATTERY_WAV" file="resources\chromeos\sounds\power\charging_started_medium.wav" type="BINDATA" />
-        <include name="IDR_SOUND_CHARGE_LOW_BATTERY_WAV" file="resources\chromeos\sounds\power\charging_started_low.wav" type="BINDATA" />
-        <include name="IDR_SOUND_NO_CHARGE_LOW_BATTERY_WAV" file="resources\chromeos\sounds\power\low_battery.wav" type="BINDATA" />
+        <include name="IDR_SOUND_CHARGE_HIGH_BATTERY_FLAC" file="resources\chromeos\sounds\power\charging_started_high.flac" type="BINDATA" />
+        <include name="IDR_SOUND_CHARGE_MEDIUM_BATTERY_FLAC" file="resources\chromeos\sounds\power\charging_started_medium.flac" type="BINDATA" />
+        <include name="IDR_SOUND_CHARGE_LOW_BATTERY_FLAC" file="resources\chromeos\sounds\power\charging_started_low.flac" type="BINDATA" />
+        <include name="IDR_SOUND_NO_CHARGE_LOW_BATTERY_FLAC" file="resources\chromeos\sounds\power\low_battery.flac" type="BINDATA" />
       </if>
       <if expr="chromeos_ash">
         <include name="IDR_ABOUT_POWER_HTML" file="resources\chromeos\power.html" type="BINDATA" />
