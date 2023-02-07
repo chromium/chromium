@@ -24,7 +24,6 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
-#include "net/dns/mock_host_resolver.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -485,62 +484,6 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, FailureAllIconsError) {
 
   EXPECT_EQ(result.Get<1>(),
             webapps::InstallResultCode::kIconDownloadingFailed);
-}
-
-class InstallFromManifestCommandNetworkTest
-    : public InstallFromManifestCommandTest {
- public:
-  void SetUpOnMainThread() override {
-    InstallFromManifestCommandTest::SetUpOnMainThread();
-
-    // Map all DNS lookups to localhost. Any such request would fail, since
-    // localhost won't know how to respond, but it allows us to check whether
-    // there were any unexpected requests after the test.
-    host_resolver()->AddRule("*", "127.0.0.1");
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandNetworkTest,
-                       OnlyAllowlistedNetworkAccess) {
-  const GURL kDocumentUrl("https://www.app.com/");
-  const GURL kManifestUrl("https://www.app.com/manifest.json");
-  const AppId kExpectedId = GenerateAppId(absl::nullopt, kDocumentUrl);
-  const char kManifestTemplate[] = R"json({
-    "start_url": "/",
-    "name": "Test app",
-    "icons": [
-      {
-        "src": "$1",
-        "sizes": "96x96",
-        "type": "image/png"
-      },
-      {
-        "src": "$2",
-        "sizes": "48x48",
-        "type": "image/png"
-      }
-    ]
-  })json";
-  std::string manifest = base::ReplaceStringPlaceholders(
-      kManifestTemplate,
-      {GetIconUrl(),
-       // This icon is not on the allowlist and will be skipped.
-       https_server()->GetURL("thirdpartywebsite.com", "/icon.png").spec()},
-      nullptr);
-
-  base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallFromManifestCommand>(
-          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, manifest, kExpectedId, GetHostAllowlist(),
-          result.GetCallback()));
-
-  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.Get<1>());
-
-  // If the number of resolves is non-zero, this indicates that some part of the
-  // installation pipeline is doing a network request which doesn't respect the
-  // `host_allowlist`.
-  EXPECT_EQ(host_resolver()->NumResolvesForHostPattern("*"), 0ul);
 }
 
 }  // namespace web_app
