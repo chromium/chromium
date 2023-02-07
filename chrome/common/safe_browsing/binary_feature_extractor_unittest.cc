@@ -11,13 +11,37 @@
 
 #include "base/base_paths.h"
 #include "base/files/file.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "crypto/sha2.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
+
+using ::testing::_;
+
+namespace {
+
+// A mock BinaryFeatureExtractor that mocks only `ExtractImageFeaturesFromData`
+// so that we can test `ExtractImageFeatures`.
+class MockBinaryFeatureExtractor : public BinaryFeatureExtractor {
+ public:
+  MOCK_METHOD(bool,
+              ExtractImageFeaturesFromData,
+              (const uint8_t*,
+               size_t,
+               ExtractHeadersOption,
+               ClientDownloadRequest_ImageHeaders*,
+               google::protobuf::RepeatedPtrField<std::string>*));
+
+ protected:
+  ~MockBinaryFeatureExtractor() override = default;
+};
+
+}  // namespace
 
 class BinaryFeatureExtractorTest : public testing::Test {
  protected:
@@ -101,6 +125,28 @@ TEST_F(BinaryFeatureExtractorTest, ExtractBigBlockDigest) {
   memset(data.get(), 71, kDataLen);
   WriteFileToHash(data.get(), kDataLen);
   ExpectFileDigestEq(kDigest);
+}
+
+TEST_F(BinaryFeatureExtractorTest, CanRemoveFileDuringExecution) {
+  // mmap fails if the length parameter is 0, so we need a non-empty file.
+  char data = ' ';
+  WriteFileToHash(&data, 1);
+
+  scoped_refptr<MockBinaryFeatureExtractor> mock_extractor(
+      new MockBinaryFeatureExtractor());
+  EXPECT_CALL(*mock_extractor, ExtractImageFeaturesFromData(_, _, _, _, _))
+      .WillOnce(
+          [&](const uint8_t* data, size_t data_size,
+              BinaryFeatureExtractor::ExtractHeadersOption options,
+              ClientDownloadRequest_ImageHeaders* image_headers,
+              google::protobuf::RepeatedPtrField<std::string>* signed_data) {
+            EXPECT_TRUE(base::DeleteFile(path_));
+            return true;
+          });
+
+  ClientDownloadRequest_ImageHeaders image_headers;
+  mock_extractor->ExtractImageFeatures(
+      path_, BinaryFeatureExtractor::kDefaultOptions, &image_headers, nullptr);
 }
 
 }  // namespace safe_browsing

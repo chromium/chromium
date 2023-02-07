@@ -9,6 +9,7 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -26,14 +27,32 @@ bool BinaryFeatureExtractor::ExtractImageFeatures(
     ExtractHeadersOption options,
     ClientDownloadRequest_ImageHeaders* image_headers,
     google::protobuf::RepeatedPtrField<std::string>* signed_data) {
-  base::MemoryMappedFile mapped_file;
-  base::Time start_time = base::Time::Now();
-  if (!mapped_file.Initialize(file_path))
+  base::FilePath temp_path;
+  if (!base::CreateTemporaryFile(&temp_path)) {
     return false;
+  }
+
+  if (!base::CopyFile(file_path, temp_path)) {
+    return false;
+  }
+
+  base::File temp_file;
+  temp_file.Initialize(temp_path, base::File::FLAG_OPEN |
+                                      base::File::FLAG_READ |
+                                      base::File::FLAG_WIN_TEMPORARY |
+                                      base::File::FLAG_DELETE_ON_CLOSE);
+
+  base::Time start_time = base::Time::Now();
+  base::MemoryMappedFile mapped_file;
+  if (!mapped_file.Initialize(std::move(temp_file))) {
+    return false;
+  }
   base::UmaHistogramMediumTimes("SBClientDownload.MemoryMapFileDuration",
                                 base::Time::Now() - start_time);
-  return ExtractImageFeaturesFromData(mapped_file.data(), mapped_file.length(),
-      options, image_headers, signed_data);
+  bool success =
+      ExtractImageFeaturesFromData(mapped_file.data(), mapped_file.length(),
+                                   options, image_headers, signed_data);
+  return success;
 }
 
 bool BinaryFeatureExtractor::ExtractImageFeaturesFromFile(
