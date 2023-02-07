@@ -130,7 +130,7 @@ bool MetaTable::Init(Database* db, int version, int compatible_version) {
   DCHECK_GT(version, 0);
   DCHECK_GT(compatible_version, 0);
 
-  // Make sure the table is created an populated atomically.
+  // Make sure the table is created and populated atomically.
   sql::Transaction transaction(db_);
   if (!transaction.Begin())
     return false;
@@ -149,8 +149,13 @@ bool MetaTable::Init(Database* db, int version, int compatible_version) {
     // Note: there is no index over the meta table. We currently only have a
     // couple of keys, so it doesn't matter. If we start storing more stuff in
     // there, we should create an index.
-    SetVersionNumber(version);
-    SetCompatibleVersionNumber(compatible_version);
+
+    // If setting either version number fails, return early to avoid likely
+    // crashes or incorrect behavior with respect to migrations.
+    if (!SetVersionNumber(version) ||
+        !SetCompatibleVersionNumber(compatible_version)) {
+      return false;
+    }
   }
   return transaction.Commit();
 }
@@ -159,9 +164,9 @@ void MetaTable::Reset() {
   db_ = nullptr;
 }
 
-void MetaTable::SetVersionNumber(int version) {
+bool MetaTable::SetVersionNumber(int version) {
   DCHECK_GT(version, 0);
-  SetValue(kVersionKey, version);
+  return SetValue(kVersionKey, version);
 }
 
 int MetaTable::GetVersionNumber() {
@@ -169,9 +174,9 @@ int MetaTable::GetVersionNumber() {
   return GetValue(kVersionKey, &version) ? version : 0;
 }
 
-void MetaTable::SetCompatibleVersionNumber(int version) {
+bool MetaTable::SetCompatibleVersionNumber(int version) {
   DCHECK_GT(version, 0);
-  SetValue(kCompatibleVersionKey, version);
+  return SetValue(kCompatibleVersionKey, version);
 }
 
 int MetaTable::GetCompatibleVersionNumber() {
