@@ -18,7 +18,10 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_separator_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_warning_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
@@ -31,6 +34,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo_controller.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -141,13 +145,13 @@ void PopupViewViews::OnSelectedRowChanged(
     absl::optional<int> previous_row_selection,
     absl::optional<int> current_row_selection) {
   if (previous_row_selection) {
-    rows_[*previous_row_selection]->SetSelected(false);
+    GetPopupRowViewAt(*previous_row_selection).SetSelected(false);
   }
 
   if (current_row_selection) {
-    PopupRowView* current_row = rows_[*current_row_selection];
-    current_row->SetSelected(true);
-    current_row->ScrollViewToVisible();
+    PopupRowView& current_row = GetPopupRowViewAt(*current_row_selection);
+    current_row.SetSelected(true);
+    current_row.ScrollViewToVisible();
   }
 
   NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
@@ -178,8 +182,11 @@ void PopupViewViews::AxAnnounce(const std::u16string& text) {
 void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
                                                bool visible) {
   if (visible) {
-    for (raw_ptr<PopupRowView> row_view : rows_) {
-      row_view->MaybeShowIphPromo();
+    for (RowPointer& row_view : rows_) {
+      if (PopupRowView** row_view_pointer =
+              absl::get_if<PopupRowView*>(&row_view)) {
+        (*row_view_pointer)->MaybeShowIphPromo();
+      }
     }
   }
 }
@@ -226,14 +233,15 @@ void PopupViewViews::CreateChildViews() {
       switch (frontend_id) {
         case PopupItemId::POPUP_ITEM_ID_SEPARATOR:
           rows_.push_back(body_container->AddChildView(
-              PopupSeparatorView::Create(this, current_line_number)));
+              std::make_unique<PopupSeparatorView>()));
           break;
 
         case PopupItemId::POPUP_ITEM_ID_MIXED_FORM_MESSAGE:
         case PopupItemId::
             POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE:
-          rows_.push_back(body_container->AddChildView(
-              PopupWarningView::Create(this, current_line_number)));
+          rows_.push_back(
+              body_container->AddChildView(std::make_unique<PopupWarningView>(
+                  kSuggestions[current_line_number])));
           break;
 
         case PopupItemId::POPUP_ITEM_ID_USERNAME_ENTRY:
@@ -289,7 +297,7 @@ void PopupViewViews::CreateChildViews() {
     if (kSuggestions[current_line_number].frontend_id ==
         POPUP_ITEM_ID_SEPARATOR) {
       rows_.push_back(footer_container->AddChildView(
-          PopupSeparatorView::Create(this, current_line_number)));
+          std::make_unique<PopupSeparatorView>()));
     } else {
       rows_.push_back(footer_container->AddChildView(PopupFooterView::Create(
           this, current_line_number,

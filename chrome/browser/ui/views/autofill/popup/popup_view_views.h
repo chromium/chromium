@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
@@ -27,20 +28,22 @@ class ScrollView;
 namespace autofill {
 
 class AutofillPopupController;
+class PopupSeparatorView;
+class PopupWarningView;
 
 // Views implementation for the autofill and password suggestion.
 class PopupViewViews : public PopupBaseView, public AutofillPopupView {
  public:
   METADATA_HEADER(PopupViewViews);
+
+  using RowPointer =
+      absl::variant<PopupRowView*, PopupSeparatorView*, PopupWarningView*>;
+
   PopupViewViews(base::WeakPtr<AutofillPopupController> controller,
                  views::Widget* parent_widget);
   PopupViewViews(const PopupViewViews&) = delete;
   PopupViewViews& operator=(const PopupViewViews&) = delete;
   ~PopupViewViews() override;
-
-  const std::vector<raw_ptr<PopupRowView>>& GetRowsForTesting() {
-    return rows_;
-  }
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -61,10 +64,16 @@ class PopupViewViews : public PopupBaseView, public AutofillPopupView {
 
  private:
   friend class PopupViewViewsBrowsertest;
+  friend class PopupViewViewsTest;
 
-  void OnSelectedRowChanged(absl::optional<int> previous_row_selection,
-                            absl::optional<int> current_row_selection) override;
-  void OnSuggestionsChanged() override;
+  const std::vector<RowPointer>& GetRowsForTesting() { return rows_; }
+
+  // Returns the `PopupRowView` at line number `index`. Assumes that there is
+  // such a view at that line number - otherwise the underlying variant will
+  // check false.
+  PopupRowView& GetPopupRowViewAt(size_t index) {
+    return *absl::get<PopupRowView*>(rows_[index]);
+  }
 
   // Creates child views based on the suggestions given by |controller_|.
   // This method expects that all non-footer suggestions precede footer
@@ -75,12 +84,17 @@ class PopupViewViews : public PopupBaseView, public AutofillPopupView {
   // element width when possible.
   int AdjustWidth(int width) const;
 
+  // AutofillPopupView:
+  void OnSelectedRowChanged(absl::optional<int> previous_row_selection,
+                            absl::optional<int> current_row_selection) override;
+  void OnSuggestionsChanged() override;
+
   // PopupBaseView:
   bool DoUpdateBoundsAndRedrawPopup() override;
 
   // Controller for this view.
   base::WeakPtr<AutofillPopupController> controller_ = nullptr;
-  std::vector<raw_ptr<PopupRowView>> rows_;
+  std::vector<RowPointer> rows_;
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;
   raw_ptr<views::BoxLayoutView> body_container_ = nullptr;
 };

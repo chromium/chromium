@@ -59,7 +59,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_config.h"
-#include "ui/views/controls/separator.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -118,11 +117,6 @@ constexpr PopupItemId kItemTypesUsingLeadingIcons[] = {
     PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN,
     PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN,
     PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE};
-
-int GetContentsVerticalPadding() {
-  return ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_CONTENT_LIST_VERTICAL_SINGLE);
-}
 
 // Builds a column set for |layout| used in the autofill dropdown.
 void BuildColumnSet(views::TableLayoutView* layout_view) {
@@ -925,89 +919,6 @@ PopupFooterView::PopupFooterView(PopupViewViews* popup_view,
 }
 
 BEGIN_METADATA(PopupFooterView, PopupItemView)
-END_METADATA
-
-/************** PopupSeparatorView **************/
-
-// static
-std::unique_ptr<PopupSeparatorView> PopupSeparatorView::Create(
-    PopupViewViews* popup_view,
-    int line_number) {
-  auto result =
-      base::WrapUnique(new PopupSeparatorView(popup_view, line_number));
-  result->Init();
-  return result;
-}
-
-void PopupSeparatorView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // Separators are not selectable.
-  node_data->role = ax::mojom::Role::kSplitter;
-}
-
-void PopupSeparatorView::CreateContent() {
-  SetUseDefaultFillLayout(true);
-
-  AddChildView(views::Builder<views::Separator>()
-                   .SetBorder(views::CreateEmptyBorder(
-                       gfx::Insets::VH(GetContentsVerticalPadding(), 0)))
-                   .SetColorId(ui::kColorSeparator)
-                   .Build());
-
-  SetBackground(views::CreateThemedSolidBackground(GetBackgroundColorId()));
-}
-
-PopupSeparatorView::PopupSeparatorView(PopupViewViews* popup_view,
-                                       int line_number)
-    : PopupRowView(popup_view, line_number) {
-  SetFocusBehavior(FocusBehavior::NEVER);
-}
-
-BEGIN_METADATA(PopupSeparatorView, PopupRowView)
-END_METADATA
-
-/************** PopupWarningView **************/
-
-// static
-std::unique_ptr<PopupWarningView> PopupWarningView::Create(
-    PopupViewViews* popup_view,
-    int line_number) {
-  auto result = base::WrapUnique(new PopupWarningView(popup_view, line_number));
-  result->Init();
-  return result;
-}
-
-void PopupWarningView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  base::WeakPtr<AutofillPopupController> controller =
-      popup_view()->controller();
-  if (!controller) {
-    return;
-  }
-
-  node_data->role = ax::mojom::Role::kStaticText;
-  node_data->SetNameChecked(
-      controller->GetSuggestionAt(GetLineNumber()).main_text.value);
-}
-
-void PopupWarningView::CreateContent() {
-  base::WeakPtr<AutofillPopupController> controller =
-      popup_view()->controller();
-
-  SetUseDefaultFillLayout(true);
-  SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
-      PopupBaseView::GetCornerRadius(), PopupBaseView::GetHorizontalMargin())));
-
-  AddChildView(
-      views::Builder<views::Label>()
-          .SetText(controller->GetSuggestionMainTextAt(GetLineNumber()))
-          .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
-          .SetTextStyle(ChromeTextStyle::STYLE_RED)
-          .SetMultiLine(true)
-          .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-          .SetEnabledColorId(ui::kColorAlertHighSeverity)
-          .Build());
-}
-
-BEGIN_METADATA(PopupWarningView, PopupRowView)
 END_METADATA
 
 /************** PopupRowView **************/

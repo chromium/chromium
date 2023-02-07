@@ -231,58 +231,6 @@ class PopupFooterView : public PopupItemView {
   PopupFooterView(PopupViewViews* popup_view, int line_number, int frontend_id);
 };
 
-// Draws a separator between sections of the dropdown, namely between datalist
-// and Autofill suggestions. Note that this is NOT the same as the border on top
-// of the footer section or the border between footer items.
-class PopupSeparatorView : public PopupRowView {
- public:
-  METADATA_HEADER(PopupSeparatorView);
-  PopupSeparatorView(const PopupSeparatorView&) = delete;
-  PopupSeparatorView& operator=(const PopupSeparatorView&) = delete;
-  ~PopupSeparatorView() override = default;
-
-  static std::unique_ptr<PopupSeparatorView> Create(PopupViewViews* popup_view,
-                                                    int line_number);
-
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnMouseEntered(const ui::MouseEvent& event) override {}
-  void OnMouseExited(const ui::MouseEvent& event) override {}
-  void OnMouseReleased(const ui::MouseEvent& event) override {}
-
- protected:
-  // PopupRowView:
-  void CreateContent() override;
-
- private:
-  PopupSeparatorView(PopupViewViews* popup_view, int line_number);
-};
-
-// Draws a row which contains a warning message.
-class PopupWarningView : public PopupRowView {
- public:
-  METADATA_HEADER(PopupWarningView);
-  PopupWarningView(const PopupWarningView&) = delete;
-  PopupWarningView& operator=(const PopupWarningView&) = delete;
-  ~PopupWarningView() override = default;
-
-  static std::unique_ptr<PopupWarningView> Create(PopupViewViews* popup_view,
-                                                  int line_number);
-
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnMouseEntered(const ui::MouseEvent& event) override {}
-  void OnMouseReleased(const ui::MouseEvent& event) override {}
-
- protected:
-  // PopupRowView:
-  void CreateContent() override;
-
- private:
-  PopupWarningView(PopupViewViews* popup_view, int line_number)
-      : PopupRowView(popup_view, line_number) {}
-};
-
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_ROW_VIEW_H_
