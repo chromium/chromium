@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -23,6 +24,7 @@
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/common/content_features.h"
 #include "media/base/video_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libyuv/include/libyuv/scale_argb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -54,24 +56,25 @@ namespace {
 // Update the list every second.
 const int kDefaultNativeDesktopMediaListUpdatePeriod = 1000;
 
-bool IsFrameValid(webrtc::DesktopFrame* frame) {
+// Returns a hash of a DesktopFrame content to detect when image for a desktop
+// media source has changed, if the frame is valid, or absl::null_opt if not.
+absl::optional<size_t> GetFrameHash(webrtc::DesktopFrame* frame) {
   // These checks ensure invalid data isn't passed along, potentially leading to
   // crashes, e.g. when we calculate the hash which assumes a positive height
   // and stride.
   // TODO(crbug.com/1085230): figure out why the height is sometimes negative.
-  return frame && frame->data() && frame->stride() >= 0 &&
-         frame->size().height() >= 0;
-}
+  if (!frame || !frame->data() || frame->stride() < 0 ||
+      frame->size().height() < 0) {
+    return absl::nullopt;
+  }
 
-// Returns a hash of a DesktopFrame content to detect when image for a desktop
-// media source has changed.
-uint32_t GetFrameHash(webrtc::DesktopFrame* frame) {
-  // TODO(dcheng): Is this vulnerable to overflow??
-  int data_size = frame->stride() * frame->size().height();
-  // IsFrameValid has already verified that the height and stride are positive
-  // so it is safe to cast to size_t, which can always fit a positive int.
-  return base::FastHash(
-      base::make_span(frame->data(), static_cast<size_t>(data_size)));
+  size_t data_size;
+  if (!base::CheckMul<size_t>(frame->stride(), frame->size().height())
+           .AssignIfValid(&data_size)) {
+    return absl::nullopt;
+  }
+
+  return base::FastHash(base::make_span(frame->data(), data_size));
 }
 
 gfx::ImageSkia ScaleDesktopFrame(std::unique_ptr<webrtc::DesktopFrame> frame,
@@ -174,7 +177,7 @@ class NativeDesktopMediaList::Worker
   void ClearDelegatedSourceListSelection();
 
  private:
-  typedef std::map<DesktopMediaID, uint32_t> ImageHashesMap;
+  typedef std::map<DesktopMediaID, size_t> ImageHashesMap;
 
   // Used to hold state associated with a call to RefreshThumbnails.
   struct RefreshThumbnailsState {
@@ -465,13 +468,13 @@ void NativeDesktopMediaList::Worker::OnCaptureResult(
 
   // |frame| may be null if capture failed (e.g. because window has been
   // closed).
-  if (IsFrameValid(frame.get())) {
-    uint32_t frame_hash = GetFrameHash(frame.get());
-    refresh_thumbnails_state_->new_image_hashes[id] = frame_hash;
+  auto frame_hash = GetFrameHash(frame.get());
+  if (frame_hash) {
+    refresh_thumbnails_state_->new_image_hashes[id] = *frame_hash;
 
     // Scale the image only if it has changed.
     auto it = image_hashes_.find(id);
-    if (it == image_hashes_.end() || it->second != frame_hash) {
+    if (it == image_hashes_.end() || it->second != *frame_hash) {
       gfx::ImageSkia thumbnail = ScaleDesktopFrame(
           std::move(frame), refresh_thumbnails_state_->thumbnail_size);
       content::GetUIThreadTaskRunner({})->PostTask(
