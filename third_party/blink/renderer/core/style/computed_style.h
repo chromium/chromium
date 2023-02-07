@@ -2230,10 +2230,6 @@ class ComputedStyle : public ComputedStyleBase,
 
   bool PreserveNewline() const { return PreserveNewline(WhiteSpace()); }
 
-  static bool BorderStyleIsVisible(EBorderStyle style) {
-    return style != EBorderStyle::kNone && style != EBorderStyle::kHidden;
-  }
-
   static bool CollapseWhiteSpace(EWhiteSpace ws) {
     // Pre and prewrap do not collapse whitespace.
     return IsNot(ws, EWhiteSpace::kPre | EWhiteSpace::kPreWrap |
@@ -2274,6 +2270,9 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // Border utility functions.
+  static bool BorderStyleIsVisible(EBorderStyle style) {
+    return style != EBorderStyle::kNone && style != EBorderStyle::kHidden;
+  }
   bool BorderObscuresBackground() const;
   void GetBorderEdgeInfo(
       BorderEdge edges[],
