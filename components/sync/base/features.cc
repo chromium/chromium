@@ -24,10 +24,6 @@ BASE_FEATURE(kPasswordNotesWithBackup,
              "PasswordNotesWithBackup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncAllowWalletDataInTransportModeWithCustomPassphrase,
-             "SyncAllowAutofillWalletDataInTransportModeWithCustomPassphrase",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kSyncAndroidLimitNTPPromoImpressions,
              "SyncAndroidLimitNTPPromoImpressions",
