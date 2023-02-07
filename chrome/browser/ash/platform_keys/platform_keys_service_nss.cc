@@ -536,10 +536,10 @@ class GetTokensState : public NSSOperationState {
 class GetKeyLocationsState : public NSSOperationState {
  public:
   GetKeyLocationsState(ServiceWeakPtr weak_ptr,
-                       const std::string& public_key_spki_der,
+                       std::vector<uint8_t> public_key_spki_der,
                        GetKeyLocationsCallback callback)
       : NSSOperationState(weak_ptr),
-        public_key_spki_der_(public_key_spki_der),
+        public_key_spki_der_(std::move(public_key_spki_der)),
         callback_(std::move(callback)) {}
 
   ~GetKeyLocationsState() override = default;
@@ -554,7 +554,7 @@ class GetKeyLocationsState : public NSSOperationState {
   }
 
   // Must be a DER encoding of a SubjectPublicKeyInfo.
-  const std::string public_key_spki_der_;
+  const std::vector<uint8_t> public_key_spki_der_;
 
  private:
   void CallBack(const base::Location& from,
@@ -1778,11 +1778,12 @@ void PlatformKeysServiceImpl::GetTokens(GetTokensCallback callback) {
 }
 
 void PlatformKeysServiceImpl::GetKeyLocations(
-    const std::string& public_key_spki_der,
+    std::vector<uint8_t> public_key_spki_der,
     GetKeyLocationsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto state = std::make_unique<GetKeyLocationsState>(
-      weak_factory_.GetWeakPtr(), public_key_spki_der, std::move(callback));
+      weak_factory_.GetWeakPtr(), std::move(public_key_spki_der),
+      std::move(callback));
   if (delegate_->IsShutDown()) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);
     return;

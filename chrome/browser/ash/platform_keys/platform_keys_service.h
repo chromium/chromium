@@ -246,7 +246,7 @@ class PlatformKeysService : public KeyedService {
   // |public_key_spki_der| is stored. |callback| will be invoked when the token
   // ids are determined, possibly with an error status. Calls |callback| on the
   // UI thread.
-  virtual void GetKeyLocations(const std::string& public_key_spki_der,
+  virtual void GetKeyLocations(std::vector<uint8_t> public_key_spki_der,
                                GetKeyLocationsCallback callback) = 0;
 
   // Sets |attribute_type| for the private key corresponding to
@@ -380,7 +380,7 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
                  std::vector<uint8_t> public_key_spki_der,
                  RemoveKeyCallback callback) override;
   void GetTokens(GetTokensCallback callback) override;
-  void GetKeyLocations(const std::string& public_key_spki_der,
+  void GetKeyLocations(std::vector<uint8_t> public_key_spki_der,
                        const GetKeyLocationsCallback callback) override;
   void SetAttributeForKey(
       chromeos::platform_keys::TokenId token_id,

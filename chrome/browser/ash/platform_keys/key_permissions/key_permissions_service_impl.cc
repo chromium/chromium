@@ -53,14 +53,11 @@ KeyPermissionsServiceImpl::~KeyPermissionsServiceImpl() = default;
 void KeyPermissionsServiceImpl::CanUserGrantPermissionForKey(
     std::vector<uint8_t> public_key_spki_der,
     CanUserGrantPermissionForKeyCallback callback) {
-  std::string public_key_str(public_key_spki_der.begin(),
-                             public_key_spki_der.end());
-  platform_keys_service_->GetKeyLocations(
-      public_key_str,
-      base::BindOnce(
-          &KeyPermissionsServiceImpl::CanUserGrantPermissionForKeyWithLocations,
-          weak_factory_.GetWeakPtr(), std::move(public_key_spki_der),
-          std::move(callback)));
+  auto key_locations_callback = base::BindOnce(
+      &KeyPermissionsServiceImpl::CanUserGrantPermissionForKeyWithLocations,
+      weak_factory_.GetWeakPtr(), public_key_spki_der, std::move(callback));
+  platform_keys_service_->GetKeyLocations(std::move(public_key_spki_der),
+                                          std::move(key_locations_callback));
 }
 
 void KeyPermissionsServiceImpl::CanUserGrantPermissionForKeyWithLocations(
@@ -120,13 +117,11 @@ void KeyPermissionsServiceImpl::
 void KeyPermissionsServiceImpl::IsCorporateKey(
     std::vector<uint8_t> public_key_spki_der,
     IsCorporateKeyCallback callback) {
-  std::string public_key_str(public_key_spki_der.begin(),
-                             public_key_spki_der.end());
-  platform_keys_service_->GetKeyLocations(
-      std::move(public_key_str),
-      base::BindOnce(&KeyPermissionsServiceImpl::IsCorporateKeyWithLocations,
-                     weak_factory_.GetWeakPtr(), std::move(public_key_spki_der),
-                     std::move(callback)));
+  auto key_locations_callback = base::BindOnce(
+      &KeyPermissionsServiceImpl::IsCorporateKeyWithLocations,
+      weak_factory_.GetWeakPtr(), public_key_spki_der, std::move(callback));
+  platform_keys_service_->GetKeyLocations(std::move(public_key_spki_der),
+                                          std::move(key_locations_callback));
 }
 
 void KeyPermissionsServiceImpl::IsCorporateKeyWithLocations(
@@ -187,13 +182,11 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithKpmResponse(
 void KeyPermissionsServiceImpl::SetCorporateKey(
     std::vector<uint8_t> public_key_spki_der,
     SetCorporateKeyCallback callback) {
-  std::string public_key_str(public_key_spki_der.begin(),
-                             public_key_spki_der.end());
-  platform_keys_service_->GetKeyLocations(
-      std::move(public_key_str),
-      base::BindOnce(&KeyPermissionsServiceImpl::SetCorporateKeyWithLocations,
-                     weak_factory_.GetWeakPtr(), public_key_spki_der,
-                     std::move(callback)));
+  auto key_locations_callback = base::BindOnce(
+      &KeyPermissionsServiceImpl::SetCorporateKeyWithLocations,
+      weak_factory_.GetWeakPtr(), public_key_spki_der, std::move(callback));
+  platform_keys_service_->GetKeyLocations(std::move(public_key_spki_der),
+                                          std::move(key_locations_callback));
 }
 
 void KeyPermissionsServiceImpl::SetCorporateKeyWithLocations(

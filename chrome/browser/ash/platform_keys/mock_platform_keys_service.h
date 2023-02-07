@@ -119,7 +119,7 @@ class MockPlatformKeysService : public PlatformKeysService {
 
   MOCK_METHOD(void,
               GetKeyLocations,
-              (const std::string& public_key_spki_der,
+              (std::vector<uint8_t> public_key_spki_der,
                GetKeyLocationsCallback callback),
               (override));
 

@@ -88,11 +88,9 @@ class KeyPermissionsServiceImplTest : public ::testing::Test {
  protected:
   void SetKeyLocations(const std::vector<uint8_t>& public_key,
                        const std::vector<TokenId>& key_locations) {
-    std::string public_key_str(public_key.begin(), public_key.end());
-    ON_CALL(*platform_keys_service_,
-            GetKeyLocations(std::move(public_key_str), _))
+    ON_CALL(*platform_keys_service_, GetKeyLocations(public_key, _))
         .WillByDefault(testing::Invoke(
-            [key_locations](const std::string& public_key_spki_der,
+            [key_locations](std::vector<uint8_t> public_key_spki_der,
                             GetKeyLocationsCallback callback) {
               std::move(callback).Run(std::move(key_locations),
                                       Status::kSuccess);

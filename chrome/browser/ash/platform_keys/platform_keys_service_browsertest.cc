@@ -779,7 +779,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
 
   test_util::GetKeyLocationsExecutionWaiter get_key_locations_waiter;
   platform_keys_service()->GetKeyLocations(
-      BytesToStr(public_key), get_key_locations_waiter.GetCallback());
+      public_key, get_key_locations_waiter.GetCallback());
   ASSERT_TRUE(get_key_locations_waiter.Wait());
 
   EXPECT_EQ(get_key_locations_waiter.status(), Status::kSuccess);
