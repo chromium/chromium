@@ -34,18 +34,15 @@ async def assert_serialization(websocket, context_id, js_str_object,
         websocket, {
             "method": "script.evaluate",
             "params": {
-                "expression":
-                f"(()=>{{"
-                f"console.log({js_str_object});"
-                f"return {js_str_object}"
-                f"}})()",
+                "expression": f"(()=>{{"
+                              f"console.log({js_str_object});"
+                              f"return {js_str_object}"
+                              f"}})()",
                 "target": {
                     "context": context_id
                 },
-                "awaitPromise":
-                False,
-                "resultOwnership":
-                "root"
+                "awaitPromise": False,
+                "resultOwnership": "root"
             }
         })
 
@@ -96,8 +93,7 @@ async def assert_callFunction_deserialization_serialization(
         websocket, {
             "method": "script.callFunction",
             "params": {
-                "functionDeclaration":
-                "(arg)=>{console.log(arg); return arg;}",
+                "functionDeclaration": "(arg)=>{console.log(arg); return arg;}",
                 "this": {
                     "type": "undefined"
                 },
@@ -214,10 +210,8 @@ async def test_serialization_deserialization(websocket, context_id,
                               "handle": any_string
                           }),
                           ("{'foo': {'bar': 'baz'}, 'qux': 'quux'}", {
-                              "type":
-                              "object",
-                              "handle":
-                              any_string,
+                              "type": "object",
+                              "handle": any_string,
                               "value": [["foo", {
                                   "type": "object"
                               }], ["qux", {
@@ -226,10 +220,8 @@ async def test_serialization_deserialization(websocket, context_id,
                               }]]
                           }),
                           ("[1, 'a', {foo: 'bar'}, [2,[3,4]]]", {
-                              "type":
-                              "array",
-                              "handle":
-                              any_string,
+                              "type": "array",
+                              "handle": any_string,
                               "value": [{
                                   "type": "number",
                                   "value": 1
@@ -243,10 +235,8 @@ async def test_serialization_deserialization(websocket, context_id,
                               }]
                           }),
                           ("new Set([1, 'a', {foo: 'bar'}, [2,[3,4]]])", {
-                              "type":
-                              "set",
-                              "handle":
-                              any_string,
+                              "type": "set",
+                              "handle": any_string,
                               "value": [{
                                   "type": "number",
                                   "value": 1
@@ -280,8 +270,7 @@ async def test_serialization_function(websocket, context_id, jsString,
 @pytest.mark.asyncio
 @pytest.mark.parametrize("serialized, excepted_re_serialized", [
     ({
-        "type":
-        "object",
+        "type": "object",
         "value": [["foo", {
             "type": "object",
             "value": []
@@ -294,10 +283,8 @@ async def test_serialization_function(websocket, context_id, jsString,
                       "value": "quux"
                   }]]
     }, {
-        "type":
-        "object",
-        "handle":
-        any_string,
+        "type": "object",
+        "handle": any_string,
         "value": [["foo", {
             "type": "object"
         }], ["qux", {
@@ -306,8 +293,7 @@ async def test_serialization_function(websocket, context_id, jsString,
         }]]
     }),
     ({
-        "type":
-        "map",
+        "type": "map",
         "value": [["foo", {
             "type": "object",
             "value": []
@@ -320,10 +306,8 @@ async def test_serialization_function(websocket, context_id, jsString,
                       "value": "quux"
                   }]]
     }, {
-        "type":
-        "map",
-        "handle":
-        any_string,
+        "type": "map",
+        "handle": any_string,
         "value": [["foo", {
             "type": "object"
         }], ["qux", {
@@ -332,8 +316,7 @@ async def test_serialization_function(websocket, context_id, jsString,
         }]]
     }),
     ({
-        "type":
-        "array",
+        "type": "array",
         "value": [{
             "type": "number",
             "value": 1
@@ -342,10 +325,8 @@ async def test_serialization_function(websocket, context_id, jsString,
             "value": "a"
         }]
     }, {
-        "type":
-        "array",
-        "handle":
-        any_string,
+        "type": "array",
+        "handle": any_string,
         "value": [{
             "type": "number",
             "value": 1
@@ -355,8 +336,7 @@ async def test_serialization_function(websocket, context_id, jsString,
         }]
     }),
     ({
-        "type":
-        "set",
+        "type": "set",
         "value": [{
             "type": "number",
             "value": 1.23
@@ -365,10 +345,8 @@ async def test_serialization_function(websocket, context_id, jsString,
             "value": "a"
         }]
     }, {
-        "type":
-        "set",
-        "handle":
-        any_string,
+        "type": "set",
+        "handle": any_string,
         "value": [{
             "type": "number",
             "value": 1.23
@@ -451,16 +429,11 @@ async def test_serialization_node(websocket, context_id):
         {
             "type": "node",
             "value": {
-                "nodeType":
-                1,
-                "sharedId":
-                any_shared_id,
-                "localName":
-                "div",
-                "namespaceURI":
-                "http://www.w3.org/1999/xhtml",
-                "childNodeCount":
-                2,
+                "nodeType": 1,
+                "sharedId": any_shared_id,
+                "localName": "div",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodeCount": 2,
                 "attributes": {
                     "some_attr_name": "some_attr_value"
                 },
@@ -652,8 +625,7 @@ async def test_deserialization_handleAndValue(websocket, context_id):
     nested_handle = result["result"]["handle"]
 
     arg = {
-        "type":
-        "object",
+        "type": "object",
         "value": [[
             "nested_object", {
                 "handle": nested_handle,

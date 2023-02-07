@@ -205,17 +205,14 @@ async def test_browsingContext_getTreeWithNestedSameOriginContexts_contextsRetur
     recursive_compare(
         {
             "contexts": [{
-                "context":
-                context_id,
+                "context": context_id,
                 "children": [{
                     "context": any_string,
                     "url": nested_iframe,
                     "children": []
                 }],
-                "parent":
-                None,
-                "url":
-                page_with_nested_iframe
+                "parent": None,
+                "url": page_with_nested_iframe
             }]
         }, result)
 
@@ -245,17 +242,14 @@ async def test_browsingContext_getTreeWithNestedCrossOriginContexts_contextsRetu
     recursive_compare(
         {
             "contexts": [{
-                "context":
-                context_id,
+                "context": context_id,
                 "children": [{
                     "context": any_string,
                     "url": nested_iframe,
                     "children": []
                 }],
-                "parent":
-                None,
-                "url":
-                page_with_nested_iframe
+                "parent": None,
+                "url": page_with_nested_iframe
             }]
         }, result)
 
@@ -299,17 +293,14 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedCrossOriginConte
     recursive_compare(
         {
             "contexts": [{
-                "context":
-                context_id,
+                "context": context_id,
                 "children": [{
                     "context": any_string,
                     "url": another_nested_iframe,
                     "children": []
                 }],
-                "parent":
-                None,
-                "url":
-                another_page_with_nested_iframe
+                "parent": None,
+                "url": another_page_with_nested_iframe
             }]
         }, result)
 
@@ -342,17 +333,14 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedContexts_context
     recursive_compare(
         {
             "contexts": [{
-                "context":
-                context_id,
+                "context": context_id,
                 "children": [{
                     "context": any_string,
                     "url": nested_iframe,
                     "children": []
                 }],
-                "parent":
-                None,
-                "url":
-                page_with_nested_iframe
+                "parent": None,
+                "url": page_with_nested_iframe
             }]
         }, result)
 
@@ -374,17 +362,14 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedContexts_context
     recursive_compare(
         {
             "contexts": [{
-                "context":
-                context_id,
+                "context": context_id,
                 "children": [{
                     "context": any_string,
                     "url": another_nested_iframe,
                     "children": []
                 }],
-                "parent":
-                None,
-                "url":
-                another_page_with_nested_iframe
+                "parent": None,
+                "url": another_page_with_nested_iframe
             }]
         }, result)
 
@@ -510,19 +495,14 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
     recursive_compare(
         {
             "contexts": [{
-                "context":
-                any_string,
-                "parent":
-                None,
-                "url":
-                top_level_page,
+                "context": any_string,
+                "parent": None,
+                "url": top_level_page,
                 "children": [
                     {
-                        "context":
-                        any_string,
+                        "context": any_string,
                         # It's not guaranteed the nested page is already loaded.
-                        "url":
-                        any_string,
+                        "url": any_string,
                         "children": [{
                             "context": any_string,
                             # It's not guaranteed the nested page is already loaded.

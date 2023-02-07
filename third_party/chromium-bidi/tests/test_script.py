@@ -24,8 +24,7 @@ async def test_script_evaluateThrowingPrimitive_exceptionReturned(
         websocket, {
             "method": "script.evaluate",
             "params": {
-                "expression":
-                "(()=>{const a=()=>{throw 1;}; const b=()=>{a();};\nconst c=()=>{b();};c();})()",
+                "expression": "(()=>{const a=()=>{throw 1;}; const b=()=>{a();};\nconst c=()=>{b();};c();})()",
                 "target": {
                     "context": context_id
                 },
@@ -85,8 +84,7 @@ async def test_script_evaluateThrowingError_exceptionReturned(
         websocket, {
             "method": "script.evaluate",
             "params": {
-                "expression":
-                "(()=>{const a=()=>{throw new Error('foo');}; const b=()=>{a();};\nconst c=()=>{b();};c();})()",
+                "expression": "(()=>{const a=()=>{throw new Error('foo');}; const b=()=>{a();};\nconst c=()=>{b();};c();})()",
                 "target": {
                     "context": context_id
                 },
@@ -296,8 +294,7 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
         websocket, {
             "method": "script.callFunction",
             "params": {
-                "functionDeclaration":
-                "(...arguments)=>{return Promise.resolve(arguments);}",
+                "functionDeclaration": "(...arguments)=>{return Promise.resolve(arguments);}",
                 "arguments": [{
                     "type": "string",
                     "value": "ARGUMENT_STRING_VALUE"
@@ -308,10 +305,8 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
                 "target": {
                     "context": context_id
                 },
-                "awaitPromise":
-                True,
-                "resultOwnership":
-                "root"
+                "awaitPromise": True,
+                "resultOwnership": "root"
             }
         })
 
@@ -320,8 +315,7 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
             "type": "success",
             "realm": any_string,
             "result": {
-                "type":
-                "array",
+                "type": "array",
                 "value": [{
                     "type": 'string',
                     "value": 'ARGUMENT_STRING_VALUE'
@@ -329,8 +323,7 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
                     "type": 'number',
                     "value": 42
                 }],
-                "handle":
-                any_string
+                "handle": any_string
             }
         }, result)
 
@@ -370,8 +363,7 @@ async def test_script_callFunctionWithArgsAndDoNotAwaitPromise_promiseReturn(
         websocket, {
             "method": "script.callFunction",
             "params": {
-                "functionDeclaration":
-                "(...arguments)=>{return Promise.resolve(arguments);}",
+                "functionDeclaration": "(...arguments)=>{return Promise.resolve(arguments);}",
                 "arguments": [{
                     "type": "string",
                     "value": "ARGUMENT_STRING_VALUE"
@@ -379,10 +371,8 @@ async def test_script_callFunctionWithArgsAndDoNotAwaitPromise_promiseReturn(
                     "type": "number",
                     "value": 42
                 }],
-                "awaitPromise":
-                False,
-                "resultOwnership":
-                "root",
+                "awaitPromise": False,
+                "resultOwnership": "root",
                 "target": {
                     "context": context_id
                 }
@@ -607,8 +597,7 @@ async def test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed
         websocket, {
             "method": "script.callFunction",
             "params": {
-                "functionDeclaration":
-                "function(){return this.constructor.name}",
+                "functionDeclaration": "function(){return this.constructor.name}",
                 "this": {
                     "type": "number",
                     "value": 1
@@ -692,8 +681,7 @@ async def test_script_callFunctionWithNode_resultReceived(
         websocket, {
             "method": "script.callFunction",
             "params": {
-                "functionDeclaration":
-                "(element) => {return '!!@@##, ' + element.innerHTML}",
+                "functionDeclaration": "(element) => {return '!!@@##, ' + element.innerHTML}",
                 "arguments": [{
                     "handle": handle
                 }],
@@ -952,8 +940,7 @@ async def test_scriptGetRealms(websocket, context_id):
     # Assert 2 realms are created.
     recursive_compare(
         {
-            "realms":
-            compare_sorted("realm", [{
+            "realms": compare_sorted("realm", [{
                 "realm": old_realm,
                 "origin": "null",
                 "type": "window",

@@ -91,8 +91,7 @@ async def test_sandbox_isolated(websocket, context_id, call_delegate):
         "window.SHARED_PROPERTY_NAME]", None, context_id, websocket)
 
     assert result_0["result"] == {
-        "type":
-        "array",
+        "type": "array",
         "value": [{
             "type": "string",
             "value": "VALUE_0"
@@ -120,8 +119,7 @@ async def test_sandbox_isolated(websocket, context_id, call_delegate):
         "window.SHARED_PROPERTY_NAME]", "", context_id, websocket)
 
     assert result_0["result"] == {
-        "type":
-        "array",
+        "type": "array",
         "value": [{
             "type": "string",
             "value": "VALUE_0"
@@ -149,8 +147,7 @@ async def test_sandbox_isolated(websocket, context_id, call_delegate):
         "window.SHARED_PROPERTY_NAME]", "SANDBOX_1", context_id, websocket)
 
     assert result_1["result"] == {
-        "type":
-        "array",
+        "type": "array",
         "value": [{
             "type": "undefined"
         }, {
@@ -176,8 +173,7 @@ async def test_sandbox_isolated(websocket, context_id, call_delegate):
         "window.PROPERTY_2, "
         "window.SHARED_PROPERTY_NAME]", "SANDBOX_2", context_id, websocket)
     assert result_2["result"] == {
-        "type":
-        "array",
+        "type": "array",
         "value": [{
             "type": "undefined"
         }, {

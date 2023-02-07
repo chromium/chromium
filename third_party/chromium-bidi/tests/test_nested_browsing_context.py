@@ -409,17 +409,14 @@ async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedCrossOrigi
     recursive_compare(
         {
             "contexts": [{
-                "context":
-                iframe_id,
+                "context": iframe_id,
                 "children": [{
                     "context": any_string,
                     "url": another_nested_iframe,
                     "children": []
                 }],
-                "parent":
-                any_string,
-                "url":
-                another_page_with_nested_iframe
+                "parent": any_string,
+                "url": another_page_with_nested_iframe
             }]
         }, result)
 
@@ -464,16 +461,13 @@ async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedContexts_c
     recursive_compare(
         {
             "contexts": [{
-                "context":
-                iframe_id,
-                "url":
-                another_page_with_nested_iframe,
+                "context": iframe_id,
+                "url": another_page_with_nested_iframe,
                 "children": [{
                     "context": any_string,
                     "url": another_nested_iframe,
                     "children": []
                 }],
-                "parent":
-                any_string
+                "parent": any_string
             }]
         }, result)
