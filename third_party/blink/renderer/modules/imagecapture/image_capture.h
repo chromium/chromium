@@ -131,7 +131,9 @@ class MODULES_EXPORT ImageCapture final
 
   const String& SourceId() const;
 
-  const absl::optional<String> GetUnsupportedContraint(
+  // Get the name a constraint for which there are no corresponding
+  // capabilities or permission to access them.
+  const absl::optional<String> GetConstraintWithNonExistingCapability(
       const MediaTrackConstraintSet* constraints);
 
   Member<MediaStreamTrack> stream_track_;

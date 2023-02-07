@@ -498,7 +498,8 @@ void ImageCapture::SetMediaTrackConstraints(
     return;
   }
 
-  if (absl::optional<String> name = GetUnsupportedContraint(constraints)) {
+  if (absl::optional<String> name =
+          GetConstraintWithNonExistingCapability(constraints)) {
     resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
         name.value(), "Unsupported constraint"));
     return;
@@ -1232,7 +1233,8 @@ const String& ImageCapture::SourceId() const {
   return stream_track_->Component()->Source()->Id();
 }
 
-const absl::optional<String> ImageCapture::GetUnsupportedContraint(
+const absl::optional<String>
+ImageCapture::GetConstraintWithNonExistingCapability(
     const MediaTrackConstraintSet* constraints) {
   if (constraints->hasWhiteBalanceMode() &&
       !capabilities_->hasWhiteBalanceMode()) {
@@ -1273,16 +1275,17 @@ const absl::optional<String> ImageCapture::GetUnsupportedContraint(
   if (constraints->hasFocusDistance() && !capabilities_->hasFocusDistance()) {
     return "focusDistance";
   }
-  if (!HasPanTiltZoomPermissionGranted()) {
-    if (constraints->hasPan() && !capabilities_->hasPan()) {
-      return "pan";
-    }
-    if (constraints->hasTilt() && !capabilities_->hasTilt()) {
-      return "tilt";
-    }
-    if (constraints->hasZoom() && !capabilities_->hasZoom()) {
-      return "zoom";
-    }
+  if (constraints->hasPan() &&
+      !(capabilities_->hasPan() && HasPanTiltZoomPermissionGranted())) {
+    return "pan";
+  }
+  if (constraints->hasTilt() &&
+      !(capabilities_->hasTilt() && HasPanTiltZoomPermissionGranted())) {
+    return "tilt";
+  }
+  if (constraints->hasZoom() &&
+      !(capabilities_->hasZoom() && HasPanTiltZoomPermissionGranted())) {
+    return "zoom";
   }
   if (constraints->hasTorch() && !capabilities_->hasTorch()) {
     return "torch";
