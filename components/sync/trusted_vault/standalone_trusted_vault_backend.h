@@ -186,8 +186,6 @@ class StandaloneTrustedVaultBackend
   void OnTrustedRecoveryMethodAdded(base::OnceClosure cb,
                                     TrustedVaultRegistrationStatus status);
 
-  void AbandonConnectionRequest();
-
   void FulfillOngoingFetchKeys(
       absl::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
 
@@ -249,6 +247,8 @@ class StandaloneTrustedVaultBackend
   };
   absl::optional<PendingTrustedRecoveryMethod> pending_trusted_recovery_method_;
 
+  // TODO(crbug.com/1413179): introduce a struct for ongoing/deferred
+  // FetchKeys().
   // Used to plumb FetchKeys() result to the caller.
   FetchKeysCallback ongoing_fetch_keys_callback_;
 
@@ -256,7 +256,10 @@ class StandaloneTrustedVaultBackend
   absl::optional<std::string> ongoing_fetch_keys_gaia_id_;
 
   // Destroying this will cancel the ongoing request.
-  std::unique_ptr<TrustedVaultConnection::Request> ongoing_connection_request_;
+  std::unique_ptr<TrustedVaultConnection::Request>
+      ongoing_device_registration_request_;
+  std::unique_ptr<TrustedVaultConnection::Request>
+      ongoing_keys_downloading_request_;
   std::unique_ptr<TrustedVaultConnection::Request>
       ongoing_verify_registration_request_;
 

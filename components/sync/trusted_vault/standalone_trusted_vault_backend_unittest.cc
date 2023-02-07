@@ -32,12 +32,14 @@
 #include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
 namespace {
 
 using testing::_;
+using testing::ByMove;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::IsEmpty;
@@ -45,6 +47,7 @@ using testing::IsNull;
 using testing::Mock;
 using testing::Ne;
 using testing::NotNull;
+using testing::Return;
 using testing::SaveArg;
 
 MATCHER_P(DegradedRecoverabilityStateEq, expected_state, "") {
@@ -2125,6 +2128,150 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_CALL(completion_callback, Run());
   std::move(registration_callback)
       .Run(TrustedVaultRegistrationStatus::kSuccess);
+}
+
+// Verifies that Backend can process device registration and keys downloading
+// concurrently, when device registration is going to succeed and triggered
+// first (to ensure that keys downloading doesn't cancel device registration).
+// This is not a likely scenario (keys downloading attempt is an indicator that
+// device registration will fail), but Backend shouldn't work under this
+// assumption as already reflected on the data level:
+// |keys_marked_as_stale_by_consumer| doesn't imply
+// |last_registration_returned_local_data_obsolete|.
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldRegisterDeviceWhileConcurrentlyDownloadingKeys) {
+  // Prepare state where both requests are meaningful:
+  // 1. This is "redo device registration" attempt (otherwise FetchKeys() will
+  // fail early).
+  // 2. Local keys are marked as stale (otherwise FetchKeys() will succeed
+  // early).
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const std::vector<std::vector<uint8_t>> kTrustedVaultKeys = {{1, 2, 3}};
+  const int kLastKeyVersion = 1;
+
+  StoreKeysAndMimicDeviceRegistration(kTrustedVaultKeys, kLastKeyVersion,
+                                      account_info);
+  // Mimic that device was registered before "redo registration" logic was
+  // introduced.
+  backend()->SetDeviceRegisteredVersionForTesting(account_info.gaia,
+                                                  /*version=*/0);
+  backend()->MarkLocalKeysAsStale(account_info);
+
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
+      redo_device_registration_callback;
+  EXPECT_CALL(*connection(),
+              RegisterAuthenticationFactor(
+                  Eq(account_info), kTrustedVaultKeys, kLastKeyVersion, _,
+                  AuthenticationFactorType::kPhysicalDevice,
+                  /*authentication_factor_type_hint=*/Eq(absl::nullopt), _))
+      .WillOnce([&](const CoreAccountInfo&,
+                    const std::vector<std::vector<uint8_t>>&, int,
+                    const SecureBoxPublicKey& device_public_key,
+                    AuthenticationFactorType, absl::optional<int>,
+                    TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                        callback) {
+        redo_device_registration_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+  // Trigger "redo device registration".
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+
+  // Trigger keys downloading, ensure that FetchKeys() actually starts
+  // downloading attempt (e.g. keys are not fetched immediately).
+  EXPECT_CALL(*connection(),
+              DownloadNewKeys(Eq(account_info),
+                              TrustedVaultKeyAndVersionEq(kTrustedVaultKeys[0],
+                                                          kLastKeyVersion),
+                              /*device_key_pair=*/NotNull(), _))
+      .WillOnce(
+          Return(ByMove(std::make_unique<TrustedVaultConnection::Request>())));
+  backend()->FetchKeys(account_info, base::DoNothing());
+
+  {
+    sync_pb::LocalDeviceRegistrationInfo registration_info =
+        backend()->GetDeviceRegistrationInfoForTesting(account_info.gaia);
+    ASSERT_THAT(registration_info.device_registered_version(), Ne(1));
+  }
+  // Complete "redo device registration" and verify it succeeds.
+  ASSERT_FALSE(redo_device_registration_callback.is_null());
+  std::move(redo_device_registration_callback)
+      .Run(TrustedVaultRegistrationStatus::kSuccess);
+  sync_pb::LocalDeviceRegistrationInfo registration_info =
+      backend()->GetDeviceRegistrationInfoForTesting(account_info.gaia);
+  EXPECT_THAT(registration_info.device_registered_version(), Eq(1));
+}
+
+// Verifies that Backend can process device registration and keys downloading
+// concurrently, when keys downloading is going to succeed and triggered first
+// (to ensure that device registration doesn't cancel keys downloading).
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldDownloadKeysWhileConcurrentlyRegisteringDevice) {
+  // Prepare state where both requests are meaningful:
+  // 1. This is "redo device registration" attempt (otherwise FetchKeys() will
+  // fail early).
+  // 2. Local keys are marked as stale (otherwise FetchKeys() will succeed
+  // early).
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kInitialTrustedVaultKey = {1, 2, 3};
+  const int kInitialLastKeyVersion = 1;
+
+  StoreKeysAndMimicDeviceRegistration({kInitialTrustedVaultKey},
+                                      kInitialLastKeyVersion, account_info);
+  // Note: SetPrimaryAccount() doesn't trigger device registration yet (not
+  // needed), the test exploits |has_persistent_auth_error| to trigger it by
+  // another SetPrimaryAccount() later.
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/true);
+  // Mimic that device was registered before "redo registration" logic was
+  // introduced.
+  backend()->SetDeviceRegisteredVersionForTesting(account_info.gaia,
+                                                  /*version=*/0);
+  backend()->MarkLocalKeysAsStale(account_info);
+
+  // Trigger keys downloading, ensure that FetchKeys() actually starts
+  // downloading attempt (e.g. keys are not fetched immediately).
+  TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  EXPECT_CALL(*connection(), DownloadNewKeys(Eq(account_info),
+                                             TrustedVaultKeyAndVersionEq(
+                                                 kInitialTrustedVaultKey,
+                                                 kInitialLastKeyVersion),
+                                             /*device_key_pair=*/NotNull(), _))
+      .WillOnce([&](const CoreAccountInfo&, const TrustedVaultKeyAndVersion&,
+                    std::unique_ptr<SecureBoxKeyPair> key_pair,
+                    TrustedVaultConnection::DownloadNewKeysCallback callback) {
+        download_keys_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+
+  // Note: RegisterAuthenticationFactor() will be actually called two times,
+  // once upon SetPrimaryAccount() with stale keys and once upon keys
+  // downloading with new keys.
+  EXPECT_CALL(
+      *connection(),
+      RegisterAuthenticationFactor(
+          Eq(account_info), _, _, _, AuthenticationFactorType::kPhysicalDevice,
+          /*authentication_factor_type_hint=*/Eq(absl::nullopt), _))
+      .WillRepeatedly([&]() {
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+  // Trigger "redo device registration".
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+
+  // Mimic successful key downloading, it should make fetch keys attempt
+  // completed.
+  const std::vector<uint8_t> kNewTrustedVaultKey = {2, 3, 4};
+  EXPECT_CALL(
+      fetch_keys_callback,
+      Run(/*keys*/ ElementsAre(kInitialTrustedVaultKey, kNewTrustedVaultKey)));
+  ASSERT_FALSE(download_keys_callback.is_null());
+  std::move(download_keys_callback)
+      .Run(TrustedVaultDownloadKeysStatus::kSuccess, {kNewTrustedVaultKey},
+           kInitialLastKeyVersion + 1);
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldVerifyRegistration) {

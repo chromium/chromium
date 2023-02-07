@@ -385,7 +385,7 @@ void StandaloneTrustedVaultBackend::FetchKeys(
     FulfillOngoingFetchKeys(/*status_for_uma=*/absl::nullopt);
     return;
   }
-  // TODO(crbug.com/1094326): currently there is no guarantee that
+  // TODO(crbug.com/1413179): currently there is no guarantee that
   // |primary_account_| is set before FetchKeys() call and this may cause
   // redundant sync error in the UI (for key retrieval), especially during the
   // browser startup. Try to find a way to avoid this issue.
@@ -412,14 +412,13 @@ void StandaloneTrustedVaultBackend::FetchKeys(
     return;
   }
 
-  // Current state guarantees there is no ongoing requests to the server:
+  // Current state guarantees there is no ongoing keys downloading requests to
+  // the server:
   // 1. Current |primary_account_| is |account_info|, so there is no ongoing
   // request for other accounts.
-  // 2. Device is already registered, so there is no device registration for
-  // |account_info|.
-  // 3. Concurrent FetchKeys() calls aren't supported, so there is no keys
+  // 2. Concurrent FetchKeys() calls aren't supported, so there is no keys
   // download for |account_info|.
-  DCHECK(!ongoing_connection_request_);
+  DCHECK(!ongoing_keys_downloading_request_);
 
   std::unique_ptr<SecureBoxKeyPair> key_pair =
       SecureBoxKeyPair::CreateByPrivateKeyImport(
@@ -436,9 +435,9 @@ void StandaloneTrustedVaultBackend::FetchKeys(
 
   // Guaranteed by |device_registered| check above.
   DCHECK(!per_user_vault->vault_key().empty());
-  // |this| outlives |connection_| and |ongoing_connection_request_|, so it's
-  // safe to use base::Unretained() here.
-  ongoing_connection_request_ = connection_->DownloadNewKeys(
+  // |this| outlives |connection_| and |ongoing_keys_downloading_request_|, so
+  // it's safe to use base::Unretained() here.
+  ongoing_keys_downloading_request_ = connection_->DownloadNewKeys(
       *primary_account_,
       TrustedVaultKeyAndVersion(
           ProtoStringToBytes(
@@ -447,7 +446,7 @@ void StandaloneTrustedVaultBackend::FetchKeys(
       std::move(key_pair),
       base::BindOnce(&StandaloneTrustedVaultBackend::OnKeysDownloaded,
                      base::Unretained(this)));
-  DCHECK(ongoing_connection_request_);
+  DCHECK(ongoing_keys_downloading_request_);
 }
 
 void StandaloneTrustedVaultBackend::StoreKeys(
@@ -509,11 +508,15 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
   }
 
   primary_account_ = primary_account;
-  AbandonConnectionRequest();
+  ongoing_device_registration_request_ = nullptr;
+  ongoing_keys_downloading_request_ = nullptr;
   degraded_recoverability_handler_ = nullptr;
   ongoing_get_recoverability_request_.reset();
   ongoing_add_recovery_method_request_.reset();
   RemoveNonPrimaryAccountKeysIfMarkedForDeletion();
+  // TODO(crbug.com/1413179): revisit this when supporting FetchKeys() call
+  // before SetPrimaryAccount().
+  FulfillOngoingFetchKeys(TrustedVaultDownloadKeysStatusForUMA::kAborted);
 
   if (!primary_account_.has_value()) {
     return;
@@ -788,7 +791,7 @@ bool StandaloneTrustedVaultBackend::AreConnectionRequestsThrottledForTesting() {
 
 absl::optional<TrustedVaultDeviceRegistrationStateForUMA>
 StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
-  // TODO(crbug.com/1102340): in case of transient failure this function is
+  // TODO(crbug.com/1413179): in case of transient failure this function is
   // likely to be not called until the browser restart; implement retry logic.
   if (!connection_) {
     // Feature disabled.
@@ -853,28 +856,27 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
     WriteDataToDisk();
   }
 
-  // Cancel existing callbacks passed to |connection_| to ensure there is only
-  // one ongoing request.
-  AbandonConnectionRequest();
-  // |this| outlives |connection_| and |ongoing_connection_request_|, so it's
-  // safe to use base::Unretained() here.
+  // |this| outlives |connection_| and |ongoing_device_registration_request_|,
+  // so it's safe to use base::Unretained() here.
   if (HasNonConstantKey(*per_user_vault)) {
-    ongoing_connection_request_ = connection_->RegisterAuthenticationFactor(
-        *primary_account_, GetAllVaultKeys(*per_user_vault),
-        per_user_vault->last_vault_key_version(), key_pair->public_key(),
-        AuthenticationFactorType::kPhysicalDevice,
-        /*authentication_factor_type_hint=*/absl::nullopt,
-        base::BindOnce(&StandaloneTrustedVaultBackend::OnDeviceRegistered,
-                       base::Unretained(this)));
+    ongoing_device_registration_request_ =
+        connection_->RegisterAuthenticationFactor(
+            *primary_account_, GetAllVaultKeys(*per_user_vault),
+            per_user_vault->last_vault_key_version(), key_pair->public_key(),
+            AuthenticationFactorType::kPhysicalDevice,
+            /*authentication_factor_type_hint=*/absl::nullopt,
+            base::BindOnce(&StandaloneTrustedVaultBackend::OnDeviceRegistered,
+                           base::Unretained(this)));
   } else {
-    ongoing_connection_request_ = connection_->RegisterDeviceWithoutKeys(
-        *primary_account_, key_pair->public_key(),
-        base::BindOnce(
-            &StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys,
-            base::Unretained(this)));
+    ongoing_device_registration_request_ =
+        connection_->RegisterDeviceWithoutKeys(
+            *primary_account_, key_pair->public_key(),
+            base::BindOnce(
+                &StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys,
+                base::Unretained(this)));
   }
 
-  DCHECK(ongoing_connection_request_);
+  DCHECK(ongoing_device_registration_request_);
   if (has_persistent_auth_error_) {
     return TrustedVaultDeviceRegistrationStateForUMA::
         kAttemptingRegistrationWithPersistentAuthError;
@@ -911,10 +913,11 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
   DCHECK(primary_account_.has_value());
 
   // This method should be called only as a result of
-  // |ongoing_connection_request_| completion/failure, verify this condition
-  // and destroy |ongoing_connection_request_| as it's not needed anymore.
-  DCHECK(ongoing_connection_request_);
-  ongoing_connection_request_ = nullptr;
+  // |ongoing_device_registration_request_| completion/failure, verify this
+  // condition and destroy |ongoing_device_registration_request_| as it's not
+  // needed anymore.
+  DCHECK(ongoing_device_registration_request_);
+  ongoing_device_registration_request_ = nullptr;
 
   sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(primary_account_->gaia);
@@ -968,10 +971,10 @@ void StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys(
   DCHECK(primary_account_.has_value());
 
   // This method should be called only as a result of
-  // |ongoing_connection_request_| completion/failure, verify this condition,
-  // |ongoing_connection_request_| will be destroyed later by
-  // OnDeviceRegistered() call.
-  DCHECK(ongoing_connection_request_);
+  // |ongoing_device_registration_request_| completion/failure, verify this
+  // condition, |ongoing_device_registration_request_| will be destroyed later
+  // by OnDeviceRegistered() call.
+  DCHECK(ongoing_device_registration_request_);
 
   sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(primary_account_->gaia);
@@ -1017,10 +1020,11 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
   DCHECK_EQ(*ongoing_fetch_keys_gaia_id_, primary_account_->gaia);
 
   // This method should be called only as a result of
-  // |ongoing_connection_request_| completion/failure, verify this condition
-  // and destroy |ongoing_connection_request_| as it's not needed anymore.
-  DCHECK(ongoing_connection_request_);
-  ongoing_connection_request_ = nullptr;
+  // |ongoing_keys_downloading_request_| completion/failure, verify this
+  // condition and destroy |ongoing_keys_downloading_request_| as it's not
+  // needed anymore.
+  DCHECK(ongoing_keys_downloading_request_);
+  ongoing_keys_downloading_request_ = nullptr;
 
   sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(primary_account_->gaia);
@@ -1095,11 +1099,6 @@ void StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded(
   } else {
     delegate_->NotifyRecoverabilityDegradedChanged();
   }
-}
-
-void StandaloneTrustedVaultBackend::AbandonConnectionRequest() {
-  ongoing_connection_request_ = nullptr;
-  FulfillOngoingFetchKeys(TrustedVaultDownloadKeysStatusForUMA::kAborted);
 }
 
 void StandaloneTrustedVaultBackend::FulfillOngoingFetchKeys(
