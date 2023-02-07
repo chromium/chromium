@@ -1142,7 +1142,14 @@ String CSSSelector::SelectorText() const {
 
 String CSSSelector::SimpleSelectorTextForDebug() const {
   StringBuilder builder;
-  SerializeSimpleSelector(builder);
+  if (match_ == kTag && !is_implicitly_added_) {
+    SerializeNamespacePrefixIfNeeded(TagQName().Prefix(), g_star_atom, builder,
+                                     IsAttributeSelector());
+    SerializeIdentifierOrAny(TagQName().LocalName(), UniversalSelectorAtom(),
+                             builder);
+  } else {
+    SerializeSimpleSelector(builder);
+  }
   return builder.ToString();
 }
 
