@@ -1,9 +1,11 @@
 # Dangling Pointer Detector
 
-Dangling pointers are not a problem unless they are dereferenced and used.
-However, they are a source of UaF bugs and highly discouraged unless you are
-100% confident that they are never dereferenced after the pointed-to objects are
-freed.
+Dangling pointers are not a problem unless they are subsequently dereferenced
+and/or used for other purposes. Proving that pointers are unused has turned out
+to be difficult in general, especially in face of future modifications to
+the code. Hence, they are a source of UaF bugs and highly discouraged unless
+you are able to ensure that they can never be used after the pointed-to objects
+are freed.
 
 See also the [Dangling Pointers Guide](./dangling_ptr_guide.md) for how to fix
 cases where dangling pointers occur.
@@ -121,7 +123,7 @@ Example usage:
    --enable-features=PartitionAllocBackupRefPtr,PartitionAllocDanglingPtr:type/cross_task
 ```
 
-## Combination
+### Combination
 
 Both parameters can be combined, example usage:
 ```bash
@@ -129,3 +131,22 @@ Both parameters can be combined, example usage:
    --enable-features=PartitionAllocBackupRefPtr,PartitionAllocDanglingPtr:mode/log_only/type/cross_task \
    |& tee output
 ```
+
+# Alternative dangling pointer detector (experimental)
+
+The dangling pointer detector above works only against certain heap allocated
+objects, but there is an alternate form that catches other cases such as
+pointers to out-of-scope stack variables or pointers to deallocated shared
+memory regions. The GN arguments to enable it are:
+
+```gn
+enable_backup_ref_ptr_support=false
+is_asan=true
+is_component_build=false
+use_asan_backup_ref_ptr=false
+use_asan_unowned_ptr=true
+```
+
+This will crash when the object containing the dangling ptr is destructed,
+giving the usual three-stack trace from ASAN showing where the deleted object
+was allocated and freed.
