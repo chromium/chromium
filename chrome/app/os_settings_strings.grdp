@@ -2454,14 +2454,26 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_AUDIO_TITLE" desc="In Device Settings, the title of the audio settings subpage.">
     Audio
   </message>
+  <message name="IDS_SETTINGS_AUDIO_VOLUME_TITLE" desc="In Device Settings, the title of the volume row under the output section in audio settings subpage." translateable="false">
+    Volume
+  </message>
   <message name="IDS_SETTINGS_AUDIO_OUTPUT_TITLE" desc="In Device Settings, the title of the output section of the audio settings subpage.">
     Output
   </message>
-  <message name="IDS_SETTINGS_AUDIO_VOLUME_TITLE" desc="In Device Settings, the title of the volume row under the output section in audio settings subpage.">
-    Volume
+  <message name="IDS_SETTINGS_AUDIO_OUTPUT_DEVICE_TITLE" desc="In Device Settings, the title of the device row under the output section in audio settings subpage." translateable="false">
+    Speaker
   </message>
-  <message name="IDS_SETTINGS_AUDIO_DEVICE_TITLE" desc="In Device Settings, the title of the device row under the output section in audio settings subpage.">
-    Device
+  <message name="IDS_SETTINGS_AUDIO_INPUT_TITLE" desc="In Device Settings, the title of the input section of the audio settings subpage." translateable="false">
+    Input
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_DEVICE_TITLE" desc="In Device Settings, the title of the device row under the input section in audio settings subpage." translateable="false">
+    Microphone
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_GAIN_TITLE" desc="In Device Settings, the title of the slider under the input section in audio settings subpage. This slider controls the microphone's gain setting." translateable="false">
+    Gain
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_NOISE_CANCELLATION_TITLE" desc="In Device Settings, the title of the noise cancellation toggle under the input section in audio settings subpage." translateable="false">
+    Noise Cancellation
   </message>
 
   <!-- Device pointer page (OS settings) -->

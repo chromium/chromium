@@ -871,21 +871,22 @@ suite('SettingsDevicePage', function() {
           audioPage.shadowRoot.querySelector('#audioOutputSubsection')));
       assertTrue(
           isVisible(audioPage.shadowRoot.querySelector('#audioInputSection')));
-      const sectionHeader =
+      const inputSectionHeader =
           audioPage.shadowRoot.querySelector('#audioInputTitle');
-      assertTrue(isVisible(sectionHeader));
-      assertEquals('Input', sectionHeader.textContent.trim());
-      const deviceSubsectionHeader =
+      assertTrue(isVisible(inputSectionHeader));
+      assertEquals('Input', inputSectionHeader.textContent.trim());
+      const inputDeviceSubsectionHeader =
           audioPage.shadowRoot.querySelector('#audioInputDeviceLabel');
-      assertTrue(isVisible(deviceSubsectionHeader));
-      assertEquals('Device', deviceSubsectionHeader.textContent.trim());
-      const deviceSubsectionDropdown =
+      assertTrue(isVisible(inputDeviceSubsectionHeader));
+      assertEquals(
+          'Microphone', inputDeviceSubsectionHeader.textContent.trim());
+      const inputDeviceSubsectionDropdown =
           audioPage.shadowRoot.querySelector('#audioInputDeviceDropdown');
-      assertTrue(isVisible(deviceSubsectionDropdown));
+      assertTrue(isVisible(inputDeviceSubsectionDropdown));
       const inputGainSubsectionHeader =
           audioPage.shadowRoot.querySelector('#audioInputGainLabel');
       assertTrue(isVisible(inputGainSubsectionHeader), 'audioInputGainLabel');
-      assertEquals('Volume', inputGainSubsectionHeader.textContent.trim());
+      assertEquals('Gain', inputGainSubsectionHeader.textContent.trim());
       const inputVolumeButton =
           audioPage.shadowRoot.querySelector('#audioInputGainMuteButton');
       assertTrue(isVisible(inputVolumeButton), 'audioInputGainMuteButton');
