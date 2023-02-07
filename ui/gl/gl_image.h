@@ -5,19 +5,9 @@
 #ifndef UI_GL_GL_IMAGE_H_
 #define UI_GL_GL_IMAGE_H_
 
-#include <stdint.h>
-
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "build/build_config.h"
-#include "ui/gfx/buffer_types.h"
-#include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_fence.h"
-#include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/overlay_transform.h"
 #include "ui/gl/gl_export.h"
 
 namespace gpu {

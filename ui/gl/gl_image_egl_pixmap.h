@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/x/glx.h"
 #include "ui/gl/gl_export.h"
