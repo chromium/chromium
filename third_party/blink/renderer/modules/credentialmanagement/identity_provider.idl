@@ -27,4 +27,9 @@
     static void login();
     [RuntimeEnabled=FedCmIdpSigninStatus, CallWith=ScriptState]
     static void logout();
+
+    [RuntimeEnabled=FedCmIdPRegistration, CallWith=ScriptState, ImplementedAs=registerIdentityProvider]
+    static Promise<void> register(USVString configURL);
+    [RuntimeEnabled=FedCmIdPRegistration, CallWith=ScriptState, ImplementedAs=unregisterIdentityProvider]
+    static Promise<void> unregister(USVString configURL);
 };

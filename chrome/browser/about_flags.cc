@@ -7860,6 +7860,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmAutoReauthnDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmAutoReauthn)},
 
+    {"fedcm-idp-registration", flag_descriptions::kFedCmIdPRegistrationName,
+     flag_descriptions::kFedCmIdPRegistrationDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kFedCmIdPRegistration)},
+
     {"fedcm-iframe-support", flag_descriptions::kFedCmIframeSupportName,
      flag_descriptions::kFedCmIframeSupportDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmIframeSupport)},

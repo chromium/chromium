@@ -1473,6 +1473,10 @@ const char kFedCmAutoReauthnDescription[] =
     "Enables auto re-authentication in the FedCM API. Requires FedCM to be "
     "enabled.";
 
+const char kFedCmIdPRegistrationName[] = "FedCM with IdP Registration support";
+const char kFedCmIdPRegistrationDescription[] =
+    "Enables RPs to get identity credentials from registered IdPs.";
+
 const char kFedCmIframeSupportName[] = "FedCM with iframe support";
 const char kFedCmIframeSupportDescription[] =
     "Enables the 'identity-credentials-get' Permissions-Policy for the FedCM "

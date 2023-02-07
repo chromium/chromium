@@ -407,6 +407,11 @@ BASE_FEATURE(kFedCmAutoReauthn,
              "FedCmAutoReauthn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables usage of the FedCM IdP Registration API.
+BASE_FEATURE(kFedCmIdPRegistration,
+             "FedCmIdPregistration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables usage of the FedCM API with iframe support.
 BASE_FEATURE(kFedCmIframeSupport,
              "FedCmIframeSupport",

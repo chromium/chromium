@@ -5,6 +5,7 @@
 #include "chrome/browser/webid/federated_identity_permission_context.h"
 
 #include "chrome/browser/webid/federated_identity_account_keyed_permission_context.h"
+#include "chrome/browser/webid/federated_identity_identity_provider_registration_context.h"
 #include "chrome/browser/webid/federated_identity_identity_provider_signin_status_context.h"
 #include "content/public/browser/browser_context.h"
 
@@ -27,6 +28,9 @@ FederatedIdentityPermissionContext::FederatedIdentityPermissionContext(
           kSharingIdpKey)),
       idp_signin_context_(
           new FederatedIdentityIdentityProviderSigninStatusContext(
+              browser_context)),
+      idp_registration_context_(
+          new FederatedIdentityIdentityProviderRegistrationContext(
               browser_context)) {}
 
 FederatedIdentityPermissionContext::~FederatedIdentityPermissionContext() =
@@ -108,8 +112,21 @@ void FederatedIdentityPermissionContext::SetIdpSigninStatus(
   }
 }
 
+std::vector<GURL> FederatedIdentityPermissionContext::GetRegisteredIdPs() {
+  return idp_registration_context_->GetRegisteredIdPs();
+}
+
+void FederatedIdentityPermissionContext::RegisterIdP(const GURL& origin) {
+  idp_registration_context_->RegisterIdP(origin);
+}
+
+void FederatedIdentityPermissionContext::UnregisterIdP(const GURL& origin) {
+  idp_registration_context_->UnregisterIdP(origin);
+}
+
 void FederatedIdentityPermissionContext::FlushScheduledSaveSettingsCalls() {
   active_session_context_->FlushScheduledSaveSettingsCalls();
   sharing_context_->FlushScheduledSaveSettingsCalls();
   idp_signin_context_->FlushScheduledSaveSettingsCalls();
+  idp_registration_context_->FlushScheduledSaveSettingsCalls();
 }

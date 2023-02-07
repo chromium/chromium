@@ -71,6 +71,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                  LogoutRpsCallback) override;
   void SetIdpSigninStatus(const url::Origin& origin,
                           blink::mojom::IdpSigninStatus status) override;
+  void RegisterIdP(const ::GURL& idp, RegisterIdPCallback) override;
+  void UnregisterIdP(const ::GURL& idp, UnregisterIdPCallback) override;
 
   // FederatedIdentityPermissionContextDelegate::IdpSigninStatusObserver:
   void OnIdpSigninStatusChanged(const url::Origin& idp_config_origin,

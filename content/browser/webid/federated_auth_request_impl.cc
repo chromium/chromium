@@ -664,6 +664,35 @@ void FederatedAuthRequestImpl::SetIdpSigninStatus(
       idp_origin, status == blink::mojom::IdpSigninStatus::kSignedIn);
 }
 
+void FederatedAuthRequestImpl::RegisterIdP(const GURL& idp,
+                                           RegisterIdPCallback callback) {
+  if (!IsFedCmIdPRegistrationEnabled()) {
+    std::move(callback).Run(false);
+    return;
+  }
+  if (!origin().IsSameOriginWith(url::Origin::Create(idp))) {
+    std::move(callback).Run(false);
+    return;
+  }
+  // TODO(crbug.com/1406698): prompt the user for permission.
+  permission_delegate_->RegisterIdP(idp);
+  std::move(callback).Run(true);
+}
+
+void FederatedAuthRequestImpl::UnregisterIdP(const GURL& idp,
+                                             UnregisterIdPCallback callback) {
+  if (!IsFedCmIdPRegistrationEnabled()) {
+    std::move(callback).Run(false);
+    return;
+  }
+  if (!origin().IsSameOriginWith(url::Origin::Create(idp))) {
+    std::move(callback).Run(false);
+    return;
+  }
+  permission_delegate_->UnregisterIdP(idp);
+  std::move(callback).Run(true);
+}
+
 void FederatedAuthRequestImpl::OnIdpSigninStatusChanged(
     const url::Origin& idp_config_origin,
     bool idp_signin_status) {

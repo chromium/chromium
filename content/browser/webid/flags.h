@@ -39,6 +39,9 @@ bool IsFedCmSelectiveDisclosureEnabled();
 // Whether the login hint parameter is enabled.
 bool IsFedCmLoginHintEnabled();
 
+// Whether the IdP Registration API is enabled.
+bool IsFedCmIdPRegistrationEnabled();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

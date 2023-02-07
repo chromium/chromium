@@ -315,6 +315,10 @@ enum class ContentSettingsType : int32_t {
   // the FedCM API.
   FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION,
 
+  // Website setting which stores whether the user has explicitly registered
+  // a website as an identity-provider.
+  FEDERATED_IDENTITY_IDENTITY_PROVIDER_REGISTRATION,
+
   NUM_TYPES,
 };
 

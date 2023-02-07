@@ -18634,6 +18634,7 @@ Called by update_net_error_codes.py.-->
   <int value="92" label="Unused site permissions"/>
   <int value="93" label="Top-level Storage Access"/>
   <int value="94" label="Federated identity auto sign-in"/>
+  <int value="95" label="Federated identity IdP Registration API"/>
 </enum>
 
 <enum name="ContentTypeParseableResult">
@@ -59572,6 +59573,7 @@ from previous Chrome versions.
       label="SupervisedUserCommittedInterstitials:enabled"/>
   <int value="-1096595907" label="disable-new-virtual-keyboard-behavior"/>
   <int value="-1095947169" label="ModalPermissionDialogView:disabled"/>
+  <int value="-1093225454" label="FedCmIdPregistration:disabled"/>
   <int value="-1093135462" label="DesktopPWAsAttentionBadgingCrOS:disabled"/>
   <int value="-1092514142" label="JourneysKeywordFiltering:disabled"/>
   <int value="-1092211161" label="BluetoothWbsDogfood:disabled"/>
@@ -64966,6 +64968,7 @@ from previous Chrome versions.
   <int value="1996051411" label="DeprecateAltBasedSixPack:enabled"/>
   <int value="1996125159" label="AutoplayMutedVideos:enabled"/>
   <int value="1997047666" label="NTPSnippetsIncreasedVisibility:disabled"/>
+  <int value="1997347809" label="FedCmIdPregistration:enabled"/>
   <int value="1997931863" label="OmniboxContextMenuShowFullUrls:enabled"/>
   <int value="1998568354" label="DocumentPictureInPictureAPI:enabled"/>
   <int value="1998917160" label="AppServiceAdaptiveIcon:enabled"/>

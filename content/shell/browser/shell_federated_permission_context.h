@@ -9,11 +9,13 @@
 #include <set>
 #include <string>
 #include <tuple>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_auto_signin_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -66,6 +68,10 @@ class ShellFederatedPermissionContext
   void SetIdpSigninStatus(const url::Origin& idp_origin,
                           bool idp_signin_status) override;
 
+  void RegisterIdP(const ::GURL&) override;
+  void UnregisterIdP(const ::GURL&) override;
+  std::vector<GURL> GetRegisteredIdPs() override;
+
   void SetIdpStatusClosureForTesting(base::RepeatingClosure closure) {
     idp_signin_status_closure_ = std::move(closure);
   }
@@ -82,7 +88,11 @@ class ShellFederatedPermissionContext
   std::map<std::string, absl::optional<bool>> idp_signin_status_;
 
   base::RepeatingClosure idp_signin_status_closure_;
+
   bool auto_signin_permission_{true};
+
+  // A vector of registered IdPs.
+  std::vector<GURL> idp_registry_;
 };
 
 }  // namespace content

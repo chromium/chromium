@@ -815,6 +815,9 @@ extern const char kFedCmDescription[];
 extern const char kFedCmAutoReauthnName[];
 extern const char kFedCmAutoReauthnDescription[];
 
+extern const char kFedCmIdPRegistrationName[];
+extern const char kFedCmIdPRegistrationDescription[];
+
 extern const char kFedCmIframeSupportName[];
 extern const char kFedCmIframeSupportDescription[];
 

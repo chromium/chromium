@@ -145,4 +145,10 @@ interface FederatedAuthRequest {
 
   // Marks the user as logged in/out to the IDP on this origin.
   SetIdpSigninStatus(url.mojom.Origin origin, IdpSigninStatus status);
+
+  // Registers the url as an IdP's configURL of the user's preference.
+  RegisterIdP(url.mojom.Url url) => (bool accepted);
+
+  // Unregisters the url as an IdP's configURL of the user's preference.
+  UnregisterIdP(url.mojom.Url url) => (bool success);
 };

@@ -181,6 +181,8 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     // TODO(crbug.com/1408520): Update JavaScript string representation when
     // desktop UI is implemented.
     {ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION, nullptr},
+    {ContentSettingsType::FEDERATED_IDENTITY_IDENTITY_PROVIDER_REGISTRATION,
+     nullptr},
 };
 
 static_assert(std::size(kContentSettingsTypeGroupNames) ==

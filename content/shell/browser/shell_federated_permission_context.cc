@@ -112,4 +112,18 @@ void ShellFederatedPermissionContext::SetIdpSigninStatus(
     idp_signin_status_closure_.Run();
 }
 
+void ShellFederatedPermissionContext::RegisterIdP(const ::GURL& configURL) {
+  idp_registry_.push_back(configURL);
+}
+
+void ShellFederatedPermissionContext::UnregisterIdP(const ::GURL& configURL) {
+  idp_registry_.erase(
+      std::remove(idp_registry_.begin(), idp_registry_.end(), configURL),
+      idp_registry_.end());
+}
+
+std::vector<GURL> ShellFederatedPermissionContext::GetRegisteredIdPs() {
+  return idp_registry_;
+}
+
 }  // namespace content

@@ -4888,6 +4888,8 @@ interface IdentityProvider
     static method getUserInfo
     static method login
     static method logout
+    static method register
+    static method unregister
     attribute @@toStringTag
     method constructor
 interface IdleDeadline

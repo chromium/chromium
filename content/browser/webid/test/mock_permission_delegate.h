@@ -7,6 +7,7 @@
 
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -46,6 +47,9 @@ class MockPermissionDelegate
                     const std::string&));
   MOCK_METHOD1(GetIdpSigninStatus, absl::optional<bool>(const url::Origin&));
   MOCK_METHOD2(SetIdpSigninStatus, void(const url::Origin&, bool));
+  MOCK_METHOD1(RegisterIdP, void(const ::GURL&));
+  MOCK_METHOD1(UnregisterIdP, void(const ::GURL&));
+  MOCK_METHOD0(GetRegisteredIdPs, std::vector<GURL>());
 };
 
 }  // namespace content

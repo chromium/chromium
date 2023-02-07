@@ -146,4 +146,53 @@ void IdentityProvider::logout(ScriptState* script_state) {
                               mojom::blink::IdpSigninStatus::kSignedOut);
 }
 
+void OnRegisterIdP(ScriptPromiseResolver* resolver, bool accepted) {
+  if (!accepted) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotAllowedError,
+        "User declined the permission to register the Identity Provider."));
+    return;
+  }
+  resolver->Resolve();
+}
+
+ScriptPromise IdentityProvider::registerIdentityProvider(
+    ScriptState* script_state,
+    const String& configURL) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  auto* request =
+      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+  request->RegisterIdP(KURL(configURL),
+                       WTF::BindOnce(&OnRegisterIdP, WrapPersistent(resolver)));
+
+  return promise;
+}
+
+void OnUnregisterIdP(ScriptPromiseResolver* resolver, bool accepted) {
+  if (!accepted) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotAllowedError,
+        "Not allowed to unregister the Identity Provider."));
+    return;
+  }
+  resolver->Resolve();
+}
+
+ScriptPromise IdentityProvider::unregisterIdentityProvider(
+    ScriptState* script_state,
+    const String& configURL) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  auto* request =
+      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+  request->UnregisterIdP(
+      KURL(configURL),
+      WTF::BindOnce(&OnUnregisterIdP, WrapPersistent(resolver)));
+
+  return promise;
+}
+
 }  // namespace blink

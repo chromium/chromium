@@ -3703,6 +3703,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "fedcm-idp-registration",
+    "owners": [ "goto", "web-identity-eng@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "fedcm-iframe-support",
     "owners": [ "npm", "web-identity-eng@google.com"],
     "expiry_milestone": 120

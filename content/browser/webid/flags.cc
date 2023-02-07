@@ -60,4 +60,8 @@ bool IsFedCmLoginHintEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmLoginHint);
 }
 
+bool IsFedCmIdPRegistrationEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmIdPRegistration);
+}
+
 }  // namespace content

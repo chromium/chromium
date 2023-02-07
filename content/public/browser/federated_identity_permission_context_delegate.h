@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_PERMISSION_CONTEXT_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_PERMISSION_CONTEXT_DELEGATE_H_
 
+#include <vector>
+
 #include "base/observer_list.h"
 #include "url/origin.h"
 
@@ -80,6 +82,15 @@ class FederatedIdentityPermissionContextDelegate {
   //   2. fetching accounts response callback
   virtual void SetIdpSigninStatus(const url::Origin& idp_origin,
                                   bool idp_signin_status) = 0;
+
+  // Returns all origins that are registered as IDP.
+  virtual std::vector<GURL> GetRegisteredIdPs() = 0;
+
+  // Registers an IdP.
+  virtual void RegisterIdP(const GURL& url) = 0;
+
+  // Unregisters an IdP.
+  virtual void UnregisterIdP(const GURL& url) = 0;
 };
 
 }  // namespace content
