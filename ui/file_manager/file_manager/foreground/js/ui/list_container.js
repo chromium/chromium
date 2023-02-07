@@ -143,10 +143,10 @@ export class ListContainer {
     this.element.addEventListener(
         'contextmenu', this.onContextMenu_.bind(this), /* useCapture */ true);
 
-    // Disables context menu by long-tap when at least one file/folder is
-    // selected, while still enabling two-finger tap.
+    // Disables context menu by long-tap when long-tap would transition to
+    // multi-select mode, but keep it enabled for two-finger tap.
     this.element.addEventListener('touchstart', function(e) {
-      if (e.touches.length > 1) {
+      if (e.touches.length > 1 || this.currentList.selectedItem) {
         this.allowContextMenuByTouch_ = true;
       }
     }.bind(this), {passive: true});
@@ -159,11 +159,15 @@ export class ListContainer {
       }
     }.bind(this));
     this.element.addEventListener('contextmenu', function(e) {
-      // Block context menu triggered by touch event unless it is right after
-      // multi-touch, or we are currently selecting a file.
+      // Block context menu triggered by touch event unless either:
+      // - It is right after a multi-touch, or
+      // - We were already in multi-select mode, or
+      // - No items are selected (i.e. long-tap on empty area in the current
+      // folder).
       if (this.currentList.selectedItem && !this.allowContextMenuByTouch_ &&
           e.sourceCapabilities && e.sourceCapabilities.firesTouchEvents) {
         e.stopPropagation();
+        e.preventDefault();
       }
     }.bind(this), true);
 
