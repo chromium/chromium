@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/file_manager/io_task_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "components/drive/file_system_core_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
@@ -357,9 +358,13 @@ void CopyOrMoveIOTaskImpl::GotFreeDiskSpace(int64_t free_space) {
   }
 
   if (is_drive) {
-    drive_integration_service->GetPooledQuotaUsage(base::BindOnce(
-        base::BindOnce(&CopyOrMoveIOTaskImpl::GotDrivePooledQuota,
-                       weak_ptr_factory_.GetWeakPtr(), required_bytes)));
+    bool is_shared_drive = drive_integration_service->GetMountPointPath()
+                               .Append(drive::util::kDriveTeamDrivesDirName)
+                               .IsParent(progress_.destination_folder.path());
+    drive_integration_service->GetPooledQuotaUsage(
+        base::BindOnce(base::BindOnce(
+            &CopyOrMoveIOTaskImpl::GotDrivePooledQuota,
+            weak_ptr_factory_.GetWeakPtr(), required_bytes, is_shared_drive)));
     return;
   }
 
@@ -368,6 +373,7 @@ void CopyOrMoveIOTaskImpl::GotFreeDiskSpace(int64_t free_space) {
 
 void CopyOrMoveIOTaskImpl::GotDrivePooledQuota(
     int64_t required_bytes,
+    bool is_shared_drive,
     drive::FileError error,
     drivefs::mojom::PooledQuotaUsagePtr usage) {
   if (error != drive::FileError::FILE_ERROR_OK) {
@@ -380,13 +386,51 @@ void CopyOrMoveIOTaskImpl::GotDrivePooledQuota(
     bool org_exceeded =
         usage->user_type == drivefs::mojom::UserType::kOrganization &&
         usage->organization_limit_exceeded;
+    // User quota does not apply to shared drives.
     bool user_exceeded =
-        usage->total_user_bytes != -1 &&
+        !is_shared_drive && usage->total_user_bytes != -1 &&
         (usage->total_user_bytes - usage->used_user_bytes) < required_bytes;
     if (org_exceeded || user_exceeded) {
       progress_.outputs.emplace_back(progress_.destination_folder,
                                      base::File::FILE_ERROR_NO_SPACE);
       LOG(ERROR) << "Insufficient drive quota";
+      Complete(State::kError);
+      return;
+    }
+  }
+
+  // Check shared drive quota if applicable.
+  auto* drive_integration_service =
+      drive::util::GetIntegrationServiceByProfile(profile_);
+  if (is_shared_drive && drive_integration_service &&
+      drive_integration_service->IsMounted()) {
+    drive_integration_service->GetMetadata(
+        progress_.destination_folder.path(),
+        base::BindOnce(&CopyOrMoveIOTaskImpl::GotSharedDriveMetadata,
+                       weak_ptr_factory_.GetWeakPtr(), required_bytes));
+    return;
+  }
+
+  GenerateDestinationURL(0);
+}
+
+void CopyOrMoveIOTaskImpl::GotSharedDriveMetadata(
+    int64_t required_bytes,
+    drive::FileError error,
+    drivefs::mojom::FileMetadataPtr metadata) {
+  if (error != drive::FileError::FILE_ERROR_OK) {
+    // Log the error if we couldn't fetch the metadata (probably because we are
+    // offline), but continue the operation and we will show an error later
+    // when we come back online and try to sync.
+    LOG(ERROR) << "Error fetching shared drive metadata: "
+               << drive::FileErrorToString(error);
+  } else if (metadata->shared_drive_quota) {
+    const auto& quota = metadata->shared_drive_quota;
+    if ((quota->individual_quota_bytes_total -
+         quota->quota_bytes_used_in_drive) < required_bytes) {
+      progress_.outputs.emplace_back(progress_.destination_folder,
+                                     base::File::FILE_ERROR_NO_SPACE);
+      LOG(ERROR) << "Insufficient shared drive quota";
       Complete(State::kError);
       return;
     }

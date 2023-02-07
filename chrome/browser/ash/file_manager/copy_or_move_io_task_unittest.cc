@@ -114,8 +114,9 @@ class CopyOrMoveIOTaskTest : public testing::TestWithParam<OperationType> {
         base::FilePath::FromUTF8Unsafe(path));
   }
 
-  State CheckDriveQuota(drive::FileError error,
-                        drivefs::mojom::PooledQuotaUsagePtr usage) {
+  State CheckDrivePooledQuota(bool is_shared_drive,
+                              drive::FileError error,
+                              drivefs::mojom::PooledQuotaUsagePtr usage) {
     progress_.sources.emplace_back(CreateFileSystemURL("foo.txt"),
                                    absl::nullopt);
     base::CreateDirectory(temp_dir_.GetPath().Append("dest_folder"));
@@ -126,7 +127,23 @@ class CopyOrMoveIOTaskTest : public testing::TestWithParam<OperationType> {
     task.complete_callback_ = base::BindLambdaForTesting(
         [&](ProgressStatus completed) { progress_.state = completed.state; });
     progress_.state = State::kQueued;
-    task.GotDrivePooledQuota(10, error, std::move(usage));
+    task.GotDrivePooledQuota(10, is_shared_drive, error, std::move(usage));
+    return progress_.state;
+  }
+
+  State CheckSharedDriveQuota(drive::FileError error,
+                              drivefs::mojom::FileMetadataPtr metadata) {
+    progress_.sources.emplace_back(CreateFileSystemURL("foo.txt"),
+                                   absl::nullopt);
+    base::CreateDirectory(temp_dir_.GetPath().Append("dest_folder"));
+    progress_.destination_folder = CreateFileSystemURL("dest_folder/");
+    CopyOrMoveIOTaskImpl task(GetParam(), progress_, {},
+                              CreateFileSystemURL(""), &profile_,
+                              file_system_context_);
+    task.complete_callback_ = base::BindLambdaForTesting(
+        [&](ProgressStatus completed) { progress_.state = completed.state; });
+    progress_.state = State::kQueued;
+    task.GotSharedDriveMetadata(10, error, std::move(metadata));
     return progress_.state;
   }
 
@@ -447,47 +464,83 @@ TEST_P(CopyOrMoveIOTaskTest, DestinationNamesDifferentToSourceNames) {
 }
 
 TEST_P(CopyOrMoveIOTaskTest, DriveQuota) {
-  // Enough quota should succeed.
+  bool is_shared_drive = true;
+  bool not_shared_drive = false;
+  auto ok = drive::FileError::FILE_ERROR_OK;
+
+  // Enough pooled quota should succeed.
   auto usage = drivefs::mojom::PooledQuotaUsage::New();
   usage->user_type = drivefs::mojom::UserType::kUnmanaged;
   usage->total_user_bytes = 100;
   usage->used_user_bytes = 0;
   EXPECT_EQ(State::kQueued,
-            CheckDriveQuota(drive::FileError::FILE_ERROR_OK, std::move(usage)));
+            CheckDrivePooledQuota(not_shared_drive, ok, std::move(usage)));
 
-  // Organization exceeded quota should fail.
+  // Organization exceeded pooled quota should fail.
   usage = drivefs::mojom::PooledQuotaUsage::New();
   usage->user_type = drivefs::mojom::UserType::kOrganization;
   usage->total_user_bytes = 100;
   usage->used_user_bytes = 0;
   usage->organization_limit_exceeded = true;
   EXPECT_EQ(State::kError,
-            CheckDriveQuota(drive::FileError::FILE_ERROR_OK, std::move(usage)));
+            CheckDrivePooledQuota(not_shared_drive, ok, std::move(usage)));
 
-  // User unlimited quota should succeed.
+  // User unlimited pooled quota should succeed.
   usage = drivefs::mojom::PooledQuotaUsage::New();
   usage->user_type = drivefs::mojom::UserType::kUnmanaged;
   usage->total_user_bytes = -1;
   usage->used_user_bytes = 100;
   EXPECT_EQ(State::kQueued,
-            CheckDriveQuota(drive::FileError::FILE_ERROR_OK, std::move(usage)));
+            CheckDrivePooledQuota(not_shared_drive, ok, std::move(usage)));
 
-  // User exceeded quota should fail.
+  // User exceeded pooled quota should fail.
   usage = drivefs::mojom::PooledQuotaUsage::New();
   usage->user_type = drivefs::mojom::UserType::kUnmanaged;
   usage->total_user_bytes = 100;
   usage->used_user_bytes = 100;
   EXPECT_EQ(State::kError,
-            CheckDriveQuota(drive::FileError::FILE_ERROR_OK, std::move(usage)));
+            CheckDrivePooledQuota(not_shared_drive, ok, std::move(usage)));
 
-  // Error fetching quota should succeed.
+  // User exceeded pooled quota should succeed for shared drive.
   usage = drivefs::mojom::PooledQuotaUsage::New();
   usage->user_type = drivefs::mojom::UserType::kUnmanaged;
   usage->total_user_bytes = 100;
   usage->used_user_bytes = 100;
   EXPECT_EQ(State::kQueued,
-            CheckDriveQuota(drive::FileError::FILE_ERROR_NO_CONNECTION,
-                            std::move(usage)));
+            CheckDrivePooledQuota(is_shared_drive, ok, std::move(usage)));
+
+  // Error fetching pooled quota should succeed.
+  usage = drivefs::mojom::PooledQuotaUsage::New();
+  usage->user_type = drivefs::mojom::UserType::kUnmanaged;
+  usage->total_user_bytes = 100;
+  usage->used_user_bytes = 100;
+  EXPECT_EQ(State::kQueued,
+            CheckDrivePooledQuota(not_shared_drive,
+                                  drive::FileError::FILE_ERROR_NO_CONNECTION,
+                                  std::move(usage)));
+
+  // Enough shared drive quota should succeed.
+  auto metadata = drivefs::mojom::FileMetadata::New();
+  metadata->shared_drive_quota = drivefs::mojom::SharedDriveQuota::New();
+  metadata->shared_drive_quota->individual_quota_bytes_total = 100;
+  metadata->shared_drive_quota->quota_bytes_used_in_drive = 0;
+  EXPECT_EQ(State::kQueued, CheckSharedDriveQuota(ok, std::move(metadata)));
+
+  // Exceeded shared drive quota should fail.
+  metadata = drivefs::mojom::FileMetadata::New();
+  metadata->shared_drive_quota = drivefs::mojom::SharedDriveQuota::New();
+  metadata->shared_drive_quota->individual_quota_bytes_total = 100;
+  metadata->shared_drive_quota->quota_bytes_used_in_drive = 100;
+  EXPECT_EQ(State::kError, CheckSharedDriveQuota(ok, std::move(metadata)));
+
+  // Error fetching shared drive quota should succeed.
+  metadata = drivefs::mojom::FileMetadata::New();
+  metadata->shared_drive_quota = drivefs::mojom::SharedDriveQuota::New();
+  metadata->shared_drive_quota->individual_quota_bytes_total = 100;
+  metadata->shared_drive_quota->quota_bytes_used_in_drive = 100;
+  EXPECT_EQ(State::kQueued,
+            CheckSharedDriveQuota(drive::FileError::FILE_ERROR_NO_CONNECTION,
+                                  std::move(metadata)));
 }
 
 INSTANTIATE_TEST_SUITE_P(CopyOrMove,

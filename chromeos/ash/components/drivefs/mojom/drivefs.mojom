@@ -357,7 +357,7 @@ struct DialogReason {
   mojo_base.mojom.FilePath path;
 };
 
-// Next MinVersion: 6
+// Next MinVersion: 7
 struct FileMetadata {
   [Extensible] enum Type {
     // A regular file.
@@ -421,6 +421,9 @@ struct FileMetadata {
   // methods which require the server side file id, such as
   // DriveAPIService::UpdateResource.
   [MinVersion=5] string? item_id;
+
+  // Present if file is part of a shared drive that has a quota limit.
+  [MinVersion=6] SharedDriveQuota? shared_drive_quota;
 };
 
 struct ImageMetadata {
@@ -458,6 +461,14 @@ struct FolderFeature {
 struct QuickAccess {
   // A [0, 1] score with the probability that a user wants this document next.
   double score;
+};
+
+struct SharedDriveQuota {
+  // The number of quota bytes used for the shared drive that this file is in.
+  int64 quota_bytes_used_in_drive;
+
+  // The admin-configured quota limit for the individual shared drive.
+  int64 individual_quota_bytes_total;
 };
 
 // Reason why this event occurred.

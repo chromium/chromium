@@ -130,8 +130,12 @@ class CopyOrMoveIOTaskImpl {
                    const base::File::Info& file_info);
   void GotFreeDiskSpace(int64_t free_space);
   void GotDrivePooledQuota(int64_t required_bytes,
+                           bool is_shared_drive,
                            drive::FileError error,
                            drivefs::mojom::PooledQuotaUsagePtr usage);
+  void GotSharedDriveMetadata(int64_t required_bytes,
+                              drive::FileError error,
+                              drivefs::mojom::FileMetadataPtr metadata);
   void GenerateDestinationURL(size_t idx);
   void CopyOrMoveFile(
       size_t idx,
