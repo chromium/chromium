@@ -84,9 +84,6 @@ When MTECheckedPtr is not enabled (the default):
 
 *   `DegradeToNoOpWhenMTE` - No effect. Uses the default `raw_ptr<T>`
     implementation (currently BackupRefPtr).
-*   `DanglingUntriagedDegradeToNoOpWhenMTE` - No effect. Uses the
-    default `raw_ptr<T>` implementation (currently BackupRefPtr),
-    but permits dangling pointers.
 
 When MTECheckedPtr *is* enabled (not the default for anybody),
 both of the above degrade the `raw_ptr<T, D>` into the no-op version

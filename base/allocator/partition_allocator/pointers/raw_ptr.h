@@ -1296,16 +1296,6 @@ using MayBeDangling = base::raw_ptr<T, base::RawPtrTraits::kMayDangle>;
 // Direct pass-through to no-op implementation.
 constexpr auto DegradeToNoOpWhenMTE = base::RawPtrTraits::kDisableMTECheckedPtr;
 
-// As above, but with the "untriaged dangling" annotation.
-// TODO(arthursonzogni): Remove this definition
-constexpr auto DanglingUntriagedDegradeToNoOpWhenMTE =
-    DanglingUntriaged | DegradeToNoOpWhenMTE;
-
-// As above, but with the "explicitly disable protection" annotation.
-// TODO(arthursonzogni): Remove this definition
-constexpr auto DisableDanglingPtrDetectionDegradeToNoOpWhenMTE =
-    DisableDanglingPtrDetection | DegradeToNoOpWhenMTE;
-
 namespace std {
 
 // Override so set/map lookups do not create extra raw_ptr. This also allows
