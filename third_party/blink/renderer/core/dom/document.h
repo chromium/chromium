@@ -1557,10 +1557,12 @@ class CORE_EXPORT Document : public ContainerNode,
   }
   void SetPopoverPointerdownTarget(const HTMLElement*);
 
+  HeapHashSet<WeakMember<Element>>& ElementsWithCSSToggles() {
+    return elements_with_css_toggles_;
+  }
   // Add an element to the set of elements that, because of CSS toggle
   // creation, need style recalc done later.
   void AddToRecalcStyleForToggle(Element* element);
-
   // Call SetNeedsStyleRecalc for elements from AddToRecalcStyleForToggle;
   // return whether any calls were made.
   bool SetNeedsStyleRecalcForToggles();
@@ -2408,6 +2410,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // are still running.
   HeapHashSet<Member<HTMLElement>> popovers_waiting_to_hide_;
 
+  // Elements that have CSS Toggles.
+  HeapHashSet<WeakMember<Element>> elements_with_css_toggles_;
   // Elements that need to be restyled because a toggle was created on them,
   // or a prior sibling, during the previous restyle.
   HeapHashSet<Member<Element>> elements_needing_style_recalc_for_toggle_;

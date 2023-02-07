@@ -7588,6 +7588,10 @@ void Element::DidMoveToNewDocument(Document& old_document) {
   if (auto* context = GetDisplayLockContext()) {
     context->DidMoveToNewDocument(old_document);
   }
+
+  if (CSSToggleMap* css_toggle_map = GetToggleMap()) {
+    css_toggle_map->DidMoveToNewDocument(old_document);
+  }
 }
 
 void Element::UpdateNamedItemRegistration(NamedItemType type,

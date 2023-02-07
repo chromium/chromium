@@ -18,6 +18,7 @@
 
 namespace blink {
 
+class Document;
 class Element;
 class ExceptionState;
 class ToggleRootList;
@@ -42,6 +43,8 @@ class CORE_EXPORT CSSToggleMap : public ScriptWrappable,
   void CreateToggles(const ToggleRootList* toggle_roots);
 
   void Trace(Visitor* visitor) const override;
+
+  void DidMoveToNewDocument(Document& old_document);
 
   CSSToggleMap* set(const AtomicString& key,
                     CSSToggle* value,

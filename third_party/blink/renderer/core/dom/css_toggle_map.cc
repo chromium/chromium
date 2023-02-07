@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/css_toggle_map.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/style/toggle_root.h"
@@ -13,7 +14,14 @@
 namespace blink {
 
 CSSToggleMap::CSSToggleMap(Element* owner_element)
-    : owner_element_(owner_element) {}
+    : owner_element_(owner_element) {
+  DCHECK(owner_element);
+
+  auto add_result =
+      owner_element->GetDocument().ElementsWithCSSToggles().insert(
+          owner_element);
+  DCHECK(add_result.is_new_entry);
+}
 
 void CSSToggleMap::Trace(Visitor* visitor) const {
   visitor->Trace(owner_element_);
@@ -21,6 +29,20 @@ void CSSToggleMap::Trace(Visitor* visitor) const {
 
   ScriptWrappable::Trace(visitor);
   ElementRareDataField::Trace(visitor);
+}
+
+void CSSToggleMap::DidMoveToNewDocument(Document& old_document) {
+  Element* element = OwnerElement();
+
+  // In theory the removal from the old document should happen
+  // earlier, but it shouldn't matter, because we don't use
+  // ElementsWithCSSToggles() from things that can happen mid-move.
+  DCHECK(old_document.ElementsWithCSSToggles().Contains(element));
+  old_document.ElementsWithCSSToggles().erase(element);
+
+  auto add_result =
+      element->GetDocument().ElementsWithCSSToggles().insert(element);
+  DCHECK(add_result.is_new_entry);
 }
 
 void CSSToggleMap::CreateToggles(const ToggleRootList* toggle_roots) {
