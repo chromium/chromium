@@ -333,12 +333,15 @@ void UnmapNow(uintptr_t reservation_start,
   } else
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   {
-    PA_DCHECK(
-        pool == kRegularPoolHandle
+    PA_DCHECK(pool == kRegularPoolHandle
 #if BUILDFLAG(ENABLE_PKEYS)
-        || pool == kPkeyPoolHandle
+              || pool == kPkeyPoolHandle
 #endif
-        || (IsConfigurablePoolAvailable() && pool == kConfigurablePoolHandle));
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
+              ||
+              (IsConfigurablePoolAvailable() && pool == kConfigurablePoolHandle)
+#endif
+    );
     // Non-BRP pools don't need adjustment that BRP needs in 32-bit mode.
     PA_DCHECK(IsManagedByPartitionAllocRegularPool(reservation_start) ||
 #if BUILDFLAG(ENABLE_PKEYS)

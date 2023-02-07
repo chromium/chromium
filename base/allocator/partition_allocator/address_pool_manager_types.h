@@ -7,7 +7,7 @@
 
 namespace partition_alloc::internal {
 
-using pool_handle = unsigned;
+enum pool_handle : unsigned;
 
 }  // namespace partition_alloc::internal
 

@@ -52,7 +52,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     PA_DCHECK(!IsInBRPPool(address));
 #endif
-    pool_handle pool = 0;
+    pool_handle pool = kNullPoolHandle;
     uintptr_t base = 0;
     if (IsInRegularPool(address)) {
       pool = kRegularPoolHandle;

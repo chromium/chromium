@@ -652,10 +652,12 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   }
 
   internal::pool_handle ChoosePool() const {
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
     if (flags.use_configurable_pool) {
       PA_DCHECK(IsConfigurablePoolAvailable());
       return internal::kConfigurablePoolHandle;
     }
+#endif
 #if BUILDFLAG(ENABLE_PKEYS)
     if (flags.pkey != internal::kDefaultPkey) {
       return internal::kPkeyPoolHandle;

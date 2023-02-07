@@ -81,7 +81,7 @@ class PartitionAllocAddressPoolManagerTest : public testing::Test {
 
 TEST_F(PartitionAllocAddressPoolManagerTest, TooLargePool) {
   uintptr_t base_addr = 0x4200000;
-  const pool_handle extra_pool = 2;
+  const pool_handle extra_pool = static_cast<pool_handle>(2u);
   static_assert(kNumPools >= 2);
 
   EXPECT_DEATH_IF_SUPPORTED(

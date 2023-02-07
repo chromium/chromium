@@ -113,7 +113,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
 
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
 PA_ALWAYS_INLINE uint16_t* GetReservationOffsetTable(pool_handle handle) {
-  PA_DCHECK(0 < handle && handle <= kNumPools);
+  PA_DCHECK(kNullPoolHandle < handle && handle <= kNumPools);
   return ReservationOffsetTable::padded_reservation_offset_tables_
       .tables[handle - 1]
       .offsets;

@@ -151,7 +151,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
   };
 
   PA_ALWAYS_INLINE Pool* GetPool(pool_handle handle) {
-    PA_DCHECK(0 < handle && handle <= kNumPools);
+    PA_DCHECK(kNullPoolHandle < handle && handle <= kNumPools);
     return &aligned_pools_.pools_[handle - 1];
   }
 

@@ -261,12 +261,29 @@ constexpr size_t kSuperPageOffsetMask = kSuperPageAlignment - 1;
 constexpr size_t kSuperPageBaseMask = ~kSuperPageOffsetMask;
 
 // PartitionAlloc's address space is split into pools. See `glossary.md`.
+
+enum pool_handle : unsigned {
+  kNullPoolHandle = 0u,
+
+  kRegularPoolHandle,
+  kBRPPoolHandle,
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
-#if BUILDFLAG(ENABLE_PKEYS)
-constexpr size_t kNumPools = 4;
-#else
-constexpr size_t kNumPools = 3;
+  kConfigurablePoolHandle,
 #endif
+
+// New pool_handles will be added here.
+
+#if BUILDFLAG(ENABLE_PKEYS)
+  // The pkey pool must come last since we pkey_mprotect its entry in the
+  // metadata tables, e.g. AddressPoolManager::aligned_pools_
+  kPkeyPoolHandle,
+#endif
+  kMaxPoolHandle
+};
+
+// kNullPoolHandle doesn't have metadata, hence - 1
+constexpr size_t kNumPools = kMaxPoolHandle - 1;
+
 // Maximum pool size. With exception of Configurable Pool, it is also
 // the actual size, unless PA_DYNAMICALLY_SELECT_POOL_SIZE is set, which
 // allows to choose a different size at initialization time for certain
@@ -278,22 +295,18 @@ constexpr size_t kNumPools = 3;
 //
 // When pointer compression is enabled, we cannot use large pools (at most
 // 8GB for each of the glued pools).
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || PA_CONFIG(POINTER_COMPRESSION)
 constexpr size_t kPoolMaxSize = 8 * kGiB;
 #else
 constexpr size_t kPoolMaxSize = 16 * kGiB;
 #endif
 #else  // BUILDFLAG(HAS_64_BIT_POINTERS)
-constexpr size_t kNumPools = 2;
 constexpr size_t kPoolMaxSize = 4 * kGiB;
 #endif
 constexpr size_t kMaxSuperPagesInPool = kPoolMaxSize / kSuperPageSize;
 
-static constexpr pool_handle kRegularPoolHandle = 1;
-static constexpr pool_handle kBRPPoolHandle = 2;
-static constexpr pool_handle kConfigurablePoolHandle = 3;
 #if BUILDFLAG(ENABLE_PKEYS)
-static constexpr pool_handle kPkeyPoolHandle = 4;
 static_assert(
     kPkeyPoolHandle == kNumPools,
     "The pkey pool must come last since we pkey_mprotect its metadata.");

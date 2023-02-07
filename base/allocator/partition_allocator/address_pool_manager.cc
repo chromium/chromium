@@ -77,8 +77,9 @@ uintptr_t AddressPoolManager::GetPoolBaseAddress(pool_handle handle) {
 }
 
 void AddressPoolManager::ResetForTesting() {
-  for (pool_handle i = 0; i < std::size(aligned_pools_.pools_); ++i)
+  for (size_t i = 0; i < std::size(aligned_pools_.pools_); ++i) {
     aligned_pools_.pools_[i].Reset();
+  }
 }
 
 void AddressPoolManager::Remove(pool_handle handle) {
@@ -102,7 +103,7 @@ uintptr_t AddressPoolManager::Reserve(pool_handle handle,
 void AddressPoolManager::UnreserveAndDecommit(pool_handle handle,
                                               uintptr_t address,
                                               size_t length) {
-  PA_DCHECK(0 < handle && handle <= kNumPools);
+  PA_DCHECK(kNullPoolHandle < handle && handle <= kNumPools);
   Pool* pool = GetPool(handle);
   PA_DCHECK(pool->IsInitialized());
   DecommitPages(address, length);
