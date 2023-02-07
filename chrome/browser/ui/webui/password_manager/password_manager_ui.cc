@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
@@ -18,6 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/password_manager_resources.h"
 #include "chrome/grit/password_manager_resources_map.h"
+#include "components/favicon_base/favicon_url_parser.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
@@ -214,6 +216,10 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
   source->AddResourcePath("images/password_manager_pwa_icon.svg",
                           IDR_CHROME_PASSWORD_MANAGER_PWA_ICON);
 #endif
+
+  content::URLDataSource::Add(
+      profile, std::make_unique<FaviconSource>(
+                   profile, chrome::FaviconUrlFormat::kFavicon2));
 
   return source;
 }
