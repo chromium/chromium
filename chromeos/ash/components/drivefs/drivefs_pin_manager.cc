@@ -339,26 +339,27 @@ bool PinManager::CanPin(const mojom::FileMetadata& md, const Path& path) {
 bool PinManager::Add(const Id id,
                      const Path& path,
                      const int64_t size,
-                     const bool pinned) {
+                     const bool pinned,
+                     const bool available_offline) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(size, 0) << " for " << id << " " << Quote(path);
 
   const auto [it, ok] = files_to_track_.try_emplace(
       id, File{.path = path, .total = size, .pinned = pinned});
   DCHECK_EQ(id, it->first);
+  File& file = it->second;
   if (!ok) {
     LOG_IF(ERROR, !ok) << "Cannot add " << id << " " << Quote(path)
                        << " with size " << HumanReadableSize(size)
-                       << " to the files to track: Conflicting entry "
-                       << it->second;
+                       << " to the files to track: Conflicting entry " << file;
     return false;
   }
 
   VLOG(3) << "Added " << id << " " << Quote(path) << " with size "
           << HumanReadableSize(size) << " to the files to track";
-  progress_.bytes_to_pin += size;
-  progress_.required_space += RoundToBlockSize(size);
+
   progress_.files_to_pin++;
+  progress_.bytes_to_pin += size;
 
   if (pinned) {
     progress_.syncing_files++;
@@ -368,6 +369,21 @@ bool PinManager::Add(const Id id,
     DCHECK_LE(files_to_pin_.size(),
               static_cast<size_t>(progress_.files_to_pin));
   }
+
+  if (available_offline) {
+    file.transferred = size;
+    progress_.pinned_bytes += size;
+  } else {
+    DCHECK_EQ(file.transferred, 0);
+    progress_.required_space += RoundToBlockSize(size);
+  }
+
+  VLOG_IF(1, pinned && !available_offline)
+      << "Already pinned but not available offline yet: " << id << " "
+      << Quote(path);
+  VLOG_IF(1, !pinned && available_offline)
+      << "Not pinned yet but already available offline: " << id << " "
+      << Quote(path);
 
   return true;
 }
@@ -380,14 +396,7 @@ bool PinManager::Add(const mojom::FileMetadata& md, const Path& path) {
     return false;
   }
 
-  VLOG_IF(1, md.pinned && !md.available_offline)
-      << "Already pinned but not available offline yet: " << id << " "
-      << Quote(path);
-  VLOG_IF(1, !md.pinned && md.available_offline)
-      << "Not pinned yet but already available offline: " << id << " "
-      << Quote(path) << ": " << Quote(md);
-
-  return Add(id, path, GetSize(md), md.pinned);
+  return Add(id, path, GetSize(md), md.pinned, md.available_offline);
 }
 
 bool PinManager::Remove(const Id id,
@@ -453,25 +462,22 @@ bool PinManager::Update(const Id id,
 
 bool PinManager::Update(Files::value_type& entry,
                         const Path& path,
-                        int64_t transferred,
-                        int64_t total) {
+                        const int64_t transferred,
+                        const int64_t total) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto& [id, file] = entry;
+  const Id id = entry.first;
+  File& file = entry.second;
   bool modified = false;
 
   if (path != file.path) {
-    VLOG(1) << "Changed path of " << id << " " << Quote(file.path) << " to "
-            << Quote(path);
+    VLOG(1) << "Changed path of " << id << " from " << Quote(file.path)
+            << " to " << Quote(path);
     file.path = path;
     modified = true;
   }
 
   if (!file.in_progress) {
-    LOG_IF(ERROR, file.transferred > 0)
-        << "Queued " << id << " " << Quote(path) << " already has transferred "
-        << HumanReadableSize(file.transferred);
-
     file.in_progress = true;
     modified = true;
   }
@@ -662,8 +668,8 @@ void PinManager::StartPinning() {
 
   VLOG(1) << "Free space: " << HumanReadableSize(progress_.free_space);
   VLOG(1) << "Required space: " << HumanReadableSize(progress_.required_space);
-  VLOG(1) << "To download: " << HumanReadableSize(progress_.bytes_to_pin);
-  VLOG(1) << "To pin: " << files_to_pin_.size() << " files";
+  VLOG(1) << "To pin: " << files_to_pin_.size() << " files, "
+          << HumanReadableSize(progress_.bytes_to_pin);
   VLOG(1) << "To track: " << files_to_track_.size() << " files";
 
   // The free space should not go below this limit.
