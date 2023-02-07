@@ -13,6 +13,7 @@
 #include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_session_runner.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/components/arc/test/fake_policy_instance.h"
@@ -199,6 +200,9 @@ class ArcPolicyBridgeTestBase {
   ArcPolicyBridgeTestBase& operator=(const ArcPolicyBridgeTestBase&) = delete;
 
   void DoSetUp(bool is_affiliated) {
+    SetArcAvailableCommandLineForTesting(
+        base::CommandLine::ForCurrentProcess());
+
     // Set up fake StatisticsProvider.
     ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
@@ -238,6 +242,14 @@ class ArcPolicyBridgeTestBase {
 
     cert_store_service_ = GetCertStoreService();
 
+    // Init ArcSessionManager for testing.
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    arc_session_manager_ =
+        CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
+            base::BindRepeating(FakeArcSession::Create)));
+    arc_session_manager()->SetProfile(profile());
+    arc_session_manager()->Initialize();
+
     // TODO(hidehiko): Use Singleton instance tied to BrowserContext.
     policy_bridge_ = std::make_unique<ArcPolicyBridge>(
         profile_, bridge_service_.get(), &policy_service_);
@@ -254,6 +266,10 @@ class ArcPolicyBridgeTestBase {
     bridge_service_->policy()->CloseInstance(policy_instance_.get());
     policy_instance_.reset();
     policy_bridge_->RemoveObserver(&observer_);
+    policy_bridge_.reset();
+    arc_session_manager()->Shutdown();
+    arc_session_manager_.reset();
+    ash::ConciergeClient::Shutdown();
     testing_profile_manager_.reset();
   }
 
@@ -325,6 +341,9 @@ class ArcPolicyBridgeTestBase {
   ArcBridgeService* bridge_service() { return bridge_service_.get(); }
   CertStoreService* cert_store_service() { return cert_store_service_; }
   ash::system::FakeStatisticsProvider statistics_provider_;
+  ArcSessionManager* arc_session_manager() {
+    return arc_session_manager_.get();
+  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -336,6 +355,7 @@ class ArcPolicyBridgeTestBase {
   std::unique_ptr<ArcBridgeService> bridge_service_;
   CertStoreService* cert_store_service_;  // Not owned.
 
+  std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcPolicyBridge> policy_bridge_;
   std::string instance_guid_;
   MockArcPolicyBridgeObserver observer_;
@@ -786,14 +806,9 @@ TEST_F(ArcPolicyBridgeTest, DisableAppsInSnapshot) {
   constexpr char kFalse[] = "false";
   constexpr char kTrue[] = "true";
 
-  ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-
   auto upstart_client = std::make_unique<ash::FakeUpstartClient>();
   arc::prefs::RegisterLocalStatePrefs(
       profile()->GetTestingPrefService()->registry());
-  auto arc_session_manager =
-      CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
-          base::BindRepeating(FakeArcSession::Create)));
 
   auto manager = std::make_unique<arc::data_snapshotd::ArcDataSnapshotdManager>(
       profile()->GetTestingPrefService(),
@@ -821,8 +836,6 @@ TEST_F(ArcPolicyBridgeTest, DisableAppsInSnapshot) {
 
   manager.reset();
   upstart_client.reset();
-  arc_session_manager.reset();
-  ash::ConciergeClient::Shutdown();
 }
 
 TEST_P(ArcPolicyBridgeAffiliatedTest, ApkCacheEnabledTest) {

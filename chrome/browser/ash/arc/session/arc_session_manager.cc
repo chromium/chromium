@@ -1088,6 +1088,9 @@ void ArcSessionManager::OnActivationNecessityChecked(bool result) {
   } else {
     activation_delay_elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
     VLOG(1) << "Activation is not allowed yet. Not starting ARC for now.";
+    for (auto& observer : observer_list_) {
+      observer.OnArcStartDelayed();
+    }
   }
 }
 

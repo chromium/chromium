@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/policy/managed_configuration_variables.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
@@ -52,6 +53,9 @@ constexpr char kPolicyCompliantJson[] = "{ \"policyCompliant\": true }";
 constexpr char kArcRequiredKeyPairs[] = "requiredKeyPairs";
 constexpr char kPrivateKeySelectionEnabled[] = "privateKeySelectionEnabled";
 constexpr char kChoosePrivateKeyRules[] = "choosePrivateKeyRules";
+constexpr char kPolicyApplications[] = "applications";
+constexpr char kPolicyAppInstallType[] = "installType";
+constexpr char kPolicyAppInstallTypeForceInstalled[] = "FORCE_INSTALLED";
 
 // invert_bool_value: If the Chrome policy and the ARC policy with boolean value
 // have opposite semantics, set this to true so the bool is inverted before
@@ -527,10 +531,17 @@ ArcPolicyBridge::ArcPolicyBridge(content::BrowserContext* context,
   VLOG(2) << "ArcPolicyBridge::ArcPolicyBridge";
   arc_bridge_service_->policy()->SetHost(this);
   arc_bridge_service_->policy()->AddObserver(this);
+  arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
+  arc_session_manager->AddObserver(this);
 }
 
 ArcPolicyBridge::~ArcPolicyBridge() {
   VLOG(2) << "ArcPolicyBridge::~ArcPolicyBridge";
+  arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
+  // It can be null in unittests
+  if (arc_session_manager) {
+    arc_session_manager->RemoveObserver(this);
+  }
   arc_bridge_service_->policy()->RemoveObserver(this);
   arc_bridge_service_->policy()->SetHost(nullptr);
 }
@@ -553,10 +564,7 @@ void ArcPolicyBridge::OverrideIsManagedForTesting(bool is_managed) {
 
 void ArcPolicyBridge::OnConnectionReady() {
   VLOG(1) << "ArcPolicyBridge::OnConnectionReady";
-  if (policy_service_ == nullptr) {
-    InitializePolicyService();
-  }
-  policy_service_->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
+  InitializePolicyService();
   policy_util::RecordInstallTypesInPolicy(GetCurrentJSONPolicies());
 
   if (!on_arc_instance_ready_callback_.is_null()) {
@@ -567,6 +575,7 @@ void ArcPolicyBridge::OnConnectionReady() {
 void ArcPolicyBridge::OnConnectionClosed() {
   VLOG(1) << "ArcPolicyBridge::OnConnectionClosed";
   policy_service_->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
+  is_policy_service_observed = false;
   policy_service_ = nullptr;
 }
 
@@ -646,6 +655,13 @@ void ArcPolicyBridge::OnPolicyUpdated(const policy::PolicyNamespace& ns,
                                       const policy::PolicyMap& previous,
                                       const policy::PolicyMap& current) {
   VLOG(1) << "ArcPolicyBridge::OnPolicyUpdated";
+
+  // Allow ARC activation if any app needs to be force installed when ARC on
+  // demand is enabled. As ARC on demand will only be enabled if there are no
+  // apps being installed, only current is checked here instead of the delta
+  // between previous and current.
+  ActivateArcIfRequiredByPolicy(current);
+
   auto* instance = ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->policy(),
                                                OnPolicyUpdated);
   if (!instance)
@@ -653,6 +669,16 @@ void ArcPolicyBridge::OnPolicyUpdated(const policy::PolicyNamespace& ns,
 
   instance->OnPolicyUpdated();
   RecordInstallTypesInPolicy(current);
+}
+
+void ArcPolicyBridge::OnArcStartDelayed() {
+  InitializePolicyService();
+  const policy::PolicyNamespace policy_namespace(
+      policy::POLICY_DOMAIN_CHROME,
+      /*component_id=*/std::string());
+  const policy::PolicyMap& policy_map =
+      policy_service_->GetPolicies(policy_namespace);
+  ActivateArcIfRequiredByPolicy(policy_map);
 }
 
 void ArcPolicyBridge::OnCommandReceived(
@@ -679,10 +705,16 @@ void ArcPolicyBridge::OnCommandReceived(
 }
 
 void ArcPolicyBridge::InitializePolicyService() {
-  auto* profile_policy_connector =
-      Profile::FromBrowserContext(context_)->GetProfilePolicyConnector();
-  policy_service_ = profile_policy_connector->policy_service();
-  is_managed_ = profile_policy_connector->IsManaged();
+  if (policy_service_ == nullptr) {
+    auto* profile_policy_connector =
+        Profile::FromBrowserContext(context_)->GetProfilePolicyConnector();
+    policy_service_ = profile_policy_connector->policy_service();
+    is_managed_ = profile_policy_connector->IsManaged();
+  }
+  if (!is_policy_service_observed) {
+    policy_service_->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
+    is_policy_service_observed = true;
+  }
 }
 
 std::string ArcPolicyBridge::GetCurrentJSONPolicies() const {
@@ -717,6 +749,24 @@ void ArcPolicyBridge::OnReportComplianceParse(
     for (Observer& observer : observers_) {
       observer.OnComplianceReportReceived(&*result);
     }
+  }
+}
+
+// static
+void ArcPolicyBridge::ActivateArcIfRequiredByPolicy(
+    const policy::PolicyMap& policy_map) {
+  base::Value::Dict filtered_policies = ParseArcPoliciesToDict(policy_map);
+  base::Value::List* apps = filtered_policies.FindList(kPolicyApplications);
+  if (apps == nullptr) {
+    return;
+  }
+  bool hasForceInstallApps =
+      std::any_of(apps->cbegin(), apps->cbegin(), [](const auto& app) {
+        return *app.GetDict().FindString(kPolicyAppInstallType) ==
+               kPolicyAppInstallTypeForceInstalled;
+      });
+  if (hasForceInstallApps) {
+    arc::ArcSessionManager::Get()->AllowActivation();
   }
 }
 

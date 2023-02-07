@@ -46,6 +46,9 @@ class ArcSessionManagerObserver {
   // browser_tests
   virtual void OnArcDataRemoved() {}
 
+  // Called to notify that ARC start is delayed by ARC on demand
+  virtual void OnArcStartDelayed() {}
+
   // Called to notify that the error is requested by the session manager to be
   // displayed in the support host. This is called even if Support UI is
   // disabled. Note that this is not called in cases when the support app

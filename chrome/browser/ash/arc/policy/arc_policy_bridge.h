@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
@@ -53,7 +54,8 @@ enum ArcCertsSyncMode : int32_t {
 class ArcPolicyBridge : public KeyedService,
                         public ConnectionObserver<mojom::PolicyInstance>,
                         public mojom::PolicyHost,
-                        public policy::PolicyService::Observer {
+                        public policy::PolicyService::Observer,
+                        public arc::ArcSessionManagerObserver {
  public:
   class Observer {
    public:
@@ -171,6 +173,9 @@ class ArcPolicyBridge : public KeyedService,
                        const policy::PolicyMap& previous,
                        const policy::PolicyMap& current) override;
 
+  // arc::ArcSessionManagerObserver overrides
+  void OnArcStartDelayed() override;
+
   void OnCommandReceived(
       const std::string& command,
       mojom::PolicyInstance::OnCommandReceivedCallback callback);
@@ -194,12 +199,18 @@ class ArcPolicyBridge : public KeyedService,
       base::OnceCallback<void(const std::string&)> callback,
       data_decoder::DataDecoder::ValueOrError result);
 
+  // Check the policy to see if ARC needs to be activated to install any
+  // applications
+  static void ActivateArcIfRequiredByPolicy(
+      const policy::PolicyMap& policy_map);
+
   content::BrowserContext* const context_;
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
   policy::PolicyService* policy_service_ = nullptr;
 
   bool is_managed_ = false;
+  bool is_policy_service_observed = false;
 
   // HACK(b/73762796): A GUID that is regenerated whenever |this| is created,
   // ensuring that the first policy sent to CloudDPC is considered different
