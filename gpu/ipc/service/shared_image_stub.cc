@@ -153,6 +153,43 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
   return true;
 }
 
+bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
+                                        gfx::GpuMemoryBufferHandle handle,
+                                        viz::SharedImageFormat format,
+                                        const gfx::Size& size,
+                                        const gfx::ColorSpace& color_space,
+                                        GrSurfaceOrigin surface_origin,
+                                        SkAlphaType alpha_type,
+                                        uint32_t usage) {
+  TRACE_EVENT2("gpu", "SharedImageStub::CreateSharedImage", "width",
+               size.width(), "height", size.height());
+  // TODO(kylechar): Add support for single-planar formats and remove this.
+  if (!format.is_multi_plane()) {
+    LOG(ERROR) << "SharedImageStub: Incompatible format.";
+    OnError();
+    return false;
+  }
+  if (!mailbox.IsSharedImage()) {
+    LOG(ERROR) << "SharedImageStub: Trying to create a SharedImage with a "
+                  "non-SharedImage mailbox and multiplanar format";
+    OnError();
+    return false;
+  }
+  if (!MakeContextCurrent()) {
+    OnError();
+    return false;
+  }
+  if (!factory_->CreateSharedImage(mailbox, format, size, color_space,
+                                   surface_origin, alpha_type, usage,
+                                   std::move(handle))) {
+    LOG(ERROR) << "SharedImageStub: Unable to create shared image with "
+                  "multiplanar format";
+    OnError();
+    return false;
+  }
+  return true;
+}
+
 bool SharedImageStub::UpdateSharedImage(const Mailbox& mailbox,
                                         gfx::GpuFenceHandle in_fence_handle) {
   TRACE_EVENT0("gpu", "SharedImageStub::UpdateSharedImage");
@@ -265,30 +302,10 @@ void SharedImageStub::OnCreateSharedImageWithBuffer(
     mojom::CreateSharedImageWithBufferParamsPtr params) {
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImageWithBuffer", "width",
                params->size.width(), "height", params->size.height());
-
-  // TODO(kylechar): Add support for single-planar formats and remove this.
-  if (!params->format.is_multi_plane()) {
-    LOG(ERROR) << "SharedImageStub: Incompatible format.";
-    OnError();
-    return;
-  }
-  if (!params->mailbox.IsSharedImage()) {
-    LOG(ERROR) << "SharedImageStub: Trying to create a SharedImage with a "
-                  "non-SharedImage mailbox.";
-    OnError();
-    return;
-  }
-
-  if (!MakeContextCurrent()) {
-    OnError();
-    return;
-  }
-  if (!factory_->CreateSharedImage(
-          params->mailbox, params->format, params->size, params->color_space,
-          params->surface_origin, params->alpha_type, params->usage,
-          std::move(params->buffer_handle))) {
-    LOG(ERROR) << "SharedImageStub: Unable to create shared image";
-    OnError();
+  if (!CreateSharedImage(params->mailbox, std::move(params->buffer_handle),
+                         params->format, params->size, params->color_space,
+                         params->surface_origin, params->alpha_type,
+                         params->usage)) {
     return;
   }
 

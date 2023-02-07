@@ -58,6 +58,14 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
                          GrSurfaceOrigin surface_origin,
                          SkAlphaType alpha_type,
                          uint32_t usage);
+  bool CreateSharedImage(const Mailbox& mailbox,
+                         gfx::GpuMemoryBufferHandle handle,
+                         viz::SharedImageFormat format,
+                         const gfx::Size& size,
+                         const gfx::ColorSpace& color_space,
+                         GrSurfaceOrigin surface_origin,
+                         SkAlphaType alpha_type,
+                         uint32_t usage);
 
   bool UpdateSharedImage(const Mailbox& mailbox,
                          gfx::GpuFenceHandle in_fence_handle);
