@@ -462,6 +462,9 @@ net::NetworkTrafficAnnotationTag HashRealTimeService::GetTrafficAnnotationTag()
       contacts {
         email: "thefrog@chromium.org"
       }
+      contacts {
+        email: "chrome-counter-abuse-alerts@google.com"
+      }
     }
     user_data {
       type: NONE
