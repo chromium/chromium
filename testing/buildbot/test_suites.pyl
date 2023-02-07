@@ -5900,6 +5900,18 @@
       'chromium_web_tests_high_dpi_isolated_scripts',
     ],
 
+    'chromium_linux_rel_isolated_scripts_code_coverage': [
+      'chromedriver_py_tests_isolated_scripts',
+      'desktop_chromium_isolated_scripts',
+      'linux_specific_chromium_isolated_scripts',
+      'mojo_python_unittests_isolated_scripts',
+      'pytype_tests',
+      'telemetry_perf_unittests_isolated_scripts',
+      'vulkan_swiftshader_isolated_scripts',
+      'chromium_web_tests_high_dpi_isolated_scripts',
+      # TODO(crbug.com/1399354): Enable gpu_dawn_webgpu_blink_web_tests
+    ],
+
     'chromium_mac_and_dangling_pointer_detection_gtests': [
       'dangling_pointer_detection_tests',
       'chromium_gtests',
@@ -5956,6 +5968,10 @@
       'mac_specific_isolated_scripts',
       'mojo_python_unittests_isolated_scripts',
       'telemetry_perf_unittests_isolated_scripts',
+    ],
+
+    'chromium_mac_rel_isolated_scripts_code_coverage': [
+      # TODO(crbug.com/1399354): Enable gpu_dawn_webgpu_blink_web_tests
     ],
 
     # Pixel tests only enabled on Win 10. So this is
@@ -6015,6 +6031,10 @@
       'telemetry_desktop_minidump_unittests_isolated_scripts',
       'telemetry_perf_unittests_isolated_scripts',
       'win_specific_isolated_scripts',
+    ],
+
+    'chromium_win_rel_isolated_scripts_code_coverage': [
+      # TODO(crbug.com/1399354): Enable gpu_dawn_webgpu_blink_web_tests
     ],
 
     'cronet_dbg_isolated_scripts': [

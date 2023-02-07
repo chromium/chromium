@@ -3998,6 +3998,50 @@
           '--timeout-ms=48000',
         ],
       },
+      # These tests must run with a GPU.
+      'linux-code-coverage': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              # TODO(crbug.com/1408314): This must be kept in sync with the
+              # appropriate mixin; currently, linux_nvidia_gtx_1660_stable,
+              # which is used by Dawn Linux x64 Release (NVIDIA).
+              'gpu': '10de:2184-440.100',
+              'os': 'Ubuntu-18.04.5|Ubuntu-18.04.6',
+              'pool': 'chromium.tests.gpu'
+            }
+          ],
+        },
+      },
+      'mac-code-coverage': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              # TODO(crbug.com/1408314): This must be kept in sync with the
+              # appropriate mixin; currently, mac_mini_intel_gpu_stable,
+              # which is used by Dawn Mac x64 Release (Intel).
+              'cpu': 'x86-64',
+              'gpu': '8086:3e9b',
+              'os': 'Mac-12.5',
+              'display_attached': '1',
+            }
+          ],
+        },
+      },
+      'win10-code-coverage': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              # TODO(crbug.com/1408314): This must be kept in sync with the
+              # appropriate mixin; currently, win10_nvidia_gtx_1660_stable,
+              # which is used by Dawn Win10 x64 Release (NVIDIA).
+              'gpu': '10de:2184-27.21.14.5638',
+              'os': 'Windows-10-18363',
+              'pool': 'chromium.tests.gpu',
+            }
+          ],
+        },
+      },
     },
     'replacements': {
       'Dawn Mac x64 Experimental Release (Intel)': {
@@ -4025,6 +4069,9 @@
       'Dawn Mac x64 Release (AMD)',
       'Dawn Win10 x64 DEPS Release (Intel)',
       'Dawn Win10 x64 Release (Intel)',
+      'linux-code-coverage',
+      'mac-code-coverage',
+      'win10-code-coverage',
     ],
   },
   'webgpu_cts_tests': {
@@ -4037,6 +4084,52 @@
       'Dawn Mac x64 Release (AMD)',
       'Dawn Mac x64 DEPS Release (AMD)',
     ],
+    'modifications': {
+      # These tests must run with a GPU.
+      'linux-code-coverage': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              # TODO(crbug.com/1408314): This must be kept in sync with the
+              # appropriate mixin; currently, linux_nvidia_gtx_1660_stable,
+              # which is used by Dawn Linux x64 Release (NVIDIA).
+              'gpu': '10de:2184-440.100',
+              'os': 'Ubuntu-18.04.5|Ubuntu-18.04.6',
+              'pool': 'chromium.tests.gpu'
+            }
+          ],
+        },
+      },
+      'mac-code-coverage': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              # TODO(crbug.com/1408314): This must be kept in sync with the
+              # appropriate mixin; currently, mac_mini_intel_gpu_stable,
+              # which is used by Dawn Mac x64 Release (Intel).
+              'cpu': 'x86-64',
+              'gpu': '8086:3e9b',
+              'os': 'Mac-12.5',
+              'display_attached': '1',
+            }
+          ],
+        },
+      },
+      'win10-code-coverage': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              # TODO(crbug.com/1408314): This must be kept in sync with the
+              # appropriate mixin; currently, win10_nvidia_gtx_1660_stable,
+              # which is used by Dawn Win10 x64 Release (NVIDIA).
+              'gpu': '10de:2184-27.21.14.5638',
+              'os': 'Windows-10-18363',
+              'pool': 'chromium.tests.gpu',
+            }
+          ],
+        },
+      },
+    },
   },
   'webgpu_cts_with_validation_tests': {
     # Remove from bots where capacity is constrained.
@@ -4051,6 +4144,9 @@
       'Dawn Win10 x64 Release (Intel)',
       'Dawn Win10 x86 DEPS Release (Intel)',
       'Dawn Win10 x86 Release (Intel)',
+      'linux-code-coverage',
+      'mac-code-coverage',
+      'win10-code-coverage',
     ],
     'modifications': {
       # ci_only for bots where capacity is constrained.

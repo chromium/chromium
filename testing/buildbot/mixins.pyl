@@ -782,6 +782,10 @@
     },
   },
   'linux_nvidia_gtx_1660_stable': {
+    # TODO(crbug.com/1408314): The swarming dimensions for
+    # webgpu_blink_web_tests and webgpu_cts_tests on linux-code-coverage
+    # must be kept manually in sync with the appropriate mixin; currently,
+    # this one, which is used by Dawn Linux x64 Release (NVIDIA).
     'swarming': {
       'dimensions': {
         'gpu': '10de:2184-440.100',
@@ -933,6 +937,10 @@
     },
   },
   'mac_mini_intel_gpu_stable': {
+    # TODO(crbug.com/1408314): The swarming dimensions for
+    # webgpu_blink_web_tests and webgpu_cts_tests on mac-code-coverage
+    # must be kept manually in sync with the appropriate mixin; currently,
+    # this one, which is used by Dawn Mac x64 Release (Intel).
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
@@ -1372,6 +1380,10 @@
     },
   },
   'win10_nvidia_gtx_1660_stable': {
+    # TODO(crbug.com/1408314): The swarming dimensions for
+    # webgpu_blink_web_tests and webgpu_cts_tests on win10-code-coverage
+    # must be kept manually in sync with the appropriate mixin; currently,
+    # this one, which is used by Dawn Win10 x64 Release (NVIDIA).
     'swarming': {
       'dimensions': {
         'gpu': '10de:2184-27.21.14.5638',

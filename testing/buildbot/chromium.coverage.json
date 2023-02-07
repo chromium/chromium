@@ -22702,7 +22702,8 @@
         "test": "zlib_unittests",
         "test_id_prefix": "ninja://third_party/zlib:zlib_unittests/"
       }
-    ]
+    ],
+    "isolated_scripts": []
   },
   "win10-code-coverage": {
     "gtest_tests": [
@@ -23964,6 +23965,7 @@
         "test": "zucchini_unittests",
         "test_id_prefix": "ninja://components/zucchini:zucchini_unittests/"
       }
-    ]
+    ],
+    "isolated_scripts": []
   }
 }
