@@ -50,11 +50,4 @@ public interface BackgroundTaskScheduler {
      */
     @MainThread
     void doMaintenance();
-
-    /**
-     * Reschedules all the tasks currently scheduler through BackgroundTaskSheduler.
-     * @param context the current context.
-     */
-    @MainThread
-    void reschedule(Context context);
 }

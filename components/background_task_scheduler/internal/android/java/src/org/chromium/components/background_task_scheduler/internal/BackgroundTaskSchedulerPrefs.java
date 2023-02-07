@@ -156,7 +156,8 @@ public class BackgroundTaskSchedulerPrefs {
      * Gets all current scheduled task.
      * @return map of task ids associated with scheduled task protos.
      */
-    public static Map<Integer, ScheduledTaskProto.ScheduledTask> getScheduledTasks() {
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    static Map<Integer, ScheduledTaskProto.ScheduledTask> getScheduledTasks() {
         try (TraceEvent te = TraceEvent.scoped("BackgroundTaskSchedulerPrefs.getScheduledTasks")) {
             Map<Integer, ScheduledTaskProto.ScheduledTask> result = new HashMap<>();
             for (Map.Entry<String, ?> entry : getSharedPreferences().getAll().entrySet()) {

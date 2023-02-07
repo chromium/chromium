@@ -138,9 +138,6 @@ public class PrefetchBackgroundTaskTest {
         @Override
         public void doMaintenance() {}
 
-        @Override
-        public void reschedule(Context context) {}
-
         public void waitForTaskStarted() throws Exception {
             assertTrue(mStartSemaphore.tryAcquire(SEMAPHORE_TIMEOUT_MS, TimeUnit.MILLISECONDS));
             // Reset for next task.

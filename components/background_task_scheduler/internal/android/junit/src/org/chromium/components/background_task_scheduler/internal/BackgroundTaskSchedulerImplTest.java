@@ -4,7 +4,6 @@
 
 package org.chromium.components.background_task_scheduler.internal;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doNothing;
@@ -158,24 +157,6 @@ public class BackgroundTaskSchedulerImplTest {
                 RuntimeEnvironment.application, TaskIds.TEST);
         verify(mDelegate, times(0)).cancel(eq(RuntimeEnvironment.application), eq(TaskIds.TEST));
         verify(mAlarmManagerDelegate, times(1))
-                .cancel(eq(RuntimeEnvironment.application), eq(TaskIds.TEST));
-    }
-
-    @Test
-    @Feature({"BackgroundTaskScheduler"})
-    public void testRescheduleTasks() {
-        BackgroundTaskSchedulerPrefs.addScheduledTask(mTask);
-
-        assertEquals(0, TestBackgroundTask.getRescheduleCalls());
-        assertFalse(BackgroundTaskSchedulerPrefs.getScheduledTaskIds().isEmpty());
-        BackgroundTaskSchedulerFactoryInternal.getScheduler().reschedule(
-                RuntimeEnvironment.application);
-
-        assertEquals(1, TestBackgroundTask.getRescheduleCalls());
-        assertTrue(BackgroundTaskSchedulerPrefs.getScheduledTaskIds().isEmpty());
-
-        verify(mDelegate, times(0)).cancel(eq(RuntimeEnvironment.application), eq(TaskIds.TEST));
-        verify(mAlarmManagerDelegate, times(0))
                 .cancel(eq(RuntimeEnvironment.application), eq(TaskIds.TEST));
     }
 }

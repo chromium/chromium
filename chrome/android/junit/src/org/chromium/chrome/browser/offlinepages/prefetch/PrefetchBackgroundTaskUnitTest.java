@@ -80,9 +80,6 @@ public class PrefetchBackgroundTaskUnitTest {
         @Override
         public void doMaintenance() {}
 
-        @Override
-        public void reschedule(Context context) {}
-
         public TaskInfo getTaskInfo(int taskId) {
             return mTaskInfos.get(taskId);
         }

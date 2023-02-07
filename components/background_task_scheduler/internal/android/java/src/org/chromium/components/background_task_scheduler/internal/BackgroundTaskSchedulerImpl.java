@@ -10,11 +10,8 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.TaskInfo;
-
-import java.util.Map;
 
 /**
  * This {@link BackgroundTaskScheduler} is the only one used in production code, and it is used to
@@ -160,34 +157,6 @@ class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
             ThreadUtils.assertOnUiThread();
 
             BackgroundTaskSchedulerUma.getInstance().flushStats();
-        }
-    }
-
-    @Override
-    public void reschedule(Context context) {
-        try (TraceEvent te = TraceEvent.scoped("BackgroundTaskScheduler.reschedule")) {
-            ThreadUtils.assertOnUiThread();
-            Map<Integer, ScheduledTaskProto.ScheduledTask> scheduledTasks =
-                    BackgroundTaskSchedulerPrefs.getScheduledTasks();
-            BackgroundTaskSchedulerPrefs.removeAllTasks();
-            for (Map.Entry<Integer, ScheduledTaskProto.ScheduledTask> entry :
-                    scheduledTasks.entrySet()) {
-                final BackgroundTask backgroundTask =
-                        BackgroundTaskSchedulerFactoryInternal.getBackgroundTaskFromTaskId(
-                                entry.getKey());
-                if (backgroundTask == null) {
-                    Log.w(TAG,
-                            "Cannot reschedule task for task id " + entry.getKey() + ". Could not "
-                                    + "instantiate BackgroundTask class.");
-                    // Cancel task if the BackgroundTask class is not found anymore. We assume this
-                    // means that the task has been deprecated.
-                    selectDelegateAndCancel(context, entry.getValue().getType(), entry.getKey());
-                    continue;
-                }
-
-                BackgroundTaskSchedulerUma.getInstance().reportTaskRescheduled();
-                backgroundTask.reschedule(context);
-            }
         }
     }
 
