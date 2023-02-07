@@ -8,8 +8,8 @@ import 'chrome://user-notes-side-panel.top-chrome/shared/sp_heading.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../strings.m.js';
-import './user_note.js';
 import './user_note_overviews_list.js';
+import '../user_notes_list.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -19,7 +19,7 @@ import {UserNotesApiProxy, UserNotesApiProxyImpl} from './user_notes_api_proxy.j
 
 export interface UserNotesAppElement {
   $: {
-    notesList: HTMLElement,
+    pageNotesList: HTMLElement,
   };
 }
 
@@ -52,7 +52,7 @@ export class UserNotesAppElement extends PolymerElement {
     };
   }
 
-  private notes_: Note[];
+  private notes_: Array<(Note | null)>;
   private overviews_: NoteOverview[];
   private viewingOverviews_: boolean;
   private userNotesApi_: UserNotesApiProxy =
@@ -97,6 +97,9 @@ export class UserNotesAppElement extends PolymerElement {
   private async updateNotes_() {
     const {notes} = await this.userNotesApi_.getNotesForCurrentTab();
     this.notes_ = notes;
+    // Add a null note which becomes the UserNoteElement that is the persistent
+    // entry point for creating a new note.
+    this.notes_.push(null);
   }
 
   /**

@@ -15,6 +15,7 @@ build_webui("build") {
     "app.ts",
     "user_note.ts",
     "user_note_menu.ts",
+    "user_notes_list.ts",
     "user_note_overview_row.ts",
     "user_note_overviews_list.ts",
   ]

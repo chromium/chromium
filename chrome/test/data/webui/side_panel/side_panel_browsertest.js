@@ -167,3 +167,22 @@ var UserNoteOverviewsListTest = class extends SidePanelBrowserTest {
 TEST_F('UserNoteOverviewsListTest', 'All', function() {
   mocha.run();
 });
+
+var UserNotesListTest = class extends SidePanelBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://user-notes-side-panel.top-chrome/test_loader.html?module=side_panel/user_notes/user_notes_list_test.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled:
+          ['user_notes::kUserNotes', 'power_bookmarks::kPowerBookmarkBackend']
+    };
+  }
+};
+
+TEST_F('UserNotesListTest', 'All', function() {
+  mocha.run();
+});

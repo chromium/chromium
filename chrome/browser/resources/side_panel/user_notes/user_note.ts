@@ -33,7 +33,7 @@ export class UserNoteElement extends PolymerElement {
   static get properties() {
     return {
       /**
-       * The `note` is undefined if the UserNoteElement is the persistent entry
+       * The `note` is null if the UserNoteElement is the persistent entry
        * note and not a preexisting note.
        */
       note: {
@@ -64,7 +64,7 @@ export class UserNoteElement extends PolymerElement {
     };
   }
 
-  note?: Note;
+  note: Note|null;
   private characterCounter_: string;
   private editing_: boolean;
   private noteContent_: string;
@@ -75,7 +75,7 @@ export class UserNoteElement extends PolymerElement {
 
   override ready() {
     super.ready();
-    this.editing_ = this.note === undefined;
+    this.editing_ = this.note === null;
   }
 
   private onNoteContentInput_() {
@@ -93,6 +93,10 @@ export class UserNoteElement extends PolymerElement {
   private onNoteChanged_() {
     if (this.note) {
       this.$.noteContent.textContent = this.note.text;
+      this.editing_ = false;
+    } else {
+      this.clearInput_();
+      this.editing_ = true;
     }
     this.onNoteContentInput_();
   }
@@ -107,22 +111,22 @@ export class UserNoteElement extends PolymerElement {
   }
 
   private onCancelClick_() {
-    if (this.note === undefined) {
+    if (this.note === null) {
       this.clearInput_();
     } else {
-      this.$.noteContent.textContent = this.note.text;
+      this.$.noteContent.textContent = this.note!.text;
       this.onNoteContentInput_();
       this.editing_ = false;
     }
   }
 
   private async onAddClick_() {
-    if (this.note === undefined) {
+    if (this.note === null) {
       await this.userNotesApi_.newNoteFinished(this.$.noteContent.textContent!);
       this.clearInput_();
     } else {
       await this.userNotesApi_.updateNote(
-          this.note.guid, this.$.noteContent.textContent!);
+          this.note!.guid, this.$.noteContent.textContent!);
       this.editing_ = false;
     }
   }

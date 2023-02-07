@@ -33,6 +33,10 @@ UserNotesSidePanelUI::UserNotesSidePanelUI(content::WebUI* web_ui)
       {"cancel", IDS_CANCEL},
       {"delete", IDS_DELETE},
       {"edit", IDS_EDIT},
+      {"sortByType", IDS_BOOKMARKS_SORT_BY_TYPE},
+      {"sortNewest", IDS_BOOKMARKS_SORT_NEWEST},
+      {"sortMenuAriaLabel", IDS_USER_NOTES_SORT_MENU_A11Y_LABEL},
+      {"sortOldest", IDS_BOOKMARKS_SORT_OLDEST},
       {"title", IDS_USER_NOTE_TITLE},
       {"tooltipClose", IDS_CLOSE},
   };
