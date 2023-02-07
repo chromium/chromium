@@ -25,7 +25,7 @@ class AssistantBindings : public CastBinding,
                           public chromecast::mojom::AssistantMessageClient {
  public:
   AssistantBindings(content::RenderFrame* frame,
-                    const base::Value& feature_config);
+                    const base::Value::Dict& feature_config);
   ~AssistantBindings() override;
   AssistantBindings(const AssistantBindings&) = delete;
   AssistantBindings& operator=(const AssistantBindings&) = delete;
@@ -55,7 +55,7 @@ class AssistantBindings : public CastBinding,
 
   base::RepeatingTimer reconnect_assistant_timer_;
   mojo::Remote<chromecast::mojom::AssistantMessageService> assistant_;
-  base::Value feature_config_;
+  base::Value::Dict feature_config_;
 
   mojo::Receiver<chromecast::mojom::AssistantMessageClient>
       message_client_binding_;

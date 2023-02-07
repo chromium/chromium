@@ -591,14 +591,14 @@ void RuntimeApplicationServiceImpl::OnAllBindingsReceived(
   std::move(callback).Run(cast_receiver::OkStatus(), std::move(bindings));
 }
 
-base::Value RuntimeApplicationServiceImpl::GetRendererFeatures() const {
+base::Value::Dict RuntimeApplicationServiceImpl::GetRendererFeatures() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto* entry =
       FindEntry(feature::kCastCoreRendererFeatures, config_.extra_features());
 
   base::Value::Dict renderer_features;
   if (!entry) {
-    return base::Value(std::move(renderer_features));
+    return renderer_features;
   }
   CHECK(entry->value().has_dictionary());
 
@@ -625,7 +625,7 @@ base::Value RuntimeApplicationServiceImpl::GetRendererFeatures() const {
     renderer_features.Set(feature.key(), std::move(dict));
   }
 
-  return base::Value(std::move(renderer_features));
+  return renderer_features;
 }
 
 bool RuntimeApplicationServiceImpl::IsAudioOnly() const {
@@ -690,10 +690,10 @@ void RuntimeApplicationServiceImpl::InnerContentsCreated(
   }
 
 #if DCHECK_IS_ON()
-  base::Value features(base::Value::Type::DICT);
-  base::Value dev_mode_config(base::Value::Type::DICT);
-  dev_mode_config.SetKey(feature::kDevModeOrigin, base::Value(url));
-  features.SetKey(feature::kEnableDevMode, std::move(dev_mode_config));
+  base::Value::Dict features;
+  base::Value::Dict dev_mode_config;
+  dev_mode_config.Set(feature::kDevModeOrigin, url);
+  features.Set(feature::kEnableDevMode, std::move(dev_mode_config));
   inner_contents->AddRendererFeatures(std::move(features));
 #endif
 

@@ -201,7 +201,7 @@ class CastWebContents : public mojom::CastWebContents {
                             additional_feature_permission_origins) override = 0;
   void SetGroupInfo(const std::string& session_id,
                     bool is_multizone_launch) override = 0;
-  void AddRendererFeatures(base::Value features) override = 0;
+  void AddRendererFeatures(base::Value::Dict features) override = 0;
   void SetInterfacesForRenderer(mojo::PendingRemote<mojom::RemoteInterfaces>
                                     remote_interfaces) override = 0;
   void SetUrlRewriteRules(

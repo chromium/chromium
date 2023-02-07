@@ -97,7 +97,7 @@ interface CastWebContents {
   SetGroupInfo(string session_id, bool is_multizone_launch);
 
   // Dictionary of renderer feature configurations.
-  AddRendererFeatures(mojo_base.mojom.Value features);
+  AddRendererFeatures(mojo_base.mojom.DictionaryValue features);
 
   // These interfaces will be exposed to RenderFrames. The interfaces are only
   // used as backends for built-in Cast V8 bindings. Sensitive APIs should

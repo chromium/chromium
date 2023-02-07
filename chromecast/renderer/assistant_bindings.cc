@@ -31,7 +31,7 @@ const char kSendAssistantRequestMethodName[] = "sendAssistantRequest";
 }  // namespace
 
 AssistantBindings::AssistantBindings(content::RenderFrame* frame,
-                                     const base::Value& feature_config)
+                                     const base::Value::Dict& feature_config)
     : CastBinding(frame),
       feature_config_(feature_config.Clone()),
       message_client_binding_(this),
@@ -120,11 +120,10 @@ void AssistantBindings::ReconnectMessagePipe() {
   if (message_pipe_.is_bound())
     message_pipe_.reset();
   LOG(INFO) << "Creating message pipe";
-  base::Value* app_id =
-      feature_config_.FindKeyOfType("app_id", base::Value::Type::STRING);
+  const std::string* app_id = feature_config_.FindString("app_id");
   DCHECK(app_id) << "Couldn't get app_id from feature config";
   GetMojoInterface()->CreateMessagePipe(
-      app_id->GetString(), message_client_binding_.BindNewPipeAndPassRemote(),
+      *app_id, message_client_binding_.BindNewPipeAndPassRemote(),
       message_pipe_.BindNewPipeAndPassReceiver());
 
   reconnect_assistant_timer_.Stop();

@@ -128,7 +128,7 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   bool IsRemoteControlMode() const;
 
   // Returns renderer features.
-  base::Value GetRendererFeatures() const;
+  base::Value::Dict GetRendererFeatures() const;
 
   // Returns if app is audio only.
   bool IsAudioOnly() const;

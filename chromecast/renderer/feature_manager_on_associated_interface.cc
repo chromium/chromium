@@ -48,8 +48,8 @@ void FeatureManagerOnAssociatedInterface::ConfigureFeatures(
     std::string app_id("MissingAppId");
     auto& feature =
         GetFeature(feature::kEnableTrackControlAppRendererFeatureUse);
-    std::string* app_id_received =
-        feature->config.FindStringPath(feature::kKeyAppId);
+    const std::string* app_id_received =
+        feature->config.FindString(feature::kKeyAppId);
     if (app_id_received) {
       app_id = *app_id_received;
     } else {
@@ -57,7 +57,7 @@ void FeatureManagerOnAssociatedInterface::ConfigureFeatures(
     }
     bool allow_insecure_content = false;
     absl::optional<bool> allow_insecure_content_received =
-        feature->config.FindBoolPath(feature::kKeyAllowInsecureContent);
+        feature->config.FindBool(feature::kKeyAllowInsecureContent);
     if (allow_insecure_content_received) {
       allow_insecure_content = *allow_insecure_content_received;
     } else {

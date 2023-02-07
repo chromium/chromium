@@ -80,12 +80,12 @@ void FeatureManager::ConfigureFeatures(
 
 void FeatureManager::ConfigureFeaturesInternal() {
   if (FeatureEnabled(feature::kEnableDevMode)) {
-    base::Value& dev_mode_config =
+    const base::Value::Dict& dev_mode_config =
         (features_map_.find(feature::kEnableDevMode)->second)->config;
-    base::Value* dev_mode_origin =
-        dev_mode_config.FindKey(feature::kDevModeOrigin);
+    const std::string* dev_mode_origin =
+        dev_mode_config.FindString(feature::kDevModeOrigin);
     DCHECK(dev_mode_origin);
-    dev_origin_ = GURL(dev_mode_origin->GetString());
+    dev_origin_ = GURL(*dev_mode_origin);
     DCHECK(dev_origin_.is_valid());
   }
 

@@ -10,7 +10,7 @@ import "mojo/public/mojom/base/values.mojom";
 // DictionaryValue
 struct Feature {
   string name;
-  mojo_base.mojom.DeprecatedDictionaryValue config;
+  mojo_base.mojom.DictionaryValue config;
 };
 
 // Receives messages from the browser process to enable/disable Cast

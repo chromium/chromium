@@ -249,8 +249,7 @@ const media_control::MediaBlocker* CastWebContentsImpl::media_blocker() const {
   return media_blocker_.get();
 }
 
-void CastWebContentsImpl::AddRendererFeatures(base::Value features) {
-  DCHECK(features.is_dict());
+void CastWebContentsImpl::AddRendererFeatures(base::Value::Dict features) {
   renderer_features_ = std::move(features);
 }
 
@@ -579,9 +578,19 @@ void CastWebContentsImpl::RenderFrameCreated(
 std::vector<chromecast::shell::mojom::FeaturePtr>
 CastWebContentsImpl::GetRendererFeatures() {
   std::vector<chromecast::shell::mojom::FeaturePtr> features;
-  for (auto feature : renderer_features_.DictItems()) {
-    features.push_back(chromecast::shell::mojom::Feature::New(
-        feature.first, feature.second.Clone()));
+  for (const auto pair : renderer_features_) {
+    const std::string& name = pair.first;
+    const base::Value& config_value = pair.second;
+    const base::Value::Dict* maybe_config_dict = config_value.GetIfDict();
+
+    // There are only 2 callers of `AddRendererFeatures` (both in
+    // `runtime_application_service_impl.cc`) and they always provide
+    // well-formed dictionaries as values.
+    DCHECK(maybe_config_dict);
+    base::Value::Dict config_dict = maybe_config_dict->Clone();
+
+    features.push_back(
+        chromecast::shell::mojom::Feature::New(name, std::move(config_dict)));
   }
   return features;
 }
