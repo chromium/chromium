@@ -231,32 +231,27 @@ generate_grd("build_grd") {
     "images/switch_access_setup_guide_closing.svg",
     "images/switch_access_setup_guide_closing_dark.svg",
     "os_settings_v3.html",
-    "../../nearby_share/shared/nearby_share_progress_bar_dark.json",
-    "../../nearby_share/shared/nearby_share_progress_bar_light.json",
-    "../../nearby_share/shared/nearby_share_pulse_animation_dark.json",
-    "../../nearby_share/shared/nearby_share_pulse_animation_light.json",
   ]
   input_files_base_dir = rebase_path(".", "//")
-  deps = [ "../../nearby_share:build_mojo_grdp" ]
-  grdp_files = [ "$root_gen_dir/chrome/browser/resources/nearby_share/nearby_share_mojo_resources.grdp" ]
-  manifest_files = []
-  resource_path_rewrites = [
-    "os_settings_v3.html|chromeos/os_settings_v3.html",
-    "../../nearby_share/shared/nearby_share_progress_bar_dark.json|nearby_share_progress_bar_dark.json",
-    "../../nearby_share/shared/nearby_share_progress_bar_light.json|nearby_share_progress_bar_light.json",
-    "../../nearby_share/shared/nearby_share_pulse_animation_dark.json|nearby_share_pulse_animation_dark.json",
-    "../../nearby_share/shared/nearby_share_pulse_animation_light.json|nearby_share_pulse_animation_light.json",
+  deps = [
+    "../../nearby_share:build_mojo_grdp",
+    "../../nearby_share/shared:build_json_grdp",
   ]
+  grdp_files = [
+    "$root_gen_dir/chrome/browser/resources/nearby_share/nearby_share_mojo_resources.grdp",
+    "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_share_json_resources.grdp",
+  ]
+  manifest_files = []
+  resource_path_rewrites =
+      [ "os_settings_v3.html|chromeos/os_settings_v3.html" ]
 
   if (optimize_webui) {
     deps += [ ":optimize_bundle" ]
     manifest_files += [ "$target_gen_dir/$build_manifest_v3" ]
-    input_files += [ "../../nearby_share/shared/nearby_shared_icons.html" ]
     resource_path_rewrites += [
       "chromeos/lazy_load.rollup.js|chromeos/lazy_load.js",
       "chromeos/os_settings.rollup.js|chromeos/os_settings.js",
       "chromeos/shared.rollup.js|chromeos/shared.rollup.js",
-      "../../nearby_share/shared/nearby_shared_icons.html|shared/nearby_shared_icons.html",
     ]
   } else {
     deps += [
@@ -267,6 +262,14 @@ generate_grd("build_grd") {
     manifest_files += [ "$target_gen_dir/build_ts.manifest" ]
     resource_path_rewrites += [ "chromeos/os_settings.html|os_settings.html" ]
   }
+}
+
+# grdp for OS Settings files that are needed by OOBE.
+generate_grd("build_oobe_grdp") {
+  grd_prefix = "os_settings_oobe"
+  out_grd = "$target_gen_dir/os_settings_oobe_resources.grdp"
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = [ "images/smart_privacy.svg" ]
 }
 
 # TODO(crbug/1315757) Gradually remove closure compilation for subfolders/pages

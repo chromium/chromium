@@ -14,6 +14,19 @@ preprocessed_folder = "tsc_input/shared"
 preprocess_gen_v3_manifest = "preprocessed_gen_v3_manifest.json"
 preprocess_v3_manifest = "preprocessed_v3_manifest.json"
 
+# Grdp of JSON files for OS Settings.
+generate_grd("build_json_grdp") {
+  grd_prefix = "nearby_share"
+  out_grd = "$target_gen_dir/nearby_share_json_resources.grdp"
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = [
+    "nearby_share_progress_bar_dark.json",
+    "nearby_share_progress_bar_light.json",
+    "nearby_share_pulse_animation_dark.json",
+    "nearby_share_pulse_animation_light.json",
+  ]
+}
+
 web_component_files = [
   "nearby_contact_visibility.js",
   "nearby_device_icon.js",

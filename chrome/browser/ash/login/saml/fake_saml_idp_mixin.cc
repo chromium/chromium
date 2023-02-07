@@ -116,7 +116,11 @@ void FakeSamlIdpMixin::SetUpCommandLine(base::CommandLine* command_line) {
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
   // NOTE: Ideally testdata would all be in chromeos/login, to match the test.
   html_template_dir_ = test_data_dir.Append("login");
-  saml_response_dir_ = test_data_dir.Append("chromeos").Append("login");
+  // saml_with_password_attributes.xml is also used by cross-platform
+  // gaia_auth_host WebUI tests. Since cross-platform WebUI shouldn't depend on
+  // Ash/ChromeOS test data, the file is located in the gaia_auth_host test data
+  // directory.
+  saml_response_dir_ = test_data_dir.Append("webui").Append("gaia_auth_host");
 
   {
     base::ScopedAllowBlockingForTesting allow_io;

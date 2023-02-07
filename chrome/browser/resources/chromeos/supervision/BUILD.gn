@@ -11,6 +11,15 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 generated_grd = "$target_gen_dir/resources.grd"
 resource_path_prefix = "supervision"
 
+# grdp for resources shared by OOBE.
+generate_grd("build_oobe_grdp") {
+  out_grd = "$target_gen_dir/supervision_oobe_resources.grdp"
+  grd_prefix = "supervision_oobe"
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = [ "supervision_icon.png" ]
+  resource_path_prefix = "images"
+}
+
 generate_grd("build_grd") {
   out_grd = generated_grd
   grd_prefix = "supervision"

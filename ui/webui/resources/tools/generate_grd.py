@@ -161,6 +161,13 @@ def main(argv):
             args.root_gen_dir + '/', '${root_gen_dir}/')
 
       for filename in args.input_files:
+        norm_base = os.path.normpath(args.input_files_base_dir)
+        norm_path = os.path.normpath(os.path.join(args.input_files_base_dir,
+                                                  filename))
+        assert os.path.commonprefix([norm_base, norm_path]) == norm_base, \
+            f'Error: input_file {filename} found outside of ' + \
+            'input_files_base_dir'
+
         filepath = os.path.join(base_dir, filename).replace('\\', '/')
         grd_file.write(_generate_include_row(
             args.grd_prefix, filename, filepath,

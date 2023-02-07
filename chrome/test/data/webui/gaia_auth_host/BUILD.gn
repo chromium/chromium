@@ -23,9 +23,6 @@ generate_grd("build_grdp") {
     "saml_username_autofill_test.js",
     "saml_timestamps_test.js",
     "saml_password_attributes_test.js",
-    "../../chromeos/login/saml_with_password_attributes.xml",
+    "saml_with_password_attributes.xml",
   ]
-
-  # Rewrite the resource path for saml_with_password_attributes.xml
-  resource_path_rewrites = [ "../../chromeos/login/saml_with_password_attributes.xml|saml_with_password_attributes.xml" ]
 }
