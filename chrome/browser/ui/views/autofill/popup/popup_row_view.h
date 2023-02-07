@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -27,15 +28,15 @@ namespace autofill {
 
 class PopupViewViews;
 
-// Child view representing one row in the Autofill Popup. This could represent
-// a UI control (e.g., a suggestion which can be autofilled), or decoration like
-// separators.
+// `PopupRowView` represents a single selectable item. Subclasses distinguish
+// between footer and suggestion rows, which are structurally similar, but have
+// distinct styling.
 class PopupRowView : public views::View {
  public:
   METADATA_HEADER(PopupRowView);
   PopupRowView(const PopupRowView&) = delete;
   PopupRowView& operator=(const PopupRowView&) = delete;
-  ~PopupRowView() override = default;
+  ~PopupRowView() override;
 
   void SetSelected(bool selected);
 
@@ -45,6 +46,11 @@ class PopupRowView : public views::View {
   // a limit for how many times it can be shown at most in a period of time.
   void MaybeShowIphPromo();
 
+  // `CreateContent` handles initialization tasks which require virtual methods.
+  // Subclasses should have private/protected constructors and implement a
+  // factory function that calls `CreateContent` after creating the object.
+  virtual void CreateContent();
+
   // views::View:
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   // Drags and presses on any row should be a no-op; subclasses instead rely on
@@ -52,38 +58,6 @@ class PopupRowView : public views::View {
   // processed (i.e., intentionally ignored).
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
-
- protected:
-  PopupRowView(PopupViewViews* popup_view, int line_number);
-
-  // Init handles initialization tasks which require virtual methods. Subclasses
-  // should have private/protected constructors and implement a static Create
-  // method which calls Init before returning.
-  void Init();
-
-  PopupViewViews* popup_view() { return popup_view_; }
-  int GetLineNumber() const;
-  bool GetSelected() const;
-  ui::ColorId GetBackgroundColorId() const;
-
-  virtual void CreateContent() = 0;
-  virtual void RefreshStyle() {}
-
- private:
-  raw_ptr<PopupViewViews> popup_view_;
-  const int line_number_;
-  bool selected_ = false;
-};
-
-// This represents a single selectable item. Subclasses distinguish between
-// footer and suggestion rows, which are structurally similar but have
-// distinct styling.
-class PopupItemView : public PopupRowView {
- public:
-  METADATA_HEADER(PopupItemView);
-  ~PopupItemView() override;
-
-  // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
@@ -93,13 +67,15 @@ class PopupItemView : public PopupRowView {
   void OnGestureEvent(ui::GestureEvent* event) override;
 
  protected:
-  PopupItemView(PopupViewViews* popup_view, int line_number, int frontend_id);
+  PopupRowView(PopupViewViews& popup_view, int line_number, int frontend_id);
 
-  // PopupRowView:
-  void CreateContent() override;
-  void RefreshStyle() override;
+  PopupViewViews& popup_view() { return popup_view_.get(); }
+  int GetLineNumber() const { return line_number_; }
+  int GetFrontendId() const { return frontend_id_; }
+  bool GetSelected() const { return selected_; }
+  ui::ColorId GetBackgroundColorId() const;
 
-  int GetFrontendId() const;
+  virtual void RefreshStyle();
 
   virtual int GetPrimaryTextStyle() = 0;
   // Returns a main text label view. The label part is optional but allow caller
@@ -147,22 +123,28 @@ class PopupItemView : public PopupRowView {
   // (crbug.com/1240472, crbug.com/1241585, crbug.com/1287364).
   bool mouse_observed_outside_item_bounds_ = false;
 
+  // The parent view containing this row.
+  const raw_ref<PopupViewViews> popup_view_;
+  const int line_number_;
   const int frontend_id_;
 
   // All the labels inside this view.
   std::vector<views::Label*> inner_labels_;
+
+  // Whether this row is currently selected.
+  bool selected_ = false;
 };
 
 // This represents a suggestion, i.e., a row containing data that will be filled
 // into the page if selected.
-class PopupSuggestionView : public PopupItemView {
+class PopupSuggestionView : public PopupRowView {
  public:
   METADATA_HEADER(PopupSuggestionView);
   PopupSuggestionView(const PopupSuggestionView&) = delete;
   PopupSuggestionView& operator=(const PopupSuggestionView&) = delete;
   ~PopupSuggestionView() override = default;
 
-  static std::unique_ptr<PopupSuggestionView> Create(PopupViewViews* popup_view,
+  static std::unique_ptr<PopupSuggestionView> Create(PopupViewViews& popup_view,
                                                      int line_number,
                                                      int frontend_id,
                                                      PopupType popup_type);
@@ -173,7 +155,7 @@ class PopupSuggestionView : public PopupItemView {
   gfx::Font::Weight GetPrimaryTextWeight() const override;
   std::unique_ptr<views::Label> CreateMainTextView() override;
   std::vector<std::unique_ptr<views::View>> CreateSubtextViews() override;
-  PopupSuggestionView(PopupViewViews* popup_view,
+  PopupSuggestionView(PopupViewViews& popup_view,
                       int line_number,
                       int frontend_id,
                       PopupType popup_type);
@@ -193,7 +175,7 @@ class PopupPasswordSuggestionView : public PopupSuggestionView {
   ~PopupPasswordSuggestionView() override = default;
 
   static std::unique_ptr<PopupPasswordSuggestionView>
-  Create(PopupViewViews* popup_view, int line_number, int frontend_id);
+  Create(PopupViewViews& popup_view, int line_number, int frontend_id);
 
  protected:
   // PopupItemView:
@@ -203,7 +185,7 @@ class PopupPasswordSuggestionView : public PopupSuggestionView {
   gfx::Font::Weight GetPrimaryTextWeight() const override;
 
  private:
-  PopupPasswordSuggestionView(PopupViewViews* popup_view,
+  PopupPasswordSuggestionView(PopupViewViews& popup_view,
                               int line_number,
                               int frontend_id);
   std::u16string origin_;
@@ -212,12 +194,12 @@ class PopupPasswordSuggestionView : public PopupSuggestionView {
 
 // This represents an option which appears in the footer of the dropdown, such
 // as a row which will open the Autofill settings page when selected.
-class PopupFooterView : public PopupItemView {
+class PopupFooterView : public PopupRowView {
  public:
   METADATA_HEADER(PopupFooterView);
   ~PopupFooterView() override = default;
 
-  static std::unique_ptr<PopupFooterView> Create(PopupViewViews* popup_view,
+  static std::unique_ptr<PopupFooterView> Create(PopupViewViews& popup_view,
                                                  int line_number,
                                                  int frontend_id);
 
@@ -228,7 +210,7 @@ class PopupFooterView : public PopupItemView {
   gfx::Font::Weight GetPrimaryTextWeight() const override;
 
  private:
-  PopupFooterView(PopupViewViews* popup_view, int line_number, int frontend_id);
+  PopupFooterView(PopupViewViews& popup_view, int line_number, int frontend_id);
 };
 
 }  // namespace autofill

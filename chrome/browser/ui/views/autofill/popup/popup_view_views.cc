@@ -250,7 +250,7 @@ void PopupViewViews::CreateChildViews() {
         case PopupItemId::POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY:
           rows_.push_back(
               body_container->AddChildView(PopupPasswordSuggestionView::Create(
-                  this, current_line_number, frontend_id)));
+                  *this, current_line_number, frontend_id)));
           break;
 
         // The default section contains most of the suggestions including
@@ -258,7 +258,7 @@ void PopupViewViews::CreateChildViews() {
         default:
           rows_.push_back(
               body_container->AddChildView(PopupSuggestionView::Create(
-                  this, current_line_number, frontend_id,
+                  *this, current_line_number, frontend_id,
                   controller_->GetPopupType())));
       }
     }
@@ -300,7 +300,7 @@ void PopupViewViews::CreateChildViews() {
           std::make_unique<PopupSeparatorView>()));
     } else {
       rows_.push_back(footer_container->AddChildView(PopupFooterView::Create(
-          this, current_line_number,
+          *this, current_line_number,
           kSuggestions[current_line_number].frontend_id)));
     }
   }
