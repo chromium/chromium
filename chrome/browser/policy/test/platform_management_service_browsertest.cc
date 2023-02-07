@@ -23,11 +23,11 @@ class PlatformPolicyManagementServiceTest : public PolicyTest {
 };
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Some testing machines/bots are managed, so we cannot test that they become managed after
-// setting one policy. For those machines we check the presence of
-// `EnterpriseManagementAuthority::COMPUTER_LOCAL` in the management authorities. For other machines
-// we test that the management authority thrustworthiness becomes
-// `ManagementAuthorityTrustworthiness::LOW`.
+// Some testing machines/bots are managed, so we cannot test that they become
+// managed after setting one policy. For those machines we check the presence of
+// `EnterpriseManagementAuthority::COMPUTER_LOCAL` in the management
+// authorities. For other machines we test that the management authority
+// trustworthiness becomes `ManagementAuthorityTrustworthiness::LOW`.
 IN_PROC_BROWSER_TEST_F(PlatformPolicyManagementServiceTest, HasPolicy) {
   bool testing_on_managed_device =
       ManagementServiceFactory::GetForPlatform()->IsManaged();
