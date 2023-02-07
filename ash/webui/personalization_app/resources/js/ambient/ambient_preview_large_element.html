@@ -27,7 +27,7 @@
     grid-template-rows: auto minmax(158px, 220px) 20px 130px auto 18px;
   }
 
-  #container.pre-ui-change {
+  #container.jelly-disabled {
     grid-template-areas:
       '. slot           slot    slot    .'
       '. image          image   image   .'
@@ -39,7 +39,7 @@
     grid-template-rows: auto minmax(158px, 220px) 20px 106px auto 24px;
   }
 
-  #container.pre-ui-change.zero-state-disabled {
+  #container.jelly-disabled.zero-state-disabled {
     grid-template-rows: auto minmax(158px, 220px) 20px auto 106px 24px;
   }
 
@@ -78,7 +78,7 @@
     justify-content: space-between;
   }
 
-  #messageContainer.pre-ui-change .text {
+  #messageContainer.jelly-disabled .text {
     color: var(--cros-text-color-secondary);
     font: var(--cros-body-1-font);
     line-height: 1.5;
@@ -106,7 +106,7 @@
     z-index: -10000;
   }
 
-  #messageContainer.pre-ui-change cr-button {
+  #messageContainer.jelly-disabled cr-button {
     margin-top: 20px;
   }
 
@@ -128,8 +128,8 @@
     justify-content: center;
   }
 
-  .pre-ui-change .album-info-mainpage,
-  .pre-ui-change #textPlaceholder {
+  .jelly-disabled .album-info-mainpage,
+  .jelly-disabled #textPlaceholder {
     align-items: flex-start;
   }
 
@@ -137,7 +137,7 @@
     margin-top: 8px;
   }
 
-  .album-info-mainpage:not(.pre-ui-change) span {
+  .album-info-mainpage:not(.jelly-disabled) span {
     margin-inline: auto;
   }
 
@@ -164,7 +164,7 @@
     margin-top: 16px;
   }
 
-  #albumTitle.pre-ui-change {
+  #albumTitle.jelly-disabled {
     margin-top: 4px;
   }
 
@@ -174,7 +174,7 @@
     margin-top: 2px;
   }
 
-  #albumDescription.pre-ui-change {
+  #albumDescription.jelly-disabled {
     margin-top: 4px;
   }
 
@@ -446,7 +446,7 @@
           <img class="preview-image disabled"
               src="//personalization/images/slideshow.png">
         </div>
-        <div class="pre-ui-change" id="messageContainer">
+        <div class="jelly-disabled" id="messageContainer">
           <span class="text" id="turnOnDescription">
             $i18n{ambientModeMainPageZeroStateMessage}
           </span>
@@ -470,7 +470,7 @@
                 on-keypress="onClickPreviewImage_">
           </div>
           <h3 aria-label$="[[getPreviewTextAriaLabel_(firstPreviewAlbum_, topicSource_, previewAlbums_)]]"
-              class="preview-text-container album-info-mainpage pre-ui-change"
+              class="preview-text-container album-info-mainpage jelly-disabled"
               id="textContainer">
             <span aria-hidden="true"
                 id="albumTitle"

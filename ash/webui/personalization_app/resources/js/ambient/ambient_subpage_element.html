@@ -26,7 +26,7 @@
     grid-area: zeroState;
   }
   /* TODO(b/253470553): Remove after Ambient subpage UI change is released. */
-  ambient-preview-small.pre-ui-change {
+  ambient-preview-small.jelly-disabled {
     margin: 20px 8px 0 8px;
   }
   ambient-preview-small {
@@ -117,7 +117,7 @@
       <template is="dom-if" if="[[ambientModeEnabled_]]">
         <!-- TODO(b/253470553): Remove after Ambient subpage UI change is released. -->
         <template is="dom-if" if="[[!isPersonalizationJellyEnabled_]]">
-          <ambient-preview-small class="pre-ui-change"></ambient-preview-small>
+          <ambient-preview-small class="jelly-disabled"></ambient-preview-small>
         </template>
         <template is="dom-if" if="[[loadingSettings_]]">
           <div id="animationThemePlaceholder">
