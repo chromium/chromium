@@ -53,7 +53,7 @@ class CORE_EXPORT ListMarker {
   // Compute inline margins for 'list-style-position: inside' and 'outside'.
   static std::pair<LayoutUnit, LayoutUnit> InlineMarginsForInside(
       Document&,
-      const ComputedStyle& marker_style,
+      const ComputedStyleBuilder& marker_style_builder,
       const ComputedStyle& list_item_style);
   static std::pair<LayoutUnit, LayoutUnit> InlineMarginsForOutside(
       Document&,

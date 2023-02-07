@@ -348,10 +348,11 @@ LayoutUnit ListMarker::WidthOfSymbol(const ComputedStyle& style,
 
 std::pair<LayoutUnit, LayoutUnit> ListMarker::InlineMarginsForInside(
     Document& document,
-    const ComputedStyle& marker_style,
+    const ComputedStyleBuilder& marker_style_builder,
     const ComputedStyle& list_item_style) {
-  if (!marker_style.ContentBehavesAsNormal())
+  if (!marker_style_builder.GetDisplayStyle().ContentBehavesAsNormal()) {
     return {};
+  }
   if (list_item_style.GeneratesMarkerImage())
     return {LayoutUnit(), LayoutUnit(kCMarkerPaddingPx)};
   switch (GetListStyleCategory(document, list_item_style)) {
@@ -359,11 +360,15 @@ std::pair<LayoutUnit, LayoutUnit> ListMarker::InlineMarginsForInside(
       const AtomicString& name =
           list_item_style.ListStyleType()->GetCounterStyleName();
       if (name == "disclosure-open" || name == "disclosure-closed") {
-        return {LayoutUnit(), LayoutUnit(kClosureMarkerMarginEm *
-                                         marker_style.SpecifiedFontSize())};
+        return {LayoutUnit(),
+                LayoutUnit(
+                    kClosureMarkerMarginEm *
+                    marker_style_builder.GetFontDescription().SpecifiedSize())};
       }
-      return {LayoutUnit(-1),
-              LayoutUnit(kCUAMarkerMarginEm * marker_style.ComputedFontSize())};
+      return {
+          LayoutUnit(-1),
+          LayoutUnit(kCUAMarkerMarginEm *
+                     marker_style_builder.GetFontDescription().ComputedSize())};
     }
     default:
       break;

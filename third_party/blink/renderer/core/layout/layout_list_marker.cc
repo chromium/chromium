@@ -286,7 +286,7 @@ void LayoutListMarker::UpdateMargins(LayoutUnit marker_inline_size) {
   const ComputedStyle& list_item_style = ListItem()->StyleRef();
   if (IsInside()) {
     std::tie(margin_start, margin_end) = ListMarker::InlineMarginsForInside(
-        GetDocument(), style, list_item_style);
+        GetDocument(), ComputedStyleBuilder(style), list_item_style);
   } else {
     std::tie(margin_start, margin_end) = ListMarker::InlineMarginsForOutside(
         GetDocument(), style, list_item_style, marker_inline_size);
