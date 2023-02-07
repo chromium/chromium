@@ -21,6 +21,14 @@
         margin: var(--cr-toolbar-icon-margin, 6px);
       }
 
+      :host-context([chrome-refresh-2023]) cr-icon-button {
+        --cr-icon-button-fill-color: var(--cr-toolbar-search-field-icon-color,
+            var(--cr-secondary-text-color));
+        --cr-icon-button-size: var(--cr-toolbar-icon-container-size, 28px);
+        --cr-icon-button-icon-size: 20px;
+        margin: var(--cr-toolbar-icon-margin, 0);
+      }
+
       @media (prefers-color-scheme: light) {
         cr-icon-button {
           --cr-icon-button-fill-color: var(
@@ -63,6 +71,12 @@
         }
       }
 
+      :host-context([chrome-refresh-2023]) #prompt {
+        color: var(--cr-toolbar-search-field-prompt-color,
+            var(--color-textfield-foreground-placeholder,
+            var(--cr-secondary-text-color)));
+      }
+
       paper-spinner-lite {
         --paper-spinner-color:
             var(--cr-toolbar-search-field-input-icon-color,
@@ -100,6 +114,10 @@
         position: relative;
       }
 
+      :host-context([chrome-refresh-2023]) #searchTerm {
+        margin: var(--cr-toolbar-search-field-term-margin, 0);
+      }
+
       label {
         bottom: 0;
         cursor: var(--cr-toolbar-search-field-cursor, text);
@@ -121,7 +139,7 @@
         border: none;
         caret-color: var(--cr-toolbar-search-field-input-caret-color,
             var(--google-blue-700));
-        color: var(--cr-toolbar-search-field-input-text-color, 
+        color: var(--cr-toolbar-search-field-input-text-color,
             var(--google-grey-900));
         cursor: var(--cr-toolbar-search-field-cursor, text);
         font: inherit;
@@ -135,6 +153,16 @@
         input {
           color: var(--cr-toolbar-search-field-input-text-color, white);
         }
+      }
+
+      :host-context([chrome-refresh-2023]) input {
+        caret-color: var(--cr-toolbar-serch-field-input-caret-color,
+            currentColor);
+        color: var(--cr-toolbar-search-field-input-text-color,
+            var(--color-textfield-foreground,
+            var(--cr-fallback-color-on-surface)));
+        font-size: 12px;
+        font-weight: 500;
       }
 
       input[type='search']::-webkit-search-cancel-button {
@@ -163,6 +191,15 @@
           background:
               var(--cr-toolbar-search-field-background, rgba(0, 0, 0, 0.22));
         }
+      }
+
+      :host-context([chrome-refresh-2023]):host(:not([narrow])) {
+        background: var(--cr-toolbar-search-field-background,
+            var(--color-textfield-background,
+            var(--cr-fallback-color-surface)));
+        border-radius: 100px;
+        height: 36px;
+        padding: 0 6px;
       }
 
       :host(:not([narrow]):not([showing-search])) #icon {
