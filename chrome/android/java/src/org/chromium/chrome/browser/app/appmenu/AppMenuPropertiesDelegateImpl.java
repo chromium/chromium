@@ -26,6 +26,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -546,7 +547,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      * @return The number of Chrome instances either running alive or dormant but the state
      *         is present for restoration.
      */
-    private int getInstanceCount() {
+    @VisibleForTesting
+    int getInstanceCount() {
         return mMultiWindowModeStateDispatcher.getInstanceCount();
     }
 
@@ -761,6 +763,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         if (instanceSwitcherEnabled()) {
             // Hide the menu if we already have the maximum number of windows.
             if (getInstanceCount() >= MultiWindowUtils.getMaxInstances()) return false;
+            // Hide the menu on automotive devices.
+            if (BuildInfo.getInstance().isAutomotive) return false;
 
             // On phones, show the menu only when in split-screen, with a single instance
             // running on the foreground.

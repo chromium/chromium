@@ -10,14 +10,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -38,9 +41,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadows.ShadowPackageManager;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
@@ -182,11 +188,15 @@ public class AppMenuPropertiesDelegateUnitTest {
     private final TestValues mTestValues = new TestValues();
     private AppMenuPropertiesDelegateImpl mAppMenuPropertiesDelegate;
     private MenuUiState mMenuUiState;
+    private ShadowPackageManager mShadowPackageManager;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         setupFeatureDefaults();
+
+        Context context = ContextUtils.getApplicationContext();
+        mShadowPackageManager = Shadows.shadowOf(context.getPackageManager());
 
         mLayoutStateProviderSupplier.set(mLayoutStateProvider);
         mIncognitoReauthControllerSupplier.set(mIncognitoReauthControllerMock);
@@ -1032,6 +1042,185 @@ public class AppMenuPropertiesDelegateUnitTest {
                 R.id.all_bookmarks_menu_id, R.id.recent_tabs_menu_id, R.id.divider_line_id,
                 R.id.preferences_id, R.id.help_id};
         assertMenuItemsAreEqual(menu, expectedItems);
+    }
+
+    @Test
+    public void testShouldShowNewMenu_alreadyMaxWindows_returnsFalse() {
+        assertFalse(doTestShouldShowNewMenu(
+                /* isAutomotive */ false,
+                /* isInstanceSwitcherEnabled */ true,
+                /* currentWindowInstances */ 10,
+                /* isTabletSizeScreen */ true,
+                /* canEnterMultiWindowMode */ false,
+                /* isChromeRunningInAdjacentWindow */ false,
+                /* isInMultiWindowMode */ false,
+                /* isInMultiDisplayMode */ false,
+                /* isMultiInstanceRunning */ false));
+        verify(mAppMenuPropertiesDelegate, never()).isTabletSizeScreen();
+    }
+
+    @Test
+    public void testShouldShowNewMenu_isAutomotive_returnsFalse() {
+        assertFalse(doTestShouldShowNewMenu(
+                /* isAutomotive */ true,
+                /* isInstanceSwitcherEnabled */ true,
+                /* currentWindowInstances */ 1,
+                /* isTabletSizeScreen */ true,
+                /* canEnterMultiWindowMode */ false,
+                /* isChromeRunningInAdjacentWindow */ false,
+                /* isInMultiWindowMode */ false,
+                /* isInMultiDisplayMode */ false,
+                /* isMultiInstanceRunning */ false));
+        verify(mAppMenuPropertiesDelegate, never()).isTabletSizeScreen();
+    }
+
+    @Test
+    public void testShouldShowNewMenu_isTabletSizedScreen_returnsTrue() {
+        assertTrue(doTestShouldShowNewMenu(
+                /* isAutomotive */ false,
+                /* isInstanceSwitcherEnabled */ true,
+                /* currentWindowInstances */ 1,
+                /* isTabletSizeScreen */ true,
+                /* canEnterMultiWindowMode */ false,
+                /* isChromeRunningInAdjacentWindow */ false,
+                /* isInMultiWindowMode */ false,
+                /* isInMultiDisplayMode */ false,
+                /* isMultiInstanceRunning */ false));
+        verify(mAppMenuPropertiesDelegate, atLeastOnce()).isTabletSizeScreen();
+    }
+
+    @Test
+    public void testShouldShowNewMenu_chromeRunningInAdjacentWindow_returnsFalse() {
+        assertFalse(doTestShouldShowNewMenu(
+                /* isAutomotive */ false,
+                /* isInstanceSwitcherEnabled */ true,
+                /* currentWindowInstances */ 1,
+                /* isTabletSizeScreen */ false,
+                /* canEnterMultiWindowMode */ false,
+                /* isChromeRunningInAdjacentWindow */ true,
+                /* isInMultiWindowMode */ true,
+                /* isInMultiDisplayMode */ true,
+                /* isMultiInstanceRunning */ false));
+        verify(mAppMenuPropertiesDelegate, atLeastOnce()).isTabletSizeScreen();
+    }
+
+    @Test
+    public void testShouldShowNewMenu_multiWindowMode_returnsTrue() {
+        assertTrue(doTestShouldShowNewMenu(
+                /* isAutomotive */ false,
+                /* isInstanceSwitcherEnabled */ true,
+                /* currentWindowInstances */ 1,
+                /* isTabletSizeScreen */ false,
+                /* canEnterMultiWindowMode */ false,
+                /* isChromeRunningInAdjacentWindow */ false,
+                /* isInMultiWindowMode */ true,
+                /* isInMultiDisplayMode */ false,
+                /* isMultiInstanceRunning */ false));
+        verify(mAppMenuPropertiesDelegate, atLeastOnce()).isTabletSizeScreen();
+    }
+
+    @Test
+    public void testShouldShowNewMenu_multiDisplayMode_returnsTrue() {
+        assertTrue(doTestShouldShowNewMenu(
+                /* isAutomotive */ false,
+                /* isInstanceSwitcherEnabled */ true,
+                /* currentWindowInstances */ 1,
+                /* isTabletSizeScreen */ false,
+                /* canEnterMultiWindowMode */ false,
+                /* isChromeRunningInAdjacentWindow */ false,
+                /* isInMultiWindowMode */ false,
+                /* isInMultiDisplayMode */ true,
+                /* isMultiInstanceRunning */ false));
+        verify(mAppMenuPropertiesDelegate, atLeastOnce()).isTabletSizeScreen();
+    }
+
+    @Test
+    public void testShouldShowNewMenu_multiInstanceRunning_returnsFalse() {
+        assertFalse(doTestShouldShowNewMenu(
+                /* isAutomotive */ false,
+                /* isInstanceSwitcherEnabled */ false,
+                /* currentWindowInstances */ 1,
+                /* isTabletSizeScreen */ false,
+                /* canEnterMultiWindowMode */ false,
+                /* isChromeRunningInAdjacentWindow */ false,
+                /* isInMultiWindowMode */ false,
+                /* isInMultiDisplayMode */ false,
+                /* isMultiInstanceRunning */ true));
+        verify(mAppMenuPropertiesDelegate, never()).isTabletSizeScreen();
+        verify(mAppMenuPropertiesDelegate, never()).getInstanceCount();
+    }
+
+    @Test
+    public void testShouldShowNewMenu_canEnterMultiWindowMode_returnsTrue() {
+        assertTrue(doTestShouldShowNewMenu(
+                /* isAutomotive */ false,
+                /* isInstanceSwitcherEnabled */ false,
+                /* currentWindowInstances */ 1,
+                /* isTabletSizeScreen */ true,
+                /* canEnterMultiWindowMode */ true,
+                /* isChromeRunningInAdjacentWindow */ false,
+                /* isInMultiWindowMode */ false,
+                /* isInMultiDisplayMode */ false,
+                /* isMultiInstanceRunning */ false));
+        verify(mAppMenuPropertiesDelegate, atLeastOnce()).isTabletSizeScreen();
+        verify(mAppMenuPropertiesDelegate, never()).getInstanceCount();
+    }
+
+    @Test
+    public void testShouldShowNewMenu_instanceSwitcherDisabled_multiWindowMode_returnsTrue() {
+        assertTrue(doTestShouldShowNewMenu(
+                /* isAutomotive */ false,
+                /* isInstanceSwitcherEnabled */ false,
+                /* currentWindowInstances */ 1,
+                /* isTabletSizeScreen */ false,
+                /* canEnterMultiWindowMode */ false,
+                /* isChromeRunningInAdjacentWindow */ false,
+                /* isInMultiWindowMode */ true,
+                /* isInMultiDisplayMode */ false,
+                /* isMultiInstanceRunning */ false));
+        verify(mAppMenuPropertiesDelegate, never()).getInstanceCount();
+    }
+
+    @Test
+    public void testShouldShowNewMenu_instanceSwitcherDisabled_multiDisplayMode_returnsTrue() {
+        assertTrue(doTestShouldShowNewMenu(
+                /* isAutomotive */ false,
+                /* isInstanceSwitcherEnabled */ false,
+                /* currentWindowInstances */ 1,
+                /* isTabletSizeScreen */ false,
+                /* canEnterMultiWindowMode */ false,
+                /* isChromeRunningInAdjacentWindow */ false,
+                /* isInMultiWindowMode */ false,
+                /* isInMultiDisplayMode */ true,
+                /* isMultiInstanceRunning */ false));
+        verify(mAppMenuPropertiesDelegate, never()).getInstanceCount();
+    }
+
+    private boolean doTestShouldShowNewMenu(boolean isAutomotive, boolean isInstanceSwitcherEnabled,
+            int currentWindowInstances, boolean isTabletSizeScreen, boolean canEnterMultiWindowMode,
+            boolean isChromeRunningInAdjacentWindow, boolean isInMultiWindowMode,
+            boolean isInMultiDisplayMode, boolean isMultiInstanceRunning) {
+        mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, isAutomotive);
+        BuildInfo.resetForTesting();
+
+        doReturn(isInstanceSwitcherEnabled)
+                .when(mAppMenuPropertiesDelegate)
+                .instanceSwitcherEnabled();
+        doReturn(currentWindowInstances).when(mAppMenuPropertiesDelegate).getInstanceCount();
+        doReturn(isTabletSizeScreen).when(mAppMenuPropertiesDelegate).isTabletSizeScreen();
+        doReturn(canEnterMultiWindowMode)
+                .when(mMultiWindowModeStateDispatcher)
+                .canEnterMultiWindowMode();
+        doReturn(isChromeRunningInAdjacentWindow)
+                .when(mMultiWindowModeStateDispatcher)
+                .isChromeRunningInAdjacentWindow();
+        doReturn(isInMultiWindowMode).when(mMultiWindowModeStateDispatcher).isInMultiWindowMode();
+        doReturn(isInMultiDisplayMode).when(mMultiWindowModeStateDispatcher).isInMultiDisplayMode();
+        doReturn(isMultiInstanceRunning)
+                .when(mMultiWindowModeStateDispatcher)
+                .isMultiInstanceRunning();
+
+        return mAppMenuPropertiesDelegate.shouldShowNewWindow();
     }
 
     private void setUpMocksForPageMenu() {

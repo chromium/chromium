@@ -27,6 +27,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -159,6 +160,8 @@ public class MultiWindowUtils implements ActivityStateListener {
      */
     public boolean isOpenInOtherWindowSupported(Activity activity) {
         if (!isInMultiWindowMode(activity) && !isInMultiDisplayMode(activity)) return false;
+        // Automotive is currently restricted to a single window.
+        if (BuildInfo.getInstance().isAutomotive) return false;
 
         return getOpenInOtherWindowActivity(activity) != null;
     }
@@ -169,6 +172,9 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return {@code True} if Chrome can get itself into multi-window mode.
      */
     public boolean canEnterMultiWindowMode(Activity activity) {
+        // Automotive is currently restricted to a single window.
+        if (BuildInfo.getInstance().isAutomotive) return false;
+
         return aospMultiWindowModeSupported() || customMultiWindowModeSupported();
     }
 
