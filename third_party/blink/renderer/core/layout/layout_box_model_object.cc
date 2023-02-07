@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
-#include "third_party/blink/renderer/core/layout/deferred_shaping.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
@@ -360,24 +359,12 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
     Layer()->SetNeedsCompositingInputsUpdate();
   }
 
-  if ((IsOutOfFlowPositioned() || IsRelPositioned()) && Parent())
-    DisallowDeferredShapingIfNegativePositioned();
-
   if (Element* element = DynamicTo<Element>(GetNode())) {
     if (IsOutOfFlowPositioned() && StyleRef().AnchorScroll())
       element->EnsureAnchorScrollData();
     else
       element->RemoveAnchorScrollData();
   }
-}
-
-void LayoutBoxModelObject::InsertedIntoTree() {
-  LayoutObject::InsertedIntoTree();
-  if (IsOutOfFlowPositioned() || IsRelPositioned())
-    DisallowDeferredShapingIfNegativePositioned();
-}
-
-void LayoutBoxModelObject::DisallowDeferredShapingIfNegativePositioned() const {
 }
 
 void LayoutBoxModelObject::CreateLayerAfterStyleChange() {

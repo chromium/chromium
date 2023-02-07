@@ -165,7 +165,6 @@
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
-#include "third_party/blink/renderer/core/layout/deferred_shaping_controller.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
@@ -1178,9 +1177,6 @@ void Element::scrollIntoView(bool align_to_top) {
 }
 
 void Element::scrollIntoViewWithOptions(const ScrollIntoViewOptions* options) {
-  if (auto* ds_controller = DeferredShapingController::From(GetDocument())) {
-    ds_controller->ReshapeAllDeferred(ReshapeReason::kScrollingApi);
-  }
   ActivateDisplayLockIfNeeded(DisplayLockActivationReason::kScrollIntoView);
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
@@ -1603,8 +1599,6 @@ void Element::setScrollLeft(double new_left) {
     return;
   }
 
-  DeferredShapingController::From(GetDocument())
-      ->ReshapeAllDeferred(ReshapeReason::kScrollingApi);
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
@@ -1658,8 +1652,6 @@ void Element::setScrollTop(double new_top) {
     return;
   }
 
-  DeferredShapingController::From(GetDocument())
-      ->ReshapeAllDeferred(ReshapeReason::kScrollingApi);
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
@@ -2979,8 +2971,6 @@ void Element::DetachLayoutTree(bool performing_reattach) {
   DetachPrecedingPseudoElements(performing_reattach);
 
   auto* context = GetDisplayLockContext();
-  bool was_shaping_deferred =
-      context && GetLayoutObject() && GetLayoutObject()->IsShapingDeferred();
 
   // TODO(futhark): We need to traverse into IsUserActionElement() subtrees,
   // even if they are already display:none because we do not clear the
@@ -3021,9 +3011,6 @@ void Element::DetachLayoutTree(bool performing_reattach) {
 
   if (context) {
     context->DetachLayoutTree();
-  }
-  if (was_shaping_deferred && GetDocument().View()) {
-    DeferredShapingController::From(GetDocument())->UnregisterDeferred(*this);
   }
 }
 
@@ -5151,7 +5138,6 @@ void Element::Focus(const FocusParams& params) {
                                       mojom::blink::FocusType::kScript
                                   ? DisplayLockActivationReason::kScriptFocus
                                   : DisplayLockActivationReason::kUserFocus);
-  DeferredShapingController::From(GetDocument())->OnFocus(*this);
 
   if (!GetDocument().GetPage()->GetFocusController().SetFocusedElement(
           this, GetDocument().GetFrame(), params_to_use)) {

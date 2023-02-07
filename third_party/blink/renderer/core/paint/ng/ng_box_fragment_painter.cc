@@ -754,9 +754,6 @@ void NGBoxFragmentPainter::PaintLineBoxes(const PaintInfo& paint_info,
   DCHECK(layout_object->IsLayoutBlock());
   DCHECK(box_fragment_.IsInlineFormattingContext());
 
-  if (layout_object->IsShapingDeferred())
-    return;
-
   // When the layout-tree gets into a bad state, we can end up trying to paint
   // a fragment with inline children, without a paint fragment. See:
   // http://crbug.com/1022545

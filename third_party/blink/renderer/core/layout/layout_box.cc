@@ -3540,10 +3540,11 @@ void LayoutBox::InvalidateItems(const NGLayoutResult& result) {
     return;
 #if DCHECK_IS_ON()
   // Column fragments are not really associated with a layout object.
-  if (IsLayoutFlowThread())
+  if (IsLayoutFlowThread()) {
     DCHECK(box_fragment.IsColumnBox());
-  else if (!IsShapingDeferred())
+  } else {
     DCHECK_EQ(this, box_fragment.GetLayoutObject());
+  }
 #endif
   ObjectPaintInvalidator(*this).SlowSetPaintingLayerNeedsRepaint();
 }

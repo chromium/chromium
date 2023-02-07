@@ -197,10 +197,11 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   // valid (see comment in `SetCachedLayoutResult`), don't return the fragment,
   // since it will be used to iteration the invalid children when running
   // simplified layout.
-  if ((!physical_fragment.ChildrenValid() || IsShapingDeferred()) &&
+  if (!physical_fragment.ChildrenValid() &&
       (size_cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout ||
-       cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout))
+       cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout)) {
     return nullptr;
+  }
 
   // Update our temporary cache status, if the size cache check indicated we
   // might need simplified layout.

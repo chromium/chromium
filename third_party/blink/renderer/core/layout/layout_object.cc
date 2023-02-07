@@ -5019,14 +5019,6 @@ void LayoutObject::MarkSelfPaintingLayerForVisualOverflowRecalc() {
 #endif
 }
 
-bool LayoutObject::IsShapingDeferred() const {
-  if (const auto* block_flow = DynamicTo<LayoutBlockFlow>(this)) {
-    return block_flow->HasNGInlineNodeData() &&
-           block_flow->GetNGInlineNodeData()->IsShapingDeferred();
-  }
-  return false;
-}
-
 bool LayoutObject::ForceLegacyLayoutForChildren() const {
   NOT_DESTROYED();
   if (bitfields_.ForceLegacyLayout())

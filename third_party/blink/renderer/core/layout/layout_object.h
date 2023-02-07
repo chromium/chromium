@@ -3616,8 +3616,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return context && !context->ShouldPaintChildren();
   }
 
-  bool IsShapingDeferred() const;
-
   // This flag caches StyleRef().HasBorderDecoration() &&
   // !Table()->ShouldCollapseBorders().
   bool HasNonCollapsedBorderDecoration() const {

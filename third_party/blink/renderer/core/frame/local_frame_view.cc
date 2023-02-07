@@ -107,8 +107,6 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observation.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
-#include "third_party/blink/renderer/core/layout/deferred_shaping.h"
-#include "third_party/blink/renderer/core/layout/deferred_shaping_controller.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
@@ -847,21 +845,7 @@ void LocalFrameView::PerformLayout() {
       if (HasOrthogonalWritingModeRoots())
         LayoutOrthogonalWritingModeRoots();
 
-      DeferredShapingController& ds_controller =
-          GetLayoutView()->GetDeferredShapingController();
-      bool default_allow_deferred_shaping =
-          ds_controller.DefaultAllowDeferredShaping() &&
-          RuntimeEnabledFeatures::DeferredShapingEnabled() &&
-          !frame_->PagePopupOwner() && !auto_size_info_ &&
-          !GetScrollableArea()->HasPendingHistoryRestoreScrollOffset();
-      if (!default_allow_deferred_shaping)
-        ds_controller.DisallowDeferredShaping();
-      using PassKey = base::PassKey<LocalFrameView>;
-      ds_controller.SetAllowDeferredShaping(
-          PassKey(), default_allow_deferred_shaping && !document->Printing());
-      DeferredShapingViewportScope viewport_scope(*GetLayoutView());
       GetLayoutView()->UpdateLayout();
-      ds_controller.SetAllowDeferredShaping(PassKey(), false);
     }
   }
 
@@ -1390,10 +1374,6 @@ void LocalFrameView::ProcessUrlFragment(const KURL& url,
     // part of the lifecycle.
     if (same_document_navigation)
       ScheduleAnimation();
-    if (const auto* layout_view = GetLayoutView()) {
-      layout_view->GetDeferredShapingController().ReshapeAllDeferred(
-          ReshapeReason::kFragmentAnchor);
-    }
   }
 }
 
@@ -1889,8 +1869,6 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
   ScheduleUpdatePluginsIfNecessary();
   if (visual_viewport_size_changed && !document->Printing())
     frame_->GetDocument()->EnqueueVisualViewportResizeEvent();
-
-  GetLayoutView()->GetDeferredShapingController().PerformPostLayoutTask();
 }
 
 float LocalFrameView::InputEventsScaleFactor() const {
@@ -3839,8 +3817,6 @@ void LocalFrameView::SetLayoutSizeInternal(const gfx::Size& size) {
   document->LayoutViewportWasResized();
   if (frame_->IsMainFrame())
     TextAutosizer::UpdatePageInfoInAllFrames(frame_);
-  if (auto* ds_controller = DeferredShapingController::From(*document))
-    ds_controller->OnResizeFrame();
 }
 
 void LocalFrameView::DidChangeScrollOffset() {

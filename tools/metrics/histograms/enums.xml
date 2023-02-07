@@ -41884,7 +41884,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4256" label="EventTimingInteractionId"/>
   <int value="4257" label="SecurePaymentConfirmationOptOut"/>
   <int value="4258" label="AnyPopoverAttribute"/>
-  <int value="4259" label="DeferredShapingWorked"/>
+  <int value="4259" label="OBSOLETE_DeferredShapingWorked"/>
   <int value="4260" label="OBSOLETE_DeferredShapingReshapedByForceLayout"/>
   <int value="4261" label="MediaSourceGetHandle"/>
   <int value="4262" label="IdentityInCanMakePaymentEvent"/>
@@ -41966,19 +41966,20 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4333" label="PrivateAggregationApiAll"/>
   <int value="4334" label="PrivateAggregationApiFledge"/>
   <int value="4335" label="PrivateAggregationApiSharedStorage"/>
-  <int value="4336" label="DeferredShaping2ReshapedByComputedStyle"/>
-  <int value="4337" label="DeferredShaping2ReshapedByDomContentLoaded"/>
-  <int value="4338" label="DeferredShaping2ReshapedByFcp"/>
-  <int value="4339" label="DeferredShaping2DisabledByFragmentAnchor"/>
-  <int value="4340" label="DeferredShaping2ReshapedByFocus"/>
-  <int value="4341" label="DeferredShaping2ReshapedByGeometry"/>
-  <int value="4342" label="DeferredShaping2ReshapedByInspector"/>
-  <int value="4343" label="DeferredShaping2ReshapedByPrinting"/>
-  <int value="4344" label="DeferredShaping2ReshapedByScrolling"/>
+  <int value="4336" label="OBSOLETE_DeferredShaping2ReshapedByComputedStyle"/>
+  <int value="4337"
+      label="OBSOLETE_DeferredShaping2ReshapedByDomContentLoaded"/>
+  <int value="4338" label="OBSOLETE_DeferredShaping2ReshapedByFcp"/>
+  <int value="4339" label="OBSOLETE_DeferredShaping2DisabledByFragmentAnchor"/>
+  <int value="4340" label="OBSOLETE_DeferredShaping2ReshapedByFocus"/>
+  <int value="4341" label="OBSOLETE_DeferredShaping2ReshapedByGeometry"/>
+  <int value="4342" label="OBSOLETE_DeferredShaping2ReshapedByInspector"/>
+  <int value="4343" label="OBSOLETE_DeferredShaping2ReshapedByPrinting"/>
+  <int value="4344" label="OBSOLETE_DeferredShaping2ReshapedByScrolling"/>
   <int value="4345" label="LCPCandidateImageFromOriginDirtyStyle"/>
   <int value="4346" label="V8TurboFanOsrCompileStarted"/>
   <int value="4347" label="V8Document_HasRedemptionRecord_Method"/>
-  <int value="4348" label="DeferredShaping2ReshapedByLastResort"/>
+  <int value="4348" label="OBSOLETE_DeferredShaping2ReshapedByLastResort"/>
   <int value="4349" label="AudioContextSinkId"/>
   <int value="4350" label="AudioContextSetSinkId"/>
   <int value="4351" label="ViewportDependentLazyLoadedImageWithSizesAttribute"/>

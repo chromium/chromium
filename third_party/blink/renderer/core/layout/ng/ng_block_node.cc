@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/html/html_marquee_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/box_layout_extra_input.h"
-#include "third_party/blink/renderer/core/layout/deferred_shaping.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
@@ -509,9 +508,6 @@ const NGLayoutResult* NGBlockNode::Layout(
       box_, fragment_geometry->border_box_size.inline_size);
 
   PrepareForLayout();
-  DeferredShapingDisallowScope disallow_deferred(
-      *box_->View(), Style().HasTransform() ||
-                         !IsHorizontalWritingMode(Style().GetWritingMode()));
 
   NGLayoutAlgorithmParams params(*this, *fragment_geometry, constraint_space,
                                  break_token, early_break);
@@ -1028,9 +1024,6 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     return MinMaxSizesResult(sizes, /* depends_on_block_constraints */ false);
   }
 
-  DeferredShapingDisallowScope disallow_deferred(
-      *box_->View(), Style().HasTransform() ||
-                         !IsHorizontalWritingMode(Style().GetWritingMode()));
   bool is_orthogonal_flow_root =
       !IsParallelWritingMode(container_writing_mode, Style().GetWritingMode());
 

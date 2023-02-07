@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/core/html/html_embed_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_snapshot_agent.h"
-#include "third_party/blink/renderer/core/layout/deferred_shaping_controller.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
@@ -141,8 +140,6 @@ void InspectorContrast::CollectNodesAndBuildRTreeIfNeeded() {
   if (!layout_view)
     return;
 
-  DeferredShapingController::From(*document_)
-      ->ReshapeAllDeferred(ReshapeReason::kInspector);
   if (!layout_view->GetFrameView()->UpdateLifecycleToPrePaintClean(
           DocumentUpdateReason::kInspector)) {
     return;
@@ -276,11 +273,6 @@ Vector<Color> InspectorContrast::GetBackgroundColors(Element* element,
     return colors;
   }
 
-  if (RuntimeEnabledFeatures::DeferredShapingEnabled()) {
-    if (auto* ds_controller = DeferredShapingController::From(*document_))
-      ds_controller->ReshapeAllDeferred(ReshapeReason::kInspector);
-    document_->UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
-  }
   PhysicalRect content_bounds = GetNodeRect(text_node);
   LocalFrameView* view = text_node->GetDocument().View();
   if (!view)

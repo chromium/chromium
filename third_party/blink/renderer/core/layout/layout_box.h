@@ -1224,8 +1224,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void FinalizeLayoutResults();
 
   void ClearLayoutResults();
-  // Clear LayoutObject fields of physical fragments.
-  void DisassociatePhysicalFragments();
 
   void RebuildFragmentTreeSpine();
 
@@ -2408,6 +2406,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Compute the border-box size from physical fragments.
   LayoutSize ComputeSize() const;
   void InvalidateCachedGeometry();
+
+  // Clear LayoutObject fields of physical fragments.
+  void DisassociatePhysicalFragments();
 
   // The CSS border box rect for this box.
   //

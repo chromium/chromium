@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/media_controls.h"
-#include "third_party/blink/renderer/core/layout/deferred_shaping.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
 
@@ -56,7 +55,6 @@ HTMLMediaElement* LayoutMedia::MediaElement() const {
 
 void LayoutMedia::UpdateLayout() {
   NOT_DESTROYED();
-  DeferredShapingDisallowScope disallow_deferred(*View());
   LayoutSize old_size(ContentWidth(), ContentHeight());
 
   LayoutImage::UpdateLayout();

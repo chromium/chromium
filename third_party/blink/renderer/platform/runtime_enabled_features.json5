@@ -991,10 +991,6 @@
       status: "stable",
     },
     {
-      // crbug.com/1259085
-      name: "DeferredShaping",
-    },
-    {
       name: "DeflateRawCompressionFormat",
       status: "stable",
     },

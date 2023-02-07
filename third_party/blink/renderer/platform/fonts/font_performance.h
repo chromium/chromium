@@ -21,7 +21,6 @@ class PLATFORM_EXPORT FontPerformance {
     primary_font_ = base::TimeDelta();
     primary_font_in_style_ = base::TimeDelta();
     system_fallback_ = base::TimeDelta();
-    shaping_ = base::TimeDelta();
   }
 
   // The aggregated time spent in |DeterminePrimarySimpleFontData|.
@@ -48,21 +47,8 @@ class PLATFORM_EXPORT FontPerformance {
     system_fallback_ += time;
   }
 
-  static void AddShapingTime(base::TimeDelta time) {
-    if (UNLIKELY(!IsMainThread()))
-      return;
-    shaping_ += time;
-  }
-
   static void MarkFirstContentfulPaint();
   static void MarkDomContentLoaded();
-
-  struct ShapeTextTimingScope final {
-    ~ShapeTextTimingScope() {
-      FontPerformance::AddShapingTime(shaping_timer.Elapsed());
-    }
-    base::ElapsedTimer shaping_timer;
-  };
 
   class StyleScope {
    public:
@@ -77,7 +63,6 @@ class PLATFORM_EXPORT FontPerformance {
   static base::TimeDelta primary_font_;
   static base::TimeDelta primary_font_in_style_;
   static base::TimeDelta system_fallback_;
-  static base::TimeDelta shaping_;
   static unsigned in_style_;
 };
 
