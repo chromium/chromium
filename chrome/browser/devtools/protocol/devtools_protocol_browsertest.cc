@@ -709,10 +709,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest,
       WaitForNotification("Target.attachedToTarget", true);
   base::Value* targetInfo = attached.Find("targetInfo");
   ASSERT_THAT(targetInfo, testing::NotNull());
-  EXPECT_THAT(*targetInfo, base::test::DictionaryHasValue(
-                               "type", base::Value("service_worker")));
-  EXPECT_THAT(*targetInfo, base::test::DictionaryHasValue(
-                               "url", *ext_target.FindKey("url")));
+  EXPECT_THAT(
+      targetInfo->GetDict(),
+      base::test::DictionaryHasValue("type", base::Value("service_worker")));
+  EXPECT_THAT(targetInfo->GetDict(), base::test::DictionaryHasValue(
+                                         "url", *ext_target.FindKey("url")));
   EXPECT_THAT(attached.FindBool("waitingForDebugger"),
               testing::Optional(false));
 
