@@ -171,7 +171,8 @@ void ExpectClean(UpdaterScope scope) {
   absl::optional<base::FilePath> keystone_path = GetKeystoneFolderPath(scope);
   EXPECT_TRUE(keystone_path);
   if (keystone_path)
-    EXPECT_FALSE(base::PathExists(*keystone_path));
+    EXPECT_FALSE(
+        base::PathExists(keystone_path->AppendASCII(KEYSTONE_NAME ".bundle")));
 }
 
 void ExpectInstalled(UpdaterScope scope) {
