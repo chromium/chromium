@@ -107,7 +107,8 @@ CSSToLengthConversionData::FontSizes::FontSizes(const ComputedStyle* style,
                                                 const ComputedStyle* root_style)
     : FontSizes(
           style->SpecifiedFontSize(),
-          root_style ? root_style->SpecifiedFontSize() : 1.0f,
+          root_style ? root_style->SpecifiedFontSize()
+                     : style->SpecifiedFontSize(),
           &style->GetFont(),
           root_style ? &root_style->GetFont() : &style->GetFont(),
           style->EffectiveZoom(),
