@@ -710,7 +710,6 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
   create_tile(std::make_unique<QuietModeFeaturePodController>(this),
               feature_pod_controllers_, tiles,
               capture_and_quiet_tiles_are_compact);
-
   create_tile(std::make_unique<BluetoothFeaturePodController>(this),
               feature_pod_controllers_, tiles);
 
@@ -724,27 +723,27 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
   create_tile(std::make_unique<RotationLockFeaturePodController>(),
               feature_pod_controllers_, tiles,
               cast_and_rotation_tiles_are_compact);
-
-  create_tile(std::make_unique<NearbyShareFeaturePodController>(this),
-              feature_pod_controllers_, tiles);
   create_tile(std::make_unique<AccessibilityFeaturePodController>(this),
               feature_pod_controllers_, tiles);
-  create_tile(std::make_unique<PrivacyScreenFeaturePodController>(),
-              feature_pod_controllers_, tiles);
-  create_tile(std::make_unique<IMEFeaturePodController>(this),
-              feature_pod_controllers_, tiles);
-  create_tile(std::make_unique<VPNFeaturePodController>(this),
+  create_tile(std::make_unique<NearbyShareFeaturePodController>(this),
               feature_pod_controllers_, tiles);
   create_tile(std::make_unique<LocaleFeaturePodController>(this),
               feature_pod_controllers_, tiles);
-  if (base::FeatureList::IsEnabled(features::kShelfParty)) {
-    create_tile(std::make_unique<ShelfPartyFeaturePodController>(),
-                feature_pod_controllers_, tiles);
-  }
+  create_tile(std::make_unique<IMEFeaturePodController>(this),
+              feature_pod_controllers_, tiles);
   if (media::ShouldEnableAutoFraming()) {
     create_tile(std::make_unique<AutozoomFeaturePodController>(),
                 feature_pod_controllers_, tiles);
   }
+  create_tile(std::make_unique<VPNFeaturePodController>(this),
+              feature_pod_controllers_, tiles);
+
+  if (base::FeatureList::IsEnabled(features::kShelfParty)) {
+    create_tile(std::make_unique<ShelfPartyFeaturePodController>(),
+                feature_pod_controllers_, tiles);
+  }
+  create_tile(std::make_unique<PrivacyScreenFeaturePodController>(),
+              feature_pod_controllers_, tiles);
 
   quick_settings_view_->AddTiles(std::move(tiles));
 }
