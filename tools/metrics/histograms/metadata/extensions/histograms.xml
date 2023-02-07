@@ -4172,9 +4172,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.WebRequest.KeepaliveRequestState"
-    enum="ExtensionInProgressRequestState" expires_after="2023-02-12">
-  <owner>yhirano@chromium.org</owner>
-  <owner>kinuko@chromium.org</owner>
+    enum="ExtensionInProgressRequestState" expires_after="2024-02-07">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
   <summary>
     Whether and how keepalive requests are blocked. There is a similar histgoram
     Net.KeepaliveRequest.BlockStatus. See there for the difference between the
