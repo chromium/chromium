@@ -24,9 +24,8 @@ import android.os.ConditionVariable;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
 import org.json.JSONObject;
@@ -363,8 +362,7 @@ public class CronetUrlRequestContextTest {
     public void testNetworkBoundContextLifetime() throws Exception {
         // Multi-network API is available starting from Android Lollipop.
         final CronetTestFramework testFramework = mTestRule.startCronetTestFramework();
-        ConnectivityManagerDelegate delegate =
-                new ConnectivityManagerDelegate(InstrumentationRegistry.getTargetContext());
+        ConnectivityManagerDelegate delegate = new ConnectivityManagerDelegate(getContext());
         Network defaultNetwork = delegate.getDefaultNetwork();
         if (defaultNetwork == null) {
             testFramework.mCronetEngine.shutdown();
@@ -434,8 +432,7 @@ public class CronetUrlRequestContextTest {
         ExperimentalUrlRequest.Builder urlRequestBuilder =
                 testFramework.mCronetEngine.newUrlRequestBuilder(
                         mUrl, callback, callback.getExecutor());
-        ConnectivityManagerDelegate delegate =
-                new ConnectivityManagerDelegate(InstrumentationRegistry.getTargetContext());
+        ConnectivityManagerDelegate delegate = new ConnectivityManagerDelegate(getContext());
         Network defaultNetwork = delegate.getDefaultNetwork();
         if (defaultNetwork == null) {
             testFramework.mCronetEngine.shutdown();
@@ -1433,8 +1430,7 @@ public class CronetUrlRequestContextTest {
         // different versions of the same Android Context does not cause crashes
         // like crbug.com/453845
         CronetEngine firstEngine = new CronetEngine.Builder(getContext()).build();
-        CronetEngine secondEngine =
-                new CronetEngine.Builder(getContext().getApplicationContext()).build();
+        CronetEngine secondEngine = new CronetEngine.Builder(getContext()).build();
         CronetEngine thirdEngine =
                 new CronetEngine.Builder(new ContextWrapper(getContext())).build();
         firstEngine.shutdown();

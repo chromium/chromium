@@ -6,9 +6,8 @@ package org.chromium.net.smoke;
 
 import static org.chromium.net.smoke.TestSupport.Protocol.QUIC;
 
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
-
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
 import org.json.JSONObject;
@@ -36,7 +35,7 @@ public class QuicTest {
     @Before
     public void setUp() throws Exception {
         mServer = mRule.getTestSupport().createTestServer(
-                InstrumentationRegistry.getTargetContext(), QUIC);
+                ApplicationProvider.getApplicationContext(), QUIC);
     }
 
     @After

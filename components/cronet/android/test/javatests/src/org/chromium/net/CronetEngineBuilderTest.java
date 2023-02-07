@@ -12,8 +12,8 @@ import static org.chromium.net.CronetProvider.PROVIDER_NAME_FALLBACK;
 import static org.chromium.net.CronetTestRule.getContext;
 
 import android.content.Context;
-import android.support.test.runner.AndroidJUnit4;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Rule;

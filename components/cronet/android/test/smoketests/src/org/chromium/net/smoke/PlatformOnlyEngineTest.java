@@ -7,9 +7,8 @@ package org.chromium.net.smoke;
 import static org.chromium.net.smoke.CronetSmokeTestRule.assertJavaEngine;
 import static org.chromium.net.smoke.CronetSmokeTestRule.assertSuccessfulNonEmptyResponse;
 
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
-
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -36,7 +35,7 @@ public class PlatformOnlyEngineTest {
     public void setUp() throws Exception {
         // Java-only implementation of the Cronet engine only supports Http/1 protocol.
         mServer = mRule.getTestSupport().createTestServer(
-                InstrumentationRegistry.getTargetContext(), TestSupport.Protocol.HTTP1);
+                ApplicationProvider.getApplicationContext(), TestSupport.Protocol.HTTP1);
         Assert.assertTrue(mServer.start());
         mURL = mServer.getSuccessURL();
     }

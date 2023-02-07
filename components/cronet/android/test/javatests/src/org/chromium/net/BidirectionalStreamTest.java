@@ -20,8 +20,8 @@ import static org.chromium.net.CronetTestRule.getContext;
 import android.os.Build;
 import android.os.ConditionVariable;
 import android.os.Process;
-import android.support.test.runner.AndroidJUnit4;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
