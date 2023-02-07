@@ -1335,7 +1335,7 @@ TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_DoesNotGetTopics) {
   std::vector<blink::mojom::EpochTopicPtr> result;
   EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
       /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-      web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+      web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kFetch,
       /*get_topics=*/false,
       /*observe=*/true, result));
   EXPECT_TRUE(result.empty());
@@ -1379,7 +1379,7 @@ TEST_F(
   std::vector<blink::mojom::EpochTopicPtr> result;
   EXPECT_FALSE(browsing_topics_service_->HandleTopicsWebApi(
       /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-      web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+      web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kFetch,
       /*get_topics=*/false,
       /*observe=*/true, result));
   EXPECT_TRUE(result.empty());

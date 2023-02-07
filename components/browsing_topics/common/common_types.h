@@ -22,7 +22,9 @@ enum class ApiCallerSource {
   // The API usage is from document.browsingTopics().
   kJavaScript,
 
-  // The API usage is from fetch(<url>, {browsingTopics: true}).
+  // The API usage is from fetch-like APIs. That is,
+  // fetch(<url>, {browsingTopics: true}), or XMLHttpRequest.send() with the
+  // `deprecatedBrowsingTopics` property set to true.
   kFetch,
 };
 

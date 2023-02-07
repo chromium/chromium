@@ -6,6 +6,7 @@
 
 #include <random>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -179,6 +180,69 @@ void RecordBrowsingTopicsApiResultUkmMetrics(
   builder.Record(ukm_recorder->Get());
 }
 
+// Represents the action type of the request.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class BrowsingTopicsApiActionType {
+  // Get topics via document.browsingTopics({skipObservation: true}).
+  kGetViaDocumentApi = 0,
+
+  // Get and observe topics via the document.browsingTopics().
+  kGetAndObserveViaDocumentApi = 1,
+
+  // Get topics via fetch(<url>, {browsingTopics: true}) or via the analogous
+  // XHR request.
+  kGetViaFetchLikeApi = 2,
+
+  // Observe topics via the "Sec-Browsing-Topics: ?1" response header for the
+  // fetch(<url>, {browsingTopics: true}) request, or for the analogous XHR
+  // request.
+  kObserveViaFetchLikeApi = 3,
+
+  kMaxValue = kObserveViaFetchLikeApi,
+};
+
+void RecordBrowsingTopicsApiActionTypeMetrics(ApiCallerSource caller_source,
+                                              bool get_topics,
+                                              bool observe) {
+  static constexpr char kBrowsingTopicsApiActionTypeHistogramId[] =
+      "BrowsingTopics.ApiActionType";
+
+  if (caller_source == ApiCallerSource::kJavaScript) {
+    DCHECK(get_topics);
+
+    if (!observe) {
+      base::UmaHistogramEnumeration(
+          kBrowsingTopicsApiActionTypeHistogramId,
+          BrowsingTopicsApiActionType::kGetViaDocumentApi);
+      return;
+    }
+
+    base::UmaHistogramEnumeration(
+        kBrowsingTopicsApiActionTypeHistogramId,
+        BrowsingTopicsApiActionType::kGetAndObserveViaDocumentApi);
+
+    return;
+  }
+
+  DCHECK_EQ(caller_source, ApiCallerSource::kFetch);
+
+  if (get_topics) {
+    DCHECK(!observe);
+
+    base::UmaHistogramEnumeration(
+        kBrowsingTopicsApiActionTypeHistogramId,
+        BrowsingTopicsApiActionType::kGetViaFetchLikeApi);
+    return;
+  }
+
+  DCHECK(observe);
+  base::UmaHistogramEnumeration(
+      kBrowsingTopicsApiActionTypeHistogramId,
+      BrowsingTopicsApiActionType::kObserveViaFetchLikeApi);
+}
+
 }  // namespace
 
 BrowsingTopicsServiceImpl::~BrowsingTopicsServiceImpl() = default;
@@ -219,6 +283,8 @@ bool BrowsingTopicsServiceImpl::HandleTopicsWebApi(
     std::vector<blink::mojom::EpochTopicPtr>& topics) {
   DCHECK(topics.empty());
   DCHECK(get_topics || observe);
+
+  RecordBrowsingTopicsApiActionTypeMetrics(caller_source, get_topics, observe);
 
   if (!browsing_topics_state_loaded_) {
     RecordBrowsingTopicsApiResultUkmMetrics(

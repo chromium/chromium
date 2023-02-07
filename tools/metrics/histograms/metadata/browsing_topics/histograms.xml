@@ -22,6 +22,17 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="BrowsingTopics.ApiActionType"
+    enum="BrowsingTopicsApiActionType" expires_after="2024-01-14">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Records the action type of the request. Recorded when a topics request is
+    handled in `BrowsingTopicsService`. Redirects (for fetch and xhr) will be
+    counted as separate histogram entries.
+  </summary>
+</histogram>
+
 <histogram name="BrowsingTopics.BrowsingTopicsState.LoadFinishStatus"
     enum="BooleanSuccess" expires_after="2023-07-16">
   <owner>yaoxia@chromium.org</owner>

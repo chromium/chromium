@@ -13660,6 +13660,13 @@ Called by update_bad_message_reasons.py.-->
   <int value="2" label="Access disallowed by settings"/>
 </enum>
 
+<enum name="BrowsingTopicsApiActionType">
+  <int value="0" label="get via document api"/>
+  <int value="1" label="get and observe via document api"/>
+  <int value="2" label="get via fetch-like api"/>
+  <int value="3" label="observe via fetch-like api"/>
+</enum>
+
 <enum name="BrowsingTopicsCalculatorResultStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Failure: permission denied"/>
