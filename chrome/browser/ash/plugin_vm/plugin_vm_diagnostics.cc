@@ -166,6 +166,9 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
         case PolicyConfigured::kErrorLicenseNotSetUp:
           entry.SetFail(IDS_VM_STATUS_PAGE_LICENSE_NOT_SET_UP_EXPLANATION);
           break;
+        case PolicyConfigured::kErrorVirtualMachinesNotAllowed:
+          entry.SetFail(IDS_VM_STATUS_PAGE_VMS_NOT_ALLOWED_EXPLANATION);
+          break;
       }
       if (set_standard_top_error) {
         entry.OverrideTopError(IDS_VM_STATUS_PAGE_INCORRECT_POLICIES_ERROR);

@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -80,6 +81,11 @@ PolicyConfigured CheckPolicyConfigured(const Profile* profile) {
     return PolicyConfigured::kErrorUserNotAffiliated;
   }
 
+  // Check that VirtualMachines are allowed by policy.
+  if (!virtual_machines::AreVirtualMachinesAllowedByPolicy()) {
+    return PolicyConfigured::kErrorVirtualMachinesNotAllowed;
+  }
+
   // Check that PluginVm is allowed to run by policy.
   bool plugin_vm_allowed_for_device;
   if (!ash::CrosSettings::Get()->GetBoolean(ash::kPluginVmAllowed,
@@ -148,6 +154,8 @@ std::string PluginVmFeatures::IsAllowedDiagnostics::GetTopError() const {
       return "VMs are disallowed by policy";
     case PolicyConfigured::kErrorLicenseNotSetUp:
       return "License for the product is not set up in policy";
+    case PolicyConfigured::kErrorVirtualMachinesNotAllowed:
+      return "No Virtual Machines are allowed on this device";
   }
 
   return "";

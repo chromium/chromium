@@ -5482,8 +5482,11 @@
   <message name="IDS_VM_STATUS_PAGE_USER_NOT_ALLOW_EXPLANATION" desc="The message explaining that the enterprise policy does not allow the current user to run the VM (virtual machine)">
     User is not allowed
   </message>
-  <message name="IDS_VM_STATUS_PAGE_LICENSE_NOT_SET_UP_EXPLANATION" desc="The message explaining that the the license for running the VM (virtual machine) is not set up">
+  <message name="IDS_VM_STATUS_PAGE_LICENSE_NOT_SET_UP_EXPLANATION" desc="The message explaining that the license for running the VM (virtual machine) is not set up">
     License is not set up
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_VMS_NOT_ALLOWED_EXPLANATION" desc="The message explaining that virtual machines are not allowed">
+    No Virtual Machines are allowed on this device
   </message>
   <message name="IDS_VM_STATUS_PAGE_DEFAULT_VM_EXISTS_REQUIREMENT" desc="The message for the requirement that a VM (virtual machine) with the default name should exist">
     VM "<ph name="DEFAULT_VM_NAME">$1<ex>PvmDefault</ex></ph>" exists
