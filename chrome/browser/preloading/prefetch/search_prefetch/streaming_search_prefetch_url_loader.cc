@@ -228,8 +228,14 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
   // If there is an error, either cancel the request or fallback depending on
   // whether we still have a parent pointer.
   if (!can_be_served) {
-    if ((navigation_prefetch_ || SearchPrefetchBlockBeforeHeadersIsEnabled()) &&
-        !streaming_prefetch_request_) {
+    if (!streaming_prefetch_request_) {
+      // That `streaming_prefetch_request_` is nullptr means this loader is
+      // serving to network stack. And we can serve a loader that has not
+      // received response yet to the network stack iff the loader was created
+      // by a navigation prefetch or we are experimenting with
+      // kSearchPrefetchBlockBeforeHeaders enabled.
+      DCHECK(navigation_prefetch_ ||
+             SearchPrefetchBlockBeforeHeadersIsEnabled());
       Fallback();
       return;
     }
