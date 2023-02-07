@@ -97,6 +97,11 @@ using base::SysNSStringToUTF16;
   _consumer = consumer;
 
   [self fetchPasswordWith:_manager->GetInsecureCredentials()];
+
+  if (_credentials[0].blocked_by_user) {
+    DCHECK_EQ(_credentials.size(), 1u);
+    [_consumer setIsBlockedSite:YES];
+  }
 }
 
 - (void)disconnect {
