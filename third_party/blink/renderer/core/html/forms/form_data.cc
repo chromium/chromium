@@ -100,10 +100,13 @@ FormData* FormData::Create(HTMLFormElement* form,
 }
 
 // https://xhr.spec.whatwg.org/#dom-formdata
-// 1. If form is given, then:
 FormData* FormData::Create(HTMLFormElement* form,
                            HTMLElement* submitter,
                            ExceptionState& exception_state) {
+  if (!form) {
+    return MakeGarbageCollected<FormData>();
+  }
+  // 1. If form is given, then:
   HTMLFormControlElement* control = nullptr;
   // 1.1. If submitter is non-null, then:
   if (submitter) {
@@ -132,6 +135,7 @@ FormData* FormData::Create(HTMLFormElement* form,
                                       "The form is constructing entry list.");
     return nullptr;
   }
+  // 1.4. Set this’s entry list to list.
   // Return a shallow copy of |form_data| because |form_data| is visible in
   // "formdata" event, and the specification says it should be different from
   // the FormData object to be returned.
