@@ -474,9 +474,6 @@ ci.builder(
     ),
     execution_timeout = 7 * time.hour,
     notifies = ["Deterministic Android"],
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
 
 ci.builder(
@@ -492,9 +489,6 @@ ci.builder(
     execution_timeout = 6 * time.hour,
     notifies = ["Deterministic Android"],
     reclient_jobs = reclient.jobs.DEFAULT,
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
 
 ci.thin_tester(
