@@ -6158,6 +6158,21 @@
             ]
         }
     ],
+    "IOSShowPasswordStorageInSaveInfobar": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSShowPasswordStorageInSaveInfobar"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSmartSortingNewOverflowMenu": [
         {
             "platforms": [

@@ -22,6 +22,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/earl_grey/matchers.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -31,23 +32,21 @@
 
 constexpr char kFormUsername[] = "un";
 constexpr char kFormPassword[] = "pw";
-NSString* const kSavedCredentialLabel = @"Eguser, Hidden, Password";
 
 namespace {
 
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
-using base::test::ios::kWaitForActionTimeout;
 using chrome_test_util::TapWebElementWithId;
 using chrome_test_util::UseSuggestedPasswordMatcher;
+using testing::ElementWithAccessibilityLabelSubstring;
 
 id<GREYMatcher> PasswordInfobar(int prompt_id) {
-  NSString* bannerLabel =
-      [NSString stringWithFormat:@"%@,%@", l10n_util::GetNSString(prompt_id),
-                                 kSavedCredentialLabel];
-  return grey_allOf(grey_accessibilityID(kInfobarBannerViewIdentifier),
-                    grey_accessibilityLabel(bannerLabel), nil);
+  return grey_allOf(
+      grey_accessibilityID(kInfobarBannerViewIdentifier),
+      ElementWithAccessibilityLabelSubstring(l10n_util::GetNSString(prompt_id)),
+      nil);
 }
 
 id<GREYMatcher> PasswordInfobarButton(int button_id) {
