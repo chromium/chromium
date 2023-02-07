@@ -4223,6 +4223,48 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="AutofillIbanAdded">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when user adds IBAN via chrome://settings/payments page.
+  </description>
+</action>
+
+<action name="AutofillIbanAddedWithNickname">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when user adds IBAN with a nickname via chrome://settings/payments
+    page.
+  </description>
+</action>
+
+<action name="AutofillIbanDeleted">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when user deletes IBAN via chrome://settings/payments page.
+  </description>
+</action>
+
+<action name="AutofillIbanEdited">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when user edits IBAN via chrome://settings/payments page.
+  </description>
+</action>
+
+<action name="AutofillIbanEditedWithNickname">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when user edits IBAN with a new nickname via
+    chrome://settings/payments page.
+  </description>
+</action>
+
 <action name="AutomaticReset_WebUIBanner_BannerShown">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

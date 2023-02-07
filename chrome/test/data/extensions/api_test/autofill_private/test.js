@@ -27,6 +27,80 @@ var failOnceCalled = function() {
   chrome.test.fail();
 };
 
+function addNewIban(nickname) {
+  function filterIbanProperties(ibans) {
+    return ibans.map(iban => {
+      var filteredIban = {};
+      ['value', 'nickname'].forEach(property => {
+        filteredIban[property] = iban[property];
+      });
+      return filteredIban;
+    });
+  }
+
+  chrome.autofillPrivate.getIbanList(chrome.test.callbackPass(function(
+      ibanList) {
+    chrome.test.assertEq([], ibanList);
+
+    // Set up the callback that verifies that the IBAN was correctly added.
+    chrome.test.listenOnce(
+        chrome.autofillPrivate.onPersonalDataChanged,
+        chrome.test.callbackPass(function(addressList, cardList, ibanList) {
+          chrome.test.assertEq(
+              [{value: IBAN_VALUE, nickname: nickname}],
+              filterIbanProperties(ibanList));
+        }));
+
+    chrome.autofillPrivate.saveIban({
+      value: IBAN_VALUE,
+      nickname: nickname
+    });
+  }));
+};
+
+function updateExistingIban(updatedNickname) {
+  var UPDATED_IBAN_VALUE = 'AL35 2021 1109 0000 0000 0123 4567';
+
+  function filterIbanProperties(ibans) {
+    return ibans.map(iban => {
+      var filteredIban = {};
+      ['guid', 'value', 'nickname'].forEach(property => {
+        filteredIban[property] = iban[property];
+      });
+      return filteredIban;
+    });
+  }
+
+  chrome.autofillPrivate.getIbanList(chrome.test.callbackPass(function(
+      ibanList) {
+    // The IBAN from the addNewIban function should still be there.
+    chrome.test.assertEq(1, ibanList.length);
+    var ibanGuid = ibanList[0].guid;
+
+    // Set up the callback that verifies that the IBAN was correctly
+    // updated.
+    chrome.test.listenOnce(
+        chrome.autofillPrivate.onPersonalDataChanged,
+        chrome.test.callbackPass(function(addressList, cardList, ibanList) {
+          chrome.test.assertEq(
+              [{
+                guid: ibanGuid,
+                value: UPDATED_IBAN_VALUE,
+                nickname: updatedNickname
+              }],
+              filterIbanProperties(ibanList));
+        }));
+
+    // Update the IBAN by saving an IBAN with the same guid and using some
+    // different information.
+    chrome.autofillPrivate.saveIban({
+      guid: ibanGuid,
+      value: UPDATED_IBAN_VALUE,
+      nickname: updatedNickname
+    });
+  }));
+};
+
 var availableTests = [
   function getCountryList() {
     var handler = function(countries) {
@@ -303,34 +377,12 @@ var availableTests = [
         }));
   },
 
-  function addNewIban() {
-    function filterIbanProperties(ibans) {
-      return ibans.map(iban => {
-        var filteredIban = {};
-        ['value', 'nickname'].forEach(property => {
-          filteredIban[property] = iban[property];
-        });
-        return filteredIban;
-      });
-    }
+  function addNewIbanNoNickname() {
+    addNewIban(/*nickname=*/undefined);
+  },
 
-    chrome.autofillPrivate.getIbanList(chrome.test.callbackPass(function(
-        ibanList) {
-      chrome.test.assertEq([], ibanList);
-
-      // Set up the callback that verifies that the IBAN was correctly added.
-      chrome.test.listenOnce(
-          chrome.autofillPrivate.onPersonalDataChanged,
-          chrome.test.callbackPass(function(addressList, cardList, ibanList) {
-            chrome.test.assertEq(
-                [{value: IBAN_VALUE, nickname: undefined}],
-                filterIbanProperties(ibanList));
-          }));
-
-      chrome.autofillPrivate.saveIban({
-        value: IBAN_VALUE,
-      });
-    }));
+  function addNewIbanWithNickname() {
+    addNewIban(/*nickname=*/'nickname');
   },
 
   function noChangesToExistingIban() {
@@ -357,20 +409,15 @@ var availableTests = [
     }));
   },
 
-  function updateExistingIban() {
-    var UPDATED_IBAN_VALUE = 'AL35 2021 1109 0000 0000 0123 4567';
-    var UPDATED_NICKNAME = 'New nickname';
+  function updateExistingIban_NoNickname() {
+    updateExistingIban(/*updatedNickname=*/undefined);
+  },
 
-    function filterIbanProperties(ibans) {
-      return ibans.map(iban => {
-        var filteredIban = {};
-        ['guid', 'value', 'nickname'].forEach(property => {
-          filteredIban[property] = iban[property];
-        });
-        return filteredIban;
-      });
-    }
+  function updateExistingIban_WithNickname() {
+    updateExistingIban(/*updatedNickname=*/'New nickname');
+  },
 
+  function removeExistingIban() {
     chrome.autofillPrivate.getIbanList(chrome.test.callbackPass(function(
         ibanList) {
       // The IBAN from the addNewIban function should still be there.
@@ -382,22 +429,11 @@ var availableTests = [
       chrome.test.listenOnce(
           chrome.autofillPrivate.onPersonalDataChanged,
           chrome.test.callbackPass(function(addressList, cardList, ibanList) {
-            chrome.test.assertEq(
-                [{
-                  guid: ibanGuid,
-                  value: UPDATED_IBAN_VALUE,
-                  nickname: UPDATED_NICKNAME
-                }],
-                filterIbanProperties(ibanList));
+            chrome.test.assertEq(0, ibanList.length);
           }));
 
-      // Update the IBAN by saving an IBAN with the same guid and using some
-      // different information.
-      chrome.autofillPrivate.saveIban({
-        guid: ibanGuid,
-        value: UPDATED_IBAN_VALUE,
-        nickname: UPDATED_NICKNAME
-      });
+      // Remove the IBAN with the given guid.
+      chrome.autofillPrivate.removeEntry(ibanGuid);
     }));
   },
 
@@ -497,8 +533,15 @@ var TESTS_FOR_CONFIG = {
     'addNewCreditCard', 'noChangesToExistingCreditCard',
     'updateExistingCreditCard'
   ],
-  'addAndUpdateIban':
-      ['addNewIban', 'noChangesToExistingIban', 'updateExistingIban']
+  'addNewIbanNoNickname': ['addNewIbanNoNickname'],
+  'addNewIbanWithNickname': ['addNewIbanWithNickname'],
+  'noChangesToExistingIban': ['addNewIbanNoNickname','noChangesToExistingIban'],
+  'updateExistingIbanNoNickname': [
+    'addNewIbanNoNickname', 'updateExistingIban_NoNickname'],
+  'updateExistingIbanWithNickname': [
+    'addNewIbanNoNickname', 'updateExistingIban_WithNickname'],
+  'removeExistingIban': [
+    'addNewIbanNoNickname', 'removeExistingIban'],
 };
 
 chrome.test.getConfig(function(config) {

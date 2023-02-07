@@ -473,6 +473,10 @@ ExtensionFunction::ResponseAction AutofillPrivateRemoveEntryFunction::Run() {
   if (!personal_data || !personal_data->IsDataLoaded())
     return RespondNow(Error(kErrorDataUnavailable));
 
+  if (personal_data->GetIBANByGUID(parameters->guid)) {
+    base::RecordAction(base::UserMetricsAction("AutofillIbanDeleted"));
+  }
+
   personal_data->RemoveByGUID(parameters->guid);
 
   return RespondNow(WithArguments());
@@ -658,8 +662,22 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveIbanFunction::Run() {
 
   if (guid.empty()) {
     personal_data->AddIBAN(iban);
-  } else if (existing_iban->Compare(iban) != 0) {
+    base::RecordAction(base::UserMetricsAction("AutofillIbanAdded"));
+    if (!iban.nickname().empty()) {
+      base::RecordAction(
+          base::UserMetricsAction("AutofillIbanAddedWithNickname"));
+    }
+    return RespondNow(NoArguments());
+  }
+
+  if (existing_iban->Compare(iban) != 0) {
     personal_data->UpdateIBAN(iban);
+    base::RecordAction(base::UserMetricsAction("AutofillIbanEdited"));
+    // Record when nickname is updated.
+    if (existing_iban->nickname() != iban.nickname()) {
+      base::RecordAction(
+          base::UserMetricsAction("AutofillIbanEditedWithNickname"));
+    }
   }
 
   return RespondNow(NoArguments());
