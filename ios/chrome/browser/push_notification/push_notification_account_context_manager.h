@@ -9,8 +9,6 @@
 
 #import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 
-class BrowserStateInfoCache;
-
 namespace ios {
 class ChromeBrowserStateManager;
 
@@ -21,7 +19,7 @@ class ChromeBrowserStateManager;
 // signed in across BrowserStates.
 @interface PushNotificationAccountContext : NSObject
 // A dictionary that maps the string value of a push notification client id to
-// the perf service value for that push notification enable feature.
+// the pref service value for that push notification enable feature.
 @property(nonatomic, readonly)
     NSDictionary<NSString*, NSNumber*>* preferenceMap;
 // A counter that stores the number of times a given account is used across
@@ -33,7 +31,7 @@ class ChromeBrowserStateManager;
 // context data related to push notifications.
 @interface PushNotificationAccountContextManager : NSObject
 
-// The designated initializer. `BrowserStateInfoCache` must not be nil.
+// The designated initializer. `manager` must not be nil.
 - (instancetype)initWithChromeBrowserStateManager:
     (ios::ChromeBrowserStateManager*)manager NS_DESIGNATED_INITIALIZER;
 
