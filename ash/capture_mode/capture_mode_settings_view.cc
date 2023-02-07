@@ -117,7 +117,8 @@ CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
                      camera_managed_by_policy);
   }
 
-  if (features::AreCaptureModeDemoToolsEnabled()) {
+  if (features::AreCaptureModeDemoToolsEnabled() &&
+      !controller->is_recording_in_progress()) {
     separator_2_ = AddChildView(std::make_unique<views::Separator>());
     separator_2_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
     demo_tools_menu_toggle_button_ =

@@ -392,6 +392,25 @@ TEST_F(CaptureModeDemoToolsTest, EntryPointFocusCyclerTest) {
                   ->has_focus());
 }
 
+// Tests that the demo tools toggle button will be hidden when starting another
+// capture mode session during video recording.
+TEST_F(CaptureModeDemoToolsTest, ToggleButtonHiddenWhileInRecording) {
+  CaptureModeController* controller = StartCaptureSession(
+      CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(GetSettingsButton(), event_generator);
+  EXPECT_TRUE(GetCaptureModeSettingsWidget());
+  EXPECT_TRUE(CaptureModeSettingsTestApi().GetDemoToolsMenuToggleButton());
+  StartVideoRecordingImmediately();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+
+  ClickOnView(GetSettingsButton(), event_generator);
+  EXPECT_TRUE(GetCaptureModeSettingsWidget());
+  EXPECT_FALSE(CaptureModeSettingsTestApi().GetDemoToolsMenuToggleButton());
+}
+
 // Tests that the key combo viewer widget displays the expected contents on key
 // event and the modifier key should always be displayed before the non-modifier
 // key. With no modifier keys or no non-modifier key that can be displayed
