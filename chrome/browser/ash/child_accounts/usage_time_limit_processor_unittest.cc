@@ -130,7 +130,7 @@ TEST_F(UsageTimeLimitProcessorInternalTest, TimeUsageWindowValid) {
                        utils::CreatePolicyTime(utils::CreateTime(8, 0)));
 
   // Call tested functions.
-  TimeUsageLimit usage_limit_struct(base::Value(std::move(time_usage_limit)));
+  TimeUsageLimit usage_limit_struct(std::move(time_usage_limit));
 
   ASSERT_EQ(usage_limit_struct.resets_at.InMinutes(), 8 * 60);
 

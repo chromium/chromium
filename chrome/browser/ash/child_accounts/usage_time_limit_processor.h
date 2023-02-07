@@ -90,7 +90,7 @@ struct TimeUsageLimitEntry {
 
 class TimeUsageLimit {
  public:
-  explicit TimeUsageLimit(const base::Value& usage_limit_dict);
+  explicit TimeUsageLimit(const base::Value::Dict& usage_limit_dict);
 
   TimeUsageLimit(const TimeUsageLimit&) = delete;
   TimeUsageLimit& operator=(const TimeUsageLimit&) = delete;

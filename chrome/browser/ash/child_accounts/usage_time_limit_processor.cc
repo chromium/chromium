@@ -8,14 +8,15 @@
 #include <string>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/time_limit_override.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace usage_time_limit {
+namespace ash::usage_time_limit {
 namespace internal {
 namespace {
 
@@ -1053,13 +1054,11 @@ base::TimeDelta UsageTimeLimitProcessor::GetTimeZoneOffset(base::Time time) {
   return time_zone_offset;
 }
 
-}  // namespace
-
 // Transforms the time dictionary sent on the UsageTimeLimit policy to a
 // TimeDelta, that represents the distance from midnight.
-base::TimeDelta ValueToTimeDelta(const base::Value* policy_time) {
-  int hour = policy_time->FindKey(kWindowLimitEntryTimeHour)->GetInt();
-  int minute = policy_time->FindKey(kWindowLimitEntryTimeMinute)->GetInt();
+base::TimeDelta DictToTimeDelta(const base::Value::Dict& policy_time) {
+  int hour = policy_time.FindInt(kWindowLimitEntryTimeHour).value();
+  int minute = policy_time.FindInt(kWindowLimitEntryTimeMinute).value();
   return base::Minutes(hour * 60 + minute);
 }
 
@@ -1075,6 +1074,8 @@ Weekday GetWeekday(std::string weekday) {
   LOG(ERROR) << "Unexpected weekday " << weekday;
   return Weekday::kSunday;
 }
+
+}  // namespace
 
 TimeWindowLimitEntry::TimeWindowLimitEntry() = default;
 
@@ -1095,19 +1096,23 @@ TimeWindowLimitBoundaries TimeWindowLimitEntry::GetLimits(
   return limit;
 }
 
-TimeWindowLimit::TimeWindowLimit(const base::Value& window_limit_dict) {
-  if (!window_limit_dict.FindKey(kWindowLimitEntries))
+TimeWindowLimit::TimeWindowLimit(const base::Value& window_limit_val) {
+  const base::Value::Dict& window_limit_dict = window_limit_val.GetDict();
+  if (!window_limit_dict.contains(kWindowLimitEntries)) {
     return;
+  }
 
-  for (const base::Value& entry_dict :
-       window_limit_dict.FindKey(kWindowLimitEntries)->GetList()) {
-    const base::Value* effective_day =
-        entry_dict.FindKey(kWindowLimitEntryEffectiveDay);
-    const base::Value* starts_at =
-        entry_dict.FindKey(kWindowLimitEntryStartsAt);
-    const base::Value* ends_at = entry_dict.FindKey(kWindowLimitEntryEndsAt);
-    const base::Value* last_updated_value =
-        entry_dict.FindKey(kTimeLimitLastUpdatedAt);
+  for (const base::Value& entry_val :
+       CHECK_DEREF(window_limit_dict.FindList(kWindowLimitEntries))) {
+    const base::Value::Dict& entry_dict = entry_val.GetDict();
+    const std::string* effective_day =
+        entry_dict.FindString(kWindowLimitEntryEffectiveDay);
+    const base::Value::Dict* starts_at =
+        entry_dict.FindDict(kWindowLimitEntryStartsAt);
+    const base::Value::Dict* ends_at =
+        entry_dict.FindDict(kWindowLimitEntryEndsAt);
+    const std::string* last_updated_value =
+        entry_dict.FindString(kTimeLimitLastUpdatedAt);
 
     if (!effective_day || !starts_at || !ends_at || !last_updated_value) {
       // Missing information, so this entry will be ignored.
@@ -1115,18 +1120,18 @@ TimeWindowLimit::TimeWindowLimit(const base::Value& window_limit_dict) {
     }
 
     int64_t last_updated;
-    if (!base::StringToInt64(last_updated_value->GetString(), &last_updated)) {
+    if (!base::StringToInt64(*last_updated_value, &last_updated)) {
       // Cannot process entry without a valid last updated.
       continue;
     }
 
     TimeWindowLimitEntry entry;
-    entry.starts_at = ValueToTimeDelta(starts_at);
-    entry.ends_at = ValueToTimeDelta(ends_at);
+    entry.starts_at = DictToTimeDelta(*starts_at);
+    entry.ends_at = DictToTimeDelta(*ends_at);
     entry.last_updated =
         base::Time::UnixEpoch() + base::Milliseconds(last_updated);
 
-    Weekday weekday = GetWeekday(effective_day->GetString());
+    Weekday weekday = GetWeekday(*effective_day);
     // We only support one time_limit_window per day. If more than one is sent
     // we only use the latest updated.
     if (!entries[weekday] ||
@@ -1152,34 +1157,36 @@ bool TimeUsageLimitEntry::operator==(const TimeUsageLimitEntry& rhs) const {
   return usage_quota == rhs.usage_quota && last_updated == rhs.last_updated;
 }
 
-TimeUsageLimit::TimeUsageLimit(const base::Value& usage_limit_dict)
+TimeUsageLimit::TimeUsageLimit(const base::Value::Dict& usage_limit_dict)
     // Default reset time is midnight.
     : resets_at(base::Minutes(0)) {
-  const base::Value* resets_at_value =
-      usage_limit_dict.FindKey(kUsageLimitResetAt);
+  const base::Value::Dict* resets_at_value =
+      usage_limit_dict.FindDict(kUsageLimitResetAt);
   if (resets_at_value) {
-    resets_at = ValueToTimeDelta(resets_at_value);
+    resets_at = DictToTimeDelta(*resets_at_value);
   }
 
   for (const std::string& weekday_key : kTimeLimitWeekdays) {
-    if (!usage_limit_dict.FindKey(weekday_key))
+    const base::Value::Dict* entry_dict =
+        usage_limit_dict.FindDict(weekday_key);
+    if (!entry_dict) {
       continue;
+    }
 
-    const base::Value* entry_dict = usage_limit_dict.FindKey(weekday_key);
-
-    const base::Value* usage_quota = entry_dict->FindKey(kUsageLimitUsageQuota);
-    const base::Value* last_updated_value =
-        entry_dict->FindKey(kTimeLimitLastUpdatedAt);
+    const absl::optional<int> usage_quota =
+        entry_dict->FindInt(kUsageLimitUsageQuota);
+    const std::string* last_updated_value =
+        entry_dict->FindString(kTimeLimitLastUpdatedAt);
 
     int64_t last_updated;
-    if (!base::StringToInt64(last_updated_value->GetString(), &last_updated)) {
+    if (!base::StringToInt64(CHECK_DEREF(last_updated_value), &last_updated)) {
       // Cannot process entry without a valid last updated.
       continue;
     }
 
     Weekday weekday = GetWeekday(weekday_key);
     TimeUsageLimitEntry entry;
-    entry.usage_quota = base::Minutes(usage_quota->GetInt());
+    entry.usage_quota = base::Minutes(usage_quota.value());
     entry.last_updated =
         base::Time::UnixEpoch() + base::Milliseconds(last_updated);
     entries[weekday] = std::move(entry);
@@ -1213,7 +1220,7 @@ absl::optional<internal::TimeUsageLimit> TimeUsageLimitFromPolicy(
       time_limit.Find(internal::kTimeUsageLimit);
   if (!time_usage_limit_value)
     return absl::nullopt;
-  return internal::TimeUsageLimit(*time_usage_limit_value);
+  return internal::TimeUsageLimit(time_usage_limit_value->GetDict());
 }
 
 absl::optional<TimeLimitOverride> OverrideFromPolicy(
@@ -1346,5 +1353,4 @@ std::set<PolicyType> GetEnabledTimeLimitPolicies(
   return enabled_policies;
 }
 
-}  // namespace usage_time_limit
-}  // namespace ash
+}  // namespace ash::usage_time_limit
