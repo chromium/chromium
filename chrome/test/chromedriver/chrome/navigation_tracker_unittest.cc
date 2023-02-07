@@ -40,27 +40,30 @@ class DeterminingLoadStateDevToolsClient : public StubDevToolsClient {
         send_event_first_(send_event_first),
         send_event_first_params_(send_event_first_params) {}
 
-  ~DeterminingLoadStateDevToolsClient() override {}
+  ~DeterminingLoadStateDevToolsClient() override = default;
 
   Status SendCommandAndGetResult(const std::string& method,
                                  const base::Value::Dict& params,
                                  base::Value::Dict* result) override {
-    if (method == "DOM.getDocument") {
+    if (method == "DOM.describeNode") {
       if (has_empty_base_url_) {
-        result->SetByDottedPath("root.baseURL", "about:blank");
-        result->SetByDottedPath("root.documentURL", "http://test");
+        result->SetByDottedPath("node.baseURL", "about:blank");
+        result->SetByDottedPath("node.documentURL", "http://chromedriver.test");
       } else {
-        result->SetByDottedPath("root.baseURL", "http://test");
-        result->SetByDottedPath("root.documentURL", "http://test");
+        result->SetByDottedPath("node.baseURL", "http://chromedriver.test");
+        result->SetByDottedPath("node.documentURL", "http://chromedriver.test");
       }
       return Status(kOk);
     } else if (method == "Runtime.evaluate") {
       const std::string* expression = params.FindString("expression");
       if (expression) {
-        if (*expression == "1")
+        if (*expression == "1") {
           result->SetByDottedPath("result.value", 1);
-        else if (*expression == "document.readyState")
+        } else if (*expression == "document.readyState") {
           result->SetByDottedPath("result.value", "loading");
+        } else if (*expression == "document") {
+          result->SetByDottedPath("result.objectId", "irrelevant");
+        }
         return Status(kOk);
       }
     }
@@ -88,7 +91,7 @@ class DeterminingLoadStateDevToolsClient : public StubDevToolsClient {
 class EvaluateScriptWebView : public StubWebView {
  public:
   explicit EvaluateScriptWebView(StatusCode code)
-      : StubWebView("1"), result_(std::string()), code_(code) {}
+      : StubWebView("1"), code_(code) {}
 
   Status EvaluateScript(const std::string& frame,
                         const std::string& function,
@@ -385,24 +388,31 @@ namespace {
 
 class FailToEvalScriptDevToolsClient : public StubDevToolsClient {
  public:
-  FailToEvalScriptDevToolsClient() : is_dom_getDocument_requested_(false) {}
+  FailToEvalScriptDevToolsClient() = default;
 
-  ~FailToEvalScriptDevToolsClient() override {}
+  ~FailToEvalScriptDevToolsClient() override = default;
 
   Status SendCommandAndGetResult(const std::string& method,
                                  const base::Value::Dict& params,
                                  base::Value::Dict* result) override {
-    if (!is_dom_getDocument_requested_ && method == "DOM.getDocument") {
+    if (!is_dom_getDocument_requested_ && method == "DOM.describeNode") {
       is_dom_getDocument_requested_ = true;
-      result->SetByDottedPath("root.baseURL", "http://test");
+      result->SetByDottedPath("node.baseURL", "http://chromedriver.test");
       return Status(kOk);
+    }
+    if (method == "Runtime.evaluate") {
+      const std::string* expression = params.FindString("expression");
+      if (expression && *expression == "document") {
+        result->SetByDottedPath("result.objectId", "irrelevant");
+      }
+      return Status{kOk};
     }
     EXPECT_STREQ("Runtime.evaluate", method.c_str());
     return Status(kUnknownError, "failed to eval script");
   }
 
  private:
-  bool is_dom_getDocument_requested_;
+  bool is_dom_getDocument_requested_ = false;
 };
 
 }  // namespace
@@ -566,9 +576,9 @@ namespace {
 
 class TargetClosedDevToolsClient : public StubDevToolsClient {
  public:
-  TargetClosedDevToolsClient() {}
+  TargetClosedDevToolsClient() = default;
 
-  ~TargetClosedDevToolsClient() override {}
+  ~TargetClosedDevToolsClient() override = default;
 
   Status SendCommandAndGetResult(const std::string& method,
                                  const base::Value::Dict& params,

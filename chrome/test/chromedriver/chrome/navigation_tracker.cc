@@ -6,6 +6,7 @@
 
 #include <unordered_map>
 
+#include "base/guid.h"
 #include "base/strings/string_util.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
@@ -52,6 +53,24 @@ bool IsNetworkError(const std::string& error_text) {
   auto val = it->second;
   return val <= -100 && val >= -199;
 }
+
+class ObjectGroup {
+ public:
+  explicit ObjectGroup(DevToolsClient* client)
+      : client_(client), object_group_name_(base::GenerateGUID()) {}
+
+  ~ObjectGroup() {
+    base::Value::Dict params;
+    params.Set("objectGroup", object_group_name_);
+    client_->SendCommandAndIgnoreResponse("Runtime.releaseObjectGroup", params);
+  }
+
+  const std::string& name() const { return object_group_name_; }
+
+ private:
+  raw_ptr<DevToolsClient> client_;
+  std::string object_group_name_;
+};
 
 }  // namespace
 
@@ -161,13 +180,33 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
     // In the case that a http request is sent to server to fetch the page
     // content and the server hasn't responded at all, a dummy page is created
     // for the new window. In such case, the baseURL will be 'about:blank'.
-    base::Value::Dict empty_params;
-    status = client_->SendCommandAndGetResultWithTimeout(
-        "DOM.getDocument", empty_params, timeout, &result);
-    if (status.IsError())
-      return MakeNavigationCheckFailedStatus(status);
-    std::string* base_url = result.FindStringByDottedPath("root.baseURL");
-    std::string* doc_url = result.FindStringByDottedPath("root.documentURL");
+    {
+      // Scope for object_group
+      ObjectGroup object_group(client_);
+
+      base::Value::Dict eval_params;
+      eval_params.Set("expression", "document");
+      eval_params.Set("objectGroup", object_group.name());
+      status = client_->SendCommandAndGetResultWithTimeout(
+          "Runtime.evaluate", eval_params, timeout, &result);
+      if (status.IsError()) {
+        return MakeNavigationCheckFailedStatus(status);
+      }
+      std::string* object_id = result.FindStringByDottedPath("result.objectId");
+      if (!object_id) {
+        return MakeNavigationCheckFailedStatus(status);
+      }
+
+      base::Value::Dict describe_node_params;
+      describe_node_params.Set("objectId", std::move(*object_id));
+      status = client_->SendCommandAndGetResultWithTimeout(
+          "DOM.describeNode", describe_node_params, timeout, &result);
+      if (status.IsError()) {
+        return MakeNavigationCheckFailedStatus(status);
+      }
+    }
+    std::string* base_url = result.FindStringByDottedPath("node.baseURL");
+    std::string* doc_url = result.FindStringByDottedPath("node.documentURL");
     if (!base_url || !doc_url)
       return MakeNavigationCheckFailedStatus(status);
 
