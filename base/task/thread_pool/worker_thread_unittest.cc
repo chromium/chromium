@@ -697,13 +697,13 @@ class CallJoinFromDifferentThread : public SimpleThread {
 
   void Run() override {
     run_started_event_.Signal();
-    worker_to_join_->JoinForTesting();
+    worker_to_join_.ExtractAsDangling()->JoinForTesting();
   }
 
   void WaitForRunToStart() { run_started_event_.Wait(); }
 
  private:
-  const raw_ptr<WorkerThread> worker_to_join_;
+  raw_ptr<WorkerThread> worker_to_join_;
   TestWaitableEvent run_started_event_;
 };
 
