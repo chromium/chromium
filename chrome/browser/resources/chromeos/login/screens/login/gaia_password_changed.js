@@ -8,6 +8,7 @@
 
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
@@ -33,6 +34,7 @@ import {addSubmitListener} from '../../login_ui_tools.js';
 const GaiaPasswordChangedUIState = {
   PASSWORD: 'password',
   FORGOT: 'forgot',
+  RECOVERY: 'setup-recovery',
   PROGRESS: 'progress',
 };
 
@@ -97,6 +99,7 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
         type: Boolean,
         value: loadTimeData.getBoolean('isCryptohomeRecoveryUIFlowEnabled'),
       },
+      isDarkModeActive_: {type: Boolean, value: false},
     };
   }
 
@@ -107,6 +110,16 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
   get UI_STEPS() {
     return GaiaPasswordChangedUIState;
   }
+
+  /** Overridden from LoginScreenBehavior. */
+  // clang-format off
+  get EXTERNAL_API() {
+    return [
+      'showWrongPasswordError',
+      'suggestRecovery',
+    ];
+  }
+  // clang-format on
 
   /**
    * @override
@@ -142,6 +155,35 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
     this.setUIStep(GaiaPasswordChangedUIState.PASSWORD);
     this.clearPassword();
     this.disabled = false;
+  }
+
+  /**
+   * Called when Screen fails to authenticate with
+   * provided password.
+   */
+  showWrongPasswordError() {
+    this.clearPassword();
+    this.disabled = false;
+    this.passwordInvalid_ = true;
+    this.setUIStep(GaiaPasswordChangedUIState.PASSWORD);
+  }
+
+  /**
+   * Called when password was successfully updated
+   * and it is possible to set up recovery for the user.
+   */
+  suggestRecovery() {
+    this.disabled = false;
+    this.setUIStep(GaiaPasswordChangedUIState.RECOVERY);
+  }
+
+  /**
+   * Returns the src of the illustration.
+   * @private
+   */
+  getImageSource_() {
+    return this.isDarkModeActive_ ? 'images/security_lock_dark.svg' :
+                                    'images/security_lock_light.svg';
   }
 
   /**
@@ -189,6 +231,38 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
     this.disabled = true;
     this.clearPassword();
     this.userActed('resync');
+  }
+
+  /** @private */
+  onSecondaryButton_() {
+    if (this.disabled) {
+      return;
+    }
+    if (this.isCryptohomeRecoveryUIFlowEnabled_) {
+      this.onForgotPasswordClicked_();
+    } else {
+      this.onCancel_();
+    }
+  }
+
+  onNoRecovery_() {
+    if (this.disabled) {
+      return;
+    }
+    this.setUIStep(GaiaPasswordChangedUIState.PROGRESS);
+    this.disabled = true;
+    this.clearPassword();
+    this.userActed('no-recovery');
+  }
+
+  onSetRecovery_() {
+    if (this.disabled) {
+      return;
+    }
+    this.setUIStep(GaiaPasswordChangedUIState.PROGRESS);
+    this.disabled = true;
+    this.clearPassword();
+    this.userActed('setup-recovery');
   }
 
   /** @private */

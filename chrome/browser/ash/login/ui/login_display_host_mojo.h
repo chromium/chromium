@@ -95,8 +95,8 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void RequestSystemInfoUpdate() override;
   bool HasUserPods() override;
   void VerifyOwnerForKiosk(base::OnceClosure on_success) override;
-  void ShowPasswordChangedDialog(const AccountId& account_id,
-                                 bool show_password_error) override;
+  void ShowPasswordChangedDialogLegacy(const AccountId& account_id,
+                                       bool show_password_error) override;
   void StartCryptohomeRecovery(
       std::unique_ptr<UserContext> user_context) override;
   void StartBrowserDataMigration() override;
@@ -131,7 +131,8 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   // AuthStatusConsumer:
   void OnAuthFailure(const AuthFailure& error) override;
   void OnAuthSuccess(const UserContext& user_context) override;
-  void OnPasswordChangeDetected(const UserContext& user_context) override;
+  void OnPasswordChangeDetectedLegacy(const UserContext& user_context) override;
+  void OnPasswordChangeDetectedFor(const AccountId& account) override;
   void OnOldEncryptionDetected(std::unique_ptr<UserContext> user_context,
                                bool has_incomplete_migration) override;
 

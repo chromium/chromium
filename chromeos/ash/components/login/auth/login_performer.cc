@@ -65,7 +65,6 @@ void LoginPerformer::OnAuthSuccess(const UserContext& user_context) {
   bool is_login_offline =
       user_context.GetAuthFlow() == UserContext::AUTH_FLOW_OFFLINE;
   metrics_recorder_->OnIsLoginOffline(is_login_offline);
-
   VLOG(1) << "LoginSuccess hash: " << user_context.GetUserIDHash();
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&LoginPerformer::NotifyAuthSuccess,
@@ -80,14 +79,28 @@ void LoginPerformer::OnOffTheRecordAuthSuccess() {
                                 weak_factory_.GetWeakPtr()));
 }
 
-void LoginPerformer::OnPasswordChangeDetected(const UserContext& user_context) {
+void LoginPerformer::OnPasswordChangeDetectedLegacy(
+    const UserContext& user_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   password_changed_ = true;
   password_changed_callback_count_++;
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&LoginPerformer::NotifyPasswordChangeDetected,
-                                weak_factory_.GetWeakPtr(), user_context));
+      FROM_HERE,
+      base::BindOnce(&LoginPerformer::NotifyPasswordChangeDetectedLegacy,
+                     weak_factory_.GetWeakPtr(), user_context));
+}
+
+void LoginPerformer::OnPasswordChangeDetected(
+    std::unique_ptr<UserContext> user_context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  password_changed_ = true;
+  DCHECK(user_context);
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&LoginPerformer::NotifyPasswordChangeDetected,
+                     weak_factory_.GetWeakPtr(), std::move(user_context)));
 }
 
 void LoginPerformer::OnOldEncryptionDetected(
@@ -238,12 +251,20 @@ void LoginPerformer::NotifyOffTheRecordAuthSuccess() {
   delegate_->OnOffTheRecordAuthSuccess();
 }
 
-void LoginPerformer::NotifyPasswordChangeDetected(
+void LoginPerformer::NotifyPasswordChangeDetectedLegacy(
     const UserContext& user_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
   user_context_ = user_context;
-  delegate_->OnPasswordChangeDetected(user_context);
+  delegate_->OnPasswordChangeDetectedLegacy(user_context);
+}
+
+void LoginPerformer::NotifyPasswordChangeDetected(
+    std::unique_ptr<UserContext> user_context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(delegate_);
+  DCHECK(user_context);
+  delegate_->OnPasswordChangeDetected(std::move(user_context));
 }
 
 void LoginPerformer::NotifyOldEncryptionDetected(

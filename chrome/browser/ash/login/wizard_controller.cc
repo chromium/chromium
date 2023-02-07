@@ -74,6 +74,7 @@
 #include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
 #include "chrome/browser/ash/login/screens/fingerprint_setup_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_password_changed_screen.h"
+#include "chrome/browser/ash/login/screens/gaia_password_changed_screen_legacy.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 #include "chrome/browser/ash/login/screens/gesture_navigation_screen.h"
 #include "chrome/browser/ash/login/screens/hardware_data_collection_screen.h"
@@ -759,12 +760,22 @@ WizardController::CreateScreens() {
   append(std::make_unique<TpmErrorScreen>(
       oobe_ui->GetView<TpmErrorScreenHandler>()->AsWeakPtr()));
 
-  auto gaia_password_change_screen =
-      std::make_unique<GaiaPasswordChangedScreen>(
-          base::BindRepeating(&WizardController::OnPasswordChangeScreenExit,
-                              weak_factory_.GetWeakPtr()),
-          oobe_ui->GetView<GaiaPasswordChangedScreenHandler>()->AsWeakPtr());
-  append(std::move(gaia_password_change_screen));
+  if (ash::features::IsCryptohomeRecoveryEnabled()) {
+    auto gaia_password_change_screen =
+        std::make_unique<GaiaPasswordChangedScreen>(
+            base::BindRepeating(&WizardController::OnPasswordChangeScreenExit,
+                                weak_factory_.GetWeakPtr()),
+            oobe_ui->GetView<GaiaPasswordChangedScreenHandler>()->AsWeakPtr());
+    append(std::move(gaia_password_change_screen));
+  } else {
+    auto gaia_password_change_screen =
+        std::make_unique<GaiaPasswordChangedScreenLegacy>(
+            base::BindRepeating(
+                &WizardController::OnPasswordChangeLegacyScreenExit,
+                weak_factory_.GetWeakPtr()),
+            oobe_ui->GetView<GaiaPasswordChangedScreenHandler>()->AsWeakPtr());
+    append(std::move(gaia_password_change_screen));
+  }
 
   append(std::make_unique<ActiveDirectoryPasswordChangeScreen>(
       oobe_ui->GetView<ActiveDirectoryPasswordChangeScreenHandler>()
@@ -930,16 +941,25 @@ void WizardController::ShowLoginScreen() {
   GetLoginDisplayHost()->StartSignInScreen();
 }
 
-void WizardController::ShowGaiaPasswordChangedScreen(
+void WizardController::ShowGaiaPasswordChangedScreenLegacy(
     const AccountId& account_id,
     bool has_error) {
-  GaiaPasswordChangedScreen* screen = GetScreen<GaiaPasswordChangedScreen>();
+  DCHECK(!ash::features::IsCryptohomeRecoveryEnabled());
+  GaiaPasswordChangedScreenLegacy* screen =
+      GetScreen<GaiaPasswordChangedScreenLegacy>();
   screen->Configure(account_id, has_error);
   if (current_screen_ != screen) {
     SetCurrentScreen(screen);
   } else {
     screen->Show(wizard_context_);
   }
+}
+
+void WizardController::ShowGaiaPasswordChangedScreen(
+    std::unique_ptr<UserContext> user_context) {
+  DCHECK(features::IsCryptohomeRecoveryEnabled());
+  wizard_context_->user_context = std::move(user_context);
+  SetCurrentScreen(GetScreen<GaiaPasswordChangedScreen>());
 }
 
 void WizardController::ShowEulaScreen() {
@@ -1237,6 +1257,22 @@ void WizardController::OnSamlConfirmPasswordScreenExit(
   }
 }
 
+void WizardController::OnPasswordChangeLegacyScreenExit(
+    GaiaPasswordChangedScreenLegacy::Result result) {
+  OnScreenExit(GaiaPasswordChangedView::kScreenId,
+               GaiaPasswordChangedScreenLegacy::GetResultString(result));
+  switch (result) {
+    case GaiaPasswordChangedScreenLegacy::Result::CANCEL:
+      LoginDisplayHost::default_host()->CancelPasswordChangedFlow();
+      break;
+    case GaiaPasswordChangedScreenLegacy::Result::RESYNC:
+      LoginDisplayHost::default_host()->ResyncUserData();
+      break;
+    case GaiaPasswordChangedScreenLegacy::Result::MIGRATE:
+      NOTREACHED();
+  }
+}
+
 void WizardController::OnPasswordChangeScreenExit(
     GaiaPasswordChangedScreen::Result result) {
   OnScreenExit(GaiaPasswordChangedView::kScreenId,
@@ -1245,11 +1281,21 @@ void WizardController::OnPasswordChangeScreenExit(
     case GaiaPasswordChangedScreen::Result::CANCEL:
       LoginDisplayHost::default_host()->CancelPasswordChangedFlow();
       break;
-    case GaiaPasswordChangedScreen::Result::RESYNC:
-      LoginDisplayHost::default_host()->ResyncUserData();
+    case GaiaPasswordChangedScreen::Result::CONTINUE_LOGIN:
+      ash::LoginDisplayHost::default_host()
+          ->GetExistingUserController()
+          ->LoginAuthenticated(std::move(wizard_context_->user_context));
       break;
-    case GaiaPasswordChangedScreen::Result::MIGRATE:
+    case GaiaPasswordChangedScreen::Result::RECREATE_USER: {
+      std::unique_ptr<UserContext> context =
+          std::move(wizard_context_->user_context);
+      ash::LoginDisplayHost::default_host()->CompleteLogin(*context);
+      break;
+    }
+    case GaiaPasswordChangedScreen::Result::CRYPTOHOME_ERROR:
+      // TODO(b/239420684): Send an error to the UI.
       NOTREACHED();
+      LoginDisplayHost::default_host()->CancelPasswordChangedFlow();
   }
 }
 
@@ -1434,8 +1480,7 @@ void WizardController::OnCryptohomeRecoveryScreenExit(
       break;
     case CryptohomeRecoveryScreen::Result::kManualRecovery:
     case CryptohomeRecoveryScreen::Result::kNoRecoveryFactor:
-      ShowGaiaPasswordChangedScreen(
-          wizard_context_->user_context->GetAccountId(), false /*has_error*/);
+      ShowGaiaPasswordChangedScreen(std::move(wizard_context_->user_context));
       break;
   }
 }

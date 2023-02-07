@@ -8,6 +8,8 @@
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 
+class AccountId;
+
 namespace ash {
 
 class AuthFailure;
@@ -28,7 +30,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthStatusConsumer
   // The current guest login attempt has succeeded.
   virtual void OnOffTheRecordAuthSuccess() {}
   // The same password didn't work both online and offline.
-  virtual void OnPasswordChangeDetected(const UserContext& user_context);
+  virtual void OnPasswordChangeDetectedLegacy(const UserContext& user_context);
+  // Password verified by the online flow does work for local
+  // authentication.
+  // This is the method that should actually handle the scenario.
+  // `context` has online-verified password as a `Key`.
+  virtual void OnPasswordChangeDetected(
+      std::unique_ptr<UserContext> user_context);
+  // Auxiliary method, used to get notified about password change without
+  // actually handling it.
+  virtual void OnPasswordChangeDetectedFor(const AccountId& account);
+
   // The cryptohome is encrypted in old format and needs migration.
   virtual void OnOldEncryptionDetected(std::unique_ptr<UserContext> context,
                                        bool has_incomplete_migration);

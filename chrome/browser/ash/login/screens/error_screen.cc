@@ -339,7 +339,13 @@ void ErrorScreen::OnOffTheRecordAuthSuccess() {
   RestartChrome(command_line, RestartChromeReason::kGuest);
 }
 
-void ErrorScreen::OnPasswordChangeDetected(const UserContext& user_context) {
+void ErrorScreen::OnPasswordChangeDetectedLegacy(
+    const UserContext& user_context) {
+  LOG(FATAL);
+}
+
+void ErrorScreen::OnPasswordChangeDetected(
+    std::unique_ptr<UserContext> user_context) {
   LOG(FATAL);
 }
 

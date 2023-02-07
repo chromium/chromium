@@ -982,7 +982,7 @@ void LoginDisplayHostWebUI::VerifyOwnerForKiosk(base::OnceClosure) {
   NOTREACHED();
 }
 
-void LoginDisplayHostWebUI::ShowPasswordChangedDialog(
+void LoginDisplayHostWebUI::ShowPasswordChangedDialogLegacy(
     const AccountId& account_id,
     bool show_password_error) {
   NOTREACHED();

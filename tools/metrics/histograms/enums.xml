@@ -44996,6 +44996,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="Migrate user data"/>
   <int value="2" label="Cancel dialog"/>
   <int value="3" label="Incorrect old password"/>
+  <int value="4" label="Don't setup Recovery"/>
+  <int value="5" label="Setup Recovery"/>
 </enum>
 
 <enum name="GaiaPasswordHashChange">

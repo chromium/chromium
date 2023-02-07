@@ -39,6 +39,7 @@
 #include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
 #include "chrome/browser/ash/login/screens/fingerprint_setup_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_password_changed_screen.h"
+#include "chrome/browser/ash/login/screens/gaia_password_changed_screen_legacy.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 #include "chrome/browser/ash/login/screens/gesture_navigation_screen.h"
 #include "chrome/browser/ash/login/screens/guest_tos_screen.h"
@@ -227,8 +228,8 @@ class WizardController : public OobeUI::Observer {
       scoped_refptr<network::SharedURLLoaderFactory> factory);
 
   // Configure and show GAIA password changed screen.
-  void ShowGaiaPasswordChangedScreen(const AccountId& account_id,
-                                     bool has_error);
+  void ShowGaiaPasswordChangedScreenLegacy(const AccountId& account_id,
+                                           bool has_error);
 
   // Configure and show active directory password change screen.
   void ShowActiveDirectoryPasswordChangeScreen(const std::string& username);
@@ -321,6 +322,7 @@ class WizardController : public OobeUI::Observer {
   void ShowThemeSelectionScreen();
   void ShowChoobeScreen();
   void ShowTouchpadScrollScreen();
+  void ShowGaiaPasswordChangedScreen(std::unique_ptr<UserContext> user_context);
 
   // Shows images login screen.
   void ShowLoginScreen();
@@ -388,6 +390,8 @@ class WizardController : public OobeUI::Observer {
   void OnGaiaScreenExit(GaiaScreen::Result result);
   void OnSamlConfirmPasswordScreenExit(
       SamlConfirmPasswordScreen::Result result);
+  void OnPasswordChangeLegacyScreenExit(
+      GaiaPasswordChangedScreenLegacy::Result result);
   void OnPasswordChangeScreenExit(GaiaPasswordChangedScreen::Result result);
   void OnActiveDirectoryLoginScreenExit();
   void OnSignInFatalErrorScreenExit();

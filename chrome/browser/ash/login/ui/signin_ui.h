@@ -70,10 +70,11 @@ class SigninUI {
   // Clears authentication data that were stored for user onboarding.
   virtual void ClearOnboardingAuthSession() = 0;
 
-  // Show password changed dialog. If `show_password_error` is true, user
+  // Show legacy password changed dialog. If `show_password_error` is true, user
   // already tried to enter old password but it turned out to be incorrect.
-  virtual void ShowPasswordChangedDialog(const AccountId& account_id,
-                                         bool password_incorrect) = 0;
+  // New implementation would start Recovery flow instead.
+  virtual void ShowPasswordChangedDialogLegacy(const AccountId& account_id,
+                                               bool password_incorrect) = 0;
 
   // Start Cryptohome recovery flow and show the screen.
   virtual void StartCryptohomeRecovery(

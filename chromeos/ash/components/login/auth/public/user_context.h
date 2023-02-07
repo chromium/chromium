@@ -126,6 +126,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   // if it exists after previous attempts.
   void SaveKeyForReplacement();
 
+  // This method is used in password changed scenario when user can not remember
+  // their old password and decide to re-create home directory.
+  //
+  // This method would replace existing Key with saved ReplacementKey.
+  void ReuseReplacementKey();
+
   // Saves the user's plaintext password for possible authentication by system
   // services:
   // - To networks. If the user's OpenNetworkConfiguration policy contains a

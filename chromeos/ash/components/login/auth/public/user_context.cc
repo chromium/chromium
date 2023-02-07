@@ -202,6 +202,12 @@ void UserContext::SaveKeyForReplacement() {
   replacement_key_ = key_;
 }
 
+void UserContext::ReuseReplacementKey() {
+  DCHECK(replacement_key_.has_value());
+  key_ = *replacement_key_;
+  replacement_key_ = absl::nullopt;
+}
+
 void UserContext::SetPasswordKey(const Key& key) {
   password_key_ = key;
 }

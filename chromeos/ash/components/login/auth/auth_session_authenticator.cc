@@ -958,7 +958,11 @@ void AuthSessionAuthenticator::HandlePasswordChangeDetected(
     LOGIN_LOG(EVENT) << "Password change detected";
     if (!consumer_)
       return;
-    consumer_->OnPasswordChangeDetected(*context);
+    if (ash::features::IsCryptohomeRecoveryEnabled()) {
+      consumer_->OnPasswordChangeDetected(std::move(context));
+    } else {
+      consumer_->OnPasswordChangeDetectedLegacy(*context);
+    }
     return;
   }
   std::move(fallback).Run(std::move(context), std::move(error));

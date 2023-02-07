@@ -229,7 +229,12 @@ UserContext StubAuthenticator::ExpectedUserContextWithTransformedKey() const {
 }
 
 void StubAuthenticator::OnPasswordChangeDetected() {
-  consumer_->OnPasswordChangeDetected(expected_user_context_);
+  if (ash::features::IsCryptohomeRecoveryEnabled()) {
+    consumer_->OnPasswordChangeDetected(
+        std::make_unique<UserContext>(expected_user_context_));
+  } else {
+    consumer_->OnPasswordChangeDetectedLegacy(expected_user_context_);
+  }
 }
 
 void StubAuthenticator::OnOldEncryptionDetected() {

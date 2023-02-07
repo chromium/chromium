@@ -24,6 +24,10 @@ class GaiaPasswordChangedView
 
   // Shows the contents of the screen.
   virtual void Show(const std::string& email, bool has_error) = 0;
+
+  virtual void Show(const std::string& email) = 0;
+  virtual void ShowWrongPasswordError() = 0;
+  virtual void SuggestRecovery() = 0;
 };
 
 class GaiaPasswordChangedScreenHandler : public GaiaPasswordChangedView,
@@ -40,6 +44,9 @@ class GaiaPasswordChangedScreenHandler : public GaiaPasswordChangedView,
 
  private:
   void Show(const std::string& email, bool has_error) override;
+  void Show(const std::string& email) override;
+  void ShowWrongPasswordError() override;
+  void SuggestRecovery() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(

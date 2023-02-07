@@ -733,7 +733,7 @@ void ExistingUserController::ShowTPMError() {
   GetLoginDisplayHost()->StartWizard(TpmErrorView::kScreenId);
 }
 
-void ExistingUserController::ShowPasswordChangedDialog(
+void ExistingUserController::ShowPasswordChangedDialogLegacy(
     const UserContext& user_context) {
   VLOG(1) << "Show password changed dialog"
           << ", count=" << login_performer_->password_changed_callback_count();
@@ -742,7 +742,7 @@ void ExistingUserController::ShowPasswordChangedDialog(
   bool show_invalid_old_password_error =
       login_performer_->password_changed_callback_count() > 1;
 
-  GetLoginDisplayHost()->GetSigninUI()->ShowPasswordChangedDialog(
+  GetLoginDisplayHost()->GetSigninUI()->ShowPasswordChangedDialogLegacy(
       user_context.GetAccountId(), show_invalid_old_password_error);
 }
 
@@ -1032,29 +1032,58 @@ void ExistingUserController::OnOffTheRecordAuthSuccess() {
     auth_status_consumer.OnOffTheRecordAuthSuccess();
 }
 
-void ExistingUserController::OnPasswordChangeDetected(
+void ExistingUserController::OnPasswordChangeDetectedLegacy(
     const UserContext& user_context) {
+  DCHECK(!ash::features::IsCryptohomeRecoveryEnabled());
   is_login_in_progress_ = false;
 
   // Must not proceed without signature verification.
   if (CrosSettingsProvider::TRUSTED !=
-      cros_settings_->PrepareTrustedValues(
-          base::BindOnce(&ExistingUserController::OnPasswordChangeDetected,
-                         weak_factory_.GetWeakPtr(), user_context))) {
+      cros_settings_->PrepareTrustedValues(base::BindOnce(
+          &ExistingUserController::OnPasswordChangeDetectedLegacy,
+          weak_factory_.GetWeakPtr(), user_context))) {
     // Value of owner email is still not verified.
     // Another attempt will be invoked after verification completion.
     return;
   }
 
   for (auto& auth_status_consumer : auth_status_consumers_)
-    auth_status_consumer.OnPasswordChangeDetected(user_context);
+    auth_status_consumer.OnPasswordChangeDetectedLegacy(user_context);
 
-  if (features::IsCryptohomeRecoveryEnabled()) {
-    GetLoginDisplayHost()->GetSigninUI()->StartCryptohomeRecovery(
-        std::make_unique<UserContext>(user_context));
-  } else {
-    ShowPasswordChangedDialog(user_context);
+  ShowPasswordChangedDialogLegacy(user_context);
+}
+
+void ExistingUserController::OnPasswordChangeDetected(
+    std::unique_ptr<UserContext> user_context) {
+  // Workaround for PrepareTrustedValues and need to move unique_ptr:
+  base::OnceClosure callback =
+      base::BindOnce(&ExistingUserController::OnPasswordChangeDetectedImpl,
+                     weak_factory_.GetWeakPtr(), std::move(user_context));
+  auto [continue_async, continue_now] =
+      base::SplitOnceCallback(std::move(callback));
+  // Must not proceed without signature verification.
+  if (CrosSettingsProvider::TRUSTED !=
+      cros_settings_->PrepareTrustedValues(std::move(continue_async))) {
+    // Value of owner email is still not verified.
+    // Callback will be invoked after verification completion.
+    return;
   }
+  std::move(continue_now).Run();
+}
+
+void ExistingUserController::OnPasswordChangeDetectedImpl(
+    std::unique_ptr<UserContext> user_context) {
+  DCHECK(ash::features::IsCryptohomeRecoveryEnabled());
+  DCHECK(user_context);
+  is_login_in_progress_ = false;
+
+  for (auto& auth_status_consumer : auth_status_consumers_) {
+    auth_status_consumer.OnPasswordChangeDetectedFor(
+        user_context->GetAccountId());
+  }
+
+  GetLoginDisplayHost()->GetSigninUI()->StartCryptohomeRecovery(
+      std::move(user_context));
 }
 
 void ExistingUserController::OnOldEncryptionDetected(

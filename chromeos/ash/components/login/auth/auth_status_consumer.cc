@@ -9,8 +9,17 @@
 
 namespace ash {
 
-void AuthStatusConsumer::OnPasswordChangeDetected(
+void AuthStatusConsumer::OnPasswordChangeDetectedLegacy(
     const UserContext& user_context) {
+  NOTREACHED();
+}
+
+void AuthStatusConsumer::OnPasswordChangeDetected(
+    std::unique_ptr<UserContext> user_context) {
+  OnPasswordChangeDetectedFor(user_context->GetAccountId());
+}
+
+void AuthStatusConsumer::OnPasswordChangeDetectedFor(const AccountId& account) {
   NOTREACHED();
 }
 

@@ -198,13 +198,13 @@ void LoginDisplayHostMojo::SetUserCount(int user_count) {
   }
 }
 
-void LoginDisplayHostMojo::ShowPasswordChangedDialog(
+void LoginDisplayHostMojo::ShowPasswordChangedDialogLegacy(
     const AccountId& account_id,
     bool show_password_error) {
   EnsureOobeDialogLoaded();
   DCHECK(GetOobeUI());
-  wizard_controller_->ShowGaiaPasswordChangedScreen(account_id,
-                                                    show_password_error);
+  wizard_controller_->ShowGaiaPasswordChangedScreenLegacy(account_id,
+                                                          show_password_error);
   ShowDialog();
 }
 
@@ -645,10 +645,18 @@ void LoginDisplayHostMojo::OnAuthSuccess(const UserContext& user_context) {
   }
 }
 
-void LoginDisplayHostMojo::OnPasswordChangeDetected(
+void LoginDisplayHostMojo::OnPasswordChangeDetectedLegacy(
     const UserContext& user_context) {
   if (user_context.GetAccountId().is_valid()) {
     SendReauthReason(user_context.GetAccountId(), true /* password changed */);
+  }
+  gaia_reauth_account_id_.reset();
+}
+
+void LoginDisplayHostMojo::OnPasswordChangeDetectedFor(
+    const AccountId& account) {
+  if (account.is_valid()) {
+    SendReauthReason(account, true /* password changed */);
   }
   gaia_reauth_account_id_.reset();
 }

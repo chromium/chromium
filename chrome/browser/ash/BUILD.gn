@@ -1759,6 +1759,8 @@ source_set("ash") {
     "login/screens/fingerprint_setup_screen.h",
     "login/screens/gaia_password_changed_screen.cc",
     "login/screens/gaia_password_changed_screen.h",
+    "login/screens/gaia_password_changed_screen_legacy.cc",
+    "login/screens/gaia_password_changed_screen_legacy.h",
     "login/screens/gaia_screen.cc",
     "login/screens/gaia_screen.h",
     "login/screens/gesture_navigation_screen.cc",

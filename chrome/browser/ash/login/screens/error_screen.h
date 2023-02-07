@@ -108,7 +108,9 @@ class ErrorScreen : public BaseScreen,
   void OnAuthFailure(const AuthFailure& error) override;
   void OnAuthSuccess(const UserContext& user_context) override;
   void OnOffTheRecordAuthSuccess() override;
-  void OnPasswordChangeDetected(const UserContext& user_context) override;
+  void OnPasswordChangeDetectedLegacy(const UserContext& user_context) override;
+  void OnPasswordChangeDetected(
+      std::unique_ptr<UserContext> user_context) override;
   void AllowlistCheckFailed(const std::string& email) override;
   void PolicyLoadFailed() override;
 

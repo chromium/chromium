@@ -95,8 +95,8 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void ShowEnableConsumerKioskScreen() override;
   bool HasUserPods() override;
   void VerifyOwnerForKiosk(base::OnceClosure) override;
-  void ShowPasswordChangedDialog(const AccountId& account_id,
-                                 bool show_password_error) override;
+  void ShowPasswordChangedDialogLegacy(const AccountId& account_id,
+                                       bool show_password_error) override;
   void StartCryptohomeRecovery(
       std::unique_ptr<UserContext> user_context) override;
   void StartBrowserDataMigration() override;
