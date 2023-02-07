@@ -722,6 +722,9 @@ BackForwardCacheImpl::PopulateReasonsForPage(
   bool main_frame_in_bfcache =
       rfh->IsInBackForwardCache() && rfh->IsOutermostMainFrame();
 
+  // Call the recursive function that adds the reasons from the subtree to the
+  // flattened list, and return the tree if needed.
+  std::unique_ptr<BackForwardCacheCanStoreTreeResult> result_tree;
   if (!rfh->IsInPrimaryMainFrame() && !main_frame_in_bfcache) {
     // When |rfh| is not the primary main frame and is not the bfcache main
     // frame, e.g. when |rfh| is prerendering, fenced frame root or is not the
@@ -731,23 +734,16 @@ BackForwardCacheImpl::PopulateReasonsForPage(
     // reasons.
     main_document_specific_result.No(
         BackForwardCacheMetrics::NotRestoredReason::kNotPrimaryMainFrame);
+    result_tree = BackForwardCacheCanStoreTreeResult::CreateEmptyTree(rfh);
   } else {
     // Populate main document specific reasons.
     PopulateReasonsForMainDocument(main_document_specific_result, rfh);
-  }
-  // Add the reasons for main document to the flattened list.
-  flattened_result.AddReasonsFrom(main_document_specific_result);
-
-  // Call the recursive function that adds the reasons from the subtree to the
-  // flattened list, and return the tree if needed.
-  std::unique_ptr<BackForwardCacheCanStoreTreeResult> result_tree;
-  if (rfh->IsInPrimaryMainFrame() || main_frame_in_bfcache) {
     NotRestoredReasonBuilder builder(rfh, requested_features);
     result_tree = builder.GetTreeResult();
     flattened_result.AddReasonsFrom(builder.GetFlattenedResult());
-  } else {
-    result_tree = BackForwardCacheCanStoreTreeResult::CreateEmptyTree(rfh);
   }
+  // Add the reasons for main document to the flattened list.
+  flattened_result.AddReasonsFrom(main_document_specific_result);
   // |result_tree| does not have main document specific reasons such as
   // "disabled via command line", and we have to manually add them.
   result_tree->AddReasonsToSubtreeRootFrom(main_document_specific_result);
