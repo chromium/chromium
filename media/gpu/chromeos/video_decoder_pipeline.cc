@@ -996,6 +996,12 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     VLOGF(1) << "Initializing auxiliary frame pool with up to " << num_pictures
              << " VideoFrames";
     auxiliary_frame_pool_->set_parent_task_runner(decoder_task_runner_);
+
+#if BUILDFLAG(IS_LINUX)
+    auxiliary_frame_pool_->AsPlatformVideoFramePool()->SetCustomFrameAllocator(
+        *allocator);
+#endif
+
     CroStatus::Or<GpuBufferLayout> status_or_layout =
         auxiliary_frame_pool_->Initialize(
             image_processor->input_config().fourcc,
