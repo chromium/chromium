@@ -31,7 +31,8 @@ class GifTenorApiFetcher {
   ~GifTenorApiFetcher();
 
   using TenorGifsApiCallback =
-      base::OnceCallback<void(emoji_picker::mojom::TenorGifResponsePtr)>;
+      base::OnceCallback<void(emoji_picker::mojom::Status,
+                              emoji_picker::mojom::TenorGifResponsePtr)>;
 
   // Fetch tenor API Categories endpoint
   void FetchCategories(

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-forward.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -104,45 +105,150 @@ class GifTenorApiFetcherTest : public testing::Test {
 
 TEST_F(GifTenorApiFetcherTest, FetchCategories) {
   task_environment_.RunUntilIdle();
+  base::test::TestFuture<emoji_picker::mojom::Status,
+                         const std::vector<std::string>&>
+      create_future_http_error;
+  gif_tenor_api_fetcher_.FetchCategories(create_future_http_error.GetCallback(),
+                                         url_loader_factory_);
+  ASSERT_EQ(create_future_http_error.Get<0>(),
+            emoji_picker::mojom::Status::kHttpError);
+  ASSERT_EQ(create_future_http_error.Get<1>(), std::vector<std::string>{});
+
+  response_.error_type = absl::make_optional(FetchErrorType::kNetError);
+  base::test::TestFuture<emoji_picker::mojom::Status,
+                         const std::vector<std::string>&>
+      create_future_net_error;
+  gif_tenor_api_fetcher_.FetchCategories(create_future_net_error.GetCallback(),
+                                         url_loader_factory_);
+  ASSERT_EQ(create_future_net_error.Get<0>(),
+            emoji_picker::mojom::Status::kNetError);
+  ASSERT_EQ(create_future_net_error.Get<1>(), std::vector<std::string>{});
+
+  base::test::TestFuture<emoji_picker::mojom::Status,
+                         const std::vector<std::string>&>
+      create_future_http_ok;
   response_.response = kFakeCategoriesResponse;
-  base::test::TestFuture<const std::vector<std::string>&> create_future;
-  gif_tenor_api_fetcher_.FetchCategories(create_future.GetCallback(),
+  response_.http_status_code = net::HTTP_OK;
+  gif_tenor_api_fetcher_.FetchCategories(create_future_http_ok.GetCallback(),
                                          url_loader_factory_);
   std::vector<std::string> expected{"#awesome", "#jk"};
-  ASSERT_EQ(create_future.Get<0>(), expected);
+  ASSERT_EQ(create_future_http_ok.Get<0>(),
+            emoji_picker::mojom::Status::kHttpOk);
+  ASSERT_EQ(create_future_http_ok.Get<1>(), expected);
 }
 
 TEST_F(GifTenorApiFetcherTest, FetchFeaturedGifs) {
   task_environment_.RunUntilIdle();
+  base::test::TestFuture<emoji_picker::mojom::Status,
+                         emoji_picker::mojom::TenorGifResponsePtr>
+      create_future_http_error;
+  gif_tenor_api_fetcher_.FetchFeaturedGifs(
+      create_future_http_error.GetCallback(), url_loader_factory_, "");
+  ASSERT_EQ(create_future_http_error.Get<0>(),
+            emoji_picker::mojom::Status::kHttpError);
+  ASSERT_EQ(create_future_http_error.Get<1>(),
+            emoji_picker::mojom::TenorGifResponse::New(
+                "", std::vector<emoji_picker::mojom::GifResponsePtr>{}));
+
+  response_.error_type = absl::make_optional(FetchErrorType::kNetError);
+  base::test::TestFuture<emoji_picker::mojom::Status,
+                         emoji_picker::mojom::TenorGifResponsePtr>
+      create_future_net_error;
+  gif_tenor_api_fetcher_.FetchFeaturedGifs(
+      create_future_net_error.GetCallback(), url_loader_factory_, "");
+  ASSERT_EQ(create_future_net_error.Get<0>(),
+            emoji_picker::mojom::Status::kNetError);
+  ASSERT_EQ(create_future_net_error.Get<1>(),
+            emoji_picker::mojom::TenorGifResponse::New(
+                "", std::vector<emoji_picker::mojom::GifResponsePtr>{}));
+
   response_.response = kFakeGifsResponse;
-  base::test::TestFuture<emoji_picker::mojom::TenorGifResponsePtr>
-      create_future;
-  gif_tenor_api_fetcher_.FetchFeaturedGifs(create_future.GetCallback(),
+  response_.http_status_code = net::HTTP_OK;
+  base::test::TestFuture<emoji_picker::mojom::Status,
+                         emoji_picker::mojom::TenorGifResponsePtr>
+      create_future_http_ok;
+  gif_tenor_api_fetcher_.FetchFeaturedGifs(create_future_http_ok.GetCallback(),
                                            url_loader_factory_, "");
-  ASSERT_EQ(create_future.Get<0>(),
+  ASSERT_EQ(create_future_http_ok.Get<0>(),
+            emoji_picker::mojom::Status::kHttpOk);
+  ASSERT_EQ(create_future_http_ok.Get<1>(),
             emoji_picker::mojom::TenorGifResponse::New("1", GetFakeGifs()));
 }
 
 TEST_F(GifTenorApiFetcherTest, FetchGifSearch) {
   task_environment_.RunUntilIdle();
-  response_.response = kFakeGifsResponse;
-  base::test::TestFuture<emoji_picker::mojom::TenorGifResponsePtr>
-      create_future;
-  gif_tenor_api_fetcher_.FetchGifSearch(create_future.GetCallback(),
+  base::test::TestFuture<emoji_picker::mojom::Status,
+                         emoji_picker::mojom::TenorGifResponsePtr>
+      create_future_http_error;
+  gif_tenor_api_fetcher_.FetchGifSearch(create_future_http_error.GetCallback(),
                                         url_loader_factory_, "", "");
-  ASSERT_EQ(create_future.Get<0>(),
+  ASSERT_EQ(create_future_http_error.Get<0>(),
+            emoji_picker::mojom::Status::kHttpError);
+  ASSERT_EQ(create_future_http_error.Get<1>(),
+            emoji_picker::mojom::TenorGifResponse::New(
+                "", std::vector<emoji_picker::mojom::GifResponsePtr>{}));
+
+  response_.error_type = absl::make_optional(FetchErrorType::kNetError);
+  base::test::TestFuture<emoji_picker::mojom::Status,
+                         emoji_picker::mojom::TenorGifResponsePtr>
+      create_future_net_error;
+  gif_tenor_api_fetcher_.FetchFeaturedGifs(
+      create_future_net_error.GetCallback(), url_loader_factory_, "");
+  ASSERT_EQ(create_future_net_error.Get<0>(),
+            emoji_picker::mojom::Status::kNetError);
+  ASSERT_EQ(create_future_net_error.Get<1>(),
+            emoji_picker::mojom::TenorGifResponse::New(
+                "", std::vector<emoji_picker::mojom::GifResponsePtr>{}));
+
+  response_.response = kFakeGifsResponse;
+  response_.http_status_code = net::HTTP_OK;
+  base::test::TestFuture<emoji_picker::mojom::Status,
+                         emoji_picker::mojom::TenorGifResponsePtr>
+      create_future_http_ok;
+  gif_tenor_api_fetcher_.FetchFeaturedGifs(create_future_http_ok.GetCallback(),
+                                           url_loader_factory_, "");
+  ASSERT_EQ(create_future_http_ok.Get<0>(),
+            emoji_picker::mojom::Status::kHttpOk);
+  ASSERT_EQ(create_future_http_ok.Get<1>(),
             emoji_picker::mojom::TenorGifResponse::New("1", GetFakeGifs()));
 }
 
 TEST_F(GifTenorApiFetcherTest, FetchGifsByIds) {
   task_environment_.RunUntilIdle();
-  response_.response = kFakeGifsResponse;
-  base::test::TestFuture<std::vector<emoji_picker::mojom::GifResponsePtr>>
-      create_future;
-  gif_tenor_api_fetcher_.FetchGifsByIds(create_future.GetCallback(),
+  base::test::TestFuture<emoji_picker::mojom::Status,
+                         std::vector<emoji_picker::mojom::GifResponsePtr>>
+      create_future_http_error;
+  gif_tenor_api_fetcher_.FetchGifsByIds(create_future_http_error.GetCallback(),
                                         url_loader_factory_,
                                         std::vector<std::string>());
-  ASSERT_EQ(create_future.Get<0>(), GetFakeGifs());
+  ASSERT_EQ(create_future_http_error.Get<0>(),
+            emoji_picker::mojom::Status::kHttpError);
+  ASSERT_EQ(create_future_http_error.Get<1>(),
+            std::vector<emoji_picker::mojom::GifResponsePtr>{});
+
+  response_.error_type = absl::make_optional(FetchErrorType::kNetError);
+  base::test::TestFuture<emoji_picker::mojom::Status,
+                         std::vector<emoji_picker::mojom::GifResponsePtr>>
+      create_future_net_error;
+  gif_tenor_api_fetcher_.FetchGifsByIds(create_future_net_error.GetCallback(),
+                                        url_loader_factory_,
+                                        std::vector<std::string>());
+  ASSERT_EQ(create_future_net_error.Get<0>(),
+            emoji_picker::mojom::Status::kNetError);
+  ASSERT_EQ(create_future_net_error.Get<1>(),
+            std::vector<emoji_picker::mojom::GifResponsePtr>{});
+
+  response_.response = kFakeGifsResponse;
+  response_.http_status_code = net::HTTP_OK;
+  base::test::TestFuture<emoji_picker::mojom::Status,
+                         std::vector<emoji_picker::mojom::GifResponsePtr>>
+      create_future_http_ok;
+  gif_tenor_api_fetcher_.FetchGifsByIds(create_future_http_ok.GetCallback(),
+                                        url_loader_factory_,
+                                        std::vector<std::string>());
+  ASSERT_EQ(create_future_http_ok.Get<0>(),
+            emoji_picker::mojom::Status::kHttpOk);
+  ASSERT_EQ(create_future_http_ok.Get<1>(), GetFakeGifs());
 }
 
 }  // namespace ash

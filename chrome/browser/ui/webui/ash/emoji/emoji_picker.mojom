@@ -25,14 +25,16 @@ enum Feature {
 // the frontend to display GIFs.
 // https://developers.google.com/tenor/guides/endpoints#response-format-search
 // https://developers.google.com/tenor/guides/endpoints#response-format-featured
+
+enum Status {
+  kHttpOk, // 200 OK
+  kNetError, // No internet connection
+  kHttpError, // Every other HTTP response status code
+};
+
 struct TenorGifResponse {
   string next;
   array<GifResponse> results;
-};
-
-struct GifUrls {
-  url.mojom.Url full;
-  url.mojom.Url preview;
 };
 
 struct GifResponse {
@@ -40,6 +42,11 @@ struct GifResponse {
   string content_description;
   GifUrls url;
   gfx.mojom.Size preview_size;
+};
+
+struct GifUrls {
+  url.mojom.Url full;
+  url.mojom.Url preview;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.
@@ -70,20 +77,23 @@ interface PageHandler {
 
   // Returns a list of GIF categories from the Tenor API
   // (https://developers.google.com/tenor/guides/endpoints#categories).
-  GetCategories() => (array<string> gif_categories);
+  GetCategories() => (Status status, array<string> gif_categories);
 
   // Returns a list of the current global featured GIFs from the Tenor API
   // (https://developers.google.com/tenor/guides/endpoints#base-url-featured).
-  GetFeaturedGifs(string? pos) => (TenorGifResponse featured_gifs);
+  GetFeaturedGifs(string? pos) => (Status status,
+                                   TenorGifResponse featured_gifs);
 
   // Returns a list of the most relevant GIFs for a given search set of search
   // terms or categories from the Tenor API
   // (https://developers.google.com/tenor/guides/endpoints#base-url-search).
-  SearchGifs(string query, string? pos) => (TenorGifResponse search_gifs);
+  SearchGifs(string query, string? pos) => (Status status,
+                                            TenorGifResponse search_gifs);
 
   // Returns a list of GIFs for the specified IDs
   // (https://developers.google.com/tenor/guides/endpoints#posts).
-  GetGifsByIds(array<string> ids) => (array<GifResponse> selected_gifs);
+  GetGifsByIds(array<string> ids) => (Status status,
+                                      array<GifResponse> selected_gifs);
 
   // Request backend to copy gif to clipboard (will close the picker).
   // gif: The gif to insert in the form of the url returned from the tenor API

@@ -24,6 +24,7 @@
     --emoji-picker-subcategory-bar-inline-margin: 18px;
     --emoji-tooltip-delay-in: 500ms;
     --emoji-tooltip-delay-out: 500ms;
+    --emoji-picker-no-internet-icon-bounding-box: 48px;
     /* Actual properties of the emoji picker */
     background-color: var(--cros-bg-color);
     display: flex;
@@ -227,6 +228,38 @@
   .category-gap {
     height: 16px;
   }
+
+  /* Error states styles */
+  .gif-error-container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+  }
+
+  .error-text {
+    font-family: 'Google Sans';
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 22px;
+    margin: 8px 0;
+  }
+
+  .try-again-button {
+    color: var(--cros-icon-color-prominent);
+    cursor: pointer;
+    font-family: 'Roboto';
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+
+  #no-internet-icon {
+    color: var(--cros-icon-color-secondary);
+    height: var(--emoji-picker-no-internet-icon-bounding-box);
+    width: var(--emoji-picker-no-internet-icon-bounding-box);
+  }
 </style>
 
 <div class="sr-only" aria-live="polite">
@@ -359,6 +392,24 @@
           category$="[[item.category]]"
           class$="[[getEmojiGroupClassNames(item.emoji,item,category,activeInfiniteGroupId)]]">
         </emoji-group>
+      </div>
+    </template>
+    <template is="dom-if" if="[[isGifInErrorState(status)]]">
+      <div class="gif-error-container">
+        <template is="dom-if" if="[[isGifInHttpErrorState(status)]]">
+          <picture>
+            <source
+              srcset="generic_error_dark.svg"
+              media="(prefers-color-scheme: dark)">
+            <img src="generic_error.svg" id="no-emoji-image">
+          </picture>
+        </template>
+        <template is="dom-if" if="[[isGifInNetworkErrorState(status)]]">
+          <iron-icon id="no-internet-icon" icon="emoji_picker_v2:cloud_off">
+          </iron-icon>
+        </template>
+        <span class="error-text">[[errorMessage]]</span>
+        <a class="try-again-button" onclick="[[onClickTryAgain]]">Try again</a>
       </div>
     </template>
   </div>

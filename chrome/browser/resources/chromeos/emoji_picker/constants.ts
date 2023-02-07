@@ -50,6 +50,10 @@ export const EMOJI_PICKER_TOTAL_EMOJI_WIDTH_PX =
 export const TAB_BUTTON_MARGIN_PX = `${TAB_BUTTON_MARGIN}px`;
 export const TEXT_GROUP_BUTTON_PADDING_PX = `${TEXT_GROUP_BUTTON_PADDING}px`;
 export const TRENDING = 'Trending';
+// If more groups are added to emoji, symbol or emoticon this number will change
+export const TRENDING_GROUP_ID = '30';  // TODO(b/266024083): Make this dynamic
+export const NO_INTERNET_ERROR_MSG = 'Connect to the internet to view GIFs';
+export const SOMETHING_WENT_WRONG_ERROR_MSG = 'Something went wrong';
 // 24 hours is equivalent to 86400000 milliseconds.
 export const TWENTY_FOUR_HOURS = 86400000;
 export const GIF_VALIDATION_DATE = 'gifValidationDate';

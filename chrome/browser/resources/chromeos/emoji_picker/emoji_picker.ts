@@ -11,6 +11,7 @@ import './text_group_button.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -18,7 +19,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import * as constants from './constants.js';
 import {EmojiGroupComponent} from './emoji_group.js';
 import {getTemplate} from './emoji_picker.html.js';
-import {Feature} from './emoji_picker.mojom-webui.js';
+import {Feature, Status} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {EmojiSearch} from './emoji_search.js';
 import * as events from './events.js';
@@ -86,6 +87,8 @@ export class EmojiPicker extends PolymerElement {
       incognito: {type: Boolean, value: true},
       gifSupport: {type: Boolean, value: false},
       gifDataInitialised: {type: Boolean, value: false},
+      errorMessage: {type: String, value: null},
+      status: {type: Status, value: null},
     };
   }
   private category: CategoryEnum;
@@ -112,6 +115,8 @@ export class EmojiPicker extends PolymerElement {
   private highlightBarMoving: boolean = false;
   private groupTabsMoving: boolean = false;
   private gifDataInitialised: boolean;
+  private errorMessage: string|null;
+  private status: Status|null;
   private previousGifValidation: Date;
 
   constructor() {
@@ -331,7 +336,19 @@ export class EmojiPicker extends PolymerElement {
           categoriesFetchPromise.then(() => this.apiProxy.getFeaturedGifs());
       Promise.all([categoriesRenderPromise, featuredGifFetchPromise])
           .then((values) => {
-            const {featuredGifs} = values[1];
+            const {status, featuredGifs} = values[1];
+            this.status = status;
+            switch (status) {
+              case Status.kNetError:
+                this.errorMessage = constants.NO_INTERNET_ERROR_MSG;
+                break;
+              case Status.kHttpError:
+                this.errorMessage = constants.SOMETHING_WENT_WRONG_ERROR_MSG;
+                break;
+              default:
+                this.errorMessage = null;
+                break;
+            }
             const trendingGifsElement: EmojiVariants[] =
                 this.apiProxy.convertTenorGifsToEmoji(featuredGifs);
 
@@ -350,6 +367,10 @@ export class EmojiPicker extends PolymerElement {
                     ?.groupId as string;
           });
     }
+  }
+
+  onClickTryAgain() {
+    // TODO(b/266024083): Try fetch trending gifs again on click
   }
 
   private canScrollToGroup(category: CategoryEnum, groupId: string): boolean {
@@ -537,6 +558,18 @@ export class EmojiPicker extends PolymerElement {
     this.insertHistoryVisualContentItem(category, item);
   }
 
+  isGifInErrorState(status: Status) {
+    return this.gifSupport && status !== Status.kHttpOk;
+  }
+
+  isGifInHttpErrorState(status: Status) {
+    return status === Status.kHttpError;
+  }
+
+  isGifInNetworkErrorState(status: Status) {
+    return status === Status.kNetError;
+  }
+
   private clearRecentEmoji(event: events.EmojiClearRecentClickEvent) {
     const category = event.detail.category;
     this.clearHistoryData(category);
@@ -716,10 +749,17 @@ export class EmojiPicker extends PolymerElement {
     const activeGroup = groupElements.find(
         el => el.getBoundingClientRect().bottom - thisRect.top >= 20);
 
-    const activeGroupId =
-        activeGroup ? activeGroup.dataset['group'] ?? '' : 'emoji-history';
-
-    return activeGroupId;
+    if (activeGroup === undefined) {
+      if (this.status && this.isGifInErrorState(this.status)) {
+        // If there's an error Trending gifs will be empty, so activeGroup
+        // cannot be found from scroll position, have to set it manually.
+        return constants.TRENDING_GROUP_ID;
+      } else {
+        return 'emoji-history';
+      }
+    } else {
+      return activeGroup.dataset['group'] ?? '';
+    }
   }
 
   /**

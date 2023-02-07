@@ -230,6 +230,8 @@ generate_grd("build_grd") {
   grd_prefix = "emoji_picker"
   out_grd = resources_grd_file
   input_files = [
+    "generic_error_dark.svg",
+    "generic_error.svg",
     "index.html",
     "no_results_dark.svg",
     "no_results.svg",
