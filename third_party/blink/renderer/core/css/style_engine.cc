@@ -1607,10 +1607,8 @@ void StyleEngine::PseudoStateChangedForElement(
     Element& element,
     bool invalidate_descendants_or_siblings,
     bool invalidate_ancestors_or_siblings) {
-  if (!invalidate_descendants_or_siblings &&
-      !invalidate_ancestors_or_siblings) {
-    return;
-  }
+  DCHECK(invalidate_descendants_or_siblings ||
+         invalidate_ancestors_or_siblings);
 
   if (ShouldSkipInvalidationFor(element)) {
     return;

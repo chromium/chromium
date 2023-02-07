@@ -4206,12 +4206,16 @@ void Element::PseudoStateChanged(
   // we'd never process them.
   // TODO(esprehn): Make this an ASSERT and fix places that call into this
   // like HTMLSelectElement.
-  if (GetDocument().InStyleRecalc()) {
+  Document& document = GetDocument();
+  if (document.InStyleRecalc()) {
     return;
   }
-  GetDocument().GetStyleEngine().PseudoStateChangedForElement(
-      pseudo, *this, affected_by_pseudo.children_or_siblings,
-      affected_by_pseudo.ancestors_or_siblings);
+  if (affected_by_pseudo.children_or_siblings ||
+      affected_by_pseudo.ancestors_or_siblings) {
+    document.GetStyleEngine().PseudoStateChangedForElement(
+        pseudo, *this, affected_by_pseudo.children_or_siblings,
+        affected_by_pseudo.ancestors_or_siblings);
+  }
 }
 
 Element::HighlightRecalc Element::CalculateHighlightRecalc(
