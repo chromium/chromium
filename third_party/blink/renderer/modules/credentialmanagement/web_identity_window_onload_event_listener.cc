@@ -37,10 +37,10 @@ void WebIdentityWindowOnloadEventListener::Invoke(
   if (!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
           execution_context)) {
     document_->GetTaskRunner(TaskType::kInternalDefault)
-        ->PostTask(
-            FROM_HERE,
-            WTF::BindOnce(&WebIdentityRequester::StopWindowOnloadDelayTimer,
-                          WrapPersistent(requester_.Get())));
+        ->PostTask(FROM_HERE,
+                   WTF::BindOnce(&WebIdentityRequester::StopDelayTimer,
+                                 WrapPersistent(requester_.Get()),
+                                 /*timer_started_before_onload=*/true));
     return;
   }
 

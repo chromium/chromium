@@ -40,13 +40,13 @@ class MODULES_EXPORT WebIdentityRequester final
       std::unique_ptr<ScopedAbortState> scoped_abort_state);
 
   // Starts the timer for recording the duration from when RequestToken is
-  // called directly to when RequestToken would be called if invoked through a
-  // window onload event listener.
-  void StartWindowOnloadDelayTimer(ScriptPromiseResolver* resolver);
+  // called directly to when RequestToken would be called if invoked through
+  // WebIdentityRequester.
+  void StartDelayTimer(ScriptPromiseResolver* resolver);
   // Stops the timer for recording the duration from when RequestToken is
-  // called directly to when RequestToken would be called if invoked through a
-  // window onload event listener.
-  void StopWindowOnloadDelayTimer();
+  // called directly to when RequestToken would be called if invoked through
+  // WebIdentityRequester.
+  void StopDelayTimer(bool timer_started_before_onload);
 
   void Trace(Visitor* visitor) const;
 
@@ -65,7 +65,7 @@ class MODULES_EXPORT WebIdentityRequester final
   HeapHashMap<KURL, Member<ScriptPromiseResolver>> provider_to_resolver_;
   bool is_requesting_token_{false};
   bool has_posted_task_{false};
-  base::TimeTicks window_onload_delay_start_time_;
+  base::TimeTicks delay_start_time_;
 };
 
 }  // namespace blink

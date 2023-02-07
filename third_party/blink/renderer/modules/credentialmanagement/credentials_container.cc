@@ -1441,10 +1441,9 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
                         WrapPersistent(options)));
 
       // Start recording the duration from when RequestToken is called directly
-      // to when RequestToken would be called if invoked through a window onload
-      // event listener.
-      web_identity_requester_->StartWindowOnloadDelayTimer(
-          WrapPersistent(resolver));
+      // to when RequestToken would be called if invoked through
+      // web_identity_requester_.
+      web_identity_requester_->StartDelayTimer(WrapPersistent(resolver));
 
       return promise;
     }

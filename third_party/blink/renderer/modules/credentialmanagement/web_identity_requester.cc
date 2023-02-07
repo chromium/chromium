@@ -147,37 +147,44 @@ void WebIdentityRequester::InitWindowOnloadEventListener(
                                           window_onload_event_listener_);
 }
 
-void WebIdentityRequester::StartWindowOnloadDelayTimer(
-    ScriptPromiseResolver* resolver) {
+void WebIdentityRequester::StartDelayTimer(ScriptPromiseResolver* resolver) {
   DCHECK(!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
       execution_context_));
 
-  bool is_after_window_onload =
-      resolver->DomWindow()->document()->IsLoadCompleted();
-  UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.IsAfterWindowOnload",
-                        is_after_window_onload);
-
-  // If this method is called after window onload, there will not be any delay
-  // caused by window onload so we do not record any metrics for it.
-  if (is_after_window_onload) {
-    return;
-  }
+  Document* document = resolver->DomWindow()->document();
+  delay_start_time_ = base::TimeTicks::Now();
+  bool timer_started_before_onload = !document->IsLoadCompleted();
 
   // Before window.onload event, we add a listener to the window onload event.
   // Once the window onload event is fired, we post a task to
-  // StopWindowOnloadDelayTimer.
-  InitWindowOnloadEventListener(resolver);
-  window_onload_delay_start_time_ = base::TimeTicks::Now();
+  // StopDelayTimer.
+  if (timer_started_before_onload) {
+    InitWindowOnloadEventListener(resolver);
+    return;
+  }
+
+  // During or after window.onload event, we post a task to StopDelayTimer.
+  document->GetTaskRunner(TaskType::kInternalDefault)
+      ->PostTask(FROM_HERE, WTF::BindOnce(&WebIdentityRequester::StopDelayTimer,
+                                          WrapPersistent(this),
+                                          timer_started_before_onload));
 }
 
-void WebIdentityRequester::StopWindowOnloadDelayTimer() {
+void WebIdentityRequester::StopDelayTimer(bool timer_started_before_onload) {
   DCHECK(!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
       execution_context_));
 
-  base::TimeDelta onload_delay_duration =
-      base::TimeTicks::Now() - window_onload_delay_start_time_;
-  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.FedCm.Timing.WindowOnloadDelayDuration",
-                             onload_delay_duration);
+  UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.IsAfterWindowOnload",
+                        !timer_started_before_onload);
+
+  base::TimeDelta delay_duration = base::TimeTicks::Now() - delay_start_time_;
+  if (timer_started_before_onload) {
+    UMA_HISTOGRAM_MEDIUM_TIMES("Blink.FedCm.Timing.WindowOnloadDelayDuration",
+                               delay_duration);
+    return;
+  }
+  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.FedCm.Timing.PostTaskDelayDuration",
+                             delay_duration);
 }
 
 void WebIdentityRequester::Trace(Visitor* visitor) const {

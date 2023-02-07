@@ -14,9 +14,10 @@
 
 namespace blink {
 
-// Test that the window onload delay duration is recorded upon the execution of
-// the window onload event.
-TEST(WebIdentityRequesterTest, StartWindowOnloadDelayTimerBeforeOnload) {
+// Test that the window onload delay duration is recorded and the post task
+// delay duration is NOT recorded when the delay timer is started before the
+// start of the window onload event.
+TEST(WebIdentityRequesterTest, StartDelayTimerBeforeOnload) {
   V8TestingScope scope;
   base::HistogramTester histogram_tester;
 
@@ -30,28 +31,36 @@ TEST(WebIdentityRequesterTest, StartWindowOnloadDelayTimerBeforeOnload) {
   WebIdentityRequester* web_identity_requester =
       MakeGarbageCollected<WebIdentityRequester>(WrapPersistent(context));
 
-  // Start window onload delay timer before the window onload event.
-  web_identity_requester->StartWindowOnloadDelayTimer(WrapPersistent(resolver));
+  // Start window onload delay timer before the window onload event starts.
+  web_identity_requester->StartDelayTimer(WrapPersistent(resolver));
 
-  // Before the window onload event is fired, the histogram should not have been
+  // Before the window onload event has started, histograms should not have been
   // recorded.
   histogram_tester.ExpectTotalCount(
       "Blink.FedCm.Timing.WindowOnloadDelayDuration", 0);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.PostTaskDelayDuration",
+                                    0);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.IsAfterWindowOnload", 0);
+
+  // Start the window onload event.
   resolver->DomWindow()->DispatchWindowLoadEvent();
   EXPECT_TRUE(scope.GetDocument().LoadEventFinished());
 
-  // Since stopping the window onload delay timer is done by posting a task, we
-  // wait for all tasks to be processed before checking for histogram presence.
+  // Since stopping the delay timer is done by posting a task, we wait for all
+  // tasks to be processed before checking for histograms.
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectTotalCount(
       "Blink.FedCm.Timing.WindowOnloadDelayDuration", 1);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.PostTaskDelayDuration",
+                                    0);
   histogram_tester.ExpectUniqueSample("Blink.FedCm.IsAfterWindowOnload", false,
                                       1);
 }
 
-// Test that the window onload delay duration is NOT recorded when timer is
-// started after the window onload event.
-TEST(WebIdentityRequesterTest, StartWindowOnloadDelayTimerAfterOnload) {
+// Test that the window onload delay duration is NOT recorded and the post task
+// delay duration is recorded when the delay timer is started after the start of
+// the window onload event.
+TEST(WebIdentityRequesterTest, StartDelayTimerAfterOnload) {
   V8TestingScope scope;
   base::HistogramTester histogram_tester;
 
@@ -62,16 +71,26 @@ TEST(WebIdentityRequesterTest, StartWindowOnloadDelayTimerAfterOnload) {
   WebIdentityRequester* web_identity_requester =
       MakeGarbageCollected<WebIdentityRequester>(WrapPersistent(context));
 
-  // Start window onload delay timer after the window onload event.
+  // Before the delay timer has started, histograms should not have been
+  // recorded.
+  histogram_tester.ExpectTotalCount(
+      "Blink.FedCm.Timing.WindowOnloadDelayDuration", 0);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.PostTaskDelayDuration",
+                                    0);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.IsAfterWindowOnload", 0);
+
+  // Start delay timer after the start of the window onload event.
   resolver->DomWindow()->DispatchWindowLoadEvent();
   EXPECT_TRUE(scope.GetDocument().LoadEventFinished());
-  web_identity_requester->StartWindowOnloadDelayTimer(WrapPersistent(resolver));
+  web_identity_requester->StartDelayTimer(WrapPersistent(resolver));
 
-  // Since stopping the window onload delay timer is done by posting a task, we
-  // wait for all tasks to be processed before checking for histogram absence.
+  // Since stopping the delay timer is done by posting a task, we wait for all
+  // tasks to be processed before checking for histograms.
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectTotalCount(
       "Blink.FedCm.Timing.WindowOnloadDelayDuration", 0);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.PostTaskDelayDuration",
+                                    1);
   histogram_tester.ExpectUniqueSample("Blink.FedCm.IsAfterWindowOnload", true,
                                       1);
 }

@@ -984,8 +984,8 @@ chromium-metrics-reviews@google.com.
   <owner>tanzachary@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
-    Records whether the FedCM request is made before or after the window onload
-    event completes. Records once per API call when the
+    Records whether the FedCM request is made before or after the start of the
+    window onload event. Records once per API call when the
     FedCmMultipleIdentityProviders flag is disabled.
   </summary>
 </histogram>
@@ -1105,6 +1105,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.Timing.PostTaskDelayDuration" units="ms"
+    expires_after="M120">
+  <owner>tanzachary@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the duration from when RequestToken is called directly in
+    navigator.credentials.get to when RequestToken would be called if invoked
+    through a posted task. Records once per API call when the
+    FedCmMultipleIdentityProviders flag is disabled and RequestToken is called
+    during or after the window onload event. If RequestToken is called before
+    the window onload event, Blink.FedCm.Timing.WindowOnloadDelayDuration is
+    recorded instead.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.Timing.ShowAccountsDialog" units="ms"
     expires_after="2023-07-16">
   <owner>yigu@chromium.org</owner>
@@ -1133,9 +1148,11 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the duration from when RequestToken is called directly in
     navigator.credentials.get to when RequestToken would be called if invoked
-    through a window onload event listener. Records at most once per API call
-    when the FedCmMultipleIdentityProviders flag is disabled and RequestToken is
-    called prior to the window onload event.
+    through a window onload event listener. Records once per API call when the
+    FedCmMultipleIdentityProviders flag is disabled and RequestToken is called
+    prior to the start of the window onload event. If RequestToken is called
+    during or after the window onload event,
+    Blink.FedCm.Timing.PostTaskDelayDuration is recorded instead.
   </summary>
 </histogram>
 
