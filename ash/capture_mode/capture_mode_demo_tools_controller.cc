@@ -74,6 +74,8 @@ constexpr ui::KeyboardCode kNotNeedingModifierKeys[] = {
     ui::VKEY_RWIN,
     ui::VKEY_ESCAPE,
     ui::VKEY_TAB,
+    ui::VKEY_RETURN,
+    ui::VKEY_BACK,
     ui::VKEY_BROWSER_BACK,
     ui::VKEY_BROWSER_FORWARD,
     ui::VKEY_BROWSER_REFRESH,
