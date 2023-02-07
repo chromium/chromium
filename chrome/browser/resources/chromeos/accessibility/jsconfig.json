@@ -1,7 +1,0 @@
-{
-  "compilerOptions": {
-    "allowJs": true,
-    "baseUrl": "."
-  },
-  "include": ["."]
-}

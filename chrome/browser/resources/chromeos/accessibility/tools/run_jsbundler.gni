@@ -33,6 +33,7 @@ template("run_jsbundler") {
     script = "//chrome/browser/resources/chromeos/accessibility/chromevox/tools/jsbundler.py"
     inputs = jsbundler_modules
     sources = invoker.sources
+    forward_variables_from(invoker, [ "deps" ])
     if (defined(invoker.output_file)) {
       if (defined(invoker.modules)) {
         depfile = "$target_out_dir/" +
