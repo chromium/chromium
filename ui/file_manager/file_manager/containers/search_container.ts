@@ -6,6 +6,7 @@ import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.j
 
 import {queryRequiredElement} from '../common/js/dom_utils.js';
 import {str, util} from '../common/js/util.js';
+import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
 import {PropStatus, SearchData, SearchFileType, SearchLocation, SearchOptions, SearchRecency, State} from '../externs/ts/state.js';
 import {VolumeManager} from '../externs/volume_manager.js';
 import {PathComponent} from '../foreground/js/path_component.js';
@@ -223,7 +224,7 @@ export class SearchContainer extends EventTarget {
    * A method invoked every time the store state changes.
    */
   onStateChanged(state: State) {
-    this.handleSearchState_(state.search);
+    this.handleSearchState_(state);
     this.handleSelectionState_(state);
   }
 
@@ -232,7 +233,8 @@ export class SearchContainer extends EventTarget {
    * is not active it hides the UI elements. Otherwise, updates them
    * accordingly.
    */
-  private handleSearchState_(search: SearchData|undefined) {
+  private handleSearchState_(state: State) {
+    const search = state.search;
     if (this.searchState_ === search) {
       // Bail out early if the search part of the state has not changed.
       return;
@@ -248,8 +250,10 @@ export class SearchContainer extends EventTarget {
       this.setQuery(query);
     }
     if (util.isSearchV2Enabled()) {
+      const dir = state.currentDirectory;
       const status = search.status;
-      if (status === PropStatus.STARTED && query) {
+      if (status === PropStatus.STARTED && query &&
+          dir?.rootType !== VolumeManagerCommon.RootType.RECENT) {
         this.showOptions_();
         this.showPathDisplay_();
       }
