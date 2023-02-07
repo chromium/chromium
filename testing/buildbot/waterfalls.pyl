@@ -2150,6 +2150,8 @@
         },
       },
       'linux-code-coverage': {
+        'os_type': 'linux',
+        'browser_config': 'release',
         'mixins': [
           'isolate_profile_data',
           'linux-bionic',
@@ -2157,7 +2159,7 @@
         'test_suites': {
           'gtest_tests': 'chromium_linux_gtests',
           'isolated_scripts': 'chromium_linux_rel_isolated_scripts_code_coverage',
-          # TODO(crbug.com/1399354): Enable gpu_dawn_webgpu_cts
+          'gpu_telemetry_tests': 'gpu_dawn_webgpu_cts',
           'scripts': 'chromium_linux_scripts',
         },
       },

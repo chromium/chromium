@@ -5909,7 +5909,7 @@
       'telemetry_perf_unittests_isolated_scripts',
       'vulkan_swiftshader_isolated_scripts',
       'chromium_web_tests_high_dpi_isolated_scripts',
-      # TODO(crbug.com/1399354): Enable gpu_dawn_webgpu_blink_web_tests
+      'gpu_dawn_webgpu_blink_web_tests',
     ],
 
     'chromium_mac_and_dangling_pointer_detection_gtests': [
