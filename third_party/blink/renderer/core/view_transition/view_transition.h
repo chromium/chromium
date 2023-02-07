@@ -201,7 +201,7 @@ class CORE_EXPORT ViewTransition : public ScriptWrappable,
   friend class AXViewTransitionTest;
 
   using PromiseProperty =
-      ScriptPromiseProperty<ToV8UndefinedGenerator, v8::Local<v8::Value>>;
+      ScriptPromiseProperty<ToV8UndefinedGenerator, ScriptValue>;
 
   // Tracks how the ViewTransition object was created.
   enum class CreationType {
