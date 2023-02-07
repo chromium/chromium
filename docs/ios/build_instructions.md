@@ -247,6 +247,26 @@ then it will be impossible to install the application on a device (Xcode will
 display an error stating that "The application was signed with invalid
 entitlements").
 
+## Building Blink for iOS
+
+The iOS build supports compiling the blink web platform. To compile blink
+set a gn arg in your `.setup-gn` file. Note the blink web platform is
+experimental code and should only be used for analysis.
+
+```
+[gn_args]
+use_blink = true
+```
+Note that only certain targets support blink. `content_shell` being the
+most useful.
+
+```shell
+$ autoninja -C out/Debug-iphonesimulator content_shell
+```
+
+To run on a live device you will need to set the
+`com.apple.developer.kernel.extended-virtual-addressing` entitlement. 
+
 ## Running apps from the command line
 
 Any target that is built and runs on the bots (see [below](#Troubleshooting))
