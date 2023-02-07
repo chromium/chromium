@@ -71,15 +71,15 @@ class RecordingEncoder {
   // of `base::BindPostTask()`.
   virtual void FlushAndFinalize(base::OnceClosure on_done) = 0;
 
- protected:
-  // Called by both the audio and video encoders to provide the `status` of
-  // encoding tasks.
-  void OnEncoderStatus(bool for_video, media::EncoderStatus status);
-
   // Notifies the owner of this object (via `on_failure_callback_`) that a
   // failure noted by `status` has occurred during encoding or saving to the
   // output file.
   void NotifyFailure(mojom::RecordingStatus status);
+
+ protected:
+  // Called by both the audio and video encoders to provide the `status` of
+  // encoding tasks.
+  void OnEncoderStatus(bool for_video, media::EncoderStatus status);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

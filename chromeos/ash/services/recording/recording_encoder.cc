@@ -18,6 +18,14 @@ RecordingEncoder::~RecordingEncoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+void RecordingEncoder::NotifyFailure(mojom::RecordingStatus status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (on_failure_callback_) {
+    std::move(on_failure_callback_).Run(status);
+  }
+}
+
 void RecordingEncoder::OnEncoderStatus(bool for_video,
                                        media::EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -30,14 +38,6 @@ void RecordingEncoder::OnEncoderStatus(bool for_video,
              << " frame: " << status.message();
   NotifyFailure(for_video ? mojom::RecordingStatus::kVideoEncodingError
                           : mojom::RecordingStatus::kAudioEncodingError);
-}
-
-void RecordingEncoder::NotifyFailure(mojom::RecordingStatus status) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (on_failure_callback_) {
-    std::move(on_failure_callback_).Run(status);
-  }
 }
 
 }  // namespace recording

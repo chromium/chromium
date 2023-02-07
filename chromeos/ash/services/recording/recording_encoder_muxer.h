@@ -96,8 +96,6 @@ class RecordingEncoderMuxer : public RecordingEncoder {
   void FlushAndFinalize(base::OnceClosure on_done) override;
 
  private:
-  class RecordingMuxerDelegate;
-
   struct AudioFrame {
     AudioFrame(std::unique_ptr<media::AudioBus>, base::TimeTicks);
     AudioFrame(AudioFrame&&);

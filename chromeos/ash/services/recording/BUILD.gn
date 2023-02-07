@@ -12,6 +12,8 @@ source_set("recording") {
     "recording_encoder.h",
     "recording_encoder_muxer.cc",
     "recording_encoder_muxer.h",
+    "recording_file_io_helper.cc",
+    "recording_file_io_helper.h",
     "recording_service.cc",
     "recording_service.h",
     "recording_service_constants.h",

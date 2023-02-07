@@ -9,17 +9,15 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_util.h"
-#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
+#include "chromeos/ash/services/recording/recording_file_io_helper.h"
 #include "chromeos/ash/services/recording/recording_service_constants.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/muxers/file_webm_muxer_delegate.h"
 #include "media/muxers/muxer.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace recording {
 
@@ -41,41 +39,27 @@ namespace {
 constexpr size_t kMaxPendingFrames = 10;
 constexpr size_t kMaxDroppedFrames = 4 * kMaxFrameRate;
 
-// We use a threshold of 512 MB to end the video recording due to low disk
-// space, which is the same threshold as that used by the low disk space
-// notification (See low_disk_notification.cc).
-constexpr int64_t kLowDiskSpaceThresholdInBytes = 512 * 1024 * 1024;
-
-// To avoid checking the remaining desk space after every write operation, we do
-// it only once every 10 MB written of webm data.
-constexpr int64_t kMinNumBytesBetweenDiskSpaceChecks = 10 * 1024 * 1024;
-
-}  // namespace
-
 // -----------------------------------------------------------------------------
-// RecordingEncoderMuxer::RecordingMuxerDelegate:
+// RecordingMuxerDelegate:
 
 // Defines a delegate for the WebmMuxer which extends the capability of
-// |media::FileWebmMuxerDelegate| (which writes seekable webm chunks directly to
+// `media::FileWebmMuxerDelegate` (which writes seekable webm chunks directly to
 // a file), by adding recording specific behavior such as ending the recording
 // when an IO file write fails, or when a critical disk space threshold is
 // reached. An instance of this object is owned by the WebmMuxer, which in turn
 // is owned by the RecordingEncoderMuxer instance.
-class RecordingEncoderMuxer::RecordingMuxerDelegate
-    : public media::FileWebmMuxerDelegate {
+class RecordingMuxerDelegate : public media::FileWebmMuxerDelegate {
  public:
   RecordingMuxerDelegate(
       const base::FilePath& webm_file_path,
-      RecordingEncoderMuxer* muxer_owner,
-      mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate)
+      mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
+      RecordingEncoderMuxer* owner)
       : FileWebmMuxerDelegate(base::File(
             webm_file_path,
             base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE)),
-        muxer_owner_(muxer_owner),
-        drive_fs_quota_delegate_remote_(std::move(drive_fs_quota_delegate)),
-        webm_file_path_(webm_file_path) {
-    DCHECK(muxer_owner_);
-  }
+        file_io_helper_(webm_file_path,
+                        std::move(drive_fs_quota_delegate),
+                        owner) {}
 
   RecordingMuxerDelegate(const RecordingMuxerDelegate&) = delete;
   RecordingMuxerDelegate& operator=(const RecordingMuxerDelegate&) = delete;
@@ -86,93 +70,22 @@ class RecordingEncoderMuxer::RecordingMuxerDelegate
   // media::FileWebmMuxerDelegate:
   mkvmuxer::int32 DoWrite(const void* buf, mkvmuxer::uint32 len) override {
     const auto result = FileWebmMuxerDelegate::DoWrite(buf, len);
-    num_bytes_till_next_disk_space_check_ -= len;
     if (result != 0) {
-      muxer_owner_->NotifyFailure(mojom::RecordingStatus::kIoError);
+      file_io_helper_.delegate()->NotifyFailure(
+          mojom::RecordingStatus::kIoError);
       return result;
     }
 
-    MaybeCheckRemainingSpace();
+    file_io_helper_.OnBytesWritten(len);
 
     return result;
   }
 
  private:
-  // Returns true if the video file is being written to a path `webm_file_path_`
-  // that exists in DriveFS, false if it's a local file.
-  bool IsDriveFsFile() const {
-    return drive_fs_quota_delegate_remote_.is_bound();
-  }
-
-  // Checks the remaining free space (whether for a local file, or a DriveFS
-  // file) once `num_bytes_till_next_disk_space_check_` goes below zero.
-  void MaybeCheckRemainingSpace() {
-    if (num_bytes_till_next_disk_space_check_ > 0)
-      return;
-
-    if (!IsDriveFsFile()) {
-      OnGotRemainingFreeSpace(
-          mojom::RecordingStatus::kLowDiskSpace,
-          base::SysInfo::AmountOfFreeDiskSpace(webm_file_path_));
-      return;
-    }
-
-    if (waiting_for_drive_fs_delegate_)
-      return;
-
-    DCHECK(drive_fs_quota_delegate_remote_);
-    waiting_for_drive_fs_delegate_ = true;
-    drive_fs_quota_delegate_remote_->GetDriveFsFreeSpaceBytes(
-        base::BindOnce(&RecordingMuxerDelegate::OnGotRemainingFreeSpace,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       mojom::RecordingStatus::kLowDriveFsQuota));
-  }
-
-  // Called to test the `remaining_free_space_bytes` against the minimum
-  // threshold below which we end the recording with a failure. The failure type
-  // that will be propagated to the client is the given `status`.
-  void OnGotRemainingFreeSpace(mojom::RecordingStatus status,
-                               int64_t remaining_free_space_bytes) {
-    waiting_for_drive_fs_delegate_ = false;
-    num_bytes_till_next_disk_space_check_ = kMinNumBytesBetweenDiskSpaceChecks;
-
-    if (remaining_free_space_bytes < 0) {
-      // A negative value (e.g. -1) indicates a failure in computing the free
-      // space.
-      return;
-    }
-
-    if (remaining_free_space_bytes < kLowDiskSpaceThresholdInBytes) {
-      LOG(WARNING) << "Ending recording due to " << status
-                   << ", and remaining free space of "
-                   << base::FormatBytesUnlocalized(remaining_free_space_bytes);
-      muxer_owner_->NotifyFailure(status);
-    }
-  }
-
-  // A reference to the owner of the WebmMuxer instance that owns |this|. It is
-  // used to notify with any IO or disk space errors while writing the webm
-  // chunks.
-  RecordingEncoderMuxer* const muxer_owner_;  // Not owned.
-
-  // A remote end to the DriveFS delegate that can calculate the remaining free
-  // space in Drive. This is bound only when the `webm_file_path_` points to a
-  // file in DriveFS. Being unbound means the file is a local disk file.
-  mojo::Remote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate_remote_;
-
-  // The path of the webm file to which the muxer output will be written.
-  const base::FilePath webm_file_path_;
-
-  // Once this value becomes <= 0, we trigger a remaining disk space poll.
-  // Initialized to 0, so that we poll the disk space on the very first write
-  // operation.
-  int64_t num_bytes_till_next_disk_space_check_ = 0;
-
-  // True when we're waiting for a reply from the remote DriveFS quota delegate.
-  bool waiting_for_drive_fs_delegate_ = false;
-
-  base::WeakPtrFactory<RecordingMuxerDelegate> weak_ptr_factory_{this};
+  RecordingFileIoHelper file_io_helper_;
 };
+
+}  // namespace
 
 // -----------------------------------------------------------------------------
 // RecordingEncoderMuxer::AudioFrame:
@@ -214,8 +127,8 @@ RecordingEncoderMuxer::RecordingEncoderMuxer(
                   /*has_audio_=*/!!audio_input_params,
                   std::make_unique<RecordingMuxerDelegate>(
                       webm_file_path,
-                      this,
-                      std::move(drive_fs_quota_delegate))) {
+                      std::move(drive_fs_quota_delegate),
+                      this)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (audio_input_params) {
