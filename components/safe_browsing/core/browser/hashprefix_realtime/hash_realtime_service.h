@@ -54,28 +54,6 @@ class HashRealTimeService : public KeyedService {
 
   ~HashRealTimeService() override;
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class OperationResult {
-    // The lookup was successful.
-    kSuccess = 0,
-    // Parsing the response to a string failed.
-    kParseError = 1,
-    // There was no cache duration in the parsed response.
-    kNoCacheDurationError = 2,
-    // At least one full hash in the parsed response had the wrong length.
-    kIncorrectFullHashLengthError = 3,
-    // There was a retriable error.
-    kRetriableError = 4,
-    // There was an error in the network stack.
-    kNetworkError = 5,
-    // There was an error in the HTTP response code.
-    kHttpError = 6,
-    // There is a bug in the code leading to a NOTREACHED branch.
-    kNotReached = 7,
-    kMaxValue = kNotReached,
-  };
-
   // This function is only currently used for the hash-prefix real-time lookup
   // experiment. Once the experiment is complete, it will be deprecated.
   // TODO(crbug.com/1410253): Deprecate this (including the factory populating
@@ -103,9 +81,39 @@ class HashRealTimeService : public KeyedService {
 
  private:
   friend class HashRealTimeServiceTest;
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest, TestLookupFailure_Error);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestLookupFailure_ParseResponse);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestLookupFailure_IncorrectFullHashLength);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestLookupFailure_MissingCacheDuration);
+
   constexpr static int kLeastSeverity = std::numeric_limits<int>::max();
   using PendingHPRTLookupRequests =
       base::flat_map<network::SimpleURLLoader*, HPRTLookupResponseCallback>;
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class OperationResult {
+    // The lookup was successful.
+    kSuccess = 0,
+    // Parsing the response to a string failed.
+    kParseError = 1,
+    // There was no cache duration in the parsed response.
+    kNoCacheDurationError = 2,
+    // At least one full hash in the parsed response had the wrong length.
+    kIncorrectFullHashLengthError = 3,
+    // There was a retriable error.
+    kRetriableError = 4,
+    // There was an error in the network stack.
+    kNetworkError = 5,
+    // There was an error in the HTTP response code.
+    kHttpError = 6,
+    // There is a bug in the code leading to a NOTREACHED branch.
+    kNotReached = 7,
+    kMaxValue = kNotReached,
+  };
 
   // Returns the traffic annotation tag that is attached in the simple URL
   // loader.
@@ -161,9 +169,6 @@ class HashRealTimeService : public KeyedService {
   // severity.
   static bool IsThreatTypeMoreSevere(const V5::ThreatType& threat_type,
                                      int baseline_severity);
-
-  // Logs whether the lookup succeeded, and if not, why not.
-  void LogOperationResult(OperationResult operation_result) const;
 
   // In addition to attempting to parse the |response_body| as described in the
   // |ParseResponse| function comments, this updates the backoff state depending

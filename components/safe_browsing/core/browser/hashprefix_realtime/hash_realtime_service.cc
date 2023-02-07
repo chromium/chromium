@@ -303,8 +303,9 @@ HashRealTimeService::ParseResponseAndUpdateBackoff(
   auto response =
       ParseResponse(net_error, response_code, std::move(response_body),
                     requested_hash_prefixes);
-  LogOperationResult(response.has_value() ? OperationResult::kSuccess
-                                          : response.error());
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.HPRT.OperationResult",
+      response.has_value() ? OperationResult::kSuccess : response.error());
   if (response.has_value()) {
     backoff_operator_->ReportSuccess();
   } else if (response.error() != OperationResult::kRetriableError) {
@@ -435,12 +436,6 @@ void HashRealTimeService::Shutdown() {
 
 base::WeakPtr<HashRealTimeService> HashRealTimeService::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
-}
-
-void HashRealTimeService::LogOperationResult(
-    OperationResult operation_result) const {
-  base::UmaHistogramEnumeration("SafeBrowsing.HPRT.OperationResult",
-                                operation_result);
 }
 
 net::NetworkTrafficAnnotationTag HashRealTimeService::GetTrafficAnnotationTag()
