@@ -58,7 +58,7 @@ scoped_refptr<CommandBufferHelper> CreateCommandBufferHelper(
   return CommandBufferHelper::Create(stub);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 bool BindDecoderManagedImage(
     scoped_refptr<CommandBufferHelper> command_buffer_helper,
     uint32_t client_texture_id,
@@ -96,7 +96,7 @@ std::unique_ptr<VideoDecodeAccelerator> CreateAndInitializeVda(
     // The semantics of |bind_image| vary per-platform: On Windows and Mac it
     // must mark the image as needing binding by the decoder, while on other
     // platforms it must mark the image as *not* needing binding by the decoder.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
     gl_client.bind_image =
         base::BindRepeating(&BindDecoderManagedImage, command_buffer_helper);
 #else

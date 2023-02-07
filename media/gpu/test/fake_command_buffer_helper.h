@@ -65,7 +65,7 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
                        GLenum type) override;
   void DestroyTexture(GLuint service_id) override;
   void SetCleared(GLuint service_id) override;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   bool BindDecoderManagedImage(GLuint service_id, gl::GLImage* image) override;
 #else
   bool BindClientManagedImage(GLuint service_id, gl::GLImage* image) override;
