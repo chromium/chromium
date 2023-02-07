@@ -179,6 +179,9 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   [[nodiscard]] bool MigrateToVersion4()
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  [[nodiscard]] bool MigrateToVersion5()
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   // Increase the `run_count` stored in the meta table by 1. Should only be
   // called once during DB initialization.  The value of `run_count` should
   // never be negative.

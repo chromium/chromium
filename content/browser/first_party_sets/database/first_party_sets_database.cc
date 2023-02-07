@@ -38,11 +38,7 @@ namespace content {
 namespace {
 
 // Version number of the database.
-const int kCurrentVersionNumber = 4;
-
-// Earliest version which can use a |kCurrentVersionNumber| database
-// without failing.
-const int kCompatibleVersionNumber = 2;
+const int kCurrentVersionNumber = 5;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -793,8 +789,9 @@ FirstPartySetsDatabase::InitStatus FirstPartySetsDatabase::InitializeTables() {
     return InitStatus::kError;
   }
 
-  if (!meta_table_.Init(db_.get(), kCurrentVersionNumber,
-                        kCompatibleVersionNumber)) {
+  // Use the current version for `compatible_version`.
+  if (!meta_table_.Init(db_.get(), /*version=*/kCurrentVersionNumber,
+                        /*compatible_version=*/kCurrentVersionNumber)) {
     return InitStatus::kError;
   }
 
@@ -822,6 +819,10 @@ bool FirstPartySetsDatabase::UpgradeSchema() {
   if (meta_table_.GetVersionNumber() == 3 && !MigrateToVersion4())
     return false;
 
+  if (meta_table_.GetVersionNumber() == 4 && !MigrateToVersion5()) {
+    return false;
+  }
+
   // Add similar if () blocks for new versions here.
 
   return true;
@@ -836,6 +837,7 @@ bool FirstPartySetsDatabase::MigrateToVersion3() {
     return false;
 
   meta_table_.SetVersionNumber(3);
+  meta_table_.SetCompatibleVersionNumber(3);
   return true;
 }
 
@@ -864,6 +866,15 @@ bool FirstPartySetsDatabase::MigrateToVersion4() {
     return false;
 
   meta_table_.SetVersionNumber(4);
+  meta_table_.SetCompatibleVersionNumber(4);
+  return true;
+}
+
+bool FirstPartySetsDatabase::MigrateToVersion5() {
+  DCHECK(db_->HasActiveTransactions());
+  // Only updates the versions in the meta table for fixing crbug.com/1409117.
+  meta_table_.SetVersionNumber(5);
+  meta_table_.SetCompatibleVersionNumber(5);
   return true;
 }
 

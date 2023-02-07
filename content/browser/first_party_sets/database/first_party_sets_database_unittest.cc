@@ -39,7 +39,7 @@ using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
 // Version number of the database.
-const int kCurrentVersionNumber = 4;
+const int kCurrentVersionNumber = 5;
 
 static const size_t kTableCount = 7u;
 
@@ -49,6 +49,16 @@ int VersionFromMetaTable(sql::Database& db) {
       db.GetUniqueStatement("SELECT value FROM meta WHERE key='version'"));
   if (!s.Step())
     return 0;
+  return s.ColumnInt(0);
+}
+
+int CompatibleVersionFromMetaTable(sql::Database& db) {
+  // Get last_compatible_version.
+  sql::Statement s(db.GetUniqueStatement(
+      "SELECT value FROM meta WHERE key='last_compatible_version'"));
+  if (!s.Step()) {
+    return 0;
+  }
   return s.ColumnInt(0);
 }
 
@@ -1113,15 +1123,6 @@ class FirstPartySetsDatabaseMigrationsTest : public FirstPartySetsDatabaseTest {
     // Trigger the lazy-initialization.
     std::ignore = db.GetGlobalSetsAndConfig("b");
   }
-
-  static int VersionFromDatabase(sql::Database* db) {
-    // Get version.
-    sql::Statement s(
-        db->GetUniqueStatement("SELECT value FROM meta WHERE key='version'"));
-    if (!s.Step())
-      return 0;
-    return s.ColumnInt(0);
-  }
 };
 
 TEST_F(FirstPartySetsDatabaseMigrationsTest, MigrateEmptyToCurrent) {
@@ -1137,7 +1138,7 @@ TEST_F(FirstPartySetsDatabaseMigrationsTest, MigrateEmptyToCurrent) {
     ASSERT_TRUE(db.Open(db_path()));
 
     // Check version.
-    EXPECT_EQ(kCurrentVersionNumber, VersionFromDatabase(&db));
+    EXPECT_EQ(kCurrentVersionNumber, VersionFromMetaTable(db));
 
     // Check that expected tables are present.
     EXPECT_TRUE(db.DoesTableExist("policy_configurations"));
@@ -1154,7 +1155,7 @@ TEST_F(FirstPartySetsDatabaseMigrationsTest, MigrateVersion2ToCurrent) {
     sql::Database db;
     ASSERT_TRUE(db.Open(db_path()));
 
-    ASSERT_EQ(2, VersionFromDatabase(&db));
+    ASSERT_EQ(2, VersionFromMetaTable(db));
   }
 
   MigrateDatabase();
@@ -1165,7 +1166,8 @@ TEST_F(FirstPartySetsDatabaseMigrationsTest, MigrateVersion2ToCurrent) {
     ASSERT_TRUE(db.Open(db_path()));
 
     // Check version.
-    EXPECT_EQ(kCurrentVersionNumber, VersionFromDatabase(&db));
+    EXPECT_EQ(kCurrentVersionNumber, VersionFromMetaTable(db));
+    EXPECT_EQ(kCurrentVersionNumber, CompatibleVersionFromMetaTable(db));
 
     // Check that expected tables are present.
     EXPECT_TRUE(db.DoesTableExist("policy_configurations"));
@@ -1188,7 +1190,7 @@ TEST_F(FirstPartySetsDatabaseMigrationsTest, MigrateVersion3ToCurrent) {
     sql::Database db;
     ASSERT_TRUE(db.Open(db_path()));
 
-    ASSERT_EQ(3, VersionFromDatabase(&db));
+    ASSERT_EQ(3, VersionFromMetaTable(db));
   }
 
   MigrateDatabase();
@@ -1199,7 +1201,8 @@ TEST_F(FirstPartySetsDatabaseMigrationsTest, MigrateVersion3ToCurrent) {
     ASSERT_TRUE(db.Open(db_path()));
 
     // Check version.
-    EXPECT_EQ(kCurrentVersionNumber, VersionFromDatabase(&db));
+    EXPECT_EQ(kCurrentVersionNumber, VersionFromMetaTable(db));
+    EXPECT_EQ(kCurrentVersionNumber, CompatibleVersionFromMetaTable(db));
 
     // Check that expected tables are present.
     EXPECT_TRUE(db.DoesTableExist("manual_configurations"));
@@ -1210,4 +1213,31 @@ TEST_F(FirstPartySetsDatabaseMigrationsTest, MigrateVersion3ToCurrent) {
   }
 }
 
+TEST_F(FirstPartySetsDatabaseMigrationsTest, MigrateVersion4ToCurrent) {
+  ASSERT_TRUE(
+      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v4.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    ASSERT_EQ(4, VersionFromMetaTable(db));
+  }
+
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    // Check version.
+    EXPECT_EQ(kCurrentVersionNumber, VersionFromMetaTable(db));
+    EXPECT_EQ(kCurrentVersionNumber, CompatibleVersionFromMetaTable(db));
+
+    // Verify that data is preserved across the migration.
+    EXPECT_EQ(2u, CountManualConfigurationsEntries(&db));
+  }
+}
 }  // namespace content
