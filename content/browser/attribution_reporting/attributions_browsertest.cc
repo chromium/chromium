@@ -169,9 +169,9 @@ struct ExpectedReportWaiter {
     replace_host.SetHostStr(host);
 
     base::Value body = base::test::ParseJson(request.content);
+    EXPECT_THAT(body, base::test::DictionaryHasValues(
+                          base::Value(expected_body.Clone())));
     const base::Value::Dict& body_dict = body.GetDict();
-    EXPECT_THAT(body_dict,
-                base::test::DictionaryHasValues(expected_body.Clone()));
 
     // The report ID is random, so just test that the field exists here and is a
     // valid GUID.
