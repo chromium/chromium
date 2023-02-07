@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL insertHTML with "<span style="background-color:rgb(0, 255, 255)">abc</span>" into <b>[]def</b> assert_equals: document.queryCommandValue("hilitecolor") expected "rgb(0, 255, 255))" but got ""
+FAIL insertHTML with "<span style="background-color:rgb(0, 255, 255)">def</span>" into <b>abc[]</b> assert_equals: document.queryCommandValue("hilitecolor") expected "rgb(0, 255, 255))" but got ""
+FAIL insertHTML with "<span style="background-color:rgb(0, 255, 255)">b</span>" into <b>a[]c</b> assert_equals: document.queryCommandValue("hilitecolor") expected "rgb(0, 255, 255))" but got ""
+Harness: the test ran to completion.
+

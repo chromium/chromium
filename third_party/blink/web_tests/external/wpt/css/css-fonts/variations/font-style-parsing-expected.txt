@@ -41,6 +41,6 @@ PASS Font-style (computed): 'oblique' followed by positive angle is valid
 PASS Font-style (computed): 'oblique' followed by calc is valid
 PASS Font-style (computed): 'oblique' followed by calc is valid even if it must be clamped (no computation)
 PASS Font-style (computed): 'oblique' followed by calc is valid even if it must be clamped (with computation)
-FAIL Font-style (computed): 'oblique' followed by calc is valid even if it mixes units (with computation) assert_equals: Font-style computed style: 'oblique' followed by calc is valid even if it mixes units (with computation) expected "oblique 14deg" but got "italic"
+FAIL Font-style (computed): 'oblique' followed by calc is valid even if it mixes units (with computation) assert_equals: Font-style computed style: 'oblique' followed by calc is valid even if it mixes units (with computation) expected "oblique" but got "italic"
 Harness: the test ran to completion.
 
