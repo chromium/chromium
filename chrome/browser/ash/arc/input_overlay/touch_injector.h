@@ -236,6 +236,9 @@ class TouchInjector : public ui::EventRewriter {
   // Load menu entry position from |proto|, if it exists.
   void LoadMenuEntryFromProto(AppDataProto& proto);
 
+  void AddSystemVersionToProto(AppDataProto& proto);
+  void LoadSystemVersionFromProto(AppDataProto& proto);
+
   // Create Action by |action_type| without any input bindings.
   std::unique_ptr<Action> CreateRawAction(ActionType action_type);
   // Remove all user-added actions from |actions| and return the deleted

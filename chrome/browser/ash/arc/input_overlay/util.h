@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UTIL_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UTIL_H_
 
+#include <string>
+
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
@@ -31,6 +34,10 @@ void ClampPosition(gfx::Point& position,
                    const gfx::Size& ui_size,
                    const gfx::Size& parent_size,
                    int parent_padding = 0);
+
+// Return the current running version of Game controls. If it is not set, it's
+// Alpha version. Otherwise, it is AlphaV2+ version.
+absl::optional<std::string> GetCurrentSystemVersion();
 
 // TODO(b/260937747): Update or remove when removing flags
 // |kArcInputOverlayAlphaV2| or |kArcInputOverlayBeta|.

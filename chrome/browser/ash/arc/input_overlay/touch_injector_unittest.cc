@@ -5,9 +5,11 @@
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/json/json_reader.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/test/event_capturer.h"
@@ -237,7 +239,10 @@ class TouchInjectorTest : public views::ViewsTestBase {
  protected:
   TouchInjectorTest()
       : views::ViewsTestBase(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kArcInputOverlayAlphaV2}, {});
+  }
 
   int GetRewrittenTouchIdForTesting(ui::PointerId original_id) {
     return injector_->GetRewrittenTouchIdForTesting(original_id);
@@ -342,6 +347,8 @@ class TouchInjectorTest : public views::ViewsTestBase {
 
     views::ViewsTestBase::TearDown();
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
@@ -886,6 +893,9 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
   injector_->actions()[0]->PrepareToBindPosition(std::move(new_pos));
   injector_->OnApplyPendingBinding();
   auto proto = ConvertToProto();
+  // Check if the system version is serialized correctly.
+  EXPECT_TRUE(proto->has_system_version());
+  EXPECT_EQ(kSystemVersionAlphaV2, proto->system_version());
   // Check that the menu entry position is serialized correctly.
   EXPECT_TRUE(proto->has_menu_entry_position());
   auto serialized_position = proto->menu_entry_position().anchor_to_target();

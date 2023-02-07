@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
+#include "chrome/browser/ash/arc/input_overlay/constants.h"
 
 namespace arc::input_overlay {
 
@@ -72,6 +73,11 @@ void ClampPosition(gfx::Point& position,
     hi += parent_padding;
   }
   position.set_y(std::clamp(position.y(), lo, hi));
+}
+
+absl::optional<std::string> GetCurrentSystemVersion() {
+  return AllowReposition() ? absl::make_optional(kSystemVersionAlphaV2)
+                           : absl::nullopt;
 }
 
 bool AllowReposition() {

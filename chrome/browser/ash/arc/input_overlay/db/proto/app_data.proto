@@ -79,4 +79,7 @@ message AppDataProto {
   // Customized Positions for the menu entry icon. It is saved when the app
   // is closed.
   optional PositionProto menu_entry_position = 4;
+  // System version. Latest version of Game controls. If it is not set, it's
+  // Alpha version. Otherwise, it is AlphaV2+ version.
+  optional string system_version = 5;
 }

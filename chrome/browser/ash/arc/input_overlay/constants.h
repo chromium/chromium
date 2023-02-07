@@ -9,6 +9,9 @@
 
 namespace arc::input_overlay {
 
+// System version for AlphaV2.
+constexpr char kSystemVersionAlphaV2[] = "0.2";
+
 // The coordinates number, including Axis x and y.
 constexpr int kAxisSize = 2;
 
