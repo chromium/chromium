@@ -83745,12 +83745,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
       label="[main frame send, main frame change, other send, other change]"/>
 </enum>
 
-<enum name="PrerenderCrossOriginRedirectionDomain">
-  <int value="0" label="kRedirectToSubDomain"/>
-  <int value="1" label="kRedirectFromSubDomain"/>
-  <int value="2" label="kCrossDomain"/>
-</enum>
-
 <enum name="PrerenderCrossOriginRedirectionMismatch">
   <int value="0" label="kShouldNotBeReported"/>
   <int value="1" label="kPortMismatch"/>

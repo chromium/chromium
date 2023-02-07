@@ -9333,8 +9333,7 @@ void CheckExpectedCrossOriginMetrics(
     const base::HistogramTester& histogram_tester,
     PrerenderCrossOriginRedirectionMismatch mismatch_type,
     absl::optional<PrerenderCrossOriginRedirectionProtocolChange>
-        protocol_change,
-    absl::optional<PrerenderCrossOriginRedirectionDomain> domain_change) {
+        protocol_change) {
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "EmbedderSuffixForTest",
@@ -9348,12 +9347,6 @@ void CheckExpectedCrossOriginMetrics(
         "Prerender.Experimental.CrossOriginRedirectionProtocolChange.Embedder_"
         "EmbedderSuffixForTest",
         protocol_change.value(), 1);
-  }
-  if (domain_change.has_value()) {
-    histogram_tester.ExpectUniqueSample(
-        "Prerender.Experimental.CrossOriginRedirectionDomain.Embedder_"
-        "EmbedderSuffixForTest",
-        domain_change.value(), 1);
   }
 }
 
@@ -9381,7 +9374,7 @@ IN_PROC_BROWSER_TEST_F(
   CheckExpectedCrossOriginMetrics(
       histogram_tester,
       PrerenderCrossOriginRedirectionMismatch::kSchemeHostPortMismatch,
-      /*protocol_change=*/absl::nullopt, /*domain_change=*/absl::nullopt);
+      /*protocol_change=*/absl::nullopt);
 }
 
 // Tests a prerendering navigaton goes with HTTP protocol, and being redirected
@@ -9409,8 +9402,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   CheckExpectedCrossOriginMetrics(
       histogram_tester,
       PrerenderCrossOriginRedirectionMismatch::kSchemePortMismatch,
-      PrerenderCrossOriginRedirectionProtocolChange::kHttpProtocolUpgrade,
-      /*domain_change=*/absl::nullopt);
+      PrerenderCrossOriginRedirectionProtocolChange::kHttpProtocolUpgrade);
 }
 
 // Similar to
@@ -9444,8 +9436,7 @@ IN_PROC_BROWSER_TEST_F(
   CheckExpectedCrossOriginMetrics(
       histogram_tester,
       PrerenderCrossOriginRedirectionMismatch::kSchemePortMismatch,
-      PrerenderCrossOriginRedirectionProtocolChange::kHttpProtocolDowngrade,
-      /*domain_change=*/absl::nullopt);
+      PrerenderCrossOriginRedirectionProtocolChange::kHttpProtocolDowngrade);
 }
 
 // Tests that embedder triggered prerender can be redirected to the subdomain
@@ -9507,8 +9498,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       PrerenderFinalStatus::kActivated, 1);
 }
 
-// Tests PrerenderCrossOriginRedirectionMismatch.kHostMismatch and
-// PrerenderCrossOriginRedirectionDomain.kCrossDomain are recorded
+// Tests PrerenderCrossOriginRedirectionMismatch.kHostMismatch is recorded
 // when the prerendering navigation is redirected to a different domain.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        EmbedderTrigger_CrossOriginRedirection_DifferentDomain) {
@@ -9521,8 +9511,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       *web_contents_impl(), kPrerenderingUrl, kRedirectedUrl);
   CheckExpectedCrossOriginMetrics(
       histogram_tester, PrerenderCrossOriginRedirectionMismatch::kHostMismatch,
-      /*protocol_change=*/absl::nullopt,
-      PrerenderCrossOriginRedirectionDomain::kCrossDomain);
+      /*protocol_change=*/absl::nullopt);
 }
 
 // Tests that prerender works with accessibility.

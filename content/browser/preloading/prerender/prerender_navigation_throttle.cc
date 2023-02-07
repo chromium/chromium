@@ -60,19 +60,6 @@ void AnalyzeCrossOriginRedirection(
         trigger_type, embedder_histogram_suffix);
     return;
   }
-  if (mismatch_type == PrerenderCrossOriginRedirectionMismatch::kHostMismatch) {
-    if (current_origin.DomainIs(initial_origin.host())) {
-      RecordPrerenderRedirectionDomain(
-          PrerenderCrossOriginRedirectionDomain::kRedirectToSubDomain,
-          trigger_type, embedder_histogram_suffix);
-      return;
-    }
-    RecordPrerenderRedirectionDomain(
-        initial_origin.DomainIs(current_origin.host())
-            ? PrerenderCrossOriginRedirectionDomain::kRedirectFromSubDomain
-            : PrerenderCrossOriginRedirectionDomain::kCrossDomain,
-        trigger_type, embedder_histogram_suffix);
-  }
 }
 
 // Prerender2 Embedders trigger based on rules decided by the browser. Prevent

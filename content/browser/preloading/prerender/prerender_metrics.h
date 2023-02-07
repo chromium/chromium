@@ -94,17 +94,6 @@ enum class PrerenderCrossOriginRedirectionProtocolChange {
   kMaxValue = kHttpProtocolDowngrade
 };
 
-// Used by PrerenderNavigationThrottle. This is a breakdown enum for
-// PrerenderCrossOriginRedirectionMismatch.kHostMismatch.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class PrerenderCrossOriginRedirectionDomain {
-  kRedirectToSubDomain = 0,
-  kRedirectFromSubDomain = 1,
-  kCrossDomain = 2,
-  kMaxValue = kCrossDomain
-};
-
 void RecordPrerenderTriggered(ukm::SourceId ukm_id);
 
 void RecordPrerenderActivationTime(
@@ -141,13 +130,6 @@ void RecordPrerenderRedirectionMismatchType(
 // Records whether the redirection was caused by HTTP protocol upgrade.
 void RecordPrerenderRedirectionProtocolChange(
     PrerenderCrossOriginRedirectionProtocolChange change_type,
-    PrerenderTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix);
-
-// Records whether the prerendering navigation was redirected to a subdomain
-// page.
-void RecordPrerenderRedirectionDomain(
-    PrerenderCrossOriginRedirectionDomain domain_type,
     PrerenderTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 

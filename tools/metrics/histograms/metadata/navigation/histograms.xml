@@ -1607,23 +1607,6 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram
-    name="Prerender.Experimental.CrossOriginRedirectionDomain{PrerenderTriggerType}"
-    enum="PrerenderCrossOriginRedirectionDomain" expires_after="2023-01-31">
-  <owner>lingqi@chromium.org</owner>
-  <owner>nhiroki@chromium.org</owner>
-  <owner>src/content/browser/preloading/prerender/OWNERS</owner>
-  <summary>
-    A breakdown metric for analyzing cross-origin redirection cases during
-    embedder-triggered prerendering. Recorded when a prerendering page was
-    redirected to a subdomain.
-
-    Note that for now it is not used for prerendering that are triggered by
-    speculation rules.
-  </summary>
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
-</histogram>
-
-<histogram
     name="Prerender.Experimental.CrossOriginRedirectionProtocolChange{PrerenderTriggerType}"
     enum="PrerenderCrossOriginRedirectionProtocolChange"
     expires_after="2023-04-30">

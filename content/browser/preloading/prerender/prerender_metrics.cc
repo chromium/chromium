@@ -291,18 +291,6 @@ void RecordPrerenderRedirectionProtocolChange(
       change_type);
 }
 
-void RecordPrerenderRedirectionDomain(
-    PrerenderCrossOriginRedirectionDomain domain_type,
-    PrerenderTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix) {
-  DCHECK_EQ(trigger_type, PrerenderTriggerType::kEmbedder);
-  base::UmaHistogramEnumeration(
-      GenerateHistogramName(
-          "Prerender.Experimental.CrossOriginRedirectionDomain", trigger_type,
-          embedder_histogram_suffix),
-      domain_type);
-}
-
 void AnalyzePrerenderActivationHeader(
     net::HttpRequestHeaders potential_activation_headers,
     net::HttpRequestHeaders prerender_headers,
