@@ -36,9 +36,9 @@ void DestroyAomCodecContext(aom_codec_ctx_t* codec_ctx) {
 // TODO(joedow): Perform some additional testing to see if this needs tweaking.
 constexpr int kAv1MinimumTargetBitrateKbpsPerMegapixel = 2500;
 
-// A value of 9 provides higher-quality and decent performance based on
-// experimentation.
-constexpr int kAv1DefaultEncoderSpeed = 9;
+// Use the highest possible encoder speed as it produces frames faster than the
+// lower settings, requires fewer CPU resources, and still has low bitrates.
+constexpr int kAv1DefaultEncoderSpeed = 10;
 
 }  // namespace
 
