@@ -212,7 +212,7 @@ std::string GetModelCacheKeyHash(proto::ModelCacheKey model_cache_key) {
       base::legacy::CityHash64(base::as_bytes(base::make_span(bytes)));
   // Convert the hash to hex encoding and not as base64 and other encodings,
   // since it will be used as filepath names.
-  return base::HexEncode(base::as_bytes(base::make_span(&hash, 1)));
+  return base::HexEncode(base::as_bytes(base::make_span(&hash, 1u)));
 }
 
 void RecordPredictionModelStoreModelRemovalVersionHistogram(

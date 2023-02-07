@@ -761,7 +761,7 @@ void NGPhysicalFragment::TraceAfterDispatch(Visitor* visitor) const {
 base::span<const NGLink> NGPhysicalFragment::Children() const {
   if (Type() == kFragmentBox)
     return static_cast<const NGPhysicalBoxFragment*>(this)->Children();
-  return base::make_span(static_cast<NGLink*>(nullptr), 0);
+  return base::make_span(static_cast<NGLink*>(nullptr), 0u);
 }
 
 NGPhysicalFragment::PostLayoutChildLinkList

@@ -295,7 +295,7 @@ void ExecuteScriptInMainWorld(
         mojom::blink::PromiseResultOption::kAwait,
     mojom::blink::UserActivationOption user_gesture =
         mojom::blink::UserActivationOption::kDoNotActivate) {
-  ExecuteScriptsInMainWorld(frame, base::make_span(&script_string, 1),
+  ExecuteScriptsInMainWorld(frame, base::make_span(&script_string, 1u),
                             std::move(callback), wait_for_promise,
                             user_gesture);
 }
@@ -1156,7 +1156,7 @@ TEST_F(WebFrameTest, FormWithNullFrame) {
       web_view_helper.LocalMainFrame()->GetDocument().Forms();
   web_view_helper.Reset();
 
-  EXPECT_EQ(forms.size(), 1U);
+  EXPECT_EQ(forms.size(), 1u);
 
   // This test passes if this doesn't crash.
   WebSearchableFormData searchable_data_form(forms[0]);

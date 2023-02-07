@@ -116,7 +116,7 @@ TEST(JSONWriterTest, BinaryValues) {
   // Binary values should return errors unless suppressed via the
   // OPTIONS_OMIT_BINARY_VALUES flag.
   const auto kBufferSpan =
-      base::make_span(reinterpret_cast<const uint8_t*>("asdf"), 4);
+      base::make_span(reinterpret_cast<const uint8_t*>("asdf"), 4u);
   Value root(kBufferSpan);
   EXPECT_FALSE(JSONWriter::Write(root, &output_js));
   EXPECT_TRUE(JSONWriter::WriteWithOptions(

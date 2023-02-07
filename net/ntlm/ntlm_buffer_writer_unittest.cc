@@ -141,7 +141,7 @@ TEST(NtlmBufferWriterTest, WriteBytes) {
   ASSERT_TRUE(writer.WriteBytes(expected));
   ASSERT_EQ(0, memcmp(GetBufferPtr(writer), expected, std::size(expected)));
   ASSERT_TRUE(writer.IsEndOfBuffer());
-  ASSERT_FALSE(writer.WriteBytes(base::make_span(expected, 1)));
+  ASSERT_FALSE(writer.WriteBytes(base::make_span(expected, 1u)));
 
   ASSERT_EQ(0, memcmp(expected, GetBufferPtr(writer), std::size(expected)));
 }

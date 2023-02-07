@@ -73,7 +73,7 @@ bool SubmitSignalVkSemaphore(VkQueue vk_queue,
                              VkSemaphore vk_semaphore,
                              VkFence vk_fence) {
   return SubmitSignalVkSemaphores(
-      vk_queue, base::span<VkSemaphore>(&vk_semaphore, 1), vk_fence);
+      vk_queue, base::span<VkSemaphore>(&vk_semaphore, 1u), vk_fence);
 }
 
 bool SubmitWaitVkSemaphores(VkQueue vk_queue,
@@ -97,7 +97,7 @@ bool SubmitWaitVkSemaphore(VkQueue vk_queue,
                            VkSemaphore vk_semaphore,
                            VkFence vk_fence) {
   return SubmitWaitVkSemaphores(
-      vk_queue, base::span<VkSemaphore>(&vk_semaphore, 1), vk_fence);
+      vk_queue, base::span<VkSemaphore>(&vk_semaphore, 1u), vk_fence);
 }
 
 VkSemaphore CreateExternalVkSemaphore(

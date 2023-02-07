@@ -487,7 +487,7 @@ TEST_F(TransportConnectJobTest, EndpointResult) {
   MockTransportClientSocketFactory::Rule rule(
       MockTransportClientSocketFactory::Type::kSynchronous,
       std::vector{IPEndPoint(ParseIP("1::"), 8443)});
-  client_socket_factory_.SetRules(base::make_span(&rule, 1));
+  client_socket_factory_.SetRules(base::make_span(&rule, 1u));
 
   TestConnectJobDelegate test_delegate;
   TransportConnectJob transport_connect_job(
@@ -642,7 +642,7 @@ TEST_F(TransportConnectJobTest, MultipleRoutesSuspended) {
   MockTransportClientSocketFactory::Rule rule(
       MockTransportClientSocketFactory::Type::kFailing,
       endpoints[0].ip_endpoints, ERR_NETWORK_IO_SUSPENDED);
-  client_socket_factory_.SetRules(base::make_span(&rule, 1));
+  client_socket_factory_.SetRules(base::make_span(&rule, 1u));
 
   TestConnectJobDelegate test_delegate;
   TransportConnectJob transport_connect_job(
@@ -679,7 +679,7 @@ TEST_F(TransportConnectJobTest, NoAlpnProtocols) {
   MockTransportClientSocketFactory::Rule rule(
       MockTransportClientSocketFactory::Type::kSynchronous,
       std::vector{endpoints[2].ip_endpoints[0]});
-  client_socket_factory_.SetRules(base::make_span(&rule, 1));
+  client_socket_factory_.SetRules(base::make_span(&rule, 1u));
 
   // Use `DefaultParams()`, an http scheme. That it is http is not very
   // important, but `url::SchemeHostPort` is difficult to use with unknown

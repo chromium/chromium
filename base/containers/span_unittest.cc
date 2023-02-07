@@ -38,7 +38,7 @@ TEST(SpanTest, DefaultConstructor) {
 
 TEST(SpanTest, ConstructFromDataAndSize) {
   constexpr int* kNull = nullptr;
-  constexpr span<int> empty_span(kNull, 0);
+  constexpr span<int> empty_span(kNull, 0u);
   EXPECT_TRUE(empty_span.empty());
   EXPECT_EQ(nullptr, empty_span.data());
 
@@ -61,7 +61,7 @@ TEST(SpanTest, ConstructFromDataAndSize) {
 
 TEST(SpanTest, ConstructFromIterAndSize) {
   constexpr int* kNull = nullptr;
-  constexpr span<int> empty_span(kNull, 0);
+  constexpr span<int> empty_span(kNull, 0u);
   EXPECT_TRUE(empty_span.empty());
   EXPECT_EQ(nullptr, empty_span.data());
 
@@ -1111,7 +1111,7 @@ TEST(SpanTest, AsWritableBytes) {
 
 TEST(SpanTest, MakeSpanFromDataAndSize) {
   int* nullint = nullptr;
-  auto empty_span = make_span(nullint, 0);
+  auto empty_span = make_span(nullint, 0u);
   EXPECT_TRUE(empty_span.empty());
   EXPECT_EQ(nullptr, empty_span.data());
 
@@ -1349,6 +1349,12 @@ TEST(SpanTest, OutOfBoundsDeath) {
   ASSERT_DEATH_IF_SUPPORTED(kNonEmptyDynamicSpan[4], "");
   ASSERT_DEATH_IF_SUPPORTED(kNonEmptyDynamicSpan.subspan(10), "");
   ASSERT_DEATH_IF_SUPPORTED(kNonEmptyDynamicSpan.subspan(1, 7), "");
+
+  size_t minus_one = static_cast<size_t>(-1);
+  ASSERT_DEATH_IF_SUPPORTED(kNonEmptyDynamicSpan.subspan(minus_one), "");
+  ASSERT_DEATH_IF_SUPPORTED(kNonEmptyDynamicSpan.subspan(minus_one, minus_one),
+                            "");
+  ASSERT_DEATH_IF_SUPPORTED(kNonEmptyDynamicSpan.subspan(minus_one, 1), "");
 }
 
 TEST(SpanTest, IteratorIsRangeMoveSafe) {

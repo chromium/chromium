@@ -75,10 +75,10 @@ TEST_F(BlobBytesProviderTest, Consolidation) {
   auto data = CreateProvider();
   DCHECK_CALLED_ON_VALID_SEQUENCE(data->sequence_checker_);
 
-  data->AppendData(base::make_span("abc", 3));
-  data->AppendData(base::make_span("def", 3));
-  data->AppendData(base::make_span("ps1", 3));
-  data->AppendData(base::make_span("ps2", 3));
+  data->AppendData(base::make_span("abc", 3u));
+  data->AppendData(base::make_span("def", 3u));
+  data->AppendData(base::make_span("ps1", 3u));
+  data->AppendData(base::make_span("ps2", 3u));
 
   EXPECT_EQ(1u, data->data_.size());
   EXPECT_EQ(12u, data->data_[0]->length());

@@ -946,7 +946,7 @@ StyleRule* CSSParserImpl::CreateImplicitNestedRule(
   parent_selector.SetLastInTagHistory(true);
   parent_selector.SetLastInSelectorList(true);
   return StyleRule::Create(
-      base::span<CSSSelector>{&parent_selector, 1},
+      base::span<CSSSelector>{&parent_selector, 1u},
       CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
 }
 

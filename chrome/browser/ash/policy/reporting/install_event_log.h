@@ -89,7 +89,7 @@ InstallEventLog<T, C>::InstallEventLog(const base::FilePath& file_name)
 
   int64_t version;
   if (!file.ReadAtCurrentPosAndCheck(
-          base::as_writable_bytes(base::make_span(&version, 1)))) {
+          base::as_writable_bytes(base::make_span(&version, 1u)))) {
     LOG(WARNING) << "Corrupted install log.";
     return;
   }
@@ -101,7 +101,7 @@ InstallEventLog<T, C>::InstallEventLog(const base::FilePath& file_name)
 
   ssize_t entries;
   if (!file.ReadAtCurrentPosAndCheck(
-          base::as_writable_bytes(base::make_span(&entries, 1)))) {
+          base::as_writable_bytes(base::make_span(&entries, 1u)))) {
     LOG(WARNING) << "Corrupted install log.";
     return;
   }
@@ -164,14 +164,14 @@ void InstallEventLog<T, C>::Store() {
   }
 
   if (!file.WriteAtCurrentPosAndCheck(
-          base::as_bytes(base::make_span(&kLogFileVersion, 1)))) {
+          base::as_bytes(base::make_span(&kLogFileVersion, 1u)))) {
     LOG(WARNING) << "Unable to store install log.";
     return;
   }
 
   ssize_t entries = logs_.size();
   if (!file.WriteAtCurrentPosAndCheck(
-          base::as_bytes(base::make_span(&entries, 1)))) {
+          base::as_bytes(base::make_span(&entries, 1u)))) {
     LOG(WARNING) << "Unable to store install log.";
     return;
   }

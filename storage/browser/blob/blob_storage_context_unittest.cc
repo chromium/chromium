@@ -173,7 +173,7 @@ TEST_F(BlobStorageContextTest, BuildBlobAsync) {
 
   EXPECT_EQ(10u, context_->memory_controller().memory_usage());
 
-  future_data.Populate(base::as_bytes(base::make_span("abcdefghij", 10)), 0);
+  future_data.Populate(base::as_bytes(base::make_span("abcdefghij", 10u)), 0u);
   context_->NotifyTransportComplete(kId);
 
   // Check we're done.
@@ -732,9 +732,10 @@ void PopulateDataInBuilder(
     size_t index,
     base::TaskRunner* file_runner) {
   if (index % 2 != 0) {
-    (*future_datas)[0].Populate(base::as_bytes(base::make_span("abcde", 5)), 0);
+    (*future_datas)[0].Populate(base::as_bytes(base::make_span("abcde", 5u)),
+                                0);
     if (index % 3 == 0) {
-      (*future_datas)[1].Populate(base::as_bytes(base::make_span("1", 1)), 0);
+      (*future_datas)[1].Populate(base::as_bytes(base::make_span("1", 1u)), 0);
     }
   } else if (index % 3 == 0) {
     scoped_refptr<ShareableFileReference> file_ref =

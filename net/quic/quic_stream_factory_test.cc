@@ -12867,7 +12867,7 @@ class QuicStreamFactoryWithDestinationTest
 
   void AddHangingSocketData() {
     auto sequenced_socket_data = std::make_unique<SequencedSocketData>(
-        base::make_span(&hanging_read_, 1), base::span<MockWrite>());
+        base::make_span(&hanging_read_, 1u), base::span<MockWrite>());
     socket_factory_->AddSocketDataProvider(sequenced_socket_data.get());
     sequenced_socket_data_vector_.push_back(std::move(sequenced_socket_data));
   }

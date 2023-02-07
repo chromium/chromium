@@ -25,34 +25,34 @@ class Derived : Base {
 
 // A default constructed span must have an extent of 0 or dynamic_extent.
 void WontCompile() {
-  span<int, 1> span;
+  span<int, 1u> span;
 }
 
-#elif defined(NCTEST_SPAN_FROM_ARRAY_WITH_NON_MATCHING_STATIC_EXTENT_DISALLOWED) // [r"fatal error: no matching constructor for initialization of 'span<int, 1>'"]
+#elif defined(NCTEST_SPAN_FROM_ARRAY_WITH_NON_MATCHING_STATIC_EXTENT_DISALLOWED) // [r"fatal error: no matching constructor for initialization of 'span<int, 1U>'"]
 
 // A span with static extent constructed from an array must match the size of
 // the array.
 void WontCompile() {
   int array[] = {1, 2, 3};
-  span<int, 1> span(array);
+  span<int, 1u> span(array);
 }
 
-#elif defined(NCTEST_SPAN_FROM_OTHER_SPAN_WITH_MISMATCHING_EXTENT_DISALLOWED) // [r"fatal error: no matching constructor for initialization of 'span<int, 4>'"]
+#elif defined(NCTEST_SPAN_FROM_OTHER_SPAN_WITH_MISMATCHING_EXTENT_DISALLOWED) // [r"fatal error: no matching constructor for initialization of 'span<int, 4U>'"]
 
 // A span with static extent constructed from another span must match the
 // extent.
 void WontCompile() {
   std::array<int, 3> array = {1, 2, 3};
-  span<int, 3> span3(array);
-  span<int, 4> span4(span3);
+  span<int, 3u> span3(array);
+  span<int, 4u> span4(span3);
 }
 
-#elif defined(NCTEST_DYNAMIC_SPAN_TO_STATIC_SPAN_DISALLOWED)  // [r"fatal error: no matching constructor for initialization of 'span<int, 3>'"]
+#elif defined(NCTEST_DYNAMIC_SPAN_TO_STATIC_SPAN_DISALLOWED)  // [r"fatal error: no matching constructor for initialization of 'span<int, 3U>'"]
 
 // Converting a dynamic span to a static span should not be allowed.
 void WontCompile() {
   span<int> dynamic_span;
-  span<int, 3> static_span(dynamic_span);
+  span<int, 3u> static_span(dynamic_span);
 }
 
 #elif defined(NCTEST_DERIVED_TO_BASE_CONVERSION_DISALLOWED)  // [r"fatal error: no matching constructor for initialization of 'span<Base \*>'"]
@@ -86,20 +86,20 @@ void WontCompile() {
   span<int> span(v);
 }
 
-#elif defined(NCTEST_IMPLICIT_CONVERSION_FROM_DYNAMIC_CONST_CONTAINER_TO_STATIC_SPAN_DISALLOWED) // [r"fatal error: no viable conversion from 'const std::vector<int>' to 'span<const int, 3>'"]
+#elif defined(NCTEST_IMPLICIT_CONVERSION_FROM_DYNAMIC_CONST_CONTAINER_TO_STATIC_SPAN_DISALLOWED) // [r"fatal error: no viable conversion from 'const std::vector<int>' to 'span<const int, 3U>'"]
 
 // A dynamic const container should not be implicitly convertible to a static span.
 void WontCompile() {
   const std::vector<int> v = {1, 2, 3};
-  span<const int, 3> span = v;
+  span<const int, 3u> span = v;
 }
 
-#elif defined(NCTEST_IMPLICIT_CONVERSION_FROM_DYNAMIC_MUTABLE_CONTAINER_TO_STATIC_SPAN_DISALLOWED) // [r"fatal error: no viable conversion from 'std::vector<int>' to 'span<int, 3>'"]
+#elif defined(NCTEST_IMPLICIT_CONVERSION_FROM_DYNAMIC_MUTABLE_CONTAINER_TO_STATIC_SPAN_DISALLOWED) // [r"fatal error: no viable conversion from 'std::vector<int>' to 'span<int, 3U>'"]
 
 // A dynamic mutable container should not be implicitly convertible to a static span.
 void WontCompile() {
   std::vector<int> v = {1, 2, 3};
-  span<int, 3> span = v;
+  span<int, 3u> span = v;
 }
 
 #elif defined(NCTEST_STD_SET_ITER_SIZE_CONVERSION_DISALLOWED)  // [r"fatal error: no matching constructor for initialization of 'span<int>'"]
@@ -107,7 +107,7 @@ void WontCompile() {
 // A std::set() should not satisfy the requirements for conversion to a span.
 void WontCompile() {
   std::set<int> set;
-  span<int> span(set.begin(), 0);
+  span<int> span(set.begin(), 0u);
 }
 
 #elif defined(NCTEST_STD_SET_ITER_ITER_CONVERSION_DISALLOWED)  // [r"fatal error: no matching constructor for initialization of 'span<int>'"]
@@ -131,7 +131,7 @@ void WontCompile() {
 // Static first called on a span with static extent must not exceed the size.
 void WontCompile() {
   std::array<int, 3> array = {1, 2, 3};
-  span<int, 3> span(array);
+  span<int, 3u> span(array);
   auto first = span.first<4>();
 }
 
@@ -140,7 +140,7 @@ void WontCompile() {
 // Static last called on a span with static extent must not exceed the size.
 void WontCompile() {
   std::array<int, 3> array = {1, 2, 3};
-  span<int, 3> span(array);
+  span<int, 3u> span(array);
   auto last = span.last<4>();
 }
 
@@ -149,7 +149,7 @@ void WontCompile() {
 // Static subspan called on a span with static extent must not exceed the size.
 void WontCompile() {
   std::array<int, 3> array = {1, 2, 3};
-  span<int, 3> span(array);
+  span<int, 3u> span(array);
   auto subspan = span.subspan<4>();
 }
 
@@ -158,7 +158,7 @@ void WontCompile() {
 // Static subspan called on a span with static extent must not exceed the size.
 void WontCompile() {
   std::array<int, 3> array = {1, 2, 3};
-  span<int, 3> span(array);
+  span<int, 3u> span(array);
   auto subspan = span.subspan<0, 4>();
 }
 
@@ -174,7 +174,7 @@ void WontCompile() {
 
 // Front called on an empty span with static extent is not allowed.
 void WontCompile() {
-  span<int, 0> s;
+  span<int, 0u> s;
   s.front();
 }
 
@@ -182,7 +182,7 @@ void WontCompile() {
 
 // Back called on an empty span with static extent is not allowed.
 void WontCompile() {
-  span<int, 0> s;
+  span<int, 0u> s;
   s.back();
 }
 
@@ -191,7 +191,7 @@ void WontCompile() {
 // Calling swap on spans with different extents is not allowed.
 void WontCompile() {
   std::array<int, 3> array = {1, 2, 3};
-  span<int, 3> static_span(array);
+  span<int, 3u> static_span(array);
   span<int> dynamic_span(array);
   std::swap(static_span, dynamic_span);
 }
@@ -234,7 +234,7 @@ int WontCompile() {
 int WontCompile() {
   constexpr StringPiece str = "Foo";
   // Intentional extent mismatch causing CHECK failure.
-  constexpr auto made_span = make_span<2>(str.begin(), 3);
+  constexpr auto made_span = make_span<2>(str.begin(), 3u);
 }
 
 #elif defined(NCTEST_STATIC_MAKE_SPAN_FROM_ITERS_CHECKS_SIZE)  // [r"constexpr variable 'made_span' must be initialized by a constant expression"]
@@ -270,7 +270,7 @@ void WontCompile() {
 #elif defined(NCTEST_DANGLING_STD_ARRAY)  // [r"object backing the pointer will be destroyed at the end of the full-expression"]
 
 void WontCompile() {
-  span<const int, 3> s{std::array<int, 3>()};
+  span<const int, 3u> s{std::array<int, 3>()};
   (void)s;
 }
 
@@ -278,6 +278,24 @@ void WontCompile() {
 
 void WontCompile() {
   span<const int> s{std::vector<int>({1, 2, 3})};
+  (void)s;
+}
+
+#elif defined(NCTEST_MAKE_SPAN_NOT_SIZE_T_SIZE)  // [r"The source type is out of range for the destination type"]
+
+void WontCompile() {
+  int length = -1;
+  std::vector<int> vector = {1, 2, 3};
+  auto s = make_span(vector.data(), length);
+  (void)s;
+}
+
+#elif defined(NCTEST_SPAN_NOT_SIZE_T_SIZE)  // [r"The source type is out of range for the destination type"]
+
+void WontCompile() {
+  int length = -1;
+  std::vector<int> vector = {1, 2, 3};
+  span<int> s(vector.data(), length);
   (void)s;
 }
 

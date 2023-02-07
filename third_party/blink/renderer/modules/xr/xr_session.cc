@@ -2027,7 +2027,7 @@ void XRSession::UpdateCanvasDimensions(Element* element) {
 void XRSession::OnButtonEvent(
     device::mojom::blink::XRInputSourceStatePtr input_state) {
   DCHECK(uses_input_eventing_);
-  auto input_states = base::make_span(&input_state, 1);
+  auto input_states = base::make_span(&input_state, 1u);
   OnInputStateChangeInternal(last_frame_id_, input_states);
   ProcessInputSourceEvents(input_states);
 }

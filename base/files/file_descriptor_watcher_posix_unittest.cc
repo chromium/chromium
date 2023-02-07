@@ -127,7 +127,7 @@ class FileDescriptorWatcherTest
   void WriteByte() {
     constexpr char kByte = '!';
     ASSERT_TRUE(WriteFileDescriptor(write_file_descriptor(),
-                                    as_bytes(make_span(&kByte, 1))));
+                                    as_bytes(make_span(&kByte, 1u))));
   }
 
   void ReadByte() {

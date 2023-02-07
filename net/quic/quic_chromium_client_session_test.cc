@@ -112,7 +112,7 @@ class QuicChromiumClientSessionTest
         default_read_(
             std::make_unique<MockRead>(SYNCHRONOUS, ERR_IO_PENDING, 0)),
         socket_data_(std::make_unique<SequencedSocketData>(
-            base::make_span(default_read_.get(), 1),
+            base::make_span(default_read_.get(), 1u),
             base::span<MockWrite>())),
         helper_(&clock_, &random_),
         transport_security_state_(std::make_unique<TransportSecurityState>()),

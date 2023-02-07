@@ -108,7 +108,7 @@ TEST(IdentifiableTokenTest, SampleStringPiece) {
 }
 
 TEST(IdentifiableTokenTest, SampleCharSpan) {
-  auto source_value = base::make_span("abcd", 4);
+  auto source_value = base::make_span("abcd", 4u);
   auto expected_value = INT64_C(0xf75a3b8a1499428d);
   EXPECT_EQ(IdentifiableToken(expected_value), IdentifiableToken(source_value));
   EXPECT_EQ(IdentifiableToken(expected_value),

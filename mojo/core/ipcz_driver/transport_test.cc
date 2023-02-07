@@ -319,8 +319,8 @@ TEST_F(MojoIpczTransportTest, TransmitHandle) {
         MakeHandleFromEndpoint(channel2.TakeRemoteEndpoint());
     {
       TransportListener listener(*transport);
-      TestMessage("!", {&handle1, 1}).Transmit(*transport);
-      TestMessage("!", {&handle2, 1}).Transmit(*transport);
+      TestMessage("!", {&handle1, 1u}).Transmit(*transport);
+      TestMessage("!", {&handle2, 1u}).Transmit(*transport);
       listener.WaitForDisconnect();
     }
 

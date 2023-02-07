@@ -225,7 +225,7 @@ int BrokerClient::InotifyAddWatch(int fd,
 
   BrokerSimpleMessage reply;
   ssize_t msg_len = message.SendRecvMsgWithFlagsMultipleFds(
-      ipc_channel_.get(), 0, base::span<const int>(&fd, 1), {}, &reply);
+      ipc_channel_.get(), 0, base::span<const int>(&fd, 1u), {}, &reply);
 
   if (msg_len < 0)
     return msg_len;

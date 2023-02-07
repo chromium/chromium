@@ -18,6 +18,7 @@
 #include "base/containers/checked_iterators.h"
 #include "base/containers/contiguous_iterator.h"
 #include "base/cxx20_to_address.h"
+#include "base/numerics/safe_math.h"
 
 namespace base {
 
@@ -256,16 +257,16 @@ class GSL_POINTER span : public internal::ExtentStorage<Extent> {
 
   template <typename It,
             typename = internal::EnableIfCompatibleContiguousIterator<It, T>>
-  constexpr span(It first, size_t count) noexcept
+  constexpr span(It first, StrictNumeric<size_t> count) noexcept
       : ExtentStorage(count),
         // The use of to_address() here is to handle the case where the iterator
         // `first` is pointing to the container's `end()`. In that case we can
         // not use the address returned from the iterator, or dereference it
-        // through the iterator's `operator*`, but we can store it. We must assume
-        // in this case that `count` is 0, since the iterator does not point to
-        // valid data. Future hardening of iterators may disallow pulling the
-        // address from `end()`, as demonstrated by asserts() in libstdc++:
-        // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=93960.
+        // through the iterator's `operator*`, but we can store it. We must
+        // assume in this case that `count` is 0, since the iterator does not
+        // point to valid data. Future hardening of iterators may disallow
+        // pulling the address from `end()`, as demonstrated by asserts() in
+        // libstdc++: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=93960.
         //
         // The span API dictates that the `data()` is accessible when size is 0,
         // since the pointer may be valid, so we cannot prevent storing and
@@ -473,7 +474,7 @@ as_writable_bytes(span<T, X> s) noexcept {
 
 // Type-deducing helpers for constructing a span.
 template <int&... ExplicitArgumentBarrier, typename It>
-constexpr auto make_span(It it, size_t size) noexcept {
+constexpr auto make_span(It it, StrictNumeric<size_t> size) noexcept {
   using T = std::remove_reference_t<iter_reference_t<It>>;
   return span<T>(it, size);
 }
@@ -508,7 +509,7 @@ constexpr auto make_span(Container&& container) noexcept {
 //
 // Usage: auto static_span = base::make_span<N>(...);
 template <size_t N, int&... ExplicitArgumentBarrier, typename It>
-constexpr auto make_span(It it, size_t size) noexcept {
+constexpr auto make_span(It it, StrictNumeric<size_t> size) noexcept {
   using T = std::remove_reference_t<iter_reference_t<It>>;
   return span<T, N>(it, size);
 }

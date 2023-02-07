@@ -87,7 +87,7 @@ class SOCKS5MockData {
     reads_[1] = MockRead(mode, kSOCKS5OkResponse, kSOCKS5OkResponseLength);
 
     data_ = std::make_unique<StaticSocketDataProvider>(
-        base::make_span(reads_.get(), 2), base::make_span(writes_.get(), 2));
+        base::make_span(reads_.get(), 2u), base::make_span(writes_.get(), 2u));
   }
 
   SocketDataProvider* data_provider() { return data_.get(); }

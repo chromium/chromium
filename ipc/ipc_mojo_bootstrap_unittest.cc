@@ -206,8 +206,8 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
   auto& sender = connection.GetSender();
 
   uint8_t data = 0;
-  sender->Receive(
-      IPC::MessageView(base::make_span(&data, 0), absl::nullopt /* handles */));
+  sender->Receive(IPC::MessageView(base::make_span(&data, 0u),
+                                   absl::nullopt /* handles */));
 
   base::RunLoop run_loop;
   PeerPidReceiver impl(std::move(receiver), run_loop.QuitClosure());

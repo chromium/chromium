@@ -1300,7 +1300,7 @@ gfx::Image* PersonalDataManager::GetCreditCardArtImageForUrl(
   if (cached_image)
     return cached_image;
 
-  FetchImagesForURLs(base::make_span(&card_art_url, 1));
+  FetchImagesForURLs(base::make_span(&card_art_url, 1u));
   return nullptr;
 }
 

@@ -714,13 +714,13 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, ComputeDirectorySize) {
 
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->CreateFileForTesting(
-                file_name0, base::span<const char>(content, 10)));
+                file_name0, base::span<const char>(content, 10u)));
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->CreateFileForTesting(
-                file_name1, base::span<const char>(content, 15)));
+                file_name1, base::span<const char>(content, 15u)));
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->CreateFileForTesting(
-                file_name2, base::span<const char>(content, 20)));
+                file_name2, base::span<const char>(content, 20u)));
 
   ASSERT_EQ(20u, file_util()->ComputeDirectorySize(dir_name2));
   ASSERT_EQ(35u, file_util()->ComputeDirectorySize(dir_name1));

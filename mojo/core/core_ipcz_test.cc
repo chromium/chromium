@@ -275,7 +275,7 @@ TEST_F(CoreIpczTest, BasicMessageUsage) {
   EXPECT_EQ(MOJO_RESULT_OK, mojo().CreateMessagePipe(nullptr, &a, &b));
 
   constexpr base::StringPiece kMessage = "hellllooooo";
-  MojoMessageHandle message = CreateMessage(kMessage, {&b, 1});
+  MojoMessageHandle message = CreateMessage(kMessage, {&b, 1u});
 
   void* buffer;
   uint32_t num_bytes;
@@ -316,7 +316,7 @@ TEST_F(CoreIpczTest, MessageDestruction) {
   EXPECT_EQ(MOJO_RESULT_OK, mojo().CreateMessagePipe(nullptr, &a, &b));
 
   constexpr base::StringPiece kMessage = "hellllooooo";
-  MojoMessageHandle message = CreateMessage(kMessage, {&b, 1});
+  MojoMessageHandle message = CreateMessage(kMessage, {&b, 1u});
 
   // Destroying the message must also close the attached pipe.
   MojoHandleSignalsState signals_state;
@@ -874,7 +874,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(DataPipeTransferClient,
   EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(invitation));
 
   MojoHandle consumer;
-  EXPECT_EQ("", ReadFromMessagePipe(new_pipe, {&consumer, 1}));
+  EXPECT_EQ("", ReadFromMessagePipe(new_pipe, {&consumer, 1u}));
   EXPECT_NE(MOJO_HANDLE_INVALID, consumer);
 
   WaitForReadable(consumer);
@@ -927,7 +927,7 @@ TEST_F(CoreIpczTest, DataPipeTransfer) {
                   mojo().CreateDataPipe(&options, &producer, &consumer));
         EXPECT_EQ(MOJO_RESULT_OK,
                   mojo().WriteMessage(
-                      new_pipe, CreateMessage("", {&consumer, 1}), nullptr));
+                      new_pipe, CreateMessage("", {&consumer, 1u}), nullptr));
         EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(new_pipe));
 
         // First attempt an oversized write, which should fail because this
