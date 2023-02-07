@@ -29,12 +29,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
 
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Called when a new message arrives. |message| contains the message which
     // is a dictionary value containing entries for kNumberKey, kTextKey, and
     // kTimestampKey.
-    virtual void MessageReceived(const base::Value& message) = 0;
+    virtual void MessageReceived(const base::Value::Dict& message) = 0;
   };
 
   NetworkSmsHandler(const NetworkSmsHandler&) = delete;
@@ -69,13 +69,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   // Adds |message| to the list of received messages. If the length of the
   // list exceeds the maximum number of retained messages, erase the least
   // recently received message.
-  void AddReceivedMessage(const base::Value& message);
+  void AddReceivedMessage(const base::Value::Dict& message);
 
   // Notify observers that |message| was received.
-  void NotifyMessageReceived(const base::Value& message);
+  void NotifyMessageReceived(const base::Value::Dict& message);
 
   // Called from NetworkSmsDeviceHandler when a message is received.
-  void MessageReceived(const base::Value& message);
+  void MessageReceived(const base::Value::Dict& message);
 
   // Callback to handle the manager properties with the list of devices.
   void ManagerPropertiesCallback(absl::optional<base::Value::Dict> properties);
@@ -95,7 +95,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
 
   base::ObserverList<Observer, true>::Unchecked observers_;
   std::unique_ptr<NetworkSmsDeviceHandler> device_handler_;
-  std::vector<base::Value> received_messages_;
+  std::vector<base::Value::Dict> received_messages_;
   std::string cellular_device_path_;
   base::WeakPtrFactory<NetworkSmsHandler> weak_ptr_factory_{this};
 };

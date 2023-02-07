@@ -9,10 +9,10 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/values.h"
 
 namespace base {
 class Bus;
-class Value;
 }  // namespace base
 
 namespace dbus {
@@ -28,7 +28,7 @@ namespace ash {
 // DBusThreadManager instance.
 class COMPONENT_EXPORT(SHILL_CLIENT) SMSClient {
  public:
-  using GetAllCallback = base::OnceCallback<void(const base::Value& sms)>;
+  using GetAllCallback = base::OnceCallback<void(const base::Value::Dict& sms)>;
 
   static const char kSMSPropertyState[];
   static const char kSMSPropertyNumber[];

@@ -25,7 +25,7 @@ class ASH_EXPORT SmsObserver : public NetworkSmsHandler::Observer {
   ~SmsObserver() override;
 
   // NetworkSmsHandler::Observer:
-  void MessageReceived(const base::Value& message) override;
+  void MessageReceived(const base::Value::Dict& message) override;
 
  private:
   // Used to create notification identifier.

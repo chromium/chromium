@@ -28,7 +28,7 @@ const char kNotifierSms[] = "ash.sms";
 
 // Send the |message| to notification center to display to users. Note that each
 // notification will be assigned with different |message_id| as notification id.
-void ShowNotification(const base::Value* message,
+void ShowNotification(const base::Value::Dict* message,
                       const std::string& message_text,
                       const std::string& message_number,
                       int message_id) {
@@ -70,9 +70,9 @@ SmsObserver::~SmsObserver() {
   }
 }
 
-void SmsObserver::MessageReceived(const base::Value& message) {
+void SmsObserver::MessageReceived(const base::Value::Dict& message) {
   const std::string* message_text =
-      message.FindStringKey(NetworkSmsHandler::kTextKey);
+      message.FindString(NetworkSmsHandler::kTextKey);
   if (!message_text) {
     NET_LOG(ERROR) << "SMS message contains no content.";
     return;
@@ -85,7 +85,7 @@ void SmsObserver::MessageReceived(const base::Value& message) {
     return;
   }
   const std::string* message_number =
-      message.FindStringKey(NetworkSmsHandler::kNumberKey);
+      message.FindString(NetworkSmsHandler::kNumberKey);
   if (!message_number) {
     NET_LOG(DEBUG) << "SMS contains no number. Ignoring.";
     return;

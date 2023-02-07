@@ -35,9 +35,8 @@ class TestObserver : public NetworkSmsHandler::Observer {
   TestObserver() = default;
   ~TestObserver() override = default;
 
-  void MessageReceived(const base::Value& message) override {
-    const std::string* text =
-        message.FindStringKey(NetworkSmsHandler::kTextKey);
+  void MessageReceived(const base::Value::Dict& message) override {
+    const std::string* text = message.FindString(NetworkSmsHandler::kTextKey);
     if (text)
       messages_.insert(*text);
   }

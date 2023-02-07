@@ -55,7 +55,7 @@ TEST_F(SmsObserverTest, SendTextMessage) {
   SmsObserver* sms_observer = GetSmsObserver();
   EXPECT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
 
-  sms_observer->MessageReceived(base::Value(CreateMessage()));
+  sms_observer->MessageReceived(CreateMessage());
 
   const message_center::NotificationList::Notifications notifications =
       MessageCenter::Get()->GetVisibleNotifications();
@@ -75,7 +75,7 @@ TEST_F(SmsObserverTest, TextMessageMissingNumber) {
   EXPECT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
 
   sms_observer->MessageReceived(
-      base::Value(CreateMessage("FakeSMSClient: Test Message.", nullptr)));
+      CreateMessage("FakeSMSClient: Test Message.", nullptr));
   EXPECT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
 }
 
@@ -84,7 +84,7 @@ TEST_F(SmsObserverTest, TextMessageEmptyText) {
   SmsObserver* sms_observer = GetSmsObserver();
   EXPECT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
 
-  sms_observer->MessageReceived(base::Value(CreateMessage("")));
+  sms_observer->MessageReceived(CreateMessage(""));
   EXPECT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
 }
 
@@ -92,7 +92,7 @@ TEST_F(SmsObserverTest, TextMessageEmptyText) {
 TEST_F(SmsObserverTest, TextMessageMissingText) {
   SmsObserver* sms_observer = GetSmsObserver();
   EXPECT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
-  sms_observer->MessageReceived(base::Value(CreateMessage("")));
+  sms_observer->MessageReceived(CreateMessage(""));
   EXPECT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
 }
 
@@ -102,8 +102,8 @@ TEST_F(SmsObserverTest, MultipleTextMessages) {
   SmsObserver* sms_observer = GetSmsObserver();
   EXPECT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
 
-  sms_observer->MessageReceived(base::Value(CreateMessage("first message")));
-  sms_observer->MessageReceived(base::Value(CreateMessage("second message")));
+  sms_observer->MessageReceived(CreateMessage("first message"));
+  sms_observer->MessageReceived(CreateMessage("second message"));
   const message_center::NotificationList::Notifications notifications =
       MessageCenter::Get()->GetVisibleNotifications();
   EXPECT_EQ(2u, notifications.size());

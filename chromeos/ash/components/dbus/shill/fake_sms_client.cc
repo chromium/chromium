@@ -29,12 +29,11 @@ void FakeSMSClient::GetAll(const std::string& service_name,
           chromeos::switches::kSmsTestMessages)) {
     return;
   }
-  // Ownership passed to callback
-  base::Value sms(base::Value::Type::DICT);
-  sms.SetStringKey("Number", "000-000-0000");
-  sms.SetStringKey("Text",
-                   "FakeSMSClient: Test Message: " + object_path.value());
-  sms.SetStringKey("Timestamp", "Fri Jun  8 13:26:04 EDT 2012");
+
+  base::Value::Dict sms;
+  sms.Set("Number", "000-000-0000");
+  sms.Set("Text", "FakeSMSClient: Test Message: " + object_path.value());
+  sms.Set("Timestamp", "Fri Jun  8 13:26:04 EDT 2012");
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(sms)));
