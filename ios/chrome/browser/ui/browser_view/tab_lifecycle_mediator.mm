@@ -49,9 +49,12 @@
   std::unique_ptr<WebStateDependencyInstallerBridge> _dependencyInstallerBridge;
 }
 
-- (void)startWithWebStateList:(WebStateList*)webStateList {
-  _dependencyInstallerBridge =
-      std::make_unique<WebStateDependencyInstallerBridge>(self, webStateList);
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList {
+  if (self = [super init]) {
+    _dependencyInstallerBridge =
+        std::make_unique<WebStateDependencyInstallerBridge>(self, webStateList);
+  }
+  return self;
 }
 
 - (void)disconnect {

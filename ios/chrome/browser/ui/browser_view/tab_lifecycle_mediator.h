@@ -52,16 +52,19 @@ class WebStateList;
 @property(nonatomic, weak) id<SnapshotGeneratorDelegate>
     snapshotGeneratorDelegate;
 
+// Creates an instance of the mediator. Delegates will be installed into all
+// existing web states in `webStateList`. While the mediator is alive,
+// delegates will be added and removed from web states when they are inserted
+// into or removed from the web state list.
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
 // Disconnects all delegates set by the mediator on any web states in its
 // web state list. After `disconnect` is called, the mediator will not add
 // delegates to further webstates.
 - (void)disconnect;
-
-// From this point on, delegates will be installed into all
-// existing web states in `webStateList`. While the mediator is alive,
-// delegates will be added and removed from web states when they are inserted
-// into or removed from the web state list.
-- (void)startWithWebStateList:(WebStateList*)webStateList;
 
 @end
 
