@@ -111,7 +111,7 @@ def start_system_log(log_manager: LogManager,
         system_log = sys.stdout
     else:
         system_log = log_manager.open_log_file('system_log')
-    log_cmd = ['log', '--no-symbols']
+    log_cmd = ['log', '--raw']
     if log_args:
         log_cmd.extend(log_args)
     if symbol_paths:

@@ -51,7 +51,7 @@ class LogManagerTest(unittest.TestCase):
         log = log_manager.LogManager(None)
         log_manager.start_system_log(log, True, log_args=['test_log_args'])
         self.assertEqual(mock_ffx.call_args_list[0][0][0],
-                         ['log', '--no-symbols', 'test_log_args'])
+                         ['log', '--raw', 'test_log_args'])
         self.assertEqual(mock_ffx.call_count, 1)
 
     @mock.patch('log_manager.run_continuous_ffx_command')
@@ -65,8 +65,7 @@ class LogManagerTest(unittest.TestCase):
             log_manager.start_system_log(log, False, pkg_paths=['test_pkg'])
             log.stop()
         self.assertEqual(mock_ffx.call_count, 1)
-        self.assertEqual(mock_ffx.call_args_list[0][0][0],
-                         ['log', '--no-symbols'])
+        self.assertEqual(mock_ffx.call_args_list[0][0][0], ['log', '--raw'])
 
     def test_no_logging_dir_exception(self) -> None:
         """Tests empty LogManager throws an exception on |open_log_file|."""
