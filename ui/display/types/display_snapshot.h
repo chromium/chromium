@@ -120,6 +120,10 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   VariableRefreshRateState variable_refresh_rate_state() const {
     return variable_refresh_rate_state_;
   }
+  void set_variable_refresh_rate_state(
+      VariableRefreshRateState variable_refresh_rate_state) {
+    variable_refresh_rate_state_ = variable_refresh_rate_state;
+  }
   const absl::optional<gfx::Range>& vertical_display_range_limits() const {
     return vertical_display_range_limits_;
   }
@@ -144,6 +148,12 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   // Adds |connector_index_| to bits 33-48 of |edid_display_id_|. This function
   // is not plumbed via mojom to limit and control usage across processes.
   void AddIndexToDisplayId();
+
+  // Returns whether the display is capable of enabling variable refresh rates.
+  bool IsVrrCapable() const;
+
+  // Returns whether the display has variable refresh rates enabled.
+  bool IsVrrEnabled() const;
 
  private:
   // Display id for this output.
@@ -257,7 +267,7 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   const gfx::Size maximum_cursor_size_;
 
   // Whether VRR is enabled, disabled, or not capable on this display.
-  const VariableRefreshRateState variable_refresh_rate_state_;
+  VariableRefreshRateState variable_refresh_rate_state_;
   // The supported vrefresh frequency range for this display. Omitted if this
   // display is not VRR capable.
   const absl::optional<gfx::Range> vertical_display_range_limits_;

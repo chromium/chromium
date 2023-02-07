@@ -196,4 +196,13 @@ void DisplaySnapshot::AddIndexToDisplayId() {
   edid_display_id_ |= static_cast<int64_t>(connector_index_) << 32;
 }
 
+bool DisplaySnapshot::IsVrrCapable() const {
+  return variable_refresh_rate_state_ != display::kVrrNotCapable &&
+         vertical_display_range_limits_.has_value();
+}
+
+bool DisplaySnapshot::IsVrrEnabled() const {
+  return variable_refresh_rate_state_ == display::kVrrEnabled;
+}
+
 }  // namespace display
