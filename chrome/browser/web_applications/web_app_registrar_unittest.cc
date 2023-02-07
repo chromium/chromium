@@ -972,10 +972,6 @@ TEST_F(WebAppRegistrarTest,
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
   web_app->SetIsLocallyInstalled(false);
 
-  // Not locally installed apps get browser display mode because they do not
-  // have information aboud isolation because manifest is not available.
-  web_app->SetStorageIsolated(true);
-
   RegisterApp(std::move(web_app));
 
   EXPECT_EQ(DisplayMode::kBrowser,
@@ -993,7 +989,6 @@ TEST_F(WebAppRegistrarTest,
   web_app->SetDisplayMode(DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
   web_app->SetIsLocallyInstalled(true);
-  web_app->SetStorageIsolated(true);
   web_app->SetIsolationData(IsolationData(IsolationData::DevModeProxy{
       .proxy_url = url::Origin::Create(GURL("http://127.0.0.1:8080"))}));
 

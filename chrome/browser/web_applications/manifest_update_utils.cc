@@ -209,7 +209,6 @@ bool IsUpdateNeededForManifest(const AppId& app_id,
 
   // TODO(crbug.com/897314): Check changes to tab_strip field once icons are
   // stored.
-  // TODO(crbug.com/1212849): Handle changes to is_storage_isolated.
   // TODO(crbug.com/926083): Check more manifest fields.
   return false;
 }

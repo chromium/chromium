@@ -608,8 +608,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   }
   app->SetDisallowedLaunchProtocols(std::move(disallowed_launch_protocols));
 
-  app->SetStorageIsolated(random.next_bool());
-
   app->SetWindowControlsOverlayEnabled(false);
 
   WebApp::SyncFallbackData sync_fallback_data;

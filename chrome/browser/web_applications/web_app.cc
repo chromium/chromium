@@ -540,10 +540,6 @@ void WebApp::SetWindowControlsOverlayEnabled(bool enabled) {
   window_controls_overlay_enabled_ = enabled;
 }
 
-void WebApp::SetStorageIsolated(bool is_storage_isolated) {
-  is_storage_isolated_ = is_storage_isolated;
-}
-
 void WebApp::SetLaunchHandler(absl::optional<LaunchHandler> launch_handler) {
   launch_handler_ = std::move(launch_handler);
 }
@@ -744,7 +740,6 @@ bool WebApp::operator==(const WebApp& other) const {
         app.file_handler_approval_state_,
         app.file_handler_os_integration_state_,
         app.window_controls_overlay_enabled_,
-        app.is_storage_isolated_,
         app.launch_handler_,
         app.parent_app_id_,
         app.permissions_policy_,
@@ -901,8 +896,6 @@ base::Value WebApp::AsDebugValue() const {
            is_from_sync_and_pending_installation_);
 
   root.Set("is_locally_installed", is_locally_installed_);
-
-  root.Set("is_storage_isolated", is_storage_isolated_);
 
   root.Set("is_uninstalling", is_uninstalling_);
 

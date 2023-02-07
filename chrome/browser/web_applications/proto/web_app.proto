@@ -303,9 +303,6 @@ message WebAppProto {
   // If present, the URL to use to create a new note in the app.
   optional string note_taking_new_note_url = 35;
 
-  // Whether the app should be loaded in a dedicated storage partition.
-  optional bool is_storage_isolated = 36;
-
   // A list of allowed launch protocols when launching the app with a protocol
   // url. This list is checked to see if we can bypass the permission dialog
   // when launching the web app.
