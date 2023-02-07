@@ -1240,7 +1240,7 @@
   "media_router_e2e_tests": {
     "args": [
       "--test_binary",
-      "./browser_tests",
+      "./interactive_ui_tests",
     ],
     "label": "//chrome/test/media_router:media_router_e2e_tests",
     "script": "//chrome/test/media_router/internal/media_router_tests.py",

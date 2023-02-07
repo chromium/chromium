@@ -90,7 +90,7 @@ if (enable_downstream_media_tests) {
     data_deps = [
       ":browser_test_resources",
       ":e2e_test_resources",
-      "//chrome/test:browser_tests",
+      "//chrome/test:interactive_ui_tests",
     ]
     data = [ "internal/" ]
   }
@@ -113,7 +113,7 @@ if (enable_downstream_media_tests) {
     testonly = true
     data_deps = [
       ":browser_test_resources",
-      "//chrome/test:browser_tests",
+      "//chrome/test:interactive_ui_tests",
     ]
     data = [ "internal/" ]
   }
