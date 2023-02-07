@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <sstream>
 #include <string>
 #include <utility>
 
@@ -29,20 +28,19 @@ namespace {
 
 class AttributionInteropParser {
  public:
-  explicit AttributionInteropParser(std::ostringstream& stream)
-      : error_manager_(stream) {}
+  AttributionInteropParser() = default;
 
   // Converts interop test input to simulator input format.
-  absl::optional<base::Value::Dict> SimulatorInputFromInteropInput(
+  base::expected<base::Value::Dict, std::string> SimulatorInputFromInteropInput(
       base::Value::Dict) &&;
 
   // Converts simulator output to interop test output format.
-  absl::optional<base::Value::Dict> InteropOutputFromSimulatorOutput(
-      base::Value::Dict) &&;
+  base::expected<base::Value::Dict, std::string>
+  InteropOutputFromSimulatorOutput(base::Value::Dict) &&;
 
-  [[nodiscard]] bool ParseConfig(const base::Value::Dict&,
-                                 AttributionConfig&,
-                                 bool required) &&;
+  [[nodiscard]] std::string ParseConfig(const base::Value::Dict&,
+                                        AttributionConfig&,
+                                        bool required) &&;
 
  private:
   bool has_error() const { return error_manager_.has_error(); }
@@ -358,7 +356,7 @@ base::Value::List AttributionInteropParser::ParseEvents(base::Value::Dict& dict,
   return results;
 }
 
-absl::optional<base::Value::Dict>
+base::expected<base::Value::Dict, std::string>
 AttributionInteropParser::SimulatorInputFromInteropInput(
     base::Value::Dict input) && {
   static constexpr char kKey[] = "input";
@@ -367,14 +365,14 @@ AttributionInteropParser::SimulatorInputFromInteropInput(
 
   base::Value* dict = input.Find(kKey);
   if (!EnsureDictionary(dict)) {
-    return absl::nullopt;
+    return base::unexpected(std::move(error_manager_).TakeError());
   }
 
   base::Value::List sources = ParseEvents(dict->GetDict(), "sources");
   base::Value::List triggers = ParseEvents(dict->GetDict(), "triggers");
 
   if (has_error()) {
-    return absl::nullopt;
+    return base::unexpected(std::move(error_manager_).TakeError());
   }
 
   base::Value::Dict result;
@@ -507,7 +505,7 @@ base::Value::List AttributionInteropParser::ParseVerboseDebugReports(
   return reports;
 }
 
-absl::optional<base::Value::Dict>
+base::expected<base::Value::Dict, std::string>
 AttributionInteropParser::InteropOutputFromSimulatorOutput(
     base::Value::Dict output) && {
   base::Value::List event_level_results = ParseEventLevelReports(output);
@@ -517,7 +515,7 @@ AttributionInteropParser::InteropOutputFromSimulatorOutput(
   base::Value::List verbose_debug_reports = ParseVerboseDebugReports(output);
 
   if (has_error()) {
-    return absl::nullopt;
+    return base::unexpected(std::move(error_manager_).TakeError());
   }
 
   base::Value::Dict dict;
@@ -558,9 +556,9 @@ void AttributionInteropParser::ParseRandomizedResponseRate(
   *Error() << "must be a double between 0 and 1 formatted as string";
 }
 
-bool AttributionInteropParser::ParseConfig(const base::Value::Dict& dict,
-                                           AttributionConfig& config,
-                                           bool required) && {
+std::string AttributionInteropParser::ParseConfig(const base::Value::Dict& dict,
+                                                  AttributionConfig& config,
+                                                  bool required) && {
   ParseInt(dict, "max_sources_per_origin", config.max_sources_per_origin,
            required);
 
@@ -636,51 +634,38 @@ bool AttributionInteropParser::ParseConfig(const base::Value::Dict& dict,
         base::Minutes(aggregatable_report_delay_span);
   }
 
-  return !has_error();
+  return std::move(error_manager_).TakeError();
 }
 
 }  // namespace
 
 base::expected<base::Value::Dict, std::string>
 AttributionSimulatorInputFromInteropInput(base::Value::Dict input) {
-  std::ostringstream error_stream;
-  auto result = AttributionInteropParser(error_stream)
-                    .SimulatorInputFromInteropInput(std::move(input));
-  if (!result.has_value()) {
-    return base::unexpected(error_stream.str());
-  }
-  return std::move(*result);
+  return AttributionInteropParser().SimulatorInputFromInteropInput(
+      std::move(input));
 }
 
 base::expected<base::Value::Dict, std::string>
 AttributionInteropOutputFromSimulatorOutput(base::Value::Dict output) {
-  std::ostringstream error_stream;
-  auto result = AttributionInteropParser(error_stream)
-                    .InteropOutputFromSimulatorOutput(std::move(output));
-  if (!result.has_value()) {
-    return base::unexpected(error_stream.str());
-  }
-  return std::move(*result);
+  return AttributionInteropParser().InteropOutputFromSimulatorOutput(
+      std::move(output));
 }
 
 base::expected<AttributionConfig, std::string> ParseAttributionConfig(
     const base::Value::Dict& dict) {
-  std::ostringstream error_stream;
   AttributionConfig config;
-  bool ok = AttributionInteropParser(error_stream)
-                .ParseConfig(dict, config, /*required=*/true);
-  if (!ok) {
-    return base::unexpected(error_stream.str());
+  std::string error =
+      AttributionInteropParser().ParseConfig(dict, config, /*required=*/true);
+  if (!error.empty()) {
+    return base::unexpected(std::move(error));
   }
   return config;
 }
 
 std::string MergeAttributionConfig(const base::Value::Dict& dict,
                                    AttributionConfig& config) {
-  std::ostringstream error_stream;
-  bool ok = AttributionInteropParser(error_stream)
-                .ParseConfig(dict, config, /*required=*/false);
-  return ok ? "" : error_stream.str();
+  return AttributionInteropParser().ParseConfig(dict, config,
+                                                /*required=*/false);
 }
 
 }  // namespace content

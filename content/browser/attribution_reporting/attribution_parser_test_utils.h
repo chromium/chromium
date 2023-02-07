@@ -9,6 +9,8 @@
 
 #include <iosfwd>
 #include <memory>
+#include <sstream>
+#include <string>
 #include <vector>
 
 #include "base/memory/raw_ref.h"
@@ -22,7 +24,7 @@ class AttributionParserErrorManager {
   using Context = absl::variant<base::StringPiece, size_t>;
   using ContextPath = std::vector<Context>;
 
-  explicit AttributionParserErrorManager(std::ostream& stream);
+  AttributionParserErrorManager();
   ~AttributionParserErrorManager();
 
   AttributionParserErrorManager(const AttributionParserErrorManager&) = delete;
@@ -52,7 +54,7 @@ class AttributionParserErrorManager {
   // Writes a newline on destruction.
   class ErrorWriter {
    public:
-    explicit ErrorWriter(std::ostream& stream);
+    explicit ErrorWriter(std::ostringstream& stream);
 
     ~ErrorWriter();
 
@@ -62,14 +64,14 @@ class AttributionParserErrorManager {
     ErrorWriter& operator=(const ErrorWriter&) = delete;
     ErrorWriter& operator=(ErrorWriter&&) = delete;
 
-    std::ostream& operator*();
+    std::ostringstream& operator*() { return *stream_; }
 
     void operator()(base::StringPiece key);
 
     void operator()(size_t index);
 
    private:
-    std::ostream& stream_;
+    const raw_ref<std::ostringstream> stream_;
   };
 
   [[nodiscard]] std::unique_ptr<ScopedContext> PushContext(Context context);
@@ -78,8 +80,10 @@ class AttributionParserErrorManager {
 
   bool has_error() const { return has_error_; }
 
+  std::string TakeError() &&;
+
  private:
-  const raw_ref<std::ostream> error_stream_;
+  std::ostringstream error_stream_;
 
   ContextPath context_path_;
   bool has_error_ = false;

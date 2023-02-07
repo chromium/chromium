@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -41,9 +40,8 @@ constexpr char kTimestampKey[] = "timestamp";
 
 class AttributionSimulatorInputParser {
  public:
-  AttributionSimulatorInputParser(base::Time offset_time,
-                                  std::ostringstream& error_stream)
-      : offset_time_(offset_time), error_manager_(error_stream) {}
+  explicit AttributionSimulatorInputParser(base::Time offset_time)
+      : offset_time_(offset_time) {}
 
   ~AttributionSimulatorInputParser() = default;
 
@@ -56,7 +54,7 @@ class AttributionSimulatorInputParser {
   AttributionSimulatorInputParser& operator=(
       AttributionSimulatorInputParser&&) = delete;
 
-  absl::optional<AttributionSimulationEvents> Parse(
+  base::expected<AttributionSimulationEvents, std::string> Parse(
       base::Value::Dict input) && {
     static constexpr char kKeySources[] = "sources";
     if (base::Value* sources = input.Find(kKeySources)) {
@@ -72,8 +70,9 @@ class AttributionSimulatorInputParser {
                 [&](base::Value trigger) { ParseTrigger(std::move(trigger)); });
     }
 
-    if (has_error())
-      return absl::nullopt;
+    if (has_error()) {
+      return base::unexpected(std::move(error_manager_).TakeError());
+    }
 
     return std::move(events_);
   }
@@ -300,13 +299,7 @@ class AttributionSimulatorInputParser {
 base::expected<AttributionSimulationEvents, std::string>
 ParseAttributionSimulationInput(base::Value::Dict input,
                                 const base::Time offset_time) {
-  std::ostringstream error_stream;
-  auto result = AttributionSimulatorInputParser(offset_time, error_stream)
-                    .Parse(std::move(input));
-  if (!result.has_value()) {
-    return base::unexpected(error_stream.str());
-  }
-  return *result;
+  return AttributionSimulatorInputParser(offset_time).Parse(std::move(input));
 }
 
 }  // namespace content
