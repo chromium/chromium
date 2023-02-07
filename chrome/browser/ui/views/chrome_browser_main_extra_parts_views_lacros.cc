@@ -17,8 +17,9 @@ ChromeBrowserMainExtraPartsViewsLacros::
     ~ChromeBrowserMainExtraPartsViewsLacros() = default;
 
 void ChromeBrowserMainExtraPartsViewsLacros::PreProfileInit() {
-  if (chromeos::wm::features::IsFloatWindowEnabled())
+  if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
     float_controller_ = std::make_unique<FloatControllerLacros>();
+  }
 
   immersive_context_ = std::make_unique<ImmersiveContextLacros>();
   snap_controller_ = std::make_unique<SnapControllerLacros>();

@@ -210,7 +210,7 @@ aura::Window* GetTopVisibleWindow() {
 
     // Floated windows can be tucked offscreen in tablet mode. Their target
     // visibility is true but the app list is fully visible under them.
-    if (chromeos::wm::features::IsFloatWindowEnabled() &&
+    if (chromeos::wm::features::IsWindowLayoutMenuEnabled() &&
         WindowState::Get(window)->IsFloated() &&
         Shell::Get()->float_controller()->IsFloatedWindowTuckedForTablet(
             window)) {

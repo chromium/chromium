@@ -249,7 +249,7 @@ gfx::Rect TabletModeWindowState::GetBoundsInTabletMode(
             state_object->snap_ratio().value_or(kDefaultSnapRatio));
   }
 
-  if (chromeos::wm::features::IsFloatWindowEnabled() &&
+  if (chromeos::wm::features::IsWindowLayoutMenuEnabled() &&
       state_object->IsFloated()) {
     return FloatController::GetPreferredFloatWindowTabletBounds(window);
   }

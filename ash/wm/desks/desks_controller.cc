@@ -1956,7 +1956,7 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
     // reuse that container. Since floated window doesn't belong to desk
     // container, handle it separately.
     aura::Window* floated_window = nullptr;
-    if (chromeos::wm::features::IsFloatWindowEnabled()) {
+    if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
       floated_window =
           Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
               removed_desk);
@@ -2170,7 +2170,7 @@ const Desk* DesksController::FindDeskOfWindow(aura::Window* window) const {
 
   // Floating windows are stored in float container, their relationship with
   // desks can be found in `FloatedWindowInfo`.
-  if (chromeos::wm::features::IsFloatWindowEnabled() &&
+  if (chromeos::wm::features::IsWindowLayoutMenuEnabled() &&
       WindowState::Get(window)->IsFloated()) {
     return Shell::Get()->float_controller()->FindDeskOfFloatedWindow(window);
   }

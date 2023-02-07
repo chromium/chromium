@@ -3868,11 +3868,6 @@
     "expiry_milestone": 117
   },
   {
-    "name": "float-window",
-    "owners": [ "shidi", "afakhry" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "focus-follows-cursor",
     "owners": [ "dandersson", "tclaiborne" ],
     "expiry_milestone": 120
@@ -5605,11 +5600,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "partial-split",
-    "owners": [ "sophiewen", "chromeos-wmp-eng@google.com" ],
-    "expiry_milestone": 114
-  },
-  {
     "name": "partitioned-cookies",
     "owners": [ "dylancutler@google.com" ],
     "expiry_milestone": 118
@@ -7287,6 +7277,11 @@
     "name": "win-10-tab-search-caption-button",
     "owners": [ "tluk@google.com", "chrome-cros@google.com" ],
     "expiry_milestone": 99
+  },
+  {
+    "name": "window-layout-menu",
+    "owners": [ "shidi", "chromeos-wmp-eng@google.com" ],
+    "expiry_milestone": 122
   },
   {
     "name": "windows-scrolling-personality",

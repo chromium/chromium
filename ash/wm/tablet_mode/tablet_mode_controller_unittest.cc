@@ -2070,7 +2070,7 @@ class TabletModeControllerFloatScreenshotTest
     : public TabletModeControllerScreenshotTest {
  public:
   TabletModeControllerFloatScreenshotTest()
-      : scoped_feature_list_(chromeos::wm::features::kFloatWindow) {}
+      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
   TabletModeControllerFloatScreenshotTest(
       const TabletModeControllerFloatScreenshotTest&) = delete;
   TabletModeControllerFloatScreenshotTest& operator=(

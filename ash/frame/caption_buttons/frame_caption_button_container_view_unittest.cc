@@ -342,12 +342,13 @@ TEST_F(FrameCaptionButtonContainerViewTest, ResizeButtonRestoreBehavior) {
   EXPECT_TRUE(window_state->IsSnapped());
 }
 
-// Test float button requires `kFloatWindow` feature to be enabled during setup.
+// Test float button requires `kWindowLayoutMenu` feature to be enabled during
+// setup.
 class FrameCaptionButtonContainerViewWithFloatTest
     : public FrameCaptionButtonContainerViewTest {
  public:
   FrameCaptionButtonContainerViewWithFloatTest()
-      : scoped_feature_list_(chromeos::wm::features::kFloatWindow) {}
+      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
   FrameCaptionButtonContainerViewWithFloatTest(
       const FrameCaptionButtonContainerViewWithFloatTest&) = delete;
   FrameCaptionButtonContainerViewWithFloatTest& operator=(

@@ -103,7 +103,7 @@ class WindowFloatTest : public AshTestBase {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::wm::features::kFloatWindow}, {});
+        {chromeos::wm::features::kWindowLayoutMenu}, {});
     AshTestBase::SetUp();
   }
 

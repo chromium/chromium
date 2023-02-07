@@ -41,7 +41,7 @@ TabletModeFloatWindowResizer::TabletModeFloatWindowResizer(
       split_view_drag_indicators_(std::make_unique<SplitViewDragIndicators>(
           window_state->window()->GetRootWindow())),
       last_location_in_parent_(details().initial_location_in_parent) {
-  DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
+  DCHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
   // TODO(sophiewen): Remove this once the untuck window widget is implemented.
   Shell::Get()->float_controller()->MaybeUntuckFloatedWindowForTablet(
       GetTarget());

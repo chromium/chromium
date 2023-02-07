@@ -1083,7 +1083,7 @@ void BrowserCommandController::InitCommandState() {
 #if BUILDFLAG(IS_CHROMEOS)
   command_updater_.UpdateCommandEnabled(
       IDC_TOGGLE_MULTITASK_MENU,
-      chromeos::wm::features::IsFloatWindowEnabled());
+      chromeos::wm::features::IsWindowLayoutMenuEnabled());
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   command_updater_.UpdateCommandEnabled(IDC_MINIMIZE_WINDOW, true);

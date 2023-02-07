@@ -97,8 +97,9 @@ void MultitaskMenuNudgeController::RegisterProfilePrefs(
 }
 
 void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
-  if (!chromeos::wm::features::IsFloatWindowEnabled())
+  if (!chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
     return;
+  }
 
   if (g_suppress_nudge_for_testing)
     return;

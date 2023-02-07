@@ -184,7 +184,7 @@ void TabletModeWindowManager::Init() {
   accounts_since_entering_tablet_.insert(
       Shell::Get()->session_controller()->GetActiveAccountId());
   event_handler_ = std::make_unique<TabletModeToggleFullscreenEventHandler>();
-  if (chromeos::wm::features::IsFloatWindowEnabled()) {
+  if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
     tablet_mode_multitask_menu_event_handler_ =
         std::make_unique<TabletModeMultitaskMenuEventHandler>();
   }

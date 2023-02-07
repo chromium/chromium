@@ -27,7 +27,7 @@ constexpr int kCueHeight = 4;
 class TabletModeMultitaskCueTest : public AshTestBase {
  public:
   TabletModeMultitaskCueTest()
-      : scoped_feature_list_(chromeos::wm::features::kFloatWindow) {}
+      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
   TabletModeMultitaskCueTest(const TabletModeMultitaskCueTest&) = delete;
   TabletModeMultitaskCueTest& operator=(const TabletModeMultitaskCueTest&) =
       delete;

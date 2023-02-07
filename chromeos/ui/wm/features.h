@@ -10,17 +10,11 @@
 
 namespace chromeos::wm::features {
 
-COMPONENT_EXPORT(CHROMEOS_UI_WM) BASE_DECLARE_FEATURE(kFloatWindow);
+COMPONENT_EXPORT(CHROMEOS_UI_WM) BASE_DECLARE_FEATURE(kWindowLayoutMenu);
 
-COMPONENT_EXPORT(CHROMEOS_UI_WM) BASE_DECLARE_FEATURE(kPartialSplit);
-
-// Checks if the float feature is enabled. On ash, this checks the feature flag.
-// On lacros, this checks the lacros service.
-COMPONENT_EXPORT(CHROMEOS_UI_WM) bool IsFloatWindowEnabled();
-
-// Checks if partial split is enabled. On ash, this checks the feature flag.
-// False otherwise.
-COMPONENT_EXPORT(CHROMEOS_UI_WM) bool IsPartialSplitEnabled();
+// Checks if the window layout menu feature is enabled. On ash, this checks the
+// feature flag. On lacros, this checks the lacros service.
+COMPONENT_EXPORT(CHROMEOS_UI_WM) bool IsWindowLayoutMenuEnabled();
 
 }  // namespace chromeos::wm::features
 

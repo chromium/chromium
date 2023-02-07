@@ -220,7 +220,7 @@ FrameSizeButton::FrameSizeButton(PressedCallback callback,
       set_buttons_to_snap_mode_delay_ms_(kSetButtonsToSnapModeDelayMs) {
   display_observer_.emplace(this);
 
-  if (chromeos::wm::features::IsFloatWindowEnabled()) {
+  if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
     pie_animation_view_ =
         AddChildView(std::make_unique<PieAnimationView>(this));
   }
@@ -235,7 +235,7 @@ bool FrameSizeButton::IsMultitaskMenuShown() const {
 void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
   // Show Multitask Menu if float is enabled. Note here float flag is also used
   // to represent other relatable UI/UX changes.
-  if (chromeos::wm::features::IsFloatWindowEnabled()) {
+  if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
     DCHECK(!chromeos::TabletState::Get()->InTabletMode());
     RecordMultitaskMenuEntryType(entry_type);
     // Owned by the bubble which contains this view. If there is an existing
@@ -249,7 +249,7 @@ void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
 }
 
 void FrameSizeButton::ToggleMultitaskMenu() {
-  DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
+  DCHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
   DCHECK(!chromeos::TabletState::Get()->InTabletMode());
   if (!multitask_menu_) {
     RecordMultitaskMenuEntryType(MultitaskMenuEntryType::kAccel);
@@ -357,8 +357,9 @@ void FrameSizeButton::OnGestureEvent(ui::GestureEvent* event) {
 void FrameSizeButton::StateChanged(views::Button::ButtonState old_state) {
   views::FrameCaptionButton::StateChanged(old_state);
 
-  if (!chromeos::wm::features::IsFloatWindowEnabled())
+  if (!chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
     return;
+  }
 
   // Pie animation will start on both active/inactive window.
   if (GetState() == views::Button::STATE_HOVERED) {
@@ -407,7 +408,7 @@ void FrameSizeButton::StartSetButtonsToSnapModeTimer(
 
 void FrameSizeButton::StartPieAnimation(base::TimeDelta duration,
                                         MultitaskMenuEntryType entry_type) {
-  if (!chromeos::wm::features::IsFloatWindowEnabled() ||
+  if (!chromeos::wm::features::IsWindowLayoutMenuEnabled() ||
       chromeos::TabletState::Get()->InTabletMode()) {
     return;
   }

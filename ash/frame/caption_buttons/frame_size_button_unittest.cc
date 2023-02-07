@@ -657,7 +657,8 @@ TEST_F(FrameSizeButtonPortraitDisplayTest, SnapButtons) {
   EXPECT_TRUE(HasStateType(WindowStateType::kPrimarySnapped));
 }
 
-// Test multitask menu requires kFloatWindow feature to be enabled during setup.
+// Test multitask menu requires kWindowLayoutMenu feature to be enabled during
+// setup.
 class MultitaskMenuTest : public FrameSizeButtonTest {
  public:
   MultitaskMenuTest() = default;
@@ -690,9 +691,7 @@ class MultitaskMenuTest : public FrameSizeButtonTest {
   void SetUp() override {
     // Ensure float feature is enabled.
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::wm::features::kFloatWindow,
-         chromeos::wm::features::kPartialSplit},
-        {});
+        {chromeos::wm::features::kWindowLayoutMenu}, {});
     FrameSizeButtonTest::SetUp();
   }
 

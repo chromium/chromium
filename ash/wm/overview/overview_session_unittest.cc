@@ -3454,7 +3454,7 @@ INSTANTIATE_TEST_SUITE_P(All, OverviewSessionTest, testing::Bool());
 class FloatOverviewSessionTest : public OverviewTestBase {
  public:
   FloatOverviewSessionTest()
-      : scoped_feature_list_(chromeos::wm::features::kFloatWindow) {}
+      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
   FloatOverviewSessionTest(const FloatOverviewSessionTest&) = delete;
   FloatOverviewSessionTest& operator=(const FloatOverviewSessionTest&) = delete;
   ~FloatOverviewSessionTest() override = default;

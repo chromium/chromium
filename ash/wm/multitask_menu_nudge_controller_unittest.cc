@@ -42,7 +42,7 @@ class MultitaskMenuNudgeControllerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        chromeos::wm::features::kFloatWindow);
+        chromeos::wm::features::kWindowLayoutMenu);
 
     AshTestBase::SetUp();
 

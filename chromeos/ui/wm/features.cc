@@ -12,25 +12,15 @@ namespace chromeos::wm::features {
 
 // Enables a window to float.
 // https://crbug.com/1240411
-BASE_FEATURE(kFloatWindow, "FloatWindow", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWindowLayoutMenu,
+             "WindowLayoutMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPartialSplit, "PartialSplit", base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsFloatWindowEnabled() {
+bool IsWindowLayoutMenuEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return base::FeatureList::IsEnabled(kFloatWindow);
+  return base::FeatureList::IsEnabled(kWindowLayoutMenu);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsFloatWindowEnabled();
-#else
-  return false;
-#endif
-}
-
-bool IsPartialSplitEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return base::FeatureList::IsEnabled(kPartialSplit);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsPartialSplitEnabled();
+  return chromeos::BrowserParamsProxy::Get()->IsWindowLayoutMenuEnabled();
 #else
   return false;
 #endif

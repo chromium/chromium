@@ -1311,7 +1311,7 @@ class FloatBrowserNonClientFrameViewChromeOSTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      chromeos::wm::features::kFloatWindow};
+      chromeos::wm::features::kWindowLayoutMenu};
 };
 
 IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,

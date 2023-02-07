@@ -501,7 +501,7 @@ bool CanToggleDictation() {
 }
 
 bool CanToggleFloatingWindow() {
-  if (!chromeos::wm::features::IsFloatWindowEnabled()) {
+  if (!chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
     return false;
   }
   aura::Window* window = window_util::GetActiveWindow();
@@ -509,7 +509,7 @@ bool CanToggleFloatingWindow() {
 }
 
 bool CanToggleMultitaskMenu() {
-  if (!chromeos::wm::features::IsFloatWindowEnabled() ||
+  if (!chromeos::wm::features::IsWindowLayoutMenuEnabled() ||
       Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     return false;
   }
@@ -1242,7 +1242,7 @@ void ToggleDockedMagnifier() {
 }
 
 void ToggleFloating() {
-  DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
+  DCHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
   aura::Window* window = window_util::GetActiveWindow();
   DCHECK(window);
   DCHECK(chromeos::wm::CanFloatWindow(window));
@@ -1457,7 +1457,7 @@ void ToggleMirrorMode() {
 }
 
 void ToggleMultitaskMenu() {
-  DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
+  DCHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
   aura::Window* window = window_util::GetActiveWindow();
   DCHECK(window);
   auto* frame_view = NonClientFrameViewAsh::Get(window);

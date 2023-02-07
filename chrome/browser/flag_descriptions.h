@@ -1882,6 +1882,9 @@ extern const char kWebXrRuntimeChoiceOpenXR[];
 extern const char kWebXrIncubationsName[];
 extern const char kWebXrIncubationsDescription[];
 
+extern const char kWindowLayoutMenu[];
+extern const char kWindowLayoutMenuDescription[];
+
 extern const char kWindowsFollowCursorName[];
 extern const char kWindowsFollowCursorDescription[];
 
@@ -3128,9 +3131,6 @@ extern const char kFilesTrashDescription[];
 extern const char kFirstPartyVietnameseInputName[];
 extern const char kFirstPartyVietnameseInputDescription[];
 
-extern const char kFloatWindow[];
-extern const char kFloatWindowDescription[];
-
 extern const char kFocusFollowsCursorName[];
 extern const char kFocusFollowsCursorDescription[];
 
@@ -3292,9 +3292,6 @@ extern const char kOsSettingsAppBadgingToggleDescription[];
 
 extern const char kOsSettingsSearchFeedbackName[];
 extern const char kOsSettingsSearchFeedbackDescription[];
-
-extern const char kPartialSplit[];
-extern const char kPartialSplitDescription[];
 
 extern const char kPcieBillboardNotificationName[];
 extern const char kPcieBillboardNotificationDescription[];

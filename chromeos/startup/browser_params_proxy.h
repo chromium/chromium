@@ -116,7 +116,7 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   crosapi::mojom::BrowserInitParams::LacrosSelection LacrosSelection() const;
 
-  bool IsFloatWindowEnabled() const;
+  bool IsWindowLayoutMenuEnabled() const;
 
   bool IsCloudGamingDevice() const;
 
@@ -124,8 +124,6 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
       const;
 
   const crosapi::mojom::ExtensionKeepListPtr& ExtensionKeepList() const;
-
-  bool IsPartialSplitEnabled() const;
 
   bool VcControlsUiEnabled() const;
 

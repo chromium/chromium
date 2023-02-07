@@ -1858,7 +1858,7 @@ void PromptToNameWindow(Browser* browser) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 void ToggleMultitaskMenu(Browser* browser) {
-  DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
+  DCHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
   browser->window()->ToggleMultitaskMenu();
 }
 #endif

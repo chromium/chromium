@@ -94,8 +94,9 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::wm::features::kFloatWindow,
-         chromeos::wm::features::kPartialSplit},
+        {
+            chromeos::wm::features::kWindowLayoutMenu,
+        },
         {});
 
     // This allows us to snap to the bottom in portrait mode.

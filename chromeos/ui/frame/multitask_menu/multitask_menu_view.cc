@@ -83,8 +83,7 @@ MultitaskMenuView::MultitaskMenuView(
   }
 
   // Partial button.
-  if (buttons & kPartialSplit &&
-      chromeos::wm::features::IsPartialSplitEnabled()) {
+  if (buttons & kPartialSplit) {
     auto partial_button = std::make_unique<SplitButtonView>(
         SplitButtonView::SplitButtonType::kPartialButtons,
         base::BindRepeating(&MultitaskMenuView::PartialButtonPressed,

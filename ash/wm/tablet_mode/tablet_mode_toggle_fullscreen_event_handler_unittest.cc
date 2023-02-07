@@ -59,8 +59,9 @@ class TabletModeToggleFullscreenEventHandlerTest : public AshTestBase {
                                                gfx::Point(100, end_y),
                                                base::Milliseconds(100), 3);
 
-    if (!chromeos::wm::features::IsFloatWindowEnabled())
+    if (!chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
       return;
+    }
 
     // Swiping down on the center reveals the tablet mode multitask menu. Ensure
     // our swipes do not reveal it, as it may eat following gestures.

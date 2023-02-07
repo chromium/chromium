@@ -418,7 +418,7 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
   // If there is a floated window that belongs to this desk, since it doesn't
   // belong to `desk_container`, we need to add it separately.
   aura::Window* floated_window = nullptr;
-  if (chromeos::wm::features::IsFloatWindowEnabled() &&
+  if (chromeos::wm::features::IsWindowLayoutMenuEnabled() &&
       (floated_window =
            Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
                mini_view_->desk()))) {

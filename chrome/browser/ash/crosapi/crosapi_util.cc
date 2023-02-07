@@ -571,10 +571,10 @@ void InjectBrowserInitParams(
   params->use_cups_for_printing = GetUseCupsForPrinting();
   params->use_floss_bluetooth = floss::features::IsFlossEnabled();
 
-  params->enable_float_window =
-      base::FeatureList::IsEnabled(chromeos::wm::features::kFloatWindow);
-  params->enable_partial_split =
-      base::FeatureList::IsEnabled(chromeos::wm::features::kPartialSplit);
+  params->enable_window_layout_menu =
+      base::FeatureList::IsEnabled(chromeos::wm::features::kWindowLayoutMenu);
+  // TODO(b/267528378): Remove this after M114.
+  params->enable_partial_split_deprecated = true;
 
   params->is_cloud_gaming_device =
       chromeos::features::IsCloudGamingDeviceEnabled();

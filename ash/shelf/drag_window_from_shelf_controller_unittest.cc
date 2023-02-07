@@ -1420,7 +1420,7 @@ class FloatDragWindowFromShelfControllerTest
     : public DragWindowFromShelfControllerTest {
  public:
   FloatDragWindowFromShelfControllerTest()
-      : scoped_feature_list_(chromeos::wm::features::kFloatWindow) {}
+      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
   FloatDragWindowFromShelfControllerTest(
       const FloatDragWindowFromShelfControllerTest&) = delete;
   FloatDragWindowFromShelfControllerTest& operator=(

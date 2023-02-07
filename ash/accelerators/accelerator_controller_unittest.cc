@@ -1428,7 +1428,7 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleQuickSettings) {
 TEST_F(AcceleratorControllerTest, ToggleMultitaskMenu) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      chromeos::wm::features::kFloatWindow);
+      chromeos::wm::features::kWindowLayoutMenu);
   std::unique_ptr<aura::Window> window = CreateAppWindow();
 
   // Pressing accelerator once should show the multitask menu.

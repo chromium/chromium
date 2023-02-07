@@ -66,6 +66,11 @@ const char kAllowInsecureLocalhostDescription[] =
     "Allows requests to localhost over HTTPS even when an invalid certificate "
     "is presented.";
 
+const char kWindowLayoutMenu[] = "New Window Layout Menu";
+const char kWindowLayoutMenuDescription[] =
+    "Enables the new Window Layout menu for adjusting window layouts. Also "
+    "enables Floating windows and partial split-screen layouts.";
+
 const char kWindowsFollowCursorName[] =
     "Windows open on the display with the cursor";
 const char kWindowsFollowCursorDescription[] =
@@ -5455,12 +5460,6 @@ const char kFilesTrashName[] = "Enable Files Trash.";
 const char kFilesTrashDescription[] =
     "Enable trash for My files volume in Files App.";
 
-const char kFloatWindow[] = "Float current active window";
-const char kFloatWindowDescription[] =
-    "Enables the accelerator (Command + Alt + F) to float current active "
-    "window. You can also access this from Multitask Menu, by "
-    "hovering/long-pressing on the maximize button on the window frame.";
-
 const char kForceSpectreVariant2MitigationName[] =
     "Force Spectre variant 2 mitigagtion";
 const char kForceSpectreVariant2MitigationDescription[] =
@@ -5741,10 +5740,6 @@ const char kOsSettingsSearchFeedbackName[] =
 const char kOsSettingsSearchFeedbackDescription[] =
     "Enables search result feedback in ChromeOS Settings when no search "
     "results are returned.";
-
-const char kPartialSplit[] = "Partial Split";
-const char kPartialSplitDescription[] =
-    "Enables the option to snap two windows into 2/3 and 1/3 for split view.";
 
 const char kPcieBillboardNotificationName[] = "Pcie billboard notification";
 const char kPcieBillboardNotificationDescription[] =

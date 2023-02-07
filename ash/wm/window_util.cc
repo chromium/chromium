@@ -374,7 +374,7 @@ aura::Window* GetTopNonFloatedWindow() {
 }
 
 aura::Window* GetFloatedWindowForActiveDesk() {
-  if (!chromeos::wm::features::IsFloatWindowEnabled()) {
+  if (!chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
     return nullptr;
   }
 

@@ -21,7 +21,7 @@ namespace {
 
 bool CanFloatWindowInClamshell(aura::Window* window) {
   DCHECK(window);
-  DCHECK(features::IsFloatWindowEnabled());
+  DCHECK(features::IsWindowLayoutMenuEnabled());
 
   if ((window->GetProperty(aura::client::kResizeBehaviorKey) &
        aura::client::kResizeBehaviorCanResize) == 0) {
@@ -41,7 +41,7 @@ bool CanFloatWindowInClamshell(aura::Window* window) {
 
 bool CanFloatWindowInTablet(aura::Window* window) {
   DCHECK(window);
-  DCHECK(features::IsFloatWindowEnabled());
+  DCHECK(features::IsWindowLayoutMenuEnabled());
 
   if ((window->GetProperty(aura::client::kResizeBehaviorKey) &
        aura::client::kResizeBehaviorCanResize) == 0) {

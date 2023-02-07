@@ -257,7 +257,7 @@ class WindowRestoreControllerTest : public AshTestBase,
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::wm::features::kFloatWindow},
+        /*enabled_features=*/{chromeos::wm::features::kWindowLayoutMenu},
         /*disabled_features=*/{});
     AshTestBase::SetUp();
 

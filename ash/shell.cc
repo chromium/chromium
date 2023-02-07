@@ -1590,7 +1590,7 @@ void Shell::Init(
     projector_controller_ = std::make_unique<ProjectorControllerImpl>();
   }
 
-  if (chromeos::wm::features::IsFloatWindowEnabled()) {
+  if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
     float_controller_ = std::make_unique<FloatController>();
   }
 

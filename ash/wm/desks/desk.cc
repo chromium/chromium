@@ -472,7 +472,7 @@ void Desk::PrepareForActivationAnimation() {
   // Floated window doesn't belong to desk container and needed to be handled
   // separately.
   aura::Window* floated_window = nullptr;
-  if (chromeos::wm::features::IsFloatWindowEnabled() &&
+  if (chromeos::wm::features::IsWindowLayoutMenuEnabled() &&
       (floated_window =
            Shell::Get()->float_controller()->FindFloatedWindowOfDesk(this))) {
     // Ensure the floated window remain hidden during activation animation.
@@ -633,7 +633,7 @@ void Desk::MoveWindowsToDesk(Desk* target_desk) {
   // floated window back to desk container before the removal, so all windows
   // under the to-be-removed desk's container can be collected in
   // `windows_to_move` to move to target desk.
-  if (chromeos::wm::features::IsFloatWindowEnabled()) {
+  if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
     Shell::Get()->float_controller()->OnMovingAllWindowsOutToDesk(this,
                                                                   target_desk);
   }
@@ -793,7 +793,7 @@ std::vector<aura::Window*> Desk::GetAllAppWindows() const {
   // Note that floated window is also app window but needs to be handled
   // separately since it doesn't store in desk container.
   aura::Window* floated_window = nullptr;
-  if (chromeos::wm::features::IsFloatWindowEnabled() &&
+  if (chromeos::wm::features::IsWindowLayoutMenuEnabled() &&
       (floated_window =
            Shell::Get()->float_controller()->FindFloatedWindowOfDesk(this))) {
     app_windows.push_back(floated_window);
@@ -806,7 +806,7 @@ std::vector<aura::Window*> Desk::GetAllAssociatedWindows() const {
   // Note that floated window needs to be handled separately since it doesn't
   // store in desk container.
   if (auto* floated_window =
-          !chromeos::wm::features::IsFloatWindowEnabled()
+          !chromeos::wm::features::IsWindowLayoutMenuEnabled()
               ? nullptr
               : Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
                     this)) {
