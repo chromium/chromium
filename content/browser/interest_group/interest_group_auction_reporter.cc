@@ -83,6 +83,7 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
     blink::InterestGroupSet interest_groups_that_bid,
     std::vector<GURL> debug_win_report_urls,
     std::vector<GURL> debug_loss_report_urls,
+    base::flat_set<std::string> k_anon_keys_to_join,
     std::map<url::Origin, PrivateAggregationRequests>
         private_aggregation_requests)
     : interest_group_manager_(interest_group_manager),
@@ -99,6 +100,7 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
       interest_groups_that_bid_(std::move(interest_groups_that_bid)),
       debug_win_report_urls_(std::move(debug_win_report_urls)),
       debug_loss_report_urls_(std::move(debug_loss_report_urls)),
+      k_anon_keys_to_join_(std::move(k_anon_keys_to_join)),
       private_aggregation_requests_(std::move(private_aggregation_requests)) {
   DCHECK(interest_group_manager_);
   DCHECK(auction_worklet_manager_);
@@ -532,6 +534,9 @@ void InterestGroupAuctionReporter::OnNavigateToWinningAd() {
   interest_group_manager_->RecordInterestGroupWin(
       blink::InterestGroupKey(winning_group.owner, winning_group.name),
       winning_bid_info_.ad_metadata);
+
+  interest_group_manager_->RegisterAdKeysAsJoined(
+      std::move(k_anon_keys_to_join_));
 
   MaybeInvokeCallback();
 }

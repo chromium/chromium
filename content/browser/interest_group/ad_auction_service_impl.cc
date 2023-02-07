@@ -124,33 +124,6 @@ void SendPrivateAggregationRequests(
   }
 }
 
-// Sends reports for a successful auction, both aggregated and event-level, and
-// performs interest group updates needed when an auction has a winner. Called
-// when a frame navigation maps a winning bid's URN to a URL. Only sends reports
-// the first time it's invoked for a given auction, to avoid generating multiple
-// reports if the winner of a single auction is used in multiple frames.
-//
-// `private_aggregation_manager` and `interest_group_manager` must be valid and
-// non-null. This is ensured by having the URN to URL mapping object, which is
-// scoped to a page, own the callback. These two objects are scoped to the
-// BrowserContext, which outlives all pages that use it.
-void SendSuccessfulAuctionReportsAndUpdateInterestGroups(
-    PrivateAggregationManager* private_aggregation_manager,
-    InterestGroupManagerImpl* interest_group_manager,
-    const url::Origin& main_frame_origin,
-    std::map<url::Origin,
-             std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
-        private_aggregation_requests,
-    base::flat_set<std::string> k_anon_keys_to_join) {
-  DCHECK(interest_group_manager);
-
-  interest_group_manager->RegisterAdKeysAsJoined(
-      std::move(k_anon_keys_to_join));
-
-  SendPrivateAggregationRequests(private_aggregation_manager, main_frame_origin,
-                                 std::move(private_aggregation_requests));
-}
-
 }  // namespace
 
 // static
@@ -589,7 +562,6 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     std::map<url::Origin,
              std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
         private_aggregation_requests,
-    base::flat_set<std::string> k_anon_keys_to_join,
     std::vector<std::string> errors,
     std::unique_ptr<InterestGroupAuctionReporter> reporter) {
   // Remove `auction` from `auctions_` but tmeporarily keep it alive - on
@@ -618,8 +590,6 @@ void AdAuctionServiceImpl::OnAuctionComplete(
       SendPrivateAggregationRequests(private_aggregation_manager_,
                                      main_frame_origin_,
                                      std::move(private_aggregation_requests));
-      GetInterestGroupManager().RegisterAdKeysAsJoined(
-          std::move(k_anon_keys_to_join));
     }
 
     std::move(callback).Run(manually_aborted, /*config=*/absl::nullopt);
@@ -672,10 +642,10 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   // callback returned by the InterestGroupAuctionReporter's
   // OnNavitationToWinningAdCallback() method (invoked just above).
   reporters_.emplace_front(std::move(reporter));
-  reporters_.front()->Start(base::BindOnce(
-      &AdAuctionServiceImpl::OnReporterComplete, base::Unretained(this),
-      reporters_.begin(), std::move(urn_uuid), std::move(fenced_frame_reporter),
-      std::move(k_anon_keys_to_join)));
+  reporters_.front()->Start(
+      base::BindOnce(&AdAuctionServiceImpl::OnReporterComplete,
+                     base::Unretained(this), reporters_.begin(),
+                     std::move(urn_uuid), std::move(fenced_frame_reporter)));
   if (auction_result_metrics) {
     auction_result_metrics->ReportAuctionResult(
         AdAuctionResultMetrics::AuctionResult::kSucceeded);
@@ -685,8 +655,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
 void AdAuctionServiceImpl::OnReporterComplete(
     ReporterList::iterator reporter_it,
     GURL urn_uuid,
-    scoped_refptr<FencedFrameReporter> fenced_frame_reporter,
-    base::flat_set<std::string> k_anon_keys_to_join) {
+    scoped_refptr<FencedFrameReporter> fenced_frame_reporter) {
   // Forward debug information to devtools.
   //
   // TODO(https://crbug.com/1394777): Ideally this will share code with the
@@ -714,10 +683,9 @@ void AdAuctionServiceImpl::OnReporterComplete(
   // navigates a fenced frame, interest groups should still be updated. We
   // should run the InterestGroupAuctionReporter as well, but that's potentially
   // another issue).
-  SendSuccessfulAuctionReportsAndUpdateInterestGroups(
-      private_aggregation_manager_, &GetInterestGroupManager(),
-      main_frame_origin_, std::move(private_aggregation_requests),
-      std::move(k_anon_keys_to_join));
+  SendPrivateAggregationRequests(private_aggregation_manager_,
+                                 main_frame_origin_,
+                                 std::move(private_aggregation_requests));
 
   // Pass reporting map to the FencedFrameReporter.
   // TODO(mmenke): move this into InterestGroupReporter.

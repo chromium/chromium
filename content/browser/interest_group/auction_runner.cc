@@ -197,10 +197,15 @@ void AuctionRunner::FailAuction(
       debug_win_report_urls, debug_loss_report_urls);
   // Shouldn't have any win report URLs if nothing won the auction.
   DCHECK(debug_win_report_urls.empty());
-  interest_group_manager_->EnqueueReports(
-      InterestGroupManagerImpl::ReportType::kDebugLoss,
-      std::move(debug_loss_report_urls), frame_origin_, *client_security_state_,
-      url_loader_factory_);
+
+  if (!manually_aborted) {
+    interest_group_manager_->RegisterAdKeysAsJoined(
+        auction_.GetKAnonKeysToJoin());
+    interest_group_manager_->EnqueueReports(
+        InterestGroupManagerImpl::ReportType::kDebugLoss,
+        std::move(debug_loss_report_urls), frame_origin_,
+        *client_security_state_, url_loader_factory_);
+  }
 
   interest_group_manager_->RecordInterestGroupBids(interest_groups_that_bid);
 
@@ -211,7 +216,7 @@ void AuctionRunner::FailAuction(
                            /*render_url=*/absl::nullopt,
                            /*ad_component_urls=*/{},
                            auction_.TakePrivateAggregationRequests(),
-                           auction_.GetKAnonKeysToJoin(), auction_.TakeErrors(),
+                           auction_.TakeErrors(),
                            /*reporter=*/nullptr);
 }
 
@@ -300,8 +305,8 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
       auction_.top_bid()->bid->render_url,
       auction_.top_bid()->bid->ad_components,
       // In this case, the reporter has all the private aggregation requests.
-      std::map<url::Origin, PrivateAggregationRequests>(),
-      auction_.GetKAnonKeysToJoin(), std::move(errors), std::move(reporter));
+      std::map<url::Origin, PrivateAggregationRequests>(), std::move(errors),
+      std::move(reporter));
 }
 
 void AuctionRunner::UpdateInterestGroupsPostAuction() {

@@ -131,15 +131,13 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
           url::Origin,
           std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
           private_aggregation_requests,
-      base::flat_set<std::string> k_anon_keys_to_join,
       std::vector<std::string> errors,
       std::unique_ptr<InterestGroupAuctionReporter> reporter);
 
   void OnReporterComplete(
       ReporterList::iterator reporter_it,
       GURL urn_uuid,
-      scoped_refptr<FencedFrameReporter> fenced_frame_reporter,
-      base::flat_set<std::string> k_anon_keys_to_join);
+      scoped_refptr<FencedFrameReporter> fenced_frame_reporter);
 
   // Calls LogWebFeatureForCurrentPage() for the frame to inform it of FLEDGE
   // private aggregation API usage, if `private_aggregation_requests` is

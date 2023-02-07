@@ -86,7 +86,6 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       std::vector<GURL> ad_component_urls,
       std::map<url::Origin, PrivateAggregationRequests>
           private_aggregation_requests,
-      base::flat_set<std::string> k_anon_keys_to_join,
       std::vector<std::string> errors,
       std::unique_ptr<InterestGroupAuctionReporter>
           interest_group_auction_reporter)>;

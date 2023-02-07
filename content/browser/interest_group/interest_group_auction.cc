@@ -1455,7 +1455,8 @@ InterestGroupAuction::CreateReporter(
       std::move(top_level_seller_winning_bid_info),
       std::move(component_seller_winning_bid_info),
       std::move(interest_groups_that_bid), std::move(debug_win_report_urls),
-      std::move(debug_loss_report_urls), TakePrivateAggregationRequests());
+      std::move(debug_loss_report_urls), GetKAnonKeysToJoin(),
+      TakePrivateAggregationRequests());
 }
 
 void InterestGroupAuction::NotifyConfigPromisesResolved() {

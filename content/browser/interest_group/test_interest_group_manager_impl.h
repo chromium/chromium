@@ -8,9 +8,11 @@
 #include <list>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
+#include "content/public/browser/k_anonymity_service_delegate.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -29,7 +31,8 @@ struct StorageInterestGroup;
 // InterestGroupManagerImpl.
 class TestInterestGroupManagerImpl
     : public InterestGroupManagerImpl,
-      public InterestGroupManagerImpl::InterestGroupObserver {
+      public InterestGroupManagerImpl::InterestGroupObserver,
+      public KAnonymityServiceDelegate {
  public:
   // Information about a report queued by an EnqueueReports() call. Doesn't
   // include values that are passed to the TestInterestGroupManagerImpl()
@@ -72,6 +75,14 @@ class TestInterestGroupManagerImpl
                                const url::Origin& owner_origin,
                                const std::string& name) override;
 
+  // KAnonymityServiceDelegate implementation:
+  void JoinSet(std::string id,
+               base::OnceCallback<void(bool)> callback) override;
+  void QuerySets(std::vector<std::string> ids,
+                 base::OnceCallback<void(std::vector<bool>)> callback) override;
+  base::TimeDelta GetJoinInterval() override;
+  base::TimeDelta GetQueryInterval() override;
+
   // Clears all logged data. Does not affect state of the interest group
   // database.
   void ClearLoggedData();
@@ -89,6 +100,13 @@ class TestInterestGroupManagerImpl
   // in the process.
   std::vector<blink::InterestGroupKey> TakeInterestGroupsThatBid();
 
+  // Returns all K-anon sets that have been joined, removing them from the
+  // internal list in the process. Note that joining k-anon sets involves
+  // a couple thread hops, including one off thread, so the caller should
+  // run all messages loops until idle (not just until the current one is idle)
+  // to make sure that all k-anon set joins have been processed.
+  std::vector<std::string> TakeJoinedKAnonSets();
+
   // Retrieves the specified interest group if it exists, spinning a RunLoop
   // until the group is retrieved.
   absl::optional<StorageInterestGroup> BlockingGetInterestGroup(
@@ -103,6 +121,7 @@ class TestInterestGroupManagerImpl
 
   std::list<Report> reports_;
   std::vector<blink::InterestGroupKey> interest_groups_that_bid_;
+  std::vector<std::string> joined_k_anon_sets_;
 };
 
 }  // namespace content

@@ -1115,7 +1115,6 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     std::map<url::Origin, PrivateAggregationRequests>
         private_aggregation_requests;
     std::vector<blink::InterestGroupKey> interest_groups_that_bid;
-    base::flat_set<std::string> k_anon_keys_to_join;
 
     std::vector<std::string> errors;
   };
@@ -1401,7 +1400,6 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       std::vector<GURL> ad_component_urls,
       std::map<url::Origin, PrivateAggregationRequests>
           private_aggregation_requests,
-      base::flat_set<std::string> k_anon_keys_to_join,
       std::vector<std::string> errors,
       std::unique_ptr<InterestGroupAuctionReporter> reporter) {
     DCHECK(auction_run_loop_);
@@ -1429,7 +1427,6 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     result_.interest_groups_that_bid.clear();
     result_.private_aggregation_requests =
         std::move(private_aggregation_requests);
-    result_.k_anon_keys_to_join = std::move(k_anon_keys_to_join);
 
     if (!reporter) {
       result_.debug_loss_report_urls =
@@ -11352,8 +11349,10 @@ TEST_P(AuctionRunnerKAnonTest, SingleNonKAnon) {
   // No k-anon authorizations.
   StartAuction(kSellerUrl, bidders);
   auction_run_loop_->Run();
+  // Have to spin all message loops to flush any k-anon set join events.
+  task_environment()->RunUntilIdle();
   EXPECT_THAT(
-      result_.k_anon_keys_to_join,
+      interest_group_manager_->TakeJoinedKAnonSets(),
       testing::UnorderedElementsAre(
           KAnonKeyForAdBid(bidders[0].interest_group,
                            bidders[0].interest_group.ads.value()[0].render_url),
@@ -11411,8 +11410,10 @@ TEST_P(AuctionRunnerKAnonTest, SingleKAnon) {
   ASSERT_TRUE(result_.ad_url.has_value());
   EXPECT_EQ(GURL("https://ad1.com"), result_.ad_url.value());
   EXPECT_THAT(result_.errors, testing::ElementsAre());
+  // Have to spin all message loops to flush any k-anon set join events.
+  task_environment()->RunUntilIdle();
   EXPECT_THAT(
-      result_.k_anon_keys_to_join,
+      interest_group_manager_->TakeJoinedKAnonSets(),
       testing::UnorderedElementsAre(
           KAnonKeyForAdBid(bidders[0].interest_group,
                            bidders[0].interest_group.ads.value()[0].render_url),
@@ -11577,8 +11578,11 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
         break;
     }
 
-    EXPECT_THAT(result_.k_anon_keys_to_join, testing::UnorderedElementsAreArray(
-                                                 expected_k_anon_keys_to_join));
+    // Have to spin all message loops to flush any k-anon set join events.
+    task_environment()->RunUntilIdle();
+    EXPECT_THAT(
+        interest_group_manager_->TakeJoinedKAnonSets(),
+        testing::UnorderedElementsAreArray(expected_k_anon_keys_to_join));
 
     expected_report_urls.push_back(expected_seller_report_url);
     if (run_as_component) {
@@ -11694,8 +11698,11 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
                          /*made_highest_scoring_other_bid=*/false));
         break;
     }
-    EXPECT_THAT(result_.k_anon_keys_to_join, testing::UnorderedElementsAreArray(
-                                                 expected_k_anon_keys_to_join));
+    // Have to spin all message loops to flush any k-anon set join events.
+    task_environment()->RunUntilIdle();
+    EXPECT_THAT(
+        interest_group_manager_->TakeJoinedKAnonSets(),
+        testing::UnorderedElementsAreArray(expected_k_anon_keys_to_join));
 
     expected_report_urls.push_back(expected_seller_report_url);
     if (run_as_component) {
@@ -11745,7 +11752,9 @@ TEST_P(AuctionRunnerKAnonTest, KAnonHigher) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   ASSERT_TRUE(result_.ad_url.has_value());
   EXPECT_EQ(GURL("https://ad1.com"), result_.ad_url.value());
-  EXPECT_THAT(result_.k_anon_keys_to_join,
+  // Have to spin all message loops to flush any k-anon set join events.
+  task_environment()->RunUntilIdle();
+  EXPECT_THAT(interest_group_manager_->TakeJoinedKAnonSets(),
               testing::UnorderedElementsAreArray(ad1_k_anon_keys));
 
   std::vector<GURL> expected_report_urls;
@@ -11872,7 +11881,9 @@ TEST_P(AuctionRunnerKAnonTest, DifferentBids) {
                   testing::ElementsAre("https://reporting.example.com/2"));
       break;
   }
-  EXPECT_THAT(result_.k_anon_keys_to_join,
+  // Have to spin all message loops to flush any k-anon set join events.
+  task_environment()->RunUntilIdle();
+  EXPECT_THAT(interest_group_manager_->TakeJoinedKAnonSets(),
               testing::UnorderedElementsAreArray(expected_k_anon_keys_to_join));
 }
 
@@ -11924,7 +11935,10 @@ TEST_P(AuctionRunnerKAnonTest, FailureHandling) {
 
   // Should not have anything to report.
   EXPECT_FALSE(result_.ad_url.has_value());
-  EXPECT_THAT(result_.k_anon_keys_to_join, testing::ElementsAre());
+  // Have to spin all message loops to flush any k-anon set join events.
+  task_environment()->RunUntilIdle();
+  EXPECT_THAT(interest_group_manager_->TakeJoinedKAnonSets(),
+              testing::ElementsAre());
   histogram_tester_->ExpectUniqueSample(
       "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", false, 0);
 }

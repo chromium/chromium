@@ -508,6 +508,10 @@ class CONTENT_EXPORT InterestGroupAuction
   // failed auction may result in keys that still need to be joined, for
   // instance if the reason the auction failed was that none of the bids were
   // k-anonymous.
+  //
+  // If CreateReporter() is invoked, the returned reporter will automatically
+  // join the k-anon sets if it's informed the winning ad has been navigated to,
+  // so there's no need for anything else to invoke this method.
   base::flat_set<std::string> GetKAnonKeysToJoin() const;
 
   // Returns the top bid of whichever auction (k-anon or not, depending on the
