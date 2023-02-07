@@ -33,6 +33,8 @@
 @interface RenderWidgetUIViewTextInput : UIView <UIKeyInput> {
   raw_ptr<content::RenderWidgetHostViewIOS> _view;
 }
+- (void)onUpdateTextInputState:(const ui::mojom::TextInputState*)state
+                    withBounds:(CGRect)bounds;
 @end
 
 @interface RenderWidgetUIView : CALayerFrameSinkProvider {
@@ -52,14 +54,29 @@
 
 @end
 
-@implementation RenderWidgetUIViewTextInput
+@implementation RenderWidgetUIViewTextInput {
+  BOOL _hasText;
+}
 
 - (instancetype)initWithWidget:(content::RenderWidgetHostViewIOS*)view {
   _view = view;
+  _hasText = NO;
   self.multipleTouchEnabled = YES;
   self.autoresizingMask =
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   return [self init];
+}
+
+- (void)onUpdateTextInputState:(const ui::mojom::TextInputState*)state
+                    withBounds:(CGRect)bounds {
+  if (state) {
+    self.frame = bounds;
+    [self becomeFirstResponder];
+    _hasText = !state->value->empty();
+  } else {
+    [self resignFirstResponder];
+    _hasText = NO;
+  }
 }
 
 - (BOOL)canBecomeFirstResponder {
@@ -67,8 +84,7 @@
 }
 
 - (BOOL)hasText {
-  NOTIMPLEMENTED();
-  return NO;
+  return _hasText;
 }
 
 - (void)insertText:(NSString*)text {
@@ -648,12 +664,8 @@ void RenderWidgetHostViewIOS::OnUpdateTextInputStateCalled(
   }
   const ui::mojom::TextInputState* state =
       text_input_manager->GetTextInputState();
-  if (state) {
-    [ui_view_->view_ textInput].frame = [ui_view_->view_ bounds];
-    [[ui_view_->view_ textInput] becomeFirstResponder];
-  } else {
-    [[ui_view_->view_ textInput] resignFirstResponder];
-  }
+  [[ui_view_->view_ textInput] onUpdateTextInputState:state
+                                           withBounds:[ui_view_->view_ bounds]];
 }
 
 ui::Compositor* RenderWidgetHostViewIOS::GetCompositor() {
