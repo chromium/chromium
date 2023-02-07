@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -196,7 +197,7 @@ const base::Value::Dict* PersistedData::GetAppKey(const std::string& id) const {
   const base::Value::Dict* apps = dict.FindDict("apps");
   if (!apps)
     return nullptr;
-  return apps->FindDict(id);
+  return apps->FindDict(base::ToLowerASCII(id));
 }
 
 std::string PersistedData::GetString(const std::string& id,
@@ -215,7 +216,7 @@ base::Value::Dict* PersistedData::GetOrCreateAppKey(const std::string& id,
                                                     base::Value::Dict& root) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Value::Dict* apps = root.EnsureDict("apps");
-  base::Value::Dict* app = apps->EnsureDict(id);
+  base::Value::Dict* app = apps->EnsureDict(base::ToLowerASCII(id));
   return app;
 }
 

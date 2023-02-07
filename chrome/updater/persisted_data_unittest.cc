@@ -64,6 +64,25 @@ TEST(PersistedDataTest, Simple) {
   EXPECT_EQ(metadata->GetLastStarted(), time2);
 }
 
+TEST(PersistedDataTest, MixedCase) {
+  auto pref = std::make_unique<TestingPrefServiceSimple>();
+  update_client::RegisterPrefs(pref->registry());
+  RegisterPersistedDataPrefs(pref->registry());
+  auto metadata =
+      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get());
+
+  metadata->SetProductVersion("someappid", base::Version("1.0"));
+  metadata->SetProductVersion("SOMEAPPID2", base::Version("2.0"));
+  EXPECT_STREQ("1.0",
+               metadata->GetProductVersion("someAPPID").GetString().c_str());
+  EXPECT_STREQ("1.0",
+               metadata->GetProductVersion("someappid").GetString().c_str());
+  EXPECT_STREQ("2.0",
+               metadata->GetProductVersion("someAPPID2").GetString().c_str());
+  EXPECT_STREQ("2.0",
+               metadata->GetProductVersion("someappid2").GetString().c_str());
+}
+
 TEST(PersistedDataTest, RegistrationRequest) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());

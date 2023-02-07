@@ -73,6 +73,21 @@ TEST(PersistedDataTest, Simple) {
                metadata->GetFingerprint("someappid").c_str());
 }
 
+TEST(PersistedDataTest, MixedCase) {
+  base::test::TaskEnvironment env;
+  auto pref = std::make_unique<TestingPrefServiceSimple>();
+  PersistedData::RegisterPrefs(pref->registry());
+  auto metadata = std::make_unique<PersistedData>(pref.get(), nullptr);
+  std::vector<std::string> items;
+  items.push_back("someappid");
+  items.push_back("someAPPid.withdot");
+  test::SetDateLastData(metadata.get(), items, 3383);
+  EXPECT_EQ(3383, metadata->GetDateLastRollCall("someappid"));
+  EXPECT_EQ(3383, metadata->GetDateLastRollCall("someappid.withdot"));
+  EXPECT_EQ(3383, metadata->GetDateLastRollCall("SOMEappid"));
+  EXPECT_EQ(3383, metadata->GetDateLastRollCall("someappID.withDOT"));
+}
+
 TEST(PersistedDataTest, SharedPref) {
   base::test::TaskEnvironment env;
   auto pref = std::make_unique<TestingPrefServiceSimple>();

@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/guid.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -45,7 +46,7 @@ const base::Value* PersistedData::GetAppKey(const std::string& id) const {
   const base::Value* apps = dict.FindDictKey("apps");
   if (!apps)
     return nullptr;
-  return apps->FindDictKey(id);
+  return apps->FindDictKey(base::ToLowerASCII(id));
 }
 
 int PersistedData::GetInt(const std::string& id,
@@ -103,9 +104,9 @@ base::Value::Dict* PersistedData::GetOrCreateAppKey(const std::string& id,
                                                     base::Value::Dict& root) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Value::Dict* apps = root.EnsureDict("apps");
-  base::Value::Dict* app = apps->FindDict(id);
+  base::Value::Dict* app = apps->FindDict(base::ToLowerASCII(id));
   if (!app) {
-    app = &apps->Set(id, base::Value::Dict())->GetDict();
+    app = &apps->Set(base::ToLowerASCII(id), base::Value::Dict())->GetDict();
     app->Set("installdate", kDateFirstTime);
   }
   return app;
