@@ -162,7 +162,7 @@ def FetchCargo(rust_git_hash):
         target = 'cargo-beta-x86_64-pc-windows-msvc'
     elif sys.platform == 'darwin':
         if platform.machine() == 'arm64':
-            target = 'rust-std-beta-aarch64-apple-darwin'
+            target = 'cargo-beta-aarch64-apple-darwin'
         else:
             target = 'cargo-beta-x86_64-apple-darwin'
     else:
@@ -237,6 +237,7 @@ def RunXPy(sub, args, llvm_bins_path, zlib_path, libxml2_dirs, build_mac_arm,
         'CFLAGS',
         'CXXFLAGS',
         'LDFLAGS',
+        'RUSTFLAGS',
         'RUSTFLAGS_BOOTSTRAP',
         'RUSTFLAGS_NOT_BOOTSTRAP',
         'RUSTDOCFLAGS',
@@ -272,6 +273,10 @@ def RunXPy(sub, args, llvm_bins_path, zlib_path, libxml2_dirs, build_mac_arm,
         RUSTENV['RUSTFLAGS_BOOTSTRAP'] += (
             f' -Clink-arg=-isysroot -Clink-arg={sdk_path}')
         RUSTENV['RUSTFLAGS_NOT_BOOTSTRAP'] += (
+            f' -Clink-arg=-isysroot -Clink-arg={sdk_path}')
+        # This flag needs to be in RUSTFLAGS for running compiletests as well,
+        # for building things _with_ rustc, not just for building rustc.
+        RUSTENV['RUSTFLAGS'] += (
             f' -Clink-arg=-isysroot -Clink-arg={sdk_path}')
 
     if zlib_path:
