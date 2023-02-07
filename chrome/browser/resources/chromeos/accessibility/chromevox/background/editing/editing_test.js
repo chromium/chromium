@@ -2146,39 +2146,36 @@ AX_TEST_F('ChromeVoxEditingTest', 'ContextMenus', async function() {
   await mockFeedback.replay();
 });
 
-// TODO(crbug.com/1352225): Flaky.
-AX_TEST_F(
-    'ChromeVoxEditingTest', 'DISABLED_NativeCharWordCommands',
-    async function() {
-      const mockFeedback = this.createMockFeedback();
-      const site = `
+AX_TEST_F('ChromeVoxEditingTest', 'NativeCharWordCommands', async function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
     <p>start</p>
     <div role="textbox" contenteditable>This is a test</div>
   `;
-      const root = await this.runWithLoadedTree(site);
-      await this.focusFirstTextField(root);
+  const root = await this.runWithLoadedTree(site);
+  await this.focusFirstTextField(root);
 
-      const textField = root.find({role: RoleType.TEXT_FIELD});
-      mockFeedback.expectSpeech('Text area')
-          .call(this.press(KeyCode.HOME, {ctrl: true}))
-          .call(this.press(KeyCode.RIGHT))
-          .expectSpeech('h')
-          .call(this.press(KeyCode.RIGHT))
-          .expectSpeech('i')
-          .call(this.press(KeyCode.LEFT))
-          .expectSpeech('h')
+  const textField = root.find({role: RoleType.TEXT_FIELD});
+  mockFeedback.expectSpeech('Text area')
+      .call(this.press(KeyCode.HOME, {ctrl: true}))
+      .call(this.press(KeyCode.RIGHT))
+      .expectSpeech('h')
+      .call(this.press(KeyCode.RIGHT))
+      .expectSpeech('i')
+      .call(this.press(KeyCode.LEFT))
+      .expectSpeech('h')
 
-          .call(this.press(KeyCode.RIGHT, {ctrl: true}))
-          .expectSpeech('This')
-          .call(this.press(KeyCode.RIGHT, {ctrl: true}))
-          .expectSpeech('is')
-          .call(this.press(KeyCode.LEFT, {ctrl: true}))
-          .expectSpeech('is')
-          .call(this.press(KeyCode.LEFT, {ctrl: true}))
-          .expectSpeech('This');
+      .call(this.press(KeyCode.RIGHT, {ctrl: true}))
+      .expectSpeech(/This\s*/)
+      .call(this.press(KeyCode.RIGHT, {ctrl: true}))
+      .expectSpeech('is')
+      .call(this.press(KeyCode.LEFT, {ctrl: true}))
+      .expectSpeech('is')
+      .call(this.press(KeyCode.LEFT, {ctrl: true}))
+      .expectSpeech(/This\s*/);
 
-      await mockFeedback.replay();
-    });
+  await mockFeedback.replay();
+});
 
 AX_TEST_F('ChromeVoxEditingTest', 'TablesWithEmptyCells', async function() {
   const mockFeedback = this.createMockFeedback();
