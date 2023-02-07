@@ -289,6 +289,9 @@ public class WebApkUpdateDataFetcherTest {
                 getTestIntentDataProviderBuilder(WEB_MANIFEST_URL1);
         // Set manifestId to empty string.
         oldIntentDataProviderBuilder.setWebApkManifestId("");
+        // Set manifestUrl to be the same so update can be trigger
+        oldIntentDataProviderBuilder.setManifestUrl(
+                mTestServerRule.getServer().getURL(WEB_MANIFEST_URL3));
 
         startWebApkUpdateDataFetcher(oldIntentDataProviderBuilder, waiter);
 

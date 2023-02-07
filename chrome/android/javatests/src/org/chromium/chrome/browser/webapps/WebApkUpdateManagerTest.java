@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import android.content.Intent;
+import android.text.format.DateUtils;
 
 import androidx.test.filters.MediumTest;
 
@@ -188,6 +189,11 @@ public class WebApkUpdateManagerTest {
         @Override
         protected void scheduleUpdate() {
             if (mCompleteCallback != null) mCompleteCallback.notifyCalled();
+        }
+
+        @Override
+        protected long updateTimeoutMilliseconds() {
+            return DateUtils.SECOND_IN_MILLIS * 3;
         }
     }
 
@@ -702,5 +708,79 @@ public class WebApkUpdateManagerTest {
 
         assertEquals(proto.getAppKey(), creationData.appKey);
         assertEquals(proto.getManifest().getId(), creationData.manifestId);
+    }
+
+    /*
+     *Test update will not be trigger with different startUrl and manifestUrl.
+     */
+    @Test
+    @MediumTest
+    @Feature({"WebApk"})
+    public void testEmptyUniqueIdNotUpdateWithDifferentUrls() throws Exception {
+        CreationData legacyWebApkData = defaultCreationData();
+        // Set the original WebAPK startUrl and manifestUrl to be different ones.
+        legacyWebApkData.startUrl = "https://www.example.com";
+        legacyWebApkData.manifestUrl = "https://www.example.com";
+        legacyWebApkData.manifestId = null;
+        legacyWebApkData.backgroundColor -= 1;
+
+        // Navigate to a page with different manifestUrl and startUrl.
+        WebappTestPage.navigateToServiceWorkerPageWithManifest(
+                mTestServer, mTab, WEBAPK_MANIFEST_URL);
+        Assert.assertFalse(checkUpdateNeeded(legacyWebApkData, /* acceptDialogIfAppears= */ false));
+    }
+
+    /*
+     *Test trigger an update with same startUrl but different manifestUrl.
+     */
+    @Test
+    @MediumTest
+    @Feature({"WebApk"})
+    public void testEmptyUniqueIdUpdateWithDifferentManifestUrl() throws Exception {
+        // Test trigger an update with same startUrl but different manifestUrl.
+        CreationData legacyWebApkData = defaultCreationData();
+        legacyWebApkData.manifestUrl = "https://www.example.com";
+        legacyWebApkData.manifestId = null;
+        legacyWebApkData.backgroundColor -= 1;
+
+        // Navigate to a page with different manifestUrl.
+        WebappTestPage.navigateToServiceWorkerPageWithManifest(
+                mTestServer, mTab, WEBAPK_MANIFEST_URL);
+        Assert.assertTrue(checkUpdateNeeded(legacyWebApkData, /* acceptDialogIfAppears= */ false));
+    }
+
+    /*
+     *Test trigger an update with same manifestUrl but different startUrl.
+     */
+    @Test
+    @MediumTest
+    @Feature({"WebApk"})
+    public void testEmptyUniqueIdUpdateWithDifferentStartUrl() throws Exception {
+        CreationData legacyWebApkData = defaultCreationData();
+        legacyWebApkData.startUrl = "https://www.example.com";
+        legacyWebApkData.manifestId = null;
+        legacyWebApkData.backgroundColor -= 1;
+
+        // Navigate to a page with different manifestUrl.
+        WebappTestPage.navigateToServiceWorkerPageWithManifest(
+                mTestServer, mTab, WEBAPK_MANIFEST_URL);
+        Assert.assertTrue(checkUpdateNeeded(legacyWebApkData, /* acceptDialogIfAppears= */ false));
+    }
+
+    /*
+     * Test navigate to page with manifest under different scope will not trigger updates.
+     */
+    @Test
+    @MediumTest
+    @Feature({"WebApk"})
+    public void testNoUpdateForPageOutOfScope() throws Exception {
+        CreationData creationData = defaultCreationData();
+        creationData.scope = mTestServer.getURL("/chrome/test/data/another_scope/");
+        creationData.backgroundColor -= 1;
+
+        // Navigate to a page under different scope.
+        WebappTestPage.navigateToServiceWorkerPageWithManifest(
+                mTestServer, mTab, WEBAPK_MANIFEST_URL);
+        Assert.assertFalse(checkUpdateNeeded(creationData, /* acceptDialogIfAppears= */ false));
     }
 }

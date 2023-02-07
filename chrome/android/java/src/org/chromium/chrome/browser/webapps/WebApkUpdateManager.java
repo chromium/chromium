@@ -139,7 +139,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
             public void run() {
                 onGotManifestData(null, null, null);
             }
-        }, UPDATE_TIMEOUT_MILLISECONDS);
+        }, updateTimeoutMilliseconds());
     }
 
     @Override
@@ -346,8 +346,14 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     /**
      * Builds {@link WebApkUpdateDataFetcher}. In a separate function for the sake of tests.
      */
+    @VisibleForTesting
     protected WebApkUpdateDataFetcher buildFetcher() {
         return new WebApkUpdateDataFetcher();
+    }
+
+    @VisibleForTesting
+    protected long updateTimeoutMilliseconds() {
+        return UPDATE_TIMEOUT_MILLISECONDS;
     }
 
     /** Builds proto to send to the WebAPK server. */
