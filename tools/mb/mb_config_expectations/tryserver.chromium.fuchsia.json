@@ -69,8 +69,7 @@
       "symbol_level": 0,
       "target_os": "fuchsia",
       "use_clang_coverage": true,
-      "use_remoteexec": true,
-      "use_v2_script_default": false
+      "use_remoteexec": true
     }
   },
   "fuchsia-compile-x64-dbg": {

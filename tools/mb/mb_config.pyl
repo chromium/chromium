@@ -2551,7 +2551,7 @@
 
     'fuchsia_clang_code_coverage_reclient': [
       'clang', 'fuchsia', 'fuchsia_code_coverage', 'no_symbols', 'release_bot_reclient',
-      'use_clang_coverage', 'fuchsia_legacy_script',
+      'use_clang_coverage',
     ],
 
     'fuchsia_clang_tot_official_arm64': [
@@ -4240,11 +4240,6 @@
 
     'fuchsia_include_sd_images': {
       'gn_args': 'fuchsia_additional_boot_images=["//third_party/fuchsia-sdk/images-internal/astro-release/","//third_party/fuchsia-sdk/images-internal/sherlock-release/","//third_party/fuchsia-sdk/images-internal/nelson-release/"]',
-    },
-
-    # TODO(crbug/1336775): Remove when --ram-size-mb is added in new scripts
-    'fuchsia_legacy_script': {
-      'gn_args': 'use_v2_script_default=false',
     },
 
     'full_symbols': {

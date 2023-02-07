@@ -2116,7 +2116,6 @@
           'isolated_scripts': 'gpu_angle_fuchsia_unittests_isolated_scripts',
         },
         'mixins': [
-          'femu-additional-ram',
           'fuchsia-code-coverage',
           'isolate_profile_data',
           'linux-bionic',

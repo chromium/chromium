@@ -531,13 +531,6 @@
       },
     },
   },
-  'femu-additional-ram': {
-    '$mixin_append': {
-      'args': [
-        '--ram-size-mb=16384',
-      ],
-    },
-  },
   'finch-chromium-swarming-pool': {
     'swarming': {
       'dimensions': {
