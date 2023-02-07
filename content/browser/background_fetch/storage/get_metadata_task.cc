@@ -81,11 +81,9 @@ void GetMetadataTask::ProcessMetadata(const std::string& metadata) {
   }
 
   const auto& registration_proto = metadata_proto_->registration();
-  // TODO(https://crbug.com/1199077): Check that the storage key matches once we
-  // can get it from `metadata_proto_`.
+  auto meta_storage_key = GetMetadataStorageKey(*metadata_proto_);
   if (registration_proto.developer_id() != developer_id_ ||
-      !storage_key_.origin().IsSameOriginWith(
-          GURL(metadata_proto_->origin()))) {
+      meta_storage_key != storage_key_) {
     FinishWithError(blink::mojom::BackgroundFetchError::STORAGE_ERROR);
     return;
   }

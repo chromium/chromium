@@ -1160,7 +1160,7 @@ TEST_F(BackgroundFetchDataManagerTest, GetMetadata) {
   // Verify that the metadata can be retrieved.
   auto metadata = GetMetadata(sw_id, kExampleUniqueId);
   ASSERT_TRUE(metadata);
-  EXPECT_EQ(metadata->origin(), storage_key().origin().Serialize());
+  EXPECT_EQ(metadata->storage_key(), storage_key().Serialize());
   EXPECT_NE(metadata->creation_microseconds_since_unix_epoch(), 0);
   EXPECT_EQ(metadata->num_fetches(), static_cast<int>(num_requests));
 
@@ -1169,7 +1169,7 @@ TEST_F(BackgroundFetchDataManagerTest, GetMetadata) {
   // After a restart, GetMetadata should still find the registration.
   metadata = GetMetadata(sw_id, kExampleUniqueId);
   ASSERT_TRUE(metadata);
-  EXPECT_EQ(metadata->origin(), storage_key().origin().Serialize());
+  EXPECT_EQ(metadata->storage_key(), storage_key().Serialize());
   EXPECT_NE(metadata->creation_microseconds_since_unix_epoch(), 0);
   EXPECT_EQ(metadata->num_fetches(), static_cast<int>(num_requests));
 }
@@ -1235,7 +1235,7 @@ TEST_F(BackgroundFetchDataManagerTest, LargeIconNotPersisted) {
   // Verify that the metadata can be retrieved.
   auto metadata = GetMetadata(sw_id, kExampleUniqueId);
   ASSERT_TRUE(metadata);
-  EXPECT_EQ(metadata->origin(), storage_key().origin().Serialize());
+  EXPECT_EQ(metadata->storage_key(), storage_key().Serialize());
   EXPECT_NE(metadata->creation_microseconds_since_unix_epoch(), 0);
   EXPECT_EQ(metadata->num_fetches(), static_cast<int>(num_requests));
   EXPECT_TRUE(GetUIOptions(sw_id).second.isNull());

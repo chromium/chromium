@@ -284,11 +284,7 @@ void CreateMetadataTask::InitializeMetadataProto() {
   }
 
   // Set other metadata fields.
-  //
-  // TODO(https://crbug.com/1199077): Store the full serialization of the
-  // storage key inside `metadata_proto_`.
-  metadata_proto_->set_origin(
-      registration_id_.storage_key().origin().Serialize());
+  metadata_proto_->set_storage_key(registration_id_.storage_key().Serialize());
   metadata_proto_->set_creation_microseconds_since_unix_epoch(
       (base::Time::Now() - base::Time::UnixEpoch()).InMicroseconds());
   metadata_proto_->set_num_fetches(requests_.size());

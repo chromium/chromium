@@ -7,6 +7,7 @@
 #include <string>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -32,6 +33,26 @@ TEST(BackgroundFetchDatabaseHelpers, CacheUrlRoundTrip) {
   EXPECT_TRUE(CacheUrlRoundTrip("https://example.com/path1/path2"));
   EXPECT_TRUE(CacheUrlRoundTrip("https://example.com/path?a=b&c=d"));
   EXPECT_TRUE(CacheUrlRoundTrip("https://example.com/path/?a=b&c=d"));
+}
+
+TEST(BackgroundFetchDatabaseHelpers, GetMetadataStorageKeyFromStorageKey) {
+  blink::StorageKey key(url::Origin::Create(GURL("http://example.com")));
+  proto::BackgroundFetchMetadata metadata_proto;
+  metadata_proto.set_storage_key(key.Serialize());
+  EXPECT_EQ(GetMetadataStorageKey(metadata_proto).Serialize(), key.Serialize());
+}
+
+TEST(BackgroundFetchDatabaseHelpers, GetMetadataStorageKeyFromOrigin) {
+  auto origin = url::Origin::Create(GURL("http://example.com"));
+  blink::StorageKey key(origin);
+  proto::BackgroundFetchMetadata metadata_proto;
+  metadata_proto.set_origin(origin.Serialize());
+  EXPECT_EQ(GetMetadataStorageKey(metadata_proto).Serialize(), key.Serialize());
+}
+
+TEST(BackgroundFetchDatabaseHelpers, GetMetadataStorageKeyNoData) {
+  proto::BackgroundFetchMetadata metadata_proto;
+  EXPECT_TRUE(GetMetadataStorageKey(metadata_proto).origin().opaque());
 }
 
 }  // namespace
