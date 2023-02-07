@@ -46,6 +46,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_item.h"
+#include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -4196,6 +4197,31 @@ TEST_F(SavedDeskTest,
   ASSERT_TRUE(undo_button);
   ClickOnView(undo_button);
   EXPECT_TRUE(overview_grid->IsSaveDeskButtonContainerVisible());
+}
+
+// Tests that there are no overview item windows on theme change.
+TEST_F(SavedDeskTest, NoOverviewItemWindowOnThemeChange) {
+  // Add a saved desk entry.
+  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+           DeskTemplateType::kTemplate);
+
+  // Create a test window.
+  auto window = CreateAppWindow();
+
+  // Enter overview and ensure overview item window is visible.
+  ToggleOverview();
+  auto* overview_item = GetOverviewItemForWindow(window.get());
+  EXPECT_EQ(window.get(), overview_item->GetWindow());
+  EXPECT_TRUE(overview_item->item_widget()->IsVisible());
+
+  // Enter library and ensure overview item window is *not* visible.
+  ShowSavedDeskLibrary();
+  WaitForSavedDeskLibrary();
+  EXPECT_FALSE(overview_item->item_widget()->IsVisible());
+
+  // Simulate theme change and ensure overview item window is *not* visible.
+  overview_item->item_widget()->ThemeChanged();
+  EXPECT_FALSE(overview_item->item_widget()->IsVisible());
 }
 
 using DeskSaveAndRecallTest = SavedDeskTest;

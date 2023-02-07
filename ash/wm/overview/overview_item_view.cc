@@ -340,6 +340,12 @@ void OverviewItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 void OverviewItemView::OnThemeChanged() {
   WindowMiniView::OnThemeChanged();
   UpdateBorderState(IsViewHighlighted());
+
+  // If it's still showing the saved desk library, make sure overview item
+  // window is not visible.
+  if (overview_item_->overview_grid()->IsShowingSavedDeskLibrary()) {
+    overview_item_->GetWindow()->layer()->SetOpacity(0.f);
+  }
 }
 
 BEGIN_METADATA(OverviewItemView, WindowMiniView)
