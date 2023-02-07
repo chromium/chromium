@@ -39,7 +39,7 @@ BASE_FEATURE(kWebApkInstallFailureNotification,
 // Enables PWA Unique IDs for WebAPKs.
 BASE_FEATURE(kWebApkUniqueId,
              "WebApkUniqueId",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // When the user clicks "Create Shortcut" in the dot menu, the current page is
