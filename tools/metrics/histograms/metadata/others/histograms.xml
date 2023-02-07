@@ -9614,7 +9614,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PaintHolding.CommitTrigger2" enum="PaintHoldingCommitTrigger2"
     expires_after="2023-06-04">
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Records the reason that a commit was triggered, to enable research into
@@ -9624,7 +9624,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PaintHolding.InputTiming3" enum="PaintHoldingInputTiming"
     expires_after="2023-07-09">
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Records whether or not input arrived before the first paint.

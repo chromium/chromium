@@ -316,7 +316,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Event.Latency.HitTest" units="microseconds"
     expires_after="2023-06-18">
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Duration of a non-resurive hitTest operation. The hit test is non-recursive
@@ -335,7 +335,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Event.Latency.HitTestRecursive" units="microseconds"
     expires_after="2023-06-18">
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Duration of a recursive hitTest operation. The hit test is recursive when

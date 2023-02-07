@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent computing IntersectionObserver observations in the Blink document
@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent processing main frame animations during a main frame update.
@@ -623,7 +623,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent updating and pushing layers at the end of the paint step in the
@@ -648,7 +648,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent updating compositing inputs in the Blink document lifecycle.
@@ -696,7 +696,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent preparing the document for a canvas draw, SVG image draw or
@@ -860,7 +860,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent computing IntersectionObserver observations in the Blink document
@@ -879,7 +879,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.EffectiveZoom" units="%" expires_after="2023-11-23">
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     The EffectiveZoom as reported by ComputedStyle in a Blink renderer. The
@@ -1299,7 +1299,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent computing layouts due to Javascript value requests. Specifically,
@@ -1337,7 +1337,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent processing rAF-aligned input during a main frame update.
@@ -1361,7 +1361,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent preparing the document for hit testing during a main frame
@@ -1841,7 +1841,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent updating layers in the compositor thread during a
@@ -1889,7 +1889,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent computing IntersectionObserver observations in the Blink document
@@ -1955,7 +1955,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent preparing the document to answer a Javascript API query or
@@ -1984,7 +1984,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent computing IntersectionObserver observations in the Blink document
@@ -2031,7 +2031,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
     Time spent updating layout in the Blink document lifecycle.
@@ -2055,7 +2055,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent computing IntersectionObserver observations in the Blink document
@@ -2125,7 +2125,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time between a BeginMainFrame and paint results commit in Blink.
@@ -2149,7 +2149,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent computing IntersectionObserver observations in the Blink document
@@ -2370,7 +2370,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent updating paint in the Blink document lifecycle.
@@ -2449,7 +2449,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent updating paint properties and paint invalidation in the Blink
@@ -2663,7 +2663,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent preparing the document to ensure correct scroll behavior, such as
@@ -2689,7 +2689,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent preparing the document to service browser driven behaviors.
@@ -2887,7 +2887,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
     Time spent updating style in the Blink document lifecycle.
@@ -2934,7 +2934,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent computing geometry information about iframes from the perspective
@@ -3368,7 +3368,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent preparing the document to service user driven behaviors. Examples
@@ -3465,7 +3465,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent waiting for the compositor thread to begin processing a layer
