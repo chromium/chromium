@@ -486,6 +486,7 @@ android_library("content_javatests") {
     "//base:base_java_test_support",
     "//base:process_launcher_java",
     "//cc/mojom:mojom_java",
+    "//components/payments/mojom:mojom_java",
     "//content/public/test/android:content_java_test_support",
     "//content/shell/android:content_shell_apk_java",
     "//content/shell/android:content_shell_java",
@@ -529,6 +530,9 @@ android_library("content_javatests") {
     "//ui/base/ime/mojom:mojom_java",
     "//ui/gfx/geometry/mojom:mojom_java",
     "//url:gurl_java",
+    "//url:origin_java",
+    "//url/mojom:url_mojom_gurl_java",
+    "//url/mojom:url_mojom_origin_java",
   ]
 
   sources = [
@@ -600,6 +604,7 @@ android_library("content_javatests") {
     "javatests/src/org/chromium/content/browser/scheduler/NativePostTaskTest.java",
     "javatests/src/org/chromium/content/browser/scheduler/UiThreadSchedulerTest.java",
     "javatests/src/org/chromium/content/browser/webcontents/WebContentsTest.java",
+    "javatests/src/org/chromium/content_public/browser/ClientDataJsonTest.java",
   ]
 
   data = [

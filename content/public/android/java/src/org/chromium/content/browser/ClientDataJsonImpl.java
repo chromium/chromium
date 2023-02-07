@@ -10,6 +10,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.content_public.browser.ClientDataRequestType;
+import org.chromium.url.Origin;
 
 import java.nio.ByteBuffer;
 
@@ -22,7 +23,7 @@ public class ClientDataJsonImpl {
     @Nullable
     public static String buildClientDataJson(@ClientDataRequestType int clientDataRequestType,
             String callerOrigin, byte[] challenge, boolean isCrossOrigin,
-            PaymentOptions paymentOptions, String relyingPartyId, String topOrigin) {
+            PaymentOptions paymentOptions, String relyingPartyId, Origin topOrigin) {
         return ClientDataJsonImplJni.get().buildClientDataJson(clientDataRequestType, callerOrigin,
                 challenge, isCrossOrigin,
                 paymentOptions == null ? null : paymentOptions.serialize(), relyingPartyId,
@@ -33,6 +34,6 @@ public class ClientDataJsonImpl {
     public interface Natives {
         String buildClientDataJson(@ClientDataRequestType int clientDataRequestType,
                 String callerOrigin, byte[] challenge, boolean isCrossOrigin,
-                ByteBuffer optionsByteBuffer, String relyingPartyId, String topOrigin);
+                ByteBuffer optionsByteBuffer, String relyingPartyId, Origin topOrigin);
     }
 }

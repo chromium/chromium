@@ -234,7 +234,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             mClientDataJson = ClientDataJson.buildClientDataJson(ClientDataRequestType.PAYMENT_GET,
                     callerOriginString, options.challenge,
                     webAuthSecurityChecksResults.isCrossOrigin, payment, options.relyingPartyId,
-                    mWebContents.getLastCommittedUrl().getOrigin().getSpec());
+                    mWebContents.getMainFrame().getLastCommittedOrigin());
             if (mClientDataJson == null) {
                 returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
                 return;

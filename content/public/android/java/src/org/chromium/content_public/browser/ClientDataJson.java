@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.content.browser.ClientDataJsonImpl;
+import org.chromium.url.Origin;
 
 /**
  * A utility class for WebAuthn to process the clientDataJson data structure in the API.
@@ -34,7 +35,7 @@ public final class ClientDataJson {
     public static String buildClientDataJson(@ClientDataRequestType int clientDataRequestType,
             @NonNull String callerOrigin, @NonNull byte[] challenge, boolean isCrossOrigin,
             @Nullable PaymentOptions paymentOptions, @Nullable String relyingPartyId,
-            @Nullable String topOrigin) {
+            @Nullable Origin topOrigin) {
         assert challenge != null;
         return ClientDataJsonImpl.buildClientDataJson(clientDataRequestType, callerOrigin,
                 challenge, isCrossOrigin, paymentOptions, relyingPartyId, topOrigin);

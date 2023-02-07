@@ -52,7 +52,7 @@ JNI_ClientDataJsonImpl_BuildClientDataJson(
     jboolean jis_cross_origin,
     const base::android::JavaParamRef<jobject>& joptions_byte_buffer,
     const base::android::JavaParamRef<jstring>& jrelying_party_id,
-    const base::android::JavaParamRef<jstring>& jtop_origin) {
+    const base::android::JavaParamRef<jobject>& jtop_origin) {
   ClientDataRequestType type =
       static_cast<ClientDataRequestType>(jclient_data_request_type);
   std::string caller_origin =
@@ -70,8 +70,7 @@ JNI_ClientDataJsonImpl_BuildClientDataJson(
           ? base::android::ConvertJavaStringToUTF8(env, jrelying_party_id)
           : "";
   std::string top_origin =
-      jtop_origin ? base::android::ConvertJavaStringToUTF8(env, jtop_origin)
-                  : "";
+      jtop_origin ? url::Origin::FromJavaObject(jtop_origin).Serialize() : "";
 
   ClientDataJsonParams client_data_json_params(
       /*type=*/type, /*origin=*/url::Origin::Create(GURL(caller_origin)),
