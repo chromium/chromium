@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,6 +29,7 @@ namespace attribution_reporting {
 namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
+using ::attribution_reporting::mojom::SourceType;
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
 FilterValues CreateFilterValues(size_t n) {
@@ -290,6 +292,261 @@ TEST(FilterValuesTest, ToJson) {
 
     EXPECT_THAT(Filters::Create(test_case.input)->ToJson(),
                 base::test::IsJson(test_case.expected_json));
+  }
+}
+
+TEST(FilterDataTest, EmptyOrMissingAttributionFilters) {
+  const auto empty_filter = FilterValues();
+
+  const auto empty_filter_values = FilterValues({{"filter1", {}}});
+
+  const auto one_filter = FilterValues({{"filter1", {"value1"}}});
+
+  const struct {
+    const char* description;
+    FilterValues filter_data;
+    FilterValues filters;
+  } kTestCases[] = {
+      {"No source filters, no trigger filters", empty_filter, empty_filter},
+      {"No source filters, trigger filter without values", empty_filter,
+       empty_filter_values},
+      {"No source filters, trigger filter with value", empty_filter,
+       one_filter},
+
+      {"Source filter without values, no trigger filters", empty_filter_values,
+       empty_filter},
+
+      {"Source filter with value, no trigger filters", one_filter,
+       empty_filter}};
+
+  // Behavior should match for negated and non-negated filters as it
+  // requires a value on each side.
+  for (const auto& test_case : kTestCases) {
+    absl::optional<FilterData> filter_data =
+        FilterData::Create(test_case.filter_data);
+    ASSERT_TRUE(filter_data) << test_case.description;
+
+    absl::optional<Filters> filters = Filters::Create(test_case.filters);
+    ASSERT_TRUE(filters) << test_case.description;
+
+    EXPECT_TRUE(filter_data->MatchesForTesting(SourceType::kNavigation,
+                                               *filters, /*negated=*/false))
+        << test_case.description;
+
+    EXPECT_TRUE(filter_data->MatchesForTesting(SourceType::kNavigation,
+                                               *filters, /*negated=*/true))
+        << test_case.description << " with negation";
+  }
+}
+
+TEST(FilterDataTest, AttributionFilterDataMatch) {
+  const auto empty_filter_values = FilterValues({{"filter1", {}}});
+
+  const auto one_filter = FilterValues({{"filter1", {"value1"}}});
+
+  const auto one_filter_different = FilterValues({{"filter1", {"value2"}}});
+
+  const auto two_filters =
+      FilterValues({{"filter1", {"value1"}}, {"filter2", {"value2"}}});
+
+  const auto one_mismatched_filter =
+      FilterValues({{"filter1", {"value1"}}, {"filter2", {"value3"}}});
+
+  const auto two_mismatched_filter =
+      FilterValues({{"filter1", {"value3"}}, {"filter2", {"value4"}}});
+
+  const struct {
+    const char* description;
+    FilterValues filter_data;
+    FilterValues filters;
+    bool match_expected;
+  } kTestCases[] = {
+      {"Source filter without values, trigger filter with value",
+       empty_filter_values, one_filter, false},
+      {"Source filter without values, trigger filter without values",
+       empty_filter_values, empty_filter_values, true},
+      {"Source filter with value, trigger filter without values", one_filter,
+       empty_filter_values, false},
+
+      {"One filter with matching values", one_filter, one_filter, true},
+      {"One filter with no matching values", one_filter, one_filter_different,
+       false},
+
+      {"Two filters with matching values", two_filters, two_filters, true},
+      {"Two filters no matching values", one_mismatched_filter,
+       two_mismatched_filter, false},
+
+      {"One filter not present in source, other matches", one_filter,
+       two_filters, true},
+      {"One filter not present in trigger, other matches", two_filters,
+       one_filter, true},
+
+      {"Two filters one filter no match", two_filters, one_mismatched_filter,
+       false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    absl::optional<FilterData> filter_data =
+        FilterData::Create(test_case.filter_data);
+    ASSERT_TRUE(filter_data) << test_case.description;
+
+    absl::optional<Filters> filters = Filters::Create(test_case.filters);
+    ASSERT_TRUE(filters) << test_case.description;
+
+    EXPECT_EQ(test_case.match_expected,
+              filter_data->MatchesForTesting(SourceType::kNavigation, *filters,
+                                             /*negated=*/false))
+        << test_case.description;
+  }
+}
+
+TEST(FilterDataTest, NegatedAttributionFilterDataMatch) {
+  const auto empty_filter_values = FilterValues({{"filter1", {}}});
+
+  const auto one_filter = FilterValues({{"filter1", {"value1"}}});
+
+  const auto one_filter_different = FilterValues({{"filter1", {"value2"}}});
+
+  const auto one_filter_one_different =
+      FilterValues({{"filter1", {"value1", "value2"}}});
+
+  const auto one_filter_multiple_different =
+      FilterValues({{"filter1", {"value2", "value3"}}});
+
+  const auto two_filters =
+      FilterValues({{"filter1", {"value1"}}, {"filter2", {"value2"}}});
+
+  const auto one_mismatched_filter =
+      FilterValues({{"filter1", {"value1"}}, {"filter2", {"value3"}}});
+
+  const auto two_mismatched_filter =
+      FilterValues({{"filter1", {"value3"}}, {"filter2", {"value4"}}});
+
+  const struct {
+    const char* description;
+    FilterValues filter_data;
+    FilterValues filters;
+    bool match_expected;
+  } kTestCases[] = {
+      // True because there is not matching values within source.
+      {"Source filter without values, trigger filter with value",
+       empty_filter_values, one_filter, true},
+      {"Source filter without values, trigger filter without values",
+       empty_filter_values, empty_filter_values, false},
+      {"Source filter with value, trigger filter without values", one_filter,
+       empty_filter_values, true},
+
+      {"One filter with matching values", one_filter, one_filter, false},
+      {"One filter with non-matching value", one_filter, one_filter_different,
+       true},
+      {"One filter with one non-matching value", one_filter,
+       one_filter_one_different, false},
+      {"One filter with multiple non-matching values", one_filter,
+       one_filter_multiple_different, true},
+
+      {"Two filters with matching values", two_filters, two_filters, false},
+      {"Two filters no matching values", one_mismatched_filter,
+       two_mismatched_filter, true},
+
+      {"One filter not present in source, other matches", one_filter,
+       two_filters, false},
+      {"One filter not present in trigger, other matches", two_filters,
+       one_filter, false},
+
+      {"Two filters one filter no match", two_filters, one_mismatched_filter,
+       false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    absl::optional<FilterData> filter_data =
+        FilterData::Create(test_case.filter_data);
+    ASSERT_TRUE(filter_data) << test_case.description;
+
+    absl::optional<Filters> filters = Filters::Create(test_case.filters);
+    ASSERT_TRUE(filters) << test_case.description;
+
+    EXPECT_EQ(test_case.match_expected,
+              filter_data->MatchesForTesting(SourceType::kNavigation, *filters,
+                                             /*negated=*/true))
+        << test_case.description << " with negation";
+  }
+}
+
+TEST(FilterDataTest, AttributionFilterDataMatch_SourceType) {
+  const struct {
+    const char* description;
+    SourceType source_type;
+    Filters filters;
+    bool negated;
+    bool match_expected;
+  } kTestCases[] = {
+      {
+          .description = "empty-filters",
+          .source_type = SourceType::kNavigation,
+          .filters = Filters(),
+          .negated = false,
+          .match_expected = true,
+      },
+      {
+          .description = "empty-filters-negated",
+          .source_type = SourceType::kNavigation,
+          .filters = Filters(),
+          .negated = true,
+          .match_expected = true,
+      },
+      {
+          .description = "empty-filter-values",
+          .source_type = SourceType::kNavigation,
+          .filters = *Filters::Create({
+              {FilterData::kSourceTypeFilterKey, {}},
+          }),
+          .negated = false,
+          .match_expected = false,
+      },
+      {
+          .description = "empty-filter-values-negated",
+          .source_type = SourceType::kNavigation,
+          .filters = *Filters::Create({
+              {FilterData::kSourceTypeFilterKey, {}},
+          }),
+          .negated = true,
+          .match_expected = true,
+      },
+      {
+          .description = "same-source-type",
+          .source_type = SourceType::kNavigation,
+          .filters = Filters::ForSourceTypeForTesting(SourceType::kNavigation),
+          .negated = false,
+          .match_expected = true,
+      },
+      {
+          .description = "same-source-type-negated",
+          .source_type = SourceType::kNavigation,
+          .filters = Filters::ForSourceTypeForTesting(SourceType::kNavigation),
+          .negated = true,
+          .match_expected = false,
+      },
+      {
+          .description = "other-source-type",
+          .source_type = SourceType::kNavigation,
+          .filters = Filters::ForSourceTypeForTesting(SourceType::kEvent),
+          .negated = false,
+          .match_expected = false,
+      },
+      {
+          .description = "other-source-type-negated",
+          .source_type = SourceType::kNavigation,
+          .filters = Filters::ForSourceTypeForTesting(SourceType::kEvent),
+          .negated = true,
+          .match_expected = true,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(test_case.match_expected,
+              FilterData().MatchesForTesting(
+                  test_case.source_type, test_case.filters, test_case.negated))
+        << test_case.description;
   }
 }
 

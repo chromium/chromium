@@ -44,7 +44,6 @@
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
-#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/sql_queries.h"
@@ -874,10 +873,10 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                                   AggregatableResult::kInternalError);
   }
 
-  const bool top_level_filters_match = AttributionFiltersMatch(
-      source_to_attribute->source.common_info().filter_data(),
-      source_to_attribute->source.common_info().source_type(),
-      trigger_registration.filters, trigger_registration.not_filters);
+  const bool top_level_filters_match =
+      source_to_attribute->source.common_info().filter_data().Matches(
+          source_to_attribute->source.common_info().source_type(),
+          trigger_registration.filters, trigger_registration.not_filters);
 
   attribution_info.emplace(std::move(source_to_attribute->source), trigger_time,
                            trigger_registration.debug_key,
@@ -1103,9 +1102,8 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
   auto event_trigger = base::ranges::find_if(
       trigger.registration().event_triggers.vec(),
       [&](const attribution_reporting::EventTriggerData& event_trigger) {
-        return AttributionFiltersMatch(common_info.filter_data(), source_type,
-                                       event_trigger.filters,
-                                       event_trigger.not_filters);
+        return common_info.filter_data().Matches(
+            source_type, event_trigger.filters, event_trigger.not_filters);
       });
 
   if (event_trigger == trigger.registration().event_triggers.vec().end()) {

@@ -28,7 +28,6 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
-#include "components/attribution_reporting/source_type.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_attestation.h"
 #include "components/attribution_reporting/trigger_registration.h"
@@ -745,13 +744,15 @@ AttributionTrigger TriggerBuilder::Build(
     event_triggers.emplace_back(
         trigger_data_, priority_, dedup_key_,
         /*filters=*/
-        AttributionFiltersForSourceType(AttributionSourceType::kNavigation),
+        attribution_reporting::Filters::ForSourceTypeForTesting(
+            AttributionSourceType::kNavigation),
         /*not_filters=*/attribution_reporting::Filters());
 
     event_triggers.emplace_back(
         event_source_trigger_data_, priority_, dedup_key_,
         /*filters=*/
-        AttributionFiltersForSourceType(AttributionSourceType::kEvent),
+        attribution_reporting::Filters::ForSourceTypeForTesting(
+            AttributionSourceType::kEvent),
         /*not_filters=*/attribution_reporting::Filters());
   }
 
@@ -1489,20 +1490,6 @@ DefaultAggregatableHistogramContributions(
     contributions.emplace_back(absl::MakeUint128(i, i), histogram_values[i]);
   }
   return contributions;
-}
-
-attribution_reporting::Filters AttributionFiltersForSourceType(
-    AttributionSourceType source_type) {
-  std::vector<std::string> values;
-  values.reserve(1);
-  values.push_back(attribution_reporting::SourceTypeName(source_type));
-
-  attribution_reporting::FilterValues filter_values;
-  filter_values.reserve(1);
-  filter_values.emplace(attribution_reporting::FilterData::kSourceTypeFilterKey,
-                        std::move(values));
-
-  return *attribution_reporting::Filters::Create(std::move(filter_values));
 }
 
 }  // namespace content

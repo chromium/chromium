@@ -9,14 +9,18 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/source_type.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 
 namespace attribution_reporting {
@@ -217,6 +221,64 @@ base::Value::Dict FilterData::ToJson() const {
   return FilterValuesToJson(filter_values_);
 }
 
+bool FilterData::Matches(mojom::SourceType source_type,
+                         const Filters& filters,
+                         bool negated) const {
+  // A filter is considered matched if the filter key is only present either on
+  // the source or trigger, or the intersection of the filter values is
+  // non-empty.
+  // Returns true if all the filters matched.
+  //
+  // If the filters are negated, the behavior should be that every single filter
+  // key does not match between the two (negating the function result is not
+  // sufficient by the API definition).
+  return base::ranges::all_of(
+      filters.filter_values(), [&](const auto& trigger_filter) {
+        if (trigger_filter.first == kSourceTypeFilterKey) {
+          bool has_intersection = base::ranges::any_of(
+              trigger_filter.second, [&](const std::string& value) {
+                return value == SourceTypeName(source_type);
+              });
+
+          return negated != has_intersection;
+        }
+
+        auto source_filter = filter_values_.find(trigger_filter.first);
+        if (source_filter == filter_values_.end()) {
+          return true;
+        }
+
+        // Desired behavior is to treat any empty set of values as a single
+        // unique value itself. This means:
+        //  - x:[] match x:[] is false when negated, and true otherwise.
+        //  - x:[1,2,3] match x:[] is true when negated, and false otherwise.
+        if (trigger_filter.second.empty()) {
+          return negated != source_filter->second.empty();
+        }
+
+        bool has_intersection = base::ranges::any_of(
+            trigger_filter.second, [&](const std::string& value) {
+              return base::Contains(source_filter->second, value);
+            });
+        // Negating filters are considered matched if the intersection of the
+        // filter values is empty.
+        return negated != has_intersection;
+      });
+}
+
+bool FilterData::MatchesForTesting(mojom::SourceType source_type,
+                                   const Filters& filters,
+                                   bool negated) const {
+  return Matches(source_type, filters, negated);
+}
+
+bool FilterData::Matches(mojom::SourceType source_type,
+                         const Filters& positive,
+                         const Filters& negative) const {
+  return Matches(source_type, positive, /*negated=*/false) &&
+         Matches(source_type, negative, /*negated=*/true);
+}
+
 // static
 absl::optional<Filters> Filters::Create(FilterValues filter_values) {
   if (!IsValidForSourceOrTrigger(filter_values))
@@ -253,6 +315,19 @@ base::expected<Filters, TriggerRegistrationError> Filters::FromJSON(
     case FilterValuesError::kValueTooLong:
       return base::unexpected(TriggerRegistrationError::kFiltersValueTooLong);
   }
+}
+
+// static
+Filters Filters::ForSourceTypeForTesting(mojom::SourceType source_type) {
+  std::vector<std::string> values;
+  values.reserve(1);
+  values.emplace_back(SourceTypeName(source_type));
+
+  FilterValues filter_values;
+  filter_values.reserve(1);
+  filter_values.emplace(FilterData::kSourceTypeFilterKey, std::move(values));
+
+  return Filters(std::move(filter_values));
 }
 
 Filters::Filters() = default;

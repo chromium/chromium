@@ -25,7 +25,6 @@
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
-#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/common/aggregatable_report.mojom.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -64,8 +63,8 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
   // match for the given source, and if applicable modify the bucket based on
   // the given key piece.
   for (const auto& data : aggregatable_trigger_data.vec()) {
-    if (!AttributionFiltersMatch(source_filter_data, source_type,
-                                 data.filters(), data.not_filters())) {
+    if (!source_filter_data.Matches(source_type, data.filters(),
+                                    data.not_filters())) {
       ++num_trigger_data_filtered;
       continue;
     }

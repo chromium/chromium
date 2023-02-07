@@ -40,7 +40,6 @@
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
-#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -144,10 +143,9 @@ class AttributionStorageTest : public testing::Test {
     auto event_trigger = base::ranges::find_if(
         conversion.registration().event_triggers.vec(),
         [&](const attribution_reporting::EventTriggerData& event_trigger) {
-          return AttributionFiltersMatch(source.common_info().filter_data(),
-                                         source.common_info().source_type(),
-                                         event_trigger.filters,
-                                         event_trigger.not_filters);
+          return source.common_info().filter_data().Matches(
+              source.common_info().source_type(), event_trigger.filters,
+              event_trigger.not_filters);
         });
     CHECK(event_trigger !=
           conversion.registration().event_triggers.vec().end());
@@ -2758,7 +2756,7 @@ TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
                       /*priority=*/12,
                       /*dedup_key=*/13,
                       /*filters=*/
-                      AttributionFiltersForSourceType(
+                      attribution_reporting::Filters::ForSourceTypeForTesting(
                           AttributionSourceType::kEvent),
                       /*not_filters=*/AttributionFilters())}),
               /*aggregatable_trigger_data=*/
@@ -2945,7 +2943,8 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
       attribution_reporting::TriggerRegistration(
           /*filters=*/AttributionFilters(),
           /*not_filters=*/
-          AttributionFiltersForSourceType(AttributionSourceType::kNavigation),
+          attribution_reporting::Filters::ForSourceTypeForTesting(
+              AttributionSourceType::kNavigation),
           /*debug_key=*/absl::nullopt,
           /*aggregatable_dedup_key=*/absl::nullopt, event_triggers,
           *attribution_reporting::AggregatableTriggerDataList::Create(

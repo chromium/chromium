@@ -14,10 +14,13 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
+#include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
+
+class Filters;
 
 using FilterValues = base::flat_map<std::string, std::vector<std::string>>;
 
@@ -46,8 +49,16 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
 
   base::Value::Dict ToJson() const;
 
+  bool Matches(mojom::SourceType,
+               const Filters& positive,
+               const Filters& negative) const;
+
+  bool MatchesForTesting(mojom::SourceType, const Filters&, bool negated) const;
+
  private:
   explicit FilterData(FilterValues);
+
+  bool Matches(mojom::SourceType, const Filters&, bool negated) const;
 
   FilterValues filter_values_;
 };
@@ -63,6 +74,9 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) Filters {
 
   static base::expected<Filters, mojom::TriggerRegistrationError> FromJSON(
       base::Value*);
+
+  // Returns filters that match only the given source type.
+  static Filters ForSourceTypeForTesting(mojom::SourceType);
 
   Filters();
 
