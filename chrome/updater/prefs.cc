@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -94,9 +95,10 @@ scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
     return nullptr;
 
   const absl::optional<base::FilePath> global_prefs_dir =
-      GetBaseDataDirectory(scope);
-  if (!global_prefs_dir)
+      GetInstallDirectory(scope);
+  if (!global_prefs_dir || !base::CreateDirectory(*global_prefs_dir)) {
     return nullptr;
+  }
   VLOG(1) << "global_prefs_dir: " << global_prefs_dir;
 
   PrefServiceFactory pref_service_factory;
@@ -117,9 +119,10 @@ scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
 
 scoped_refptr<LocalPrefs> CreateLocalPrefs(UpdaterScope scope) {
   const absl::optional<base::FilePath> local_prefs_dir =
-      GetVersionedDataDirectory(scope);
-  if (!local_prefs_dir)
+      GetVersionedInstallDirectory(scope);
+  if (!local_prefs_dir || !base::CreateDirectory(*local_prefs_dir)) {
     return nullptr;
+  }
 
   PrefServiceFactory pref_service_factory;
   pref_service_factory.set_user_prefs(base::MakeRefCounted<JsonPrefStore>(

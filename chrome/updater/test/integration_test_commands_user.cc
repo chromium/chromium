@@ -33,7 +33,7 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   void PrintLog() const override { updater::test::PrintLog(updater_scope_); }
 
   void CopyLog() const override {
-    absl::optional<base::FilePath> path = GetDataDirPath(updater_scope_);
+    absl::optional<base::FilePath> path = GetInstallDirectory(updater_scope_);
     EXPECT_TRUE(path);
     if (path)
       updater::test::CopyLog(*path);

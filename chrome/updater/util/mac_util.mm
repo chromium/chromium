@@ -210,16 +210,17 @@ bool ConfirmFilePermissions(const base::FilePath& root_path,
   return true;
 }
 
-absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope) {
+absl::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
   absl::optional<base::FilePath> path = GetLibraryFolderPath(scope);
   return path ? absl::optional<base::FilePath>(
-                    path->Append(GetUpdaterFolderName()))
+                    path->Append("Application Support")
+                        .Append(GetUpdaterFolderName()))
               : absl::nullopt;
 }
 
 absl::optional<base::FilePath> GetUpdateServiceLauncherPath(
     UpdaterScope scope) {
-  absl::optional<base::FilePath> install_dir = GetBaseInstallDirectory(scope);
+  absl::optional<base::FilePath> install_dir = GetInstallDirectory(scope);
   return install_dir
              ? absl::optional<base::FilePath>(
                    install_dir->Append("Current")

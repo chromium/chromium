@@ -44,7 +44,7 @@ static constexpr base::TaskTraits kTaskTraitsBlockWithSyncPrimitives = {
 // identified by the |app_id|.
 absl::optional<base::FilePath> GetAppInstallDir(UpdaterScope scope,
                                                 const std::string& app_id) {
-  absl::optional<base::FilePath> app_install_dir = GetBaseDataDirectory(scope);
+  absl::optional<base::FilePath> app_install_dir = GetInstallDirectory(scope);
   if (!app_install_dir) {
     return absl::nullopt;
   }

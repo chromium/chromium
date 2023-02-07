@@ -221,9 +221,6 @@ extern const char kDevOverrideKeyCrxVerifierFormat[];
 extern const char kDevOverrideKeyGroupPolicies[];
 extern const char kDevOverrideKeyOverinstallTimeout[];
 
-// File name of developer overrides file.
-extern const char kDevOverrideFileName[];
-
 // Timing constants.
 // How long to wait for an application installer (such as chrome_installer.exe)
 // to complete.

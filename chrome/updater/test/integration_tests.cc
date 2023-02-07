@@ -114,7 +114,7 @@ class IntegrationTest : public ::testing::Test {
     PrintLog();
 
     // TODO(crbug.com/1159189): Use a specific test output directory
-    // because Uninstall() deletes the files under GetDataDirPath().
+    // because Uninstall() deletes the files under GetInstallDirectory().
     CopyLog();
 
     // TODO(crbug.com/1233612) - reenable the code when system tests pass.
@@ -830,6 +830,9 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
 // TODO(crbug.com/1398845): Enable test once SetupRealUpdaterLowerVersion
 // is implemented.
 #if !BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1412450): Enable test once CIPD has rolled to pick up the
+// test override path change.
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
   ScopedServer test_server(test_commands_);
 
@@ -874,6 +877,7 @@ TEST_F(IntegrationTest, InstallLowerVersion) {
 #endif  // IS_WIN
 }
 
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 #endif  // !BUILDFLAG(IS_LINUX)
 #endif
 #endif

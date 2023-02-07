@@ -49,10 +49,6 @@ scoped_refptr<PolicyService> CreateTestPolicyService();
 // if the test name is not available.
 std::string GetTestName();
 
-// Get the path for external constants override file. This is the JSON file in
-// the updater data directory.
-absl::optional<base::FilePath> GetOverrideFilePath(UpdaterScope scope);
-
 // Deletes the file and its parent directories, if the parent directories are
 // empty. Returns true if:
 // - the file and the directories are deleted.

@@ -176,13 +176,6 @@ std::string GetTestName() {
                    : "?.?";
 }
 
-absl::optional<base::FilePath> GetOverrideFilePath(UpdaterScope scope) {
-  const absl::optional<base::FilePath> data_dir = GetBaseDataDirectory(scope);
-  return data_dir
-             ? absl::make_optional(data_dir->AppendASCII(kDevOverrideFileName))
-             : absl::nullopt;
-}
-
 bool DeleteFileAndEmptyParentDirectories(
     const absl::optional<base::FilePath>& file_path) {
   struct Local {

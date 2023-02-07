@@ -47,6 +47,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants_builder.h"
+#include "chrome/updater/external_constants_override.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
@@ -305,7 +306,7 @@ void Install(UpdaterScope scope) {
 
 void PrintLog(UpdaterScope scope) {
   std::string contents;
-  absl::optional<base::FilePath> path = GetDataDirPath(scope);
+  absl::optional<base::FilePath> path = GetInstallDirectory(scope);
   EXPECT_TRUE(path);
   if (path &&
       base::ReadFileToString(path->AppendASCII("updater.log"), &contents)) {
@@ -415,7 +416,7 @@ void UpdateAll(UpdaterScope scope) {
 }
 
 void DeleteUpdaterDirectory(UpdaterScope scope) {
-  absl::optional<base::FilePath> install_dir = GetBaseInstallDirectory(scope);
+  absl::optional<base::FilePath> install_dir = GetInstallDirectory(scope);
   ASSERT_TRUE(install_dir);
   ASSERT_TRUE(base::DeletePathRecursively(*install_dir));
 }
@@ -432,10 +433,11 @@ void SetupFakeUpdaterPrefs(UpdaterScope scope, const base::Version& version) {
 
 void SetupFakeUpdaterInstallFolder(UpdaterScope scope,
                                    const base::Version& version) {
-  const absl::optional<base::FilePath> folder_path =
-      GetFakeUpdaterInstallFolderPath(scope, version);
+  absl::optional<base::FilePath> folder_path =
+      GetVersionedInstallDirectory(scope, version);
   ASSERT_TRUE(folder_path);
-  ASSERT_TRUE(base::CreateDirectory(*folder_path));
+  ASSERT_TRUE(base::CreateDirectory(
+      folder_path->Append(GetExecutableRelativePath()).DirName()));
 }
 
 void SetupFakeUpdater(UpdaterScope scope, const base::Version& version) {

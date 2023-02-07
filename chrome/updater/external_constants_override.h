@@ -14,10 +14,13 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/updater/external_constants.h"
+#include "chrome/updater/updater_scope.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
 namespace base {
+class FilePath;
 class TimeDelta;
 class Value;
 }  // namespace base
@@ -27,6 +30,8 @@ enum class VerifierFormat;
 }
 
 namespace updater {
+
+absl::optional<base::FilePath> GetOverrideFilePath(UpdaterScope scope);
 
 class ExternalConstantsOverrider : public ExternalConstants {
  public:

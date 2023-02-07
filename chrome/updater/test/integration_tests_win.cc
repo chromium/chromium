@@ -101,27 +101,6 @@ HRESULT CreateLocalServer(GUID clsid,
                             IID_PPV_ARGS(&server));
 }
 
-// Returns the root directory where the updater product is installed. This
-// is the parent directory where the versioned directories of the
-// updater instances are.
-absl::optional<base::FilePath> GetProductPath(UpdaterScope scope) {
-  base::FilePath app_data_dir;
-  if (!base::PathService::Get(IsSystemInstall(scope) ? base::DIR_PROGRAM_FILES
-                                                     : base::DIR_LOCAL_APP_DATA,
-                              &app_data_dir)) {
-    return absl::nullopt;
-  }
-  return app_data_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
-      .AppendASCII(PRODUCT_FULLNAME_STRING);
-}
-
-// Returns the versioned directory of this updater instances.
-absl::optional<base::FilePath> GetProductVersionPath(UpdaterScope scope) {
-  absl::optional<base::FilePath> product_path = GetProductPath(scope);
-  return product_path ? product_path->AppendASCII(kUpdaterVersion)
-                      : product_path;
-}
-
 [[nodiscard]] bool RegKeyExists(HKEY root, const std::wstring& path) {
   return base::win::RegKey(root, path.c_str(), Wow6432(KEY_QUERY_VALUE))
       .Valid();
@@ -328,24 +307,16 @@ void CheckInstallation(UpdaterScope scope,
             .c_str());
   }
 
-  const absl::optional<base::FilePath> product_version_path =
-      GetProductVersionPath(scope);
-  const absl::optional<base::FilePath> data_dir_path = GetDataDirPath(scope);
-
-  for (const absl::optional<base::FilePath>& path :
-       {product_version_path, data_dir_path}) {
-    if (!is_active_and_sxs && path == data_dir_path)
-      continue;
-
-    EXPECT_TRUE(path);
-    EXPECT_TRUE(WaitFor(base::BindLambdaForTesting([&]() {
-                          return is_installed == base::PathExists(*path);
-                        }),
-                        base::BindLambdaForTesting([&]() {
-                          VLOG(0) << "Still waiting for " << *path
-                                  << " where is_installed=" << is_installed;
-                        })));
-  }
+  const absl::optional<base::FilePath> path =
+      GetVersionedInstallDirectory(scope, base::Version(kUpdaterVersion));
+  EXPECT_TRUE(path);
+  EXPECT_TRUE(WaitFor(base::BindLambdaForTesting([&]() {
+                        return is_installed == base::PathExists(*path);
+                      }),
+                      base::BindLambdaForTesting([&]() {
+                        VLOG(0) << "Still waiting for " << *path
+                                << " where is_installed=" << is_installed;
+                      })));
 }
 
 // Returns true if any updater process is found running in any session in the
@@ -553,26 +524,6 @@ base::FilePath GetSetupExecutablePath() {
   return out_dir.AppendASCII("UpdaterSetup_test.exe");
 }
 
-absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
-  absl::optional<base::FilePath> path = GetProductVersionPath(scope);
-  if (!path)
-    return absl::nullopt;
-  return path->Append(GetExecutableRelativePath());
-}
-
-absl::optional<base::FilePath> GetFakeUpdaterInstallFolderPath(
-    UpdaterScope scope,
-    const base::Version& version) {
-  absl::optional<base::FilePath> path = GetProductVersionPath(scope);
-  if (!path)
-    return absl::nullopt;
-  return path->AppendASCII(version.GetString());
-}
-
-absl::optional<base::FilePath> GetDataDirPath(UpdaterScope scope) {
-  return GetProductPath(scope);
-}
-
 void Clean(UpdaterScope scope) {
   VLOG(0) << __func__;
 
@@ -629,7 +580,7 @@ void Clean(UpdaterScope scope) {
   if (target_path)
     base::DeleteFile(*target_path);
 
-  absl::optional<base::FilePath> path = GetProductPath(scope);
+  absl::optional<base::FilePath> path = GetInstallDirectory(scope);
   ASSERT_TRUE(path);
   ASSERT_TRUE(base::DeletePathRecursively(*path)) << *path;
 
@@ -1423,7 +1374,7 @@ void RunUninstallCmdLine(UpdaterScope scope) {
 
 void RunHandoff(UpdaterScope scope, const std::string& app_id) {
   const absl::optional<base::FilePath> installed_executable_path =
-      GetInstalledExecutablePath(scope);
+      GetUpdaterExecutablePath(scope);
   ASSERT_TRUE(installed_executable_path);
   ASSERT_TRUE(base::PathExists(*installed_executable_path));
 
@@ -1560,7 +1511,7 @@ void RunOfflineInstall(UpdaterScope scope,
   EXPECT_TRUE(DeleteRegKey(root, app_client_state_key));
 
   const absl::optional<base::FilePath> updater_exe =
-      GetInstalledExecutablePath(scope);
+      GetUpdaterExecutablePath(scope);
   ASSERT_TRUE(updater_exe.has_value());
 
   const base::FilePath exe_dir(updater_exe->DirName());

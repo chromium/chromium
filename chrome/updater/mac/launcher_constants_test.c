@@ -10,11 +10,12 @@
 #include "chrome/updater/updater_branding.h"
 
 const char kBundlePath[] =
-    "/Library/" COMPANY_SHORTNAME_STRING "/" PRODUCT_FULLNAME_STRING
-    "/" PRODUCT_VERSION "/" PRODUCT_FULLNAME_STRING "_test.app";
+    "/Library/Application Support/" COMPANY_SHORTNAME_STRING
+    "/" PRODUCT_FULLNAME_STRING "/" PRODUCT_VERSION "/" PRODUCT_FULLNAME_STRING
+    "_test.app";
 const char kExecutablePath[] =
-    "/Library/" COMPANY_SHORTNAME_STRING "/" PRODUCT_FULLNAME_STRING
-    "/" PRODUCT_VERSION "/" PRODUCT_FULLNAME_STRING
+    "/Library/Application Support/" COMPANY_SHORTNAME_STRING
+    "/" PRODUCT_FULLNAME_STRING "/" PRODUCT_VERSION "/" PRODUCT_FULLNAME_STRING
     "_test.app/Contents/MacOS/" PRODUCT_FULLNAME_STRING "_test";
 const char kExecutableName[] = PRODUCT_FULLNAME_STRING "_test";
 

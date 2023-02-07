@@ -96,14 +96,14 @@ void DeleteGoogleUpdateFilesAndKeys(UpdaterScope scope) {
 
 int RunUninstallScript(UpdaterScope scope, bool uninstall_all) {
   const absl::optional<base::FilePath> versioned_dir =
-      GetVersionedDataDirectory(scope);
+      GetVersionedInstallDirectory(scope);
   if (!versioned_dir) {
-    LOG(ERROR) << "GetVersionedDataDirectory failed.";
+    LOG(ERROR) << "GetVersionedInstallDirectory failed.";
     return kErrorNoVersionedDirectory;
   }
-  const absl::optional<base::FilePath> base_dir = GetBaseDataDirectory(scope);
+  const absl::optional<base::FilePath> base_dir = GetInstallDirectory(scope);
   if (IsSystemInstall(scope) && !base_dir) {
-    LOG(ERROR) << "GetBaseDataDirectory failed.";
+    LOG(ERROR) << "GetInstallDirectory failed.";
     return kErrorNoBaseDirectory;
   }
 

@@ -64,7 +64,7 @@ int UninstallCandidate(UpdaterScope scope) {
   int error = kErrorOk;
 
   if (DeleteCandidateInstallFolder(scope) ||
-      DeleteFolder(GetVersionedDataDirectory(scope))) {
+      DeleteFolder(GetVersionedInstallDirectory(scope))) {
     error = kErrorFailedToDeleteFolder;
   }
 
@@ -115,8 +115,8 @@ int Uninstall(UpdaterScope scope) {
     error = kErrorFailedToRemoveSystemdUnit;
   }
 
-  if (!DeleteFolder(GetBaseInstallDirectory(scope)) ||
-      !DeleteFolder(GetBaseDataDirectory(scope))) {
+  if (!DeleteFolder(GetInstallDirectory(scope)) ||
+      !DeleteFolder(GetInstallDirectory(scope))) {
     error = kErrorFailedToDeleteFolder;
   }
 

@@ -976,7 +976,7 @@ absl::optional<base::CommandLine> CommandLineForLegacyFormat(
   return command_line;
 }
 
-absl::optional<base::FilePath> GetApplicationDataDirectory(UpdaterScope scope) {
+absl::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
   base::FilePath app_data_dir;
   if (!base::PathService::Get(IsSystemInstall(scope) ? base::DIR_PROGRAM_FILES
                                                      : base::DIR_LOCAL_APP_DATA,
@@ -984,15 +984,8 @@ absl::optional<base::FilePath> GetApplicationDataDirectory(UpdaterScope scope) {
     LOG(ERROR) << "Can't retrieve app data directory.";
     return absl::nullopt;
   }
-  return app_data_dir;
-}
-
-absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope) {
-  absl::optional<base::FilePath> app_data_dir =
-      GetApplicationDataDirectory(scope);
-  return app_data_dir ? app_data_dir->AppendASCII(COMPANY_SHORTNAME_STRING)
-                            .AppendASCII(PRODUCT_FULLNAME_STRING)
-                      : app_data_dir;
+  return app_data_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
+      .AppendASCII(PRODUCT_FULLNAME_STRING);
 }
 
 base::FilePath GetExecutableRelativePath() {

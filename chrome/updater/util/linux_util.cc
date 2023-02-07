@@ -25,34 +25,28 @@ constexpr base::FilePath::CharType kUserRelativeDataPath[] =
 
 }  // namespace
 
-absl::optional<base::FilePath> GetApplicationDataDirectory(UpdaterScope scope) {
-  base::FilePath path;
-  switch (scope) {
-    case UpdaterScope::kUser:
-      if (base::PathService::Get(base::DIR_HOME, &path)) {
-        return path.Append(kUserRelativeDataPath);
-      }
-      break;
-    case UpdaterScope::kSystem:
-      return base::FilePath(kSystemDataPath);
-  }
-  return absl::nullopt;
-}
-
 base::FilePath GetExecutableRelativePath() {
   return base::FilePath(base::StrCat({kExecutableName, kExecutableSuffix}));
 }
 
-absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope) {
-  absl::optional<base::FilePath> path = GetApplicationDataDirectory(scope);
-  return path ? absl::optional<base::FilePath>(
-                    path->Append(GetUpdaterFolderName()))
-              : absl::nullopt;
+absl::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
+  switch (scope) {
+    case UpdaterScope::kUser:
+      base::FilePath path;
+      if (base::PathService::Get(base::DIR_HOME, &path)) {
+        return path.Append(kUserRelativeDataPath)
+            .Append(GetUpdaterFolderName());
+      }
+      break;
+    case UpdaterScope::kSystem:
+      return base::FilePath(kSystemDataPath).Append(GetUpdaterFolderName());
+  }
+  return absl::nullopt;
 }
 
 absl::optional<base::FilePath> GetUpdateServiceLauncherPath(
     UpdaterScope scope) {
-  absl::optional<base::FilePath> path = GetBaseInstallDirectory(scope);
+  absl::optional<base::FilePath> path = GetInstallDirectory(scope);
   return path ? absl::optional<base::FilePath>(path->AppendASCII(kLauncherName))
               : absl::nullopt;
 }

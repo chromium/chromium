@@ -223,7 +223,7 @@ update_client::UpdaterStateProvider Configurator::GetUpdaterStateProvider()
 #if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
 absl::optional<base::FilePath> Configurator::GetCrxCachePath() const {
   absl::optional<base::FilePath> optional_result =
-      updater::GetBaseDataDirectory(GetUpdaterScope());
+      updater::GetInstallDirectory(GetUpdaterScope());
   return optional_result.has_value()
              ? absl::optional<base::FilePath>(
                    optional_result.value().AppendASCII(kCrxCachePath))

@@ -39,8 +39,7 @@ void AppWakeAll::FirstTaskRun() {
       FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
       base::BindOnce(
           [](UpdaterScope scope) {
-            absl::optional<base::FilePath> base =
-                GetBaseInstallDirectory(scope);
+            absl::optional<base::FilePath> base = GetInstallDirectory(scope);
             if (!base) {
               return kErrorNoBaseDirectory;
             }

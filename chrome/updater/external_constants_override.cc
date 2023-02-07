@@ -38,6 +38,9 @@
 
 namespace {
 
+// Developer override file name, relative to app data directory.
+const char kDevOverrideFileName[] = "overrides.json";
+
 std::vector<GURL> GURLVectorFromStringList(
     const base::Value::List& update_url_list) {
   std::vector<GURL> ret;
@@ -52,6 +55,14 @@ std::vector<GURL> GURLVectorFromStringList(
 }  // anonymous namespace
 
 namespace updater {
+
+absl::optional<base::FilePath> GetOverrideFilePath(UpdaterScope scope) {
+  absl::optional<base::FilePath> base = GetInstallDirectory(scope);
+  if (!base) {
+    return absl::nullopt;
+  }
+  return base->DirName().AppendASCII(kDevOverrideFileName);
+}
 
 ExternalConstantsOverrider::ExternalConstantsOverrider(
     base::Value::Dict override_values,
@@ -165,16 +176,14 @@ base::TimeDelta ExternalConstantsOverrider::OverinstallTimeout() const {
 scoped_refptr<ExternalConstantsOverrider>
 ExternalConstantsOverrider::FromDefaultJSONFile(
     scoped_refptr<ExternalConstants> next_provider) {
-  const absl::optional<base::FilePath> data_dir_path =
-      GetBaseDataDirectory(GetUpdaterScope());
-  if (!data_dir_path) {
-    LOG(ERROR) << "Cannot find app data path.";
+  const absl::optional<base::FilePath> override_file_path =
+      GetOverrideFilePath(GetUpdaterScope());
+  if (!override_file_path) {
+    LOG(ERROR) << "Cannot find override file path.";
     return nullptr;
   }
-  const base::FilePath override_file_path =
-      data_dir_path->AppendASCII(kDevOverrideFileName);
 
-  JSONFileValueDeserializer parser(override_file_path,
+  JSONFileValueDeserializer parser(*override_file_path,
                                    base::JSON_ALLOW_TRAILING_COMMAS);
   int error_code = 0;
   std::string error_message;

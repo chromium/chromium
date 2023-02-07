@@ -83,13 +83,7 @@ bool CopyKeystoneBundle(UpdaterScope scope) {
                                      base::FILE_PERMISSION_EXECUTE_BY_GROUP |
                                      base::FILE_PERMISSION_READ_BY_OTHERS |
                                      base::FILE_PERMISSION_EXECUTE_BY_OTHERS;
-    if (!base::SetPosixFilePermissions(
-            GetLibraryFolderPath(scope)->Append(COMPANY_SHORTNAME_STRING),
-            kPermissionsMask) ||
-        !base::SetPosixFilePermissions(*GetBaseInstallDirectory(scope),
-                                       kPermissionsMask) ||
-        !base::SetPosixFilePermissions(*GetVersionedInstallDirectory(scope),
-                                       kPermissionsMask) ||
+    if (!base::SetPosixFilePermissions(dest_path.DirName(), kPermissionsMask) ||
         !base::SetPosixFilePermissions(dest_path, kPermissionsMask)) {
       LOG(ERROR) << "Failed to set permissions to drwxr-xr-x at "
                  << dest_path.value();

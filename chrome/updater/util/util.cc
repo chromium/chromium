@@ -113,53 +113,10 @@ std::string EscapeQueryParamValue(base::StringPiece text, bool use_plus) {
 
 }  // namespace
 
-absl::optional<base::FilePath> GetBaseDataDirectory(UpdaterScope scope) {
-  absl::optional<base::FilePath> app_data_dir;
-#if BUILDFLAG(IS_WIN)
-  app_data_dir = GetApplicationDataDirectory(scope);
-#elif BUILDFLAG(IS_MAC)
-  app_data_dir = GetApplicationSupportDirectory(scope);
-#elif BUILDFLAG(IS_LINUX)
-  app_data_dir = GetApplicationDataDirectory(scope);
-#endif
-  if (!app_data_dir) {
-    LOG(ERROR) << "Can't retrieve app data directory.";
-    return absl::nullopt;
-  }
-
-  const auto product_data_dir =
-      app_data_dir->AppendASCII(COMPANY_SHORTNAME_STRING)
-          .AppendASCII(PRODUCT_FULLNAME_STRING);
-  base::File::Error error;
-  if (!base::CreateDirectoryAndGetError(product_data_dir, &error)) {
-    LOG(WARNING) << "Can't create base directory: " << product_data_dir << ": "
-                 << error;
-    return absl::nullopt;
-  }
-  return product_data_dir;
-}
-
-absl::optional<base::FilePath> GetVersionedDataDirectory(UpdaterScope scope) {
-  const absl::optional<base::FilePath> product_dir =
-      GetBaseDataDirectory(scope);
-  if (!product_dir) {
-    LOG(ERROR) << "Failed to get the base directory.";
-    return absl::nullopt;
-  }
-
-  const auto versioned_dir = product_dir->AppendASCII(kUpdaterVersion);
-  if (!base::CreateDirectory(versioned_dir)) {
-    LOG(ERROR) << "Can't create versioned directory.";
-    return absl::nullopt;
-  }
-
-  return versioned_dir;
-}
-
 absl::optional<base::FilePath> GetVersionedInstallDirectory(
     UpdaterScope scope,
     const base::Version& version) {
-  const absl::optional<base::FilePath> path = GetBaseInstallDirectory(scope);
+  const absl::optional<base::FilePath> path = GetInstallDirectory(scope);
   if (!path)
     return absl::nullopt;
   return path->AppendASCII(version.GetString());
@@ -276,7 +233,7 @@ base::CommandLine MakeElevated(base::CommandLine command_line) {
 
 // The log file is created in DIR_LOCAL_APP_DATA or DIR_ROAMING_APP_DATA.
 absl::optional<base::FilePath> GetLogFilePath(UpdaterScope scope) {
-  const absl::optional<base::FilePath> log_dir = GetBaseDataDirectory(scope);
+  const absl::optional<base::FilePath> log_dir = GetInstallDirectory(scope);
   if (log_dir) {
     return log_dir->Append(FILE_PATH_LITERAL("updater.log"));
   }
@@ -289,6 +246,7 @@ void InitLogging(UpdaterScope updater_scope) {
     LOG(ERROR) << "Error getting base dir.";
     return;
   }
+  base::CreateDirectory(log_file->DirName());
   // Rotate log if needed.
   int64_t size = 0;
   if (base::GetFileSize(*log_file, &size) && size >= kLogRotateAtSize) {

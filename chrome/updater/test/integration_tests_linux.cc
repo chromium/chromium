@@ -80,10 +80,6 @@ bool WaitForUpdaterExit(UpdaterScope scope) {
           []() { VLOG(0) << "Still waiting for updater to exit..."; }));
 }
 
-absl::optional<base::FilePath> GetDataDirPath(UpdaterScope scope) {
-  return GetBaseDataDirectory(scope);
-}
-
 void Uninstall(UpdaterScope scope) {
   absl::optional<base::FilePath> path = GetExecutablePath();
   ASSERT_TRUE(path);
@@ -111,7 +107,7 @@ void ExpectInstalled(UpdaterScope scope) {
 }
 
 void Clean(UpdaterScope scope) {
-  absl::optional<base::FilePath> path = GetBaseDataDirectory(scope);
+  absl::optional<base::FilePath> path = GetInstallDirectory(scope);
   EXPECT_TRUE(path);
   if (path) {
     EXPECT_TRUE(base::DeletePathRecursively(*path));
@@ -123,7 +119,7 @@ void Clean(UpdaterScope scope) {
 void ExpectClean(UpdaterScope scope) {
   ExpectCleanProcesses();
 
-  absl::optional<base::FilePath> path = GetBaseDataDirectory(scope);
+  absl::optional<base::FilePath> path = GetInstallDirectory(scope);
   EXPECT_TRUE(path);
   if (path && base::PathExists(*path)) {
     // If the path exists, then expect only the log file to be present.

@@ -99,9 +99,6 @@ const char kDevOverrideKeyCrxVerifierFormat[] = "crx_verifier_format";
 const char kDevOverrideKeyGroupPolicies[] = "group_policies";
 const char kDevOverrideKeyOverinstallTimeout[] = "overinstall_timeout";
 
-// Developer override file name, relative to app data directory.
-const char kDevOverrideFileName[] = "overrides.json";
-
 // Policy Management constants.
 const char kProxyModeDirect[] = "direct";
 const char kProxyModeAutoDetect[] = "auto_detect";

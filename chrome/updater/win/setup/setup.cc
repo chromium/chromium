@@ -83,9 +83,9 @@ int Setup(UpdaterScope scope) {
     return -1;
   }
   const absl::optional<base::FilePath> versioned_dir =
-      GetVersionedDataDirectory(scope);
+      GetVersionedInstallDirectory(scope);
   if (!versioned_dir) {
-    LOG(ERROR) << "GetVersionedDataDirectory failed.";
+    LOG(ERROR) << "GetVersionedInstallDirectory failed.";
     return -1;
   }
   base::FilePath exe_path;

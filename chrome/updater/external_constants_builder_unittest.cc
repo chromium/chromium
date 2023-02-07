@@ -39,7 +39,7 @@ class ExternalConstantsBuilderTests : public ::testing::Test {
  private:
   // This test runs non-elevated.
   const absl::optional<base::FilePath> overrides_file_path_ =
-      test::GetOverrideFilePath(UpdaterScope::kUser);
+      GetOverrideFilePath(UpdaterScope::kUser);
 };
 
 TEST_F(ExternalConstantsBuilderTests, TestOverridingNothing) {

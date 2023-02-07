@@ -158,15 +158,11 @@ DMStorage::DMStorage(const base::FilePath& policy_cache_root)
     : DMStorage(policy_cache_root, std::make_unique<TokenService>()) {}
 
 scoped_refptr<DMStorage> GetDefaultDMStorage() {
-  absl::optional<base::FilePath> sys_library_path =
-      GetLibraryFolderPath(UpdaterScope::kSystem);
-  if (!sys_library_path)
-    return nullptr;
-
-  return base::MakeRefCounted<DMStorage>(
-      sys_library_path->AppendASCII(COMPANY_SHORTNAME_STRING)
-          .Append(FILE_PATH_LITERAL(KEYSTONE_NAME))
-          .AppendASCII("DeviceManagement"));
+  absl::optional<base::FilePath> keystone_path =
+      GetKeystoneFolderPath(UpdaterScope::kSystem);
+  return keystone_path ? base::MakeRefCounted<DMStorage>(
+                             keystone_path->AppendASCII("DeviceManagement"))
+                       : nullptr;
 }
 
 }  // namespace updater

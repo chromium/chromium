@@ -46,17 +46,6 @@ struct TagArgs;
 
 enum class UpdaterScope;
 
-// Returns the base data directory common to all versions of the updater. For
-// instance, this function may return %localappdata%\Chromium\ChromiumUpdater
-// for a user install. Creates the directory if it does not exist.
-absl::optional<base::FilePath> GetBaseDataDirectory(UpdaterScope scope);
-
-// Returns the versioned data directory under which the running version of the
-// updater stores its data. For instance, this function may return
-// %localappdata%\Chromium\ChromiumUpdater\1.2.3.4 for a user install. Creates
-// the directory if it does not exit.
-absl::optional<base::FilePath> GetVersionedDataDirectory(UpdaterScope scope);
-
 // Returns the versioned install directory under which the program stores its
 // executables. For example, on macOS this function may return
 // ~/Library/Google/GoogleUpdater/88.0.4293.0 (/Library for system). Does not
@@ -71,13 +60,7 @@ absl::optional<base::FilePath> GetVersionedInstallDirectory(UpdaterScope scope);
 
 // Returns the base install directory common to all versions of the updater.
 // Does not create the directory if it does not exist.
-absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope);
-
-#if BUILDFLAG(IS_WIN)
-// Returns the program files directory for system scope or the local application
-// data directory for user scope.
-absl::optional<base::FilePath> GetApplicationDataDirectory(UpdaterScope scope);
-#endif
+absl::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope);
 
 #if BUILDFLAG(IS_MAC)
 // For example: ~/Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app
@@ -92,15 +75,7 @@ absl::optional<base::FilePath> GetUpdaterAppBundlePath(UpdaterScope scope);
 //    MacOS/GoogleUpdater
 absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope);
 
-// For user installations:
-// ~/Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app/Contents/MacOS
-// For system installations:
-// /Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app/Contents/MacOS
-absl::optional<base::FilePath> GetExecutableFolderPathForVersion(
-    UpdaterScope scope,
-    const base::Version& version);
-
-// Returns a relative path to the executable, such as
+// Returns a relative path to the executable from GetVersionedInstallDirectory.
 // "GoogleUpdater.app/Contents/MacOS/GoogleUpdater" on macOS.
 // "updater.exe" on Win.
 base::FilePath GetExecutableRelativePath();

@@ -41,7 +41,7 @@ namespace {
 // given `scope`.
 void UninstallOtherVersions(UpdaterScope scope) {
   const absl::optional<base::FilePath> updater_folder_path =
-      GetBaseInstallDirectory(scope);
+      GetInstallDirectory(scope);
   if (!updater_folder_path) {
     LOG(ERROR) << "Failed to get updater folder path.";
     return;

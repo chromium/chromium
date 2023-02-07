@@ -53,7 +53,7 @@ bool CrashClient::InitializeDatabaseOnly(UpdaterScope updater_scope) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const absl::optional<base::FilePath> database_path =
-      GetVersionedDataDirectory(updater_scope);
+      GetVersionedInstallDirectory(updater_scope);
   if (!database_path) {
     LOG(ERROR) << "Failed to get the database path.";
     return false;

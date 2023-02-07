@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -128,16 +129,18 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::SetOverinstallTimeout(
 }
 
 bool ExternalConstantsBuilder::Overwrite() {
-  const absl::optional<base::FilePath> base_path =
-      GetBaseDataDirectory(GetUpdaterScope());
-  if (!base_path) {
+  const absl::optional<base::FilePath> override_path =
+      GetOverrideFilePath(GetUpdaterScope());
+  if (!override_path) {
     LOG(ERROR) << "Can't find base directory; can't save constant overrides.";
     return false;
   }
+  if (!base::CreateDirectory(override_path->DirName())) {
+    LOG(ERROR) << "Can't create " << override_path->value();
+    return false;
+  }
 
-  const base::FilePath override_file_path =
-      base_path.value().AppendASCII(kDevOverrideFileName);
-  bool ok = JSONFileValueSerializer(override_file_path).Serialize(overrides_);
+  bool ok = JSONFileValueSerializer(*override_path).Serialize(overrides_);
   written_ = written_ || ok;
   return ok;
 }

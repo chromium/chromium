@@ -90,11 +90,19 @@ base::scoped_nsobject<NSString> GetWakeLaunchdLabel(UpdaterScope scope) {
 }
 
 #pragma mark Setup
-bool CopyBundle(const base::FilePath& dest_path, UpdaterScope scope) {
-  if (!base::PathExists(dest_path)) {
+bool CopyBundle(UpdaterScope scope) {
+  absl::optional<base::FilePath> base_install_dir = GetInstallDirectory(scope);
+  absl::optional<base::FilePath> versioned_install_dir =
+      GetVersionedInstallDirectory(scope);
+  if (!base_install_dir || !versioned_install_dir) {
+    LOG(ERROR) << "Failed to get install directory.";
+    return false;
+  }
+  if (!base::PathExists(*versioned_install_dir)) {
     base::File::Error error;
-    if (!base::CreateDirectoryAndGetError(dest_path, &error)) {
-      LOG(ERROR) << "Failed to create '" << dest_path.value().c_str()
+    if (!base::CreateDirectoryAndGetError(*versioned_install_dir, &error)) {
+      LOG(ERROR) << "Failed to create '"
+                 << versioned_install_dir->value().c_str()
                  << "' directory: " << base::File::ErrorToString(error);
       return false;
     }
@@ -107,21 +115,21 @@ bool CopyBundle(const base::FilePath& dest_path, UpdaterScope scope) {
                                      base::FILE_PERMISSION_EXECUTE_BY_GROUP |
                                      base::FILE_PERMISSION_READ_BY_OTHERS |
                                      base::FILE_PERMISSION_EXECUTE_BY_OTHERS;
-    if (!base::SetPosixFilePermissions(
-            GetLibraryFolderPath(scope)->Append(COMPANY_SHORTNAME_STRING),
-            kPermissionsMask) ||
-        !base::SetPosixFilePermissions(*GetBaseInstallDirectory(scope),
+    if (!base::SetPosixFilePermissions(base_install_dir->DirName(),
                                        kPermissionsMask) ||
-        !base::SetPosixFilePermissions(*GetVersionedInstallDirectory(scope),
+        !base::SetPosixFilePermissions(*base_install_dir, kPermissionsMask) ||
+        !base::SetPosixFilePermissions(*versioned_install_dir,
                                        kPermissionsMask)) {
       LOG(ERROR) << "Failed to set permissions to drwxr-xr-x at "
-                 << dest_path.value().c_str();
+                 << versioned_install_dir->value();
       return false;
     }
   }
 
-  if (!base::CopyDirectory(base::mac::OuterBundlePath(), dest_path, true)) {
-    LOG(ERROR) << "Copying app to '" << dest_path.value().c_str() << "' failed";
+  if (!base::CopyDirectory(base::mac::OuterBundlePath(), *versioned_install_dir,
+                           true)) {
+    LOG(ERROR) << "Copying app to '" << versioned_install_dir->value().c_str()
+               << "' failed";
     return false;
   }
 
@@ -196,11 +204,11 @@ bool RemoveUpdateWakeJobFromLaunchd(UpdaterScope scope) {
 }
 
 bool DeleteInstallFolder(UpdaterScope scope) {
-  return DeleteFolder(GetBaseInstallDirectory(scope));
+  return DeleteFolder(GetInstallDirectory(scope));
 }
 
 bool DeleteDataFolder(UpdaterScope scope) {
-  return DeleteFolder(GetBaseDataDirectory(scope));
+  return DeleteFolder(GetInstallDirectory(scope));
 }
 
 void CleanAfterInstallFailure(UpdaterScope scope) {
@@ -209,16 +217,9 @@ void CleanAfterInstallFailure(UpdaterScope scope) {
 }
 
 int DoSetup(UpdaterScope scope) {
-  const absl::optional<base::FilePath> dest_path =
-      GetVersionedInstallDirectory(scope);
-
-  if (!dest_path)
-    return kErrorFailedToGetVersionedInstallDirectory;
-  if (!CopyBundle(*dest_path, scope))
+  if (!CopyBundle(scope)) {
     return kErrorFailedToCopyBundle;
-
-  const base::FilePath updater_executable_path =
-      dest_path->Append(GetExecutableRelativePath());
+  }
 
   // Quarantine attribute needs to be removed here as the copied bundle might be
   // given com.apple.quarantine attribute, and the server is attempted to be
@@ -247,8 +248,7 @@ int Setup(UpdaterScope scope) {
 int PromoteCandidate(UpdaterScope scope) {
   const absl::optional<base::FilePath> updater_executable_path =
       GetUpdaterExecutablePath(scope);
-  const absl::optional<base::FilePath> install_dir =
-      GetBaseInstallDirectory(scope);
+  const absl::optional<base::FilePath> install_dir = GetInstallDirectory(scope);
   const absl::optional<base::FilePath> bundle_path =
       GetUpdaterAppBundlePath(scope);
   if (!updater_executable_path || !install_dir || !bundle_path) {
@@ -296,7 +296,7 @@ int PromoteCandidate(UpdaterScope scope) {
 #pragma mark Uninstall
 int UninstallCandidate(UpdaterScope scope) {
   return !DeleteCandidateInstallFolder(scope) ||
-                 !DeleteFolder(GetVersionedDataDirectory(scope))
+                 !DeleteFolder(GetVersionedInstallDirectory(scope))
              ? kErrorFailedToDeleteFolder
              : kErrorOk;
 }
