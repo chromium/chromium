@@ -53,11 +53,17 @@ export async function testKeepLatest(done: () => void) {
   results.push(secondValue.value!);
 
   // At this point `first` should be cancelled by the keepLatest().
-  // However, the exception doesn't show up here, because the exception is in
-  // the actionsProducerSuccess() and isn't surfaced by the keepLast().
-  const result = await first.next();
-  assertEquals(result.value, undefined);
-  assertEquals(result.done, true);
+  // However, the exception only shows up in the next iteration of the AP.
+  try {
+    await first.next();
+    assertNotReached('`first` should have failed');
+  } catch (error) {
+    assertTrue(error instanceof ConcurrentActionInvalidatedError);
+    // Check that the generator is in `done=true` state.
+    const {value, done} = await first.next();
+    assertEquals(value, undefined);
+    assertEquals(done, true);
+  }
 
   // Await for the second generator to be fully consumed.
   await consumeGenerator(second, results);

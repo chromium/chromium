@@ -34,7 +34,7 @@ export function keepLatest<T extends BaseAction, Args extends any[]>(
       // Scope #3: The generated action.
 
       if (actionId !== counter) {
-        generator.throw(new ConcurrentActionInvalidatedError(
+        await generator.throw(new ConcurrentActionInvalidatedError(
             `ActionsProducer invalidated running id: ${actionId} current: ${
                 counter}:`));
         break;
@@ -80,7 +80,7 @@ export function keyedKeepFirst<T extends BaseAction, Args extends any[]>(
           const error = new ConcurrentActionInvalidatedError(
               `ActionsProducer invalidated running key: ${key} current: ${
                   inFlightKey}:`);
-          generator.throw(error);
+          await generator.throw(error);
           throw error;
         }
         yield producedAction;
