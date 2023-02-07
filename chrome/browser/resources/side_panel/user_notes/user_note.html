@@ -6,8 +6,10 @@
     --note-placeholder-text-color: var(--google-grey-500);
     border-radius: 8px;
     color: var(--cr-primary-text-color);
-    display: block;
+    display: flex;
+    flex-direction: column;
     font-size: var(--mwb-primary-text-font-size);
+    justify-content: center;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -52,7 +54,7 @@
     position: relative;
   }
 
-  :host([editing_]:focus-within) #noteContent,
+  :host([editing_]:focus) #noteContent,
   :host([editing_]) #noteContent:not(:empty) {
     min-height: 62px;
     padding: var(--note-content-vertical-padding)
@@ -79,7 +81,7 @@
     width: 100%;
   }
 
-  #noteContent:empty:not(:focus-within) + #editingFooter  {
+  #noteContent:empty:not(:focus) + #editingFooter  {
     display: none;
   }
 
