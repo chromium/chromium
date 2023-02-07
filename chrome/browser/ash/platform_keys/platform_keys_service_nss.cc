@@ -470,10 +470,10 @@ class RemoveCertificateState : public NSSOperationState {
 class RemoveKeyState : public NSSOperationState {
  public:
   RemoveKeyState(ServiceWeakPtr weak_ptr,
-                 const std::string& public_key_spki_der,
+                 std::vector<uint8_t> public_key_spki_der,
                  RemoveKeyCallback callback)
       : NSSOperationState(weak_ptr),
-        public_key_spki_der_(public_key_spki_der),
+        public_key_spki_der_(std::move(public_key_spki_der)),
         callback_(std::move(callback)) {}
 
   ~RemoveKeyState() override = default;
@@ -487,7 +487,7 @@ class RemoveKeyState : public NSSOperationState {
   }
 
   // Must be a DER encoding of a SubjectPublicKeyInfo.
-  const std::string public_key_spki_der_;
+  const std::vector<uint8_t> public_key_spki_der_;
 
  private:
   void CallBack(const base::Location& from, Status status) {
@@ -1244,8 +1244,8 @@ void RemoveCertificateWithDB(std::unique_ptr<RemoveCertificateState> state,
 void RemoveKeyOnWorkerThread(std::unique_ptr<RemoveKeyState> state) {
   DCHECK(state->slot_.get());
 
-  crypto::ScopedSECKEYPrivateKey private_key = GetPrivateKey(
-      StrToBytes(state->public_key_spki_der_), state->slot_.get());
+  crypto::ScopedSECKEYPrivateKey private_key =
+      GetPrivateKey(state->public_key_spki_der_, state->slot_.get());
 
   if (!private_key) {
     state->OnError(FROM_HERE, Status::kErrorKeyNotFound);
@@ -1737,13 +1737,15 @@ void PlatformKeysServiceImpl::RemoveCertificate(
                   delegate_.get(), state_ptr);
 }
 
-void PlatformKeysServiceImpl::RemoveKey(TokenId token_id,
-                                        const std::string& public_key_spki_der,
-                                        RemoveKeyCallback callback) {
+void PlatformKeysServiceImpl::RemoveKey(
+    TokenId token_id,
+    std::vector<uint8_t> public_key_spki_der,
+    RemoveKeyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  auto state = std::make_unique<RemoveKeyState>(
-      weak_factory_.GetWeakPtr(), public_key_spki_der, std::move(callback));
+  auto state = std::make_unique<RemoveKeyState>(weak_factory_.GetWeakPtr(),
+                                                std::move(public_key_spki_der),
+                                                std::move(callback));
   if (delegate_->IsShutDown()) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);
     return;

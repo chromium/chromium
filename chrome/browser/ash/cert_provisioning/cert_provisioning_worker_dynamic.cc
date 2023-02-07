@@ -897,7 +897,7 @@ void CertProvisioningWorkerDynamic::CleanUpAndRunCallback() {
     return;
   } else if (key_location_ == KeyLocation::kPkcs11Token) {
     platform_keys_service_->RemoveKey(
-        GetPlatformKeysTokenId(cert_scope_), BytesToStr(public_key_),
+        GetPlatformKeysTokenId(cert_scope_), public_key_,
         base::BindOnce(&CertProvisioningWorkerDynamic::OnRemoveKeyDone,
                        weak_factory_.GetWeakPtr()));
     return;

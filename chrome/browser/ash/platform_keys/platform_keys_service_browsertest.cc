@@ -126,6 +126,10 @@ std::string BytesToStr(const std::vector<uint8_t>& val) {
   return std::string(val.begin(), val.end());
 }
 
+std::vector<uint8_t> StrToBytes(const std::string& val) {
+  return std::vector<uint8_t>(val.begin(), val.end());
+}
+
 }  // namespace
 
 class PlatformKeysServiceBrowserTestBase
@@ -665,7 +669,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   EXPECT_TRUE(crypto::FindNSSKeyFromPublicKeyInfo(public_key_bytes_2));
 
   test_util::RemoveKeyExecutionWaiter remove_key_waiter;
-  platform_keys_service()->RemoveKey(token_id, BytesToStr(public_key_1),
+  platform_keys_service()->RemoveKey(token_id, public_key_1,
                                      remove_key_waiter.GetCallback());
   ASSERT_TRUE(remove_key_waiter.Wait());
 
@@ -704,7 +708,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
 
   // Try Removing the key pair.
   test_util::RemoveKeyExecutionWaiter remove_key_waiter;
-  platform_keys_service()->RemoveKey(token_id, public_key,
+  platform_keys_service()->RemoveKey(token_id, StrToBytes(public_key),
                                      remove_key_waiter.GetCallback());
   ASSERT_TRUE(remove_key_waiter.Wait());
   EXPECT_NE(remove_key_waiter.status(), Status::kSuccess);

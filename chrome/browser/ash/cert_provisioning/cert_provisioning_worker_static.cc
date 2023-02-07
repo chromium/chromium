@@ -878,7 +878,7 @@ void CertProvisioningWorkerStatic::CleanUpAndRunCallback() {
   // Keep conditions mutually exclusive.
   if (!public_key_.empty() && (prev_state_idx >= key_registered_idx)) {
     platform_keys_service_->RemoveKey(
-        GetPlatformKeysTokenId(cert_scope_), BytesToStr(public_key_),
+        GetPlatformKeysTokenId(cert_scope_), public_key_,
         base::BindOnce(&CertProvisioningWorkerStatic::OnRemoveKeyDone,
                        weak_factory_.GetWeakPtr()));
     return;

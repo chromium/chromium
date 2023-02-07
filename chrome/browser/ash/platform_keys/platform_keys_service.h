@@ -234,7 +234,7 @@ class PlatformKeysService : public KeyedService {
   // given |token_id| are considered. |callback| will be invoked on the UI
   // thread when the removal is finished, possibly with an error status.
   virtual void RemoveKey(chromeos::platform_keys::TokenId token_id,
-                         const std::string& public_key_spki_der,
+                         std::vector<uint8_t> public_key_spki_der,
                          RemoveKeyCallback callback) = 0;
 
   // Gets the list of available tokens. |callback| will be invoked when the list
@@ -377,7 +377,7 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
                          const scoped_refptr<net::X509Certificate>& certificate,
                          RemoveCertificateCallback callback) override;
   void RemoveKey(chromeos::platform_keys::TokenId token_id,
-                 const std::string& public_key_spki_der,
+                 std::vector<uint8_t> public_key_spki_der,
                  RemoveKeyCallback callback) override;
   void GetTokens(GetTokensCallback callback) override;
   void GetKeyLocations(const std::string& public_key_spki_der,

@@ -1606,7 +1606,7 @@ TEST_F(CertProvisioningWorkerStaticTest, RemoveRegisteredKey) {
     EXPECT_CALL(
         *platform_keys_service_,
         RemoveKey(TokenId::kUser,
-                  /*public_key_spki_der=*/GetPublicKey(), /*callback=*/_))
+                  /*public_key_spki_der=*/GetPublicKeyBin(), /*callback=*/_))
         .Times(1)
         .WillOnce(RunOnceCallback<2>(Status::kSuccess));
 

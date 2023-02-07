@@ -711,7 +711,7 @@ void KeystoreServiceAsh::RemoveKey(KeystoreType keystore,
   }
 
   GetPlatformKeys()->RemoveKey(
-      token_id.value(), std::string(public_key.begin(), public_key.end()),
+      token_id.value(), public_key,
       base::BindOnce(&KeystoreServiceAsh::DidRemoveKey, std::move(callback)));
 }
 

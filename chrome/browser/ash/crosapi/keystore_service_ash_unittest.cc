@@ -381,7 +381,7 @@ TEST_F(KeystoreServiceAshTest, UnknownSignSchemeSignFail) {
 
 TEST_F(KeystoreServiceAshTest, RemoveKeySuccess) {
   EXPECT_CALL(platform_keys_service_,
-              RemoveKey(TokenId::kSystem, GetPublicKeyStr(), /*callback=*/_))
+              RemoveKey(TokenId::kSystem, GetPublicKeyBin(), /*callback=*/_))
       .WillOnce(RunOnceCallback<2>(Status::kSuccess));
 
   StatusCallbackObserver observer;
@@ -394,7 +394,7 @@ TEST_F(KeystoreServiceAshTest, RemoveKeySuccess) {
 
 TEST_F(KeystoreServiceAshTest, RemoveKeyFail) {
   EXPECT_CALL(platform_keys_service_,
-              RemoveKey(TokenId::kSystem, GetPublicKeyStr(), /*callback=*/_))
+              RemoveKey(TokenId::kSystem, GetPublicKeyBin(), /*callback=*/_))
       .WillOnce(RunOnceCallback<2>(Status::kErrorKeyNotFound));
 
   StatusCallbackObserver observer;
