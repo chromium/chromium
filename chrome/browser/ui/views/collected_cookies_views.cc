@@ -118,14 +118,9 @@ std::u16string GetAnnotationTextForSetting(ContentSetting setting) {
 // copying each of them.
 std::unique_ptr<CookiesTreeModel> CreateCookiesTreeModel(
     const browsing_data::LocalSharedObjectsContainer& shared_objects) {
-  auto container = std::make_unique<LocalDataContainer>(
-      shared_objects.cookies(), shared_objects.databases(),
-      shared_objects.local_storages(), shared_objects.session_storages(),
-      shared_objects.indexed_dbs(), shared_objects.file_systems(), nullptr,
-      shared_objects.service_workers(), shared_objects.shared_workers(),
-      shared_objects.cache_storages());
-
-  return std::make_unique<CookiesTreeModel>(std::move(container), nullptr);
+  return std::make_unique<CookiesTreeModel>(
+      LocalDataContainer::CreateFromLocalSharedObjectsContainer(shared_objects),
+      /*special_storage_policy=*/nullptr);
 }
 
 PageSpecificSiteDataDialogAction GetDeleteActionForNodeType(

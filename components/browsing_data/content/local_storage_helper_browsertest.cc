@@ -126,7 +126,7 @@ class StopTestOnCallback {
 
 IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CallbackCompletes) {
   auto local_storage_helper = base::MakeRefCounted<LocalStorageHelper>(
-      shell()->web_contents()->GetBrowserContext());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetStoragePartition());
   CreateLocalStorageDataForTest();
   StopTestOnCallback stop_test_on_callback(local_storage_helper.get());
   local_storage_helper->StartFetching(base::BindOnce(
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CallbackCompletes) {
 
 IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, DeleteSingleOrigin) {
   auto local_storage_helper = base::MakeRefCounted<LocalStorageHelper>(
-      shell()->web_contents()->GetBrowserContext());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetStoragePartition());
   CreateLocalStorageDataForTest();
   base::RunLoop delete_run_loop;
   local_storage_helper->DeleteStorageKey(
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedAddLocalStorage) {
       blink::StorageKey::CreateFromStringForTesting("http://host2:1/");
 
   auto helper = base::MakeRefCounted<CannedLocalStorageHelper>(
-      shell()->web_contents()->GetBrowserContext());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetStoragePartition());
   helper->Add(storage_key1);
   helper->Add(storage_key2);
 
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedUnique) {
       blink::StorageKey::CreateFromStringForTesting("http://host1:1/");
 
   auto helper = base::MakeRefCounted<CannedLocalStorageHelper>(
-      shell()->web_contents()->GetBrowserContext());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetStoragePartition());
   helper->Add(storage_key);
   helper->Add(storage_key);
 
@@ -229,12 +229,12 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedEmptyIgnored) {
 
   // Add all three of our storage keys to our canned local storage helpers.
   auto helper = base::MakeRefCounted<CannedLocalStorageHelper>(
-      shell()->web_contents()->GetBrowserContext());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetStoragePartition());
   helper->Add(storage_key1);
   helper->Add(storage_key2);
   helper->Add(storage_key3);
   auto helper_auto_ignore = base::MakeRefCounted<CannedLocalStorageHelper>(
-      shell()->web_contents()->GetBrowserContext(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetStoragePartition(),
       /*update_ignored_empty_keys_on_fetch=*/true);
   helper_auto_ignore->Add(storage_key1);
   helper_auto_ignore->Add(storage_key2);

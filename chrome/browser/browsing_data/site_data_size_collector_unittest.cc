@@ -32,13 +32,15 @@ class SiteDataSizeCollectorTest : public testing::Test {
 
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
+    auto* storage_partition = profile_->GetDefaultStoragePartition();
     mock_browsing_data_cookie_helper_ =
-        base::MakeRefCounted<browsing_data::MockCookieHelper>(profile_.get());
+        base::MakeRefCounted<browsing_data::MockCookieHelper>(
+            storage_partition);
     mock_browsing_data_local_storage_helper_ =
         base::MakeRefCounted<browsing_data::MockLocalStorageHelper>(
-            profile_.get());
+            storage_partition);
     mock_browsing_data_quota_helper_ =
-        base::MakeRefCounted<MockBrowsingDataQuotaHelper>(profile_.get());
+        base::MakeRefCounted<MockBrowsingDataQuotaHelper>();
     base::WriteFile(profile_->GetPath().Append(chrome::kCookieFilename),
                     kCookieFileData, std::size(kCookieFileData));
     fetched_size_ = -1;

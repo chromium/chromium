@@ -2,20 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/browsing_data/access_context_audit_service_factory.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/browsing_data/content/local_shared_objects_container.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "url/gurl.h"
 
 namespace {
+
+constexpr char kTestHostname[] = "a.test";
 
 // Calls the accessStorage javascript function and awaits its completion for
 // each frame in the active web contents for |browser|.
@@ -105,12 +114,26 @@ class CookiesTreeModelBrowserTest : public InProcessBrowserTest {
 
   GURL storage_accessor_url() {
     auto host_port_pair =
-        net::HostPortPair::FromURL(test_server_.GetURL("a.test", "/"));
+        net::HostPortPair::FromURL(test_server_.GetURL(kTestHostname, "/"));
     base::StringPairs replacement_text = {
         {"REPLACE_WITH_HOST_AND_PORT", host_port_pair.ToString()}};
     auto replaced_path = net::test_server::GetFilePathWithReplacements(
         "/browsing_data/storage_accessor.html", replacement_text);
     return test_server_.GetURL("a.test", replaced_path);
+  }
+
+  std::unique_ptr<CookiesTreeModel> CreateModelForStoragePartitionConfig(
+      Profile* profile,
+      const content::StoragePartitionConfig& storage_partition_config) {
+    auto local_data_container = LocalDataContainer::CreateFromStoragePartition(
+        profile->GetStoragePartition(storage_partition_config),
+        CookiesTreeModel::GetCookieDeletionDisabledCallback(profile));
+    auto tree_model = std::make_unique<CookiesTreeModel>(
+        std::move(local_data_container), /*special_storage_policy=*/nullptr);
+    CookiesTreeObserver observer;
+    tree_model->AddCookiesTreeObserver(&observer);
+    observer.AwaitTreeModelEndBatch();
+    return tree_model;
   }
 
   virtual void InitFeatures() {
@@ -162,14 +185,10 @@ IN_PROC_BROWSER_TEST_F(CookiesTreeModelBrowserTest, BatchesFinishSync) {
   // Confirm that when all helpers fetch functions return synchronously, that
   // the model has received all expected batches.
   auto shared_objects = browsing_data::LocalSharedObjectsContainer(
-      chrome_test_utils::GetProfile(this),
+      chrome_test_utils::GetProfile(this)->GetDefaultStoragePartition(),
       /*ignore_empty_localstorage=*/false, {}, base::NullCallback());
-  auto local_data_container = std::make_unique<LocalDataContainer>(
-      shared_objects.cookies(), shared_objects.databases(),
-      shared_objects.local_storages(), shared_objects.session_storages(),
-      shared_objects.indexed_dbs(), shared_objects.file_systems(),
-      /*quota_helper=*/nullptr, shared_objects.service_workers(),
-      shared_objects.shared_workers(), shared_objects.cache_storages());
+  auto local_data_container =
+      LocalDataContainer::CreateFromLocalSharedObjectsContainer(shared_objects);
 
   // Ideally we could observe TreeModelEndBatch, however in the sync case, the
   // batch will finish during the models constructor, before we can attach an
@@ -184,6 +203,75 @@ IN_PROC_BROWSER_TEST_F(CookiesTreeModelBrowserTest, BatchesFinishSync) {
   EXPECT_EQ(cookies_model->batches_started_, 0);
   EXPECT_EQ(cookies_model->batches_expected_, 0);
   EXPECT_EQ(cookies_model->batches_seen_, 0);
+}
+
+class ScopedNonDefaultStoragePartitionContentBrowserClient
+    : public ChromeContentBrowserClient {
+ public:
+  ScopedNonDefaultStoragePartitionContentBrowserClient(
+      const char* target_host,
+      const content::StoragePartitionConfig& storage_partition_config)
+      : target_host_(target_host),
+        storage_partition_config_(storage_partition_config),
+        original_client_(content::SetBrowserClientForTesting(this)) {}
+
+  ~ScopedNonDefaultStoragePartitionContentBrowserClient() override {
+    CHECK(SetBrowserClientForTesting(original_client_) == this);
+  }
+
+  content::StoragePartitionConfig GetStoragePartitionConfigForSite(
+      content::BrowserContext* browser_context,
+      const GURL& site) override {
+    if (site.host() == target_host_) {
+      return storage_partition_config_;
+    }
+    return content::StoragePartitionConfig::CreateDefault(browser_context);
+  }
+
+ private:
+  const char* target_host_;
+  content::StoragePartitionConfig storage_partition_config_;
+  content::ContentBrowserClient* original_client_;
+};
+
+IN_PROC_BROWSER_TEST_F(CookiesTreeModelBrowserTest,
+                       NonDefaultStoragePartition) {
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  auto non_default_storage_partition_config =
+      content::StoragePartitionConfig::Create(profile,
+                                              /*partition_domain=*/"nondefault",
+                                              /*partition_name=*/"",
+                                              /*in_memory=*/false);
+  ScopedNonDefaultStoragePartitionContentBrowserClient client(
+      kTestHostname, non_default_storage_partition_config);
+
+  // Check that the non-default StoragePartition starts out empty.
+  auto tree_model = CreateModelForStoragePartitionConfig(
+      profile, non_default_storage_partition_config);
+  EXPECT_EQ(1u, tree_model->GetRoot()->GetTotalNodeCount());
+
+  AccessStorage();
+
+  // Check that the non-default StoragePartition now has content.
+  tree_model = CreateModelForStoragePartitionConfig(
+      profile, non_default_storage_partition_config);
+
+  auto node_counts = GetNodeTypeCounts(tree_model.get());
+  EXPECT_LT(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_ROOT]);
+  EXPECT_LT(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_HOST]);
+  EXPECT_LT(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_COOKIE]);
+  EXPECT_LT(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_COOKIES]);
+  EXPECT_LT(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGE]);
+  EXPECT_LT(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGES]);
+  EXPECT_EQ(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_QUOTA]);
+
+  // Check that the default StoragePartition is empty.
+  tree_model = CreateModelForStoragePartitionConfig(
+      profile, content::StoragePartitionConfig::CreateDefault(profile));
+
+  EXPECT_EQ(1u, tree_model->GetRoot()->GetTotalNodeCount());
+  node_counts = GetNodeTypeCounts(tree_model.get());
+  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_ROOT]);
 }
 
 class CookiesTreeModelBrowserTestQuotaOnly

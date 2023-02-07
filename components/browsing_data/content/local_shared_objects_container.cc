@@ -21,7 +21,6 @@
 #include "components/browsing_data/content/service_worker_helper.h"
 #include "components/browsing_data/content/shared_worker_helper.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -43,31 +42,29 @@ bool SameDomainOrHost(const GURL& gurl1, const GURL& gurl2) {
 }  // namespace
 
 LocalSharedObjectsContainer::LocalSharedObjectsContainer(
-    content::BrowserContext* browser_context,
+    content::StoragePartition* storage_partition,
     bool ignore_empty_localstorage,
     const std::vector<storage::FileSystemType>& additional_file_system_types,
     browsing_data::CookieHelper::IsDeletionDisabledCallback callback)
-    : cookies_(base::MakeRefCounted<CannedCookieHelper>(
-          browser_context->GetDefaultStoragePartition(),
-          std::move(callback))),
-      databases_(base::MakeRefCounted<CannedDatabaseHelper>(browser_context)),
+    : cookies_(base::MakeRefCounted<CannedCookieHelper>(storage_partition,
+                                                        std::move(callback))),
+      databases_(base::MakeRefCounted<CannedDatabaseHelper>(storage_partition)),
       file_systems_(base::MakeRefCounted<CannedFileSystemHelper>(
-          browser_context->GetDefaultStoragePartition()->GetFileSystemContext(),
+          storage_partition->GetFileSystemContext(),
           additional_file_system_types)),
-      indexed_dbs_(base::MakeRefCounted<CannedIndexedDBHelper>(
-          browser_context->GetDefaultStoragePartition())),
+      indexed_dbs_(
+          base::MakeRefCounted<CannedIndexedDBHelper>(storage_partition)),
       local_storages_(base::MakeRefCounted<CannedLocalStorageHelper>(
-          browser_context,
+          storage_partition,
           /*update_ignored_empty_keys_on_fetch=*/ignore_empty_localstorage)),
       service_workers_(base::MakeRefCounted<CannedServiceWorkerHelper>(
-          browser_context->GetDefaultStoragePartition()
-              ->GetServiceWorkerContext())),
-      shared_workers_(base::MakeRefCounted<CannedSharedWorkerHelper>(
-          browser_context->GetDefaultStoragePartition())),
-      cache_storages_(base::MakeRefCounted<CannedCacheStorageHelper>(
-          browser_context->GetDefaultStoragePartition())),
+          storage_partition->GetServiceWorkerContext())),
+      shared_workers_(
+          base::MakeRefCounted<CannedSharedWorkerHelper>(storage_partition)),
+      cache_storages_(
+          base::MakeRefCounted<CannedCacheStorageHelper>(storage_partition)),
       session_storages_(base::MakeRefCounted<CannedLocalStorageHelper>(
-          browser_context,
+          storage_partition,
           /*update_ignored_empty_keys_on_fetch=*/false)) {}
 
 LocalSharedObjectsContainer::~LocalSharedObjectsContainer() = default;

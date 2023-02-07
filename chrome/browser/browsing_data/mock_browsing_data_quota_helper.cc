@@ -9,8 +9,7 @@
 
 using content::BrowserThread;
 
-MockBrowsingDataQuotaHelper::MockBrowsingDataQuotaHelper(Profile* profile)
-    : BrowsingDataQuotaHelper() {}
+MockBrowsingDataQuotaHelper::MockBrowsingDataQuotaHelper() = default;
 
 MockBrowsingDataQuotaHelper::~MockBrowsingDataQuotaHelper() {}
 

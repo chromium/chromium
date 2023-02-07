@@ -138,8 +138,9 @@ class BrowsingDataModelBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<BrowsingDataModel> BuildBrowsingDataModel() {
     base::test::TestFuture<std::unique_ptr<BrowsingDataModel>>
         browsing_data_model;
-    BrowsingDataModel::BuildFromDisk(browser()->profile(),
-                                     browsing_data_model.GetCallback());
+    BrowsingDataModel::BuildFromDisk(
+        browser()->profile()->GetDefaultStoragePartition(),
+        browsing_data_model.GetCallback());
     return browsing_data_model.Take();
   }
 

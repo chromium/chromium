@@ -16,7 +16,10 @@
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 class BrowsingDataQuotaHelper;
-class Profile;
+
+namespace content {
+class StoragePartition;
+}  // namespace content
 
 struct BrowsingDataQuotaHelperDeleter {
   static void Destruct(const BrowsingDataQuotaHelper* helper);
@@ -59,7 +62,8 @@ class BrowsingDataQuotaHelper
   using QuotaInfoArray = std::list<QuotaInfo>;
   using FetchResultCallback = base::OnceCallback<void(const QuotaInfoArray&)>;
 
-  static scoped_refptr<BrowsingDataQuotaHelper> Create(Profile* profile);
+  static scoped_refptr<BrowsingDataQuotaHelper> Create(
+      content::StoragePartition* storage_partition);
 
   BrowsingDataQuotaHelper(const BrowsingDataQuotaHelper&) = delete;
   BrowsingDataQuotaHelper& operator=(const BrowsingDataQuotaHelper&) = delete;

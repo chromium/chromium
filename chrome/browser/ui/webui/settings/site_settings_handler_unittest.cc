@@ -634,10 +634,11 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     scoped_refptr<browsing_data::MockLocalStorageHelper>
         mock_browsing_data_local_storage_helper;
 
+    auto* storage_partition = profile()->GetDefaultStoragePartition();
     mock_browsing_data_cookie_helper =
-        new browsing_data::MockCookieHelper(profile());
+        new browsing_data::MockCookieHelper(storage_partition);
     mock_browsing_data_local_storage_helper =
-        new browsing_data::MockLocalStorageHelper(profile());
+        new browsing_data::MockLocalStorageHelper(storage_partition);
 
     auto container = std::make_unique<LocalDataContainer>(
         mock_browsing_data_cookie_helper,

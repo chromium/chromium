@@ -19,7 +19,6 @@
 #include "url/origin.h"
 #include "url/url_util.h"
 
-using content::BrowserContext;
 using content::BrowserThread;
 
 namespace browsing_data {
@@ -48,9 +47,9 @@ void GetUsageInfoCallback(LocalStorageHelper::FetchCallback callback,
 
 }  // namespace
 
-LocalStorageHelper::LocalStorageHelper(BrowserContext* context)
-    : dom_storage_context_(
-          context->GetDefaultStoragePartition()->GetDOMStorageContext()) {
+LocalStorageHelper::LocalStorageHelper(
+    content::StoragePartition* storage_partition)
+    : dom_storage_context_(storage_partition->GetDOMStorageContext()) {
   DCHECK(dom_storage_context_);
 }
 
@@ -72,9 +71,9 @@ void LocalStorageHelper::DeleteStorageKey(const blink::StorageKey& storage_key,
 //---------------------------------------------------------
 
 CannedLocalStorageHelper::CannedLocalStorageHelper(
-    BrowserContext* context,
+    content::StoragePartition* storage_partition,
     bool update_ignored_empty_keys_on_fetch)
-    : LocalStorageHelper(context),
+    : LocalStorageHelper(storage_partition),
       update_ignored_empty_keys_on_fetch_(update_ignored_empty_keys_on_fetch) {}
 
 void CannedLocalStorageHelper::Add(const blink::StorageKey& storage_key) {

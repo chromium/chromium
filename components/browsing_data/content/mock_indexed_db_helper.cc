@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,8 +14,8 @@
 namespace browsing_data {
 
 MockIndexedDBHelper::MockIndexedDBHelper(
-    content::BrowserContext* browser_context)
-    : IndexedDBHelper(browser_context->GetDefaultStoragePartition()) {}
+    content::StoragePartition* storage_partition)
+    : IndexedDBHelper(storage_partition) {}
 
 MockIndexedDBHelper::~MockIndexedDBHelper() {}
 

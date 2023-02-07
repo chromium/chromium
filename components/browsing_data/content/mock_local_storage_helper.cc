@@ -8,12 +8,14 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
+#include "content/public/browser/storage_partition.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace browsing_data {
 
-MockLocalStorageHelper::MockLocalStorageHelper(content::BrowserContext* context)
-    : browsing_data::LocalStorageHelper(context) {}
+MockLocalStorageHelper::MockLocalStorageHelper(
+    content::StoragePartition* storage_partition)
+    : browsing_data::LocalStorageHelper(storage_partition) {}
 
 MockLocalStorageHelper::~MockLocalStorageHelper() = default;
 

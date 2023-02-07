@@ -45,8 +45,8 @@ class DatabaseHelperTest : public content::ContentBrowserTest {
   virtual void CreateDatabases() {
     storage::DatabaseTracker* db_tracker = shell()
                                                ->web_contents()
-                                               ->GetBrowserContext()
-                                               ->GetDefaultStoragePartition()
+                                               ->GetPrimaryMainFrame()
+                                               ->GetStoragePartition()
                                                ->GetDatabaseTracker();
     base::RunLoop run_loop;
     db_tracker->task_runner()->PostTaskAndReply(
@@ -81,7 +81,7 @@ class DatabaseHelperTest : public content::ContentBrowserTest {
 IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, DISABLED_FetchData) {
   CreateDatabases();
   auto database_helper = base::MakeRefCounted<DatabaseHelper>(
-      shell()->web_contents()->GetBrowserContext());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetStoragePartition());
   std::list<content::StorageUsageInfo> database_info_list;
   base::RunLoop run_loop;
   database_helper->StartFetching(base::BindLambdaForTesting(
@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, CannedAddDatabase) {
   const url::Origin origin2 = url::Origin::Create(GURL("http://host2:1/"));
 
   auto database_helper = base::MakeRefCounted<CannedDatabaseHelper>(
-      shell()->web_contents()->GetBrowserContext());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetStoragePartition());
   database_helper->Add(origin1);
   database_helper->Add(origin1);
   database_helper->Add(origin2);
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, CannedUnique) {
   const url::Origin origin = url::Origin::Create(GURL("http://host1:1/"));
 
   auto database_helper = base::MakeRefCounted<CannedDatabaseHelper>(
-      shell()->web_contents()->GetBrowserContext());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetStoragePartition());
   database_helper->Add(origin);
   database_helper->Add(origin);
 

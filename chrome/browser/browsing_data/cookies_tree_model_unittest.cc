@@ -68,33 +68,36 @@ class CookiesTreeModelTest : public testing::Test {
 
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
+    auto* storage_partition = profile_->GetDefaultStoragePartition();
     mock_browsing_data_cookie_helper_ =
-        base::MakeRefCounted<browsing_data::MockCookieHelper>(profile_.get());
+        base::MakeRefCounted<browsing_data::MockCookieHelper>(
+            storage_partition);
     mock_browsing_data_database_helper_ =
-        base::MakeRefCounted<browsing_data::MockDatabaseHelper>(profile_.get());
+        base::MakeRefCounted<browsing_data::MockDatabaseHelper>(
+            storage_partition);
     mock_browsing_data_local_storage_helper_ =
         base::MakeRefCounted<browsing_data::MockLocalStorageHelper>(
-            profile_.get());
+            storage_partition);
     mock_browsing_data_session_storage_helper_ =
         base::MakeRefCounted<browsing_data::MockLocalStorageHelper>(
-            profile_.get());
+            storage_partition);
     mock_browsing_data_indexed_db_helper_ =
         base::MakeRefCounted<browsing_data::MockIndexedDBHelper>(
-            profile_.get());
+            storage_partition);
     mock_browsing_data_file_system_helper_ =
         base::MakeRefCounted<browsing_data::MockFileSystemHelper>(
-            profile_.get());
+            storage_partition);
     mock_browsing_data_quota_helper_ =
-        base::MakeRefCounted<MockBrowsingDataQuotaHelper>(profile_.get());
+        base::MakeRefCounted<MockBrowsingDataQuotaHelper>();
     mock_browsing_data_service_worker_helper_ =
         base::MakeRefCounted<browsing_data::MockServiceWorkerHelper>(
-            profile_.get());
+            storage_partition);
     mock_browsing_data_shared_worker_helper_ =
         base::MakeRefCounted<browsing_data::MockSharedWorkerHelper>(
-            profile_.get());
+            storage_partition);
     mock_browsing_data_cache_storage_helper_ =
         base::MakeRefCounted<browsing_data::MockCacheStorageHelper>(
-            profile_.get());
+            storage_partition);
 
     const char kExtensionScheme[] = "extensionscheme";
     auto cookie_settings =

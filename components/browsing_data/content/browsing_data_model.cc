@@ -10,7 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/network_context.h"
@@ -355,12 +354,12 @@ BrowsingDataModel::Iterator BrowsingDataModel::end() const {
 BrowsingDataModel::~BrowsingDataModel() = default;
 
 void BrowsingDataModel::BuildFromDisk(
-    content::BrowserContext* browser_context,
+    content::StoragePartition* storage_partition,
     base::OnceCallback<void(std::unique_ptr<BrowsingDataModel>)>
         complete_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto model = BuildEmpty(browser_context);
+  auto model = BuildEmpty(storage_partition);
   auto* model_pointer = model.get();
 
   // This functor will own the unique_ptr for the model during construction,
@@ -377,9 +376,9 @@ void BrowsingDataModel::BuildFromDisk(
 }
 
 std::unique_ptr<BrowsingDataModel> BrowsingDataModel::BuildEmpty(
-    content::BrowserContext* browser_context) {
-  return base::WrapUnique(new BrowsingDataModel(
-      browser_context->GetDefaultStoragePartition()));  // Private constructor
+    content::StoragePartition* storage_partition) {
+  return base::WrapUnique(
+      new BrowsingDataModel(storage_partition));  // Private constructor
 }
 
 void BrowsingDataModel::AddBrowsingData(const DataKey& data_key,

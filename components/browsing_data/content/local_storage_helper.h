@@ -23,7 +23,7 @@ class StorageKey;
 }  // namespace blink
 
 namespace content {
-class BrowserContext;
+class StoragePartition;
 }  // namespace content
 
 namespace browsing_data {
@@ -35,7 +35,7 @@ class LocalStorageHelper : public base::RefCounted<LocalStorageHelper> {
   using FetchCallback =
       base::OnceCallback<void(const std::list<content::StorageUsageInfo>&)>;
 
-  explicit LocalStorageHelper(content::BrowserContext* context);
+  explicit LocalStorageHelper(content::StoragePartition* storage_partition);
 
   LocalStorageHelper(const LocalStorageHelper&) = delete;
   LocalStorageHelper& operator=(const LocalStorageHelper&) = delete;
@@ -68,7 +68,7 @@ class LocalStorageHelper : public base::RefCounted<LocalStorageHelper> {
 class CannedLocalStorageHelper : public LocalStorageHelper {
  public:
   explicit CannedLocalStorageHelper(
-      content::BrowserContext* context,
+      content::StoragePartition* storage_partition,
       bool update_ignored_empty_keys_on_fetch = false);
 
   CannedLocalStorageHelper(const CannedLocalStorageHelper&) = delete;

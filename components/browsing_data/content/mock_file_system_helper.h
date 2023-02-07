@@ -13,7 +13,7 @@
 #include "components/browsing_data/content/file_system_helper.h"
 
 namespace content {
-class BrowserContext;
+class StoragePartition;
 }
 
 namespace browsing_data {
@@ -23,7 +23,7 @@ namespace browsing_data {
 // Notify().
 class MockFileSystemHelper : public FileSystemHelper {
  public:
-  explicit MockFileSystemHelper(content::BrowserContext* browser_context);
+  explicit MockFileSystemHelper(content::StoragePartition* storage_partition);
 
   MockFileSystemHelper(const MockFileSystemHelper&) = delete;
   MockFileSystemHelper& operator=(const MockFileSystemHelper&) = delete;

@@ -24,7 +24,8 @@ TEST_F(CannedDatabaseHelperTest, Empty) {
 
   const GURL origin("http://host1:1/");
 
-  auto helper = base::MakeRefCounted<CannedDatabaseHelper>(&browser_context);
+  auto helper = base::MakeRefCounted<CannedDatabaseHelper>(
+      browser_context.GetDefaultStoragePartition());
 
   ASSERT_TRUE(helper->empty());
   helper->Add(url::Origin::Create(origin));
@@ -40,7 +41,8 @@ TEST_F(CannedDatabaseHelperTest, Delete) {
   const GURL origin2("http://example.com");
   const GURL origin3("http://foo.example.com");
 
-  auto helper = base::MakeRefCounted<CannedDatabaseHelper>(&browser_context);
+  auto helper = base::MakeRefCounted<CannedDatabaseHelper>(
+      browser_context.GetDefaultStoragePartition());
 
   EXPECT_TRUE(helper->empty());
   helper->Add(url::Origin::Create(origin1));
@@ -59,7 +61,8 @@ TEST_F(CannedDatabaseHelperTest, IgnoreExtensionsAndDevTools) {
   const GURL origin1("chrome-extension://abcdefghijklmnopqrstuvwxyz/");
   const GURL origin2("devtools://abcdefghijklmnopqrstuvwxyz/");
 
-  auto helper = base::MakeRefCounted<CannedDatabaseHelper>(&browser_context);
+  auto helper = base::MakeRefCounted<CannedDatabaseHelper>(
+      browser_context.GetDefaultStoragePartition());
 
   ASSERT_TRUE(helper->empty());
   helper->Add(url::Origin::Create(origin1));

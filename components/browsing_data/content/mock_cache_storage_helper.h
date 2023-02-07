@@ -13,7 +13,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
-class BrowserContext;
+class StoragePartition;
 }
 
 namespace browsing_data {
@@ -23,7 +23,7 @@ namespace browsing_data {
 // call Notify().
 class MockCacheStorageHelper : public CacheStorageHelper {
  public:
-  explicit MockCacheStorageHelper(content::BrowserContext* browser_context);
+  explicit MockCacheStorageHelper(content::StoragePartition* storage_partition);
 
   MockCacheStorageHelper(const MockCacheStorageHelper&) = delete;
   MockCacheStorageHelper& operator=(const MockCacheStorageHelper&) = delete;

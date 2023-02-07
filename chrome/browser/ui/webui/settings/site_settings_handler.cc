@@ -27,6 +27,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
+#include "chrome/browser/browsing_data/access_context_audit_service_factory.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
@@ -78,6 +79,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_features.h"
@@ -2054,9 +2056,12 @@ void SiteSettingsHandler::RebuildModels() {
 
   num_models_being_built_ = 2;
 
+  content::StoragePartition* storage_partition =
+      profile_->GetDefaultStoragePartition();
   BrowsingDataModel::BuildFromDisk(
-      profile_, base::BindOnce(&SiteSettingsHandler::BrowsingDataModelCreated,
-                               weak_ptr_factory_.GetWeakPtr()));
+      storage_partition,
+      base::BindOnce(&SiteSettingsHandler::BrowsingDataModelCreated,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   cookies_tree_model_ = CookiesTreeModel::CreateForProfileDeprecated(profile_);
   cookies_tree_model_->AddCookiesTreeObserver(this);

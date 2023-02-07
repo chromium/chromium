@@ -18,6 +18,7 @@
 #include "components/browsing_data/content/database_helper.h"
 #include "components/browsing_data/content/file_system_helper.h"
 #include "components/browsing_data/content/indexed_db_helper.h"
+#include "components/browsing_data/content/local_shared_objects_container.h"
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "components/browsing_data/content/service_worker_helper.h"
 #include "components/browsing_data/content/shared_worker_helper.h"
@@ -26,6 +27,7 @@ class CookiesTreeModel;
 class LocalDataContainer;
 
 namespace content {
+class StoragePartition;
 struct StorageUsageInfo;
 }
 
@@ -49,6 +51,15 @@ class LocalDataContainer {
   using SharedWorkerInfoList =
       std::list<browsing_data::SharedWorkerHelper::SharedWorkerInfo>;
   using CacheStorageUsageInfoList = std::list<content::StorageUsageInfo>;
+
+  static std::unique_ptr<LocalDataContainer>
+  CreateFromLocalSharedObjectsContainer(
+      const browsing_data::LocalSharedObjectsContainer& shared_objects);
+
+  static std::unique_ptr<LocalDataContainer> CreateFromStoragePartition(
+      content::StoragePartition* storage_partition,
+      browsing_data::CookieHelper::IsDeletionDisabledCallback
+          is_cookie_deletion_disabled_callback);
 
   LocalDataContainer(
       scoped_refptr<browsing_data::CookieHelper> cookie_helper,

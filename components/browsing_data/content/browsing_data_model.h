@@ -18,7 +18,6 @@
 #include "url/origin.h"
 
 namespace content {
-class BrowserContext;
 class StoragePartition;
 }
 
@@ -138,15 +137,15 @@ class BrowsingDataModel {
   virtual ~BrowsingDataModel();
 
   // Consults supported storage backends to create and populate a Model based
-  // on the current state of `browser_context`.
+  // on the current state of `storage_partition`.
   static void BuildFromDisk(
-      content::BrowserContext* browser_context,
+      content::StoragePartition* storage_partition,
       base::OnceCallback<void(std::unique_ptr<BrowsingDataModel>)>
           complete_callback);
 
   // Creates and returns an empty model, for population via AddBrowsingData().
   static std::unique_ptr<BrowsingDataModel> BuildEmpty(
-      content::BrowserContext* browser_context);
+      content::StoragePartition* storage_partition);
 
   // Directly add browsing data to the Model. The appropriate BrowsingDataEntry
   // will be created or modified. Typically this should only be used when the

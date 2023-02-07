@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -14,8 +13,8 @@
 namespace browsing_data {
 
 MockSharedWorkerHelper::MockSharedWorkerHelper(
-    content::BrowserContext* browser_context)
-    : SharedWorkerHelper(browser_context->GetDefaultStoragePartition()) {}
+    content::StoragePartition* storage_partition)
+    : SharedWorkerHelper(storage_partition) {}
 
 MockSharedWorkerHelper::~MockSharedWorkerHelper() {}
 

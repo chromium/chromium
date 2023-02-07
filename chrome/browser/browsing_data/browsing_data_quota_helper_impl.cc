@@ -29,9 +29,9 @@ using content::BrowserContext;
 
 // static
 scoped_refptr<BrowsingDataQuotaHelper> BrowsingDataQuotaHelper::Create(
-    Profile* profile) {
+    content::StoragePartition* storage_partition) {
   return base::MakeRefCounted<BrowsingDataQuotaHelperImpl>(
-      profile->GetDefaultStoragePartition()->GetQuotaManager());
+      storage_partition->GetQuotaManager());
 }
 
 void BrowsingDataQuotaHelperImpl::StartFetching(FetchResultCallback callback) {

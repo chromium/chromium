@@ -14,7 +14,7 @@
 
 class MockBrowsingDataQuotaHelper : public BrowsingDataQuotaHelper {
  public:
-  explicit MockBrowsingDataQuotaHelper(Profile* profile);
+  MockBrowsingDataQuotaHelper();
 
   MockBrowsingDataQuotaHelper(const MockBrowsingDataQuotaHelper&) = delete;
   MockBrowsingDataQuotaHelper& operator=(const MockBrowsingDataQuotaHelper&) =

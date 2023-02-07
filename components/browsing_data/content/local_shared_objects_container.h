@@ -18,7 +18,7 @@
 class GURL;
 
 namespace content {
-class BrowserContext;
+class StoragePartition;
 }
 
 namespace browsing_data {
@@ -33,8 +33,8 @@ class CannedLocalStorageHelper;
 
 class LocalSharedObjectsContainer {
  public:
-  explicit LocalSharedObjectsContainer(
-      content::BrowserContext* browser_context,
+  LocalSharedObjectsContainer(
+      content::StoragePartition* storage_partition,
       bool ignore_empty_localstorage,
       const std::vector<storage::FileSystemType>& additional_file_system_types,
       browsing_data::CookieHelper::IsDeletionDisabledCallback callback);

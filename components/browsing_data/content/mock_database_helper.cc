@@ -8,12 +8,14 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
+#include "content/public/browser/storage_partition.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace browsing_data {
 
-MockDatabaseHelper::MockDatabaseHelper(content::BrowserContext* browser_context)
-    : DatabaseHelper(browser_context) {}
+MockDatabaseHelper::MockDatabaseHelper(
+    content::StoragePartition* storage_partition)
+    : DatabaseHelper(storage_partition) {}
 
 MockDatabaseHelper::~MockDatabaseHelper() {}
 

@@ -16,7 +16,7 @@ class StorageKey;
 }
 
 namespace content {
-class BrowserContext;
+class StoragePartition;
 }
 
 namespace browsing_data {
@@ -26,7 +26,7 @@ namespace browsing_data {
 // call Notify().
 class MockIndexedDBHelper : public IndexedDBHelper {
  public:
-  explicit MockIndexedDBHelper(content::BrowserContext* browser_context);
+  explicit MockIndexedDBHelper(content::StoragePartition* storage_partition);
 
   MockIndexedDBHelper(const MockIndexedDBHelper&) = delete;
   MockIndexedDBHelper& operator=(const MockIndexedDBHelper&) = delete;

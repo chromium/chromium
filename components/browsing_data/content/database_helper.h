@@ -19,7 +19,7 @@
 #include "url/origin.h"
 
 namespace content {
-class BrowserContext;
+class StoragePartition;
 struct StorageUsageInfo;
 }  // namespace content
 
@@ -35,7 +35,7 @@ class DatabaseHelper : public base::RefCountedThreadSafe<DatabaseHelper> {
   using FetchCallback =
       base::OnceCallback<void(const std::list<content::StorageUsageInfo>&)>;
 
-  explicit DatabaseHelper(content::BrowserContext* browser_context);
+  explicit DatabaseHelper(content::StoragePartition* storage_partition);
 
   DatabaseHelper(const DatabaseHelper&) = delete;
   DatabaseHelper& operator=(const DatabaseHelper&) = delete;
@@ -62,7 +62,7 @@ class DatabaseHelper : public base::RefCountedThreadSafe<DatabaseHelper> {
 // a call when accessed.
 class CannedDatabaseHelper : public DatabaseHelper {
  public:
-  explicit CannedDatabaseHelper(content::BrowserContext* browser_context);
+  explicit CannedDatabaseHelper(content::StoragePartition* storage_partition);
 
   CannedDatabaseHelper(const CannedDatabaseHelper&) = delete;
   CannedDatabaseHelper& operator=(const CannedDatabaseHelper&) = delete;

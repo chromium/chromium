@@ -253,8 +253,8 @@ void BrowsingDataSizeCalculator::PerformCalculation() {
         storage_partition->GetPath(),
         new browsing_data::CookieHelper(storage_partition,
                                         base::NullCallback()),
-        new browsing_data::LocalStorageHelper(profile_),
-        BrowsingDataQuotaHelper::Create(profile_));
+        new browsing_data::LocalStorageHelper(storage_partition),
+        BrowsingDataQuotaHelper::Create(storage_partition));
   }
   site_data_size_collector_->Fetch(
       base::BindOnce(&BrowsingDataSizeCalculator::OnGetBrowsingDataSize,

@@ -412,30 +412,9 @@ std::string BrowsingDataRemoverBrowserTestBase::GetCookiesTreeModelInfo(
 
 std::unique_ptr<CookiesTreeModel>
 BrowsingDataRemoverBrowserTestBase::GetCookiesTreeModel(Profile* profile) {
-  content::StoragePartition* storage_partition =
-      profile->GetDefaultStoragePartition();
-  content::ServiceWorkerContext* service_worker_context =
-      storage_partition->GetServiceWorkerContext();
-  storage::FileSystemContext* file_system_context =
-      storage_partition->GetFileSystemContext();
-  auto container = std::make_unique<LocalDataContainer>(
-      base::MakeRefCounted<browsing_data::CookieHelper>(
-          storage_partition,
-          CookiesTreeModel::GetCookieDeletionDisabledCallback(profile)),
-      base::MakeRefCounted<browsing_data::DatabaseHelper>(profile),
-      base::MakeRefCounted<browsing_data::LocalStorageHelper>(profile),
-      /*session_storage_helper=*/nullptr,
-      base::MakeRefCounted<browsing_data::IndexedDBHelper>(storage_partition),
-      base::MakeRefCounted<browsing_data::FileSystemHelper>(
-          file_system_context,
-          browsing_data_file_system_util::GetAdditionalFileSystemTypes()),
-      BrowsingDataQuotaHelper::Create(profile),
-      base::MakeRefCounted<browsing_data::ServiceWorkerHelper>(
-          service_worker_context),
-      base::MakeRefCounted<browsing_data::SharedWorkerHelper>(
-          storage_partition),
-      base::MakeRefCounted<browsing_data::CacheStorageHelper>(
-          storage_partition));
+  auto container = LocalDataContainer::CreateFromStoragePartition(
+      profile->GetDefaultStoragePartition(),
+      CookiesTreeModel::GetCookieDeletionDisabledCallback(profile));
   base::RunLoop run_loop;
   CookiesTreeObserver observer(run_loop.QuitClosure());
   auto model = std::make_unique<CookiesTreeModel>(

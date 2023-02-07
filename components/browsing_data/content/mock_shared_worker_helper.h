@@ -15,14 +15,14 @@ class StorageKey;
 }  // namespace blink
 
 namespace content {
-class BrowserContext;
+class StoragePartition;
 }
 
 namespace browsing_data {
 
 class MockSharedWorkerHelper : public SharedWorkerHelper {
  public:
-  explicit MockSharedWorkerHelper(content::BrowserContext* browser_context);
+  explicit MockSharedWorkerHelper(content::StoragePartition* storage_partition);
 
   MockSharedWorkerHelper(const MockSharedWorkerHelper&) = delete;
   MockSharedWorkerHelper& operator=(const MockSharedWorkerHelper&) = delete;

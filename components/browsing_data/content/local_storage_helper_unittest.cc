@@ -25,7 +25,8 @@ TEST_F(CannedLocalStorageTest, Empty) {
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://host1:1/");
 
-  auto helper = base::MakeRefCounted<CannedLocalStorageHelper>(&context);
+  auto helper = base::MakeRefCounted<CannedLocalStorageHelper>(
+      context.GetDefaultStoragePartition());
 
   ASSERT_TRUE(helper->empty());
   helper->Add(storage_key);
@@ -44,7 +45,8 @@ TEST_F(CannedLocalStorageTest, Delete) {
   const blink::StorageKey storage_key3 =
       blink::StorageKey::CreateFromStringForTesting("http://foo.example.com");
 
-  auto helper = base::MakeRefCounted<CannedLocalStorageHelper>(&context);
+  auto helper = base::MakeRefCounted<CannedLocalStorageHelper>(
+      context.GetDefaultStoragePartition());
 
   EXPECT_TRUE(helper->empty());
   helper->Add(storage_key1);
@@ -67,7 +69,8 @@ TEST_F(CannedLocalStorageTest, IgnoreExtensionsAndDevTools) {
       blink::StorageKey::CreateFromStringForTesting(
           "devtools://abcdefghijklmnopqrstuvwxyz/");
 
-  auto helper = base::MakeRefCounted<CannedLocalStorageHelper>(&context);
+  auto helper = base::MakeRefCounted<CannedLocalStorageHelper>(
+      context.GetDefaultStoragePartition());
 
   ASSERT_TRUE(helper->empty());
   helper->Add(storage_key1);

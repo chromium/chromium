@@ -42,6 +42,7 @@ class CookieTreeSharedWorkersNode;
 class CookieTreeSessionStorageNode;
 class CookieTreeSessionStoragesNode;
 class ExtensionSpecialStoragePolicy;
+class Profile;
 
 namespace content_settings {
 class CookieSettings;
@@ -263,18 +264,16 @@ class CookieTreeHostNode : public CookieTreeNode {
 // CookiesTreeModel -----------------------------------------------------------
 class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
  public:
+  // Create CookiesTreeModel by profile info.
+  // DEPRECATED(crbug.com/1271155): The cookies tree model is slowly being
+  // deprecated, during this process the semantics of the model are nuanced
+  // w.r.t partitioned storage, and should not be used in new locations.
+  static std::unique_ptr<CookiesTreeModel> CreateForProfileDeprecated(
+      Profile* profile);
+
   CookiesTreeModel(std::unique_ptr<LocalDataContainer> data_container,
                    ExtensionSpecialStoragePolicy* special_storage_policy);
-  // As above, but also provides the tree model with a pointer to the Access
-  // Context Audit service. This allows the tree model to report deletion events
-  // to the service. This must be used whenever the service exists to ensure
-  // audit record consistency.
-  // TODO (crbug.com/1113602): Remove this constructor when all deletions are
-  // performed directly against the StoragePartition and the tree model doesn't
-  // require knowledge of the audit service.
-  CookiesTreeModel(std::unique_ptr<LocalDataContainer> data_container,
-                   ExtensionSpecialStoragePolicy* special_storage_policy,
-                   AccessContextAuditService* access_context_audit_service);
+
   ~CookiesTreeModel() override;
 
   // Given a CanonicalCookie, return the ID of the message which should be
@@ -374,18 +373,27 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   // expected).
   void SetBatchExpectation(int batches_expected, bool reset);
 
-  // Create CookiesTreeModel by profile info.
-  // DEPRECATED(crbug.com/1271155): The cookies tree model is slowly being
-  // deprecated, during this process the semantics of the model are nuanced
-  // w.r.t partitioned storage, and should not be used in new locations.
-  static std::unique_ptr<CookiesTreeModel> CreateForProfileDeprecated(
-      Profile* profile);
-
   static browsing_data::CookieHelper::IsDeletionDisabledCallback
   GetCookieDeletionDisabledCallback(Profile* profile);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(CookiesTreeModelBrowserTest, BatchesFinishSync);
+
+  // Provides the tree model with a pointer to the Access Context Audit
+  // service, which allows the tree model to report deletion events to the
+  // service.  This must be used whenever the service exists to ensure audit
+  // record consistency.
+  //
+  // When using this constructor, ensure that the backing StoragePartition of
+  // |data_container| belongs to the same Profile as |special_storage_policy|
+  // and |access_context_audit_service|.
+  //
+  // TODO (crbug.com/1113602): Remove this constructor when all deletions are
+  // performed directly against the StoragePartition and the tree model doesn't
+  // require knowledge of the audit service.
+  CookiesTreeModel(std::unique_ptr<LocalDataContainer> data_container,
+                   ExtensionSpecialStoragePolicy* special_storage_policy,
+                   AccessContextAuditService* access_context_audit_service);
 
   // Record that one batch has been delivered.
   void RecordBatchSeen();

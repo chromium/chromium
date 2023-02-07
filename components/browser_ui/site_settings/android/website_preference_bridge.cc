@@ -640,7 +640,8 @@ static void JNI_WebsitePreferenceBridge_FetchLocalStorageInfo(
     jboolean fetch_important) {
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
   auto local_storage_helper =
-      base::MakeRefCounted<browsing_data::LocalStorageHelper>(browser_context);
+      base::MakeRefCounted<browsing_data::LocalStorageHelper>(
+          browser_context->GetDefaultStoragePartition());
   local_storage_helper->StartFetching(base::BindOnce(
       &OnLocalStorageModelInfoLoaded, browser_context, fetch_important,
       ScopedJavaGlobalRef<jobject>(java_callback)));

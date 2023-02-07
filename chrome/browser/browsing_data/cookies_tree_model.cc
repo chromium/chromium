@@ -1237,6 +1237,18 @@ void CookiesTreeModel::ScopedBatchUpdateNotifier::StartBatchUpdate() {
 
 ///////////////////////////////////////////////////////////////////////////////
 // CookiesTreeModel, public:
+
+// static
+std::unique_ptr<CookiesTreeModel> CookiesTreeModel::CreateForProfileDeprecated(
+    Profile* profile) {
+  return base::WrapUnique(new CookiesTreeModel(
+      LocalDataContainer::CreateFromStoragePartition(
+          profile->GetDefaultStoragePartition(),
+          CookiesTreeModel::GetCookieDeletionDisabledCallback(profile)),
+      profile->GetExtensionSpecialStoragePolicy(),
+      AccessContextAuditServiceFactory::GetForProfile(profile)));
+}
+
 CookiesTreeModel::CookiesTreeModel(
     std::unique_ptr<LocalDataContainer> data_container,
     ExtensionSpecialStoragePolicy* special_storage_policy)
@@ -1742,60 +1754,4 @@ CookiesTreeModel::GetCookieDeletionDisabledCallback(Profile* profile) {
   }
 #endif
   return base::NullCallback();
-}
-
-// static
-std::unique_ptr<CookiesTreeModel> CookiesTreeModel::CreateForProfileDeprecated(
-    Profile* profile) {
-  auto* storage_partition = profile->GetDefaultStoragePartition();
-  auto* file_system_context = storage_partition->GetFileSystemContext();
-
-  // If partitioned storage is enabled, the quota node is used to represent all
-  // types of quota managed storage. If not, the quota node type is excluded as
-  // it is represented by other types.
-  bool use_quota_only =
-      blink::StorageKey::IsThirdPartyStoragePartitioningEnabled();
-
-  // Types managed by Quota:
-  auto database_helper =
-      use_quota_only
-          ? nullptr
-          : base::MakeRefCounted<browsing_data::DatabaseHelper>(profile);
-  auto cache_helper =
-      use_quota_only ? nullptr
-                     : base::MakeRefCounted<browsing_data::CacheStorageHelper>(
-                           storage_partition);
-  auto indexed_db_helper =
-      use_quota_only ? nullptr
-                     : base::MakeRefCounted<browsing_data::IndexedDBHelper>(
-                           storage_partition);
-  auto file_system_helper =
-      use_quota_only
-          ? nullptr
-          : base::MakeRefCounted<browsing_data::FileSystemHelper>(
-                file_system_context,
-                browsing_data_file_system_util::GetAdditionalFileSystemTypes());
-  auto service_worker_helper =
-      use_quota_only ? nullptr
-                     : base::MakeRefCounted<browsing_data::ServiceWorkerHelper>(
-                           storage_partition->GetServiceWorkerContext());
-
-  // Quota type itself:
-  auto quota_helper =
-      use_quota_only ? BrowsingDataQuotaHelper::Create(profile) : nullptr;
-
-  auto container = std::make_unique<LocalDataContainer>(
-      base::MakeRefCounted<browsing_data::CookieHelper>(
-          storage_partition, GetCookieDeletionDisabledCallback(profile)),
-      database_helper,
-      base::MakeRefCounted<browsing_data::LocalStorageHelper>(profile),
-      /*session_storage_helper=*/nullptr, indexed_db_helper, file_system_helper,
-      quota_helper, service_worker_helper,
-      base::MakeRefCounted<browsing_data::SharedWorkerHelper>(
-          storage_partition),
-      cache_helper);
-
-  return std::make_unique<CookiesTreeModel>(
-      std::move(container), profile->GetExtensionSpecialStoragePolicy(),
-      AccessContextAuditServiceFactory::GetForProfile(profile));
 }

@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "components/browsing_data/content/file_system_helper.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -15,10 +14,8 @@
 namespace browsing_data {
 
 MockFileSystemHelper::MockFileSystemHelper(
-    content::BrowserContext* browser_context)
-    : FileSystemHelper(
-          browser_context->GetDefaultStoragePartition()->GetFileSystemContext(),
-          {}) {}
+    content::StoragePartition* storage_partition)
+    : FileSystemHelper(storage_partition->GetFileSystemContext(), {}) {}
 
 MockFileSystemHelper::~MockFileSystemHelper() {}
 
