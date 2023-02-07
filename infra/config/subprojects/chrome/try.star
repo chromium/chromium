@@ -50,6 +50,22 @@ def chrome_internal_verifier(
             **kwargs
         )
 
+### Mandatory builders ###
+
+chrome_internal_verifier(
+    builder = "internal-cq-builder-verifier",
+    tryjob = try_.job(
+        location_filters = ["infra/config/generated/cq-usage/full.cfg"],
+    ),
+)
+
+chrome_internal_verifier(
+    builder = "linux-chromeos-compile-chrome",
+    tryjob = try_.job(),
+)
+
+### Optional builders ###
+
 chrome_internal_verifier(
     builder = "android-internal-binary-size",
 )
@@ -161,11 +177,6 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "linux-chromeos-chrome",
-)
-
-chrome_internal_verifier(
-    builder = "linux-chromeos-compile-chrome",
-    tryjob = try_.job(),
 )
 
 chrome_internal_verifier(
