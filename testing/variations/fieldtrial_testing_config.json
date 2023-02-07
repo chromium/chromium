@@ -3539,25 +3539,6 @@
             ]
         }
     ],
-    "CustomTabEngagementBranding": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "real_values": "true"
-                    },
-                    "enable_features": [
-                        "CCTBrandTransparency",
-                        "CCTRealTimeEngagementSignals"
-                    ]
-                }
-            ]
-        }
-    ],
     "CustomTabSessionRecording": [
         {
             "platforms": [
