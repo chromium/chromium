@@ -44,6 +44,9 @@ constexpr uint64_t kFrontMicId = 10012;
 constexpr uint64_t kRearMicId = 10013;
 const uint64_t kInternalSpeakerId = 10001;
 const uint64_t kHeadphoneId = 10002;
+constexpr uint64_t kDualInternalMicId = 0;
+const int kFrontMicGainPercent = 50;
+const int kRearMicGainPercent = 100;
 
 const std::u16string kInitialLiveCaptionViewSubtitleText = u"This is a test";
 const std::u16string kSodaDownloaded = u"Speech files downloaded";
@@ -349,6 +352,45 @@ TEST_P(UnifiedAudioDetailedViewControllerTest,
     EXPECT_EQ(static_cast<QuickSettingsSlider*>(mic_gain_slider_view->slider())
                   ->slider_style(),
               QuickSettingsSlider::Style::kRadioActive);
+  }
+}
+
+TEST_P(UnifiedAudioDetailedViewControllerTest,
+       DualInternalMicSliderInactiveState) {
+  fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
+      GenerateAudioNodeList({kFrontMic, kRearMic, kMicJack}));
+
+  // Verify the device has dual internal mics.
+  EXPECT_TRUE(cras_audio_handler_->HasDualInternalMic());
+
+  std::unique_ptr<views::View> view =
+      audio_detailed_view_controller_->CreateView();
+
+  // Verify there are 2 sliders in the view and one of them is the new dual
+  // internal mic.
+  EXPECT_EQ(input_sliders_map_.size(), 2u);
+  EXPECT_TRUE(input_sliders_map_.contains(kDualInternalMicId));
+
+  // Sets different volume gain levels for front and rear mics.
+  cras_audio_handler_->SetVolumeGainPercentForDevice(kFrontMicId,
+                                                     kFrontMicGainPercent);
+  cras_audio_handler_->SetVolumeGainPercentForDevice(kRearMicId,
+                                                     kRearMicGainPercent);
+
+  // Switches to `kMicJack` to make the internal mic inactive.
+  cras_audio_handler_->SwitchToDevice(AudioDevice(GenerateAudioNode(kMicJack)),
+                                      true, CrasAudioHandler::ACTIVATE_BY_USER);
+
+  // For QsRevamp: Verify the dual internal mic slider is inactive and its
+  // volume level equals to the front mic's level.
+  if (IsQsRevampEnabled()) {
+    auto* mic_gain_slider_view = static_cast<MicGainSliderView*>(
+        input_sliders_map_.find(kDualInternalMicId)->second);
+    EXPECT_EQ(static_cast<QuickSettingsSlider*>(mic_gain_slider_view->slider())
+                  ->slider_style(),
+              QuickSettingsSlider::Style::kRadioInactive);
+    EXPECT_EQ(mic_gain_slider_view->slider()->GetValue(),
+              kFrontMicGainPercent / 100.0);
   }
 }
 

@@ -10,6 +10,7 @@
 #include "ash/system/audio/mic_gain_slider_controller.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/quick_settings_slider.h"
+#include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -138,19 +139,21 @@ void MicGainSliderView::Update(bool by_user) {
   float level = audio_handler->GetInputGainPercent() / 100.f;
 
   // Gets the input gain for each device to draw each slider in
-  // `AudioDetailedView`. If the internal mic stub is showing, don't get the
-  // audio level by its id and don't set it invisible.
+  // `AudioDetailedView`.
   if (features::IsQsRevampEnabled()) {
     if (!show_internal_stub) {
-      // If the device cannot be found by `device_id_`, hides this view and
-      // early returns to avoid a crash.
+      // If the device cannot be found by `device_id_`(i.e. this device is the
+      // dual internal mic), sets its level as the front internal mic level.
       if (!audio_handler->GetDeviceFromId(device_id_)) {
-        SetVisible(false);
-        return;
+        level = audio_handler->GetInputGainPercentForDevice(
+                    audio_handler->GetDeviceByType(AudioDeviceType::kFrontMic)
+                        ->id) /
+                100.f;
+      } else {
+        // Inactive input devices don't have a record of their mute states, so
+        // we manually get the level.
+        level = audio_handler->GetInputGainPercentForDevice(device_id_) / 100.f;
       }
-      // Inactive input devices don't have a record of their mute states,so we
-      // manually get the level.
-      level = audio_handler->GetInputGainPercentForDevice(device_id_) / 100.f;
     }
     // Sets `is_muted` for active internal mic stub and all other input devices.
     is_muted = level == 0;
