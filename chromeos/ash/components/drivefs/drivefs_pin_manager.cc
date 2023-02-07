@@ -132,15 +132,40 @@ std::ostream& operator<<(std::ostream& out, Quoter<mojom::FileChange::Type> q) {
              << static_cast<std::underlying_type_t<Type>>(q.value) << ")";
 }
 
+std::ostream& operator<<(std::ostream& out,
+                         Quoter<mojom::ShortcutDetails::LookupStatus> q) {
+  using LookupStatus = mojom::ShortcutDetails::LookupStatus;
+  switch (q.value) {
+#define PRINT(s)           \
+  case LookupStatus::k##s: \
+    return out << #s;
+    PRINT(Ok)
+    PRINT(NotFound)
+    PRINT(PermissionDenied)
+    PRINT(Unknown)
+#undef PRINT
+  }
+
+  return out << "ShortcutDetails::LookupStatus("
+             << static_cast<std::underlying_type_t<LookupStatus>>(q.value)
+             << ")";
+}
+
+std::ostream& operator<<(std::ostream& out, Quoter<mojom::ShortcutDetails> q) {
+  return out << "{id: " << PinManager::Id(q.value.target_stable_id)
+             << ", status: " << Quote(q.value.target_lookup_status) << "}";
+}
+
 std::ostream& operator<<(std::ostream& out, Quoter<mojom::FileMetadata> q) {
   const mojom::FileMetadata& md = q.value;
-  return out << "{" << Quote(md.type) << " " << PinManager::Id(md.stable_id)
-             << ", size: " << HumanReadableSize(md.size)
-             << ", pinned: " << md.pinned << ", can_pin: "
-             << (md.can_pin == mojom::FileMetadata::CanPinStatus::kOk)
-             << ", available_offline: " << md.available_offline
-             << ", shared: " << md.shared << ", starred: " << md.starred
-             << ", item_id = " << Quote(md.item_id) << "}";
+  out << "{" << Quote(md.type) << " " << PinManager::Id(md.stable_id)
+      << ", size: " << HumanReadableSize(md.size) << ", pinned: " << md.pinned
+      << ", can_pin: " << (md.can_pin == mojom::FileMetadata::CanPinStatus::kOk)
+      << ", available_offline: " << md.available_offline;
+  if (md.shortcut_details) {
+    out << ", shortcut_details: " << Quote(*md.shortcut_details);
+  }
+  return out << "}";
 }
 
 std::ostream& operator<<(std::ostream& out, Quoter<mojom::ItemEvent> q) {

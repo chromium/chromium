@@ -357,7 +357,7 @@ struct DialogReason {
   mojo_base.mojom.FilePath path;
 };
 
-// Next MinVersion: 7
+// Next MinVersion: 8
 struct FileMetadata {
   [Extensible] enum Type {
     // A regular file.
@@ -424,6 +424,28 @@ struct FileMetadata {
 
   // Present if file is part of a shared drive that has a quota limit.
   [MinVersion=6] SharedDriveQuota? shared_drive_quota;
+
+  // Populated if the item is a shortcut and contains information about the
+  // target of the shortcut.
+  [MinVersion=7] ShortcutDetails? shortcut_details;
+};
+
+// Details relating to the target item that a shortcut refers to.
+struct ShortcutDetails {
+  // The `stable_id` that refers to the target.
+  int64 target_stable_id = 0;
+
+  [Extensible]
+  enum LookupStatus {
+    [Default] kOk,
+    kNotFound,
+    kPermissionDenied,
+    kUnknown,
+  };
+
+  // In the case the target the shortcut points to can't be found or doesn't
+  // have permission, relay that information back.
+  LookupStatus target_lookup_status;
 };
 
 struct ImageMetadata {
