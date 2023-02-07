@@ -274,7 +274,7 @@ class DiceWebSigninInterceptHandlerTest
 
     DiceWebSigninInterceptHandler handler(
         {GetParam().interception_type, intercepted_account, primary_account},
-        base::DoNothing());
+        base::DoNothing(), base::DoNothing());
     handler.set_web_ui(&web_ui_);
 
     return handler.GetInterceptionParametersValue();

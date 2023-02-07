@@ -116,6 +116,10 @@ class DiceWebSigninInterceptionBubbleView
 
   content::WebContents* GetBubbleWebContentsForTesting();
 
+  // Callback to set the final height of the bubble based on its content, after
+  // the page is loaded and the height is sent by DiceWebSigninInterceptHandler.
+  void SetHeightAndShowWidget(int height);
+
   // This bubble can outlive the Browser, in particular on Mac (see
   // https://crbug.com/1302729). Retain the profile to prevent use-after-free.
   ScopedProfileKeepAlive profile_keep_alive_;

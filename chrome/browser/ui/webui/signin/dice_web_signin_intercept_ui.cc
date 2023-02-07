@@ -95,7 +95,8 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
   if (web_ui->GetWebContents()->GetVisibleURL().query() == "debug") {
     // Not intended to be hooked to anything. The bubble will not initialize it
     // so we force it here.
-    Initialize(CreateSampleBubbleParameters(), base::DoNothing());
+    Initialize(CreateSampleBubbleParameters(), base::DoNothing(),
+               base::DoNothing());
   }
 }
 
@@ -104,9 +105,12 @@ DiceWebSigninInterceptUI::~DiceWebSigninInterceptUI() = default;
 void DiceWebSigninInterceptUI::Initialize(
     const DiceWebSigninInterceptor::Delegate::BubbleParameters&
         bubble_parameters,
-    base::OnceCallback<void(SigninInterceptionUserChoice)> callback) {
+    base::OnceCallback<void(int)> show_widget_with_height_callback,
+    base::OnceCallback<void(SigninInterceptionUserChoice)>
+        completion_callback) {
   web_ui()->AddMessageHandler(std::make_unique<DiceWebSigninInterceptHandler>(
-      bubble_parameters, std::move(callback)));
+      bubble_parameters, std::move(show_widget_with_height_callback),
+      std::move(completion_callback)));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DiceWebSigninInterceptUI)

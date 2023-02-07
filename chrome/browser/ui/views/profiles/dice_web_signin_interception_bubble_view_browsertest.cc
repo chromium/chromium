@@ -38,6 +38,7 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -216,10 +217,15 @@ class DiceWebSigninInterceptionBubblePixelTest
         GURL(chrome::kChromeUIDiceWebSigninInterceptURL)};
     observer.StartWatchingNewWebContents();
 
+    views::NamedWidgetShownWaiter widget_waiter(
+        views::test::AnyWidgetTestPasskey{},
+        "DiceWebSigninInterceptionBubbleView");
+
     bubble_handle_ = DiceWebSigninInterceptionBubbleView::CreateBubble(
         browser(), GetAvatarButton(browser()), GetTestBubbleParameters(),
         base::DoNothing());
 
+    widget_waiter.WaitIfNeededAndGet();
     observer.Wait();
   }
 

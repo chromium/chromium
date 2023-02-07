@@ -43,6 +43,10 @@ export interface DiceWebSigninInterceptBrowserProxy {
 
   // Called when the page is loaded.
   pageLoaded(): Promise<InterceptionParameters>;
+
+  // Called after the page is loaded, sending the final height of the page in
+  // order to set the size of the bubble dynamically.
+  initializedWithHeight(height: number): void;
 }
 
 export class DiceWebSigninInterceptBrowserProxyImpl implements
@@ -61,6 +65,10 @@ export class DiceWebSigninInterceptBrowserProxyImpl implements
 
   pageLoaded() {
     return sendWithPromise('pageLoaded');
+  }
+
+  initializedWithHeight(height: number) {
+    chrome.send('initializedWithHeight', [height]);
   }
 
   static getInstance(): DiceWebSigninInterceptBrowserProxy {

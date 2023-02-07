@@ -23,7 +23,9 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
   DiceWebSigninInterceptHandler(
       const DiceWebSigninInterceptor::Delegate::BubbleParameters&
           bubble_parameters,
-      base::OnceCallback<void(SigninInterceptionUserChoice)> callback);
+      base::OnceCallback<void(int)> show_widget_with_height_callback,
+      base::OnceCallback<void(SigninInterceptionUserChoice)>
+          completion_callback);
   ~DiceWebSigninInterceptHandler() override;
 
   DiceWebSigninInterceptHandler(const DiceWebSigninInterceptHandler&) = delete;
@@ -50,6 +52,7 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
   void HandleCancel(const base::Value::List& args);
   void HandleGuest(const base::Value::List& args);
   void HandlePageLoaded(const base::Value::List& args);
+  void HandleInitializedWithHeight(const base::Value::List& args);
 
   // Gets the values sent to javascript.
   base::Value::Dict GetAccountInfoValue(const AccountInfo& info);
@@ -72,7 +75,8 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
       identity_observation_{this};
   DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
 
-  base::OnceCallback<void(SigninInterceptionUserChoice)> callback_;
+  base::OnceCallback<void(int)> show_widget_with_height_callback_;
+  base::OnceCallback<void(SigninInterceptionUserChoice)> completion_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_HANDLER_H_

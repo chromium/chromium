@@ -80,6 +80,10 @@ export class DiceWebSigninInterceptAppElement extends
   private onPageLoaded_(parameters: InterceptionParameters) {
     this.handleParametersChanged_(parameters);
     afterNextRender(this, () => {
+      const height =
+          this.shadowRoot!.querySelector<HTMLElement>(
+                              '#interceptDialog')!.offsetHeight;
+      this.diceWebSigninInterceptBrowserProxy_.initializedWithHeight(height);
       // |showGuestOption| is constant during the lifetime of this bubble,
       // therefore it's safe to set the listener only during initialization.
       if (this.interceptionParameters_.showGuestOption) {

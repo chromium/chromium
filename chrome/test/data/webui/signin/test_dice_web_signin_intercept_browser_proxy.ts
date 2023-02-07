@@ -10,7 +10,7 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy
   private interceptionParameters_: InterceptionParameters;
 
   constructor() {
-    super(['accept', 'cancel', 'guest', 'pageLoaded']);
+    super(['accept', 'cancel', 'guest', 'pageLoaded', 'initializedWithHeight']);
 
     this.interceptionParameters_ = {
       headerText: '',
@@ -49,5 +49,9 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy
   pageLoaded() {
     this.methodCalled('pageLoaded');
     return Promise.resolve(this.interceptionParameters_);
+  }
+
+  initializedWithHeight(height: number) {
+    this.methodCalled('initializedWithHeight', height);
   }
 }
