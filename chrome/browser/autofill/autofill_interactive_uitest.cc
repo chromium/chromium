@@ -2895,11 +2895,19 @@ class AutofillInteractiveFencedFrameTest
       public ::testing::WithParamInterface<FrameType> {
  protected:
   AutofillInteractiveFencedFrameTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled;
+    std::vector<base::test::FeatureRef> disabled;
     if (GetParam() != FrameType::kIFrame) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kAutofillEnableWithinFencedFrame}, {});
+      enabled.push_back({blink::features::kBrowsingTopics, {}});
+      enabled.push_back({blink::features::kBrowsingTopicsXHR, {}});
+      enabled.push_back({blink::features::kFencedFramesAPIChanges, {}});
+      enabled.push_back({features::kAutofillEnableWithinFencedFrame, {}});
+      scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
       fenced_frame_test_helper_ =
           std::make_unique<content::test::FencedFrameTestHelper>();
+    } else {
+      disabled.push_back(features::kAutofillEnableWithinFencedFrame);
+      scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
     }
   }
   ~AutofillInteractiveFencedFrameTest() override = default;

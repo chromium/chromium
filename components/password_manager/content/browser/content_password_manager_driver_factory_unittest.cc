@@ -33,6 +33,7 @@ class ContentPasswordManagerDriverFactoryFencedFramesTest
     enabled.push_back(
         {blink::features::kFencedFrames, {{"implementation_type", "mparch"}}});
     if (password_manager_enabled_in_fencedframe()) {
+      enabled.push_back({blink::features::kFencedFramesAPIChanges, {}});
       enabled.push_back(
           {features::kEnablePasswordManagerWithinFencedFrame, {}});
     } else {

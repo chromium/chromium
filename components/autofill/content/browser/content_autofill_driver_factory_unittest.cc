@@ -366,6 +366,7 @@ class ContentAutofillDriverFactoryTest_FencedFrames
     enabled.push_back(
         {blink::features::kFencedFrames, {{"implementation_type", "mparch"}}});
     if (autofill_enabled_in_fencedframe()) {
+      enabled.push_back({blink::features::kFencedFramesAPIChanges, {}});
       enabled.push_back({features::kAutofillEnableWithinFencedFrame, {}});
     } else {
       disabled.push_back(features::kAutofillEnableWithinFencedFrame);

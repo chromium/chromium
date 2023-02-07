@@ -22,6 +22,7 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "net/cert/cert_status_flags.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace password_manager {
 
@@ -85,8 +86,10 @@ ContentPasswordManagerDriverFactory::GetDriverForFrame(
     return nullptr;
 
   if (render_frame_host->IsNestedWithinFencedFrame() &&
-      !base::FeatureList::IsEnabled(
-          features::kEnablePasswordManagerWithinFencedFrame)) {
+      !(base::FeatureList::IsEnabled(
+            features::kEnablePasswordManagerWithinFencedFrame) &&
+        base::FeatureList::IsEnabled(
+            blink::features::kFencedFramesAPIChanges))) {
     return nullptr;
   }
 
