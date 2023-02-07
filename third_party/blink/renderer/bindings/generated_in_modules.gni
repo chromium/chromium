@@ -817,6 +817,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_push_subscription_change_event_init.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_push_subscription_options_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_push_subscription_options_init.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_top_level_storage_access_permission_descriptor.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_top_level_storage_access_permission_descriptor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_query_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_query_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_registration_options.cc",

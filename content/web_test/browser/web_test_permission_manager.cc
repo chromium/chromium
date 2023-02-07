@@ -275,8 +275,14 @@ void WebTestPermissionManager::SetPermission(
     std::move(callback).Run(false);
     return;
   }
+  GURL applicable_permission_url = url;
+  if (PermissionUtil::IsDomainOverride(descriptor)) {
+    const auto overridden_origin =
+        PermissionUtil::ExtractDomainOverride(descriptor);
+    applicable_permission_url = overridden_origin.GetURL();
+  }
 
-  SetPermission(*type, status, url, embedding_url);
+  SetPermission(*type, status, applicable_permission_url, embedding_url);
   std::move(callback).Run(true);
 }
 

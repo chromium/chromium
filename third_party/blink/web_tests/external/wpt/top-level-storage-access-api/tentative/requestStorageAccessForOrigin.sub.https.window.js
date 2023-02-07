@@ -124,6 +124,18 @@ if (topLevelDocument) {
       '[' + testPrefix +
           '] document.requestStorageAccessForOrigin() should be rejected when called with an opaque origin');
 
+
+  promise_test(
+    async t => {
+      await test_driver.set_permission(
+        { name: 'top-level-storage-access', requestedOrigin: 'https://foo.com' }, 'granted');
+
+      await RunCallbackWithGesture(
+        () => document.requestStorageAccessForOrigin('https://foo.com'));
+    },
+    '[' + testPrefix +
+    '] document.requestStorageAccessForOrigin() should be resolved when called properly with a user gesture');
+
 } else {
   promise_test(
       async t => {
