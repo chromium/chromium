@@ -20,9 +20,11 @@
 
 {%- macro add_instance(kind, name, nested) %}
 {%-   if kind|is_array_kind %}
+{%-     if not kind.kind|is_bool_kind %}
   for (auto& {{name}}_iter : {{ value(kind, name) }}) {
 {{ add_instance(kind.kind, name ~ '_iter', True)|indent(2, True) }}
   }
+{%-     endif %}
 {%-   elif kind|is_map_kind %}
   for (auto& {{name}}_iter : {{ value(kind, name) }}) {
     auto& {{name}}_key = {{name}}_iter.first;

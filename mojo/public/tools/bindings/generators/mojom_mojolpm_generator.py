@@ -207,6 +207,7 @@ class Generator(CppGenerator):
         "proto_field_type": self._GetProtoFieldType,
         "proto_id": self._GetProtoId,
         "is_array_kind": mojom.IsArrayKind,
+        "is_bool_kind": mojom.IsBoolKind,
         "is_enum_kind": mojom.IsEnumKind,
         "is_double_kind": mojom.IsDoubleKind,
         "is_float_kind": mojom.IsFloatKind,
