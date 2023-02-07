@@ -20,7 +20,6 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
@@ -96,7 +95,6 @@ public class ToolbarTablet
     private ImageButton[] mToolbarButtons;
     private ImageButton mOptionalButton;
     private boolean mOptionalButtonUsesTint;
-    private ImageView mToolbarShadow;
 
     private NavigationPopup mNavigationPopup;
 
@@ -324,13 +322,6 @@ public class ToolbarTablet
     }
 
     @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-
-        mToolbarShadow = (ImageView) getRootView().findViewById(R.id.toolbar_hairline);
-    }
-
-    @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         // Ensure the the popup is not shown after resuming activity from background.
         if (hasWindowFocus && mNavigationPopup != null) {
@@ -390,17 +381,6 @@ public class ToolbarTablet
             description = resources.getString(R.string.menu_download);
         }
         return Toast.showAnchoredToast(context, v, description);
-    }
-
-    /**
-     * Update the visibility of the toolbar shadow.
-     */
-    private void updateShadowVisibility() {
-        int shadowVisibility = mIsInTabSwitcherMode ? View.INVISIBLE : View.VISIBLE;
-
-        if (mToolbarShadow != null && mToolbarShadow.getVisibility() != shadowVisibility) {
-            mToolbarShadow.setVisibility(shadowVisibility);
-        }
     }
 
     @Override
