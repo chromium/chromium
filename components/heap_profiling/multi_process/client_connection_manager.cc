@@ -115,8 +115,6 @@ ClientConnectionManager::~ClientConnectionManager() {
 
 void ClientConnectionManager::Start() {
   Add(this);
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-                 content::NotificationService::AllBrowserContextsAndSources());
   registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
                  content::NotificationService::AllBrowserContextsAndSources());
   registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
@@ -246,6 +244,13 @@ void ClientConnectionManager::StartProfilingNonRendererChild(
                      std::move(client), data.GetProcess().Pid(), process_type));
 }
 
+void ClientConnectionManager::OnRenderProcessHostCreated(
+    content::RenderProcessHost* host) {
+  if (ShouldProfileNewRenderer(host)) {
+    StartProfilingRenderer(host);
+  }
+}
+
 void ClientConnectionManager::Observe(
     int type,
     const content::NotificationSource& source,
@@ -262,11 +267,6 @@ void ClientConnectionManager::Observe(
   if ((type == content::NOTIFICATION_RENDERER_PROCESS_TERMINATED ||
        type == content::NOTIFICATION_RENDERER_PROCESS_CLOSED)) {
     profiled_renderers_.erase(host);
-  }
-
-  if (type == content::NOTIFICATION_RENDERER_PROCESS_CREATED &&
-      ShouldProfileNewRenderer(host)) {
-    StartProfilingRenderer(host);
   }
 }
 
