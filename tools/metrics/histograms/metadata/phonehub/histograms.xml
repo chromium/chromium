@@ -284,6 +284,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="PhoneHub.LauncherButton.Loading.Latency" units="ms"
+    expires_after="2023-06-11">
+  <owner>crisrael@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The duration of time it from the More Apps button in Phone Hub to go from
+    intialization to finished loading apps after receiving the app list update.
+    Emitted after the app list is finished loading.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.MoreAppsButton.LoadingState"
     enum="MoreAppsButtonLoadingState" expires_after="2023-06-11">
   <owner>crisrael@google.com</owner>

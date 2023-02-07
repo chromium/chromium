@@ -11,6 +11,7 @@
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_small_app_icon.h"
 #include "ash/system/phonehub/phone_hub_small_app_loading_icon.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -53,7 +54,7 @@ class MoreAppsButtonBackground : public views::Background {
 PhoneHubMoreAppsButton::PhoneHubMoreAppsButton(
     phonehub::AppStreamLauncherDataModel* app_stream_launcher_data_model,
     views::Button::PressedCallback callback)
-    : views::Button(callback),
+    : views::Button(std::move(callback)),
       app_stream_launcher_data_model_(app_stream_launcher_data_model) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetAccessibleName(
@@ -91,6 +92,7 @@ void PhoneHubMoreAppsButton::InitLayout() {
 
   SetEnabled(false);
   if (app_stream_launcher_data_model_->GetAppsListSortedByName()->empty()) {
+    load_app_list_latency_ = base::TimeTicks::Now();
     InitGlimmer();
     SetEnabled(false);
     phone_hub_metrics::LogMoreAppsButtonAnimationOnShow(
@@ -98,6 +100,11 @@ void PhoneHubMoreAppsButton::InitLayout() {
   } else {
     LoadAppList();
     SetEnabled(true);
+
+    // Reset the latency variable to a default state when there is already an
+    // apps list from the app stream launcher data model. This ensures we don't
+    // log the latency metric since the loaded list should already be shown.
+    load_app_list_latency_ = base::TimeTicks();
     phone_hub_metrics::LogMoreAppsButtonAnimationOnShow(
         phone_hub_metrics::MoreAppsButtonLoadingState::kMoreAppsButtonLoaded);
   }
@@ -132,6 +139,12 @@ void PhoneHubMoreAppsButton::OnShouldShowMiniLauncherChanged() {}
 
 void PhoneHubMoreAppsButton::OnAppListChanged() {
   LoadAppList();
+
+  if (load_app_list_latency_ != base::TimeTicks()) {
+    phone_hub_metrics::LogMoreAppsButtonFullAppsLatency(base::TimeTicks::Now() -
+                                                        load_app_list_latency_);
+    load_app_list_latency_ = base::TimeTicks();
+  }
 }
 
 void PhoneHubMoreAppsButton::LoadAppList() {

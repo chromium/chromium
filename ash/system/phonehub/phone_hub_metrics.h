@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_PHONEHUB_PHONE_HUB_METRICS_H_
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_METRICS_H_
 
+#include "base/time/time.h"
+
 namespace ash::phone_hub_metrics {
 
 // Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
@@ -136,6 +138,10 @@ void LogCameraRollContentPresent();
 // Logs if the glimmer animation was shown or not (more apps button was shown
 // instead) when Phone Hub is opened
 void LogMoreAppsButtonAnimationOnShow(MoreAppsButtonLoadingState loading_state);
+
+// Logs the time latency from initializing the More Apps button and when we
+// receive/load the full apps list
+void LogMoreAppsButtonFullAppsLatency(const base::TimeDelta latency);
 
 }  // namespace ash::phone_hub_metrics
 

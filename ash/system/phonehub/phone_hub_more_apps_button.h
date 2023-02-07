@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_PHONEHUB_PHONE_HUB_MORE_APPS_BUTTON_H_
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_MORE_APPS_BUTTON_H_
 
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/table_layout.h"
@@ -35,6 +36,7 @@ class VIEWS_EXPORT PhoneHubMoreAppsButton
   void LoadAppList();
   void InitGlimmer();
 
+  base::TimeTicks load_app_list_latency_ = base::TimeTicks();
   views::TableLayout* table_layout_ = nullptr;
   phonehub::AppStreamLauncherDataModel* app_stream_launcher_data_model_;
 };

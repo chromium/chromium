@@ -209,4 +209,8 @@ void LogMoreAppsButtonAnimationOnShow(
                                 loading_state);
 }
 
+void LogMoreAppsButtonFullAppsLatency(const base::TimeDelta latency) {
+  base::UmaHistogramTimes("PhoneHub.LauncherButton.Loading.Latency", latency);
+}
+
 }  // namespace ash::phone_hub_metrics
