@@ -6566,6 +6566,29 @@ TEST_F(SplitViewOverviewSessionTest, NoCrashWhenDraggingDividerInPortrait) {
   generator->ReleaseTouch();
 }
 
+// Tests that in tablet mode, after minimizing and unminimizng a snapped window,
+// it is visible to the user. Regression test for b/267391123.
+TEST_F(SplitViewOverviewSessionTest, WindowVisibleAfterMinimizeUnminimize) {
+  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  auto* window_state = WindowState::Get(window.get());
+
+  split_view_controller()->SnapWindow(
+      window.get(), SplitViewController::SnapPosition::kPrimary);
+  ASSERT_TRUE(InOverviewSession());
+  ASSERT_FALSE(GetOverviewItemForWindow(window.get()));
+
+  window_state->Minimize();
+  ASSERT_TRUE(InOverviewSession());
+  ASSERT_TRUE(GetOverviewItemForWindow(window.get()));
+
+  window->Show();
+  wm::ActivateWindow(window.get());
+  EXPECT_TRUE(window_state->IsSnapped());
+  EXPECT_TRUE(InOverviewSession());
+  EXPECT_TRUE(window->IsVisible());
+  EXPECT_EQ(1.f, window->layer()->GetTargetOpacity());
+}
+
 // Test the split view and overview functionalities in clamshell mode. Split
 // view is only active when overview is active in clamshell mode.
 class SplitViewOverviewSessionInClamshellTest

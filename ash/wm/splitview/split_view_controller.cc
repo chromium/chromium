@@ -240,6 +240,7 @@ void RemoveSnappingWindowFromOverviewIfApplicable(
   // is snapped. Note the remaining windows in overview don't need to be
   // repositioned in this case as they have been positioned to the right place
   // during dragging.
+  item->EnsureVisible();
   item->RestoreWindow(/*reset_transform=*/false);
   overview_session->RemoveItem(item);
 }
