@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/css/style_recalc_context.h"
 
-#include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
@@ -23,7 +22,11 @@ Element* ClosestInclusiveAncestorContainer(Element& element,
       // StyleRecalcContext::From[Inclusive]Ancestors, then either turn
       // if (!style) into CHECK(style) or simplify into checking:
       // container->GetComputedStyle()->IsContainerForSizeContainerQueries()
-      base::debug::DumpWithoutCrashing();
+      //
+      // This used to use base::debug::DumpWithoutCrashing() but generated too
+      // many failures in the wild to keep around (would upload too many crash
+      // reports). Consider adding UMA stats back if we want to track this or
+      // land a strategy to figure it out and fix what's going on.
       return nullptr;
     }
     if (style->IsContainerForSizeContainerQueries()) {
