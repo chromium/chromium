@@ -40,9 +40,15 @@
 namespace blink {
 
 static unsigned ComputeMatchedPropertiesHash(const MatchResult& result) {
-  const MatchedPropertiesVector& vector = result.GetMatchedProperties();
-  return StringHasher::HashMemory(vector.data(),
-                                  sizeof(MatchedProperties) * vector.size());
+  const MatchedPropertiesVector& properties = result.GetMatchedProperties();
+  unsigned hash = StringHasher::HashMemory(
+      properties.data(), sizeof(MatchedProperties) * properties.size());
+  auto& tree_scopes = result.GetTreeScopes();
+  WTF::AddIntToHash(hash,
+                    StringHasher::HashMemory(
+                        tree_scopes.data(),
+                        sizeof(Member<const TreeScope>) * tree_scopes.size()));
+  return hash;
 }
 
 void CachedMatchedProperties::Set(

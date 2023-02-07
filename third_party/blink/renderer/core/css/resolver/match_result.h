@@ -231,6 +231,10 @@ class CORE_EXPORT MatchResult {
   // objects were added.
   void Reset();
 
+  const HeapVector<Member<const TreeScope>, 4>& GetTreeScopes() const {
+    return tree_scopes_;
+  }
+
   const TreeScope& ScopeFromTreeOrder(uint16_t tree_order) const {
     SECURITY_DCHECK(tree_order < tree_scopes_.size());
     return *tree_scopes_[tree_order];
