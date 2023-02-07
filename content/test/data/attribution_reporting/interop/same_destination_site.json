@@ -48,8 +48,10 @@
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",
+          "debug_permission": true,
           "response": {
             "Attribution-Reporting-Register-Trigger": {
+              "debug_reporting": true,
               "event_trigger_data": [
                 {
                   "trigger_data": "6"
@@ -74,6 +76,18 @@
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
         "report_time": "1643411973000"
+      }
+    ],
+    "verbose_debug_reports": [
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://another-destination.test"
+          },
+          "type": "trigger-no-matching-source"
+       } ],
+       "report_time": "1643235575000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
   }

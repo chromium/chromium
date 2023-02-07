@@ -190,8 +190,34 @@
           }
         }]
       },
+      // Should not result in an event-level report as there's no matching
+      // configuration.
       {
         "timestamp": "1643235577000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://another-destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "debug_reporting": true,
+              "event_trigger_data": [
+                {
+                  "trigger_data": "0",
+                  "filters": {
+                    "source_type": ["navigation"]
+                  }
+                }
+              ]
+            }
+          }
+        }]
+      },
+      {
+        "timestamp": "1643235578000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://another-destination.test"
@@ -269,6 +295,20 @@
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
         "report_time": "1645831173000"
+      }
+    ],
+    "verbose_debug_reports": [
+      {
+        "payload": [ {
+          "body": {
+            "attribution_destination": "https://another-destination.test",
+            "source_event_id": "456",
+            "source_site": "https://source.test"
+          },
+          "type": "trigger-event-no-matching-configurations"
+       } ],
+       "report_time": "1643235577000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
   }

@@ -2618,7 +2618,6 @@ test("content_unittests") {
     "../renderer/worker/worker_thread_registry_unittest.cc",
     "../services/shared_storage_worklet/module_script_downloader_unittest.cc",
     "../services/shared_storage_worklet/shared_storage_worklet_global_scope_unittest.cc",
-    "attribution_simulator_impl_unittest.cc",
     "attribution_simulator_input_parser_unittest.cc",
     "navigation_simulator_unittest.cc",
     "test_aggregation_service_impl_unittest.cc",

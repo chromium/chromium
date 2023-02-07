@@ -89,8 +89,10 @@
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",
+          "debug_permission": true,
           "response": {
             "Attribution-Reporting-Register-Trigger": {
+              "debug_reporting": true,
               "event_trigger_data": [
                 {
                   "trigger_data": "4",
@@ -202,6 +204,23 @@
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
         "report_time": "1643411973000"
+      }
+    ],
+    "verbose_debug_reports": [
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination.test",
+             "randomized_trigger_rate": 0.0024,
+             "scheduled_report_time": "1643411973",
+             "source_event_id": "123",
+             "source_type": "navigation",
+             "trigger_data": "4"
+          },
+          "type": "trigger-event-low-priority"
+       } ],
+       "report_time": "1643235577000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
   }
