@@ -14,8 +14,7 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -166,6 +165,23 @@ std::string SerializeMessage(proto::MessageType message_type,
   uint16_t* ptr =
       reinterpret_cast<uint16_t*>(const_cast<char*>(message.data()));
   *ptr = htons(static_cast<uint16_t>(message_type));
+  return message;
+}
+
+std::string SerializeMessageIncorrectly(
+    proto::MessageType message_type,
+    const google::protobuf::MessageLite* request) {
+  // Add two space characters, followed by the serialized proto with junk.
+  std::string message =
+      base::StrCat({"  ", request->SerializeAsString(), "junk"});
+
+  // Replace the first two characters with |message_type| as a 16-bit int.
+  uint16_t* ptr =
+      reinterpret_cast<uint16_t*>(const_cast<char*>(message.data()));
+  *ptr = htons(static_cast<uint16_t>(message_type));
+
+  // Overwrite the last byte to 0xFF results in malformed wire.
+  message[message.size() - 1] = 0xFF;
   return message;
 }
 
@@ -627,5 +643,79 @@ TEST_F(MessageReceiverImplTest,
   EXPECT_EQ(0u, GetNumAppListIncrementalUpdateCalls());
 }
 
-}  // namespace phonehub
-}  // namespace ash
+TEST_F(MessageReceiverImplTest, OnMessageReceivedParseFailureStates) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kEcheSWA, features::kPhoneHubCameraRoll,
+                            features::kPhoneHubFeatureSetupErrorHandling,
+                            features::kPhoneHubPingOnBubbleOpen},
+      /*disabled_features=*/{});
+
+  std::string expected_message;
+
+  proto::PhoneStatusSnapshot expected_snapshot;
+  // Simulate receiving an incorrect message by malforming the last byte.
+  expected_message = SerializeMessageIncorrectly(proto::PHONE_STATUS_SNAPSHOT,
+                                                 &expected_snapshot);
+  fake_connection_manager_->NotifyMessageReceived(expected_message);
+
+  EXPECT_EQ(0u, GetNumPhoneStatusSnapshotCalls());
+
+  proto::PhoneStatusUpdate expected_update;
+  // Simulate receiving an incorrect message by malforming the last byte.
+  expected_message =
+      SerializeMessageIncorrectly(proto::PHONE_STATUS_UPDATE, &expected_update);
+  fake_connection_manager_->NotifyMessageReceived(expected_message);
+
+  EXPECT_EQ(0u, GetNumPhoneStatusUpdatedCalls());
+
+  proto::FeatureSetupResponse expected_response;
+  // Simulate receiving an incorrect message by malforming the last byte.
+  expected_message = SerializeMessageIncorrectly(proto::FEATURE_SETUP_RESPONSE,
+                                                 &expected_response);
+  fake_connection_manager_->NotifyMessageReceived(expected_message);
+
+  EXPECT_EQ(0u, GetNumFeatureSetupResponseCalls());
+
+  proto::FetchCameraRollItemsResponse expected_items;
+  // Simulate receiving an incorrect message by malforming the last byte.
+  expected_message = SerializeMessageIncorrectly(
+      proto::FETCH_CAMERA_ROLL_ITEMS_RESPONSE, &expected_items);
+  fake_connection_manager_->NotifyMessageReceived(expected_message);
+
+  EXPECT_EQ(0u, GetNumFetchCameraRollItemsResponseCalls());
+
+  proto::FetchCameraRollItemDataResponse expected_data;
+  // Simulate receiving an incorrect message by malforming the last byte.
+  expected_message = SerializeMessageIncorrectly(
+      proto::FETCH_CAMERA_ROLL_ITEM_DATA_RESPONSE, &expected_data);
+  fake_connection_manager_->NotifyMessageReceived(expected_message);
+
+  EXPECT_EQ(0u, GetNumFetchCameraRollItemDataResponseCalls());
+
+  proto::AppStreamUpdate expected_app_stream_update;
+  // Simulate receiving an incorrect message by malforming the last byte.
+  expected_message = SerializeMessageIncorrectly(proto::APP_STREAM_UPDATE,
+                                                 &expected_app_stream_update);
+  fake_connection_manager_->NotifyMessageReceived(expected_message);
+
+  EXPECT_EQ(0u, GetNumAppStreamUpdateCalls());
+
+  proto::AppListUpdate expected_app_list_update;
+  // Simulate receiving an incorrect message by malforming the last byte.
+  expected_message = SerializeMessageIncorrectly(proto::APP_LIST_UPDATE,
+                                                 &expected_app_list_update);
+  fake_connection_manager_->NotifyMessageReceived(expected_message);
+
+  EXPECT_EQ(0u, GetNumAppListUpdateCalls());
+
+  proto::AppListIncrementalUpdate expected_incremental_update;
+  // Simulate receiving an incorrect message by malforming the last byte.
+  expected_message = SerializeMessageIncorrectly(
+      proto::APP_LIST_INCREMENTAL_UPDATE, &expected_incremental_update);
+  fake_connection_manager_->NotifyMessageReceived(expected_message);
+
+  EXPECT_EQ(0u, GetNumAppListIncrementalUpdateCalls());
+}
+
+}  // namespace ash::phonehub
