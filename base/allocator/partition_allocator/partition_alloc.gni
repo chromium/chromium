@@ -52,9 +52,7 @@ declare_args() {
 }
 
 declare_args() {
-  # TODO(bartekn): Disable soon. Enabled temporarily to catch a suspected
-  # double-free.
-  use_freeslot_bitmap = true
+  use_freeslot_bitmap = false
 
   # Puts the regular and BRP pools right next to each other, so that we can
   # check "belongs to one of the two pools" with a single bitmask operation.
