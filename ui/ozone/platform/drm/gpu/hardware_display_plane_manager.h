@@ -141,10 +141,6 @@ class HardwareDisplayPlaneManager {
       const std::vector<display::GammaRampRGBEntry>& degamma_lut,
       const std::vector<display::GammaRampRGBEntry>& gamma_lut);
 
-  // Sets the variable refresh rate enabled state on the CRTC object with ID
-  // |crtc_id|.
-  virtual bool SetVrrEnabled(uint32_t crtc_id, bool vrr_enabled);
-
   // Assign hardware planes from the |planes_| list to |overlay_list| entries,
   // recording the plane IDs in the |plane_list|. Only planes compatible with
   // |crtc_id| will be used. |overlay_list| must be sorted bottom-to-top.

@@ -368,19 +368,6 @@ bool HardwareDisplayPlaneManager::SetGammaCorrection(
   return CommitGammaCorrection(*crtc_props);
 }
 
-bool HardwareDisplayPlaneManager::SetVrrEnabled(uint32_t crtc_id,
-                                                bool vrr_enabled) {
-  const auto crtc_index = LookupCrtcIndex(crtc_id);
-  if (!crtc_index) {
-    LOG(ERROR) << "Unknown CRTC ID=" << crtc_id;
-    return false;
-  }
-
-  CrtcState* crtc_state = &crtc_state_[*crtc_index];
-  crtc_state->properties.vrr_enabled.value = vrr_enabled;
-  return true;
-}
-
 bool HardwareDisplayPlaneManager::InitializeCrtcState() {
   ScopedDrmResourcesPtr resources(drm_->GetResources());
   if (!resources) {

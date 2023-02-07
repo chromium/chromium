@@ -54,10 +54,6 @@ class MockHardwareDisplayPlaneManager : public HardwareDisplayPlaneManager {
                const std::vector<display::GammaRampRGBEntry>& degamma_lut,
                const std::vector<display::GammaRampRGBEntry>& gamma_lut),
               (override));
-  MOCK_METHOD(bool,
-              SetVrrEnabled,
-              (uint32_t crtc_id, bool vrr_enabled),
-              (override));
 
   bool Commit(CommitRequest commit_request, uint32_t flags) override {
     return false;
@@ -182,17 +178,6 @@ TEST_F(DrmDisplayTest, SetEmptyGammaCorrectionHDRDisplay) {
                                  MatchesPowerFunction(kSDRLevel, kExponent)));
   drm_display_.SetGammaCorrection(std::vector<display::GammaRampRGBEntry>(),
                                   std::vector<display::GammaRampRGBEntry>());
-}
-
-TEST_F(DrmDisplayTest, SetVrrEnabled) {
-  MockHardwareDisplayPlaneManager* plane_manager =
-      AddMockHardwareDisplayPlaneManager();
-
-  EXPECT_CALL(*plane_manager, SetVrrEnabled(_, _)).WillOnce(Return(false));
-  EXPECT_FALSE(drm_display_.SetVrrEnabled(true));
-
-  EXPECT_CALL(*plane_manager, SetVrrEnabled(_, _)).WillOnce(Return(true));
-  EXPECT_TRUE(drm_display_.SetVrrEnabled(true));
 }
 
 }  // namespace ui

@@ -334,15 +334,6 @@ void DrmDisplay::SetColorSpace(const gfx::ColorSpace& color_space) {
   CommitGammaCorrection(degamma, gamma);
 }
 
-bool DrmDisplay::SetVrrEnabled(bool vrr_enabled) {
-  if (!drm_->plane_manager()->SetVrrEnabled(crtc_, vrr_enabled)) {
-    LOG(ERROR) << "Failed to set vrr_enabled property for crtc_id = " << crtc_;
-    return false;
-  }
-
-  return true;
-}
-
 void DrmDisplay::CommitGammaCorrection(
     const std::vector<display::GammaRampRGBEntry>& degamma_lut,
     const std::vector<display::GammaRampRGBEntry>& gamma_lut) {
