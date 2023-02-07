@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/sync/synced_session_client_ash.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/sync_sessions/synced_session.h"
@@ -40,17 +41,61 @@ GetSortedMetadataWithoutFavicons(const sync_sessions::SyncedSession* session) {
       // URLs whose schemes are not http:// or https:// should be ignored
       // because they may be platform specific (e.g., chrome:// URLs) or may
       // refer to local media on the phone (e.g., content:// URLs).
-      if (!tab_url.SchemeIsHTTPOrHTTPS())
+      if (!tab_url.SchemeIsHTTPOrHTTPS()) {
         continue;
+      }
 
       // If the url is incorrectly formatted, is empty, or has a
       // scheme that should be omitted, do not proceed with storing its
       // metadata.
-      if (!tab_url.is_valid())
+      if (!tab_url.is_valid()) {
         continue;
+      }
 
       const std::u16string& title = current_navigation.title();
       const base::Time last_accessed_timestamp = tab->timestamp;
+      browser_tab_metadata.emplace_back(tab_url, title, last_accessed_timestamp,
+                                        gfx::Image());
+    }
+  }
+
+  // Sorts the |browser_tab_metadata| from most recently visited to least
+  // recently visited.
+  std::sort(browser_tab_metadata.begin(), browser_tab_metadata.end());
+
+  // At most |kMaxMostRecentTabs| tab metadata can be displayed.
+  size_t num_tabs_to_display = std::min(browser_tab_metadata.size(),
+                                        BrowserTabsModel::kMaxMostRecentTabs);
+  return std::vector<BrowserTabsModel::BrowserTabMetadata>(
+      browser_tab_metadata.begin(),
+      browser_tab_metadata.begin() + num_tabs_to_display);
+}
+
+std::vector<BrowserTabsModel::BrowserTabMetadata>
+GetSortedMetadataWithoutFaviconsFromForeignSyncedSession(
+    const ForeignSyncedSessionAsh& session) {
+  std::vector<BrowserTabsModel::BrowserTabMetadata> browser_tab_metadata;
+
+  for (const ForeignSyncedSessionWindowAsh& window : session.windows) {
+    for (const ForeignSyncedSessionTabAsh& tab : window.tabs) {
+      GURL tab_url = tab.current_navigation_url;
+
+      // URLs whose schemes are not http:// or https:// should be ignored
+      // because they may be platform specific (e.g., chrome:// URLs) or may
+      // refer to local media on the phone (e.g., content:// URLs).
+      if (!tab_url.SchemeIsHTTPOrHTTPS()) {
+        continue;
+      }
+
+      // If the url is incorrectly formatted, is empty, or has a
+      // scheme that should be omitted, do not proceed with storing its
+      // metadata.
+      if (!tab_url.is_valid()) {
+        continue;
+      }
+
+      const std::u16string title = tab.current_navigation_title;
+      const base::Time last_accessed_timestamp = tab.last_modified_timestamp;
       browser_tab_metadata.emplace_back(tab_url, title, last_accessed_timestamp,
                                         gfx::Image());
     }
@@ -102,6 +147,23 @@ void BrowserTabsMetadataFetcherImpl::Fetch(
                        weak_ptr_factory_.GetWeakPtr(), i, barrier),
         favicon::HistoryUiFaviconRequestOrigin::kRecentTabs);
   }
+}
+
+void BrowserTabsMetadataFetcherImpl::FetchForeignSyncedPhoneSessionMetadata(
+    const ForeignSyncedSessionAsh& session,
+    base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) {
+  // A new fetch was made, return a absl::nullopt to the previous |callback_|.
+  if (!callback_.is_null()) {
+    weak_ptr_factory_.InvalidateWeakPtrs();
+    std::move(callback_).Run(absl::nullopt);
+  }
+
+  results_ = GetSortedMetadataWithoutFaviconsFromForeignSyncedSession(session);
+
+  // TODO(b/260599791): Fetch favicons before invoking the callback. We may need
+  // to include the favicons directly in the Mojo payload that we receive from
+  // Lacros.
+  std::move(callback).Run(std::move(results_));
 }
 
 void BrowserTabsMetadataFetcherImpl::OnAllFaviconsFetched() {

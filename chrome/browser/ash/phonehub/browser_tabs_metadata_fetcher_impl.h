@@ -18,6 +18,9 @@ class HistoryUiFaviconRequestHandler;
 }  // namespace favicon
 
 namespace ash {
+
+struct ForeignSyncedSessionAsh;
+
 namespace phonehub {
 
 // BrowserTabsMetadataFetcher implementation. First, a vector containing
@@ -37,6 +40,9 @@ class BrowserTabsMetadataFetcherImpl : public BrowserTabsMetadataFetcher {
   // BrowserTabsMetadataFetcher:
   void Fetch(
       const sync_sessions::SyncedSession* session,
+      base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) override;
+  void FetchForeignSyncedPhoneSessionMetadata(
+      const ForeignSyncedSessionAsh& session,
       base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) override;
 
  private:

@@ -16,6 +16,9 @@ struct SyncedSession;
 }  // namespace sync_sessions
 
 namespace ash {
+
+struct ForeignSyncedSessionAsh;
+
 namespace phonehub {
 
 // Used to collect the most recently visited tab metadata from a
@@ -37,6 +40,9 @@ class BrowserTabsMetadataFetcher {
   // already in progress, the previous fetch will be passed a absl::nullopt.
   virtual void Fetch(
       const sync_sessions::SyncedSession* session,
+      base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) = 0;
+  virtual void FetchForeignSyncedPhoneSessionMetadata(
+      const ForeignSyncedSessionAsh& session,
       base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) = 0;
 
  protected:

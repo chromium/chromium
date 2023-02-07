@@ -7,6 +7,7 @@
 #include <deque>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/sync/synced_session_client_ash.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
 #include "components/favicon_base/favicon_types.h"
@@ -123,18 +124,28 @@ class BrowserTabsMetadataFetcherImplTest : public testing::Test {
         .WillRepeatedly(
             [&](auto, favicon_base::FaviconImageCallback callback, auto) {
               // Randomize the order in which callbacks may return.
-              if (std::rand() % 2)
+              if (std::rand() % 2) {
                 favicon_request_handler_responses_.emplace_front(
                     std::move(callback));
-              else
+              } else {
                 favicon_request_handler_responses_.emplace_back(
                     std::move(callback));
+              }
             });
   }
 
   void AttemptFetch() {
     browser_tabs_metadata_job_.Fetch(
         synced_session_.get(),
+        base::BindOnce(
+            &BrowserTabsMetadataFetcherImplTest::OnBrowserTabMetadataFetched,
+            base::Unretained(this)));
+  }
+
+  void AttemptFetchForeignSyncedPhoneSessionMetadata(
+      const ForeignSyncedSessionAsh& session) {
+    browser_tabs_metadata_job_.FetchForeignSyncedPhoneSessionMetadata(
+        session,
         base::BindOnce(
             &BrowserTabsMetadataFetcherImplTest::OnBrowserTabMetadataFetched,
             base::Unretained(this)));
@@ -345,6 +356,43 @@ TEST_F(BrowserTabsMetadataFetcherImplTest, MultipleWindows) {
   CheckIsExpectedMetadata(std::vector<BrowserTabMetadata>({
       BrowserTabMetadata(kUrlE, kTitleE, kTimeE, GetDummyImage()),
       BrowserTabMetadata(kUrlD, kTitleD, kTimeD, GetDummyImage()),
+  }));
+}
+
+TEST_F(BrowserTabsMetadataFetcherImplTest,
+       FetchForeignSyncedPhoneSessionMetadata) {
+  ForeignSyncedSessionAsh test_session;
+  test_session.session_name = "testing";
+  test_session.modified_time = kTimeA;
+  ForeignSyncedSessionWindowAsh test_window;
+
+  const std::u16string kTitleC = u"C";
+  const GURL kUrlC = GURL("http://c.com");
+
+  const std::u16string kTitleD = u"D";
+  const GURL kUrlD = GURL("http://d.com");
+
+  ForeignSyncedSessionTabAsh test_tab_c;
+  test_tab_c.current_navigation_url = kUrlC;
+  test_tab_c.current_navigation_title = kTitleC;
+  test_tab_c.last_modified_timestamp = kTimeC;
+
+  ForeignSyncedSessionTabAsh test_tab_d;
+  test_tab_d.current_navigation_url = kUrlD;
+  test_tab_d.current_navigation_title = kTitleD;
+  test_tab_d.last_modified_timestamp = kTimeD;
+
+  test_window.tabs.push_back(std::move(test_tab_c));
+  test_window.tabs.push_back(std::move(test_tab_d));
+  test_session.windows.push_back(std::move(test_window));
+
+  ExpectFaviconUrlFetchAttempt(kUrlC);
+  ExpectFaviconUrlFetchAttempt(kUrlD);
+
+  AttemptFetchForeignSyncedPhoneSessionMetadata(test_session);
+  CheckIsExpectedMetadata(std::vector<BrowserTabMetadata>({
+      BrowserTabMetadata(kUrlD, kTitleD, kTimeD, gfx::Image()),
+      BrowserTabMetadata(kUrlC, kTitleC, kTimeC, gfx::Image()),
   }));
 }
 
