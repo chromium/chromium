@@ -23,7 +23,7 @@ there.
 To make sure the inclusion of a new third_party project makes sense for the
 Chromium project, you should first obtain
 [Chrome ATL](../ATL_OWNERS) approval. Please include the following information in an
-email to chrome-atls@google.com:
+email to chrome-atls-discuss@google.com:
 * Motivation of your project
 * Design docs
 * Additional checkout size
@@ -70,7 +70,7 @@ mitigations).
 (memory/crashes/undefined behavior) bugs, when compared to the existing
 third-party library and related C++ code required to use the library. We realize
 assessing risk is quite complex and very nuanced. If this is the criteria by
-which the third-party library is being added, chrome-atls@google.com and
+which the third-party library is being added, chrome-atls-discuss@google.com and
 chrome-rust@google.com may ask for more data.
 
 Support for third-party libraries written in Rust is in active development. If
