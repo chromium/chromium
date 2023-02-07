@@ -160,6 +160,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   static constexpr int64_t kGBytes = 1024 * 1024 * 1024;
   static constexpr int64_t kNoLimit = INT64_MAX;
   static constexpr int64_t kMBytes = 1024 * 1024;
+
+  // A "typical" amount of usage expected for a bucket. This is used to
+  // dynamically limit the number of buckets that may be created: the quota for
+  // a site divided by this number is an upper bound for the number of buckets
+  // it's allowed.
+  static constexpr int64_t kTypicalBucketUsage = 20 * kMBytes;
+
   static constexpr int kMinutesInMilliSeconds = 60 * 1000;
 
   QuotaManagerImpl(bool is_incognito,
@@ -393,11 +400,15 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                    UsageWithBreakdownCallback callback);
   void GetBucketUsageAndQuota(BucketId id, UsageAndQuotaCallback callback);
 
-  bool IsSessionOnly(const blink::StorageKey& storage_key,
-                     blink::mojom::StorageType type) const;
-
   bool IsStorageUnlimited(const blink::StorageKey& storage_key,
                           blink::mojom::StorageType type) const;
+
+  // Calculates the quota for the given storage key, taking into account whether
+  // the storage should be session only for this key. This will return 0 for
+  // unlimited storage situations.
+  int64_t GetQuotaForStorageKey(const blink::StorageKey& storage_key,
+                                blink::mojom::StorageType type,
+                                const QuotaSettings& settings) const;
 
   virtual void GetBucketsModifiedBetween(blink::mojom::StorageType type,
                                          base::Time begin,
@@ -655,6 +666,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void DidRazeForReBootstrap(QuotaError raze_and_reopen_result);
   void OnComplete(QuotaError result);
 
+  void DidGetQuotaSettingsForBucketCreation(
+      const BucketInitParams& bucket_params,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
+      const QuotaSettings& settings);
   void DidGetBucket(base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
                     QuotaErrorOr<BucketInfo> result);
   void DidGetBucketCheckExpiration(

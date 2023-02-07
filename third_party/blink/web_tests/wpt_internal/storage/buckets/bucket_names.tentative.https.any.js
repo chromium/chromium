@@ -45,8 +45,8 @@ kBadBucketNameTests.forEach(test_data => {
   const test_description = test_data[1];
 
   promise_test(async testCase => {
-    await promise_rejects_dom(
-        testCase, 'InvalidCharacterError',
+    await promise_rejects_js(
+        testCase, TypeError,
         navigator.storageBuckets.open(bucket_name));
   }, `open() throws an error if bucket names ${test_description}`);
 });
@@ -74,8 +74,8 @@ kBadBucketNameTests.forEach(test_data => {
   const test_description = test_data[1];
 
   promise_test(async testCase => {
-    await promise_rejects_dom(
-        testCase, 'InvalidCharacterError',
+    await promise_rejects_js(
+        testCase, TypeError,
         navigator.storageBuckets.delete(bucket_name));
   }, `delete() throws an error if bucket names ${test_description}`);
 });

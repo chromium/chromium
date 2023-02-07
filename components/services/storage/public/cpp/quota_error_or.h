@@ -16,7 +16,8 @@ enum class QuotaError {
   kNotFound,
   kEntryExistsError,
   kFileOperationError,
-  kIllegalOperation,
+  kInvalidExpiration,
+  kQuotaExceeded,
 };
 
 // Helper for methods which perform database operations which may fail. Objects

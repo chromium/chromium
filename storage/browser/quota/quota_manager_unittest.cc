@@ -75,7 +75,7 @@ const storage::mojom::StorageType kStorageSync =
 const int64_t kAvailableSpaceForApp = 13377331U;
 const int64_t kMustRemainAvailableForSystem = kAvailableSpaceForApp / 2;
 const int64_t kDefaultPoolSize = 1000;
-const int64_t kDefaultPerStorageKeyQuota = 200;
+const int64_t kDefaultPerStorageKeyQuota = 200 * 1024 * 1024;
 const int64_t kGigabytes = QuotaManagerImpl::kGBytes;
 
 struct UsageAndQuotaResult {
@@ -816,6 +816,28 @@ TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket_Expiration) {
   EXPECT_EQ(bucket->quota, 500);
 
   QuotaDatabase::SetClockForTesting(nullptr);
+}
+
+TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket_Overflow) {
+  const int kPoolSize = 100;
+  // This quota for the storage key implies only two buckets can be constructed.
+  const int kPerStorageKeyQuota = 40 * 1024 * 1024;
+  SetQuotaSettings(kPoolSize, kPerStorageKeyQuota,
+                   kMustRemainAvailableForSystem);
+
+  StorageKey storage_key = ToStorageKey("http://a.com/");
+
+  auto bucket_a = UpdateOrCreateBucket({storage_key, "bucket_a"});
+  EXPECT_TRUE(bucket_a.ok());
+  auto bucket_b = UpdateOrCreateBucket({storage_key, "bucket_b"});
+  EXPECT_TRUE(bucket_b.ok());
+  auto bucket_c = UpdateOrCreateBucket({storage_key, "bucket_c"});
+  EXPECT_FALSE(bucket_c.ok());
+  EXPECT_EQ(QuotaError::kQuotaExceeded, bucket_c.error());
+
+  // Default bucket shouldn't be limited by the quota.
+  auto bucket_default = UpdateOrCreateBucket({storage_key, "default"});
+  EXPECT_TRUE(bucket_default.ok());
 }
 
 // Make sure `EvictExpiredBuckets` deletes expired buckets.

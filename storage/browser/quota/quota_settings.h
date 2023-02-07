@@ -83,11 +83,6 @@ void GetNominalDynamicSettings(const base::FilePath& partition_path,
 
 COMPONENT_EXPORT(STORAGE_BROWSER)
 
-// Returns settings with a poolsize of zero and no per StorageKey quota.
-inline QuotaSettings GetNoQuotaSettings() {
-  return QuotaSettings();
-}
-
 // Returns settings that provide given `per_storage_key_quota` and a total
 // poolsize of five times that.
 inline QuotaSettings GetHardCodedSettings(int64_t per_storage_key_quota) {

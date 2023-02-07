@@ -82,8 +82,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   // `params`. If the bucket exists but policies don't match what's provided in
   // `params`, the existing bucket will be updated and returned (for those
   // policies that are possible to modify --- expiration and persistence).
-  // Returns a QuotaError if the operation has failed.
-  QuotaErrorOr<BucketInfo> UpdateOrCreateBucket(const BucketInitParams& params);
+  // Returns a QuotaError if the operation has failed. If `max_bucket_count` is
+  // greater than zero, and this operation would create a new bucket, then fail
+  // to create the new bucket if the total bucket count for this storage key is
+  // already at or above the max.
+  QuotaErrorOr<BucketInfo> UpdateOrCreateBucket(const BucketInitParams& params,
+                                                int max_bucket_count);
 
   // Same as UpdateOrCreateBucket but takes in StorageType. This should only
   // be used by FileSystem, and is expected to be removed when
@@ -272,9 +276,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   QuotaError DumpBucketTable(const BucketTableCallback& callback);
 
   // Adds a new bucket entry in the buckets table. Will return a
-  // QuotaError::kDatabaseError if the query fails.
+  // QuotaError::kDatabaseError if the query fails. Will fail if adding the new
+  // bucket would cause the count of buckets for that storage key and type to
+  // exceed `max_bucket_count`, if `max_bucket_count` is greater than zero.
   QuotaErrorOr<BucketInfo> CreateBucketInternal(const BucketInitParams& params,
-                                                blink::mojom::StorageType type);
+                                                blink::mojom::StorageType type,
+                                                int max_bucket_count = 0);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

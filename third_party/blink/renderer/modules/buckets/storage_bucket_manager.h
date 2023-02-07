@@ -51,7 +51,8 @@ class MODULES_EXPORT StorageBucketManager final
   mojom::blink::BucketManagerHost* GetBucketManager(ScriptState* script_state);
 
   void DidOpen(ScriptPromiseResolver* resolver,
-               mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote);
+               mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote,
+               mojom::blink::BucketError error);
   void DidGetKeys(ScriptPromiseResolver* resolver,
                   const Vector<String>& keys,
                   bool success);

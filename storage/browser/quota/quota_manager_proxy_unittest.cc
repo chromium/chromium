@@ -27,7 +27,12 @@ class QuotaManagerProxyTest : public testing::Test {
         /*is_incognito*/ false, profile_path_.GetPath(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*quota_change_callback=*/base::DoNothing(),
-        /*storage_policy=*/nullptr, GetQuotaSettingsFunc());
+        /*storage_policy=*/nullptr,
+        base::BindRepeating([](OptionalQuotaSettingsCallback callback) {
+          QuotaSettings settings;
+          settings.per_storage_key_quota = 200 * 1024 * 1024;
+          std::move(callback).Run(settings);
+        }));
     quota_manager_proxy_ = base::MakeRefCounted<QuotaManagerProxy>(
         quota_manager_.get(), base::SingleThreadTaskRunner::GetCurrentDefault(),
         profile_path_.GetPath());

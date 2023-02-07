@@ -220,7 +220,8 @@ QuotaDatabase::~QuotaDatabase() {
 constexpr char QuotaDatabase::kDatabaseName[];
 
 QuotaErrorOr<BucketInfo> QuotaDatabase::UpdateOrCreateBucket(
-    const BucketInitParams& params) {
+    const BucketInitParams& params,
+    int max_bucket_count) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   QuotaErrorOr<BucketInfo> bucket_result =
@@ -228,7 +229,8 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::UpdateOrCreateBucket(
 
   if (!bucket_result.ok()) {
     if (bucket_result.error() == QuotaError::kNotFound) {
-      return CreateBucketInternal(params, StorageType::kTemporary);
+      return CreateBucketInternal(params, StorageType::kTemporary,
+                                  max_bucket_count);
     }
 
     return bucket_result;
@@ -1168,12 +1170,40 @@ QuotaError QuotaDatabase::DumpBucketTable(const BucketTableCallback& callback) {
 
 QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
     const BucketInitParams& params,
-    StorageType type) {
+    StorageType type,
+    int max_bucket_count) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug/1210259): Add DCHECKs for input validation.
   QuotaError open_error = EnsureOpened();
   if (open_error != QuotaError::kNone) {
     return open_error;
+  }
+
+  // First verify this won't exceed the max bucket count if one is given.
+  if (max_bucket_count > 0) {
+    DCHECK_NE(params.name, kDefaultBucketName);
+    // Note that technically we should be filtering out default buckets when
+    // counting existing buckets so that the max count only applies to
+    // non-default buckets. However the precise bucket count is not that
+    // important and we don't want to perform a lot of string comparisons.
+    static constexpr char kSql[] =
+        // clang-format off
+        "SELECT count(*) "
+          "FROM buckets "
+          "WHERE storage_key = ? AND type = ?";
+    // clang-format on
+    sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
+    statement.BindString(0, params.storage_key.Serialize());
+    statement.BindInt(1, static_cast<int>(type));
+
+    if (!statement.Step()) {
+      return QuotaError::kDatabaseError;
+    }
+
+    const int64_t current_bucket_count = statement.ColumnInt64(0);
+    if (current_bucket_count >= max_bucket_count) {
+      return QuotaError::kQuotaExceeded;
+    }
   }
 
   static constexpr char kSql[] =

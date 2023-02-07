@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/modules/buckets/storage_bucket.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
@@ -112,8 +113,8 @@ ScriptPromise StorageBucketManager::open(ScriptState* script_state,
   }
 
   if (!IsValidName(name)) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidCharacterError,
+    resolver->Reject(V8ThrowException::CreateTypeError(
+        script_state->GetIsolate(),
         "The bucket name '" + name + "' is not a valid name."));
     return promise;
   }
@@ -166,8 +167,8 @@ ScriptPromise StorageBucketManager::Delete(ScriptState* script_state,
   }
 
   if (!IsValidName(name)) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidCharacterError,
+    resolver->Reject(V8ThrowException::CreateTypeError(
+        script_state->GetIsolate(),
         "The bucket name " + name + " is not a valid name."));
     return promise;
   }
@@ -194,7 +195,8 @@ mojom::blink::BucketManagerHost* StorageBucketManager::GetBucketManager(
 
 void StorageBucketManager::DidOpen(
     ScriptPromiseResolver* resolver,
-    mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote) {
+    mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote,
+    mojom::blink::BucketError error) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid()) {
     return;
@@ -202,11 +204,24 @@ void StorageBucketManager::DidOpen(
   ScriptState::Scope scope(script_state);
 
   if (!bucket_remote) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kUnknownError,
-        "Unknown error occured while creating a bucket."));
-    return;
+    switch (error) {
+      case mojom::blink::BucketError::kUnknown:
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kUnknownError,
+            "Unknown error occured while creating a bucket."));
+        return;
+      case mojom::blink::BucketError::kQuotaExceeded:
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kQuotaExceededError,
+            "Too many buckets created."));
+        return;
+      case mojom::blink::BucketError::kInvalidExpiration:
+        resolver->Reject(V8ThrowException::CreateTypeError(
+            script_state->GetIsolate(), "The bucket expiration is invalid."));
+        return;
+    }
   }
+
   resolver->Resolve(MakeGarbageCollected<StorageBucket>(
       navigator_base_, std::move(bucket_remote)));
 }

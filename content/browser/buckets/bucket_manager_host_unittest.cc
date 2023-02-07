@@ -136,7 +136,8 @@ TEST_F(BucketManagerHostTest, OpenBucket) {
   bucket_manager_host_remote_->OpenBucket(
       "inbox_bucket", blink::mojom::BucketPolicies::New(),
       base::BindLambdaForTesting(
-          [&](mojo::PendingRemote<blink::mojom::BucketHost> remote) {
+          [&](mojo::PendingRemote<blink::mojom::BucketHost> remote,
+              blink::mojom::BucketError error) {
             EXPECT_TRUE(remote.is_valid());
             run_loop.Quit();
           }));
@@ -182,7 +183,8 @@ TEST_F(BucketManagerHostTest, OpenBucketValidateName) {
       remote->OpenBucket(
           it->second, blink::mojom::BucketPolicies::New(),
           base::BindLambdaForTesting(
-              [&](mojo::PendingRemote<blink::mojom::BucketHost> remote) {
+              [&](mojo::PendingRemote<blink::mojom::BucketHost> remote,
+                  blink::mojom::BucketError error) {
                 EXPECT_EQ(remote.is_valid(), it->first);
                 run_loop.Quit();
               }));
@@ -203,7 +205,8 @@ TEST_F(BucketManagerHostTest, DeleteBucket) {
   bucket_manager_host_remote_->OpenBucket(
       "inbox_bucket", blink::mojom::BucketPolicies::New(),
       base::BindLambdaForTesting(
-          [&](mojo::PendingRemote<blink::mojom::BucketHost> remote) {
+          [&](mojo::PendingRemote<blink::mojom::BucketHost> remote,
+              blink::mojom::BucketError error) {
             EXPECT_TRUE(remote.is_valid());
             run_loop.Quit();
           }));
@@ -250,7 +253,8 @@ TEST_F(BucketManagerHostTest, PermissionCheck) {
         bucket_manager_host_remote_->OpenBucket(
             "foo", blink::mojom::BucketPolicies::New(),
             base::BindLambdaForTesting(
-                [&](mojo::PendingRemote<blink::mojom::BucketHost> remote) {
+                [&](mojo::PendingRemote<blink::mojom::BucketHost> remote,
+                    blink::mojom::BucketError error) {
                   EXPECT_TRUE(remote.is_valid());
                   bucket_remote.Bind(std::move(remote));
                   run_loop.Quit();
@@ -297,7 +301,8 @@ TEST_F(BucketManagerHostTest, PermissionCheck) {
         bucket_manager_host_remote_->OpenBucket(
             "foo", std::move(policies),
             base::BindLambdaForTesting(
-                [&](mojo::PendingRemote<blink::mojom::BucketHost> remote) {
+                [&](mojo::PendingRemote<blink::mojom::BucketHost> remote,
+                    blink::mojom::BucketError error) {
                   EXPECT_TRUE(remote.is_valid());
                   bucket_remote2.Bind(std::move(remote));
                   run_loop.Quit();

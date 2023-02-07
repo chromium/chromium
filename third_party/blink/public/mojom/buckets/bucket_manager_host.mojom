@@ -22,6 +22,12 @@ enum BucketDurability {
   kStrict = 1,
 };
 
+enum BucketError {
+  kUnknown = 0,
+  kQuotaExceeded = 1,
+  kInvalidExpiration = 2,
+};
+
 // The policies applied to a StorageBucket upon its creation.
 struct BucketPolicies {
   bool persisted;
@@ -98,9 +104,10 @@ interface BucketManagerHost {
   // Open or create or bucket with the specified name and policies.
   // On success, it will return a mojo data pipe to the BucketHost in the
   // browser process. Returns a null remote on error, e.g. if the storage bucket
-  // failed to be created or retrieved due to a database error.
+  // failed to be created or retrieved due to a database error. `error` is only
+  // meaningful if `remote` is null.
   OpenBucket(string name, BucketPolicies policy)
-      => (pending_remote<BucketHost>? remote);
+      => (pending_remote<BucketHost>? remote, BucketError error);
 
   // Returns a list of stored bucket names in alphabetical order.
   Keys() => (array<string> buckets, bool success);

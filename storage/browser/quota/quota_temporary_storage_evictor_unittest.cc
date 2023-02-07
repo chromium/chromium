@@ -45,7 +45,7 @@ class MockQuotaEvictionHandler : public QuotaEvictionHandler {
   void EvictBucketData(const BucketLocator& bucket,
                        base::OnceCallback<void(QuotaError)> callback) override {
     if (error_on_evict_buckets_data_) {
-      std::move(callback).Run(QuotaError::kIllegalOperation);
+      std::move(callback).Run(QuotaError::kUnknownError);
       return;
     }
     int64_t bucket_usage = EnsureBucketRemoved(bucket);

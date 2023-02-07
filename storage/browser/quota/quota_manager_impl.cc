@@ -211,12 +211,8 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
                          weak_factory_.GetWeakPtr(), barrier));
       SetDesiredStorageKeyQuota(barrier, blink::mojom::QuotaStatusCode::kOk,
                                 kNoLimit);
-    } else if (type_ == StorageType::kSyncable) {
-      SetDesiredStorageKeyQuota(barrier, blink::mojom::QuotaStatusCode::kOk,
-                                kSyncableStorageDefaultStorageKeyQuota);
     } else {
-      DCHECK_EQ(StorageType::kTemporary, type_);
-      // For temporary storage,  OnGotSettings will set the host quota.
+      // For limited storage,  OnGotSettings will set the host quota.
     }
   }
 
@@ -283,14 +279,11 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
 
     settings_ = settings;
     barrier_closure.Run();
-    if (type_ == StorageType::kTemporary && !is_unlimited_) {
-      int64_t storage_key_quota =
-          manager()->IsSessionOnly(storage_key_, type_)
-              ? settings.session_only_per_storage_key_quota
-              : settings.per_storage_key_quota;
+    const int64_t quota =
+        manager()->GetQuotaForStorageKey(storage_key_, type_, settings);
+    if (quota != kNoLimit) {
       SetDesiredStorageKeyQuota(std::move(barrier_closure),
-                                blink::mojom::QuotaStatusCode::kOk,
-                                storage_key_quota);
+                                blink::mojom::QuotaStatusCode::kOk, quota);
     }
   }
 
@@ -1039,19 +1032,29 @@ void QuotaManagerImpl::UpdateOrCreateBucket(
   }
   if (!bucket_params.expiration.is_null() &&
       (bucket_params.expiration <= QuotaDatabase::GetNow())) {
-    std::move(callback).Run(QuotaError::kIllegalOperation);
+    std::move(callback).Run(QuotaError::kInvalidExpiration);
     return;
   }
 
-  PostTaskAndReplyWithResultForDBThread(
-      base::BindOnce(
-          [](const BucketInitParams& params, QuotaDatabase* database) {
-            DCHECK(database);
-            return database->UpdateOrCreateBucket(params);
-          },
-          bucket_params),
-      base::BindOnce(&QuotaManagerImpl::DidGetBucketCheckExpiration,
-                     weak_factory_.GetWeakPtr(), bucket_params,
+  // The default bucket skips the quota check.
+  if (bucket_params.name == kDefaultBucketName) {
+    PostTaskAndReplyWithResultForDBThread(
+        base::BindOnce(
+            [](const BucketInitParams& params, QuotaDatabase* database) {
+              DCHECK(database);
+              return database->UpdateOrCreateBucket(params,
+                                                    /*max_bucket_count=*/0);
+            },
+            bucket_params),
+        base::BindOnce(&QuotaManagerImpl::DidGetBucketCheckExpiration,
+                       weak_factory_.GetWeakPtr(), bucket_params,
+                       std::move(callback)));
+    return;
+  }
+
+  GetQuotaSettings(
+      base::BindOnce(&QuotaManagerImpl::DidGetQuotaSettingsForBucketCreation,
+                     weak_factory_.GetWeakPtr(), std::move(bucket_params),
                      std::move(callback)));
 }
 
@@ -1640,13 +1643,6 @@ void QuotaManagerImpl::GetBucketUsageWithBreakdown(
   usage_tracker->GetBucketUsageWithBreakdown(bucket, std::move(callback));
 }
 
-bool QuotaManagerImpl::IsSessionOnly(const StorageKey& storage_key,
-                                     StorageType type) const {
-  return type == StorageType::kTemporary && special_storage_policy_ &&
-         special_storage_policy_->IsStorageSessionOnly(
-             storage_key.origin().GetURL());
-}
-
 bool QuotaManagerImpl::IsStorageUnlimited(const StorageKey& storage_key,
                                           StorageType type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1660,6 +1656,27 @@ bool QuotaManagerImpl::IsStorageUnlimited(const StorageKey& storage_key,
   return special_storage_policy_.get() &&
          special_storage_policy_->IsStorageUnlimited(
              storage_key.origin().GetURL());
+}
+
+int64_t QuotaManagerImpl::GetQuotaForStorageKey(
+    const StorageKey& storage_key,
+    StorageType type,
+    const QuotaSettings& settings) const {
+  if (IsStorageUnlimited(storage_key, type)) {
+    return kNoLimit;
+  }
+
+  if (type == StorageType::kSyncable) {
+    return kSyncableStorageDefaultStorageKeyQuota;
+  }
+
+  if (type == StorageType::kTemporary && special_storage_policy_ &&
+      special_storage_policy_->IsStorageSessionOnly(
+          storage_key.origin().GetURL())) {
+    return settings.session_only_per_storage_key_quota;
+  }
+
+  return settings.per_storage_key_quota;
 }
 
 void QuotaManagerImpl::GetBucketsModifiedBetween(StorageType type,
@@ -2642,6 +2659,29 @@ void QuotaManagerImpl::DidRazeForReBootstrap(
 void QuotaManagerImpl::OnComplete(QuotaError result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DidDatabaseWork(result != QuotaError::kDatabaseError);
+}
+
+void QuotaManagerImpl::DidGetQuotaSettingsForBucketCreation(
+    const BucketInitParams& bucket_params,
+    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
+    const QuotaSettings& settings) {
+  const int64_t quota = GetQuotaForStorageKey(
+      bucket_params.storage_key, StorageType::kTemporary, settings);
+  int64_t max_buckets = (quota == kNoLimit) ? 0 : (quota / kTypicalBucketUsage);
+  DCHECK_EQ(max_buckets == 0, IsStorageUnlimited(bucket_params.storage_key,
+                                                 StorageType::kTemporary));
+
+  PostTaskAndReplyWithResultForDBThread(
+      base::BindOnce(
+          [](const BucketInitParams& params, int max_buckets,
+             QuotaDatabase* database) {
+            DCHECK(database);
+            return database->UpdateOrCreateBucket(params, max_buckets);
+          },
+          bucket_params, max_buckets),
+      base::BindOnce(&QuotaManagerImpl::DidGetBucketCheckExpiration,
+                     weak_factory_.GetWeakPtr(), bucket_params,
+                     std::move(callback)));
 }
 
 void QuotaManagerImpl::DidGetBucket(
