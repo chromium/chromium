@@ -85,7 +85,7 @@ class TestNetworkMetadataObserver : public NetworkMetadataObserver {
     connections_.insert(guid);
   }
   void OnNetworkUpdate(const std::string& guid,
-                       const base::Value* set_properties) override {
+                       const base::Value::Dict* set_properties) override {
     if (!updates_.contains(guid)) {
       updates_[guid] = 1;
     } else {
@@ -383,7 +383,7 @@ TEST_F(NetworkMetadataStoreTest, ConfigurationUpdated) {
   properties.Set(shill::kPassphraseProperty, "secret");
 
   network_configuration_handler()->SetShillProperties(
-      service_path, base::Value(std::move(properties)), base::DoNothing(),
+      service_path, std::move(properties), base::DoNothing(),
       base::DoNothing());
   base::RunLoop().RunUntilIdle();
 
@@ -407,7 +407,7 @@ TEST_F(NetworkMetadataStoreTest, SharedConfigurationUpdatedByOtherUser) {
   other_properties.Set(shill::kProxyConfigProperty, "proxy_details");
 
   network_configuration_handler()->SetShillProperties(
-      service_path, base::Value(std::move(other_properties)), base::DoNothing(),
+      service_path, std::move(other_properties), base::DoNothing(),
       base::DoNothing());
   base::RunLoop().RunUntilIdle();
 
@@ -419,7 +419,7 @@ TEST_F(NetworkMetadataStoreTest, SharedConfigurationUpdatedByOtherUser) {
   owner_properties.Set(shill::kProxyConfigProperty, "new_proxy_details");
 
   network_configuration_handler()->SetShillProperties(
-      service_path, base::Value(std::move(owner_properties)), base::DoNothing(),
+      service_path, std::move(owner_properties), base::DoNothing(),
       base::DoNothing());
   base::RunLoop().RunUntilIdle();
 
@@ -443,7 +443,7 @@ TEST_F(NetworkMetadataStoreTest, SharedConfigurationUpdated_NewPassword) {
   other_properties.Set(shill::kPassphraseProperty, "pass2");
 
   network_configuration_handler()->SetShillProperties(
-      service_path, base::Value(std::move(other_properties)), base::DoNothing(),
+      service_path, std::move(other_properties), base::DoNothing(),
       base::DoNothing());
   base::RunLoop().RunUntilIdle();
 

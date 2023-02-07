@@ -1319,8 +1319,7 @@ void ArcNetHostImpl::AddPasspointCredentialsWithProperties(
   }
 
   ash::ShillManagerClient::Get()->AddPasspointCredentials(
-      dbus::ObjectPath(profile->path), base::Value(std::move(properties)),
-      base::DoNothing(),
+      dbus::ObjectPath(profile->path), std::move(properties), base::DoNothing(),
       base::BindOnce(&AddPasspointCredentialsFailureCallback));
   return;
 }
@@ -1349,7 +1348,7 @@ void ArcNetHostImpl::RemovePasspointCredentials(
   }
 
   ash::ShillManagerClient::Get()->RemovePasspointCredentials(
-      dbus::ObjectPath(profile->path), base::Value(std::move(shill_properties)),
+      dbus::ObjectPath(profile->path), std::move(shill_properties),
       base::DoNothing(),
       base::BindOnce(&RemovePasspointCredentialsFailureCallback));
 

@@ -20,7 +20,7 @@
 
 namespace ash {
 
-FakeShillIPConfigClient::FakeShillIPConfigClient() {}
+FakeShillIPConfigClient::FakeShillIPConfigClient() = default;
 
 FakeShillIPConfigClient::~FakeShillIPConfigClient() = default;
 
@@ -34,11 +34,10 @@ void FakeShillIPConfigClient::RemovePropertyChangedObserver(
 
 void FakeShillIPConfigClient::GetProperties(
     const dbus::ObjectPath& ipconfig_path,
-    chromeos::DBusMethodCallback<base::Value> callback) {
+    chromeos::DBusMethodCallback<base::Value::Dict> callback) {
   const base::Value::Dict* dict = ipconfigs_.EnsureDict(ipconfig_path.value());
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), base::Value(dict->Clone())));
+      FROM_HERE, base::BindOnce(std::move(callback), dict->Clone()));
 }
 
 void FakeShillIPConfigClient::SetProperty(

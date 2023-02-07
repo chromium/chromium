@@ -177,8 +177,9 @@ class CrosNetworkConfig
   void OnGetAlwaysOnVpn(GetAlwaysOnVpnCallback callback,
                         std::string mode,
                         std::string service_path);
-  void OnGetSupportedVpnTypes(GetSupportedVpnTypesCallback callback,
-                              absl::optional<base::Value> manager_properties);
+  void OnGetSupportedVpnTypes(
+      GetSupportedVpnTypesCallback callback,
+      absl::optional<base::Value::Dict> manager_properties);
   void PopulateTrafficCounters(RequestTrafficCountersCallback callback,
                                absl::optional<base::Value> traffic_counters);
 

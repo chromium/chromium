@@ -65,11 +65,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillIPConfigClient {
       ShillPropertyChangedObserver* observer) = 0;
 
   // Calls the GetProperties DBus method and invokes |callback| when complete.
-  // |callback| receives a dictionary Value containing the IPCOnfig properties
-  // on success or nullopt on failure.
+  // |callback| receives a dictionary containing the IPCOnfig properties on
+  // success or nullopt on failure.
   virtual void GetProperties(
       const dbus::ObjectPath& ipconfig_path,
-      chromeos::DBusMethodCallback<base::Value> callback) = 0;
+      chromeos::DBusMethodCallback<base::Value::Dict> callback) = 0;
 
   // Calls SetProperty method.
   // |callback| is called after the method call succeeds.

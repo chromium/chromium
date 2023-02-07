@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, ConfigPersistence) {
 
   ash::NetworkHandler::Get()
       ->network_configuration_handler()
-      ->CreateShillConfiguration(base::Value(std::move(properties)),
+      ->CreateShillConfiguration(std::move(properties),
                                  base::BindOnce(DoNothingSuccessCallback),
                                  base::BindOnce(DoNothingFailureCallback));
   content::RunAllPendingInMessageLoop();

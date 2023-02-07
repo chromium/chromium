@@ -72,7 +72,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
     virtual void UpdateIPConfigProperties(ManagedState::ManagedType type,
                                           const std::string& path,
                                           const std::string& ip_config_path,
-                                          base::Value properties) = 0;
+                                          base::Value::Dict properties) = 0;
 
     // Called when the list of devices with portal check enabled changes.
     virtual void CheckPortalListChanged(
@@ -180,7 +180,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
       TypeRequestMap;
 
   // Callback for dbus method fetching properties.
-  void ManagerPropertiesCallback(absl::optional<base::Value> properties);
+  void ManagerPropertiesCallback(absl::optional<base::Value::Dict> properties);
 
   // Notifies the listener when a ManagedStateList has changed and all pending
   // updates have been received. |key| can either identify the list that
@@ -247,7 +247,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
   void GetIPConfigCallback(ManagedState::ManagedType type,
                            const std::string& path,
                            const std::string& ip_config_path,
-                           absl::optional<base::Value> properties);
+                           absl::optional<base::Value::Dict> properties);
 
   void SetProhibitedTechnologiesEnforced(bool enforced);
 

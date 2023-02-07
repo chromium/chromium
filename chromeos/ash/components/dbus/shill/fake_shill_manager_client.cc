@@ -271,7 +271,7 @@ void FakeShillManagerClient::RemovePropertyChangedObserver(
 }
 
 void FakeShillManagerClient::GetProperties(
-    chromeos::DBusMethodCallback<base::Value> callback) {
+    chromeos::DBusMethodCallback<base::Value::Dict> callback) {
   VLOG(1) << "Manager.GetProperties";
   if (return_null_properties_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -287,7 +287,7 @@ void FakeShillManagerClient::GetProperties(
 }
 
 void FakeShillManagerClient::GetNetworksForGeolocation(
-    chromeos::DBusMethodCallback<base::Value> callback) {
+    chromeos::DBusMethodCallback<base::Value::Dict> callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeShillManagerClient::PassStubGeoNetworks,
@@ -372,7 +372,7 @@ void FakeShillManagerClient::DisableTechnology(const std::string& type,
 }
 
 void FakeShillManagerClient::ConfigureService(
-    const base::Value& properties,
+    const base::Value::Dict& properties,
     chromeos::ObjectPathCallback callback,
     ErrorCallback error_callback) {
   switch (simulate_configuration_result_) {
@@ -391,12 +391,11 @@ void FakeShillManagerClient::ConfigureService(
   ShillServiceClient::TestInterface* service_client =
       ShillServiceClient::Get()->GetTestInterface();
 
-  const base::Value::Dict& properties_dict = properties.GetDict();
   std::string guid;
   std::string type;
   std::string name;
-  if (!GetString(properties_dict, shill::kGuidProperty, &guid) ||
-      !GetString(properties_dict, shill::kTypeProperty, &type)) {
+  if (!GetString(properties, shill::kGuidProperty, &guid) ||
+      !GetString(properties, shill::kTypeProperty, &type)) {
     LOG(ERROR) << "ConfigureService requires GUID and Type to be defined";
     // If the properties aren't filled out completely, then just return an empty
     // object path.
@@ -406,11 +405,11 @@ void FakeShillManagerClient::ConfigureService(
   }
 
   if (type == shill::kTypeWifi) {
-    GetString(properties_dict, shill::kSSIDProperty, &name);
+    GetString(properties, shill::kSSIDProperty, &name);
 
     if (name.empty()) {
       std::string hex_name;
-      GetString(properties_dict, shill::kWifiHexSsid, &hex_name);
+      GetString(properties, shill::kWifiHexSsid, &hex_name);
       if (!hex_name.empty()) {
         std::vector<uint8_t> bytes;
         if (base::HexStringToBytes(hex_name, &bytes)) {
@@ -420,12 +419,12 @@ void FakeShillManagerClient::ConfigureService(
     }
   }
   if (name.empty())
-    GetString(properties_dict, shill::kNameProperty, &name);
+    GetString(properties, shill::kNameProperty, &name);
   if (name.empty())
     name = guid;
 
   std::string ipconfig_path;
-  GetString(properties_dict, shill::kIPConfigProperty, &ipconfig_path);
+  GetString(properties, shill::kIPConfigProperty, &ipconfig_path);
 
   std::string service_path = service_client->FindServiceMatchingGUID(guid);
   if (service_path.empty())
@@ -442,12 +441,13 @@ void FakeShillManagerClient::ConfigureService(
   }
 
   // Set all the properties.
-  for (auto iter : properties.DictItems())
+  for (auto iter : properties) {
     service_client->SetServiceProperty(service_path, iter.first, iter.second);
+  }
 
   // If the Profile property is set, add it to ProfileClient.
   const std::string* profile_path =
-      properties.FindStringKey(shill::kProfileProperty);
+      properties.FindString(shill::kProfileProperty);
   if (profile_path) {
     auto* profile_client = ShillProfileClient::Get()->GetTestInterface();
     if (!profile_client->UpdateService(*profile_path, service_path))
@@ -461,17 +461,16 @@ void FakeShillManagerClient::ConfigureService(
 
 void FakeShillManagerClient::ConfigureServiceForProfile(
     const dbus::ObjectPath& profile_path,
-    const base::Value& properties,
+    const base::Value::Dict& properties,
     chromeos::ObjectPathCallback callback,
     ErrorCallback error_callback) {
-  base::Value properties_copy = properties.Clone();
-  properties_copy.GetDict().Set(shill::kProfileProperty,
-                                base::Value(profile_path.value()));
+  base::Value::Dict properties_copy = properties.Clone();
+  properties_copy.Set(shill::kProfileProperty, profile_path.value());
   ConfigureService(properties_copy, std::move(callback),
                    std::move(error_callback));
 }
 
-void FakeShillManagerClient::GetService(const base::Value& properties,
+void FakeShillManagerClient::GetService(const base::Value::Dict& properties,
                                         chromeos::ObjectPathCallback callback,
                                         ErrorCallback error_callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -493,13 +492,13 @@ void FakeShillManagerClient::ScanAndConnectToBestServices(
 
 void FakeShillManagerClient::AddPasspointCredentials(
     const dbus::ObjectPath& profile_path,
-    const base::Value& properties,
+    const base::Value::Dict& properties,
     base::OnceClosure callback,
     ErrorCallback error_callback) {}
 
 void FakeShillManagerClient::RemovePasspointCredentials(
     const dbus::ObjectPath& profile_path,
-    const base::Value& properties,
+    const base::Value::Dict& properties,
     base::OnceClosure callback,
     ErrorCallback error_callback) {}
 
@@ -670,7 +669,7 @@ void FakeShillManagerClient::SetTechnologyEnabled(const std::string& type,
 }
 
 void FakeShillManagerClient::AddGeoNetwork(const std::string& technology,
-                                           const base::Value& network) {
+                                           const base::Value::Dict& network) {
   base::Value::List* list_value = stub_geo_networks_.EnsureList(technology);
   list_value->Append(network.Clone());
 }
@@ -1165,21 +1164,21 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
 // Private methods
 
 void FakeShillManagerClient::PassNullopt(
-    chromeos::DBusMethodCallback<base::Value> callback) const {
+    chromeos::DBusMethodCallback<base::Value::Dict> callback) const {
   std::move(callback).Run(absl::nullopt);
 }
 
 void FakeShillManagerClient::PassStubProperties(
-    chromeos::DBusMethodCallback<base::Value> callback) const {
+    chromeos::DBusMethodCallback<base::Value::Dict> callback) const {
   base::Value::Dict stub_properties = stub_properties_.Clone();
   stub_properties.Set(shill::kServiceCompleteListProperty,
                       GetEnabledServiceList());
-  std::move(callback).Run(base::Value(std::move(stub_properties)));
+  std::move(callback).Run(std::move(stub_properties));
 }
 
 void FakeShillManagerClient::PassStubGeoNetworks(
-    chromeos::DBusMethodCallback<base::Value> callback) const {
-  std::move(callback).Run(base::Value(stub_geo_networks_.Clone()));
+    chromeos::DBusMethodCallback<base::Value::Dict> callback) const {
+  std::move(callback).Run(stub_geo_networks_.Clone());
 }
 
 void FakeShillManagerClient::CallNotifyObserversPropertyChanged(

@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillIPConfigClient
       ShillPropertyChangedObserver* observer) override;
   void GetProperties(
       const dbus::ObjectPath& ipconfig_path,
-      chromeos::DBusMethodCallback<base::Value> callback) override;
+      chromeos::DBusMethodCallback<base::Value::Dict> callback) override;
   void SetProperty(const dbus::ObjectPath& ipconfig_path,
                    const std::string& name,
                    const base::Value& value,

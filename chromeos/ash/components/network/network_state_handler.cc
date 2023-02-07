@@ -1627,7 +1627,7 @@ void NetworkStateHandler::UpdateIPConfigProperties(
     ManagedState::ManagedType type,
     const std::string& path,
     const std::string& ip_config_path,
-    base::Value properties) {
+    base::Value::Dict properties) {
   if (type == ManagedState::MANAGED_TYPE_NETWORK) {
     NetworkState* network = GetModifiableNetworkState(path);
     if (!network)

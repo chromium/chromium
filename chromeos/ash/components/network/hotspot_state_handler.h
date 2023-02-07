@@ -75,7 +75,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   void LoggedInStateChanged() override;
 
   // Callback to handle the manager properties with hotspot related properties.
-  void OnManagerProperties(absl::optional<base::Value> properties);
+  void OnManagerProperties(absl::optional<base::Value::Dict> properties);
 
   // Update the cached hotspot_state_ and active_client_count_ from hotspot
   // status in Shill.
@@ -88,7 +88,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   // from |manager_properties|, and then run the |callback|.
   void UpdateHotspotConfigAndRunCallback(
       SetHotspotConfigCallback callback,
-      absl::optional<base::Value> manager_properties);
+      absl::optional<base::Value::Dict> manager_properties);
 
   // Callback when the SetHotspotConfig operation succeeded.
   void OnSetHotspotConfigSuccess(SetHotspotConfigCallback callback);

@@ -37,9 +37,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void RemovePropertyChangedObserver(
       ShillPropertyChangedObserver* observer) override;
   void GetProperties(
-      chromeos::DBusMethodCallback<base::Value> callback) override;
+      chromeos::DBusMethodCallback<base::Value::Dict> callback) override;
   void GetNetworksForGeolocation(
-      chromeos::DBusMethodCallback<base::Value> callback) override;
+      chromeos::DBusMethodCallback<base::Value::Dict> callback) override;
   void SetProperty(const std::string& name,
                    const base::Value& value,
                    base::OnceClosure callback,
@@ -53,14 +53,14 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void DisableTechnology(const std::string& type,
                          base::OnceClosure callback,
                          ErrorCallback error_callback) override;
-  void ConfigureService(const base::Value& properties,
+  void ConfigureService(const base::Value::Dict& properties,
                         chromeos::ObjectPathCallback callback,
                         ErrorCallback error_callback) override;
   void ConfigureServiceForProfile(const dbus::ObjectPath& profile_path,
-                                  const base::Value& properties,
+                                  const base::Value::Dict& properties,
                                   chromeos::ObjectPathCallback callback,
                                   ErrorCallback error_callback) override;
-  void GetService(const base::Value& properties,
+  void GetService(const base::Value::Dict& properties,
                   chromeos::ObjectPathCallback callback,
                   ErrorCallback error_callback) override;
   void ScanAndConnectToBestServices(base::OnceClosure callback,
@@ -69,11 +69,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
                                   base::OnceClosure callback,
                                   ErrorCallback error_callback) override;
   void AddPasspointCredentials(const dbus::ObjectPath& profile_path,
-                               const base::Value& properties,
+                               const base::Value::Dict& properties,
                                base::OnceClosure callback,
                                ErrorCallback error_callback) override;
   void RemovePasspointCredentials(const dbus::ObjectPath& profile_path,
-                                  const base::Value& properties,
+                                  const base::Value::Dict& properties,
                                   base::OnceClosure callback,
                                   ErrorCallback error_callback) override;
   void SetTetheringEnabled(bool enabled,
@@ -101,7 +101,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
                             base::OnceClosure callback,
                             bool enabled) override;
   void AddGeoNetwork(const std::string& technology,
-                     const base::Value& network) override;
+                     const base::Value::Dict& network) override;
   void AddProfile(const std::string& profile_path) override;
   void ClearProperties() override;
   void SetManagerProperty(const std::string& key,
@@ -136,11 +136,12 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
 
  private:
   void SetDefaultProperties();
-  void PassNullopt(chromeos::DBusMethodCallback<base::Value> callback) const;
+  void PassNullopt(
+      chromeos::DBusMethodCallback<base::Value::Dict> callback) const;
   void PassStubProperties(
-      chromeos::DBusMethodCallback<base::Value> callback) const;
+      chromeos::DBusMethodCallback<base::Value::Dict> callback) const;
   void PassStubGeoNetworks(
-      chromeos::DBusMethodCallback<base::Value> callback) const;
+      chromeos::DBusMethodCallback<base::Value::Dict> callback) const;
   void CallNotifyObserversPropertyChanged(const std::string& property);
   void NotifyObserversPropertyChanged(const std::string& property);
   base::Value::List& GetListProperty(const std::string& property);

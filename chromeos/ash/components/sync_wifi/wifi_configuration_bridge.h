@@ -85,7 +85,7 @@ class WifiConfigurationBridge : public syncer::ModelTypeSyncBridge,
   void OnFirstConnectionToNetwork(const std::string& guid) override;
   void OnNetworkCreated(const std::string& guid) override;
   void OnNetworkUpdate(const std::string& guid,
-                       const base::Value* set_properties) override;
+                       const base::Value::Dict* set_properties) override;
 
   // NetworkConfigurationObserver::
   void OnBeforeConfigurationRemoved(const std::string& service_path,

@@ -234,7 +234,7 @@ void VpnServiceForExtensionAsh::CreateConfiguration(
   ash::NetworkHandler::Get()
       ->network_configuration_handler()
       ->CreateShillConfiguration(
-          base::Value(std::move(properties)),
+          std::move(properties),
           base::BindOnce(
               &VpnServiceForExtensionAsh::OnCreateConfigurationSuccess,
               weak_factory_.GetWeakPtr(), std::move(success), configuration),

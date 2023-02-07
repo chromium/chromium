@@ -352,7 +352,7 @@ class SimpleGeolocationWirelessTest : public ::testing::TestWithParam<bool> {
     properties.Set(shill::kGeoChannelProperty, channel);
     properties.Set(shill::kGeoSignalStrengthProperty, strength);
     manager_test_->AddGeoNetwork(shill::kGeoWifiAccessPointsProperty,
-                                 base::Value(std::move(properties)));
+                                 std::move(properties));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -370,7 +370,7 @@ class SimpleGeolocationWirelessTest : public ::testing::TestWithParam<bool> {
     properties.Set(shill::kGeoMobileNetworkCodeProperty, mnc);
 
     manager_test_->AddGeoNetwork(shill::kGeoCellTowersProperty,
-                                 base::Value(std::move(properties)));
+                                 std::move(properties));
     base::RunLoop().RunUntilIdle();
   }
 

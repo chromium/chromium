@@ -28,7 +28,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataObserver
   // Called after a network configuration and associated metadata has been
   // updated.
   virtual void OnNetworkUpdate(const std::string& guid,
-                               const base::Value* set_properties);
+                               const base::Value::Dict* set_properties);
 
  protected:
   NetworkMetadataObserver();

@@ -72,14 +72,13 @@ bool NetworkProfileHandler::HasObserver(NetworkProfileObserver* observer) {
 }
 
 void NetworkProfileHandler::GetManagerPropertiesCallback(
-    absl::optional<base::Value> properties) {
+    absl::optional<base::Value::Dict> properties) {
   if (!properties) {
     LOG(ERROR) << "Error when requesting manager properties.";
     return;
   }
 
-  const base::Value* profiles =
-      properties->GetDict().Find(shill::kProfilesProperty);
+  const base::Value* profiles = properties->Find(shill::kProfilesProperty);
   if (!profiles) {
     LOG(ERROR) << "Manager properties returned from Shill don't contain "
                << "the field " << shill::kProfilesProperty;

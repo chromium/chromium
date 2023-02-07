@@ -519,7 +519,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   void UpdateIPConfigProperties(ManagedState::ManagedType type,
                                 const std::string& path,
                                 const std::string& ip_config_path,
-                                base::Value properties) override;
+                                base::Value::Dict properties) override;
 
   void CheckPortalListChanged(const std::string& check_portal_list) override;
   void HostnameChanged(const std::string& hostname) override;

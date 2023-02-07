@@ -355,7 +355,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetShillProperties(
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
   network_configuration_handler_->SetShillProperties(
-      service_path, shill_dictionary, std::move(callback),
+      service_path, shill_dictionary.GetDict(), std::move(callback),
       std::move(error_callback));
 }
 
@@ -441,7 +441,7 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
     return;
   }
 
-  // If a GUID was provided, verify that the new configuraiton matches an
+  // If a GUID was provided, verify that the new configuration matches an
   // existing NetworkState for an unconfigured (i.e. visible) network.
   // Requires HexSSID to be set first for comparing SSIDs.
   if (!guid.empty()) {
@@ -472,7 +472,8 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
                                             &validated_properties);
 
   network_configuration_handler_->CreateShillConfiguration(
-      shill_dictionary, std::move(callback), std::move(error_callback));
+      shill_dictionary.GetDict(), std::move(callback),
+      std::move(error_callback));
 }
 
 void ManagedNetworkConfigurationHandlerImpl::ConfigurePolicyNetwork(
@@ -480,7 +481,7 @@ void ManagedNetworkConfigurationHandlerImpl::ConfigurePolicyNetwork(
     base::OnceClosure callback) const {
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   network_configuration_handler_->CreateShillConfiguration(
-      shill_properties,
+      shill_properties.GetDict(),
       base::BindOnce(
           &ManagedNetworkConfigurationHandlerImpl::OnPolicyAppliedToNetwork,
           weak_ptr_factory_.GetWeakPtr(), std::move(split_callback.first)),
@@ -729,7 +730,7 @@ void ManagedNetworkConfigurationHandlerImpl::
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   network_configuration_handler_->CreateShillConfiguration(
-      shill_properties,
+      shill_properties.GetDict(),
       base::BindOnce(
           &ManagedNetworkConfigurationHandlerImpl::OnPolicyAppliedToNetwork,
           weak_ptr_factory_.GetWeakPtr(), std::move(split_callback.first)),

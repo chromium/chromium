@@ -100,7 +100,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotCapabilitiesProvider
   void OnShuttingDown() override;
 
   // Callback to handle the manager properties with hotspot related properties.
-  void OnManagerProperties(absl::optional<base::Value> properties);
+  void OnManagerProperties(absl::optional<base::Value::Dict> properties);
 
   // Notify observer that hotspot capabilities was changed.
   void NotifyHotspotCapabilitiesChanged();

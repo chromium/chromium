@@ -82,7 +82,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
   // Attempts to create a Shill service configuration with given
   // |new_shill_properties| for eSIM with |profile_path| and |euicc_path|.
   // |callback| is called with the newly configure service path.
-  void ConfigureESimService(const base::Value& new_shill_properties,
+  void ConfigureESimService(const base::Value::Dict& new_shill_properties,
                             const dbus::ObjectPath& euicc_path,
                             const dbus::ObjectPath& profile_path,
                             ConfigureESimServiceCallback callback);

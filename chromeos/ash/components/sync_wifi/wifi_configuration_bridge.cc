@@ -458,7 +458,7 @@ void WifiConfigurationBridge::OnFirstConnectionToNetwork(
 
 void WifiConfigurationBridge::OnNetworkUpdate(
     const std::string& guid,
-    const base::Value* set_properties) {
+    const base::Value::Dict* set_properties) {
   if (!set_properties)
     return;
 
@@ -471,12 +471,11 @@ void WifiConfigurationBridge::OnNetworkUpdate(
     return;
   }
 
-  const base::Value::Dict& set_properties_dict = set_properties->GetDict();
-  if (!set_properties_dict.contains(shill::kAutoConnectProperty) &&
-      !set_properties_dict.contains(shill::kPriorityProperty) &&
-      !set_properties_dict.contains(shill::kProxyConfigProperty) &&
-      !set_properties_dict.contains(shill::kMeteredProperty) &&
-      !set_properties->FindPath(
+  if (!set_properties->contains(shill::kAutoConnectProperty) &&
+      !set_properties->contains(shill::kPriorityProperty) &&
+      !set_properties->contains(shill::kProxyConfigProperty) &&
+      !set_properties->contains(shill::kMeteredProperty) &&
+      !set_properties->FindByDottedPath(
           base::StringPrintf("%s.%s", shill::kStaticIPConfigProperty,
                              shill::kNameServersProperty))) {
     NET_LOG(EVENT) << "Not uploading change to " << NetworkGuidId(guid)

@@ -37,8 +37,7 @@ class GeolocationServiceAshTest : public testing::Test {
         properties.Set(shill::kGeoSignalStrengthProperty,
                        base::Value(strength));
         network_handler_test_helper_->manager_test()->AddGeoNetwork(
-            shill::kGeoWifiAccessPointsProperty,
-            base::Value(std::move(properties)));
+            shill::kGeoWifiAccessPointsProperty, std::move(properties));
       }
     }
     base::RunLoop().RunUntilIdle();

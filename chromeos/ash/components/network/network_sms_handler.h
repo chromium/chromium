@@ -12,13 +12,10 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class Value;
-}
 
 namespace ash {
 
@@ -81,10 +78,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   void MessageReceived(const base::Value& message);
 
   // Callback to handle the manager properties with the list of devices.
-  void ManagerPropertiesCallback(absl::optional<base::Value> properties);
+  void ManagerPropertiesCallback(absl::optional<base::Value::Dict> properties);
 
   // Requests properties for each entry in |devices|.
-  void UpdateDevices(const base::Value& devices);
+  void UpdateDevices(const base::Value::List& devices);
 
   // Callback to handle the device properties for |device_path|.
   // A NetworkSmsDeviceHandler will be instantiated for each cellular device.

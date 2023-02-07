@@ -625,8 +625,8 @@ TEST_F(WifiConfigurationBridgeTest, LocalConfiguredAndUpdated_BeforeInit) {
       GenerateTestWifiSpecifics(meow_network_id(), kSyncPsk, /*timestamp=*/100);
   local_network_collector()->AddNetwork(meow_local);
 
-  base::Value set_properties(base::Value::Type::DICT);
-  set_properties.SetBoolKey(shill::kAutoConnectProperty, true);
+  base::Value::Dict set_properties;
+  set_properties.Set(shill::kAutoConnectProperty, true);
   bridge()->OnNetworkUpdate(guid, &set_properties);
 
   // Only the last change for a network is synced.
@@ -697,8 +697,8 @@ TEST_F(WifiConfigurationBridgeTest, LocalUpdate) {
   EXPECT_CALL(*processor(), Put(_, _, _))
       .WillOnce(testing::SaveArg<0>(&storage_key));
   std::string guid = meow_network_id().SerializeToString();
-  base::Value set_properties(base::Value::Type::DICT);
-  set_properties.SetBoolKey(shill::kAutoConnectProperty, true);
+  base::Value::Dict set_properties;
+  set_properties.Set(shill::kAutoConnectProperty, true);
   bridge()->OnNetworkUpdate(guid, &set_properties);
   base::RunLoop().RunUntilIdle();
 }
@@ -713,8 +713,8 @@ TEST_F(WifiConfigurationBridgeTest, LocalUpdate_UntrackedField) {
 
   EXPECT_CALL(*processor(), Put(_, _, _)).Times(testing::Exactly(0));
   std::string guid = meow_network_id().SerializeToString();
-  base::Value set_properties(base::Value::Type::DICT);
-  set_properties.SetStringKey(shill::kUIDataProperty, "random_change");
+  base::Value::Dict set_properties;
+  set_properties.Set(shill::kUIDataProperty, "random_change");
   bridge()->OnNetworkUpdate(guid, &set_properties);
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectTotalCount(kTotalCountHistogram, 0);
@@ -732,8 +732,8 @@ TEST_F(WifiConfigurationBridgeTest, LocalUpdate_FromSync) {
 
   EXPECT_CALL(*processor(), Put(_, _, _)).Times(testing::Exactly(0));
 
-  base::Value set_properties(base::Value::Type::DICT);
-  set_properties.SetBoolKey(shill::kAutoConnectProperty, true);
+  base::Value::Dict set_properties;
+  set_properties.Set(shill::kAutoConnectProperty, true);
   bridge()->OnNetworkUpdate(guid, &set_properties);
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectTotalCount(kTotalCountHistogram, 0);

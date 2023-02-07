@@ -807,7 +807,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
   if (!config_properties.DictEmpty()) {
     NET_LOG(EVENT) << "Configuring Network: " << NetworkPathId(service_path);
     configuration_handler_->SetShillProperties(
-        service_path, config_properties,
+        service_path, config_properties.GetDict(),
         base::BindOnce(&NetworkConnectionHandlerImpl::CallShillConnect,
                        AsWeakPtr(), service_path),
         base::BindOnce(

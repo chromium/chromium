@@ -87,6 +87,11 @@ class ShillClientHelper {
   void CallValueMethod(dbus::MethodCall* method_call,
                        chromeos::DBusMethodCallback<base::Value> callback);
 
+  // Calls a method with a value dictionary result.
+  void CallValueDictMethod(
+      dbus::MethodCall* method_call,
+      chromeos::DBusMethodCallback<base::Value::Dict> callback);
+
   // Calls a method without results with error callback.
   void CallVoidMethodWithErrorCallback(dbus::MethodCall* method_call,
                                        base::OnceClosure callback,
@@ -127,13 +132,7 @@ class ShillClientHelper {
   // Appends a string-to-variant dictionary to the writer as an '{sv}' array.
   // Each value is written using AppendValueDataAsVariant.
   static void AppendServiceProperties(dbus::MessageWriter* writer,
-                                      const base::Value& dictionary);
-
-  // Helper method to check for a dictionary result in GetProperties calls.
-  static void OnGetProperties(
-      const dbus::ObjectPath& device_path,
-      chromeos::DBusMethodCallback<base::Value> callback,
-      absl::optional<base::Value> result);
+                                      const base::Value::Dict& dictionary);
 
  protected:
   // Reference / Ownership management. If the number of active refs (observers

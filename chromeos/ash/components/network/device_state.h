@@ -33,7 +33,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
   bool IsActive() const override;
 
   void IPConfigPropertiesChanged(const std::string& ip_config_path,
-                                 base::Value properties);
+                                 base::Value::Dict properties);
 
   // Accessors
   const std::string& mac_address() const { return mac_address_; }

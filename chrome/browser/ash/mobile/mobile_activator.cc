@@ -174,8 +174,8 @@ void MobileActivator::InitiateActivation(const std::string& service_path) {
   base::Value::Dict auto_connect_property;
   auto_connect_property.Set(shill::kAutoConnectProperty, true);
   NetworkHandler::Get()->network_configuration_handler()->SetShillProperties(
-      service_path_, base::Value(std::move(auto_connect_property)),
-      base::DoNothing(), network_handler::ErrorCallback());
+      service_path_, std::move(auto_connect_property), base::DoNothing(),
+      network_handler::ErrorCallback());
 
   StartActivation();
 }

@@ -234,7 +234,7 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::MessageReceived(
 ///////////////////////////////////////////////////////////////////////////////
 // NetworkSmsHandler
 
-NetworkSmsHandler::NetworkSmsHandler() {}
+NetworkSmsHandler::NetworkSmsHandler() = default;
 
 NetworkSmsHandler::~NetworkSmsHandler() {
   ShillManagerClient::Get()->RemovePropertyChangedObserver(this);
@@ -278,7 +278,7 @@ void NetworkSmsHandler::OnPropertyChanged(const std::string& name,
 
   // Manager property change
   if (name == shill::kDevicesProperty && value.is_list()) {
-    UpdateDevices(value);
+    UpdateDevices(value.GetList());
   }
 }
 
@@ -301,12 +301,13 @@ void NetworkSmsHandler::MessageReceived(const base::Value& message) {
 }
 
 void NetworkSmsHandler::ManagerPropertiesCallback(
-    absl::optional<base::Value> properties) {
+    absl::optional<base::Value::Dict> properties) {
   if (!properties) {
     NET_LOG(ERROR) << "NetworkSmsHandler: Failed to get manager properties.";
     return;
   }
-  const base::Value* value = properties->FindListKey(shill::kDevicesProperty);
+  const base::Value::List* value =
+      properties->FindList(shill::kDevicesProperty);
   if (!value) {
     NET_LOG(EVENT) << "NetworkSmsHandler: No list value for: "
                    << shill::kDevicesProperty;
@@ -315,8 +316,8 @@ void NetworkSmsHandler::ManagerPropertiesCallback(
   UpdateDevices(*value);
 }
 
-void NetworkSmsHandler::UpdateDevices(const base::Value& devices) {
-  for (const auto& item : devices.GetList()) {
+void NetworkSmsHandler::UpdateDevices(const base::Value::List& devices) {
+  for (const auto& item : devices) {
     if (!item.is_string())
       continue;
 

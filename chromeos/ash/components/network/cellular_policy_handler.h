@@ -99,7 +99,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   void ProcessRequests();
   void AttemptInstallESim();
   void SetupESim(const dbus::ObjectPath& euicc_path);
-  base::Value GetNewShillProperties();
+  base::Value::Dict GetNewShillProperties();
   const std::string& GetCurrentSmdpAddress() const;
   std::string GetCurrentPolicyGuid() const;
   void OnRefreshProfileList(

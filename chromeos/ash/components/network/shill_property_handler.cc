@@ -360,13 +360,13 @@ void ShillPropertyHandler::OnPropertyChanged(const std::string& key,
 // Private methods
 
 void ShillPropertyHandler::ManagerPropertiesCallback(
-    absl::optional<base::Value> properties) {
+    absl::optional<base::Value::Dict> properties) {
   if (!properties) {
     NET_LOG(ERROR) << "ManagerPropertiesCallback Failed";
     return;
   }
   NET_LOG(EVENT) << "ManagerPropertiesCallback: Success";
-  for (const auto item : properties->DictItems()) {
+  for (const auto item : *properties) {
     ManagerPropertyChanged(item.first, item.second);
   }
 
@@ -685,7 +685,7 @@ void ShillPropertyHandler::GetIPConfigCallback(
     ManagedState::ManagedType type,
     const std::string& path,
     const std::string& ip_config_path,
-    absl::optional<base::Value> properties) {
+    absl::optional<base::Value::Dict> properties) {
   if (!properties) {
     // IP Config properties not available. Shill will emit a property change
     // when they are.

@@ -26,12 +26,12 @@ TestNetworkConfigurationObserver::~TestNetworkConfigurationObserver() = default;
 void TestNetworkConfigurationObserver::OnConfigurationModified(
     const std::string& service_path,
     const std::string& network_guid,
-    const base::Value* set_properties) {
+    const base::Value::Dict* set_properties) {
   if (!set_properties)
     return;
 
   if (const base::Value* ui_data =
-          set_properties->GetDict().Find(shill::kUIDataProperty)) {
+          set_properties->Find(shill::kUIDataProperty)) {
     if (const std::string* ui_data_str = ui_data->GetIfString()) {
       base::Value ui_data_dict(
           chromeos::onc::ReadDictionaryFromJson(*ui_data_str));

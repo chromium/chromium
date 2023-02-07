@@ -52,13 +52,13 @@ class MockDoHTemplatesUriResolver
 void OnGetProperties(bool* success_out,
                      std::map<std::string, std::string>* props_out,
                      base::OnceClosure callback,
-                     absl::optional<base::Value> result) {
+                     absl::optional<base::Value::Dict> result) {
   *success_out = result.has_value();
   if (result) {
-    base::Value* value = result->FindKeyOfType(
-        shill::kDNSProxyDOHProvidersProperty, base::Value::Type::DICT);
+    base::Value::Dict* value =
+        result->FindDict(shill::kDNSProxyDOHProvidersProperty);
     if (value != nullptr) {
-      for (const auto kv : value->DictItems()) {
+      for (const auto kv : *value) {
         props_out->emplace(kv.first, kv.second.GetString());
       }
     }

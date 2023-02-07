@@ -356,12 +356,32 @@ void ShillClientUnittestBase::ExpectValueResultWithoutStatus(
 }
 
 // static
+void ShillClientUnittestBase::ExpectValueDictionaryResultWithoutStatus(
+    const base::Value::Dict* expected_result,
+    base::Value::Dict result) {
+  std::string expected_result_string;
+  base::JSONWriter::Write(*expected_result, &expected_result_string);
+  std::string result_string;
+  base::JSONWriter::Write(result, &result_string);
+  EXPECT_EQ(expected_result_string, result_string);
+}
+
+// static
 void ShillClientUnittestBase::ExpectValueResult(
     const base::Value* expected_result,
     absl::optional<base::Value> result) {
   EXPECT_TRUE(result);
   ExpectValueResultWithoutStatus(expected_result,
                                  std::move(result).value_or(base::Value()));
+}
+
+// static
+void ShillClientUnittestBase::ExpectValueDictionaryResult(
+    const base::Value::Dict* expected_result,
+    absl::optional<base::Value::Dict> result) {
+  EXPECT_TRUE(result);
+  ExpectValueDictionaryResultWithoutStatus(
+      expected_result, std::move(result).value_or(base::Value::Dict()));
 }
 
 void ShillClientUnittestBase::OnConnectToPlatformMessage(

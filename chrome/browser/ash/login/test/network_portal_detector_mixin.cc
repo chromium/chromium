@@ -139,7 +139,8 @@ void NetworkPortalDetectorMixin::SetShillDefaultNetwork(
   CHECK(json_dict.is_dict());
   ShillManagerClient::Get()->ConfigureServiceForProfile(
       dbus::ObjectPath(NetworkProfileHandler::GetSharedProfilePath()),
-      json_dict, base::BindOnce([](const dbus::ObjectPath& result) {}),
+      json_dict.GetDict(),
+      base::BindOnce([](const dbus::ObjectPath& result) {}),
       base::BindOnce([](const std::string& err, const std::string& msg) {
         LOG(WARNING) << "Error: " << err << " Msg: " << msg;
       }));

@@ -85,7 +85,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   // Called when the IPConfig properties may have changed. |properties| is
   // expected to be of type DICTIONARY.
-  void IPConfigPropertiesChanged(const base::Value& properties);
+  void IPConfigPropertiesChanged(const base::Value::Dict& properties);
 
   // Returns true if the network requires a service activation.
   bool RequiresActivation() const;

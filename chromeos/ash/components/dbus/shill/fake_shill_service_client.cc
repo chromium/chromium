@@ -41,29 +41,28 @@ base::TimeDelta GetInteractiveDelay() {
 }
 
 // Extracts the hex SSID from shill |service_properties|.
-std::string GetHexSSID(const base::Value& service_properties) {
+std::string GetHexSSID(const base::Value::Dict& service_properties) {
   const std::string* hex_ssid =
-      service_properties.FindStringKey(shill::kWifiHexSsid);
+      service_properties.FindString(shill::kWifiHexSsid);
   if (hex_ssid)
     return *hex_ssid;
-  const std::string* ssid =
-      service_properties.FindStringKey(shill::kSSIDProperty);
+  const std::string* ssid = service_properties.FindString(shill::kSSIDProperty);
   if (ssid)
     return base::HexEncode(ssid->c_str(), ssid->size());
   return std::string();
 }
 
-std::string GetSecurityClass(const base::Value& service_properties) {
+std::string GetSecurityClass(const base::Value::Dict& service_properties) {
   // Mimics shill's WiFiProvider::GetServiceParametersFromStorage with
   // WiFiService::ComputeSecurityClass.
   const std::string* security_class =
-      service_properties.FindStringKey(shill::kSecurityClassProperty);
+      service_properties.FindString(shill::kSecurityClassProperty);
 
   if (security_class)
     return *security_class;
 
   const std::string* security =
-      service_properties.FindStringKey(shill::kSecurityProperty);
+      service_properties.FindString(shill::kSecurityProperty);
 
   if (!security)
     return shill::kSecurityClassNone;
@@ -88,12 +87,12 @@ std::string GetSecurityClass(const base::Value& service_properties) {
 
 // Returns true if both |template_service_properties| and |service_properties|
 // have the key |key| and both have the same value for it.
-bool HaveSameValueForKey(const base::Value& template_service_properties,
-                         const base::Value& service_properties,
+bool HaveSameValueForKey(const base::Value::Dict& template_service_properties,
+                         const base::Value::Dict& service_properties,
                          base::StringPiece key) {
   const base::Value* template_service_value =
-      template_service_properties.GetDict().Find(key);
-  const base::Value* service_value = service_properties.GetDict().Find(key);
+      template_service_properties.Find(key);
+  const base::Value* service_value = service_properties.Find(key);
   return template_service_value && service_value &&
          *template_service_value == *service_value;
 }
@@ -102,8 +101,8 @@ bool HaveSameValueForKey(const base::Value& template_service_properties,
 // |template_service_properties| and |service_properties| refer to a service of
 // the same type.
 bool IsSimilarService(const std::string& service_type,
-                      const base::Value& template_service_properties,
-                      const base::Value& service_properties) {
+                      const base::Value::Dict& template_service_properties,
+                      const base::Value::Dict& service_properties) {
   if (service_type == shill::kTypeWifi) {
     // Mimics shill's WiFiProvider::FindSimilarService.
     return GetHexSSID(template_service_properties) ==
@@ -208,7 +207,7 @@ void FakeShillServiceClient::SetProperty(const dbus::ObjectPath& service_path,
 }
 
 void FakeShillServiceClient::SetProperties(const dbus::ObjectPath& service_path,
-                                           const base::Value& properties,
+                                           const base::Value::Dict& properties,
                                            base::OnceClosure callback,
                                            ErrorCallback error_callback) {
   if (set_properties_error_name_.has_value()) {
@@ -218,7 +217,7 @@ void FakeShillServiceClient::SetProperties(const dbus::ObjectPath& service_path,
     set_properties_error_name_ = absl::nullopt;
     return;
   }
-  for (auto iter : properties.DictItems()) {
+  for (auto iter : properties) {
     if (!SetServiceProperty(service_path.value(), iter.first, iter.second)) {
       LOG(ERROR) << "Service not found: " << service_path.value();
       std::move(error_callback).Run("Error.InvalidService", "Invalid Service");
@@ -681,18 +680,18 @@ std::string FakeShillServiceClient::FindServiceMatchingGUID(
 }
 
 std::string FakeShillServiceClient::FindSimilarService(
-    const base::Value& template_service_properties) {
+    const base::Value::Dict& template_service_properties) {
   const std::string* template_type =
-      template_service_properties.FindStringKey(shill::kTypeProperty);
+      template_service_properties.FindString(shill::kTypeProperty);
   if (!template_type)
     return std::string();
 
   for (const auto service_pair : stub_services_.DictItems()) {
     const auto& service_path = service_pair.first;
-    const auto& service_properties = service_pair.second;
+    const base::Value::Dict& service_properties = service_pair.second.GetDict();
 
     const std::string* service_type =
-        service_properties.FindStringKey(shill::kTypeProperty);
+        service_properties.FindString(shill::kTypeProperty);
     if (!service_type || *service_type != *template_type)
       continue;
 

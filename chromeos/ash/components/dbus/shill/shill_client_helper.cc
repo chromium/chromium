@@ -153,6 +153,34 @@ void OnValueMethod(ShillClientHelper::RefHolder* ref_holder,
   std::move(callback).Run(std::move(value));
 }
 
+// Handles responses for methods with base::Value::Dict results.
+void OnValueDictMethod(ShillClientHelper::RefHolder* ref_holder,
+                       chromeos::DBusMethodCallback<base::Value::Dict> callback,
+                       dbus::Response* response,
+                       dbus::ErrorResponse* error_response) {
+  if (!response) {
+    if (error_response) {
+      dbus::MessageReader reader(error_response);
+      std::string error_message;
+      reader.PopString(&error_message);
+      NET_LOG(ERROR) << "DBus call failed. Error: "
+                     << error_response->GetErrorName()
+                     << " Message: " << error_message;
+    } else {
+      NET_LOG(ERROR) << "DBus call failed with no error.";
+    }
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  dbus::MessageReader reader(response);
+  base::Value value(dbus::PopDataAsValue(&reader));
+  if (!value.is_dict()) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  std::move(callback).Run(std::move(value.GetDict()));
+}
+
 // Handles responses for methods without results.
 void OnVoidMethodWithErrorCallback(ShillClientHelper::RefHolder* ref_holder,
                                    base::OnceClosure callback,
@@ -227,9 +255,9 @@ void ShillClientHelper::AddPropertyChangedObserver(
   if (observer_list_.HasObserver(observer))
     return;
   AddRef();
-  // Excecute all the pending MonitorPropertyChanged calls.
-  for (size_t i = 0; i < interfaces_to_be_monitored_.size(); ++i) {
-    MonitorPropertyChangedInternal(interfaces_to_be_monitored_[i]);
+  // Execute all the pending MonitorPropertyChanged calls.
+  for (const auto& interface : interfaces_to_be_monitored_) {
+    MonitorPropertyChangedInternal(interface);
   }
   interfaces_to_be_monitored_.clear();
 
@@ -300,6 +328,17 @@ void ShillClientHelper::CallValueMethod(
   proxy_->CallMethodWithErrorResponse(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&OnValueMethod,
+                     base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
+                     std::move(callback)));
+}
+
+void ShillClientHelper::CallValueDictMethod(
+    dbus::MethodCall* method_call,
+    chromeos::DBusMethodCallback<base::Value::Dict> callback) {
+  DCHECK(!callback.is_null());
+  proxy_->CallMethodWithErrorResponse(
+      method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&OnValueDictMethod,
                      base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
                      std::move(callback)));
 }
@@ -384,11 +423,11 @@ enum DictionaryType { DICTIONARY_TYPE_VARIANT, DICTIONARY_TYPE_STRING };
 
 // Appends an a{ss} dictionary to |writer|. |dictionary| must only contain
 // strings.
-void AppendStringDictionary(const base::Value& dictionary,
+void AppendStringDictionary(const base::Value::Dict& dictionary,
                             dbus::MessageWriter* writer) {
   dbus::MessageWriter array_writer(nullptr);
   writer->OpenArray("{ss}", &array_writer);
-  for (const auto it : dictionary.DictItems()) {
+  for (const auto it : dictionary) {
     dbus::MessageWriter entry_writer(nullptr);
     array_writer.OpenDictEntry(&entry_writer);
     entry_writer.AppendString(it.first);
@@ -417,12 +456,13 @@ void AppendValueDataAsVariantInternal(dbus::MessageWriter* writer,
         // expects a string -> string dictionary.
         dbus::MessageWriter variant_writer(nullptr);
         writer->OpenVariant("a{ss}", &variant_writer);
-        AppendStringDictionary(value, &variant_writer);
+        AppendStringDictionary(value.GetDict(), &variant_writer);
         writer->CloseContainer(&variant_writer);
       } else {
         dbus::MessageWriter variant_writer(nullptr);
         writer->OpenVariant("a{sv}", &variant_writer);
-        ShillClientHelper::AppendServiceProperties(&variant_writer, value);
+        ShillClientHelper::AppendServiceProperties(&variant_writer,
+                                                   value.GetDict());
         writer->CloseContainer(&variant_writer);
       }
       break;
@@ -440,7 +480,7 @@ void AppendValueDataAsVariantInternal(dbus::MessageWriter* writer,
         dbus::MessageWriter array_writer(nullptr);
         variant_writer.OpenArray("a{ss}", &array_writer);
         for (const auto& item : list_view) {
-          AppendStringDictionary(item, &array_writer);
+          AppendStringDictionary(item.GetDict(), &array_writer);
         }
         variant_writer.CloseContainer(&array_writer);
         writer->CloseContainer(&variant_writer);
@@ -485,16 +525,17 @@ void ShillClientHelper::AppendValueDataAsVariant(dbus::MessageWriter* writer,
 }
 
 // static
-void ShillClientHelper::AppendServiceProperties(dbus::MessageWriter* writer,
-                                                const base::Value& dictionary) {
+void ShillClientHelper::AppendServiceProperties(
+    dbus::MessageWriter* writer,
+    const base::Value::Dict& dictionary) {
   dbus::MessageWriter array_writer(nullptr);
   writer->OpenArray("{sv}", &array_writer);
-  for (auto it : dictionary.DictItems()) {
+  for (auto it : dictionary) {
     dbus::MessageWriter entry_writer(nullptr);
     array_writer.OpenDictEntry(&entry_writer);
     entry_writer.AppendString(it.first);
     // Shill expects Cellular.APN to be a string dictionary, a{ss}. All other
-    // properties use a varient dictionary, a{sv}. TODO(stevenjb): Remove this
+    // properties use a variant dictionary, a{sv}. TODO(stevenjb): Remove this
     // hack if/when we change Shill to accept a{sv} for Cellular.APN.
     DictionaryType dictionary_type = (it.first == shill::kCellularApnProperty)
                                          ? DICTIONARY_TYPE_STRING
@@ -504,20 +545,6 @@ void ShillClientHelper::AppendServiceProperties(dbus::MessageWriter* writer,
     array_writer.CloseContainer(&entry_writer);
   }
   writer->CloseContainer(&array_writer);
-}
-
-// static
-void ShillClientHelper::OnGetProperties(
-    const dbus::ObjectPath& device_path,
-    chromeos::DBusMethodCallback<base::Value> callback,
-    absl::optional<base::Value> result) {
-  if (result && !result->is_dict()) {
-    NET_LOG(ERROR) << "GetProperties for: " << device_path.value()
-                   << " returned non dictionary Value: " << *result;
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-  std::move(callback).Run(std::move(result));
 }
 
 void ShillClientHelper::AddRef() {

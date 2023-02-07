@@ -144,7 +144,7 @@ void HotspotStateHandler::LoggedInStateChanged() {
 
 void HotspotStateHandler::UpdateHotspotConfigAndRunCallback(
     SetHotspotConfigCallback callback,
-    absl::optional<base::Value> properties) {
+    absl::optional<base::Value::Dict> properties) {
   if (!properties) {
     NET_LOG(ERROR) << "Error getting Shill manager properties.";
     std::move(callback).Run(
@@ -152,7 +152,7 @@ void HotspotStateHandler::UpdateHotspotConfigAndRunCallback(
     return;
   }
   const base::Value::Dict* shill_tethering_config =
-      properties->GetDict().FindDict(shill::kTetheringConfigProperty);
+      properties->FindDict(shill::kTetheringConfigProperty);
   if (!shill_tethering_config) {
     NET_LOG(ERROR) << "Error getting " << shill::kTetheringConfigProperty
                    << " in Shill manager properties";
@@ -182,14 +182,14 @@ void HotspotStateHandler::OnPropertyChanged(const std::string& key,
 }
 
 void HotspotStateHandler::OnManagerProperties(
-    absl::optional<base::Value> properties) {
+    absl::optional<base::Value::Dict> properties) {
   if (!properties) {
     NET_LOG(ERROR) << "HotspotStateHandler: Failed to get manager properties.";
     return;
   }
 
   const base::Value::Dict* status =
-      properties->GetDict().FindDict(shill::kTetheringStatusProperty);
+      properties->FindDict(shill::kTetheringStatusProperty);
   if (!status) {
     NET_LOG(EVENT) << "HotspotStateHandler: No dict value for: "
                    << shill::kTetheringStatusProperty;

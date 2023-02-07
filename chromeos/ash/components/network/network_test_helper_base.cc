@@ -113,7 +113,7 @@ std::string NetworkTestHelperBase::ConfigureService(
   // error cases, ConfigureCallback() will not run, resulting in "" being
   // returned from this function.
   ShillManagerClient::Get()->ConfigureService(
-      shill_json_dict,
+      shill_json_dict.GetDict(),
       base::BindOnce(&NetworkTestHelperBase::ConfigureCallback,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FailErrorCallback));

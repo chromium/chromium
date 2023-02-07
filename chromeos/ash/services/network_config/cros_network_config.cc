@@ -3341,7 +3341,7 @@ void CrosNetworkConfig::GetSupportedVpnTypes(
 
 void CrosNetworkConfig::OnGetSupportedVpnTypes(
     GetSupportedVpnTypesCallback callback,
-    absl::optional<base::Value> properties) {
+    absl::optional<base::Value::Dict> properties) {
   std::vector<std::string> result;
   if (!properties) {
     NET_LOG(ERROR) << "GetSupportedVpnTypes: GetProperties failed.";
@@ -3349,7 +3349,7 @@ void CrosNetworkConfig::OnGetSupportedVpnTypes(
     return;
   }
   const std::string* value =
-      properties->GetDict().FindString(shill::kSupportedVPNTypesProperty);
+      properties->FindString(shill::kSupportedVPNTypesProperty);
   if (value) {
     result = base::SplitString(*value, ",", base::TRIM_WHITESPACE,
                                base::SPLIT_WANT_NONEMPTY);

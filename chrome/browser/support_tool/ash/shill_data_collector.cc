@@ -167,7 +167,7 @@ void ShillDataCollector::CollectDataAndDetectPII(
 }
 
 void ShillDataCollector::OnGetManagerProperties(
-    absl::optional<base::Value> result) {
+    absl::optional<base::Value::Dict> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result) {
     SupportToolError error = {SupportToolErrorCode::kDataCollectorError,
@@ -176,13 +176,11 @@ void ShillDataCollector::OnGetManagerProperties(
     return;
   }
 
-  base::Value::Dict& result_dict = result->GetDict();
   // Records how many entries are pending to be processed. Adds 1 to guard
   // against the case where `num_entries_left_` drops to 0 before all entries
   // are retrieved.
   num_entries_left_ = 1;
-  const base::Value::List* devices =
-      result_dict.FindList(shill::kDevicesProperty);
+  const base::Value::List* devices = result->FindList(shill::kDevicesProperty);
   if (devices) {
     for (const base::Value& device : *devices) {
       std::string path = GetString(device);
@@ -197,7 +195,7 @@ void ShillDataCollector::OnGetManagerProperties(
   }
 
   const base::Value::List* services =
-      result_dict.FindList(shill::kServicesProperty);
+      result->FindList(shill::kServicesProperty);
   if (services) {
     for (const base::Value& service : *services) {
       std::string path = GetString(service);
@@ -232,7 +230,7 @@ void ShillDataCollector::AddDeviceAndRequestIPConfigs(
     const base::Value& properties) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   shill_log_.FindDict(kNetworkDevices)
-      ->Set(device_path, ExpandProperties(device_path, properties));
+      ->Set(device_path, ExpandProperties(device_path, properties.GetDict()));
 
   const base::Value::List* ip_configs =
       properties.GetIfDict()->FindList(shill::kIPConfigsProperty);
@@ -252,9 +250,10 @@ void ShillDataCollector::AddDeviceAndRequestIPConfigs(
   }
 }
 
-void ShillDataCollector::OnGetIPConfig(const std::string& device_path,
-                                       const std::string& ip_config_path,
-                                       absl::optional<base::Value> properties) {
+void ShillDataCollector::OnGetIPConfig(
+    const std::string& device_path,
+    const std::string& ip_config_path,
+    absl::optional<base::Value::Dict> properties) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!properties) {
     collector_err_["IPConfig"].emplace_back(
@@ -268,7 +267,7 @@ void ShillDataCollector::OnGetIPConfig(const std::string& device_path,
 
 void ShillDataCollector::AddIPConfig(const std::string& device_path,
                                      const std::string& ip_config_path,
-                                     const base::Value& properties) {
+                                     const base::Value::Dict& properties) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Value::Dict& device =
       shill_log_.FindDict(kNetworkDevices)->Find(device_path)->GetDict();
@@ -288,7 +287,8 @@ void ShillDataCollector::OnGetService(const std::string& service_path,
     collector_err_["Service"].emplace_back(service_path);
   } else {
     shill_log_.FindDict(kNetworkServices)
-        ->Set(service_path, ExpandProperties(service_path, *properties));
+        ->Set(service_path,
+              ExpandProperties(service_path, properties->GetDict()));
   }
   --num_entries_left_;
   CheckIfDone();
@@ -296,9 +296,9 @@ void ShillDataCollector::OnGetService(const std::string& service_path,
 
 base::Value::Dict ShillDataCollector::ExpandProperties(
     const std::string& object_path,
-    const base::Value& properties) {
+    const base::Value::Dict& properties) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value::Dict dict = properties.GetIfDict()->Clone();
+  base::Value::Dict dict = properties.Clone();
   // Converts UIData from a string to a dictionary.
   std::string* ui_data = dict.FindString(shill::kUIDataProperty);
   if (ui_data) {

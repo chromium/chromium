@@ -36,19 +36,19 @@ void ErrorCallback(const std::string& error_name) {
 void CreateTestShillConfiguration(bool is_hidden) {
   static int guid_index = 0;
 
-  base::Value properties(base::Value::Type::DICT);
+  base::Value::Dict properties;
 
-  properties.SetKey(shill::kGuidProperty,
-                    base::Value(base::StringPrintf("guid-%i", guid_index++)));
-  properties.SetKey(shill::kTypeProperty, base::Value(shill::kTypeWifi));
-  properties.SetKey(shill::kStateProperty, base::Value(shill::kStateIdle));
-  properties.SetKey(shill::kWifiHiddenSsid, base::Value(is_hidden));
-  properties.SetKey(shill::kProfileProperty,
-                    base::Value(NetworkProfileHandler::GetSharedProfilePath()));
+  properties.Set(shill::kGuidProperty,
+                 base::StringPrintf("guid-%i", guid_index++));
+  properties.Set(shill::kTypeProperty, shill::kTypeWifi);
+  properties.Set(shill::kStateProperty, shill::kStateIdle);
+  properties.Set(shill::kWifiHiddenSsid, is_hidden);
+  properties.Set(shill::kProfileProperty,
+                 NetworkProfileHandler::GetSharedProfilePath());
 
   NetworkHandler::Get()
       ->network_configuration_handler()
-      ->CreateShillConfiguration(properties, base::DoNothing(),
+      ->CreateShillConfiguration(std::move(properties), base::DoNothing(),
                                  base::BindOnce(&ErrorCallback));
   base::RunLoop().RunUntilIdle();
 }

@@ -529,16 +529,16 @@ int ImportNetworksForUser(const user_manager::User* user,
           NetworkHandler::Get()->network_state_handler()->FirstNetworkByType(
               NetworkTypePattern::Ethernet());
       if (ethernet) {
-        config_handler->SetShillProperties(ethernet->path(), shill_dict,
-                                           base::OnceClosure(),
-                                           network_handler::ErrorCallback());
+        config_handler->SetShillProperties(
+            ethernet->path(), shill_dict.GetDict(), base::OnceClosure(),
+            network_handler::ErrorCallback());
       } else {
         ethernet_not_found = true;
       }
 
     } else {
       config_handler->CreateShillConfiguration(
-          shill_dict, network_handler::ServiceResultCallback(),
+          shill_dict.GetDict(), network_handler::ServiceResultCallback(),
           network_handler::ErrorCallback());
       ++networks_created;
     }

@@ -215,7 +215,7 @@ void NetworkMetadataStore::FixSyncedHiddenNetworks() {
     base::Value::Dict dict;
     dict.Set(shill::kWifiHiddenSsid, false);
     network_configuration_handler_->SetShillProperties(
-        network->path(), base::Value(std::move(dict)), base::DoNothing(),
+        network->path(), std::move(dict), base::DoNothing(),
         base::BindOnce(&NetworkMetadataStore::OnDisableHiddenError,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -346,24 +346,23 @@ void NetworkMetadataStore::UpdateExternalModifications(
 void NetworkMetadataStore::OnConfigurationModified(
     const std::string& service_path,
     const std::string& guid,
-    const base::Value* set_properties) {
+    const base::Value::Dict* set_properties) {
   if (!set_properties) {
     return;
   }
 
   SetPref(guid, kIsFromSync, base::Value(false));
 
-  const base::Value::Dict& set_properties_dict = set_properties->GetDict();
-  if (set_properties_dict.Find(shill::kProxyConfigProperty)) {
+  if (set_properties->Find(shill::kProxyConfigProperty)) {
     UpdateExternalModifications(guid, shill::kProxyConfigProperty);
   }
-  if (set_properties_dict.FindByDottedPath(
+  if (set_properties->FindByDottedPath(
           base::StringPrintf("%s.%s", shill::kStaticIPConfigProperty,
                              shill::kNameServersProperty))) {
     UpdateExternalModifications(guid, shill::kNameServersProperty);
   }
 
-  if (set_properties_dict.Find(shill::kPassphraseProperty)) {
+  if (set_properties->Find(shill::kPassphraseProperty)) {
     // Only clear last connected if the passphrase changes.  Other settings
     // (autoconnect, dns, etc.) won't affect the ability to connect to a
     // network.

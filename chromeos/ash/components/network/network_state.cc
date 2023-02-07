@@ -340,12 +340,13 @@ bool NetworkState::IsActive() const {
          activation_state() == shill::kActivationStateActivating;
 }
 
-void NetworkState::IPConfigPropertiesChanged(const base::Value& properties) {
-  if (properties.DictEmpty()) {
+void NetworkState::IPConfigPropertiesChanged(
+    const base::Value::Dict& properties) {
+  if (properties.empty()) {
     ipv4_config_ = base::Value();
     return;
   }
-  ipv4_config_ = properties.Clone();
+  ipv4_config_ = base::Value(properties.Clone());
 }
 
 std::string NetworkState::GetIpAddress() const {

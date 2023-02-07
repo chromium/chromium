@@ -32,13 +32,13 @@ class HotspotAllowedFlagHandlerTest : public ::testing::Test {
   }
 
   void OnGetManagerCallback(bool expected_value,
-                            absl::optional<base::Value> result) {
+                            absl::optional<base::Value::Dict> result) {
     if (!result) {
       ADD_FAILURE() << "Error getting Shill manager properties";
       return;
     }
     absl::optional<bool> tethering_allowed =
-        result->GetDict().FindBool(shill::kTetheringAllowedProperty);
+        result->FindBool(shill::kTetheringAllowedProperty);
     if (!tethering_allowed) {
       ADD_FAILURE()
           << "Error getting TetheringAllowed in Shill manager properties";

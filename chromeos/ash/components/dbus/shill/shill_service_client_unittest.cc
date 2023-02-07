@@ -151,7 +151,7 @@ TEST_F(ShillServiceClientTest, SetProperties) {
   // Call method.
   base::MockCallback<base::OnceClosure> mock_closure;
   base::MockCallback<ShillServiceClient::ErrorCallback> mock_error_callback;
-  client_->SetProperties(dbus::ObjectPath(kExampleServicePath), arg,
+  client_->SetProperties(dbus::ObjectPath(kExampleServicePath), arg.GetDict(),
                          mock_closure.Get(), mock_error_callback.Get());
   EXPECT_CALL(mock_closure, Run()).Times(1);
   EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);

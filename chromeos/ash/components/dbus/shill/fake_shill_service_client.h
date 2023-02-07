@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
                    base::OnceClosure callback,
                    ErrorCallback error_callback) override;
   void SetProperties(const dbus::ObjectPath& service_path,
-                     const base::Value& properties,
+                     const base::Value::Dict& properties,
                      base::OnceClosure callback,
                      ErrorCallback error_callback) override;
   void ClearProperty(const dbus::ObjectPath& service_path,
@@ -122,7 +122,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
       const std::string& service_path) override;
   std::string FindServiceMatchingGUID(const std::string& guid) override;
   std::string FindSimilarService(
-      const base::Value& template_service_properties) override;
+      const base::Value::Dict& template_service_properties) override;
   void ClearServices() override;
   void SetConnectBehavior(const std::string& service_path,
                           const base::RepeatingClosure& behavior) override;

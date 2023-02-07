@@ -105,9 +105,10 @@ class TestNetworkConfigurationObserver : public NetworkConfigurationObserver {
     removed_configurations_[service_path] = guid;
   }
 
-  void OnConfigurationModified(const std::string& service_path,
-                               const std::string& guid,
-                               const base::Value* set_properties) override {
+  void OnConfigurationModified(
+      const std::string& service_path,
+      const std::string& guid,
+      const base::Value::Dict* set_properties) override {
     updated_configurations_[service_path] = guid;
   }
 
@@ -212,7 +213,7 @@ class NetworkConfigurationHandlerTest : public testing::Test {
   }
 
   void ManagerGetPropertiesCallback(const std::string& success_callback_name,
-                                    absl::optional<base::Value> result) {
+                                    absl::optional<base::Value::Dict> result) {
     if (result)
       success_callback_name_ = success_callback_name;
     manager_get_properties_ = std::move(result);
@@ -235,7 +236,7 @@ class NetworkConfigurationHandlerTest : public testing::Test {
                    NetworkProfileHandler::GetSharedProfilePath());
 
     network_configuration_handler_->CreateShillConfiguration(
-        base::Value(std::move(properties)),
+        std::move(properties),
         base::BindOnce(
             &NetworkConfigurationHandlerTest::CreateConfigurationCallback,
             base::Unretained(this)),
@@ -311,9 +312,10 @@ class NetworkConfigurationHandlerTest : public testing::Test {
 
   bool GetReceivedStringManagerProperty(const std::string& key,
                                         std::string* result) {
-    if (!manager_get_properties_ || manager_get_properties_->is_none())
+    if (!manager_get_properties_) {
       return false;
-    const std::string* value = manager_get_properties_->FindStringKey(key);
+    }
+    const std::string* value = manager_get_properties_->FindString(key);
     if (!value)
       return false;
     *result = *value;
@@ -337,7 +339,7 @@ class NetworkConfigurationHandlerTest : public testing::Test {
   std::string success_callback_name_;
   std::string get_properties_path_;
   base::Value get_properties_;
-  absl::optional<base::Value> manager_get_properties_;
+  absl::optional<base::Value::Dict> manager_get_properties_;
   std::string create_service_path_;
 };
 
@@ -418,10 +420,11 @@ TEST_F(NetworkConfigurationHandlerTest, SetProperties) {
       kServicePath, std::string() /* guid */, std::string() /* name */,
       shill::kTypeWifi, std::string() /* state */, true /* visible */);
 
-  base::Value value(base::Value::Type::DICT);
-  value.SetStringKey(shill::kSSIDProperty, kNetworkName);
+  base::Value::Dict value;
+  value.Set(shill::kSSIDProperty, kNetworkName);
   network_configuration_handler_->SetShillProperties(
-      kServicePath, value, base::DoNothing(), base::BindOnce(&ErrorCallback));
+      kServicePath, std::move(value), base::DoNothing(),
+      base::BindOnce(&ErrorCallback));
   base::RunLoop().RunUntilIdle();
 
   const base::Value* properties =
@@ -484,7 +487,7 @@ TEST_F(NetworkConfigurationHandlerTest, CreateConfiguration) {
   std::string service_path;
   std::string guid;
   network_configuration_handler_->CreateShillConfiguration(
-      base::Value(std::move(value)),
+      std::move(value),
       base::BindOnce(&CopyServiceResult, &success, &service_path, &guid),
       base::BindOnce(&ErrorCallback));
   base::RunLoop().RunUntilIdle();
@@ -608,14 +611,11 @@ TEST_F(NetworkConfigurationHandlerTest, StubSetAndClearProperties) {
   const std::string test_passphrase("test_passphrase");
 
   // Set Properties
-  base::Value properties_to_set(base::Value::Type::DICT);
-  properties_to_set.SetKey(shill::kCheckPortalProperty,
-                           base::Value(test_check_portal));
-  properties_to_set.SetKey(shill::kPassphraseProperty,
-                           base::Value(test_passphrase));
+  base::Value::Dict properties_to_set;
+  properties_to_set.Set(shill::kCheckPortalProperty, test_check_portal);
+  properties_to_set.Set(shill::kPassphraseProperty, test_passphrase);
   network_configuration_handler_->SetShillProperties(
-      service_path, properties_to_set,
-
+      service_path, std::move(properties_to_set),
       base::BindOnce(&NetworkConfigurationHandlerTest::SuccessCallback,
                      base::Unretained(this), "SetProperties"),
       base::BindOnce(&ErrorCallback));
@@ -659,10 +659,10 @@ TEST_F(NetworkConfigurationHandlerTest, StubGetNameFromWifiHex) {
   std::string expected_name = "This is HEX SSID!";
 
   // Set Properties
-  base::Value properties_to_set(base::Value::Type::DICT);
-  properties_to_set.SetKey(shill::kWifiHexSsid, base::Value(wifi_hex));
+  base::Value::Dict properties_to_set;
+  properties_to_set.Set(shill::kWifiHexSsid, wifi_hex);
   network_configuration_handler_->SetShillProperties(
-      service_path, properties_to_set, base::DoNothing(),
+      service_path, std::move(properties_to_set), base::DoNothing(),
       base::BindOnce(&ErrorCallback));
   base::RunLoop().RunUntilIdle();
   std::string wifi_hex_result;
@@ -759,13 +759,12 @@ TEST_F(NetworkConfigurationHandlerTest, NetworkConfigurationObserver_Updated) {
   EXPECT_FALSE(
       network_configuration_observer->HasUpdatedConfiguration(service_path));
 
-  base::Value properties(base::Value::Type::DICT);
-  properties.SetKey(shill::kSecurityClassProperty,
-                    base::Value(shill::kSecurityClassPsk));
-  properties.SetKey(shill::kPassphraseProperty, base::Value("secret"));
+  base::Value::Dict properties;
+  properties.Set(shill::kSecurityClassProperty, shill::kSecurityClassPsk);
+  properties.Set(shill::kPassphraseProperty, "secret");
 
   network_configuration_handler_->SetShillProperties(
-      create_service_path_, properties, base::DoNothing(),
+      create_service_path_, std::move(properties), base::DoNothing(),
       base::BindOnce(&ErrorCallback));
   base::RunLoop().RunUntilIdle();
 

@@ -135,7 +135,7 @@ void HotspotCapabilitiesProvider::ResetNetworkStateHandler() {
 }
 
 void HotspotCapabilitiesProvider::OnManagerProperties(
-    absl::optional<base::Value> properties) {
+    absl::optional<base::Value::Dict> properties) {
   if (!properties) {
     NET_LOG(ERROR)
         << "HotspotCapabilitiesProvider: Failed to get manager properties.";
@@ -143,7 +143,7 @@ void HotspotCapabilitiesProvider::OnManagerProperties(
   }
 
   const base::Value::Dict* capabilities =
-      properties->GetDict().FindDict(shill::kTetheringCapabilitiesProperty);
+      properties->FindDict(shill::kTetheringCapabilitiesProperty);
   if (!capabilities) {
     NET_LOG(EVENT) << "HotspotCapabilitiesProvider: No dict value for: "
                    << shill::kTetheringCapabilitiesProperty;

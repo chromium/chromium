@@ -93,7 +93,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
     // security and mode match. Returns the empty string if no similar service
     // is found.
     virtual std::string FindSimilarService(
-        const base::Value& template_service_properties) = 0;
+        const base::Value::Dict& template_service_properties) = 0;
 
     // Clears all Services from the Manager and Service stubs.
     virtual void ClearServices() = 0;
@@ -176,11 +176,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
                            base::OnceClosure callback,
                            ErrorCallback error_callback) = 0;
 
-  // Calls the SetProperties DBus method with |properties| which must be a
-  // dictionary Value. Invokes |callback| on success or |error_callback| on
-  // failure.
+  // Calls the SetProperties DBus method with |properties|. Invokes |callback|
+  // on success or |error_callback| on failure.
   virtual void SetProperties(const dbus::ObjectPath& service_path,
-                             const base::Value& properties,
+                             const base::Value::Dict& properties,
                              base::OnceClosure callback,
                              ErrorCallback error_callback) = 0;
 

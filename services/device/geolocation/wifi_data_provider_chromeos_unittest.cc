@@ -54,8 +54,7 @@ class GeolocationChromeOsWifiDataProviderTest : public testing::Test {
         properties.Set(shill::kGeoChannelProperty, channel);
         properties.Set(shill::kGeoSignalStrengthProperty, strength);
         network_handler_test_helper_.manager_test()->AddGeoNetwork(
-            shill::kGeoWifiAccessPointsProperty,
-            base::Value(std::move(properties)));
+            shill::kGeoWifiAccessPointsProperty, std::move(properties));
       }
     }
     base::RunLoop().RunUntilIdle();

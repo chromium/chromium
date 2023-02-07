@@ -202,8 +202,7 @@ class NetworkChangeManagerClientUpdateTest : public testing::Test {
 
     ipv4_properties.Set(shill::kNameServersProperty,
                         std::move(dns_servers_value));
-    default_network_.IPConfigPropertiesChanged(
-        base::Value(std::move(ipv4_properties)));
+    default_network_.IPConfigPropertiesChanged(std::move(ipv4_properties));
   }
 
   // Process an default network update based on the state of |default_network_|.

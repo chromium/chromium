@@ -278,7 +278,7 @@ void NetworkConnectImpl::CallCreateConfiguration(
   NetworkHandler::Get()
       ->network_configuration_handler()
       ->CreateShillConfiguration(
-          base::Value(std::move(shill_properties)),
+          std::move(shill_properties),
           base::BindOnce(&NetworkConnectImpl::OnConfigureSucceeded,
                          weak_factory_.GetWeakPtr(), connect_on_configure),
           base::BindOnce(&NetworkConnectImpl::OnConfigureFailed,
@@ -344,7 +344,7 @@ void NetworkConnectImpl::ConfigureSetProfileSucceeded(
     return;
   }
   NetworkHandler::Get()->network_configuration_handler()->SetShillProperties(
-      network->path(), properties_to_set,
+      network->path(), properties_to_set.GetDict(),
       base::BindOnce(&NetworkConnectImpl::ClearPropertiesAndConnect,
                      weak_factory_.GetWeakPtr(), network_id,
                      properties_to_clear),

@@ -158,9 +158,19 @@ class ShillClientUnittestBase : public testing::Test {
   static void ExpectValueResult(const base::Value* expected_result,
                                 absl::optional<base::Value> result);
 
+  // Checks the result and expects the call status to be SUCCESS.
+  static void ExpectValueDictionaryResult(
+      const base::Value::Dict* expected_result,
+      absl::optional<base::Value::Dict> result);
+
   // Expects the |expected_result| to match the |result|.
   static void ExpectValueResultWithoutStatus(const base::Value* expected_result,
                                              base::Value result);
+
+  // Expects the |expected_result| to match the |result|.
+  static void ExpectValueDictionaryResultWithoutStatus(
+      const base::Value::Dict* expected_result,
+      base::Value::Dict result);
 
   // A message loop to emulate asynchronous behavior.
   base::test::SingleThreadTaskEnvironment task_environment_;

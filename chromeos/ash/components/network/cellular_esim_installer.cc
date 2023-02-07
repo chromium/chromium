@@ -47,27 +47,27 @@ CreateTimedInstallProfileCallback(
       std::move(callback), base::Time::Now());
 }
 
-void AppendRequiredCellularProperties(const dbus::ObjectPath& euicc_path,
-                                      const dbus::ObjectPath& profile_path,
-                                      const NetworkProfile* profile,
-                                      base::Value* shill_properties_to_update) {
+void AppendRequiredCellularProperties(
+    const dbus::ObjectPath& euicc_path,
+    const dbus::ObjectPath& profile_path,
+    const NetworkProfile* profile,
+    base::Value::Dict* shill_properties_to_update) {
   HermesEuiccClient::Properties* euicc_properties =
       HermesEuiccClient::Get()->GetProperties(euicc_path);
   HermesProfileClient::Properties* profile_properties =
       HermesProfileClient::Get()->GetProperties(profile_path);
-  shill_properties_to_update->SetStringKey(shill::kTypeProperty,
-                                           shill::kTypeCellular);
-  shill_properties_to_update->SetStringKey(shill::kProfileProperty,
-                                           profile->path);
+  shill_properties_to_update->Set(shill::kTypeProperty, shill::kTypeCellular);
+  shill_properties_to_update->Set(shill::kProfileProperty, profile->path);
   // Insert ICCID and EID to the shill properties.
-  shill_properties_to_update->SetStringKey(shill::kIccidProperty,
-                                           profile_properties->iccid().value());
-  shill_properties_to_update->SetStringKey(shill::kEidProperty,
-                                           euicc_properties->eid().value());
+  shill_properties_to_update->Set(shill::kIccidProperty,
+                                  profile_properties->iccid().value());
+  shill_properties_to_update->Set(shill::kEidProperty,
+                                  euicc_properties->eid().value());
   // Use ICCID as GUID if no GUID found in the given properties.
-  if (!shill_properties_to_update->FindStringKey(shill::kGuidProperty))
-    shill_properties_to_update->SetStringKey(
-        shill::kGuidProperty, profile_properties->iccid().value());
+  if (!shill_properties_to_update->FindString(shill::kGuidProperty)) {
+    shill_properties_to_update->Set(shill::kGuidProperty,
+                                    profile_properties->iccid().value());
+  }
 }
 
 bool IsManagedNetwork(const base::Value& new_shill_properties) {
@@ -214,14 +214,14 @@ void CellularESimInstaller::OnProfileInstallResult(
                                  is_initial_install, is_install_via_qr_code);
   pending_inhibit_locks_.emplace(*profile_path, std::move(inhibit_lock));
   ConfigureESimService(
-      new_shill_properties, euicc_path, *profile_path,
+      new_shill_properties.GetDict(), euicc_path, *profile_path,
       base::BindOnce(&CellularESimInstaller::EnableProfile,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      euicc_path, *profile_path));
 }
 
 void CellularESimInstaller::ConfigureESimService(
-    const base::Value& new_shill_properties,
+    const base::Value::Dict& new_shill_properties,
     const dbus::ObjectPath& euicc_path,
     const dbus::ObjectPath& profile_path,
     ConfigureESimServiceCallback callback) {
@@ -236,7 +236,7 @@ void CellularESimInstaller::ConfigureESimService(
     return;
   }
 
-  base::Value properties_to_set = new_shill_properties.Clone();
+  base::Value::Dict properties_to_set = new_shill_properties.Clone();
   AppendRequiredCellularProperties(euicc_path, profile_path, profile,
                                    &properties_to_set);
   NET_LOG(EVENT)

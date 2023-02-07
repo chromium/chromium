@@ -667,7 +667,7 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
   void OnGetShillManagerDictPropertiesByKey(
       const std::string& callback_id,
       const std::string& dict_key,
-      absl::optional<base::Value> properties) {
+      absl::optional<base::Value::Dict> properties) {
     if (!properties) {
       NET_LOG(ERROR) << "Error getting Shill manager properties.";
       Respond(callback_id,
@@ -675,7 +675,7 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
       return;
     }
 
-    base::Value::Dict* value = properties->GetDict().FindDict(dict_key);
+    base::Value::Dict* value = properties->FindDict(dict_key);
     if (value) {
       const std::string* ssid =
           value->FindString(shill::kTetheringConfSSIDProperty);

@@ -73,7 +73,7 @@ class ShillDataCollector : public DataCollector {
                       bool success);
 
   // These are functions originated from `system_logs::ShillLogSource`.
-  void OnGetManagerProperties(absl::optional<base::Value> result);
+  void OnGetManagerProperties(absl::optional<base::Value::Dict> result);
 
   void OnGetDevice(const std::string& device_path,
                    absl::optional<base::Value> properties);
@@ -83,11 +83,11 @@ class ShillDataCollector : public DataCollector {
 
   void OnGetIPConfig(const std::string& device_path,
                      const std::string& ip_config_path,
-                     absl::optional<base::Value> properties);
+                     absl::optional<base::Value::Dict> properties);
 
   void AddIPConfig(const std::string& device_path,
                    const std::string& ip_config_path,
-                   const base::Value& properties);
+                   const base::Value::Dict& properties);
 
   void OnGetService(const std::string& service_path,
                     absl::optional<base::Value> properties);
@@ -95,7 +95,7 @@ class ShillDataCollector : public DataCollector {
   // Expands UIData from JSON into a dictionary if present. Also detects PII
   // such as the device and service names.
   base::Value::Dict ExpandProperties(const std::string& object_path,
-                                     const base::Value& properties);
+                                     const base::Value::Dict& properties);
 
   // Check whether all property requests have been completed. If so, runs
   // redaction::RedactionTool on the collected log.

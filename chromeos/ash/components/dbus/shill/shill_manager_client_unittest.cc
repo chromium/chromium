@@ -115,13 +115,13 @@ TEST_F(ShillManagerClientTest, GetProperties) {
   writer.CloseContainer(&array_writer);
 
   // Create the expected value.
-  base::Value value(base::Value::Type::DICT);
-  value.SetKey(shill::kArpGatewayProperty, base::Value(true));
+  base::Value::Dict value;
+  value.Set(shill::kArpGatewayProperty, true);
   // Set expectations.
   PrepareForMethodCall(shill::kGetPropertiesFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
-  client_->GetProperties(base::BindOnce(&ExpectValueResult, &value));
+  client_->GetProperties(base::BindOnce(&ExpectValueDictionaryResult, &value));
   // Run the message loop.
   base::RunLoop().RunUntilIdle();
 }
@@ -160,14 +160,13 @@ TEST_F(ShillManagerClientTest, GetNetworksForGeolocation) {
   type_entry_list.Append(std::move(property_dict));
   base::Value::Dict type_dict;
   type_dict.Set("wifi", std::move(type_entry_list));
-  base::Value type_dict_value(std::move(type_dict));
 
   // Set expectations.
   PrepareForMethodCall(shill::kGetNetworksForGeolocation,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
   client_->GetNetworksForGeolocation(
-      base::BindOnce(&ExpectValueResult, &type_dict_value));
+      base::BindOnce(&ExpectValueDictionaryResult, &type_dict));
 
   // Run the message loop.
   base::RunLoop().RunUntilIdle();
@@ -293,7 +292,8 @@ TEST_F(ShillManagerClientTest, ConfigureService) {
   // Call method.
   base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
   client_->ConfigureService(
-      arg, base::BindOnce(&ExpectObjectPathResultWithoutStatus, object_path),
+      arg.GetDict(),
+      base::BindOnce(&ExpectObjectPathResultWithoutStatus, object_path),
       mock_error_callback.Get());
   EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
 
@@ -319,7 +319,8 @@ TEST_F(ShillManagerClientTest, GetService) {
   // Call method.
   base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
   client_->GetService(
-      arg, base::BindOnce(&ExpectObjectPathResultWithoutStatus, object_path),
+      arg.GetDict(),
+      base::BindOnce(&ExpectObjectPathResultWithoutStatus, object_path),
       mock_error_callback.Get());
   EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
 

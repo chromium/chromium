@@ -208,7 +208,7 @@ class CellularESimInstallerTest : public testing::Test {
     absl::optional<dbus::ObjectPath> service_path_out;
     base::RunLoop run_loop;
     cellular_esim_installer_->ConfigureESimService(
-        new_shill_properties, euicc_path, profile_path,
+        new_shill_properties.GetDict(), euicc_path, profile_path,
         base::BindLambdaForTesting(
             [&](absl::optional<dbus::ObjectPath> service_path) {
               service_path_out = service_path;

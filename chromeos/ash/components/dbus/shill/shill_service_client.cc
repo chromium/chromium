@@ -131,7 +131,7 @@ class ShillServiceClientImpl : public ShillServiceClient {
   }
 
   void SetProperties(const dbus::ObjectPath& service_path,
-                     const base::Value& properties,
+                     const base::Value::Dict& properties,
                      base::OnceClosure callback,
                      ErrorCallback error_callback) override {
     auto* helper = GetHelper(service_path);

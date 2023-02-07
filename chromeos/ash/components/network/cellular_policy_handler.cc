@@ -6,6 +6,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/value_iterators.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
@@ -197,7 +198,7 @@ void CellularPolicyHandler::SetupESim(const dbus::ObjectPath& euicc_path) {
   NET_LOG(EVENT) << "Attempt setup policy eSIM profile with SMDP address: "
                  << GetCurrentSmdpAddress()
                  << " on euicc path: " << euicc_path.value();
-  base::Value new_shill_properties = GetNewShillProperties();
+  base::Value::Dict new_shill_properties = GetNewShillProperties();
   absl::optional<dbus::ObjectPath> profile_path =
       FindExistingMatchingESimProfile();
   if (profile_path) {
@@ -226,14 +227,14 @@ void CellularPolicyHandler::SetupESim(const dbus::ObjectPath& euicc_path) {
   // require confirmation code.
   cellular_esim_installer_->InstallProfileFromActivationCode(
       GetCurrentSmdpAddress(), /*confirmation_code=*/std::string(), euicc_path,
-      std::move(new_shill_properties),
+      base::Value(std::move(new_shill_properties)),
       base::BindOnce(
           &CellularPolicyHandler::OnESimProfileInstallAttemptComplete,
           weak_ptr_factory_.GetWeakPtr()),
       remaining_install_requests_.front()->retry_backoff.failure_count() == 0);
 }
 
-base::Value CellularPolicyHandler::GetNewShillProperties() {
+base::Value::Dict CellularPolicyHandler::GetNewShillProperties() {
   const NetworkProfile* profile =
       network_profile_handler_->GetProfileForUserhash(
           /*userhash=*/std::string());
@@ -242,10 +243,11 @@ base::Value CellularPolicyHandler::GetNewShillProperties() {
           ::onc::network_config::kGUID);
   DCHECK(guid);
 
-  return policy_util::CreateShillConfiguration(
-      *profile, *guid, /*global_policy=*/nullptr,
-      &(remaining_install_requests_.front()->onc_config),
-      /*user_settings=*/nullptr);
+  return std::move(policy_util::CreateShillConfiguration(
+                       *profile, *guid, /*global_policy=*/nullptr,
+                       &(remaining_install_requests_.front()->onc_config),
+                       /*user_settings=*/nullptr)
+                       .GetDict());
 }
 
 const std::string& CellularPolicyHandler::GetCurrentSmdpAddress() const {

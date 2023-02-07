@@ -114,10 +114,9 @@ void ShellNetworkController::SetCellularAllowRoaming(bool allow_roaming) {
   handler->network_state_handler()->GetVisibleNetworkListByType(
       ash::NetworkTypePattern::Cellular(), &network_list);
 
-  const base::Value properties_value(std::move(properties));
   for (const ash::NetworkState* network : network_list) {
     handler->network_configuration_handler()->SetShillProperties(
-        network->path(), properties_value, base::DoNothing(),
+        network->path(), properties, base::DoNothing(),
         ash::network_handler::ErrorCallback());
   }
 }

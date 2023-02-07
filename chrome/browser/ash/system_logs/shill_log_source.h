@@ -28,23 +28,24 @@ class ShillLogSource : public SystemLogsSource {
   void Fetch(SysLogsSourceCallback callback) override;
 
  private:
-  void OnGetManagerProperties(absl::optional<base::Value> result);
+  void OnGetManagerProperties(absl::optional<base::Value::Dict> result);
   void OnGetDevice(const std::string& device_path,
                    absl::optional<base::Value> properties);
   void AddDeviceAndRequestIPConfigs(const std::string& device_path,
                                     const base::Value& properties);
   void OnGetIPConfig(const std::string& device_path,
                      const std::string& ip_config_path,
-                     absl::optional<base::Value> properties);
+                     absl::optional<base::Value::Dict> properties);
   void AddIPConfig(const std::string& device_path,
                    const std::string& ip_config_path,
-                   const base::Value& properties);
+                   const base::Value::Dict& properties);
   void OnGetService(const std::string& service_path,
                     absl::optional<base::Value> properties);
   // Scrubs |properties| for PII data based on the |object_path|. Also expands
   // UIData from JSON into a dictionary if present.
-  base::Value ScrubAndExpandProperties(const std::string& object_path,
-                                       const base::Value& properties);
+  base::Value::Dict ScrubAndExpandProperties(
+      const std::string& object_path,
+      const base::Value::Dict& properties);
   // Check whether all property requests have completed. If so, invoke
   // |callback_| and clear results.
   void CheckIfDone();
@@ -55,8 +56,8 @@ class ShillLogSource : public SystemLogsSource {
   std::set<std::string> service_paths_;
   // More than one device may request the same IP configs, so use multiset.
   std::multiset<std::string> ip_config_paths_;
-  base::Value devices_{base::Value::Type::DICT};
-  base::Value services_{base::Value::Type::DICT};
+  base::Value::Dict devices_;
+  base::Value::Dict services_;
   base::WeakPtrFactory<ShillLogSource> weak_ptr_factory_{this};
 };
 
