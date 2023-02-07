@@ -25,6 +25,7 @@
 #include "ash/wm/workspace_controller.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -856,19 +857,36 @@ void Desk::RestackAllDeskWindows() {
     const size_t count = container->children().size();
     DCHECK_LE(adw_data.size(), count);
 
-    if (count > 1) {
-      for (auto& adw : base::Reversed(adw_data)) {
-        DCHECK(adw.window);
-        if (adw.order != 0) {
-          // TODO: Make this robust rather than DCHECK'ing
-          DCHECK_GT(container->children().size(), count - adw.order - 1);
-          aura::Window* stack_below =
-              container->children()[count - adw.order - 1];
-          if (adw.window != stack_below) {
-            container->StackChildBelow(adw.window, stack_below);
-          }
+    // Keeps track of which ADW windows have been stacked in the code below.
+    base::flat_set<aura::Window*> already_stacked;
+
+    // Find the place to insert, counting only windows that are Z-order tracked.
+    auto find_window_to_stack_below = [&](size_t order) -> aura::Window* {
+      size_t index = 0;
+      for (aura::Window* w : base::Reversed(container->children())) {
+        if (desks_util::IsZOrderTracked(w) &&
+            (!desks_util::IsWindowVisibleOnAllWorkspaces(w) ||
+             already_stacked.contains(w))) {
+          ++index;
+        }
+        if (order == index) {
+          return w;
         }
       }
+      return nullptr;
+    };
+
+    for (auto& adw : adw_data) {
+      DCHECK(adw.window);
+      if (adw.order == 0) {
+        container->StackChildAtTop(adw.window);
+      } else if (aura::Window* stack_below =
+                     find_window_to_stack_below(adw.order)) {
+        if (adw.window != stack_below) {
+          container->StackChildBelow(adw.window, stack_below);
+        }
+      }
+      already_stacked.insert(adw.window);
     }
   }
 }
