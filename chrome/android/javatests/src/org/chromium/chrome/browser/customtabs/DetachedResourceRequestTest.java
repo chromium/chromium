@@ -31,7 +31,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -142,38 +142,43 @@ public class DetachedResourceRequestTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             int expected = CustomTabsConnection.ParallelRequestStatus.NO_REQUEST;
-            HistogramDelta histogram =
-                    new HistogramDelta("CustomTabs.ParallelRequestStatusOnStart", expected);
+            var histogram = HistogramWatcher.newSingleRecordWatcher(
+                    "CustomTabs.ParallelRequestStatusOnStart", expected);
             Assert.assertEquals(expected, mConnection.handleParallelRequest(session, new Intent()));
-            Assert.assertEquals(1, histogram.getDelta());
+            histogram.assertExpected();
 
             expected = CustomTabsConnection.ParallelRequestStatus.FAILURE_INVALID_URL;
-            histogram = new HistogramDelta("CustomTabs.ParallelRequestStatusOnStart", expected);
+            histogram = HistogramWatcher.newSingleRecordWatcher(
+                    "CustomTabs.ParallelRequestStatusOnStart", expected);
             Intent intent =
                     prepareIntent(Uri.parse("android-app://this.is.an.android.app"), ORIGIN);
             Assert.assertEquals("Should not allow android-app:// scheme", expected,
                     mConnection.handleParallelRequest(session, intent));
-            Assert.assertEquals(1, histogram.getDelta());
+            histogram.assertExpected();
 
             expected = CustomTabsConnection.ParallelRequestStatus.FAILURE_INVALID_URL;
-            histogram = new HistogramDelta("CustomTabs.ParallelRequestStatusOnStart", expected);
+            histogram = HistogramWatcher.newSingleRecordWatcher(
+                    "CustomTabs.ParallelRequestStatusOnStart", expected);
             intent = prepareIntent(Uri.parse(""), ORIGIN);
             Assert.assertEquals("Should not allow an empty URL", expected,
                     mConnection.handleParallelRequest(session, intent));
-            Assert.assertEquals(1, histogram.getDelta());
+            histogram.assertExpected();
 
             expected =
                     CustomTabsConnection.ParallelRequestStatus.FAILURE_INVALID_REFERRER_FOR_SESSION;
-            histogram = new HistogramDelta("CustomTabs.ParallelRequestStatusOnStart", expected);
+            histogram = HistogramWatcher.newSingleRecordWatcher(
+                    "CustomTabs.ParallelRequestStatusOnStart", expected);
             intent = prepareIntent(Uri.parse("HTTPS://foo.bar"), Uri.parse("wrong://origin"));
             Assert.assertEquals("Should not allow an arbitrary origin", expected,
                     mConnection.handleParallelRequest(session, intent));
+            histogram.assertExpected();
 
             expected = CustomTabsConnection.ParallelRequestStatus.SUCCESS;
-            histogram = new HistogramDelta("CustomTabs.ParallelRequestStatusOnStart", expected);
+            histogram = HistogramWatcher.newSingleRecordWatcher(
+                    "CustomTabs.ParallelRequestStatusOnStart", expected);
             intent = prepareIntent(Uri.parse("HTTPS://foo.bar"), ORIGIN);
             Assert.assertEquals(expected, mConnection.handleParallelRequest(session, intent));
-            Assert.assertEquals(1, histogram.getDelta());
+            histogram.assertExpected();
         });
     }
 
