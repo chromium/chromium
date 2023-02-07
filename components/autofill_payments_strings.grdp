@@ -305,6 +305,15 @@
     front of your card
   </message>
   <if expr="is_android">
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_DEFAULT" desc="Title for the credit card unmasking dialog. This dialog is triggered when users attempt autofilling credit cards saved in their payments profile, and prompts them for the CVC to unmask the card.">
+      Enter your CVC
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_VIRTUAL_CARD" desc="Title for the credit card unmasking dialog. This dialog is triggered when users attempt autofilling virtual cards, and prompts them for the security code on the associated real card to unmask the card.">
+      Enter your security code
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_EXPIRED_CARD" desc="Title for the credit card unmasking dialog. This dialog is triggered when users attempt autofilling expired credit cards saved in their payments profile, and prompts them for the new expiration date and the CVC to unmask the card.">
+      Card expired
+    </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_EXPIRATION_DATE" desc="Error message that encourages the user to try to re-enter their credit card expiration date after a previous failed attempt." formatter_data="android_java">
       Check your expiration date and try again
     </message>

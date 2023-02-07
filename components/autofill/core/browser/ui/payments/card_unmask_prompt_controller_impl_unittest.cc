@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -280,24 +281,119 @@ TEST_F(CardUnmaskPromptControllerImplTest,
       1);
 }
 
+class CardUnmaskPromptContentTest : public CardUnmaskPromptControllerImplTest,
+                                    public testing::WithParamInterface<bool> {
+ public:
+  CardUnmaskPromptContentTest() {
+#if BUILDFLAG(IS_ANDROID)
+    touch_to_fill_for_credit_cards_enabled_ = GetParam();
+    scoped_feature_list_.InitWithFeatureState(
+        features::kAutofillTouchToFillForCreditCardsAndroid,
+        touch_to_fill_for_credit_cards_enabled_);
+#endif
+  }
+
+  CardUnmaskPromptContentTest(const CardUnmaskPromptContentTest&) = delete;
+  CardUnmaskPromptContentTest& operator=(const CardUnmaskPromptContentTest&) =
+      delete;
+
+  ~CardUnmaskPromptContentTest() override = default;
+
+  bool touch_to_fill_for_credit_cards_enabled() const {
+#if BUILDFLAG(IS_ANDROID)
+    return touch_to_fill_for_credit_cards_enabled_;
+#else
+    return false;
+#endif
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+ private:
+  bool touch_to_fill_for_credit_cards_enabled_;
+#endif
+};
+
+INSTANTIATE_TEST_SUITE_P(All, CardUnmaskPromptContentTest, ::testing::Bool());
+
 // Ensures the card information is shown correctly in the instruction message on
-// iOS and in the title on other platforms.
-TEST_F(CardUnmaskPromptControllerImplTest, DisplayCardInformation) {
+// iOS, in the card details section on Android, and in the title on other
+// platforms.
+TEST_P(CardUnmaskPromptContentTest, DisplayCardInformation) {
   ShowPrompt();
 #if BUILDFLAG(IS_IOS)
   EXPECT_TRUE(controller_->GetInstructionsMessage().find(
                   card_.CardIdentifierStringForAutofillDisplay()) !=
               std::string::npos);
 #else
-  EXPECT_TRUE(controller_->GetWindowTitle().find(
-                  card_.CardIdentifierStringForAutofillDisplay()) !=
-              std::string::npos);
+  if (touch_to_fill_for_credit_cards_enabled()) {
+#if BUILDFLAG(IS_ANDROID)
+    EXPECT_EQ(controller_->GetCardName(), card_.CardNameForAutofillDisplay());
+    EXPECT_EQ(controller_->GetCardLastFourDigits(),
+              card_.ObfuscatedNumberWithVisibleLastFourDigits());
 #endif
+  } else {
+    EXPECT_TRUE(controller_->GetWindowTitle().find(
+                    card_.CardIdentifierStringForAutofillDisplay()) !=
+                std::string::npos);
+  }
+#endif
+}
+
+// Tests the title and instructions message in the credit card unmask dialog.
+TEST_P(CardUnmaskPromptContentTest, TitleAndInstructionMessage) {
+  ShowPrompt();
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(controller_->GetWindowTitle(), u"Confirm Card");
+  EXPECT_EQ(controller_->GetInstructionsMessage(),
+            u"Enter the CVC for " +
+                card_.CardIdentifierStringForAutofillDisplay() +
+                u". After you confirm, card details from your Google Account "
+                u"will be shared with this site.");
+#else
+  if (touch_to_fill_for_credit_cards_enabled()) {
+    EXPECT_EQ(controller_->GetWindowTitle(), u"Enter your CVC");
+  } else {
+    EXPECT_EQ(
+        controller_->GetWindowTitle(),
+        u"Enter the CVC for " + card_.CardIdentifierStringForAutofillDisplay());
+  }
+  EXPECT_EQ(controller_->GetInstructionsMessage(),
+            u"After you confirm, card details from your Google Account will be "
+            u"shared with this site.");
+#endif
+}
+
+// Tests the title and instructions message in the credit card unmask dialog for
+// expired cards.
+TEST_P(CardUnmaskPromptContentTest, ExpiredCardTitleAndInstructionMessage) {
+  card_ = test::GetExpiredCreditCard();
+  ShowPrompt();
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(controller_->GetWindowTitle(), u"Confirm Card");
+  EXPECT_EQ(
+      controller_->GetInstructionsMessage(),
+      u"Enter the expiration date and CVC for " +
+          card_.CardIdentifierStringForAutofillDisplay() +
+          u" to update your card details. After you confirm, card details from "
+          u"your Google Account will be shared with this site.");
+#else
+  if (touch_to_fill_for_credit_cards_enabled()) {
+    EXPECT_EQ(controller_->GetWindowTitle(), u"Card expired");
+  } else {
+    EXPECT_EQ(controller_->GetWindowTitle(),
+              u"Enter the expiration date and CVC for " +
+                  card_.CardIdentifierStringForAutofillDisplay());
+  }
+  EXPECT_EQ(controller_->GetInstructionsMessage(),
+            u"After you confirm, card details from your Google Account will be "
+            u"shared with this site.");
+#endif
+  controller_->OnUnmaskDialogClosed();
 }
 
 // This test ensures that the expected CVC length is correctly set for server
 // cards.
-TEST_F(CardUnmaskPromptControllerImplTest, GetExpectedCvcLength) {
+TEST_P(CardUnmaskPromptContentTest, GetExpectedCvcLength) {
   // Test that if the network is not American Express and there is no challenge
   // option, the expected length of the security code is 3.
   card_ = test::GetMaskedServerCard();
@@ -318,7 +414,7 @@ TEST_F(CardUnmaskPromptControllerImplTest, GetExpectedCvcLength) {
 // the expected CVC length is correctly set for virtual cards. Virtual cards are
 // not currently supported on iOS, so we don't test on the platform.
 #if !BUILDFLAG(IS_IOS)
-TEST_F(CardUnmaskPromptControllerImplTest,
+TEST_P(CardUnmaskPromptContentTest,
        ChallengeOptionInstructionMessageAndWindowTitleAndExpectedCvcLength) {
   // Test that if the network is not American Express and the challenge option
   // denotes that the security code is on the back of the card, its expected
@@ -329,9 +425,13 @@ TEST_F(CardUnmaskPromptControllerImplTest,
   EXPECT_EQ(controller_->GetInstructionsMessage(),
             u"Enter the 3-digit security code on the back of your card so your "
             u"bank can verify it's you");
-  EXPECT_EQ(controller_->GetWindowTitle(),
-            u"Enter your security code for " +
-                card_.CardIdentifierStringForAutofillDisplay());
+  if (touch_to_fill_for_credit_cards_enabled()) {
+    EXPECT_EQ(controller_->GetWindowTitle(), u"Enter your security code");
+  } else {
+    EXPECT_EQ(controller_->GetWindowTitle(),
+              u"Enter your security code for " +
+                  card_.CardIdentifierStringForAutofillDisplay());
+  }
   EXPECT_EQ(controller_->GetExpectedCvcLength(), 3);
   controller_->OnUnmaskDialogClosed();
 
@@ -345,9 +445,13 @@ TEST_F(CardUnmaskPromptControllerImplTest,
   EXPECT_EQ(controller_->GetInstructionsMessage(),
             u"Enter the 3-digit security code on the back of your card so your "
             u"bank can verify it's you");
-  EXPECT_EQ(controller_->GetWindowTitle(),
-            u"Enter your security code for " +
-                card_.CardIdentifierStringForAutofillDisplay());
+  if (touch_to_fill_for_credit_cards_enabled()) {
+    EXPECT_EQ(controller_->GetWindowTitle(), u"Enter your security code");
+  } else {
+    EXPECT_EQ(controller_->GetWindowTitle(),
+              u"Enter your security code for " +
+                  card_.CardIdentifierStringForAutofillDisplay());
+  }
   EXPECT_EQ(controller_->GetExpectedCvcLength(), 3);
   controller_->OnUnmaskDialogClosed();
 }

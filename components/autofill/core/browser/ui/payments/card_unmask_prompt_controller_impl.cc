@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/grit/components_scaled_resources.h"
@@ -198,17 +199,44 @@ std::u16string CardUnmaskPromptControllerImpl::GetWindowTitle() const {
 
   // For VCN unmask flow, display unique CVC title.
   if (IsChallengeOptionPresent()) {
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillTouchToFillForCreditCardsAndroid)) {
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_VIRTUAL_CARD);
+    }
+#endif
     return l10n_util::GetStringFUTF16(
         IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_SECURITY_CODE,
         card_.CardIdentifierStringForAutofillDisplay());
   }
 
-  return l10n_util::GetStringFUTF16(
-      ShouldRequestExpirationDate()
-          ? IDS_AUTOFILL_CARD_UNMASK_PROMPT_EXPIRED_TITLE
-          : IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE,
-      card_.CardIdentifierStringForAutofillDisplay());
+  // Title for expired cards.
+  if (ShouldRequestExpirationDate()) {
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillTouchToFillForCreditCardsAndroid)) {
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_EXPIRED_CARD);
+    }
 #endif
+    return l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_CARD_UNMASK_PROMPT_EXPIRED_TITLE,
+        card_.CardIdentifierStringForAutofillDisplay());
+  }
+
+  // Default title.
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillTouchToFillForCreditCardsAndroid)) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_DEFAULT);
+  }
+#endif
+  return l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE,
+      card_.CardIdentifierStringForAutofillDisplay());
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 std::u16string CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
