@@ -260,11 +260,6 @@ void LabelButton::SetBorder(std::unique_ptr<Border> border) {
 void LabelButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   ClearTextIfShrunkDown();
   Button::OnBoundsChanged(previous_bounds);
-
-  if (features::IsChromeRefresh2023()) {
-    SetFocusRingCornerRadius(LayoutProvider::Get()->GetCornerRadiusMetric(
-        Emphasis::kMaximum, size()));
-  }
 }
 
 gfx::Size LabelButton::CalculatePreferredSize() const {
