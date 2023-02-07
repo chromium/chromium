@@ -101,7 +101,6 @@ class MessagePumpCFRunLoopBase::ScopedModeEnabler {
     CFRunLoopRef loop = owner_->run_loop_;
     CFRunLoopAddTimer(loop, owner_->delayed_work_timer_, mode());
     CFRunLoopAddSource(loop, owner_->work_source_, mode());
-    CFRunLoopAddSource(loop, owner_->idle_work_source_, mode());
     CFRunLoopAddSource(loop, owner_->nesting_deferred_work_source_, mode());
     CFRunLoopAddObserver(loop, owner_->pre_wait_observer_, mode());
     CFRunLoopAddObserver(loop, owner_->after_wait_observer_, mode());
@@ -119,7 +118,6 @@ class MessagePumpCFRunLoopBase::ScopedModeEnabler {
     CFRunLoopRemoveObserver(loop, owner_->pre_wait_observer_, mode());
     CFRunLoopRemoveObserver(loop, owner_->after_wait_observer_, mode());
     CFRunLoopRemoveSource(loop, owner_->nesting_deferred_work_source_, mode());
-    CFRunLoopRemoveSource(loop, owner_->idle_work_source_, mode());
     CFRunLoopRemoveSource(loop, owner_->work_source_, mode());
     CFRunLoopRemoveTimer(loop, owner_->delayed_work_timer_, mode());
   }
@@ -247,8 +245,7 @@ MessagePumpCFRunLoopBase::MessagePumpCFRunLoopBase(int initial_mode_mask)
       run_nesting_level_(0),
       deepest_nesting_level_(0),
       keep_running_(true),
-      delegateless_work_(false),
-      delegateless_idle_work_(false) {
+      delegateless_work_(false) {
   run_loop_ = CFRunLoopGetCurrent();
   CFRetain(run_loop_);
 
@@ -271,10 +268,6 @@ MessagePumpCFRunLoopBase::MessagePumpCFRunLoopBase(int initial_mode_mask)
   work_source_ = CFRunLoopSourceCreate(NULL,  // allocator
                                        1,     // priority
                                        &source_context);
-  source_context.perform = RunIdleWorkSource;
-  idle_work_source_ = CFRunLoopSourceCreate(NULL,  // allocator
-                                            2,     // priority
-                                            &source_context);
   source_context.perform = RunNestingDeferredWorkSource;
   nesting_deferred_work_source_ = CFRunLoopSourceCreate(NULL,  // allocator
                                                         0,     // priority
@@ -320,7 +313,6 @@ MessagePumpCFRunLoopBase::~MessagePumpCFRunLoopBase() {
   CFRelease(pre_wait_observer_);
   CFRelease(after_wait_observer_);
   CFRelease(nesting_deferred_work_source_);
-  CFRelease(idle_work_source_);
   CFRelease(work_source_);
   CFRelease(delayed_work_timer_);
   CFRelease(run_loop_);
@@ -367,10 +359,6 @@ void MessagePumpCFRunLoopBase::SetDelegate(Delegate* delegate) {
     if (delegateless_work_) {
       CFRunLoopSourceSignal(work_source_);
       delegateless_work_ = false;
-    }
-    if (delegateless_idle_work_) {
-      CFRunLoopSourceSignal(idle_work_source_);
-      delegateless_idle_work_ = false;
     }
   }
 }
@@ -488,22 +476,10 @@ bool MessagePumpCFRunLoopBase::RunWork() {
   }
 }
 
-// Called from the run loop.
-// static
-void MessagePumpCFRunLoopBase::RunIdleWorkSource(void* info) {
-  MessagePumpCFRunLoopBase* self = static_cast<MessagePumpCFRunLoopBase*>(info);
-  base::mac::CallWithEHFrame(^{
-    self->RunIdleWork();
-  });
-}
-
-// Called by MessagePumpCFRunLoopBase::RunIdleWorkSource.
 void MessagePumpCFRunLoopBase::RunIdleWork() {
   if (!delegate_) {
     // This point can be reached with a nullptr delegate_ if Run is not on the
-    // stack but foreign code is spinning the CFRunLoop.  Arrange to come back
-    // here when a delegate is available.
-    delegateless_idle_work_ = true;
+    // stack but foreign code is spinning the CFRunLoop.
     return;
   }
   if (!keep_running())
@@ -522,7 +498,7 @@ void MessagePumpCFRunLoopBase::RunIdleWork() {
   // possibly happen between now and BeforeWait().
   PushWorkItemScope();
   if (did_work)
-    CFRunLoopSourceSignal(idle_work_source_);
+    CFRunLoopSourceSignal(work_source_);
 }
 
 // Called from the run loop.
@@ -544,13 +520,10 @@ void MessagePumpCFRunLoopBase::RunNestingDeferredWork() {
     return;
   }
 
-  if (RunWork()) {
-    // Work was done.  Arrange for the loop to try non-nestable idle work on
-    // a subsequent pass.
-    CFRunLoopSourceSignal(idle_work_source_);
-  } else {
-    RunIdleWork();
-  }
+  // Attempt to do work, if there's any more work to do this call will re-signal
+  // |work_source_| and keep things going; otherwise, PreWaitObserver will be
+  // invoked by the native pump to declare us idle.
+  RunWork();
 }
 
 void MessagePumpCFRunLoopBase::BeforeWait() {

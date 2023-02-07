@@ -80,8 +80,9 @@ class BASE_EXPORT MessagePump {
     virtual NextWorkInfo DoWork() = 0;
 
     // Called from within Run just before the message pump goes to sleep.
-    // Returns true to indicate that idle work was done. Returning false means
-    // the pump will now wait.
+    // Returns true to indicate that idle work was done; in which case Run()
+    // should resume with calling DoWork(). Returning false means the pump
+    // should now wait.
     virtual bool DoIdleWork() = 0;
 
     class ScopedDoWorkItem {
