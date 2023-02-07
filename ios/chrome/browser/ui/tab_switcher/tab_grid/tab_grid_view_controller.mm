@@ -260,7 +260,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         ];
         break;
     }
-    _pinnedTabsViewController = [[PinnedTabsViewController alloc] init];
+
+    if (IsPinnedTabsEnabled()) {
+      _pinnedTabsViewController = [[PinnedTabsViewController alloc] init];
+    }
   }
   return self;
 }

@@ -119,7 +119,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self.collectionView reloadData];
   [self updateEmptyCollectionViewLabelVisibility];
 
-  [self scrollCollectionViewToSelectedItemAnimated:NO];
+  [self selectCollectionViewItemWithID:_selectedItemID animated:NO];
 
   // Update the delegate, in case it wasn't set when `items` was populated.
   [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
@@ -706,6 +706,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // Returns the index in `_items` of the first item whose identifier is
 // `identifier`.
 - (NSUInteger)indexOfItemWithID:(NSString*)identifier {
+  // Check that identifier exists and not empty.
+  if (identifier.length == 0) {
+    return NSNotFound;
+  }
+
   auto selectedTest =
       ^BOOL(TabSwitcherItem* item, NSUInteger index, BOOL* stop) {
         return [item.identifier isEqualToString:identifier];
@@ -739,6 +744,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)updateCollectionViewAfterItemInsertionWithPreviousItemID:
     (NSString*)previousItemID {
   [self deselectCollectionViewItemWithID:previousItemID animated:NO];
+  [self selectCollectionViewItemWithID:_selectedItemID animated:NO];
 
   // Scroll the collection view to the newly added item, so it doesn't
   // disappear from the user's sight.
@@ -761,6 +767,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // Bring back selected halo only for the moved cell, which lost it during
   // the move (drag & drop).
   if (self.selectedIndex != index) {
+    [self scrollCollectionViewToItemWithIndex:index animated:YES];
     return;
   }
   // Force reload of the selected cell now to avoid extra delay for the
@@ -797,6 +804,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)selectCollectionViewItemWithID:(NSString*)itemID
                               animated:(BOOL)animated {
   NSUInteger itemIndex = [self indexOfItemWithID:itemID];
+
+  // Check `itemIndex` boundaries in order to filter out possible race
+  // conditions while mutating the collection.
+  if (itemIndex == NSNotFound || itemIndex >= _items.count) {
+    return;
+  }
+
   NSIndexPath* itemIndexPath = CreateIndexPath(itemIndex);
 
   [self.collectionView
@@ -836,9 +850,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   NSIndexPath* itemIndexPath = CreateIndexPath(itemIndex);
   [self.collectionView
-      selectItemAtIndexPath:itemIndexPath
-                   animated:YES
-             scrollPosition:UICollectionViewScrollPositionCenteredHorizontally];
+      scrollToItemAtIndexPath:itemIndexPath
+             atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally
+                     animated:animated];
 }
 
 @end
