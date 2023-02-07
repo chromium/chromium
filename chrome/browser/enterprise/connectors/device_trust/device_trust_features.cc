@@ -10,6 +10,10 @@ BASE_FEATURE(kDeviceTrustConnectorEnabled,
              "DeviceTrustConnectorEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAutomaticKeyRotationEnabled,
+             "AutomaticKeyRotationEnabled",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsDeviceTrustConnectorFeatureEnabled() {
   return base::FeatureList::IsEnabled(kDeviceTrustConnectorEnabled);
 }
