@@ -47,6 +47,7 @@ source_set("data") {
     "LinkPresentation.framework",
     "MobileCoreServices.framework",
     "UIKit.framework",
+    "UniformTypeIdentifiers.framework",
   ]
 }
 

@@ -92,6 +92,8 @@ source_set("tab_grid") {
     "//ui/base",
     "//ui/gfx",
   ]
+
+  frameworks = [ "UniformTypeIdentifiers.framework" ]
 }
 
 source_set("tab_collection_commands") {

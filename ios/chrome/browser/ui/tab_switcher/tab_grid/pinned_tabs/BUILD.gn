@@ -27,6 +27,8 @@ source_set("pinned_tabs") {
     "//ios/chrome/browser/web_state_list",
     "//ios/web",
   ]
+
+  frameworks = [ "UniformTypeIdentifiers.framework" ]
 }
 
 source_set("pinned_tabs_ui") {

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator.h"
 
-#import <MobileCoreServices/UTCoreTypes.h>
 #import <UIKit/UIKit.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #import <memory>
 
 #import "base/functional/bind.h"
@@ -878,7 +878,7 @@ void RecordTabGridCloseTabsCount(int count) {
   }
 
   // URLs are accepted when drags originate from outside Chrome.
-  NSArray<NSString*>* acceptableTypes = @[ (__bridge NSString*)kUTTypeURL ];
+  NSArray<NSString*>* acceptableTypes = @[ UTTypeURL.identifier ];
   if ([session hasItemsConformingToTypeIdentifiers:acceptableTypes]) {
     return UIDropOperationCopy;
   }

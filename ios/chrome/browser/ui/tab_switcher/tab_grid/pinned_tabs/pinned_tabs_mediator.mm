@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_mediator.h"
 
-#import <MobileCoreServices/UTCoreTypes.h>
 #import <UIKit/UIKit.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -429,7 +429,7 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
   }
 
   // URLs are accepted when drags originate from outside Chrome.
-  NSArray<NSString*>* acceptableTypes = @[ (__bridge NSString*)kUTTypeURL ];
+  NSArray<NSString*>* acceptableTypes = @[ UTTypeURL.identifier ];
   if ([session hasItemsConformingToTypeIdentifiers:acceptableTypes]) {
     return UIDropOperationCopy;
   }

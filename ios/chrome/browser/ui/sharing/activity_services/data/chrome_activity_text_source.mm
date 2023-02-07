@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/sharing/activity_services/data/chrome_activity_text_source.h"
 
-#import <MobileCoreServices/MobileCoreServices.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "base/check.h"
 
@@ -53,7 +53,7 @@
 - (NSString*)activityViewController:
                  (UIActivityViewController*)activityViewController
     dataTypeIdentifierForActivityType:(NSString*)activityType {
-  return (NSString*)kUTTypeText;
+  return UTTypeText.identifier;
 }
 
 @end

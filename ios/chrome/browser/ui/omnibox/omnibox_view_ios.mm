@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_view_ios.h"
 
 #import <CoreText/CoreText.h>
-#import <MobileCoreServices/MobileCoreServices.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import <string>
 
@@ -597,10 +597,10 @@ void OmniboxViewIOS::OnCopy() {
   // NSDictionary with multiple keys, one for each representation.
   NSMutableDictionary* item = [NSMutableDictionary dictionaryWithCapacity:2];
   [item setObject:base::SysUTF16ToNSString(text)
-           forKey:(NSString*)kUTTypePlainText];
+           forKey:UTTypePlainText.identifier];
 
   if (write_url)
-    [item setObject:net::NSURLWithGURL(url) forKey:(NSString*)kUTTypeURL];
+    [item setObject:net::NSURLWithGURL(url) forKey:UTTypeURL.identifier];
 
   board.items = [NSArray arrayWithObject:item];
 }

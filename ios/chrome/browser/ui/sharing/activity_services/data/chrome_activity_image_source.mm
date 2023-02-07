@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/sharing/activity_services/data/chrome_activity_image_source.h"
 
 #import <LinkPresentation/LinkPresentation.h>
-#import <MobileCoreServices/MobileCoreServices.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "base/check.h"
 
@@ -57,7 +57,7 @@
 - (NSString*)activityViewController:
                  (UIActivityViewController*)activityViewController
     dataTypeIdentifierForActivityType:(UIActivityType)activityType {
-  return (NSString*)kUTTypeImage;
+  return UTTypeImage.identifier;
 }
 
 - (LPLinkMetadata*)activityViewControllerLinkMetadata:

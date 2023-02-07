@@ -211,6 +211,7 @@ source_set("omnibox_internal") {
     "MobileCoreServices.framework",
     "QuartzCore.framework",
     "UIKit.framework",
+    "UniformTypeIdentifiers.framework",
   ]
 }
 
