@@ -321,7 +321,7 @@ void WinWebAuthnApiAuthenticator::GetCredentialInformationForRequest(
     }
     case NTE_NOT_FOUND:
       FIDO_LOG(DEBUG) << "No credentials found";
-      std::move(callback).Run(/*credentials=*/{}, /*has_credentials=*/true);
+      std::move(callback).Run(/*credentials=*/{}, /*has_credentials=*/false);
       return;
     default:
       FIDO_LOG(ERROR) << "Windows API returned unknown result: " << hresult;

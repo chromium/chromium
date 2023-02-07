@@ -110,7 +110,7 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_NoCredentials) {
 
   EXPECT_EQ(std::get<0>(*callback.result()),
             std::vector<DiscoverableCredentialMetadata>{});
-  EXPECT_TRUE(std::get<1>(*callback.result()));
+  EXPECT_FALSE(std::get<1>(*callback.result()));
 }
 
 // Tests the authenticator handling of an unexpected error from the Windows API.
