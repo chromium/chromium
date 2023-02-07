@@ -1,7 +1,7 @@
 Name: ninja
 Short Name: ninja
 URL: https://github.com/ninja-build/ninja
-Version: v1.8.2
+Version: v1.11.1
 License: Apache License 2.0
 License File: https://github.com/ninja-build/ninja/blob/master/COPYING
 Security Critical: no
