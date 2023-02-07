@@ -451,14 +451,15 @@ bool UDIFParser::ParseBlkx() {
   if (stream_->Seek(trailer.plist_offset, SEEK_SET) == -1)
     return false;
 
-  if (!stream_->ReadExact(&plist_bytes[0], trailer.plist_length)) {
+  if (trailer.plist_length == 0 ||
+      !stream_->ReadExact(plist_bytes.data(), trailer.plist_length)) {
     DLOG(ERROR) << "Failed to read blkx plist data";
     return false;
   }
 
   base::ScopedCFTypeRef<CFDataRef> plist_data(
-      CFDataCreateWithBytesNoCopy(kCFAllocatorDefault,
-          &plist_bytes[0], plist_bytes.size(), kCFAllocatorNull));
+      CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, plist_bytes.data(),
+                                  plist_bytes.size(), kCFAllocatorNull));
   if (!plist_data) {
     DLOG(ERROR) << "Failed to create data from bytes";
     return false;
