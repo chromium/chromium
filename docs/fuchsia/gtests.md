@@ -14,6 +14,9 @@ gtest binary, check this [documentation](build_instructions.md).
 For the sake of this example, we will be using `base_unittests` as the package
 we wish to install and/or execute.
 
+If using anything other than the default Fuchsia boot image, see
+[Supported Fuchsia Product configurations](#supported-fuchsia-product-configurations).
+
 For details of the implementation of `run_<test_target_name>` scripts, see
 [here](test_scripts.md).
 
@@ -98,3 +101,121 @@ arguments to the test runner script:
   a certain number of times until it fails. This is useful to investigate flaky
   tests.
 
+## Supported Fuchsia Product configurations
+
+The prebuilt Terminal and Workstation images downloaded by `gclient sync` are
+specifically configured to support running Chromium tests. It is also possible
+to run Chromium tests on other Product configurations, such as Core, using a
+custom build.
+
+**Use the default unless you have a specific reason to run on a different
+Product.** For example, if you need to reproduce an issue occurring on a bot
+using that Product.
+
+### Terminal
+Chromium gtests are primarily supported (i.e., pass all tests) on the Terminal
+Fuchsia Product configuration. This is the default image used for
+[hermetic emulation](#hermetic-emulation) and when starting a
+[persistent emulator](#run-on-a-persistent-emulator).
+
+### Workstation
+Workstation configurations also generally support most tests.
+
+### Core
+
+By default, Fuchsia Core Product configurations do **not** support running
+Chromium tests. Similarly, the Core images provided with the Fuchsia SDK are
+unable to run Chromium tests. (In the future, it may be possible to run them
+on such images [with a corresponding TUF repo](https://crbug.com/1033794).)
+
+When working with a local Fuchsia Core build, there are have two options for
+running Chromium tests.
+1. **Combined repo**: Follow the instructions in
+[Run on a device paved with Fuchsia built from source](#run-on-a-device-paved-with-fuchsia-built-from-source).
+2. **Packages in base**: Add the
+[additional required packages](#additional-required-packages) to the
+[base packages](https://fuchsia.dev/fuchsia-src/concepts/packages/package?hl=en#base-packages).
+<!-- Resolving needed packages before running the tests does not work. -->
+
+[Using method (1)](#combined-repo) with the default configuration for
+`core.qemu-x64`, all `base_unittests` pass.
+The same tests pass using method (2) with
+[modifications](#chromium-only-repo-packages-in-base) to `core.qemu-x64`'s
+configuration.
+
+Most other test suites will require additional packages used (indirectly) by
+those tests. Some of these packages may not even be in Core's default set of
+[universe packages](https://fuchsia.dev/fuchsia-src/concepts/packages/package?hl=en#universe-packages)
+and need to be explicitly added as described in
+[Adding packages](#adding-packages).
+
+#### Additional required packages
+At a minimum, `test_manager` is required in order to run tests. This is already
+available when using a combined repo as in option (1).
+
+Other useful packages include:
+* `intl_property_manager` - avoids many warnings when the test shard tries
+  to launch it.
+* `audio_core` - avoids warnings related to `fuchsia.media.ProfileProvider`.
+  <!-- TODO(crbug.com/1365682): Replace `audio_core` with the appropriate
+       Package name and path here and below, respectively, when switching to
+       `fuchsia.scheduler.ProfileProvider`.
+  -->
+
+This is sufficient to pass `base_unittests` and eliminate most warnings.
+
+#### Adding packages
+To add packages, find the path to the package's build target in the Fuchsia code
+and add `--with[-base]` followed by `//path_from_fuchsia_root:target_name` to
+the `fx set` command for the Fuchsia build.
+
+##### Combined repo
+
+When using a compined repo as in option (1), packages that are already part of
+the Core configuration (including
+[cached](https://fuchsia.dev/fuchsia-src/concepts/packages/package?hl=en#cached-packages)
+and
+[universe](https://fuchsia.dev/fuchsia-src/concepts/packages/package?hl=en#universe-packages)
+packages), are available. Thus, only packages _not_ included in Core's
+[base, cached, or universe packages](https://fuchsia.dev/fuchsia-src/concepts/packages/package?hl=en#types_of_packages),
+need to be added. Similarly, `--with`, `--with-cache`, and `--with-base` are all
+acceptable ways to add such packages.
+
+The following makes all
+[additional required packages](#additional-required-packages) available to the
+Chromium tests.
+```bash
+$ fx set core.qemu-x64 --auto-dir --release  --with //src/testing/fidl/intl_property_manager --with //src/media/audio/audio_core
+```
+
+##### Chromium-only repo: packages in base
+By default - and specifically when not using option (1) - Chromium's
+[test scripts](test_scripts.md) only serve packages from the Chromium workspace,
+meaning that Fuchsia provided packages not in Core's
+[base packages](https://fuchsia.dev/fuchsia-src/concepts/packages/package?hl=en#base-packages)
+cannot be resolved. Thus, all Fuchsia packages needed during the tests must be
+added to base.
+
+In this case `--with-base` is the only acceptable method of specifying packages,
+and `test_manager` must be explicitly added to base packages by including
+`--with-base //src/sys/test_manager`. The following is the minimum `fx set`
+command line for this case.
+```bash
+$ fx set core.qemu-x64 --auto-dir --release --with-base //src/sys/test_manager
+```
+
+For the purposes of successfully running Chromium tests, the following is
+equivalent to the command line in [Combined repo](#combined-repo). It adds all
+[additional required packages](#additional-required-packages) to
+[base packages](https://fuchsia.dev/fuchsia-src/concepts/packages/package?hl=en#base-packages).
+It also adds `//sdk/lib/sys/cpp` to base packages to enable `base_unittests`'s
+`TestComponentContextForProcessTest.ProvideSystemService` test to pass.
+```bash
+$ fx set core.qemu-x64 --auto-dir --release  --with-base //src/sys/test_manager --with-base //src/testing/fidl/intl_property_manager --with-base //src/media/audio/audio_core --with-base //sdk/lib/sys/cpp
+```
+
+### Other Products
+Other Fuchsia Product configurations may not support running Chromium tests by
+default and require some subset of the
+[additional required packages](#additional-required-packages) needed for
+[Core](#core) as well as others for specific test suites.
