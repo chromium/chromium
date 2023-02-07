@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -923,19 +924,17 @@ base::Value::Dict PeopleHandler::GetSyncStatusDictionary() const {
   // dialog on turn off sync. This is no longer needed since users are allowed
   // to turn off sync. Enterprise team to decide whether to show the delete
   // profile dialog on signout.
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     CoreAccountInfo primary_account_info =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
-
-    bool is_managed =
-        identity_manager->FindExtendedAccountInfo(primary_account_info)
-            .IsManaged();
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
     // If there is no one logged in or if the profile name is empty then the
     // domain name is empty. This happens in browser tests.
-    if (is_managed && !primary_account_info.email.empty())
+    if (chrome::enterprise_util::UserAcceptedAccountManagement(profile_) &&
+        !primary_account_info.email.empty()) {
       sync_status.Set("domain",
                       gaia::ExtractDomainName(primary_account_info.email));
+    }
   }
 
   // This is intentionally not using GetSyncService(), in order to access more

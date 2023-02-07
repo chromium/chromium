@@ -242,6 +242,39 @@ suite('SyncAccountControl', function() {
     items[2]!.click();
     await browserProxy.whenCalled('startSignIn');
   });
+
+  test('managedUser, Sync off, turn sync off disabled', function() {
+    loadTimeData.overrideValues({turnOffSyncAllowedForManagedProfiles: false});
+
+    testElement.syncStatus = {
+      signedIn: false,
+      disabled: false,
+      hasError: false,
+      domain: 'domain',
+      statusAction: StatusAction.NO_ACTION,
+    };
+    flush();
+    assertTrue(isChildVisible(testElement, '#sync-button'));
+    assertTrue(!!testElement.shadowRoot!.querySelector('#menu'));
+    assertTrue(isChildVisible(testElement, '#dropdown-arrow'));
+  });
+
+  test('managedUser, Sync off, turn sync off enabled', function() {
+    loadTimeData.overrideValues({turnOffSyncAllowedForManagedProfiles: true});
+
+    testElement.syncStatus = {
+      signedIn: false,
+      disabled: false,
+      hasError: false,
+      domain: 'domain',
+      statusAction: StatusAction.NO_ACTION,
+    };
+    flush();
+    assertTrue(isChildVisible(testElement, '#sync-button'));
+    // Menu is hidden.
+    assertFalse(!!testElement.shadowRoot!.querySelector('#menu'));
+    assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
+  });
   // </if>
 
   // <if expr="chromeos_lacros">

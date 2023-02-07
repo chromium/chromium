@@ -332,7 +332,9 @@ export class SettingsSyncAccountControlElement extends
       return false;
     }
     // </if>
-    return !this.syncStatus.signedIn;
+    return !this.syncStatus.signedIn &&
+        (!loadTimeData.getBoolean('turnOffSyncAllowedForManagedProfiles') ||
+         !this.syncStatus.domain);
   }
 
   private handleStoredAccounts_(accounts: StoredAccount[]) {
