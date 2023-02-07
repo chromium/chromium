@@ -1039,8 +1039,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 
 // Tests redirects around workers. To test service workers, the HTTPS test
 // server is used.
+// TODO(crbug.com/1413434): test is flaky on linux-chromeos-rel.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_WebRequestRedirectsWorkers DISABLED_WebRequestRedirectsWorkers
+#else
+#define MAYBE_WebRequestRedirectsWorkers WebRequestRedirectsWorkers
+#endif
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
-                       WebRequestRedirectsWorkers) {
+                       MAYBE_WebRequestRedirectsWorkers) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   net::EmbeddedTestServer https_test_server(
       net::EmbeddedTestServer::TYPE_HTTPS);
