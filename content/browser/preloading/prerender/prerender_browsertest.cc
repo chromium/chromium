@@ -2241,9 +2241,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       PrerenderFinalStatus::kCrossSiteNavigation);
 }
 
-// TODO(crbug.com/1239281): Add test cases for prerendering triggered by the
-// browser process.
-
 // Regression test for https://crbug.com/1198051
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MainFrameFragmentNavigation) {
   const GURL kInitialUrl = GetUrl("/empty.html");

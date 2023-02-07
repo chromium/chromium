@@ -693,8 +693,16 @@ void MetricsWebContentsObserver::HandleCommittedNavigationForTrackedLoad(
     std::unique_ptr<PageLoadTracker> tracker) {
   PageLoadTracker* raw_tracker = tracker.get();
   if (navigation_handle->IsInPrerenderedMainFrame()) {
-    DCHECK(inactive_pages_.find(navigation_handle->GetRenderFrameHost()) ==
-           inactive_pages_.end());
+    // The PageLoadTracker already exists when a main frame navigation after the
+    // initial prerener navigation in a prerendering page is finished. Replace
+    // the old page tracker with the new one.
+    if (auto existing_tracker_iter =
+            inactive_pages_.find(navigation_handle->GetRenderFrameHost());
+        existing_tracker_iter != inactive_pages_.end()) {
+      DCHECK(base::FeatureList::IsEnabled(
+          blink::features::kPrerender2MainFrameNavigation));
+      inactive_pages_.erase(existing_tracker_iter);
+    }
     inactive_pages_.emplace(navigation_handle->GetRenderFrameHost(),
                             std::move(tracker));
   } else if (navigation_handle->IsInPrimaryMainFrame()) {
