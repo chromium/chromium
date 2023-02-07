@@ -11,6 +11,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -275,6 +276,7 @@ int PromoteCandidate(UpdaterScope scope) {
         lchmod(path.value().c_str(),
                S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH | S_ISUID)) {
       VPLOG(1) << "Launcher lchmod failed. Cross-user on-demand will not work";
+      base::debug::DumpWithoutCrashing();
     }
   }
 
