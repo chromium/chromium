@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/message_view.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/vector_icons/vector_icons.h"
@@ -140,7 +141,9 @@ void DisplayOverlayController::AddNudgeView(views::Widget* overlay_widget) {
   auto nudge_view = std::make_unique<ash::PillButton>(
       base::BindRepeating(&DisplayOverlayController::OnNudgeDismissed,
                           base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_SETTINGS_NUDGE_ALPHA),
+      l10n_util::GetStringUTF16(AllowReposition()
+                                    ? IDS_INPUT_OVERLAY_SETTINGS_NUDGE_ALPHAV2
+                                    : IDS_INPUT_OVERLAY_SETTINGS_NUDGE_ALPHA),
       ash::PillButton::Type::kDefaultWithIconLeading, &kTipIcon);
   nudge_view->SetSize(
       gfx::Size(nudge_view->GetPreferredSize().width(), kNudgeHeight));
