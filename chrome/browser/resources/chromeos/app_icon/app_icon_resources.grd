@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/chromeos_app_icon_resources.h" type="rc_header" context="default_100_percent">
+      <emit emit_type='prepend'></emit>
+    </output>
+
+    <output filename="grit/chromeos_app_icon_resources_map.cc" type="resource_map_source" context="default_100_percent" />
+    <output filename="grit/chromeos_app_icon_resources_map.h" type="resource_map_header" context="default_100_percent" />
+    <output filename="chromeos_app_icon_resources_100_percent.pak" type="data_package" context="default_100_percent" />
+    <output filename="chromeos_app_icon_resources_200_percent.pak" type="data_package" context="default_200_percent" />
+  </outputs>
+  <release seq="1">
+    <structures fallback_to_low_resolution="true">
+      <!-- Badge for Chrome Apps if Arc is enabled. -->
+      <structure type="chrome_scaled_image" name="IDR_CHROME_ICON_BADGE" file="badges/chrome-icon-badge.png" />
+      <!-- Badge for disabled apps. -->
+      <structure type="chrome_scaled_image" name="IDR_BLOCK_ICON_BADGE" file="badges/block-icon-badge.png" />
+      <!-- Badge for apps that used their daily time limit. -->
+      <structure type="chrome_scaled_image" name="IDR_HOURGLASS_ICON_BADGE" file="badges/hourglass-icon-badge.png" />
+      <!-- Mask for badge. -->
+      <structure type="chrome_scaled_image" name="IDR_ICON_BADGE_MASK" file="mask/badge-mask.png" />
+    </structures>
+  </release>
+</grit>

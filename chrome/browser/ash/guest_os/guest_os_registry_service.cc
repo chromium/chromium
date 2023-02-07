@@ -35,7 +35,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/icon_transcoder/svg_icon_transcoder.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/grit/app_icon_resources.h"
+#include "chrome/grit/chromeos_app_icon_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 #include "components/crx_file/id_util.h"

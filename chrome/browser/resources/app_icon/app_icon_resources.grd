@@ -12,16 +12,8 @@
   </outputs>
   <release seq="1">
     <structures fallback_to_low_resolution="true">
-      <!-- Badge for Chrome Apps if Arc is enabled. -->
-      <structure type="chrome_scaled_image" name="IDR_CHROME_ICON_BADGE" file="badges/chrome-icon-badge.png" />
-      <!-- Badge for disabled apps. -->
-      <structure type="chrome_scaled_image" name="IDR_BLOCK_ICON_BADGE" file="badges/block-icon-badge.png" />
-      <!-- Badge for apps that used their daily time limit. -->
-      <structure type="chrome_scaled_image" name="IDR_HOURGLASS_ICON_BADGE" file="badges/hourglass-icon-badge.png" />
       <!-- Mask for standard icons. -->
       <structure type="chrome_scaled_image" name="IDR_ICON_MASK" file="mask/mask.png" />
-
-      <structure type="chrome_scaled_image" name="IDR_ICON_BADGE_MASK" file="mask/badge-mask.png" />
     </structures>
   </release>
 </grit>
