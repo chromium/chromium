@@ -280,6 +280,12 @@ class AppSessionTest
 
   base::FilePath crash_path() const { return temp_dir_.GetPath(); }
 
+ protected:
+  AppSession* app_session() {
+    DCHECK(app_session_);
+    return app_session_.get();
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
@@ -710,6 +716,45 @@ TEST_F(AppSessionRestartReasonTest, PowerManagerRequestRestart) {
     histogram()->ExpectBucketCount(kKioskSessionRestartReasonHistogram,
                                    test_case.restart_reason, 1);
   }
+}
+
+class AppSessionTroubleshootingTest : public AppSessionTest {
+ public:
+  bool AreKioskTroubleshootingToolsEnabled() {
+    return app_session()
+        ->GetKioskTroubleshootingControllerForTesting()
+        ->AreKioskTroubleshootingToolsEnabled();
+  }
+};
+
+TEST_F(AppSessionTroubleshootingTest, EnableTroubleshootingToolsDuringSession) {
+  StartWebKioskSession();
+  EXPECT_FALSE(AreKioskTroubleshootingToolsEnabled());
+
+  GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, true);
+
+  EXPECT_TRUE(AreKioskTroubleshootingToolsEnabled());
+  // Kiosk session should shoutdown only if policy is changed from enable to
+  // disable.
+  EXPECT_FALSE(IsSessionShuttingDown());
+
+  GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, false);
+
+  EXPECT_FALSE(AreKioskTroubleshootingToolsEnabled());
+  EXPECT_TRUE(IsSessionShuttingDown());
+}
+
+TEST_F(AppSessionTroubleshootingTest,
+       EnableTroubleshootingToolsBeforeSessionStarted) {
+  GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, true);
+
+  StartWebKioskSession();
+  EXPECT_TRUE(AreKioskTroubleshootingToolsEnabled());
+
+  GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, false);
+
+  EXPECT_FALSE(AreKioskTroubleshootingToolsEnabled());
+  EXPECT_TRUE(IsSessionShuttingDown());
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)

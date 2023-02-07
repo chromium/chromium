@@ -61,6 +61,12 @@ class KioskSessionServiceBrowserTest : public InProcessBrowserTest {
         std::make_unique<FakeKioskSessionServiceLacros>();
   }
 
+  void TearDownOnMainThread() override {
+    kiosk_session_service_lacros_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+    browser_service_.reset();
+  }
+
   bool IsServiceAvailable() const {
     auto* lacros_chrome_service = chromeos::LacrosService::Get();
     return lacros_chrome_service &&

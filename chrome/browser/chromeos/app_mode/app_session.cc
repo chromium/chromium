@@ -16,6 +16,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/app_mode/app_session_browser_window_handler.h"
 #include "chrome/browser/chromeos/app_mode/app_session_metrics_service.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_troubleshooting_controller.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -63,7 +64,7 @@ void RebootDevice() {
       power_manager::REQUEST_RESTART_OTHER, "kiosk app session");
 }
 
-// Sends a SIGFPE signal to plugin subprocesses that matches |child_ids|
+// Sends a SIGFPE signal to plugin subprocesses that matches `child_ids`
 // to trigger a dump.
 void DumpPluginProcess(const std::set<int>& child_ids) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -129,7 +130,7 @@ class AppSession::AppWindowHandler : public AppWindowRegistry::Observer {
       return;
     }
 
-    app_session_->OnLastAppWindowClosed();
+    app_session_->ShutdownAppSession();
     window_registry_->RemoveObserver(this);
   }
 
@@ -215,7 +216,8 @@ void AppSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 void AppSession::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kNewWindowsInKioskAllowed, false);
-  registry->RegisterBooleanPref(prefs::kKioskTroubleshootingToolsEnabled, false);
+  registry->RegisterBooleanPref(prefs::kKioskTroubleshootingToolsEnabled,
+                                false);
 }
 
 void AppSession::Init(const std::string& app_id) {
@@ -244,6 +246,11 @@ void AppSession::SetOnHandleBrowserCallbackForTesting(
   on_handle_browser_callback_ = std::move(callback);
 }
 
+const KioskTroubleshootingController*
+AppSession::GetKioskTroubleshootingControllerForTesting() const {
+  return kiosk_troubleshooting_controller_.get();
+}
+
 KioskSessionPluginHandlerDelegate*
 AppSession::GetPluginHandlerDelegateForTesting() {
   return plugin_handler_delegate_.get();
@@ -253,14 +260,17 @@ AppSession::AppSession(
     Profile* profile,
     base::OnceClosure attempt_user_exit,
     std::unique_ptr<AppSessionMetricsService> metrics_service)
-    :
+    : profile_(profile),
 #if BUILDFLAG(ENABLE_PLUGINS)
       plugin_handler_delegate_(
           std::make_unique<PluginHandlerDelegateImpl>(this)),
 #endif
-      profile_(profile),
       attempt_user_exit_(std::move(attempt_user_exit)),
       metrics_service_(std::move(metrics_service)) {
+  kiosk_troubleshooting_controller_ =
+      std::make_unique<KioskTroubleshootingController>(
+          profile_->GetPrefs(), base::BindOnce(&AppSession::ShutdownAppSession,
+                                               weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AppSession::CreateBrowserWindowHandler(
@@ -269,8 +279,8 @@ void AppSession::CreateBrowserWindowHandler(
       profile(), web_app_name,
       base::BindRepeating(&AppSession::OnHandledNewBrowserWindow,
                           weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&AppSession::OnLastAppWindowClosed,
-                          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&AppSession::ShutdownAppSession,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AppSession::OnHandledNewBrowserWindow(bool is_closing) {
@@ -301,9 +311,10 @@ void AppSession::OnGuestAdded(content::WebContents* guest_web_contents) {
 #endif
 }
 
-void AppSession::OnLastAppWindowClosed() {
-  if (is_shutting_down())
+void AppSession::ShutdownAppSession() {
+  if (is_shutting_down()) {
     return;
+  }
   is_shutting_down_ = true;
   metrics_service_->RecordKioskSessionStopped();
 

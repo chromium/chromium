@@ -24,15 +24,14 @@ AppSessionBrowserWindowHandler::AppSessionBrowserWindowHandler(
     const absl::optional<std::string>& web_app_name,
     base::RepeatingCallback<void(bool is_closing)>
         on_browser_window_added_callback,
-    base::RepeatingClosure on_last_browser_window_closed_callback)
+    base::OnceClosure on_last_browser_window_closed_callback)
     : profile_(profile),
       web_app_name_(web_app_name),
       on_browser_window_added_callback_(on_browser_window_added_callback),
       on_last_browser_window_closed_callback_(
-          on_last_browser_window_closed_callback) {
+          std::move(on_last_browser_window_closed_callback)),
+      app_session_policies_(profile_->GetPrefs()) {
   BrowserList::AddObserver(this);
-  app_session_policies_ =
-      std::make_unique<AppSessionPolicies>(profile_->GetPrefs());
 }
 
 AppSessionBrowserWindowHandler::~AppSessionBrowserWindowHandler() {
@@ -126,7 +125,7 @@ void AppSessionBrowserWindowHandler::OnBrowserRemoved(Browser* browser) {
   // Exit the kiosk session if the last browser was closed.
   if (ShouldExitKioskWhenLastBrowserRemoved() &&
       BrowserList::GetInstance()->empty()) {
-    on_last_browser_window_closed_callback_.Run();
+    std::move(on_last_browser_window_closed_callback_).Run();
   }
 
   if (browser == settings_browser_) {
@@ -141,7 +140,7 @@ void AppSessionBrowserWindowHandler::OnBrowserRemoved(Browser* browser) {
 
 bool AppSessionBrowserWindowHandler::IsNewBrowserWindowAllowed(
     Browser* browser) const {
-  return app_session_policies_->IsWindowCreationAllowed() &&
+  return app_session_policies_.IsWindowCreationAllowed() &&
          browser->is_type_app_popup() && web_app_name_.has_value() &&
          browser->app_name() == web_app_name_.value();
 }

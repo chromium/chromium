@@ -36,6 +36,8 @@ source_set("chromeos") {
     "app_mode/kiosk_app_service_launcher.h",
     "app_mode/kiosk_settings_navigation_throttle.cc",
     "app_mode/kiosk_settings_navigation_throttle.h",
+    "app_mode/kiosk_troubleshooting_controller.cc",
+    "app_mode/kiosk_troubleshooting_controller.h",
     "app_mode/startup_app_launcher_update_checker.cc",
     "app_mode/startup_app_launcher_update_checker.h",
     "app_mode/web_kiosk_browser_controller_base.cc",
