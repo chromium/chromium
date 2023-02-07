@@ -143,10 +143,10 @@ void NetworkTestHelperBase::ConfigureCallback(const dbus::ObjectPath& result) {
 absl::optional<double> NetworkTestHelperBase::GetServiceDoubleProperty(
     const std::string& service_path,
     const std::string& key) {
-  const base::Value* properties =
+  const base::Value::Dict* properties =
       service_test_->GetServiceProperties(service_path);
   if (properties) {
-    return properties->FindDoubleKey(key);
+    return properties->FindDouble(key);
   }
   return absl::nullopt;
 }
@@ -154,10 +154,10 @@ absl::optional<double> NetworkTestHelperBase::GetServiceDoubleProperty(
 std::string NetworkTestHelperBase::GetServiceStringProperty(
     const std::string& service_path,
     const std::string& key) {
-  const base::Value* properties =
+  const base::Value::Dict* properties =
       service_test_->GetServiceProperties(service_path);
   if (properties) {
-    const std::string* result = properties->FindStringKey(key);
+    const std::string* result = properties->FindString(key);
     if (result)
       return *result;
   }

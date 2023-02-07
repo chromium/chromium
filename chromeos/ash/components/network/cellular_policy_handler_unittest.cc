@@ -59,7 +59,7 @@ void CheckShillConfiguration(bool is_installed) {
   std::string service_path =
       ShillServiceClient::Get()->GetTestInterface()->FindServiceMatchingGUID(
           kCellularGuid);
-  const base::Value* properties =
+  const base::Value::Dict* properties =
       ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
           service_path);
 
@@ -67,13 +67,13 @@ void CheckShillConfiguration(bool is_installed) {
     EXPECT_EQ(properties, nullptr);
     return;
   }
-  const std::string* guid = properties->FindStringKey(shill::kGuidProperty);
+  const std::string* guid = properties->FindString(shill::kGuidProperty);
   EXPECT_EQ(kCellularGuid, *guid);
   // UIData should not be empty if cellular service is configured.
   const std::string* ui_data_value =
-      properties->FindStringKey(shill::kUIDataProperty);
+      properties->FindString(shill::kUIDataProperty);
   EXPECT_NE(*ui_data_value, std::string());
-  const std::string* iccid = properties->FindStringKey(shill::kIccidProperty);
+  const std::string* iccid = properties->FindString(shill::kIccidProperty);
   EXPECT_EQ(kICCID, *iccid);
 }
 

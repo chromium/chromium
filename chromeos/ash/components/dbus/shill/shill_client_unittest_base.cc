@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -19,6 +20,7 @@
 #include "dbus/object_path.h"
 #include "dbus/values_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using ::testing::_;
@@ -35,17 +37,18 @@ std::unique_ptr<base::Value> PopStringToStringDictionary(
   dbus::MessageReader array_reader(nullptr);
   if (!reader->PopArray(&array_reader))
     return nullptr;
-  auto result = std::make_unique<base::Value>(base::Value::Type::DICT);
+  base::Value::Dict result;
   while (array_reader.HasMoreData()) {
     dbus::MessageReader entry_reader(nullptr);
     std::string key;
     std::string value;
     if (!array_reader.PopDictEntry(&entry_reader) ||
-        !entry_reader.PopString(&key) || !entry_reader.PopString(&value))
+        !entry_reader.PopString(&key) || !entry_reader.PopString(&value)) {
       return nullptr;
-    result->SetKey(key, base::Value(value));
+    }
+    result.Set(key, value);
   }
-  return result;
+  return std::make_unique<base::Value>(std::move(result));
 }
 
 }  // namespace
@@ -162,7 +165,7 @@ void ShillClientUnittestBase::SendPlatformMessageSignal(dbus::Signal* signal) {
   platform_message_handler_.Run(signal);
 }
 
-void ShillClientUnittestBase::SendPacketReceievedSignal(dbus::Signal* signal) {
+void ShillClientUnittestBase::SendPacketReceivedSignal(dbus::Signal* signal) {
   ASSERT_FALSE(packet_receieved__handler_.is_null());
   packet_receieved__handler_.Run(signal);
 }
@@ -256,10 +259,9 @@ void ShillClientUnittestBase::ExpectStringAndValueArguments(
 
 // static
 void ShillClientUnittestBase::ExpectValueDictionaryArgument(
-    const base::Value* expected_dictionary,
+    const base::Value::Dict* expected_dictionary,
     bool string_valued,
     dbus::MessageReader* reader) {
-  ASSERT_TRUE(expected_dictionary->is_dict());
   dbus::MessageReader array_reader(nullptr);
   ASSERT_TRUE(reader->PopArray(&array_reader));
   while (array_reader.HasMoreData()) {
@@ -270,8 +272,7 @@ void ShillClientUnittestBase::ExpectValueDictionaryArgument(
     if (string_valued) {
       std::string value;
       ASSERT_TRUE(entry_reader.PopString(&value));
-      const std::string* expected_value =
-          expected_dictionary->FindStringKey(key);
+      const std::string* expected_value = expected_dictionary->FindString(key);
       ASSERT_TRUE(expected_value);
       EXPECT_EQ(*expected_value, value);
       continue;
@@ -280,7 +281,7 @@ void ShillClientUnittestBase::ExpectValueDictionaryArgument(
     ASSERT_TRUE(entry_reader.PopVariant(&variant_reader));
     std::unique_ptr<base::Value> value;
     // Variants in the dictionary can be basic types or string-to-string
-    // dictinoary.
+    // dictionary.
     switch (variant_reader.GetDataType()) {
       case dbus::Message::ARRAY:
         value = PopStringToStringDictionary(&variant_reader);
@@ -296,15 +297,14 @@ void ShillClientUnittestBase::ExpectValueDictionaryArgument(
         NOTREACHED();
     }
     ASSERT_TRUE(value.get());
-    const base::Value* expected_value =
-        expected_dictionary->GetDict().Find(key);
+    const base::Value* expected_value = expected_dictionary->Find(key);
     ASSERT_TRUE(expected_value);
     EXPECT_EQ(*value, *expected_value);
   }
 }
 
 // static
-base::Value ShillClientUnittestBase::CreateExampleServiceProperties() {
+base::Value::Dict ShillClientUnittestBase::CreateExampleServiceProperties() {
   base::Value::Dict properties;
   properties.Set(shill::kGuidProperty,
                  base::Value("00000000-0000-0000-0000-000000000000"));
@@ -315,7 +315,7 @@ base::Value ShillClientUnittestBase::CreateExampleServiceProperties() {
                  base::Value(base::HexEncode(ssid.c_str(), ssid.size())));
   properties.Set(shill::kSecurityClassProperty,
                  base::Value(shill::kSecurityClassPsk));
-  return base::Value(std::move(properties));
+  return properties;
 }
 
 // static

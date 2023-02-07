@@ -90,9 +90,9 @@ TEST_F(ShillIPConfigClientTest, GetProperties) {
   // Create response.
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
   dbus::MessageWriter writer(response.get());
-  dbus::MessageWriter array_writer(NULL);
+  dbus::MessageWriter array_writer(nullptr);
   writer.OpenArray("{sv}", &array_writer);
-  dbus::MessageWriter entry_writer(NULL);
+  dbus::MessageWriter entry_writer(nullptr);
   // Append address.
   array_writer.OpenDictEntry(&entry_writer);
   entry_writer.AppendString(shill::kAddressProperty);

@@ -105,9 +105,9 @@ TEST_F(ShillManagerClientTest, GetProperties) {
   // Create response.
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
   dbus::MessageWriter writer(response.get());
-  dbus::MessageWriter array_writer(NULL);
+  dbus::MessageWriter array_writer(nullptr);
   writer.OpenArray("{sv}", &array_writer);
-  dbus::MessageWriter entry_writer(NULL);
+  dbus::MessageWriter entry_writer(nullptr);
   array_writer.OpenDictEntry(&entry_writer);
   entry_writer.AppendString(shill::kArpGatewayProperty);
   entry_writer.AppendVariantOfBool(true);
@@ -131,18 +131,18 @@ TEST_F(ShillManagerClientTest, GetNetworksForGeolocation) {
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
 
   dbus::MessageWriter writer(response.get());
-  dbus::MessageWriter type_dict_writer(NULL);
+  dbus::MessageWriter type_dict_writer(nullptr);
   writer.OpenArray("{sv}", &type_dict_writer);
-  dbus::MessageWriter type_entry_writer(NULL);
+  dbus::MessageWriter type_entry_writer(nullptr);
   type_dict_writer.OpenDictEntry(&type_entry_writer);
   type_entry_writer.AppendString(shill::kTypeWifi);
-  dbus::MessageWriter variant_writer(NULL);
+  dbus::MessageWriter variant_writer(nullptr);
   type_entry_writer.OpenVariant("aa{ss}", &variant_writer);
-  dbus::MessageWriter wap_list_writer(NULL);
+  dbus::MessageWriter wap_list_writer(nullptr);
   variant_writer.OpenArray("a{ss}", &wap_list_writer);
-  dbus::MessageWriter property_dict_writer(NULL);
+  dbus::MessageWriter property_dict_writer(nullptr);
   wap_list_writer.OpenArray("{ss}", &property_dict_writer);
-  dbus::MessageWriter property_entry_writer(NULL);
+  dbus::MessageWriter property_entry_writer(nullptr);
   property_dict_writer.OpenDictEntry(&property_entry_writer);
   property_entry_writer.AppendString(shill::kGeoMacAddressProperty);
   property_entry_writer.AppendString("01:23:45:67:89:AB");
@@ -281,7 +281,7 @@ TEST_F(ShillManagerClientTest, ConfigureService) {
   dbus::MessageWriter writer(response.get());
   writer.AppendObjectPath(object_path);
   // Create the argument dictionary.
-  base::Value arg = CreateExampleServiceProperties();
+  base::Value::Dict arg = CreateExampleServiceProperties();
   // Use a variant valued dictionary rather than a string valued one.
   const bool string_valued = false;
   // Set expectations.
@@ -292,8 +292,7 @@ TEST_F(ShillManagerClientTest, ConfigureService) {
   // Call method.
   base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
   client_->ConfigureService(
-      arg.GetDict(),
-      base::BindOnce(&ExpectObjectPathResultWithoutStatus, object_path),
+      arg, base::BindOnce(&ExpectObjectPathResultWithoutStatus, object_path),
       mock_error_callback.Get());
   EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
 
@@ -308,7 +307,7 @@ TEST_F(ShillManagerClientTest, GetService) {
   dbus::MessageWriter writer(response.get());
   writer.AppendObjectPath(object_path);
   // Create the argument dictionary.
-  base::Value arg = CreateExampleServiceProperties();
+  base::Value::Dict arg = CreateExampleServiceProperties();
   // Use a variant valued dictionary rather than a string valued one.
   const bool string_valued = false;
   // Set expectations.
@@ -319,8 +318,7 @@ TEST_F(ShillManagerClientTest, GetService) {
   // Call method.
   base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
   client_->GetService(
-      arg.GetDict(),
-      base::BindOnce(&ExpectObjectPathResultWithoutStatus, object_path),
+      arg, base::BindOnce(&ExpectObjectPathResultWithoutStatus, object_path),
       mock_error_callback.Get());
   EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
 

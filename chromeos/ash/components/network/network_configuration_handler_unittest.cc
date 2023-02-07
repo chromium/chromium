@@ -264,9 +264,9 @@ class NetworkConfigurationHandlerTest : public testing::Test {
     GetShillProfileClient()->AddService("profile2", "/service/2");
 
     // Tie profiles and services.
-    const base::Value* service_properties_1 =
+    const base::Value::Dict* service_properties_1 =
         GetShillServiceClient()->GetServiceProperties("/service/1");
-    const base::Value* service_properties_2 =
+    const base::Value::Dict* service_properties_2 =
         GetShillServiceClient()->GetServiceProperties("/service/2");
     ASSERT_TRUE(service_properties_1);
     ASSERT_TRUE(service_properties_2);
@@ -287,11 +287,11 @@ class NetworkConfigurationHandlerTest : public testing::Test {
                                 std::string* result) {
     ShillServiceClient::TestInterface* service_test =
         ShillServiceClient::Get()->GetTestInterface();
-    const base::Value* properties =
+    const base::Value::Dict* properties =
         service_test->GetServiceProperties(service_path);
     if (!properties)
       return false;
-    const std::string* value = properties->FindStringKey(key);
+    const std::string* value = properties->FindString(key);
     if (!value)
       return false;
     *result = *value;
@@ -427,10 +427,10 @@ TEST_F(NetworkConfigurationHandlerTest, SetProperties) {
       base::BindOnce(&ErrorCallback));
   base::RunLoop().RunUntilIdle();
 
-  const base::Value* properties =
+  const base::Value::Dict* properties =
       GetShillServiceClient()->GetServiceProperties(kServicePath);
   ASSERT_TRUE(properties);
-  const std::string* ssid = properties->FindStringKey(shill::kSSIDProperty);
+  const std::string* ssid = properties->FindString(shill::kSSIDProperty);
   ASSERT_TRUE(ssid);
   EXPECT_EQ(kNetworkName, *ssid);
 }
@@ -450,10 +450,10 @@ TEST_F(NetworkConfigurationHandlerTest, ClearProperties) {
       kServicePath, names, base::DoNothing(), base::BindOnce(&ErrorCallback));
   base::RunLoop().RunUntilIdle();
 
-  const base::Value* properties =
+  const base::Value::Dict* properties =
       GetShillServiceClient()->GetServiceProperties(kServicePath);
   ASSERT_TRUE(properties);
-  const std::string* ssid = properties->FindStringKey(shill::kSSIDProperty);
+  const std::string* ssid = properties->FindString(shill::kSSIDProperty);
   EXPECT_FALSE(ssid);
 }
 

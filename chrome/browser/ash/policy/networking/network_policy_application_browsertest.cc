@@ -132,13 +132,13 @@ class ServicePropertyValueWatcher : public ash::ShillPropertyChangedObserver {
 
     // If the service already exists and has `property_name`, record the initial
     // value.
-    const base::Value* initial_service_properties =
+    const base::Value::Dict* initial_service_properties =
         shill_service_client_test_->GetServiceProperties(service_path);
     if (!initial_service_properties) {
       return;
     }
     const std::string* property_value =
-        initial_service_properties->GetDict().FindString(property_name);
+        initial_service_properties->FindString(property_name);
     if (!property_value) {
       return;
     }
@@ -641,12 +641,12 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
   // service `service_path`.
   absl::optional<base::Value::Dict> GetUIDataDict(
       const std::string& service_path) {
-    const base::Value* properties =
+    const base::Value::Dict* properties =
         shill_service_client_test_->GetServiceProperties(service_path);
     if (!properties)
       return {};
     const std::string* ui_data_json =
-        properties->GetDict().FindString(shill::kUIDataProperty);
+        properties->FindString(shill::kUIDataProperty);
     if (!ui_data_json)
       return {};
     absl::optional<base::Value> ui_data_value =
@@ -680,7 +680,7 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
     return *guid;
   }
 
-  const base::Value* GetWifiProps(const std::string& guid) {
+  const base::Value::Dict* GetWifiProps(const std::string& guid) {
     absl::optional<std::string> wifi_service;
     wifi_service = shill_service_client_test_->FindServiceMatchingGUID(guid);
     if (wifi_service->empty()) {
@@ -701,9 +701,9 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
   }
 
   const std::string GetWifiStateFromShillClient(const std::string& guid) {
-    const base::Value* wifi_properties = GetWifiProps(guid);
+    const base::Value::Dict* wifi_properties = GetWifiProps(guid);
     const std::string* wifi_state =
-        wifi_properties->FindStringKey(shill::kStateProperty);
+        wifi_properties->FindString(shill::kStateProperty);
     if (!wifi_state) {
       ADD_FAILURE() << "Network has no WiFi state properties: " << guid;
       return "";
@@ -834,13 +834,13 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
           "{device-policy-for-Wifi1}");
   ASSERT_TRUE(wifi_service);
   {
-    const base::Value* wifi_service_properties =
+    const base::Value::Dict* wifi_service_properties =
         shill_service_client_test_->GetServiceProperties(wifi_service.value());
     ASSERT_TRUE(wifi_service_properties);
     EXPECT_THAT(
-        wifi_service_properties->GetDict(),
+        *wifi_service_properties,
         DictionaryHasValue(shill::kAutoConnectProperty, base::Value(true)));
-    EXPECT_THAT(wifi_service_properties->GetDict(),
+    EXPECT_THAT(*wifi_service_properties,
                 DictionaryHasValue(shill::kProfileProperty,
                                    base::Value(kSharedProfilePath)));
   }
@@ -912,19 +912,19 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
 
   // Expect that the same service path now has the user policy GUID.
   {
-    const base::Value* wifi_service_properties =
+    const base::Value::Dict* wifi_service_properties =
         shill_service_client_test_->GetServiceProperties(wifi_service.value());
     ASSERT_TRUE(wifi_service_properties);
-    EXPECT_THAT(wifi_service_properties->GetDict(),
+    EXPECT_THAT(*wifi_service_properties,
                 DictionaryHasValue(shill::kGuidProperty,
                                    base::Value("{user-policy-for-Wifi1}")));
     EXPECT_THAT(
-        wifi_service_properties->GetDict(),
+        *wifi_service_properties,
         DictionaryHasValue(shill::kAutoConnectProperty, base::Value(false)));
-    EXPECT_THAT(wifi_service_properties->GetDict(),
+    EXPECT_THAT(*wifi_service_properties,
                 DictionaryHasValue(shill::kProfileProperty,
                                    base::Value(kUserProfilePath)));
-    EXPECT_THAT(wifi_service_properties->GetDict(),
+    EXPECT_THAT(*wifi_service_properties,
                 DictionaryHasValue(shill::kStateProperty,
                                    base::Value(shill::kStateIdle)));
   }
@@ -934,11 +934,11 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
           "{user-policy-for-Wifi2}");
   ASSERT_TRUE(wifi2_service);
   {
-    const base::Value* wifi_service_properties =
+    const base::Value::Dict* wifi_service_properties =
         shill_service_client_test_->GetServiceProperties(wifi2_service.value());
     ASSERT_TRUE(wifi_service_properties);
     EXPECT_THAT(
-        wifi_service_properties->GetDict(),
+        *wifi_service_properties,
         DictionaryHasValue(shill::kAutoConnectProperty, base::Value(true)));
     // This service is still connected. This is an important check in this
     // regression test:
@@ -949,7 +949,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
     // AutoConnectHandler disconnected the current network because of the global
     // AllowOnlyPolicyNetworksToAutoconnect policy. Verify that this has not
     // happened in this test.
-    EXPECT_THAT(wifi_service_properties->GetDict(),
+    EXPECT_THAT(*wifi_service_properties,
                 DictionaryHasValue(shill::kStateProperty,
                                    base::Value(shill::kStateOnline)));
   }
@@ -1145,11 +1145,11 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   SetDeviceOpenNetworkConfiguration(kDeviceONC1, /*wait_applied=*/true);
 
   {
-    const base::Value* wifi_service_properties =
+    const base::Value::Dict* wifi_service_properties =
         shill_service_client_test_->GetServiceProperties(kServiceWifi2);
     ASSERT_TRUE(wifi_service_properties);
     EXPECT_THAT(
-        wifi_service_properties->GetDict(),
+        *wifi_service_properties,
         DictionaryHasValue(shill::kGuidProperty, base::Value("{same_guid}")));
   }
 
@@ -1173,17 +1173,17 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
     })";
   SetDeviceOpenNetworkConfiguration(kDeviceONC2, /*wait_applied=*/true);
   {
-    const base::Value* wifi_service_properties =
+    const base::Value::Dict* wifi_service_properties =
         shill_service_client_test_->GetServiceProperties(kServiceWifi2);
     ASSERT_TRUE(wifi_service_properties);
-    EXPECT_FALSE(wifi_service_properties->GetDict().Find(shill::kGuidProperty));
+    EXPECT_FALSE(wifi_service_properties->Find(shill::kGuidProperty));
   }
   {
-    const base::Value* wifi_service_properties =
+    const base::Value::Dict* wifi_service_properties =
         shill_service_client_test_->GetServiceProperties(kServiceWifi1);
     ASSERT_TRUE(wifi_service_properties);
     EXPECT_THAT(
-        wifi_service_properties->GetDict(),
+        *wifi_service_properties,
         DictionaryHasValue(shill::kGuidProperty, base::Value("{same_guid}")));
   }
 }
@@ -1259,14 +1259,14 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
       /*wait_applied=*/true);
 
   {
-    const base::Value* wifi_service_properties =
+    const base::Value::Dict* wifi_service_properties =
         shill_service_client_test_->GetServiceProperties(kServiceWifi1);
     ASSERT_TRUE(wifi_service_properties);
-    EXPECT_THAT(wifi_service_properties->GetDict(),
+    EXPECT_THAT(*wifi_service_properties,
                 DictionaryHasValue(shill::kGuidProperty,
                                    base::Value("{DeviceLevelWifiGuid}")));
     // Expect that the EAP.Identity has been replaced
-    EXPECT_THAT(wifi_service_properties->GetDict(),
+    EXPECT_THAT(*wifi_service_properties,
                 DictionaryHasValue(shill::kEapIdentityProperty,
                                    base::Value(kSerialNumber)));
 
@@ -1301,14 +1301,14 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
       /*wait_applied=*/true);
 
   {
-    const base::Value* wifi_service_properties =
+    const base::Value::Dict* wifi_service_properties =
         shill_service_client_test_->GetServiceProperties(kServiceWifi1);
     ASSERT_TRUE(wifi_service_properties);
-    EXPECT_THAT(wifi_service_properties->GetDict(),
+    EXPECT_THAT(*wifi_service_properties,
                 DictionaryHasValue(shill::kGuidProperty,
                                    base::Value("{DeviceLevelWifiGuid}")));
     // Expect that the EAP.Identity has been replaced
-    EXPECT_THAT(wifi_service_properties->GetDict(),
+    EXPECT_THAT(*wifi_service_properties,
                 DictionaryHasValue(shill::kEapIdentityProperty,
                                    base::Value(kExpectedIdentity)));
   }
@@ -1337,15 +1337,15 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
       /*wait_applied=*/true);
 
   {
-    const base::Value* wifi_service_properties =
+    const base::Value::Dict* wifi_service_properties =
         shill_service_client_test_->GetServiceProperties(kServiceWifi1);
     ASSERT_TRUE(wifi_service_properties);
-    EXPECT_THAT(wifi_service_properties->GetDict(),
+    EXPECT_THAT(*wifi_service_properties,
                 DictionaryHasValue(shill::kGuidProperty,
                                    base::Value("{UserLevelWifiGuid}")));
     // Expect that the EAP.Identity has been replaced
     EXPECT_THAT(
-        wifi_service_properties->GetDict(),
+        *wifi_service_properties,
         DictionaryHasValue(shill::kEapIdentityProperty,
                            base::Value(test_account_id_.GetUserEmail())));
   }
@@ -1379,11 +1379,11 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, RetainEthernetIPAddr) {
   SetDeviceOpenNetworkConfiguration(kDeviceONC1, /*wait_applied=*/true);
 
   {
-    const base::Value* eth_service_properties =
+    const base::Value::Dict* eth_service_properties =
         shill_service_client_test_->GetServiceProperties(kServiceEth);
     ASSERT_TRUE(eth_service_properties);
     EXPECT_THAT(
-        eth_service_properties->GetDict(),
+        *eth_service_properties,
         DictionaryHasValue(shill::kGuidProperty, base::Value(kEthernetGuid)));
   }
 
@@ -1413,12 +1413,11 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, RetainEthernetIPAddr) {
 
   // Verify that the Static IP config has been applied.
   {
-    const base::Value* shill_properties =
+    const base::Value::Dict* shill_properties =
         shill_service_client_test_->GetServiceProperties(kServiceEth);
     ASSERT_TRUE(shill_properties);
-    EXPECT_EQ(
-        GetStaticIPAddressFromShillProperties(shill_properties->GetDict()),
-        "192.168.1.44");
+    EXPECT_EQ(GetStaticIPAddressFromShillProperties(*shill_properties),
+              "192.168.1.44");
   }
 
   // Modify the policy: Force custom nameserver, but allow IP address to be
@@ -1448,15 +1447,13 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, RetainEthernetIPAddr) {
   // Verify that the Static IP is still active, and the custom name server has
   // been applied.
   {
-    const base::Value* shill_properties =
+    const base::Value::Dict* shill_properties =
         shill_service_client_test_->GetServiceProperties(kServiceEth);
     ASSERT_TRUE(shill_properties);
-    EXPECT_EQ(
-        GetStaticIPAddressFromShillProperties(shill_properties->GetDict()),
-        "192.168.1.44");
-    EXPECT_THAT(
-        GetStaticNameServersFromShillProperties(shill_properties->GetDict()),
-        ElementsAre("8.8.3.1", "8.8.2.1", "0.0.0.0", "0.0.0.0"));
+    EXPECT_EQ(GetStaticIPAddressFromShillProperties(*shill_properties),
+              "192.168.1.44");
+    EXPECT_THAT(GetStaticNameServersFromShillProperties(*shill_properties),
+                ElementsAre("8.8.3.1", "8.8.2.1", "0.0.0.0", "0.0.0.0"));
   }
 
   // Modify the policy: Force DHCP ip address
@@ -1488,12 +1485,11 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, RetainEthernetIPAddr) {
 
   // Verify that the Static IP is gone.
   {
-    const base::Value* shill_properties =
+    const base::Value::Dict* shill_properties =
         shill_service_client_test_->GetServiceProperties(kServiceEth);
     ASSERT_TRUE(shill_properties);
-    EXPECT_THAT(
-        GetStaticIPAddressFromShillProperties(shill_properties->GetDict()),
-        IsEmpty());
+    EXPECT_THAT(GetStaticIPAddressFromShillProperties(*shill_properties),
+                IsEmpty());
   }
 }
 
@@ -1753,11 +1749,11 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationNoEthernetWorkaroundTest,
                                     /*wait_applied=*/true);
 
   {
-    const base::Value* eth_service_properties =
+    const base::Value::Dict* eth_service_properties =
         shill_service_client_test_->GetServiceProperties(kServiceEth);
     ASSERT_TRUE(eth_service_properties);
     EXPECT_THAT(
-        eth_service_properties->GetDict(),
+        *eth_service_properties,
         DictionaryHasValue(shill::kGuidProperty, base::Value(kEthernetGuid)));
   }
 
@@ -1789,12 +1785,11 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationNoEthernetWorkaroundTest,
 
   // Verify that the Static IP config has not been applied.
   {
-    const base::Value* shill_properties =
+    const base::Value::Dict* shill_properties =
         shill_service_client_test_->GetServiceProperties(kServiceEth);
     ASSERT_TRUE(shill_properties);
-    EXPECT_THAT(
-        GetStaticIPAddressFromShillProperties(shill_properties->GetDict()),
-        IsEmpty());
+    EXPECT_THAT(GetStaticIPAddressFromShillProperties(*shill_properties),
+                IsEmpty());
   }
 }
 
@@ -1862,12 +1857,11 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationNoEthernetWorkaroundTest,
 
   // Verify that the Static IP config has been applied.
   {
-    const base::Value* shill_properties =
+    const base::Value::Dict* shill_properties =
         shill_service_client_test_->GetServiceProperties(kServiceEth);
     ASSERT_TRUE(shill_properties);
-    EXPECT_EQ(
-        GetStaticIPAddressFromShillProperties(shill_properties->GetDict()),
-        "192.168.1.44");
+    EXPECT_EQ(GetStaticIPAddressFromShillProperties(*shill_properties),
+              "192.168.1.44");
   }
 
   // Modify the policy: Force custom nameserver, but allow IP address to be
@@ -1898,15 +1892,13 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationNoEthernetWorkaroundTest,
   // Verify that the Static IP is still active, and the custom name server has
   // been applied.
   {
-    const base::Value* shill_properties =
+    const base::Value::Dict* shill_properties =
         shill_service_client_test_->GetServiceProperties(kServiceEth);
     ASSERT_TRUE(shill_properties);
-    EXPECT_EQ(
-        GetStaticIPAddressFromShillProperties(shill_properties->GetDict()),
-        "192.168.1.44");
-    EXPECT_THAT(
-        GetStaticNameServersFromShillProperties(shill_properties->GetDict()),
-        ElementsAre("8.8.3.1", "8.8.2.1", "0.0.0.0", "0.0.0.0"));
+    EXPECT_EQ(GetStaticIPAddressFromShillProperties(*shill_properties),
+              "192.168.1.44");
+    EXPECT_THAT(GetStaticNameServersFromShillProperties(*shill_properties),
+                ElementsAre("8.8.3.1", "8.8.2.1", "0.0.0.0", "0.0.0.0"));
   }
 
   // For Ethernet, not mentioning "Recommended" currently means that the IP
@@ -1938,12 +1930,11 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationNoEthernetWorkaroundTest,
 
   // Verify that the Static IP is gone.
   {
-    const base::Value* shill_properties =
+    const base::Value::Dict* shill_properties =
         shill_service_client_test_->GetServiceProperties(kServiceEth);
     ASSERT_TRUE(shill_properties);
-    EXPECT_THAT(
-        GetStaticIPAddressFromShillProperties(shill_properties->GetDict()),
-        IsEmpty());
+    EXPECT_THAT(GetStaticIPAddressFromShillProperties(*shill_properties),
+                IsEmpty());
   }
 }
 

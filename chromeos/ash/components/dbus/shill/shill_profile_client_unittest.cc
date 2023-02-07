@@ -28,7 +28,7 @@ const char kExampleEntryPath[] = "example_entry_path";
 
 void AppendVariantOfArrayOfStrings(dbus::MessageWriter* writer,
                                    const std::vector<std::string>& strings) {
-  dbus::MessageWriter variant_writer(NULL);
+  dbus::MessageWriter variant_writer(nullptr);
   writer->OpenVariant("as", &variant_writer);
   variant_writer.AppendArrayOfStrings(strings);
   writer->CloseContainer(&variant_writer);
@@ -99,9 +99,9 @@ TEST_F(ShillProfileClientTest, GetProperties) {
   // Create response.
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
   dbus::MessageWriter writer(response.get());
-  dbus::MessageWriter array_writer(NULL);
+  dbus::MessageWriter array_writer(nullptr);
   writer.OpenArray("{sv}", &array_writer);
-  dbus::MessageWriter entry_writer(NULL);
+  dbus::MessageWriter entry_writer(nullptr);
   array_writer.OpenDictEntry(&entry_writer);
   entry_writer.AppendString(shill::kEntriesProperty);
   AppendVariantOfArrayOfStrings(&entry_writer,
@@ -133,9 +133,9 @@ TEST_F(ShillProfileClientTest, GetEntry) {
   // Create response.
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
   dbus::MessageWriter writer(response.get());
-  dbus::MessageWriter array_writer(NULL);
+  dbus::MessageWriter array_writer(nullptr);
   writer.OpenArray("{sv}", &array_writer);
-  dbus::MessageWriter entry_writer(NULL);
+  dbus::MessageWriter entry_writer(nullptr);
   array_writer.OpenDictEntry(&entry_writer);
   entry_writer.AppendString(shill::kTypeProperty);
   entry_writer.AppendVariantOfString(shill::kTypeWifi);
@@ -144,7 +144,7 @@ TEST_F(ShillProfileClientTest, GetEntry) {
 
   // Create the expected value.
   base::Value value(base::Value::Type::DICT);
-  value.SetKey(shill::kTypeProperty, base::Value(shill::kTypeWifi));
+  value.GetDict().Set(shill::kTypeProperty, shill::kTypeWifi);
   // Set expectations.
   PrepareForMethodCall(
       shill::kGetEntryFunction,
@@ -166,7 +166,7 @@ TEST_F(ShillProfileClientTest, DeleteEntry) {
 
   // Create the expected value.
   base::Value value(base::Value::Type::DICT);
-  value.SetKey(shill::kArpGatewayProperty, base::Value(true));
+  value.GetDict().Set(shill::kArpGatewayProperty, true);
   // Set expectations.
   PrepareForMethodCall(
       shill::kDeleteEntryFunction,

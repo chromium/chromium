@@ -94,7 +94,7 @@ TEST_F(ShillThirdPartyVpnDriverClientTest, PlatformSignal) {
 
   // Run the signal callback.
   SendPlatformMessageSignal(&pmessage_signal);
-  SendPacketReceievedSignal(&preceived_signal);
+  SendPacketReceivedSignal(&preceived_signal);
 
   testing::Mock::VerifyAndClearExpectations(&observer);
 
@@ -124,7 +124,7 @@ TEST_F(ShillThirdPartyVpnDriverClientTest, PlatformSignal) {
 
   // Run the signal callback.
   SendPlatformMessageSignal(&pmessage_signal);
-  SendPacketReceievedSignal(&preceived_signal);
+  SendPacketReceivedSignal(&preceived_signal);
 
   testing::Mock::VerifyAndClearExpectations(&observer);
 
@@ -136,10 +136,9 @@ TEST_F(ShillThirdPartyVpnDriverClientTest, SetParameters) {
   dbus::MessageWriter writer(response.get());
   writer.AppendString(std::string("deadbeef"));
 
-  base::Value parameters(base::Value::Type::DICT);
+  base::Value::Dict parameters;
   const std::string kAddress("1.1.1.1");
-  parameters.SetKey(shill::kAddressParameterThirdPartyVpn,
-                    base::Value(kAddress));
+  parameters.Set(shill::kAddressParameterThirdPartyVpn, kAddress);
 
   EXPECT_CALL(*this, MockSuccessWithWarning(std::string("deadbeef"))).Times(1);
 

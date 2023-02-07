@@ -745,7 +745,7 @@ void FakeShillManagerClient::SortManagerServices(bool notify) {
   std::vector<base::Value> complete_dict_list;
   for (const base::Value& value : complete_path_list) {
     std::string service_path = value.GetString();
-    const base::Value* properties =
+    const base::Value::Dict* properties =
         ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
             service_path);
     if (!properties) {
@@ -753,15 +753,14 @@ void FakeShillManagerClient::SortManagerServices(bool notify) {
       continue;
     }
 
-    std::string type =
-        GetStringValue(properties->GetDict(), shill::kTypeProperty);
+    std::string type = GetStringValue(*properties, shill::kTypeProperty);
     if (!TechnologyEnabled(type)) {
       disabled_path_list.push_back(service_path);
       continue;
     }
 
-    base::Value properties_copy = properties->Clone();
-    properties_copy.SetKey(kPathKey, base::Value(service_path));
+    base::Value::Dict properties_copy = properties->Clone();
+    properties_copy.Set(kPathKey, service_path);
     complete_dict_list.emplace_back(std::move(properties_copy));
   }
 
@@ -775,13 +774,14 @@ void FakeShillManagerClient::SortManagerServices(bool notify) {
   visible_services.clear();
   for (const base::Value& dict : complete_dict_list) {
     std::string service_path = GetStringValue(dict.GetDict(), kPathKey);
-    complete_path_list.Append(base::Value(service_path));
-    if (dict.FindBoolKey(shill::kVisibleProperty).value_or(false))
-      visible_services.Append(base::Value(service_path));
+    complete_path_list.Append(service_path);
+    if (dict.GetDict().FindBool(shill::kVisibleProperty).value_or(false)) {
+      visible_services.Append(service_path);
+    }
   }
   // Append disabled networks to the end of the complete path list.
   for (const std::string& path : disabled_path_list)
-    complete_path_list.Append(base::Value(path));
+    complete_path_list.Append(path);
 
   // Notify observers if the order changed.
   if (notify && complete_path_list != prev_complete_path_list)
@@ -1095,20 +1095,20 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
                                    shill::kRoamingStateProperty,
                                    base::Value(shill_roaming_state));
 
-      base::Value apn(base::Value::Type::DICT);
-      apn.SetKey(shill::kApnProperty, base::Value("testapn"));
-      apn.SetKey(shill::kApnNameProperty, base::Value("Test APN"));
-      apn.SetKey(shill::kApnLocalizedNameProperty,
-                 base::Value("Localized Test APN"));
-      apn.SetKey(shill::kApnUsernameProperty, base::Value("User1"));
-      apn.SetKey(shill::kApnPasswordProperty, base::Value("password"));
-      apn.SetKey(shill::kApnAuthenticationProperty, base::Value("chap"));
-      base::Value apn2(base::Value::Type::DICT);
-      apn2.SetKey(shill::kApnProperty, base::Value("testapn2"));
+      base::Value apn_value{base::Value::Type::DICT};
+      base::Value::Dict& apn = apn_value.GetDict();
+      apn.Set(shill::kApnProperty, "testapn");
+      apn.Set(shill::kApnNameProperty, "Test APN");
+      apn.Set(shill::kApnLocalizedNameProperty, "Localized Test APN");
+      apn.Set(shill::kApnUsernameProperty, "User1");
+      apn.Set(shill::kApnPasswordProperty, "password");
+      apn.Set(shill::kApnAuthenticationProperty, "chap");
+      base::Value::Dict apn2;
+      apn2.Set(shill::kApnProperty, "testapn2");
       services->SetServiceProperty(kCellularServicePath,
-                                   shill::kCellularApnProperty, apn);
-      services->SetServiceProperty(kCellularServicePath,
-                                   shill::kCellularLastGoodApnProperty, apn);
+                                   shill::kCellularApnProperty, apn_value);
+      services->SetServiceProperty(
+          kCellularServicePath, shill::kCellularLastGoodApnProperty, apn_value);
       base::Value::List apn_list;
       apn_list.Append(std::move(apn));
       apn_list.Append(std::move(apn2));
@@ -1238,13 +1238,13 @@ base::Value FakeShillManagerClient::GetEnabledServiceList() const {
         ShillServiceClient::Get()->GetTestInterface();
     for (const base::Value& v : *service_list) {
       std::string service_path = v.GetString();
-      const base::Value* properties =
+      const base::Value::Dict* properties =
           service_client->GetServiceProperties(service_path);
       if (!properties) {
         LOG(ERROR) << "Properties not found for service: " << service_path;
         continue;
       }
-      const std::string* type = properties->FindStringKey(shill::kTypeProperty);
+      const std::string* type = properties->FindString(shill::kTypeProperty);
       if (type && TechnologyEnabled(*type))
         new_service_list.Append(v.Clone());
     }
@@ -1291,9 +1291,8 @@ void FakeShillManagerClient::ParseCommandLineSwitch() {
   VLOG(1) << "Parsing command line:" << option_str;
   base::StringPairs string_pairs;
   base::SplitStringIntoKeyValuePairs(option_str, '=', ',', &string_pairs);
-  for (base::StringPairs::iterator iter = string_pairs.begin();
-       iter != string_pairs.end(); ++iter) {
-    ParseOption((*iter).first, (*iter).second);
+  for (auto& string_pair : string_pairs) {
+    ParseOption(string_pair.first, string_pair.second);
   }
 }
 
@@ -1311,19 +1310,19 @@ bool FakeShillManagerClient::ParseOption(const std::string& arg0,
     return true;
   } else if (arg0 == "sim_lock") {
     bool locked = (arg1 == "1");
-    base::Value simlock_dict(base::Value::Type::DICT);
-    simlock_dict.SetBoolKey(shill::kSIMLockEnabledProperty, true);
+    base::Value::Dict simlock_dict;
+    simlock_dict.Set(shill::kSIMLockEnabledProperty, true);
     std::string lock_type = locked ? shill::kSIMLockPin : "";
-    simlock_dict.SetStringKey(shill::kSIMLockTypeProperty, lock_type);
+    simlock_dict.Set(shill::kSIMLockTypeProperty, lock_type);
     if (locked) {
-      simlock_dict.SetIntKey(shill::kSIMLockRetriesLeftProperty,
-                             FakeShillDeviceClient::kSimPinRetryCount);
+      simlock_dict.Set(shill::kSIMLockRetriesLeftProperty,
+                       FakeShillDeviceClient::kSimPinRetryCount);
     }
     shill_device_property_map_[shill::kTypeCellular]
                               [shill::kSIMPresentProperty] = base::Value(true);
     shill_device_property_map_[shill::kTypeCellular]
                               [shill::kSIMLockStatusProperty] =
-                                  std::move(simlock_dict);
+                                  base::Value(std::move(simlock_dict));
     shill_device_property_map_[shill::kTypeCellular]
                               [shill::kTechnologyFamilyProperty] =
                                   base::Value(shill::kNetworkTechnologyGsm);

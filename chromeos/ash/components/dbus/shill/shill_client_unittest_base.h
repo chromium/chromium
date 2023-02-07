@@ -93,7 +93,7 @@ class ShillClientUnittestBase : public testing::Test {
   void SendPlatformMessageSignal(dbus::Signal* signal);
 
   // Sends packet received signal to the tested client.
-  void SendPacketReceievedSignal(dbus::Signal* signal);
+  void SendPacketReceivedSignal(dbus::Signal* signal);
 
   // Sends property changed signal to the tested client.
   void SendPropertyChangedSignal(dbus::Signal* signal);
@@ -134,12 +134,12 @@ class ShillClientUnittestBase : public testing::Test {
 
   // Expects the reader to have a string-to-variant dictionary.
   static void ExpectValueDictionaryArgument(
-      const base::Value* expected_dictionary,
+      const base::Value::Dict* expected_dictionary,
       bool string_valued,
       dbus::MessageReader* reader);
 
-  // Creates a dictionary Value with example Service properties.
-  static base::Value CreateExampleServiceProperties();
+  // Creates a dictionary with example Service properties.
+  static base::Value::Dict CreateExampleServiceProperties();
 
   // Expects the call status to be SUCCESS.
   static void ExpectNoResultValue(bool result);

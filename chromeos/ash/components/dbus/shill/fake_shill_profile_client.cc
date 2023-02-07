@@ -186,7 +186,7 @@ void FakeShillProfileClient::AddProfile(const std::string& profile_path,
 
 void FakeShillProfileClient::AddEntry(const std::string& profile_path,
                                       const std::string& entry_path,
-                                      const base::Value& properties) {
+                                      const base::Value::Dict& properties) {
   ProfileProperties* profile = GetProfile(dbus::ObjectPath(profile_path));
   DCHECK(profile);
   profile->entries.Set(entry_path, properties.Clone());
@@ -230,14 +230,14 @@ bool FakeShillProfileClient::AddOrUpdateServiceImpl(
     ProfileProperties* profile) {
   ShillServiceClient::TestInterface* service_test =
       ShillServiceClient::Get()->GetTestInterface();
-  const base::Value* service_properties =
+  const base::Value::Dict* service_properties =
       service_test->GetServiceProperties(service_path);
   if (!service_properties) {
     LOG(ERROR) << "No matching service: " << service_path;
     return false;
   }
   const std::string* service_profile_path =
-      service_properties->FindStringKey(shill::kProfileProperty);
+      service_properties->FindString(shill::kProfileProperty);
   if (!service_profile_path || service_profile_path->empty()) {
     base::Value profile_path_value(profile_path);
     service_test->SetServiceProperty(service_path, shill::kProfileProperty,

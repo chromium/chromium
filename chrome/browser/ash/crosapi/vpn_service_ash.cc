@@ -296,7 +296,7 @@ void VpnServiceForExtensionAsh::SetParameters(base::Value::Dict parameters,
 
   auto [success, failure] = AdaptCallback(std::move(callback));
   ash::ShillThirdPartyVpnDriverClient::Get()->SetParameters(
-      active_configuration_->object_path(), base::Value(std::move(parameters)),
+      active_configuration_->object_path(), std::move(parameters),
       base::BindOnce(&RunWarningCallback, std::move(success)),
       std::move(failure));
 }

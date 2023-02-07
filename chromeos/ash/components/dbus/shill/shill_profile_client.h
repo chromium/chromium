@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillProfileClient {
     // kServicesProperty (which represents 'visible' services).
     virtual void AddEntry(const std::string& profile_path,
                           const std::string& entry_path,
-                          const base::Value& properties) = 0;
+                          const base::Value::Dict& properties) = 0;
 
     // Adds a service to the profile, copying properties from the
     // ShillServiceClient entry matching |service_path|. Returns false if no
@@ -80,7 +80,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillProfileClient {
     virtual base::Value GetService(const std::string& service_path,
                                    std::string* profile_path) = 0;
 
-    // Returns true iff an entry sepcified via |service_path| exists in
+    // Returns true iff an entry specified via |service_path| exists in
     // any profile.
     virtual bool HasService(const std::string& service_path) = 0;
 

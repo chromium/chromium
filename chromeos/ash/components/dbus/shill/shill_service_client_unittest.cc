@@ -90,9 +90,9 @@ TEST_F(ShillServiceClientTest, GetProperties) {
   // Create response.
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
   dbus::MessageWriter writer(response.get());
-  dbus::MessageWriter array_writer(NULL);
+  dbus::MessageWriter array_writer(nullptr);
   writer.OpenArray("{sv}", &array_writer);
-  dbus::MessageWriter entry_writer(NULL);
+  dbus::MessageWriter entry_writer(nullptr);
   array_writer.OpenDictEntry(&entry_writer);
   entry_writer.AppendString(shill::kSignalStrengthProperty);
   entry_writer.AppendVariantOfByte(kValue);
@@ -101,7 +101,7 @@ TEST_F(ShillServiceClientTest, GetProperties) {
 
   // Set expectations.
   base::Value value(base::Value::Type::DICT);
-  value.SetKey(shill::kSignalStrengthProperty, base::Value(kValue));
+  value.GetDict().Set(shill::kSignalStrengthProperty, kValue);
   PrepareForMethodCall(shill::kGetPropertiesFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
@@ -140,7 +140,7 @@ TEST_F(ShillServiceClientTest, SetProperties) {
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
 
   // Set expectations.
-  base::Value arg = CreateExampleServiceProperties();
+  base::Value::Dict arg = CreateExampleServiceProperties();
   // Use a variant valued dictionary rather than a string valued one.
   const bool string_valued = false;
   PrepareForMethodCall(
@@ -151,7 +151,7 @@ TEST_F(ShillServiceClientTest, SetProperties) {
   // Call method.
   base::MockCallback<base::OnceClosure> mock_closure;
   base::MockCallback<ShillServiceClient::ErrorCallback> mock_error_callback;
-  client_->SetProperties(dbus::ObjectPath(kExampleServicePath), arg.GetDict(),
+  client_->SetProperties(dbus::ObjectPath(kExampleServicePath), arg,
                          mock_closure.Get(), mock_error_callback.Get());
   EXPECT_CALL(mock_closure, Run()).Times(1);
   EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
@@ -186,7 +186,7 @@ TEST_F(ShillServiceClientTest, ClearProperties) {
   // Create response.
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
   dbus::MessageWriter writer(response.get());
-  dbus::MessageWriter array_writer(NULL);
+  dbus::MessageWriter array_writer(nullptr);
   writer.OpenArray("b", &array_writer);
   array_writer.AppendBool(true);
   array_writer.AppendBool(true);

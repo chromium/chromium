@@ -152,9 +152,10 @@ class NetworkCertMigratorTest : public testing::Test {
     cert_id->clear();
 
     std::string name = wifi ? kWifiStub : kEthernetEapStub;
-    const base::Value* properties = service_test_->GetServiceProperties(name);
+    const base::Value::Dict* properties =
+        service_test_->GetServiceProperties(name);
     const std::string* value =
-        properties->FindStringKey(shill::kEapCertIdProperty);
+        properties->FindString(shill::kEapCertIdProperty);
     if (value)
       *cert_id = *value;
   }
@@ -188,11 +189,11 @@ class NetworkCertMigratorTest : public testing::Test {
     slot_id->clear();
     pkcs11_id->clear();
 
-    const base::Value* properties =
+    const base::Value::Dict* properties =
         service_test_->GetServiceProperties(kVPNStub);
     ASSERT_TRUE(properties);
     const base::Value::Dict* provider =
-        properties->GetDict().FindDict(shill::kProviderProperty);
+        properties->FindDict(shill::kProviderProperty);
     if (!provider)
       return;
     if (open_vpn) {

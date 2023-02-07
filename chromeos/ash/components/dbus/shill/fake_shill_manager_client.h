@@ -182,8 +182,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   // Current network throttling status.
   NetworkThrottlingStatus network_throttling_status_ = {false, 0, 0};
 
-  typedef std::map<std::string, base::Value> ShillPropertyMap;
-  typedef std::map<std::string, ShillPropertyMap> DevicePropertyMap;
+  using ShillPropertyMap = std::map<std::string, base::Value>;
+  using DevicePropertyMap = std::map<std::string, ShillPropertyMap>;
   DevicePropertyMap shill_device_property_map_;
 
   base::ObserverList<ShillPropertyChangedObserver>::Unchecked observer_list_;

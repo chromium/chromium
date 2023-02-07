@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillThirdPartyVpnDriverClient {
                                    uint32_t message) = 0;
 
    protected:
-    virtual ~TestInterface() {}
+    virtual ~TestInterface() = default;
   };
 
   // Creates and initializes the global instance. |bus| must not be null.
@@ -74,10 +74,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillThirdPartyVpnDriverClient {
       const std::string& object_path_value) = 0;
 
   // Calls the SetParameters DBus method for |object_path_value| with
-  // |parameters| which must be a dictionary Value. Invokes |callback| on
-  // success or |error_callback| on failure.
+  // |parameters|. Invokes |callback| on success or |error_callback| on failure.
   virtual void SetParameters(const std::string& object_path_value,
-                             const base::Value& parameters,
+                             const base::Value::Dict& parameters,
                              StringCallback callback,
                              ErrorCallback error_callback) = 0;
 

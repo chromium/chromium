@@ -200,11 +200,11 @@ void FakeHermesProfileClient::UpdateCellularServices(const std::string& iccid,
 
   base::Value service_list = manager_test->GetEnabledServiceList();
   for (const base::Value& service_path : service_list.GetList()) {
-    const base::Value* properties =
+    const base::Value::Dict* properties =
         service_test->GetServiceProperties(service_path.GetString());
-    const std::string* type = properties->FindStringKey(shill::kTypeProperty);
+    const std::string* type = properties->FindString(shill::kTypeProperty);
     const std::string* service_iccid =
-        properties->FindStringKey(shill::kIccidProperty);
+        properties->FindString(shill::kIccidProperty);
     if (!service_iccid || !type || *type != shill::kTypeCellular)
       continue;
 

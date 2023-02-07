@@ -398,11 +398,11 @@ class ClientCertResolverTest : public testing::Test,
   void GetServiceProperty(const std::string& prop_name,
                           std::string* prop_value) {
     prop_value->clear();
-    const base::Value* properties =
+    const base::Value::Dict* properties =
         service_test_->GetServiceProperties(kWifiStub);
     if (!properties)
       return;
-    const std::string* value = properties->FindStringKey(prop_name);
+    const std::string* value = properties->FindString(prop_name);
     if (value)
       *prop_value = *value;
   }
