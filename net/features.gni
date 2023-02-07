@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/cronet/config.gni")
 import("//build/config/features.gni")
 
 declare_args() {
@@ -37,7 +38,8 @@ declare_args() {
 
   # Platforms where the cert verifier comparison trial is supported.
   # See https://crbug.com/649026.
-  trial_comparison_cert_verifier_supported = is_mac || is_win || is_android
+  trial_comparison_cert_verifier_supported =
+      is_mac || is_win || (is_android && !is_cronet_build)
 
   # Platforms for which certificate verification can be performed using the
   # builtin cert verifier with the Chrome Root Store, and this can be
@@ -45,5 +47,6 @@ declare_args() {
   # flag is false, verification may be done with the platform verifier or the
   # builtin verifier using platform roots, depending on the platform.
   # See https://crbug.com/1216547 for status.
-  chrome_root_store_supported = is_win || is_mac || is_android
+  chrome_root_store_supported =
+      is_win || is_mac || (is_android && !is_cronet_build)
 }
