@@ -50,13 +50,8 @@
 #include "ui/wm/core/cursor_util.h"
 
 namespace exo {
-namespace {
 
-// TODO(oshima): Some accessibility features, including large cursors, disable
-// hardware cursors. Ash does not support compositing for custom cursors, so it
-// replaces them with the default cursor. As a result, this scale has no effect
-// for now. See crbug.com/708378.
-const float kLargeCursorScale = 2.8f;
+namespace {
 
 const double kLocatedEventEpsilonSquared = 1.0 / (2000.0 * 2000.0);
 
@@ -937,8 +932,6 @@ void Pointer::UpdateCursor() {
         ui::GetScaleForResourceScaleFactor(ui::GetSupportedResourceScaleFactor(
             display.device_scale_factor())) /
         capture_scale_;
-    if (cursor_client->GetCursorSize() == ui::CursorSize::kLarge)
-      scale *= kLargeCursorScale;
 
     // Use panel_rotation() rather than "natural" rotation, as it actually
     // relates to the hardware you're about to draw the cursor bitmap on.
