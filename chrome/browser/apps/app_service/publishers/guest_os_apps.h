@@ -23,7 +23,6 @@ class Profile;
 namespace apps {
 
 class PublisherHost;
-class GuestOSAppsTestHelper;
 
 // GuestOSApps holds the common code for GuestOS app publishers (in the App
 // Service sense). Subclasses like CrostiniApps and BruschettaApps should
@@ -37,9 +36,10 @@ class GuestOSApps : public KeyedService,
   GuestOSApps& operator=(const GuestOSApps&) = delete;
   ~GuestOSApps() override;
 
+  void InitializeForTesting();
+
  private:
   friend class PublisherHost;  // It calls Initialize().
-  friend class GuestOSAppsTestHelper;
 
   // Returns false if this kind of GuestOS isn't supported, e.g. missing
   // hardware capabilities. This prevents the app publisher from being

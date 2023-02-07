@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
@@ -19,6 +20,11 @@ GuestOSApps::GuestOSApps(AppServiceProxy* proxy)
     : AppPublisher(proxy), profile_(proxy->profile()) {}
 
 GuestOSApps::~GuestOSApps() = default;
+
+void GuestOSApps::InitializeForTesting() {
+  CHECK_IS_TEST();
+  Initialize();
+}
 
 void GuestOSApps::Initialize() {
   DCHECK(profile_);

@@ -57,11 +57,6 @@ class TestPublisher : public GuestOSApps {
   }
 };
 
-class GuestOSAppsTestHelper {
- public:
-  static void Initialize(GuestOSApps* publisher) { publisher->Initialize(); }
-};
-
 class GuestOSAppsTest : public testing::Test {
  public:
   GuestOSAppsTest()
@@ -91,7 +86,7 @@ class GuestOSAppsTest : public testing::Test {
 TEST_F(GuestOSAppsTest, CreateApp) {
   // Create the test publisher and register it.
   auto pub = std::make_unique<TestPublisher>(app_service_proxy());
-  GuestOSAppsTestHelper::Initialize(pub.get());
+  pub->InitializeForTesting();
 
   // Create a test app.
   vm_tools::apps::App app;

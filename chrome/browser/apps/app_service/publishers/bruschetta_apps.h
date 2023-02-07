@@ -27,6 +27,8 @@ class BruschettaApps : public GuestOSApps {
   ~BruschettaApps() override = default;
 
  private:
+  friend class BruschettaAppsTestHelper;
+
   bool CouldBeAllowed() const override;
   apps::AppType AppType() const override;
   guest_os::VmType VmType() const override;
