@@ -18,6 +18,7 @@ if (is_win) {
          "Only Linux X64 MSAN is supported")
   platform_config_root = "config/linux-noasm/$current_cpu"
 } else if (current_cpu == "riscv64" || current_cpu == "loong64" ||
+           current_cpu == "mipsel" || current_cpu == "mips64el" ||
            current_cpu == "ppc64") {
   platform_config_root = "config/linux-noasm/generic"
 } else {
