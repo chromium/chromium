@@ -263,6 +263,10 @@ void PrintJob::Cancel() {
 
   is_canceling_ = true;
 
+  for (auto& observer : observers_) {
+    observer.OnCanceling();
+  }
+
   if (worker_ && worker_->IsRunning()) {
     // Call this right now so it renders the context invalid. Do not use
     // InvokeLater since it would take too much time.

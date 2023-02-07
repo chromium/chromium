@@ -83,11 +83,8 @@ void PrintJobWorkerOop::StartPrinting(PrintedDocument* new_document) {
 
   // Do browser-side context setup.
   std::u16string document_name = GetDocumentName(new_document);
-  mojom::ResultCode result = printing_context()->NewDocument(document_name);
-  if (result != mojom::ResultCode::kSuccess) {
-    OnFailure();
-    return;
-  }
+  bool success = SetupDocument(document_name);
+  DCHECK(success);
 
   // Keep another reference to the document just for OOP.  This reference
   // ensures the document object is retained even if the job cancels out and
@@ -281,6 +278,16 @@ void PrintJobWorkerOop::OnDocumentDone() {
   // PrintBackend service.
 }
 
+void PrintJobWorkerOop::OnCancel() {
+  // Retain a reference to the PrintJob to ensure it doesn't get deleted before
+  // the `OnDidCancel()` callback occurs.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&PrintJobWorkerOop::SendCancel,
+                                ui_weak_factory_.GetWeakPtr(),
+                                base::WrapRefCounted(print_job())));
+  PrintJobWorker::OnCancel();
+}
+
 void PrintJobWorkerOop::OnFailure() {
   // Retain a reference to the PrintJob to ensure it doesn't get deleted before
   // the `OnDidCancel()` callback occurs.
@@ -344,9 +351,15 @@ void PrintJobWorkerOop::NotifyFailure(mojom::ResultCode result) {
   base::UmaHistogramEnumeration(kPrintOopPrintResultHistogramName, uma_result);
 
   // Initiate rest of regular failure handling.
-  task_runner()->PostTask(FROM_HERE,
-                          base::BindOnce(&PrintJobWorkerOop::OnFailure,
-                                         worker_weak_factory_.GetWeakPtr()));
+  if (result == mojom::ResultCode::kCanceled) {
+    task_runner()->PostTask(FROM_HERE,
+                            base::BindOnce(&PrintJobWorkerOop::OnCancel,
+                                           worker_weak_factory_.GetWeakPtr()));
+  } else {
+    task_runner()->PostTask(FROM_HERE,
+                            base::BindOnce(&PrintJobWorkerOop::OnFailure,
+                                           worker_weak_factory_.GetWeakPtr()));
+  }
 }
 
 void PrintJobWorkerOop::SendStartPrinting(const std::string& device_name,

@@ -3260,34 +3260,29 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   SetUpPrintViewManager(web_contents);
 
   if (GetParam() == PrintBackendFeatureVariation::kInBrowserProcess) {
-    // The expected events for this are:
-    // 1.  A print job is started, but results in a cancel.  There are no
-    //     callbacks to notice this.  The cancel does result in an error dialog
-    //     being shown.
-    // 2.  Wait for the one print job to be destroyed, to ensure printing
+    // A print job is started, but results in a cancel.  There are no callbacks
+    // to notice the start job.  The expected events for this are:
+    // 1.  Wait for the one print job to be destroyed, to ensure printing
     //     finished cleanly before completing the test.
-    SetNumExpectedMessages(/*num=*/2);
+    SetNumExpectedMessages(/*num=*/1);
   } else {
     // The expected events for this are:
     // 1.  A print job is started, but results in a cancel.
     // 2.  The print job is canceled.
-    // 3.  An error dialog is shown.
-    // 4.  Wait for the one print job to be destroyed, to ensure printing
+    // 3.  Wait for the one print job to be destroyed, to ensure printing
     //     finished cleanly before completing the test.
-    SetNumExpectedMessages(/*num=*/4);
+    SetNumExpectedMessages(/*num=*/3);
   }
 
   PrintAfterPreviewIsReadyAndLoaded();
 
-  // No tracking of start printing or cancel for in-browser tests, only for
-  // OOP.
+  // No tracking of start printing or cancel callbacks for in-browser tests,
+  // only for OOP.
   if (GetParam() != PrintBackendFeatureVariation::kInBrowserProcess) {
     EXPECT_EQ(start_printing_result(), mojom::ResultCode::kCanceled);
     EXPECT_EQ(cancel_count(), 1);
   }
-  // TODO(crbug.com/1393505)  Error count should be zero once cancel handling
-  // is corrected.
-  EXPECT_EQ(error_dialog_shown_count(), 1u);
+  EXPECT_EQ(error_dialog_shown_count(), 0u);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
 

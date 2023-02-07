@@ -174,6 +174,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   // PrintJob::Observer overrides:
   void OnDocDone(int job_id, PrintedDocument* document) override;
   void OnJobDone() override;
+  void OnCanceling() override;
   void OnFailed() override;
 
   base::ObserverList<Observer>& GetObservers() { return observers_; }

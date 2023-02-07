@@ -92,6 +92,9 @@ class PrintJobWorker {
   // Get the document name to be used when initiating printing.
   std::u16string GetDocumentName(const PrintedDocument* new_document) const;
 
+  // Setup the document in preparation for printing.
+  bool SetupDocument(const std::u16string& document_name);
+
 #if BUILDFLAG(IS_WIN)
   // Renders a page in the printer.  Returns false if any errors occur.
   // This is applicable when using the Windows GDI print API.
@@ -109,6 +112,10 @@ class PrintJobWorker {
 
   // Helper function for document done processing.
   void FinishDocumentDone(int job_id);
+
+  // Notifies the owning PrintJob that a cancel request has occurred during
+  // processing of the job.
+  virtual void OnCancel();
 
   // Discards the current document, the current page and cancels the printing
   // context.

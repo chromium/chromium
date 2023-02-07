@@ -475,9 +475,17 @@ mojom::ResultCode PrintingContextWin::OnError() {
   if (abort_printing_) {
     result = mojom::ResultCode::kCanceled;
   } else {
-    result = logging::GetLastSystemErrorCode() == ERROR_ACCESS_DENIED
-                 ? mojom::ResultCode::kAccessDenied
-                 : mojom::ResultCode::kFailed;
+    switch (logging::GetLastSystemErrorCode()) {
+      case ERROR_ACCESS_DENIED:
+        result = mojom::ResultCode::kAccessDenied;
+        break;
+      case ERROR_CANCELLED:
+        result = mojom::ResultCode::kCanceled;
+        break;
+      default:
+        result = mojom::ResultCode::kFailed;
+        break;
+    }
   }
   ResetSettings();
   return result;

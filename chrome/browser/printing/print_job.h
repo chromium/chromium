@@ -58,6 +58,7 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
    public:
     virtual void OnDocDone(int job_id, PrintedDocument* document) {}
     virtual void OnJobDone() {}
+    virtual void OnCanceling() {}
     virtual void OnFailed() {}
     virtual void OnDestruction() {}
   };

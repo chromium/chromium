@@ -70,6 +70,7 @@ class PrintJobWorkerOop : public PrintJobWorker {
 #endif
   bool SpoolDocument() override;
   void OnDocumentDone() override;
+  void OnCancel() override;
   void OnFailure() override;
 
  private:

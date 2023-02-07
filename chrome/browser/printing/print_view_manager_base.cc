@@ -796,6 +796,10 @@ void PrintViewManagerBase::OnJobDone() {
   ReleasePrintJob();
 }
 
+void PrintViewManagerBase::OnCanceling() {
+  canceling_job_ = true;
+}
+
 void PrintViewManagerBase::OnFailed() {
 #if !BUILDFLAG(IS_ANDROID)  // Android does not implement this function.
   if (!canceling_job_)
