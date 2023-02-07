@@ -109,8 +109,7 @@ TEST_F(AnimationHostTest, ImplOnlyTimeline) {
   scoped_refptr<AnimationTimeline> timeline(
       AnimationTimeline::Create(timeline_id1));
   scoped_refptr<AnimationTimeline> timeline_impl(
-      AnimationTimeline::Create(timeline_id2));
-  timeline_impl->set_is_impl_only(true);
+      AnimationTimeline::Create(timeline_id2, /* is_impl_only */ true));
 
   host->AddAnimationTimeline(timeline.get());
   host_impl->AddAnimationTimeline(timeline_impl.get());

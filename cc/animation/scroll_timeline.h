@@ -94,18 +94,22 @@ class CC_ANIMATION_EXPORT ScrollTimeline : public AnimationTimeline {
       const ScrollTree& scroll_tree,
       bool is_active_tree) override;
 
-  absl::optional<ElementId> GetActiveIdForTest() const { return active_id_; }
-  absl::optional<ElementId> GetPendingIdForTest() const { return pending_id_; }
-  ScrollDirection GetDirectionForTest() const { return direction_; }
+  absl::optional<ElementId> GetActiveIdForTest() const { return active_id(); }
+  absl::optional<ElementId> GetPendingIdForTest() const { return pending_id(); }
+  ScrollDirection GetDirectionForTest() const { return direction(); }
   absl::optional<double> GetStartScrollOffsetForTest() const {
-    if (!pending_offsets_)
-      return absl::nullopt;
-    return pending_offsets_->start;
+    absl::optional<ScrollOffsets> offsets = pending_offsets();
+    if (offsets) {
+      return offsets->start;
+    }
+    return absl::nullopt;
   }
   absl::optional<double> GetEndScrollOffsetForTest() const {
-    if (!pending_offsets_)
-      return absl::nullopt;
-    return pending_offsets_->end;
+    absl::optional<ScrollOffsets> offsets = pending_offsets();
+    if (offsets) {
+      return offsets->end;
+    }
+    return absl::nullopt;
   }
 
   bool IsScrollTimeline() const override;
@@ -114,18 +118,38 @@ class CC_ANIMATION_EXPORT ScrollTimeline : public AnimationTimeline {
   ~ScrollTimeline() override;
 
  private:
+  const absl::optional<ElementId>& active_id() const {
+    return active_id_.Read(*this);
+  }
+
+  const absl::optional<ElementId>& pending_id() const {
+    return pending_id_.Read(*this);
+  }
+
+  const ScrollDirection& direction() const { return direction_.Read(*this); }
+
+  const absl::optional<ScrollOffsets>& active_offsets() const {
+    return active_offsets_.Read(*this);
+  }
+
+  const absl::optional<ScrollOffsets>& pending_offsets() const {
+    return pending_offsets_.Read(*this);
+  }
+
   // The scroller which this ScrollTimeline is based on. The same underlying
   // scroll source may have different ids in the pending and active tree (see
   // http://crbug.com/847588).
-  absl::optional<ElementId> active_id_;
-  absl::optional<ElementId> pending_id_;
+
+  // Only the impl thread can set active properties.
+  ProtectedSequenceForbidden<absl::optional<ElementId>> active_id_;
+  ProtectedSequenceWritable<absl::optional<ElementId>> pending_id_;
 
   // The direction of the ScrollTimeline indicates which axis of the scroller
   // it should base its current time on, and where the origin point is.
-  ScrollDirection direction_;
+  ProtectedSequenceReadable<ScrollDirection> direction_;
 
-  absl::optional<ScrollOffsets> pending_offsets_;
-  absl::optional<ScrollOffsets> active_offsets_;
+  ProtectedSequenceForbidden<absl::optional<ScrollOffsets>> active_offsets_;
+  ProtectedSequenceWritable<absl::optional<ScrollOffsets>> pending_offsets_;
 };
 
 inline ScrollTimeline* ToScrollTimeline(AnimationTimeline* timeline) {

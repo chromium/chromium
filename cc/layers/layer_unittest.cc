@@ -186,8 +186,8 @@ class LayerTest : public testing::Test {
                    &task_runner_provider_,
                    &task_graph_runner_) {
     timeline_impl_ =
-        AnimationTimeline::Create(AnimationIdProvider::NextTimelineId());
-    timeline_impl_->set_is_impl_only(true);
+        AnimationTimeline::Create(AnimationIdProvider::NextTimelineId(),
+                                  /* is_impl_only */ true);
     host_impl_.animation_host()->AddAnimationTimeline(timeline_impl_);
   }
 
