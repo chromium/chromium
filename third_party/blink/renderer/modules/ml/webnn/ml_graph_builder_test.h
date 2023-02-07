@@ -6,18 +6,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_BUILDER_TEST_H_
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_utils.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
@@ -27,27 +24,6 @@ class MLOperand;
 class V8TestingScope;
 
 // The utility methods for graph builder test.
-MLGraphBuilder* CreateMLGraphBuilder(
-    V8TestingScope& scope,
-    MLContextOptions* options = MLContextOptions::Create());
-
-MLOperand* BuildInput(V8TestingScope& scope,
-                      MLGraphBuilder* builder,
-                      const String& name,
-                      const Vector<uint32_t>& dimensions,
-                      V8MLOperandType::Enum type);
-
-NotShared<DOMArrayBufferView> CreateDOMArrayBufferView(
-    size_t size,
-    V8MLOperandType::Enum type);
-
-MLOperand* BuildConstant(
-    V8TestingScope& scope,
-    MLGraphBuilder* builder,
-    const Vector<uint32_t>& dimensions,
-    V8MLOperandType::Enum type,
-    absl::optional<NotShared<DOMArrayBufferView>> buffer_view = absl::nullopt);
-
 NotShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
     const MLOperand* operand);
 
