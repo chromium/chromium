@@ -348,20 +348,7 @@ void BrowserNonClientFrameViewMac::OnThemeChanged() {
 // BrowserNonClientFrameViewMac, views::NonClientFrameView implementation:
 
 gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForClientView() const {
-  // Because of the z-ordering of our child views (the client view is positioned
-  // over the non-client frame view), if the client view ever overlaps the frame
-  // view visually (as it does for the browser window), then NSAccessibility
-  // accessibilityHitTest will not be able to find the window controls, such as
-  // WebAppFrameToolbarView.
-  // TODO(crbug/1361945): Make accessibilityHitTest support the window controls
-  // overlay mode.
-  gfx::Rect client_view_bounds = bounds();
-  int top_inset = (browser_view()->IsWindowControlsOverlayEnabled() ||
-                   browser_view()->IsImmersiveModeEnabled())
-                      ? 0
-                      : GetTopInset(false);
-  client_view_bounds.Inset(gfx::Insets::TLBR(top_inset, 0, 0, 0));
-  return client_view_bounds;
+  return bounds();
 }
 
 gfx::Rect BrowserNonClientFrameViewMac::GetWindowBoundsForClientBounds(

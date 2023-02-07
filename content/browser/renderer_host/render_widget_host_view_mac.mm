@@ -1618,10 +1618,6 @@ void RenderWidgetHostViewMac::ShowSharePicker(
 // RenderWidgetHostNSViewHostHelper and mojom::RenderWidgetHostNSViewHost
 // implementation:
 
-id RenderWidgetHostViewMac::GetAccessibilityElement() {
-  return GetNativeViewAccessible();
-}
-
 id RenderWidgetHostViewMac::GetRootBrowserAccessibilityElement() {
   if (auto* manager = host()->GetRootBrowserAccessibilityManager())
     return manager->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
@@ -2126,15 +2122,6 @@ void RenderWidgetHostViewMac::StartSpeaking() {
 
 void RenderWidgetHostViewMac::StopSpeaking() {
   ui::TextServicesContextMenu::StopSpeaking();
-}
-
-void RenderWidgetHostViewMac::GetRenderWidgetAccessibilityToken(
-    GetRenderWidgetAccessibilityTokenCallback callback) {
-  base::ProcessId pid = getpid();
-  id element_id = GetNativeViewAccessible();
-  std::vector<uint8_t> token =
-      ui::RemoteAccessibility::GetTokenForLocalElement(element_id);
-  std::move(callback).Run(pid, token);
 }
 
 void RenderWidgetHostViewMac::SetRemoteAccessibilityWindowToken(

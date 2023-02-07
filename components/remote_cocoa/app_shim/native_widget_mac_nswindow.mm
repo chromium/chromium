@@ -14,7 +14,6 @@
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
 #import "components/remote_cocoa/app_shim/window_touch_bar_delegate.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
-#include "ui/base/cocoa/remote_accessibility_api.h"
 #import "ui/base/cocoa/user_interface_item_command_handler.h"
 #import "ui/base/cocoa/window_size_constants.h"
 
@@ -143,21 +142,6 @@ void OrderChildWindow(NSWindow* child_window,
 - (BOOL)_shouldFlipTrafficLightsForRTL {
   return [[self window] windowTitlebarLayoutDirection] ==
          NSUserInterfaceLayoutDirectionRightToLeft;
-}
-
-// The base implementation skips NSAccessibilityRemoteUIElement.
-- (id)accessibilityHitTest:(NSPoint)point {
-  for (id child in [[self accessibilityChildren] reverseObjectEnumerator]) {
-    if ([child isKindOfClass:[NSAccessibilityRemoteUIElement class]])
-      return [child accessibilityHitTest:point];
-    if (!NSPointInRect(point, [child accessibilityFrame]))
-      continue;
-    if (id foundChild = [child accessibilityHitTest:point])
-      return foundChild;
-  }
-
-  // Hit self, but not any child.
-  return NSAccessibilityUnignoredAncestor(self);
 }
 @end
 

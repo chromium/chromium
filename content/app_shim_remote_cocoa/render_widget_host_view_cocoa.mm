@@ -83,7 +83,6 @@ class DummyHostHelper : public RenderWidgetHostNSViewHostHelper {
 
  private:
   // RenderWidgetHostNSViewHostHelper implementation.
-  id GetAccessibilityElement() override { return nil; }
   id GetRootBrowserAccessibilityElement() override { return nil; }
   id GetFocusedBrowserAccessibilityElement() override { return nil; }
   void SetAccessibilityWindow(NSWindow* window) override {}
@@ -1698,9 +1697,6 @@ void ExtractUnderlines(NSAttributedString* string,
 - (id)accessibilityHitTest:(NSPoint)point {
   id root_element = _hostHelper->GetRootBrowserAccessibilityElement();
   if (!root_element) {
-    id rwhv_element = _hostHelper->GetAccessibilityElement();
-    if (rwhv_element && rwhv_element != self)
-      return [rwhv_element accessibilityHitTest:point];
     return self;
   }
 

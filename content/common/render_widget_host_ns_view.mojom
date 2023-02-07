@@ -4,7 +4,6 @@
 
 module remote_cocoa.mojom;
 
-import "mojo/public/mojom/base/process_id.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/input/input_handler.mojom";
 import "third_party/blink/public/mojom/webshare/share_error.mojom";
@@ -252,12 +251,6 @@ interface RenderWidgetHostNSViewHost {
   // return the result as |is_speaking|.
   [Sync]
   SyncIsSpeaking() => (bool is_speaking);
-
-  // Return in |element_token| the token for the root content AX node for this
-  // view and in |host_pid| the pid for the host process.
-  [Sync]
-  GetRenderWidgetAccessibilityToken() =>
-      (mojo_base.mojom.ProcessId host_pid, array<uint8> element_token);
 
   // Send the token for the NSWindow in which this NSView is being displayed.
   SetRemoteAccessibilityWindowToken(array<uint8> window_token);
