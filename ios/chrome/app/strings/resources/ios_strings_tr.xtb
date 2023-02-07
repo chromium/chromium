@@ -18,7 +18,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="1076421457278169141">Kod tarandı</translation>
 <translation id="1076785341346483463">Yönetilen Hesapla Senkronize Edin</translation>
 <translation id="1084365883616172403">Facebook yayını tamamlandı.</translation>
-<translation id="1085696779717592361">Varsayılan olarak Chrome kullanın</translation>
+<translation id="1085696779717592361">Chrome'u Varsayılan Olarak Kullanın</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> dilini daima çevir</translation>
 <translation id="110724200315609752">Açık Pencereye Geç</translation>
 <translation id="1112015203684611006">Yazdırılamadı.</translation>
@@ -238,7 +238,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="2781331604911854368">Açık</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">Bağlantı Oluşturulamadı</translation>
-<translation id="2786701870377699570">Senkronize Edilmiş Cihazlardaki Sekmeleri Arayın</translation>
+<translation id="2786701870377699570">Senkronize Cihazlardaki Sekmeleri Arayın</translation>
 <translation id="2797029671965852011">Geçmişi Göster</translation>
 <translation id="2800683595868705743">Sekme Değiştirici'den Çık</translation>
 <translation id="2815198996063984598">2. Varsayılan Tarayıcı Uygulaması'na dokunun</translation>
@@ -655,7 +655,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5933515656458364246">Verilerinizi tüm cihazlarda senkronize edin.</translation>
 <translation id="5938160824633642847">Cihazınızın depolama alanı dolmak üzere. Yer boşaltın ve tekrar deneyin.</translation>
 <translation id="5948291296578561264">Böylece, fotoğrafları fotoğraf kitaplığınıza kaydedebilirsiniz.</translation>
-<translation id="5951816930277761335">Bağlantıyı paylaşın</translation>
+<translation id="5951816930277761335">Bağlantıyı Paylaşın</translation>
 <translation id="5955891643922670672">Çevrimdışı Sürüm Gösteriliyor</translation>
 <translation id="5957613098218939406">Diğer Seçenekler</translation>
 <translation id="5963939892571022323">Seçili metin için bağlantı oluşturulamıyor.</translation>

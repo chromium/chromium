@@ -165,7 +165,7 @@
 <translation id="181103072419391116">Сигналдын күчү <ph name="SIGNAL_STRENGTH" />, Администраторуңуз башкарат</translation>
 <translation id="1812997170047690955">Экранымда эмне көрсөтүлүп турат?</translation>
 <translation id="1816896987747843206">Камерага уруксаты бар колдонмолордун жана вебсайттардын баарына камераны пайдалануу мүмкүнчүлүгү берилет</translation>
-<translation id="1823280932251546115">Абал түпкүчү, убакыт <ph name="TIME" />,
+<translation id="1823280932251546115">Абал сабы, убакыт <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
         <ph name="NETWORK" />,

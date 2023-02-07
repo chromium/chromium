@@ -1856,7 +1856,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2659971421398561408">Canvi de mida del disc de Crostini</translation>
 <translation id="2660779039299703961">Esdeveniment</translation>
 <translation id="266079277508604648">No es pot contactar amb la impressora. Comprova que estigui encesa i connectada al teu Chromebook per Wi-Fi o USB.</translation>
-<translation id="2661315027005813059">Pàgina desada a la memòria cau back-forward: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="2661315027005813059">Pàgina desada a la memòria cau endavant/enrere: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="2661714428027871023">Navega més de pressa i estalvia dades amb el mode lleuger. Fes clic per obtenir més informació.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2663302507110284145">Idioma</translation>
@@ -3002,7 +3002,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3727187387656390258">Inspecciona l'element emergent</translation>
 <translation id="372722114124766626">Només una vegada</translation>
 <translation id="3727332897090187514">No s'ha afegit cap nota</translation>
-<translation id="3727473233247516571">Submarc desat a la memòria cau back-forward: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727473233247516571">Submarc desat a la memòria cau endavant/enrere: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="3728188878314831180">Mostra notificacions del telèfon</translation>
 <translation id="3728681439294129328">Configura l'adreça de la xarxa</translation>
 <translation id="3729303374699765035">Pregunta'm quan un lloc web vulgui descobrir dispositius Bluetooth propers</translation>
@@ -4460,7 +4460,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 amb encriptació RSA</translation>
 <translation id="5089763948477033443">Ansa de canvi de mida del tauler lateral</translation>
 <translation id="5090637338841444533">Sense permís per fer un seguiment de la posició de la càmera</translation>
-<translation id="5093569275467863761">Submarc d'incògnit desat a la memòria cau back-forward: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5093569275467863761">Submarc d'incògnit desat a la memòria cau endavant/enrere: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094042205195563542">S'està iniciant la instal·lació</translation>
 <translation id="5094176498302660097">Amb aquesta aplicació pots obrir i editar fitxers admesos des de l'aplicació Fitxers o des d'altres aplicacions. Si vols controlar quins fitxers s'obren amb aquesta aplicació de manera predeterminada, <ph name="BEGIN_LINK" />obtén més informació sobre com pots establir aplicacions predeterminades al dispositiu<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Comunicar-se amb aplicacions natives cooperatives</translation>
@@ -7623,7 +7623,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8033023935541439900">S'ha obert el menú de marques d'èmfasi. Prem la fletxa esquerra o dreta per navegar i prem Retorn per inserir-ne una.</translation>
 <translation id="8033827949643255796">seleccionats</translation>
 <translation id="8033958968890501070">Temps d'espera esgotat</translation>
-<translation id="8035059678007243127">Pàgina d'incògnit desada a la memòria cau back-forward: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8035059678007243127">Pàgina d'incògnit desada a la memòria cau endavant/enrere: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8037117027592400564">Llegeix tot el text en veu alta mitjançant una síntesi de veu</translation>
 <translation id="8037357227543935929">Pregunta (opció predeterminada)</translation>
 <translation id="803771048473350947">Fitxer</translation>
