@@ -337,11 +337,14 @@ void DataTransferDlpController::PasteIfAllowed(
 }
 
 void DataTransferDlpController::DropIfAllowed(
-    const ui::DataTransferEndpoint* data_src,
+    const ui::OSExchangeData* drag_data,
     const ui::DataTransferEndpoint* data_dst,
     base::OnceClosure drop_cb) {
+  DCHECK(drag_data);
+
   std::string src_pattern;
   std::string dst_pattern;
+  auto* data_src = drag_data->GetSource();
   DlpRulesManager::Level level =
       IsDataTransferAllowed(dlp_rules_manager_, data_src, data_dst,
                             absl::nullopt, &src_pattern, &dst_pattern);

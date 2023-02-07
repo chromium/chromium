@@ -109,7 +109,7 @@ class TestDataTransferPolicyController : ui::DataTransferPolicyController {
                       content::RenderFrameHost* web_contents,
                       base::OnceCallback<void(bool)> callback) override {}
 
-  void DropIfAllowed(const ui::DataTransferEndpoint* const data_src,
+  void DropIfAllowed(const ui::OSExchangeData* const drag_data,
                      const ui::DataTransferEndpoint* const data_dst,
                      base::OnceClosure drop_cb) override {
     std::move(drop_cb).Run();

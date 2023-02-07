@@ -376,7 +376,7 @@ class MockDataTransferPolicyController
                     content::RenderFrameHost* rfh,
                     base::OnceCallback<void(bool)> callback));
   MOCK_METHOD3(DropIfAllowed,
-               void(const ui::DataTransferEndpoint* data_src,
+               void(const ui::OSExchangeData* drag_data,
                     const ui::DataTransferEndpoint* data_dst,
                     base::OnceClosure drop_cb));
 };
@@ -418,17 +418,16 @@ TEST_F(DragDropOperationTest, DragDropCheckSourceFromLacros) {
   icon_surface->Attach(buffer.get());
 
   // Expect the encoded endpoint from Lacros to be correctly parsed.
-  EXPECT_CALL(*dlp_controller,
-              DropIfAllowed(
-                  Pointee(AllOf(
-                      Property(&ui::DataTransferEndpoint::IsUrlType, true),
-                      Property(&ui::DataTransferEndpoint::GetURL,
-                               Pointee(Property(&GURL::spec,
-                                                "https://www.google.com/"))))),
-                  _, _))
-      .WillOnce([&](const ui::DataTransferEndpoint* data_src,
+  EXPECT_CALL(*dlp_controller, DropIfAllowed)
+      .WillOnce([&](const ui::OSExchangeData* drag_data,
                     const ui::DataTransferEndpoint* data_dst,
-                    base::OnceClosure drop_cb) { std::move(drop_cb).Run(); });
+                    base::OnceClosure drop_cb) {
+        ASSERT_TRUE(drag_data);
+        auto* data_src = drag_data->GetSource();
+        ASSERT_TRUE(data_src->IsUrlType());
+        EXPECT_EQ(data_src->GetURL()->spec(), "https://www.google.com/");
+        std::move(drop_cb).Run();
+      });
 
   base::RunLoop run_loop;
   set_drag_blocked_callback(run_loop.QuitClosure());
@@ -485,16 +484,16 @@ TEST_F(DragDropOperationTest, DragDropCheckSourceFromNonLacros) {
   icon_surface->Attach(buffer.get());
 
   // Expect the encoded endpoint from non-Lacros to be ignored.
-  EXPECT_CALL(
-      *dlp_controller,
-      DropIfAllowed(
-          Pointee(AllOf(Property(&ui::DataTransferEndpoint::IsUrlType, false),
-                        Property(&ui::DataTransferEndpoint::type,
-                                 ui::EndpointType::kCrostini))),
-          _, _))
-      .WillOnce([&](const ui::DataTransferEndpoint* data_src,
+  EXPECT_CALL(*dlp_controller, DropIfAllowed)
+      .WillOnce([&](const ui::OSExchangeData* drag_data,
                     const ui::DataTransferEndpoint* data_dst,
-                    base::OnceClosure drop_cb) { std::move(drop_cb).Run(); });
+                    base::OnceClosure drop_cb) {
+        ASSERT_TRUE(drag_data);
+        auto* data_src = drag_data->GetSource();
+        EXPECT_FALSE(data_src->IsUrlType());
+        EXPECT_EQ(data_src->type(), ui::EndpointType::kCrostini);
+        std::move(drop_cb).Run();
+      });
 
   base::RunLoop run_loop;
   set_drag_blocked_callback(run_loop.QuitClosure());

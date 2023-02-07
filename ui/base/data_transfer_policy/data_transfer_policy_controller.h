@@ -15,6 +15,7 @@ class RenderFrameHost;
 }
 
 namespace ui {
+class OSExchangeData;
 
 // The DataTransfer policy controller controls transferring data via
 // drag-and-drop and clipboard read operations. It allows/disallows transferring
@@ -51,13 +52,12 @@ class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY)
                               content::RenderFrameHost* rfh,
                               base::OnceCallback<void(bool)> callback) = 0;
 
-  // nullptr can be passed instead of `data_src` or `data_dst`. If dropping the
-  // data is not allowed, this function will show a notification to the user. If
-  // the drop is allowed, `drop_cb` will be run. Otherwise `drop_cb` will be
-  // reset.
-  // `drop_cb` may be run asynchronously after the user comfirms they want to
-  // drop the data.
-  virtual void DropIfAllowed(const DataTransferEndpoint* data_src,
+  // `drag_data` can't be nullptr. nullptr can be passed instead of `data_dst`.
+  // If dropping the data is not allowed, this function will show a notification
+  // to the user. If the drop is allowed, `drop_cb` will be run. Otherwise
+  // `drop_cb` will be reset. `drop_cb` may be run asynchronously after the user
+  // comfirms they want to drop the data.
+  virtual void DropIfAllowed(const ui::OSExchangeData* drag_data,
                              const DataTransferEndpoint* data_dst,
                              base::OnceClosure drop_cb) = 0;
 

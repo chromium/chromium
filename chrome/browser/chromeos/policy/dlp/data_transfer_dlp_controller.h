@@ -44,7 +44,7 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
                       const absl::optional<size_t> size,
                       content::RenderFrameHost* rfh,
                       base::OnceCallback<void(bool)> paste_cb) override;
-  void DropIfAllowed(const ui::DataTransferEndpoint* data_src,
+  void DropIfAllowed(const ui::OSExchangeData* drag_data,
                      const ui::DataTransferEndpoint* data_dst,
                      base::OnceClosure drop_cb) override;
 
