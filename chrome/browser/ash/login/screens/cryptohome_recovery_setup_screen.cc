@@ -17,13 +17,22 @@
 
 namespace ash {
 
+namespace {
+
+constexpr char kUserActionSkip[] = "skip";
+constexpr char kUserActionRetry[] = "retry";
+
+}  // namespace
+
 // static
 std::string CryptohomeRecoverySetupScreen::GetResultString(Result result) {
   switch (result) {
+    case Result::NOT_APPLICABLE:
+      return BaseScreen::kNotApplicable;
     case Result::DONE:
       return "Done";
     case Result::SKIPPED:
-      return BaseScreen::kNotApplicable;
+      return "Skipped";
   }
 }
 
@@ -44,6 +53,41 @@ void CryptohomeRecoverySetupScreen::ShowImpl() {
   // Show UI with a spinner while we are setting up the recovery auth factor.
   view_->Show();
 
+  SetupRecovery();
+}
+
+void CryptohomeRecoverySetupScreen::HideImpl() {}
+
+void CryptohomeRecoverySetupScreen::OnUserAction(
+    const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
+  if (action_id == kUserActionSkip) {
+    exit_callback_.Run(Result::SKIPPED);
+    return;
+  }
+  if (action_id == kUserActionRetry) {
+    view_->SetLoadingState();
+    SetupRecovery();
+    return;
+  }
+  BaseScreen::OnUserAction(args);
+}
+
+bool CryptohomeRecoverySetupScreen::MaybeSkip(WizardContext& wizard_context) {
+  // Skip recovery setup if the user didn't opt-in.
+  if (wizard_context.skip_post_login_screens_for_tests ||
+      !wizard_context.recovery_setup.recovery_factor_opted_in) {
+    ExitScreen(wizard_context, Result::NOT_APPLICABLE);
+    return true;
+  }
+
+  return false;
+}
+
+void CryptohomeRecoverySetupScreen::SetupRecovery() {
+  // Reset the weak ptr to prevent multiple calls at the same time.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   quick_unlock::QuickUnlockStorage* quick_unlock_storage =
       quick_unlock::QuickUnlockFactory::GetForProfile(
           ProfileManager::GetActiveUserProfile());
@@ -57,24 +101,6 @@ void CryptohomeRecoverySetupScreen::ShowImpl() {
       token, /*enabled=*/true,
       base::BindOnce(&CryptohomeRecoverySetupScreen::OnRecoveryConfigured,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void CryptohomeRecoverySetupScreen::HideImpl() {}
-
-void CryptohomeRecoverySetupScreen::OnUserAction(
-    const base::Value::List& args) {
-  BaseScreen::OnUserAction(args);
-}
-
-bool CryptohomeRecoverySetupScreen::MaybeSkip(WizardContext& wizard_context) {
-  // Skip recovery setup if the user didn't opt-in.
-  if (wizard_context.skip_post_login_screens_for_tests ||
-      !wizard_context.recovery_setup.recovery_factor_opted_in) {
-    ExitScreen(wizard_context, Result::SKIPPED);
-    return true;
-  }
-
-  return false;
 }
 
 void CryptohomeRecoverySetupScreen::ExitScreen(
@@ -97,8 +123,7 @@ void CryptohomeRecoverySetupScreen::OnRecoveryConfigured(
     case auth::mojom::ConfigureResult::kFatalError:
       LOG(ERROR) << "Failed to setup recovery factor, result "
                  << static_cast<int>(result);
-      ExitScreen(*context(), Result::SKIPPED);
-      // TODO(b/239420684): Send an error to the UI.
+      view_->OnSetupFailed();
       break;
   }
 }

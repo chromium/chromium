@@ -7,3 +7,26 @@ found in the LICENSE file. -->
     title-key="gaiaLoading">
   <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
 </oobe-loading-dialog>
+
+<oobe-adaptive-dialog id="errorDialog" role="dialog" for-step="error"
+    aria-label$="[[i18nDynamic(locale, 'cryptohomeRecoverySetupErrorTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'cryptohomeRecoverySetupErrorTitle')]]
+  </h1>
+  <span slot="subtitle">
+    [[i18nDynamic(locale,'cryptohomeRecoverySetupErrorSubtitle')]]
+  </span>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <img src="images/error.svg" class="oobe-illustration" aria-hidden="true">
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="skipButton"
+        on-click="onSkip_"
+        text-key="cryptohomeRecoverySetupSkipButton">
+    </oobe-text-button>
+    <oobe-text-button id="retryButton" on-click="onRetry_"
+        text-key="cryptohomeRecoverySetupRetryButton" inverse>
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>

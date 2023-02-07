@@ -24,6 +24,12 @@ class CryptohomeRecoverySetupScreenView
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
+
+  // Shows the recovery setup failed message.
+  virtual void OnSetupFailed() = 0;
+
+  // Shows the spinner in the UI.
+  virtual void SetLoadingState() = 0;
 };
 
 class CryptohomeRecoverySetupScreenHandler
@@ -44,6 +50,8 @@ class CryptohomeRecoverySetupScreenHandler
  private:
   // CryptohomeRecoverySetupScreenView
   void Show() override;
+  void OnSetupFailed() override;
+  void SetLoadingState() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(

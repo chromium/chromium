@@ -134,7 +134,8 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoverySetupScreenTest, SkippedOnOptOut) {
   ShowScreen();
 
   ContinueScreenExit();
-  EXPECT_EQ(result_.value(), CryptohomeRecoverySetupScreen::Result::SKIPPED);
+  EXPECT_EQ(result_.value(),
+            CryptohomeRecoverySetupScreen::Result::NOT_APPLICABLE);
   histogram_tester.ExpectTotalCount(
       "OOBE.StepCompletionTimeByExitReason.Cryptohome-recovery-setup.Done", 0);
   histogram_tester.ExpectTotalCount(

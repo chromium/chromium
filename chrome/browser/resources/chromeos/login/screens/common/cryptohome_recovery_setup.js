@@ -22,6 +22,7 @@ import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/beha
  */
 const CryptohomeRecoverySetupUIState = {
   LOADING: 'loading',
+  ERROR: 'error',
 };
 
 /**
@@ -58,6 +59,13 @@ class CryptohomeRecoverySetup extends CryptohomeRecoverySetupBase {
     return CryptohomeRecoverySetupUIState;
   }
 
+  get EXTERNAL_API() {
+    return [
+      'setLoadingState',
+      'onSetupFailed',
+    ];
+  }
+
   /** @override */
   ready() {
     super.ready();
@@ -69,6 +77,36 @@ class CryptohomeRecoverySetup extends CryptohomeRecoverySetupBase {
 
   reset() {
     this.setUIStep(CryptohomeRecoverySetupUIState.LOADING);
+  }
+
+  /**
+   * Called to show the spinner in the UI.
+   */
+  setLoadingState() {
+    this.setUIStep(CryptohomeRecoverySetupUIState.LOADING);
+  }
+
+  /**
+   * Called when Cryptohome recovery setup failed.
+   */
+  onSetupFailed() {
+    this.setUIStep(CryptohomeRecoverySetupUIState.ERROR);
+  }
+
+  /**
+   * Skip button click handler.
+   * @private
+   */
+  onSkip_() {
+    this.userActed('skip');
+  }
+
+  /**
+   * Retry button click handler.
+   * @private
+   */
+  onRetry_() {
+    this.userActed('retry');
   }
 }
 

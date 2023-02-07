@@ -20,7 +20,11 @@ class CryptohomeRecoverySetupScreenView;
 class CryptohomeRecoverySetupScreen : public BaseScreen {
  public:
   using TView = CryptohomeRecoverySetupScreenView;
-  enum class Result { DONE, SKIPPED };
+  enum class Result {
+    NOT_APPLICABLE,
+    DONE,
+    SKIPPED,
+  };
   static std::string GetResultString(Result result);
   using ScreenExitCallback = base::RepeatingCallback<void(Result)>;
 
@@ -46,6 +50,7 @@ class CryptohomeRecoverySetupScreen : public BaseScreen {
   bool MaybeSkip(WizardContext& context) override;
 
  private:
+  void SetupRecovery();
   void ExitScreen(WizardContext& wizard_context, Result result);
   void OnRecoveryConfigured(auth::mojom::ConfigureResult result);
   base::WeakPtr<CryptohomeRecoverySetupScreenView> view_ = nullptr;

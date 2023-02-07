@@ -6,6 +6,9 @@
 
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/login/localized_values_builder.h"
 
 namespace ash {
 
@@ -16,10 +19,27 @@ CryptohomeRecoverySetupScreenHandler::~CryptohomeRecoverySetupScreenHandler() =
     default;
 
 void CryptohomeRecoverySetupScreenHandler::DeclareLocalizedValues(
-    ::login::LocalizedValuesBuilder* builder) {}
+    ::login::LocalizedValuesBuilder* builder) {
+  builder->Add("cryptohomeRecoverySetupErrorTitle",
+               IDS_LOGIN_CRYPTOHOME_RECOVERY_SETUP_ERROR_TITLE);
+  builder->Add("cryptohomeRecoverySetupErrorSubtitle",
+               IDS_LOGIN_CRYPTOHOME_RECOVERY_SETUP_ERROR_SUBTITLE);
+  builder->Add("cryptohomeRecoverySetupSkipButton",
+               IDS_LOGIN_CRYPTOHOME_RECOVERY_SETUP_SKIP_BUTTON);
+  builder->Add("cryptohomeRecoverySetupRetryButton",
+               IDS_LOGIN_CRYPTOHOME_RECOVERY_SETUP_RETRY_BUTTON);
+}
 
 void CryptohomeRecoverySetupScreenHandler::Show() {
   ShowInWebUI();
+}
+
+void CryptohomeRecoverySetupScreenHandler::OnSetupFailed() {
+  CallExternalAPI("onSetupFailed");
+}
+
+void CryptohomeRecoverySetupScreenHandler::SetLoadingState() {
+  CallExternalAPI("setLoadingState");
 }
 
 }  // namespace ash
