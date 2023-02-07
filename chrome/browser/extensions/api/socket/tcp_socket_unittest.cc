@@ -6,6 +6,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_context.h"
@@ -16,7 +17,6 @@
 #include "net/base/address_list.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
-#include "net/base/test_completion_callback.h"
 #include "net/socket/socket_test_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request_context.h"
@@ -33,6 +33,24 @@ const char kTestMsg[] = "abcdefghij";
 const int kTestMsgLength = strlen(kTestMsg);
 
 const char FAKE_ID[] = "abcdefghijklmnopqrst";
+
+using AcceptFuture = base::test::TestFuture<
+    int32_t,
+    mojo::PendingRemote<network::mojom::TCPConnectedSocket>,
+    const absl::optional<net::IPEndPoint>&,
+    mojo::ScopedDataPipeConsumerHandle,
+    mojo::ScopedDataPipeProducerHandle>;
+
+using BoolFuture = base::test::TestFuture<bool>;
+
+using ConnectFuture = base::test::TestFuture<int32_t>;
+
+using ListenFuture = base::test::TestFuture<int32_t, const std::string&>;
+
+using ReadFuture =
+    base::test::TestFuture<int32_t, scoped_refptr<net::IOBuffer>, bool>;
+
+using WriteFuture = base::test::TestFuture<int32_t>;
 
 class TCPSocketUnitTestBase : public extensions::ExtensionServiceTestBase {
  public:
@@ -51,9 +69,9 @@ class TCPSocketUnitTestBase : public extensions::ExtensionServiceTestBase {
       const net::IPEndPoint& ip_end_point) {
     auto socket = CreateSocket();
     net::AddressList address(ip_end_point);
-    net::TestCompletionCallback callback;
-    socket->Connect(address, callback.callback());
-    EXPECT_EQ(net::OK, callback.WaitForResult());
+    ConnectFuture connect_future;
+    socket->Connect(address, connect_future.GetCallback());
+    EXPECT_EQ(net::OK, connect_future.Get());
     return socket;
   }
 
@@ -67,21 +85,15 @@ class TCPSocketUnitTestBase : public extensions::ExtensionServiceTestBase {
     std::string received_data;
     const int count = 512;
     while (true) {
-      base::RunLoop run_loop;
-      int net_error = net::ERR_FAILED;
-      socket->Read(count,
-                   base::BindLambdaForTesting(
-                       [&](int result, scoped_refptr<net::IOBuffer> io_buffer,
-                           bool socket_destroying) {
-                         net_error = result;
-                         EXPECT_FALSE(socket_destroying);
-                         if (result > 0)
-                           received_data.append(io_buffer->data(), result);
-                         run_loop.Quit();
-                       }));
-      run_loop.Run();
-      if (net_error <= 0)
+      ReadFuture read_future;
+      socket->Read(count, read_future.GetCallback());
+      auto [net_error, io_buffer, socket_destroying] = read_future.Take();
+      EXPECT_FALSE(socket_destroying);
+      if (net_error > 0) {
+        received_data.append(io_buffer->data(), net_error);
+      } else {
         break;
+      }
     }
     EXPECT_EQ(expected_data, received_data);
   }
@@ -114,13 +126,13 @@ class TCPSocketUnitTestBase : public extensions::ExtensionServiceTestBase {
 class TCPSocketUnitTest : public TCPSocketUnitTestBase,
                           public ::testing::WithParamInterface<net::IoMode> {
  public:
-  TCPSocketUnitTest() : TCPSocketUnitTestBase() {
+  TCPSocketUnitTest() {
     mock_client_socket_factory_.set_enable_read_if_ready(true);
     url_request_context_builder_->set_client_socket_factory_for_testing(
         &mock_client_socket_factory_);
     Initialize();
   }
-  ~TCPSocketUnitTest() override {}
+  ~TCPSocketUnitTest() override = default;
 
   net::MockClientSocketFactory* mock_client_socket_factory() {
     return &mock_client_socket_factory_;
@@ -143,10 +155,10 @@ TEST_F(TCPSocketUnitTest, SocketConnectError) {
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
   std::unique_ptr<TCPSocket> socket = CreateSocket();
 
-  net::AddressList address(ip_end_point);
-  net::TestCompletionCallback callback;
-  socket->Connect(address, callback.callback());
-  EXPECT_EQ(net::ERR_FAILED, callback.WaitForResult());
+  ConnectFuture connect_future;
+  socket->Connect(net::AddressList(std::move(ip_end_point)),
+                  connect_future.GetCallback());
+  EXPECT_EQ(net::ERR_FAILED, connect_future.Get());
 }
 
 TEST_P(TCPSocketUnitTest, SocketConnectAfterDisconnect) {
@@ -160,11 +172,12 @@ TEST_P(TCPSocketUnitTest, SocketConnectAfterDisconnect) {
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider2);
   std::unique_ptr<TCPSocket> socket = CreateAndConnectSocket();
   socket->Disconnect(false /* socket_destroying */);
-  net::TestCompletionCallback callback2;
+
+  ConnectFuture connect_future;
   net::IPEndPoint ip_end_point(net::IPAddress::IPv4Localhost(), 1234);
-  net::AddressList address(ip_end_point);
-  socket->Connect(address, callback2.callback());
-  EXPECT_EQ(net::OK, callback2.WaitForResult());
+  socket->Connect(net::AddressList(std::move(ip_end_point)),
+                  connect_future.GetCallback());
+  EXPECT_EQ(net::OK, connect_future.Get());
 
   EXPECT_TRUE(data_provider1.AllReadDataConsumed());
   EXPECT_TRUE(data_provider1.AllWriteDataConsumed());
@@ -184,12 +197,12 @@ TEST_F(TCPSocketUnitTest, SocketConnectDisconnectRace) {
   std::unique_ptr<TCPSocket> socket = CreateSocket();
 
   net::AddressList address(ip_end_point);
-  net::TestCompletionCallback callback;
-  socket->Connect(address, callback.callback());
+  ConnectFuture connect_future;
+  socket->Connect(address, connect_future.GetCallback());
   socket->Disconnect(false /* socket_destroying */);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(callback.have_result());
+  EXPECT_FALSE(connect_future.IsReady());
 }
 
 TEST_F(TCPSocketUnitTest, DestroyWhileReadPending) {
@@ -200,26 +213,18 @@ TEST_F(TCPSocketUnitTest, DestroyWhileReadPending) {
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
   std::unique_ptr<TCPSocket> socket = CreateAndConnectSocket();
 
-  int net_result = net::ERR_FAILED;
-  base::RunLoop run_loop;
-  int count = 1;
   // Read one byte, and it should be pending.
-  socket->Read(count,
-               base::BindLambdaForTesting(
-                   [&](int result, scoped_refptr<net::IOBuffer> io_buffer,
-                       bool socket_destroying) {
-                     net_result = result;
-                     // |socket_destroying| should correctly denote that this
-                     // read callback is invoked through the destructor of
-                     // TCPSocket.
-                     EXPECT_TRUE(socket_destroying);
-                     run_loop.Quit();
-                   }));
+  ReadFuture read_future;
+  socket->Read(/*count=*/1, read_future.GetCallback());
   // Destroy socket.
   socket = nullptr;
   // Wait for read callback.
-  run_loop.Run();
-  EXPECT_EQ(net::ERR_CONNECTION_CLOSED, net_result);
+  auto [net_error, io_buffer, socket_destroying] = read_future.Take();
+  // |socket_destroying| should correctly denote that this
+  // read callback is invoked through the destructor of
+  // TCPSocket.
+  EXPECT_TRUE(socket_destroying);
+  EXPECT_EQ(net::ERR_CONNECTION_CLOSED, net_error);
 }
 
 TEST_P(TCPSocketUnitTest, Read) {
@@ -273,21 +278,15 @@ TEST_P(TCPSocketUnitTest, SocketPartialRead) {
   int count = 1;
   std::string received_data;
   while (true) {
-    int net_result = net::ERR_FAILED;
-    base::RunLoop run_loop;
-    socket->Read(count,
-                 base::BindLambdaForTesting(
-                     [&](int result, scoped_refptr<net::IOBuffer> io_buffer,
-                         bool socket_destroying) {
-                       net_result = result;
-                       EXPECT_FALSE(socket_destroying);
-                       if (result > 0)
-                         received_data.append(io_buffer->data(), result);
-                       run_loop.Quit();
-                     }));
-    run_loop.Run();
-    if (net_result <= 0)
+    ReadFuture read_future;
+    socket->Read(count, read_future.GetCallback());
+    auto [bytes_read, io_buffer, socket_destroying] = read_future.Take();
+    EXPECT_FALSE(socket_destroying);
+    if (bytes_read > 0) {
+      received_data.append(io_buffer->data(), bytes_read);
+    } else {
       break;
+    }
     // Double the read size in the next iteration.
     count *= 2;
   }
@@ -306,34 +305,27 @@ TEST_P(TCPSocketUnitTest, ReadError) {
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
   std::unique_ptr<TCPSocket> socket = CreateAndConnectSocket();
 
-  const int count = 512;
-  int net_error = net::OK;
+  int net_error_out = net::OK;
   while (true) {
-    base::RunLoop run_loop;
-    socket->Read(count,
-                 base::BindLambdaForTesting(
-                     [&](int result, scoped_refptr<net::IOBuffer> io_buffer,
-                         bool socket_destroying) {
-                       net_error = result;
-                       EXPECT_FALSE(socket_destroying);
-                       if (result <= 0) {
-                         EXPECT_FALSE(socket->IsConnected());
-                         EXPECT_EQ(nullptr, io_buffer);
-                       } else {
-                         EXPECT_TRUE(socket->IsConnected());
-                       }
-                       run_loop.Quit();
-                     }));
-    run_loop.Run();
-    if (net_error <= 0)
+    ReadFuture read_future;
+    socket->Read(/*count=*/512, read_future.GetCallback());
+    auto [net_error, io_buffer, socket_destroying] = read_future.Take();
+    EXPECT_FALSE(socket_destroying);
+    if (net_error <= 0) {
+      EXPECT_FALSE(socket->IsConnected());
+      EXPECT_EQ(nullptr, io_buffer);
+      net_error_out = net_error;
       break;
+    } else {
+      EXPECT_TRUE(socket->IsConnected());
+    }
   }
   // Note that TCPSocket only detects that receive pipe is broken and propagates
   // it as 0 byte read. It doesn't know the specific net error code. To know the
   // specific net error code, it needs to register itself as a
   // network::mojom::SocketObserver. However, that gets tricky because of two
   // separate mojo pipes.
-  EXPECT_EQ(0, net_error);
+  EXPECT_EQ(0, net_error_out);
   EXPECT_TRUE(data_provider.AllReadDataConsumed());
   EXPECT_TRUE(data_provider.AllWriteDataConsumed());
 }
@@ -351,9 +343,9 @@ TEST_P(TCPSocketUnitTest, Write) {
   std::unique_ptr<TCPSocket> socket = CreateAndConnectSocket();
 
   auto io_buffer = base::MakeRefCounted<net::StringIOBuffer>(kTestMsg);
-  net::TestCompletionCallback write_callback;
-  socket->Write(io_buffer.get(), kTestMsgLength, write_callback.callback());
-  EXPECT_EQ(kTestMsgLength, write_callback.WaitForResult());
+  WriteFuture write_future;
+  socket->Write(io_buffer.get(), kTestMsgLength, write_future.GetCallback());
+  EXPECT_EQ(kTestMsgLength, write_future.Get());
 }
 
 // Tests the case where a message is split over two separate socket writes.
@@ -377,10 +369,10 @@ TEST_P(TCPSocketUnitTest, MultipleWrite) {
   auto drainable_io_buffer = base::MakeRefCounted<net::DrainableIOBuffer>(
       io_buffer.get(), kTestMsgLength);
   while (num_bytes_written < kTestMsgLength) {
-    net::TestCompletionCallback write_callback;
+    WriteFuture write_future;
     socket->Write(drainable_io_buffer.get(), kTestMsgLength - num_bytes_written,
-                  write_callback.callback());
-    int result = write_callback.WaitForResult();
+                  write_future.GetCallback());
+    int result = write_future.Get();
     ASSERT_GT(result, net::OK);
     drainable_io_buffer->DidConsume(result);
     num_bytes_written += result;
@@ -411,15 +403,15 @@ TEST_P(TCPSocketUnitTest, PartialWrite) {
   auto drainable_io_buffer = base::MakeRefCounted<net::DrainableIOBuffer>(
       io_buffer.get(), kTestMsgLength);
   while (num_bytes_written < kTestMsgLength) {
-    net::TestCompletionCallback write_callback;
+    WriteFuture write_future;
     socket->Write(
         drainable_io_buffer.get(),
         std::max(kTestMsgLength - num_bytes_written, num_bytes_to_write),
-        write_callback.callback());
-    int result = write_callback.WaitForResult();
-    ASSERT_GT(result, net::OK);
-    drainable_io_buffer->DidConsume(result);
-    num_bytes_written += result;
+        write_future.GetCallback());
+    int bytes_written = write_future.Get();
+    ASSERT_GT(bytes_written, 0);
+    drainable_io_buffer->DidConsume(bytes_written);
+    num_bytes_written += bytes_written;
     num_bytes_to_write *= 2;
     // Flushes the write.
     base::RunLoop().RunUntilIdle();
@@ -445,16 +437,14 @@ TEST_P(TCPSocketUnitTest, WriteError) {
   auto io_buffer = base::MakeRefCounted<net::StringIOBuffer>(kTestMsg);
   int net_error = net::OK;
   while (true) {
-    base::RunLoop run_loop;
-    socket->Write(io_buffer.get(), kTestMsgLength,
-                  base::BindLambdaForTesting([&](int result) {
-                    EXPECT_EQ(result > 0, socket->IsConnected());
-                    net_error = result;
-                    run_loop.Quit();
-                  }));
-    run_loop.Run();
-    if (net_error <= 0)
+    WriteFuture write_future;
+    socket->Write(io_buffer.get(), kTestMsgLength, write_future.GetCallback());
+    auto bytes_written = write_future.Get();
+    EXPECT_EQ(bytes_written > 0, socket->IsConnected());
+    if (bytes_written <= 0) {
+      net_error = bytes_written;
       break;
+    }
   }
   // Note that TCPSocket only detects that send pipe is broken and propagates
   // it as a net::ERR_FAILED. It doesn't know the specific net error code. To do
@@ -475,14 +465,14 @@ class ExtensionsMockClientSocket : public net::MockTCPClientSocket {
             nullptr /* netlog */,
             provider),
         success_(success) {
-    this->set_enable_read_if_ready(true);
+    set_enable_read_if_ready(true);
   }
 
   ExtensionsMockClientSocket(const ExtensionsMockClientSocket&) = delete;
   ExtensionsMockClientSocket& operator=(const ExtensionsMockClientSocket&) =
       delete;
 
-  ~ExtensionsMockClientSocket() override {}
+  ~ExtensionsMockClientSocket() override = default;
 
   bool SetNoDelay(bool no_delay) override { return success_; }
   bool SetKeepAlive(bool enable, int delay) override { return success_; }
@@ -549,7 +539,7 @@ class TCPSocketSettingsTest : public TCPSocketUnitTestBase,
         &client_socket_factory_);
     Initialize();
   }
-  ~TCPSocketSettingsTest() override {}
+  ~TCPSocketSettingsTest() override = default;
 
  private:
   TestSocketFactory client_socket_factory_;
@@ -563,21 +553,15 @@ TEST_P(TCPSocketSettingsTest, SetNoDelay) {
   std::unique_ptr<TCPSocket> socket = CreateAndConnectSocket();
   bool expected_success = GetParam();
   {
-    base::RunLoop run_loop;
-    socket->SetNoDelay(true, base::BindLambdaForTesting([&](bool success) {
-                         EXPECT_EQ(expected_success, success);
-                         run_loop.Quit();
-                       }));
-    run_loop.Run();
+    BoolFuture no_delay_future;
+    socket->SetNoDelay(true, no_delay_future.GetCallback());
+    EXPECT_EQ(expected_success, no_delay_future.Get());
   }
 
   {
-    base::RunLoop run_loop;
-    socket->SetNoDelay(false, base::BindLambdaForTesting([&](bool success) {
-                         EXPECT_EQ(expected_success, success);
-                         run_loop.Quit();
-                       }));
-    run_loop.Run();
+    BoolFuture no_delay_future;
+    socket->SetNoDelay(false, no_delay_future.GetCallback());
+    EXPECT_EQ(expected_success, no_delay_future.Get());
   }
 }
 
@@ -585,30 +569,24 @@ TEST_P(TCPSocketSettingsTest, SetKeepAlive) {
   std::unique_ptr<TCPSocket> socket = CreateAndConnectSocket();
   bool expected_success = GetParam();
   {
-    base::RunLoop run_loop;
-    socket->SetKeepAlive(true /* enable */, 123 /* delay */,
-                         base::BindLambdaForTesting([&](bool success) {
-                           EXPECT_EQ(expected_success, success);
-                           run_loop.Quit();
-                         }));
-    run_loop.Run();
+    BoolFuture keep_alive_future;
+    socket->SetKeepAlive(/*enable=*/true, /*delay=*/123,
+                         keep_alive_future.GetCallback());
+    EXPECT_EQ(expected_success, keep_alive_future.Get());
   }
 
   {
-    base::RunLoop run_loop;
-    socket->SetKeepAlive(false /* enable */, 123 /* delay */,
-                         base::BindLambdaForTesting([&](bool success) {
-                           EXPECT_EQ(expected_success, success);
-                           run_loop.Quit();
-                         }));
-    run_loop.Run();
+    BoolFuture keep_alive_future;
+    socket->SetKeepAlive(/*enable=*/false, /*delay=*/123,
+                         keep_alive_future.GetCallback());
+    EXPECT_EQ(expected_success, keep_alive_future.Get());
   }
 }
 
 class TCPSocketServerTest : public TCPSocketUnitTestBase {
  public:
-  TCPSocketServerTest() : TCPSocketUnitTestBase() { Initialize(); }
-  ~TCPSocketServerTest() override {}
+  TCPSocketServerTest() { Initialize(); }
+  ~TCPSocketServerTest() override = default;
 
  private:
   net::MockClientSocketFactory mock_client_socket_factory_;
@@ -617,36 +595,24 @@ class TCPSocketServerTest : public TCPSocketUnitTestBase {
 TEST_F(TCPSocketServerTest, ListenAccept) {
   // Create a server socket.
   std::unique_ptr<TCPSocket> socket = CreateSocket();
-  net::TestCompletionCallback callback;
-  base::RunLoop run_loop;
-  socket->Listen(
-      "127.0.0.1", 0 /* port */, 1 /* backlog */,
-      base::BindLambdaForTesting([&](int result, const std::string& error_msg) {
-        EXPECT_EQ(net::OK, result);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  {
+    ListenFuture listen_future;
+    socket->Listen("127.0.0.1", 0 /* port */, 1 /* backlog */,
+                   listen_future.GetCallback());
+    EXPECT_EQ(net::OK, listen_future.Get<int32_t>());
+  }
+
   net::IPEndPoint server_addr;
   EXPECT_TRUE(socket->GetLocalAddress(&server_addr));
 
-  base::RunLoop accept_run_loop;
-  net::IPEndPoint accept_client_addr;
-  socket->Accept(base::BindLambdaForTesting(
-      [&](int result,
-          mojo::PendingRemote<network::mojom::TCPConnectedSocket>
-              accepted_socket,
-          const absl::optional<net::IPEndPoint>& remote_addr,
-          mojo::ScopedDataPipeConsumerHandle receive_handle,
-          mojo::ScopedDataPipeProducerHandle send_handle) {
-        EXPECT_EQ(net::OK, result);
-        accept_client_addr = remote_addr.value();
-        accept_run_loop.Quit();
-      }));
-
+  AcceptFuture accept_future;
+  socket->Accept(accept_future.GetCallback());
   // Create a client socket to talk to the server socket.
   auto client_socket = CreateAndConnectSocketWithAddress(server_addr);
-  accept_run_loop.Run();
+  auto [result, connected_socket, accept_client_addr, receive_handle,
+        send_handle] = accept_future.Take();
 
+  EXPECT_EQ(result, net::OK);
   net::IPEndPoint peer_addr;
   EXPECT_TRUE(client_socket->GetPeerAddress(&peer_addr));
   net::IPEndPoint client_addr;
@@ -658,7 +624,6 @@ TEST_F(TCPSocketServerTest, ListenAccept) {
 TEST_F(TCPSocketServerTest, ListenDisconnectRace) {
   // Create a server socket.
   std::unique_ptr<TCPSocket> socket = CreateSocket();
-  net::TestCompletionCallback callback;
   bool callback_ran = false;
   socket->Listen(
       "127.0.0.1", 0 /* port */, 1 /* backlog */,
@@ -673,86 +638,64 @@ TEST_F(TCPSocketServerTest, ListenDisconnectRace) {
 TEST_F(TCPSocketServerTest, ReadAndWrite) {
   // Create a server socket.
   std::unique_ptr<TCPSocket> socket = CreateSocket();
-  net::TestCompletionCallback callback;
   {
-    base::RunLoop run_loop;
+    ListenFuture listen_future;
     socket->Listen("127.0.0.1", 0 /* port */, 1 /* backlog */,
-                   base::BindLambdaForTesting(
-                       [&](int result, const std::string& error_msg) {
-                         EXPECT_EQ(net::OK, result);
-                         run_loop.Quit();
-                       }));
-    run_loop.Run();
+                   listen_future.GetCallback());
+    EXPECT_EQ(net::OK, listen_future.Get<int32_t>());
   }
   net::IPEndPoint server_addr;
   EXPECT_TRUE(socket->GetLocalAddress(&server_addr));
 
-  base::RunLoop accept_run_loop;
-  std::unique_ptr<TCPSocket> accepted_socket;
-
-  socket->Accept(base::BindLambdaForTesting(
-      [&](int result,
-          mojo::PendingRemote<network::mojom::TCPConnectedSocket>
-              connected_socket,
-          const absl::optional<net::IPEndPoint>& remote_addr,
-          mojo::ScopedDataPipeConsumerHandle receive_handle,
-          mojo::ScopedDataPipeProducerHandle send_handle) {
-        EXPECT_EQ(net::OK, result);
-        accepted_socket = std::make_unique<TCPSocket>(
-            std::move(connected_socket), std::move(receive_handle),
-            std::move(send_handle), remote_addr, FAKE_ID);
-        accept_run_loop.Quit();
-      }));
+  AcceptFuture accept_future;
+  socket->Accept(accept_future.GetCallback());
 
   // Create a client socket to talk to the server socket.
   auto client_socket = CreateAndConnectSocketWithAddress(server_addr);
-  net::TestCompletionCallback connect_callback;
-  accept_run_loop.Run();
+
+  auto [result, connected_socket, remote_addr, receive_handle, send_handle] =
+      accept_future.Take();
+  EXPECT_EQ(net::OK, result);
+  auto accepted_socket = std::make_unique<TCPSocket>(
+      std::move(connected_socket), std::move(receive_handle),
+      std::move(send_handle), remote_addr, FAKE_ID);
 
   // Send data from the client to the server.
-  auto io_buffer = base::MakeRefCounted<net::StringIOBuffer>(kTestMsg);
-  net::TestCompletionCallback write_callback;
-  client_socket->Write(io_buffer.get(), kTestMsgLength,
-                       write_callback.callback());
-  EXPECT_EQ(kTestMsgLength, write_callback.WaitForResult());
+  auto io_buffer_write = base::MakeRefCounted<net::StringIOBuffer>(kTestMsg);
+  {
+    WriteFuture write_future;
+    client_socket->Write(io_buffer_write.get(), kTestMsgLength,
+                         write_future.GetCallback());
+    EXPECT_EQ(kTestMsgLength, write_future.Get());
+  }
 
   std::string received_contents;
   while (received_contents.size() < kTestMsgLength) {
-    base::RunLoop run_loop;
-    accepted_socket->Read(
-        kTestMsgLength,
-        base::BindLambdaForTesting([&](int result,
-                                       scoped_refptr<net::IOBuffer> io_buffer,
-                                       bool socket_destroying) {
-          ASSERT_GT(result, 0);
-          EXPECT_FALSE(socket_destroying);
-          received_contents.append(std::string(io_buffer->data(), result));
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    ReadFuture read_future;
+    accepted_socket->Read(kTestMsgLength, read_future.GetCallback());
+    auto [bytes_read, io_buffer_read, socket_destroying] = read_future.Take();
+    ASSERT_GT(bytes_read, 0);
+    EXPECT_FALSE(socket_destroying);
+    received_contents.append(std::string(io_buffer_read->data(), bytes_read));
   }
   EXPECT_EQ(kTestMsg, received_contents);
 
   // Send data from the server to the client.
-  net::TestCompletionCallback write_callback2;
-  accepted_socket->Write(io_buffer.get(), kTestMsgLength,
-                         write_callback2.callback());
-  EXPECT_EQ(kTestMsgLength, write_callback2.WaitForResult());
+  {
+    WriteFuture write_future;
+    accepted_socket->Write(io_buffer_write.get(), kTestMsgLength,
+                           write_future.GetCallback());
+    EXPECT_EQ(kTestMsgLength, write_future.Get());
+  }
 
   std::string sent_contents;
   while (sent_contents.size() < kTestMsgLength) {
-    base::RunLoop run_loop;
-    client_socket->Read(
-        kTestMsgLength,
-        base::BindLambdaForTesting([&](int result,
-                                       scoped_refptr<net::IOBuffer> io_buffer,
-                                       bool socket_destroying) {
-          ASSERT_GT(result, 0);
-          EXPECT_FALSE(socket_destroying);
-          sent_contents.append(std::string(io_buffer->data(), result));
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    ReadFuture read_future;
+    client_socket->Read(kTestMsgLength, read_future.GetCallback());
+    auto [bytes_read, io_buffer_read, socket_destroying] = read_future.Take();
+    ASSERT_GT(bytes_read, 0);
+    EXPECT_FALSE(socket_destroying);
+    sent_contents.append(std::string(io_buffer_read->data(), bytes_read));
   }
   EXPECT_EQ(kTestMsg, sent_contents);
 }
