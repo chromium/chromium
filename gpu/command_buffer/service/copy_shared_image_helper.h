@@ -58,6 +58,7 @@ class GPU_GLES2_EXPORT CopySharedImageHelper {
  private:
   raw_ptr<SharedImageRepresentationFactory> representation_factory_ = nullptr;
   raw_ptr<SharedContextState> shared_context_state_ = nullptr;
+  bool is_drdc_enabled_ = false;
 };
 
 }  // namespace gpu

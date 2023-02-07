@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "skia/ext/rgba_to_yuva.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -123,12 +124,13 @@ void FlushSurface(SkiaImageRepresentation::ScopedWriteAccess* access) {
 }
 
 void SubmitIfNecessary(std::vector<GrBackendSemaphore> signal_semaphores,
-                       SharedContextState* context) {
+                       SharedContextState* context,
+                       bool is_drdc_enabled) {
   // Note that when DrDc is enabled, we need to call
   // AddVulkanCleanupTaskForSkiaFlush() on gpu main thread and do skia flush.
   // This will ensure that vulkan memory allocated on gpu main thread will be
   // cleaned up.
-  if (!signal_semaphores.empty()) {
+  if (!signal_semaphores.empty() || is_drdc_enabled) {
     GrFlushInfo flush_info = {
         .fNumSemaphores = signal_semaphores.size(),
         .fSignalSemaphores = signal_semaphores.data(),
@@ -150,7 +152,8 @@ void SubmitIfNecessary(std::vector<GrBackendSemaphore> signal_semaphores,
   // trying to issue submit only once per draw call for both gpu main and
   // drdc thread gr_context. Also add metric to see how often submits are
   // happening per frame.
-  const bool need_submit = sync_cpu || !signal_semaphores.empty();
+  const bool need_submit =
+      sync_cpu || !signal_semaphores.empty() || is_drdc_enabled;
 
   if (need_submit) {
     context->gr_context()->submit(sync_cpu);
@@ -183,6 +186,7 @@ bool TryCopySubTextureINTERNALMemory(
     SkiaImageRepresentation::ScopedWriteAccess* dest_scoped_access,
     SharedImageRepresentationFactory* representation_factory,
     SharedContextState* shared_context_state,
+    bool is_drdc_enabled,
     const std::vector<GrBackendSemaphore>& begin_semaphores,
     std::vector<GrBackendSemaphore>& end_semaphores) {
   if (unpack_flip_y) {
@@ -223,7 +227,8 @@ bool TryCopySubTextureINTERNALMemory(
   dest_scoped_access->surface()->writePixels(subset, xoffset, yoffset);
 
   FlushSurface(dest_scoped_access);
-  SubmitIfNecessary(std::move(end_semaphores), shared_context_state);
+  SubmitIfNecessary(std::move(end_semaphores), shared_context_state,
+                    is_drdc_enabled);
 
   if (!dest_shared_image->IsCleared()) {
     dest_shared_image->SetClearedRect(dest_cleared_rect);
@@ -238,7 +243,10 @@ CopySharedImageHelper::CopySharedImageHelper(
     SharedImageRepresentationFactory* representation_factory,
     SharedContextState* shared_context_state)
     : representation_factory_(representation_factory),
-      shared_context_state_(shared_context_state) {}
+      shared_context_state_(shared_context_state),
+      is_drdc_enabled_(
+          features::IsDrDcEnabled() &&
+          !shared_context_state->feature_info()->workarounds().disable_drdc) {}
 
 CopySharedImageHelper::~CopySharedImageHelper() = default;
 
@@ -326,7 +334,8 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
       yuva_images[i]->SetCleared();
     }
   }
-  SubmitIfNecessary(std::move(end_semaphores), shared_context_state_);
+  SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
+                    is_drdc_enabled_);
   return base::ok();
 }
 
@@ -433,7 +442,8 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
   }
 
   FlushSurface(dest_scoped_access.get());
-  SubmitIfNecessary(std::move(end_semaphores), shared_context_state_);
+  SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
+                    is_drdc_enabled_);
 
   if (!rgba_image->IsCleared() && drew_image) {
     rgba_image->SetCleared();
@@ -515,7 +525,8 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
           xoffset, yoffset, x, y, width, height, new_cleared_rect,
           unpack_flip_y, source_mailbox, dest_shared_image.get(),
           dest_scoped_access.get(), representation_factory_,
-          shared_context_state_, begin_semaphores, end_semaphores)) {
+          shared_context_state_, is_drdc_enabled_, begin_semaphores,
+          end_semaphores)) {
     return base::ok();
   }
 
@@ -539,7 +550,8 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
       dest_shared_image->SetClearedRect(new_cleared_rect);
     }
     FlushSurface(dest_scoped_access.get());
-    SubmitIfNecessary(std::move(end_semaphores), shared_context_state_);
+    SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
+                      is_drdc_enabled_);
 
     // Note, that we still generate error for the client to indicate there was
     // problem.
@@ -649,7 +661,8 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
     }
   }
 
-  SubmitIfNecessary(std::move(end_semaphores), shared_context_state_);
+  SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
+                    is_drdc_enabled_);
   return result;
 }
 
