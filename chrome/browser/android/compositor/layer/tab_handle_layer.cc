@@ -214,9 +214,10 @@ void TabHandleLayer::SetProperties(
 
     int title_x = is_rtl ? padding_left + close_width : padding_left;
     title_x += is_rtl ? 0 : content_offset_x;
-    title_layer->setBounds(gfx::Size(
-        width - padding_right - padding_left - close_width - content_offset_x,
-        height));
+    title_layer->setBounds(gfx::Size(width - padding_right - padding_left -
+                                         close_width - content_offset_x +
+                                         close_button_padding,
+                                     height));
     if (foreground_) {
       title_x += original_x;
       title_y += original_y;
