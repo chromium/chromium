@@ -205,15 +205,15 @@ TEST(ONCUtils, ParseAndValidateOncForImport_WithAdvancedOpenVPNSettings) {
   const auto* open_vpn =
       network_configs[0].GetDict().FindByDottedPath("VPN.OpenVPN");
   ASSERT_NE(open_vpn, nullptr);
-  base::Value::Dict expected{};
+  base::Value::Dict expected;
   expected.Set(::onc::openvpn::kAuth, "MD5");
   expected.Set(::onc::openvpn::kCipher, "AES-192-CBC");
   expected.Set(::onc::openvpn::kCompressionAlgorithm,
                ::onc::openvpn_compression_algorithm::kLzo);
   expected.Set(::onc::openvpn::kTLSAuthContents, auth_key);
   expected.Set(::onc::openvpn::kKeyDirection, "1");
-  EXPECT_THAT(*open_vpn, base::test::DictionaryHasValues(
-                             base::Value{std::move(expected)}));
+  EXPECT_THAT(open_vpn->GetDict(),
+              base::test::DictionaryHasValues(std::move(expected)));
 }
 
 struct MaskCredentialsTestCase {

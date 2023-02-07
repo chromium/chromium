@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/optional_util.h"
+#include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -65,29 +66,26 @@ namespace test {
 
 namespace {
 
-std::string FormatAsJSON(const base::Value& value) {
+std::string FormatAsJSON(ValueView value) {
   std::string json;
   JSONWriter::Write(value, &json);
   return json;
 }
 
 class DictionaryHasValueMatcher
-    : public testing::MatcherInterface<const base::Value&> {
+    : public testing::MatcherInterface<const base::Value::Dict&> {
  public:
   DictionaryHasValueMatcher(const std::string& key,
                             const base::Value& expected_value)
       : key_(key), expected_value_(expected_value.Clone()) {}
 
-  ~DictionaryHasValueMatcher() = default;
+  DictionaryHasValueMatcher(const DictionaryHasValueMatcher& other) = delete;
+  DictionaryHasValueMatcher& operator=(const DictionaryHasValueMatcher& other) =
+      delete;
 
-  bool MatchAndExplain(const base::Value& value,
+  bool MatchAndExplain(const base::Value::Dict& value,
                        testing::MatchResultListener* listener) const override {
-    if (!value.is_dict()) {
-      *listener << "The value '" << FormatAsJSON(value)
-                << "' is not a dictionary";
-      return false;
-    }
-    const base::Value* sub_value = value.GetDict().Find(key_);
+    const base::Value* sub_value = value.Find(key_);
     if (!sub_value) {
       *listener << "Dictionary '" << FormatAsJSON(value)
                 << "' does not have key '" << key_ << "'";
@@ -113,35 +111,25 @@ class DictionaryHasValueMatcher
   }
 
  private:
-  DictionaryHasValueMatcher& operator=(const DictionaryHasValueMatcher& other) =
-      delete;
-
   const std::string key_;
   const base::Value expected_value_;
 };
 
 class DictionaryHasValuesMatcher
-    : public testing::MatcherInterface<const base::Value&> {
+    : public testing::MatcherInterface<const base::Value::Dict&> {
  public:
-  DictionaryHasValuesMatcher(const base::Value& template_value)
-      : template_value_(template_value.Clone()) {
-    CHECK(template_value.is_dict());
-  }
+  explicit DictionaryHasValuesMatcher(const base::Value::Dict& template_value)
+      : template_value_(template_value.Clone()) {}
 
-  ~DictionaryHasValuesMatcher() = default;
+  DictionaryHasValuesMatcher(const DictionaryHasValuesMatcher& other) = delete;
+  DictionaryHasValuesMatcher& operator=(
+      const DictionaryHasValuesMatcher& other) = delete;
 
-  bool MatchAndExplain(const base::Value& value,
+  bool MatchAndExplain(const base::Value::Dict& value,
                        testing::MatchResultListener* listener) const override {
-    if (!value.is_dict()) {
-      *listener << "The value '" << FormatAsJSON(value)
-                << "' is not a dictionary";
-      return false;
-    }
-
     bool ok = true;
-    for (auto template_dict_item : template_value_.GetDict()) {
-      const base::Value* sub_value =
-          value.GetDict().Find(template_dict_item.first);
+    for (auto template_dict_item : template_value_) {
+      const base::Value* sub_value = value.Find(template_dict_item.first);
       if (!sub_value) {
         *listener << "\nDictionary does not have key '"
                   << template_dict_item.first << "'";
@@ -170,10 +158,7 @@ class DictionaryHasValuesMatcher
   }
 
  private:
-  DictionaryHasValueMatcher& operator=(const DictionaryHasValueMatcher& other) =
-      delete;
-
-  const base::Value template_value_;
+  const base::Value::Dict template_value_;
 };
 
 // Attempts to parse `json` as JSON. Returns resulting Value on success, has an
@@ -199,15 +184,15 @@ absl::optional<Value> ParseJsonHelper(
 
 }  // namespace
 
-testing::Matcher<const base::Value&> DictionaryHasValue(
+testing::Matcher<const base::Value::Dict&> DictionaryHasValue(
     const std::string& key,
     const base::Value& expected_value) {
   return testing::MakeMatcher(
       new DictionaryHasValueMatcher(key, expected_value));
 }
 
-testing::Matcher<const base::Value&> DictionaryHasValues(
-    const base::Value& template_value) {
+testing::Matcher<const base::Value::Dict&> DictionaryHasValues(
+    const base::Value::Dict& template_value) {
   return testing::MakeMatcher(new DictionaryHasValuesMatcher(template_value));
 }
 
@@ -225,6 +210,11 @@ IsJsonMatcher::IsJsonMatcher(const base::Value::List& value)
 
 IsJsonMatcher::IsJsonMatcher(const IsJsonMatcher& other)
     : expected_value_(other.expected_value_.Clone()) {}
+
+IsJsonMatcher& IsJsonMatcher::operator=(const IsJsonMatcher& other) {
+  expected_value_ = other.expected_value_.Clone();
+  return *this;
+}
 
 IsJsonMatcher::~IsJsonMatcher() = default;
 

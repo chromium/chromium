@@ -42,16 +42,16 @@ void ExpectStringValue(const std::string& expected_str, const Value& actual);
 
 namespace test {
 
-// A custom GMock matcher which matches if a base::Value is a dictionary which
-// has a key |key| that is equal to |value|.
-testing::Matcher<const base::Value&> DictionaryHasValue(
+// A custom GMock matcher which matches if a base::Value::Dict has a key |key|
+// that is equal to |value|.
+testing::Matcher<const base::Value::Dict&> DictionaryHasValue(
     const std::string& key,
     const base::Value& expected_value);
 
-// A custom GMock matcher which matches if a base::Value is a dictionary which
-// contains all key/value pairs from |template_value|.
-testing::Matcher<const base::Value&> DictionaryHasValues(
-    const base::Value& template_value);
+// A custom GMock matcher which matches if a base::Value::Dict contains all
+// key/value pairs from |template_value|.
+testing::Matcher<const base::Value::Dict&> DictionaryHasValues(
+    const base::Value::Dict& template_value);
 
 // A custom GMock matcher.  For details, see
 // https://github.com/google/googletest/blob/644319b9f06f6ca9bf69fe791be399061044bc3d/googlemock/docs/CookBook.md#writing-new-polymorphic-matchers
@@ -61,7 +61,10 @@ class IsJsonMatcher {
   explicit IsJsonMatcher(const base::Value& value);
   explicit IsJsonMatcher(const base::Value::Dict& value);
   explicit IsJsonMatcher(const base::Value::List& value);
+
   IsJsonMatcher(const IsJsonMatcher& other);
+  IsJsonMatcher& operator=(const IsJsonMatcher& other);
+
   ~IsJsonMatcher();
 
   bool MatchAndExplain(base::StringPiece json,
@@ -76,8 +79,6 @@ class IsJsonMatcher {
   void DescribeNegationTo(std::ostream* os) const;
 
  private:
-  IsJsonMatcher& operator=(const IsJsonMatcher& other) = delete;
-
   base::Value expected_value_;
 };
 

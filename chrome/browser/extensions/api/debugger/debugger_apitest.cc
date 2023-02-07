@@ -521,8 +521,8 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, GetTargets) {
     ASSERT_TRUE(value.is_list());
     const base::Value::List targets = std::move(value).TakeList();
     ASSERT_THAT(targets, testing::SizeIs(1));
-    EXPECT_THAT(targets[0], base::test::DictionaryHasValue(
-                                "url", base::Value("about:blank")));
+    EXPECT_THAT(targets[0].GetDict(), base::test::DictionaryHasValue(
+                                          "url", base::Value("about:blank")));
   }
 
   {

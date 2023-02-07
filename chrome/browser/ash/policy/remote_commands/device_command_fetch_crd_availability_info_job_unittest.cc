@@ -188,7 +188,7 @@ TEST_F(DeviceCommandFetchCrdAvailabilityInfoJobTest,
   SetDeviceIdleTime(device_idle_time_in_sec);
   Result result = CreateAndRunJob();
 
-  EXPECT_THAT(ParseJson(result.payload),
+  EXPECT_THAT(ParseJsonDict(result.payload),
               DictionaryHasValue("deviceIdleTimeInSeconds",
                                  base::Value(device_idle_time_in_sec)));
 }
@@ -200,7 +200,7 @@ TEST_F(DeviceCommandFetchCrdAvailabilityInfoJobTest,
 
   Result result = CreateAndRunJob();
 
-  EXPECT_THAT(ParseJson(result.payload),
+  EXPECT_THAT(ParseJsonDict(result.payload),
               DictionaryHasValue("isInManagedEnvironment", base::Value(true)));
 }
 
@@ -211,7 +211,7 @@ TEST_F(DeviceCommandFetchCrdAvailabilityInfoJobTest,
 
   Result result = CreateAndRunJob();
 
-  EXPECT_THAT(ParseJson(result.payload),
+  EXPECT_THAT(ParseJsonDict(result.payload),
               DictionaryHasValue("isInManagedEnvironment", base::Value(false)));
 }
 
@@ -248,7 +248,7 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
     }
   }();
 
-  EXPECT_THAT(ParseJson(result.payload),
+  EXPECT_THAT(ParseJsonDict(result.payload),
               DictionaryHasValue("userSessionType",
                                  base::Value(static_cast<int>(expected))));
 }
