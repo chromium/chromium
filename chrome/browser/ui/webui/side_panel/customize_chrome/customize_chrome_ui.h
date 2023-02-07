@@ -41,6 +41,12 @@ class CustomizeChromeUI
 
   ~CustomizeChromeUI() override;
 
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kChangeChromeThemeButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kChangeChromeThemeClassicElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kChromeThemeBackElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kChromeThemeCollectionElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kChromeThemeElementId);
+
   void ScrollToSection(CustomizeChromeSection section);
 
   // Gets a weak pointer to this object.

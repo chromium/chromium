@@ -28,6 +28,16 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/webui/web_ui_util.h"
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CustomizeChromeUI,
+                                      kChangeChromeThemeButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CustomizeChromeUI,
+                                      kChangeChromeThemeClassicElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CustomizeChromeUI,
+                                      kChromeThemeBackElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CustomizeChromeUI,
+                                      kChromeThemeCollectionElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CustomizeChromeUI, kChromeThemeElementId);
+
 CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui),
       profile_(Profile::FromWebUI(web_ui)),
@@ -157,5 +167,10 @@ void CustomizeChromeUI::CreateHelpBubbleHandler(
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
       std::move(handler), std::move(client), this,
-      std::vector<ui::ElementIdentifier>{});
+      std::vector<ui::ElementIdentifier>{
+          CustomizeChromeUI::kChangeChromeThemeButtonElementId,
+          CustomizeChromeUI::kChangeChromeThemeClassicElementId,
+          CustomizeChromeUI::kChromeThemeCollectionElementId,
+          CustomizeChromeUI::kChromeThemeElementId,
+          CustomizeChromeUI::kChromeThemeBackElementId});
 }
