@@ -46,7 +46,8 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest, UserFeedbackDisallowed) {
                            /*description_template=*/unused,
                            /*description_placeholder_text=*/unused,
                            /*category_tag=*/unused,
-                           /*extra_diagnostics=*/unused);
+                           /*extra_diagnostics=*/unused,
+                           /*autofill_metadata=*/base::Value::Dict());
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
                                                false);
@@ -54,7 +55,8 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest, UserFeedbackDisallowed) {
                            /*description_template=*/unused,
                            /*description_placeholder_text=*/unused,
                            /*category_tag=*/unused,
-                           /*extra_diagnostics=*/unused);
+                           /*extra_diagnostics=*/unused,
+                           /*autofill_metadata=*/base::Value::Dict());
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
 
@@ -82,7 +84,8 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                            /*description_template=*/unused,
                            /*description_placeholder_text=*/unused,
                            /*category_tag=*/unused,
-                           /*extra_diagnostics=*/unused);
+                           /*extra_diagnostics=*/unused,
+                           /*autofill_metadata=*/base::Value::Dict());
   navigation_observer.Wait();
 
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
@@ -139,7 +142,8 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
       /*description_template=*/description_template,
       /*description_placeholder_text=*/description_placeholder_text,
       /*category_tag=*/category_tag,
-      /*extra_diagnostics=*/extra_diagnostics);
+      /*extra_diagnostics=*/extra_diagnostics,
+      /*autofill_metadata=*/base::Value::Dict());
   navigation_observer.Wait();
 
   const GURL visible_url = chrome::FindLastActive()
@@ -195,7 +199,8 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
       /*description_template=*/description_template,
       /*description_placeholder_text=*/description_placeholder_text,
       /*category_tag=*/category_tag,
-      /*extra_diagnostics=*/extra_diagnostics);
+      /*extra_diagnostics=*/extra_diagnostics,
+      /*autofill_metadata=*/base::Value::Dict());
   navigation_observer.Wait();
 
   const GURL visible_url = chrome::FindLastActive()

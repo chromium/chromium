@@ -163,17 +163,31 @@ void OnLacrosActiveTabUrlFeteched(
     const std::string& description_placeholder_text,
     const std::string& category_tag,
     const std::string& extra_diagnostics,
+    base::Value::Dict autofill_metadata,
     const absl::optional<GURL>& active_tab_url) {
   GURL page_url;
   if (active_tab_url)
     page_url = *active_tab_url;
   chrome::ShowFeedbackPage(page_url, profile, source, description_template,
                            description_placeholder_text, category_tag,
-                           extra_diagnostics);
+                           extra_diagnostics, std::move(autofill_metadata));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+feedback_private::FeedbackFlow GetFeedbackFlowFromSource(
+    FeedbackSource source) {
+  switch (source) {
+    case kFeedbackSourceSadTabPage:
+      return feedback_private::FeedbackFlow::FEEDBACK_FLOW_SADTABCRASH;
+    case kFeedbackSourceAutofillContextMenu:
+      return feedback_private::FeedbackFlow::FEEDBACK_FLOW_GOOGLEINTERNAL;
+    default:
+      return feedback_private::FeedbackFlow::FEEDBACK_FLOW_REGULAR;
+  }
+}
+
 // Calls feedback private api to show Feedback ui.
 void RequestFeedbackFlow(const GURL& page_url,
                          Profile* profile,
@@ -181,12 +195,9 @@ void RequestFeedbackFlow(const GURL& page_url,
                          const std::string& description_template,
                          const std::string& description_placeholder_text,
                          const std::string& category_tag,
-                         const std::string& extra_diagnostics) {
-  feedback_private::FeedbackFlow flow =
-      source == kFeedbackSourceSadTabPage
-          ? feedback_private::FeedbackFlow::FEEDBACK_FLOW_SADTABCRASH
-          : feedback_private::FeedbackFlow::FEEDBACK_FLOW_REGULAR;
-
+                         const std::string& extra_diagnostics,
+                         base::Value::Dict autofill_metadata) {
+  feedback_private::FeedbackFlow flow = GetFeedbackFlowFromSource(source);
   bool include_bluetooth_logs = false;
   bool show_questionnaire = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -196,6 +207,8 @@ void RequestFeedbackFlow(const GURL& page_url,
     show_questionnaire = IsFromUserInteraction(source);
   }
   if (base::FeatureList::IsEnabled(ash::features::kOsFeedback)) {
+    // TODO(crbug.com/1407646): Include autofill metadata into CrOS new feedback
+    // tool.
     ash::SystemAppLaunchParams params{};
     params.url = BuildFeedbackUrl(extra_diagnostics, description_template,
                                   description_placeholder_text, category_tag,
@@ -214,7 +227,8 @@ void RequestFeedbackFlow(const GURL& page_url,
       extra_diagnostics, page_url, flow, source == kFeedbackSourceAssistant,
       include_bluetooth_logs, show_questionnaire,
       source == kFeedbackSourceChromeLabs ||
-          source == kFeedbackSourceKaleidoscope);
+          source == kFeedbackSourceKaleidoscope,
+      source == kFeedbackSourceAutofillContextMenu, autofill_metadata);
 
   FeedbackDialog::CreateOrShow(profile, *info);
 }
@@ -230,7 +244,8 @@ void ShowFeedbackPageLacros(const GURL& page_url,
                             const std::string& description_template,
                             const std::string& description_placeholder_text,
                             const std::string& category_tag,
-                            const std::string& extra_diagnostics);
+                            const std::string& extra_diagnostics,
+                            base::Value::Dict autofill_metadata);
 }  // namespace internal
 #endif
 
@@ -239,7 +254,8 @@ void ShowFeedbackPage(const Browser* browser,
                       const std::string& description_template,
                       const std::string& description_placeholder_text,
                       const std::string& category_tag,
-                      const std::string& extra_diagnostics) {
+                      const std::string& extra_diagnostics,
+                      base::Value::Dict autofill_metadata) {
   GURL page_url;
   if (browser) {
     page_url = GetTargetTabUrl(browser->session_id(),
@@ -256,16 +272,17 @@ void ShowFeedbackPage(const Browser* browser,
       crosapi::BrowserManager::Get()->GetActiveTabUrlSupported()) {
     crosapi::BrowserManager::Get()->GetActiveTabUrl(base::BindOnce(
         &OnLacrosActiveTabUrlFeteched, profile, source, description_template,
-        description_placeholder_text, category_tag, extra_diagnostics));
+        description_placeholder_text, category_tag, extra_diagnostics,
+        std::move(autofill_metadata)));
   } else {
     ShowFeedbackPage(page_url, profile, source, description_template,
                      description_placeholder_text, category_tag,
-                     extra_diagnostics);
+                     extra_diagnostics, std::move(autofill_metadata));
   }
 #else
   ShowFeedbackPage(page_url, profile, source, description_template,
                    description_placeholder_text, category_tag,
-                   extra_diagnostics);
+                   extra_diagnostics, std::move(autofill_metadata));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -275,7 +292,8 @@ void ShowFeedbackPage(const GURL& page_url,
                       const std::string& description_template,
                       const std::string& description_placeholder_text,
                       const std::string& category_tag,
-                      const std::string& extra_diagnostics) {
+                      const std::string& extra_diagnostics,
+                      base::Value::Dict autofill_metadata) {
   if (!profile) {
     LOG(ERROR) << "Cannot invoke feedback: No profile found!";
     return;
@@ -293,14 +311,14 @@ void ShowFeedbackPage(const GURL& page_url,
   DCHECK(
       chromeos::LacrosService::Get()->IsAvailable<crosapi::mojom::Feedback>());
   // Send request to ash via crosapi mojo to show Feedback ui from ash.
-  internal::ShowFeedbackPageLacros(page_url, source, description_template,
-                                   description_placeholder_text, category_tag,
-                                   extra_diagnostics);
+  internal::ShowFeedbackPageLacros(
+      page_url, source, description_template, description_placeholder_text,
+      category_tag, extra_diagnostics, std::move(autofill_metadata));
 #else
   // Show feedback dialog using feedback extension API.
   RequestFeedbackFlow(page_url, profile, source, description_template,
                       description_placeholder_text, category_tag,
-                      extra_diagnostics);
+                      extra_diagnostics, std::move(autofill_metadata));
 #endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 

@@ -84,8 +84,9 @@ void ShowFeedbackDialogForWebUI(WebUIFeedbackSource webui_source,
       break;
   }
 
-  ShowFeedbackPage(nullptr, source, /*description_template=*/std::string(),
-                   /*description_template_placeholder=*/std::string(), category,
+  ShowFeedbackPage(nullptr, source,
+                   /*description_template=*/std::string(),
+                   /*description_placeholder_text=*/std::string(), category,
                    extra_diagnostics);
 }
 

@@ -50,11 +50,16 @@ void FeedbackAsh::ShowFeedbackPage(mojom::FeedbackInfoPtr feedback_info) {
         << "Cannot invoke feedback for lacros: No primary profile found!";
     return;
   }
+  base::Value::Dict autofill_metadata;
+  if (feedback_info->autofill_metadata) {
+    DCHECK(feedback_info->autofill_metadata->is_dict());
+    autofill_metadata = std::move(*feedback_info->autofill_metadata).TakeDict();
+  }
   chrome::ShowFeedbackPage(
       feedback_info->page_url, profile, FromMojo(feedback_info->source),
       feedback_info->description_template,
       feedback_info->description_placeholder_text, feedback_info->category_tag,
-      feedback_info->extra_diagnostics);
+      feedback_info->extra_diagnostics, std::move(autofill_metadata));
 }
 
 }  // namespace crosapi

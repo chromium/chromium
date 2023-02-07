@@ -19,11 +19,11 @@ TEST_F(ShowFeedbackPageTest, DISABLED_UserFeedbackDisallowed) {
   base::HistogramTester histogram_tester;
   std::string unused;
   chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceBrowserCommand,
-                           unused, unused, unused, unused);
+                           unused, unused, unused, unused, base::Value::Dict());
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
                                                false);
   chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceBrowserCommand,
-                           unused, unused, unused, unused);
+                           unused, unused, unused, unused, base::Value::Dict());
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }

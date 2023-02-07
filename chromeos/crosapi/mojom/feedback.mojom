@@ -4,6 +4,7 @@
 
 module crosapi.mojom;
 
+import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
 
 [Stable, Extensible]
@@ -34,6 +35,9 @@ struct FeedbackInfo {
   // Extra diagnostics information.
   // For example, "Failed to connect to wifi network.".
   string extra_diagnostics@5;
+
+  // Autofill metadata (e.g. form signatures, last autofill event type, etc).
+ [MinVersion=1] mojo_base.mojom.Value? autofill_metadata@6;
 };
 
 // This interface is implemented by ash-chrome. It allows lacros-chrome to

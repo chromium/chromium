@@ -206,7 +206,7 @@ class AutofillContextMenuManager {
       base::span<const FieldsToShow> other_fields_to_show);
 
   // Triggers the feedback flow for Autofill command.
-  void ExecuteAutofillFeedbackCommand();
+  void ExecuteAutofillFeedbackCommand(content::RenderFrameHost* rfh);
 
   // Triggers the corresponding menu manager command.
   void ExecuteMenuManagerCommand(CommandId command_id,

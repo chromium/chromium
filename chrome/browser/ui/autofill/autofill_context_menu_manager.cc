@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/autofill_feedback_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -174,20 +175,28 @@ void AutofillContextMenuManager::ExecuteCommand(CommandId command_id) {
   DCHECK(IsAutofillCustomCommandId(command_id));
 
   if (command_id.value() == kAutofillContextFeedback) {
-    ExecuteAutofillFeedbackCommand();
+    ExecuteAutofillFeedbackCommand(rfh);
     return;
   }
 
   ExecuteMenuManagerCommand(command_id, rfh);
 }
 
-void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand() {
-  // TODO(crbug.com/1407646) Include autofill metadata in the feedback dialog.
-  chrome::ShowFeedbackPage(browser_, chrome::kFeedbackSourceAutofillContextMenu,
-                           /*description_template=*/std::string(),
-                           /*description_placeholder_text=*/std::string(),
-                           /*category_tag=*/std::string(),
-                           /*extra_diagnostics=*/std::string());
+void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
+    content::RenderFrameHost* rfh) {
+  AutofillManager* manager =
+      ContentAutofillDriver::GetForRenderFrameHost(rfh)->autofill_manager();
+  if (!manager) {
+    return;
+  }
+
+  chrome::ShowFeedbackPage(
+      browser_, chrome::kFeedbackSourceAutofillContextMenu,
+      /*description_template=*/std::string(),
+      /*description_placeholder_text=*/std::string(),
+      /*category_tag=*/std::string(),
+      /*extra_diagnostics=*/std::string(),
+      /*autofill_metadata=*/data_logs::FetchAutofillFeedbackData(manager));
 }
 
 void AutofillContextMenuManager::ExecuteMenuManagerCommand(
@@ -245,8 +254,10 @@ void AutofillContextMenuManager::AddAddressOrCreditCardItemsToMenu(
         profiles) {
   bool is_address_menu =
       absl::holds_alternative<AddressProfilesWithTitles>(profiles);
-  if (is_address_menu && absl::get<AddressProfilesWithTitles>(profiles).empty())
+  if (is_address_menu &&
+      absl::get<AddressProfilesWithTitles>(profiles).empty()) {
     return;
+  }
 
   if (!is_address_menu &&
       absl::get<CreditCardProfilesWithTitles>(profiles).empty()) {

@@ -100,6 +100,13 @@ namespace feedbackPrivate {
     // Whether to show questionnaire in the report description based on detected
     // domain-related keywords (crbug/1241169).
     boolean? showQuestionnaire;
+
+    // Whether or not triggered for Autofill.
+    boolean? fromAutofill;
+
+    // A JSON formatted string containing autofill metadata for this
+    // feedback report.
+    DOMString? autofillMetadata;
   };
 
   // Possible statuses that can result from sending feedback.

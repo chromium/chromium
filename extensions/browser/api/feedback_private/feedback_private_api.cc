@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
@@ -216,7 +217,9 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
     bool from_assistant,
     bool include_bluetooth_logs,
     bool show_questionnaire,
-    bool from_chrome_labs_or_kaleidoscope) {
+    bool from_chrome_labs_or_kaleidoscope,
+    bool from_autofill,
+    const base::Value::Dict& autofill_metadata) {
   auto info = std::make_unique<FeedbackInfo>();
 
   info->description = description_template;
@@ -224,6 +227,10 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
   info->category_tag = category_tag;
   info->page_url = page_url.spec();
   info->system_information.emplace();
+  info->from_autofill = from_autofill;
+  std::string autofill_metadata_json;
+  base::JSONWriter::Write(autofill_metadata, &autofill_metadata_json);
+  info->autofill_metadata = autofill_metadata_json;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   info->from_assistant = from_assistant;
   info->include_bluetooth_logs = include_bluetooth_logs;

@@ -30,7 +30,9 @@ void LoginFeedback::Request(const std::string& description) {
       /*from_assistant=*/false,
       /*include_bluetooth_logs=*/false,
       /*show_questionnaire=*/false,
-      /*from_chrome_labs_or_kaleidoscope=*/false);
+      /*from_chrome_labs_or_kaleidoscope=*/false,
+      /*from_autofill=*/false,
+      /*autofill_metadata=*/base::Value::Dict());
 
   FeedbackDialog::CreateOrShow(profile_, *info);
 }
