@@ -73,7 +73,8 @@ class TabSlider::SelectorView : public views::View {
     auto* view_layer = layer();
 
     gfx::Transform reverse_transform = gfx::TransformBetweenRects(
-        gfx::RectF(button_->bounds()), gfx::RectF(previous_button->bounds()));
+        gfx::RectF(button_->GetMirroredBounds()),
+        gfx::RectF(previous_button->GetMirroredBounds()));
     view_layer->SetTransform(reverse_transform);
     ui::ScopedLayerAnimationSettings settings(view_layer->GetAnimator());
     settings.SetTransitionDuration(kSelectorAnimationDuration);
