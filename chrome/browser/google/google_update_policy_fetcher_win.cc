@@ -306,10 +306,10 @@ GoogleUpdatePoliciesAndState::GoogleUpdatePoliciesAndState() = default;
 GoogleUpdatePoliciesAndState::~GoogleUpdatePoliciesAndState() = default;
 
 base::Value GetGoogleUpdatePolicyNames() {
-  base::Value names(base::Value::Type::LIST);
+  base::Value::List names;
   for (const auto& key_value : GetGoogleUpdatePolicySchemas())
     names.Append(base::Value(key_value.first));
-  return names;
+  return base::Value(std::move(names));
 }
 
 policy::PolicyConversions::PolicyToSchemaMap GetGoogleUpdatePolicySchemas() {
