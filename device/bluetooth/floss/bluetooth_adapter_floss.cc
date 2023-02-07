@@ -674,22 +674,15 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
 
   BluetoothDeviceFloss* device =
       static_cast<BluetoothDeviceFloss*>(devices_[canonical_address].get());
-  if (UpdateDevice(device, device_floss.get())) {
-    for (auto& observer : observers_)
-      observer.DeviceChanged(this, device);
+
+  // If the name has changed, we should also reinitialize the device properties.
+  // NotifyDeviceChanged will get called after properties are re-init.
+  if (device_floss->GetName() && device->GetName() != device_floss->GetName()) {
+    device->SetName(device_floss->GetName().value_or(""));
+    device->InitializeDeviceProperties(
+        base::BindOnce(&BluetoothAdapterFloss::NotifyDeviceChanged,
+                       weak_ptr_factory_.GetWeakPtr(), device));
   }
-}
-
-bool BluetoothAdapterFloss::UpdateDevice(BluetoothDeviceFloss* device,
-                                         BluetoothDeviceFloss* new_device) {
-  bool updated = false;
-
-  if (new_device->GetName() && device->GetName() != new_device->GetName()) {
-    device->SetName(new_device->GetName().value_or(""));
-    updated = true;
-  }
-
-  return updated;
 }
 
 void BluetoothAdapterFloss::AdapterClearedDevice(

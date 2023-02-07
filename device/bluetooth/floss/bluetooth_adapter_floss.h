@@ -218,8 +218,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
 
   void PopulateInitialDevices();
   void ClearAllDevices();
-  bool UpdateDevice(BluetoothDeviceFloss* device,
-                    BluetoothDeviceFloss* new_device);
 
   // floss::FlossAdapterClient::Observer override.
   void DiscoverableChanged(bool discoverable) override;
