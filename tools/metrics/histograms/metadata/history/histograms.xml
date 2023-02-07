@@ -1341,12 +1341,40 @@ chromium-metrics-reviews@google.com.
     enum="Boolean" expires_after="2023-10-01">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     When the user visits a page, `ContextClustererHistoryServiceObserver`
     considers whether to add the visit to a new cluster or an existing cluster.
     If it decides to create a new cluster, this is logged. Therefore, logged at
     most once per page visit.
   </summary>
+</histogram>
+
+<histogram name="History.Clusters.ContextClusterer.DbLatency.{Segment}"
+    units="ms" expires_after="2023-10-01">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    When the user visits a page, `ContextClustererHistoryServiceObserver`
+    considers whether to add the visit to a new cluster or an existing cluster.
+
+    This histogram records the processing breakdown for persisting visits to
+    group them into context clusters. Recorded each time {Segment}. The
+    histograms here summed up with the histograms as part of
+    `History.Clusters.ContextClusterer.VisitProcessingLatency` record the total
+    latency for context clustering.
+  </summary>
+  <token key="Segment">
+    <variant name="AddVisitsToCluster"
+        summary="new visits are added to an existing cluster"/>
+    <variant name="ReserveNextClusterId"
+        summary="a cluster is determined and requires a new cluster ID"/>
+    <variant name="UpdateClusterVisit"
+        summary="additional visit metadata has been calculated for an
+                 existing visit already part of a cluster and needs to be
+                 updated"/>
+  </token>
 </histogram>
 
 <histogram name="History.Clusters.ContextClusterer.NumClusters.AtCleanUp"
@@ -1380,6 +1408,31 @@ chromium-metrics-reviews@google.com.
     Number of clusters that are in-progress. Recorded once an hour
     (Finch-configurable) after the clean-up pass.
   </summary>
+</histogram>
+
+<histogram
+    name="History.Clusters.ContextClusterer.VisitProcessingLatency.{Segment}"
+    units="ms" expires_after="2023-10-01">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    When the user visits a page, `ContextClustererHistoryServiceObserver`
+    considers whether to add the visit to a new cluster or an existing cluster.
+
+    This histogram records the processing breakdown for processing visits to
+    group them into context clusters. Recorded each time {Segment}. The
+    histograms here summed up with the histograms as part of
+    `History.Clusters.ContextClusterer.DbLatency` record the total latency for
+    context clustering.
+  </summary>
+  <token key="Segment">
+    <variant name="CleanUpTimer"
+        summary="a clean-up pass has invoked, roughly once every ten minutes
+                 (Finch-configurable)"/>
+    <variant name="UrlsDeleted" summary="a set of URLs has beeen deleted"/>
+    <variant name="UrlVisited" summary="a URL is visited"/>
+  </token>
 </histogram>
 
 <histogram name="History.Clusters.JourneysEligibleAndEnabledAtSessionStart"

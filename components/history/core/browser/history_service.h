@@ -603,6 +603,7 @@ class HistoryService : public KeyedService {
   virtual base::CancelableTaskTracker::TaskId AddVisitsToCluster(
       int64_t cluster_id,
       const std::vector<ClusterVisit>& visits,
+      base::OnceClosure callback,
       base::CancelableTaskTracker* tracker);
 
   // Updates the triggerability attributes for `clusters`.
@@ -621,6 +622,7 @@ class HistoryService : public KeyedService {
   // ID as `new_cluster_visit`.
   virtual base::CancelableTaskTracker::TaskId UpdateClusterVisit(
       const history::ClusterVisit& new_cluster_visit,
+      base::OnceClosure callback,
       base::CancelableTaskTracker* tracker);
 
   // Get the most recent `Cluster`s within the constraints. The most recent
