@@ -354,9 +354,12 @@ namespace content_verifier_test_utils {
 
 // TestExtensionBuilder -------------------------------------------------------
 TestExtensionBuilder::TestExtensionBuilder()
+    // We have to provide explicit extension id in verified_contents.json.
+    : TestExtensionBuilder(ExtensionId(32, 'a')) {}
+
+TestExtensionBuilder::TestExtensionBuilder(const ExtensionId& extension_id)
     : test_content_verifier_key_(crypto::RSAPrivateKey::Create(2048)),
-      // We have to provide explicit extension id in verified_contents.json.
-      extension_id_(32, 'a') {
+      extension_id_(extension_id) {
   base::CreateDirectory(extension_dir_.UnpackedPath().Append(kMetadataFolder));
 }
 
@@ -462,7 +465,8 @@ void TestExtensionBuilder::WriteVerifiedContents() {
                             verified_contents.size()));
 }
 
-std::vector<uint8_t> TestExtensionBuilder::GetTestContentVerifierPublicKey() {
+std::vector<uint8_t> TestExtensionBuilder::GetTestContentVerifierPublicKey()
+    const {
   std::vector<uint8_t> public_key;
   test_content_verifier_key_->ExportPublicKey(&public_key);
   return public_key;

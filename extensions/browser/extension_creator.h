@@ -54,15 +54,6 @@ class ExtensionCreator {
            const base::FilePath& private_key_output_path,
            int run_flags);
 
-  // Create a CRX3 file at |crx_path|, using the contents of the unpacked
-  // extension located at |extension_dir|. Creates a random signing key and sets
-  // |extension_id| according to it.
-  bool CreateCrxWithVerifiedContentsInHeaderForTesting(
-      const base::FilePath& extension_dir,
-      const base::FilePath& crx_path,
-      const std::string& compressed_verified_contents,
-      std::string* extension_id);
-
   // Returns the error message that will be present if Run(...) returned false.
   std::string error_message() { return error_message_; }
 
@@ -70,6 +61,7 @@ class ExtensionCreator {
 
  private:
   friend class ExtensionCreatorTest;
+  friend class ContentVerifierTest;
 
   // Verifies input directory's existence. |extension_dir| is the source
   // directory that should contain all the extension resources. |crx_path| is

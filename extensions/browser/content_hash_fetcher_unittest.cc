@@ -147,8 +147,11 @@ class ContentHashFetcherTest : public ExtensionsTest {
     EXPECT_TRUE(zip::Unzip(extension_zip, destination));
 
     std::string error;
+    static constexpr char kTestExtensionId[] =
+        "jmllhlobpjcnnomjlipadejplhmheiif";
     scoped_refptr<Extension> extension = file_util::LoadExtension(
-        destination, mojom::ManifestLocation::kInternal, 0 /* flags */, &error);
+        destination, kTestExtensionId, mojom::ManifestLocation::kInternal,
+        0 /* flags */, &error);
     EXPECT_NE(nullptr, extension.get()) << " error:'" << error << "'";
     return extension;
   }

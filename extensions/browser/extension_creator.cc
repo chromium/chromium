@@ -263,20 +263,6 @@ bool ExtensionCreator::CreateCrxAndPerformCleanup(
   return result;
 }
 
-bool ExtensionCreator::CreateCrxWithVerifiedContentsInHeaderForTesting(
-    const base::FilePath& extension_dir,
-    const base::FilePath& crx_path,
-    const std::string& compressed_verified_contents,
-    std::string* extension_id) {
-  auto signing_key = crypto::RSAPrivateKey::Create(kRSAKeySize);
-  std::vector<uint8_t> public_key;
-  signing_key->ExportPublicKey(&public_key);
-  const std::string public_key_str(public_key.begin(), public_key.end());
-  *extension_id = crx_file::id_util::GenerateId(public_key_str);
-  return CreateCrxAndPerformCleanup(extension_dir, crx_path, signing_key.get(),
-                                    compressed_verified_contents);
-}
-
 bool ExtensionCreator::Run(const base::FilePath& extension_dir,
                            const base::FilePath& crx_path,
                            const base::FilePath& private_key_path,
