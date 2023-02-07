@@ -12,6 +12,7 @@ sendBuildTestRequest({
   name: `Chromium Release ${revision}`,
   tasks: [
     ...platformTasks("linux"),
+    ...platformTasks("macOS"),
   ],
 });
 
