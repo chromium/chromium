@@ -88,6 +88,7 @@ source_set("find_in_page_unittests") {
   sources = [
     "find_in_page_js_unittest.mm",
     "find_in_page_manager_delegate_bridge_unittest.mm",
+    "find_in_page_manager_impl_unittest.mm",
     "java_script_find_in_page_manager_impl_unittest.mm",
     "java_script_find_in_page_request_unittest.mm",
   ]
