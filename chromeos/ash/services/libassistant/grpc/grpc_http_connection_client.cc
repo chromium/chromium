@@ -167,18 +167,21 @@ void GrpcHttpConnectionClient::OnRpcWriteAvailable(
   }
 
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](base::WeakPtr<GrpcHttpConnectionClient> weak_ptr,
-                        StreamingWriter<StreamHttpConnectionRequest>* writer) {
-                       if (!weak_ptr)
-                         return;
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<GrpcHttpConnectionClient> weak_ptr,
+             StreamingWriter<StreamHttpConnectionRequest>* writer) {
+            if (!weak_ptr) {
+              return;
+            }
 
-                       if (!weak_ptr->write_queue_)
-                         return;
+            if (!weak_ptr->write_queue_) {
+              return;
+            }
 
-                       weak_ptr->write_queue_->OnRpcWriteAvailable(writer);
-                     },
-                     weak_factory_.GetWeakPtr(), writer));
+            weak_ptr->write_queue_->OnRpcWriteAvailable(writer);
+          },
+          weak_factory_.GetWeakPtr(), base::UnsafeDanglingUntriaged(writer)));
 }
 
 void GrpcHttpConnectionClient::OnRpcReadAvailable(
