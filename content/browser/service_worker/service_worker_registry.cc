@@ -46,6 +46,10 @@ BASE_FEATURE(kServiceWorkerStorageControlResponseQueue,
              "ServiceWorkerStorageControlResponseQueue",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// A hard limit of the ServiceWorkerScopeCacheLimitPerKey feature param.
+// (https://crbug.com/1411197)
+const int kServiceWorkerScopeCacheHardLimitPerKey = 100;
+
 blink::ServiceWorkerStatusCode DatabaseStatusToStatusCode(
     storage::mojom::ServiceWorkerDatabaseStatus status) {
   switch (status) {
@@ -1406,7 +1410,11 @@ void ServiceWorkerRegistry::DidStoreRegistration(
 
   auto iter = registration_scope_cache_.find(key);
   if (iter != registration_scope_cache_.end()) {
-    iter->second.insert(stored_scope);
+    std::set<GURL>& scopes = iter->second;
+    scopes.insert(stored_scope);
+    if (scopes.size() > kServiceWorkerScopeCacheHardLimitPerKey) {
+      registration_scope_cache_.erase(iter);
+    }
   }
 
   if (storage_policy_observer_)

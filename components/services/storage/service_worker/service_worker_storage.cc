@@ -65,7 +65,8 @@ BASE_FEATURE(kServiceWorkerScopeCache,
              "ServiceWorkerScopeCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// The scope URL count limit per the storage key.
+// The scope URL count limit per the storage key. This must be set less than or
+// equal to 'kServiceWorkerScopeCacheHardLimitPerKey'.
 const base::FeatureParam<int> kServiceWorkerScopeCacheLimitPerKey{
     &kServiceWorkerScopeCache, "ServiceWorkerScopeCacheLimitPerKey", 100};
 
