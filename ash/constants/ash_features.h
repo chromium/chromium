@@ -694,6 +694,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFullscreenAfterUnlockAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFullscreenAlertBubbleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGaiaReauthEndpointEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGalleryAppPdfEditNotificationEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGameDashboardEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGifRecordingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreGlanceablesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHibernateEnabled();

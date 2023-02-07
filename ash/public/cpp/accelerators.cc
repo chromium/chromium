@@ -367,6 +367,13 @@ const AcceleratorData kEnableWithFloatWindowAcceleratorData[] = {
 const size_t kEnableWithFloatWindowAcceleratorDataLength =
     std::size(kEnableWithFloatWindowAcceleratorData);
 
+const AcceleratorData kToggleGameDashboardAcceleratorData[] = {
+    {true, ui::VKEY_G, ui::EF_COMMAND_DOWN, TOGGLE_GAME_DASHBOARD},
+};
+
+const size_t kToggleGameDashboardAcceleratorDataLength =
+    std::size(kToggleGameDashboardAcceleratorData);
+
 // static
 AcceleratorController* AcceleratorController::Get() {
   return g_instance;

@@ -127,6 +127,12 @@ void AshAcceleratorConfiguration::Initialize() {
         base::make_span(kEnableWithFloatWindowAcceleratorData,
                         kEnableWithFloatWindowAcceleratorDataLength));
   }
+  if (features::IsGameDashboardEnabled()) {
+    AppendAcceleratorData(
+        accelerators,
+        base::make_span(kToggleGameDashboardAcceleratorData,
+                        kToggleGameDashboardAcceleratorDataLength));
+  }
 
   // Debug accelerators.
   if (debug::DebugAcceleratorsEnabled()) {

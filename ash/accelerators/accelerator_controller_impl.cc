@@ -670,6 +670,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return accelerators::CanToggleFloatingWindow();
     case TOGGLE_FULLSCREEN_MAGNIFIER:
       return true;
+    case TOGGLE_GAME_DASHBOARD:
+      return accelerators::CanToggleGameDashboard();
     case TOGGLE_MESSAGE_CENTER_BUBBLE:
       return true;
     case TOGGLE_MIRROR_MODE:
@@ -1221,6 +1223,9 @@ void AcceleratorControllerImpl::PerformAction(
       base::RecordAction(
           UserMetricsAction("Accel_Toggle_Fullscreen_Magnifier"));
       accelerators::ToggleFullscreenMagnifier();
+      break;
+    case TOGGLE_GAME_DASHBOARD:
+      accelerators::ToggleGameDashboard();
       break;
     case TOGGLE_HIGH_CONTRAST:
       base::RecordAction(UserMetricsAction("Accel_Toggle_High_Contrast"));

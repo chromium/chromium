@@ -24,6 +24,9 @@ BASE_FEATURE(kInstantTetheringBackgroundAdvertisementSupport,
              "InstantTetheringBackgroundAdvertisementSupport",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+constexpr char kChromeOSReleaseTrack[] = "CHROMEOS_RELEASE_TRACK";
+constexpr char kTestImageRelease[] = "testimage-channel";
+
 }  // namespace
 
 // Enables the UI and logic that minimizes the amount of time the device spends
@@ -2703,7 +2706,14 @@ bool IsEducationEnrollmentOobeFlowEnabled() {
 }
 
 bool IsGameDashboardEnabled() {
-  return base::FeatureList::IsEnabled(kGameDashboard);
+  if (!base::FeatureList::IsEnabled(kGameDashboard)) {
+    return false;
+  }
+
+  // Only allow the dashboard on test images until further in development.
+  std::string track;
+  return base::SysInfo::GetLsbReleaseValue(kChromeOSReleaseTrack, &track) &&
+         track.find(kTestImageRelease) != std::string::npos;
 }
 
 bool IsLockScreenInlineReplyEnabled() {

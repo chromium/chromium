@@ -87,6 +87,8 @@ ASH_EXPORT bool CanToggleDictation();
 
 ASH_EXPORT bool CanToggleFloatingWindow();
 
+ASH_EXPORT bool CanToggleGameDashboard();
+
 ASH_EXPORT bool CanToggleMultitaskMenu();
 
 ASH_EXPORT bool CanToggleOverview();
@@ -317,6 +319,9 @@ ASH_EXPORT void ToggleFullscreen();
 
 // Turns the fullscreen magnifier mode on or off.
 ASH_EXPORT void ToggleFullscreenMagnifier();
+
+// Toggles the game dashboard on the current window.
+ASH_EXPORT void ToggleGameDashboard();
 
 // Turns the high contrast mode on or off.
 ASH_EXPORT void ToggleHighContrast();

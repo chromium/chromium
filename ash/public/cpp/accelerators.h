@@ -126,6 +126,7 @@ enum AcceleratorAction {
   TOGGLE_FLOATING,
   TOGGLE_FULLSCREEN,
   TOGGLE_FULLSCREEN_MAGNIFIER,
+  TOGGLE_GAME_DASHBOARD,
   TOGGLE_HIGH_CONTRAST,
   TOGGLE_MAXIMIZED,
   TOGGLE_MESSAGE_CENTER_BUBBLE,
@@ -230,6 +231,11 @@ ASH_PUBLIC_EXPORT extern const AcceleratorData
     kEnableWithFloatWindowAcceleratorData[];
 ASH_PUBLIC_EXPORT extern const size_t
     kEnableWithFloatWindowAcceleratorDataLength;
+
+// Accelerators that are enabled with the game dashboard feature.
+ASH_PUBLIC_EXPORT extern const AcceleratorData
+    kToggleGameDashboardAcceleratorData[];
+ASH_PUBLIC_EXPORT extern const size_t kToggleGameDashboardAcceleratorDataLength;
 
 // The public-facing interface for accelerator handling, which is Ash's duty to
 // implement.

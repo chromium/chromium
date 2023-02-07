@@ -26,6 +26,7 @@
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
+#include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/projector/projector_controller.h"
@@ -506,6 +507,14 @@ bool CanToggleFloatingWindow() {
   }
   aura::Window* window = window_util::GetActiveWindow();
   return window && chromeos::wm::CanFloatWindow(window);
+}
+
+bool CanToggleGameDashboard() {
+  if (!features::IsGameDashboardEnabled()) {
+    return false;
+  }
+  aura::Window* window = window_util::GetActiveWindow();
+  return window && IsArcWindow(window);
 }
 
 bool CanToggleMultitaskMenu() {
@@ -1304,6 +1313,13 @@ void ToggleFullscreenMagnifier() {
   } else {
     SetFullscreenMagnifierEnabled(!current_enabled);
   }
+}
+
+void ToggleGameDashboard() {
+  DCHECK(features::IsGameDashboardEnabled());
+  aura::Window* window = window_util::GetActiveWindow();
+  DCHECK(window);
+  // TODO(phshah): Connect to the game dashboard controller.
 }
 
 void ToggleHighContrast() {
