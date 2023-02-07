@@ -107,11 +107,10 @@ bool ReadMountProgressFromDbus(dbus::MessageReader* reader, MountPoint* entry) {
   return true;
 }
 
-void MaybeGetStringFromDictionaryValue(const base::Value& dict,
+void MaybeGetStringFromDictionaryValue(const base::Value::Dict& dict,
                                        const char* key,
                                        std::string* result) {
-  DCHECK(dict.is_dict());
-  const std::string* value = dict.FindStringKey(key);
+  const std::string* value = dict.FindString(key);
   if (value)
     *result = *value;
 }
@@ -751,64 +750,62 @@ bool DiskInfo::InitializeFromResponse(dbus::Response* response) {
     return false;
   }
 
-  is_drive_ = value.FindBoolKey(cros_disks::kDeviceIsDrive).value_or(is_drive_);
+  const base::Value::Dict& dict = value.GetDict();
+  is_drive_ = dict.FindBool(cros_disks::kDeviceIsDrive).value_or(is_drive_);
   is_read_only_ =
-      value.FindBoolKey(cros_disks::kDeviceIsReadOnly).value_or(is_read_only_);
-  is_hidden_ = value.FindBoolKey(cros_disks::kDevicePresentationHide)
-                   .value_or(is_hidden_);
-  has_media_ = value.FindBoolKey(cros_disks::kDeviceIsMediaAvailable)
-                   .value_or(has_media_);
-  on_boot_device_ = value.FindBoolKey(cros_disks::kDeviceIsOnBootDevice)
+      dict.FindBool(cros_disks::kDeviceIsReadOnly).value_or(is_read_only_);
+  is_hidden_ =
+      dict.FindBool(cros_disks::kDevicePresentationHide).value_or(is_hidden_);
+  has_media_ =
+      dict.FindBool(cros_disks::kDeviceIsMediaAvailable).value_or(has_media_);
+  on_boot_device_ = dict.FindBool(cros_disks::kDeviceIsOnBootDevice)
                         .value_or(on_boot_device_);
-  on_removable_device_ =
-      value.FindBoolKey(cros_disks::kDeviceIsOnRemovableDevice)
-          .value_or(on_removable_device_);
+  on_removable_device_ = dict.FindBool(cros_disks::kDeviceIsOnRemovableDevice)
+                             .value_or(on_removable_device_);
   is_virtual_ =
-      value.FindBoolKey(cros_disks::kDeviceIsVirtual).value_or(is_virtual_);
-  is_auto_mountable_ = value.FindBoolKey(cros_disks::kIsAutoMountable)
-                           .value_or(is_auto_mountable_);
-  MaybeGetStringFromDictionaryValue(value, cros_disks::kStorageDevicePath,
+      dict.FindBool(cros_disks::kDeviceIsVirtual).value_or(is_virtual_);
+  is_auto_mountable_ =
+      dict.FindBool(cros_disks::kIsAutoMountable).value_or(is_auto_mountable_);
+
+  MaybeGetStringFromDictionaryValue(dict, cros_disks::kStorageDevicePath,
                                     &storage_device_path_);
-  MaybeGetStringFromDictionaryValue(value, cros_disks::kDeviceFile,
-                                    &file_path_);
-  MaybeGetStringFromDictionaryValue(value, cros_disks::kVendorId, &vendor_id_);
-  MaybeGetStringFromDictionaryValue(value, cros_disks::kVendorName,
+  MaybeGetStringFromDictionaryValue(dict, cros_disks::kDeviceFile, &file_path_);
+  MaybeGetStringFromDictionaryValue(dict, cros_disks::kVendorId, &vendor_id_);
+  MaybeGetStringFromDictionaryValue(dict, cros_disks::kVendorName,
                                     &vendor_name_);
-  MaybeGetStringFromDictionaryValue(value, cros_disks::kProductId,
-                                    &product_id_);
-  MaybeGetStringFromDictionaryValue(value, cros_disks::kProductName,
+  MaybeGetStringFromDictionaryValue(dict, cros_disks::kProductId, &product_id_);
+  MaybeGetStringFromDictionaryValue(dict, cros_disks::kProductName,
                                     &product_name_);
-  MaybeGetStringFromDictionaryValue(value, cros_disks::kDriveModel,
+  MaybeGetStringFromDictionaryValue(dict, cros_disks::kDriveModel,
                                     &drive_model_);
-  MaybeGetStringFromDictionaryValue(value, cros_disks::kIdLabel, &label_);
-  MaybeGetStringFromDictionaryValue(value, cros_disks::kIdUuid, &uuid_);
-  MaybeGetStringFromDictionaryValue(value, cros_disks::kFileSystemType,
+  MaybeGetStringFromDictionaryValue(dict, cros_disks::kIdLabel, &label_);
+  MaybeGetStringFromDictionaryValue(dict, cros_disks::kIdUuid, &uuid_);
+  MaybeGetStringFromDictionaryValue(dict, cros_disks::kFileSystemType,
                                     &file_system_type_);
 
-  bus_number_ = value.FindIntKey(cros_disks::kBusNumber).value_or(bus_number_);
+  bus_number_ = dict.FindInt(cros_disks::kBusNumber).value_or(bus_number_);
   device_number_ =
-      value.FindIntKey(cros_disks::kDeviceNumber).value_or(device_number_);
+      dict.FindInt(cros_disks::kDeviceNumber).value_or(device_number_);
 
   // dbus::PopDataAsValue() pops uint64_t as double. The top 11 bits of uint64_t
   // are dropped by the use of double. But, this works unless the size exceeds 8
   // PB.
   absl::optional<double> device_size_double =
-      value.FindDoubleKey(cros_disks::kDeviceSize);
+      dict.FindDouble(cros_disks::kDeviceSize);
   if (device_size_double.has_value())
     total_size_in_bytes_ = device_size_double.value();
 
   // dbus::PopDataAsValue() pops uint32_t as double.
   absl::optional<double> media_type_double =
-      value.FindDoubleKey(cros_disks::kDeviceMediaType);
+      dict.FindDouble(cros_disks::kDeviceMediaType);
   if (media_type_double.has_value())
     device_type_ = ToDeviceType(media_type_double.value());
 
-  if (const base::Value* const mount_paths =
-          value.FindListKey(cros_disks::kDeviceMountPaths);
-      mount_paths && mount_paths->is_list()) {
-    if (const base::Value::List& mount_paths_as_list = mount_paths->GetList();
-        !mount_paths_as_list.empty()) {
-      if (const base::Value& first_mount_path = mount_paths_as_list.front();
+  if (const base::Value::List* const mount_paths =
+          dict.FindList(cros_disks::kDeviceMountPaths);
+      mount_paths) {
+    if (!mount_paths->empty()) {
+      if (const base::Value& first_mount_path = mount_paths->front();
           first_mount_path.is_string()) {
         mount_path_ = first_mount_path.GetString();
       }
