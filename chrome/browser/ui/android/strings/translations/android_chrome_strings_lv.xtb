@@ -251,6 +251,7 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="2426805022920575512">Izvēlēties citu kontu</translation>
 <translation id="2433507940547922241">Izskats</translation>
 <translation id="2435457462613246316">Rādīt paroli</translation>
+<translation id="2439153523196674349">Vietnes <ph name="SITE_NAME" /> priekšskatījums</translation>
 <translation id="2450083983707403292">Vai vēlaties vēlreiz sākt faila <ph name="FILE_NAME" /> lejupielādi?</translation>
 <translation id="2453860139492968684">Pabeigt</translation>
 <translation id="2459390580524506445">Uzlabota meklēšana ar balsi</translation>
@@ -670,7 +671,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4678082183394354975">Pārlūkā Chrome ir ieslēgta tumšā motīva lietošana vietnēs</translation>
 <translation id="4684427112815847243">Sinhronizēt visu</translation>
 <translation id="4685741273709472646">Atlasīt no nolaižamā saraksta</translation>
-<translation id="4687718960473379118">Vietņu ieteiktas reklāmas</translation>
+<translation id="4687718960473379118">Vietnē ieteiktās reklāmas</translation>
 <translation id="4689792375321623175">Meklēt attēlu ar Google <ph name="BEGIN_NEW" />Jaunums<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}zero{<ph name="SHIPPING_OPTION_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Kešatmiņā ievietotie attēli un faili</translation>

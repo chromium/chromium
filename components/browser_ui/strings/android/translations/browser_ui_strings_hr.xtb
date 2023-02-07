@@ -231,7 +231,7 @@
 <translation id="5317780077021120954">Spremi</translation>
 <translation id="5335288049665977812">Web-lokacije mogu pokretati JavaScript (preporučeno)</translation>
 <translation id="534295439873310000">NFC uređaji</translation>
-<translation id="5344522958567249764">Upravljanje privatnošću oglasa</translation>
+<translation id="5344522958567249764">Upravljanje značajkama za zaštitu privatnosti u online oglašavanju</translation>
 <translation id="5354152178998424783">Izbrisat će se <ph name="DATASIZE" /> podataka i kolačića koje su spremile web-lokacije.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ još 1)}one{(+ još #)}few{(+ još #)}other{(+ još #)}}</translation>
 <translation id="5403592356182871684">Nazivi</translation>
@@ -280,7 +280,7 @@
 <translation id="6181444274883918285">Dodaj iznimku za web-lokaciju</translation>
 <translation id="6192792657125177640">Iznimke</translation>
 <translation id="6196640612572343990">Blokiraj kolačiće trećih strana</translation>
-<translation id="6205314730813004066">Privatnost oglasa</translation>
+<translation id="6205314730813004066">Zaštita privatnosti u online oglašavanju</translation>
 <translation id="6216432067784365534">Opcije stavke <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Želite li deinstalirati aplikaciju <ph name="APP_NAME" />?</translation>
 <translation id="6262191102408817757">Na temelju vaše posljednje kartice</translation>

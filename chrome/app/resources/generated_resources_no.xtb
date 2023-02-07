@@ -4142,6 +4142,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4713409221649555176">Slett når du lukker alle vinduer</translation>
 <translation id="47158868804223727">Klikk på gruppenavnet for å vise eller skjule det</translation>
 <translation id="4716483597559580346">Powerwash for økt sikkerhet</translation>
+<translation id="471759229191973607">Endre tema</translation>
 <translation id="4722735765955348426">Passord for <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> deler skjermen din.</translation>
 <translation id="4722989931633062466">Nettsteder som ikke har lov til å vise påloggingsforespørsler fra tredjeparter</translation>
@@ -7163,6 +7164,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> svarer ikke. Velg «Tving avslutning» for å lukke appen.</translation>
 <translation id="7535730537657706072">For å fjerne Inkognito-nettleserloggen fra enheten, lukk alle inkognitofaner</translation>
 <translation id="7537451260744431038">Nettsteder kan ikke bruke informasjonskapsler for å gi deg en bedre surfeopplevelse, for eksempel for å holde deg pålogget eller huske varene i handlekurven din</translation>
+<translation id="7538088324298143359">Søk i bildet med <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">Det oppsto en feil under søk etter oppdateringer: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> har stilt denne enheten inn på en tidligere versjon. Lagre viktige filer, og start på nytt. Alle data på enheten blir slettet.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> med <ph name="APP_NAME" />-appen</translation>

@@ -928,6 +928,7 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
       Wenn die Richtlinie aktiviert ist, kann WebDriver inkompatible Richtlinien überschreiben.
 
       Ist sie deaktiviert oder nicht konfiguriert, kann WebDriver inkompatible Richtlinien nicht überschreiben.</translation>
+<translation id="1883274744253492031">Automatisches Upgrade für gemischte Inhalte aktivieren</translation>
 <translation id="1885782360784839335">Einblendung von Werbung auf dem gesamten Tab aktivieren</translation>
 <translation id="1888871729456797026">Das Registrierungstoken der Cloud-Richtlinie auf dem Desktop</translation>
 <translation id="1893271062894546361">Wenn diese Richtlinie aktiviert ist, steht die Benutzeroberfläche mit Elementen zur Steuerung der Medienwiedergabe für <ph name="PRODUCT_NAME" />-Sitzungen, die von anderen Geräten im lokalen Netzwerk gestartet wurden, zur Verfügung.
@@ -3008,6 +3009,14 @@ Wenn diese Einstellung deaktiviert ist, können Nutzer sich nicht mit Smart Lock
 Wenn diese Richtlinie nicht festgelegt ist, gilt die Standardeinstellung: Vom Unternehmen verwaltete Nutzer können sich nicht mit Smart Lock anmelden, nicht verwaltete Nutzer können sich mit Smart Lock anmelden.</translation>
 <translation id="3791179836066841809">Richtliniendokumentation</translation>
 <translation id="3791556154364029875">Unverankerten Arbeitsbereich aktivieren und Remote-Browserfenster bei der Anmeldung öffnen</translation>
+<translation id="3793998702484455655">Chrome versucht, einige Unterressourcentypen für gemischte Inhalte (HTTP auf einer HTTPS-Website) auf iOS-Geräten upzugraden.
+Weitere Informationen findest du unter https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md.
+
+Die Funktion wird standardmäßig aktiviert. Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, bleibt die Funktion aktiviert.
+
+Ist die Richtlinie deaktiviert, wird die Funktion deaktiviert.
+
+Diese Richtlinie ist eine vorübergehende Problemumgehung, die in einem zukünftigen Meilenstein entfernt wird – voraussichtlich im Rahmen von M113.</translation>
 <translation id="3795413481405077588">Mit dieser Richtlinie kann ein Administrator Einstellungen für installierte Web-Apps angeben.
 
       Diese Richtlinie ordnet die ID einer Web-App einer bestimmten Einstellung zu. Mit der spezifischen ID <ph name="DEFAULT_SCOPE" /> kannst du eine Standardkonfiguration festlegen, die für alle Web-Apps angewendet wird, die keine benutzerdefinierte Konfiguration in dieser Richtlinie haben.
@@ -6434,6 +6443,7 @@ HINWEIS: Änderungen an dieser Richtlinie werden nur für neu gestartete Rendere
 <translation id="7126716959063786004">Beenden von Prozessen im Task-Manager erlauben</translation>
 <translation id="7126928806195745404">JavaScript-Einstellungen</translation>
 <translation id="7127980134843952133">Downloadverlauf</translation>
+<translation id="7128513247945602297">Automatisches Upgrade für gemischte Inhalte auf HTTPS-Websites aktivieren</translation>
 <translation id="712963038874313213">Gibt ein Ansible-Playbook an, das im standardmäßigen Crostini-Container ausgeführt werden muss.
 
       Diese Richtlinie ermöglicht die Bereitstellung eines Ansible-Playbooks, das auf den standardmäßigen Crostini-Container angewendet wird, sofern er auf dem jeweiligen Gerät verfügbar und gemäß den Richtlinien zulässig ist.
@@ -7189,6 +7199,7 @@ werden abgelehnt.</translation>
       Zulässige Werte für das Feld „<ph name="MINUTE_FIELD_NAME" />“ in „<ph name="START_TIME_FIELD_NAME" />“, „<ph name="END_TIME_FIELD_NAME" />“ und „<ph name="CHARGE_START_TIME_FIELD_NAME" />“ sind 0, 15, 30 und 45.</translation>
 <translation id="7840258755683573560">Automatisches Klicken aktivieren</translation>
 <translation id="7841880500990419427">TLS-Mindestversion für Fallback</translation>
+<translation id="7841883965249733328">Automatisches Upgrade für gemischte Inhalte deaktivieren</translation>
 <translation id="7845130996290850593">Kerberos aktivieren</translation>
 <translation id="7846952520291088817">URLs, für die lokale IPs in WebRTC ICE Candidates offengelegt sind</translation>
 <translation id="7848641140449742406">Einstellungen des Betriebssystems</translation>

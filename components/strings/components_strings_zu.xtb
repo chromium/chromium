@@ -914,7 +914,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, cindezela u-Tab bese u-Enter ukuze udale umcimbi omusha ngokushesha ku-Google Calendar</translation>
 <translation id="3261488570342242926">Funda mayelana namakhadi we-virtual</translation>
 <translation id="3264837738038045344">Phatha inkinobho yamasethingi we-Chrome, cindezela u-Enter ukuze uvakashele amasethingi wakho we-Chrome</translation>
-<translation id="3266367459139339908">Sethula izindlela ezintsha zokukhawulela lokho amasayithi angakufunda ngawe uma ekubonisa izikhangiso eziqondene nawe, ngokwesibonelo:</translation>
+<translation id="3266367459139339908">Sethula izindlela ezintsha zokukhawulela lokho amasayithi angakufunda ngawe uma ekubonisa izikhangiso eziqondaniswe nawe, ngokwesibonelo:</translation>
 <translation id="3266793032086590337">Inani (liyaphambana)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Awekho amasayithi avinjiwe, okuhlanganisa amasayithi ahlobene}=1{Isayithi eli-1 livinjiwe, okuhlanganisa amasayithi ahlobene}one{Amasayithi angu-# avinjiwe, okuhlanganisa amasayithi ahlobene}other{Amasayithi angu-# avinjiwe, okuhlanganisa amasayithi ahlobene}}</translation>
 <translation id="3268451620468152448">Vula amathebhu</translation>
@@ -1420,7 +1420,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="449126573531210296">Bethela amaphasiwedi avumelanisiwe nge-akhawunti yakho ye-Google</translation>
 <translation id="4492519888999857993">Lezi zici zikhutshazwe ngokuzenzakalela. Ngeke zize zitholakale kuzinguqulo ezizayo ze-Chrome.</translation>
 <translation id="4493480324863638523">I-URLengavumelekile. Kumele kube i-URL ene-schema esijwayelekile, isb. i-http://example.com noma i-https://example.com.</translation>
-<translation id="4494323206460475851">Ungabona izihloko zesikhangiso kumasethingi futhi uvimbele lezo ongafuni ukuthi zabiwe namasayithi. I-Chrome iphinda isule ngokuzenzakalela izihloko zesikhangiso ezindala kunamaviki ama-4.</translation>
+<translation id="4494323206460475851">Ungabona izihloko zesikhangiso kumasethingi futhi uvimbele lezo ongafuni ukuthi zabiwe namasayithi. I-Chrome iphinde isuse ngokuzenzekela izihloko zesikhangiso ezindala kunamaviki ama-4.</translation>
 <translation id="4500587658229086076">ouqukethwe okungavikelekile</translation>
 <translation id="4506176782989081258">Iphutha lokuqinisekisa: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4506599922270137252">Ukuxhumana nomlawuli wesistimu</translation>

@@ -1338,7 +1338,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4282346679996504092">Upozorenja za ovaj proizvod isključena su, a oznaka je uklonjena</translation>
 <translation id="4285498937028063278">Otkvači</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Ova je kartica spremljena na vašem Google računu}one{Ove su kartice spremljene na vašem Google računu}few{Ove su kartice spremljene na vašem Google računu}other{Ove su kartice spremljene na vašem Google računu}}</translation>
-<translation id="4287495839370498922">Poboljšana privatnost oglasa u Chromeu</translation>
+<translation id="4287495839370498922">Poboljšana zaštita privatnosti u online oglašavanju u Chromeu</translation>
 <translation id="4287885627794386150">Ispunjava kriterije za probu, ali proba nije aktivna</translation>
 <translation id="4297502707443874121">Minijatura za stranicu <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Investicije</translation>
@@ -1781,7 +1781,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5337569431717511221">Gumb za postavljanje Chromea kao zadanog preglednika, pritisnite Enter da biste postavili Chrome kao zadani preglednik sustava</translation>
 <translation id="5340250774223869109">Aplikacija je blokirana</translation>
 <translation id="534295439873310000">NFC uređaji</translation>
-<translation id="5344522958567249764">Upravljanje privatnošću oglasa</translation>
+<translation id="5344522958567249764">Upravljanje značajkama za zaštitu privatnosti u online oglašavanju</translation>
 <translation id="5344579389779391559">Ta će vam stranica možda pokušati nešto naplatiti</translation>
 <translation id="5347645913823149105">Gumb Prilagodi fontove u Chromeu, pritisnite Enter da biste prilagodili veličine i vrste fontova u Chromeu</translation>
 <translation id="5355557959165512791">Trenutačno ne možete otvoriti web-lokaciju <ph name="SITE" /> jer je njezin certifikat opozvan. Mrežne pogreške i napadi uglavnom su privremeni i ta bi stranica kasnije trebala funkcionirati.</translation>
@@ -2108,7 +2108,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6196640612572343990">Blokiraj kolačiće trećih strana</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6203231073485539293">Provjerite internetsku vezu</translation>
-<translation id="6205314730813004066">Privatnost oglasa</translation>
+<translation id="6205314730813004066">Zaštita privatnosti u online oglašavanju</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
 <translation id="6218753634732582820">Želite li ukloniti adresu iz Chromiuma?</translation>
 <translation id="622039917539443112">Paralelno presavijanje</translation>

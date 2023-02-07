@@ -231,7 +231,7 @@
 <translation id="5317780077021120954">שמירה</translation>
 <translation id="5335288049665977812">‏התרה לאתרים להריץ JavaScript (מומלץ)</translation>
 <translation id="534295439873310000">‏מכשירי NFC</translation>
-<translation id="5344522958567249764">ניהול של הגדרות הפרטיות בנושא במודעות</translation>
+<translation id="5344522958567249764">ניהול של הגדרות הפרטיות בפרסום</translation>
 <translation id="5354152178998424783">‏הפעולה הזו תגרום למחיקת <ph name="DATASIZE" /> של נתונים וקובצי cookie שנשמרו על ידי אתרים.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ועוד 1)}one{(ועוד #)}two{(ועוד #)}other{(ועוד #)}}</translation>
 <translation id="5403592356182871684">שמות</translation>
@@ -280,7 +280,7 @@
 <translation id="6181444274883918285">להוספת מקרה חריג של אתר</translation>
 <translation id="6192792657125177640">יוצאי דופן</translation>
 <translation id="6196640612572343990">‏חסימת קובצי Cookie של צד שלישי</translation>
-<translation id="6205314730813004066">פרטיות בנושא מודעות</translation>
+<translation id="6205314730813004066">פרטיות בפרסום</translation>
 <translation id="6216432067784365534">אפשרויות של <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">להסיר את '<ph name="APP_NAME" />'?</translation>
 <translation id="6262191102408817757">על סמך הכרטיסייה האחרונה שלך</translation>

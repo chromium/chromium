@@ -924,6 +924,7 @@
       如果此政策已启用，WebDriver 将能够覆盖与之冲突的政策。
 
       如果此政策已停用或未配置，WebDriver 将无法覆盖与之冲突的政策。</translation>
+<translation id="1883274744253492031">允许混合内容自动升级</translation>
 <translation id="1885782360784839335">允许使用整个标签页显示宣传内容</translation>
 <translation id="1888871729456797026">云政策在桌面设备上的注册令牌</translation>
 <translation id="1893271062894546361">如果此政策已启用，由本地网络中的其他设备启动的 <ph name="PRODUCT_NAME" /> 会话便可使用媒体播放控件界面。
@@ -2991,6 +2992,14 @@
       如果此政策未设置，默认情况下，受企业管理的用户不能使用 Smart Lock，不受管理的用户则能够使用 Smart Lock。</translation>
 <translation id="3791179836066841809">政策文档</translation>
 <translation id="3791556154364029875">启用悬浮式工作区，并在登录时启动远程浏览器窗口</translation>
+<translation id="3793998702484455655">在 iOS 上，Chrome 会尝试升级某些类型的混合内容（HTTPS 网站上的 HTTP）子资源。
+如需了解详情，请参阅 https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md。
+
+该功能默认处于启用状态。如果此政策已启用或未设置，系统会保持该功能的启用状态。
+
+如果此政策已停用，系统会停用该功能。
+
+此政策只是一种临时的变通方案，会在几个里程碑后被移除（我们暂定在 M113 中移除它）。</translation>
 <translation id="3795413481405077588">此政策让管理员能够为已安装的 Web 应用指定设置。
 
       使用此政策后，您可将某个 Web 应用 ID 映射到特定设置。您可以使用特殊 ID<ph name="DEFAULT_SCOPE" />设定默认配置，该配置会应用于未在此政策中设定自定义配置的所有 Web 应用。
@@ -6413,6 +6422,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7126716959063786004">允许在任务管理器中结束进程</translation>
 <translation id="7126928806195745404">JavaScript 设置</translation>
 <translation id="7127980134843952133">下载记录</translation>
+<translation id="7128513247945602297">允许 HTTPS 网站上的混合内容自动升级</translation>
 <translation id="712963038874313213">提供应在默认 Crostini 容器中执行的 Ansible Playbook。
 
       此政策允许提供 Ansible Playbook 以应用到默认 Crostini 容器，前提是该容器在给定设备上可用且相关政策允许。
@@ -7149,6 +7159,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       <ph name="START_TIME_FIELD_NAME" />、<ph name="END_TIME_FIELD_NAME" /> 和 <ph name="CHARGE_START_TIME_FIELD_NAME" /> 中的有效 <ph name="MINUTE_FIELD_NAME" /> 字段值为 0、15、30、45。</translation>
 <translation id="7840258755683573560">允许自动点击</translation>
 <translation id="7841880500990419427">要回退到的最低 TLS 版本</translation>
+<translation id="7841883965249733328">禁止混合内容自动升级</translation>
 <translation id="7845130996290850593">启用 Kerberos</translation>
 <translation id="7846952520291088817">在 WebRTC ICE 候选路径中显示本地 IP 的网址</translation>
 <translation id="7848641140449742406">操作系统设置</translation>

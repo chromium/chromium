@@ -4132,6 +4132,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4713409221649555176">Borrar cuando cierras todas las ventanas</translation>
 <translation id="47158868804223727">Haz clic en el nombre del grupo para expandirlo o contraerlo</translation>
 <translation id="4716483597559580346">Powerwash para mejorar la seguridad</translation>
+<translation id="471759229191973607">Cambiar tema</translation>
 <translation id="4722735765955348426">Contraseña de <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> está compartiendo tu pantalla.</translation>
 <translation id="4722989931633062466">No se pueden mostrar mensajes de acceso de terceros</translation>
@@ -5714,7 +5715,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6200151268994853226">Administrar extensión</translation>
 <translation id="6201608810045805374">¿Quieres quitar esta cuenta?</translation>
 <translation id="6202304368170870640">Puedes usar el PIN para acceder a tu dispositivo o desbloquearlo.</translation>
-<translation id="6205314730813004066">Privacidad de los anuncios</translation>
+<translation id="6205314730813004066">Privacidad en los anuncios</translation>
 <translation id="6206199626856438589">Saldrás de los sitios que se muestran, incluso si están en pestañas abiertas.</translation>
 <translation id="6206311232642889873">Cop&amp;iar imagen</translation>
 <translation id="6206521455877863927">Incluye sitios del mismo dominio, por ejemplo, google.com y mail.google.com. Los sitios que estás viendo pueden guardar datos en tu dispositivo.</translation>
@@ -7154,6 +7155,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> no responde. Selecciona "Forzar cierre" para cerrar la app.</translation>
 <translation id="7535730537657706072">Para borrar del dispositivo el historial de navegación en modo Incógnito, cierra todas las pestañas de incógnito.</translation>
 <translation id="7537451260744431038">Los sitios no pueden usar cookies para mejorar la experiencia de navegación, por ejemplo, para mantener el acceso a ellos o recordar elementos del carrito de compras.</translation>
+<translation id="7538088324298143359">Buscar en la imagen con <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">Se produjo un error al buscar actualizaciones: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> revirtió este dispositivo a una versión anterior. Guarda los archivos importantes y, luego, reinicia el sistema. Se borrarán todos los datos del dispositivo.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> con la app de <ph name="APP_NAME" /></translation>

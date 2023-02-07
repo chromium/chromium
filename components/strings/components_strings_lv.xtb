@@ -1496,7 +1496,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="467809019005607715">Google prezentācijas</translation>
 <translation id="4682496302933121474">Vai tulkot lapu?</translation>
 <translation id="468314109939257734">Skatiet savas virtuālās kartes numuru</translation>
-<translation id="4687718960473379118">Vietņu ieteiktas reklāmas</translation>
+<translation id="4687718960473379118">Vietnē ieteiktās reklāmas</translation>
 <translation id="4692623383562244444">Meklētājprogrammas</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">sānu</translation>
@@ -2058,7 +2058,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6051221802930200923">Pašlaik nevarat apmeklēt vietni <ph name="SITE" />, jo tajā tiek izmantota sertifikātu piespraušana. Tā kā tīkla kļūdas un uzbrukumi parasti ir īslaicīgi, visticamāk, šī lapa vēlāk darbosies.</translation>
 <translation id="6051898664905071243">Lappušu skaits:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053735090575989697">Lasiet mūsu konfidencialitātes politiku, lai uzzinātu, kā Google aizsargā jūsu datus.</translation>
+<translation id="6053735090575989697">Lai uzzinātu vairāk par to, kā Google tīklā tiek aizsargāti jūsu dati, skatiet mūsu konfidencialitātes politiku.</translation>
 <translation id="6055888660316801977">Lapa ar akreditācijas datiem, kas neatbilst drošu maksājumu akreditācijas datiem</translation>
 <translation id="6058977677006700226">Vai vēlaties izmantot kartes visās savās ierīcēs?</translation>
 <translation id="6059925163896151826">USB ierīces</translation>
@@ -2324,7 +2324,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6786145470008421571">Aploksne (6 x 9 collas)</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Paplašinājumi</translation>
-<translation id="6787094689637422836">Mēs ieviešam jaunas konfidencialitātes funkcijas, kas sniedz plašākas iespējas izvēlēties, kādas reklāmas jums tiek rādītas.</translation>
+<translation id="6787094689637422836">Mēs izlaižam jaunas konfidencialitātes funkcijas, kas sniedz lielākas izvēles iespējas attiecībā uz jums rādītajām reklāmām.</translation>
 <translation id="678982761784843853">Aizsargāta satura ID</translation>
 <translation id="6790428901817661496">Atskaņot</translation>
 <translation id="679355240208270552">Politika ignorēta, jo noklusējuma meklēšana nav iespējota politikā.</translation>
@@ -3077,7 +3077,7 @@ Papildu informācija:
 <translation id="860043288473659153">Bankas kartes īpašnieka vārds</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Kādi dati tiek izmantoti:<ph name="END_BOLD" /> jūsu darbības vietnē, ko šajā ierīcē apmeklējat, izmantojot pārlūku Chrome.</translation>
 <translation id="8606726445206553943">izmantot jūsu MIDI ierīces</translation>
-<translation id="8606988009912891950">Reklāmu tēmas palīdz vietnēm rādīt atbilstošas reklāmas, vienlaikus aizsargājot jūsu pārlūkošanas vēsturi un identitāti. Chrome var saglabāt interešu tēmas, pamatojoties uz jūsu neseno pārlūkošanas vēsturi. Vēlāk kāda jūsu apmeklēta vietne var pieprasīt pārlūkam Chrome kopīgot atbilstošas tēmas, lai personalizētu jums rādītās reklāmas.</translation>
+<translation id="8606988009912891950">Reklāmu tēmas palīdz vietnēm rādīt jums atbilstošas reklāmas, vienlaikus aizsargājot jūsu pārlūkošanas vēsturi un identitāti. Chrome var noteikt, kādas tēmas jūs interesē, ņemot vērā neseno pārlūkošanas vēsturi. Vēlāk, lai personalizētu jums rādītās reklāmas, kāda jūsu izmantotā lietotne var pieprasīt no operētājsistēmas Chrome atbilstošās tēmas.</translation>
 <translation id="8617269623452051934">jūsu ierīces lietojums</translation>
 <translation id="861775596732816396">4. izmērs</translation>
 <translation id="8620276786115098679">Aploksne Kaku 7</translation>

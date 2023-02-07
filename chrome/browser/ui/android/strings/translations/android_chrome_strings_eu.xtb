@@ -251,6 +251,7 @@ Arakatze-historia ezabatzen duzunean (osorik nahiz webgune zehatz bat), neurketa
 <translation id="2426805022920575512">Aukeratu beste kontu bat</translation>
 <translation id="2433507940547922241">Itxura</translation>
 <translation id="2435457462613246316">Erakutsi pasahitza</translation>
+<translation id="2439153523196674349"><ph name="SITE_NAME" /> webgunearen jarioaren aurrebista</translation>
 <translation id="2450083983707403292">Berriro hasi nahi duzu <ph name="FILE_NAME" /> deskargatzen?</translation>
 <translation id="2453860139492968684">Amaitu</translation>
 <translation id="2459390580524506445">Ahozko bilaketa doitua</translation>
@@ -952,7 +953,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6193448654517602979">Hautatu fitxak</translation>
 <translation id="6196315980958524839">Pasahitzak gailu honetan gordetzen dira, Google-ren Pasahitz-kudeatzailea zerbitzuan</translation>
 <translation id="6202812185118613467">Sinkronizatzen hasteko, hasi saioa berriro</translation>
-<translation id="6205314730813004066">Iragarkien inguruko pribatutasuna</translation>
+<translation id="6205314730813004066">Iragarkien pribatutasuna</translation>
 <translation id="6210748933810148297">Ez al zara <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Orria aurreikusten</translation>
 <translation id="6221633008163990886">Desblokeatu gailua pasahitzak esportatzeko</translation>

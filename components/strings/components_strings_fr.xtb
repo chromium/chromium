@@ -823,7 +823,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="301521992641321250">Bloquée automatiquement</translation>
 <translation id="3016780570757425217">Connaître votre position</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, appuyez sur Tabulation, puis sur Entrée pour supprimer la suggestion.</translation>
-<translation id="3023165109041533893">Les annonces suggérées par les sites contribuent à protéger votre historique de navigation et votre identité, tout en permettant aux sites de vous proposer des annonces pertinentes. En fonction de votre activité, un site auquel vous avez accédé peut vous suggérer des annonces similaires à mesure que vous poursuivez votre navigation. Vous pouvez consulter la liste de ces sites et bloquer ceux qui vous ne vous intéressent pas dans les paramètres.</translation>
+<translation id="3023165109041533893">Les annonces suggérées par les sites contribuent à protéger votre historique de navigation et votre identité, tout en permettant aux sites de vous présenter des annonces pertinentes. En fonction de votre activité, un site auquel vous avez accédé peut suggérer des annonces associées à mesure que vous poursuivez votre navigation. Vous pouvez consulter la liste de ces sites et bloquer ceux qui vous ne vous intéressent pas dans les paramètres.</translation>
 <translation id="3024663005179499861">Type de règle incorrect.</translation>
 <translation id="3029752078111257850">Actualités internationales</translation>
 <translation id="3037177537145227281">Suivi du prix activé</translation>
@@ -1423,7 +1423,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="449126573531210296">Chiffrer les mots de passe synchronisés avec votre compte Google</translation>
 <translation id="4492519888999857993">Ces fonctionnalités sont désactivées par défaut. Elles ne seront plus disponibles dans les prochaines versions de Chrome.</translation>
 <translation id="4493480324863638523">URL non valide : vous devez saisir une URL avec un schéma standard, comme http://example.com ou https://example.com.</translation>
-<translation id="4494323206460475851">Vous pouvez voir les thèmes publicitaires dans les paramètres et bloquer ceux que vous ne souhaitez pas partager avec des sites. Chrome supprime aussi automatiquement les thèmes publicitaires s'ils datent de plus de quatre semaines.</translation>
+<translation id="4494323206460475851">Vous pouvez voir les thèmes d'annonces dans les paramètres, et bloquer ceux que vous ne souhaitez pas partager avec les sites. Par ailleurs, Chrome supprime automatiquement les thèmes d'annonces qui datent de plus de quatre semaines.</translation>
 <translation id="4500587658229086076">contenu non sécurisé</translation>
 <translation id="4506176782989081258">Erreur de validation : <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4506599922270137252">Contacter l'administrateur système</translation>
@@ -2325,7 +2325,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6786145470008421571">Enveloppe 150x230</translation>
 <translation id="67862343314499040">Mauve</translation>
 <translation id="6786747875388722282">Extensions</translation>
-<translation id="6787094689637422836">Nous proposons de nouvelles fonctionnalités de confidentialité qui vous offrent une plus grande liberté de choix sur les annonces diffusées.</translation>
+<translation id="6787094689637422836">Nous lançons de nouvelles fonctionnalités de confidentialité qui vous offrent une plus grande liberté de choix sur les annonces diffusées.</translation>
 <translation id="678982761784843853">ID de contenu protégé</translation>
 <translation id="6790428901817661496">Lire</translation>
 <translation id="679355240208270552">Règle ignorée, car le moteur de recherche par défaut n'est pas activé par une règle.</translation>
@@ -3078,7 +3078,7 @@ Informations supplémentaires :
 <translation id="860043288473659153">Nom du titulaire de la carte</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Quelles sont les données utilisées<ph name="END_BOLD" /> : votre activité sur un site que vous consultez dans Chrome sur cet appareil.</translation>
 <translation id="8606726445206553943">Utiliser vos appareils MIDI</translation>
-<translation id="8606988009912891950">Les thèmes publicitaires aident les sites à vous présenter des annonces pertinentes tout en protégeant votre historique de navigation et votre identité. Chrome peut se baser sur votre historique de navigation récent pour déterminer les thèmes qui vous intéressent. Par la suite, un site que vous consultez pourra demander à Chrome des thèmes pertinents pour personnaliser les annonces qui vous seront présentées.</translation>
+<translation id="8606988009912891950">Les thèmes d'annonces aident les sites à vous présenter des annonces pertinentes tout en protégeant votre historique de navigation et votre identité. Chrome peut déterminer les thèmes qui vous intéressent en fonction de votre historique de navigation récent. Par la suite, un site que vous consultez pourra demander à Chrome des thèmes pertinents pour personnaliser les annonces qui vous seront présentées.</translation>
 <translation id="8617269623452051934">si vous utilisez cet appareil</translation>
 <translation id="861775596732816396">Taille 4</translation>
 <translation id="8620276786115098679">Enveloppe Kaku 7</translation>

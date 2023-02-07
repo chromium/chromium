@@ -231,7 +231,7 @@
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5335288049665977812">Baimendu webguneei JavaScript erabiltzea (gomendatua)</translation>
 <translation id="534295439873310000">NFC darabilten gailuak</translation>
-<translation id="5344522958567249764">Kudeatu iragarkien inguruko pribatutasuna</translation>
+<translation id="5344522958567249764">Kudeatu iragarkien pribatutasuna</translation>
 <translation id="5354152178998424783">Webguneek gordetako datu eta cookieen <ph name="DATASIZE" /> garbituko dira.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(eta beste bat)}other{(eta beste #)}}</translation>
 <translation id="5403592356182871684">Izenak</translation>
@@ -280,7 +280,7 @@
 <translation id="6181444274883918285">Gehitu webgune bat salbuespen gisa</translation>
 <translation id="6192792657125177640">Salbuespenak</translation>
 <translation id="6196640612572343990">Blokeatu hirugarrenen cookieak</translation>
-<translation id="6205314730813004066">Iragarkien inguruko pribatutasuna</translation>
+<translation id="6205314730813004066">Iragarkien pribatutasuna</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> - Aukerak</translation>
 <translation id="6231752747840485235">"<ph name="APP_NAME" />" desinstalatu nahi duzu?</translation>
 <translation id="6262191102408817757">Azken fitxaren arabera</translation>

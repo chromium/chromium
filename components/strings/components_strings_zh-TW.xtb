@@ -1338,7 +1338,7 @@
 <translation id="4282346679996504092">這項產品的快訊已關閉，這個網頁也已從書籤中移除</translation>
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{這張卡片已儲存到你的 Google 帳戶}other{這些卡片已儲存到你的 Google 帳戶}}</translation>
-<translation id="4287495839370498922">Chrome 的加強型廣告隱私設定</translation>
+<translation id="4287495839370498922">Chrome 的加強型廣告隱私權設定</translation>
 <translation id="4287885627794386150">符合適用條件但尚未啟用</translation>
 <translation id="4297502707443874121">第 <ph name="THUMBNAIL_PAGE" /> 頁的縮圖</translation>
 <translation id="4298000214066716287">投資</translation>
@@ -1781,7 +1781,7 @@
 <translation id="5337569431717511221">可將 Chrome 設為預設瀏覽器的按鈕，按下 Enter 鍵即可將 Chrome 設為系統的預設瀏覽器</translation>
 <translation id="5340250774223869109">應用程式已遭封鎖</translation>
 <translation id="534295439873310000">NFC 裝置</translation>
-<translation id="5344522958567249764">管理廣告隱私設定</translation>
+<translation id="5344522958567249764">管理廣告隱私權設定</translation>
 <translation id="5344579389779391559">進入接下來的頁面後，系統可能會向您收費</translation>
 <translation id="5347645913823149105">「自訂 Chrome 中的字型」按鈕；按下 Enter 鍵即可自訂 Chrome 中的字型大小和字體</translation>
 <translation id="5355557959165512791">目前無法造訪 <ph name="SITE" />，因為這個網站的憑證已遭撤銷。網路錯誤和攻擊行為通常是暫時性的，因此這個網頁可能稍後就會恢復正常狀態。</translation>
@@ -2108,7 +2108,7 @@
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6197648101609735209">89 x 89 公釐</translation>
 <translation id="6203231073485539293">檢查網際網路連線</translation>
-<translation id="6205314730813004066">廣告隱私設定</translation>
+<translation id="6205314730813004066">廣告隱私權設定</translation>
 <translation id="6212314149070368045">美國 Fanfold</translation>
 <translation id="6218753634732582820">要從 Chromium 中移除地址嗎？</translation>
 <translation id="622039917539443112">雙對摺</translation>

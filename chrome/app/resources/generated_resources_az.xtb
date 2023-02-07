@@ -7424,7 +7424,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7768507955883790804">Saytları ziyarət etdikdə onlar avtomatik bu ayarı izləyir</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> qovluğundakı fayllara baxa biləcək</translation>
 <translation id="7768770796815395237">Dəyişin</translation>
-<translation id="7768784765476638775">Seç və Dinlə</translation>
+<translation id="7768784765476638775">Seçib səsləndirmə</translation>
 <translation id="7769748505895274502">Son bağlananı yığcamlaşdırın</translation>
 <translation id="7770072242481632881">Yan Panel Seçicisi</translation>
 <translation id="7770450735129978837">Mausun sağ düyməsinə tıklama</translation>
@@ -8667,7 +8667,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8899851313684471736">Linki yeni pəncərədə açın</translation>
 <translation id="8900413463156971200">Mobil şəbəkəni aktiv edin</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> bugün datanızı yedəkləmənizi və bu <ph name="DEVICE_TYPE" /> cihazını qaytarmanızı tələb edir.}other{<ph name="MANAGER" /> son tarixdən öncə datanızı yedəkləmənizi və bu <ph name="DEVICE_TYPE" /> cihazını qaytarmanızı tələb edir.}}</translation>
-<translation id="8902667442496790482">Seç və Dinlə ayarlarını seçin</translation>
+<translation id="8902667442496790482">Seçib səsləndirmə ayarlarını seçin</translation>
 <translation id="890616557918890486">Mənbəni dəyişin</translation>
 <translation id="8907701755790961703">Ölkə seçin</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> tətbiqinin quraşdırılması ləğv edildi</translation>

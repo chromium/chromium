@@ -231,7 +231,7 @@
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5335288049665977812">Ausführung von JavaScript durch Websites zulassen (empfohlen)</translation>
 <translation id="534295439873310000">NFC-Geräte</translation>
-<translation id="5344522958567249764">Datenschutz bei Werbung verwalten</translation>
+<translation id="5344522958567249764">Datenschutz bei Anzeigen verwalten</translation>
 <translation id="5354152178998424783">Dadurch werden <ph name="DATASIZE" /> an von Websites gespeicherten Daten und Cookies gelöscht.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 weitere)}other{(+ # weitere)}}</translation>
 <translation id="5403592356182871684">Namen</translation>
@@ -280,7 +280,7 @@
 <translation id="6181444274883918285">Ausnahme für Website hinzufügen</translation>
 <translation id="6192792657125177640">Ausnahmen</translation>
 <translation id="6196640612572343990">Drittanbieter-Cookies blockieren</translation>
-<translation id="6205314730813004066">Datenschutz bei Werbung</translation>
+<translation id="6205314730813004066">Datenschutz bei Anzeigen</translation>
 <translation id="6216432067784365534">Optionen für <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">„<ph name="APP_NAME" />“ deinstallieren?</translation>
 <translation id="6262191102408817757">Basierend auf deinem letzten Tab</translation>

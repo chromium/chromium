@@ -934,6 +934,7 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
       Si elle est activée, WebDriver pourra ignorer les règles non compatibles.
 
       Si elle est désactivée ou qu'elle n'est pas configurée, la fonctionnalité WebDriver ne sera pas autorisée à ignorer les règles non compatibles.</translation>
+<translation id="1883274744253492031">Activer la mise à niveau automatique du contenu mixte</translation>
 <translation id="1885782360784839335">Activer l'affichage de contenus promotionnels en mode Plein onglet</translation>
 <translation id="1888871729456797026">Jeton d'enregistrement des règles relatives au cloud sur ordinateur</translation>
 <translation id="1893271062894546361">Lorsque cette règle est activée, l'UI des commandes de lecture multimédia est disponible pour les sessions <ph name="PRODUCT_NAME" /> lancées par d'autres appareils sur le réseau local.
@@ -3012,6 +3013,14 @@ Si cette règle n'est pas configurée ou si la liste ne contient aucune référe
       Si cette règle n'est pas définie, le paramètre sera désactivé par défaut pour les utilisateurs gérés par une entreprise et activé par défaut pour les utilisateurs non gérés.</translation>
 <translation id="3791179836066841809">Documentation de la règle</translation>
 <translation id="3791556154364029875">Activer l'espace de travail flottant et lancer les fenêtres de navigateur distantes lors de la connexion</translation>
+<translation id="3793998702484455655">Chrome tentera de mettre à niveau certains types de sous-ressources de contenu mixte (HTTP sur un site HTTPS) sur iOS.
+Pour en savoir plus, consultez la page https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md.
+
+Cette fonctionnalité sera activée par défaut. Si cette règle est activée ou qu'elle n'est pas configurée, la fonctionnalité reste activée.
+
+Si elle est désactivée, la fonctionnalité est désactivée.
+
+Cette règle est une mesure temporaire et sera supprimée dans une future version (la suppression est envisagée pour M113).</translation>
 <translation id="3795413481405077588">Cette règle permet à un administrateur de définir des paramètres pour les applications Web installées.
 
       Elle fait correspondre un ID d'application Web à son paramètre spécifique. Une configuration par défaut peut être définie avec l'ID spécial <ph name="DEFAULT_SCOPE" />, lequel s'applique à toutes les applications Web pour lesquelles aucune configuration personnalisée n'est définie dans cette règle.
@@ -6459,6 +6468,7 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 <translation id="7126716959063786004">Mettre fin aux processus dans le gestionnaire des tâches</translation>
 <translation id="7126928806195745404">Paramètres JavaScript</translation>
 <translation id="7127980134843952133">Historique des téléchargements</translation>
+<translation id="7128513247945602297">Activer la mise à niveau automatique du contenu mixte sur les sites HTTPS</translation>
 <translation id="712963038874313213">Fournit un playbook Ansible à exécuter dans le conteneur Crostini par défaut.
 
       Cette règle permet de fournir un playbook Ansible à appliquer au conteneur Crostini par défaut s'il est disponible sur l'appareil concerné et que les règles l'autorisent.
@@ -7216,6 +7226,7 @@ Dans le cas contraire, le moteur de rendu par défaut sera utilisé pour tous le
       Les valeurs autorisées dans le champ "<ph name="MINUTE_FIELD_NAME" />" de "<ph name="START_TIME_FIELD_NAME" />", "<ph name="END_TIME_FIELD_NAME" />" et "<ph name="CHARGE_START_TIME_FIELD_NAME" />" sont 0, 15, 30 et 45.</translation>
 <translation id="7840258755683573560">Activer les clics automatiques</translation>
 <translation id="7841880500990419427">Version minimale de TLS à utiliser en remplacement</translation>
+<translation id="7841883965249733328">Désactiver la mise à niveau automatique du contenu mixte</translation>
 <translation id="7845130996290850593">Activer Kerberos</translation>
 <translation id="7846952520291088817">URL pour lesquelles les candidats WebRTC ICE affichent les adresses IP locales</translation>
 <translation id="7848641140449742406">Paramètres de l'OS</translation>

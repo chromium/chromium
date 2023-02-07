@@ -2469,7 +2469,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3183944777708523606">Aranjarea pe monitor</translation>
 <translation id="3184536091884214176">Configurează sau gestionează imprimantele CUPS. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Aplicația este blocată}few{Unele aplicații sunt blocate}other{Unele aplicații sunt blocate}}</translation>
-<translation id="3187472288455401631">Ad measurement</translation>
+<translation id="3187472288455401631">Cuantificarea anunțurilor</translation>
 <translation id="3188257591659621405">Fișierele mele</translation>
 <translation id="3188465121994729530">Medie mobilă</translation>
 <translation id="3189187154924005138">Cursor mare</translation>
@@ -4136,6 +4136,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4713409221649555176">Șterge când închizi toate ferestrele</translation>
 <translation id="47158868804223727">Dă clic pe numele grupului ca să-l extinzi sau să-l restrângi</translation>
 <translation id="4716483597559580346">Powerwash pentru securitate suplimentară</translation>
+<translation id="471759229191973607">Schimbă tema</translation>
 <translation id="4722735765955348426">Parola pentru <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856">Aplicația <ph name="APP_NAME" /> are acces la ecran.</translation>
 <translation id="4722989931633062466">Nu au permisiunea de a afișa solicitări de conectare prin terți</translation>
@@ -7160,6 +7161,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> nu răspunde. Selectează „Închide forțat” pentru a închide aplicația.</translation>
 <translation id="7535730537657706072">Pentru a șterge istoricul de navigare incognito de pe dispozitiv, închide toate filele incognito</translation>
 <translation id="7537451260744431038">Site-urile nu pot folosi cookie-uri pentru a-ți îmbunătăți experiența de navigare, de exemplu, pentru a te menține conectat(ă) sau pentru a reține articolele din coșul de cumpărături</translation>
+<translation id="7538088324298143359">Caută în imagine cu <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">A avut loc o eroare la verificarea existenței unor actualizări: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> a restabilit o versiune anterioară pe acest dispozitiv. Salvează fișierele importante, apoi repornește-l. Toate datele de pe dispozitiv vor fi șterse.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> cu aplicația <ph name="APP_NAME" /></translation>

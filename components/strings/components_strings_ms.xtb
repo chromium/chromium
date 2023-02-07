@@ -317,7 +317,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="168693727862418163">Nilai dasar ini gagal disahkan dengan skemanya dan akan diabaikan.</translation>
 <translation id="168841957122794586">Sijil pelayan mengandungi kunci kriptografi yang lemah.</translation>
 <translation id="1689333818294560261">Nama panggilan</translation>
-<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cara anda boleh mengurus data anda:<ph name="END_BOLD" /> Chrome akan memadamkan topik yang disimpan melebihi 4 minggu secara automatik. Semasa anda terus menyemak imbas, topik mungkin muncul semula dalam senarai. Anda juga boleh menyekat topik yang tidak mahu dikongsi oleh Chrome dengan laman dan mematikan topik iklan dalam tetapan Chrome pada bila-bila masa.</translation>
+<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cara anda boleh mengurus data anda:<ph name="END_BOLD" /> Chrome mengautopadam topik yang disimpan melebihi 4 minggu. Jika anda terus membuat penyemakan imbas, topik mungkin dipaparkan semula pada senarai. Anda juga boleh menyekat topik yang anda tidak mahu Chrome kongsikan dengan laman dan mematikan topik iklan pada bila-bila masa dalam tetapan Chrome.</translation>
 <translation id="1697532407822776718">Anda telah bersedia!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Surat</translation>
@@ -347,7 +347,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1736420071277903564">Komputer</translation>
 <translation id="1740951997222943430">Masukkan bulan tamat tempoh yang sah</translation>
 <translation id="1741613555002899862">Mesti dinyatakan dan merupakan rentetan yang sah apabila DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Chrome mencatat topik yang diminati semasa anda menyemak imbas. Label topik ditakrifkan terlebih dahulu dan merangkumi perkara seperti, Seni &amp; Hiburan, Beli-belah dan Sukan. Kemudian, laman yang anda lawati boleh meminta beberapa topik anda (tetapi bukan sejarah penyemakan imbas anda) daripada Chrome untuk memeribadikan iklan yang anda lihat.</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Chrome mengingati topik yang anda minati semasa anda membuat penyemakan imbas. Label topik dipratakrifkan dan merangkumi perkara seperti Seni &amp; Hiburan, Beli-belah dan Sukan. Kemudian, laman yang anda lawati boleh meminta Chrome beberapa topik anda (tetapi bukan sejarah penyemakan imbas anda) untuk memeribadikan iklan yang anda lihat.</translation>
 <translation id="1745880797583122200">Penyemak imbas anda diurus</translation>
 <translation id="1746113442205726301">Anjakan Y imej</translation>
 <translation id="1746531169546376413">0 darjah</translation>
@@ -460,7 +460,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="205212645995975601">BBQ &amp; menggril</translation>
 <translation id="2053111141626950936">Halaman dalam <ph name="LANGUAGE" /> tidak akan diterjemah.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Apabila kawalan ini dihidupkan dan status adalah aktif, Chrome akan menentukan kumpulan besar orang, atau "kohort" yang paling serupa dengan aktiviti penyemakan imbas anda baru-baru ini. Pengiklan boleh memilih iklan untuk kumpulan itu dan aktiviti penyemakan imbas anda dipastikan tertutup pada peranti anda. Kumpulan anda dikemas kini setiap hari.}=1{Apabila kawalan ini dihidupkan dan status adalah aktif, Chrome akan menentukan kumpulan besar orang, atau "kohort" yang paling serupa dengan aktiviti penyemakan imbas anda baru-baru ini. Pengiklan boleh memilih iklan untuk kumpulan itu dan aktiviti penyemakan imbas anda dipastikan tertutup pada peranti anda. Kumpulan anda dikemas kini setiap hari.}other{Apabila kawalan ini dihidupkan dan status adalah aktif, Chrome akan menentukan kumpulan besar orang, atau "kohort" yang paling serupa dengan aktiviti penyemakan imbas anda baru-baru ini. Pengiklan boleh memilih iklan untuk kumpulan itu dan aktiviti penyemakan imbas anda dipastikan tertutup pada peranti anda. Kumpulan anda dikemas kini setiap {NUM_DAYS} hari.}}</translation>
-<translation id="2056658168519009885">Laman boleh meminta maklumat daripada Chrome untuk membantu mereka memeribadikan iklan yang anda lihat.</translation>
+<translation id="2056658168519009885">Laman boleh meminta maklumat daripada Chrome untuk membantu laman memeribadikan iklan yang anda lihat.</translation>
 <translation id="2059202684901022309">22 x 34 in</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 cadangan}other{# cadangan}}</translation>
 <translation id="2066915425250589881">permintaan untuk dipadamkan</translation>
@@ -835,7 +835,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="306573536155379004">Permainan dimulakan.</translation>
 <translation id="3068991664510324412">Komputer &amp; permainan video</translation>
 <translation id="3080254622891793721">Grafik</translation>
-<translation id="3081538120861307764">Untuk mengukur prestasi iklan, jenis data terhad dikongsi antara laman, seperti masa hari iklan dipaparkan kepada anda.</translation>
+<translation id="3081538120861307764">Untuk mengukur prestasi iklan, jenis data yang terhad dikongsi antara laman, seperti masa hari iklan dipaparkan kepada anda.</translation>
 <translation id="3082007635241601060">Benarkan Google menggunakan troli anda untuk mencari diskaun diperibadikan apabila tersedia</translation>
 <translation id="3086579638707268289">Aktiviti anda di web sedang dipantau</translation>
 <translation id="3087734570205094154">Bawah</translation>
@@ -916,7 +916,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk membuat acara baharu dalam Google Calendar dengan pantas</translation>
 <translation id="3261488570342242926">Ketahui tentang kad maya</translation>
 <translation id="3264837738038045344">Butang urus tetapan Chrome, tekan Enter untuk melawati tetapan Chrome anda</translation>
-<translation id="3266367459139339908">Kami melancarkan cara baharu untuk mengehadkan perkara yang boleh diketahui oleh laman tentang anda apabila mereka memaparkan iklan diperibadikan kepada anda, contohnya:</translation>
+<translation id="3266367459139339908">Kami akan melancarkan cara baharu untuk mengehadkan perkara yang boleh dipelajari oleh laman tentang anda apabila laman itu menunjukkan iklan diperibadikan kepada anda, contohnya:</translation>
 <translation id="3266793032086590337">Nilai (konflik)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Tiada laman disekat, termasuk laman yang berkaitan}=1{1 laman disekat, termasuk laman yang berkaitan}other{# laman disekat, termasuk laman yang berkaitan}}</translation>
 <translation id="3268451620468152448">Tab Terbuka</translation>
@@ -1095,7 +1095,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3678342917559046352">Sambungan Tidak Sah: Menjangkakan nilai dalam salah satu bentuk berikut: &lt;extension_id&gt; atau &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Buka halaman dalam tetingkap Inkognito baharu (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Maklumat sijil</translation>
-<translation id="3681421644246505351">Chrome mencatat topik yang diminati berdasarkan sejarah penyemakan imbas anda baru-baru ini.</translation>
+<translation id="3681421644246505351">Chrome mengingati topik yang diminati berdasarkan sejarah penyemakan imbas anda baru-baru ini.</translation>
 <translation id="3693327506115126094">Pilih cara anda akan mengesahkan itu anda</translation>
 <translation id="3701427423622901115">Tetap semula diakui.</translation>
 <translation id="3704162925118123524">Rangkaian yang anda gunakan mungkin memerlukan anda untuk melawat halaman log masuknya.</translation>
@@ -1230,7 +1230,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4063924980214801036">Gunakan kunci skrin peranti untuk mengesahkan kad dengan lebih cepat</translation>
 <translation id="4067098466788473230">Geran &amp; biasiswa pendidikan</translation>
 <translation id="4067947977115446013">Tambahkan Alamat yang Sah</translation>
-<translation id="4070790659619547722">Dengan pengukuran iklan, jenis data terhad dikongsi antara laman untuk mengukur prestasi iklan mereka, seperti masa hari iklan dipaparkan kepada anda.</translation>
+<translation id="4070790659619547722">Dengan pengukuran iklan, jenis data yang terhad akan dikongsi antara laman untuk mengukur prestasi iklan laman, seperti masa dalam sehari iklan ditunjukkan kepada anda.</translation>
 <translation id="4072193657607981494">Memuatkan dasar</translation>
 <translation id="4072486802667267160">Ralat berlaku semasa memproses pesanan anda. Sila cuba lagi.</translation>
 <translation id="4073376909608563327">Tidak dapat menggunakan buka kunci peranti</translation>
@@ -2222,7 +2222,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="646793340882508547">Permainan kembara</translation>
 <translation id="6468485451923838994">Fon</translation>
 <translation id="647261751007945333">Dasar peranti</translation>
-<translation id="6475672344094591109">Laman yang anda lawati boleh meminta maklumat yang membantu mereka mengukur prestasi iklan mereka daripada Chrome. Chrome melindungi privasi anda dengan mengehadkan maklumat yang boleh dikongsi oleh satu laman dengan laman yang lain.</translation>
+<translation id="6475672344094591109">Laman yang anda lawati boleh meminta Chrome maklumat yang membantu laman mengukur prestasi iklan. Chrome melindungi privasi anda dengan mengehadkan maklumat yang boleh dikongsi oleh laman dengan satu sama lain.</translation>
 <translation id="6476284679642588870">Urus kaedah pembayaran</translation>
 <translation id="6486200200930923183">Filem dokumentari</translation>
 <translation id="6489534406876378309">Mulakan muat naik ranap sistem</translation>
@@ -2326,7 +2326,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6786145470008421571">Sampul 6 x 9 inci</translation>
 <translation id="67862343314499040">Ungu Lembayung</translation>
 <translation id="6786747875388722282">Pelanjutan</translation>
-<translation id="6787094689637422836">Kami sedang melancarkan ciri privasi baharu yang memberi anda lebih banyak pilihan terhadap iklan yang anda lihat.</translation>
+<translation id="6787094689637422836">Kami akan melancarkan ciri privasi baharu yang memberi anda lebih banyak pilihan terhadap iklan yang anda lihat.</translation>
 <translation id="678982761784843853">ID kandungan yang dilindungi</translation>
 <translation id="6790428901817661496">Mainkan</translation>
 <translation id="679355240208270552">Diabaikan kerana carian lalai tidak didayakan oleh dasar.</translation>
@@ -2766,13 +2766,13 @@ Butiran tambahan:
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7773005668374414287">Susunan sama menghadap ke atas</translation>
 <translation id="7785790577395078482">tablet ini</translation>
-<translation id="7790488044432570133">Laman yang anda lawati boleh meminta maklumat daripada Chrome untuk membantu mereka mengukur prestasi iklan mereka. Chrome membenarkan laman mengumpulkan jenis data yang terhad, seperti masa hari iklan dipaparkan kepada anda.</translation>
+<translation id="7790488044432570133">Laman yang anda lawati boleh meminta maklumat daripada Chrome untuk membantu laman mengukur prestasi iklan. Chrome membenarkan laman mengumpulkan jenis data yang terhad, seperti masa hari iklan dipaparkan kepada anda.</translation>
 <translation id="7791011319128895129">Belum dilancarkan</translation>
 <translation id="7791196057686275387">Bale</translation>
 <translation id="7791543448312431591">Tambah</translation>
 <translation id="7798389633136518089">Diabaikan kerana dasar itu tidak ditetapkan oleh sumber awan.</translation>
 <translation id="7800304661137206267">Sambungan disulitkan menggunakan <ph name="CIPHER" />, dengan <ph name="MAC" /> untuk pengesahan mesej dan <ph name="KX" /> sebagai mekanisme pertukaran kunci.</translation>
-<translation id="7800977246388195491">Chrome mencatat topik yang diminati berdasarkan sejarah penyemakan imbas anda baru-baru ini. Selain itu, laman yang anda lawati boleh menentukan perkara yang anda sukai. Kemudian, laman boleh meminta maklumat ini untuk memaparkan iklan yang diperibadikan kepada anda. Anda boleh memilih topik dan laman yang digunakan untuk memaparkan iklan kepada anda.</translation>
+<translation id="7800977246388195491">Chrome mengingati topik yang diminati berdasarkan sejarah penyemakan imbas anda baru-baru ini. Selain itu, laman yang anda lawati boleh menentukan perkara yang anda sukai. Kemudian, laman boleh meminta maklumat ini untuk memaparkan iklan yang diperibadikan kepada anda. Anda boleh memilih topik dan laman yang digunakan untuk memaparkan iklan kepada anda.</translation>
 <translation id="7802523362929240268">Tapak ini sah</translation>
 <translation id="7802989406998618639">Masukkan kod keselamatan <ph name="NUMBER_OF_DIGITS" /> digit pada <ph name="SIDE_OF_CARD" /> supaya bank anda boleh mengesahkan itu anda</translation>
 <translation id="780301667611848630">Tidak, terima kasih</translation>
@@ -3079,7 +3079,7 @@ Butiran tambahan:
 <translation id="860043288473659153">Nama pemegang kad</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Jenis data yang digunakan:<ph name="END_BOLD" /> Aktiviti anda pada laman yang anda lawati menggunakan Chrome pada peranti ini.</translation>
 <translation id="8606726445206553943">Gunakan peranti MIDI anda</translation>
-<translation id="8606988009912891950">Topik iklan membantu laman memaparkan iklan yang berkaitan kepada anda sambil melindungi sejarah penyemakan imbas dan identiti anda. Chrome boleh mencatat topik yang diminati berdasarkan sejarah penyemakan imbas anda baru-baru ini. Kemudian, laman yang anda lawati boleh meminta topik yang berkaitan daripada Chrome untuk memeribadikan iklan yang anda lihat.</translation>
+<translation id="8606988009912891950">Topik iklan membantu laman memaparkan iklan yang berkaitan kepada anda sambil melindungi sejarah penyemakan imbas dan identiti anda. Chrome boleh mengetahui topik yang anda minati berdasarkan sejarah penyemakan imbas anda baru-baru ini. Kemudian, laman yang anda lawati boleh meminta topik yang berkaitan daripada Chrome untuk memeribadikan iklan yang anda lihat.</translation>
 <translation id="8617269623452051934">penggunaan peranti anda</translation>
 <translation id="861775596732816396">Saiz 4</translation>
 <translation id="8620276786115098679">Sampul Kaku 7</translation>
@@ -3188,7 +3188,7 @@ Butiran tambahan:
 <translation id="8876033571432926051">Permainan kasual</translation>
 <translation id="8877780815363510165">Memancing</translation>
 <translation id="8884537526797090108">Tidak dapat merakam kandungan sulit</translation>
-<translation id="8890798179125483517">Chrome akan memadamkan topik dan laman yang mencadangkan iklan yang disimpan melebihi 4 minggu secara automatik. Anda juga boleh menyekat topik dan laman tertentu yang tidak anda sukai.</translation>
+<translation id="8890798179125483517">Chrome mengautopadam topik dan laman yang mencadangkan iklan yang disimpan melebihi 4 minggu. Anda juga boleh menyekat topik dan laman tertentu yang tidak anda sukai.</translation>
 <translation id="8891727572606052622">Mod proksi tidak sah.</translation>
 <translation id="8894794286471754040">Sisi panjang dahulu</translation>
 <translation id="8897428486789851669">Berenang</translation>
@@ -3301,7 +3301,7 @@ Butiran tambahan:
 <translation id="9157595877708044936">Menyediakan...</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Laman yang anda lawati juga boleh menentukan perkara yang anda sukai berdasarkan aktiviti anda pada laman tersebut. Contohnya, jika anda melawati laman yang menjual kasut lari jarak jauh, laman tersebut mungkin memutuskan bahawa anda berminat dalam larian maraton.</translation>
-<translation id="9166851138617700776">Lebih lanjut tentang iklan yang dicadangkan laman dan pengukuran iklan</translation>
+<translation id="9166851138617700776">Lagi tentang iklan cadangan laman dan pengukuran iklan</translation>
 <translation id="9168814207360376865">Benarkan tapak menyemak sama ada anda mempunyai kaedah pembayaran yang disimpan</translation>
 <translation id="9169664750068251925">Sentiasa sekat di tapak ini</translation>
 <translation id="9169931577761441333">Tambahkan <ph name="APP_NAME" /> pada Skrin utama</translation>

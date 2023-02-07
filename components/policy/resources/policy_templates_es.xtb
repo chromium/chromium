@@ -932,6 +932,7 @@ Esta política no tendrá efecto si la opción de conservar los datos de navegac
       Si la política está habilitada, WebDriver puede anular las políticas incompatibles.
 
       Si la política está inhabilitada o no está configurada, WebDriver no puede anular las políticas incompatibles.</translation>
+<translation id="1883274744253492031">Habilitar la actualización automática de contenido mixto</translation>
 <translation id="1885782360784839335">Permitir que se muestre contenido promocional que ocupe toda la pestaña</translation>
 <translation id="1888871729456797026">El token de registro de la política de nube en ordenadores</translation>
 <translation id="1893271062894546361">Si se habilita esta política, la UI de controles de reproducción multimedia estará disponible para las sesiones de <ph name="PRODUCT_NAME" /> iniciadas por otros dispositivos en la red local.
@@ -3021,6 +3022,14 @@ Si no se define esta política o si la lista no contiene ninguna referencia a un
       Si esta política no se configura, Smart Lock se inhabilita para los usuarios administrados por empresas y se habilita para los no administrados.</translation>
 <translation id="3791179836066841809">Documentación de la política</translation>
 <translation id="3791556154364029875">Habilitar los espacios de trabajo flotantes y abrir ventanas de navegador a distancia tras iniciar sesión</translation>
+<translation id="3793998702484455655">Chrome intentará actualizar algunos tipos de subrecursos de contenido mixto (HTTP en un sitio HTTPS) en iOS.
+Consulta https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md para obtener más información.
+
+La función estará habilitada de forma predeterminada. Si se habilita esta política o no se establece, la función quedará habilitada.
+
+Si se inhabilita esta política, también se inhabilitará la función.
+
+Esta política es una solución temporal y se eliminará gradualmente (está previsto que se elimine en la versión M113).</translation>
 <translation id="3795413481405077588">Esta política permite que un administrador especifique ajustes para aplicaciones web instaladas.
 
       Esta política asocia un ID de aplicación web a su ajuste específico. Se puede definir una configuración predeterminada usando el ID especial <ph name="DEFAULT_SCOPE" />, que se aplica a todas las aplicaciones web sin una configuración personalizada en esta política.
@@ -6489,6 +6498,7 @@ NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente refle
 <translation id="7126716959063786004">Habilitar la finalización de procesos en el administrador de tareas</translation>
 <translation id="7126928806195745404">Configuración de JavaScript</translation>
 <translation id="7127980134843952133">Historial de descargas</translation>
+<translation id="7128513247945602297">Habilitar la actualización automática de contenido mixto en sitios HTTPS</translation>
 <translation id="712963038874313213">Proporciona un playbook de Ansible que debe ejecutarse en el contenedor de Crostini predeterminado.
 
       Esta política permite proporcionar un playbook de Ansible para que se aplique al contenedor de Crostini predeterminado (si está disponible en el dispositivo y las políticas lo permiten).
@@ -7252,6 +7262,7 @@ Para definir esta política, se debe inhabilitar la política <ph name="PRIVACY_
       Los valores válidos para el campo <ph name="MINUTE_FIELD_NAME" /> en <ph name="START_TIME_FIELD_NAME" />, <ph name="END_TIME_FIELD_NAME" /> y <ph name="CHARGE_START_TIME_FIELD_NAME" /> son 0, 15, 30 y 45.</translation>
 <translation id="7840258755683573560">Habilitar el clic automático</translation>
 <translation id="7841880500990419427">Versión mínima de TLS a la que recurrir</translation>
+<translation id="7841883965249733328">Inhabilitar la actualización automática de contenido mixto</translation>
 <translation id="7845130996290850593">Habilitar Kerberos</translation>
 <translation id="7846952520291088817">URLs cuyas IP locales se exponen en candidatos ICE WebRTC</translation>
 <translation id="7848641140449742406">Ajustes del sistema operativo</translation>

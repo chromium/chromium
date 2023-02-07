@@ -4138,6 +4138,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4713409221649555176">Barcha oynalar yopilganda oʻchirilsin</translation>
 <translation id="47158868804223727">Guruh nomini bosib, uni yoyish yoki yigʻish mumkin</translation>
 <translation id="4716483597559580346">Xavfsizlikni oshirish uchun qurilmani zavod sozlamalariga qaytaring</translation>
+<translation id="471759229191973607">Mavzuni almashtirish</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> hisobi paroli</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> ekraningizni uzatmoqda.</translation>
 <translation id="4722989931633062466">Tashqi xizmatlarga kirish oynalarini chiqarishga ruxsat berilmagan</translation>
@@ -5720,7 +5721,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6200151268994853226">Kengaytmalar boshqaruvi</translation>
 <translation id="6201608810045805374">Bu hisob olib tashlansinmi?</translation>
 <translation id="6202304368170870640">Hisobingizga kirish yoki qurilmani ochish uchun PIN koddan foydalanishingiz mumkin.</translation>
-<translation id="6205314730813004066">Reklamadagi maxfiylik</translation>
+<translation id="6205314730813004066">Reklamalardagi maxfiylik</translation>
 <translation id="6206199626856438589">Barcha koʻrsatilgan saytlardagi hisobingizdan avtomatik chiqarilasiz (shuningdek, ochiq varaqlardan ham)</translation>
 <translation id="6206311232642889873">Tasvirni &amp;nusxalash</translation>
 <translation id="6206521455877863927">Shu jumladan, bir xil domendagi saytlar, masalan, google.com va mail.google.com. Siz koʻrayotgan saytlar qurilmangizdagi maʼlumotlarni saqlashi mumkin.</translation>
@@ -7160,6 +7161,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> javob bermayapti Ilovani “Majburiy toʻxtatish” orqali yoping.</translation>
 <translation id="7535730537657706072">Qurilmadan Inkognito sahifalar tarixini tozalash uchun barcha Inkognito varaqlarni yoping</translation>
 <translation id="7537451260744431038">Saytlar sahifalarni kezishingizni yaxshilash, jumladan, kirish axborotingiz yoki xarid qutingizni eslab qolish uchun cookie fayllardan foydalana olmaydi</translation>
+<translation id="7538088324298143359">Ichki rasmni <ph name="SEARCH_ENGINE" /> orqali qidirish</translation>
 <translation id="7540972813190816353">Yangilanishlarni tekshirish vaqtida xatolik yuz berdi: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> bu qurilma tizimini eski versiyasiga qaytardi. Qurilma qayta ishga tushishidan oldin kerakli fayllarni saqlab oling. Qurilmadagi barcha maʼlumotlar tozalanadi.</translation>
 <translation id="7541773865713908457"><ph name="APP_NAME" /> ilovasida <ph name="ACTION_NAME" /></translation>

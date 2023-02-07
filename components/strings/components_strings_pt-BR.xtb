@@ -823,7 +823,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="301521992641321250">Bloqueada automaticamente</translation>
 <translation id="3016780570757425217">Saber sua localização</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />. Pressione "Tab" e depois "Enter" para remover a sugestão.</translation>
-<translation id="3023165109041533893">Os anúncios sugeridos por sites ajudam a proteger seu histórico de navegação e sua identidade, além de permitir que os sites mostrem anúncios relevantes. Com base na sua atividade, um site que você visitou pode sugerir anúncios relacionados à medida que você navega. É possível conferir uma lista desses sites e bloquear os que você não quer nas configurações.</translation>
+<translation id="3023165109041533893">Os anúncios sugeridos por sites ajudam a proteger seu histórico de navegação e sua identidade ao permitir que eles mostrem anúncios relevantes. Com base na sua atividade, um site que você acessou pode sugerir anúncios relacionados à medida que você navega. Confira uma lista desses sites e bloqueie os que você não quer nas configurações.</translation>
 <translation id="3024663005179499861">Tipo de política incorreto</translation>
 <translation id="3029752078111257850">Notícias mundiais</translation>
 <translation id="3037177537145227281">Monitorando preço</translation>
@@ -916,7 +916,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo evento no Google Agenda</translation>
 <translation id="3261488570342242926">Saiba mais sobre cartões virtuais</translation>
 <translation id="3264837738038045344">Botão "Gerenciar configurações do Chrome". Pressione Enter para acessar as configurações do Chrome</translation>
-<translation id="3266367459139339908">Estamos lançando novas maneiras de limitar o que os sites podem aprender sobre você quando mostram anúncios personalizados, por exemplo:</translation>
+<translation id="3266367459139339908">Estamos lançando novas formas de limitar o que os sites podem saber sobre você ao mostrar anúncios personalizados, por exemplo:</translation>
 <translation id="3266793032086590337">Valor (conflitante)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Nenhum site bloqueado, incluindo páginas relacionadas}=1{1 site bloqueado, incluindo páginas relacionadas}one{# site bloqueado, incluindo páginas relacionadas}other{# sites bloqueados, incluindo páginas relacionadas}}</translation>
 <translation id="3268451620468152448">Guias abertas</translation>
@@ -1423,7 +1423,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="449126573531210296">Criptografar as senhas sincronizadas com sua Conta do Google</translation>
 <translation id="4492519888999857993">Esses recursos são desativados por padrão e não estarão disponíveis em versões futuras do Chrome.</translation>
 <translation id="4493480324863638523">URL inválido. É necessário um URL com um esquema padrão, como http://example.com ou https://example.com.</translation>
-<translation id="4494323206460475851">Você pode conferir os temas de anúncios nas configurações e bloquear os que não quer compartilhar com sites. O Chrome também exclui automaticamente temas de anúncios com mais de quatro semanas.</translation>
+<translation id="4494323206460475851">Consulte os temas de anúncio nas configurações e bloqueie os que não quer compartilhar com sites. O Chrome também exclui automaticamente temas de anúncios com mais de quatro semanas.</translation>
 <translation id="4500587658229086076">conteúdo não seguro</translation>
 <translation id="4506176782989081258">Erro de validação: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Entrar em contato com o administrador do sistema</translation>
@@ -2109,7 +2109,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6203231073485539293">Verifique sua conexão com a Internet</translation>
-<translation id="6205314730813004066">Privacidade do anúncio</translation>
+<translation id="6205314730813004066">Privacidade de anúncios</translation>
 <translation id="6212314149070368045">Fanfold (EUA)</translation>
 <translation id="6218753634732582820">Remover endereço do Chromium?</translation>
 <translation id="622039917539443112">Dobra paralela</translation>
@@ -3078,7 +3078,7 @@ Mais detalhes:
 <translation id="860043288473659153">Nome do titular do cartão</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Dados usados<ph name="END_BOLD" />: sua atividade em sites que você acessa usando o Chrome neste dispositivo.</translation>
 <translation id="8606726445206553943">Usar seus dispositivos MIDI</translation>
-<translation id="8606988009912891950">Os temas ajudam os sites a mostrar anúncios que são relevantes, enquanto protegem seu histórico de navegação e sua identidade. O Chrome pode anotar temas de interesse com base no seu histórico de navegação recente. Os sites que você visitar vão poder pedir temas relevantes ao Chrome para personalizar os anúncios mostrados a você.</translation>
+<translation id="8606988009912891950">Os temas ajudam os sites a mostrar anúncios relevantes, enquanto protegem seu histórico de navegação e sua identidade. O Chrome pode registrar temas de interesse com base no seu histórico de navegação recente. Mais tarde, os sites que você acessa podem pedir temas relevantes ao Chrome para personalizar os anúncios que você recebe.</translation>
 <translation id="8617269623452051934">uso do seu dispositivo</translation>
 <translation id="861775596732816396">Tamanho 4</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>

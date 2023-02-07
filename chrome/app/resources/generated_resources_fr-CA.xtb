@@ -4137,6 +4137,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4713409221649555176">Supprimer lorsque vous fermez toutes les fenêtres</translation>
 <translation id="47158868804223727">Cliquez sur le nom du groupe pour le développer ou le réduire</translation>
 <translation id="4716483597559580346">Powerwash pour une sécurité accrue</translation>
+<translation id="471759229191973607">Changer de thème</translation>
 <translation id="4722735765955348426">Mot de passe pour <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> partage votre écran.</translation>
 <translation id="4722989931633062466">Non autorisés à afficher des invites de connexion tierces</translation>
@@ -7161,6 +7162,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> ne répond pas. Sélectionnez « Forcer la fermeture » pour fermer l'application.</translation>
 <translation id="7535730537657706072">Pour effacer l'historique de navigation privée de votre appareil, fermez tous les onglets de navigation privée</translation>
 <translation id="7537451260744431038">Les sites ne peuvent pas utiliser de témoins pour améliorer votre expérience de navigation, par exemple en vous permettant de rester connecté ou en mémorisant des articles de votre panier d'achats</translation>
+<translation id="7538088324298143359">Rechercher dans l'image avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">Une erreur s'est produite pendant la vérification des mises à jour : <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> a restauré une version antérieure de cet appareil. Veuillez enregistrer les fichiers importants, puis redémarrer l'appareil. Toutes les données qu'il contient seront supprimées.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> avec l'application <ph name="APP_NAME" /></translation>

@@ -4148,6 +4148,7 @@
 <translation id="4713409221649555176">حذف با بستن همه پنجره‌ها</translation>
 <translation id="47158868804223727">روی نام گروه کلیک کنید تا گسترده یا جمع شود</translation>
 <translation id="4716483597559580346">‏Powerwash برای امنیت بیشتر</translation>
+<translation id="471759229191973607">تغییر زمینه</translation>
 <translation id="4722735765955348426">گذرواژه <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> در حال اشتراک‌گذاری صفحه نمایش شما است.</translation>
 <translation id="4722989931633062466">اجازه ندارند پیام‌واره‌های ورود به سیستم شخص ثالث را نشان دهند</translation>
@@ -6730,7 +6731,7 @@
 <translation id="7108338896283013870">عدم نمایش</translation>
 <translation id="7108668606237948702">Enter</translation>
 <translation id="7108933416628942903">اکنون قفل شود</translation>
-<translation id="7109543803214225826">میان‌بر حذف شد</translation>
+<translation id="7109543803214225826">میان‌بر برداشته شد</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{افزودن برگه به گروه}one{افزودن برگه‌ها به گروه}other{افزودن برگه‌ها به گروه}}</translation>
 <translation id="7111822978084196600">این پنجره را نام‌گذاری کنید</translation>
 <translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> مورد</translation>
@@ -7172,6 +7173,7 @@
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> پاسخ نمی‌دهد. برای بستن برنامه، «بستن اجباری» را انتخاب کنید.</translation>
 <translation id="7535730537657706072">برای پاک کردن سابقه مرور «حالت ناشناس» از دستگاه، همه «برگه‌های ناشناس» را ببندید</translation>
 <translation id="7537451260744431038">سایت‌ها نمی‌توانند از کوکی‌ها برای بهبود تجربه مرورتان استفاده کنند، مثلاً برای اینکه شما را درحالت واردشده به سیستم نگه دارند یا موارد موجود در سبد خریدتان را به‌خاطر بسپارند</translation>
+<translation id="7538088324298143359">جستجو درون تصویر با <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">در هنگام بررسی برای وجود به‌روزرسانی خطایی رخ داد: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> این دستگاه را به نسخه قبلی برگردانده است. لطفاً فایل‌های مهم را ذخیره کنید، سپس دستگاه را بازراه‌اندازی کنید. همه داده‌های ذخیره‌شده در دستگاه حذف خواهد شد.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> با برنامه <ph name="APP_NAME" /></translation>

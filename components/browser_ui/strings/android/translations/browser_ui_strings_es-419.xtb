@@ -231,7 +231,7 @@
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5335288049665977812">Permitir que los sitios ejecuten JavaScript (recomendado)</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
-<translation id="5344522958567249764">Administrar la privacidad de los anuncios</translation>
+<translation id="5344522958567249764">Administrar la privacidad en los anuncios</translation>
 <translation id="5354152178998424783">Esta acción borrará <ph name="DATASIZE" /> de datos y cookies que almacenaron los sitios.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(1 más)}other{(# más)}}</translation>
 <translation id="5403592356182871684">Nombres</translation>
@@ -280,7 +280,7 @@
 <translation id="6181444274883918285">Agregar excepción de sitio</translation>
 <translation id="6192792657125177640">Excepciones</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
-<translation id="6205314730813004066">Privacidad de los anuncios</translation>
+<translation id="6205314730813004066">Privacidad en los anuncios</translation>
 <translation id="6216432067784365534">Opciones de <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">¿Quieres desinstalar "<ph name="APP_NAME" />"?</translation>
 <translation id="6262191102408817757">Según tu última pestaña</translation>

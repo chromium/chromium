@@ -936,6 +936,7 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
       Si habilitas la política, WebDriver podrá anular las políticas incompatibles.
 
       Si inhabilitas la política o no la configuras, WebDriver no podrá anular las políticas incompatibles.</translation>
+<translation id="1883274744253492031">Habilitar la actualización automática de contenido mixto</translation>
 <translation id="1885782360784839335">Permitir que se muestre el contenido promocional en la pestaña completa</translation>
 <translation id="1888871729456797026">El token de inscripción de la política de nube en computadoras de escritorio</translation>
 <translation id="1893271062894546361">Si habilitas esta política, la IU de los controles de reproducción de contenido multimedia estará disponible en las sesiones de <ph name="PRODUCT_NAME" /> que inicien otros dispositivos en la red local.
@@ -3030,6 +3031,14 @@ Si no estableces esta política, o la lista no contiene referencias de imagen v�
       Si no se establece esta política, los usuarios administrados por empresas no podrán usar la configuración predeterminada, pero los usuarios no administrados sí podrán usarla.</translation>
 <translation id="3791179836066841809">Documentación para la política</translation>
 <translation id="3791556154364029875">Habilitar Floating Workspace y abrir ventanas del navegador remotas al acceder</translation>
+<translation id="3793998702484455655">Chrome intentará actualizar algunos tipos de subrecursos con contenido mixto (HTTP en un sitio HTTPS) en iOS.
+Para obtener más información, consulta https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md.
+
+La función estará habilitada de forma predeterminada. Si habilitas la política o no la estableces, la función estará habilitada.
+
+Si la inhabilitas, se inhabilitará la función.
+
+Esta política es una solución temporal y se quitará en algunos momentos importantes (se prevé quitarla en la versión M113 de manera provisoria).</translation>
 <translation id="3795413481405077588">Esta política permite que un administrador especifique la configuración para las aplicaciones web instaladas.
 
       Esta política asigna una ID de aplicación web a su parámetro de configuración específico. Es posible establecer una configuración predeterminada usando la ID especial <ph name="DEFAULT_SCOPE" />, que se aplicará a todas las aplicaciones web que no tengan una configuración personalizada en esta política.
@@ -6554,6 +6563,7 @@ política mientras se esté ejecutando el navegador.</translation>
 <translation id="7126716959063786004">Permitir finalizar procesos en el Administrador de tareas</translation>
 <translation id="7126928806195745404">Configuración de JavaScript</translation>
 <translation id="7127980134843952133">Historial de descargas</translation>
+<translation id="7128513247945602297">Habilitar la actualización automática de contenido mixto en sitios HTTPS</translation>
 <translation id="712963038874313213">Proporciona un playbook de Ansible que debe ejecutarse en el contenedor predeterminado de Crostini.
 
       Esta política proporciona un playbook de Ansible para aplicarlo en el contenedor predeterminado de Crostini si este está disponible en el dispositivo determinado y si lo permiten las políticas.
@@ -7313,6 +7323,7 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
       Los valores válidos para el campo <ph name="MINUTE_FIELD_NAME" /> en <ph name="START_TIME_FIELD_NAME" />, <ph name="END_TIME_FIELD_NAME" /> y <ph name="CHARGE_START_TIME_FIELD_NAME" /> son 0, 15, 30 y 45.</translation>
 <translation id="7840258755683573560">Habilitar el clic automático</translation>
 <translation id="7841880500990419427">Versión mínima de TLS para resguardo</translation>
+<translation id="7841883965249733328">Inhabilitar la actualización automática de contenido mixto</translation>
 <translation id="7845130996290850593">Habilitar Kerberos</translation>
 <translation id="7846952520291088817">Las URL para las que se exponen las IP locales en los candidatos ICE de WebRTC</translation>
 <translation id="7848641140449742406">Configuración del SO</translation>

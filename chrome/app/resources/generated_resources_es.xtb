@@ -4135,6 +4135,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4713409221649555176">Eliminar al cerrar todas las ventanas</translation>
 <translation id="47158868804223727">Haz clic en el nombre del grupo para ampliarlo o contraerlo</translation>
 <translation id="4716483597559580346">Powerwash para mayor seguridad</translation>
+<translation id="471759229191973607">Cambiar tema</translation>
 <translation id="4722735765955348426">Contraseña de <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> está compartiendo tu pantalla.</translation>
 <translation id="4722989931633062466">No tiene permiso para mostrar notificaciones de inicio de sesión de terceros</translation>
@@ -7157,6 +7158,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> no responde. Selecciona "Forzar cierre" para cerrar la aplicación.</translation>
 <translation id="7535730537657706072">Para borrar el historial de navegación de incógnito en tu dispositivo, cierra todas las pestañas de incógnito.</translation>
 <translation id="7537451260744431038">Los sitios no pueden usar cookies para mejorar tu experiencia de navegación, por ejemplo, para mantener tu sesión iniciada o recordar los artículos de tu carrito de la compra</translation>
+<translation id="7538088324298143359">Buscar dentro de la imagen con <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">Se ha producido un error al comprobar las actualizaciones: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> ha cambiado este dispositivo a una versión anterior. Guarda los archivos importantes y, después, reinícialo. Todos los datos del dispositivo se eliminarán.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> con la aplicación <ph name="APP_NAME" /></translation>

@@ -933,6 +933,7 @@ Dit beleid heeft geen effect als de optie om bestaande browsegegevens te behoude
       Als het beleid wordt toegepast, kan WebDriver niet-geschikte beleidsregels overschrijven.
 
       Als het beleid niet wordt toegepast of niet is ingesteld, mag WebDriver niet-geschikte beleidsregels niet overschrijven.</translation>
+<translation id="1883274744253492031">Automatisch upgraden van gemengde content aanzetten</translation>
 <translation id="1885782360784839335">Promotiecontent op volledig tabblad tonen</translation>
 <translation id="1888871729456797026">De inschrijvingstoken van het cloudbeleid op een desktop</translation>
 <translation id="1893271062894546361">Als je dit beleid toepast, is de gebruikersinterface voor de afspeelbediening voor media beschikbaar voor <ph name="PRODUCT_NAME" />-sessies die worden gestart door andere apparaten in het lokale netwerk.
@@ -3004,6 +3005,14 @@ Als je de instelling activeert of geen waarde instelt, kunnen gebruikers de opti
       Als dit beleid niet wordt ingesteld, geldt de standaardwaarde 'niet toegestaan' voor beheerde Enterprise-gebruikers en 'toegestaan' voor niet-beheerde gebruikers.</translation>
 <translation id="3791179836066841809">Documentatie voor beleid</translation>
 <translation id="3791556154364029875">Floating Workspace aanzetten en externe browservensters openen bij inloggen</translation>
+<translation id="3793998702484455655">Chrome probeert bepaalde typen subresources met gemengde content (HTTP op een HTTPS-site) te upgraden op iOS.
+Zie https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md voor meer informatie.
+
+De functie wordt standaard aangezet. Als je het beleid toepast of niet instelt, blijft de functie aanstaan.
+
+Als je het beleid niet toepast, wordt de functie uitgezet.
+
+Dit beleid is een tijdelijke oplossing en wordt na bepaalde tijd verwijderd (de verwijdering is voorlopig gepland in M113).</translation>
 <translation id="3795413481405077588">Met dit beleid kan een beheerder instellingen voor geïnstalleerde web-apps opgeven.
 
       Dit beleid wijst een web-app-ID toe aan de specifieke instelling. Met de speciale ID <ph name="DEFAULT_SCOPE" /> kan een standaardconfiguratie worden ingesteld die van toepassing is op alle web-apps waarvoor geen aangepaste configuratie is ingesteld in dit beleid.
@@ -6423,6 +6432,7 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 <translation id="7126716959063786004">Beëindiging van processen in Taakbeheer aanzetten</translation>
 <translation id="7126928806195745404">Instellingen voor JavaScript</translation>
 <translation id="7127980134843952133">Downloadgeschiedenis</translation>
+<translation id="7128513247945602297">Automatisch upgraden van gemengde content aanzetten op HTTPS-sites</translation>
 <translation id="712963038874313213">Hiermee wordt een Ansible-playbook geboden dat moet worden uitgevoerd in de standaard Crostini-container.
 
       Dit beleid staat het bieden van een Ansible-playbook toe die mag worden toegepast op de standaard Crostini-container, als deze beschikbaar is op het opgegeven apparaat en is toegestaan door het beleid.
@@ -7160,6 +7170,7 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
       Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="START_TIME_FIELD_NAME" />, <ph name="END_TIME_FIELD_NAME" /> en <ph name="CHARGE_START_TIME_FIELD_NAME" /> zijn 0, 15, 30, 45.</translation>
 <translation id="7840258755683573560">Automatisch klikken aanzetten</translation>
 <translation id="7841880500990419427">Minimale TLS-versie om op terug te vallen</translation>
+<translation id="7841883965249733328">Automatisch upgraden van gemengde content uitzetten</translation>
 <translation id="7845130996290850593">Kerberos aanzetten</translation>
 <translation id="7846952520291088817">URL's waarvan lokale IP's zichtbaar zijn in WebRTC ICE-kandidaten</translation>
 <translation id="7848641140449742406">OS-instellingen</translation>

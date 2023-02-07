@@ -936,6 +936,7 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
       Jika kebijakan ini disetel ke aktif, WebDriver akan dapat menggantikan kebijakan yang tidak kompatibel.
 
       Jika kebijakan ini disetel ke nonaktif atau tidak dikonfigurasi, WebDriver tidak akan diizinkan menggantikan kebijakan yang tidak kompatibel.</translation>
+<translation id="1883274744253492031">Aktifkan upgrade otomatis konten campuran</translation>
 <translation id="1885782360784839335">Mengaktifkan ditampilkannya konten promosi tab penuh</translation>
 <translation id="1888871729456797026">Token pendaftaran kebijakan cloud di desktop</translation>
 <translation id="1893271062894546361">Jika kebijakan ini disetel ke aktif, UI kontrol pemutaran media akan tersedia untuk sesi <ph name="PRODUCT_NAME" /> yang dimulai oleh perangkat lain di jaringan lokal.
@@ -3037,6 +3038,14 @@ Jika setelan ini dinonaktifkan, pengguna tidak akan diizinkan untuk menggunakan 
 Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengguna yang dikelola perusahaan dan diizinkan bagi pengguna yang tidak dikelola.</translation>
 <translation id="3791179836066841809">Dokumentasi kebijakan</translation>
 <translation id="3791556154364029875">Aktifkan ruang kerja mengambang dan luncurkan jendela browser jarak jauh saat login</translation>
+<translation id="3793998702484455655">Chrome akan mencoba mengupgrade beberapa jenis subresource konten campuran (HTTP di situs HTTPS) di iOS.
+Lihat https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md untuk mengetahui detailnya.
+
+Fitur ini akan diaktifkan secara default. Jika kebijakan disetel ke Aktif atau tidak disetel, fitur akan diaktifkan.
+
+Jika kebijakan disetel ke Nonaktif, fitur akan dinonaktifkan.
+
+Kebijakan ini adalah solusi sementara dan akan dihapus dalam beberapa milestone (penghapusan untuk sementara waktu akan dilakukan pada M113).</translation>
 <translation id="3795413481405077588">Kebijakan ini memungkinkan admin menentukan setelan untuk aplikasi web terinstal.
 
       Kebijakan ini memetakan ID Aplikasi Web ke setelan tertentu. Konfigurasi default dapat disetel menggunakan ID khusus <ph name="DEFAULT_SCOPE" />, yang berlaku untuk semua aplikasi web tanpa konfigurasi khusus dalam kebijakan ini.
@@ -6570,6 +6579,7 @@ kebijakan ini saat browser berjalan.</translation>
 <translation id="7126716959063786004">Aktifkan proses diakhiri di Pengelola Tugas</translation>
 <translation id="7126928806195745404">Setelan JavaScript</translation>
 <translation id="7127980134843952133">Histori download</translation>
+<translation id="7128513247945602297">Mengaktifkan upgrade otomatis konten campuran di situs HTTPS</translation>
 <translation id="712963038874313213">Menyediakan playbook Ansible yang harus dijalankan di penampung Crostini default.
 
       Dengan kebijakan ini, playbook Ansible akan dapat diterapkan ke penampung Crostini default jika tersedia pada perangkat tertentu dan diizinkan oleh kebijakan.
@@ -7329,6 +7339,7 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
       Nilai yang valid untuk kolom <ph name="MINUTE_FIELD_NAME" /> dalam <ph name="START_TIME_FIELD_NAME" />, <ph name="END_TIME_FIELD_NAME" /> dan <ph name="CHARGE_START_TIME_FIELD_NAME" /> adalah 0, 15, 30, 45.</translation>
 <translation id="7840258755683573560">Aktifkan klik otomatis</translation>
 <translation id="7841880500990419427">Versi TLS minimum untuk kembali</translation>
+<translation id="7841883965249733328">Nonaktifkan upgrade otomatis konten campuran</translation>
 <translation id="7845130996290850593">Aktifkan Kerberos</translation>
 <translation id="7846952520291088817">URL yang akan menampilkan IP lokal dalam kandidat WebRTC ICE</translation>
 <translation id="7848641140449742406">Setelan OS</translation>

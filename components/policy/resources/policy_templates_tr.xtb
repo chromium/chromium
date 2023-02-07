@@ -934,6 +934,7 @@ Kurumsal profil ayrımının katı bir şekilde zorunlu tutulması ya da ilgili 
       Politika etkinleştirilirse WebDriver, uyumlu olmayan politikaları geçersiz kılabilir.
 
       Politika devre dışı bırakılır veya yapılandırılmazsa WebDriver'ın uyumlu olmayan politikaları geçersiz kılmasına izin verilmez.</translation>
+<translation id="1883274744253492031">Karma içerik otomatik yükseltmesini etkinleştir</translation>
 <translation id="1885782360784839335">Tap sekme tanıtım içeriğini göstermeyi etkinleştir</translation>
 <translation id="1888871729456797026">Masaüstünde bulut politikasının kayıt jetonu</translation>
 <translation id="1893271062894546361">Bu politika etkinleştirildiğinde medya oynatma kontrolleri kullanıcı arayüzü, yerel ağdaki diğer cihazlar tarafından başlatılan <ph name="PRODUCT_NAME" /> oturumları için kullanılabilir.
@@ -3019,6 +3020,14 @@ Bu politika ayarlanmazsa veya listede geçerli bir resim referansı yoksa <ph na
       Bu politika ayarlanmadan bırakılırsa, varsayılan olarak kuruluş tarafından yönetilen kullanıcılara izin verilmezken, yönetilmeyen kullanıcılara izin verilir.</translation>
 <translation id="3791179836066841809">Politika dokümanları</translation>
 <translation id="3791556154364029875">Kayan çalışma alanı etkinleştirilir ve giriş yapıldıktan sonra uzak tarayıcı pencereleri açılır</translation>
+<translation id="3793998702484455655">Chrome, iOS'te bazı karma içerik (HTTPS sitesinde HTTP) alt kaynaklarını yükseltmeye çalışır.
+Ayrıntılar için https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md sayfasına göz atın.
+
+Bu özellik varsayılan olarak etkinleştirilir. Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa özellik etkin kalır.
+
+Politika, Devre Dışı değerine ayarlanırsa özellik devre dışı bırakılır.
+
+Bu politika geçici bir çözümdür ve birkaç kilometre taşından kaldırılacaktır (kaldırma işleminin geçici olarak M113 sürümünde gerçekleşmesi planlanmaktadır).</translation>
 <translation id="3795413481405077588">Bu politika, yöneticinin yüklenen web uygulamaları için ayarları belirtmesine olanak tanır.
 
       Bu politika, web uygulaması kimliğini kendi özel ayarı ile eşleştirir. <ph name="DEFAULT_SCOPE" /> özel kimliği kullanılarak varsayılan bir yapılandırma ayarlanabilir. Bu varsayılan yapılandırma, bu politikada özel bir yapılandırma ayarlanmamış tüm web uygulamaları için geçerli olur.
@@ -6496,6 +6505,7 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 <translation id="7126716959063786004">Görev Yöneticisi'ndeki işlemlerin sona erdirilebilmesini etkinleştir</translation>
 <translation id="7126928806195745404">JavaScript ayarları</translation>
 <translation id="7127980134843952133">İndirme geçmişi</translation>
+<translation id="7128513247945602297">HTTPS sitelerinde karma içerik otomatik yükseltmesini etkinleştir</translation>
 <translation id="712963038874313213">Varsayılan Crostini kapsayıcısında uygulanması gereken bir Ansible başucu kitabı sağlar.
 
       Bu politika, belirtilen cihazda kullanılabiliyorsa ve politika tarafından izin veriliyorsa varsayılan Crostini kapsayıcısına uygulanacak bir Ansible başucu kitabının sağlanmasına olanak tanır.
@@ -7250,6 +7260,7 @@ Bu politikanın ayarlanması için <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLI
       <ph name="START_TIME_FIELD_NAME" />, <ph name="END_TIME_FIELD_NAME" /> ve <ph name="CHARGE_START_TIME_FIELD_NAME" /> içinde <ph name="MINUTE_FIELD_NAME" /> alanı için izin verilen değerler 0, 15, 30, 45'tir.</translation>
 <translation id="7840258755683573560">Otomatik tıklamayı etkinleştir</translation>
 <translation id="7841880500990419427">Yedek olarak kullanılacak minimum TLS sürümü</translation>
+<translation id="7841883965249733328">Karma içerik otomatik yükseltmesini devre dışı bırak</translation>
 <translation id="7845130996290850593">Kerberos'u etkinleştir</translation>
 <translation id="7846952520291088817">WebRTC ICE adaylarında sunulan yerel IP'ler için URL'ler</translation>
 <translation id="7848641140449742406">OS Ayarları</translation>

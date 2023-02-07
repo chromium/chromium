@@ -933,6 +933,7 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
       Se a política for ativada, o WebDriver poderá substituir as políticas incompatíveis.
 
       Se ela for desativada ou não configurada, o WebDriver não terá permissão para substituir as políticas incompatíveis.</translation>
+<translation id="1883274744253492031">Ativar o upgrade automático do conteúdo misto</translation>
 <translation id="1885782360784839335">Ativar a exibição de conteúdo promocional em guia cheia</translation>
 <translation id="1888871729456797026">Token de inscrição da política de nuvem na área de trabalho</translation>
 <translation id="1893271062894546361">Quando esta política é ativada, a IU dos controles de mídia fica disponível para sessões do <ph name="PRODUCT_NAME" /> iniciadas por outros dispositivos na rede local.
@@ -3028,6 +3029,14 @@ Se a política for deixada sem definição ou se a lista não tiver referências
       Se esta política não for definida, o comportamento padrão será não permitir o login para usuários gerenciados por empresas e permitir o login para usuários não gerenciados.</translation>
 <translation id="3791179836066841809">Documentação da política</translation>
 <translation id="3791556154364029875">Ativar o Workspace flutuante e abrir janelas do navegador remoto ao fazer login</translation>
+<translation id="3793998702484455655">O Chrome tentará fazer upgrade de alguns tipos de recursos secundários de conteúdo misto (HTTP em um site HTTPS) no iOS.
+Consulte https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md para mais detalhes.
+
+O recurso vai ser ativado por padrão. Se a política for ativada ou deixada sem definição, o recurso será ativado.
+
+Se ela for desativada, o recurso será desativado.
+
+Esta política é uma solução temporária e vai ser removida em marcos futuros. A remoção está prevista para acontecer na versão M113.</translation>
 <translation id="3795413481405077588">Esta política permite que um administrador especifique configurações para apps da Web instalados.
 
       Esta política mapeia um ID de app da Web para a própria configuração específica. É possível usar o ID especial <ph name="DEFAULT_SCOPE" /> para definir uma configuração padrão, que será aplicada a todos os apps da Web que não tiverem uma configuração personalizada definida nesta política.
@@ -6550,6 +6559,7 @@ política enquanto o navegador estiver em execução.</translation>
 <translation id="7126716959063786004">Permitir processos de finalização no gerenciador de tarefas</translation>
 <translation id="7126928806195745404">Configurações de JavaScript</translation>
 <translation id="7127980134843952133">Histórico de downloads</translation>
+<translation id="7128513247945602297">Ativar o upgrade automático de conteúdo misto em sites HTTPS</translation>
 <translation id="712963038874313213">Fornece um playbook Ansible que precisa ser executado no contêiner Crostini padrão.
 
       Esta política permite fornecer um playbook Ansible a ser aplicado ao contêiner Crostini padrão se estiver disponível no dispositivo fornecido e for permitido pelas políticas.
@@ -7308,6 +7318,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
       Os valores válidos para o campo <ph name="MINUTE_FIELD_NAME" /> em <ph name="START_TIME_FIELD_NAME" />, <ph name="END_TIME_FIELD_NAME" /> e <ph name="CHARGE_START_TIME_FIELD_NAME" /> são 0, 15, 30, 45.</translation>
 <translation id="7840258755683573560">Ativar clique automático</translation>
 <translation id="7841880500990419427">Versão TLS mínima para substituição</translation>
+<translation id="7841883965249733328">Desativar o upgrade automático do conteúdo misto</translation>
 <translation id="7845130996290850593">Ativar o Kerberos</translation>
 <translation id="7846952520291088817">URLs para os quais IPs locais são expostos em candidatos ICE do WebRTC</translation>
 <translation id="7848641140449742406">Configurações do SO</translation>

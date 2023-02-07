@@ -1339,7 +1339,7 @@
 <translation id="4282346679996504092">ההתראות לגבי המוצר הזה הושבתו והסימנייה הוסרה</translation>
 <translation id="4285498937028063278">ביטול הצמדה</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{‏הכרטיס הזה נשמר בחשבון Google שלך}one{‏הכרטיסים האלה נשמרו בחשבון Google שלך}two{‏הכרטיסים האלה נשמרו בחשבון Google שלך}other{‏הכרטיסים האלה נשמרו בחשבון Google שלך}}</translation>
-<translation id="4287495839370498922">‏הגדרות פרטיות משופרות לגבי מודעות ב-Chrome</translation>
+<translation id="4287495839370498922">‏הגדרות פרטיות משופרות בפרסום ב-Chrome</translation>
 <translation id="4287885627794386150">מתאים להשתתפות בניסוי, לא פעיל</translation>
 <translation id="4297502707443874121">תמונה ממוזערת של הדף <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">השקעות</translation>
@@ -1786,7 +1786,7 @@ Del</translation>
 <translation id="5337569431717511221">‏לחצן להגדרת Chrome כדפדפן ברירת המחדל, יש ללחוץ על Enter כדי להגדיר את Chrome כדפדפן ברירת המחדל של המערכת.</translation>
 <translation id="5340250774223869109">האפליקציה חסומה</translation>
 <translation id="534295439873310000">‏מכשירי NFC</translation>
-<translation id="5344522958567249764">ניהול של הגדרות הפרטיות בנושא במודעות</translation>
+<translation id="5344522958567249764">ניהול של הגדרות הפרטיות בפרסום</translation>
 <translation id="5344579389779391559">ייתכן שהדף הזה ינסה לדרוש ממך תשלום</translation>
 <translation id="5347645913823149105">‏הלחצן להתאמה אישית של הגופנים ב-Chrome, מקישים על Enter כדי להתאים אישית את הגופנים וגודל הטקסט ב-Chrome</translation>
 <translation id="5355557959165512791">נכון לעכשיו אי אפשר לבקר באתר <ph name="SITE" /> מאחר שהאישור שלו בוטל. שגיאות רשת ומתקפות הן בדרך כלל זמניות, כך שהדף הזה יחזור כנראה לפעול מאוחר יותר.</translation>
@@ -2114,7 +2114,7 @@ Del</translation>
 <translation id="6196640612572343990">‏חסימת קובצי Cookie של צד שלישי</translation>
 <translation id="6197648101609735209">‏89x89 מ"מ</translation>
 <translation id="6203231073485539293">בדיקת חיבור האינטרנט</translation>
-<translation id="6205314730813004066">פרטיות בנושא מודעות</translation>
+<translation id="6205314730813004066">פרטיות בפרסום</translation>
 <translation id="6212314149070368045">‏11x14.88 אינץ' (Fanfold – ארה"ב)</translation>
 <translation id="6218753634732582820">‏האם להסיר מ-Chromium את הכתובת?</translation>
 <translation id="622039917539443112">קיפול מקביל</translation>

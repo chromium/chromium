@@ -251,6 +251,7 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="2426805022920575512">Seleccionar otra cuenta</translation>
 <translation id="2433507940547922241">Diseño</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
+<translation id="2439153523196674349">Vista previa de <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">¿Deseas comenzar la descarga de <ph name="FILE_NAME" /> de nuevo?</translation>
 <translation id="2453860139492968684">Finalizar</translation>
 <translation id="2459390580524506445">Búsqueda por voz mejorada</translation>
@@ -952,7 +953,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="6193448654517602979">Seleccionar pestañas</translation>
 <translation id="6196315980958524839">Las contraseñas se guardan en el Administrador de contraseñas de Google en este dispositivo</translation>
 <translation id="6202812185118613467">Vuelve a acceder para iniciar la sincronización</translation>
-<translation id="6205314730813004066">Privacidad de los anuncios</translation>
+<translation id="6205314730813004066">Privacidad en los anuncios</translation>
 <translation id="6210748933810148297">¿No eres <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Vista previa de esta página</translation>
 <translation id="6221633008163990886">Desbloquea la pantalla para exportar tus contraseñas</translation>

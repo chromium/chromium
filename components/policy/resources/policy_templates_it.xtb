@@ -928,6 +928,7 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
       Se il criterio viene attivato, WebDriver potrà sostituire i criteri non compatibili.
 
       Se il criterio viene disattivato o se non viene configurato, WebDriver non potrà sostituire i criteri non compatibili.</translation>
+<translation id="1883274744253492031">Attiva l'upgrade automatico del contenuto misto</translation>
 <translation id="1885782360784839335">Attiva la visualizzazione di contenuti promozionali a scheda intera</translation>
 <translation id="1888871729456797026">Il token di registrazione della norma relativa al cloud su desktop</translation>
 <translation id="1893271062894546361">Se questo criterio viene attivato, l'UI dei controlli per la riproduzione di contenuti multimediali è disponibile per le sessioni <ph name="PRODUCT_NAME" /> avviate da altri dispositivi sulla rete locale.
@@ -3006,6 +3007,14 @@ Se questo criterio non viene configurato o se l'elenco non contiene riferimenti 
       Se questa norma non viene impostata, per impostazione predefinita la funzione non è consentita per gli utenti gestiti dall'azienda ed è consentita per gli utenti non gestiti.</translation>
 <translation id="3791179836066841809">Documentazione per le norme</translation>
 <translation id="3791556154364029875">Abilita l'area di lavoro mobile e avvia le finestre del browser remoto al momento dell'accesso</translation>
+<translation id="3793998702484455655">Chrome tenterà di eseguire l'upgrade di alcuni tipi di sottorisorse di contenuto misto (HTTP su un sito HTTPS) su iOS.
+Per informazioni dettagliate, visita la pagina https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md.
+
+La funzionalità verrà attivata per impostazione predefinita. Se il criterio viene impostato su Enabled o se non viene configurato, la funzionalità rimarrà attiva.
+
+Se il criterio viene impostato su Disabled, la funzionalità verrà disattivata.
+
+Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il lancio di alcune nuove versioni (la rimozione è prevista nella versione M113).</translation>
 <translation id="3795413481405077588">Questo criterio consente a un amministratore di specificare le impostazioni relative alle app web installate.
 
       Questo criterio associa un ID app web alla relativa impostazione specifica. È possibile impostare con l'ID speciale <ph name="DEFAULT_SCOPE" /> una configurazione predefinita che verrà applicata a tutte le app web senza una configurazione personalizzata in questo criterio.
@@ -6459,6 +6468,7 @@ NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai pr
 <translation id="7126716959063786004">Consenti di terminare i processi in Task Manager</translation>
 <translation id="7126928806195745404">Impostazioni JavaScript</translation>
 <translation id="7127980134843952133">Cronologia download</translation>
+<translation id="7128513247945602297">Attiva l'upgrade automatico del contenuto misto sui siti HTTPS</translation>
 <translation id="712963038874313213">Fornisce un playbook Ansible che deve essere eseguito nel contenitore Crostini predefinito.
 
       Questo criterio consente di specificare un playbook Ansible da applicare al contenitore Crostini predefinito, se disponibile sul dispositivo e se consentito dai criteri.
@@ -7191,6 +7201,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       I valori validi per il campo <ph name="MINUTE_FIELD_NAME" /> in <ph name="START_TIME_FIELD_NAME" />, <ph name="END_TIME_FIELD_NAME" /> e <ph name="CHARGE_START_TIME_FIELD_NAME" /> sono 0, 15, 30 e 45.</translation>
 <translation id="7840258755683573560">Attiva i clic automatici</translation>
 <translation id="7841880500990419427">Versione TLS minima a cui retrocedere</translation>
+<translation id="7841883965249733328">Disattiva l'upgrade automatico del contenuto misto</translation>
 <translation id="7845130996290850593">Attiva Kerberos</translation>
 <translation id="7846952520291088817">URL per cui vengono esposti IP locali nei candidati ICE WebRTC</translation>
 <translation id="7848641140449742406">Impostazioni del sistema operativo</translation>

@@ -1335,7 +1335,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4282346679996504092">Desaktibatu dira produktuari buruzko alertak, eta kendu da haren laster-marka</translation>
 <translation id="4285498937028063278">Desainguratu</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Google-ko kontuan gorde da txartela}other{Google-ko kontuan gorde dira txartelak}}</translation>
-<translation id="4287495839370498922">Iragarkien inguruko pribatutasun hobea Chrome-n</translation>
+<translation id="4287495839370498922">Iragarkien pribatutasun hobea Chrome-n</translation>
 <translation id="4287885627794386150">Probaldirako egokia da, baina ez dago aktibo</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> orriaren irudi txikia</translation>
 <translation id="4298000214066716287">Inbertsioak</translation>
@@ -1778,7 +1778,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5337569431717511221">Chrome arakatzaile lehenetsi gisa ezartzeko botoia: sakatu "Sartu" Chrome sistemaren arakatzaile lehenetsi gisa ezartzeko</translation>
 <translation id="5340250774223869109">Aplikazioa blokeatuta dago</translation>
 <translation id="534295439873310000">NFC darabilten gailuak</translation>
-<translation id="5344522958567249764">Kudeatu iragarkien inguruko pribatutasuna</translation>
+<translation id="5344522958567249764">Kudeatu iragarkien pribatutasuna</translation>
 <translation id="5344579389779391559">Baliteke orri hau dirua kobratzen saiatzea</translation>
 <translation id="5347645913823149105">Chrome-n letrak pertsonalizatzeko botoia: sakatu "Sartu" tekla Chrome-ko letren tamaina eta tipoa pertsonalizatzeko</translation>
 <translation id="5355557959165512791">Une honetan ezin zara joan <ph name="SITE" /> webgunera ziurtagiria ukatu egin delako. Sareko erroreak eta erasoak aldi baterakoak izan ohi dira; beraz, geroago funtzionatuko du orriak, segur aski.</translation>
@@ -2104,7 +2104,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6196640612572343990">Blokeatu hirugarrenen cookieak</translation>
 <translation id="6197648101609735209">89 × 89 mm</translation>
 <translation id="6203231073485539293">Egiaztatu Internetera konektatuta zaudela</translation>
-<translation id="6205314730813004066">Iragarkien inguruko pribatutasuna</translation>
+<translation id="6205314730813004066">Iragarkien pribatutasuna</translation>
 <translation id="6212314149070368045">Fanfold estatubatuarra</translation>
 <translation id="6218753634732582820">Helbidea Chromium-etik kendu nahi duzu?</translation>
 <translation id="622039917539443112">Tolestura paraleloa</translation>
@@ -2320,7 +2320,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6786145470008421571">15 cm × 23 cm-ko gutun-azala</translation>
 <translation id="67862343314499040">Bioleta</translation>
 <translation id="6786747875388722282">Luzapenak</translation>
-<translation id="6787094689637422836">Ikusten dituzun iragarkiak kontrolatzeko aukera gehiago ematen dizkizuten pribatutasun-eginbide berriak ezarri ditugu.</translation>
+<translation id="6787094689637422836">Ikusten dituzun iragarkien gaineko kontrol handiagoa emango dizuten pribatutasun-eginbide berriak kaleratuko ditugu.</translation>
 <translation id="678982761784843853">Eduki babestuaren IDak</translation>
 <translation id="6790428901817661496">Erreproduzitu</translation>
 <translation id="679355240208270552">Ez ikusi egin zaio bilaketa lehenetsia ez dagoelako gaituta gidalerroen arabera.</translation>

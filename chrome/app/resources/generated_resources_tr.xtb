@@ -4133,6 +4133,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4713409221649555176">Tüm pencereleri kapattığımda sil</translation>
 <translation id="47158868804223727">Genişletmek veya daraltmak için grup adını tıklayın</translation>
 <translation id="4716483597559580346">Daha fazla güvenlik için Powerwash işlemini uygulayın</translation>
+<translation id="471759229191973607">Temayı değiştir</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> için şifre</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> ekranınızı paylaşıyor.</translation>
 <translation id="4722989931633062466">Üçüncü taraf oturum açma istemleri göstermesine izin verilmeyen siteler</translation>
@@ -7156,6 +7157,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> yanıt vermiyor. Uygulamayı kapatmak için "Uygulamayı kapat"ı seçin.</translation>
 <translation id="7535730537657706072">Gizli mod tarama geçmişini cihazınızdan temizlemek için tüm Gizli sekmeleri kapatın</translation>
 <translation id="7537451260744431038">Siteler size daha iyi bir göz atma deneyimi sunmak, örneğin, oturumunuzu açık tutmak veya alışveriş sepetinizdeki ürünleri hatırlamak için çerez kullanamaz</translation>
+<translation id="7538088324298143359"><ph name="SEARCH_ENGINE" /> ile görselin içinde arama yap</translation>
 <translation id="7540972813190816353">Güncelleme olup olmadığı kontrol edilirken bir hata oluştu: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> bu cihazı önceki sürüme geçirdi. Lütfen önemli dosyaları kaydedip cihazı yeniden başlatın. Cihazdaki tüm veriler silinecektir.</translation>
 <translation id="7541773865713908457"><ph name="APP_NAME" /> Uygulaması ile <ph name="ACTION_NAME" /></translation>

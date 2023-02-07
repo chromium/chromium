@@ -823,7 +823,7 @@
 <translation id="301521992641321250">Blocată automat</translation>
 <translation id="3016780570757425217">Afle locația</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, apasă pe Tab, apoi pe Enter pentru a elimina sugestia.</translation>
-<translation id="3023165109041533893">Anunțurile sugerate de site-uri contribuie la protejarea istoricului de navigare și a identității tale și le dă site-urilor posibilitatea să îți afișeze anunțuri relevante. Pe baza activității tale, un site pe care l-ai accesat poate sugera anunțuri similare pe măsură ce navighezi. În setări, poți să vezi o listă a acestor site-uri și să le blochezi pe cele care nu dorești să apară.</translation>
+<translation id="3023165109041533893">Anunțurile sugerate de site-uri contribuie la protejarea istoricului de navigare și a identității tale și le permit site-urilor să îți afișeze anunțuri relevante. Pe baza activității tale, un site pe care l-ai accesat poate sugera anunțuri similare pe măsură ce navighezi. În setări, poți să vezi o listă a acestor site-uri și să le blochezi pe cele care nu dorești să apară.</translation>
 <translation id="3024663005179499861">Tip de politică greșit</translation>
 <translation id="3029752078111257850">Știri internaționale</translation>
 <translation id="3037177537145227281">Se urmărește prețul</translation>
@@ -875,7 +875,7 @@
 <translation id="317878711435188021">să afle când folosești activ dispozitivul</translation>
 <translation id="3180358318770512945">Părinți</translation>
 <translation id="3187306450550410410">Flexibilitate la locul de muncă</translation>
-<translation id="3187472288455401631">Ad measurement</translation>
+<translation id="3187472288455401631">Cuantificarea anunțurilor</translation>
 <translation id="3190736958609431397">Anulează urmărirea</translation>
 <translation id="319282854780294203">Rețele sociale</translation>
 <translation id="3194737229810486521"><ph name="URL" /> dorește să stocheze permanent date pe dispozitiv</translation>
@@ -3076,9 +3076,9 @@ Detalii suplimentare:
 <translation id="8589998999637048520">Calitate optimă</translation>
 <translation id="8600271352425265729">Doar de data aceasta</translation>
 <translation id="860043288473659153">Nume titular de card</translation>
-<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Ce date sunt folosite:<ph name="END_BOLD" /> activitatea ta de pe un site pe care l-ai accesat folosind Chrome pe acest dispozitiv.</translation>
+<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Ce date se folosesc:<ph name="END_BOLD" /> activitatea ta de pe un site pe care l-ai accesat folosind Chrome pe acest dispozitiv.</translation>
 <translation id="8606726445206553943">Folosească dispozitive MIDI</translation>
-<translation id="8606988009912891950">Pe baza subiectelor anunțurilor, site-urile îți afișează anunțuri relevante, protejându-ți totodată istoricul de navigare și identitatea. Chrome poate reține subiectele de interes pe baza istoricului tău de navigare recent. Ulterior, un site pe care îl accesezi poate solicita browserului Chrome subiecte relevante, pentru a personaliza anunțurile pe care le vezi.</translation>
+<translation id="8606988009912891950">Pe baza subiectelor anunțurilor, site-urile îți afișează anunțuri relevante și îți protejează istoricul de navigare și identitatea. Chrome poate reține subiectele de interes în funcție de istoricul tău de navigare recent. Ulterior, un site pe care îl accesezi poate solicita subiecte relevante de la browserul Chrome pentru a personaliza anunțurile pe care le vezi.</translation>
 <translation id="8617269623452051934">folosirea dispozitivului</translation>
 <translation id="861775596732816396">Mărimea 4</translation>
 <translation id="8620276786115098679">Plic Kaku 7</translation>

@@ -231,7 +231,7 @@
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5335288049665977812">Дозволи сајтовите да извршуваат JavaScript (се препорачува)</translation>
 <translation id="534295439873310000">NFC-уреди</translation>
-<translation id="5344522958567249764">Управувајте со приватноста на рекламите</translation>
+<translation id="5344522958567249764">Управувајте со приватноста за реклами</translation>
 <translation id="5354152178998424783">Ова ќе избрише <ph name="DATASIZE" /> податоци и колачиња складирани од сајтовите.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и уште 1)}one{(и уште #)}other{(и уште #)}}</translation>
 <translation id="5403592356182871684">Имиња</translation>
@@ -280,7 +280,7 @@
 <translation id="6181444274883918285">Додај исклучок за сајт</translation>
 <translation id="6192792657125177640">Исклучоци</translation>
 <translation id="6196640612572343990">Блокирај колачиња од трети лица</translation>
-<translation id="6205314730813004066">Приватност на реклами</translation>
+<translation id="6205314730813004066">Приватност за реклами</translation>
 <translation id="6216432067784365534">Опции за <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Да се деинсталира „<ph name="APP_NAME" />“?</translation>
 <translation id="6262191102408817757">Според вашата последна картичка</translation>

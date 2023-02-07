@@ -317,7 +317,7 @@
 <translation id="168693727862418163">此政策值未能根据其架构进行验证，因此会被忽略。</translation>
 <translation id="168841957122794586">服务器证书包含弱加密密钥。</translation>
 <translation id="1689333818294560261">昵称</translation>
-<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />您可以如何管理自己的数据<ph name="END_BOLD" />：Chrome 会自动删除保留时长超过 4 周的主题。随着您继续浏览，某个主题可能会再次出现在列表中。您还可随时在 Chrome 设置中屏蔽不希望 Chrome 与网站分享的主题，以及停用广告主题。</translation>
+<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />您可以如何管理自己的数据<ph name="END_BOLD" />：Chrome 会自动删除保留时长超过 4 周的主题。随着您继续浏览，某个主题可能会再次出现在列表中。您还可以随时在 Chrome 设置中屏蔽不希望 Chrome 与网站分享的主题，以及停用广告主题功能。</translation>
 <translation id="1697532407822776718">搞定了！</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -347,7 +347,7 @@
 <translation id="1736420071277903564">计算机</translation>
 <translation id="1740951997222943430">请输入有效的失效月份</translation>
 <translation id="1741613555002899862">当 DnsOverHttpsMode 是“<ph name="SECURE_DNS_MODE_SECURE" />”时，必须将此政策指定为有效字符串。</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />我们会如何使用这些数据<ph name="END_BOLD" />：Chrome 会在您浏览时推测您感兴趣的主题。主题标签是预定义的，包括“艺术与娱乐”“购物”和“体育”等等。之后，您访问的网站便可请求 Chrome 提供您的若干主题（而非您的浏览记录），以便向您展示个性化广告。</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />我们如何使用这些数据<ph name="END_BOLD" />：Chrome 会在您浏览时记录您感兴趣的主题。主题标签是预定义的，包括“艺术与娱乐”“购物”和“体育”等等。之后，您访问的网站便可请求 Chrome 提供您的若干主题（而非您的浏览记录），以便向您展示个性化广告。</translation>
 <translation id="1745880797583122200">您的浏览器受管理</translation>
 <translation id="1746113442205726301">图片沿 Y 轴位移</translation>
 <translation id="1746531169546376413">0 度</translation>
@@ -823,7 +823,7 @@
 <translation id="301521992641321250">已被自动禁止</translation>
 <translation id="3016780570757425217">获取您的位置</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />，依次按 Tab 键和 Enter 键即可移除建议。</translation>
-<translation id="3023165109041533893">网站建议的广告既有助于保护您的浏览记录和身份信息，又能让网站向您展示相关广告。随着您继续浏览，您访问的网站可以根据您的活动展示建议的相关广告。您可在设置中查看这些网站的列表，并酌情屏蔽其中一些网站。</translation>
+<translation id="3023165109041533893">网站建议的广告既有助于保护您的浏览记录和身份信息，又能让网站向您展示相关广告。在您浏览的过程中，您访问的网站可以根据您的活动建议相关广告。您可以在设置中查看这些网站，并酌情阻止这些网站活动。</translation>
 <translation id="3024663005179499861">策略类型有误</translation>
 <translation id="3029752078111257850">全球新闻</translation>
 <translation id="3037177537145227281">正在跟踪价格</translation>
@@ -914,7 +914,7 @@
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google 日历中快速创建新活动</translation>
 <translation id="3261488570342242926">了解虚拟卡</translation>
 <translation id="3264837738038045344">“管理 Chrome 设置”按钮，按 Enter 键即可访问您的 Chrome 设置</translation>
-<translation id="3266367459139339908">我们推出了多种新方式来限制网站为向您展示个性化广告而能够获取的相关信息，例如：</translation>
+<translation id="3266367459139339908">我们推出了新的方式来限制网站在向您展示个性化广告时可以了解关于您的哪些信息，例如：</translation>
 <translation id="3266793032086590337">值（冲突）</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{没有阻止任何网站，包括相关网站}=1{已阻止 1 个网站，包括相关网站}other{已阻止 # 个网站，包括相关网站}}</translation>
 <translation id="3268451620468152448">打开的标签页</translation>
@@ -3073,7 +3073,7 @@
 <translation id="860043288473659153">持卡人姓名</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />我们会使用哪些数据<ph name="END_BOLD" />：您在此设备上使用 Chrome 访问某个网站时进行的活动。</translation>
 <translation id="8606726445206553943">使用您的 MIDI 设备</translation>
-<translation id="8606988009912891950">借助广告主题，网站既能向您展示相关广告，又能保护您的浏览记录和身份信息。Chrome 会根据您近期的浏览记录来推测您感兴趣的主题。之后，您访问的网站可请求 Chrome 提供相关主题，以便向您展示个性化广告。</translation>
+<translation id="8606988009912891950">广告主题有助于网站向您展示相关广告，同时保护您的浏览记录和身份信息。Chrome 会根据您近期的浏览活动来记录您感兴趣的主题。之后，您访问的网站可请求 Chrome 提供相关主题，以便向您展示个性化广告。</translation>
 <translation id="8617269623452051934">您的设备使用情况</translation>
 <translation id="861775596732816396">大小：4</translation>
 <translation id="8620276786115098679">Kaku 7 信封</translation>
@@ -3325,7 +3325,7 @@
 <translation id="935608979562296692">清除表单内容</translation>
 <translation id="936602727769022409">您可能会无法再访问自己的 Google 帐号。Chromium 建议您立即更改密码。系统会要求您登录。</translation>
 <translation id="937457230470581909">动物园、水族馆与保护区</translation>
-<translation id="937804173274050966"><ph name="BEGIN_BOLD" />我们会使用哪些数据<ph name="END_BOLD" />：为确定您的广告主题，系统会使用您近期的浏览记录，即您在此设备上使用 Chrome 访问过的网站的列表。</translation>
+<translation id="937804173274050966"><ph name="BEGIN_BOLD" />会使用哪些数据<ph name="END_BOLD" />：为确定您的广告主题，系统会使用您近期的浏览记录，即您在此设备上使用 Chrome 访问过的网站的列表。</translation>
 <translation id="939736085109172342">新建文件夹</translation>
 <translation id="940053046584497293">旅行与交通</translation>
 <translation id="945855313015696284">请查看下面的信息，并删除所有无效卡片</translation>

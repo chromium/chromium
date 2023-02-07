@@ -3825,6 +3825,7 @@
 <translation id="4441147046941420429">続行するには、デバイスからセキュリティ キーを取り外し、もう一度差し込んでからタッチしてください</translation>
 <translation id="444134486829715816">展開...</translation>
 <translation id="4441928470323187829">管理者によって固定されています</translation>
+<translation id="4442863809158514979">ウェブ権限を表示</translation>
 <translation id="4443536555189480885">ヘルプ(&amp;H)</translation>
 <translation id="4444304522807523469">USB 接続またはローカル ネットワーク上のドキュメント スキャナーへのアクセス</translation>
 <translation id="4444512841222467874">十分な空き領域がない場合、ユーザーとデータが自動的に削除される可能性があります。</translation>
@@ -4098,7 +4099,7 @@
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%（デフォルト）</translation>
 <translation id="4684427112815847243">すべてを同期する</translation>
 <translation id="4687613760714619596">不明なデバイス（<ph name="DEVICE_ID" />）</translation>
-<translation id="4687718960473379118">サイト提案広告</translation>
+<translation id="4687718960473379118">サイトによる広告の提案</translation>
 <translation id="4688036121858134881">ローカルログ ID は <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" /> です。</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> がこのデバイスを以前のバージョンに戻しています（<ph name="PROGRESS_PERCENT" />）</translation>
 <translation id="4689235506267737042">デモ設定の選択</translation>
@@ -7448,6 +7449,7 @@
 <translation id="779308894558717334">明るい緑</translation>
 <translation id="7793098747275782155">暗い青</translation>
 <translation id="7797571222998226653">オフ</translation>
+<translation id="7798504574384119986">ウェブ権限を表示</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" />を自動ブロック</translation>
 <translation id="7800518121066352902">反時計回りに回転(&amp;O)</translation>
 <translation id="7801679634091975683">ここで加えた変更は、Lacros Chrome ブラウザにのみ反映されます。Chrome ブラウザの設定に変更を加えるには、Chrome ブラウザを開いて [設定] に移動してください。</translation>
