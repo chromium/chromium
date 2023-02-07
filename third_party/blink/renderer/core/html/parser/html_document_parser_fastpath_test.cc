@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
+#include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
@@ -31,9 +32,9 @@ TEST(HTMLDocumentParserFastpathTest, SanityCheck) {
       "<div>test</div>", *document, *fragment, *div,
       ParserContentPolicy::kAllowScriptingContent, false));
   histogram_tester.ExpectTotalCount(
-      "Blink.HTMLFastPathParser.UnsupportedTagType.CompositeMask", 0);
+      "Blink.HTMLFastPathParser.UnsupportedTagType.CompositeMaskV2", 0);
   histogram_tester.ExpectTotalCount(
-      "Blink.HTMLFastPathParser.UnsupportedContextTag.CompositeMask", 0);
+      "Blink.HTMLFastPathParser.UnsupportedContextTag.CompositeMaskV2", 0);
 }
 
 TEST(HTMLDocumentParserFastpathTest, SetInnerHTMLUsesFastPathSuccess) {
@@ -119,15 +120,15 @@ TEST(HTMLDocumentParserFastpathTest, LogUnsupportedTags) {
   base::HistogramTester histogram_tester;
   div->setInnerHTML("<table></table>");
   histogram_tester.ExpectTotalCount(
-      "Blink.HTMLFastPathParser.UnsupportedTag.CompositeMask", 1);
+      "Blink.HTMLFastPathParser.UnsupportedTag.CompositeMaskV2", 1);
   histogram_tester.ExpectBucketCount(
-      "Blink.HTMLFastPathParser.UnsupportedTag.CompositeMask", 2, 1);
+      "Blink.HTMLFastPathParser.UnsupportedTag.CompositeMaskV2", 2, 1);
   histogram_tester.ExpectTotalCount(
-      "Blink.HTMLFastPathParser.UnsupportedTag.Mask0", 0);
+      "Blink.HTMLFastPathParser.UnsupportedTag.Mask0V2", 0);
   histogram_tester.ExpectTotalCount(
-      "Blink.HTMLFastPathParser.UnsupportedTag.Mask1", 1);
+      "Blink.HTMLFastPathParser.UnsupportedTag.Mask1V2", 1);
   histogram_tester.ExpectTotalCount(
-      "Blink.HTMLFastPathParser.UnsupportedTag.Mask2", 0);
+      "Blink.HTMLFastPathParser.UnsupportedTag.Mask2V2", 0);
 }
 
 TEST(HTMLDocumentParserFastpathTest, LogUnsupportedTagsWithValidTag) {
@@ -139,16 +140,16 @@ TEST(HTMLDocumentParserFastpathTest, LogUnsupportedTagsWithValidTag) {
   base::HistogramTester histogram_tester;
   div->setInnerHTML("<div><table></table></div>");
   histogram_tester.ExpectTotalCount(
-      "Blink.HTMLFastPathParser.UnsupportedTag.CompositeMask", 1);
+      "Blink.HTMLFastPathParser.UnsupportedTag.CompositeMaskV2", 1);
   // Table is in the second chunk of values, so 2 should be set.
   histogram_tester.ExpectBucketCount(
-      "Blink.HTMLFastPathParser.UnsupportedTag.CompositeMask", 2, 1);
+      "Blink.HTMLFastPathParser.UnsupportedTag.CompositeMaskV2", 2, 1);
   histogram_tester.ExpectTotalCount(
-      "Blink.HTMLFastPathParser.UnsupportedTag.Mask0", 0);
+      "Blink.HTMLFastPathParser.UnsupportedTag.Mask0V2", 0);
   histogram_tester.ExpectTotalCount(
-      "Blink.HTMLFastPathParser.UnsupportedTag.Mask1", 1);
+      "Blink.HTMLFastPathParser.UnsupportedTag.Mask1V2", 1);
   histogram_tester.ExpectTotalCount(
-      "Blink.HTMLFastPathParser.UnsupportedTag.Mask2", 0);
+      "Blink.HTMLFastPathParser.UnsupportedTag.Mask2V2", 0);
 }
 
 TEST(HTMLDocumentParserFastpathTest, LogUnsupportedContextTag) {
@@ -160,16 +161,58 @@ TEST(HTMLDocumentParserFastpathTest, LogUnsupportedContextTag) {
   base::HistogramTester histogram_tester;
   dl->setInnerHTML("some text");
   histogram_tester.ExpectTotalCount(
-      "Blink.HTMLFastPathParser.UnsupportedContextTag.CompositeMask", 1);
+      "Blink.HTMLFastPathParser.UnsupportedContextTag.CompositeMaskV2", 1);
   // Textarea is in the third chunk of values, so 3 should be set.
   histogram_tester.ExpectBucketCount(
-      "Blink.HTMLFastPathParser.UnsupportedContextTag.CompositeMask", 4, 1);
+      "Blink.HTMLFastPathParser.UnsupportedContextTag.CompositeMaskV2", 4, 1);
   histogram_tester.ExpectTotalCount(
-      "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask0", 0);
+      "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask0V2", 0);
   histogram_tester.ExpectTotalCount(
-      "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask1", 0);
+      "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask1V2", 0);
   histogram_tester.ExpectTotalCount(
-      "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask2", 1);
+      "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask2V2", 1);
+}
+
+TEST(HTMLDocumentParserFastpathTest, LogSvg) {
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
+  auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
+
+  base::HistogramTester histogram_tester;
+  div->setInnerHTML("<svg></svg>");
+  histogram_tester.ExpectTotalCount(
+      "Blink.HTMLFastPathParser.UnsupportedTag.CompositeMaskV2", 1);
+  // Svg is in the third chunk of values, so 4 should be set.
+  histogram_tester.ExpectBucketCount(
+      "Blink.HTMLFastPathParser.UnsupportedTag.CompositeMaskV2", 4, 1);
+  histogram_tester.ExpectTotalCount(
+      "Blink.HTMLFastPathParser.UnsupportedTag.Mask0V2", 0);
+  histogram_tester.ExpectTotalCount(
+      "Blink.HTMLFastPathParser.UnsupportedTag.Mask1V2", 0);
+  histogram_tester.ExpectTotalCount(
+      "Blink.HTMLFastPathParser.UnsupportedTag.Mask2V2", 1);
+}
+
+TEST(HTMLDocumentParserFastpathTest, LogUnsupportedContextTagBody) {
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
+  auto* body = MakeGarbageCollected<HTMLBodyElement>(*document);
+
+  base::HistogramTester histogram_tester;
+  body->setInnerHTML("some text");
+  histogram_tester.ExpectTotalCount(
+      "Blink.HTMLFastPathParser.UnsupportedContextTag.CompositeMaskV2", 1);
+  // Body is in the third chunk of values, so 4 should be set.
+  histogram_tester.ExpectBucketCount(
+      "Blink.HTMLFastPathParser.UnsupportedContextTag.CompositeMaskV2", 4, 1);
+  histogram_tester.ExpectTotalCount(
+      "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask0V2", 0);
+  histogram_tester.ExpectTotalCount(
+      "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask1V2", 0);
+  histogram_tester.ExpectTotalCount(
+      "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask2V2", 1);
 }
 
 }  // namespace

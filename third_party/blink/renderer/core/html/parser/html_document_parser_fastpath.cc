@@ -35,6 +35,8 @@
 #include "third_party/blink/renderer/core/html/parser/atomic_html_token.h"
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 #include "third_party/blink/renderer/core/html/parser/html_entity_parser.h"
+#include "third_party/blink/renderer/core/svg/svg_element.h"
+#include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
@@ -1122,6 +1124,10 @@ bool CanUseFastPath(Document& document,
 // A hand picked enumeration of the most frequently used tags on web pages with
 // some amount of grouping. Ranking comes from
 // (https://discuss.httparchive.org/t/use-of-html-elements/1438).
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused (unless the histogram name is
+// updated).
 enum class UnsupportedTagType : uint32_t {
   // The tag is supported.
   kSupported = 0,
@@ -1153,8 +1159,9 @@ enum class UnsupportedTagType : uint32_t {
   kFieldset = 1 << 19,
   kTextarea = 1 << 20,
   kTime = 1 << 21,
-  kFigure = 1 << 22,
-  kMaxValue = kFigure,
+  kSvg = 1 << 22,
+  kBody = 1 << 23,
+  kMaxValue = kBody,
 };
 
 constexpr uint32_t kAllUnsupportedTags =
@@ -1206,6 +1213,9 @@ UnsupportedTagType UnsupportedTagTypeValueForNode(const Node& node) {
       node.HasTagName(html_names::kDdTag)) {
     return UnsupportedTagType::kDescriptionList;
   }
+  if (node.HasTagName(svg_names::kSVGTag)) {
+    return UnsupportedTagType::kSvg;
+  }
   CHECK_TAG_TYPE(Aside)
   CHECK_TAG_TYPE(U)
   CHECK_TAG_TYPE(Hr)
@@ -1221,7 +1231,7 @@ UnsupportedTagType UnsupportedTagTypeValueForNode(const Node& node) {
   CHECK_TAG_TYPE(Fieldset)
   CHECK_TAG_TYPE(Textarea)
   CHECK_TAG_TYPE(Time)
-  CHECK_TAG_TYPE(Figure)
+  CHECK_TAG_TYPE(Body)
   if (node.IsHTMLElement() && To<Element>(node).TagQName().IsDefinedName()) {
     return UnsupportedTagType::kOtherHtml;
   }
@@ -1230,20 +1240,20 @@ UnsupportedTagType UnsupportedTagTypeValueForNode(const Node& node) {
 
 // Histogram names used when logging unsupported tag type.
 const char* kUnsupportedTagTypeCompositeName =
-    "Blink.HTMLFastPathParser.UnsupportedTag.CompositeMask";
+    "Blink.HTMLFastPathParser.UnsupportedTag.CompositeMaskV2";
 const char* kUnsupportedTagTypeMaskNames[] = {
-    "Blink.HTMLFastPathParser.UnsupportedTag.Mask0",
-    "Blink.HTMLFastPathParser.UnsupportedTag.Mask1",
-    "Blink.HTMLFastPathParser.UnsupportedTag.Mask2",
+    "Blink.HTMLFastPathParser.UnsupportedTag.Mask0V2",
+    "Blink.HTMLFastPathParser.UnsupportedTag.Mask1V2",
+    "Blink.HTMLFastPathParser.UnsupportedTag.Mask2V2",
 };
 
 // Histogram names used when logging unsupported context tag type.
 const char* kUnsupportedContextTagTypeCompositeName =
-    "Blink.HTMLFastPathParser.UnsupportedContextTag.CompositeMask";
+    "Blink.HTMLFastPathParser.UnsupportedContextTag.CompositeMaskV2";
 const char* kUnsupportedContextTagTypeMaskNames[] = {
-    "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask0",
-    "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask1",
-    "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask2",
+    "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask0V2",
+    "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask1V2",
+    "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask2V2",
 };
 
 // Logs histograms for either an unsupported tag or unsupported context tag.

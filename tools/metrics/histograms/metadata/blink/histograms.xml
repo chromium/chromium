@@ -1461,7 +1461,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.HTMLFastPathParser.{Type}.CompositeMask"
+<histogram name="Blink.HTMLFastPathParser.{Type}.CompositeMaskV2"
     enum="InnerHTMLFastPathParserUnsupportedTagType" expires_after="2023-12-07">
   <owner>sky@chromium.org</owner>
   <owner>tebbi@chromium.org</owner>
@@ -1480,7 +1480,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Blink.HTMLFastPathParser.{Type}.Mask{MaskBit}" units="tags"
+<histogram name="Blink.HTMLFastPathParser.{Type}.Mask{MaskBit}V2" units="tags"
     expires_after="2023-12-07">
   <owner>sky@chromium.org</owner>
   <owner>tebbi@chromium.org</owner>
@@ -1508,7 +1508,7 @@ chromium-metrics-reviews@google.com.
                  ins bit 7: blockquote."/>
     <variant name="2"
         summary="bit 0: center. bit 1: small. bit 2: font. bit 3: fieldset.
-                 bit 4: textarea. bit 5: time. bit 6: figure."/>
+                 bit 4: textarea. bit 5: time. bit 6: svg. bit7: body."/>
   </token>
 </histogram>
 
