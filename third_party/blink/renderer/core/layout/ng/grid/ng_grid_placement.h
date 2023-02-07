@@ -156,7 +156,13 @@ class CORE_EXPORT NGGridPlacement {
   // subgrid, clamp their resolved positions to the subgrid's explicit grid.
   void ClampGridItemsToFitSubgridArea(GridTrackSizingDirection track_direction);
 
+  void ClampMinorMaxToSubgridArea();
+
   bool HasSparsePacking() const;
+
+  // The maximum end line for a given direction, not counting implicit tracks.
+  // For subgrids, this gets clamped by the subgrid span size.
+  wtf_size_t IntrinsicEndLine(GridTrackSizingDirection track_direction) const;
 
 #if DCHECK_IS_ON()
   bool auto_placement_algorithm_called_ : 1;
