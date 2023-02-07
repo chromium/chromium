@@ -44,7 +44,7 @@
 #include "tools/v8_context_snapshot/buildflags.h"
 #include "v8/include/v8.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
@@ -77,7 +77,7 @@ namespace content {
 
 TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
     TestBlinkWebUnitTestSupport::SchedulerType scheduler_type) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   base::mac::ScopedNSAutoreleasePool autorelease_pool;
 #endif
 
