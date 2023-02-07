@@ -115,6 +115,10 @@ class CastSocket {
   // CHANNEL_ERROR_NONE if no error has occurred.
   virtual ChannelError error_state() const = 0;
 
+  // Returns a bitfield of flags that were set when the socket was connected.
+  // Flag values are defined by the CastChannelFlag enum.
+  virtual CastChannelFlags flags() const = 0;
+
   // True when keep-alive signaling is handled for this socket.
   virtual bool keep_alive() const = 0;
 
@@ -211,6 +215,7 @@ class CastSocketImpl : public CastSocket {
   void set_id(int channel_id) override;
   ReadyState ready_state() const override;
   ChannelError error_state() const override;
+  CastChannelFlags flags() const override;
   bool keep_alive() const override;
   bool audio_only() const override;
   void AddObserver(Observer* observer) override;
@@ -407,6 +412,10 @@ class CastSocketImpl : public CastSocket {
 
   // The last error encountered by the channel.
   ChannelError error_state_;
+
+  // Bitfield of flags set when the socket was opened.
+  // Values are from CastChannelFlag.
+  CastChannelFlags flags_;
 
   // The current status of the channel.
   ReadyState ready_state_;

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CHANNEL_CAST_CHANNEL_ENUM_H_
 #define COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CHANNEL_CAST_CHANNEL_ENUM_H_
 
+#include <cstdint>
 #include <string>
 
 namespace cast_channel {
@@ -17,7 +18,6 @@ auto AsInteger(Enumeration const value) ->
   return static_cast<typename std::underlying_type<Enumeration>::type>(value);
 }
 
-// Maps to enum ReadyState in cast_channel.idl
 enum class ReadyState {
   NONE,
   CONNECTING,
@@ -26,7 +26,6 @@ enum class ReadyState {
   CLOSED,
 };
 
-// Maps to enum ChannelError in cast_channel.idl
 enum class ChannelError {
   NONE,
   CHANNEL_NOT_OPEN,
@@ -41,7 +40,6 @@ enum class ChannelError {
   UNKNOWN,
 };
 
-// Used in ErrorInfo.eventType in cast_channel.idl
 enum class ChannelEvent {
   UNKNOWN = 0,
   CAST_SOCKET_CREATED,
@@ -77,7 +75,6 @@ enum class ChannelEvent {
   PING_WRITE_ERROR,  // Logged with RV.
 };
 
-// Used in ErrorInfo.challengeReplyErrorType in cast_channel.idl
 enum class ChallengeReplyError {
   NONE = 1,
   PEER_CERT_EMPTY,
@@ -140,6 +137,24 @@ enum class WriteState {
 
 std::string ReadyStateToString(ReadyState ready_state);
 std::string ChannelErrorToString(ChannelError channel_error);
+
+constexpr int kNumCastChannelFlags = 6;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Keep in sync with CastChannelFlag enum in tools/metrics/enums.xml.
+enum class CastChannelFlag : uint16_t {
+  kFlagsNone = 0,
+  kSha1DigestAlgorithm = 1,
+  kSenderNonceMissing = 1 << 1,
+  kSenderNonceMismatch = 1 << 2,
+  kCRLMissing = 1 << 3,
+  kCRLInvalid = 1 << 4,
+  kCertificateRevoked = 1 << 5,
+  kMaxValue = kCertificateRevoked,
+};
+
+using CastChannelFlags = uint16_t;
 
 }  // namespace cast_channel
 

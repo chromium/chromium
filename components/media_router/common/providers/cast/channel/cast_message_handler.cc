@@ -16,6 +16,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/default_tick_clock.h"
+#include "components/media_router/common/providers/cast/channel/cast_channel_metrics.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "components/media_router/common/providers/cast/channel/cast_socket_service.h"
 
@@ -224,7 +225,7 @@ void CastMessageHandler::LaunchSession(
                             nullptr);
     return;
   }
-
+  RecordLaunchSessionChannelFlags(socket->flags());
   auto* requests = GetOrCreatePendingRequests(channel_id);
   int request_id = NextRequestId();
   // Cap the max launch timeout to avoid long-living pending requests.

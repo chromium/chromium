@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
+#include "components/media_router/common/providers/cast/channel/cast_channel_enum.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
 namespace cast_certificate {
@@ -58,18 +59,24 @@ struct AuthResult {
   // Constructs a AuthResult that corresponds to success.
   AuthResult();
 
-  AuthResult(const std::string& error_message, ErrorType error_type);
+  AuthResult(const std::string& error_message,
+             ErrorType error_type,
+             CastChannelFlag flag = CastChannelFlag::kFlagsNone);
 
   ~AuthResult();
 
   static AuthResult CreateWithParseError(const std::string& error_message,
                                          ErrorType error_type);
 
+  void set_flag(CastChannelFlag flag) { flags |= static_cast<uint16_t>(flag); }
+
   bool success() const { return error_type == ERROR_NONE; }
 
   std::string error_message;
-  ErrorType error_type;
-  unsigned int channel_policies;
+  ErrorType error_type{ERROR_NONE};
+  unsigned int channel_policies{POLICY_NONE};
+  CastChannelFlags flags{
+      static_cast<CastChannelFlags>(CastChannelFlag::kFlagsNone)};
 };
 
 class AuthContext {

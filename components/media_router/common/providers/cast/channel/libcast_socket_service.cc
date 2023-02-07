@@ -137,6 +137,8 @@ class CastSocketWrapper final : public CastSocket {
 
   ChannelError error_state() const override { return error_state_; }
 
+  CastChannelFlags flags() const override { return flags_; }
+
   bool keep_alive() const override { return !!keep_alive_handler_; }
 
   bool audio_only() const override { return socket_->audio_only(); }
@@ -161,6 +163,7 @@ class CastSocketWrapper final : public CastSocket {
   Transport transport_;
   ReadyState ready_state_ = ReadyState::OPEN;
   ChannelError error_state_ = ChannelError::NONE;
+  CastChannelFlags flags_ = 0;
   std::unique_ptr<KeepAliveHandler> keep_alive_handler_;
 };
 
