@@ -64,4 +64,11 @@ const base::FeatureParam<int> kLimitNumNodesForBookmarkSearchCount(
 // unnecessarily.
 BASE_FEATURE(kIndexPaths, "BookmarkIndexPaths", kEnabledByDefaultDesktopOnly);
 
+// If enabled, there will be two different BookmarkModel instances per profile:
+// one instance for "profile" bookmarks and another instance for "account"
+// bookmarks. See https://crbug.com/1404250 for details.
+BASE_FEATURE(kEnableBookmarksAccountStorage,
+             "EnableBookmarksAccountStorage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace bookmarks

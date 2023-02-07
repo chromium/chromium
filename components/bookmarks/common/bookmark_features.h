@@ -19,6 +19,8 @@ extern const base::FeatureParam<int> kLimitNumNodesForBookmarkSearchCount;
 
 BASE_DECLARE_FEATURE(kIndexPaths);
 
+BASE_DECLARE_FEATURE(kEnableBookmarksAccountStorage);
+
 }  // namespace bookmarks
 
 #endif  // COMPONENTS_BOOKMARKS_COMMON_BOOKMARK_FEATURES_H_
