@@ -102,6 +102,15 @@ class CONTENT_EXPORT FencedFrameReporter
       const std::string& event_data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destination);
 
+  const absl::optional<std::string>& automatic_beacon_data() {
+    return automatic_beacon_data_;
+  }
+
+  const std::vector<blink::FencedFrame::ReportingDestination>&
+  automatic_beacon_destination() {
+    return automatic_beacon_destination_;
+  }
+
  private:
   friend class base::RefCounted<FencedFrameReporter>;
   friend class FencedFrameURLMappingTestPeer;
