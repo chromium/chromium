@@ -13,6 +13,9 @@ namespace enterprise_connectors {
 // Pref that maps to the "ContextAwareAccessSignalsAllowlistPref" policy.
 extern const char kContextAwareAccessSignalsAllowlistPref[];
 
+// Prefs that maps to the "AutomatedKeyRotationEnabled" policy.
+extern const char kAutomatedKeyRotationEnabledPref[];
+
 // Registers the device trust connectors profile preferences.
 void RegisterDeviceTrustConnectorProfilePrefs(PrefRegistrySimple* registry);
 

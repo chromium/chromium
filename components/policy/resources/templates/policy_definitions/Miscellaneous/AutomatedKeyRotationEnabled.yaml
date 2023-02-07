@@ -1,0 +1,21 @@
+caption: Enable automated key rotations for the <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR">Chrome Enterprise Device Trust Connector</ph>
+desc: |-
+  This policy is only available through <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph> and can be used to enable automated key rotations for the
+  <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR">Chrome Enterprise Device Trust Connector</ph>
+example_value: stringvalue
+features:
+  cloud_only: true
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- hmare@google.com
+- cbe-device-trust-eng@google.com
+- file://components/policy/OWNERS
+schema:
+  type: string
+supported_on:
+- chrome.win:112-
+- chrome.linux:112-
+- chrome.mac:112-
+tags: []
+type: string
