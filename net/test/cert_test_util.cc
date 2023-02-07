@@ -85,22 +85,6 @@ scoped_refptr<X509Certificate> ImportCertFromFile(
   return ImportCertFromFile(certs_dir.AppendASCII(cert_file));
 }
 
-bssl::UniquePtr<EVP_PKEY> LoadPrivateKeyFromFile(
-    const base::FilePath& key_path) {
-  std::string key_string;
-  if (!base::ReadFileToString(key_path, &key_string))
-    return nullptr;
-  std::vector<std::string> headers;
-  headers.push_back("PRIVATE KEY");
-  PEMTokenizer pem_tokenizer(key_string, headers);
-  if (!pem_tokenizer.GetNext())
-    return nullptr;
-  CBS cbs;
-  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(pem_tokenizer.data().data()),
-           pem_tokenizer.data().size());
-  return bssl::UniquePtr<EVP_PKEY>(EVP_parse_private_key(&cbs));
-}
-
 ScopedTestEVPolicy::ScopedTestEVPolicy(EVRootCAMetadata* ev_root_ca_metadata,
                                        const SHA256HashValue& fingerprint,
                                        const char* policy)

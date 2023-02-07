@@ -105,13 +105,6 @@ scoped_refptr<X509Certificate> ImportCertFromFile(
     const base::FilePath& certs_dir,
     base::StringPiece cert_file);
 
-// Imports a private key from |key_path|, which should be a PEM file containing
-// a PRIVATE KEY block. Only the first private key found will be returned, if
-// the file contains multiple private keys or other PEM blocks, they will be
-// ignored.
-bssl::UniquePtr<EVP_PKEY> LoadPrivateKeyFromFile(
-    const base::FilePath& key_path);
-
 // ScopedTestEVPolicy causes certificates marked with |policy|, issued from a
 // root with the given fingerprint, to be treated as EV. |policy| is expressed
 // as a string of dotted numbers: i.e. "1.2.3.4".

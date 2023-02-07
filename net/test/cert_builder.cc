@@ -24,6 +24,7 @@
 #include "net/der/parse_values.h"
 #include "net/der/parser.h"
 #include "net/test/cert_test_util.h"
+#include "net/test/key_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -121,7 +122,7 @@ std::unique_ptr<CertBuilder> CertBuilder::FromFile(
     return nullptr;
 
   bssl::UniquePtr<EVP_PKEY> private_key(
-      LoadPrivateKeyFromFile(cert_and_key_file));
+      key_util::LoadEVP_PKEYFromPEM(cert_and_key_file));
   if (!private_key)
     return nullptr;
 
@@ -154,7 +155,7 @@ std::unique_ptr<CertBuilder> CertBuilder::FromStaticCertFile(
     return nullptr;
 
   bssl::UniquePtr<EVP_PKEY> private_key(
-      LoadPrivateKeyFromFile(cert_and_key_file));
+      key_util::LoadEVP_PKEYFromPEM(cert_and_key_file));
   if (!private_key)
     return nullptr;
 
@@ -1037,7 +1038,8 @@ void CertBuilder::GenerateRSAKey() {
 }
 
 bool CertBuilder::UseKeyFromFile(const base::FilePath& key_file) {
-  bssl::UniquePtr<EVP_PKEY> private_key(LoadPrivateKeyFromFile(key_file));
+  bssl::UniquePtr<EVP_PKEY> private_key(
+      key_util::LoadEVP_PKEYFromPEM(key_file));
   if (!private_key)
     return false;
   key_ = std::move(private_key);

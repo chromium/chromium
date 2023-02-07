@@ -49,6 +49,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "net/test/key_util.h"
 #include "net/test/revocation_builder.h"
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_frame_builder.h"
@@ -395,7 +396,8 @@ bool EmbeddedTestServer::InitializeCertAndKeyFromFile() {
   if (!x509_cert_)
     return false;
 
-  private_key_ = LoadPrivateKeyFromFile(certs_dir.AppendASCII(cert_name));
+  private_key_ =
+      key_util::LoadEVP_PKEYFromPEM(certs_dir.AppendASCII(cert_name));
   return !!private_key_;
 }
 
