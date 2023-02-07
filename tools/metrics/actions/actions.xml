@@ -3490,6 +3490,96 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="AppHome_CreateShortcut">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@chromium.org</owner>
+  <description>
+    User clicks on the menu option to create shortcuts for an app from the right
+    click context menu of an app from new chrome://apps page.
+  </description>
+</action>
+
+<action name="AppHome_CustomContextMenuTriggered">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@chromium.org</owner>
+  <description>
+    User opens the custom context menu for an app from new chrome://apps page.
+  </description>
+</action>
+
+<action name="AppHome_InstallAppLocally">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@chromium.org</owner>
+  <description>
+    User clicks on the menu option to install an app locally from the right
+    click context menu of an app from new chrome://apps page.
+  </description>
+</action>
+
+<action name="AppHome_LaunchAtStartupChecked">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@chromium.org</owner>
+  <description>
+    User checks the launch at startup option from the right click context menu
+    of an app from new chrome://apps page.
+  </description>
+</action>
+
+<action name="AppHome_LaunchAtStartupUnchecked">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@chromium.org</owner>
+  <description>
+    User unchecks the launch at startup option from the right click context menu
+    of an app from new chrome://apps page.
+  </description>
+</action>
+
+<action name="AppHome_NavigationComplete">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@chromium.org</owner>
+  <description>
+    Triggered whenever an the new chrome://apps page page is initialized on
+    navigation. This is not recorded on OSes where the new chrome://apps page
+    page does not exist, like ChromeOS and Android.
+  </description>
+</action>
+
+<action name="AppHome_OpenAppSettings">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@chromium.org</owner>
+  <description>
+    User clicks on the menu option to open app settings from the right click
+    context menu of an app from new chrome://apps page.
+  </description>
+</action>
+
+<action name="AppHome_OpenInWindowChecked">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@chromium.org</owner>
+  <description>
+    User checks the open in window option from the right click context menu of
+    an app from new chrome://apps page.
+  </description>
+</action>
+
+<action name="AppHome_OpenInWindowUnchecked">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@chromium.org</owner>
+  <description>
+    User checks the open in window option from the right click context menu of
+    an app from new chrome://apps page.
+  </description>
+</action>
+
+<action name="AppHome_UninstallTriggered">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@chromium.org</owner>
+  <description>
+    User clicks on the menu option to uninstall an app from the right click
+    context menu of an app from new chrome://apps page.
+  </description>
+</action>
+
 <action name="ApplicationShortcut.LensPressedFromHomeScreenWidget">
   <owner>schechter@google.com</owner>
   <owner>hujasonx@google.com</owner>

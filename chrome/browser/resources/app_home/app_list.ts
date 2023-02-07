@@ -11,6 +11,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {AppInfo, PageCallbackRouter} from './app_home.mojom-webui.js';
+import {AppHomeUserAction, recordUserAction} from './app_home_utils.js';
 import {AppItemElement} from './app_item.js';
 import {getTemplate} from './app_list.html.js';
 import {BrowserProxy} from './browser_proxy.js';
@@ -69,6 +70,7 @@ export class AppListElement extends PolymerElement {
     super.ready();
     this.addEventListener('on-menu-open-triggered', this.switchActiveMenu_);
     this.addEventListener('on-menu-closed', this.clearActiveMenu_);
+    recordUserAction(AppHomeUserAction.APP_HOME_INIT);
   }
 
   override connectedCallback() {

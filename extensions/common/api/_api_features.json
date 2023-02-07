@@ -342,6 +342,7 @@
     "channel": "stable",
     "contexts": ["webui"],
     "matches": [
+      "chrome://apps/",
       "chrome://bookmarks/*",
       "chrome://bookmarks-side-panel.top-chrome/*",
       "chrome://customize-chrome-side-panel.top-chrome/*",

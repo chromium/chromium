@@ -6,6 +6,7 @@ import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_act
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppInfo, RunOnOsLoginMode} from './app_home.mojom-webui.js';
+import {AppHomeUserAction, recordUserAction} from './app_home_utils.js';
 import {getTemplate} from './app_item.html.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {UserDisplayMode} from './user_display_mode.mojom-webui.js';
@@ -52,6 +53,7 @@ export class AppItemElement extends PolymerElement {
     });
 
     this.$.menu.showAtPosition({top: e.clientY, left: e.clientX});
+    recordUserAction(AppHomeUserAction.CONTEXT_MENU_TRIGGERED);
 
     e.preventDefault();
     e.stopPropagation();
@@ -95,9 +97,11 @@ export class AppItemElement extends PolymerElement {
     if (this.appInfo.openInWindow) {
       BrowserProxy.getInstance().handler.setUserDisplayMode(
           this.appInfo.id, UserDisplayMode.kBrowser);
+      recordUserAction(AppHomeUserAction.OPEN_IN_WINDOW_UNCHECKED);
     } else {
       BrowserProxy.getInstance().handler.setUserDisplayMode(
           this.appInfo.id, UserDisplayMode.kStandalone);
+      recordUserAction(AppHomeUserAction.OPEN_IN_WINDOW_CHECKED);
     }
     this.closeContextMenu();
   }
@@ -111,9 +115,11 @@ export class AppItemElement extends PolymerElement {
     if (this.isLaunchOnStartUp_()) {
       BrowserProxy.getInstance().handler.setRunOnOsLoginMode(
           this.appInfo.id, RunOnOsLoginMode.kNotRun);
+      recordUserAction(AppHomeUserAction.LAUNCH_AT_STARTUP_UNCHECKED);
     } else {
       BrowserProxy.getInstance().handler.setRunOnOsLoginMode(
           this.appInfo.id, RunOnOsLoginMode.kWindowed);
+      recordUserAction(AppHomeUserAction.LAUNCH_AT_STARTUP_CHECKED);
     }
     this.closeContextMenu();
   }
@@ -121,6 +127,7 @@ export class AppItemElement extends PolymerElement {
   private onCreateShortcutItemClick_() {
     if (this.appInfo.id) {
       BrowserProxy.getInstance().handler.createAppShortcut(this.appInfo.id);
+      recordUserAction(AppHomeUserAction.CREATE_SHORTCUT);
     }
     this.closeContextMenu();
   }
@@ -128,6 +135,7 @@ export class AppItemElement extends PolymerElement {
   private onInstallLocallyItemClick_() {
     if (this.appInfo.id) {
       BrowserProxy.getInstance().handler.installAppLocally(this.appInfo.id);
+      recordUserAction(AppHomeUserAction.INSTALL_APP_LOCALLY);
     }
     this.closeContextMenu();
   }
@@ -135,6 +143,7 @@ export class AppItemElement extends PolymerElement {
   private onUninstallItemClick_() {
     if (this.appInfo.id) {
       BrowserProxy.getInstance().handler.uninstallApp(this.appInfo.id);
+      recordUserAction(AppHomeUserAction.UNINSTALL);
     }
     this.closeContextMenu();
   }
@@ -142,6 +151,7 @@ export class AppItemElement extends PolymerElement {
   private onAppSettingsItemClick_() {
     if (this.appInfo.id) {
       BrowserProxy.getInstance().handler.showAppSettings(this.appInfo.id);
+      recordUserAction(AppHomeUserAction.OPEN_APP_SETTINGS);
     }
     this.closeContextMenu();
   }
