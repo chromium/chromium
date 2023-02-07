@@ -303,16 +303,14 @@ bool PinManager::CanPin(const mojom::FileMetadata& md, const Path& path) {
   using Type = mojom::FileMetadata::Type;
   const auto id = PinManager::Id(md.stable_id);
 
-  if (md.type == Type::kDirectory) {
-    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Directory";
+  if (md.shortcut_details) {
+    VLOG(1) << "Skipped " << id << " " << Quote(path) << ": Shortcut to "
+            << Id(md.shortcut_details->target_stable_id);
     return false;
   }
 
-  // TODO (b/264596214) Drive shortcuts masquerade as empty files. Is there a
-  // better way to recognize Drive shortcuts?
-  if (md.type == Type::kFile && md.size == 0) {
-    VLOG(2) << "Skipped " << id << " " << Quote(path)
-            << ": Empty file or shortcut";
+  if (md.type == Type::kDirectory) {
+    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Directory";
     return false;
   }
 
@@ -877,23 +875,19 @@ void PinManager::OnFileCreated(const mojom::FileChange& event) {
   const Id id = Id(event.stable_id);
   const Path& path = event.path;
 
-  const Files::iterator it = files_to_track_.find(id);
-  if (it == files_to_track_.end()) {
-    VLOG(1) << "Got " << Quote(event);
-    drivefs_->GetMetadataByStableId(
-        static_cast<int64_t>(id),
-        base::BindOnce(&PinManager::OnMetadataForCreatedFile, GetWeakPtr(), id,
-                       path));
+  if (const Files::iterator it = files_to_track_.find(id);
+      it != files_to_track_.end()) {
+    DCHECK_EQ(it->first, id);
+    LOG(ERROR) << "Ignored " << Quote(event) << ": Existing entry "
+               << it->second;
     return;
   }
 
-  DCHECK_EQ(it->first, id);
-
-  if (Update(*it, path, -1, -1)) {
-    VLOG(1) << "Got " << Quote(event);
-  } else {
-    VLOG(1) << "Ignored " << Quote(event);
-  }
+  VLOG(1) << "Got " << Quote(event);
+  drivefs_->GetMetadataByStableId(
+      static_cast<int64_t>(id),
+      base::BindOnce(&PinManager::OnMetadataForCreatedFile, GetWeakPtr(), id,
+                     path));
 }
 
 void PinManager::OnFileDeleted(const mojom::FileChange& event) {
@@ -927,19 +921,14 @@ void PinManager::OnFileModified(const mojom::FileChange& event) {
 
   const Files::iterator it = files_to_track_.find(id);
   if (it == files_to_track_.end()) {
-    VLOG(1) << "Ignored " << Quote(event);
+    VLOG(1) << "Ignored " << Quote(event) << ": Not tracked";
     return;
   }
 
   VLOG(1) << "Got " << Quote(event);
   DCHECK_EQ(it->first, id);
-  File& file = it->second;
 
-  if (file.path != path) {
-    LOG(ERROR) << "Changed path of " << id << " " << Quote(file.path) << " to "
-               << Quote(path);
-    file.path = path;
-  }
+  Update(*it, path, -1, -1);
 
   VLOG(2) << "Checking changed " << id << " " << Quote(path);
   drivefs_->GetMetadataByStableId(

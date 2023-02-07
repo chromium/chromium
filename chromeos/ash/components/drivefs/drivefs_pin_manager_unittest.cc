@@ -269,9 +269,9 @@ TEST_F(DriveFsPinManagerTest, CanPin) {
   md.size = 1;
   EXPECT_TRUE(PinManager::CanPin(md, path));
 
-  // Zero-sized file cannot be pinned.
+  // Zero-sized file can be pinned.
   md.size = 0;
-  EXPECT_FALSE(PinManager::CanPin(md, path));
+  EXPECT_TRUE(PinManager::CanPin(md, path));
   md.size = 1456754;
   EXPECT_TRUE(PinManager::CanPin(md, path));
 
@@ -297,6 +297,15 @@ TEST_F(DriveFsPinManagerTest, CanPin) {
   md.available_offline = true;
   EXPECT_TRUE(PinManager::CanPin(md, path));
   md.available_offline = false;
+  EXPECT_TRUE(PinManager::CanPin(md, path));
+
+  // Shortcut cannot be pinned.
+  md.shortcut_details = mojom::ShortcutDetails::New();
+  md.shortcut_details->target_stable_id = 987;
+  md.shortcut_details->target_lookup_status =
+      mojom::ShortcutDetails::LookupStatus::kOk;
+  EXPECT_FALSE(PinManager::CanPin(md, path));
+  md.shortcut_details.reset();
   EXPECT_TRUE(PinManager::CanPin(md, path));
 
   // File that is not under /root/... cannot be pinned.
