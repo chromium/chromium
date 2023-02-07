@@ -825,6 +825,24 @@ suite('SettingsDevicePage', function() {
       ],
     };
 
+    /** @type {!AudioSystemProperties} */
+    const muteByHardwareAudioSystemProperties = {
+      outputVolumePercent: 0,
+
+      /** @type {!MuteState} */
+      outputMuteState: crosAudioConfigMojomWebui.MuteState.kNotMuted,
+
+      /** @type {!Array<!AudioDevice>} */
+      outputDevices: [],
+
+      /** @type {!Array<!AudioDevice>} */
+      inputDevices: [
+        fakeCrosAudioConfig.fakeInternalMicActive,
+      ],
+
+      inputMuteState: crosAudioConfigMojomWebui.MuteState.kMutedExternally,
+    };
+
     /**
      * Simuates clicking at a given point on cr-slider element.
      * @param {string} crSliderSelector
@@ -1251,6 +1269,24 @@ suite('SettingsDevicePage', function() {
       assertFalse(
           isVisible(noiseCancellationSubsection),
       );
+    });
+
+    test('simulate input muted by hardware', async function() {
+      const muteSelector = '#audioInputGainMuteButton';
+      const inputMuteButton = audioPage.shadowRoot.querySelector(muteSelector);
+      const sliderSelector = '#audioInputGainVolumeSlider';
+      const inputSlider = audioPage.shadowRoot.querySelector(sliderSelector);
+      assertFalse(inputMuteButton.disabled);
+      assertFalse(inputSlider.disabled);
+      assertFalse(audioPage.getIsInputMutedForTest());
+
+      crosAudioConfig.setAudioSystemProperties(
+          muteByHardwareAudioSystemProperties);
+      await flushTasks();
+
+      assertTrue(inputMuteButton.disabled);
+      assertTrue(inputSlider.disabled);
+      assertTrue(audioPage.getIsInputMutedForTest());
     });
   });
 

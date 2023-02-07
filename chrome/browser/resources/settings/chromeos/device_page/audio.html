@@ -136,14 +136,16 @@
           <cr-icon-button id="audioInputGainMuteButton"
               iron-icon="[[getInputIcon_(isInputMuted_)]]"
               on-click="onInputMuteClicked"
-              class="audio-mute-button">
+              class="audio-mute-button"
+              disabled="[[shouldDisableInputGainControls(isInputMuted_)]]">
           </cr-icon-button>
           <cr-slider id="audioInputGainVolumeSlider" min="0" max="100"
               iron-icon="[[getInputIcon_(isInputMuted_)]]"
               value="[[audioSystemProperties_.inputGainPercent]]"
               on-cr-slider-value-changed="onInputVolumeSliderChanged"
               class="audio-slider"
-              aria-labelledby="audioInputTitle audioInputGainLabel">
+              aria-labelledby="audioInputTitle audioInputGainLabel"
+              disabled="[[shouldDisableInputGainControls(isInputMuted_)]]">
           </cr-slider>
         </div>
       </div>

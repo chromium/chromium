@@ -275,6 +275,14 @@ class SettingsAudioElement extends SettingsAudioElementBase {
   protected getInputHidden_(): boolean {
     return this.audioSystemProperties_.inputDevices.length === 0;
   }
+
+  /**
+   * Returns true if input is muted by physical switch; otherwise, return false.
+   */
+  protected shouldDisableInputGainControls(): boolean {
+    return this.audioSystemProperties_.inputMuteState ===
+        MuteState.kMutedExternally;
+  }
 }
 
 declare global {
