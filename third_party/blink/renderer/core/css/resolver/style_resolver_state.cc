@@ -119,7 +119,7 @@ scoped_refptr<ComputedStyle> StyleResolverState::TakeStyle() {
 
 void StyleResolverState::UpdateLengthConversionData() {
   css_to_length_conversion_data_ = CSSToLengthConversionData(
-      *style_builder_.InternalStyle(), ParentStyle(), RootElementStyle(),
+      style_builder_, ParentStyle(), RootElementStyle(),
       GetDocument().GetLayoutView(),
       CSSToLengthConversionData::ContainerSizes(container_unit_context_),
       StyleBuilder().EffectiveZoom(), length_conversion_flags_);
@@ -128,12 +128,13 @@ void StyleResolverState::UpdateLengthConversionData() {
 }
 
 CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData(
-    const ComputedStyle* font_style) {
-  DCHECK(font_style);
+    const FontSizeStyle& font_size_style) {
   const ComputedStyle* root_font_style = RootElementStyle();
-  CSSToLengthConversionData::FontSizes font_sizes(*font_style, root_font_style);
+  CSSToLengthConversionData::FontSizes font_sizes(font_size_style,
+                                                  root_font_style);
   CSSToLengthConversionData::LineHeightSize line_height_size(
-      ParentStyle() ? *ParentStyle() : *style_builder_.InternalStyle(),
+      ParentStyle() ? ParentStyle()->GetFontSizeStyle()
+                    : style_builder_.GetFontSizeStyle(),
       root_font_style);
   CSSToLengthConversionData::ViewportSize viewport_size(
       GetDocument().GetLayoutView());
@@ -146,11 +147,11 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData(
 }
 
 CSSToLengthConversionData StyleResolverState::FontSizeConversionData() {
-  return UnzoomedLengthConversionData(ParentStyle());
+  return UnzoomedLengthConversionData(ParentStyle()->GetFontSizeStyle());
 }
 
 CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData() {
-  return UnzoomedLengthConversionData(style_builder_.InternalStyle());
+  return UnzoomedLengthConversionData(style_builder_.GetFontSizeStyle());
 }
 
 void StyleResolverState::SetParentStyle(
@@ -256,14 +257,14 @@ const CSSValue& StyleResolverState::ResolveLightDarkPair(
 void StyleResolverState::UpdateFont() {
   GetFontBuilder().CreateFont(StyleBuilder(), ParentStyle());
   SetConversionFontSizes(CSSToLengthConversionData::FontSizes(
-      *style_builder_.InternalStyle(), RootElementStyle()));
+      style_builder_.GetFontSizeStyle(), RootElementStyle()));
   SetConversionZoom(StyleBuilder().EffectiveZoom());
 }
 
 void StyleResolverState::UpdateLineHeight() {
   css_to_length_conversion_data_.SetLineHeightSize(
       CSSToLengthConversionData::LineHeightSize(
-          *style_builder_.InternalStyle(),
+          style_builder_.GetFontSizeStyle(),
           GetDocument().documentElement()->GetComputedStyle()));
 }
 

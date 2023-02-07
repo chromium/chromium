@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -43,9 +44,10 @@
 namespace blink {
 
 class ComputedStyle;
-class LayoutView;
-class Font;
 class Element;
+class Font;
+class FontSizeStyle;
+class LayoutView;
 
 class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   STACK_ALLOCATED();
@@ -63,7 +65,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
               const Font* root_font,
               float font_zoom,
               float root_font_zoom);
-    FontSizes(const ComputedStyle&, const ComputedStyle* root_style);
+    FontSizes(const FontSizeStyle&, const ComputedStyle* root_style);
 
     float Em(float zoom) const { return em_ * zoom; }
     float Rem(float zoom) const { return rem_ * zoom; }
@@ -104,7 +106,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
           root_font_(root_font),
           font_zoom_(font_zoom),
           root_font_zoom_(root_font_zoom) {}
-    LineHeightSize(const ComputedStyle& style, const ComputedStyle* root_style);
+    LineHeightSize(const FontSizeStyle& style, const ComputedStyle* root_style);
 
     float Lh(float zoom) const;
     float Rlh(float zoom) const;
@@ -234,13 +236,24 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
                             const ContainerSizes&,
                             float zoom,
                             Flags&);
-  CSSToLengthConversionData(const ComputedStyle& element_style,
+  template <typename ComputedStyleOrBuilder>
+  CSSToLengthConversionData(const ComputedStyleOrBuilder& element_style,
                             const ComputedStyle* parent_style,
                             const ComputedStyle* root_style,
-                            const LayoutView*,
-                            const ContainerSizes&,
+                            const LayoutView* layout_view,
+                            const ContainerSizes& container_sizes,
                             float zoom,
-                            Flags&);
+                            Flags& flags)
+      : CSSToLengthConversionData(
+            element_style.GetWritingMode(),
+            FontSizes(element_style.GetFontSizeStyle(), root_style),
+            LineHeightSize(parent_style ? parent_style->GetFontSizeStyle()
+                                        : element_style.GetFontSizeStyle(),
+                           root_style),
+            ViewportSize(layout_view),
+            container_sizes,
+            zoom,
+            flags) {}
 
   float EmFontSize(float zoom) const override;
   float RemFontSize(float zoom) const override;

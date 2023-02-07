@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/style/cursor_list.h"
 #include "third_party/blink/renderer/core/style/data_ref.h"
 #include "third_party/blink/renderer/core/style/display_style.h"
+#include "third_party/blink/renderer/core/style/font_size_style.h"
 #include "third_party/blink/renderer/core/style/style_cached_data.h"
 #include "third_party/blink/renderer/core/style/style_highlight_data.h"
 #include "third_party/blink/renderer/core/style/transform_origin.h"
@@ -816,6 +817,10 @@ class ComputedStyle : public ComputedStyleBase,
   TextEmphasisMark GetTextEmphasisMark() const;
   const AtomicString& TextEmphasisMarkString() const;
   LineLogicalSide GetTextEmphasisLineLogicalSide() const;
+
+  CORE_EXPORT FontSizeStyle GetFontSizeStyle() const {
+    return FontSizeStyle(GetFont(), LineHeightInternal(), EffectiveZoom());
+  }
 
   // Font properties.
   CORE_EXPORT const FontDescription& GetFontDescription() const {
@@ -3045,6 +3050,10 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   }
   FontOrientation ComputeFontOrientation() const;
   void UpdateFontOrientation();
+
+  FontSizeStyle GetFontSizeStyle() const {
+    return FontSizeStyle(GetFont(), LineHeightInternal(), EffectiveZoom());
+  }
 
   // letter-spacing
   void SetLetterSpacing(float letter_spacing) {

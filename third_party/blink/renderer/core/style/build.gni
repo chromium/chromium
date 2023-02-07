@@ -35,6 +35,7 @@ blink_core_sources_style = [
   "filter_operation.h",
   "filter_operations.cc",
   "filter_operations.h",
+  "font_size_style.h",
   "grid_area.h",
   "grid_enums.h",
   "grid_length.h",

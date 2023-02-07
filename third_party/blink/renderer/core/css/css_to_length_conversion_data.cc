@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/font_size_style.h"
 
 namespace blink {
 
@@ -103,7 +104,7 @@ CSSToLengthConversionData::FontSizes::FontSizes(float em,
   DCHECK(root_font_);
 }
 
-CSSToLengthConversionData::FontSizes::FontSizes(const ComputedStyle& style,
+CSSToLengthConversionData::FontSizes::FontSizes(const FontSizeStyle& style,
                                                 const ComputedStyle* root_style)
     : FontSizes(
           style.SpecifiedFontSize(),
@@ -185,11 +186,12 @@ float CSSToLengthConversionData::FontSizes::Ric(float zoom) const {
 }
 
 CSSToLengthConversionData::LineHeightSize::LineHeightSize(
-    const ComputedStyle& style,
+    const FontSizeStyle& style,
     const ComputedStyle* root_style)
     : LineHeightSize(
-          style.LineHeight(),
-          root_style ? root_style->LineHeight() : style.LineHeight(),
+          style.SpecifiedLineHeight(),
+          root_style ? root_style->SpecifiedLineHeight()
+                     : style.SpecifiedLineHeight(),
           &style.GetFont(),
           root_style ? &root_style->GetFont() : &style.GetFont(),
           style.EffectiveZoom(),
@@ -294,24 +296,6 @@ CSSToLengthConversionData::CSSToLengthConversionData(
       viewport_size_(viewport_size),
       container_sizes_(container_sizes),
       flags_(&flags) {}
-
-CSSToLengthConversionData::CSSToLengthConversionData(
-    const ComputedStyle& element_style,
-    const ComputedStyle* parent_style,
-    const ComputedStyle* root_style,
-    const LayoutView* layout_view,
-    const ContainerSizes& container_sizes,
-    float zoom,
-    Flags& flags)
-    : CSSToLengthConversionData(
-          element_style.GetWritingMode(),
-          FontSizes(element_style, root_style),
-          LineHeightSize(parent_style ? *parent_style : element_style,
-                         root_style),
-          ViewportSize(layout_view),
-          container_sizes,
-          zoom,
-          flags) {}
 
 float CSSToLengthConversionData::EmFontSize(float zoom) const {
   SetFlag(Flag::kEm);

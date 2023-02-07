@@ -205,8 +205,7 @@ class CORE_EXPORT StyleResolverState {
 
  private:
   void UpdateLengthConversionData();
-  CSSToLengthConversionData UnzoomedLengthConversionData(
-      const ComputedStyle* font_style);
+  CSSToLengthConversionData UnzoomedLengthConversionData(const FontSizeStyle&);
 
   ElementResolveContext element_context_;
   Document* document_;

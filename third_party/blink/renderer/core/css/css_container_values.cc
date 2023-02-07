@@ -20,10 +20,10 @@ CSSContainerValues::CSSContainerValues(Document& document,
       height_(height),
       writing_mode_(container.ComputedStyleRef().GetWritingMode()),
       font_sizes_(CSSToLengthConversionData::FontSizes(
-          container.ComputedStyleRef(),
+          container.ComputedStyleRef().GetFontSizeStyle(),
           document.documentElement()->GetComputedStyle())),
       line_height_size_(CSSToLengthConversionData::LineHeightSize(
-          container.ComputedStyleRef(),
+          container.ComputedStyleRef().GetFontSizeStyle(),
           document.documentElement()->GetComputedStyle())),
       container_sizes_(container.ParentOrShadowHostElement()) {}
 
