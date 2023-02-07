@@ -376,16 +376,8 @@ void UpdateServiceProxy::OnConnected(
 
   // A weak pointer is used here to prevent remote_ from forming a reference
   // cycle with this object.
-  // TODO(crbug.com/1413523): Remove the logging once tests are fixed.
-  remote_.set_disconnect_with_reason_handler(base::BindOnce(
-      [](base::OnceClosure on_disconnect, uint32_t reason,
-         const std::string& description) {
-        VLOG(1) << "UpdateServiceProxy remote disconnected with reason "
-                << reason << " and description: " << description;
-        std::move(on_disconnect).Run();
-      },
-      base::BindOnce(&UpdateServiceProxy::OnDisconnected,
-                     weak_factory_.GetWeakPtr())));
+  remote_.set_disconnect_handler(base::BindOnce(
+      &UpdateServiceProxy::OnDisconnected, weak_factory_.GetWeakPtr()));
 }
 
 void UpdateServiceProxy::OnDisconnected() {
