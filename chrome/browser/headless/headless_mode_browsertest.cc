@@ -30,12 +30,16 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/headless/clipboard/headless_clipboard.h"  // nogncheck
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/multiprocess_func_list.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_sequence_number_token.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/gfx/switches.h"
 
 namespace headless {
@@ -211,6 +215,38 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithUserDataDirAndIncognito,
                        StartWithUserDataDirAndIncognito) {
   // With user data dir and incognito expect to start in incognito mode.
   EXPECT_TRUE(browser()->profile()->IsOffTheRecord());
+}
+
+// Clipboard tests -----------------------------------------------------------
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, HeadlessClipboardInstalled) {
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  ASSERT_TRUE(clipboard);
+
+  ui::ClipboardBuffer buffer = ui::ClipboardBuffer::kCopyPaste;
+  ASSERT_TRUE(ui::Clipboard::IsSupportedClipboardBuffer(buffer));
+
+  // Expect sequence number to be incremented. This confirms that the headless
+  // clipboard implementation is being used.
+  int request_counter = GetSequenceNumberRequestCounterForTesting();
+  clipboard->GetSequenceNumber(buffer);
+  EXPECT_GT(GetSequenceNumberRequestCounterForTesting(), request_counter);
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, HeadlessClipboardCopyPaste) {
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  ASSERT_TRUE(clipboard);
+
+  ui::ClipboardBuffer buffer = ui::ClipboardBuffer::kCopyPaste;
+  ASSERT_TRUE(ui::Clipboard::IsSupportedClipboardBuffer(buffer));
+
+  const std::u16string text = u"Clippy!";
+  ui::ScopedClipboardWriter(buffer).WriteText(text);
+
+  std::u16string copy_pasted_text;
+  clipboard->ReadText(buffer, /*data_dst=*/nullptr, &copy_pasted_text);
+
+  EXPECT_EQ(text, copy_pasted_text);
 }
 
 }  // namespace

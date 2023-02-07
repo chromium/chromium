@@ -10,6 +10,7 @@
 #include "base/debug/alias.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "components/headless/clipboard/headless_clipboard.h"
 #include "content/public/common/result_codes.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
@@ -17,8 +18,6 @@
 #include "headless/lib/browser/headless_screen.h"
 #include "headless/lib/browser/headless_select_file_dialog_factory.h"
 #include "headless/public/switches.h"
-#include "ui/base/clipboard/clipboard.h"
-#include "ui/base/clipboard/clipboard_non_backed.h"
 
 #if defined(HEADLESS_USE_PREFS)
 #include "components/os_crypt/os_crypt.h"  // nogncheck
@@ -53,21 +52,6 @@ const base::FilePath::CharType kLocalStateFilename[] =
 
 }  // namespace
 
-// Headless clipboard that is independent of any platform clipboard.
-class HeadlessClipboard : public ui::ClipboardNonBacked {
- public:
-  HeadlessClipboard() = default;
-
-  HeadlessClipboard(const HeadlessClipboard&) = delete;
-  HeadlessClipboard& operator=(const HeadlessClipboard&) = delete;
-
-  ~HeadlessClipboard() override = default;
-
-  static std::unique_ptr<HeadlessClipboard> Create() {
-    return std::make_unique<HeadlessClipboard>();
-  }
-};
-
 HeadlessBrowserMainParts::HeadlessBrowserMainParts(HeadlessBrowserImpl* browser)
     : browser_(browser) {}
 
@@ -78,9 +62,7 @@ int HeadlessBrowserMainParts::PreMainMessageLoopRun() {
   CreatePrefService();
 #endif
   MaybeStartLocalDevToolsHttpHandler();
-
-  ui::Clipboard::SetClipboardForCurrentThread(HeadlessClipboard::Create());
-
+  SetHeadlessClipboardForCurrentThread();
   browser_->PlatformInitialize();
   browser_->RunOnStartCallback();
   HeadlessSelectFileDialogFactory::SetUp();
