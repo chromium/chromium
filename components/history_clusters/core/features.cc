@@ -93,10 +93,10 @@ BASE_FEATURE(kHideVisits,
 
 BASE_FEATURE(kSidePanelJourneys,
              "SidePanelJourneys",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // If enabled, and the main flag is also enabled, the Journeys omnibox
 // entrypoints open Journeys in Side Panel rather than the History WebUI.
 const base::FeatureParam<bool> kSidePanelJourneysOpensFromOmnibox{
-    &kSidePanelJourneys, "SidePanelJourneysOpensFromOmnibox", false};
+    &kSidePanelJourneys, "SidePanelJourneysOpensFromOmnibox", true};
 
 }  // namespace history_clusters
