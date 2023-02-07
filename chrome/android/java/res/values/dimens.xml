@@ -413,4 +413,8 @@ found in the LICENSE file.
 
     <!-- Price Drop dimensions -->
     <dimen name="price_drop_spotted_iph_ntp_tabswitcher_y_inset">4dp</dimen>
+
+    <!-- Settings page -->
+    <dimen name="settings_page_card_icon_width">32dp</dimen>
+    <dimen name="settings_page_card_icon_height">20dp</dimen>
 </resources>
