@@ -243,7 +243,9 @@ API_AVAILABLE(macos(10.15))
 - (id)init {
   if (self = [super init]) {
     base::scoped_nsprotocol<id<MTLDevice>> device(metal::CreateDefaultDevice());
-    [self setWantsExtendedDynamicRangeContent:YES];
+    if (@available(macOS 10.11, iOS 16.0, *)) {
+      [self setWantsExtendedDynamicRangeContent:YES];
+    }
     [self setDevice:device];
     [self setOpaque:NO];
     [self setPresentsWithTransaction:YES];
@@ -267,33 +269,34 @@ API_AVAILABLE(macos(10.15))
     return;
   }
 
-  // Set metadata for tone mapping.
-  if (_color_space != color_space || _hdr_metadata != hdr_metadata) {
-    CAEDRMetadata* edr_metadata = nil;
-    switch (color_space.GetTransferID()) {
-      case gfx::ColorSpace::TransferID::PQ: {
-        base::ScopedCFTypeRef<CFDataRef> display_info;
-        base::ScopedCFTypeRef<CFDataRef> content_info;
-        display_info = gfx::GenerateMasteringDisplayColorVolume(hdr_metadata);
-        content_info = gfx::GenerateContentLightLevelInfo(hdr_metadata);
-        edr_metadata = [CAEDRMetadata
-            HDR10MetadataWithDisplayInfo:base::mac::CFToNSCast(display_info)
-                             contentInfo:base::mac::CFToNSCast(content_info)
-                      opticalOutputScale:100];
-        break;
+  if (@available(macOS 10.15, iOS 16.0, *)) {
+    // Set metadata for tone mapping.
+    if (_color_space != color_space || _hdr_metadata != hdr_metadata) {
+      CAEDRMetadata* edr_metadata = nil;
+      switch (color_space.GetTransferID()) {
+        case gfx::ColorSpace::TransferID::PQ: {
+          base::ScopedCFTypeRef<CFDataRef> display_info;
+          base::ScopedCFTypeRef<CFDataRef> content_info;
+          display_info = gfx::GenerateMasteringDisplayColorVolume(hdr_metadata);
+          content_info = gfx::GenerateContentLightLevelInfo(hdr_metadata);
+          edr_metadata = [CAEDRMetadata
+              HDR10MetadataWithDisplayInfo:base::mac::CFToNSCast(display_info)
+                               contentInfo:base::mac::CFToNSCast(content_info)
+                        opticalOutputScale:100];
+          break;
+        }
+        case gfx::ColorSpace::TransferID::HLG:
+          edr_metadata = [CAEDRMetadata HLGMetadata];
+          break;
+        default:
+          [self setEDRMetadata:nil];
+          break;
       }
-      case gfx::ColorSpace::TransferID::HLG:
-        edr_metadata = [CAEDRMetadata HLGMetadata];
-        break;
-      default:
-        [self setEDRMetadata:nil];
-        break;
+      [self setEDRMetadata:edr_metadata];
+      _color_space = color_space;
+      _hdr_metadata = hdr_metadata;
     }
-    [self setEDRMetadata:edr_metadata];
-    _color_space = color_space;
-    _hdr_metadata = hdr_metadata;
   }
-
   // Migrate to the MTLDevice on which the CAMetalLayer is being composited, if
   // known.
   if (device) {
@@ -330,7 +333,9 @@ API_AVAILABLE(macos(10.15))
     [tex_desc setMipmapLevelCount:1];
     [tex_desc setArrayLength:1];
     [tex_desc setSampleCount:1];
+#if BUILDFLAG(IS_MAC)
     [tex_desc setStorageMode:MTLStorageModeManaged];
+#endif
     buffer_texture.reset([device newTextureWithDescriptor:tex_desc
                                                 iosurface:buffer
                                                     plane:0]);
