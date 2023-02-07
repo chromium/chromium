@@ -329,6 +329,9 @@
                      barButtonItem:self.viewController.deleteButton];
   }
 
+  password_manager::CredentialUIEntry credential =
+      self.mediator.credentials[index];
+
   __weak __typeof(self) weakSelf = self;
 
   NSString* deleteButtonString =
@@ -342,7 +345,7 @@
                 action:^{
                   [weakSelf passwordDeletionConfirmedForCompromised:
                                 compromisedPassword
-                                                           forIndex:index];
+                                                         credential:credential];
                 }
                  style:UIAlertActionStyleDestructive];
 
@@ -377,10 +380,12 @@
 
 // Notifies delegate about password deletion and records metric if needed.
 - (void)passwordDeletionConfirmedForCompromised:(BOOL)compromised
-                                       forIndex:(int)index {
+                                     credential:
+                                         (const password_manager::
+                                              CredentialUIEntry&)credential {
   [self.delegate
       passwordDetailsCoordinator:self
-                deleteCredential:self.mediator.credentials[index]
+                deleteCredential:credential
                shouldDismissView:(self.mediator.credentials.size() - 1 == 0)];
   if (compromised) {
     base::UmaHistogramEnumeration(
