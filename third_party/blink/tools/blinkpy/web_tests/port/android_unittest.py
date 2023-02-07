@@ -80,7 +80,7 @@ class AndroidPortTest(port_testcase.PortTestCase):
 
         self._mock_battery = mock.patch(
             'devil.android.battery_utils.BatteryUtils.GetBatteryInfo',
-            return_value={'level': 100})
+            return_value={'level': '100'})
         self._mock_battery.start()
 
         self._mock_perf_control = mock.patch(
@@ -165,7 +165,7 @@ class ChromiumAndroidDriverTest(unittest.TestCase):
 
         self._mock_battery = mock.patch(
             'devil.android.battery_utils.BatteryUtils.GetBatteryInfo',
-            return_value={'level': 100})
+            return_value={'level': '100'})
         self._mock_battery.start()
 
         self._mock_perf_control = mock.patch(
@@ -213,7 +213,7 @@ class ChromiumAndroidDriverTwoDriversTest(unittest.TestCase):
 
         self._mock_battery = mock.patch(
             'devil.android.battery_utils.BatteryUtils.GetBatteryInfo',
-            return_value={'level': 100})
+            return_value={'level': '100'})
         self._mock_battery.start()
 
         self._mock_perf_control = mock.patch(
@@ -256,7 +256,7 @@ class ChromiumAndroidTwoPortsTest(unittest.TestCase):
 
         self._mock_battery = mock.patch(
             'devil.android.battery_utils.BatteryUtils.GetBatteryInfo',
-            return_value={'level': 100})
+            return_value={'level': '100'})
         self._mock_battery.start()
 
         self._mock_perf_control = mock.patch(
@@ -298,7 +298,7 @@ class ChromiumAndroidDriverTombstoneTest(unittest.TestCase):
 
         self._mock_battery = mock.patch(
             'devil.android.battery_utils.BatteryUtils.GetBatteryInfo',
-            return_value={'level': 100})
+            return_value={'level': '100'})
         self._mock_battery.start()
 
         self._port = android.AndroidPort(

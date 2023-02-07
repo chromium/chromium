@@ -256,11 +256,18 @@ class AndroidDevices(object):
             return self._usable_devices
 
         devices = device_utils.DeviceUtils.HealthyDevices()
-        self._usable_devices = [
-            d for d in devices if
-            (battery_utils.BatteryUtils(d).GetBatteryInfo().get('level', 0) >=
-             AndroidDevices.MINIMUM_BATTERY_PERCENTAGE and d.IsScreenOn())
-        ]
+        usable_devices = []
+        for d in devices:
+            try:
+                battery_level = int(
+                    battery_utils.BatteryUtils(d).GetBatteryInfo().get(
+                        'level', '0'))
+            except ValueError:
+                battery_level = 0
+            if (battery_level >= AndroidDevices.MINIMUM_BATTERY_PERCENTAGE
+                    and d.IsScreenOn()):
+                usable_devices.append(d)
+        self._usable_devices = usable_devices
 
         return self._usable_devices
 
