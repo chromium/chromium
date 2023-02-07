@@ -9,7 +9,6 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/client_native_pixmap.h"
 #include "ui/gl/gl_image_native_pixmap.h"
-#include "ui/gl/test/gl_image_bind_test_template.h"
 #include "ui/gl/test/gl_image_test_template.h"
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -122,47 +121,6 @@ using GLImageScanoutTypeDisabled = testing::Types<
 INSTANTIATE_TYPED_TEST_SUITE_P(DISABLED_GLImageNativePixmapScanoutRGBA,
                                GLImageTest,
                                GLImageScanoutTypeDisabled);
-
-using GLImageReadWriteType = testing::Types<
-    GLImageNativePixmapTestDelegate<gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-                                    gfx::BufferFormat::R_8>,
-    GLImageNativePixmapTestDelegate<gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE,
-                                    gfx::BufferFormat::YUV_420_BIPLANAR>,
-    GLImageNativePixmapTestDelegate<gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-                                    gfx::BufferFormat::P010>>;
-
-using GLImageBindTestTypes = testing::Types<
-    GLImageNativePixmapTestDelegate<gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-                                    gfx::BufferFormat::BGRA_8888>,
-    GLImageNativePixmapTestDelegate<gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-                                    gfx::BufferFormat::RGBA_1010102>,
-    GLImageNativePixmapTestDelegate<gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-                                    gfx::BufferFormat::R_8>,
-    GLImageNativePixmapTestDelegate<gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-                                    gfx::BufferFormat::YVU_420>,
-    GLImageNativePixmapTestDelegate<
-        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-        gfx::BufferFormat::YVU_420>,
-    GLImageNativePixmapTestDelegate<gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-                                    gfx::BufferFormat::YUV_420_BIPLANAR>,
-    GLImageNativePixmapTestDelegate<gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE,
-                                    gfx::BufferFormat::YUV_420_BIPLANAR>,
-    GLImageNativePixmapTestDelegate<
-        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-        gfx::BufferFormat::YUV_420_BIPLANAR>,
-    GLImageNativePixmapTestDelegate<gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-                                    gfx::BufferFormat::P010>>;
-
-// These tests are disabled since the trybots are running with Ozone X11
-// implementation that doesn't support creating ClientNativePixmap.
-// TODO(dcastagna): Implement ClientNativePixmapFactory on Ozone X11.
-INSTANTIATE_TYPED_TEST_SUITE_P(DISABLED_GLImageNativePixmapReadWrite,
-                               GLImageTest,
-                               GLImageReadWriteType);
-
-INSTANTIATE_TYPED_TEST_SUITE_P(DISABLED_GLImageNativePixmap,
-                               GLImageBindTest,
-                               GLImageBindTestTypes);
 
 }  // namespace
 }  // namespace gl
