@@ -61,11 +61,6 @@ enum class CreationResult {
   kMaxValue = kFailToCreateShortcut
 };
 
-WebAppShortcutManager::ShortcutCallback& GetShortcutUpdateCallbackForTesting() {
-  static base::NoDestructor<WebAppShortcutManager::ShortcutCallback> callback;
-  return *callback;
-}
-
 WebAppShortcutManager::UpdateShortcutsForAllAppsCallback&
 GetUpdateShortcutsForAllAppsCallback() {
   static base::NoDestructor<
@@ -166,11 +161,6 @@ void WebAppShortcutManager::GetAppExistingShortCutLocation(
 void WebAppShortcutManager::SetUpdateShortcutsForAllAppsCallback(
     UpdateShortcutsForAllAppsCallback callback) {
   GetUpdateShortcutsForAllAppsCallback() = std::move(callback);
-}
-
-void WebAppShortcutManager::SetShortcutUpdateCallbackForTesting(
-    base::OnceCallback<void(const ShortcutInfo*)> callback) {
-  GetShortcutUpdateCallbackForTesting() = std::move(callback);  // IN-TEST
 }
 
 bool WebAppShortcutManager::CanCreateShortcuts() const {
@@ -332,9 +322,6 @@ void WebAppShortcutManager::OnShortcutInfoRetrievedUpdateShortcuts(
     std::u16string old_name,
     ResultCallback update_finished_callback,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
-  if (GetShortcutUpdateCallbackForTesting())
-    std::move(GetShortcutUpdateCallbackForTesting()).Run(shortcut_info.get());
-
   if (suppress_shortcuts_for_testing_ || !shortcut_info) {
     std::move(update_finished_callback).Run(Result::kOk);
     return;

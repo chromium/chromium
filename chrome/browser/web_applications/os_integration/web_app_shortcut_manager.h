@@ -131,9 +131,6 @@ class WebAppShortcutManager {
   static void SetUpdateShortcutsForAllAppsCallback(
       UpdateShortcutsForAllAppsCallback callback);
 
-  using ShortcutCallback = base::OnceCallback<void(const ShortcutInfo*)>;
-  static void SetShortcutUpdateCallbackForTesting(ShortcutCallback callback);
-
  private:
   void OnIconsRead(const AppId& app_id,
                    GetShortcutInfoCallback callback,
