@@ -185,11 +185,8 @@ void ImageContextImpl::BeginAccessIfNecessary(
   if (texture_base->GetType() == gpu::TextureBase::Type::kValidated) {
     // Verify that the client-provided size matches the size of the GPU
     // resource, using a fallback texture otherwise.
-    // TODO(crbug.com/955456): Is this check still necessary, or are the sizes
-    // guaranteed to match?
-    // TODO(crbug.com/958821): If this check is still necessary, is the
-    // restriction to the validating decoder still necessary given that
-    // SkiaRenderer has launched on Windows?
+    // NOTE: This verification is possible only for the validating decoder, as
+    // the size of the GL texture isn't tracked in the passthrough decoder.
     auto* texture = gpu::gles2::Texture::CheckedCast(texture_base);
     GLsizei width, height;
     texture->GetLevelSize(texture_base->target(), 0 /* level */, &width,
