@@ -131,11 +131,17 @@ class ASH_EXPORT ReturnToAppPanel : public views::View,
   int max_capturing_count() { return max_capturing_count_; }
 
  private:
+  friend class ReturnToAppPanelTest;
+
   // ReturnToAppButton::Observer:
   void OnExpandedStateChanged(bool expanded) override;
 
   // Used by the ctor to add `ReturnToAppButton`(s) to the panel.
   void AddButtonsToPanel(MediaApps apps);
+
+  // The container of the panel, which contains all the views and is used for
+  // setting padding and background painting. Owned by the views hierarchy.
+  views::View* container_view_ = nullptr;
 
   // The view at the top of the panel, summarizing the information of all media
   // apps. This pointer will be null when there's one or fewer media apps. Owned

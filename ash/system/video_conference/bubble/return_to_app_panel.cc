@@ -240,16 +240,23 @@ ReturnToAppPanel::ReturnToAppPanel() {
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+      .SetInteriorMargin(gfx::Insets::TLBR(16, 16, 0, 16));
+
+  auto container_view = std::make_unique<views::View>();
+  container_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
       .SetDefault(views::kMarginsKey,
                   gfx::Insets::TLBR(0, 0, kReturnToAppPanelSpacing, 0))
       .SetInteriorMargin(gfx::Insets::TLBR(12, 16, 8, 16));
+  container_view->SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemOnBase, kReturnToAppPanelRadius));
+  container_view_ = AddChildView(std::move(container_view));
 
   // Add running media apps buttons to the panel.
   VideoConferenceTrayController::Get()->GetMediaApps(base::BindOnce(
       &ReturnToAppPanel::AddButtonsToPanel, weak_ptr_factory_.GetWeakPtr()));
-
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBase, kReturnToAppPanelRadius));
 }
 
 ReturnToAppPanel::~ReturnToAppPanel() {
@@ -261,10 +268,10 @@ ReturnToAppPanel::~ReturnToAppPanel() {
 }
 
 void ReturnToAppPanel::OnExpandedStateChanged(bool expanded) {
-  for (auto* child : children()) {
+  for (auto* child : container_view_->children()) {
     // Skip the first child since we always show the summary row. Otherwise,
     // show the other rows if `expanded` and vice versa.
-    if (child == children().front()) {
+    if (child == container_view_->children().front()) {
       continue;
     }
     child->SetVisible(expanded);
@@ -286,7 +293,7 @@ void ReturnToAppPanel::AddButtonsToPanel(MediaApps apps) {
         app->is_capturing_microphone, app->is_capturing_screen,
         GetMediaAppDisplayText(app));
     app_button->expand_button()->SetVisible(false);
-    AddChildView(std::move(app_button));
+    container_view_->AddChildView(std::move(app_button));
 
     return;
   }
@@ -310,15 +317,16 @@ void ReturnToAppPanel::AddButtonsToPanel(MediaApps apps) {
       IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SUMMARY_TEXT,
       static_cast<int>(apps.size()));
 
-  summary_row_view_ = AddChildView(std::make_unique<ReturnToAppButton>(
-      /*panel=*/this,
-      /*is_top_row=*/true, /*app_id=*/base::UnguessableToken::Null(),
-      any_apps_capturing_camera, any_apps_capturing_microphone,
-      any_apps_capturing_screen, summary_text));
+  summary_row_view_ =
+      container_view_->AddChildView(std::make_unique<ReturnToAppButton>(
+          /*panel=*/this,
+          /*is_top_row=*/true, /*app_id=*/base::UnguessableToken::Null(),
+          any_apps_capturing_camera, any_apps_capturing_microphone,
+          any_apps_capturing_screen, summary_text));
   summary_row_view_->AddObserver(this);
 
   for (auto& app : apps) {
-    AddChildView(std::make_unique<ReturnToAppButton>(
+    container_view_->AddChildView(std::make_unique<ReturnToAppButton>(
         /*panel=*/this,
         /*is_top_row=*/false, app->id, app->is_capturing_camera,
         app->is_capturing_microphone, app->is_capturing_screen,

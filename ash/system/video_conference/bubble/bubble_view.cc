@@ -26,15 +26,14 @@ BubbleView::BubbleView(const InitParams& init_params,
   SetID(BubbleViewID::kMainBubbleView);
 
   // Add a `FlexLayout` for the entire view.
-  views::FlexLayout* layout =
-      SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout->SetOrientation(views::LayoutOrientation::kVertical);
-  layout->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-  layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
 
   // `ReturnToAppPanel` resides in the top-level layout and isn't part of the
   // scrollable area (that can't be added until the `BubbleView` officially has
-  // a parent waidget).
+  // a parent widget).
   AddChildView(std::make_unique<ReturnToAppPanel>());
 }
 
@@ -53,16 +52,12 @@ void BubbleView::AddedToWidget() {
   scroll_view->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
 
-  // `FlexLayout` makes the most sense for the contents of the
-  // `views::ScrollView`, since the effects sections are stacked vertically and
-  // need to expand to fill the bubble.
-
   views::BoxLayoutView* layout_view =
       scroll_view->SetContents(std::make_unique<views::BoxLayoutView>());
   layout_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
   layout_view->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
-  layout_view->SetInsideBorderInsets(gfx::Insets::TLBR(16, 16, 16, 16));
+  layout_view->SetInsideBorderInsets(gfx::Insets::TLBR(16, 12, 16, 12));
   layout_view->SetBetweenChildSpacing(16);
 
   // Make the effects sections children of the `views::FlexLayoutView`, so that

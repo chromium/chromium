@@ -5,17 +5,26 @@
 
 #include "ash/system/video_conference/bubble/toggle_effects_view.h"
 
+#include <algorithm>
+#include <memory>
+
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/icon_button.h"
-#include "ash/system/tray/tray_constants.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
+#include "ash/utility/haptics_util.h"
+#include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
+#include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
-#include "ui/views/border.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -26,25 +35,33 @@ namespace ash {
 namespace {
 
 constexpr int kButtonCornerRadius = 16;
+constexpr int kIconSize = 20;
 constexpr int kButtonHeight = 64;
+constexpr int kButtonSpacing = 8;
 
 // A single toggle button for a video conference effect, combined with a text
-// label.
-class ButtonContainer : public views::View, public IconButton::Delegate {
+// label. WARNING: `callback` provided must not destroy the button or the bubble
+// (i.e. close the bubble) as it would result in a crash in `OnButtonClicked()`.
+class ButtonContainer : public views::Button {
  public:
   METADATA_HEADER(ButtonContainer);
 
   ButtonContainer(views::Button::PressedCallback callback,
-                  const gfx::VectorIcon* icon,
+                  const gfx::VectorIcon* vector_icon,
                   bool toggle_state,
                   const std::u16string& label_text,
                   const int accessible_name_id,
-                  const int preferred_width) {
+                  const int preferred_width)
+      : callback_(callback), toggled_(toggle_state) {
+    SetCallback(base::BindRepeating(&ButtonContainer::OnButtonClicked,
+                                    weak_ptr_factory_.GetWeakPtr()));
+    SetID(video_conference::BubbleViewID::kToggleEffectsButton);
+
     views::FlexLayout* layout =
         SetLayoutManager(std::make_unique<views::FlexLayout>());
     layout->SetOrientation(views::LayoutOrientation::kVertical);
     layout->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-    layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+    layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
     // This makes the view the expand or contract to occupy any available space.
     SetProperty(
@@ -56,26 +73,15 @@ class ButtonContainer : public views::View, public IconButton::Delegate {
     // `kButtonHeight` is from the spec.
     SetPreferredSize(gfx::Size(preferred_width, kButtonHeight));
 
-    // Construct the `IconButton`, set ID and initial toggle state (from the
-    // passed-in value, which is the current state of the effect).
-    std::unique_ptr<IconButton> button = std::make_unique<IconButton>(
-        callback, IconButton::Type::kMedium, icon, accessible_name_id,
-        /*is_togglable=*/true,
-        /*has_border=*/true);
-    button->SetID(video_conference::BubbleViewID::kToggleEffectsButton);
-    button->SetToggled(toggle_state);
-
-    // Delegate is the `ButtonContainer`, which changes the toggle-state of the
-    // button when clicked.
-    button->set_delegate(this);
-
-    // `button` is owned by the `view::View` but a pointer is saved off for
-    // logic based on its toggle state.
-    button_ = AddChildView(std::move(button));
+    auto icon = std::make_unique<views::ImageView>();
+    icon->SetImage(ui::ImageModel::FromVectorIcon(
+        *vector_icon, cros_tokens::kCrosSysOnSurface, kIconSize));
+    icon_ = AddChildView(std::move(icon));
 
     // Label is below the button.
     AddChildView(std::make_unique<views::Label>(label_text));
 
+    SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
     UpdateColorsAndBackground();
   }
 
@@ -84,27 +90,41 @@ class ButtonContainer : public views::View, public IconButton::Delegate {
 
   ~ButtonContainer() override = default;
 
-  // IconButton::Delegate:
-  void OnButtonToggled(IconButton* button) override {}
-  void OnButtonClicked(IconButton* button) override {
-    button->SetToggled(!button->toggled());
+ private:
+  // Callback for clicking the button.
+  void OnButtonClicked(const ui::Event& event) {
+    callback_.Run(event);
+
+    // Sets the toggled state.
+    toggled_ = !toggled_;
+
+    haptics_util::PlayHapticToggleEffect(
+        !toggled_, ui::HapticTouchpadEffectStrength::kMedium);
+
     UpdateColorsAndBackground();
   }
 
   void UpdateColorsAndBackground() {
     ui::ColorId background_color_id =
-        button_->toggled() ? cros_tokens::kCrosSysSystemPrimaryContainer
-                           : cros_tokens::kCrosSysSystemOnBase;
+        toggled_ ? cros_tokens::kCrosSysSystemPrimaryContainer
+                 : cros_tokens::kCrosSysSystemOnBase;
 
     SetBackground(views::CreateThemedRoundedRectBackground(
         background_color_id, kButtonCornerRadius));
   }
 
- private:
-  IconButton* button_ = nullptr;
+  views::Button::PressedCallback callback_;
+
+  // Indicates the toggled state of the button.
+  bool toggled_ = false;
+
+  // Owned by the views hierarchy.
+  views::ImageView* icon_ = nullptr;
+
+  base::WeakPtrFactory<ButtonContainer> weak_ptr_factory_{this};
 };
 
-BEGIN_METADATA(ButtonContainer, views::View);
+BEGIN_METADATA(ButtonContainer, views::Button);
 END_METADATA
 
 }  // namespace
@@ -116,11 +136,12 @@ ToggleEffectsView::ToggleEffectsView(VideoConferenceTrayController* controller,
   SetID(BubbleViewID::kToggleEffectsView);
 
   // Layout for the entire toggle effects section.
-  views::FlexLayout* layout =
-      SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout->SetOrientation(views::LayoutOrientation::kVertical);
-  layout->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-  layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets::TLBR(0, 0, kButtonSpacing, 0));
 
   // The effects manager provides the toggle effects in rows.
   const VideoConferenceTrayEffectsManager::EffectDataTable tile_rows =
@@ -128,16 +149,18 @@ ToggleEffectsView::ToggleEffectsView(VideoConferenceTrayController* controller,
   for (auto& row : tile_rows) {
     // Each row is its own view, with its own layout.
     std::unique_ptr<views::View> row_view = std::make_unique<views::View>();
-    std::unique_ptr<views::FlexLayout> row_layout =
-        std::make_unique<views::FlexLayout>();
-    row_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
-    row_layout->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-    row_layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
-    row_view->SetLayoutManager(std::move(row_layout));
+    row_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
+        ->SetOrientation(views::LayoutOrientation::kHorizontal)
+        .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+        .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+        .SetDefault(
+            views::kMarginsKey,
+            gfx::Insets::TLBR(0, kButtonSpacing / 2, 0, kButtonSpacing / 2));
 
     // All buttons in a single row should have the same width i.e. fraction of
     // the parent width.
-    const int button_width = parent_width / row.size();
+    const int button_width =
+        (GetPreferredSize().width() - kButtonSpacing) / row.size();
 
     // Add a button for each item in the row.
     for (auto* tile : row) {

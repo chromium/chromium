@@ -9,13 +9,11 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
-#include "ash/system/video_conference/bubble/bubble_view.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/token.h"
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -113,6 +111,10 @@ class ReturnToAppPanelTest : public AshTestBase {
             BubbleViewID::kReturnToApp));
   }
 
+  views::View* GetReturnToAppContainer(ReturnToAppPanel* panel) {
+    return panel->container_view_;
+  }
+
   FakeVideoConferenceTrayController* controller() { return controller_.get(); }
 
  private:
@@ -140,11 +142,13 @@ TEST_F(ReturnToAppPanelTest, OneApp) {
       /*url=*/GURL(kGoogleMeetTestUrl)));
 
   // There should be one child representing the only one running media app.
-  auto return_to_app_panel = std::make_unique<ReturnToAppPanel>();
-  EXPECT_EQ(1u, return_to_app_panel->children().size());
+  auto panel = std::make_unique<ReturnToAppPanel>();
+  auto* return_to_app_container = GetReturnToAppContainer(panel.get());
 
-  auto* app_button =
-      static_cast<ReturnToAppButton*>(return_to_app_panel->children().front());
+  EXPECT_EQ(1u, return_to_app_container->children().size());
+
+  auto* app_button = static_cast<ReturnToAppButton*>(
+      return_to_app_container->children().front());
   EXPECT_FALSE(app_button->expand_button()->GetVisible());
   VerifyReturnToAppButtonInfo(app_button, is_capturing_camera,
                               is_capturing_microphone, is_capturing_screen,
@@ -164,13 +168,14 @@ TEST_F(ReturnToAppPanelTest, MultipleApps) {
 
   // There should be three children, one representing the summary row and two
   // for two running media apps.
-  auto return_to_app_panel = std::make_unique<ReturnToAppPanel>();
-  EXPECT_EQ(3u, return_to_app_panel->children().size());
+  auto panel = std::make_unique<ReturnToAppPanel>();
+  auto* return_to_app_container = GetReturnToAppContainer(panel.get());
+  EXPECT_EQ(3u, return_to_app_container->children().size());
 
   // The first row should be the summary row, representing the state of
   // capturing from all apps and showing that 2 apps are running.
-  auto* summary_row =
-      static_cast<ReturnToAppButton*>(return_to_app_panel->children().front());
+  auto* summary_row = static_cast<ReturnToAppButton*>(
+      return_to_app_container->children().front());
   VerifyReturnToAppButtonInfo(
       summary_row, /*is_capturing_camera=*/true,
       /*is_capturing_microphone=*/true,
@@ -180,7 +185,7 @@ TEST_F(ReturnToAppPanelTest, MultipleApps) {
 
   // Verify the next 2 rows, representing the 2 running apps.
   auto* first_app_row =
-      static_cast<ReturnToAppButton*>(return_to_app_panel->children()[1]);
+      static_cast<ReturnToAppButton*>(return_to_app_container->children()[1]);
   VerifyReturnToAppButtonInfo(first_app_row, /*is_capturing_camera=*/true,
                               /*is_capturing_microphone=*/false,
                               /*is_capturing_screen=*/false,
@@ -188,7 +193,7 @@ TEST_F(ReturnToAppPanelTest, MultipleApps) {
 
   // If the url is not provided, the button should display the app title.
   auto* second_app_row =
-      static_cast<ReturnToAppButton*>(return_to_app_panel->children()[2]);
+      static_cast<ReturnToAppButton*>(return_to_app_container->children()[2]);
   VerifyReturnToAppButtonInfo(second_app_row, /*is_capturing_camera=*/false,
                               /*is_capturing_microphone=*/true,
                               /*is_capturing_screen=*/true, u"Zoom");
@@ -205,15 +210,16 @@ TEST_F(ReturnToAppPanelTest, ExpandCollapse) {
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
       /*url=*/""));
 
-  auto return_to_app_panel = std::make_unique<ReturnToAppPanel>();
-  auto* summary_row =
-      static_cast<ReturnToAppButton*>(return_to_app_panel->children().front());
+  auto panel = std::make_unique<ReturnToAppPanel>();
+  auto* return_to_app_container = GetReturnToAppContainer(panel.get());
+  auto* summary_row = static_cast<ReturnToAppButton*>(
+      return_to_app_container->children().front());
   EXPECT_TRUE(summary_row->expand_button()->GetVisible());
 
   auto* first_app_row =
-      static_cast<ReturnToAppButton*>(return_to_app_panel->children()[1]);
+      static_cast<ReturnToAppButton*>(return_to_app_container->children()[1]);
   auto* second_app_row =
-      static_cast<ReturnToAppButton*>(return_to_app_panel->children()[2]);
+      static_cast<ReturnToAppButton*>(return_to_app_container->children()[2]);
 
   // The panel should be collapsed by default.
   EXPECT_FALSE(summary_row->expanded());
@@ -299,13 +305,14 @@ TEST_F(ReturnToAppPanelTest, ReturnToApp) {
 
   LeftClickOn(toggle_bubble_button());
   auto* return_to_app_panel = GetReturnToAppPanel();
+  auto* return_to_app_container = GetReturnToAppContainer(return_to_app_panel);
 
-  auto* summary_row =
-      static_cast<ReturnToAppButton*>(return_to_app_panel->children().front());
+  auto* summary_row = static_cast<ReturnToAppButton*>(
+      return_to_app_container->children().front());
   auto* first_app_row =
-      static_cast<ReturnToAppButton*>(return_to_app_panel->children()[1]);
+      static_cast<ReturnToAppButton*>(return_to_app_container->children()[1]);
   auto* second_app_row =
-      static_cast<ReturnToAppButton*>(return_to_app_panel->children()[2]);
+      static_cast<ReturnToAppButton*>(return_to_app_container->children()[2]);
 
   // Clicking on the summary row should not launch any apps.
   LeftClickOn(summary_row);
