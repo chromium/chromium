@@ -14,6 +14,7 @@
 #include "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
+#import "components/language/ios/browser/language_detection_java_script_feature.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
 #include "components/ssl_errors/error_info.h"
@@ -98,6 +99,7 @@ std::vector<web::JavaScriptFeature*> WebViewWebClient::GetJavaScriptFeatures(
   return {autofill::AutofillJavaScriptFeature::GetInstance(),
           autofill::FormHandlersJavaScriptFeature::GetInstance(),
           autofill::SuggestionControllerJavaScriptFeature::GetInstance(),
+          language::LanguageDetectionJavaScriptFeature::GetInstance(),
           password_manager::PasswordManagerJavaScriptFeature::GetInstance(),
           security_interstitials::IOSSecurityInterstitialJavaScriptFeature::
               GetInstance(),
