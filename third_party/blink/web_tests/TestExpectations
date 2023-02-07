@@ -3058,7 +3058,6 @@ crbug.com/1410224 [ Mac10.14 ] external/wpt/webxr/ar-module/xrSession_interactio
 crbug.com/1410224 [ Mac13-arm64 ] external/wpt/webxr/ar-module/xrSession_interactionMode.https.html [ Failure Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/dom-overlay/ar_dom_overlay_hit_test.https.html [ Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/webxr/events_input_source_recreation.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/gamepads-module/xrInputSource_gamepad_input_registered.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/hit-test/ar_hittest_source_cancel.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/hit-test/ar_hittest_subscription_inputSources.https.html [ Timeout ]
@@ -4861,7 +4860,6 @@ crbug.com/1072022 http/tests/security/frameNavigation/xss-ALLOWED-parent-navigat
 
 # Sheriff 2021-03-19
 crbug.com/1189976 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints.js [ Failure Pass Timeout ]
-crbug.com/1189976 [ Debug Mac12 ] http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints-editing-dom-from-inspector.js [ Failure Pass Timeout ]
 crbug.com/1190176 [ Linux ] fast/peerconnection/RTCPeerConnection-addMultipleTransceivers.html [ Crash Failure Pass ]
 
 crbug.com/1176039 [ Mac ] virtual/stable/media/stable/video-object-fit-stable.html [ Failure Pass ]
@@ -6358,7 +6356,12 @@ crbug.com/1395450 [ Debug Linux ] virtual/plz-dedicated-worker/http/tests/devtoo
 crbug.com/1395412 [ Mac10.15 ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
 crbug.com/1403736 [ Mac11-arm64 ] external/wpt/html/semantics/popovers/light-dismiss-event-ordering.tentative.html [ Timeout ]
 crbug.com/1396079 [ Mac ] inspector-protocol/memory/forcibly-purge-javascript-memory.js [ Crash Failure ]
-crbug.com/1395840 [ Mac ] http/tests/accessibility/slow-document-load.html [ Failure ]
+crbug.com/1395840 [ Mac10.15 Release ] http/tests/accessibility/slow-document-load.html [ Failure ]
+crbug.com/1395840 [ Mac11 Release ] http/tests/accessibility/slow-document-load.html [ Failure ]
+crbug.com/1395840 [ Mac11-arm64 Release ] http/tests/accessibility/slow-document-load.html [ Failure ]
+crbug.com/1395840 [ Mac12 ] http/tests/accessibility/slow-document-load.html [ Failure ]
+crbug.com/1395840 [ Mac12-arm64 Release ] http/tests/accessibility/slow-document-load.html [ Failure ]
+crbug.com/1395840 [ Mac13-arm64 Release ] http/tests/accessibility/slow-document-load.html [ Failure ]
 crbug.com/1404767 [ Debug Linux ] external/wpt/css/css-cascade/all-prop-revert-layer-noop.html [ Failure Timeout ]
 crbug.com/1406027 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/overflow-menu-hide-on-resize.html [ Failure ]
 crbug.com/1289607 [ Linux ] external/wpt/cookie-store/cookieStore_subscribe_arguments.https.any.html [ Failure ]
