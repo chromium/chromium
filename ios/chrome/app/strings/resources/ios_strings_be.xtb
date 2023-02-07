@@ -80,6 +80,7 @@
 <translation id="149095475893949513">Гэты вэб-сайт спрабуе спампаваць профіль канфігурацыі.</translation>
 <translation id="1491277525950327607">Каб уключыць або выключыць наладу, двойчы дакраніцеся</translation>
 <translation id="1492417797159476138">Вы ўжо захавалі гэта імя карыстальніка для гэтага сайта</translation>
+<translation id="1498283581832036924">Ваш уліковы запіс на вэб-сайце <ph name="WEBSITE" /> не будзе выдалены.</translation>
 <translation id="1506063256525392513">Гэта дае магчымасць рабіць і запампоўваць фота, а таксама сканіраваць QR-коды</translation>
 <translation id="1509486075633541495">Уваход на вэб-сайт</translation>
 <translation id="1509960214886564027">Функцыі на многіх сайтах могуць перастаць працаваць</translation>
@@ -218,6 +219,7 @@
 <translation id="2664621323652615289">Спыніць</translation>
 <translation id="2671426118752779020">Вы можаце выкарыстоўваць паролі, захаваныя ў Менеджары пароляў Google, у іншых праграмах на iPhone.</translation>
 <translation id="2690858294534178585">Камера выкарыстоўваецца</translation>
+<translation id="26915454213703967">Пошук на відарысе праз Google</translation>
 <translation id="2691653761409724435">Недаступна ў пазасеткавым рэжыме</translation>
 <translation id="2695507686909505111">Старонка перакладзена</translation>
 <translation id="2697526135132990015">Выйсці з уліковага запісу і выдаліць даныя</translation>
@@ -380,6 +382,7 @@
 <translation id="3819183753496523827">Вы па-за сеткай. Праверце падключэнне да інтэрнэту і паўтарыце спробу.</translation>
 <translation id="3835964409414434850">Перайсці на наступную ўкладку</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3851938967634752633">Паролі для вэб-сайтаў <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> і яшчэ <ph name="NUMBER_OF_ACCOUNTS" /> будуць выдалены. Вашы ўліковыя запісы захаваюцца.</translation>
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3861486700625780712">Адпісацца</translation>
 <translation id="3863769054730344136">Адправіць на вашы прылады</translation>
@@ -515,6 +518,7 @@
 <translation id="4833786495304741580">Аўтаматычна адпраўляе ў Google статыстыку выкарыстання і справаздачы аб збоях.</translation>
 <translation id="4840495572919996524">Закладкі, гісторыя, паролі і іншае больш не будуць сінхранізавацца з Уліковым запісам Google.</translation>
 <translation id="4844899002472726590">Праглядайце і змяняйце цікавыя вам тэмы</translation>
+<translation id="4848999860252535517">Выдаліць пароль для вэб-сайта <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Задайце пароль</translation>
 <translation id="4858786880085262208">Пераходзіць на HTTPS, калі гэта магчыма. Бяспечныя сайты могуць мець убудаванае змесціва, якое не з'яўляецца бяспечным.</translation>
 <translation id="4860895144060829044">Выклік</translation>
@@ -768,6 +772,7 @@
 <translation id="6598875554591387303">Сартаваць па выдаўцу</translation>
 <translation id="6603393121510733479">Ваша арганізацыя адключыла прыватны прагляд.
 <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Паролі для вэб-сайтаў <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> і <ph name="THIRD_WEBSITE" /> будуць выдалены. Вашы ўліковыя запісы захаваюцца.</translation>
 <translation id="6610002944194042868">Параметры перакладу</translation>
 <translation id="661266467055912436">Павышае бяспеку для вас і іншых карыстальнікаў у інтэрнэце.</translation>
 <translation id="6620279676667515405">Скасаваць</translation>
@@ -1045,6 +1050,7 @@
 <translation id="8756969031206844760">Абнавіць пароль?</translation>
 <translation id="8763613688786959833">Перайсці на апошнюю ўкладку</translation>
 <translation id="8764015330924122850">Адпісацца ад <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Паролі для вэб-сайтаў <ph name="WEBSITE" /> і <ph name="SECOND_WEBSITE" /> будуць выдалены. Вашы ўліковыя запісы захаваюцца.</translation>
 <translation id="8775144690796719618">Няправільны URL-адрас</translation>
 <translation id="8787968206789828143">Пошук у інтэрнэце</translation>
 <translation id="8792626944327216835">мікрафон</translation>
@@ -1094,6 +1100,7 @@
 <translation id="9093271241977565440">Націсніце на значок "Пошук" уверсе экрана</translation>
 <translation id="9094033019050270033">Абнавіць пароль</translation>
 <translation id="9097506547406246598">Не ўдалося адпісацца. Нешта пайшло не так.</translation>
+<translation id="9098541895599151034">Выдаліць паролі (<ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9100610230175265781">Патрабуецца фраза-пароль</translation>
 <translation id="9107664647686727385">Праверка наяўнасці раскрытых пароляў</translation>
 <translation id="9124387962554796433">Google можа выкарыстоўваць вашу гісторыю, каб персаналізаваць пошук і іншыя сэрвісы Google.</translation>

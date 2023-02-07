@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Preparing files</translation>
 <translation id="1015730422737071372">Provide additional details.</translation>
 <translation id="1019413721762100891">Off</translation>
-<translation id="1021110881106174305">Accepted cards</translation>
 <translation id="1021753677514347426">This problem happens because of a certificate that you or someone else installed on your device. The certificate is known to be used to monitor and intercept networks, and is not trusted by Chromium. While some legitimate cases for monitoring do exist, like on a school or company network, Chromium wants to make sure that you're aware it's happening, even if you can't stop it. Monitoring may happen in any browser or application that accesses the web.</translation>
 <translation id="1024111578869940408">Attackers sometimes mimic sites by making hard-to-see changes to the web address.</translation>
 <translation id="1028781062521375153">See details</translation>
@@ -709,7 +708,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2688969097326701645">Yes, continue</translation>
 <translation id="2691924980723297736">Safety warning</translation>
 <translation id="2692131511336778528">Science fiction and fantasy</translation>
-<translation id="2699302886720511147">Accepted Cards</translation>
 <translation id="2701514975700770343">Face down</translation>
 <translation id="2702801445560668637">Reading List</translation>
 <translation id="2704283930420550640">Value doesn't match format.</translation>
@@ -992,7 +990,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="342781501876943858">Chromium recommends resetting your password if you reused it on other sites.</translation>
 <translation id="3428151540071562330">One or more of the DnsOverHttpsTemplates server template URIs is invalid and will not be used.</translation>
 <translation id="3431216045099978607">Press |<ph name="ACCELERATOR" />| to exit full screen and see download.</translation>
-<translation id="3431636764301398940">Save this card to this device</translation>
 <translation id="3432601291244612633">Close page</translation>
 <translation id="3435738964857648380">Security</translation>
 <translation id="3438829137925142401">Use passwords saved in your Google Account</translation>
@@ -1123,7 +1120,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3744111561329211289">Background sync</translation>
 <translation id="3744286742364977428">Files that you download are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware and might be stored based on company policies.</translation>
 <translation id="3744899669254331632">You cannot visit <ph name="SITE" /> right now because the website sent scrambled credentials that Chromium cannot process. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
-<translation id="3745099705178523657">Once you confirm, card details from your Google Account will be shared with this site.</translation>
 <translation id="3748148204939282805">Attackers on <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> may trick you into doing something dangerous like installing software or revealing your personal information (for example, passwords, phone numbers or credit cards). <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Aviation industry</translation>
 <translation id="3752543821772132562">Ignored because <ph name="POLICY_NAME" /> is not set.</translation>
@@ -1141,7 +1137,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3781428340399460090">Hot pink</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth devices</translation>
-<translation id="3787705759683870569">Expires <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Size 16</translation>
 <translation id="3789841737615482174">Install</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
@@ -3088,7 +3083,6 @@ Additional details:
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
 <translation id="8623885649813806493">No matching passwords. Show all saved passwords.</translation>
 <translation id="8624354461147303341">Get discounts</translation>
-<translation id="8625384913736129811">Save This Card to This Device</translation>
 <translation id="8634957317623797170">54 mm x 86 mm</translation>
 <translation id="8637577059508742477">Your profile and browser are managed by <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">Envelope Kaku 3</translation>

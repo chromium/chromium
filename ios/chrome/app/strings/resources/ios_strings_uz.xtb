@@ -80,6 +80,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="149095475893949513">Bu sayt konfiguratsiya profilini yuklab olishga harakat qilmoqda.</translation>
 <translation id="1491277525950327607">Almashtirish uchun ikki marta bosing</translation>
 <translation id="1492417797159476138">Bu sayt uchun login allaqachon saqlangan</translation>
+<translation id="1498283581832036924"><ph name="WEBSITE" /> hisobingiz oʻchirilmaydi</translation>
 <translation id="1506063256525392513">Rasmlarni suratga olish va internetga yuklash, QR kodlarni skanerlash imkonini beradi</translation>
 <translation id="1509486075633541495">Saytga kirish</translation>
 <translation id="1509960214886564027">Aksariyat saytlardagi funksiyalar ishalamay qolishi mumkin</translation>
@@ -218,6 +219,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2664621323652615289">Toʻxtatish</translation>
 <translation id="2671426118752779020">Google Parollar menejeriga saqlangan parollarni iPhonedagi boshqa ilovalarda ishlatish mumkin.</translation>
 <translation id="2690858294534178585">Kamera band.</translation>
+<translation id="26915454213703967">Rasmdagi narsalarni Googledan qidirish</translation>
 <translation id="2691653761409724435">Oflayn rejimda mavjud emas</translation>
 <translation id="2695507686909505111">Sahifa tarjima qilindi</translation>
 <translation id="2697526135132990015">Chiqish va maʼlumotlarni tozalash</translation>
@@ -380,6 +382,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3819183753496523827">Siz internetga ulanmagansiz. Internetni tekshiring va qayta urining.</translation>
 <translation id="3835964409414434850">Keyingi varaqni ochish</translation>
 <translation id="385051799172605136">Orqaga</translation>
+<translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> va <ph name="NUMBER_OF_ACCOUNTS" /> ta hisob parollari oʻchiriladi. Hisoblaringiz oʻchirilmaydi.</translation>
 <translation id="3858860766373142691">Ism</translation>
 <translation id="3861486700625780712">Kuzatuvni bekor qilish</translation>
 <translation id="3863769054730344136">Qurilmalaringizga yuborish</translation>
@@ -515,6 +518,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="4833786495304741580">Foydalanish statistikasi va ishdan chiqish hisobotlari avtomatik tarzda Google serverlariga yuborilsin.</translation>
 <translation id="4840495572919996524">Bukmarklar, tarix, parollar va boshqa sozlamalaringiz va Google hisobingiz sinxronizatsiyasi uziladi</translation>
 <translation id="4844899002472726590">Qiziqarli mavzularni koʻrish va tahrirlash</translation>
+<translation id="4848999860252535517"><ph name="WEBSITE" /> paroli oʻchirilsinmi?</translation>
 <translation id="4854345657858711387">Maxfiy kod o‘rnating</translation>
 <translation id="4858786880085262208">Imkon boʻlganda HTTPS protokoliga yangilansin Xavfsiz saytlarda ham himoyasiz kontent joylanishi mumkin.</translation>
 <translation id="4860895144060829044">Chaqiruv</translation>
@@ -769,6 +773,7 @@ Har bir sayt uchun alohida parol ishlating.</translation>
 <translation id="6598875554591387303">Noshirlar asosida saralash</translation>
 <translation id="6603393121510733479">Inkognito rejimi tashkilotingiz tomonidan faolsizlantirildi.
 <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> va <ph name="THIRD_WEBSITE" /> parollari oʻchiriladi. Hisoblaringiz oʻchirilmaydi.</translation>
 <translation id="6610002944194042868">Tarjima parametrlari</translation>
 <translation id="661266467055912436">Siz va yaqinlaringizni internetdan yaxshiroq himoyalaydi.</translation>
 <translation id="6620279676667515405">Bekor qilish</translation>
@@ -1047,6 +1052,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8756969031206844760">Parolni yangilash</translation>
 <translation id="8763613688786959833">Oxirgi varaqni ochish</translation>
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> kuzatuvini bekor qilish</translation>
+<translation id="8766790350274092814"><ph name="WEBSITE" /> va <ph name="SECOND_WEBSITE" /> parollari oʻchiriladi. Hisoblaringiz oʻchirilmaydi.</translation>
 <translation id="8775144690796719618">URL manzil yaroqsiz</translation>
 <translation id="8787968206789828143">Internetda qidirish</translation>
 <translation id="8792626944327216835">mikrofon</translation>
@@ -1096,6 +1102,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="9093271241977565440">Ekranning yuqori qismida Qidiruv belgisini bosing</translation>
 <translation id="9094033019050270033">Parolni yangilash</translation>
 <translation id="9097506547406246598">Obuna bekor qilinmadi. Xatolik yuz berdi.</translation>
+<translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> ta hisob paroli oʻchirilsinmi?</translation>
 <translation id="9100610230175265781">Kodli ibora zarur</translation>
 <translation id="9107664647686727385">Oshkor etilgan parollar uchun tekshirish</translation>
 <translation id="9124387962554796433">Qidiruv va boshqa xizmatlarni sizga moslashtirish uchun Google tarix maʼlumotlaringizdan foydalanishi mumkin.</translation>

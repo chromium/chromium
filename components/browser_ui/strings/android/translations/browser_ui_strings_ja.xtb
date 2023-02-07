@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">広告</translation>
 <translation id="1919950603503897840">連絡先を選択</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">アクセスしたすべてのサイトでテキストと画像を拡大または縮小して表示します</translation>
 <translation id="1984937141057606926">サードパーティを除いて許可する</translation>
 <translation id="1989112275319619282">閲覧</translation>
 <translation id="1994173015038366702">サイトの URL</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">音声</translation>
 <translation id="2148716181193084225">今日</translation>
 <translation id="216989819110952009">緑色の眼鏡で眼を守っていても、ドロシーと彼女の仲間たちは目が眩みました</translation>
+<translation id="2176704795966505152">メインメニューにズーム オプションを表示する</translation>
 <translation id="2182457891543959921">サイトに周囲の 3D マップの作成またはカメラ位置の追跡を許可する前に確認します（推奨）</translation>
 <translation id="2212565012507486665">Cookie を許可</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> にカメラへのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもカメラをオンにしてください。</translation>
@@ -165,6 +167,7 @@
 <translation id="4008040567710660924">特定のサイトの Cookie を許可します。</translation>
 <translation id="4046123991198612571">次のトラック</translation>
 <translation id="4149994727733219643">ウェブページの簡易表示</translation>
+<translation id="4151930093518524179">デフォルトのズーム</translation>
 <translation id="4165986682804962316">サイトの設定</translation>
 <translation id="4169549551965910670">USB デバイスに接続されています</translation>
 <translation id="4194328954146351878">サイトが NFC デバイスの情報を参照および変更することを許可する前に確認する（推奨）</translation>
@@ -188,6 +191,7 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> にマイクへのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもマイクをオンにしてください。</translation>
 <translation id="4566417217121906555">マイクをミュート</translation>
 <translation id="4570913071927164677">詳細</translation>
+<translation id="4575264539271661854">アクセスしたサイトのテキストや画像をズームインしやすくします</translation>
 <translation id="4598549027014564149">シークレット モードのとき、サイトは Cookie を使用して関連サイトを含む他のサイトでの閲覧アクティビティを確認することができません。閲覧アクティビティは、広告のカスタマイズなどには使用されません。一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="4645575059429386691">保護者により管理されています</translation>
 <translation id="4670064810192446073">バーチャル リアリティ（VR）</translation>

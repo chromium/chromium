@@ -80,6 +80,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="149095475893949513">Dette nettstedet prøver å laste ned en konfigurasjonsprofil.</translation>
 <translation id="1491277525950327607">Dobbelttrykk for å slå innstillingen av/på</translation>
 <translation id="1492417797159476138">Du har allerede lagret dette brukernavnet for dette nettstedet</translation>
+<translation id="1498283581832036924"><ph name="WEBSITE" />-kontoen din slettes ikke</translation>
 <translation id="1506063256525392513">Dette gjør at du kan ta og laste opp bilder samt skanne QR-koder</translation>
 <translation id="1509486075633541495">Logg på nettstedet</translation>
 <translation id="1509960214886564027">Det kan hende at funksjoner på mange nettsteder slutter å fungere</translation>
@@ -218,6 +219,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2664621323652615289">Stopp</translation>
 <translation id="2671426118752779020">Du kan bruke passordene du har lagret i Google Passordlagring, i andre apper på iPhonen din.</translation>
 <translation id="2690858294534178585">Kameraet er i bruk</translation>
+<translation id="26915454213703967">Søk i bildet med Google</translation>
 <translation id="2691653761409724435">Ikke tilgjengelig uten nett</translation>
 <translation id="2695507686909505111">Siden er oversatt</translation>
 <translation id="2697526135132990015">Logg av og slett data</translation>
@@ -380,6 +382,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3819183753496523827">Du er uten nett. Sjekk internettilkoblingen din, og prøv på nytt.</translation>
 <translation id="3835964409414434850">Gå til neste fane</translation>
 <translation id="385051799172605136">Tilbake</translation>
+<translation id="3851938967634752633">Passord for <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> og <ph name="NUMBER_OF_ACCOUNTS" /> andre slettes. Kontoene dine slettes ikke.</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3861486700625780712">Slutt å følge</translation>
 <translation id="3863769054730344136">Send til enhetene dine</translation>
@@ -516,6 +519,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="4833786495304741580">Sender automatisk bruksstatistikk og programstopprapporter til Google.</translation>
 <translation id="4840495572919996524">Bokmerkene, loggen, passord med mer synkroniseres ikke lenger med Google-kontoen din.</translation>
 <translation id="4844899002472726590">Se og rediger emnene du er interessert i</translation>
+<translation id="4848999860252535517">Vil du slette passordet for <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Angi en adgangskode</translation>
 <translation id="4858786880085262208">Oppgrader til HTTPS når det er mulig. Sikre nettsteder kan bygge inn innhold som ikke er sikkert.</translation>
 <translation id="4860895144060829044">Ring</translation>
@@ -769,6 +773,7 @@ Prøv å bruke unike passord for hvert nettsted.</translation>
 <translation id="6598875554591387303">Sorter etter utgiver</translation>
 <translation id="6603393121510733479">Organisasjonen din har slått av privat surfing.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Passordene for <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> og <ph name="THIRD_WEBSITE" /> slettes. Kontoene dine slettes ikke.</translation>
 <translation id="6610002944194042868">Alternativer for oversettelse</translation>
 <translation id="661266467055912436">Øker sikkerheten for deg og alle andre på nettet.</translation>
 <translation id="6620279676667515405">Avbryt</translation>
@@ -1046,6 +1051,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8756969031206844760">Vil du oppdatere passordet?</translation>
 <translation id="8763613688786959833">Gå til siste fane</translation>
 <translation id="8764015330924122850">Slutt å følge <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Passordene for <ph name="WEBSITE" /> og <ph name="SECOND_WEBSITE" /> slettes. Kontoene dine slettes ikke.</translation>
 <translation id="8775144690796719618">Ugyldig nettadresse</translation>
 <translation id="8787968206789828143">Søk på nettet</translation>
 <translation id="8792626944327216835">mikrofon</translation>
@@ -1095,6 +1101,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9093271241977565440">Trykk på søkeikonet øverst på skjermen</translation>
 <translation id="9094033019050270033">Oppdater passordet</translation>
 <translation id="9097506547406246598">Kan ikke slutte å følge. Noe gikk galt.</translation>
+<translation id="9098541895599151034">Vil du slette <ph name="NUMBER_OF_ACCOUNTS" /> passord?</translation>
 <translation id="9100610230175265781">Det kreves en passordfrase</translation>
 <translation id="9107664647686727385">Sjekk om du har passord som er utsatt for sikkerhetsbrudd</translation>
 <translation id="9124387962554796433">Google kan bruke loggen din for å gi Søk og andre Google-tjenester et personlig preg.</translation>

@@ -6898,32 +6898,6 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 
       Als je het beleid niet toepast, wordt er in plaats daarvan altijd een bericht getoond als gebruikers acties uitvoeren die een dialoogvenster voor het selecteren van bestanden aanroepen, zoals bookmarks importeren, bestanden uploaden en links opslaan. Er wordt vanuit gegaan dat de gebruiker op Annuleren heeft geklikt in het dialoogvenster voor het selecteren van bestanden.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
-<translation id="7638726624761352254">Als je het beleid instelt, wordt een lijst met web-apps gespecificeerd die op de achtergrond worden geïnstalleerd zonder interactie met de gebruiker en die niet kunnen worden verwijderd of uitgezet door gebruikers.
-
-Elk lijstitem van het beleid is een object met een verplicht lid:
-<ph name="URL_LABEL" /> (de URL van de web-app die moet worden geïnstalleerd)
-
-en 6 optionele leden:
-- <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (voor hoe de web-app wordt geopend: de standaardinstelling is een nieuw tabblad)
-
-- <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (True als je <ph name="LINUX_OS_NAME" />- en <ph name="MS_WIN_NAME" />-snelkoppelingen wilt maken).
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" /> (Vanaf versie 90 van <ph name="PRODUCT_NAME" /> kun je de app-naam overschrijven als het geen progressive web-app (PWA) is, of kun je de tijdelijk geïnstalleerde app-naam overschrijven als het een PWA is, maar verificatie vereist is voordat de installatie kan worden afgerond. Als zowel <ph name="CUSTOM_NAME_LABEL" /> als <ph name="FALLBACK_APP_NAME_LABEL" /> zijn verstrekt, wordt die laatste genegeerd.)
-
-      - <ph name="OVERRIDE_APP_NAME_LABEL" />
-(Vanaf versie 99 voor <ph name="PRODUCT_OS_NAME" /> en versie 111 voor alle andere besturingssystemen kun je de app-naam definitief overschrijven voor alle web-apps en PWA's.)
-
-      - <ph name="CUSTOM_ICON_LABEL" />
-(Vanaf versie 99 voor <ph name="PRODUCT_OS_NAME" /> en versie 111 voor alle andere besturingssystemen kun je het app-icoon van geïnstalleerde apps overschrijven. De iconen moeten vierkant zijn, met een maximale grootte van 1 MB en een van de volgende indelingen hebben: jpeg, png, gif, webp, ico.
-      De hash-waarde moet de SHA256-hash van het icoonbestand zijn.)
-
-      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
-(Vanaf versie 107 voor <ph name="PRODUCT_NAME" />). Als je dit beleid toepast, wordt de opgegeven <ph name="URL_LABEL" /> geïnstalleerd als snelkoppeling, alsof je dit doet via de optie Snelkoppeling maken
-      in de GUI van de desktopbrowser.
-      Houd er rekening mee dat als het manifest in <ph name="URL_LABEL" /> wordt gewijzigd, de URL niet wordt geüpdatet als deze is geïnstalleerd als snelkoppeling.
-      Als je dit beleid niet toepast of niet instelt, wordt de web-app op de opgegeven <ph name="URL_LABEL" /> normaal geïnstalleerd.
-
-      Bekijk <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> voor het vastzetten van apps op de <ph name="PRODUCT_OS_NAME" />-plank.</translation>
 <translation id="7638764766629234761">Systeemmeldingen toestaan</translation>
 <translation id="7643151458117317518">Beleid om te bepalen of de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentiemeting kan worden uitgezet voor je gebruikers.
 

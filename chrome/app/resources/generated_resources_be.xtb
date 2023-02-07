@@ -376,6 +376,7 @@
 <translation id="1339009753652684748">Звяртацца да Памочніка, вымавіўшы "Ok Google". У мэтах эканоміі зараду акумулятара выберыце "Уключыць (рэкамендуецца)". Памочнік будзе адказваць, толькі калі прылада будзе падключана да крыніцы сілкавання або падчас зарадкі.</translation>
 <translation id="13392265090583506">Даступнасць</translation>
 <translation id="1340527397989195812">Стварыце рэзервовыя копіі файлаў мультымедыя з прылады з дапамогай праграмы "Файлы".</translation>
+<translation id="1341871421050612057">Ва ўліковым запісе <ph name="USERNAME" /> выкарыстоўваць сінхранізацыю нельга</translation>
 <translation id="1343865611738742294">Даць праграмам Linux доступ да прылад USB. Linux будзе забываць выдаленыя прылады USB.</translation>
 <translation id="1343920184519992513">Працягваць з месца, на якім вы спыніліся, і адкрываць пэўны набор старонак</translation>
 <translation id="134589511016534552">Укладкі мультымедыя таксама паказваюцца ў раздзеле "Адкрытыя ўкладкі"</translation>
@@ -3039,6 +3040,7 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Вы і Google</translation>
 <translation id="3722108462506185496">Памылка запуску сэрвісу віртуальнай машыны. Паўтарыце спробу.</translation>
+<translation id="3722624153992426516">Атрымана інструкцыя: <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Даступныя сеткі Wi-Fi</translation>
 <translation id="3727187387656390258">Праверыць выплыўное акно</translation>
@@ -3395,6 +3397,7 @@
 <translation id="402211067068791756">Будуць выдалены даныя (<ph name="TOTAL_USAGE" />), захаваныя паказанымі сайтамі</translation>
 <translation id="4022426551683927403">&amp;Дадаць у слоўнік</translation>
 <translation id="4025039777635956441">Выключыць гук на выбраным сайце</translation>
+<translation id="402707738228916911">Атрымана інструкцыя: <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027958407426528157">Адкрываць вэб-сайты ў праграмах, усталяваных на прыладзе <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Дадаць метады ўводу</translation>
 <translation id="4029556917477724407">Вярнуцца назад са старонкі "<ph name="PAGE_TITLE" />"</translation>
@@ -4134,6 +4137,7 @@
 <translation id="4713409221649555176">Выдаляць пры закрыцці ўсіх вокнаў</translation>
 <translation id="47158868804223727">Каб разгарнуць або згарнуць групу, націсніце на яе назву</translation>
 <translation id="4716483597559580346">Выканаць Powerwash для павышэння бяспекі</translation>
+<translation id="471759229191973607">Змяніць тэму</translation>
 <translation id="4722735765955348426">Пароль карыстальніка <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> абагульвае ваш экран.</translation>
 <translation id="4722989931633062466">Не дазволена паказваць запыты на ўваход ад старонніх сэрвісаў</translation>
@@ -5674,6 +5678,7 @@
 <translation id="6150961653851236686">На гэту мову перакладаюцца старонкі</translation>
 <translation id="6151323131516309312">Для пошуку на сайце <ph name="SITE_NAME" /> націсніце <ph name="SEARCH_KEY" /></translation>
 <translation id="6151771661215463137">Файл ужо існуе ў папцы спампоўвання.</translation>
+<translation id="6152918902620844577">Чакаецца наступная аперацыя</translation>
 <translation id="6154240335466762404">Выдаліць усе парты</translation>
 <translation id="615436196126345398">Пратакол</translation>
 <translation id="6155141482566063812">Фонавая ўкладка абагульвае ваш экран</translation>
@@ -7162,6 +7167,7 @@
 <translation id="7532009420053991888">Праграма <ph name="LINUX_APP_NAME" /> не адказвае. Каб закрыць яе, націсніце "Прымусова закрыць".</translation>
 <translation id="7535730537657706072">Каб ачысціць гісторыю прагляду сайтаў у рэжыме інкогніта на прыладзе, закрыйце ўсе ўкладкі ў рэжыме інкогніта</translation>
 <translation id="7537451260744431038">Сайты не могуць выкарыстоўваць файлы cookie для паляпшэння сваёй функцыянальнасці – напрыклад, для захавання інфармацыі пра тое, што вы ўвайшлі ва ўліковы запіс, або каб запамінаць тавары ў кошыку</translation>
+<translation id="7538088324298143359">Шукаць на відарысе праз сэрвіс "<ph name="SEARCH_ENGINE" />"</translation>
 <translation id="7540972813190816353">Адбылася памылка пры праверцы наяўнасці абнаўленняў: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> вярнуў на гэтай прыладзе ранейшую версію АС. Захавайце важныя файлы і перазапусціце прыладу. Усе даныя на ёй будуць выдалены.</translation>
 <translation id="7541773865713908457">Дзеянне <ph name="ACTION_NAME" /> (у праграме <ph name="APP_NAME" />)</translation>
@@ -7389,6 +7395,7 @@
 <translation id="7730683939467795481">Гэта старонка была зменена пашырэннем "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="7735165285389721951">Наладжванне Steam ужо запушчана. Перш чым паўтараць спробу, пачакайце, пакуль яно завяршыцца</translation>
 <translation id="7737115349420013392">Ідзе спалучэнне з прыладай "<ph name="DEVICE_NAME" />"...</translation>
+<translation id="7737203573077018777">Атрымана інструкцыя: <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /></translation>
 <translation id="7737846262459425222">Вы можаце выключыць гэту функцыю ў любы час у раздзеле "Налады &gt; Памочнік Google &gt; Кантэкст экрана".</translation>
 <translation id="7737948071472253612">Не дазволена выкарыстоўваць камеру</translation>
 <translation id="77381465218432215">Паказваць дыякрытычныя знакі і спецыяльныя сімвалы</translation>
@@ -7589,6 +7596,7 @@
 <translation id="7912080627461681647">Ваш пароль зменены на серверы. Выйдзіце і зноў увайдзіце ва ўліковы запіс.</translation>
 <translation id="7912974581251770345">Пераклад</translation>
 <translation id="7915457674565721553">Каб наладзіць бацькоўскі кантроль, падключыцеся да інтэрнэту</translation>
+<translation id="7916364730877325865">Ваша арганізацыя не дазваляе вам уключаць сінхранізацыю для гэтага ўліковага запісу</translation>
 <translation id="7918257978052780342">Зарэгістраваць</translation>
 <translation id="7919123827536834358">Аўтаматычна перакладаць з гэтых моў</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> с</translation>

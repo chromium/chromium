@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Wrthi'n paratoi ffeiliau</translation>
 <translation id="1015730422737071372">Rhowch ragor o fanylion</translation>
 <translation id="1019413721762100891">Diffodd</translation>
-<translation id="1021110881106174305">Cardiau sy'n cael eu derbyn</translation>
 <translation id="1021753677514347426">Mae'r broblem hon yn digwydd oherwydd tystysgrif rydych chi neu rywun arall wedi'i gosod ar eich dyfais. Mae'n hysbys bod y dystysgrif yn cael ei defnyddio i fonitro a rhyng-gipio rhwydweithiau, ac nid yw Chromium yn ymddiried ynddi. Er bod rhai achosion dilys yn bodoli ar gyfer monitro, fel ar rwydwaith ysgol neu gwmni, mae Chromium am sicrhau eich bod yn ymwybodol ei fod yn digwydd, hyd yn oed os na allwch ei atal. Gallai monitro ddigwydd mewn unrhyw borwr neu raglen sy'n defnyddio'r we.</translation>
 <translation id="1024111578869940408">Mae ymosodwyr yn dynwared gwefannau weithiau, gan wneud newidiadau sy'n anodd eu gweld yn y cyfeiriad gwe.</translation>
 <translation id="1028781062521375153">Gweld y manylion</translation>
@@ -708,7 +707,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2688969097326701645">Iawn, parhau</translation>
 <translation id="2691924980723297736">Rhybudd Diogelwch</translation>
 <translation id="2692131511336778528">Ffuglen wyddonol a ffantasi</translation>
-<translation id="2699302886720511147">Cardiau Derbyniol</translation>
 <translation id="2701514975700770343">Wyneb i lawr</translation>
 <translation id="2702801445560668637">Rhestr Ddarllen</translation>
 <translation id="2704283930420550640">Nid yw'r gwerth yn cyfateb i'r fformat.</translation>
@@ -991,7 +989,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="342781501876943858">Mae Chromium yn argymell ailosod eich cyfrinair os gwnaethoch ei ailddefnyddio ar wefannau eraill.</translation>
 <translation id="3428151540071562330">Mae un neu fwy o'r URI templed gweinydd DnsOverHttpsTemplates yn annilys ac ni chaiff ei ddefnyddio.</translation>
 <translation id="3431216045099978607">Pwyswch |<ph name="ACCELERATOR" />| i adael y sgrîn lawn a gweld y lawrlwythiad.</translation>
-<translation id="3431636764301398940">Cadw'r cerdyn hwn i'r ddyfais hon</translation>
 <translation id="3432601291244612633">Cau'r dudalen</translation>
 <translation id="3435738964857648380">Diogelwch</translation>
 <translation id="3438829137925142401">Defnyddiwch gyfrineiriau a gedwir yn eich Cyfrif Google</translation>
@@ -1122,7 +1119,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3744111561329211289">Cysoni yn y cefndir</translation>
 <translation id="3744286742364977428">Anfonir ffeiliau rydych wedi'u lawrlwytho i Google Cloud neu drydydd partïon i'w dadansoddi. Er enghraifft, mae'n bosib y byddant yn cael eu sganio am ddata sensitif neu faleiswedd a gallent gael eu storio yn seiliedig ar bolisïau cwmni.</translation>
 <translation id="3744899669254331632">Ni allwch fynd i <ph name="SITE" /> ar hyn o bryd gan fod y wefan wedi anfon manylion sydd wedi'u sgramblo na all Google eu prosesu. Mae gwallau ac ymosodiadau rhwydwaith yn rhai dros dro fel arfer, felly mae'n debyg y bydd y dudalen hon yn gweithio'n nes ymlaen.</translation>
-<translation id="3745099705178523657">Ar ôl i chi gadarnhau, bydd manylion cardiau o'ch Cyfrif Google yn cael eu rhannu â'r wefan hon.</translation>
 <translation id="3748148204939282805">Gall ymosodwyr ar <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> eich twyllo i wneud rhywbeth peryglus megis gosod meddalwedd neu ddatgelu eich gwybodaeth bersonol (er enghraifft, cyfrineiriau, rhifau ffôn neu rifau cardiau credyd). <ph name="BEGIN_LEARN_MORE_LINK" />Dysgu rhagor<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Diwydiant hedfan</translation>
 <translation id="3752543821772132562">Wedi'i anwybyddu oherwydd nid yw <ph name="POLICY_NAME" /> wedi ei osod.</translation>
@@ -1140,7 +1136,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3781428340399460090">Pinc Llachar</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dyfeisiau Bluetooth</translation>
-<translation id="3787705759683870569">Yn darfod <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Maint 16</translation>
 <translation id="3789841737615482174">Gosod</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> modfedd)</translation>
@@ -3084,7 +3079,6 @@ Manylion ychwanegol:
 <translation id="8620276786115098679">Amlen Kaku 7</translation>
 <translation id="8623885649813806493">Nid oes unrhyw gyfrineiriau sy'n cyfateb. Dangos yr holl gyfrineiriau sydd wedi'u cadw.</translation>
 <translation id="8624354461147303341">Cael gostyngiadau</translation>
-<translation id="8625384913736129811">Cadw'r Cerdyn Hwn i'r Ddyfais Hon</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637577059508742477">Rheolir eich proffil a'ch porwr gan <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">Amlen Kaku 3</translation>

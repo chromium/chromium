@@ -92,6 +92,7 @@
 <translation id="7045244423563602563">Upravte Chromium podľa seba</translation>
 <translation id="7099326575020694068">Chromium nemôže použiť váš fotoaparát v režime Rozdelené zobrazenie</translation>
 <translation id="7118091470949186573">Chromium môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
+<translation id="7165402419892018581">Ak chcete využívať automatické dopĺňanie, vyberte si Chromium</translation>
 <translation id="7175400662502680481">Pri porušení ochrany údajov došlo k prezradeniu vášho hesla. Správca hesiel odporúča okamžite ho zmeniť.</translation>
 <translation id="7208566199746267865">Vaše účty sú na webe, čím Chromium šetrí váš čas. Účty môžete pridávať alebo odstraňovať v nastaveniach.</translation>
 <translation id="725427773388857052">Chromium vás môže chrániť pred porušeniami ochrany údajov, nebezpečnými webmi a ďalšími hrozbami.</translation>
@@ -106,6 +107,7 @@
 <translation id="7746854981345936341">Tip pre Chromium: niektoré tlačidlá sa teraz nachádzajú v dolnej časti obrazovky, napríklad Dopredu, Späť a Hľadať.</translation>
 <translation id="7763454117143368771">Používajte Chromium ako svoj predvolený prehliadač, aby ste sa naďalej chránili pred nebezpečnými webmi a zaistili ochranu svojich hesiel</translation>
 <translation id="7812317783196516890">Prihlásili ste sa do účtu spravovaného doménou <ph name="DOMAIN" /> a synchronizujete s ním svoje údaje. Na tejto doméne môže jeho správca teraz nastavovať pravidlá pre používateľov, ktoré sú preň špecifické a môžu zmeniť správanie prehliadača Chromium.</translation>
+<translation id="7859018312476869945">Keď zadávate v paneli s adresou alebo vyhľadávacom poli, prehliadač Chromium odosiela zadaný text do vášho predvoleného vyhľadávača, aby dostal lepšie návrhy. Táto možnosť je v režime inkognito vypnutá.</translation>
 <translation id="786327964234957808">Účet na synchronizáciu <ph name="USER_EMAIL1" /> prepínate na <ph name="USER_EMAIL2" />. Vaše existujúce údaje prehliadača Chromium spravuje doména <ph name="DOMAIN" />. Touto akciou odstránite údaje z vášho zariadenia, avšak zostanú naďalej v účte <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Začnite používať skener prehliadača Chromium</translation>
 <translation id="7928628054454574139">Chromium otvoríte vždy, keď klepnete na odkazy v iných aplikáciách</translation>
@@ -115,6 +117,7 @@
 <translation id="8073677936375100957">Chcete vymazať údaje prehliadača Chromium z tohto zariadenia?</translation>
 <translation id="8240981428553046115">Prehliadaču Chromium sa nepodarilo skontrolovať dostupnosť aktualizácií. Skúste to neskôr.</translation>
 <translation id="8409374867500149834">Máte nasilnejšie zabezpečenie prehliadača Chromium proti škodlivým webom</translation>
+<translation id="8460301378281140593">V sekcii Nastavenia iPhonu otvorte Možnosti hesla a vyberte Chromium</translation>
 <translation id="858114650497379505">Heslá, ktoré ste uložili do správcu hesiel, môžete v iPhone použiť v iných aplikáciách.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autori Chromium. Všetky práva vyhradené.</translation>
 <translation id="8603022514504485810">Správcovi hesiel Google sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra alebo <ph name="BEGIN_LINK" />skontrolujte heslá vo svojom účte Google.<ph name="END_LINK" /></translation>

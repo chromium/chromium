@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Bestanden voorbereiden</translation>
 <translation id="1015730422737071372">Aanvullende gegevens verzenden</translation>
 <translation id="1019413721762100891">Uit</translation>
-<translation id="1021110881106174305">Geaccepteerde passen</translation>
 <translation id="1021753677514347426">Dit probleem doet zich voor als gevolg van een certificaat dat jij of iemand anders heeft geïnstalleerd op je apparaat. Het certificaat staat erom bekend dat het wordt gebruikt voor netwerkmonitoring en -onderschepping en wordt niet vertrouwd door Chromium. Hoewel er ook legitieme certificaten bestaan, bijvoorbeeld op een school- of zakelijk netwerk, wil Chromium zeker weten dat je begrijpt wat er gebeurt, ook als je het niet kunt tegenhouden. Monitoring kan plaatsvinden in elke browser of app met toegang tot internet.</translation>
 <translation id="1024111578869940408">Aanvallers maken sites soms na door wijzigingen in het webadres aan te brengen die je moeilijk kunt zien.</translation>
 <translation id="1028781062521375153">Details bekijken</translation>
@@ -317,7 +316,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="168693727862418163">Deze beleidswaarde kan niet worden gevalideerd op basis van het bijbehorende schema en wordt genegeerd.</translation>
 <translation id="168841957122794586">Het servercertificaat bevat een zwakke cryptografische sleutel.</translation>
 <translation id="1689333818294560261">Bijnaam</translation>
-<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Hoe je je gegevens kunt beheren:<ph name="END_BOLD" /> Chrome verwijdert automatisch onderwerpen die ouder zijn dan 4 weken. Terwijl je browset, kan er een onderwerp opnieuw verschijnen in de lijst. In de Chrome-instellingen kun je ook altijd onderwerpen blokkeren als je niet wilt dat Chrome deze met sites deelt en advertentieonderwerpen uitzetten.</translation>
+<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Hoe je je gegevens kunt beheren:<ph name="END_BOLD" /> Chrome verwijdert automatisch onderwerpen die ouder zijn dan 4 weken. Als je blijft browsen, kan een onderwerp opnieuw in de lijst verschijnen. Je kunt ook onderwerpen blokkeren waarvan je niet wilt dat de Chrome ze deelt met sites, en advertentieonderwerpen op elk moment uitzetten via de Chrome-instellingen.</translation>
 <translation id="1697532407822776718">Je bent nu klaar!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -347,7 +346,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1736420071277903564">Computer</translation>
 <translation id="1740951997222943430">Geef een geldige vervalmaand op</translation>
 <translation id="1741613555002899862">Moet gespecificeerd zijn en een geldige tekenreeks zijn als DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> is.</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Hoe we deze gegevens gebruiken:<ph name="END_BOLD" /> Chrome registreert interessante onderwerpen terwijl je browset. Onderwerplabels zijn vooraf gedefinieerd en omvatten bijvoorbeeld Kunst en entertainment, Shopping en Sport. Later kan een site die je bezoekt Chrome om een aantal van je onderwerpen (maar niet je browsegeschiedenis) vragen om de advertenties te personaliseren die je te zien krijgt.</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Hoe we deze gegevens gebruiken:<ph name="END_BOLD" /> Chrome registreert interessante onderwerpen terwijl je browset. Onderwerplabels zijn vooraf gedefinieerd en omvatten bijvoorbeeld Kunst en entertainment, Shopping en Sport. Later kan een site die je bezoekt Chrome om een aantal van je onderwerpen vragen (maar niet je browsegeschiedenis) om de advertenties te personaliseren die je te zien krijgt.</translation>
 <translation id="1745880797583122200">Je browser wordt beheerd</translation>
 <translation id="1746113442205726301">Beeldverschuiving Y</translation>
 <translation id="1746531169546376413">0 graden</translation>
@@ -708,7 +707,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2688969097326701645">Ja, doorgaan</translation>
 <translation id="2691924980723297736">Veiligheidswaarschuwing</translation>
 <translation id="2692131511336778528">Sciencefiction en fantasy</translation>
-<translation id="2699302886720511147">Geaccepteerde passen</translation>
 <translation id="2701514975700770343">Bedrukte zijde omlaag</translation>
 <translation id="2702801445560668637">Leeslijst</translation>
 <translation id="2704283930420550640">Waarde komt niet overeen met notatie.</translation>
@@ -824,7 +822,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="301521992641321250">Automatisch geblokkeerd</translation>
 <translation id="3016780570757425217">Je locatie weten</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, druk op Tab en daarna op Enter om de suggestie te verwijderen.</translation>
-<translation id="3023165109041533893">Met door sites voorgestelde advertenties worden je browsegeschiedenis en identiteit beschermd terwijl sites je relevante advertenties kunnen laten zien. Op basis van je activiteit kan een site die je hebt bezocht gerelateerde advertenties voorstellen terwijl je browset. In de instellingen kun je een lijst van deze sites bekijken en ongewenste sites blokkeren.</translation>
+<translation id="3023165109041533893">Met door sites voorgestelde advertenties worden je browsegeschiedenis en identiteit beschermd terwijl de sites je relevante advertenties kunnen laten zien. Op basis van je activiteit kan een site die je hebt bezocht gerelateerde advertenties voorstellen terwijl je browset. In de instellingen kun je een lijst van deze sites bekijken en ongewenste sites blokkeren.</translation>
 <translation id="3024663005179499861">Onjuist beleidstype</translation>
 <translation id="3029752078111257850">Wereldnieuws</translation>
 <translation id="3037177537145227281">Prijs wordt gevolgd</translation>
@@ -836,7 +834,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="306573536155379004">Game gestart.</translation>
 <translation id="3068991664510324412">Computer- en videogames</translation>
 <translation id="3080254622891793721">Afbeelding</translation>
-<translation id="3081538120861307764">Beperkte typen gegevens, zoals het tijdstip waarop een advertentie aan je wordt getoond, worden gedeeld tussen sites om de prestaties van een advertentie te meten.</translation>
+<translation id="3081538120861307764">Slechts bepaalde soorden gegevens, zoals het tijdstip waarop een advertentie aan je wordt getoond, worden gedeeld tussen sites om de prestaties van advertenties te meten.</translation>
 <translation id="3082007635241601060">Laat Google je winkelwagens gebruiken om gepersonaliseerde kortingen te vinden als deze beschikbaar zijn</translation>
 <translation id="3086579638707268289">Je activiteit op internet wordt in de gaten gehouden</translation>
 <translation id="3087734570205094154">Onderaan</translation>
@@ -914,7 +912,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om snel een nieuwe afspraak in Google Agenda te maken</translation>
 <translation id="3261488570342242926">Meer informatie over virtuele kaarten</translation>
 <translation id="3264837738038045344">Knop 'Chrome-instellingen beheren', druk op Enter om naar je Chrome-instellingen te gaan</translation>
-<translation id="3266367459139339908">We introduceren nieuwe manieren om te beperken wat sites over je kunnen leren als ze je gepersonaliseerde advertenties laten zien, bijvoorbeeld:</translation>
+<translation id="3266367459139339908">We introduceren nieuwe manieren om te beperken wat sites over jou te weten kunnen komen wanneer ze je gepersonaliseerde advertenties laten zien, bijvoorbeeld:</translation>
 <translation id="3266793032086590337">Waarde (conflict)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Geen sites geblokkeerd, waaronder gerelateerde sites}=1{1 site geblokkeerd, waaronder gerelateerde sites}other{# sites geblokkeerd, waaronder gerelateerde sites}}</translation>
 <translation id="3268451620468152448">Geopende tabbladen</translation>
@@ -946,7 +944,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3339440062908617027">Hardlopen en wandelen</translation>
 <translation id="3339446062576134663">Cloud (Ash)</translation>
 <translation id="3340978935015468852">instellingen</translation>
-<translation id="3342018947887487892">Later kan een site die je bezoekt om deze informatie vragen. Dit kunnen je advertentieonderwerpen zijn of advertenties die worden voorgesteld door sites die je hebt bezocht.</translation>
+<translation id="3342018947887487892">Later kan een site die je bezoekt vragen om je advertentieonderwerpen of om advertenties die zijn voorgesteld door sites die je hebt bezocht.</translation>
 <translation id="3342366525167526994">Body art</translation>
 <translation id="3345782426586609320">Ogen</translation>
 <translation id="3349952286488694786">SRA2</translation>
@@ -988,7 +986,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="342781501876943858">Chromium raadt je aan je wachtwoord te resetten als je het voor andere sites hebt hergebruikt.</translation>
 <translation id="3428151540071562330">Een of meer van de servertemplate-URI's voor DnsOverHttpsTemplates zijn ongeldig en worden niet gebruikt.</translation>
 <translation id="3431216045099978607">Druk op |<ph name="ACCELERATOR" />| om het volledige scherm te sluiten en de download te bekijken.</translation>
-<translation id="3431636764301398940">Deze creditcard opslaan op dit apparaat</translation>
 <translation id="3432601291244612633">Pagina sluiten</translation>
 <translation id="3435738964857648380">Beveiliging</translation>
 <translation id="3438829137925142401">Wachtwoorden gebruiken die zijn opgeslagen in je Google-account</translation>
@@ -1117,7 +1114,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3744111561329211289">Synchronisatie op de achtergrond</translation>
 <translation id="3744286742364977428">Bestanden die je downloadt, worden voor analyse naar Google Cloud of naar derden gestuurd. Ze kunnen bijvoorbeeld worden gescand op gevoelige gegevens of malware en worden opgeslagen volgens het bedrijfsbeleid.</translation>
 <translation id="3744899669254331632">Je kunt <ph name="SITE" /> op dit moment niet bezoeken, omdat de website gecodeerde inloggegevens heeft verstuurd die niet door Chromium kunnen worden verwerkt. Aangezien netwerkfouten en aanvallen doorgaans van tijdelijke aard zijn, zal deze pagina later waarschijnlijk wel werken.</translation>
-<translation id="3745099705178523657">Nadat je hebt bevestigd, worden de kaartgegevens uit je Google-account gedeeld met deze site.</translation>
 <translation id="3748148204939282805">Cybercriminelen op <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> kunnen proberen om je te misleiden zodat je iets gevaarlijks doet, bijvoorbeeld software installeren of je persoonlijke informatie bekendmaken (zoals wachtwoorden, telefoonnummers of creditcardgegevens). <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Luchtvaartindustrie</translation>
 <translation id="3752543821772132562">Genegeerd omdat <ph name="POLICY_NAME" /> niet is ingesteld.</translation>
@@ -1135,7 +1131,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3781428340399460090">Felroze</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-apparaten</translation>
-<translation id="3787705759683870569">Verloopt: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Grootte 16</translation>
 <translation id="3789841737615482174">Installeren</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
@@ -1226,7 +1221,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4063924980214801036">Gebruik apparaatontgrendeling om kaarten sneller te bevestigen</translation>
 <translation id="4067098466788473230">Studiebeurzen en -toelagen</translation>
 <translation id="4067947977115446013">Geldig adres toevoegen</translation>
-<translation id="4070790659619547722">Bij advertentiemeting worden beperkte typen gegevens gedeeld tussen sites om de prestaties van hun advertenties te meten. Denk bijvoorbeeld aan het tijdstip waarop je een advertentie te zien kreeg.</translation>
+<translation id="4070790659619547722">Bij advertentiemeting worden beperkte typen gegevens gedeeld tussen sites om de prestaties van hun advertenties te meten. Denk bijvoorbeeld aan het tijdstip waarop een advertentie aan je is getoond.</translation>
 <translation id="4072193657607981494">Beleid laden</translation>
 <translation id="4072486802667267160">Er is een fout opgetreden bij het verwerken van je bestelling. Probeer het opnieuw.</translation>
 <translation id="4073376909608563327">Kan apparaatontgrendeling niet gebruiken</translation>
@@ -1419,7 +1414,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="449126573531210296">Gesynchroniseerde wachtwoorden versleutelen met je Google-account</translation>
 <translation id="4492519888999857993">Deze functies staan standaard uit. Ze zijn niet meer beschikbaar in toekomstige versies van Chrome.</translation>
 <translation id="4493480324863638523">Ongeldige URL. Dit moet een URL met een standaardschema zijn, zoals http://example.com of https://example.com.</translation>
-<translation id="4494323206460475851">Je kunt advertentieonderwerpen bekijken in de instellingen en de onderwerpen blokkeren die je niet met sites wilt delen. Chrome verwijdert ook automatisch advertentieonderwerpen die ouder zijn dan 4 weken.</translation>
+<translation id="4494323206460475851">Je kunt advertentieonderwerpen zien in je instellingen en de onderwerpen blokkeren die je niet wilt delen met sites. Chrome verwijdert advertentieonderwerpen die ouder zijn dan 4 weken ook automatisch.</translation>
 <translation id="4500587658229086076">onveilige content</translation>
 <translation id="4506176782989081258">Validatiefout: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Neem contact op met de systeembeheerder</translation>
@@ -1877,7 +1872,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5598944008576757369">Betaalmethode kiezen</translation>
 <translation id="560412284261940334">Beheer wordt niet ondersteund</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Hoe je je gegevens kunt beheren:<ph name="END_BOLD" /> Chrome verwijdert automatisch sites die ouder zijn dan 4 weken. Een site die je opnieuw bezoekt, kan weer op de lijst komen te staan. Je kunt ook op elk gewenst moment via de Chrome-instellingen voorkomen dat een site advertenties voor je voorstelt of door sites voorgestelde advertenties uitzetten.</translation>
+<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Hoe je je gegevens kunt beheren:<ph name="END_BOLD" /> Chrome verwijdert automatisch sites die ouder zijn dan 4 weken. Een site die je opnieuw bezoekt, kan weer in de lijst verschijnen. Via de Chrome-instellingen kun je ook altijd voorkomen dat een site advertenties voor je voorstelt of door sites voorgestelde advertenties uitzetten.</translation>
 <translation id="5610142619324316209">Controleer de verbinding</translation>
 <translation id="5610807607761827392">Je kunt passen en adressen beheren in <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Deze pagina vertalen met Google Translate</translation>
@@ -2053,7 +2048,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6051221802930200923">Je kunt <ph name="SITE" /> momenteel niet bezoeken, omdat de website gebruikmaakt van certificaatpinning. Netwerkfouten en aanvallen zijn doorgaans tijdelijk, dus deze pagina werkt later waarschijnlijk correct.</translation>
 <translation id="6051898664905071243">Aantal pagina's:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053735090575989697">Bekijk ons Privacybeleid voor meer informatie over hoe Google je gegevens beschermt.</translation>
+<translation id="6053735090575989697">In ons Privacybeleid vind je meer informatie over hoe Google je gegevens beschermt.</translation>
 <translation id="6055888660316801977">Pagina waarop staat dat er geen overeenkomende inloggegevens zijn voor beveiligde betaling</translation>
 <translation id="6058977677006700226">Je passen gebruiken op al je apparaten?</translation>
 <translation id="6059925163896151826">USB-apparaten</translation>
@@ -2318,7 +2313,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6786145470008421571">Envelop 6 x 9 inch</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786747875388722282">Extensies</translation>
-<translation id="6787094689637422836">We lanceren nieuwe privacyfuncties waarmee je meer controle hebt over de advertenties die je te zien krijgt.</translation>
+<translation id="6787094689637422836">We lanceren nieuwe privacyfuncties die je meer controle geven over de advertenties die je te zien krijgt.</translation>
 <translation id="678982761784843853">ID's van beschermde content</translation>
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="679355240208270552">Genegeerd omdat de standaard zoekoptie is uitgezet door het beleid.</translation>
@@ -2626,7 +2621,7 @@ Aanvullende informatie:
 <translation id="7507075214339298899">Envelop #9</translation>
 <translation id="7508255263130623398">Geretourneerde apparaat-ID voor beleid is leeg of komt niet overeen met de huidige apparaat-ID</translation>
 <translation id="7508870219247277067">Avocadogroen</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Hoe sites deze gegevens gebruiken:<ph name="END_BOLD" /> Sites kunnen informatie over je interesses opslaan in Chrome. Als je bijvoorbeeld een site over marathontraining bezoekt, kan de site besluiten dat je geïnteresseerd bent in hardloopschoenen. Als je later een andere site bezoekt, kan die site een advertentie voor hardloopschoenen laten zien die door de eerste site is voorgesteld.</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Hoe sites deze gegevens gebruiken:<ph name="END_BOLD" /> Sites kunnen informatie over wat je leuk vindt opslaan in Chrome. Als je bijvoorbeeld een site over marathontraining bezoekt, kan de site besluiten dat je geïnteresseerd bent in hardloopschoenen. Als je later een andere site bezoekt, kan die site een advertentie voor hardloopschoenen tonen die door de eerste site is voorgesteld.</translation>
 <translation id="7510269639068718544">Katten</translation>
 <translation id="7511955381719512146">Het is mogelijk dat je <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> moet bezoeken van het wifi-netwerk dat je gebruikt.</translation>
 <translation id="7512685745044087310">Dit beleid kan niet tegelijkertijd zijn ingesteld op True en verplicht zijn. Daarom is het veranderd naar aanbevolen.</translation>
@@ -2758,13 +2753,13 @@ Aanvullende informatie:
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7773005668374414287">Dezelfde volgorde met de bedrukte zijde omhoog</translation>
 <translation id="7785790577395078482">deze tablet</translation>
-<translation id="7790488044432570133">Sites die je bezoekt, kunnen Chrome om informatie vragen zodat ze de prestaties van hun advertenties kunnen meten. Met Chrome kunnen sites beperkte typen gegevens verzamelen, zoals het tijdstip waarop je een advertentie te zien kreeg.</translation>
+<translation id="7790488044432570133">Sites die je bezoekt kunnen Chrome om informatie vragen waarmee ze de prestaties van hun advertenties kunnen meten. Met Chrome kunnen sites slechts bepaalde soorten gegevens verzamelen, zoals het tijdstip waarop je een advertentie te zien kreeg.</translation>
 <translation id="7791011319128895129">Niet uitgebracht</translation>
 <translation id="7791196057686275387">Bundelen</translation>
 <translation id="7791543448312431591">Toevoegen</translation>
 <translation id="7798389633136518089">Genegeerd omdat het beleid niet is ingesteld door een cloudbron.</translation>
 <translation id="7800304661137206267">De verbinding is geëncrypt met <ph name="CIPHER" />, met <ph name="MAC" /> voor berichtverificatie en <ph name="KX" /> als mechanisme voor sleuteluitwisseling.</translation>
-<translation id="7800977246388195491">Chrome stelt interessante onderwerpen vast op basis van je recente browsegeschiedenis. Ook kunnen sites die je bezoekt, vaststellen wat je leuk vindt. Later kunnen sites om deze gegevens vragen om de advertenties te personaliseren die je te zien krijgt. Je kunt kiezen welke onderwerpen en sites worden gebruikt om advertenties te laten zien.</translation>
+<translation id="7800977246388195491">Chrome stelt interessante onderwerpen vast op basis van je recente browsegeschiedenis. Sites die je bezoekt, kunnen ook vaststellen wat je leuk vindt. Later kunnen sites om deze informatie vragen om de advertenties te personaliseren die je te zien krijgt. Je kunt kiezen welke onderwerpen en sites worden gebruikt om advertenties tonen.</translation>
 <translation id="7802523362929240268">Site is legitiem</translation>
 <translation id="7802989406998618639">Geef de beveiligingscode van <ph name="NUMBER_OF_DIGITS" /> cijfers op de <ph name="SIDE_OF_CARD" /> op, zodat je bank kan verifiëren dat jij het bent</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
@@ -3072,13 +3067,12 @@ Aanvullende informatie:
 <translation id="860043288473659153">Naam kaarthouder</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Welke gegevens worden gebruikt:<ph name="END_BOLD" /> Je activiteit op een site die je op dit apparaat via Chrome bezoekt.</translation>
 <translation id="8606726445206553943">Je MIDI-apparaten gebruiken</translation>
-<translation id="8606988009912891950">Met advertentieonderwerpen kunnen sites je relevante advertenties laten zien en tegelijkertijd je browsegeschiedenis en identiteit beschermen. Chrome kan interessante onderwerpen vaststellen op basis van je recente browsegeschiedenis. Later kan een site die je bezoekt Chrome om relevante onderwerpen vragen om de advertenties te personaliseren die je te zien krijgt.</translation>
+<translation id="8606988009912891950">Met advertentieonderwerpen kunnen sites je relevante advertenties laten zien terwijl je browsegeschiedenis en identiteit worden beschermd. Chrome stelt interessante onderwerpen vast op basis van je recente browsegeschiedenis. Later kan een app die je gebruikt relevante onderwerpen opvragen bij Chrome om zo de advertenties te personaliseren die je te zien krijgt.</translation>
 <translation id="8617269623452051934">je apparaatgebruik</translation>
 <translation id="861775596732816396">Grootte 4</translation>
 <translation id="8620276786115098679">Envelop Kaku 7</translation>
 <translation id="8623885649813806493">Geen overeenkomende wachtwoorden. Alle opgeslagen wachtwoorden bekijken.</translation>
 <translation id="8624354461147303341">Kortingen zoeken</translation>
-<translation id="8625384913736129811">Deze pas opslaan op dit apparaat</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637577059508742477">Je profiel en browser worden beheerd door <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">Envelop Kaku 3</translation>
@@ -3182,7 +3176,7 @@ Aanvullende informatie:
 <translation id="8876033571432926051">Casual games</translation>
 <translation id="8877780815363510165">Vissen</translation>
 <translation id="8884537526797090108">Kan geen vertrouwelijke content opnemen</translation>
-<translation id="8890798179125483517">Chrome verwijdert automatisch onderwerpen en sites die advertenties voorstellen als ze ouder zijn dan 4 weken. Je kunt ook specifieke ongewenste onderwerpen en sites blokkeren.</translation>
+<translation id="8890798179125483517">Chrome verwijdert onderwerpen en sites die advertenties voorstellen die ouder zijn dan 4 weken automatisch. Je kunt ook specifieke onderwerpen en sites blokkeren.</translation>
 <translation id="8891727572606052622">Ongeldige proxymodus.</translation>
 <translation id="8894794286471754040">Lange zijde eerst</translation>
 <translation id="8897428486789851669">Zwemmen</translation>
@@ -3294,8 +3288,8 @@ Aanvullende informatie:
 <translation id="9155211586651734179">Aangesloten audiorandapparaten</translation>
 <translation id="9157595877708044936">Bezig met instellen...</translation>
 <translation id="9164742147345933553">os://flags</translation>
-<translation id="9165305804774426672">Sites die je bezoekt, kunnen ook vaststellen wat je leuk vindt op basis van je activiteit op de site. Als je bijvoorbeeld een site bezoekt waarop hardloopschoenen voor lange afstanden worden verkocht, kan de site besluiten dat je geïnteresseerd bent in marathons.</translation>
-<translation id="9166851138617700776">Meer informatie over door sites voorgestelde advertenties en advertentiemetingen</translation>
+<translation id="9165305804774426672">Sites die je bezoekt, kunnen ook vaststellen wat je leuk vindt op basis van je activiteit op de site. Als je bijvoorbeeld een site bezoekt die hardloopschoenen voor lange afstanden verkoopt, kan de site besluiten dat je geïnteresseerd bent in marathons.</translation>
+<translation id="9166851138617700776">Meer over door sites voorgestelde advertenties en advertentiemetingen</translation>
 <translation id="9168814207360376865">Toestaan dat sites controleren of je betaalmethoden hebt opgeslagen</translation>
 <translation id="9169664750068251925">Altijd blokkeren op deze site</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> toevoegen aan startscherm</translation>

@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">engleski (SAD), sa tastaturom Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
 <translation id="1521655867290435174">Google tabele</translation>
+<translation id="1521795806314479294">Priprema se <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">Otvaraju se Linux datoteke…</translation>
 <translation id="1547964879613821194">kanadska engleska</translation>
 <translation id="1556189134700913550">Primeni na sve</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Stavke (<ph name="NUMBER_OF_ITEMS" />) se dodaju u datoteku...</translation>
 <translation id="1722687688096767818">Dodaje se profil…</translation>
 <translation id="1726100011689679555">Serveri imena</translation>
+<translation id="1727562178154619254">Spremno za sinhronizaciju</translation>
 <translation id="1729953886957086472">nemački (Nemačka)</translation>
 <translation id="1730235522912993863">kineski, čangčije</translation>
 <translation id="1731889557567069540">Kopiranih stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -479,6 +481,7 @@
 <translation id="4973523518332075481">Koristite naziv čiji je maksimalni broj znakova <ph name="MAX_LENGTH" /></translation>
 <translation id="4973970068702235170">Dodavanje u zip datoteku nije uspelo, neočekivana greška: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">japanski</translation>
+<translation id="4987699874727873250">engleski (Indija)</translation>
 <translation id="4988205478593450158">Želite li stvarno da izbrišete „<ph name="FILE_NAME" />“?</translation>
 <translation id="498902553138568924">Crveni leptir</translation>
 <translation id="4992066212339426712">Uključi zvuk</translation>
@@ -509,6 +512,7 @@
        Ako uklonite uređaj dok se još koristi, može da dođe do gubitka podataka. Sačekajte da se operacija završi, pa izbacite uređaj pomoću aplikacije Datoteke.</translation>
 <translation id="5163869187418756376">Deljenje nije uspelo. Proverite vezu i pokušajte ponovo kasnije.</translation>
 <translation id="516592729076796170">Američka Dvorak tastatura za programere</translation>
+<translation id="5167102019886320507">Pripremaju se stavke (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="5177526793333269655">Prikaz sličica</translation>
 <translation id="5181896909298187506">Nema nedavnih fajlova</translation>
 <translation id="5194713942430106590">Kliknite da biste sortirali stavke u koloni po rastućem redosledu.</translation>

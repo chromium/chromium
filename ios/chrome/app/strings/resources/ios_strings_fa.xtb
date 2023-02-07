@@ -80,6 +80,7 @@
 <translation id="149095475893949513">این وب‌سایت می‌خواهد نمایه پیکربندی بارگیری کند.</translation>
 <translation id="1491277525950327607">برای جابه‌جایی بین تنظیمات، دو ضربه سریع بزنید</translation>
 <translation id="1492417797159476138">قبلاً این نام کاربری را برای این سایت ذخیره کرده‌اید</translation>
+<translation id="1498283581832036924">حساب <ph name="WEBSITE" /> حذف نخواهد شد.</translation>
 <translation id="1506063256525392513">با این اجازه می‌توانید عکس بگیرید و بارگذاری کنید و همچنین رمزینه‌های پاسخ‌سریع را اسکن کنید</translation>
 <translation id="1509486075633541495">ورود به سیستم وب‌سایت</translation>
 <translation id="1509960214886564027">ویژگی‌های بسیاری از سایت‌ها ممکن است درست کار نکنند</translation>
@@ -218,6 +219,7 @@
 <translation id="2664621323652615289">توقف</translation>
 <translation id="2671426118752779020">‏می‌توانید از گذرواژه‌های ذخیره‌شده در «مدیر گذرواژه Google» در برنامه‌های دیگر iPhone خودتان استفاده کنید.</translation>
 <translation id="2690858294534178585">دوربین درحال استفاده است</translation>
+<translation id="26915454213703967">‏جستجو درون تصویر با Google</translation>
 <translation id="2691653761409724435">به‌صورت آفلاین در دسترس نیست</translation>
 <translation id="2695507686909505111">ترجمه صفحه</translation>
 <translation id="2697526135132990015">خروج از سیستم و پاک کردن داده‌ها</translation>
@@ -380,6 +382,7 @@
 <translation id="3819183753496523827">آفلاین هستید. اتصال اینترنت را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="3835964409414434850">رفتن به برگه بعدی</translation>
 <translation id="385051799172605136">بازگشت</translation>
+<translation id="3851938967634752633">گذرواژه‌های <ph name="WEBSITE" />، <ph name="SECOND_WEBSITE" />، و <ph name="NUMBER_OF_ACCOUNTS" /> مورد دیگر حذف خواهد شد. حساب‌هایتان حذف نخواهد شد.</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="3861486700625780712">لغو دنبال کردن</translation>
 <translation id="3863769054730344136">ارسال به «دستگاه‌های شما»</translation>
@@ -515,6 +518,7 @@
 <translation id="4833786495304741580">‏به‌طور خودکار آمار کاربرد و گزارش‌های خرابی را به Google ارسال می‌کند.</translation>
 <translation id="4840495572919996524">‏نشانک‌ها، سابقه، گذرواژه‌ها و سایر موارد، دیگر با حساب Google شما همگام‌سازی نمی‌شود.</translation>
 <translation id="4844899002472726590">دیدن و ویرایش موضوع‌های موردعلاقه</translation>
+<translation id="4848999860252535517">گذرواژه <ph name="WEBSITE" /> حذف شود؟</translation>
 <translation id="4854345657858711387">تنظیم گذرنویسه</translation>
 <translation id="4858786880085262208">‏هروقت ممکن باشد، به HTTPS ارتقا پیدا می‌کنید. سایت‌های امن ممکن است محتوای ناامن جاسازی کنند.</translation>
 <translation id="4860895144060829044">تماس</translation>
@@ -768,6 +772,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6598875554591387303">مرتب‌سازی براساس ناشر</translation>
 <translation id="6603393121510733479">سازمانتان مرور خصوصی را خاموش کرده است.
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">گذرواژه‌های <ph name="WEBSITE" />، <ph name="SECOND_WEBSITE" />، و <ph name="THIRD_WEBSITE" /> حذف خواهد شد. حساب‌هایتان حذف نخواهد شد.</translation>
 <translation id="6610002944194042868">گزینه‌های ترجمه</translation>
 <translation id="661266467055912436">امنیت را برای شما و همه کاربران دیگر وب بهبود می‌بخشد.</translation>
 <translation id="6620279676667515405">لغو</translation>
@@ -1045,6 +1050,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8756969031206844760">گذرواژه به‌روزرسانی شود؟</translation>
 <translation id="8763613688786959833">رفتن به آخرین برگه</translation>
 <translation id="8764015330924122850">لغو دنبال کردن <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">گذرواژه‌های <ph name="WEBSITE" /> و <ph name="SECOND_WEBSITE" /> حذف خواهد شد. حساب‌هایتان حذف نخواهد شد.</translation>
 <translation id="8775144690796719618">نشانی وب نامعتبر</translation>
 <translation id="8787968206789828143">جستجو در وب</translation>
 <translation id="8792626944327216835">میکروفون</translation>
@@ -1094,6 +1100,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="9093271241977565440">در بالای صفحه، روی «نماد جستجو» ضربه بزنید</translation>
 <translation id="9094033019050270033">به‌روزرسانی گذرواژه</translation>
 <translation id="9097506547406246598">لغو دنبال کردن ممکن نیست. مشکلی پیش آمد.</translation>
+<translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> گذرواژه حذف شود؟</translation>
 <translation id="9100610230175265781">گذرعبارت لازم است</translation>
 <translation id="9107664647686727385">بررسی برای وجود گذرواژه‌های لورفته</translation>
 <translation id="9124387962554796433">‏Google ممکن است از سابقه شما برای شخصی‌سازی «جستجو» و دیگر سرویس‌های Google استفاده کند.</translation>

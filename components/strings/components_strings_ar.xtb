@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">جارٍ تحضير الملفات</translation>
 <translation id="1015730422737071372">تقديم تفاصيل إضافية</translation>
 <translation id="1019413721762100891">غير مفعّل</translation>
-<translation id="1021110881106174305">البطاقات المقبولة</translation>
 <translation id="1021753677514347426">‏تحدث هذه المشكلة بسبب شهادة ثبّتها أنت أو ثبّتها مستخدم آخر على جهازك. من المعروف أن الشهادة تُستخدم لمراقبة الشبكات واعتراضها، ولا يثق Chromium بها. وعلى الرغم من وجود بعض الحالات المشروعة للمراقبة، كما هو الحال في شبكة المدرسة أو الشركة، يريد Chromium التأكد من أنك تدرك حدوث ذلك، حتى لو لم يكن بإمكانك إيقافه. يمكن أن تحدث عملية المراقبة في أي متصفّح أو تطبيق يصل إلى الويب.</translation>
 <translation id="1024111578869940408">يحاكي المخترِقون أحيانًا المواقع الإلكترونية من خلال إجراء تغييرات يصعب رؤيتها على عنوان الويب.</translation>
 <translation id="1028781062521375153">عرض التفاصيل</translation>
@@ -709,7 +708,6 @@
 <translation id="2688969097326701645">نعم، متابعة</translation>
 <translation id="2691924980723297736">تحذير متعلق بالأمان</translation>
 <translation id="2692131511336778528">خيال علمي وفانتازيا</translation>
-<translation id="2699302886720511147">البطاقات المقبولة</translation>
 <translation id="2701514975700770343">الوجه للأسفل</translation>
 <translation id="2702801445560668637">قائمة القراءة</translation>
 <translation id="2704283930420550640">القيمة لا تطابق التنسيق.</translation>
@@ -992,7 +990,6 @@
 <translation id="342781501876943858">‏يُوصي Chromium بإعادة تحديد كلمة المرور في حال إعادة استخدامها في مواقع إلكترونية أخرى.</translation>
 <translation id="3428151540071562330">‏إنّ معرّف واحد أو أكثر من معرّفات الموارد المنتظمة (URI) لنموذج خادم DnsOverHttpsTemplates غير صالح وبالتالي لن يتم استخدامه.</translation>
 <translation id="3431216045099978607">اضغط على مفتاح |<ph name="ACCELERATOR" />| للخروج من وضع ملء الشاشة والاطّلاع على عملية التنزيل.</translation>
-<translation id="3431636764301398940">حفظ هذه البطاقة إلى هذا الجهاز</translation>
 <translation id="3432601291244612633">إغلاق الصفحة</translation>
 <translation id="3435738964857648380">أمن المعلومات</translation>
 <translation id="3438829137925142401">‏استخدام كلمات المرور المحفوظة في حسابك على Google</translation>
@@ -1124,7 +1121,6 @@
 <translation id="3744111561329211289">المزامنة في الخلفية</translation>
 <translation id="3744286742364977428">‏يتم إرسال الملفات التي تنزِّلها إلى Google Cloud أو جهات خارجية لتحليلها. على سبيل المثال، قد يتم فحص هذه الملفات بحثًا عن بيانات حسّاسة أو برامج ضارة، وقد يتم تخزينها استنادًا إلى سياسات الشركة.</translation>
 <translation id="3744899669254331632">‏لا يمكنك زيارة <ph name="SITE" /> في الوقت الحالي لأن الموقع أرسل اعتمادات مختلطة حيث لا يستطيع Chromium المعالجة. أخطاء الشبكة وهجماتها عادةً ما تكون مؤقتة، لذلك من المحتمل أن تعمل هذه الصفحة في وقت لاحق.</translation>
-<translation id="3745099705178523657">‏بعد التأكيد، ستتم مشاركة تفاصيل البطاقة من حسابك على Google مع هذا الموقع الإلكتروني.</translation>
 <translation id="3748148204939282805">قد يخدعك المهاجمون على <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> لاتّخاذ إجراءات خطيرة، مثل تثبيت برامج معيّنة أو كشف معلوماتك الشخصية (مثل كلمات المرور أو أرقام الهاتف أو بطاقات الائتمان). <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">مجال الطيران</translation>
 <translation id="3752543821772132562">تم تجاهل السياسة بسبب عدم ضبط <ph name="POLICY_NAME" />.</translation>
@@ -1142,7 +1138,6 @@
 <translation id="3781428340399460090">وردي برّاق</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">أجهزة بلوتوث</translation>
-<translation id="3787705759683870569">تنتهي في <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">الحجم 16</translation>
 <translation id="3789841737615482174">تثبيت</translation>
 <translation id="3792100426446126328">‏<ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> بوصة)</translation>
@@ -3091,7 +3086,6 @@
 <translation id="8620276786115098679">‏ظرف Kaku 7</translation>
 <translation id="8623885649813806493">ما مِن كلمات مرور مطابقة. يمكنك عرض جميع كلمات المرور المحفوظة.</translation>
 <translation id="8624354461147303341">الحصول على الخصومات</translation>
-<translation id="8625384913736129811">حفظ هذه البطاقة إلى هذا الجهاز</translation>
 <translation id="8634957317623797170">54 × 86 ملم</translation>
 <translation id="8637577059508742477">تتم إدارة ملفك الشخصي ومتصفّحك من خلال النطاق <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">‏ظرف Kaku 3</translation>

@@ -89,6 +89,7 @@
 <translation id="6709398533399187136">Ditt lösenord har läckt ut vid ett dataintrång. Du rekommenderas av Google Lösenordshantering att byta lösenord nu.</translation>
 <translation id="6822673484890854830">Chrome kunde inte kontrollera alla lösenord. Försök igen senare.</translation>
 <translation id="6964931465519938134">Nu kan du använda Chrome varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
+<translation id="6975725306479268850">Välj Chrome för Autofyll</translation>
 <translation id="701356708427365932">Bekanta dig med den nya Chrome-menyn</translation>
 <translation id="7059914902409643750">Anpassa Chrome</translation>
 <translation id="7124339256045485976">Håll Chrome uppdaterad</translation>
@@ -109,6 +110,7 @@
 <translation id="7754633291442704733">Organisationen <ph name="DOMAIN" /> har åtkomst till data, bokmärken, historik, lösenord och andra inställningar i Chrome som du lagrar i det här kontot. När du loggar ut raderas din data från enheten.  Datan lagras dock fortfarande i det hanterade Google-kontot och kan kommas åt av organisationen. Organisationen kan även ställa in användarpolicyer som gäller det kontot specifikt och som kan påverka hur Chrome fungerar.</translation>
 <translation id="7780154209050837198">Logga in med Google-kontot i Chrome så att du får ut mesta möjliga av programmet.</translation>
 <translation id="7855730255114109580">Google Chrome behöver inte uppdateras</translation>
+<translation id="7939179037291298976">Öppna Lösenordsalternativ i inställningarna på iPhone och välj Chrome</translation>
 <translation id="8022947259858476807">Använd Chrome som standard när du öppnar länkar och söker med en widget och få lösenord ifyllda i andra appar automatiskt</translation>
 <translation id="81358522153858150">Chrome har nu stöd för användarpolicyer för dina hanterade konton</translation>
 <translation id="8160472928944011082">Uppdatering inte möjlig</translation>
@@ -124,6 +126,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Google Lösenordshantering kunde inte kontrollera alla lösenord. Försök igen i morgon eller <ph name="BEGIN_LINK" />kontrollera lösenorden i ditt Google-konto<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Surfa säkert med Google Chrome</translation>
+<translation id="8765470054473112089">När du skriver i adressfältet eller sökrutan skickar Chrome det du skriver till standardsökmotorn för att du ska få bättre förslag. Detta är inaktiverat i inkognitoläge.</translation>
 <translation id="8772179140489533211">Visar meddelanden om att logga in i Chrome.</translation>
 <translation id="8788269841521769222">Du behöver inte komma ihåg det här lösenordet. Det sparas med Google Lösenordshantering för <ph name="EMAIL" /></translation>
 <translation id="8857676124663337448">Google Lösenordshantering kunde inte kontrollera alla lösenord. Försök igen i morgon.</translation>

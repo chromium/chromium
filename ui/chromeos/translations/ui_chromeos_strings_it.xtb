@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Inglese (USA) con tastiera Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Host</translation>
 <translation id="1521655867290435174">Fogli Google</translation>
+<translation id="1521795806314479294">Preparazione di <ph name="FILE_NAME" /> in corso…</translation>
 <translation id="1538729222189715449">Apertura di file Linux…</translation>
 <translation id="1547964879613821194">Inglese canadese</translation>
 <translation id="1556189134700913550">Applica a tutti</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Compressione di <ph name="NUMBER_OF_ITEMS" /> elementi...</translation>
 <translation id="1722687688096767818">Aggiunta del profilo in corso…</translation>
 <translation id="1726100011689679555">Server dei nomi</translation>
+<translation id="1727562178154619254">File pronti per la sincronizzazione</translation>
 <translation id="1729953886957086472">Tedesco (Germania)</translation>
 <translation id="1730235522912993863">Cinese Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementi copiati.</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">Assegna nomi personalizzati a server</translation>
 <translation id="4465725236958772856">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, gestita dall'amministratore, connetti</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
+<translation id="4474142134969976028">Nessun risultato corrispondente</translation>
 <translation id="4477002475007461989">Rumeno</translation>
 <translation id="4477219268485577442">Fonetica bulgara</translation>
 <translation id="4508265954913339219">Attivazione non riuscita</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">Il nome deve contenere un massimo di <ph name="MAX_LENGTH" /> caratteri</translation>
 <translation id="4973970068702235170">Compressione non riuscita. Errore imprevisto: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Giapponese</translation>
+<translation id="4987699874727873250">Inglese (India)</translation>
 <translation id="4988205478593450158">Vuoi eliminare "<ph name="FILE_NAME" />"?</translation>
 <translation id="498902553138568924">Farfalla rossa</translation>
 <translation id="4992066212339426712">Riattiva audio</translation>
@@ -509,6 +513,7 @@
    La rimozione del dispositivo mentre è in uso potrebbe causare la perdita di dati. Attendi fino al termine dell'operazione, quindi espelli il dispositivo utilizzando l'app File.</translation>
 <translation id="5163869187418756376">Condivisione non riuscita. Controlla la connessione e riprova più tardi.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
+<translation id="5167102019886320507">Preparazione di <ph name="NUMBER_OF_ITEMS" /> elementi in corso…</translation>
 <translation id="5177526793333269655">Visualizzazione Miniature</translation>
 <translation id="5181896909298187506">Nessun file recente</translation>
 <translation id="5194713942430106590">Fai clic per ordinare la colonna in ordine decrescente.</translation>
@@ -812,6 +817,7 @@
 <translation id="7655441028674523381">Accedi facilmente a Google Foto</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7665680517722058469">Prova a effettuare un'altra ricerca</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> elementi spostati nel cestino</translation>
 <translation id="7693909743393669729">La formattazione di un'unità causerà l'eliminazione di tutti i dati archiviati e la rimozione di tutte le partizioni esistenti, incluse quelle che potrebbero non essere visibili. L'operazione non potrà essere annullata.</translation>
 <translation id="7695430100978772476">Impossibile formattare <ph name="DRIVE_NAME" /></translation>

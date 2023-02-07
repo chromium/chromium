@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Pripravujú sa súbory</translation>
 <translation id="1015730422737071372">Poskytnite ďalšie podrobnosti</translation>
 <translation id="1019413721762100891">vypnuté</translation>
-<translation id="1021110881106174305">Prijímané karty</translation>
 <translation id="1021753677514347426">Tento problém je spôsobený certifikátom, ktorý bol v zariadení nainštalovaný vami alebo niekým iným. O tomto certifikáte je známe, že sa pomocou neho sledujú a narúšajú siete. Chromium mu nedôveruje. Niekedy existujú legitímne prípady sledovania, napríklad v školskej alebo firemnej sieti. Chromium sa však chce uistiť, či viete, že k tomu dochádza (aj keď to nemôžete zastaviť). Sledovanie môže prebiehať v ktoromkoľvek prehliadači alebo aplikácii s prístupom na internet.</translation>
 <translation id="1024111578869940408">Útočníci niekedy weby napodobňujú tak, že vo webovej adrese vykonajú ťažko odhaliteľné zmeny.</translation>
 <translation id="1028781062521375153">Zobraziť podrobnosti</translation>
@@ -708,7 +707,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2688969097326701645">Áno, pokračovať</translation>
 <translation id="2691924980723297736">Bezpečnostné upozornenie</translation>
 <translation id="2692131511336778528">Sci‑fi a fantasy</translation>
-<translation id="2699302886720511147">Akceptované karty</translation>
 <translation id="2701514975700770343">Lícom nadol</translation>
 <translation id="2702801445560668637">Čitateľský zoznam</translation>
 <translation id="2704283930420550640">Hodnota nezodpovedá formátu.</translation>
@@ -988,7 +986,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="342781501876943858">Ak ste heslo použili aj na iných weboch, Chromium ho odporúča obnoviť.</translation>
 <translation id="3428151540071562330">Minimálne jeden identifikátor URI šablón servera DnsOverHttpsTemplates je neplatný a nebude použitý.</translation>
 <translation id="3431216045099978607">Stlačením tlačidla |<ph name="ACCELERATOR" />| ukončíte režim celej obrazovky a zobrazíte stiahnutý obsah.</translation>
-<translation id="3431636764301398940">Uložiť túto kartu na zariadení</translation>
 <translation id="3432601291244612633">Zavrieť stránku</translation>
 <translation id="3435738964857648380">Bezpečnosť</translation>
 <translation id="3438829137925142401">Použiť heslá uložené vo vašom účte Google</translation>
@@ -1118,7 +1115,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3744111561329211289">Synchronizácia na pozadí</translation>
 <translation id="3744286742364977428">Súbory, ktoré si stiahnete, sa odosielajú na analýzu do služby Google Cloud alebo tretím stranám. V rámci toho môžu byť napríklad podrobené kontrole prítomnosti citlivých údajov alebo malvéru a podľa firemných pravidiel môžu byť uložené.</translation>
 <translation id="3744899669254331632">Webové stránky <ph name="SITE" /> momentálne nemôžete navštíviť, pretože odoslali zakódované poverenia, ktoré Chromium neodkáže spracovať. Chyby siete a útoky sú zvyčajne dočasné, takže táto stránka by mala pravdepodobne neskôr fungovať.</translation>
-<translation id="3745099705178523657">Po potvrdení sa budú údaje o karte z vášho účtu Google zdieľať s týmto webom.</translation>
 <translation id="3748148204939282805">Útočníci na webe <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> vás môžu oklamať, aby ste urobili niečo nebezpečné, napríklad nainštalovali softvér alebo odhalili svoje osobné informácie (napríklad heslá, telefónne čísla a kreditné karty). <ph name="BEGIN_LEARN_MORE_LINK" />Ďalšie informácie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Letecký priemysel</translation>
 <translation id="3752543821772132562">Ignorované, pretože nie sú nastavené pravidlá <ph name="POLICY_NAME" />.</translation>
@@ -1136,7 +1132,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3781428340399460090">Jasnoružová</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Zariadenia Bluetooth</translation>
-<translation id="3787705759683870569">Platnosť vyprší <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Veľkosť 16</translation>
 <translation id="3789841737615482174">Inštalovať</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> palcov)</translation>
@@ -3080,7 +3075,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8620276786115098679">Obálka Kaku 7</translation>
 <translation id="8623885649813806493">Žiadne zhodujúce sa heslá. Zobrazte si všetky uložené heslá.</translation>
 <translation id="8624354461147303341">Získať zľavy</translation>
-<translation id="8625384913736129811">Uložiť túto kartu do tohto zariadenia</translation>
 <translation id="8634957317623797170">54 × 86 mm</translation>
 <translation id="8637577059508742477">Váš profil a prehliadač spravuje <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">Obálka Kaku 3</translation>

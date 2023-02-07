@@ -412,6 +412,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Không có mật khẩu nào bị lộ}=1{1 mật khẩu bị lộ}other{{NUM_COMPROMISED} mật khẩu bị lộ}}</translation>
 <translation id="1380028686461971526">Tự động kết nối mạng</translation>
 <translation id="1381567580865186407">Dữ liệu giọng nói <ph name="LANGUAGE" /> sẽ được gửi tới Google để xử lý</translation>
+<translation id="1383381142702995121">Quản lý tiện ích này</translation>
 <translation id="1383597849754832576">Không thể tải tệp mã chuyển lời nói thành văn bản xuống. Hãy thử lại sau.</translation>
 <translation id="1383861834909034572">Mở khi hoàn tất</translation>
 <translation id="1383876407941801731">Tìm kiếm</translation>
@@ -4243,6 +4244,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4807098396393229769">Tên trên thẻ</translation>
 <translation id="4808667324955055115">Đã chặn cửa sổ bật lên:</translation>
 <translation id="4809079943450490359">Hướng dẫn từ quản trị viên thiết bị:</translation>
+<translation id="4809447465126035330">Xoá</translation>
 <translation id="480990236307250886">Mở trang chủ</translation>
 <translation id="4809927044794281115">Giao diện sáng</translation>
 <translation id="4811212958317149293">Tự động quét tìm bàn phím của tính năng Tiếp cận bằng công tắc</translation>
@@ -5045,6 +5047,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5556459405103347317">Tải lại</translation>
 <translation id="5558129378926964177">Phóng &amp;to</translation>
 <translation id="5558247502209241936">Cho phép mở ứng dụng trong cửa sổ</translation>
+<translation id="5559311991468302423">Xoá địa chỉ</translation>
 <translation id="55601339223879446">Điều chỉnh các ranh giới của màn hình trong vòng hiển thị</translation>
 <translation id="5561162485081632007">Phát hiện và cảnh báo cho bạn về các sự kiện nguy hiểm khi các sự kiện đó diễn ra</translation>
 <translation id="5562781907504170924">Thẻ này được kết nối với thiết bị Bluetooth.</translation>
@@ -6436,6 +6439,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6839916869147598086">Quy trình đăng nhập đã thay đổi</translation>
 <translation id="6840155290835956714">Hỏi trước khi gửi</translation>
 <translation id="6840184929775541289">Không phải là Tổ chức phát hành chứng chỉ</translation>
+<translation id="6840214587087739194">Đã xoá địa chỉ</translation>
 <translation id="6841143363521180029">Đã mã hoá</translation>
 <translation id="6841186874966388268">Lỗi</translation>
 <translation id="6842136130964845393">Hãy xác minh danh tính của bạn để đảm bảo bạn luôn có thể truy cập mật khẩu đã lưu</translation>
@@ -8280,6 +8284,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8525306231823319788">Toàn màn hình</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Thêm ngôn ngữ</translation>
+<translation id="8528479410903501741">Lưu IBAN</translation>
 <translation id="8528962588711550376">Đang đăng nhập.</translation>
 <translation id="8529925957403338845">Lỗi kết nối khi Chia sẻ Internet tức thì</translation>
 <translation id="8531701051932785007">Đang tắt tính năng Duyệt web an toàn có tăng cường bảo vệ</translation>

@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Préparation des fichiers en cours…</translation>
 <translation id="1015730422737071372">Fournir des détails supplémentaires</translation>
 <translation id="1019413721762100891">Désactivé</translation>
-<translation id="1021110881106174305">Cartes acceptées</translation>
 <translation id="1021753677514347426">Ce problème survient en raison d'un certificat installé, par vous ou quelqu'un d'autre, sur votre appareil. Le certificat n'est pas considéré comme fiable par Chromium, parce qu'on sait qu'il est utilisé pour surveiller et intercepter les réseaux. Certains cas requièrent de la surveillance, comme un réseau scolaire ou d'entreprise, mais Chromium vous le mentionne pour que vous sachiez que cette surveillance se produit, même si vous ne pouvez pas l'empêcher. La surveillance peut se produire dans tous les navigateurs et toutes les applications qui accèdent au Web.</translation>
 <translation id="1024111578869940408">Les pirates tentent parfois d'imiter des sites Web en utilisant des variations subtiles d'adresses Web.</translation>
 <translation id="1028781062521375153">Voir les renseignements</translation>
@@ -525,6 +524,7 @@
 <translation id="2202627062836089804">dos de votre carte</translation>
 <translation id="22081806969704220">Bac 3</translation>
 <translation id="2210794033760923560">Téléverser le rapport</translation>
+<translation id="2212579473415663542">Cette adresse est enregistrée dans votre compte Google (<ph name="ACCOUNT" />). Vous pouvez l'utiliser dans tous les produits Google, sur n'importe quel appareil.</translation>
 <translation id="2212735316055980242">Règle introuvable</translation>
 <translation id="2213606439339815911">Récupération des entrées...</translation>
 <translation id="2213612003795704869">La page est imprimée</translation>
@@ -708,7 +708,6 @@
 <translation id="2688969097326701645">Oui, continuer</translation>
 <translation id="2691924980723297736">Avertissement de sécurité</translation>
 <translation id="2692131511336778528">Science-fiction et merveilleux</translation>
-<translation id="2699302886720511147">Cartes acceptées</translation>
 <translation id="2701514975700770343">Face vers le bas</translation>
 <translation id="2702801445560668637">Liste de lecture</translation>
 <translation id="2704283930420550640">La valeur ne correspond pas au format.</translation>
@@ -991,7 +990,6 @@
 <translation id="342781501876943858">Chromium recommande de réinitialiser votre mot de passe si vous l'avez réutilisé sur d'autres sites.</translation>
 <translation id="3428151540071562330">Une ou plusieurs des URL de modèle de serveur DnsOverHttpsTemplates sont incorrectes et ne seront pas utilisées.</translation>
 <translation id="3431216045099978607">Appuyez sur |<ph name="ACCELERATOR" />| pour quitter le mode plein écran et voir le téléchargement.</translation>
-<translation id="3431636764301398940">Enregistrer cette carte sur cet appareil</translation>
 <translation id="3432601291244612633">Fermer la page</translation>
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3438829137925142401">Utiliser les mots de passe enregistrés dans votre compte Google</translation>
@@ -1122,7 +1120,6 @@
 <translation id="3744111561329211289">Synchronisation en arrière-plan</translation>
 <translation id="3744286742364977428">Les fichiers que vous téléchargez sont envoyés à Google Cloud ou à des tiers afin d'être analysés. Par exemple, ils peuvent être analysés à la recherche de données confidentielles ou de logiciels malveillants et peuvent être stockés en fonction des politiques de l'entreprise.</translation>
 <translation id="3744899669254331632">Vous ne pas présentement consulter le site <ph name="SITE" />, car il a renvoyé des authentifiants brouillés que Chromium ne peut pas traiter. Les erreurs et attaques réseau étant généralement temporaires, cette page sera peut-être à nouveau accessible plus tard.</translation>
-<translation id="3745099705178523657">Après votre confirmation, les détails de la carte provenant de votre compte Google seront partagés avec ce site.</translation>
 <translation id="3748148204939282805">Les cyberpirates à l'œuvre sur le site <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> peuvent vous inciter à faire quelque chose de dangereux comme installer un logiciel ou révéler vos renseignements personnels (par exemple, des mots de passe, des numéros de téléphone ou des numéros de carte de crédit). <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Industrie aéronautique</translation>
 <translation id="3752543821772132562">Ignorée, car <ph name="POLICY_NAME" /> n'est pas définie.</translation>
@@ -1140,7 +1137,6 @@
 <translation id="3781428340399460090">Rose indien</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Appareils Bluetooth</translation>
-<translation id="3787705759683870569">Date d'expiration : <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Taille 16</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> po x <ph name="HEIGHT" /> po)</translation>
@@ -1977,6 +1973,7 @@
 <translation id="5866898949289125849">Vous consultez une page d'outils de conception</translation>
 <translation id="5869405914158311789">Impossible d'accéder à ce site</translation>
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>
+<translation id="5872692522325383488">IBAN enregistré</translation>
 <translation id="5873013647450402046">Votre banque veut confirmer votre identité.</translation>
 <translation id="5877831137320480913">Soins du corps et mise en forme</translation>
 <translation id="5884465125445718607">Enveloppe chinoise nᵒ 6</translation>
@@ -2146,6 +2143,7 @@
 <translation id="6300452962057769623">{0,plural, =0{Votre appareil va redémarrer maintenant}=1{Votre appareil va redémarrer dans 1 seconde}one{Votre appareil va redémarrer dans # seconde}other{Votre appareil va redémarrer dans # secondes}}</translation>
 <translation id="6301104306974789820">Recevoir les notifications de suivi de prix</translation>
 <translation id="6305205051461490394">Impossible d'accéder à <ph name="URL" />.</translation>
+<translation id="6306713302480826305">Cette adresse sera supprimée de cet appareil et des autres appareils sur lesquels vous êtes connecté</translation>
 <translation id="6311165245110979290">Carte virtuelle disponible</translation>
 <translation id="6312113039770857350">La page Web n'est pas disponible</translation>
 <translation id="6316226860534107313">Scouteurs et cyclomoteurs</translation>
@@ -3037,6 +3035,7 @@ Détails supplémentaires :
 <translation id="8473863474539038330">Adresses et plus</translation>
 <translation id="8474910779563686872">Afficher les renseignements du développeur</translation>
 <translation id="8479754468255770962">Agrafe en bas à gauche</translation>
+<translation id="8483229036294884935">Cette adresse sera supprimée de votre compte Google, <ph name="ACCOUNT" /></translation>
 <translation id="8483780878231876732">Pour utiliser des cartes à partir de votre compte Google, connectez-vous à Chrome</translation>
 <translation id="8488350697529856933">S'applique à</translation>
 <translation id="8490137692873530638">Empileur 10</translation>
@@ -3084,7 +3083,6 @@ Détails supplémentaires :
 <translation id="8620276786115098679">Enveloppe Kaku nᵒ 7</translation>
 <translation id="8623885649813806493">Aucun mot de passe correspondant. Afficher tous les mots de passe enregistrés.</translation>
 <translation id="8624354461147303341">Obtenir des rabais</translation>
-<translation id="8625384913736129811">Enregistrer cette carte sur cet appareil</translation>
 <translation id="8634957317623797170">54 mm x 86 mm</translation>
 <translation id="8637577059508742477">Votre profil et votre navigateur sont gérés par <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">Enveloppe Kaku nᵒ 3</translation>

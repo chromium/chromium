@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Anglais (É.-U.) avec clavier Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Hôte</translation>
 <translation id="1521655867290435174">Google Feuilles de calcul</translation>
+<translation id="1521795806314479294">Préparation de <ph name="FILE_NAME" /> en cours…</translation>
 <translation id="1538729222189715449">Ouverture des fichiers Linux en cours…</translation>
 <translation id="1547964879613821194">Anglais canadien</translation>
 <translation id="1556189134700913550">Appliquer à tout</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Compression de <ph name="NUMBER_OF_ITEMS" /> éléments en cours…</translation>
 <translation id="1722687688096767818">Ajout du profil en cours…</translation>
 <translation id="1726100011689679555">Serveurs de noms</translation>
+<translation id="1727562178154619254">Prêt à synchroniser</translation>
 <translation id="1729953886957086472">Allemand (Allemagne)</translation>
 <translation id="1730235522912993863">Chinois (cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> éléments copiés</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">Serveurs de noms personnalisés</translation>
 <translation id="4465725236958772856">Réseaux <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, géré par votre administrateur, connexion</translation>
 <translation id="4470564870223067757">Hangûl, dubeol-sik</translation>
+<translation id="4474142134969976028">Aucun résultat correspondant</translation>
 <translation id="4477002475007461989">Roumain</translation>
 <translation id="4477219268485577442">Phonétique bulgare</translation>
 <translation id="4508265954913339219">Échec de l'activation</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">Utilisez un nom contenant au maximum <ph name="MAX_LENGTH" /> caractères</translation>
 <translation id="4973970068702235170">Échec de compression au format .zip en raison d'une erreur inattendue : <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japonais</translation>
+<translation id="4987699874727873250">Anglais (Inde)</translation>
 <translation id="4988205478593450158">Voulez-vous vraiment supprimer « <ph name="FILE_NAME" /> »?</translation>
 <translation id="498902553138568924">Papillon rouge</translation>
 <translation id="4992066212339426712">Réactiver le son</translation>
@@ -511,6 +515,7 @@
    en utilisant l'application Fichiers.</translation>
 <translation id="5163869187418756376">Échec du partage. Veuillez vérifier votre connexion et réessayer plus tard.</translation>
 <translation id="516592729076796170">Dvorak programmeur américain</translation>
+<translation id="5167102019886320507">Préparation de <ph name="NUMBER_OF_ITEMS" /> éléments en cours…</translation>
 <translation id="5177526793333269655">Affichage de miniatures</translation>
 <translation id="5181896909298187506">Aucun fichier récent</translation>
 <translation id="5194713942430106590">Cliquez ici pour trier la colonne par ordre croissant.</translation>
@@ -814,6 +819,7 @@
 <translation id="7655441028674523381">Accéder facilement à Google Photos</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7665680517722058469">Essayez une autre recherche</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> éléments déplacés vers la corbeille</translation>
 <translation id="7693909743393669729">Le formatage d'un disque entraîne la suppression de toutes les données qu'il contient et de toutes ses partitions, y compris les partitions invisibles. Cette action est irréversible.</translation>
 <translation id="7695430100978772476">Impossible de formater <ph name="DRIVE_NAME" /></translation>
@@ -970,6 +976,7 @@
 <translation id="8866284467018526531">Arabe (translittération)</translation>
 <translation id="8873014196523807561">Pour restaurer ces éléments, faites-les glisser vers un nouveau dossier. Les dossiers d'origine de certains de ces éléments ont été supprimés.</translation>
 <translation id="8874184842967597500">Non connecté</translation>
+<translation id="8876368061475701452">En file d'attente</translation>
 <translation id="8900820606136623064">Hongrois</translation>
 <translation id="8903931173357132290">Diplômé</translation>
 <translation id="8912078710089354287">Chien remuant la queue</translation>

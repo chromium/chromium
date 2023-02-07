@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Undirbýr skrár</translation>
 <translation id="1015730422737071372">Veita frekari upplýsingar</translation>
 <translation id="1019413721762100891">Slökkt</translation>
-<translation id="1021110881106174305">Gild greiðslukort</translation>
 <translation id="1021753677514347426">Þetta vandamál tengist vottorði sem þú eða einhver annar setti upp í tækinu þínu. Vitað er að þetta vottorð er notað til að fylgjast með og grípa inn í netkerfi og Chromium treystir því ekki. Þrátt fyrir að notkun þess geti í einhverjum tilvikum átt rétt á sér, svo sem á skóla- eða fyrirtækjaneti, vill Chromium tryggja að þú vitir af því, þótt þú getir ekki komið í veg fyrir notkun þess. Eftirlit getur átt sér stað í öllum vöfrum eða forritum sem nota vefinn.</translation>
 <translation id="1024111578869940408">Stundum herma tölvuþrjótar eftir vefsvæðum með því að gera illgreinanlegar breytingar á vefslóðinni.</translation>
 <translation id="1028781062521375153">Sjá upplýsingar</translation>
@@ -708,7 +707,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2688969097326701645">Já, halda áfram</translation>
 <translation id="2691924980723297736">Öryggisviðvörun</translation>
 <translation id="2692131511336778528">Vísindaskáldskapur og fantasíur</translation>
-<translation id="2699302886720511147">Greiðslukort sem tekið er við</translation>
 <translation id="2701514975700770343">Snýr niður</translation>
 <translation id="2702801445560668637">Leslisti</translation>
 <translation id="2704283930420550640">Gildið stemmir ekki við sniðið.</translation>
@@ -991,7 +989,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="342781501876943858">Chromium mælir með því að þú endurstillir aðgangsorðið þitt ef þú notaðir það einnig á öðrum síðum.</translation>
 <translation id="3428151540071562330">Eitt eða fleiri af URI sniðmátum netþjóns DnsOverHttpsTemplates eru ógild og verða ekki notuð.</translation>
 <translation id="3431216045099978607">Ýttu á |<ph name="ACCELERATOR" />| til að hætta að nota allan skjáinn og sjá niðurhal.</translation>
-<translation id="3431636764301398940">Vista kortið á þessu tæki</translation>
 <translation id="3432601291244612633">Loka síðu</translation>
 <translation id="3435738964857648380">Öryggi</translation>
 <translation id="3438829137925142401">Nota aðgangsorð sem eru vistuð á Google reikningnum þínum</translation>
@@ -1122,7 +1119,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3744111561329211289">Samstilling í bakgrunni</translation>
 <translation id="3744286742364977428">Skrár sem þú sækir eru sendar til Google Cloud eða þriðju aðila til greiningar. Þær gætu til dæmis verið skannaðar í leit að viðkvæmum gögnum eða spilliforritum og þær verða hugsanlega vistaðar í samræmi við reglur fyrirtækisins.</translation>
 <translation id="3744899669254331632">Þú getur ekki heimsótt <ph name="SITE" /> í augnablikinu vegna þess að vefsvæðið sendi dulkóðuð skilríki sem Chromium getur ekki unnið úr. Netkerfisvillur og árásir ganga yfirleitt fljótt yfir svo síðan mun líklega virka aftur síðar.</translation>
-<translation id="3745099705178523657">Greiðslukortaupplýsingum af reikningnum þínum á Google verður deilt með þessu vefsvæði eftir að þú hefur staðfest.</translation>
 <translation id="3748148204939282805">Þrjótar á <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> gætu reynt að gabba þig til að gera eitthvað varasamt eins og að setja upp hugbúnað eða gefa upp persónuupplýsingar (til dæmis aðgangsorð, símanúmer eða kreditkortanúmer). <ph name="BEGIN_LEARN_MORE_LINK" />Frekari upplýsingar<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Flugiðnaður</translation>
 <translation id="3752543821772132562">Hunsað vegna þess að <ph name="POLICY_NAME" /> er ekki stillt.</translation>
@@ -1140,7 +1136,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3781428340399460090">Dökkbleikur</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-tæki</translation>
-<translation id="3787705759683870569">Rennur út <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Stærð 16</translation>
 <translation id="3789841737615482174">Setja upp</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> to.)</translation>
@@ -3084,7 +3079,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8620276786115098679">Umslag: kaku 7</translation>
 <translation id="8623885649813806493">Engin samsvarandi aðgangsorð. Sýna öll vistuð aðgangsorð.</translation>
 <translation id="8624354461147303341">Fá afslætti</translation>
-<translation id="8625384913736129811">Vista þetta kort í þessu tæki</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637577059508742477">Prófílnum og vafranum þínum er stjórnað af <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">Umslag: kaku 3</translation>

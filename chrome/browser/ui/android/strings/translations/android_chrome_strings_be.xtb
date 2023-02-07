@@ -250,6 +250,7 @@
 <translation id="2426805022920575512">Выбраць іншы ўліковы запіс</translation>
 <translation id="2433507940547922241">Выгляд</translation>
 <translation id="2435457462613246316">Паказаць пароль</translation>
+<translation id="2439153523196674349">Перадпрагляд сайта "<ph name="SITE_NAME" />"</translation>
 <translation id="2450083983707403292">Пачаць спампоўваць файл "<ph name="FILE_NAME" />" зноў?</translation>
 <translation id="2453860139492968684">Завяршыць</translation>
 <translation id="2459390580524506445">Палепшаны галасавы пошук</translation>
@@ -388,6 +389,7 @@
 <translation id="3066573403916685335">Перамясціць уніз</translation>
 <translation id="3070005020161560471">Аўтаматычна перакладаць з наступных моў:</translation>
 <translation id="3072980200212375806">Праграма "<ph name="APP_NAME" />" адкрыецца ў Chrome. Працягваючы, вы згаджаецеся з <ph name="BEGIN_LINK1" />Умовамі выкарыстання Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Дадатковымі ўмовамі выкарыстання Google Chrome і Chrome OS<ph name="END_LINK2" />. Прымяняецца таксама <ph name="BEGIN_LINK3" />Палітыка прыватнасці<ph name="END_LINK3" />.</translation>
+<translation id="3083194063661536258">Выкананы выхад. Кнопка. Адкрывае дыялогавае акно, якое дазваляе ўвайсці ва ўліковы запіс і ўключыць сінхранізацыю.</translation>
 <translation id="3091010850649238832">Паказаць змесціва буфера абмену</translation>
 <translation id="3098745985164956033">Некаторыя відарысы адпраўляюцца ў Google, каб палепшыць іх апісанне</translation>
 <translation id="3104179992611025423">Браўзерам кіруюць твае бацькі</translation>
@@ -924,6 +926,7 @@
 <translation id="6040143037577758943">Закрыць</translation>
 <translation id="604124094241169006">Аўтаматычна</translation>
 <translation id="6042308850641462728">Яшчэ</translation>
+<translation id="6049046116080614938">Вы ўвайшлі як <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Кнопка. Адкрывае налады.</translation>
 <translation id="604996488070107836">Не ўдалося спампаваць файл "<ph name="FILE_NAME" />" з-за невядомай памылкі.</translation>
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Кіруйце паказам артыкулаў і гісторыяй дзеянняў тут</translation>
@@ -1297,6 +1300,7 @@
 <translation id="7968014550143838305">Дададзена ў спіс чытання</translation>
 <translation id="7971136598759319605">Апошнія дзеянні: дзень таму</translation>
 <translation id="7975379999046275268">Перадпрагляд старонкі <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">Вы ўвайшлі як <ph name="USER_NAME" />. Кнопка. Адкрывае налады.</translation>
 <translation id="7986497153528221272">Каб праглядаць паролі, спачатку наладзьце на прыладзе блакіроўку экрана</translation>
 <translation id="7995059495660416932">Вы ўбачыце змесціва, калі яно стане даступным</translation>
 <translation id="799576009106109668">Паскорыцца прагляд сайтаў, паколькі змесціва будзе загружацца без запыту на падставе даных з бягучай вэб-старонкі.</translation>

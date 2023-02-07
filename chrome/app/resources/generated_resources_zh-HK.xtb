@@ -8389,6 +8389,7 @@
 <translation id="8639635302972078117">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果您為子女開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。</translation>
 <translation id="8642900771896232685">2 秒</translation>
 <translation id="8642947597466641025">放大文字</translation>
+<translation id="8643403533759285912">刪除群組</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> 可能不安全。要傳送到「Google 進階保護功能」進行掃瞄嗎？</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{沒有 Cookie}=1{已封鎖 1 個 Cookie}other{已封鎖 # 個 Cookie}}</translation>
 <translation id="864423554496711319">已儲存至您帳戶的裝置</translation>
@@ -8862,6 +8863,7 @@
 <translation id="90528604757378587">背景活動及部分視覺效果 (例如平滑捲動) 可能會受到限制。</translation>
 <translation id="9053563360605707198">雙面列印</translation>
 <translation id="9055636786322918818">強制執行 RC4 加密。由於 RC4 加密不安全，因此使用此選項會提高風險。</translation>
+<translation id="9056788090206401048">在其他裝置上使用密鑰時必須開啟藍牙，您可以隨時在設定中管理此選項。</translation>
 <translation id="9056810968620647706">找不到相符的項目。</translation>
 <translation id="9057007989365783744">「<ph name="SUPERVISED_USER_NAME" />」要求存取以下內容：</translation>
 <translation id="9057354806206861646">更新時間表</translation>

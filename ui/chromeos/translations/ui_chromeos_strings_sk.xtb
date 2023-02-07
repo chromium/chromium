@@ -408,6 +408,7 @@
 <translation id="4462159676511157176">Vlastné menné servery</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ovládaná správcom, pripojenie</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
+<translation id="4474142134969976028">Žiadne zodpovedajúce výsledky</translation>
 <translation id="4477002475007461989">Rumunská klávesnica</translation>
 <translation id="4477219268485577442">Bulharská fonetická klávesnica</translation>
 <translation id="4508265954913339219">Aktivácia zlyhala</translation>
@@ -813,6 +814,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7655441028674523381">Jednoduchý prístup k Fotkám Google</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7663224033570512922">Hindská klávesnica</translation>
+<translation id="7665680517722058469">Skúste iné vyhľadávanie</translation>
 <translation id="7689532716264131859">Položky (<ph name="NUMBER_OF_ITEMS" />) boli presunuté do koša</translation>
 <translation id="7693909743393669729">Formátovaním kľúča vymažete všetky dáta, ktoré sú v ňom uložené, ako aj všetky existujúce oddiely vrátane tých, ktoré nemusia byť viditeľné. Táto akcia sa nedá vrátiť späť.</translation>
 <translation id="7695430100978772476">Disk <ph name="DRIVE_NAME" /> sa nepodarilo naformátovať</translation>
@@ -969,6 +971,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8866284467018526531">Arabská klávesnica (prepis)</translation>
 <translation id="8873014196523807561">Ak chcete tieto položky obnoviť, presuňte ich do nového priečinka. Pôvodné priečinky pre niektoré tieto položky boli odstránené.</translation>
 <translation id="8874184842967597500">Nepripojené</translation>
+<translation id="8876368061475701452">V poradí</translation>
 <translation id="8900820606136623064">Maďarčina</translation>
 <translation id="8903931173357132290">Absolvent</translation>
 <translation id="8912078710089354287">Pes krútiaci chvostom</translation>

@@ -322,6 +322,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7828947555739565424">Profil u Chromiumu s tim računom već postoji na ovom uređaju</translation>
 <translation id="7845233973568007926">Zahvaljujemo što ste izvršili instaliranje. Da biste mogli koristiti <ph name="BUNDLE_NAME" />, morate ponovno pokrenuti računalo.</translation>
+<translation id="7859018312476869945">Kad upisujete u adresnu traku ili okvir za pretraživanje, ono što upisujete Chromium šalje vašoj zadanoj tražilici kako bi vam pružio bolje prijedloge. To je isključeno u anonimnom načinu.</translation>
 <translation id="7867198900892795913">Chromium se nije mogao ažurirati na najnoviju verziju, tako da nemate nove značajke i sigurnosne popravke.</translation>
 <translation id="7872446069773932638">Preuzimanje... Još <ph name="SECONDS" /> s</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Kako možete upravljati svojim podacima<ph name="END_BOLD" />: da bismo zaštitili vašu privatnost, automatski brišemo vaše interese starije od četiri tjedna. Tijekom vašeg daljnjeg pregledavanja neki se interes može ponovo pojaviti na popisu. Možete i ukloniti interese za koje ne želite da ih Chromium razmatra.</translation>

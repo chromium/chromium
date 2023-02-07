@@ -3010,6 +3010,14 @@ Si cette règle n'est pas configurée ou si la liste ne contient aucune référe
       Si cette règle n'est pas définie, le paramètre sera désactivé par défaut pour les utilisateurs gérés par une entreprise et activé par défaut pour les utilisateurs non gérés.</translation>
 <translation id="3791179836066841809">Documentation de la règle</translation>
 <translation id="3791556154364029875">Activer l'espace de travail flottant et lancer les fenêtres de navigateur distantes lors de la connexion</translation>
+<translation id="3793998702484455655">Chrome tentera de mettre à niveau certains types de sous-ressources de contenu mixte (HTTP sur un site HTTPS) sur iOS.
+Pour en savoir plus, consultez la page https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md.
+
+Cette fonctionnalité sera activée par défaut. Si cette règle est activée ou qu'elle n'est pas configurée, la fonctionnalité reste activée.
+
+Si elle est désactivée, la fonctionnalité est désactivée.
+
+Cette règle est une mesure temporaire et sera supprimée dans une future version (la suppression est envisagée pour M113).</translation>
 <translation id="3795413481405077588">Cette règle permet à un administrateur de définir des paramètres pour les applications Web installées.
 
       Elle fait correspondre un ID d'application Web à son paramètre spécifique. Une configuration par défaut peut être définie avec l'ID spécial <ph name="DEFAULT_SCOPE" />, lequel s'applique à toutes les applications Web pour lesquelles aucune configuration personnalisée n'est définie dans cette règle.
@@ -4701,6 +4709,10 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Lorsque sa valeur est configurée, et si elle ne correspond pas à 0, l'utilisateur connecté en mode démonstration est déconnecté automatiquement après la durée d'inactivité définie.
 
       Notez que la valeur de cette règle se mesure en millisecondes.</translation>
+<translation id="5501031245538651575">À partir de M110, l'API non standard window.webkitStorageInfo sera supprimée. Cette règle réactive l'API.
+Si cette règle est activée, l'API window.webkitStorageInfo sera disponible.
+Si cette règle est désactivée ou n'est pas configurée, l'API window.webkitStorageInfo ne sera pas disponible.
+Cette API a été supprimée dans M112.</translation>
 <translation id="5502683401545256109">Cette règle détermine si l'utilisateur est invité ou non à sélectionner un certificat client sur l'écran de connexion (dans le cadre où se trouve le flux SAML) quand la règle <ph name="DEVICE_LOGIN_SCREEN_AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> établit une correspondance avec plus d'un certificat.
       Si cette règle est activée, l'utilisateur est invité à sélectionner le certificat client chaque fois que la règle de sélection automatique établit une correspondance avec plusieurs certificats.
       Si cette règle est désactivée ou n'est pas configurée, l'utilisateur n'est jamais invité à sélectionner de certificat client sur l'écran de connexion.
@@ -6921,51 +6933,6 @@ On attend de cette règle qu'elle soit utilisée dans le cadre de la modificatio
 
       Si cette règle est désactivée, chaque fois que l'utilisateur effectue une action qui devrait entraîner l'ouverture d'une boîte de dialogue de sélection de fichiers (par exemple, pour enregistrer des liens, ou importer des favoris ou des fichiers), un message s'affiche à la place. L'utilisateur est supposé avoir cliqué sur "Annuler" dans la boîte de dialogue de sélection de fichiers.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
-<translation id="7638726624761352254">Permet de lister les applis Web qui s'installent de manière autonome (sans intervention de l'utilisateur) et de définir quels utilisateurs ne peuvent pas les désinstaller ni les désactiver.
-
-      Chaque élément de la liste de cette règle est un objet constitué d'un membre obligatoire :
-      <ph name="URL_LABEL" /> (qui correspond à l'URL de l'appli Web à installer)
-
-      et de six membres facultatifs :
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
-      (qui indique où s'ouvre l'appli Web ; par défaut, elle s'ouvre dans un nouvel onglet)
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
-      ("True" si vous voulez créer des raccourcis sur le bureau <ph name="LINUX_OS_NAME" /> et
-      <ph name="MS_WIN_NAME" />).
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" />
-      (Disponible depuis la version 90 de <ph name="PRODUCT_NAME" /> ;
-      permet de remplacer le nom de l'appli,
-      sauf pour les progressive web apps (PWA) –
-      dans le cas d'une PWA avec authentification requise pour l'installation,
-      le nom de l'appli temporaire peut être remplacé. Si les règles
-      <ph name="CUSTOM_NAME_LABEL" /> et
-      <ph name="FALLBACK_APP_NAME_LABEL" /> sont fournies,
-      cette dernière sera ignorée.)
-
-      - <ph name="OVERRIDE_APP_NAME_LABEL" />
-      (Disponible depuis la version 99 de <ph name="PRODUCT_OS_NAME" />
-      et la version 111 sur tous les autres systèmes d'exploitation ; permet de remplacer
-      définitivement le nom d'une appli pour toutes les applis Web et les PWA.)
-
-      - <ph name="CUSTOM_ICON_LABEL" />
-      (Disponible depuis la version 99 de <ph name="PRODUCT_OS_NAME" />
-      et la version 111 sur tous les autres systèmes d'exploitation ; permet de remplacer
-      l'icône des applis installées. Les icônes ne doivent pas dépasser 1 Mo.
-      Elles doivent être carrées et au format jpeg, png, gif, webp ou ico.
-      La valeur de hachage doit être un hachage SHA-256 du fichier d'icône.)
-
-      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
-      (Disponible depuis la version 107 de <ph name="PRODUCT_NAME" />.) Si cette règle est activée, l'<ph name="URL_LABEL" /> donnée
-      sera installée en tant que raccourci, comme si vous cliquiez sur l'option "Créer un raccourci…"
-      dans l'IUG du navigateur pour ordinateur.
-      Notez que lorsqu'elle est installée en tant que raccourci, elle n'est pas mise à
-      jour si le fichier manifeste dans <ph name="URL_LABEL" /> change.
-      Si cette règle est désactivée ou qu'elle n'est pas configurée, l'appli Web
-      de l'<ph name="URL_LABEL" /> donnée sera installée normalement.
-
-      Consultez la règle <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> pour épingler des applis à l'étagère <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7638764766629234761">Autoriser l'utilisation des notifications système</translation>
 <translation id="7643151458117317518">Règle permettant de décider si le paramètre de mesure des performances des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé pour vos utilisateurs.
 

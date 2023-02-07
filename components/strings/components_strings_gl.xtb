@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Preparando ficheiros</translation>
 <translation id="1015730422737071372">Proporcionar información adicional</translation>
 <translation id="1019413721762100891">Desactivado</translation>
-<translation id="1021110881106174305">Tarxetas aceptadas</translation>
 <translation id="1021753677514347426">Este problema prodúcese por causa dun certificado instalado por ti ou por outra persoa no teu dispositivo. Sábese que este certificado se utiliza para supervisar e interceptar redes, e Chromium non confía nel. Aínda que existen algunhas situacións lexítimas para a supervisión, como no caso de redes de empresas ou de centros educativos, Chromium quere asegurarse de que sexas consciente do que acontece, inda que non poidas facer nada ao respecto. A supervisión pode levarse a cabo en calquera navegador ou aplicación que acceda á Web.</translation>
 <translation id="1024111578869940408">Ás veces, os atacantes imitan sitios facendo cambios no enderezo web que son difíciles de ver.</translation>
 <translation id="1028781062521375153">Ver detalles</translation>
@@ -708,7 +707,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2688969097326701645">Si, continuar</translation>
 <translation id="2691924980723297736">Advertencia de seguranza</translation>
 <translation id="2692131511336778528">Ciencia ficción e fantasía</translation>
-<translation id="2699302886720511147">Acéptanse tarxetas</translation>
 <translation id="2701514975700770343">Cara abaixo</translation>
 <translation id="2702801445560668637">Lista de lectura</translation>
 <translation id="2704283930420550640">O valor non se corresponde co formato.</translation>
@@ -991,7 +989,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="342781501876943858">Chromium recoméndache que restablezas o contrasinal se o reutilizaches noutros sitios.</translation>
 <translation id="3428151540071562330">Un ou varios URI do modelo do servidor DnsOverHttpsTemplates non son válidos e non se utilizarán.</translation>
 <translation id="3431216045099978607">Preme |<ph name="ACCELERATOR" />| para saír de pantalla completa e ver a descarga.</translation>
-<translation id="3431636764301398940">Gardar esta tarxeta neste dispositivo</translation>
 <translation id="3432601291244612633">Pechar páxina</translation>
 <translation id="3435738964857648380">Seguranza</translation>
 <translation id="3438829137925142401">Utilizar contrasinais gardados na túa Conta de Google</translation>
@@ -1122,7 +1119,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
 <translation id="3744286742364977428">Os ficheiros que descargas envíanse a Google Cloud ou a terceiros para analizalos. Por exemplo, poderíase comprobar se conteñen datos confidenciais ou software malicioso e poderían almacenarse en función das políticas da empresa.</translation>
 <translation id="3744899669254331632">Non se pode visitar <ph name="SITE" /> nestes momentos porque o sitio web enviou credenciais codificadas que Chromium non pode procesar. Os erros e ataques da rede normalmente son temporais, polo que é probable que esta páxina funcione máis tarde.</translation>
-<translation id="3745099705178523657">Unha vez que confirmes os datos, os detalles da tarxeta da túa Conta de Google compartiranse con este sitio.</translation>
 <translation id="3748148204939282805">Os piratas informáticos de <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> poden enganarte para que realices accións perigosas, como instalar un software ou revelar información persoal (por exemplo, contrasinais, números de teléfono ou tarxetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Máis información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Industria aeronáutica</translation>
 <translation id="3752543821772132562">Ignórase porque non se configurou <ph name="POLICY_NAME" />.</translation>
@@ -1140,7 +1136,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3781428340399460090">Rosa fucsia</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositivos Bluetooth</translation>
-<translation id="3787705759683870569">Caduca o <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Tamaño 16</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> in)</translation>
@@ -1340,7 +1335,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4282346679996504092">Desactiváronse as alertas para este produto e eliminouse o marcador</translation>
 <translation id="4285498937028063278">Deixar de fixar</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Esta tarxeta gardouse na túa Conta de Google}other{Estas tarxetas gardáronse na túa Conta de Google}}</translation>
-<translation id="4287495839370498922">Privacidade mellorada nos anuncios con Chrome</translation>
+<translation id="4287495839370498922">Privacidade mellorada nos anuncios en Chrome</translation>
 <translation id="4287885627794386150">Cumpre os requisitos para a proba, pero a técnica non está activa</translation>
 <translation id="4297502707443874121">Miniatura da páxina <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Investimento</translation>
@@ -3084,7 +3079,6 @@ Detalles adicionais:
 <translation id="8620276786115098679">Sobre Kaku-7</translation>
 <translation id="8623885649813806493">Non tes ningún contrasinal para este sitio. Mostrar todos os contrasinais gardados.</translation>
 <translation id="8624354461147303341">Obter descontos</translation>
-<translation id="8625384913736129811">Gardar esta tarxeta neste dispositivo</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637577059508742477"><ph name="DOMAIN" /> xestiona o teu perfil e navegador</translation>
 <translation id="8643409044755049933">Sobre Kaku-3</translation>

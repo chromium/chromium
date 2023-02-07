@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Se pregătesc fișierele</translation>
 <translation id="1015730422737071372">Specifică detalii suplimentare</translation>
 <translation id="1019413721762100891">dezactivate</translation>
-<translation id="1021110881106174305">Carduri acceptate</translation>
 <translation id="1021753677514347426">Această problemă apare din cauza unui certificat pe care tu sau altcineva l-ați instalat pe dispozitiv. Certificatul este folosit pentru a monitoriza și a intercepta rețelele, nefiind autorizat de Chromium. Deși există cazuri legitime pentru monitorizare, de exemplu, într-o rețea de la școală sau de la serviciu, Chromium vrea să se asigure că știi ce se întâmplă, chiar dacă nu poți opri acest lucru. Monitorizarea se poate face în orice browser sau aplicație care intră pe web.</translation>
 <translation id="1024111578869940408">Uneori, atacatorii imită site-uri aducând modificări greu de observat adresei web.</translation>
 <translation id="1028781062521375153">Vezi detaliile</translation>
@@ -709,7 +708,6 @@
 <translation id="2688969097326701645">Da, continuă</translation>
 <translation id="2691924980723297736">Avertisment de siguranță</translation>
 <translation id="2692131511336778528">Științifico-fantastic și fantasy</translation>
-<translation id="2699302886720511147">Carduri acceptate</translation>
 <translation id="2701514975700770343">Cu fața în jos</translation>
 <translation id="2702801445560668637">Listă de lecturi</translation>
 <translation id="2704283930420550640">Valoarea nu se potrivește cu formatul.</translation>
@@ -825,7 +823,7 @@
 <translation id="301521992641321250">Blocată automat</translation>
 <translation id="3016780570757425217">Afle locația</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, apasă pe Tab, apoi pe Enter pentru a elimina sugestia.</translation>
-<translation id="3023165109041533893">Anunțurile sugerate de site-uri contribuie la protejarea istoricului de navigare și a identității tale și le dă site-urilor posibilitatea să îți afișeze anunțuri relevante. Pe baza activității tale, un site pe care l-ai accesat poate sugera anunțuri similare pe măsură ce navighezi. În setări, poți să vezi o listă a acestor site-uri și să le blochezi pe cele care nu dorești să apară.</translation>
+<translation id="3023165109041533893">Anunțurile sugerate de site-uri contribuie la protejarea istoricului de navigare și a identității tale și le permit site-urilor să îți afișeze anunțuri relevante. Pe baza activității tale, un site pe care l-ai accesat poate sugera anunțuri similare pe măsură ce navighezi. În setări, poți să vezi o listă a acestor site-uri și să le blochezi pe cele care nu dorești să apară.</translation>
 <translation id="3024663005179499861">Tip de politică greșit</translation>
 <translation id="3029752078111257850">Știri internaționale</translation>
 <translation id="3037177537145227281">Se urmărește prețul</translation>
@@ -877,7 +875,7 @@
 <translation id="317878711435188021">să afle când folosești activ dispozitivul</translation>
 <translation id="3180358318770512945">Părinți</translation>
 <translation id="3187306450550410410">Flexibilitate la locul de muncă</translation>
-<translation id="3187472288455401631">Ad measurement</translation>
+<translation id="3187472288455401631">Cuantificarea anunțurilor</translation>
 <translation id="3190736958609431397">Anulează urmărirea</translation>
 <translation id="319282854780294203">Rețele sociale</translation>
 <translation id="3194737229810486521"><ph name="URL" /> dorește să stocheze permanent date pe dispozitiv</translation>
@@ -992,7 +990,6 @@
 <translation id="342781501876943858">Chromium îți recomandă să resetezi parola dacă ai folosit-o și pe alte site-uri.</translation>
 <translation id="3428151540071562330">Una sau mai multe dintre adresele URI pentru șabloanele de server DnsOverHttpsTemplates este nevalidă și nu va fi folosită.</translation>
 <translation id="3431216045099978607">Apasă pe |<ph name="ACCELERATOR" />| ca să ieși din ecranul complet și să vezi descărcarea.</translation>
-<translation id="3431636764301398940">Salvează cardul pe acest dispozitiv</translation>
 <translation id="3432601291244612633">Închide pagina</translation>
 <translation id="3435738964857648380">Securitate</translation>
 <translation id="3438829137925142401">Folosește parolele salvate în Contul tău Google</translation>
@@ -1123,7 +1120,6 @@
 <translation id="3744111561329211289">Sincronizare în fundal</translation>
 <translation id="3744286742364977428">Fișierele pe care le descarci sunt trimise la Google Cloud sau la terți spre analiză. De exemplu, se pot căuta date sensibile sau programe malware și fișierele pot fi stocate conform politicilor companiei.</translation>
 <translation id="3744899669254331632">Nu poți accesa acum <ph name="SITE" />, deoarece site-ul a trimis date de conectare într-un format necunoscut pe care Chromium nu le poate procesa. Erorile de rețea și atacurile sunt de obicei temporare și probabil că această pagină va funcționa mai târziu.</translation>
-<translation id="3745099705178523657">După ce confirmi, acest site va avea acces la detaliile cardului tău din Contul Google.</translation>
 <translation id="3748148204939282805">Atacatorii de pe <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> te pot înșela, determinându-te să faci ceva periculos, cum ar fi să instalezi software sau să îți dezvălui informațiile cu caracter personal (de exemplu, parole, numere de telefon sau date despre cardurile de credit). <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Domeniul aviației</translation>
 <translation id="3752543821772132562">S-a ignorat deoarece <ph name="POLICY_NAME" /> nu este setat.</translation>
@@ -1141,7 +1137,6 @@
 <translation id="3781428340399460090">Roz aprins</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispozitive Bluetooth</translation>
-<translation id="3787705759683870569">Expiră în <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Mărimea 16</translation>
 <translation id="3789841737615482174">Instalează</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
@@ -3081,15 +3076,14 @@ Detalii suplimentare:
 <translation id="8589998999637048520">Calitate optimă</translation>
 <translation id="8600271352425265729">Doar de data aceasta</translation>
 <translation id="860043288473659153">Nume titular de card</translation>
-<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Ce date sunt folosite:<ph name="END_BOLD" /> activitatea ta de pe un site pe care l-ai accesat folosind Chrome pe acest dispozitiv.</translation>
+<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Ce date se folosesc:<ph name="END_BOLD" /> activitatea ta de pe un site pe care l-ai accesat folosind Chrome pe acest dispozitiv.</translation>
 <translation id="8606726445206553943">Folosească dispozitive MIDI</translation>
-<translation id="8606988009912891950">Pe baza subiectelor anunțurilor, site-urile îți afișează anunțuri relevante, protejându-ți totodată istoricul de navigare și identitatea. Chrome poate reține subiectele de interes pe baza istoricului tău de navigare recent. Ulterior, un site pe care îl accesezi poate solicita browserului Chrome subiecte relevante, pentru a personaliza anunțurile pe care le vezi.</translation>
+<translation id="8606988009912891950">Pe baza subiectelor anunțurilor, site-urile îți afișează anunțuri relevante și îți protejează istoricul de navigare și identitatea. Chrome poate reține subiectele de interes în funcție de istoricul tău de navigare recent. Ulterior, un site pe care îl accesezi poate solicita subiecte relevante de la browserul Chrome pentru a personaliza anunțurile pe care le vezi.</translation>
 <translation id="8617269623452051934">folosirea dispozitivului</translation>
 <translation id="861775596732816396">Mărimea 4</translation>
 <translation id="8620276786115098679">Plic Kaku 7</translation>
 <translation id="8623885649813806493">Parolele nu corespund. Afișează toate parolele salvate.</translation>
 <translation id="8624354461147303341">Primește reduceri</translation>
-<translation id="8625384913736129811">Salvează cardul pe acest dispozitiv</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637577059508742477">Profilul și browserul sunt gestionate de <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">Plic Kaku 3</translation>

@@ -92,6 +92,7 @@
 <translation id="7045244423563602563">Anpassa Chromium</translation>
 <translation id="7099326575020694068">Chromium kan inte använda kameran i delad vy</translation>
 <translation id="7118091470949186573">Nu kan du använda Chromium varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
+<translation id="7165402419892018581">Välj Chromium för autofyll</translation>
 <translation id="7175400662502680481">Ditt lösenord har läckt ut vid ett dataintrång. Du rekommenderas av Lösenordshantering att byta lösenord nu.</translation>
 <translation id="7208566199746267865">Med Chromium sparar du tid genom att dina konton blir tillgängliga på nätet. Du kan lägga till och ta bort konton i inställningarna.</translation>
 <translation id="725427773388857052">Chromium kan skydda dig från dataintrång, osäkra webbplatser med mera.</translation>
@@ -106,6 +107,7 @@
 <translation id="7746854981345936341">Tips för Chromium. Vissa knappar finns nu längst ned på skärmen, till exempel bakåtknappen, framåtknappen och Sök.</translation>
 <translation id="7763454117143368771">Använd Chromium som standardwebbläsare med skydd mot skadliga webbplatser och skydd av dina lösenord</translation>
 <translation id="7812317783196516890">Du är inloggad på och synkroniserar din data med ett konto som hanteras av <ph name="DOMAIN" />. Administratören kan nu ställa in användarpolicyer som gäller det kontot specifikt och som kan påverka hur Chromium fungerar.</translation>
+<translation id="7859018312476869945">När du skriver i adressfältet eller sökrutan skickar Chromium det du skriver till standardsökmotorn för att du ska få bättre förslag. Detta är inaktiverat i inkognitoläge.</translation>
 <translation id="786327964234957808">Du håller på att byta synkroniseringskonto från <ph name="USER_EMAIL1" /> till <ph name="USER_EMAIL2" />. Befintlig data i Chromium hanteras av <ph name="DOMAIN" />. Åtgärden raderar din data från den här enheten men den finns kvar på <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Börja använda Chromium som skanner</translation>
 <translation id="7928628054454574139">Öppna Chromium varje gång du trycker på länkar i andra appar</translation>
@@ -115,6 +117,7 @@
 <translation id="8073677936375100957">Vill du rensa din data i Chromium från den här enheten?</translation>
 <translation id="8240981428553046115">Chromium kunde inte söka efter uppdateringar. Försök igen senare.</translation>
 <translation id="8409374867500149834">Du har den starkaste säkerheten i Chromium mot skadliga webbplatser</translation>
+<translation id="8460301378281140593">Öppna Lösenordsalternativ i inställningarna på iPhone och välj Chromium</translation>
 <translation id="858114650497379505">Du kan använda lösenorden som sparats med Lösenordshantering i andra iPhone-appar.</translation>
 <translation id="8586442755830160949">Upphovsrätt <ph name="YEAR" /> The Chromium Authors. Med ensamrätt.</translation>
 <translation id="8603022514504485810">Google Lösenordshantering kunde inte kontrollera alla lösenord. Försök igen i morgon eller <ph name="BEGIN_LINK" />kontrollera lösenorden i ditt Google-konto<ph name="END_LINK" />.</translation>

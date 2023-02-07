@@ -80,6 +80,7 @@
 <translation id="149095475893949513">આ વેબસાઇટ કન્ફિગ્યુરેશન પ્રોફાઇલ ડાઉનલોડ કરવાનો પ્રયાસ કરી રહી છે.</translation>
 <translation id="1491277525950327607">સેટિંગ ટૉગલ કરવા માટે બે વાર ટૅપ કરો</translation>
 <translation id="1492417797159476138">તમે આ સાઇટ માટે પહેલેથી જ વપરાશકર્તા નામ સાચવ્યું છે</translation>
+<translation id="1498283581832036924">તમારું <ph name="WEBSITE" /> એકાઉન્ટ ડિલીટ થશે નહીં.</translation>
 <translation id="1506063256525392513">આ તમને ફોટા લેવા અને અપલોડ કરવા તેમજ QR કોડ સ્કૅન કરવા દે છે</translation>
 <translation id="1509486075633541495">વેબસાઇટમાં સાઇન ઇન કરો</translation>
 <translation id="1509960214886564027">ઘણી સાઇટ પરની સુવિધાઓને કદાચ બંધ કરવામાં આવી શકે</translation>
@@ -218,6 +219,7 @@
 <translation id="2664621323652615289">રોકો</translation>
 <translation id="2671426118752779020">તમે Google પાસવર્ડ મેનેજરમાં સાચવેલા તમારા પાસવર્ડનો ઉપયોગ તમારા iPhone પરની અન્ય ઍપમાં કરી શકો છો.</translation>
 <translation id="2690858294534178585">કૅમેરા ઉપયોગમાં છે</translation>
+<translation id="26915454213703967">Google વડે છબીમાં શોધો</translation>
 <translation id="2691653761409724435">ઑફલાઇન ઉપલબ્ધ નથી</translation>
 <translation id="2695507686909505111">પેજનો અનુવાદ કર્યો</translation>
 <translation id="2697526135132990015">સાઇન આઉટ કરો અને ડેટા સાફ કરો</translation>
@@ -380,6 +382,7 @@
 <translation id="3819183753496523827">તમે ઑફલાઇન છો. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="3835964409414434850">આગલા ટૅબ પર જાઓ</translation>
 <translation id="385051799172605136">પાછળ</translation>
+<translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> અને અન્ય <ph name="NUMBER_OF_ACCOUNTS" /> માટેના પાસવર્ડ ડિલીટ કરવામાં આવશે. તમારા એકાઉન્ટ ડિલીટ થશે નહીં.</translation>
 <translation id="3858860766373142691">નામ</translation>
 <translation id="3861486700625780712">અનફૉલો કરો</translation>
 <translation id="3863769054730344136">તમારા બધા ડિવાઇસ પર મોકલો</translation>
@@ -515,6 +518,7 @@
 <translation id="4833786495304741580">Googleને વપરાશના આંકડા અને ક્રૅશ રિપોર્ટ ઑટોમૅટિક રીતે મોકલે છે.</translation>
 <translation id="4840495572919996524">તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય બાબતો હવેથી Google એકાઉન્ટ પર સિંક થશે નહીં.</translation>
 <translation id="4844899002472726590">તમે જેમાં રુચિ ધરાવતા હો, એવા વિષયો જુઓ અને તેમાં ફેરફાર કરો</translation>
+<translation id="4848999860252535517">શું <ph name="WEBSITE" /> માટેનો પાસવર્ડ ડિલીટ કરીએ?</translation>
 <translation id="4854345657858711387">એક પાસકોડ સેટ કરો</translation>
 <translation id="4858786880085262208">જ્યારે શક્ય હોય ત્યારે, HTTPS પર અપગ્રેડ કરો. સુરક્ષિત સાઇટ અસુરક્ષિત કન્ટેન્ટ શામેલ કરી શકે છે.</translation>
 <translation id="4860895144060829044">કૉલ કરો</translation>
@@ -768,6 +772,7 @@
 <translation id="6598875554591387303">પ્રકાશક મુજબ સૉર્ટ કરો</translation>
 <translation id="6603393121510733479">તમારી સંસ્થાએ ખાનગી બ્રાઉઝિંગ બંધ કર્યું છે.
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> અને <ph name="THIRD_WEBSITE" /> માટેના પાસવર્ડ ડિલીટ કરવામાં આવશે. તમારા એકાઉન્ટ ડિલીટ થશે નહીં.</translation>
 <translation id="6610002944194042868">અનુવાદ માટેના વિકલ્પો</translation>
 <translation id="661266467055912436">વેબ પર તમારા માટે તેમજ પ્રત્યેક માટે સુરક્ષાને બહેતર બનાવે છે.</translation>
 <translation id="6620279676667515405">રદ કરો</translation>
@@ -1045,6 +1050,7 @@
 <translation id="8756969031206844760">પાસવર્ડ અપડેટ કરીએ?</translation>
 <translation id="8763613688786959833">છેલ્લી ટૅબ પર જાઓ</translation>
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" />ને અનફૉલો કરો</translation>
+<translation id="8766790350274092814"><ph name="WEBSITE" /> અને <ph name="SECOND_WEBSITE" /> માટેના પાસવર્ડ ડિલીટ કરવામાં આવશે. તમારા એકાઉન્ટ ડિલીટ થશે નહીં.</translation>
 <translation id="8775144690796719618">અમાન્ય URL</translation>
 <translation id="8787968206789828143">વેબ પર શોધો</translation>
 <translation id="8792626944327216835">માઇક્રોફોન</translation>
@@ -1094,6 +1100,7 @@
 <translation id="9093271241977565440">સ્ક્રીનની સૌથી ઉપર, શોધો આઇકન પર ટૅપ કરો</translation>
 <translation id="9094033019050270033">પાસવર્ડ અપડેટ કરો</translation>
 <translation id="9097506547406246598">અનફૉલો કરી શકતા નથી. કંઈક ખોટું થયું.</translation>
+<translation id="9098541895599151034">શું પાસવર્ડ <ph name="NUMBER_OF_ACCOUNTS" /> ડિલીટ કરીએ?</translation>
 <translation id="9100610230175265781">પાસફ્રેઝ આવશ્યક છે</translation>
 <translation id="9107664647686727385">ચેડાં કરાયેલા પાસવર્ડ ચેક કરો</translation>
 <translation id="9124387962554796433">Search અને Googleની અન્ય સેવાઓને મનપસંદ બનાવવા માટે, Google તમારા ઇતિહાસનો ઉપયોગ કરી શકે છે.</translation>

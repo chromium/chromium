@@ -165,7 +165,7 @@
 <translation id="1807246157184219062">Ачык</translation>
 <translation id="181103072419391116">Сигналдын күчү <ph name="SIGNAL_STRENGTH" />, Администраторуңуз башкарат</translation>
 <translation id="1816896987747843206">Камерага уруксаты бар колдонмолордун жана вебсайттардын баарына камераны пайдалануу мүмкүнчүлүгү берилет</translation>
-<translation id="1823280932251546115">Абал түпкүчү, убакыт <ph name="TIME" />,
+<translation id="1823280932251546115">Абал сабы, убакыт <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
         <ph name="NETWORK" />,
@@ -913,6 +913,7 @@
 <translation id="5867606971598166637">Тутум администратору экрандарды көзөмөлдөп жатат</translation>
 <translation id="5876666360658629066">Ата-энелик кодду киргизүү</translation>
 <translation id="5881540930187678962">Phone Hub'ды кийинчерээк жөндөө</translation>
+<translation id="5881663018261910378">Өчүк</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> терезеси <ph name="DESK_TITLE" /> иш тактасына дайындалып, башка иш такталардын баарына дайындоо жокко чыгарылды</translation>
 <translation id="5895138241574237353">Өчүрүп күйгүзүү</translation>
 <translation id="589817443623831496">Чекиттик скандоо</translation>

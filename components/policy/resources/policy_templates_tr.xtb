@@ -3020,6 +3020,14 @@ Bu politika ayarlanmazsa veya listede geçerli bir resim referansı yoksa <ph na
       Bu politika ayarlanmadan bırakılırsa, varsayılan olarak kuruluş tarafından yönetilen kullanıcılara izin verilmezken, yönetilmeyen kullanıcılara izin verilir.</translation>
 <translation id="3791179836066841809">Politika dokümanları</translation>
 <translation id="3791556154364029875">Kayan çalışma alanı etkinleştirilir ve giriş yapıldıktan sonra uzak tarayıcı pencereleri açılır</translation>
+<translation id="3793998702484455655">Chrome, iOS'te bazı karma içerik (HTTPS sitesinde HTTP) alt kaynaklarını yükseltmeye çalışır.
+Ayrıntılar için https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md sayfasına göz atın.
+
+Bu özellik varsayılan olarak etkinleştirilir. Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa özellik etkin kalır.
+
+Politika, Devre Dışı değerine ayarlanırsa özellik devre dışı bırakılır.
+
+Bu politika geçici bir çözümdür ve birkaç kilometre taşından kaldırılacaktır (kaldırma işleminin geçici olarak M113 sürümünde gerçekleşmesi planlanmaktadır).</translation>
 <translation id="3795413481405077588">Bu politika, yöneticinin yüklenen web uygulamaları için ayarları belirtmesine olanak tanır.
 
       Bu politika, web uygulaması kimliğini kendi özel ayarı ile eşleştirir. <ph name="DEFAULT_SCOPE" /> özel kimliği kullanılarak varsayılan bir yapılandırma ayarlanabilir. Bu varsayılan yapılandırma, bu politikada özel bir yapılandırma ayarlanmamış tüm web uygulamaları için geçerli olur.
@@ -4720,6 +4728,10 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa gi
       Bu politika için 0 dışında bir değer ayarlandığında, belirtilen sürede herhangi bir etkinlik gerçekleştirilmezse giriş yapmış olan tanıtım kullanıcısının oturumu otomatik olarak kapanır.
 
       Politika değeri milisaniye cinsinden belirtilmelidir.</translation>
+<translation id="5501031245538651575">Standart olmayan window.webkitStorageInfo API'si, M110 sürümünden itibaren kaldırılacaktır. Bu politika, API'yi yeniden etkinleştirir.
+Bu politika, Etkin değerine ayarlanırsa window.webkitStorageInfo API'si kullanılabilir.
+Bu politika, Devre Dışı değerine ayarlanırsa veya ayarlanmadan bırakılırsa window.webkitStorageInfo API'si kullanılamaz.
+Bu politika, M112 sürümünde kaldırılmıştır.</translation>
 <translation id="5502683401545256109">Bu politika, <ph name="DEVICE_LOGIN_SCREEN_AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> ile eşleşen birden fazla sertifika olduğunda kullanıcıdan SAML akışını barındıran çerçevedeki oturum açma ekranında bir istemci sertifikası seçmesinin istenip istenmeyeceğini kontrol eder.
       Bu politika Etkin değerine ayarlanırsa, otomatik seçim politikası birden fazla sertifikayla eşleştiğinde kullanıcıdan istemci sertifikasını seçmesi istenir.
       Bu politika Devre Dışı değerine ayarlanırsa veya ayarlanmadan bırakılırsa kullanıcıdan hiçbir zaman oturum açma ekranında bir istemci sertifikası seçmesi istenmez.
@@ -6955,44 +6967,6 @@ Bu politika, kullanımdan kaldırılan <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_UR
 
       Politika, Devre Dışı değerine ayarlanırsa kullanıcılar yer işareti içe aktarma, dosya yükleme ve bağlantı kaydetme gibi dosya seçimi iletişim kutusunun açılmasını sağlayan işlemler yaptıklarında bir mesaj görüntülenir. Kullanıcının dosya seçimi iletişim kutusunda İptal'i tıklamış olduğu varsayılır.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
-<translation id="7638726624761352254">Politikayı ayarlamak, kullanıcı etkileşimi olmadan sessizce yüklenen, kullanıcıların kaldıramadığı veya kapatamadığı web uygulamalarının listesini belirtir.
-
-      Politikanın her liste öğesi, zorunlu üyeye sahip bir nesnedir:
-      <ph name="URL_LABEL" /> (yüklenecek web uygulamasının URL'si)
-
-      ve isteğe bağlı 6 üye:
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
-      (web uygulamasının açılma yöntemini belirlemek için — varsayılan yeni sekmedir)
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
-      (<ph name="LINUX_OS_NAME" /> ve
-      <ph name="MS_WIN_NAME" /> masaüstü kısayolları oluşturulmak istenirse doğru değerine ayarlanmalıdır).
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" />
-      (<ph name="PRODUCT_NAME" /> sürüm 90'dan başlayarak, Progresif Web Uygulaması (PWA) değilse uygulama adını veya PWA ise ancak yüklemenin tamamlanabilmesi için kimlik doğrulama gerekiyorsa geçici olarak yüklenen uygulama adını geçersiz kılmanıza olanak tanır.) Hem <ph name="CUSTOM_NAME_LABEL" /> hem de <ph name="FALLBACK_APP_NAME_LABEL" /> sağlanmışsa ikincisi dikkate alınmaz.)
-
-      - <ph name="OVERRIDE_APP_NAME_LABEL" />
-      (<ph name="PRODUCT_OS_NAME" /> sürüm 99
-      ve diğer tüm işletim sistemlerinde bulunan sürüm 111'den itibaren tüm web uygulamaları
-      ve PWA'lar için uygulama adını kalıcı olarak geçersiz kılmanıza olanak tanır.)
-
-      - <ph name="CUSTOM_ICON_LABEL" />
-      (<ph name="PRODUCT_OS_NAME" /> sürüm 99
-      ve diğer tüm işletim sistemlerinde bulunan sürüm 111'den itibaren yüklü uygulamaların
-      uygulama simgesini geçersiz kılmanıza olanak tanır. Simgeler; kare şeklinde, maksimum 1 MB boyutunda ve jpeg, png, gif, webp, ico biçimlerinden birinde olmalıdır.
-      Karma değeri, simge dosyasının SHA256 karma değeri olmalıdır.)
-
-      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
-      (<ph name="PRODUCT_NAME" /> sürüm 107'den
-      itibaren). Politika etkinleştirilirse belirtilen <ph name="URL_LABEL" />,
-      masaüstü tarayıcı GUI'sındaki "Kısayol Oluştur..." seçeneği kullanılmış
-      gibi kısayol olarak yüklenir.
-      Kısayol olarak yüklenirse <ph name="URL_LABEL" /> içindeki manifest değiştiğinde
-      güncellenmeyeceğini unutmayın.
-      Politika devre dışı bırakılırsa veya ayarlanmazsa belirtilen
-      <ph name="URL_LABEL" /> içindeki web uygulaması normal şekilde yüklenir.
-
-      Uygulamaları <ph name="PRODUCT_OS_NAME" /> rafına sabitlemek için <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> politikasına bakın.</translation>
 <translation id="7638764766629234761">Sistem bildirimlerinin kullanılmasına izin ver</translation>
 <translation id="7643151458117317518"><ph name="PRIVACY_SANDBOX_NAME" /> reklam ölçümü ayarının kullanıcılarınız için devre dışı bırakılıp bırakılamayacağını kontrol eden bir politika.
 

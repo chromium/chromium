@@ -250,6 +250,7 @@
 <translation id="2426805022920575512">மற்றொரு கணக்கைத் தேர்வுசெய்க</translation>
 <translation id="2433507940547922241">தோற்றம்</translation>
 <translation id="2435457462613246316">கடவுச்சொல்லைக் காண்பி</translation>
+<translation id="2439153523196674349"><ph name="SITE_NAME" /> மாதிரிக்காட்சி</translation>
 <translation id="2450083983707403292"><ph name="FILE_NAME" />ஐ மீண்டும் பதிவிறக்கவா?</translation>
 <translation id="2453860139492968684">முடி</translation>
 <translation id="2459390580524506445">மேம்பட்ட குரல் தேடல்</translation>
@@ -388,6 +389,7 @@
 <translation id="3066573403916685335">கீழே நகர்த்து</translation>
 <translation id="3070005020161560471">தானாக மொழிபெயர்க்க வேண்டியவை</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chromeமில் திறக்கப்படும். தொடர்வதன் மூலம் <ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகள்<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Google Chrome &amp; ChromeOS தொடர்பான கூடுதல் சேவை விதிமுறைகள்<ph name="END_LINK2" /> ஆகியவற்றை ஏற்கிறீர்கள். <ph name="BEGIN_LINK3" />தனியுரிமைக் கொள்கையையும்<ph name="END_LINK3" /> ஏற்கிறீர்கள்.</translation>
+<translation id="3083194063661536258">வெளியேறிவிட்டீர்கள். பட்டன். உள்நுழைந்து ஒத்திசைவை இயக்குவதற்கான உரையாடலைத் திறக்கும்.</translation>
 <translation id="3091010850649238832">கிளிப்போர்டில் உள்ளவற்றைக் காட்டும்</translation>
 <translation id="3098745985164956033">உங்களுக்கான விளக்கங்களை மேம்படுத்த, படங்கள் Googleளுக்கு அனுப்பப்படும்</translation>
 <translation id="3104179992611025423">இந்த உலாவியை உங்கள் பெற்றோர் நிர்வகிக்கின்றனர்</translation>
@@ -924,6 +926,7 @@
 <translation id="6040143037577758943">மூடு</translation>
 <translation id="604124094241169006">தானியங்கு</translation>
 <translation id="6042308850641462728">மேலும்</translation>
+<translation id="6049046116080614938">உள்நுழைந்துள்ள கணக்கு: <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. பட்டன். அமைப்புகளைத் திறக்கும்.</translation>
 <translation id="604996488070107836">அறியப்படாதப் பிழை காரணமாக <ph name="FILE_NAME" />ஐப் பதிவிறக்க முடியவில்லை.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">உங்கள் செய்திகளையும் செயல்பாட்டையும் இங்கே கட்டுப்படுத்தலாம்</translation>
@@ -1297,6 +1300,7 @@
 <translation id="7968014550143838305">வாசிப்புப் பட்டியலில் சேர்ந்தது</translation>
 <translation id="7971136598759319605">கடைசியாக 1 நாளுக்கு முன் பயன்படுத்தியுள்ளார்</translation>
 <translation id="7975379999046275268">பக்க மாதிரிக்காட்சியைக் காட்டு <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">உள்நுழைந்துள்ள கணக்கு: <ph name="USER_NAME" />. பட்டன். அமைப்புகளைத் திறக்கும்.</translation>
 <translation id="7986497153528221272">கடவுச்சொற்களைப் பார்க்க, முதலில் உங்கள் சாதனத்தில் திரைப் பூட்டை அமைக்கவும்</translation>
 <translation id="7995059495660416932">கிடைக்கும்போது உள்ளடக்கம் காட்டப்படும்</translation>
 <translation id="799576009106109668">நீங்கள் தற்போது பார்க்கும் இணையப் பக்கத்தின் அடிப்படையில் உள்ளடக்கம் முன்கூட்டியே ஏற்றப்படுவதால் விரைவாக உலாவலாம்</translation>

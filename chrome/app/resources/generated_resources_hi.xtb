@@ -376,6 +376,7 @@
 <translation id="1339009753652684748">"Ok Google" बोलकर अपनी Assistant को ऐक्सेस करें. बैटरी बचाने के लिए, “चालू करें (सुझाव दिया जाता है)” चुनें. आपकी Assistant सिर्फ़ तब जवाब देगी, जब आपका डिवाइस प्लग-इन होगा या चार्ज हो रहा होगा.</translation>
 <translation id="13392265090583506">सुलभता सेटिंग</translation>
 <translation id="1340527397989195812">फ़ाइल ऐप्लिकेशन का उपयोग करके डिवाइस से मीडिया का बैक अप लें.</translation>
+<translation id="1341871421050612057"><ph name="USERNAME" /> के साथ सिंक नहीं किया जा सकता</translation>
 <translation id="1343865611738742294">Linux के ऐप्लिकेशन को यूएसबी डिवाइस ऐक्सेस करने की अनुमति दें. यूएसबी डिवाइस को हटाने के बाद Linux उसे याद नहीं रखेगा.</translation>
 <translation id="1343920184519992513">जहां आपने छोड़ा था वहीं से जारी रखें और पेजों के एक खास सेट को खोलें</translation>
 <translation id="134589511016534552">मीडिया टैब, खुले हुए टैब सेक्शन में भी दिखते हैं</translation>
@@ -3054,6 +3055,7 @@
 <translation id="372062398998492895">CUPS प्रिंटर</translation>
 <translation id="3721119614952978349">आप और Google</translation>
 <translation id="3722108462506185496">वर्चुअल मशीन सेवा शुरू करने में गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
+<translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> निर्देश मिला</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">उपलब्ध वाई-फ़ाई नेटवर्क</translation>
 <translation id="3727187387656390258">पॉपअप का निरीक्षण करें</translation>
@@ -3409,6 +3411,7 @@
 <translation id="402211067068791756">इससे, देखी गई साइटों के सेव किए गए कुल डेटा में से <ph name="TOTAL_USAGE" /> डेटा मिट जाएगा</translation>
 <translation id="4022426551683927403">शब्दकोश में &amp;जोड़ें</translation>
 <translation id="4025039777635956441">चुनी गई साइट म्यूट करें</translation>
+<translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> निर्देश मिला</translation>
 <translation id="4027958407426528157">अपने <ph name="DEVICE_TYPE" /> पर इंस्टॉल किए गए ऐप्लिकेशन में वेबसाइटें खोलें</translation>
 <translation id="4028467762035011525">इनपुट का तरीका जोड़ें</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> पेज से वापस जाएं</translation>
@@ -4149,6 +4152,7 @@
 <translation id="4713409221649555176">सभी विंडो बंद करने पर डेटा मिटाएं</translation>
 <translation id="47158868804223727">ग्रुप को बड़ा या छोटा करने के लिए, उसके नाम पर क्लिक करें</translation>
 <translation id="4716483597559580346">अतिरिक्त सुरक्षा के लिए Powerwash करें</translation>
+<translation id="471759229191973607">थीम बदलें</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> का पासवर्ड</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> आपकी स्क्रीन शेयर कर रहा है.</translation>
 <translation id="4722989931633062466">तीसरे पक्ष की सेवा के लिए, साइन इन करने के अनुरोधों को दिखाने की अनुमति नहीं है</translation>
@@ -5689,6 +5693,7 @@
 <translation id="6150961653851236686">पेजों का अनुवाद करते समय इस भाषा का इस्तेमाल किया जाता है</translation>
 <translation id="6151323131516309312"><ph name="SITE_NAME" /> पर खोजने के लिए <ph name="SEARCH_KEY" /> दबाएं</translation>
 <translation id="6151771661215463137">फ़ाइल आपके डाउनलोड फ़ोल्डर में पहले से मौजूद है.</translation>
+<translation id="6152918902620844577">अगली कार्रवाई का इंतज़ार है</translation>
 <translation id="6154240335466762404">सभी पोर्ट हटाएं</translation>
 <translation id="615436196126345398">प्रोटोकॉल</translation>
 <translation id="6155141482566063812">बैकग्राउंड टैब आपकी स्क्रीन शेयर कर रहा है</translation>
@@ -7173,6 +7178,7 @@
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> काम नहीं कर रहा है. ऐप्लिकेशन को बंद करने के लिए "ज़बरदस्ती बंद करें" चुनें.</translation>
 <translation id="7535730537657706072">अपने डिवाइस पर गुप्त मोड में की गई ब्राउज़िंग का इतिहास मिटाने के लिए, सभी गुप्त टैब बंद कर दें</translation>
 <translation id="7537451260744431038">साइटें आपके ब्राउज़ करने के अनुभव को बेहतर बनाने के लिए कुकी का इस्तेमाल नहीं कर सकतीं. जैसे, आपको साइन इन बनाए रखने के लिए या आपने शॉपिंग कार्ट में जो आइटम सेव किए हैं उन्हें याद रखने के लिए</translation>
+<translation id="7538088324298143359"><ph name="SEARCH_ENGINE" /> की मदद से इमेज के बारे में खोजें</translation>
 <translation id="7540972813190816353">अपडेट की जाँच करते समय कोई गड़बड़ी आई: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> ने इस डिवाइस को पिछले वर्शन पर सेट किया है. कृपया ज़रूरी फ़ाइलों को सेव कर लें. इसके बाद, रीस्टार्ट करें. इस डिवाइस का सारा डेटा मिट जाएगा.</translation>
 <translation id="7541773865713908457"><ph name="APP_NAME" /> ऐप्लिकेशन से <ph name="ACTION_NAME" /> करें</translation>
@@ -7400,6 +7406,7 @@
 <translation id="7730683939467795481">"<ph name="EXTENSION_NAME" />" एक्सटेंशन ने इस पेज में बदलाव किया है</translation>
 <translation id="7735165285389721951">Steam का कोई अन्य सेटअप इंस्टॉल हो रहा है. दोबारा कोशिश करने से पहले, कृपया इसके पूरा होने तक इंतज़ार करें</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" से जोड़ा जा रहा है ...</translation>
+<translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> निर्देश मिला</translation>
 <translation id="7737846262459425222">आप जब चाहें, सेटिंग &gt; Google Assistant &gt; स्क्रीन पर दिखने वाली सामग्री इस्तेमाल करें, में जाकर बदलाव कर सकते हैं.</translation>
 <translation id="7737948071472253612">कैमरा इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="77381465218432215">उच्चारण के चिह्न और विशेष वर्ण दिखाएं</translation>
@@ -7599,6 +7606,7 @@
 <translation id="7912080627461681647">सर्वर पर आपका पासवर्ड बदल दिया गया है. कृपया साइन आउट करके फिर से साइन इन करें.</translation>
 <translation id="7912974581251770345">अनुवाद करें</translation>
 <translation id="7915457674565721553">'माता-पिता के नियंत्रण में' सुविधा सेट करने के लिए इंटरनेट से कनेक्ट करें</translation>
+<translation id="7916364730877325865">इस खाते के साथ सिंक नहीं किया जा सकता, क्योंकि आपका संगठन इसकी अनुमति नहीं देता</translation>
 <translation id="7918257978052780342">नामांकित करें</translation>
 <translation id="7919123827536834358">अपने-आप इन भाषाओं का अनुवाद करें</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> सेकंड</translation>

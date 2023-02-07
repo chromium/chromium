@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Forbereder filer</translation>
 <translation id="1015730422737071372">Angiv yderligere oplysninger</translation>
 <translation id="1019413721762100891">Fra</translation>
-<translation id="1021110881106174305">Accepterede kort</translation>
 <translation id="1021753677514347426">Dette problem opstår på grund af et certifikat, som du eller en anden har installeret på din enhed. Certifikatet anvendes ofte til at overvåge og opfange netværk, og Chromium har ikke tillid til det. Der findes legitime årsager til at overvåge, f.eks. på skole- og virksomhedsnetværk, men Chromium vil sikre, at du er bevidst om det, når det sker, også selvom du ikke kan stoppe det. Overvågning kan finde sted i enhver browser eller app, der har adgang til nettet.</translation>
 <translation id="1024111578869940408">Hackere efterligner nogle gange websites ved at foretage små ændringer af webadressen, som er svære at se.</translation>
 <translation id="1028781062521375153">Få flere oplysninger</translation>
@@ -708,7 +707,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2688969097326701645">Ja, fortsæt</translation>
 <translation id="2691924980723297736">Sikkerhedsadvarsel</translation>
 <translation id="2692131511336778528">Science fiction og fantasy</translation>
-<translation id="2699302886720511147">Accepterede kort</translation>
 <translation id="2701514975700770343">Forside nedad</translation>
 <translation id="2702801445560668637">Læseliste</translation>
 <translation id="2704283930420550640">Værdien stemmer ikke overens med formatet.</translation>
@@ -991,7 +989,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="342781501876943858">Chromium anbefaler, at du nulstiller din adgangskode, hvis du har brugt den på andre websites.</translation>
 <translation id="3428151540071562330">En eller flere af serverskabelon-URI'erne for DnsOverHttpsTemplates er ugyldige og anvendes ikke.</translation>
 <translation id="3431216045099978607">Tryk på |<ph name="ACCELERATOR" />| for at afslutte visningen i fuld skærm og se downloadfilen.</translation>
-<translation id="3431636764301398940">Gem dette kort på denne enhed</translation>
 <translation id="3432601291244612633">Luk side</translation>
 <translation id="3435738964857648380">Sikkerhed</translation>
 <translation id="3438829137925142401">Brug de adgangskoder, der er gemt på din Google-konto</translation>
@@ -1122,7 +1119,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3744111561329211289">Synkronisering i baggrunden</translation>
 <translation id="3744286742364977428">De filer, du downloader, sendes til Google Cloud eller tredjeparter, hvor de analyseres. De kan f.eks. blive scannet for følsomme oplysninger eller malware og kan blive gemt i henhold til virksomhedens politikker.</translation>
 <translation id="3744899669254331632">Du kan ikke gå til <ph name="SITE" /> lige nu, da websitet sendte krypterede loginoplysninger, som Chromium ikke kan behandle. Netværksfejl og angreb er normalt midlertidige, så denne side vil sandsynligvis fungere igen senere.</translation>
-<translation id="3745099705178523657">Når du bekræfter, deles kortoplysningerne på din Google-konto med dette website.</translation>
 <translation id="3748148204939282805">Brugere med ondsindede hensigter <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> kan narre dig til at gøre noget farligt såsom at installere software eller afsløre dine personlige oplysninger (f.eks. adgangskoder, telefonnumre eller kreditkort). <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Flybranchen</translation>
 <translation id="3752543821772132562">Ignoreret, fordi <ph name="POLICY_NAME" /> ikke er angivet.</translation>
@@ -1140,7 +1136,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3781428340399460090">Varm lyserød</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-enheder</translation>
-<translation id="3787705759683870569">Udløber <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Størrelse 16</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> tommer)</translation>
@@ -3085,7 +3080,6 @@ Yderligere oplysninger:
 <translation id="8620276786115098679">Konvolut Kaku 7</translation>
 <translation id="8623885649813806493">Der er ingen matchende adgangskoder. Se alle gemte adgangskoder.</translation>
 <translation id="8624354461147303341">Få rabatter</translation>
-<translation id="8625384913736129811">Gem dette kort på denne enhed</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637577059508742477">Din profil og browser administreres af <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">Konvolut Kaku 3</translation>

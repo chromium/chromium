@@ -80,6 +80,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="149095475893949513">Þetta vefsvæði er að reyna að sækja stillingasnið.</translation>
 <translation id="1491277525950327607">Ýttu tvisvar til að breyta stillingum</translation>
 <translation id="1492417797159476138">Þú varst þegar búin(n) að vista þetta notandanafn fyrir vefsvæðið</translation>
+<translation id="1498283581832036924"><ph name="WEBSITE" />-reikningnum þínum verður ekki eytt.</translation>
 <translation id="1506063256525392513">Með þessu móti geturðu tekið myndir og hlaðið þeim upp og skannað QR-kóða.</translation>
 <translation id="1509486075633541495">Skrá inn á vefsvæði</translation>
 <translation id="1509960214886564027">Eiginleikar gætu bilað á mörgum vefsvæðum</translation>
@@ -218,6 +219,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2664621323652615289">Stöðva</translation>
 <translation id="2671426118752779020">Þú getur notað aðgangsorðin sem þú vistaðir í aðgangsorðastjórnun Google í öðrum forritum í iPhone.</translation>
 <translation id="2690858294534178585">Myndavélin er í notkun</translation>
+<translation id="26915454213703967">Leita á mynd með Google</translation>
 <translation id="2691653761409724435">Ekki í boði án nettengingar</translation>
 <translation id="2695507686909505111">Síða þýdd</translation>
 <translation id="2697526135132990015">Skrá út og hreinsa gögn</translation>
@@ -380,6 +382,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3819183753496523827">Þú ert ekki á netinu. Athugaðu nettenginguna og reyndu aftur.</translation>
 <translation id="3835964409414434850">Fara á næsta flipa</translation>
 <translation id="385051799172605136">Til baka</translation>
+<translation id="3851938967634752633">Aðgangsorðum fyrir <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> og <ph name="NUMBER_OF_ACCOUNTS" /> í viðbót verður eytt. Reikningunum þínum verður ekki eytt.</translation>
 <translation id="3858860766373142691">Heiti</translation>
 <translation id="3861486700625780712">Hætta að fylgjast með</translation>
 <translation id="3863769054730344136">Senda í tækin þín</translation>
@@ -515,6 +518,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="4833786495304741580">Sendir sjálfkrafa talnagögn um notkun og tilkynningar um hrun til Google.</translation>
 <translation id="4840495572919996524">Bókamerkin þín, ferillinn, aðgangsorðin og fleira verða ekki lengur samstillt við Google reikninginn þinn.</translation>
 <translation id="4844899002472726590">Skoðaðu og breyttu umfjöllunarefnum sem þú hefur áhuga á</translation>
+<translation id="4848999860252535517">Eyða aðgangsorði fyrir <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Veldu aðgangskóða</translation>
 <translation id="4858786880085262208">Uppfæra í HTTPS þegar það er hægt. Örugg vefsvæði gætu fellt inn óöruggt efni.</translation>
 <translation id="4860895144060829044">Hringja</translation>
@@ -768,6 +772,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="6598875554591387303">Raða eftir útgefanda</translation>
 <translation id="6603393121510733479">Fyrirtækið þitt slökkti á óskráðri vefnotkun.
 <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Aðgangsorðum fyrir <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> og <ph name="THIRD_WEBSITE" /> verður eytt. Reikningunum þínum verður ekki eytt.</translation>
 <translation id="6610002944194042868">Valkostir þýðinga</translation>
 <translation id="661266467055912436">Eykur öryggi þitt og allra á vefnum.</translation>
 <translation id="6620279676667515405">Hætta við</translation>
@@ -1045,6 +1050,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8756969031206844760">Uppfæra aðgangsorð?</translation>
 <translation id="8763613688786959833">Opna síðasta flipa</translation>
 <translation id="8764015330924122850">Hætta að fylgja <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Aðgangsorðum fyrir <ph name="WEBSITE" /> og<ph name="SECOND_WEBSITE" /> verður eytt. Reikningunum þínum verður ekki eytt.</translation>
 <translation id="8775144690796719618">Ógild vefslóð</translation>
 <translation id="8787968206789828143">Leita á netinu</translation>
 <translation id="8792626944327216835">hljóðnema</translation>
@@ -1094,6 +1100,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="9093271241977565440">Ýttu á leitartáknið efst á skjánum</translation>
 <translation id="9094033019050270033">Uppfæra aðgangsorð</translation>
 <translation id="9097506547406246598">Ekki er hægt að hætta að fylgja. Eitthvað fór úrskeiðis.</translation>
+<translation id="9098541895599151034">Eyða <ph name="NUMBER_OF_ACCOUNTS" /> aðgangsorðum?</translation>
 <translation id="9100610230175265781">Aðgangsorðs krafist</translation>
 <translation id="9107664647686727385">Leita að aðgangsorðum í hættu</translation>
 <translation id="9124387962554796433">Google notar hugsanlega ferilinn þinn til að sérsníða Leit og aðrar Google þjónustur.</translation>

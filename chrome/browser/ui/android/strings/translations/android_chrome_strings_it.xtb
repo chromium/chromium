@@ -922,6 +922,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="6000203700195075278">Segui di nuovo</translation>
 <translation id="6002122790816966947">I tuoi dispositivi</translation>
 <translation id="6005538289190791541">Password consigliata</translation>
+<translation id="6011308810877101166">Migliora i suggerimenti di ricerca</translation>
 <translation id="6039379616847168523">Vai alla scheda successiva</translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="604124094241169006">Automatico</translation>
@@ -1452,6 +1453,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8746155870861185046">Condividi evidenziazione</translation>
 <translation id="8748850008226585750">Contenuti nascosti</translation>
 <translation id="8756969031206844760">Aggiornare la password?</translation>
+<translation id="8765470054473112089">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chrome invia ciò che digiti al tuo motore di ricerca predefinito per ricevere suggerimenti migliori. Questa opzione è disattivata in incognito.</translation>
 <translation id="8766529642647037772">Vuoi creare un link evidenziato come questo?</translation>
 <translation id="8773160212632396039">Elaborazione della richiesta in corso…</translation>
 <translation id="8788265440806329501">La cronologia di navigazione è chiusa</translation>

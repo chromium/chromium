@@ -5717,7 +5717,7 @@
 <translation id="6200151268994853226">管理擴充功能</translation>
 <translation id="6201608810045805374">要移除這個帳戶嗎？</translation>
 <translation id="6202304368170870640">你可以使用 PIN 碼登入裝置，或將裝置解鎖。</translation>
-<translation id="6205314730813004066">廣告隱私設定</translation>
+<translation id="6205314730813004066">廣告隱私權設定</translation>
 <translation id="6206199626856438589">系統會將你登出這些目前顯示的網站，包含已開啟的分頁</translation>
 <translation id="6206311232642889873">複製圖片(&amp;Y)</translation>
 <translation id="6206521455877863927">包括同一網域中的網站，例如 google.com 和 mail.google.com。你目前瀏覽的網站可將資料儲存到你的裝置。</translation>
@@ -8371,6 +8371,7 @@
 <translation id="8639635302972078117">傳送使用狀況與診斷資料。這部裝置目前會自動將診斷資料、裝置和應用程式的使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能，並不會用於識別貴子女的身分。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善自己的產品和服務。如果貴子女的「其他網路和應用程式活動」設定為開啟，這些資料可能會儲存在他們的 Google 帳戶中。</translation>
 <translation id="8642900771896232685">2 秒</translation>
 <translation id="8642947597466641025">放大文字</translation>
+<translation id="8643403533759285912">刪除群組</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> 可能含有危險內容。要傳送到 Google 進階保護進行掃描嗎？</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{沒有 Cookie}=1{已封鎖 1 個 Cookie}other{已封鎖 # 個 Cookie}}</translation>
 <translation id="864423554496711319">已儲存到你的帳戶的裝置</translation>
@@ -8844,6 +8845,7 @@
 <translation id="90528604757378587">背景活動和某些視覺效果 (例如平滑捲動) 可能會受到限制。</translation>
 <translation id="9053563360605707198">雙面列印</translation>
 <translation id="9055636786322918818">強制執行 RC4 加密。由於 RC4 加密不安全，使用這個加密選項會提高風險。</translation>
+<translation id="9056788090206401048">在其他裝置上使用密碼金鑰時必須開啟藍牙，你隨時可以在設定中管理這項功能。</translation>
 <translation id="9056810968620647706">找不到相符項目。</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" />想存取下列內容：</translation>
 <translation id="9057354806206861646">更新時間表</translation>

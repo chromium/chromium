@@ -316,6 +316,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" />: Chromium Canary</translation>
 <translation id="7828947555739565424">Este dispositivo já tem um perfil do Chromium com essa conta</translation>
 <translation id="7845233973568007926">Agradecemos por fazer a instalação. É necessário reiniciar o computador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7859018312476869945">Quando você digita na barra de endereço ou na caixa de pesquisa, o Chromium envia o conteúdo digitado ao mecanismo de pesquisa padrão para melhorar as sugestões. Essa opção fica desativada na navegação anônima.</translation>
 <translation id="7867198900892795913">Não foi possível atualizar o Chromium para a versão mais recente. Com isso, você está perdendo novos recursos e correções de segurança.</translation>
 <translation id="7872446069773932638">Fazendo o download… <ph name="SECONDS" /> segundo(s) restante(s)</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Como gerenciar seus dados<ph name="END_BOLD" />: para proteger sua privacidade, excluímos automaticamente seus interesses que têm mais de quatro semanas. Enquanto você navega, um interesse pode aparecer na lista novamente. Você também pode remover interesses que não quer que o Chromium considere.</translation>

@@ -250,6 +250,7 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="2426805022920575512">Zgjidh llogari tjetër</translation>
 <translation id="2433507940547922241">Pamja</translation>
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
+<translation id="2439153523196674349">Pamje paraprake e <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Dëshiron që të fillosh ta shkarkosh <ph name="FILE_NAME" /> përsëri?</translation>
 <translation id="2453860139492968684">Përfundo</translation>
 <translation id="2459390580524506445">Kërkimi zanor i përmirësuar</translation>
@@ -388,6 +389,7 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="3066573403916685335">Lëviz poshtë</translation>
 <translation id="3070005020161560471">Përkthe automatikisht</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> do të hapet në Chrome. Duke vazhduar, ti pranon <ph name="BEGIN_LINK1" />"Kushtet e shërbimit" të Google<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />"Kushtet shtesë të shërbimit" të Google Chrome dhe të ChromeOS<ph name="END_LINK2" />. Zbatohet gjithashtu <ph name="BEGIN_LINK3" />Politika e privatësisë<ph name="END_LINK3" />.</translation>
+<translation id="3083194063661536258">Ke dalë Buton. Hap dialogun për t'u identifikuar dhe për të aktivizuar sinkronizimin.</translation>
 <translation id="3091010850649238832">Shfaq përmbajtjet e kujtesës së fragmenteve</translation>
 <translation id="3098745985164956033">Disa imazhet i dërgohen Google për të përmirësuar përshkrimet për ty</translation>
 <translation id="3104179992611025423">Shfletuesi yt menaxhohet nga prindërit e tu</translation>
@@ -924,6 +926,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="604124094241169006">Automatike</translation>
 <translation id="6042308850641462728">Më shumë</translation>
+<translation id="6049046116080614938">Identifikuar si <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Buton. Hap cilësimet.</translation>
 <translation id="604996488070107836">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të një gabimi të panjohur.</translation>
 <translation id="605721222689873409">VV</translation>
 <translation id="6059830886158432458">Kontrollo historitë dhe aktivitetin tënd këtu</translation>
@@ -1297,6 +1300,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7968014550143838305">U shtua te lista e leximit</translation>
 <translation id="7971136598759319605">Aktiv 1 ditë më parë</translation>
 <translation id="7975379999046275268">Shiko paraprakisht faqen <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">Identifikuar si <ph name="USER_NAME" />. Buton. Hap cilësimet.</translation>
 <translation id="7986497153528221272">Për të parë fjalëkalimet, në fillim cakto një kyçje ekrani në pajisjen tënde</translation>
 <translation id="7995059495660416932">Do ta shikosh përmbajtjen kur të ofrohet</translation>
 <translation id="799576009106109668">Do të shfletosh më shpejt sepse përmbajtja ngarkohet në mënyrë proaktive bazuar në vizitën aktuale në faqen e uebit</translation>

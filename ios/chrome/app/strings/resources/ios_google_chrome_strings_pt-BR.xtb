@@ -22,6 +22,7 @@
 <translation id="2347208864470321755">Quando este recurso está ativado, o Google Chrome disponibiliza a tradução de páginas escritas em outros idiomas usando o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">O Chrome tem recursos que ajudam a gerenciar seus dados de Internet e a velocidade de carregamento de páginas da Web.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="2444854139071078915">Para acessar com facilidade suas senhas salvas em outros apps, use o preenchimento automático no Chrome</translation>
 <translation id="2561231791489583059">Use o Chrome como navegador padrão para se proteger contra sites perigosos e garantir a segurança das suas senhas</translation>
 <translation id="2574249610672786438">Para ver suas guias em qualquer lugar onde você usar o Chrome, faça login em todos os seus dispositivos</translation>
 <translation id="2576431527583832481">O Google Chrome ficou ainda melhor! Uma nova versão está disponível.</translation>
@@ -89,6 +90,7 @@
 <translation id="6709398533399187136">Sua senha foi exposta em uma violação de dados. O Gerenciador de senhas do Google recomenda que ela seja mudada agora mesmo.</translation>
 <translation id="6822673484890854830">Não foi possível verificar todas as senhas com o Chrome. Tente novamente mais tarde.</translation>
 <translation id="6964931465519938134">Agora você poderá usar o Chrome sempre que tocar em links em mensagens, documentos e outros apps.</translation>
+<translation id="6975725306479268850">Escolha o Chrome para o preenchimento automático</translation>
 <translation id="701356708427365932">Conheça o novo menu do Chrome</translation>
 <translation id="7059914902409643750">Personalize o Chrome</translation>
 <translation id="7124339256045485976">Manter o Chrome atualizado</translation>
@@ -109,6 +111,7 @@
 <translation id="7754633291442704733">A organização <ph name="DOMAIN" /> vai ter acesso aos dados, favoritos, histórico, senhas e outras configurações do Chrome que você armazenar nessa conta. Quando você sair, seus dados vão ser apagados deste dispositivo.  No entanto, os dados continuarão armazenados na sua Conta do Google gerenciada e vão ficar disponíveis para sua organização. A organização também pode definir políticas do usuário específicas para a conta, e elas podem mudar o comportamento do Chrome.</translation>
 <translation id="7780154209050837198">Para aproveitar o Chrome ao máximo, faça login na sua Conta do Google.</translation>
 <translation id="7855730255114109580">O Google Chrome está atualizado</translation>
+<translation id="7939179037291298976">Nos Ajustes do iPhone, abra "Opções de Senha" e selecione "Chrome"</translation>
 <translation id="8022947259858476807">Use o Chrome como padrão para abrir links, pesquisar em widgets e preencher senhas automaticamente em outros apps</translation>
 <translation id="81358522153858150">O Chrome agora oferece suporte para políticas do usuário na sua conta gerenciada</translation>
 <translation id="8160472928944011082">Não é possível atualizar o Chrome</translation>
@@ -124,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">O Gerenciador de senhas do Google não conseguiu verificar todas as senhas. Tente de novo amanhã ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Proteja-se com o Google Chrome</translation>
+<translation id="8765470054473112089">Quando você digita na barra de endereço ou na caixa de pesquisa, o Chrome envia o conteúdo digitado ao mecanismo de pesquisa padrão para melhorar as sugestões. Essa opção fica desativada na navegação anônima.</translation>
 <translation id="8772179140489533211">Mostra solicitações para fazer login no Chrome.</translation>
 <translation id="8788269841521769222">Você não terá que se lembrar dessa senha. Ela vai ficar salva na conta <ph name="EMAIL" /> do Gerenciador de senhas do Google</translation>
 <translation id="8857676124663337448">O Gerenciador de senhas do Google não conseguiu verificar todas as senhas. Tente de novo amanhã.</translation>

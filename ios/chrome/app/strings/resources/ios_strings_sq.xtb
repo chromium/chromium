@@ -80,6 +80,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="149095475893949513">Ky sajt uebi po përpiqet të shkarkojë një profil konfigurimi.</translation>
 <translation id="1491277525950327607">Trokit dy herë për të ndryshuar cilësimin</translation>
 <translation id="1492417797159476138">E ke ruajtur tashmë këtë emër përdoruesi për këtë sajt</translation>
+<translation id="1498283581832036924">Llogaria jote e <ph name="WEBSITE" /> nuk do të fshihet.</translation>
 <translation id="1506063256525392513">Kjo të lejon të bësh dhe të ngarkosh fotografi, si dhe të skanosh kode QR</translation>
 <translation id="1509486075633541495">Identifikohu në sajtin e uebit</translation>
 <translation id="1509960214886564027">Veçoritë në shumë sajte mund të ndalojnë së funksionuari</translation>
@@ -218,6 +219,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2664621323652615289">Ndalo</translation>
 <translation id="2671426118752779020">Fjalëkalimet që ke ruajtur në "Menaxherin e fjalëkalimeve të Google" mund t'i përdorësh në aplikacione të tjera në iPhone.</translation>
 <translation id="2690858294534178585">Kamera është në përdorim</translation>
+<translation id="26915454213703967">Kërko brenda imazhit me Google</translation>
 <translation id="2691653761409724435">Nuk mundësohet jashtë linje</translation>
 <translation id="2695507686909505111">Faqja u përkthye</translation>
 <translation id="2697526135132990015">Dil dhe pastro të dhënat</translation>
@@ -380,6 +382,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3819183753496523827">Je jashtë linje. Kontrollo lidhjen e internetit dhe provo sërish.</translation>
 <translation id="3835964409414434850">Shko te skeda tjetër</translation>
 <translation id="385051799172605136">Prapa</translation>
+<translation id="3851938967634752633">Fjalëkalimet për <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> dhe <ph name="NUMBER_OF_ACCOUNTS" /> të tjera do të fshihen. Llogaritë e tua nuk do të fshihen.</translation>
 <translation id="3858860766373142691">Emri</translation>
 <translation id="3861486700625780712">Mos e ndiq</translation>
 <translation id="3863769054730344136">Dërgo te pajisjet e tua</translation>
@@ -515,6 +518,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="4833786495304741580">Dërgon automatikisht te Google statistika të përdorimit dhe raportet e ndërprerjeve aksidentale.</translation>
 <translation id="4840495572919996524">Faqeshënuesit, historiku, fjalëkalimet etj. nuk do të sinkronizohen më në "Llogarinë tënde të Google".</translation>
 <translation id="4844899002472726590">Shiko dhe modifiko temat që të interesojnë</translation>
+<translation id="4848999860252535517">Të fshihet fjalëkalimi për <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Vendos një kod</translation>
 <translation id="4858786880085262208">Përmirësoje në HTTPS, kur është e mundur. Sajtet e sigurta mund të integrojnë përmbajtje që nuk janë të sigurta.</translation>
 <translation id="4860895144060829044">Telefono</translation>
@@ -768,6 +772,7 @@ Provo të përdorësh një fjalëkalim unik për çdo sajt.</translation>
 <translation id="6598875554591387303">Rendit sipas "Publikuesit"</translation>
 <translation id="6603393121510733479">Organizata jote ka çaktivizuar shfletimin privat.
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Fjalëkalimet për <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> dhe <ph name="THIRD_WEBSITE" /> do të fshihen. Llogaritë e tua nuk do të fshihen.</translation>
 <translation id="6610002944194042868">Opsionet e "Përkthe"</translation>
 <translation id="661266467055912436">Përmirëson sigurinë për ty dhe këdo në ueb.</translation>
 <translation id="6620279676667515405">Anulo</translation>
@@ -1045,6 +1050,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8756969031206844760">Të përditësohet fjalëkalimi?</translation>
 <translation id="8763613688786959833">Shko te skeda e fundit</translation>
 <translation id="8764015330924122850">Mos e ndiq <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Fjalëkalimet për <ph name="WEBSITE" /> dhe <ph name="SECOND_WEBSITE" /> do të fshihen. Llogaritë e tua nuk do të fshihen.</translation>
 <translation id="8775144690796719618">URL-ja është e pavlefshme</translation>
 <translation id="8787968206789828143">Kërko në ueb</translation>
 <translation id="8792626944327216835">mikrofoni</translation>
@@ -1094,6 +1100,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="9093271241977565440">Në krye të ekranit, trokit tek ikona e kërkimit</translation>
 <translation id="9094033019050270033">Përditëso fjalëkalimin</translation>
 <translation id="9097506547406246598">Ndjekja nuk mund të anulohet. Ndodhi një gabim.</translation>
+<translation id="9098541895599151034">Të fshihen <ph name="NUMBER_OF_ACCOUNTS" /> fjalëkalime?</translation>
 <translation id="9100610230175265781">Kërkohet shprehja e kalimit</translation>
 <translation id="9107664647686727385">Kontrollo për fjalëkalime të komprometuara</translation>
 <translation id="9124387962554796433">Google mund ta përdorë historikun tënd për të personalizuar "Kërko" dhe shërbime të tjera të Google.</translation>

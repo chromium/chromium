@@ -407,7 +407,8 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4018310736049373830">Gerenciar atividade</translation>
 <translation id="4038354071007134711">Nenhum app deste dispositivo pode abrir o arquivo.</translation>
 <translation id="4042870976416480368">Buscar na página</translation>
-<translation id="40433179647657191">Criar e compartilhar um link direto para parte de uma página destacada.</translation>
+<translation id="40433179647657191">Crie e compartilhe um link direto para parte de uma página destacada.</translation>
+<translation id="4045648459118332842">Acesse suas senhas salvas em qualquer app com um toque</translation>
 <translation id="4049507953662678203">Verifique se você tem uma conexão de rede e tente novamente.</translation>
 <translation id="4063300985191096908">Acessar o feed</translation>
 <translation id="408404951701638773">Ficou mais fácil acessar a barra de pesquisa</translation>
@@ -667,6 +668,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5988097621740394599">Ver reduções no preço nas suas guias</translation>
 <translation id="5988851877894965432">Abrir URLs no Chrome</translation>
 <translation id="6006672969046233841">Nova guia</translation>
+<translation id="6011308810877101166">Melhorar as sugestões de pesquisa</translation>
 <translation id="6012140227487808125">Criptografando…</translation>
 <translation id="6021332621416007159">Abrir no...</translation>
 <translation id="6027945736510816438">Você quis dizer <ph name="WEBSITE" />?</translation>
@@ -886,6 +888,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="746684838091935575">3. Selecione o Chrome</translation>
 <translation id="7472734401283673885">Nome da empresa</translation>
 <translation id="7473891865547856676">Agora não</translation>
+<translation id="7491131399623468277">Acessar os Ajustes…</translation>
 <translation id="750493650310597496">0 selecionados</translation>
 <translation id="7508728395076009983">Para bloquear suas guias anônimas, configure o Touch ID, o Face ID ou uma senha.</translation>
 <translation id="7514365320538308">Fazer o download</translation>

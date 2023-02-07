@@ -922,6 +922,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="6000203700195075278">Znova sledovať</translation>
 <translation id="6002122790816966947">Vaše zariadenia</translation>
 <translation id="6005538289190791541">Navrhované heslo</translation>
+<translation id="6011308810877101166">Zlepšovať návrhy vyhľadávania</translation>
 <translation id="6039379616847168523">Prechod na ďalšiu kartu</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="604124094241169006">Automatické</translation>
@@ -1452,6 +1453,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="8746155870861185046">Zdieľať zvýraznenie</translation>
 <translation id="8748850008226585750">Obsah je skrytý</translation>
 <translation id="8756969031206844760">Aktualizovať heslo?</translation>
+<translation id="8765470054473112089">Keď zadávate v paneli s adresou alebo vyhľadávacom poli, Chrome odosiela zadaný text do vášho predvoleného vyhľadávača, aby dostal lepšie návrhy. Táto možnosť je v režime inkognito vypnutá.</translation>
 <translation id="8766529642647037772">Chcete vytvoriť zvýraznený odkaz ako tento?</translation>
 <translation id="8773160212632396039">Žiadosť sa spracúva</translation>
 <translation id="8788265440806329501">História navigácie je zatvorená</translation>

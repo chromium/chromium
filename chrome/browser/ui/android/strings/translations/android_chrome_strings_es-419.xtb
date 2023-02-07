@@ -250,6 +250,7 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="2426805022920575512">Seleccionar otra cuenta</translation>
 <translation id="2433507940547922241">Diseño</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
+<translation id="2439153523196674349">Vista previa de <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">¿Deseas comenzar la descarga de <ph name="FILE_NAME" /> de nuevo?</translation>
 <translation id="2453860139492968684">Finalizar</translation>
 <translation id="2459390580524506445">Búsqueda por voz mejorada</translation>
@@ -388,6 +389,7 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="3066573403916685335">Bajar</translation>
 <translation id="3070005020161560471">Traducir automáticamente</translation>
 <translation id="3072980200212375806">Se abrirá <ph name="APP_NAME" /> en Chrome. Si continúas, aceptas las <ph name="BEGIN_LINK1" />Condiciones del Servicio de Google<ph name="END_LINK1" /> y las <ph name="BEGIN_LINK2" />Condiciones del Servicio Adicionales de Google Chrome y Chrome OS<ph name="END_LINK2" />. También se aplica la <ph name="BEGIN_LINK3" />Política de privacidad<ph name="END_LINK3" />.</translation>
+<translation id="3083194063661536258">Has cerrado sesión. Botón. Abre el cuadro de diálogo para acceder y activar la sincronización.</translation>
 <translation id="3091010850649238832">Muestra el contenido del portapapeles</translation>
 <translation id="3098745985164956033">Se envían algunas imágenes a Google para proporcionarte mejores descripciones.</translation>
 <translation id="3104179992611025423">Tu madre o padre administra el navegador</translation>
@@ -924,6 +926,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="604124094241169006">Automático</translation>
 <translation id="6042308850641462728">Más</translation>
+<translation id="6049046116080614938">Accediste como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Botón. Abre la configuración.</translation>
 <translation id="604996488070107836"><ph name="FILE_NAME" /> no se pudo descargar debido a un error desconocido.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla tus noticias y actividad aquí</translation>
@@ -949,7 +952,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="6193448654517602979">Seleccionar pestañas</translation>
 <translation id="6196315980958524839">Las contraseñas se guardan en el Administrador de contraseñas de Google en este dispositivo</translation>
 <translation id="6202812185118613467">Vuelve a acceder para iniciar la sincronización</translation>
-<translation id="6205314730813004066">Privacidad de los anuncios</translation>
+<translation id="6205314730813004066">Privacidad en los anuncios</translation>
 <translation id="6210748933810148297">¿No eres <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Vista previa de esta página</translation>
 <translation id="6221633008163990886">Desbloquea la pantalla para exportar tus contraseñas</translation>
@@ -1297,6 +1300,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7968014550143838305">Se agregó a la lista de lectura</translation>
 <translation id="7971136598759319605">Activo hace 1 día</translation>
 <translation id="7975379999046275268">Vista previa de página <ph name="BEGIN_NEW" />Nueva<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">Accediste como <ph name="USER_NAME" />. Botón. Abre la configuración.</translation>
 <translation id="7986497153528221272">Para ver las contraseñas, primero establece un bloqueo de pantalla en el dispositivo.</translation>
 <translation id="7995059495660416932">Verás contenido cuando esté disponible</translation>
 <translation id="799576009106109668">Navegarás más rápido porque el contenido se cargará proactivamente en función de la página web que visites en el momento.</translation>

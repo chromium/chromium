@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Preparando archivos</translation>
 <translation id="1015730422737071372">Proporciónanos más detalles</translation>
 <translation id="1019413721762100891">Desactivado</translation>
-<translation id="1021110881106174305">Tarjetas aceptadas</translation>
 <translation id="1021753677514347426">Este problema se debe a un certificado que tú u otra persona habéis instalado en el dispositivo. Chromium no confía en este certificado porque hay constancia de que se utiliza para interceptar y vigilar redes. En algunos casos, dicha vigilancia es legítima (por ejemplo, en las redes de centros educativos o empresas), pero Chrome quiere asegurarse de que estás al corriente de ello, aunque no puedas evitarlo. La vigilancia puede afectar a todos los navegadores y las aplicaciones que accedan a Internet.</translation>
 <translation id="1024111578869940408">A veces, los atacantes imitan otros sitios haciendo cambios en la dirección web que son difíciles de ver.</translation>
 <translation id="1028781062521375153">Ver detalles</translation>
@@ -317,7 +316,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="168693727862418163">No se ha podido validar el valor de esta política con su esquema y se ignorará.</translation>
 <translation id="168841957122794586">El certificado del servidor contiene una clave criptográfica no segura.</translation>
 <translation id="1689333818294560261">Apodo</translation>
-<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cómo puedes gestionar tus datos:<ph name="END_BOLD" /> Chrome elimina automáticamente los temas que tienen una antigüedad superior a 4 semanas. A medida que sigas navegando, es posible que un tema vuelva a aparecer en la lista. Además, puedes bloquear los temas que no quieras que Chrome comparta con los sitios. También puedes desactivar los temas de anuncios en cualquier momento desde la configuración de Chrome.</translation>
+<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cómo puedes gestionar tus datos:<ph name="END_BOLD" /> Chrome elimina automáticamente los temas que tienen una antigüedad superior a 4 semanas. A medida que sigas navegando, los temas pueden volver a aparecer en la lista. Además, puedes bloquear los temas que no quieras que Chrome comparta con los sitios, así como desactivar los temas de anuncios en cualquier momento desde la configuración de Chrome.</translation>
 <translation id="1697532407822776718">¡Listo!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -708,7 +707,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2688969097326701645">Sí, continuar</translation>
 <translation id="2691924980723297736">Advertencia de seguridad</translation>
 <translation id="2692131511336778528">Ciencia ficción y fantasía</translation>
-<translation id="2699302886720511147">Tarjetas aceptadas</translation>
 <translation id="2701514975700770343">Boca abajo</translation>
 <translation id="2702801445560668637">Lista de lectura</translation>
 <translation id="2704283930420550640">El valor no coincide con el formato.</translation>
@@ -824,7 +822,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="301521992641321250">Bloqueado automáticamente</translation>
 <translation id="3016780570757425217">Conocer tu ubicación</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, pulsa Tabulador y, a continuación, Intro para quitar la sugerencia.</translation>
-<translation id="3023165109041533893">Los anuncios sugeridos por sitios ayudan a proteger tu historial de navegación y tu identidad, y permiten que los sitios te muestren anuncios relevantes. Basándose en tu actividad, un sitio que hayas visitado puede sugerirte anuncios relacionados mientras sigues navegando. Puedes ver una lista de estos sitios y bloquear los que no quieras en la configuración.</translation>
+<translation id="3023165109041533893">Los anuncios sugeridos por sitios ayudan a proteger tu historial de navegación y tu identidad a la vez que permiten que los sitios te muestren anuncios relevantes. Basándose en tu actividad, un sitio que hayas visitado puede sugerirte anuncios relacionados mientras sigues navegando. Puedes ver una lista de estos sitios y bloquear los que no quieras en la configuración.</translation>
 <translation id="3024663005179499861">Tipo de política incorrecto</translation>
 <translation id="3029752078111257850">Noticias internacionales</translation>
 <translation id="3037177537145227281">Siguiendo precio</translation>
@@ -836,7 +834,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="306573536155379004">Juego iniciado.</translation>
 <translation id="3068991664510324412">Juegos de ordenador y videojuegos</translation>
 <translation id="3080254622891793721">Gráfico</translation>
-<translation id="3081538120861307764">Para medir el rendimiento de un anuncio, algunos tipos de datos se comparten entre sitios, como la hora del día en la que se te mostró un anuncio.</translation>
+<translation id="3081538120861307764">Para medir el rendimiento de un anuncio, se comparten algunos tipos de datos entre sitios, como la hora del día en la que se te mostró un anuncio.</translation>
 <translation id="3082007635241601060">Permite que Google use tus carritos para encontrar descuentos personalizados cuando estén disponibles</translation>
 <translation id="3086579638707268289">Se está vigilando tu actividad en la Web</translation>
 <translation id="3087734570205094154">Inferior</translation>
@@ -991,7 +989,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="342781501876943858">Chromium te recomienda que cambies tu contraseña si la has vuelto a utilizar en otros sitios.</translation>
 <translation id="3428151540071562330">Una o varias URI de plantilla del servidor DnsOverHttpsTemplates no son válidas y no se utilizarán.</translation>
 <translation id="3431216045099978607">Pulsa |<ph name="ACCELERATOR" />| para salir de pantalla completa y ver la descarga.</translation>
-<translation id="3431636764301398940">Guardar esta tarjeta en el dispositivo</translation>
 <translation id="3432601291244612633">Cerrar página</translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="3438829137925142401">Usar las contraseñas guardadas en tu cuenta de Google</translation>
@@ -1095,7 +1092,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3678342917559046352">Extensión no válida: se esperaba que el valor tuviera el formato &lt;extension_id&gt; o &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Abre una página en una nueva ventana de Incógnito (Ctrl + Mayús + N).</translation>
 <translation id="3681007416295224113">Datos del certificado</translation>
-<translation id="3681421644246505351">Chrome tiene en cuenta temas de interés basados en tu historial de navegación reciente.</translation>
+<translation id="3681421644246505351">Chrome tiene en cuenta temas de interés basándose en tu historial de navegación reciente.</translation>
 <translation id="3693327506115126094">Elige cómo vas a verificar tu identidad</translation>
 <translation id="3701427423622901115">Se han restablecido los ajustes.</translation>
 <translation id="3704162925118123524">La red que estás utilizando puede requerir el acceso a su página de inicio de sesión.</translation>
@@ -1122,7 +1119,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
 <translation id="3744286742364977428">Los archivos que descargas se envían a Google Cloud o a terceros para que se analicen. Por ejemplo, puede que se analicen para buscar datos sensibles o malware y que se almacenen de acuerdo con las políticas de la empresa.</translation>
 <translation id="3744899669254331632">No puedes acceder a <ph name="SITE" /> en este momento porque el sitio web ha enviado credenciales codificadas que Chromium no puede procesar. Los ataques y los errores de red suelen ser temporales, por lo que es probable que esta página funcione más tarde.</translation>
-<translation id="3745099705178523657">Una vez que confirmes esta acción, la información de la tarjeta de tu cuenta de Google se compartirá con este sitio web.</translation>
 <translation id="3748148204939282805">Es posible que los atacantes que se encuentren en <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> intenten engañarte para que realices una acción peligrosa, como instalar software o revelar tu información personal (por ejemplo, contraseñas, números de teléfono o tarjetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Sector aeronáutico</translation>
 <translation id="3752543821772132562">Se ha ignorado porque no se ha establecido <ph name="POLICY_NAME" />.</translation>
@@ -1140,7 +1136,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3781428340399460090">Rosa fucsia</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositivos Bluetooth</translation>
-<translation id="3787705759683870569">Vencimiento: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Tamaño 16</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
@@ -1231,7 +1226,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4063924980214801036">Usa el desbloqueo del dispositivo para confirmar las tarjetas más rápido</translation>
 <translation id="4067098466788473230">Subvenciones y becas para estudiantes</translation>
 <translation id="4067947977115446013">Añade una dirección válida</translation>
-<translation id="4070790659619547722">Con la medición de anuncios, algunos tipos de datos se comparten entre sitios para medir el rendimiento de sus anuncios, como la hora del día en la que se te mostró un anuncio.</translation>
+<translation id="4070790659619547722">Con la medición de anuncios, se comparten algunos tipos de datos entre sitios para medir el rendimiento de sus anuncios, como la hora del día en la que se te mostró un anuncio.</translation>
 <translation id="4072193657607981494">Cargando políticas</translation>
 <translation id="4072486802667267160">Se ha producido un error al procesar el pedido. Vuelve a intentarlo.</translation>
 <translation id="4073376909608563327">No se ha podido usar el desbloqueo del dispositivo</translation>
@@ -1882,7 +1877,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5598944008576757369">Seleccionar método de pago</translation>
 <translation id="560412284261940334">Administración no admitida</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Cómo puedes gestionar tus datos:<ph name="END_BOLD" /> Chrome elimina automáticamente los sitios que tienen una antigüedad superior a 4 semanas. Si visitas un sitio de nuevo, es posible que vuelva a aparecer en la lista. También puedes bloquear las sugerencias de anuncios de un sitio y desactivar los anuncios sugeridos por sitios en cualquier momento desde la configuración de Chrome.</translation>
+<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Cómo puedes gestionar tus datos:<ph name="END_BOLD" /> Chrome elimina automáticamente los sitios que tienen una antigüedad superior a 4 semanas. Si visitas un sitio de nuevo, puede que vuelva a aparecer en la lista. También puedes bloquear las sugerencias de anuncios de un sitio y desactivar los anuncios sugeridos por sitios en cualquier momento desde la configuración de Chrome.</translation>
 <translation id="5610142619324316209">Comprobar la conexión</translation>
 <translation id="5610807607761827392">Puedes gestionar las tarjetas y las direcciones en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Traduce esta página con el Traductor de Google</translation>
@@ -2058,7 +2053,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6051221802930200923">No puedes acceder a <ph name="SITE" /> en este momento porque el sitio web utiliza la fijación de certificados. Los ataques y los errores de red suelen ser temporales, por lo que es probable que esta página funcione más tarde.</translation>
 <translation id="6051898664905071243">Número de páginas:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053735090575989697">Para ver más información sobre cómo protege Google tus datos, consulta nuestra Política de Privacidad.</translation>
+<translation id="6053735090575989697">Consulta más información sobre cómo protege Google tus datos en nuestra Política de Privacidad.</translation>
 <translation id="6055888660316801977">Hoja de credenciales de pago seguro con una credencial que no coincide</translation>
 <translation id="6058977677006700226">¿Quieres usar las tarjetas en todos tus dispositivos?</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>
@@ -2324,7 +2319,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6786145470008421571">Sobre de 6x9 pulgadas</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensiones</translation>
-<translation id="6787094689637422836">Vamos a lanzar nuevas funciones de privacidad que te permitirán elegir más opciones sobre los anuncios que veas.</translation>
+<translation id="6787094689637422836">Vamos a lanzar nuevas funciones de privacidad para que puedas controlar mejor los anuncios que veas.</translation>
 <translation id="678982761784843853">IDs de contenido protegido</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="679355240208270552">Se ha ignorado el valor porque se ha establecido una política que inhabilita la búsqueda predeterminada.</translation>
@@ -2632,7 +2627,7 @@ Más información:
 <translation id="7507075214339298899">Sobre n.º 9</translation>
 <translation id="7508255263130623398">El ID de dispositivo de política devuelto está vacío o no coincide con el ID de dispositivo actual</translation>
 <translation id="7508870219247277067">Verde aguacate</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Cómo usan estos datos los sitios:<ph name="END_BOLD" /> los sitios pueden almacenar información con Chrome sobre las cosas que te gustan. Por ejemplo, si visitas un sitio sobre entrenamiento para maratones, es posible que el sitio determine que te interesan las zapatillas para correr. Después, si visitas otro sitio, puede que ese sitio te muestre un anuncio de zapatillas para correr sugerido por el primer sitio.</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Cómo usan estos datos los sitios:<ph name="END_BOLD" /> los sitios pueden almacenar información sobre cosas que te gustan con Chrome. Por ejemplo, si visitas un sitio sobre entrenamiento para maratones, es posible que el sitio determine que te interesan las zapatillas para correr. Después, si visitas otro sitio, puede que ese sitio te muestre un anuncio de zapatillas para correr sugerido por el primer sitio.</translation>
 <translation id="7510269639068718544">Gatos</translation>
 <translation id="7511955381719512146">La red Wi-Fi que estás utilizando puede requerir que accedas a la página <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">No se le puede asignar el valor "Verdadero" a esta política y ser obligatoria, por lo que se ha cambiado a "recomendada".</translation>
@@ -2770,7 +2765,7 @@ Más información:
 <translation id="7791543448312431591">Añadir</translation>
 <translation id="7798389633136518089">Se ha ignorado porque la política no está configurada en la nube.</translation>
 <translation id="7800304661137206267">La conexión se ha encriptado mediante <ph name="CIPHER" />, con <ph name="MAC" /> para la autenticación del mensaje y con <ph name="KX" /> como mecanismo de intercambio de claves.</translation>
-<translation id="7800977246388195491">Chrome tiene en cuenta temas de interés basados en tu historial de navegación reciente. Además, los sitios que visites pueden determinar qué cosas te gustan. Más adelante, los sitios podrán solicitar esta información para mostrarte anuncios personalizados. Puedes elegir qué temas y sitios se utilizarán para mostrarte anuncios.</translation>
+<translation id="7800977246388195491">Chrome tiene en cuenta temas de interés basándose en tu historial de navegación reciente. Además, los sitios que visites pueden determinar lo que te gusta. Después, los sitios podrán solicitar esta información para mostrarte anuncios personalizados. Puedes elegir qué temas y sitios se usarán para mostrarte anuncios.</translation>
 <translation id="7802523362929240268">El sitio web es legítimo</translation>
 <translation id="7802989406998618639">Introduce el código de seguridad de <ph name="NUMBER_OF_DIGITS" /> dígitos que figura en el <ph name="SIDE_OF_CARD" /> para que el banco pueda verificar tu identidad</translation>
 <translation id="780301667611848630">No, gracias</translation>
@@ -3078,13 +3073,12 @@ Más información:
 <translation id="860043288473659153">Nombre del titular de la tarjeta</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Qué datos se usan:<ph name="END_BOLD" /> tu actividad en un sitio que visites usando Chrome en este dispositivo.</translation>
 <translation id="8606726445206553943">Utilizar tus dispositivos MIDI</translation>
-<translation id="8606988009912891950">Los temas de anuncios ayudan a los sitios a mostrarte anuncios relevantes y protegen tu historial de navegación y tu identidad. Chrome puede considerar temas de interés basados en tu historial de navegación reciente. Después, un sitio que visites puede pedirle a Chrome consultar los temas relevantes para personalizar los anuncios que veas.</translation>
+<translation id="8606988009912891950">Los temas de anuncios ayudan a los sitios a mostrarte anuncios relevantes a la vez que protegen tu historial de navegación y tu identidad. Chrome puede considerar temas de interés basados en tu historial de navegación reciente. Después, un sitio que visites puede pedirle a Chrome consultar los temas relevantes para personalizar los anuncios que veas.</translation>
 <translation id="8617269623452051934">uso de tu dispositivo</translation>
 <translation id="861775596732816396">Tamaño 4</translation>
 <translation id="8620276786115098679">Sobre Kaku 7</translation>
 <translation id="8623885649813806493">No hay contraseñas que coincidan. Mostrar todas las contraseñas guardadas.</translation>
 <translation id="8624354461147303341">Conseguir descuentos</translation>
-<translation id="8625384913736129811">Guardar esta tarjeta en el dispositivo</translation>
 <translation id="8634957317623797170">54x86 mm</translation>
 <translation id="8637577059508742477"><ph name="DOMAIN" /> gestiona tu perfil y tu navegador</translation>
 <translation id="8643409044755049933">Sobre Kaku 3</translation>
@@ -3300,7 +3294,7 @@ Más información:
 <translation id="9155211586651734179">Periféricos de audio conectados</translation>
 <translation id="9157595877708044936">Configurando...</translation>
 <translation id="9164742147345933553">os://flags</translation>
-<translation id="9165305804774426672">Los sitios que visites también pueden determinar qué cosas te gustan en función de tu actividad en ellos. Por ejemplo, si visitas un sitio en el que se venden zapatillas para correr largas distancias, es posible que el sitio determine que te interesan los maratones.</translation>
+<translation id="9165305804774426672">Los sitios que visites también pueden determinar lo que te gusta en función de tu actividad en ellos. Por ejemplo, si visitas un sitio en el que se venden zapatillas para correr largas distancias, el sitio podría determinar que te interesa correr maratones.</translation>
 <translation id="9166851138617700776">Más información sobre los anuncios sugeridos por sitios y la medición de anuncios</translation>
 <translation id="9168814207360376865">Permite a los sitios comprobar si tienes métodos de pago guardados</translation>
 <translation id="9169664750068251925">Bloquear siempre en este sitio</translation>

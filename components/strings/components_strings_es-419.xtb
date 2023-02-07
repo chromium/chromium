@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Preparando archivos</translation>
 <translation id="1015730422737071372">Proporciona más detalles</translation>
 <translation id="1019413721762100891">No</translation>
-<translation id="1021110881106174305">Tarjetas aceptadas</translation>
 <translation id="1021753677514347426">Se produjo este problema debido a un certificado que tú o alguien más instaló en el dispositivo. El certificado se usa para interceptar y supervisar redes, y no es de confianza para Chromium. Si bien existen usos legítimos de la supervisión, como en el caso de redes de empresas o instituciones educativas, Chromium quiere asegurarse de que estás al tanto de esta situación, aunque no puedas impedirlo. La supervisión puede ocurrir en cualquier navegador o app que acceda a la Web.</translation>
 <translation id="1024111578869940408">A veces los atacantes hacen cambios difíciles de detectar en la dirección web para imitar sitios.</translation>
 <translation id="1028781062521375153">Ver detalles</translation>
@@ -708,7 +707,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2688969097326701645">Sí, continuar</translation>
 <translation id="2691924980723297736">Advertencia de seguridad</translation>
 <translation id="2692131511336778528">Ciencia ficción y fantasía</translation>
-<translation id="2699302886720511147">Tarjetas aceptadas</translation>
 <translation id="2701514975700770343">Hacia abajo</translation>
 <translation id="2702801445560668637">Lista de lectura</translation>
 <translation id="2704283930420550640">El valor no coincide con el formato.</translation>
@@ -992,7 +990,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="342781501876943858">Chromium te recomienda que restablezcas tu contraseña si la volviste a usar en otros sitios.</translation>
 <translation id="3428151540071562330">Una o más URI de plantillas del servidor de la política DnsOverHttpsTemplates no son válidas, por lo que no se usarán.</translation>
 <translation id="3431216045099978607">Presiona |<ph name="ACCELERATOR" />| para salir de la pantalla completa y ver la descarga.</translation>
-<translation id="3431636764301398940">Guardar esta tarjeta para este dispositivo</translation>
 <translation id="3432601291244612633">Cerrar página</translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="3438829137925142401">Usar las contraseñas guardadas en tu Cuenta de Google</translation>
@@ -1123,7 +1120,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
 <translation id="3744286742364977428">Los archivos que descargas se envían a Google Cloud o a terceros para su análisis. Por ejemplo, es posible que se analicen en busca de datos sensibles o software malicioso y que se almacenen según las políticas de la empresa.</translation>
 <translation id="3744899669254331632">No puedes visitar <ph name="SITE" /> en este momento porque el sitio web envió credenciales encriptadas que Chromium no puede procesar. Los ataques y errores de red generalmente son temporales, por lo que esta página probablemente funcionará de nuevo más tarde.</translation>
-<translation id="3745099705178523657">Después de que confirmes esta acción, los datos de tu Cuenta de Google se compartirán con este sitio.</translation>
 <translation id="3748148204939282805">Es posible que los atacantes en <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> intenten engañarte para que realices alguna acción peligrosa, como instalar software o revelar información personal (p. ej., contraseñas, números de teléfono o tarjetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Industria aeronáutica</translation>
 <translation id="3752543821772132562">Se ignoró porque no se estableció <ph name="POLICY_NAME" />.</translation>
@@ -1141,7 +1137,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3781428340399460090">Fucsia</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositivos Bluetooth</translation>
-<translation id="3787705759683870569">Vencimiento: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Tamaño 16</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> in)</translation>
@@ -1341,7 +1336,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4282346679996504092">Se desactivaron las alertas para este producto y se quitó el favorito</translation>
 <translation id="4285498937028063278">Dejar de fijar</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Se guardó esta tarjeta en tu Cuenta de Google}other{Se guardaron estas tarjetas en tu Cuenta de Google}}</translation>
-<translation id="4287495839370498922">Privacidad de los anuncios mejorada en Chrome</translation>
+<translation id="4287495839370498922">Privacidad en los anuncios mejorada en Chrome</translation>
 <translation id="4287885627794386150">Apta para pruebas, pero no está activada</translation>
 <translation id="4297502707443874121">Miniatura para la página <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Inversión</translation>
@@ -1784,7 +1779,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5337569431717511221">Establece Chrome como el botón de navegador predeterminado, presiona Intro para establecer Chrome como el navegador predeterminado del sistema</translation>
 <translation id="5340250774223869109">Se bloqueó la app</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
-<translation id="5344522958567249764">Administrar la privacidad de los anuncios</translation>
+<translation id="5344522958567249764">Administrar la privacidad en los anuncios</translation>
 <translation id="5344579389779391559">Es posible que esta página intente cobrarte dinero</translation>
 <translation id="5347645913823149105">Botón Personalizar fuentes en Chrome, presiona Intro para personalizar el tamaño de las fuentes y los tipos de letra en Chrome</translation>
 <translation id="5355557959165512791">No puedes visitar <ph name="SITE" /> ahora porque este certificado se revocó. Los ataques y errores de red suelen ser temporales, por lo que es posible que esta página funcione más tarde.</translation>
@@ -2109,7 +2104,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6197648101609735209">89 × 89 mm</translation>
 <translation id="6203231073485539293">Comprueba tu conexión a Internet.</translation>
-<translation id="6205314730813004066">Privacidad de los anuncios</translation>
+<translation id="6205314730813004066">Privacidad en los anuncios</translation>
 <translation id="6212314149070368045">Continuo estadounidense</translation>
 <translation id="6218753634732582820">¿Confirmas que quieres quitar la dirección de Chromium?</translation>
 <translation id="622039917539443112">Plegado en paralelo</translation>
@@ -3086,7 +3081,6 @@ Detalles adicionales:
 <translation id="8620276786115098679">Sobre Kaku n.º 7</translation>
 <translation id="8623885649813806493">No se encontró una contraseña para este sitio. Mostrar todas las contraseñas guardadas.</translation>
 <translation id="8624354461147303341">Obtener descuentos</translation>
-<translation id="8625384913736129811">Guardar esta tarjeta para este dispositivo</translation>
 <translation id="8634957317623797170">54 × 86 mm</translation>
 <translation id="8637577059508742477"><ph name="DOMAIN" /> administra tu perfil y navegador</translation>
 <translation id="8643409044755049933">Sobre Kaku n.º 3</translation>

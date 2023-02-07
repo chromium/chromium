@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Фајлови се припремају</translation>
 <translation id="1015730422737071372">Наведите додатне детаље</translation>
 <translation id="1019413721762100891">Искључено</translation>
-<translation id="1021110881106174305">Прихваћене картице</translation>
 <translation id="1021753677514347426">Овај проблем се јавља због сертификата који сте ви или неко други инсталирали на уређају. Сертификат се користи за надгледање и пресретање мрежа и Chromium га не сматра поузданим. Иако постоје поједини оправдани разлози за надгледање, на пример на школској или пословној мрежи, Chromium жели да будете свесни да се то догађа, чак и ако то не можете да спречите. Надгледање је могуће у било ком прегледачу или апликацији која приступа вебу.</translation>
 <translation id="1024111578869940408">Нападачи понекад имитирају сајтове тако што скоро неприметно измене веб-адресу.</translation>
 <translation id="1028781062521375153">Прикажи детаље</translation>
@@ -525,6 +524,7 @@
 <translation id="2202627062836089804">полеђини картице</translation>
 <translation id="22081806969704220">3. фиока</translation>
 <translation id="2210794033760923560">Отпреми извештај</translation>
+<translation id="2212579473415663542">Ова адреса је сачувана на Google налогу (<ph name="ACCOUNT" />). Можете да користите адресу у свим Google производима на било ком уређају.</translation>
 <translation id="2212735316055980242">Смернице нису пронађене</translation>
 <translation id="2213606439339815911">Преузимање уноса...</translation>
 <translation id="2213612003795704869">Страница је одштампана</translation>
@@ -708,7 +708,6 @@
 <translation id="2688969097326701645">Да, настави</translation>
 <translation id="2691924980723297736">Безбедносно упозорење</translation>
 <translation id="2692131511336778528">Научна и остала фантастика</translation>
-<translation id="2699302886720511147">Картице које се прихватају</translation>
 <translation id="2701514975700770343">Са одштампаном страном надоле</translation>
 <translation id="2702801445560668637">Листа за читање</translation>
 <translation id="2704283930420550640">Вредност се не подудара са форматом.</translation>
@@ -991,7 +990,6 @@
 <translation id="342781501876943858">Chromium вам препоручује да ресетујете лозинку ако сте је користили на другим сајтовима.</translation>
 <translation id="3428151540071562330">Један или више URI-ја шаблона DnsOverHttpsTemplates сервера су неважећи и неће се користити.</translation>
 <translation id="3431216045099978607">Притисните |<ph name="ACCELERATOR" />| да бисте изашли из режима целог екрана и видели преузимање.</translation>
-<translation id="3431636764301398940">Сачувај ову картицу на овом уређају</translation>
 <translation id="3432601291244612633">Затвори страницу</translation>
 <translation id="3435738964857648380">Безбедност</translation>
 <translation id="3438829137925142401">Користите лозинке сачуване на Google налогу</translation>
@@ -1122,7 +1120,6 @@
 <translation id="3744111561329211289">Синхронизација у позадини</translation>
 <translation id="3744286742364977428">Фајлови које преузмете се шаљу у Google Cloud или трећим странама на анализу. На пример, можда ће бити скенирани у потрази за осетљивим подацима или малвером и могу да се чувају на основу смерница предузећа.</translation>
 <translation id="3744899669254331632">Тренутно не можете да посетите <ph name="SITE" /> јер је веб-сајт послао кодиране акредитиве које Chromium не може да обради. Грешке на мрежи и напади су углавном привремени, па ће страница вероватно прорадити касније.</translation>
-<translation id="3745099705178523657">Када будете потврдили, подаци о картици са Google налога ће се делити са овим сајтом.</translation>
 <translation id="3748148204939282805">Нападачи на <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> могу да вас наведу да урадите нешто опасно, на пример, да инсталирате софтвер или откријете личне податке (попут лозинки, бројева телефона или бројева кредитних картица). <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Авиоиндустрија</translation>
 <translation id="3752543821772132562">Занемарује се јер смернице <ph name="POLICY_NAME" /> нису подешене.</translation>
@@ -1140,7 +1137,6 @@
 <translation id="3781428340399460090">Јаркорозе</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth уређаји</translation>
-<translation id="3787705759683870569">Истиче <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Величина 16</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" />x<ph name="HEIGHT" /> in)</translation>
@@ -1977,6 +1973,7 @@
 <translation id="5866898949289125849">Прегледате страницу са алаткама за прогамере</translation>
 <translation id="5869405914158311789">Овај сајт није доступан</translation>
 <translation id="5869522115854928033">Сачуване лозинке</translation>
+<translation id="5872692522325383488">IBAN је сачуван</translation>
 <translation id="5873013647450402046">Банка жели да потврди да сте то ви.</translation>
 <translation id="5877831137320480913">Лепота и фитнес</translation>
 <translation id="5884465125445718607">Кинеска коверта бр. 6</translation>
@@ -2145,6 +2142,7 @@
 <translation id="6300452962057769623">{0,plural, =0{Уређај ће се рестартовати}=1{Уређај ће се рестартовати за 1 секунду}one{Уређај ће се рестартовати за # секунду}few{Уређај ће се рестартовати за # секунде}other{Уређај ће се рестартовати за # секунди}}</translation>
 <translation id="6301104306974789820">Добијајте обавештења о праћењу цена</translation>
 <translation id="6305205051461490394">URL <ph name="URL" /> није доступан.</translation>
+<translation id="6306713302480826305">Ова адреса ће бити избрисана са овог и других уређаја на којима сте пријављени</translation>
 <translation id="6311165245110979290">Виртуелна картица је доступна</translation>
 <translation id="6312113039770857350">Веб-страница није доступна</translation>
 <translation id="6316226860534107313">Скутери и мопеди</translation>
@@ -3036,6 +3034,7 @@
 <translation id="8473863474539038330">Адресе и друго</translation>
 <translation id="8474910779563686872">Прикажи детаље о програмеру</translation>
 <translation id="8479754468255770962">Спајање у доњем левом углу</translation>
+<translation id="8483229036294884935">Ова адреса ће бити избрисана са Google налога, <ph name="ACCOUNT" /></translation>
 <translation id="8483780878231876732">Да бисте користили картице са Google налога, пријавите се у Chrome</translation>
 <translation id="8488350697529856933">Односе се на</translation>
 <translation id="8490137692873530638">10. преграда за слагање</translation>
@@ -3084,7 +3083,6 @@
 <translation id="8620276786115098679">Коверта Kaku 7</translation>
 <translation id="8623885649813806493">Ниједна лозинка се не подудара. Прикажи све сачуване лозинке.</translation>
 <translation id="8624354461147303341">Остварите попусте</translation>
-<translation id="8625384913736129811">Сачувај ову картицу на овом уређају</translation>
 <translation id="8634957317623797170">54×86 mm</translation>
 <translation id="8637577059508742477">Профилом и прегледачем управља <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">Коверта Kaku 3</translation>

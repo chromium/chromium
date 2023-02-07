@@ -8389,6 +8389,7 @@ nil</translation>
 <translation id="8639635302972078117">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። ይህ መሣሪያ በአሁኑ ጊዜ በራስ-ሰር የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ ወደ Google እየላከ ነው። ይህ ልጅዎን ለመለየት ስራ ላይ አይውልም፣ እና የስርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ። የተጨማሪ የድር እና መተግበሪያ እንቅስቃሴ ቅንብር ለልጅዎ በርቶ ከሆነ ይህ ውሂብ ወደ የGoogle መለያቸው ሊቀመጥ ይችላል።</translation>
 <translation id="8642900771896232685">2 ሰከንዶች</translation>
 <translation id="8642947597466641025">ጽሁፍ አተልቅ</translation>
+<translation id="8643403533759285912">ቡድን ይሰርዙ</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> አደገኛ ሊሆን ይችላል። እንዲቃኝ ወደ Google የላቀ ጥበቃ ይላክ?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{ምንም ኩኪዎች የሉም}=1{1 ኩኪ ታግዷል}one{# ኩኪዎች ታግደዋል}other{# ኩኪዎች ታግደዋል}}</translation>
 <translation id="864423554496711319">በእርስዎ መለያ ላይ የተቀመጡ መሣሪያዎች</translation>
@@ -8863,6 +8864,7 @@ nil</translation>
 <translation id="90528604757378587">የዳራ እንቅስቃሴ እና እንደ ለስላሳ ሽብለላ ያሉ አንዳንድ ምስላዊ ተጽዕኖዎች የተገደቡ ሊሆኑ ይችላሉ።</translation>
 <translation id="9053563360605707198">በሁለቱም ጎኖች ላይ አትም</translation>
 <translation id="9055636786322918818">የRC4 ምሥጠራን አስገድድ። የRC4 ምሥጠራዎች ለደህንነት አስተማማኝ ስላልሆኑ ይህን አማራጭ መጠቀም የእርስዎን አደጋ ይጨምራል።</translation>
+<translation id="9056788090206401048">የእርስዎን የይለፍ ቁልፍ በተለየ መሣሪያ ላይ ለመጠቀም ብሉቱዝ መብራት አለበት። ይህን ሁልጊዜ በቅንብሮች ውስጥ ማስተካከል ይችላሉ።</translation>
 <translation id="9056810968620647706">ምንም ተዛማጆች አልተገኙም።</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> የሚከተለውን ይዘት መድረስ ይፈልጋል፡-</translation>
 <translation id="9057354806206861646">መርሐግብርን አዘምን</translation>

@@ -375,6 +375,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1339009753652684748">Bruk assistenten ved å si «Hey Google». For å spare batteri, velg «På (anbefales)». Assistenten svarer bare når enheten er koblet til strøm eller står på lading.</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Sikkerhetskopiér medier fra enheten ved hjelp av Filer-appen.</translation>
+<translation id="1341871421050612057">Kan ikke synkronisere med <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Gi Linux-apper tilgang til USB-enheter. Linux husker ikke USB-enheter etter at de er fjernet.</translation>
 <translation id="1343920184519992513">Fortsett der du slapp, og åpne et spesifikt sett med sider</translation>
 <translation id="134589511016534552">Mediefaner vises også i Åpne faner-delen</translation>
@@ -4143,6 +4144,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4713409221649555176">Slett når du lukker alle vinduer</translation>
 <translation id="47158868804223727">Klikk på gruppenavnet for å vise eller skjule det</translation>
 <translation id="4716483597559580346">Powerwash for økt sikkerhet</translation>
+<translation id="471759229191973607">Endre tema</translation>
 <translation id="4722735765955348426">Passord for <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> deler skjermen din.</translation>
 <translation id="4722989931633062466">Nettsteder som ikke har lov til å vise påloggingsforespørsler fra tredjeparter</translation>
@@ -7168,6 +7170,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> svarer ikke. Velg «Tving avslutning» for å lukke appen.</translation>
 <translation id="7535730537657706072">For å fjerne Inkognito-nettleserloggen fra enheten, lukk alle inkognitofaner</translation>
 <translation id="7537451260744431038">Nettsteder kan ikke bruke informasjonskapsler for å gi deg en bedre surfeopplevelse, for eksempel for å holde deg pålogget eller huske varene i handlekurven din</translation>
+<translation id="7538088324298143359">Søk i bildet med <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">Det oppsto en feil under søk etter oppdateringer: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> har stilt denne enheten inn på en tidligere versjon. Lagre viktige filer, og start på nytt. Alle data på enheten blir slettet.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> med <ph name="APP_NAME" />-appen</translation>
@@ -7596,6 +7599,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7912080627461681647">Passordet ditt er endret på tjeneren. Logg av og på igjen.</translation>
 <translation id="7912974581251770345">Oversettelse</translation>
 <translation id="7915457674565721553">Koble til internett for å sette opp foreldrekontroll</translation>
+<translation id="7916364730877325865">Organisasjonen din tillater ikke at du slår på synkronisering med denne kontoen</translation>
 <translation id="7918257978052780342">Registrer deg</translation>
 <translation id="7919123827536834358">Oversett disse språkene automatisk</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>

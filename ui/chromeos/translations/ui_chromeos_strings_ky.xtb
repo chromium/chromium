@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Англисче (АКШ) жана Dvorak баскычтобу</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Башкы түйүн</translation>
 <translation id="1521655867290435174">Google Таблицалары</translation>
+<translation id="1521795806314479294"><ph name="FILE_NAME" /> даярдалууда...</translation>
 <translation id="1538729222189715449">Linux файлдары ачылууда...</translation>
 <translation id="1547964879613821194">Англисче (Канада)</translation>
 <translation id="1556189134700913550">Бардыгы үчүн колдонуу</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> файл кысылууда…</translation>
 <translation id="1722687688096767818">Профиль кошулууда...</translation>
 <translation id="1726100011689679555">Ысым серверлери</translation>
+<translation id="1727562178154619254">Шайкештирүүгө даяр</translation>
 <translation id="1729953886957086472">Немисче (Германия)</translation>
 <translation id="1730235522912993863">Кытайча (цанцзе)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> нерсе көчүрүлдү.</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">Жалпы ат серверлери</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, Администраторуңуз башкарат, Туташуу</translation>
 <translation id="4470564870223067757">Хангул 2 топтому</translation>
+<translation id="4474142134969976028">Эч нерсе табылган жок</translation>
 <translation id="4477002475007461989">Румынча</translation>
 <translation id="4477219268485577442">Болгарча фонетикалык</translation>
 <translation id="4508265954913339219">Жанбай калды</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">Аталышы <ph name="MAX_LENGTH" /> же андан аз символдон турушу керек</translation>
 <translation id="4973970068702235170">Кысылбай калды, күтүүсүз ката кетти: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Жапончо</translation>
+<translation id="4987699874727873250">Англисче (Индия)</translation>
 <translation id="4988205478593450158">"<ph name="FILE_NAME" />" файлын чын эле өчүрөсүзбү?</translation>
 <translation id="498902553138568924">Кызыл көпөлөк</translation>
 <translation id="4992066212339426712">Үнүн чыгаруу</translation>
@@ -509,6 +513,7 @@
    Түзмөгүңүз колдонулуп жатканда суурулса, дайындар жоголуп кетиши мүмкүн. Иш-аракет аяктагыча күтүп, андан соң түзмөктү Файлдар колдонмосу аркылуу чыгарып салыңыз.</translation>
 <translation id="5163869187418756376">Бөлүшүлбөй калды. Туташууңузду текшерип туруп, бир аздан кийин кайталап көрүңүз.</translation>
 <translation id="516592729076796170">АКШ Программачы Dvorak</translation>
+<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> нерсе даярдалууда...</translation>
 <translation id="5177526793333269655">Бармакбасым көрүнүшү</translation>
 <translation id="5181896909298187506">Жаңы файлдар жок</translation>
 <translation id="5194713942430106590">Тилкени чоңойгон ыраатта иреттөө үчүн чыкылдатыңыз.</translation>
@@ -812,6 +817,7 @@
 <translation id="7655441028674523381">Google Фотого тез өтүңүз</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7663224033570512922">Хиндиче</translation>
+<translation id="7665680517722058469">Кайра издеп көрүңүз</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> нерсе таштандыга ыргытылды</translation>
 <translation id="7693909743393669729">Дискти форматтасаңыз, анда сакталган бардык маалымат тазаланып, көзгө көрүнбөгөн бөлүмдөрдөн бери өчүрүлөт. Бул аракетти артка кайтаруу мүмкүн эмес.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> форматталган жок</translation>
@@ -968,6 +974,7 @@
 <translation id="8866284467018526531">Арабча (транслитерация)</translation>
 <translation id="8873014196523807561">Бул нерселерди калыбына келтирүү үчүн жаңы папкага сүйрөңүз. Бул нерселердин айрымдары үчүн түпнуска папкалар өчүрүлгөн.</translation>
 <translation id="8874184842967597500">Интернет жок</translation>
+<translation id="8876368061475701452">Кезекте</translation>
 <translation id="8900820606136623064">Венгерче</translation>
 <translation id="8903931173357132290">Бүтүрүүчү</translation>
 <translation id="8912078710089354287">Куйругун шыйпаңдаткан ит</translation>

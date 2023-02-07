@@ -369,7 +369,7 @@ Les jetons de confiance valides améliorent la confidentialité sur le Web et ne
 <translation id="2996809686854298943">URL requise</translation>
 <translation id="2997081575621687554">Lorsqu'un site Google propose de précharger en privé des liens sur sa page, Chrome chiffre et précharge les pages par les serveurs de Google sans témoins. Cette opération permet de masquer votre identité sur le site préchargé.</translation>
 <translation id="3006881078666935414">Aucune donnée d'utilisation</translation>
-<translation id="301080557829842765">Guide relatif à la confidentialité</translation>
+<translation id="301080557829842765">Guide sur la confidentialité</translation>
 <translation id="3016635187733453316">Assurez-vous que cet appareil est connecté à Internet</translation>
 <translation id="3026955690410463085">Ajouter le lien</translation>
 <translation id="3027644380269727216">En fonction de votre activité sur un site. Ce paramètre est activé.</translation>
@@ -922,6 +922,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6000203700195075278">Se réabonner</translation>
 <translation id="6002122790816966947">Vos appareils</translation>
 <translation id="6005538289190791541">Mot de passe suggéré</translation>
+<translation id="6011308810877101166">Améliorer les suggestions de recherche</translation>
 <translation id="6039379616847168523">Accéder à l'onglet suivant</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="604124094241169006">Automatique</translation>
@@ -1452,6 +1453,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8746155870861185046">Partager le contenu surligné</translation>
 <translation id="8748850008226585750">Contenus masqués</translation>
 <translation id="8756969031206844760">Mettre à jour le mot de passe?</translation>
+<translation id="8765470054473112089">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chrome achemine la requête saisie à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en mode de navigation privée.</translation>
 <translation id="8766529642647037772">Créez un lien mis en évidence comme celui-ci?</translation>
 <translation id="8773160212632396039">Traitement de la demande en cours…</translation>
 <translation id="8788265440806329501">L'historique de navigation est fermé</translation>

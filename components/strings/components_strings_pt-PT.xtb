@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">A preparar os ficheiros</translation>
 <translation id="1015730422737071372">Forneça mais detalhes</translation>
 <translation id="1019413721762100891">Desativado</translation>
-<translation id="1021110881106174305">Cartões admitidos</translation>
 <translation id="1021753677514347426">Este problema ocorre devido a um certificado que o utilizador ou outra pessoa instalou no dispositivo. Sabe-se que o certificado é utilizado para monitorizar e intercetar redes e não é considerado fidedigno pelo Chromium. Embora existam alguns casos legítimos para a monitorização, como numa rede escolar ou da empresa, o Chromium pretende certificar-se de que o utilizador tem conhecimento da situação, mesmo que não seja possível interrompê-la. A monitorização pode ocorrer em qualquer navegador ou aplicação que aceda à Web.</translation>
 <translation id="1024111578869940408">Por vezes, os atacantes imitam sites ao efetuarem alterações difíceis de detetar no endereço Web.</translation>
 <translation id="1028781062521375153">Veja detalhes</translation>
@@ -709,7 +708,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2688969097326701645">Sim, continuar</translation>
 <translation id="2691924980723297736">Aviso de segurança</translation>
 <translation id="2692131511336778528">Ficção científica e fantasia</translation>
-<translation id="2699302886720511147">Cartões aceites</translation>
 <translation id="2701514975700770343">Com orientação para baixo</translation>
 <translation id="2702801445560668637">Lista de leitura</translation>
 <translation id="2704283930420550640">O valor não corresponde ao formato.</translation>
@@ -992,7 +990,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="342781501876943858">O Chromium recomenda a reposição da palavra-passe se a tiver reutilizado noutros sites.</translation>
 <translation id="3428151540071562330">Um ou mais URIs de modelos do servidor DnsOverHttpsTemplates são inválidos e não serão utilizados.</translation>
 <translation id="3431216045099978607">Prima |<ph name="ACCELERATOR" />| para sair do modo de ecrã inteiro e ver a transferência.</translation>
-<translation id="3431636764301398940">Guardar este cartão neste dispositivo</translation>
 <translation id="3432601291244612633">Fechar página</translation>
 <translation id="3435738964857648380">Segurança</translation>
 <translation id="3438829137925142401">Utilizar palavras-passe guardadas na sua Conta Google</translation>
@@ -1123,7 +1120,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
 <translation id="3744286742364977428">Os ficheiros que transfere são enviados para o Google Cloud ou para terceiros para análise. Por exemplo, podem ser analisados quanto a dados confidenciais ou software malicioso e podem ser armazenados com base nas políticas da empresa.</translation>
 <translation id="3744899669254331632">Não pode visitar <ph name="SITE" /> neste momento, porque o Website enviou credenciais baralhadas que o Chromium não consegue processar. Os erros de rede e os ataques são geralmente temporários, pelo que esta página deverá funcionar mais tarde.</translation>
-<translation id="3745099705178523657">Depois de confirmar, os detalhes do cartão da sua Conta Google são partilhados com este site.</translation>
 <translation id="3748148204939282805">Os atacantes em <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> podem levá-lo a tomar medidas perigosas, como instalar software ou revelar as suas informações pessoais (por exemplo, palavras-passe, números de telefone ou cartões de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Indústria da aviação</translation>
 <translation id="3752543821772132562">Ignorada porque a política <ph name="POLICY_NAME" /> não está definida.</translation>
@@ -1141,7 +1137,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3781428340399460090">Rosa choque</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositivos Bluetooth</translation>
-<translation id="3787705759683870569">Expira a <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Tamanho 16</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> pol.)</translation>
@@ -3088,7 +3083,6 @@ Detalhes adicionais:
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
 <translation id="8623885649813806493">Não existem palavras-passe correspondentes. Mostrar todas as palavras-passe guardadas.</translation>
 <translation id="8624354461147303341">Obter descontos</translation>
-<translation id="8625384913736129811">Guardar este cartão neste dispositivo</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637577059508742477">O seu perfil e navegador são geridos pelo domínio <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">Envelope Kaku 3</translation>

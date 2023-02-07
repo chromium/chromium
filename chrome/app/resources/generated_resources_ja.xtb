@@ -3823,6 +3823,7 @@
 <translation id="4441147046941420429">続行するには、デバイスからセキュリティ キーを取り外し、もう一度差し込んでからタッチしてください</translation>
 <translation id="444134486829715816">展開...</translation>
 <translation id="4441928470323187829">管理者によって固定されています</translation>
+<translation id="4442863809158514979">ウェブ権限を表示</translation>
 <translation id="4443536555189480885">ヘルプ(&amp;H)</translation>
 <translation id="4444304522807523469">USB 接続またはローカル ネットワーク上のドキュメント スキャナーへのアクセス</translation>
 <translation id="4444512841222467874">十分な空き領域がない場合、ユーザーとデータが自動的に削除される可能性があります。</translation>
@@ -4096,7 +4097,7 @@
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%（デフォルト）</translation>
 <translation id="4684427112815847243">すべてを同期する</translation>
 <translation id="4687613760714619596">不明なデバイス（<ph name="DEVICE_ID" />）</translation>
-<translation id="4687718960473379118">サイト提案広告</translation>
+<translation id="4687718960473379118">サイトによる広告の提案</translation>
 <translation id="4688036121858134881">ローカルログ ID は <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" /> です。</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> がこのデバイスを以前のバージョンに戻しています（<ph name="PROGRESS_PERCENT" />）</translation>
 <translation id="4689235506267737042">デモ設定の選択</translation>
@@ -4818,6 +4819,7 @@
 <translation id="5382591305415226340">サポートされているリンクを管理</translation>
 <translation id="5383377866517186886">Mac のシステム環境設定でカメラがオフになっています</translation>
 <translation id="5383740867328871413">名前のないグループ - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" />（ID: <ph name="EXTENSION_ID" />）</translation>
 <translation id="538822246583124912">エンタープライズ ポリシーが変更され、ツールバーにテストボタンが追加されました。ボタンをクリックすると、ダイアログを開いてテストを有効にできます。</translation>
 <translation id="5388885445722491159">ペア設定済み</translation>
 <translation id="5390112241331447203">送信された system_logs.txt ファイルをフィードバック レポートに含める。</translation>
@@ -5031,6 +5033,7 @@
 <translation id="5578059481725149024">自動ログイン</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" /> への翻訳が完了しました</translation>
 <translation id="558170650521898289">Microsoft Windows ハードウェア ドライバの確認</translation>
+<translation id="5581876958763461074">すべてのメモ</translation>
 <translation id="5581972110672966454">デバイスをドメインに追加できません。もう一度お試しいただくか、デバイス所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="5582839680698949063">メインメニュー</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -7443,6 +7446,7 @@
 <translation id="779308894558717334">明るい緑</translation>
 <translation id="7793098747275782155">暗い青</translation>
 <translation id="7797571222998226653">オフ</translation>
+<translation id="7798504574384119986">ウェブ権限を表示</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" />を自動ブロック</translation>
 <translation id="7800518121066352902">反時計回りに回転(&amp;O)</translation>
 <translation id="7801679634091975683">ここで加えた変更は、Lacros Chrome ブラウザにのみ反映されます。Chrome ブラウザの設定に変更を加えるには、Chrome ブラウザを開いて [設定] に移動してください。</translation>

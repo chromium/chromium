@@ -373,6 +373,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1339009753652684748">Di "Hey Google" para acceder a tu Asistente. Para ahorrar batería, elige "Activado (recomendado)". Tu Asistente responderá únicamente cuando el dispositivo esté conectado a una fuente de energía o se esté cargando.</translation>
 <translation id="13392265090583506">Accesibilidad</translation>
 <translation id="1340527397989195812">Realizar una copia de seguridad del contenido multimedia desde el dispositivo mediante la aplicación Archivos</translation>
+<translation id="1341871421050612057">No se puede sincronizar con <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Concédeles a las apps de Linux acceso a dispositivos USB. Linux no recuerda los dispositivos USB después de quitarlos.</translation>
 <translation id="1343920184519992513">Continuar la sesión desde donde la dejaste y abrir un conjunto específico de páginas</translation>
 <translation id="134589511016534552">Las pestañas con contenido multimedia también aparecen en la sección Pestañas abiertas</translation>
@@ -3035,6 +3036,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Tú y Google</translation>
 <translation id="3722108462506185496">Se produjo un error al iniciar el servicio de máquina virtual. Vuelve a intentarlo.</translation>
+<translation id="3722624153992426516">Instrucciones <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> recibidas</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Redes Wi-Fi disponibles</translation>
 <translation id="3727187387656390258">Inspeccionar ventana emergente</translation>
@@ -3391,6 +3393,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="402211067068791756">Esta acción borrará <ph name="TOTAL_USAGE" /> de datos almacenados por los sitios que se muestran.</translation>
 <translation id="4022426551683927403">&amp;Agregar a diccionario</translation>
 <translation id="4025039777635956441">Silenciar el sitio seleccionado</translation>
+<translation id="402707738228916911">Instrucciones <ph name="AUTHORIZE_INSTRUCTION_NAME" /> recibidas</translation>
 <translation id="4027958407426528157">Abrir sitios web en las apps que estén instaladas en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Agregar métodos de entrada</translation>
 <translation id="4029556917477724407">Regresar de la página <ph name="PAGE_TITLE" /></translation>
@@ -4130,6 +4133,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4713409221649555176">Borrar cuando cierras todas las ventanas</translation>
 <translation id="47158868804223727">Haz clic en el nombre del grupo para expandirlo o contraerlo</translation>
 <translation id="4716483597559580346">Powerwash para mejorar la seguridad</translation>
+<translation id="471759229191973607">Cambiar tema</translation>
 <translation id="4722735765955348426">Contraseña de <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> está compartiendo tu pantalla.</translation>
 <translation id="4722989931633062466">No se pueden mostrar mensajes de acceso de terceros</translation>
@@ -5670,6 +5674,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6150961653851236686">Este idioma se usa cuando se traducen páginas</translation>
 <translation id="6151323131516309312">Haz clic en <ph name="SEARCH_KEY" /> para buscar <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">El archivo ya existe en tu carpeta de descargas.</translation>
+<translation id="6152918902620844577">Esperando la siguiente operación</translation>
 <translation id="6154240335466762404">Quitar todos los puertos</translation>
 <translation id="615436196126345398">Protocolo</translation>
 <translation id="6155141482566063812">La pestaña en segundo plano está compartiendo tu pantalla</translation>
@@ -5713,7 +5718,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6200151268994853226">Administrar extensión</translation>
 <translation id="6201608810045805374">¿Quieres quitar esta cuenta?</translation>
 <translation id="6202304368170870640">Puedes usar el PIN para acceder a tu dispositivo o desbloquearlo.</translation>
-<translation id="6205314730813004066">Privacidad de los anuncios</translation>
+<translation id="6205314730813004066">Privacidad en los anuncios</translation>
 <translation id="6206199626856438589">Saldrás de los sitios que se muestran, incluso si están en pestañas abiertas.</translation>
 <translation id="6206311232642889873">Cop&amp;iar imagen</translation>
 <translation id="6206521455877863927">Incluye sitios del mismo dominio, por ejemplo, google.com y mail.google.com. Los sitios que estás viendo pueden guardar datos en tu dispositivo.</translation>
@@ -7152,6 +7157,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> no responde. Selecciona "Forzar cierre" para cerrar la app.</translation>
 <translation id="7535730537657706072">Para borrar del dispositivo el historial de navegación en modo Incógnito, cierra todas las pestañas de incógnito.</translation>
 <translation id="7537451260744431038">Los sitios no pueden usar cookies para mejorar la experiencia de navegación, por ejemplo, para mantener el acceso a ellos o recordar elementos del carrito de compras.</translation>
+<translation id="7538088324298143359">Buscar en la imagen con <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">Se produjo un error al buscar actualizaciones: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> revirtió este dispositivo a una versión anterior. Guarda los archivos importantes y, luego, reinicia el sistema. Se borrarán todos los datos del dispositivo.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> con la app de <ph name="APP_NAME" /></translation>
@@ -7379,6 +7385,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7730683939467795481">La extensión "<ph name="EXTENSION_NAME" />" modificó esta página</translation>
 <translation id="7735165285389721951">Se está ejecutando otra configuración de Steam. Espera a que finalice antes de volver a intentarlo.</translation>
 <translation id="7737115349420013392">Vinculando con "<ph name="DEVICE_NAME" />"…</translation>
+<translation id="7737203573077018777">Instrucciones <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> recibidas</translation>
 <translation id="7737846262459425222">Puedes cambiar esta opción cuando quieras en Configuración &gt; Asistente de Google &gt; Contexto de pantalla.</translation>
 <translation id="7737948071472253612">No puede usar la cámara</translation>
 <translation id="77381465218432215">Mostrar tildes y caracteres especiales</translation>
@@ -7579,6 +7586,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7912080627461681647">Se cambió la contraseña en el servidor. Sal de la cuenta y vuelve a acceder.</translation>
 <translation id="7912974581251770345">Traducción</translation>
 <translation id="7915457674565721553">Conéctate a Internet para configurar los controles parentales</translation>
+<translation id="7916364730877325865">Tu organización no te permite activar la sincronización con esta cuenta</translation>
 <translation id="7918257978052780342">Inscribir</translation>
 <translation id="7919123827536834358">Traducir estos idiomas de forma automática</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>

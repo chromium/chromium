@@ -63,6 +63,7 @@
 <translation id="4985291216379576555">Off-line. Não é possível verificar se há atualizações</translation>
 <translation id="4996471330284142407">Seja mais eficiente com um Chromium simples, seguro e mais rápido do que nunca.</translation>
 <translation id="4999538639245140991">Como você está saindo de uma conta gerenciada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os dados do Chromium serão excluídos deste dispositivo, mas permanecerão na sua Conta do Google.</translation>
+<translation id="5048795749726991615">Para acessar com facilidade suas senhas salvas em outros apps, use o preenchimento automático no Chromium</translation>
 <translation id="5171868502429358653">Faça login no Chromium</translation>
 <translation id="5224391634244552924">Nenhuma senha salva. O Chromium poderá verificar suas senhas quando elas forem salvas.</translation>
 <translation id="5308226104666789935">Não é possível verificar se há atualizações</translation>
@@ -92,6 +93,7 @@
 <translation id="7045244423563602563">Personalize o Chromium</translation>
 <translation id="7099326575020694068">O Chromium não pode usar a câmera no modo Visualização dividida</translation>
 <translation id="7118091470949186573">Agora você pode usar o Chromium sempre que toca em links em mensagens, documentos e outros apps.</translation>
+<translation id="7165402419892018581">Escolha o Chromium para o preenchimento automático</translation>
 <translation id="7175400662502680481">Sua senha foi exposta em uma violação de dados. O Gerenciador de senhas recomenda que ela seja mudada agora mesmo.</translation>
 <translation id="7208566199746267865">O Chromium permite que você otimize seu tempo trazendo suas contas para a Web. É possível adicionar ou remover contas nas configurações.</translation>
 <translation id="725427773388857052">O Chromium pode ajudar a proteger você de violações de dados, sites perigosos e muito mais.</translation>
@@ -106,6 +108,7 @@
 <translation id="7746854981345936341">Dica do Chromium. Alguns botões agora estão na parte inferior da tela, como "Voltar", "Avançar" e "Pesquisar".</translation>
 <translation id="7763454117143368771">Use o Chromium como navegador padrão para se proteger contra sites perigosos e garantir a segurança das suas senhas</translation>
 <translation id="7812317783196516890">Sua conta está conectada e seus dados estão sendo sincronizados com uma conta gerenciada por <ph name="DOMAIN" />, onde o administrador pode definir políticas do usuário específicas para a conta que podem mudar o comportamento do Chromium.</translation>
+<translation id="7859018312476869945">Quando você digita na barra de endereço ou na caixa de pesquisa, o Chromium envia o conteúdo digitado ao mecanismo de pesquisa padrão para melhorar as sugestões. Essa opção fica desativada na navegação anônima.</translation>
 <translation id="786327964234957808">Você está trocando a conta de sincronização de <ph name="USER_EMAIL1" /> para <ph name="USER_EMAIL2" />. Os dados do Chromium são gerenciados por <ph name="DOMAIN" />. Eles serão excluídos deste dispositivo, mas permanecerão no <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Começar a usar o leitor do Chromium</translation>
 <translation id="7928628054454574139">Abrir o Chromium sempre que você tocar nos links em outros apps</translation>
@@ -115,6 +118,7 @@
 <translation id="8073677936375100957">Limpar seus dados do Chromium deste dispositivo?</translation>
 <translation id="8240981428553046115">Não foi possível verificar se há atualizações. Tente novamente mais tarde.</translation>
 <translation id="8409374867500149834">Você tem a segurança reforçada do Chromium contra sites perigosos</translation>
+<translation id="8460301378281140593">Nos Ajustes do iPhone, abra "Opções de Senha" e selecione "Chromium"</translation>
 <translation id="858114650497379505">Você pode usar as senhas armazenadas no Gerenciador de senhas em outros apps do iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="8603022514504485810">O Gerenciador de senhas do Google não conseguiu verificar todas as senhas. Tente de novo amanhã ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>

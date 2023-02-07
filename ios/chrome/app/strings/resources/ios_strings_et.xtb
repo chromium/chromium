@@ -80,6 +80,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="149095475893949513">See veebisait üritab alla laadida seadistusprofiili.</translation>
 <translation id="1491277525950327607">Seade vahetamiseks topeltpuudutage</translation>
 <translation id="1492417797159476138">Olete selle kasutajanime selle saidi jaoks juba salvestanud</translation>
+<translation id="1498283581832036924">Teie teenuse <ph name="WEBSITE" /> kontot ei kustutata.</translation>
 <translation id="1506063256525392513">See võimaldab fotosid jäädvustada ja üles laadida ning QR-koode skannida</translation>
 <translation id="1509486075633541495">Logi veebisaidile sisse</translation>
 <translation id="1509960214886564027">Paljude saitide funktsioonid ei pruugi töötada</translation>
@@ -218,6 +219,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2664621323652615289">Peatamine</translation>
 <translation id="2671426118752779020">Saate Google'i paroolihaldurisse salvestatud paroole oma iPhone'i muudes rakendustes kasutada.</translation>
 <translation id="2690858294534178585">Kaamera on kasutusel</translation>
+<translation id="26915454213703967">Otsi pildilt Google'iga</translation>
 <translation id="2691653761409724435">Pole võrguühenduseta saadaval</translation>
 <translation id="2695507686909505111">Leht tõlgitud</translation>
 <translation id="2697526135132990015">Logi välja ja kustuta andmed</translation>
@@ -225,7 +227,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2702801445560668637">Lugemisloend</translation>
 <translation id="2704491540504985681">Allalaadimised</translation>
 <translation id="2704606927547763573">Kopeeritud</translation>
-<translation id="2709516037105925701">Automaatne täitmine</translation>
+<translation id="2709516037105925701">Automaattäide</translation>
 <translation id="271033894570825754">Uus</translation>
 <translation id="2712127207578915686">Faili ei õnnestu avada</translation>
 <translation id="2718352093833049315">Ainult WiFi-ga</translation>
@@ -380,6 +382,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3819183753496523827">Võrguühendus puudub. Kontrollige internetiühendust ja proovige uuesti.</translation>
 <translation id="3835964409414434850">Järgmisele vahelehele liikumine</translation>
 <translation id="385051799172605136">Tagasi</translation>
+<translation id="3851938967634752633">Teenuste <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ja veel <ph name="NUMBER_OF_ACCOUNTS" /> paroolid kustutatakse. Teie kontosid ei kustutata.</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3861486700625780712">Lõpeta jälgimine</translation>
 <translation id="3863769054730344136">Saatmine teie seadmetesse</translation>
@@ -515,6 +518,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="4833786495304741580">Google'ile saadetakse automaatselt kasutusstatistikat ja krahhiaruandeid.</translation>
 <translation id="4840495572919996524">Teie järjehoidjaid, ajalugu, paroole ja muud sisu ei sünkroonita enam teie Google'i kontoga.</translation>
 <translation id="4844899002472726590">Vaadake ja muutke teemasid, millest olete huvitatud</translation>
+<translation id="4848999860252535517">Kas kustutada teenuse <ph name="WEBSITE" /> parool?</translation>
 <translation id="4854345657858711387">Pääsukoodi seadistamine</translation>
 <translation id="4858786880085262208">Võimaluse korral viiakse üle HTTPS-ile. Turvalised saidid võivad manustada sisu, mis pole turvaline.</translation>
 <translation id="4860895144060829044">Helistage</translation>
@@ -768,6 +772,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="6598875554591387303">Sordi väljaandja järgi</translation>
 <translation id="6603393121510733479">Teie organisatsioon lülitas privaatse sirvimise välja.
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Teenuste <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ja <ph name="THIRD_WEBSITE" /> paroolid kustutatakse. Teie kontosid ei kustutata.</translation>
 <translation id="6610002944194042868">Tõlkimise valikud</translation>
 <translation id="661266467055912436">Täiendab turvalisust teie ja kõigi teiste veebikasutajate jaoks.</translation>
 <translation id="6620279676667515405">Tühista</translation>
@@ -1045,6 +1050,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8756969031206844760">Kas värskendada parooli?</translation>
 <translation id="8763613688786959833">Eelmisele vahelehele liikumine</translation>
 <translation id="8764015330924122850">Lõpetage üksuse <ph name="DOMAIN_NAME" /> jälgimine</translation>
+<translation id="8766790350274092814">Teenuste <ph name="WEBSITE" /> ja <ph name="SECOND_WEBSITE" /> paroolid kustutatakse. Teie kontosid ei kustutata.</translation>
 <translation id="8775144690796719618">Sobimatu URL</translation>
 <translation id="8787968206789828143">Otsige veebist</translation>
 <translation id="8792626944327216835">mikrofon</translation>
@@ -1094,6 +1100,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="9093271241977565440">Puudutage ekraanikuva ülaosas otsinguikooni</translation>
 <translation id="9094033019050270033">Värskenda parooli</translation>
 <translation id="9097506547406246598">Ei saa jälgimist lõpetada. Midagi läks valesti.</translation>
+<translation id="9098541895599151034">Kas kustutada <ph name="NUMBER_OF_ACCOUNTS" /> parooli?</translation>
 <translation id="9100610230175265781">Parool on vajalik</translation>
 <translation id="9107664647686727385">Ohustatud paroolide otsimine</translation>
 <translation id="9124387962554796433">Google võib kasutada teie ajalugu otsingu ja muude Google'i teenuste isikupärastamiseks.</translation>

@@ -80,6 +80,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="149095475893949513">Šī vietne mēģina lejupielādēt konfigurācijas profilu.</translation>
 <translation id="1491277525950327607">Veiciet dubultskārienu, lai pārslēgtu iestatījumu.</translation>
 <translation id="1492417797159476138">Jūs jau saglabājāt šo lietotājvārdu šai vietnei</translation>
+<translation id="1498283581832036924">Jūsu <ph name="WEBSITE" /> konts netiks dzēsts.</translation>
 <translation id="1506063256525392513">Varat uzņemt un augšupielādēt fotoattēlus, kā arī skenēt kvadrātkodus</translation>
 <translation id="1509486075633541495">Pierakstieties tīmekļa vietnē</translation>
 <translation id="1509960214886564027">Daudzās vietnēs funkcijas var nedarboties</translation>
@@ -218,6 +219,7 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 <translation id="2664621323652615289">Apturēt</translation>
 <translation id="2671426118752779020">Google paroļu pārvaldniekā saglabātās paroles varat izmantot citās iPhone tālruņa lietotnēs.</translation>
 <translation id="2690858294534178585">Tiek izmantota kamera.</translation>
+<translation id="26915454213703967">Meklēt attēlā ar Google</translation>
 <translation id="2691653761409724435">Nav pieejami bezsaistē</translation>
 <translation id="2695507686909505111">Lapa iztulkota</translation>
 <translation id="2697526135132990015">Izrakstīties un notīrīt datus</translation>
@@ -380,6 +382,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3819183753496523827">Esat bezsaistē. Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="3835964409414434850">Pāriet uz nākamo cilni</translation>
 <translation id="385051799172605136">Atpakaļ</translation>
+<translation id="3851938967634752633">Tiks dzēstas paroles vietnēm <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> un citām vietnēm (vēl <ph name="NUMBER_OF_ACCOUNTS" />). Jūsu konti netiks dzēsti.</translation>
 <translation id="3858860766373142691">Nosaukums</translation>
 <translation id="3861486700625780712">Nesekot</translation>
 <translation id="3863769054730344136">Sūtīt uz jūsu ierīcēm</translation>
@@ -515,6 +518,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="4833786495304741580">Automātiski sūtīt lietojuma statistiku un avāriju pārskatus Google serveriem.</translation>
 <translation id="4840495572919996524">Jūsu grāmatzīmes, vēsture, paroles un citi iestatījumi vairs netiks sinhronizēti ar jūsu Google kontu.</translation>
 <translation id="4844899002472726590">Skatiet un rediģējiet tēmas, kas jūs interesē</translation>
+<translation id="4848999860252535517">Vai dzēst paroli vietnei <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Piekļuves koda iestatīšana</translation>
 <translation id="4858786880085262208">Ja iespējams, veiciet jaunināšanu uz HTTPS. Drošās vietnēs var tikt iegults nedrošs saturs.</translation>
 <translation id="4860895144060829044">Zvanīt</translation>
@@ -768,6 +772,7 @@ Ieteicams izmantot unikālu paroli katrai vietnei.</translation>
 <translation id="6598875554591387303">Kārtot pēc izdevēja</translation>
 <translation id="6603393121510733479">Jūsu organizācija izslēdza privātu pārlūkošanu.
 <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Tiks dzēstas paroles vietnēm <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> un <ph name="THIRD_WEBSITE" />. Jūsu konti netiks dzēsti.</translation>
 <translation id="6610002944194042868">Tulkošanas opcijas</translation>
 <translation id="661266467055912436">Šis režīms efektīvāk aizsargā gan jūs, gan visus citus tīmekļa lietotājus.</translation>
 <translation id="6620279676667515405">Atcelt</translation>
@@ -1045,6 +1050,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8756969031206844760">Vai atjaunināt paroli?</translation>
 <translation id="8763613688786959833">Pāriet uz pēdējo cilni</translation>
 <translation id="8764015330924122850">Nesekot domēnam <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Tiks dzēstas paroles vietnēm <ph name="WEBSITE" /> un <ph name="SECOND_WEBSITE" />. Jūsu konti netiks dzēsti.</translation>
 <translation id="8775144690796719618">Nederīgs URL</translation>
 <translation id="8787968206789828143">Meklēt tīmeklī</translation>
 <translation id="8792626944327216835">mikrofons</translation>
@@ -1094,6 +1100,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="9093271241977565440">Ekrāna augšdaļā pieskarieties meklēšanas ikonai</translation>
 <translation id="9094033019050270033">Atjaunināt paroli</translation>
 <translation id="9097506547406246598">Nevar pārtraukt sekošanu. Radās kļūda.</translation>
+<translation id="9098541895599151034">Vai dzēst paroles (<ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9100610230175265781">Jāievada ieejas frāze.</translation>
 <translation id="9107664647686727385">Uzlauztu paroļu pārbaude</translation>
 <translation id="9124387962554796433">Google var izmantot jūsu vēsturi, lai personalizētu pakalpojumu Meklēšana un citus Google pakalpojumus.</translation>

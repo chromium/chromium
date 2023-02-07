@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Fayllar hazırlanır</translation>
 <translation id="1015730422737071372">Əlavə detallar ilə təmin edin</translation>
 <translation id="1019413721762100891">Deaktiv</translation>
-<translation id="1021110881106174305">Qəbul olunmuş kartlar</translation>
 <translation id="1021753677514347426">Bu xətanın səbəbi cihazınızda siz və ya başqası tərəfindən quraşdırılmış sertifikatdır. Sertifikat şəbəkələrə nəzarət etmək və onları bloklamaq üçün istifadə olunur və Chromium ona etibar etmir. Məktəb və ya şirkət şəbəkəsi kimi bəzi hallarda qanuni nəzarətə icazə verilsə də, Chromium qarşısını ala bilməsəniz də, bunun baş verdiyini bilmənizi istəyir. Nəzarət vebə girişi olan istənilən brauzer və ya tətbiqdə baş verə bilər.</translation>
 <translation id="1024111578869940408">Hücum edənlər bəzən veb ünvana kiçik, çətin sezilə bilən dəyişikliklər etməklə saytları təqlid edir.</translation>
 <translation id="1028781062521375153">Detallara baxın</translation>
@@ -708,7 +707,6 @@
 <translation id="2688969097326701645">Bəli, davam edin</translation>
 <translation id="2691924980723297736">Təhlükəsizlik xəbərdarlığı</translation>
 <translation id="2692131511336778528">Elmi fantastika və fentezi</translation>
-<translation id="2699302886720511147">Qəbul edilən Kartlar</translation>
 <translation id="2701514975700770343">Üzü aşağı</translation>
 <translation id="2702801445560668637">Siyahı oxunur</translation>
 <translation id="2704283930420550640">Dəyər formata uyğun gəlmir.</translation>
@@ -989,7 +987,6 @@
 <translation id="342781501876943858">Parolunuzdan digər saytlarda təkrar istifadə etmisinizsə, Chromium onu sıfırlamağınızı tövsiyə edir.</translation>
 <translation id="3428151540071562330">Bir və ya bir neçə DnsOverHttpsTemplates server şablonu URI'si yanlışdır və istifadə edilməyəcək.</translation>
 <translation id="3431216045099978607">Tam ekrandan çıxmaq və endirməyə baxmaq üçün |<ph name="ACCELERATOR" />| düyməsini basın.</translation>
-<translation id="3431636764301398940">Bu kartı bu cihaza yazın</translation>
 <translation id="3432601291244612633">Səhifəni bağlayın</translation>
 <translation id="3435738964857648380">Təhlükəsizlik</translation>
 <translation id="3438829137925142401">Google Hesabınızda saxlanılan parollardan istifadə edin</translation>
@@ -1118,7 +1115,6 @@
 <translation id="3744111561329211289">Arxa fon sinx</translation>
 <translation id="3744286742364977428">Endirdiyiniz fayllar təhlil üçün Google Cloud'a və ya üçüncü tərəflərə göndərilir. Məsələn, onlar həssas data və ya zərərli proqrama görə skanlana və şirkət siyasətlərinə əsasən saxlana bilər.</translation>
 <translation id="3744899669254331632">Sayt güvənsiz kredensiallar göndərdiyi üçün <ph name="SITE" /> ünvanına girə bilməzsiniz.</translation>
-<translation id="3745099705178523657">Təsdiqlədikdən sonra Google Hesabındakı kart məlumatları bu saytda paylaşılacaq.</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytındakı hücumçular Sizi zərərli proqram təminatı quraşdırmaq və ya şəxsi məlumatı (məsələn, parol, telefon nömrəsi və ya kredit kartları) paylaşmaq kimi təhlükəli işləri görməyə sövq edə bilər. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Aviasiya sənayesi</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> ayarlanmadığına görə nəzərə alınmayıb.</translation>
@@ -1136,7 +1132,6 @@
 <translation id="3781428340399460090">Parlaq Çəhrayı</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth cihazları</translation>
-<translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /> tarixində bitir</translation>
 <translation id="3789155188480882154">Ölçü 16</translation>
 <translation id="3789841737615482174">Quraşdırın</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> düym)</translation>
@@ -3080,7 +3075,6 @@
 <translation id="8620276786115098679">Zərf Kaku 7</translation>
 <translation id="8623885649813806493">Uyğun parol yoxdur. Yadda saxlanmış bütün parolları göstərin.</translation>
 <translation id="8624354461147303341">Endirim əldə edin</translation>
-<translation id="8625384913736129811">Bu Kartı Bu Cihazda yadda saxlayın</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637577059508742477">Profiliniz və brauzeriniz <ph name="DOMAIN" /> tərəfindən idarə olunur</translation>
 <translation id="8643409044755049933">Zərf Kaku 3</translation>

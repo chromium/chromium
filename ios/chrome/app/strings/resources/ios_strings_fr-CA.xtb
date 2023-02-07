@@ -80,6 +80,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="149095475893949513">Ce site Web tente de télécharger un profil de configuration.</translation>
 <translation id="1491277525950327607">Touchez deux fois pour activer ou désactiver le paramètre</translation>
 <translation id="1492417797159476138">Vous avez déjà enregistré ce nom d'utilisateur pour ce site</translation>
+<translation id="1498283581832036924">Votre compte <ph name="WEBSITE" /> ne sera pas supprimé.</translation>
 <translation id="1506063256525392513">Cela vous permet de prendre des photos et de les téléverser ainsi que de numériser des codes QR</translation>
 <translation id="1509486075633541495">Connexion au site Web</translation>
 <translation id="1509960214886564027">Des fonctionnalités sur de nombreux sites risquent de ne pas fonctionner</translation>
@@ -218,6 +219,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2664621323652615289">Arrêter</translation>
 <translation id="2671426118752779020">Vous pouvez utiliser les mots de passe que vous avez enregistrés dans le gestionnaire de mots de passe Google pour d'autres applications sur votre iPhone.</translation>
 <translation id="2690858294534178585">La caméra est en cours d'utilisation</translation>
+<translation id="26915454213703967">Rechercher dans l'image avec Google</translation>
 <translation id="2691653761409724435">Indisponible hors ligne</translation>
 <translation id="2695507686909505111">Page traduite</translation>
 <translation id="2697526135132990015">Se déconnecter et effacer les données</translation>
@@ -380,6 +382,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3819183753496523827">Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez.</translation>
 <translation id="3835964409414434850">Accéder à l'onglet suivant</translation>
 <translation id="385051799172605136">Retour</translation>
+<translation id="3851938967634752633">Les mots de passe de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> et de<ph name="NUMBER_OF_ACCOUNTS" /> autres comptes seront supprimés. Vos comptes ne seront pas supprimés.</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3861486700625780712">Ne plus suivre</translation>
 <translation id="3863769054730344136">Envoyer à vos appareils</translation>
@@ -405,6 +408,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4038354071007134711">Auc. app. sur cet appareil ne peut ouv. le fichier</translation>
 <translation id="4042870976416480368">Rechercher dans la page</translation>
 <translation id="40433179647657191">Créez et partagez un lien direct vers une partie d'une page que vous avez mise en surbrillance.</translation>
+<translation id="4045648459118332842">Utilisez vos mots de passe enregistrés dans n'importe quelle application en un seul clic</translation>
 <translation id="4049507953662678203">Assurez-vous d'avoir une connexion réseau et réessayez.</translation>
 <translation id="4063300985191096908">Accéder au flux</translation>
 <translation id="408404951701638773">La barre de recherche est désormais plus facile à atteindre</translation>
@@ -515,6 +519,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4833786495304741580">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google.</translation>
 <translation id="4840495572919996524">Vos favoris, votre historique, vos mots de passe et d'autres paramètres ne seront plus synchronisés avec votre compte Google.</translation>
 <translation id="4844899002472726590">Affichez et modifiez les sujets qui vous intéressent</translation>
+<translation id="4848999860252535517">Supprimer le mot de passe pour <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Définir un mot de passe</translation>
 <translation id="4858786880085262208">Utiliser la version HTTPS lorsque c'est possible. Les sites sécurisés peuvent intégrer du contenu non sécurisé.</translation>
 <translation id="4860895144060829044">Appeler</translation>
@@ -663,6 +668,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5988097621740394599">Faites le suivi des réductions dans vos onglets.</translation>
 <translation id="5988851877894965432">Ouvrir les URL dans Chrome</translation>
 <translation id="6006672969046233841">Nouvel onglet</translation>
+<translation id="6011308810877101166">Améliorer les suggestions de recherche</translation>
 <translation id="6012140227487808125">Cryptage en cours…</translation>
 <translation id="6021332621416007159">Ouvrir dans...</translation>
 <translation id="6027945736510816438">Vouliez-vous dire <ph name="WEBSITE" />?</translation>
@@ -768,6 +774,7 @@ Tâchez d'utiliser un mot de passe différent pour chaque site.</translation>
 <translation id="6598875554591387303">Trier par Éditeur</translation>
 <translation id="6603393121510733479">Votre organisation a désactivé la navigation privée.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Les mots de passe de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> et <ph name="THIRD_WEBSITE" /> seront supprimés. Vos comptes ne seront pas supprimés.</translation>
 <translation id="6610002944194042868">Options de traduction</translation>
 <translation id="661266467055912436">Il renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>
 <translation id="6620279676667515405">Annuler</translation>
@@ -881,6 +888,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="746684838091935575">3. Sélectionnez Chrome</translation>
 <translation id="7472734401283673885">Nom d'entreprise</translation>
 <translation id="7473891865547856676">Non merci</translation>
+<translation id="7491131399623468277">Accédez au menu Paramètres…</translation>
 <translation id="750493650310597496">0 sélectionné</translation>
 <translation id="7508728395076009983">Pour verrouiller vos onglets de navigation privée, configurez Touch ID, Face ID ou un mot de passe.</translation>
 <translation id="7514365320538308">Télécharger</translation>
@@ -1045,6 +1053,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8756969031206844760">Mettre à jour le mot de passe?</translation>
 <translation id="8763613688786959833">Aller au dernier onglet</translation>
 <translation id="8764015330924122850">Se désabonner de <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Les mots de passe de <ph name="WEBSITE" /> et <ph name="SECOND_WEBSITE" /> seront supprimés. Vos comptes ne seront pas supprimés.</translation>
 <translation id="8775144690796719618">URL non valide</translation>
 <translation id="8787968206789828143">Recherchez sur le Web</translation>
 <translation id="8792626944327216835">Microphone</translation>
@@ -1094,6 +1103,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9093271241977565440">Dans la partie supérieure de l'écran, touchez l'icône de recherche</translation>
 <translation id="9094033019050270033">Mettre à jour le mot de passe</translation>
 <translation id="9097506547406246598">Le désabonnement a échoué. Un problème est survenu.</translation>
+<translation id="9098541895599151034">Supprimer <ph name="NUMBER_OF_ACCOUNTS" /> mots de passe?</translation>
 <translation id="9100610230175265781">Une phrase de passe est requise</translation>
 <translation id="9107664647686727385">Pour vérifier la présence de mots de passe compromis</translation>
 <translation id="9124387962554796433">Google peut utiliser votre historique pour personnaliser la recherche et d'autres services Google.</translation>

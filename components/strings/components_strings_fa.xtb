@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">درحال آماده‌سازی فایل‌ها</translation>
 <translation id="1015730422737071372">جزئیات بیشتری ارائه دهید</translation>
 <translation id="1019413721762100891">خاموش</translation>
-<translation id="1021110881106174305">کارت‌های قابل‌ قبول</translation>
 <translation id="1021753677514347426">‏علت این مشکل وجود یکی از گواهی‌هایی است که شما یا فردی دیگر در دستگاهتان نصب کرده‌اید. از این گواهی برای نظارت بر شبکه‌ها و رهگیری آن‌ها استفاده می‌شود و مورداعتماد Chromium نیست. علی‌رغم وجود برخی موارد قانونی برای نظارت، مثلاً نظارت بر شبکه‌های مدارس و شرکت‌ها، Chromium می‌خواهد مطمئن شود که شما از این جریان آگاهی دارید، حتی اگر نتوانید آن را متوقف کنید. نظارت ممکن است در هر مرورگر یا برنامه‌ای که به وب دسترسی دارد انجام شود.</translation>
 <translation id="1024111578869940408">گاهی‌اوقات مهاجمان با ایجاد تغییراتی بسیار جزئی در نشانی وب، سایت‌ها را جعل می‌کنند.</translation>
 <translation id="1028781062521375153">دیدن جزئیات</translation>
@@ -708,7 +707,6 @@
 <translation id="2688969097326701645">بله، ادامه می‌دهم</translation>
 <translation id="2691924980723297736">هشدار ایمنی</translation>
 <translation id="2692131511336778528">علمی تخیلی و فانتزی</translation>
-<translation id="2699302886720511147">کارت‌های قابل‌‌قبول</translation>
 <translation id="2701514975700770343">روبه‌پایین</translation>
 <translation id="2702801445560668637">فهرست خواندن</translation>
 <translation id="2704283930420550640">مقدار با فرمت مطابقت ندارد.</translation>
@@ -991,7 +989,6 @@
 <translation id="342781501876943858">‏Chromium توصیه می‌کند اگر از گذرواژه‌تان در سایت‌های دیگری استفاده کردید آن را بازنشانی کنید.</translation>
 <translation id="3428151540071562330">‏یک یا چند سرور نشانی وب الگوی سرور DnsOverHttpsTemplates نامعتبر است و استفاده نخواهد شد.</translation>
 <translation id="3431216045099978607">برای خروج از حالت تمام صفحه و دیدن بارگیری، |<ph name="ACCELERATOR" />| را فشار دهید.</translation>
-<translation id="3431636764301398940">این کارت را در این دستگاه ذخیره کنید</translation>
 <translation id="3432601291244612633">بستن صفحه</translation>
 <translation id="3435738964857648380">امنیت</translation>
 <translation id="3438829137925142401">‏استفاده از گذرواژه‌های ذخیره‌شده در «حساب Google»</translation>
@@ -1122,7 +1119,6 @@
 <translation id="3744111561329211289">همگام‌سازی پس‌زمینه</translation>
 <translation id="3744286742364977428">‏فایل‌هایی که بارگیری می‌کنید برای تجریه‌وتحلیل به Google Cloud یا اشخاص ثالث ارسال می‌شود. مثلاً ممکن است این فایل‌ها ازنظر وجود داده‌های حساس یا بدافزار اسکن شود و براساس خط‌مشی‌های شرکت ذخیره شود.</translation>
 <translation id="3744899669254331632">‏نمی‌توانید اکنون از <ph name="SITE" /> دیدن کنید زیرا وب‌سایت اعتبارنامه‌های درهمی ارسال کرده که Chromium نمی‌تواند پردازش کند. خطاها و حمله‌های شبکه معمولاً موقتی هستند، بنابراین احتمالاً این صفحه بعداً کار می‌کند.</translation>
-<translation id="3745099705178523657">‏بعد از تأیید کردن، جزئیات کارت از حساب Google شما با این سایت هم‌رسانی می‌شود.</translation>
 <translation id="3748148204939282805">ممکن است مهاجم‌ها در <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> شما را فریب دهند تا اقدام خطرناکی همچون نصب نرم‌افزار یا افشای اطلاعات شخصی (مانند گذرواژه‌ها، پیام‌ها یا کارت‌های اعتباری) انجام دهید. <ph name="BEGIN_LEARN_MORE_LINK" />بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">صنعت هوانوردی</translation>
 <translation id="3752543821772132562">نادیده گرفته می‌شود زیرا <ph name="POLICY_NAME" /> تنظیم نشده است.</translation>
@@ -1140,7 +1136,6 @@
 <translation id="3781428340399460090">صورتی پررنگ</translation>
 <translation id="3783418713923659662">مسترکارت</translation>
 <translation id="3784372983762739446">دستگاه‌های بلوتوث</translation>
-<translation id="3787705759683870569">تاریخ انقضا <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">اندازه ۱۶</translation>
 <translation id="3789841737615482174">نصب</translation>
 <translation id="3792100426446126328">‏<ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> اینچ)</translation>
@@ -3084,7 +3079,6 @@
 <translation id="8620276786115098679">پاکت کاکو ۷</translation>
 <translation id="8623885649813806493">گذرواژه منطبقی وجود ندارد. نمایش همه گذرواژه‌های ذخیره‌شده.</translation>
 <translation id="8624354461147303341">دریافت تخفیف</translation>
-<translation id="8625384913736129811">ذخیره کردن این کارت در این دستگاه</translation>
 <translation id="8634957317623797170">۸۶ × ۵۴ میلی‌متر</translation>
 <translation id="8637577059508742477">نمایه و مرورگر شما تحت‌مدیریت <ph name="DOMAIN" /> است</translation>
 <translation id="8643409044755049933">پاکت کاکو ۳</translation>

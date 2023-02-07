@@ -80,6 +80,7 @@
 <translation id="149095475893949513">Веб-сајтов се обидува да преземе профил за конфигурација.</translation>
 <translation id="1491277525950327607">Допрете двапати за да ја измените поставката</translation>
 <translation id="1492417797159476138">Веќе го зачувавте ова корисничко име за сајтов</translation>
+<translation id="1498283581832036924">Сметката на <ph name="WEBSITE" /> нема да се избрише.</translation>
 <translation id="1506063256525392513">Ова ви овозможува да фотографирате и да прикачувате фотографии, како и да скенирате QR-кодови</translation>
 <translation id="1509486075633541495">Најавете се на веб-сајтот</translation>
 <translation id="1509960214886564027">Функциите на многу сајтови може да не функционираат</translation>
@@ -218,6 +219,7 @@
 <translation id="2664621323652615289">Запри</translation>
 <translation id="2671426118752779020">Може да ги користите лозинките што сте ги зачувале во „Управникот со лозинки на Google“ во други апликации на вашиот iPhone.</translation>
 <translation id="2690858294534178585">Камерата е во употреба</translation>
+<translation id="26915454213703967">Пребарајте во слика со Google</translation>
 <translation id="2691653761409724435">Не се достапни офлајн</translation>
 <translation id="2695507686909505111">Страницата е преведена</translation>
 <translation id="2697526135132990015">Одјави ми и избриши ги сите податоци</translation>
@@ -380,6 +382,7 @@
 <translation id="3819183753496523827">Офлајн сте. Проверете ја интернет-врската и обидете се повторно.</translation>
 <translation id="3835964409414434850">Оди на следната картичка</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3851938967634752633">Лозинките за <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и <ph name="NUMBER_OF_ACCOUNTS" /> други ќе се избришат. Сметките нема да се избришат.</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3861486700625780712">Не следи</translation>
 <translation id="3863769054730344136">Испратете до вашите уреди</translation>
@@ -516,6 +519,7 @@
 <translation id="4833786495304741580">Автоматски испраќа статистика за користењето и извештаи за падовите во Google.</translation>
 <translation id="4840495572919996524">Обележувачите, историјата, лозинките и другo веќе нема да се синхронизираат со сметката на Google.</translation>
 <translation id="4844899002472726590">Гледајте и менувајте ги темите што ве интересираат</translation>
+<translation id="4848999860252535517">Да се избрише лозинката за <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Поставете лозинка</translation>
 <translation id="4858786880085262208">Надградете на HTTPS, кога е можно. Безбедните сајтови може да вметнуваат содржини што не се безбедни.</translation>
 <translation id="4860895144060829044">Повикајте</translation>
@@ -769,6 +773,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6598875554591387303">Подредете според издавач</translation>
 <translation id="6603393121510733479">Вашата организација го исклучи прелистувањето „Инкогнито“.
 <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Лозинките за <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и <ph name="THIRD_WEBSITE" /> ќе се избришат. Сметките нема да се избришат.</translation>
 <translation id="6610002944194042868">Опции за „Преведи“</translation>
 <translation id="661266467055912436">Ја подобрува безбедноста за вас и сите останати на интернет.</translation>
 <translation id="6620279676667515405">Откажи</translation>
@@ -1046,6 +1051,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8756969031206844760">Дали да се ажурира лозинката?</translation>
 <translation id="8763613688786959833">Одете на последната картичка</translation>
 <translation id="8764015330924122850">Престани со следење на <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Лозинките за <ph name="WEBSITE" /> и <ph name="SECOND_WEBSITE" /> ќе се избришат. Сметките нема да се избришат.</translation>
 <translation id="8775144690796719618">Неважечка URL-адреса</translation>
 <translation id="8787968206789828143">Пребарувајте на интернет</translation>
 <translation id="8792626944327216835">микрофон</translation>
@@ -1095,6 +1101,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="9093271241977565440">Најгоре на екранот, допрете ја иконата „Пребарување“</translation>
 <translation id="9094033019050270033">Ажурирај ја лозинката</translation>
 <translation id="9097506547406246598">Не може да се отследи. Нешто тргна наопаку.</translation>
+<translation id="9098541895599151034">Да се избришат <ph name="NUMBER_OF_ACCOUNTS" /> лозинки?</translation>
 <translation id="9100610230175265781">Потребна е лозинка-фраза</translation>
 <translation id="9107664647686727385">Проверува дали има компромитирани лозинки</translation>
 <translation id="9124387962554796433">Google може да ја користи вашата историја за да ги персонализира „Пребарувањето“ и другите услуги на Google.</translation>

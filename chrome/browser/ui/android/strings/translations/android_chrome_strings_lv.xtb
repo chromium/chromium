@@ -250,6 +250,7 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="2426805022920575512">Izvēlēties citu kontu</translation>
 <translation id="2433507940547922241">Izskats</translation>
 <translation id="2435457462613246316">Rādīt paroli</translation>
+<translation id="2439153523196674349">Vietnes <ph name="SITE_NAME" /> priekšskatījums</translation>
 <translation id="2450083983707403292">Vai vēlaties vēlreiz sākt faila <ph name="FILE_NAME" /> lejupielādi?</translation>
 <translation id="2453860139492968684">Pabeigt</translation>
 <translation id="2459390580524506445">Uzlabota meklēšana ar balsi</translation>
@@ -388,6 +389,7 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="3066573403916685335">Pārvietot lejup</translation>
 <translation id="3070005020161560471">Automātiski tulkot</translation>
 <translation id="3072980200212375806">Lietotne <ph name="APP_NAME" /> tiks atvērta pārlūkā Chrome. Turpinot jūs piekrītat <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumiem<ph name="END_LINK1" />, kā arī <ph name="BEGIN_LINK2" />Google Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumiem<ph name="END_LINK2" />. Ir spēkā arī <ph name="BEGIN_LINK3" />konfidencialitātes politika<ph name="END_LINK3" />.</translation>
+<translation id="3083194063661536258">Jūs esat izrakstījies. Poga. Tiks atvērts dialoglodziņš, lai pierakstītos un ieslēgtu sinhronizāciju.</translation>
 <translation id="3091010850649238832">Rādīt starpliktuves saturu</translation>
 <translation id="3098745985164956033">Daži attēli tiek sūtīti uz Google serveriem, lai uzlabotu aprakstus</translation>
 <translation id="3104179992611025423">Pārlūku pārvalda jūsu vecāki.</translation>
@@ -667,7 +669,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4678082183394354975">Pārlūkā Chrome ir ieslēgta tumšā motīva lietošana vietnēs</translation>
 <translation id="4684427112815847243">Sinhronizēt visu</translation>
 <translation id="4685741273709472646">Atlasīt no nolaižamā saraksta</translation>
-<translation id="4687718960473379118">Vietņu ieteiktas reklāmas</translation>
+<translation id="4687718960473379118">Vietnē ieteiktās reklāmas</translation>
 <translation id="4689792375321623175">Meklēt attēlu ar Google <ph name="BEGIN_NEW" />Jaunums<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}zero{<ph name="SHIPPING_OPTION_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Kešatmiņā ievietotie attēli un faili</translation>
@@ -924,6 +926,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="604124094241169006">Automātiski</translation>
 <translation id="6042308850641462728">Vairāk</translation>
+<translation id="6049046116080614938">Esat pierakstījies kā <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Poga. Tiks atvērti iestatījumi.</translation>
 <translation id="604996488070107836">Neizdevās lejupielādēt failu <ph name="FILE_NAME" />, jo radās nezināma kļūda.</translation>
 <translation id="605721222689873409">GG</translation>
 <translation id="6059830886158432458">Šeit varat kontrolēt jums rādītos rakstus un darbības.</translation>
@@ -1297,6 +1300,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7968014550143838305">Pievienota lasīšanas sarakstam</translation>
 <translation id="7971136598759319605">Aktīva pirms 1 dienas</translation>
 <translation id="7975379999046275268">Priekšskatīt lapu <ph name="BEGIN_NEW" />Jauna<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">Esat pierakstījies kā <ph name="USER_NAME" />. Poga. Tiks atvērti iestatījumi.</translation>
 <translation id="7986497153528221272">Lai skatītu paroles, vispirms iestatiet ierīcei ekrāna bloķēšanu</translation>
 <translation id="7995059495660416932">Kad saturs būs pieejams, jūs to redzēsiet.</translation>
 <translation id="799576009106109668">Pārlūkošana būs ātrāka, jo saturs tiks iepriekš ielādēts, pamatojoties uz jūsu pašlaik apmeklēto tīmekļa lapu.</translation>

@@ -411,6 +411,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Nema ugroženih lozinki}=1{1 ugrožena lozinka}one{{NUM_COMPROMISED} ugrožena lozinka}few{{NUM_COMPROMISED} ugrožene lozinke}other{{NUM_COMPROMISED} ugroženih lozinki}}</translation>
 <translation id="1380028686461971526">Automatsko povezivanje na mrežu</translation>
 <translation id="1381567580865186407">Govor (<ph name="LANGUAGE" />) se šalje Google-u radi obrade</translation>
+<translation id="1383381142702995121">Upravljaj ovim dodatkom</translation>
 <translation id="1383597849754832576">Preuzimanje fajlova govora nije uspelo. Probajte kasnije.</translation>
 <translation id="1383861834909034572">Otvaranje kad se dovrši</translation>
 <translation id="1383876407941801731">Pretraži</translation>
@@ -4225,6 +4226,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4807098396393229769">Ime i prezime na kartici</translation>
 <translation id="4808667324955055115">Iskačući prozori su blokirani:</translation>
 <translation id="4809079943450490359">Uputstva administratora uređaja:</translation>
+<translation id="4809447465126035330">Izbriši</translation>
 <translation id="480990236307250886">Otvori početnu stranicu</translation>
 <translation id="4809927044794281115">Svetla tema</translation>
 <translation id="4811212958317149293">Automatsko skeniranje tastature za pristup pomoću prekidača</translation>
@@ -5026,6 +5028,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5558129378926964177">Zoom &amp;In (Uvećaj)</translation>
 <translation id="5558247502209241936">Omogući otvaranje aplikacije u prozoru</translation>
+<translation id="5559311991468302423">Izbrišite adresu</translation>
 <translation id="55601339223879446">Prilagodite granice radne površine unutar prikaza</translation>
 <translation id="5561162485081632007">Otkriva opasne događaje kada se dogode i upozorava vas na njih</translation>
 <translation id="5562781907504170924">Ova kartica je povezana sa Bluetooth uređajem.</translation>
@@ -6420,6 +6423,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6839916869147598086">Prijavljivanje je promenjeno</translation>
 <translation id="6840155290835956714">Pitaj pre slanja</translation>
 <translation id="6840184929775541289">Nije autoritet za izdavanje sertifikata</translation>
+<translation id="6840214587087739194">Adresa je izbrisana</translation>
 <translation id="6841143363521180029">Šifrovano</translation>
 <translation id="6841186874966388268">Greške</translation>
 <translation id="6842136130964845393">Da biste bili sigurni da uvek možete da pristupate sačuvanim lozinkama, potvrdite da ste to vi</translation>
@@ -8263,6 +8267,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8525306231823319788">Ceo ekran</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Dodaj jezike</translation>
+<translation id="8528479410903501741">Sačuvaj IBAN</translation>
 <translation id="8528962588711550376">Prijavljivanje.</translation>
 <translation id="8529925957403338845">Povezivanje preko trenutnog privezivanja nije uspelo</translation>
 <translation id="8531701051932785007">Poboljšano bezbedno pregledanje je isključeno</translation>

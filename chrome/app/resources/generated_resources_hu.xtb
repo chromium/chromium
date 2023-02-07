@@ -8391,6 +8391,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8639635302972078117">Használati és diagnosztikai adatok küldése. Ez az eszköz jelenleg automatikusan küld diagnosztikai, eszköz- és alkalmazáshasználati adatokat a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek, nem használjuk fel őket az Ön gyermekének azonosítására. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva a gyermekénél, akkor a rendszer ezeket az adatokat mentheti a gyermek Google-fiókjába.</translation>
 <translation id="8642900771896232685">2 másodperc</translation>
 <translation id="8642947597466641025">Szöveg nagyítása</translation>
+<translation id="8643403533759285912">Csoport törlése</translation>
 <translation id="8643443571868262066">A(z) <ph name="FILE_NAME" /> veszélyes lehet. Elküldi a Google Speciális védelem szolgáltatásának vizsgálatra?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Nincs cookie}=1{1 cookie van letiltva}other{# cookie van letiltva}}</translation>
 <translation id="864423554496711319">Fiókjába mentett eszközök</translation>
@@ -8864,6 +8865,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="90528604757378587">Lehetséges, hogy a háttértevékenységek és bizonyos vizuális effektek (például a finomgörgetés) korlátozottak.</translation>
 <translation id="9053563360605707198">Nyomtatás mindkét oldalra</translation>
 <translation id="9055636786322918818">Az RC4 titkosítás kényszerítése. A beállítás használata növeli a kockázatot, mivel az RC4-kódok nem biztonságosak.</translation>
+<translation id="9056788090206401048">Ahhoz, hogy az azonosítókulcsot használhassa másik eszközön, a Bluetoothnak bekapcsolva kell lennie. Ezt bármikor kezelheti a beállítások között.</translation>
 <translation id="9056810968620647706">Nincs találat.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> hozzá szeretne férni a következő tartalomhoz:</translation>
 <translation id="9057354806206861646">Ütemezés frissítése</translation>

@@ -250,6 +250,7 @@ Arakatze-historia ezabatzen duzunean (osorik nahiz webgune zehatz bat), neurketa
 <translation id="2426805022920575512">Aukeratu beste kontu bat</translation>
 <translation id="2433507940547922241">Itxura</translation>
 <translation id="2435457462613246316">Erakutsi pasahitza</translation>
+<translation id="2439153523196674349"><ph name="SITE_NAME" /> webgunearen jarioaren aurrebista</translation>
 <translation id="2450083983707403292">Berriro hasi nahi duzu <ph name="FILE_NAME" /> deskargatzen?</translation>
 <translation id="2453860139492968684">Amaitu</translation>
 <translation id="2459390580524506445">Ahozko bilaketa doitua</translation>
@@ -388,6 +389,7 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="3066573403916685335">Eraman behera</translation>
 <translation id="3070005020161560471">Itzuli automatikoki edukia hizkuntza hauetako batean badago:</translation>
 <translation id="3072980200212375806">Chrome-n irekiko da <ph name="APP_NAME" />. Aurrera egiten baduzu, onartu egingo dituzu <ph name="BEGIN_LINK1" />Google-ren Zerbitzu-baldintzak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />Google Chrome-ren eta Chrome OS-ren Zerbitzu-baldintza gehigarriak<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Pribatutasun-gidalerroak<ph name="END_LINK3" /> ere aplikatuko dira.</translation>
+<translation id="3083194063661536258">Saioa amaituta dago. Botoia. Saioa hasteko eta sinkronizazioa aktibatzeko leihoa irekitzen du.</translation>
 <translation id="3091010850649238832">Erakutsi arbeleko edukia</translation>
 <translation id="3098745985164956033">Jasotzen dituzun deskribapenak hobetzeko bidaltzen zaizkio irudi batzuk Google-ri</translation>
 <translation id="3104179992611025423">Zure gurasoek kudeatzen dute arakatzailea</translation>
@@ -924,6 +926,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="604124094241169006">Automatikoa</translation>
 <translation id="6042308850641462728">Gehiago</translation>
+<translation id="6049046116080614938"><ph name="USER_NAME" /> gisa hasi duzu saioa. <ph name="USER_EMAIL" />. Botoia. Ezarpenak irekitzen ditu.</translation>
 <translation id="604996488070107836">Ezin izan da deskargatu <ph name="FILE_NAME" /> errore ezezagun bat gertatu delako.</translation>
 <translation id="605721222689873409">UU</translation>
 <translation id="6059830886158432458">Kontrolatu istorioak eta jarduerak hemen</translation>
@@ -949,7 +952,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6193448654517602979">Hautatu fitxak</translation>
 <translation id="6196315980958524839">Pasahitzak gailu honetan gordetzen dira, Google-ren Pasahitz-kudeatzailea zerbitzuan</translation>
 <translation id="6202812185118613467">Sinkronizatzen hasteko, hasi saioa berriro</translation>
-<translation id="6205314730813004066">Iragarkien inguruko pribatutasuna</translation>
+<translation id="6205314730813004066">Iragarkien pribatutasuna</translation>
 <translation id="6210748933810148297">Ez al zara <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Orria aurreikusten</translation>
 <translation id="6221633008163990886">Desblokeatu gailua pasahitzak esportatzeko</translation>
@@ -1297,6 +1300,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7968014550143838305">Gehitu da irakurketa-zerrendan</translation>
 <translation id="7971136598759319605">Aktibo duela 1 egun</translation>
 <translation id="7975379999046275268">Aurreikusi orria <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979"><ph name="USER_NAME" /> gisa hasi duzu saioa. Botoia. Ezarpenak irekitzen ditu.</translation>
 <translation id="7986497153528221272">Pasahitzak ikusteko, ezarri lehendabizi pantailaren blokeoa gailuan</translation>
 <translation id="7995059495660416932">Erabilgarri dagoenean ikusiko duzu edukia</translation>
 <translation id="799576009106109668">Bizkorrago arakatuko duzu, edukia proaktiboki kargatuko delako bisitatzen ari zaren web-orriaren arabera.</translation>

@@ -219,6 +219,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1192706927100816598">{0,plural, =1{Verrà eseguita automaticamente la disconnessione tra # secondo.
 <ph name="DOMAIN" /> richiede di lasciare la smart card inserita.}other{Verrà eseguita automaticamente la disconnessione tra # secondi.
 <ph name="DOMAIN" /> richiede di lasciare la smart card inserita.}}</translation>
+<translation id="119330003005586565">Pagine che hai letto</translation>
 <translation id="1193927020065025187">Il sito potrebbe cercare di ingannarti per indurti a consentire notifiche invasive</translation>
 <translation id="1195210374336998651">Vai alle impostazioni dell'app</translation>
 <translation id="1195447618553298278">Errore sconosciuto.</translation>
@@ -409,6 +410,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Nessuna password compromessa}=1{1 password compromessa}other{{NUM_COMPROMISED} password compromesse}}</translation>
 <translation id="1380028686461971526">Collegamento automatico alla rete</translation>
 <translation id="1381567580865186407">Il testo dettato in <ph name="LANGUAGE" /> viene inviato a Google per essere elaborato</translation>
+<translation id="1383381142702995121">Gestisci questa estensione</translation>
 <translation id="1383597849754832576">Impossibile scaricare i file di contenuti vocali. Riprova più tardi.</translation>
 <translation id="1383861834909034572">Apri al termine</translation>
 <translation id="1383876407941801731">Cerca</translation>
@@ -4226,6 +4228,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4807098396393229769">Nome sulla carta di credito</translation>
 <translation id="4808667324955055115">Popup bloccati</translation>
 <translation id="4809079943450490359">Istruzioni dell'amministratore del tuo dispositivo:</translation>
+<translation id="4809447465126035330">Elimina</translation>
 <translation id="480990236307250886">Apri pagina iniziale</translation>
 <translation id="4809927044794281115">Tema chiaro</translation>
 <translation id="4811212958317149293">Scansione automatica tastiera Switch Access</translation>
@@ -5028,6 +5031,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5556459405103347317">Ricarica</translation>
 <translation id="5558129378926964177">&amp;Ingrandisci</translation>
 <translation id="5558247502209241936">Attiva l'apertura dell'app nella finestra</translation>
+<translation id="5559311991468302423">Elimina indirizzo</translation>
 <translation id="55601339223879446">Regola i bordi del desktop all'interno del display</translation>
 <translation id="5561162485081632007">Rileva e ti avvisa quando si verificano eventi pericolosi</translation>
 <translation id="5562781907504170924">Questa scheda è connessa a un dispositivo Bluetooth.</translation>
@@ -5514,6 +5518,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6007240208646052708">La ricerca vocale nella tua lingua non è disponibile.</translation>
 <translation id="6010651352520077187">Quando l'opzione è attiva, Google Traduttore propone di tradurre i siti nella tua lingua preferita. Può anche tradurre automaticamente i siti.</translation>
 <translation id="6011193465932186973">Impronta digitale</translation>
+<translation id="6011308810877101166">Migliora i suggerimenti di ricerca</translation>
 <translation id="6011908034087870826">Invio del link a <ph name="DEVICE_NAME" /> in corso…</translation>
 <translation id="6013027779243312217">Aggiungi sottotitoli ai tuoi contenuti audio e video</translation>
 <translation id="6014293228235665243">Da leggere</translation>
@@ -5831,6 +5836,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="630292539633944562">Suggerimenti di informazioni personali</translation>
 <translation id="6305607932814307878">Norme globali:</translation>
 <translation id="6305909198255586420">Installa utilizzando il tuo profilo principale</translation>
+<translation id="630750887748244481">Uno dei tuoi genitori ha disattivato "Autorizzazioni per siti, app ed estensioni" per Chrome. L'aggiunta di questa estensione non è consentita.</translation>
 <translation id="6307990684951724544">Sistema occupato</translation>
 <translation id="6308493641021088955">Accesso fornito da <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Salva lin&amp;k con nome...</translation>
@@ -6414,6 +6420,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6839916869147598086">L'accesso è stato modificato</translation>
 <translation id="6840155290835956714">Chiedi prima di inviare</translation>
 <translation id="6840184929775541289">Non è un'autorità di certificazione</translation>
+<translation id="6840214587087739194">Indirizzo eliminato</translation>
 <translation id="6841143363521180029">Criptato</translation>
 <translation id="6841186874966388268">Errori</translation>
 <translation id="6842136130964845393">Per assicurarti di poter accedere alle tue password salvate in qualsiasi momento, verifica la tua identità</translation>
@@ -7972,6 +7979,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8251509999076836464">Accoppiamento con <ph name="DEVICE_NAME" /> in corso…</translation>
 <translation id="8251578425305135684">Miniatura rimossa.</translation>
 <translation id="825238165904109940">Mostra sempre URL completi</translation>
+<translation id="8252538334423261825">Impossibile aggiungere l'estensione</translation>
 <translation id="8252569384384439529">Caricamento...</translation>
 <translation id="8253198102038551905">Fai clic su "+" per visualizzare le proprietà della rete</translation>
 <translation id="8255212965098517578">App, notifiche e foto recenti</translation>
@@ -8257,6 +8265,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8525306231823319788">Schermo intero</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Aggiungi lingue</translation>
+<translation id="8528479410903501741">Salva IBAN</translation>
 <translation id="8528962588711550376">Accesso in corso.</translation>
 <translation id="8529925957403338845">Connessione in tethering istantaneo non riuscita</translation>
 <translation id="8531701051932785007">Navigazione sicura avanzata è disattivata</translation>

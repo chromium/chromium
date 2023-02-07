@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">ინგლისური (აშშ) Dvorak კლავიატურით</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> — ჰოსტი</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
+<translation id="1521795806314479294">მზადდება <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">მიმდინარეობს Linux ფაილების გახსნა...</translation>
 <translation id="1547964879613821194">კანადური ინგლისური</translation>
 <translation id="1556189134700913550">ყველასთვის გამოყენება</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის დაარქივება…</translation>
 <translation id="1722687688096767818">მიმდინარეობს პროფილის დამატება...</translation>
 <translation id="1726100011689679555">სახელთა სერვერები</translation>
+<translation id="1727562178154619254">მზადაა სინქრონიზაციისთვის</translation>
 <translation id="1729953886957086472">გერმანული (გერმანია)</translation>
 <translation id="1730235522912993863">ჩინური ჩანჯი</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ერთეული დაკოპირდა.</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">ინდივიდუალური სახელთა სერვერები</translation>
 <translation id="4465725236958772856">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, მართავს თქვენი ადმინისტრატორი, დაკავშირება</translation>
 <translation id="4470564870223067757">ჰანგული ნაკრები 2</translation>
+<translation id="4474142134969976028">შესატყვისი შედეგები არ არის</translation>
 <translation id="4477002475007461989">რუმინული</translation>
 <translation id="4477219268485577442">ბულგარული ფონეტიკური</translation>
 <translation id="4508265954913339219">აქტივაცია ვერ მოხერხდა</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">სახელის სიგრძე უნდა იყოს <ph name="MAX_LENGTH" /> ან ნაკლები სიმბოლო</translation>
 <translation id="4973970068702235170">დაარქივება ვერ მოხერხდა, მოულოდნელი შეცდომა: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">იაპონური</translation>
+<translation id="4987699874727873250">ინგლისური (ინდოეთი)</translation>
 <translation id="4988205478593450158">ნამდვილად გსურთ, წაშალოთ „<ph name="FILE_NAME" />“?</translation>
 <translation id="498902553138568924">წითელი პეპელა</translation>
 <translation id="4992066212339426712">დადუმების მოხსნა</translation>
@@ -509,6 +513,7 @@
    თუ ამოიღებთ მოწყობილობას, სანამ გამოიყენება, შეიძლება დაკარგოთ მონაცემები. დაელოდეთ ოპერაციის დასრულებას და შემდეგ ამოიღეთ მოწყობილობა პროგრამის „ფაილები“ მეშვეობით.</translation>
 <translation id="5163869187418756376">გაზიარება ვერ მოხერხდა. შეამოწმეთ კავშირი და ხელახლა სცადეთ.</translation>
 <translation id="516592729076796170">შეერთებული შტატების დვორაკი პროგრამისტებისთვის</translation>
+<translation id="5167102019886320507">მზადდება <ph name="NUMBER_OF_ITEMS" /> ერთეული...</translation>
 <translation id="5177526793333269655">ესკიზების ხედი</translation>
 <translation id="5181896909298187506">ბოლოდროინდელი ფაილები არ არის</translation>
 <translation id="5194713942430106590">დააწკაპუნეთ სვეტის ზრდადი მიმდევრობით დასალაგებლად.</translation>
@@ -812,6 +817,7 @@
 <translation id="7655441028674523381">იქონიეთ მარტივი წვდომა Google Photos-ზე</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
 <translation id="7663224033570512922">ჰინდი</translation>
+<translation id="7665680517722058469">ცადეთ, მოიძიოთ სხვა რამ</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> ერთეული გადატანილია წაშლილებში</translation>
 <translation id="7693909743393669729">დისკის დაფორმატება ამოშლის მასში შენახულ ყველა მონაცემს, მათ შორის, დანაყოფებს, რომლებიც შეიძლება არ ჩანდეს. ამ მოქმედებას ვერ გააუქმებთ.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> ვერ დაფორმატდა</translation>
@@ -968,6 +974,7 @@
 <translation id="8866284467018526531">არაბული ტრანსლიტერაცია</translation>
 <translation id="8873014196523807561">ამ ერთეულების აღსადგენად ჩავლებით გადაიტანეთ ისინი ახალ საქაღალდეში. ზოგიერთი ამ ერთეულის თავდაპირველი საქაღალდეები წაიშალა.</translation>
 <translation id="8874184842967597500">არ არის დაკავშირებული</translation>
+<translation id="8876368061475701452">რიგშია</translation>
 <translation id="8900820606136623064">უნგრული</translation>
 <translation id="8903931173357132290">კურსდამთავრებული</translation>
 <translation id="8912078710089354287">ძაღლი, რომელიც კუდს აქიცინებს</translation>

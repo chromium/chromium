@@ -6904,54 +6904,6 @@ Dies ersetzt die eingestellte Richtlinie <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
 
       Wird die Richtlinie deaktiviert, erscheint stattdessen eine Meldung, wenn Nutzer mit einer Aktion ein Dialogfeld zur Dateiauswahl öffnen würden, etwa beim Importieren von Lesezeichen, Hochladen von Dateien und Speichern von Links. Es wird angenommen, dass der Nutzer im Dialogfeld zur Dateiauswahl auf „Abbrechen“ geklickt hat.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
-<translation id="7638726624761352254">Wenn die Richtlinie konfiguriert ist, wird eine Liste von Web-Apps festgelegt, die automatisch – also ohne Interaktion des Nutzers – installiert werden und vom Nutzer weder deinstalliert noch deaktiviert werden können.
-
-      Jedes Listenelement der Richtlinie ist ein Objekt, das aus der erforderlichen Komponente
-      „<ph name="URL_LABEL" />“ (der URL der Web-App, die installiert werden soll)
-
-      und sechs optionalen Komponenten besteht:
-      – „<ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />“
-      (legt fest, wie die Web-App geöffnet wird – standardmäßig auf einem neuen Tab)
-
-      – „<ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />“
-      (auf „True“ setzen, wenn du Desktopverknüpfungen für <ph name="LINUX_OS_NAME" /> und
-      <ph name="MS_WIN_NAME" /> erstellen möchtest)
-
-      – „<ph name="FALLBACK_APP_NAME_LABEL" />“
-      (Ab <ph name="PRODUCT_NAME" /> Version 90 –
-      ermöglicht, den App-Namen zu überschreiben, wenn es keine
-      progressive Web-App (PWA) ist oder es eine temporär installierte PWA ist,
-      für die vor Abschluss der Installation
-      eine Authentifizierung erforderlich ist. Wenn sowohl
-      „<ph name="CUSTOM_NAME_LABEL" />“ als auch
-      „<ph name="FALLBACK_APP_NAME_LABEL" />“ angegeben sind,
-      wird Letzteres ignoriert.)
-
-      – „<ph name="OVERRIDE_APP_NAME_LABEL" />“
-      (Ab <ph name="PRODUCT_OS_NAME" />
-      Version 99 und Version 111 unter allen anderen Betriebssystemen – ermöglicht,
-      den App-Namen für alle Web-Apps und PWAs endgültig zu überschreiben.
-
-      – „<ph name="CUSTOM_ICON_LABEL" />“
-      (Ab <ph name="PRODUCT_OS_NAME" />
-      Version 99 und Version 111 unter allen anderen Betriebssystemen – ermöglicht,
-      das App-Symbol installierter Apps zu überschreiben. Die
-      Symbole müssen quadratisch und maximal 1 MB groß sein und in einem der folgenden
-      Formate vorliegen: JPEG, PNG, GIF, WEBP, ICO.
-      Der Hashwert muss der SHA‑256-Hash
-      der Symboldatei sein.)
-
-      – „<ph name="INSTALL_AS_SHORTCUT_LABEL" />“
-      (Ab <ph name="PRODUCT_NAME" />
-      Version 107.) Bei Aktivierung wird die jeweilige URL („<ph name="URL_LABEL" />“)
-      als Verknüpfung – wie bei Verwendung der Option „Verknüpfung erstellen…“ –
-      auf der GUI des Desktop-Browsers installiert.
-      Hinweis: Wenn sie als Verknüpfung installiert wird, wird sie nicht aktualisiert, wenn sich das
-      Manifest in „<ph name="URL_LABEL" />“ ändert.
-      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird die Web-App bei der jeweiligen URL
-      („<ph name="URL_LABEL" />“) normal installiert.
-
-      In „<ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" />“ wird beschrieben, wie du Apps an die <ph name="PRODUCT_OS_NAME" />-Ablage anpinnen kannst.</translation>
 <translation id="7638764766629234761">Verwendung von Systembenachrichtigungen zulassen</translation>
 <translation id="7643151458117317518">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für die Anzeigenanalyse für Nutzer deaktiviert werden kann.
 

@@ -375,6 +375,7 @@
 <translation id="1339009753652684748">Кажете „Ok Google“ за достъп до Асистент. С цел икономия на батерия изберете „Включено (препоръчително)“. Асистент ще отговаря само когато устройството ви е включено в електрическата мрежа или се зарежда.</translation>
 <translation id="13392265090583506">Настройки за достъпност</translation>
 <translation id="1340527397989195812">Създаване на резервно копие на носителя от устройството с помощта на приложението Файлове.</translation>
+<translation id="1341871421050612057">Синхронизирането с(ъс) <ph name="USERNAME" /> не е възможно</translation>
 <translation id="1343865611738742294">Разрешаване на приложенията за Linux да осъществяват достъп до USB устройства. Linux няма да запомни дадено USB устройство, след като бъде премахнато.</translation>
 <translation id="1343920184519992513">Продължаване оттам, откъдето сте прекъснали, и отваряне на определен набор от страници</translation>
 <translation id="134589511016534552">Разделите с мултимедия също се показват в секцията с отворени раздели</translation>
@@ -4148,6 +4149,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4713409221649555176">Изтриване при затваряне на всички прозорци</translation>
 <translation id="47158868804223727">Кликнете върху името на групата, за да я разгънете или свиете</translation>
 <translation id="4716483597559580346">Powerwash за повишаване на сигурността</translation>
+<translation id="471759229191973607">Промяна на темата</translation>
 <translation id="4722735765955348426">Парола за <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> споделя екрана ви.</translation>
 <translation id="4722989931633062466">Сайтове без разрешение за показване на подкани за вход от трети страни</translation>
@@ -7172,6 +7174,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> не реагира. Изберете „Принудително затваряне“, за да затворите приложението.</translation>
 <translation id="7535730537657706072">За да изчистите историята на сърфиране в режим „инкогнито“ на устройството си, затворете всички раздели</translation>
 <translation id="7537451260744431038">Сайтовете не могат да използват „бисквитки“ с цел по-добро сърфиране, например за да оставате в профила си или за да запомнят артикулите в пазарската ви кошница</translation>
+<translation id="7538088324298143359">Търсене в изображението чрез <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">При проверката за актуализации възникна грешка: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> върна устройството към предишна версия. Моля, запазете важните файлове и го рестартирайте. Всички данни на устройството ще бъдат изтрити.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> чрез приложението <ph name="APP_NAME" /></translation>
@@ -7600,6 +7603,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7912080627461681647">Паролата ви е променена в сървъра. Моля, излезте от профила си и влезте отново в него.</translation>
 <translation id="7912974581251770345">Превод</translation>
 <translation id="7915457674565721553">Свържете се с интернет, за да настроите родителските контроли</translation>
+<translation id="7916364730877325865">Организацията ви не разрешава включването на синхронизирането с този профил</translation>
 <translation id="7918257978052780342">Записване</translation>
 <translation id="7919123827536834358">Автоматично превеждане от следните езици</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> сек</translation>

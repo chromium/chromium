@@ -250,6 +250,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="2426805022920575512">Escoller outra conta</translation>
 <translation id="2433507940547922241">Aparencia</translation>
 <translation id="2435457462613246316">Mostrar contrasinal</translation>
+<translation id="2439153523196674349">Vista previa de <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Queres empezar a descargar <ph name="FILE_NAME" /> de novo?</translation>
 <translation id="2453860139492968684">Finalizar</translation>
 <translation id="2459390580524506445">Busca por voz mellorada</translation>
@@ -388,6 +389,7 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="3066573403916685335">Mover para abaixo</translation>
 <translation id="3070005020161560471">Traducir automaticamente</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> abrirase en Chrome. Ao continuar, aceptas as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" />, así como as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_LINK2" />. Tamén é aplicable a <ph name="BEGIN_LINK3" />Política de privacidade<ph name="END_LINK3" />.</translation>
+<translation id="3083194063661536258">Tes a sesión pechada. Botón 4. Abre un cadro de diálogo para iniciar sesión e activar a sincronización.</translation>
 <translation id="3091010850649238832">Mostrar contido do portapapeis</translation>
 <translation id="3098745985164956033">Algunhas imaxes envíanse a Google coa finalidade de mellorar as descricións para ti</translation>
 <translation id="3104179992611025423">Os teus pais xestionan o teu navegador</translation>
@@ -924,6 +926,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="604124094241169006">Automático</translation>
 <translation id="6042308850641462728">Máis</translation>
+<translation id="6049046116080614938">Tes a sesión iniciada como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Botón 4. Abre a configuración.</translation>
 <translation id="604996488070107836">Produciuse un problema coa descarga de <ph name="FILE_NAME" /> debido a un erro descoñecido.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla as túas historias e a túa actividade aquí</translation>
@@ -1297,6 +1300,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7968014550143838305">Engadiuse á lista de lectura</translation>
 <translation id="7971136598759319605">Dispositivo activo hai 1 día</translation>
 <translation id="7975379999046275268">Vista previa: páxina <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">Tes a sesión iniciada como <ph name="USER_NAME" />. Botón 4. Abre a configuración.</translation>
 <translation id="7986497153528221272">Para poder ver os contrasinais, define un bloqueo de pantalla no teu dispositivo</translation>
 <translation id="7995059495660416932">Verás o contido cando estea dispoñible</translation>
 <translation id="799576009106109668">Navegarás máis rápido porque o contido se cargará de maneira proactiva en función da túa visita á páxina web na que te atopes</translation>

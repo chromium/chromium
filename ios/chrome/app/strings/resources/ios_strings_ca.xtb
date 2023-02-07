@@ -80,6 +80,7 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="149095475893949513">Aquest lloc web està provant de baixar un perfil de configuració</translation>
 <translation id="1491277525950327607">Fes doble toc per canviar la configuració</translation>
 <translation id="1492417797159476138">Ja has desat aquest nom d'usuari per a aquest lloc web</translation>
+<translation id="1498283581832036924">El teu compte de <ph name="WEBSITE" /> no se suprimirà.</translation>
 <translation id="1506063256525392513">Això et permet fer i penjar fotos, així com escanejar codis QR</translation>
 <translation id="1509486075633541495">Inicia la sessió al lloc web</translation>
 <translation id="1509960214886564027">Pot ser que les funcions de molts llocs web no funcionin</translation>
@@ -218,6 +219,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2664621323652615289">Atura</translation>
 <translation id="2671426118752779020">Pots utilitzar les contrasenyes que has desat al gestor de contrasenyes de Google en altres aplicacions de l'iPhone.</translation>
 <translation id="2690858294534178585">La càmera s'està utilitzant</translation>
+<translation id="26915454213703967">Cerca a la imatge amb Google</translation>
 <translation id="2691653761409724435">No disponible sense connexió</translation>
 <translation id="2695507686909505111">S'ha traduït la pàgina</translation>
 <translation id="2697526135132990015">Tanca la sessió i esborra les dades</translation>
@@ -380,6 +382,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3819183753496523827">No tens connexió. Comprova la connexió a Internet i torna-ho a provar.</translation>
 <translation id="3835964409414434850">Ves a la pestanya següent</translation>
 <translation id="385051799172605136">Enrere</translation>
+<translation id="3851938967634752633">Les contrasenyes de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i <ph name="NUMBER_OF_ACCOUNTS" /> més se suprimiran. Els teus comptes no se suprimiran.</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3861486700625780712">Deixa de seguir</translation>
 <translation id="3863769054730344136">Envia als teus dispositius</translation>
@@ -515,6 +518,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="4833786495304741580">Envia automàticament a Google estadístiques d'ús i informes d'error.</translation>
 <translation id="4840495572919996524">Les adreces d'interès, l'historial, les contrasenyes i altres opcions ja no se sincronitzaran amb el teu Compte de Google.</translation>
 <translation id="4844899002472726590">Consulta i edita els temes que t'interessen</translation>
+<translation id="4848999860252535517">Vols suprimir la contrasenya de <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Estableix una contrasenya</translation>
 <translation id="4858786880085262208">Actualitza a HTTPS, quan sigui possible. Els llocs web segurs poden inserir contingut no segur.</translation>
 <translation id="4860895144060829044">Truca</translation>
@@ -768,6 +772,7 @@ Prova d'utilitzar una contrasenya única per a cada lloc web.</translation>
 <translation id="6598875554591387303">Ordena per Editor</translation>
 <translation id="6603393121510733479">La teva organització ha desactivat la navegació privada.
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Les contrasenyes de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i <ph name="THIRD_WEBSITE" /> se suprimiran. Els teus comptes no se suprimiran.</translation>
 <translation id="6610002944194042868">Opcions del Traductor</translation>
 <translation id="661266467055912436">Millora la seguretat per a tu i per a tots els usuaris del web.</translation>
 <translation id="6620279676667515405">Cancel·la</translation>
@@ -1045,6 +1050,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8756969031206844760">Vols actualitzar la contrasenya?</translation>
 <translation id="8763613688786959833">Ves a la darrera pestanya</translation>
 <translation id="8764015330924122850">Deixa de seguir <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Les contrasenyes de <ph name="WEBSITE" /> i <ph name="SECOND_WEBSITE" /> se suprimiran. Els teus comptes no se suprimiran.</translation>
 <translation id="8775144690796719618">URL no vàlid</translation>
 <translation id="8787968206789828143">Cerca al web</translation>
 <translation id="8792626944327216835">micròfon</translation>
@@ -1094,6 +1100,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="9093271241977565440">A la part superior de la pantalla, toca la icona de cerca</translation>
 <translation id="9094033019050270033">Actualitza la contrasenya</translation>
 <translation id="9097506547406246598">No es pot deixar de seguir. S'ha produït un error.</translation>
+<translation id="9098541895599151034">Vols suprimir <ph name="NUMBER_OF_ACCOUNTS" /> contrasenyes?</translation>
 <translation id="9100610230175265781">S'ha d'introduir una frase de contrasenya </translation>
 <translation id="9107664647686727385">Comprova que no hi hagi contrasenyes en perill</translation>
 <translation id="9124387962554796433">És possible que Google utilitzi el teu historial per personalitzar la Cerca i altres serveis de Google.</translation>

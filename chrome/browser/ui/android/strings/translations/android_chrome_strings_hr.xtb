@@ -922,6 +922,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="6000203700195075278">Pratite ponovo</translation>
 <translation id="6002122790816966947">Vaši uređaji</translation>
 <translation id="6005538289190791541">Predložena zaporka</translation>
+<translation id="6011308810877101166">Poboljšaj prijedloge za pretraživanje</translation>
 <translation id="6039379616847168523">Preskakanje na sljedeću karticu</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="604124094241169006">Automatski</translation>
@@ -952,7 +953,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="6193448654517602979">Odaberite kartice</translation>
 <translation id="6196315980958524839">Zaporke se spremaju u Google upravitelj zaporki na ovom uređaju.</translation>
 <translation id="6202812185118613467">Prijavite se ponovo da biste pokrenuli sinkronizaciju</translation>
-<translation id="6205314730813004066">Privatnost oglasa</translation>
+<translation id="6205314730813004066">Zaštita privatnosti u online oglašavanju</translation>
 <translation id="6210748933810148297">Niste <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Pregledavanje ove stranice</translation>
 <translation id="6221633008163990886">Otključajte da biste izvezli zaporke</translation>
@@ -1452,6 +1453,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="8746155870861185046">Podijeli isticanje</translation>
 <translation id="8748850008226585750">Sadržaj je skriven</translation>
 <translation id="8756969031206844760">Želite li ažurirati zaporku?</translation>
+<translation id="8765470054473112089">Kad upisujete u adresnu traku ili okvir za pretraživanje, ono što upisujete Chrome šalje vašoj zadanoj tražilici kako bi vam pružio bolje prijedloge. To je isključeno u anonimnom načinu.</translation>
 <translation id="8766529642647037772">Želite li izraditi istaknutu vezu poput ove?</translation>
 <translation id="8773160212632396039">Obrada zahtjeva</translation>
 <translation id="8788265440806329501">Zatvorena je povijest navigacije</translation>

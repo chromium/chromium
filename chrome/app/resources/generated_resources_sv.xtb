@@ -221,6 +221,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1192706927100816598">{0,plural, =1{Du kommer att loggas ut automatiskt om # sekund.
 <ph name="DOMAIN" /> kräver att du har smartkortet isatt.}other{Du kommer att loggas ut automatiskt om # sekunder.
 <ph name="DOMAIN" /> kräver att du har smartkortet isatt.}}</translation>
+<translation id="119330003005586565">Sidor du har läst</translation>
 <translation id="1193927020065025187">Den här webbplatsen kan försöka lura dig att tillåta påträngande aviseringar</translation>
 <translation id="1195210374336998651">Öppna appinställningarna</translation>
 <translation id="1195447618553298278">Okänt fel.</translation>
@@ -5533,6 +5534,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6007240208646052708">Röstsökning är inte tillgängligt på ditt språk.</translation>
 <translation id="6010651352520077187">När detta är aktiverat blir du tillfrågad om du vill översätta webbplatser till språket du föredrar med Google Översätt. Funktionen kan också översätta webbplatser automatiskt.</translation>
 <translation id="6011193465932186973">Fingeravtryck</translation>
+<translation id="6011308810877101166">Förbättra sökförslag</translation>
 <translation id="6011908034087870826">Länken skickas till <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">Få textad ljud- och videouppspelning</translation>
 <translation id="6014293228235665243">Olästa</translation>
@@ -5850,6 +5852,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="630292539633944562">Personuppgiftsförslag</translation>
 <translation id="6305607932814307878">Global policy:</translation>
 <translation id="6305909198255586420">Installera med din primära profil</translation>
+<translation id="630750887748244481">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chrome. Det är inte tillåtet att lägga till det här tillägget.</translation>
 <translation id="6307990684951724544">Systemet är upptaget</translation>
 <translation id="6308493641021088955">Inloggning tillhandahålls av <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Spara l&amp;änk som...</translation>
@@ -7991,6 +7994,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8251509999076836464">Parkopplar till <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniatyren har tagits bort.</translation>
 <translation id="825238165904109940">Visa alltid hela webbadresser</translation>
+<translation id="8252538334423261825">Det gick inte att lägga till tillägget</translation>
 <translation id="8252569384384439529">Laddar upp …</translation>
 <translation id="8253198102038551905">Klicka på + för att hämta nätverksegenskaperna</translation>
 <translation id="8255212965098517578">Senaste foton, aviseringar och appar</translation>

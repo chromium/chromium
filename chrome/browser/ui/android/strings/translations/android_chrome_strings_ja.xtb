@@ -667,7 +667,7 @@
 <translation id="4678082183394354975">Chrome でサイトのダークモードがオンになっています</translation>
 <translation id="4684427112815847243">すべてを同期する</translation>
 <translation id="4685741273709472646">プルダウン リストから選択します</translation>
-<translation id="4687718960473379118">サイト提案広告</translation>
+<translation id="4687718960473379118">サイトによる広告の提案</translation>
 <translation id="4689792375321623175">Google で画像を検索<ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 件}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 件}}</translation>
 <translation id="4699172675775169585">キャッシュされた画像とファイル</translation>

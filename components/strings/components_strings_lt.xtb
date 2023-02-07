@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Ruošiami failai</translation>
 <translation id="1015730422737071372">Pateikti papildomos išsamios informacijos</translation>
 <translation id="1019413721762100891">Išjungta</translation>
-<translation id="1021110881106174305">Tinkamos kortelės</translation>
 <translation id="1021753677514347426">Ši problema kyla dėl sertifikato, kurį jūs ar kitas asmuo įdiegėte įrenginyje. Žinoma, kad sertifikatas naudojamas tinklams stebėti ir nuskaityti ir nėra patikimas sistemoje „Chromium“. Kai kurie stebėjimo atvejai yra teisėti, pvz., mokyklos ar įmonės tinkle, bet „Chromium“ nori būti tikras, kad apie stebėjimą būsite informuoti, net jei jo nutraukti negalite. Stebėjimas galimas bet kurioje naršyklėje ar programoje, iš kurių pasiekiamas žiniatinklis.</translation>
 <translation id="1024111578869940408">Kartais atakos vykdytojai kurdami svetainių kopijas atlieka sunkiai pastebimų žiniatinklio adreso pakeitimų.</translation>
 <translation id="1028781062521375153">Žr. išsamią informaciją</translation>
@@ -709,7 +708,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2688969097326701645">Taip, tęsti</translation>
 <translation id="2691924980723297736">Saugos įspėjimas</translation>
 <translation id="2692131511336778528">Mokslinė ir maginė fantastika</translation>
-<translation id="2699302886720511147">Tinkamos kortelės</translation>
 <translation id="2701514975700770343">Gerąja puse į apačią</translation>
 <translation id="2702801445560668637">Skait. sąraš.</translation>
 <translation id="2704283930420550640">Vertė neatitinka formato.</translation>
@@ -993,7 +991,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="342781501876943858">„Chromium“ rekomenduoja iš naujo nustatyti slaptažodį, jei naudojate jį kitose svetainėse.</translation>
 <translation id="3428151540071562330">Vienas arba keli „DnsOverHttpsTemplates“ serverio šablono URI yra netinkami ir nebus naudojami.</translation>
 <translation id="3431216045099978607">Paspauskite „|<ph name="ACCELERATOR" />|“, jei norite išeiti iš viso ekrano režimo ir peržiūrėti atsisiuntimą.</translation>
-<translation id="3431636764301398940">Išsaugoti šią kortelę šiame įrenginyje</translation>
 <translation id="3432601291244612633">Uždaryti puslapį</translation>
 <translation id="3435738964857648380">Sauga</translation>
 <translation id="3438829137925142401">Naudoti „Google“ paskyroje išsaugotus slaptažodžius</translation>
@@ -1124,7 +1121,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3744111561329211289">Fono sinchronizavimas</translation>
 <translation id="3744286742364977428">Failai, kuriuos atsisiunčiate, siunčiami „Google Cloud“ arba trečiosioms šalims, kad būtų atlikta analizė. Pavyzdžiui, jie gali būti nuskaityti tikrinant, ar juose nėra neskelbtinų duomenų arba kenkėjiškų programų, ir saugomi laikantis įmonės politikos nuostatų.</translation>
 <translation id="3744899669254331632">Negalite dabar apsilankyti svetainėje <ph name="SITE" />, nes ji atsiuntė užšifruotus prisijungimo duomenis, kurių „Chromium“ negali apdoroti. Tinklo klaidos ir užpuolimai dažniausiai yra laikini, todėl šis puslapis vėliau tikriausiai veiks.</translation>
-<translation id="3745099705178523657">Kai patvirtinsite, „Google“ paskyroje nurodyta išsami kortelės informacija bus bendrinama su šia svetaine.</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> užpuolikai gali bandyti apgaule priversti jus atlikti pavojingus veiksmus, pvz., įdiegti programinę įrangą ar atskleisti asmens informaciją (pvz., slaptažodžius, telefonų numerius ar kredito kortelių duomenis). <ph name="BEGIN_LEARN_MORE_LINK" />Sužinokite daugiau<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Aviacijos pramonė</translation>
 <translation id="3752543821772132562">Nepaisoma, nes politika „<ph name="POLICY_NAME" />“ nenustatyta.</translation>
@@ -1142,7 +1138,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3781428340399460090">Ryškiai rausva</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">„Bluetooth“ įrenginiai</translation>
-<translation id="3787705759683870569">Galiojimo laikas baigiasi <ph name="EXPIRATION_MONTH" /> / <ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Dydis: 16</translation>
 <translation id="3789841737615482174">Įdiegti</translation>
 <translation id="3792100426446126328">„<ph name="NAME" />“ (<ph name="WIDTH" /> x <ph name="HEIGHT" /> col.)</translation>
@@ -3090,7 +3085,6 @@ Papildoma išsami informacija:
 <translation id="8620276786115098679">„Kaku 7“ vokas</translation>
 <translation id="8623885649813806493">Nėra jokių atitinkančių slaptažodžių. Rodyti visus išsaugotus slaptažodžius.</translation>
 <translation id="8624354461147303341">Gauti nuolaidų</translation>
-<translation id="8625384913736129811">Išsaugoti šią kortelę šiame įrenginyje</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637577059508742477">Jūsų profilį ir naršyklę tvarko <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">„Kaku 3“ vokas</translation>

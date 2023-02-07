@@ -80,6 +80,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="149095475893949513">Site-ul încearcă să descarce un profil de configurare.</translation>
 <translation id="1491277525950327607">Atinge de două ori ca să comuți setarea</translation>
 <translation id="1492417797159476138">Ai salvat deja acest nume de utilizator pentru site</translation>
+<translation id="1498283581832036924">Contul tău <ph name="WEBSITE" /> nu se va șterge.</translation>
 <translation id="1506063256525392513">Astfel, poți să fotografiezi, să încarci fotografiile și să scanezi coduri QR</translation>
 <translation id="1509486075633541495">Conectează-te la site</translation>
 <translation id="1509960214886564027">Este posibil ca funcțiile de pe mai multe site-uri să fie întrerupte</translation>
@@ -218,6 +219,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2664621323652615289">Oprește</translation>
 <translation id="2671426118752779020">Poți folosi parolele salvate în Managerul de parole Google în alte aplicații de pe iPhone.</translation>
 <translation id="2690858294534178585">Camera foto este în uz</translation>
+<translation id="26915454213703967">Caută în imagine cu Google</translation>
 <translation id="2691653761409724435">Indisponibil offline</translation>
 <translation id="2695507686909505111">S-a tradus pagina</translation>
 <translation id="2697526135132990015">Deconectează-te și șterge datele</translation>
@@ -380,6 +382,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3819183753496523827">Ești offline. Verifică starea conexiunii la internet și încearcă din nou.</translation>
 <translation id="3835964409414434850">Accesează fila următoare</translation>
 <translation id="385051799172605136">Înapoi</translation>
+<translation id="3851938967634752633">Parolele pentru <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> și încă <ph name="NUMBER_OF_ACCOUNTS" /> se vor șterge. Conturile tale nu se vor șterge.</translation>
 <translation id="3858860766373142691">Nume</translation>
 <translation id="3861486700625780712">Anulează urmărirea</translation>
 <translation id="3863769054730344136">Trimite pe dispozitivele tale</translation>
@@ -516,6 +519,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="4833786495304741580">Trimite automat statistici de utilizare și rapoarte de blocare la Google.</translation>
 <translation id="4840495572919996524">Marcajele, istoricul, parolele și alte setări nu vor mai fi sincronizate cu Contul Google.</translation>
 <translation id="4844899002472726590">Vezi și editează subiectele care te interesează</translation>
+<translation id="4848999860252535517">Ștergi parola pentru <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Setează o parolă</translation>
 <translation id="4858786880085262208">Fă upgrade la HTTPS, dacă este posibil. Site-urile securizate pot încorpora conținut nesigur.</translation>
 <translation id="4860895144060829044">Apelează</translation>
@@ -769,6 +773,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="6598875554591387303">Sortează după editor</translation>
 <translation id="6603393121510733479">Organizația ta a dezactivat navigarea privată.
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Parolele pentru <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> și <ph name="THIRD_WEBSITE" /> se vor șterge. Conturile tale nu se vor șterge.</translation>
 <translation id="6610002944194042868">Opțiuni de traducere</translation>
 <translation id="661266467055912436">Îmbunătățește securitatea pe web pentru tine și toți ceilalți.</translation>
 <translation id="6620279676667515405">Anulează</translation>
@@ -1046,6 +1051,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8756969031206844760">Actualizezi parola?</translation>
 <translation id="8763613688786959833">Accesează ultima filă</translation>
 <translation id="8764015330924122850">Nu mai urmări <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Parolele pentru <ph name="WEBSITE" /> și <ph name="SECOND_WEBSITE" /> se vor șterge. Conturile tale nu se vor șterge.</translation>
 <translation id="8775144690796719618">Adresă URL nevalidă</translation>
 <translation id="8787968206789828143">Caută pe web</translation>
 <translation id="8792626944327216835">Microfon</translation>
@@ -1095,6 +1101,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="9093271241977565440">În partea de sus a ecranului, atinge pictograma de căutare</translation>
 <translation id="9094033019050270033">Actualizează parola</translation>
 <translation id="9097506547406246598">Nu se poate anula urmărirea. A apărut o eroare.</translation>
+<translation id="9098541895599151034">Ștergi <ph name="NUMBER_OF_ACCOUNTS" /> parole?</translation>
 <translation id="9100610230175265781">Este necesară o expresie de acces</translation>
 <translation id="9107664647686727385">Verifică dacă există parole compromise</translation>
 <translation id="9124387962554796433">Google poate folosi istoricul pentru a personaliza Căutarea și alte servicii Google.</translation>

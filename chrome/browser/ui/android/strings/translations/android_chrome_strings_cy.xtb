@@ -250,6 +250,7 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="2426805022920575512">Dewis cyfrif arall</translation>
 <translation id="2433507940547922241">Gwedd</translation>
 <translation id="2435457462613246316">Dangos y cyfrinair</translation>
+<translation id="2439153523196674349">Rhagolwg <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Ydych chi am ddechrau lawrlwytho <ph name="FILE_NAME" /> eto?</translation>
 <translation id="2453860139492968684">Gorffen</translation>
 <translation id="2459390580524506445">Gwell chwilio llais</translation>
@@ -388,6 +389,7 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="3066573403916685335">Symud i Lawr</translation>
 <translation id="3070005020161560471">Cyfieithu'n awtomatig</translation>
 <translation id="3072980200212375806">Bydd <ph name="APP_NAME" /> yn agor yn Chrome. Drwy barhau, rydych yn cytuno i <ph name="BEGIN_LINK1" />Delerau Gwasanaeth Google<ph name="END_LINK1" />, a <ph name="BEGIN_LINK2" />Thelerau Gwasanaeth Ychwanegol Google Chrome a ChromeOS<ph name="END_LINK2" />. Mae'r <ph name="BEGIN_LINK3" />Polisi Preifatrwydd<ph name="END_LINK3" /> hefyd yn berthnasol.</translation>
+<translation id="3083194063661536258">Rydych wedi'ch allgofnodi. Botwm. Yn agor deialog i fewngofnodi a throi cysoni ymlaen.</translation>
 <translation id="3091010850649238832">Dangos cynnwys y clipfwrdd</translation>
 <translation id="3098745985164956033">Anfonir rhai lluniau at Google i wella disgrifiadau i chi.</translation>
 <translation id="3104179992611025423">Rheolir eich porwr gan eich rhieni</translation>
@@ -924,6 +926,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="6040143037577758943">Cau</translation>
 <translation id="604124094241169006">Awtomatig</translation>
 <translation id="6042308850641462728">Mwy</translation>
+<translation id="6049046116080614938">Wedi mewngofnodi fel <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Botwm. Yn agor y gosodiadau.</translation>
 <translation id="604996488070107836">Wedi methu â lawrlwytho <ph name="FILE_NAME" /> oherwydd gwall anhysbys.</translation>
 <translation id="605721222689873409">BB</translation>
 <translation id="6059830886158432458">Rheoli eich straeon a'ch gweithgarwch yma</translation>
@@ -1297,6 +1300,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7968014550143838305">Ychwanegwyd at y rhestr ddarllen</translation>
 <translation id="7971136598759319605">Yma 1 diwrnod yn ôl</translation>
 <translation id="7975379999046275268">Tudalen rhagolwg <ph name="BEGIN_NEW" />Newydd<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">Wedi mewngofnodi fel <ph name="USER_NAME" />. Botwm. Yn agor y gosodiadau.</translation>
 <translation id="7986497153528221272">I weld y cyfrineiriau, gosodwch glo sgrîn ar eich dyfais yn gyntaf.</translation>
 <translation id="7995059495660416932">Byddwn yn gweld cynnwys pan fydd ar gael</translation>
 <translation id="799576009106109668">Byddwch yn pori'n gyflymach oherwydd bod cynnwys yn cael ei lwytho'n rhagweithiol yn seiliedig ar eich ymweliad tudalen we bresennol</translation>

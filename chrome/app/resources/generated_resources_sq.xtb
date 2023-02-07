@@ -373,6 +373,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1339009753652684748">Hap "Asistentin" kur thua "Ok Google". Për të kursyer baterinë, zgjidh "Aktive (rekomandohet)". "Asistenti" yt do të përgjigjet vetëm kur pajisja jote të jetë e lidhur ose në karikim.</translation>
 <translation id="13392265090583506">Qasshmëria</translation>
 <translation id="1340527397989195812">Rezervo median nga pajisja duke përdorur aplikacionin "Skedarët".</translation>
+<translation id="1341871421050612057">Nuk mund të sinkronizohet me <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Jepu autorizim aplikacioneve të Linux që të kenë qasje në pajisjet USB. Linux nuk do ta kujtojë një pajisje USB pasi ajo të hiqet.</translation>
 <translation id="1343920184519992513">Vazhdo aty ku e ke lënë dhe hap një grup specifik faqesh</translation>
 <translation id="134589511016534552">Skedat e medias shfaqen gjithashtu në seksionin "Skedat e hapura"</translation>
@@ -3036,6 +3037,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Ti dhe Google</translation>
 <translation id="3722108462506185496">Gabim në nisjen e shërbimit të pajisjes virtuale. Provo sërish.</translation>
+<translation id="3722624153992426516">U mor udhëzimi: <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Rrjetet e ofruara WiFi</translation>
 <translation id="3727187387656390258">Inspekto dritaret kërcyese</translation>
@@ -3392,6 +3394,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="402211067068791756">Kjo do të pastrojë <ph name="TOTAL_USAGE" /> të dhëna të ruajtura nga sajtet e shfaqura</translation>
 <translation id="4022426551683927403">&amp;Shto në fjalor</translation>
 <translation id="4025039777635956441">Çaktivizo zërin e sajtit të zgjedhur</translation>
+<translation id="402707738228916911">U mor udhëzimi: <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027958407426528157">Hap sajtet e uebit në aplikacionet e instaluara në pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Shto mënyrat e hyrjes</translation>
 <translation id="4029556917477724407">Kthehu nga faqja <ph name="PAGE_TITLE" /></translation>
@@ -4131,6 +4134,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4713409221649555176">Fshiji kur mbyll të gjitha dritaret</translation>
 <translation id="47158868804223727">Kliko emrin e grupit për ta zgjeruar ose për ta palosur atë</translation>
 <translation id="4716483597559580346">Powerwash për më shumë siguri</translation>
+<translation id="471759229191973607">Ndrysho temën</translation>
 <translation id="4722735765955348426">Fjalëkalimi për <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> po ndan ekranin tënd.</translation>
 <translation id="4722989931633062466">Nuk lejohet që të shfaqen kërkesat për identifikimin nga palë të treta</translation>
@@ -5671,6 +5675,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6150961653851236686">Kjo gjuhë përdoret kur përkthen faqe</translation>
 <translation id="6151323131516309312">Shtyp <ph name="SEARCH_KEY" /> për të kërkuar në <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Skedari ekziston tashmë në dosjen tënde të shkarkimeve.</translation>
+<translation id="6152918902620844577">Në pritje për veprimin tjetër</translation>
 <translation id="6154240335466762404">Hiq të gjitha portat</translation>
 <translation id="615436196126345398">Protokolli</translation>
 <translation id="6155141482566063812">Skeda në sfond po ndan ekranin tënd</translation>
@@ -7153,6 +7158,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> nuk po përgjigjet. Zgjidh "Ndalo me forcë" për ta mbyllur aplikacionin.</translation>
 <translation id="7535730537657706072">Për të pastruar historikun e shfletimit "Të fshehtë" nga pajisja jote, mbylli të gjitha skedat "E fshehta"</translation>
 <translation id="7537451260744431038">Sajtet nuk mund t'i përdorin kukit për të përmirësuar përvojën e shfletimit, për shembull për të të mbajtur të identifikuar ose për të kujtuar artikujt në karrocën e blerjeve</translation>
+<translation id="7538088324298143359">Kërko brenda në imazh me <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">Një gabim ndodhi gjatë kontrollit për përditësime: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> e ka kaluar këtë pajisje në një version të mëparshëm. Ruaj skedarët e rëndësishëm dhe më pas rinise. Të gjitha të dhënat në pajisje do të fshihen.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> me aplikacionin <ph name="APP_NAME" /></translation>
@@ -7380,6 +7386,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7730683939467795481">Kjo faqe është ndryshuar nga shtesa "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="7735165285389721951">Po ekzekutohet një konfigurim tjetër i Steam. Prit të përfundojë përpara se ta provosh përsëri</translation>
 <translation id="7737115349420013392">Po çiftohet me "<ph name="DEVICE_NAME" />" ...</translation>
+<translation id="7737203573077018777">U mor udhëzimi: <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /></translation>
 <translation id="7737846262459425222">Këtë mund ta ndryshosh në çdo kohë te Cilësimet &gt; Asistenti i Google &gt; Konteksti i ekranit.</translation>
 <translation id="7737948071472253612">Nuk lejohen të përdorin kamerën tënde</translation>
 <translation id="77381465218432215">Shfaq shenjat e theksimit dhe karakteret e veçanta</translation>
@@ -7579,6 +7586,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7912080627461681647">Fjalëkalimi yt është ndryshuar në server. Dil dhe më pas identifikohu përsëri.</translation>
 <translation id="7912974581251770345">Përkthimi</translation>
 <translation id="7915457674565721553">Lidhu në internet për të konfiguruar kontrollet prindërore</translation>
+<translation id="7916364730877325865">Organizata jote nuk të lejon të aktivizosh sinkronizimin me këtë llogari</translation>
 <translation id="7918257978052780342">Regjistroje</translation>
 <translation id="7919123827536834358">Përkthe automatikisht këto gjuhë</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> sek.</translation>
@@ -8363,6 +8371,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8639635302972078117">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Aktualisht kjo pajisje po dërgon automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe të aplikacioneve. Këto nuk do të përdoren për të identifikuar fëmijën tënd dhe do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar për fëmijën tënd, këto të dhëna mund të ruhen në "Llogarinë e Google" të fëmijës.</translation>
 <translation id="8642900771896232685">2 sekonda</translation>
 <translation id="8642947597466641025">Bëje tekstin më të madh</translation>
+<translation id="8643403533759285912">Fshi grupin</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> mund të jetë i rrezikshëm. Të dërgohet te "Mbrojtja e përparuar" e Google për skanim?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Nuk ka kuki}=1{1 kuki është bllokuar}other{# kuki janë bllokuar}}</translation>
 <translation id="864423554496711319">Pajisjet e ruajtura në llogarinë tënde</translation>
@@ -8836,6 +8845,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="90528604757378587">Aktiviteti në sfond dhe disa efekte vizuale, si p.sh. lëvizja e butë, mund të jenë të kufizuara.</translation>
 <translation id="9053563360605707198">Printo në të dyja anët</translation>
 <translation id="9055636786322918818">Zbato enkriptimin RC4. Përdorimi i këtij opsioni rrit rrezikun për ty, pasi shifrat RC4 nuk janë të sigurta.</translation>
+<translation id="9056788090206401048">Bluetooth-i duhet të jetë aktiv që të përdorësh çelësin e kalimit në një pajisje tjetër. Mund ta menaxhosh këtë gjithmonë te cilësimet.</translation>
 <translation id="9056810968620647706">Nuk u gjet asnjë përputhje.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> kërkon të ketë qasje në përmbajtjen e mëposhtme:</translation>
 <translation id="9057354806206861646">Përditëso orarin</translation>

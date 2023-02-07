@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Valmistellaan tiedostoja</translation>
 <translation id="1015730422737071372">Lisätietoja</translation>
 <translation id="1019413721762100891">Pois päältä</translation>
-<translation id="1021110881106174305">Hyväksytyt kortit</translation>
 <translation id="1021753677514347426">Tämän virheen syynä on varmenne, jonka sinä tai joku muu asensi laitteellesi. Varmennetta on aiemmin käytetty verkkojen valvontaan ja kaappaamiseen, eikä Chromium luota siihen. Valvomiselle voi olla oikea syy esimerkiksi oppilaitoksen tai yrityksen verkossa, mutta Chromium haluaa sinun tietävän valvonnasta, vaikket voi lopettaa sitä. Valvonta voi tapahtua missä tahansa selaimessa tai sovelluksessa, jolla on pääsy verkkoon.</translation>
 <translation id="1024111578869940408">Hyökkääjät jäljittelevät joskus sivustoja tekemällä verkko-osoitteeseen vaikeasti havaittavia muutoksia.</translation>
 <translation id="1028781062521375153">Katso tiedot</translation>
@@ -708,7 +707,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2688969097326701645">Kyllä, jatka</translation>
 <translation id="2691924980723297736">Turvallisuusvaroitus</translation>
 <translation id="2692131511336778528">Tieteisfiktio ja fantasia</translation>
-<translation id="2699302886720511147">Hyväksytyt kortit</translation>
 <translation id="2701514975700770343">Tulostuspuoli alaspäin</translation>
 <translation id="2702801445560668637">Lukulista</translation>
 <translation id="2704283930420550640">Arvo ei vastaa muotoa.</translation>
@@ -992,7 +990,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="342781501876943858">Chromium suosittelee salasanan vaihtamista, jos olet käyttänyt sitä myös muilla sivustoilla.</translation>
 <translation id="3428151540071562330">Yksi tai useampi DnsOverHttpsTemplates-palvelinmallien URI-tunnuksista on virheellinen, eikä niitä käytetä.</translation>
 <translation id="3431216045099978607">Voit poistua koko näytön tilasta ja nähdä latauksen painamalla |<ph name="ACCELERATOR" />|.</translation>
-<translation id="3431636764301398940">Tallenna kortti tälle laitteelle</translation>
 <translation id="3432601291244612633">Sulje sivu</translation>
 <translation id="3435738964857648380">Suojaus</translation>
 <translation id="3438829137925142401">Käytä Google-tilillesi tallennettuja salasanoja</translation>
@@ -1123,7 +1120,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3744111561329211289">Taustasynkronointi</translation>
 <translation id="3744286742364977428">Lataamasi tiedostot lähetetään Google Cloudiin tai kolmansille osapuolille analysoitaviksi. Ne voidaan esimerkiksi skannata arkaluontoisten tietojen tai haittaohjelmien varalta ja tallentaa yrityksen käytäntöjen mukaisesti.</translation>
 <translation id="3744899669254331632">Et voi siirtyä sivustoon <ph name="SITE" /> tällä hetkellä, koska sivusto lähetti salatut kirjautumistiedot, joita Chromium ei osaa käsitellä. Verkkovirheet ja hyökkäykset ovat yleensä väliaikaisia, joten sivu toimii luultavasti myöhemmin.</translation>
-<translation id="3745099705178523657">Vahvistamisen jälkeen korttitiedot Google-tililtäsi jaetaan tämän sivuston kanssa.</translation>
 <translation id="3748148204939282805">Sivustolle <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> hyökännyt taho voi yrittää huijata sinua tekemään jotain vaarallista, kuten asentamaan ohjelmia tai paljastamaan henkilötietojasi (esimerkiksi salasanoja, puhelinnumeroita tai luottokorttitietoja). <ph name="BEGIN_LEARN_MORE_LINK" />Lisätietoja<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Lentokoneteollisuus</translation>
 <translation id="3752543821772132562">Ohitettu, koska <ph name="POLICY_NAME" /> on määrittämättä.</translation>
@@ -1141,7 +1137,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3781428340399460090">Pinkki</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-laitteet</translation>
-<translation id="3787705759683870569">Vanhenee <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Koko 16</translation>
 <translation id="3789841737615482174">Asenna</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> tuumaa)</translation>
@@ -3086,7 +3081,6 @@ Lisätietoja:
 <translation id="8620276786115098679">Kirjekuori Kaku 7</translation>
 <translation id="8623885649813806493">Ei salasanaosumia. Näytä kaikki tallennetut salasanat.</translation>
 <translation id="8624354461147303341">Hyödynnä alennukset</translation>
-<translation id="8625384913736129811">Tallenna kortti tälle laitteelle</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637577059508742477"><ph name="DOMAIN" /> ylläpitää profiiliasi ja selaintasi</translation>
 <translation id="8643409044755049933">Kirjekuori Kaku 3</translation>

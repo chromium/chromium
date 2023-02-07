@@ -922,6 +922,7 @@
 <translation id="6000203700195075278">מעקב מחודש</translation>
 <translation id="6002122790816966947">המכשירים שלך</translation>
 <translation id="6005538289190791541">הצעה לסיסמה</translation>
+<translation id="6011308810877101166">שיפור של ההצעות לחיפוש</translation>
 <translation id="6039379616847168523">מעבר לכרטיסייה הבאה</translation>
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="604124094241169006">אוטומטי</translation>
@@ -952,7 +953,7 @@
 <translation id="6193448654517602979">בחירת כרטיסיות</translation>
 <translation id="6196315980958524839">‏סיסמאות נשמרות במנהל הסיסמאות של Google במכשיר הזה</translation>
 <translation id="6202812185118613467">עליך להיכנס שוב כדי להתחיל את הסנכרון</translation>
-<translation id="6205314730813004066">פרטיות בנושא מודעות</translation>
+<translation id="6205314730813004066">פרטיות בפרסום</translation>
 <translation id="6210748933810148297">אינך <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">מוצגת תצוגה מקדימה של הדף</translation>
 <translation id="6221633008163990886">יש לבטל את הנעילה כדי לייצא סיסמאות</translation>
@@ -1452,6 +1453,7 @@
 <translation id="8746155870861185046">שיתוף של הטקסט המודגש</translation>
 <translation id="8748850008226585750">התוכן מוסתר</translation>
 <translation id="8756969031206844760">לעדכן את הסיסמה?</translation>
+<translation id="8765470054473112089">‏כשמקלידים טקסט בסרגל הכתובות או בתיבת החיפוש, Chrome שולח את הטקסט הזה למנוע החיפוש שמוגדר כברירת מחדל כדי לקבל הצעות טובות יותר. האפשרות הזו מושבתת במצב הפרטי.</translation>
 <translation id="8766529642647037772">רוצה ליצור קישור מודגש כמו זה שמופיע כאן?</translation>
 <translation id="8773160212632396039">עיבוד הבקשה מתבצע</translation>
 <translation id="8788265440806329501">היסטוריית הניווט סגורה</translation>

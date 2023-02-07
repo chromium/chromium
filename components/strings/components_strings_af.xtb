@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Berei tans lêers voor</translation>
 <translation id="1015730422737071372">Verskaf bykomende besonderhede</translation>
 <translation id="1019413721762100891">Af</translation>
-<translation id="1021110881106174305">Aanvaarde kaarte</translation>
 <translation id="1021753677514347426">Hierdie probleem word veroorsaak deur 'n sertifikaat wat jy of iemand anders op jou toestel geïnstalleer het. Dit is bekend dat hierdie sertifikaat gebruik word om netwerke te monitor en te onderskep, en dit word nie deur Chromium vertrou nie. Terwyl sommige wettige gevalle vir monitering wel bestaan, soos op 'n skool- of maatskappynetwerk, wil Chromium seker maak dat jy weet dit gebeur, selfs al kan jy dit nie keer nie. Monitering kan in enige blaaier of program met toegang tot die web plaasvind.</translation>
 <translation id="1024111578869940408">Aanvallers boots soms werwe na deur veranderinge aan die webadres te maak wat moeilik is om te sien.</translation>
 <translation id="1028781062521375153">Sien besonderhede</translation>
@@ -708,7 +707,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2688969097326701645">Ja, gaan voort</translation>
 <translation id="2691924980723297736">Veiligheidswaarskuwing</translation>
 <translation id="2692131511336778528">Wetenskapfiksie en fantasie</translation>
-<translation id="2699302886720511147">Aanvaarde kaarte</translation>
 <translation id="2701514975700770343">Voorkant na onder</translation>
 <translation id="2702801445560668637">Leeslys</translation>
 <translation id="2704283930420550640">Waarde stem nie ooreen met formaat nie.</translation>
@@ -991,7 +989,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="342781501876943858">Chromium beveel aan dat jy jou wagwoord terugstel as jy dit ook op ander werwe gebruik het.</translation>
 <translation id="3428151540071562330">Een of meer van die DnsOverHttpsTemplates-bedienertemplaat se URI's is ongeldig en sal nie gebruik word nie.</translation>
 <translation id="3431216045099978607">Druk |<ph name="ACCELERATOR" />| om volskerm te verlaat en aflaai te sien.</translation>
-<translation id="3431636764301398940">Stoor hierdie kaart op hierdie toestel</translation>
 <translation id="3432601291244612633">Maak bladsy toe</translation>
 <translation id="3435738964857648380">Sekuriteit</translation>
 <translation id="3438829137925142401">Gebruik wagwoorde wat in jou Google-rekening gestoor is</translation>
@@ -1122,7 +1119,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3744111561329211289">Agtergrondsinkronisering</translation>
 <translation id="3744286742364977428">Lêers wat jy aflaai, word na Google Cloud of derde partye gestuur om ontleed te word. Hulle kan byvoorbeeld vir sensitiewe data of wanware geskandeer word en kan op grond van maatskappybeleide geberg word.</translation>
 <translation id="3744899669254331632">Jy kan <ph name="SITE" /> nie nou onmiddelllik besoek nie, omdat die webwerf deurmekaar eiebewyse gestuur het wat Chrome nie kan verwerk nie. Netwerkfoute en -aanvalle is gewoonlik tydelik, so hierdie bladsy sal waarskynlik later werk.</translation>
-<translation id="3745099705178523657">Nadat jy bevestig het, sal kaartbesonderhede vanaf jou Google-rekening met hierdie werf gedeel word.</translation>
 <translation id="3748148204939282805">Aanvallers op <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> kan jou dalk mislei om iets gevaarlik te doen, soos om sagteware te installeer of jou persoonlike inligting bekend te maak (byvoorbeeld: wagwoorde, foonnommers of kredietkaartinligting). <ph name="BEGIN_LEARN_MORE_LINK" />Kom meer te wete<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Lugvaartbedryf</translation>
 <translation id="3752543821772132562">Geïgnoreer omdat <ph name="POLICY_NAME" /> nie gestel is nie.</translation>
@@ -1140,7 +1136,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3781428340399460090">Helderpienk</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-toestelle</translation>
-<translation id="3787705759683870569">Verval <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Grootte 16</translation>
 <translation id="3789841737615482174">Installeer</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" />x<ph name="HEIGHT" /> dm.)</translation>
@@ -3084,7 +3079,6 @@ Bykomende besonderhede:
 <translation id="8620276786115098679">Koevert Kaku 7</translation>
 <translation id="8623885649813806493">Geen passende wagwoorde nie. Wys alle gestoorde wagwoorde.</translation>
 <translation id="8624354461147303341">Kry afslag</translation>
-<translation id="8625384913736129811">Stoor hierdie kaart op hierdie toestel</translation>
 <translation id="8634957317623797170">54x86 mm</translation>
 <translation id="8637577059508742477">Jou profiel en blaaier word deur <ph name="DOMAIN" /> bestuur</translation>
 <translation id="8643409044755049933">Koevert Kaku 3</translation>

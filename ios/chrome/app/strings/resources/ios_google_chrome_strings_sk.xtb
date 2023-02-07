@@ -89,6 +89,7 @@
 <translation id="6709398533399187136">Pri porušení ochrany údajov došlo k prezradeniu vášho hesla. Správca hesiel do Googlu odporúča okamžite ho zmeniť.</translation>
 <translation id="6822673484890854830">Chromu sa nepodarilo skontrolovať všetky heslá. Skúste to neskôr.</translation>
 <translation id="6964931465519938134">Chrome môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
+<translation id="6975725306479268850">Ak chcete využívať automatické dopĺňanie, vyberte si Chrome</translation>
 <translation id="701356708427365932">Zoznámte sa s novou Ponukou Chrome</translation>
 <translation id="7059914902409643750">Upravte Chrome podľa seba</translation>
 <translation id="7124339256045485976">Udržuje Chrome aktuálny</translation>
@@ -109,6 +110,7 @@
 <translation id="7754633291442704733">Vaša organizácia <ph name="DOMAIN" /> bude mať prístup k údajom, záložkám, histórii, heslám a ďalším nastaveniam Chromu, ktoré uložíte v tomto účte. Keď sa odhlásite, vaše údaje budú z tohto zariadenia vymazané.  Údaje však zostanú uložené vo vašom spravovanom účte Google a budú k dispozícii vašej organizácii. Vaša organizácia môže nastaviť aj pravidlá pre používateľov špecifické pre daný účet, ktoré môžu zmeniť správanie Chromu.</translation>
 <translation id="7780154209050837198">Ak chcete využívať Chrome naplno, prihláste sa doň svojím účtom Google.</translation>
 <translation id="7855730255114109580">Google Chrome je aktuálny.</translation>
+<translation id="7939179037291298976">V sekcii Nastavenia iPhonu otvorte Možnosti hesla a vyberte Chrome</translation>
 <translation id="8022947259858476807">Predvolene otvárajte odkazy, vyhľadávajte v miniaplikáciách a automaticky dopĺňajte heslá v iných aplikáciách pomocou Chromu</translation>
 <translation id="81358522153858150">Chrome teraz podporuje pre váš spravovaný účet pravidlá pre používateľov</translation>
 <translation id="8160472928944011082">Chrome sa nedá aktualizovať</translation>
@@ -124,6 +126,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Správcovi hesiel Google sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra alebo <ph name="BEGIN_LINK" />skontrolujte heslá vo svojom účte Google.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Zaistite svoju bezpečnosť s prehliadačom Google Chrome</translation>
+<translation id="8765470054473112089">Keď zadávate v paneli s adresou alebo vyhľadávacom poli, Chrome odosiela zadaný text do vášho predvoleného vyhľadávača, aby dostal lepšie návrhy. Táto možnosť je v režime inkognito vypnutá.</translation>
 <translation id="8772179140489533211">Zobrazí výzvy na prihlásenie do Chromu.</translation>
 <translation id="8788269841521769222">Toto heslo si nebudete musieť pamätať. Uloží sa do správcu hesiel Google v účte <ph name="EMAIL" />.</translation>
 <translation id="8857676124663337448">Správcovi hesiel Google sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra.</translation>

@@ -324,6 +324,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7828947555739565424">Det finns redan en Chromium-profil med detta konto på enheten</translation>
 <translation id="7845233973568007926">Tack för att du installerat programmet. Du måste starta om datorn innan du använder <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7859018312476869945">När du skriver i adressfältet eller sökrutan skickar Chromium det du skriver till standardsökmotorn för att du ska få bättre förslag. Detta är inaktiverat i inkognitoläge.</translation>
 <translation id="7867198900892795913">Det gick inte att uppdatera Chromium till den senaste versionen. Därför går du miste om nya funktioner och säkerhetskorrigeringar.</translation>
 <translation id="7872446069773932638">Laddar ned … <ph name="SECONDS" /> sekund/sekunder återstår</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Så här kan du hantera dina uppgifter:<ph name="END_BOLD" /> För att skydda din integritet raderar vi automatiskt intressen som är äldre än fyra veckor. Medan du surfar kan ett intresse dyka upp på listan igen. Du kan också ta bort intressen som du inte vill att Chromium ska inkludera.</translation>

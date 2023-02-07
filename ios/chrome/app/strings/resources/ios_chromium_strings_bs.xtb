@@ -63,6 +63,7 @@
 <translation id="4985291216379576555">Van mreže, Chromium ne može provjeravati ima li ažuriranja</translation>
 <translation id="4996471330284142407">Obavite više s jednostavnim i sigurnim Chromiumom koji je brži nego ikad.</translation>
 <translation id="4999538639245140991">Pošto se odjavljujete s računa kojim upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaši podaci iz Chromiuma će se izbrisati s ovog uređaja. Vaši podaci će ostati na vašem Google računu.</translation>
+<translation id="5048795749726991615">Da biste jednostavno dohvatili spremljene zaporke u drugim aplikacijama, upotrijebite Chromium za Automatsko popunjavanje</translation>
 <translation id="5171868502429358653">Prijavite se u Chromium</translation>
 <translation id="5224391634244552924">Nema sačuvanih lozinki. Chromium može provjeravati vaše lozinke kada ih sačuvate.</translation>
 <translation id="5308226104666789935">Chromium ne može provjeriti ima li ažuriranja</translation>
@@ -92,6 +93,7 @@
 <translation id="7045244423563602563">Prilagodite Chromium sebi</translation>
 <translation id="7099326575020694068">Chromium ne može koristiti kameru u načinu rada podijeljenog prikaza</translation>
 <translation id="7118091470949186573">Sada možete koristiti Chromium svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
+<translation id="7165402419892018581">Odabir Chromiuma za automatsko popunjavanje</translation>
 <translation id="7175400662502680481">Vaša lozinka je bila izložena prilikom narušavanja podataka. Upravitelj lozinki preporučuje da odmah promijenite lozinku.</translation>
 <translation id="7208566199746267865">Chromium vam štedi vrijeme povezivanjem računa na web. U Postavkama možete dodati ili ukloniti račune.</translation>
 <translation id="725427773388857052">Chromium vam može pomoći da se zaštitite od narušavanja podataka, nesigurnih web lokacija i još mnogo toga.</translation>
@@ -106,6 +108,7 @@
 <translation id="7746854981345936341">Savjet za Chromium. Neka dugmad poput dugmadi za nazad, naprijed i pretraživanje su sada na dnu ekrana.</translation>
 <translation id="7763454117143368771">Koristite Chromium kao zadani preglednik da se zaštitite od opasnih web lokacija i da zaštitite lozinke</translation>
 <translation id="7812317783196516890">Prijavljeni ste na račun i sinhronizirate podatke s računom kojim upravlja domena <ph name="DOMAIN" /> čiji administrator sada može postaviti korisnička pravila posebno za taj račun koja mogu promijeniti ponašanje Chromiuma.</translation>
+<translation id="7859018312476869945">Kad upisujete u adresnu traku ili okvir za pretraživanje, ono što upisujete Chromium šalje vašoj zadanoj tražilici kako bi vam pružio bolje prijedloge. To je isključeno u anonimnom načinu.</translation>
 <translation id="786327964234957808">Prebacujete račune za sinhronizaciju s <ph name="USER_EMAIL1" /> na <ph name="USER_EMAIL2" />. Vašim postojećim podacima iz Chromea upravlja domena <ph name="DOMAIN" />. Ovim će se izbrisati vaši podaci s ovog uređaja, ali će vaši podaci ostati na računu <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Počnite koristiti Chromium skener</translation>
 <translation id="7928628054454574139">Otvorite Chromium kad god dodirnete linkove u drugim aplikacijama</translation>
@@ -115,6 +118,7 @@
 <translation id="8073677936375100957">Izbrisati Chromium podatke s ovog uređaja?</translation>
 <translation id="8240981428553046115">Chromium nije mogao provjeriti ima li ažuriranja. Pokušajte ponovo kasnije.</translation>
 <translation id="8409374867500149834">Imate najjaču zaštitu Chromea od štetnih web lokacija</translation>
+<translation id="8460301378281140593">U postavkama iPhonea otvorite Opcije zaporke, a zatim odaberite Chromium</translation>
 <translation id="858114650497379505">Možete koristiti lozinke koje ste sačuvali u Upravitelju lozinki u drugim aplikacijama na iPhoneu.</translation>
 <translation id="8586442755830160949">Autorska prava <ph name="YEAR" /> Autori Chromiuma. Sva prava zadržana.</translation>
 <translation id="8603022514504485810">Google upravitelj lozinki nije uspio provjeriti sve lozinke. Pokušajte ponovo sutra ili <ph name="BEGIN_LINK" />provjerite lozinke na Google računu.<ph name="END_LINK" /></translation>

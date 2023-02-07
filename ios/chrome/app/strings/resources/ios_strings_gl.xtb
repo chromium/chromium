@@ -80,6 +80,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="149095475893949513">Este sitio web está tentando descargar un perfil de configuración.</translation>
 <translation id="1491277525950327607">Toca dúas veces para activar ou desactivar a configuración</translation>
 <translation id="1492417797159476138">Xa gardaches este nome de usuario para este sitio</translation>
+<translation id="1498283581832036924">Non se eliminará a túa conta de <ph name="WEBSITE" />.</translation>
 <translation id="1506063256525392513">Permíteche tirar e cargar fotos, así como escanear códigos QR</translation>
 <translation id="1509486075633541495">Iniciar sesión no sitio web</translation>
 <translation id="1509960214886564027">As funcións de moitos sitios poden deixar de funcionar</translation>
@@ -218,6 +219,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2664621323652615289">Deter</translation>
 <translation id="2671426118752779020">Podes utilizar os contrasinais que gardaches no xestor de contrasinais de Google noutras aplicacións do teu iPhone.</translation>
 <translation id="2690858294534178585">Estase utilizando a cámara</translation>
+<translation id="26915454213703967">Buscar na imaxe con Google</translation>
 <translation id="2691653761409724435">Non dispoñible sen conexión</translation>
 <translation id="2695507686909505111">Traduciuse a páxina</translation>
 <translation id="2697526135132990015">Pechar sesión e borrar datos</translation>
@@ -380,6 +382,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3819183753496523827">Estás sen conexión. Comproba a conexión a Internet e téntao de novo.</translation>
 <translation id="3835964409414434850">Ir á pestana seguinte</translation>
 <translation id="385051799172605136">Atrás</translation>
+<translation id="3851938967634752633">Eliminaranse os contrasinais de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e <ph name="NUMBER_OF_ACCOUNTS" /> sitios web máis. Non se eliminarán as túas contas.</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3861486700625780712">Deixar de seguir</translation>
 <translation id="3863769054730344136">Enviar aos teus dispositivos</translation>
@@ -515,6 +518,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="4833786495304741580">Envía estatísticas de uso e informes de fallos automaticamente a Google.</translation>
 <translation id="4840495572919996524">Os marcadores, o historial, os contrasinais e outros datos deixarán de sincronizarse coa túa Conta de Google.</translation>
 <translation id="4844899002472726590">Consulta e edita os temas que che interesan</translation>
+<translation id="4848999860252535517">Queres eliminar o contrasinal de <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Definir un código</translation>
 <translation id="4858786880085262208">Actualiza a HTTPS cando sexa posible. Os sitios seguros poden ter inserido contido non seguro.</translation>
 <translation id="4860895144060829044">Chamar</translation>
@@ -768,6 +772,7 @@ Tenta usar un contrasinal distinto para cada sitio.</translation>
 <translation id="6598875554591387303">Ordenar por editor</translation>
 <translation id="6603393121510733479">A túa organización desactivou a navegación privada.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Eliminaranse os contrasinais de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e <ph name="THIRD_WEBSITE" />. Non se eliminarán as túas contas.</translation>
 <translation id="6610002944194042868">Opcións de tradución</translation>
 <translation id="661266467055912436">Mellora a túa seguranza e a do resto dos usuarios da Web.</translation>
 <translation id="6620279676667515405">Cancelar</translation>
@@ -1045,6 +1050,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8756969031206844760">Queres actualizar o contrasinal?</translation>
 <translation id="8763613688786959833">Ir á última pestana</translation>
 <translation id="8764015330924122850">Deixar de seguir: <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Eliminaranse os contrasinais de <ph name="WEBSITE" /> e <ph name="SECOND_WEBSITE" />. Non se eliminarán as túas contas.</translation>
 <translation id="8775144690796719618">URL non válido</translation>
 <translation id="8787968206789828143">Busca na Web</translation>
 <translation id="8792626944327216835">micrófono</translation>
@@ -1094,6 +1100,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9093271241977565440">Na parte superior da pantalla, toca a icona da Busca</translation>
 <translation id="9094033019050270033">Actualizar contrasinal</translation>
 <translation id="9097506547406246598">Non se puido deixar de seguir o contido. Produciuse un erro.</translation>
+<translation id="9098541895599151034">Queres eliminar <ph name="NUMBER_OF_ACCOUNTS" /> contrasinais?</translation>
 <translation id="9100610230175265781">Contrasinal obrigatorio</translation>
 <translation id="9107664647686727385">Comproba se hai contrasinais vulnerados</translation>
 <translation id="9124387962554796433">Google pode usar o teu historial de para personalizar a Busca e outros servizos seus.</translation>

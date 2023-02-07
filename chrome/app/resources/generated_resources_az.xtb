@@ -217,6 +217,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1192706927100816598">{0,plural, =1{# saniyə sonra avtomatik çıxılacaq.
 <ph name="DOMAIN" /> smart kartınızın taxılı qalmasını tələb edir.}other{# saniyə sonra avtomatik çıxılacaq.
 <ph name="DOMAIN" /> smart kartınızın taxılı qalmasını tələb edir.}}</translation>
+<translation id="119330003005586565">Oxuduğunuz səhifələr</translation>
 <translation id="1193927020065025187">Bu sayt təhlükəli bildirişlərə icazə verməniz üçün sizi cəlb etmiş ola bilər</translation>
 <translation id="1195210374336998651">Tətbiq ayarlarına keçin</translation>
 <translation id="1195447618553298278">Naməlum xəta.</translation>
@@ -5512,6 +5513,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6007240208646052708">Dilinizdə səsli axtarış etmək əlçatan deyil.</translation>
 <translation id="6010651352520077187">Aktiv olduqda, Google Tərcümə saytları seçdiyiniz dilə tərcümə etməyi təklif edəcək. O, həmçinin saytları avtomatik tərcümə edə bilər.</translation>
 <translation id="6011193465932186973">Barmaq izi</translation>
+<translation id="6011308810877101166">Axtarış təkliflərini təkmilləşdirin</translation>
 <translation id="6011908034087870826"><ph name="DEVICE_NAME" /> cihazına keçid göndərilir</translation>
 <translation id="6013027779243312217">Audio və videonuz üçün altyazılar əldə edin</translation>
 <translation id="6014293228235665243">Oxunmamış</translation>
@@ -5829,6 +5831,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="630292539633944562">Şəxsi məlumat təklifləri</translation>
 <translation id="6305607932814307878">Qlobal Siyasət:</translation>
 <translation id="6305909198255586420">Əsas profilinizdən istifadə edərək quraşdırın</translation>
+<translation id="630750887748244481">Valideyniniz Chrome üçün "Saytlar, tətbiqlər və artırmalar üzrə icazələri" deaktiv edib. Bu artırmanı əlavə etməyə icazə verilmir.</translation>
 <translation id="6307990684951724544">Sistem məşğuldur</translation>
 <translation id="6308493641021088955">Giriş <ph name="EXTENSION_NAME" /> tərəfindən təmin edilib</translation>
 <translation id="6308937455967653460">Linkin saxlanma formatı:</translation>
@@ -7426,7 +7429,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7768507955883790804">Saytları ziyarət etdikdə onlar avtomatik bu ayarı izləyir</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> qovluğundakı fayllara baxa biləcək</translation>
 <translation id="7768770796815395237">Dəyişin</translation>
-<translation id="7768784765476638775">Seç və Dinlə</translation>
+<translation id="7768784765476638775">Seçib səsləndirmə</translation>
 <translation id="7769748505895274502">Son bağlananı yığcamlaşdırın</translation>
 <translation id="7770072242481632881">Yan Panel Seçicisi</translation>
 <translation id="7770450735129978837">Mausun sağ düyməsinə tıklama</translation>
@@ -7969,6 +7972,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" /> ilə birləşdirilir</translation>
 <translation id="8251578425305135684">Eskiz silindi.</translation>
 <translation id="825238165904109940">Həmişə Tam URL'ləri Göstərin</translation>
+<translation id="8252538334423261825">Artırma əlavə etmək olmur</translation>
 <translation id="8252569384384439529">Yüklənir...</translation>
 <translation id="8253198102038551905">Şəbəkə xüsusiyyətlərini əldə etmək üçün '+' klikləyin</translation>
 <translation id="8255212965098517578">Son fotolar, bildirişlər və tətbiqlər</translation>
@@ -8369,6 +8373,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8639635302972078117">İstifadə və diaqnostika datasını göndərin. Bu cihaz hazırda diaqnostika, cihaz və tətbiqdən istifadə datasını avtomatik Google'a göndərir. Bu məlumatlardan uşağınızı müəyyən etmək üçün istifadə edilməyəcək. Onlar sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Bəzi ümumiləşdirilmiş məlumatlar Google tətbiqlərinə və Android tərtibatçıları kimi partnyorlara da kömək edəcək. Uşağınız üçün əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, bu data onun Google Hesabında yadda saxlanıla bilər.</translation>
 <translation id="8642900771896232685">2 saniyə</translation>
 <translation id="8642947597466641025">Mətni böyüdün</translation>
+<translation id="8643403533759285912">Qrupu silin</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> təhlükəli ola bilər. Skanlanması üçün Google Qabaqcıl Qorumaya göndərilsin?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Kuki yoxdur}=1{1 kuki bloklanıb}other{# kuki bloklanıb}}</translation>
 <translation id="864423554496711319">Cihazlar hesabınızda saxlandı</translation>
@@ -8670,7 +8675,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8899851313684471736">Linki yeni pəncərədə açın</translation>
 <translation id="8900413463156971200">Mobil şəbəkəni aktiv edin</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> bugün datanızı yedəkləmənizi və bu <ph name="DEVICE_TYPE" /> cihazını qaytarmanızı tələb edir.}other{<ph name="MANAGER" /> son tarixdən öncə datanızı yedəkləmənizi və bu <ph name="DEVICE_TYPE" /> cihazını qaytarmanızı tələb edir.}}</translation>
-<translation id="8902667442496790482">Seç və Dinlə ayarlarını seçin</translation>
+<translation id="8902667442496790482">Seçib səsləndirmə ayarlarını seçin</translation>
 <translation id="890616557918890486">Mənbəni dəyişin</translation>
 <translation id="8907701755790961703">Ölkə seçin</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> tətbiqinin quraşdırılması ləğv edildi</translation>
@@ -8840,6 +8845,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="90528604757378587">Arxa fon fəaliyyəti və hamar sürüşmə kimi bəzi vizual effektlər məhdudlaşdırıla bilər.</translation>
 <translation id="9053563360605707198">Hər iki tərəfində çap edin</translation>
 <translation id="9055636786322918818">RC4 şifrələməsini tətbiq edin. RC4 şifrələri təhlükəli olduğu üçün bu seçimdən istifadə etmək riski artırır.</translation>
+<translation id="9056788090206401048">Giriş açarınızı başqa cihazda istifadə etmək üçün Bluetooth aktiv olmalıdır. Bunu həmişə ayarlarda idarə edə bilərsiniz.</translation>
 <translation id="9056810968620647706">Heç bir uyğunluq tapılmadı.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> aşağıdakı məzmuna giriş etmək istəyir:</translation>
 <translation id="9057354806206861646">Cədvəli güncəlləyin</translation>

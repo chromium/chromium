@@ -63,6 +63,7 @@
 <translation id="4985291216379576555">Chromium brez povezave ne more preveriti, ali so na voljo posodobitve</translation>
 <translation id="4996471330284142407">Opravite več s preprostim in varnim Chromiumom, ki je hitrejši kot kdaj prej.</translation>
 <translation id="4999538639245140991">Ker se boste odjavili iz računa, ki ga upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, boste iz te naprave izbrisali podatke v Chromiumu. Vaši podatki bodo še vedno na voljo v Google Računu.</translation>
+<translation id="5048795749726991615">Če želite preprosto do shranjenih gesel v drugih aplikacijah, uporabite Chromium za samodejno izpolnjevanje.</translation>
 <translation id="5171868502429358653">Prijavite se v Chromium</translation>
 <translation id="5224391634244552924">Ni shranjenih gesel. Chromium lahko preveri gesla, če jih shranite.</translation>
 <translation id="5308226104666789935">Chromium ne more preveriti, ali so na voljo posodobitve</translation>
@@ -92,6 +93,7 @@
 <translation id="7045244423563602563">Prilagodite si Chromium</translation>
 <translation id="7099326575020694068">Chromium ne more uporabljati fotoaparata v načinu razdeljenega pogleda</translation>
 <translation id="7118091470949186573">Zdaj lahko uporabljate Chromium, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah.</translation>
+<translation id="7165402419892018581">Izbira Chromiuma za samodejno izpolnjevanje</translation>
 <translation id="7175400662502680481">Geslo je bilo razkrito zaradi podatkovne kršitve. Upravitelj gesel priporoča, da ga takoj spremenite.</translation>
 <translation id="7208566199746267865">Chromium poskrbi, da so vaši računi v spletu, in vam tako prihrani čas. Račune lahko dodajate ali odstranjujete v nastavitvah.</translation>
 <translation id="725427773388857052">Chromium vas lahko varuje pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim.</translation>
@@ -106,6 +108,7 @@
 <translation id="7746854981345936341">Nasvet za Chromium. Nekateri gumbi, na primer gumbi za nazaj, naprej in iskanje, so zdaj na dnu zaslona.</translation>
 <translation id="7763454117143368771">Uporabljajte Chromium kot privzeti brskalnik, če se želite zaščititi pred nevarnimi spletnimi mesti in poskrbeti za varnost gesel.</translation>
 <translation id="7812317783196516890">Prijavljeni ste in poteka sinhronizacija podatkov z računom, ki ga upravlja domena <ph name="DOMAIN" />, kjer lahko skrbnik zdaj nastavi uporabniške pravilnike, specifične za ta račun, to pa lahko spremeni način delovanja Chromiuma.</translation>
+<translation id="7859018312476869945">Ko tipkate v naslovno vrstico ali iskalno polje, Chromium vaše vnose pošlje v privzeti iskalnik zaradi boljših predlogov. V anonimnem načinu je to izklopljeno.</translation>
 <translation id="786327964234957808">Z računa za sinhronizacijo <ph name="USER_EMAIL1" /> boste preklopili na račun <ph name="USER_EMAIL2" />. Obstoječe podatke v Chromiumu upravlja <ph name="DOMAIN" />. S tem boste izbrisali podatke iz te naprave, vendar bodo vaši podatki še vedno na voljo v računu <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Začnite uporabljati optični bralnik Chromium</translation>
 <translation id="7928628054454574139">Odpiranje Chromiuma ob vsakem dotiku povezav v drugih aplikacijah.</translation>
@@ -115,6 +118,7 @@
 <translation id="8073677936375100957">Ali želite izbrisati podatke v Chromiumu iz te naprave?</translation>
 <translation id="8240981428553046115">Chromium ni mogel preveriti, ali so na voljo posodobitve. Poskusite pozneje.</translation>
 <translation id="8409374867500149834">Uporabljate Chromiumovo najmočnejšo zaščito pred škodljivimi spletnimi mesti.</translation>
+<translation id="8460301378281140593">V nastavitvah iPhona odprite »Password Options« (Možnosti gesla) in izberite »Chromium«</translation>
 <translation id="858114650497379505">Gesla, ki ste jih shranili v upravitelju gesel, lahko uporabite v drugih aplikacijah v iPhonu.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ustvarjalci Chromiuma. Vse pravice pridržane.</translation>
 <translation id="8603022514504485810">Googlovemu upravitelju gesel ni uspelo preveriti vseh gesel. Poskusite znova jutri ali <ph name="BEGIN_LINK" />preverite gesla v računu Google.<ph name="END_LINK" /></translation>

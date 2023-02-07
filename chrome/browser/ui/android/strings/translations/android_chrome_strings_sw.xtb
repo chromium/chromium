@@ -250,6 +250,7 @@ Unapofuta historia yako ya kuvinjari — yote au kwa tovuti mahususi — unafuta
 <translation id="2426805022920575512">Chagua akaunti nyingine</translation>
 <translation id="2433507940547922241">Sura</translation>
 <translation id="2435457462613246316">Onyesha nenosiri</translation>
+<translation id="2439153523196674349">Onyesho la kukagua la <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Je, unataka kuanza kupakua <ph name="FILE_NAME" /> tena?</translation>
 <translation id="2453860139492968684">Maliza</translation>
 <translation id="2459390580524506445">Kipengele kilichoboreshwa cha kutafuta kwa kutamka</translation>
@@ -388,6 +389,7 @@ Tokeni za hali ya faragha zinaboresha faragha kwenye wavuti na haziwezi kutumiwa
 <translation id="3066573403916685335">Sogeza Chini</translation>
 <translation id="3070005020161560471">Tafsiri kiotomatiki</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> itafunguka kwenye Chrome. Kwa kuendelea, unakubali <ph name="BEGIN_LINK1" />Sheria na Masharti ya Google<ph name="END_LINK1" /> na <ph name="BEGIN_LINK2" />Sheria na Masharti ya Ziada ya Google Chrome na Mfumo wa Uendeshaji wa Chrome<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Sera ya Faragha<ph name="END_LINK3" /> pia inatumika.</translation>
+<translation id="3083194063661536258">Umeondoka kwenye akaunti. Kitufe. Hufungua kidirisha ili kuingia katika akaunti na kuwasha usawazishaji.</translation>
 <translation id="3091010850649238832">Onyesha yaliyomo kwenye ubao wa kunakili</translation>
 <translation id="3098745985164956033">Baadhi ya picha hutumwa kwa Google ili kuboresha maelezo unayopata</translation>
 <translation id="3104179992611025423">Kivinjari chako kinadhibitiwa na wazazi wako</translation>
@@ -924,6 +926,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="6040143037577758943">Funga</translation>
 <translation id="604124094241169006">Otomatiki</translation>
 <translation id="6042308850641462728">Zaidi</translation>
+<translation id="6049046116080614938">Umeingia katika akaunti ukitumia <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Kitufe. Hufungua mipangilio.</translation>
 <translation id="604996488070107836">Kipakuliwa cha <ph name="FILE_NAME" /> hakijafaulu kwa sababu ya hitilafu isiyojulikana.</translation>
 <translation id="605721222689873409">MK</translation>
 <translation id="6059830886158432458">Dhibiti hadithi na shughuli zako hapa</translation>
@@ -1297,6 +1300,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="7968014550143838305">Imewekwa kwenye orodha ya kusoma</translation>
 <translation id="7971136598759319605">Ilitumika siku 1 iliyopita</translation>
 <translation id="7975379999046275268">Kagua ukurasa kwanza <ph name="BEGIN_NEW" />Mpya<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">Umeingia katika akaunti ukitumia <ph name="USER_NAME" />. Kitufe. Hufungua mipangilio.</translation>
 <translation id="7986497153528221272">Ili uone manenosiri, weka kwanza mipangilio ya kufunga skrini kwenye kifaa chako</translation>
 <translation id="7995059495660416932">Utaona maudhui yatakapopatikana</translation>
 <translation id="799576009106109668">Utavinjari kwa haraka zaidi kwa sababu maudhui hupakiwa kabla hujayaomba, kulingana na jinsi unavyotembelea ukurasa wa wavuti ulioufungua</translation>

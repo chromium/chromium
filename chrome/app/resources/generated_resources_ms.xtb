@@ -375,6 +375,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1339009753652684748">Akses Assistant anda apabila anda menyebut "Ok Google". Untuk menjimatkan bateri, pilih “Hidup (Disyorkan)”. Assistant anda hanya akan memberikan respons apabila peranti anda dipasang palam atau mengecas.</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Sandarkan media dari peranti menggunakan apl Fail.</translation>
+<translation id="1341871421050612057">Tidak dapat melakukan penyegerakan dengan <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Beri Linux kebenaran apl untuk mengakses peranti USB. Linux tidak akan mengingat peranti USB selepas peranti itu dialih keluar.</translation>
 <translation id="1343920184519992513">Teruskan dari tempat anda berhenti dan buka set halaman tertentu</translation>
 <translation id="134589511016534552">Tab media juga ditunjukkan dalam bahagian Tab Terbuka</translation>
@@ -3053,6 +3054,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Anda dan Google</translation>
 <translation id="3722108462506185496">Ralat semasa memulakan perkhidmatan mesin maya. Sila cuba lagi.</translation>
+<translation id="3722624153992426516">Arahan <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> diterima</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Rangkaian Wi-Fi yang tersedia</translation>
 <translation id="3727187387656390258">Periksa pop muncul</translation>
@@ -3409,6 +3411,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="402211067068791756">Tindakan ini akan mengosongkan <ph name="TOTAL_USAGE" /> daripada data yang disimpan oleh laman yang dipaparkan</translation>
 <translation id="4022426551683927403">&amp;Tambahkan pada Kamus</translation>
 <translation id="4025039777635956441">Redam Tapak yang Dipilih</translation>
+<translation id="402707738228916911">Arahan <ph name="AUTHORIZE_INSTRUCTION_NAME" /> diterima</translation>
 <translation id="4027958407426528157">Buka laman web dalam apl yang dipasang pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="4028467762035011525">Tambah kaedah masukan</translation>
 <translation id="4029556917477724407">Kembali daripada halaman <ph name="PAGE_TITLE" /></translation>
@@ -4149,6 +4152,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4713409221649555176">Padamkan apabila anda menutup semua tetingkap</translation>
 <translation id="47158868804223727">Klik nama kumpulan untuk mengembangkan atau menguncupkannya</translation>
 <translation id="4716483597559580346">Powerwash untuk keselamatan tambahan</translation>
+<translation id="471759229191973607">Tukar tema</translation>
 <translation id="4722735765955348426">Kata laluan untuk <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> berkongsi skrin anda.</translation>
 <translation id="4722989931633062466">Tidak dibenarkan untuk memaparkan gesaan log masuk pihak ketiga</translation>
@@ -5689,6 +5693,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6150961653851236686">Bahasa ini digunakan apabila menterjemah halaman</translation>
 <translation id="6151323131516309312">Tekan <ph name="SEARCH_KEY" /> untuk mencari <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Fail ini telah pun wujud dalam folder muat turun anda.</translation>
+<translation id="6152918902620844577">Menunggu operasi seterusnya</translation>
 <translation id="6154240335466762404">Alih keluar semua port</translation>
 <translation id="615436196126345398">Protokol</translation>
 <translation id="6155141482566063812">Tab latar belakang berkongsi skrin anda</translation>
@@ -7171,6 +7176,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> tiada respons. Pilih "Paksa tutup" untuk menutup apl.</translation>
 <translation id="7535730537657706072">Untuk mengosongkan sejarah penyemakan imbas Inkognito daripada peranti anda, tutup semua tab Inkognito</translation>
 <translation id="7537451260744431038">Tapak tidak boleh menggunakan kuki untuk memperbaik pengalaman penyemakan imbas anda, contohnya, untuk mengekalkan log masuk anda atau untuk mengingat item dalam troli beli-belah anda</translation>
+<translation id="7538088324298143359">Cari Dalam Imej dengan <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">Ralat berlaku semasa menyemak kemas kini: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> telah meletakkan peranti ini pada versi sebelumnya. Sila simpan fail penting, kemudian mulakan semula. Semua data pada peranti akan dipadamkan.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> dengan Apl <ph name="APP_NAME" /></translation>
@@ -7398,6 +7404,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7730683939467795481">Halaman ini telah ditukar oleh sambungan "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="7735165285389721951">Satu lagi persediaan Stim sedang berjalan. Sila tunggu sehingga selesai sebelum mencuba semula</translation>
 <translation id="7737115349420013392">Berpasangan dengan "<ph name="DEVICE_NAME" />" ...</translation>
+<translation id="7737203573077018777">Arahan <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> diterima</translation>
 <translation id="7737846262459425222">Anda boleh menukar tetapan ini pada bila-bila masa dalam Tetapan &gt; Google Assistant &gt; Konteks skrin.</translation>
 <translation id="7737948071472253612">Tidak dibenarkan untuk menggunakan kamera anda</translation>
 <translation id="77381465218432215">Tunjukkan tanda aksen dan aksara khas</translation>
@@ -7598,6 +7605,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7912080627461681647">Kata laluan anda telah ditukar pada pelayan. Sila log keluar, kemudian log masuk semula.</translation>
 <translation id="7912974581251770345">Terjemahan</translation>
 <translation id="7915457674565721553">Sambung ke Internet untuk menyediakan kawalan ibu bapa</translation>
+<translation id="7916364730877325865">Organisasi anda tidak membenarkan anda menghidupkan penyegerakan dengan akaun ini</translation>
 <translation id="7918257978052780342">Daftar</translation>
 <translation id="7919123827536834358">Terjemahkan bahasa ini secara automatik</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />s</translation>

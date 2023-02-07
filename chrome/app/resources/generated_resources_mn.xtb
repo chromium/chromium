@@ -411,6 +411,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Алдагдсан нууц үг алга}=1{Алдагдсан 1 нууц үг}other{{NUM_COMPROMISED} алдагдсан нууц үг}}</translation>
 <translation id="1380028686461971526">Сүлжээнд автоматаар холбогдох</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> дээрх яриаг боловсруулахаар Google рүү илгээсэн</translation>
+<translation id="1383381142702995121">Энэ өргөтгөлийг удирдах</translation>
 <translation id="1383597849754832576">Ярианы файлуудыг татах боломжгүй. Дараа дахин оролдоно уу.</translation>
 <translation id="1383861834909034572">Дуусах үед нээж байна</translation>
 <translation id="1383876407941801731">Хайлт</translation>
@@ -4237,6 +4238,7 @@
 <translation id="4807098396393229769">Картан дээрх нэр</translation>
 <translation id="4808667324955055115">Попапыг хориглосон.</translation>
 <translation id="4809079943450490359">Таны төхөөрөмжийн администраторын зааварчилгаа:</translation>
+<translation id="4809447465126035330">Устгах</translation>
 <translation id="480990236307250886">Нүүр хуудсыг нээх</translation>
 <translation id="4809927044794281115">Цайвар загвар</translation>
 <translation id="4811212958317149293">Сэлгүүрийн гарын автомат скан</translation>
@@ -5039,6 +5041,7 @@
 <translation id="5556459405103347317">Дахин ачаал</translation>
 <translation id="5558129378926964177">Томруул</translation>
 <translation id="5558247502209241936">Аппыг цонхонд нээхийг идэвхжүүлэх</translation>
+<translation id="5559311991468302423">Хаягийг устгах</translation>
 <translation id="55601339223879446">Компьютерийн хилийг дэлгэцэд тохируулах</translation>
 <translation id="5561162485081632007">Аюултай үйл явдал тохиолдох үед түүнийг илрүүлж, танд анхааруулдаг</translation>
 <translation id="5562781907504170924">Энэ таб Bluetooth Төхөөрөмжид холбогдсон байна.</translation>
@@ -6428,6 +6431,7 @@
 <translation id="6839916869147598086">Нэвтрэх өөрчлөгдлөө</translation>
 <translation id="6840155290835956714">Илгээхээсээ өмнө асуух</translation>
 <translation id="6840184929775541289">Гэрчилгээжүүлэх эрх байхгүй</translation>
+<translation id="6840214587087739194">Хаягийг устгасан</translation>
 <translation id="6841143363521180029">Шифрлэсэн</translation>
 <translation id="6841186874966388268">Алдаа</translation>
 <translation id="6842136130964845393">Та хадгалсан нууц үгнүүддээ үргэлж хандах боломжтой эсэхээ баталгаажуулахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
@@ -8268,6 +8272,7 @@
 <translation id="8525306231823319788">Бүтэн дэлгэц</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Хэл нэмэх</translation>
+<translation id="8528479410903501741">Олон улсын банк акаунтны дугаарыг хадгалах</translation>
 <translation id="8528962588711550376">Нэвтэрч байна</translation>
 <translation id="8529925957403338845">Шуурхай модем болгох холболт амжилтгүй боллоо</translation>
 <translation id="8531701051932785007">Сайжруулсан аюулгүй хөтөч унтраалттай байна</translation>

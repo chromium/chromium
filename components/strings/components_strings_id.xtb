@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Menyiapkan file</translation>
 <translation id="1015730422737071372">Berikan detail tambahan</translation>
 <translation id="1019413721762100891">Nonaktif</translation>
-<translation id="1021110881106174305">Kartu yang diterima</translation>
 <translation id="1021753677514347426">Masalah ini terjadi karena sertifikat yang diinstal di perangkat oleh Anda atau orang lain. Sertifikat ini diketahui sebagai sertifikat yang digunakan untuk memantau dan melakukan intersepsi jaringan dan tidak dipercaya oleh Chromium. Walau terdapat beberapa kasus pemantauan yang sah, seperti pada jaringan sekolah atau perusahaan, Chromium ingin memastikan Anda menyadari terjadinya masalah tersebut, meskipun Anda tidak dapat menghentikannya. Pemantauan dapat terjadi di browser atau aplikasi yang mengakses web.</translation>
 <translation id="1024111578869940408">Penyerang terkadang meniru situs dengan membuat perubahan yang sulit terlihat pada alamat web.</translation>
 <translation id="1028781062521375153">Lihat detail</translation>
@@ -708,7 +707,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2688969097326701645">Ya, lanjutkan</translation>
 <translation id="2691924980723297736">Peringatan keamanan</translation>
 <translation id="2692131511336778528">Fiksi ilmiah &amp; fantasi</translation>
-<translation id="2699302886720511147">Kartu yang Diterima</translation>
 <translation id="2701514975700770343">Menghadap ke bawah</translation>
 <translation id="2702801445560668637">Daftar Bacaan</translation>
 <translation id="2704283930420550640">Nilai tidak sesuai format.</translation>
@@ -991,7 +989,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="342781501876943858">Chromium menyarankan untuk menyetel ulang sandi jika Anda juga menggunakannya di situs lain.</translation>
 <translation id="3428151540071562330">Satu atau beberapa URI template server DnsOverHttpsTemplates tidak valid dan tidak akan digunakan.</translation>
 <translation id="3431216045099978607">Tekan |<ph name="ACCELERATOR" />| untuk keluar dari layar penuh dan melihat download.</translation>
-<translation id="3431636764301398940">Simpan kartu ini ke perangkat ini</translation>
 <translation id="3432601291244612633">Tutup halaman</translation>
 <translation id="3435738964857648380">Keamanan</translation>
 <translation id="3438829137925142401">Gunakan sandi yang disimpan di Akun Google Anda</translation>
@@ -1121,7 +1118,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3744111561329211289">Sinkronisasi latar belakang</translation>
 <translation id="3744286742364977428">File yang Anda download akan dikirimkan ke Google Cloud atau pihak ketiga untuk analisis. Misalnya, file mungkin dipindai untuk mendeteksi data sensitif atau malware dan mungkin disimpan berdasarkan kebijakan perusahaan.</translation>
 <translation id="3744899669254331632">Anda tidak dapat mengunjungi <ph name="SITE" /> sekarang karena situs web mengirim kredensial tak beraturan yang tidak dapat diproses Chromium. Kesalahan jaringan dan serangan biasanya bersifat sementara, sehingga halaman ini mungkin akan bekerja nanti.</translation>
-<translation id="3745099705178523657">Setelah mengonfirmasi, detail kartu dari Akun Google Anda akan dibagikan dengan situs ini.</translation>
 <translation id="3748148204939282805">Penyerang di <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> dapat mengelabui Anda agar melakukan tindakan yang berbahaya seperti menginstal software atau mengungkap informasi pribadi Anda (misalnya sandi, nomor telepon, atau kartu kredit). <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Industri penerbangan</translation>
 <translation id="3752543821772132562">Diabaikan karena <ph name="POLICY_NAME" /> tidak disetel.</translation>
@@ -1139,7 +1135,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3781428340399460090">Merah Muda Terang</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Perangkat bluetooth</translation>
-<translation id="3787705759683870569">Masa berlaku <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Ukuran 16</translation>
 <translation id="3789841737615482174">Instal</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> inci)</translation>
@@ -3079,7 +3074,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
 <translation id="8623885649813806493">Tidak ada sandi yang cocok. Tampilkan semua sandi yang tersimpan.</translation>
 <translation id="8624354461147303341">Dapatkan diskon</translation>
-<translation id="8625384913736129811">Simpan Kartu Ini ke Perangkat Ini</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637577059508742477">Profil dan browser Anda dikelola oleh <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">Envelope Kaku 3</translation>

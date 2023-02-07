@@ -80,6 +80,7 @@
 <translation id="149095475893949513">Този уебсайт се опитва да изтегли конфигурационен профил.</translation>
 <translation id="1491277525950327607">Докоснете двукратно за превключване на настройката</translation>
 <translation id="1492417797159476138">Вече запазихте това потребителско име за този сайт</translation>
+<translation id="1498283581832036924">Профилът ви в(ъв) <ph name="WEBSITE" /> няма да бъде изтрит.</translation>
 <translation id="1506063256525392513">Това ви позволява да правите и качвате снимки, както и да сканирате QR кодове</translation>
 <translation id="1509486075633541495">Вход в уебсайта</translation>
 <translation id="1509960214886564027">Функциите в много сайтове може да не работят правилно</translation>
@@ -218,6 +219,7 @@
 <translation id="2664621323652615289">Спиране</translation>
 <translation id="2671426118752779020">Можете да използвате паролите, които сте запазили в мениджъра на паролите в Google, в други приложения на вашия iPhone.</translation>
 <translation id="2690858294534178585">Камерата се използва</translation>
+<translation id="26915454213703967">Търсене в изображението с Google</translation>
 <translation id="2691653761409724435">Не е налице офлайн</translation>
 <translation id="2695507686909505111">Страницата е преведена</translation>
 <translation id="2697526135132990015">Излизане от профила и изчистване на данните</translation>
@@ -380,6 +382,7 @@
 <translation id="3819183753496523827">Офлайн сте. Проверете връзката си с интернет и опитайте отново.</translation>
 <translation id="3835964409414434850">Към следващия раздел</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3851938967634752633">Паролите за <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и още <ph name="NUMBER_OF_ACCOUNTS" /> сайта ще бъдат изтрити. Профилите ви няма да бъдат изтрити.</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3861486700625780712">Прекратяване на следенето</translation>
 <translation id="3863769054730344136">Изпращане до устройствата ви</translation>
@@ -515,6 +518,7 @@
 <translation id="4833786495304741580">Автоматично изпраща до Google статистически данни за употребата и сигнали за сривове.</translation>
 <translation id="4840495572919996524">Вашите отметки, история, пароли и други неща повече няма да се синхронизират с профила ви в Google.</translation>
 <translation id="4844899002472726590">Преглеждайте и редактирайте темите, от които се интересувате</translation>
+<translation id="4848999860252535517">Да се изтрие ли паролата за <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Задайте код за достъп</translation>
 <translation id="4858786880085262208">Надстройте до HTTPS, когато е възможно. В защитените сайтове може да има незащитено вградено съдържание.</translation>
 <translation id="4860895144060829044">Обаждане</translation>
@@ -768,6 +772,7 @@
 <translation id="6598875554591387303">Сортиране по издател</translation>
 <translation id="6603393121510733479">Организацията ви е изключила режима за частно сърфиране.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Паролите за <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и <ph name="THIRD_WEBSITE" /> ще бъдат изтрити. Профилите ви няма да бъдат изтрити.</translation>
 <translation id="6610002944194042868">Опции за превод</translation>
 <translation id="661266467055912436">Подобрява сигурността за вас и всички потребители в мрежата.</translation>
 <translation id="6620279676667515405">Отказ</translation>
@@ -1045,6 +1050,7 @@
 <translation id="8756969031206844760">Да се актуализира ли паролата?</translation>
 <translation id="8763613688786959833">Към последния раздел</translation>
 <translation id="8764015330924122850">Прекратяване на следенето на <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Паролите за <ph name="WEBSITE" /> и <ph name="SECOND_WEBSITE" /> ще бъдат изтрити. Профилите ви няма да бъдат изтрити.</translation>
 <translation id="8775144690796719618">Невалиден URL адрес</translation>
 <translation id="8787968206789828143">Търсене в мрежата</translation>
 <translation id="8792626944327216835">микрофон</translation>
@@ -1094,6 +1100,7 @@
 <translation id="9093271241977565440">Докоснете иконата за търсене в горната част на екрана.</translation>
 <translation id="9094033019050270033">Актуализиране на паролата</translation>
 <translation id="9097506547406246598">Прекратяването на следенето не е възможно. Нещо се обърка.</translation>
+<translation id="9098541895599151034">Да се изтрият ли <ph name="NUMBER_OF_ACCOUNTS" /> пароли?</translation>
 <translation id="9100610230175265781">Изисква се пропуск</translation>
 <translation id="9107664647686727385">Проверка за компрометирани пароли</translation>
 <translation id="9124387962554796433">Възможно е да използваме историята ви, за да персонализираме търсенето и други услуги на Google.</translation>

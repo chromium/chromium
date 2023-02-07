@@ -323,6 +323,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7828947555739565424">Il existe déjà un profil Chromium associé à ce compte sur cet appareil</translation>
 <translation id="7845233973568007926">Merci pour l'installation. Vous devez redémarrer votre ordinateur avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7859018312476869945">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chromium achemine la requête saisie à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en mode de navigation privée.</translation>
 <translation id="7867198900892795913">Chromium n'a pas pu installer la nouvelle version, vous ne pouvez donc pas profiter des nouvelles fonctionnalités ni des correctifs relatifs à la sécurité.</translation>
 <translation id="7872446069773932638">Téléchargement en cours… <ph name="SECONDS" /> seconde(s) restante(s)</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Comment gérer vos données :<ph name="END_BOLD" /> afin de protéger votre confidentialité, nous supprimons automatiquement vos centres d'intérêt ayant plus de quatre semaines. Au fur et à mesure que vous naviguez, un centre d'intérêt peut réapparaître sur la liste. Vous pouvez également retirer des centres d'intérêt si vous ne voulez pas que Chromium les prenne en compte.</translation>

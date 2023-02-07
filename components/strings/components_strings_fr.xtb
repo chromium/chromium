@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Préparation des fichiers…</translation>
 <translation id="1015730422737071372">Fournir des informations supplémentaires</translation>
 <translation id="1019413721762100891">Désactivé</translation>
-<translation id="1021110881106174305">Cartes acceptées</translation>
 <translation id="1021753677514347426">Ce problème est dû à un certificat installé sur votre appareil par vous-même ou par quelqu'un d'autre. Ce certificat est utilisé pour surveiller et intercepter des réseaux, et n'est pas approuvé par Chromium. Bien qu'il existe des cas légitimes de surveillance (sur un réseau scolaire ou d'entreprise, par exemple), Chromium souhaite s'assurer que vous êtes au courant de cette activité, même si vous ne pouvez pas l'empêcher. La surveillance peut se produire sur n'importe quel navigateur ou application qui accède au Web.</translation>
 <translation id="1024111578869940408">Les pirates informatiques tentent parfois d'imiter des sites en modifiant l'adresse Web de façon subtile pour que le changement passe inaperçu.</translation>
 <translation id="1028781062521375153">Voir les détails</translation>
@@ -708,7 +707,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2688969097326701645">Oui, continuer</translation>
 <translation id="2691924980723297736">Avertissement de sécurité</translation>
 <translation id="2692131511336778528">Science-fiction et fantastique</translation>
-<translation id="2699302886720511147">Cartes acceptées</translation>
 <translation id="2701514975700770343">Vers le bas</translation>
 <translation id="2702801445560668637">Liste de lecture</translation>
 <translation id="2704283930420550640">La valeur ne respecte pas le format requis.</translation>
@@ -824,7 +822,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="301521992641321250">Bloquée automatiquement</translation>
 <translation id="3016780570757425217">Connaître votre position</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, appuyez sur Tabulation, puis sur Entrée pour supprimer la suggestion.</translation>
-<translation id="3023165109041533893">Les annonces suggérées par les sites contribuent à protéger votre historique de navigation et votre identité, tout en permettant aux sites de vous proposer des annonces pertinentes. En fonction de votre activité, un site auquel vous avez accédé peut vous suggérer des annonces similaires à mesure que vous poursuivez votre navigation. Vous pouvez consulter la liste de ces sites et bloquer ceux qui vous ne vous intéressent pas dans les paramètres.</translation>
+<translation id="3023165109041533893">Les annonces suggérées par les sites contribuent à protéger votre historique de navigation et votre identité, tout en permettant aux sites de vous présenter des annonces pertinentes. En fonction de votre activité, un site auquel vous avez accédé peut suggérer des annonces associées à mesure que vous poursuivez votre navigation. Vous pouvez consulter la liste de ces sites et bloquer ceux qui vous ne vous intéressent pas dans les paramètres.</translation>
 <translation id="3024663005179499861">Type de règle incorrect.</translation>
 <translation id="3029752078111257850">Actualités internationales</translation>
 <translation id="3037177537145227281">Suivi du prix activé</translation>
@@ -991,7 +989,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="342781501876943858">L'équipe Chromium vous recommande de réinitialiser votre mot de passe si vous l'avez réutilisé sur d'autres sites.</translation>
 <translation id="3428151540071562330">Au moins un URI de modèle de serveur DnsOverHttpsTemplates n'est pas valide et ne sera pas utilisé.</translation>
 <translation id="3431216045099978607">Appuyez sur |<ph name="ACCELERATOR" />| pour quitter le plein écran et voir le téléchargement.</translation>
-<translation id="3431636764301398940">Enregistrer cette carte sur cet appareil</translation>
 <translation id="3432601291244612633">Fermer la page</translation>
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3438829137925142401">Utiliser les mots de passe enregistrés dans votre compte Google</translation>
@@ -1122,7 +1119,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3744111561329211289">Synchronisation en arrière-plan</translation>
 <translation id="3744286742364977428">Les fichiers que vous téléchargez sont envoyés à Google Cloud ou à des tiers pour analyse. Par exemple, ils peuvent être analysés à la recherche de données sensibles ou de logiciels malveillants, et être stockés conformément aux règles de l'entreprise.</translation>
 <translation id="3744899669254331632"><ph name="SITE" /> est actuellement inaccessible. Le site Web a envoyé des identifiants brouillés inutilisables par Chromium. Les erreurs de réseau et les attaques étant généralement temporaires, cette page devrait à nouveau fonctionner ultérieurement.</translation>
-<translation id="3745099705178523657">Une fois la validation effectuée, les informations relatives à la carte de votre compte Google seront partagées avec ce site.</translation>
 <translation id="3748148204939282805">Des individus malveillants à l'œuvre sur le site <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> pourraient vous inciter à effectuer des opérations dangereuses, comme installer des logiciels ou divulguer des informations personnelles (mots de passe, numéros de téléphone ou numéros de carte de crédit, par exemple). <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Secteur aéronautique</translation>
 <translation id="3752543821772132562">Ignorée, car <ph name="POLICY_NAME" /> n'est pas définie.</translation>
@@ -1140,7 +1136,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3781428340399460090">Rose foncé</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Appareils Bluetooth</translation>
-<translation id="3787705759683870569">Expire en <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Taille 16</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> pouces)</translation>
@@ -1424,7 +1419,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="449126573531210296">Chiffrer les mots de passe synchronisés avec votre compte Google</translation>
 <translation id="4492519888999857993">Ces fonctionnalités sont désactivées par défaut. Elles ne seront plus disponibles dans les prochaines versions de Chrome.</translation>
 <translation id="4493480324863638523">URL non valide : vous devez saisir une URL avec un schéma standard, comme http://example.com ou https://example.com.</translation>
-<translation id="4494323206460475851">Vous pouvez voir les thèmes publicitaires dans les paramètres et bloquer ceux que vous ne souhaitez pas partager avec des sites. Chrome supprime aussi automatiquement les thèmes publicitaires s'ils datent de plus de quatre semaines.</translation>
+<translation id="4494323206460475851">Vous pouvez voir les thèmes d'annonces dans les paramètres, et bloquer ceux que vous ne souhaitez pas partager avec les sites. Par ailleurs, Chrome supprime automatiquement les thèmes d'annonces qui datent de plus de quatre semaines.</translation>
 <translation id="4500587658229086076">contenu non sécurisé</translation>
 <translation id="4506176782989081258">Erreur de validation : <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4506599922270137252">Contacter l'administrateur système</translation>
@@ -2324,7 +2319,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6786145470008421571">Enveloppe 150x230</translation>
 <translation id="67862343314499040">Mauve</translation>
 <translation id="6786747875388722282">Extensions</translation>
-<translation id="6787094689637422836">Nous proposons de nouvelles fonctionnalités de confidentialité qui vous offrent une plus grande liberté de choix sur les annonces diffusées.</translation>
+<translation id="6787094689637422836">Nous lançons de nouvelles fonctionnalités de confidentialité qui vous offrent une plus grande liberté de choix sur les annonces diffusées.</translation>
 <translation id="678982761784843853">ID de contenu protégé</translation>
 <translation id="6790428901817661496">Lire</translation>
 <translation id="679355240208270552">Règle ignorée, car le moteur de recherche par défaut n'est pas activé par une règle.</translation>
@@ -3079,13 +3074,12 @@ Informations supplémentaires :
 <translation id="860043288473659153">Nom du titulaire de la carte</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Quelles sont les données utilisées<ph name="END_BOLD" /> : votre activité sur un site que vous consultez dans Chrome sur cet appareil.</translation>
 <translation id="8606726445206553943">Utiliser vos appareils MIDI</translation>
-<translation id="8606988009912891950">Les thèmes publicitaires aident les sites à vous présenter des annonces pertinentes tout en protégeant votre historique de navigation et votre identité. Chrome peut se baser sur votre historique de navigation récent pour déterminer les thèmes qui vous intéressent. Par la suite, un site que vous consultez pourra demander à Chrome des thèmes pertinents pour personnaliser les annonces qui vous seront présentées.</translation>
+<translation id="8606988009912891950">Les thèmes d'annonces aident les sites à vous présenter des annonces pertinentes tout en protégeant votre historique de navigation et votre identité. Chrome peut déterminer les thèmes qui vous intéressent en fonction de votre historique de navigation récent. Par la suite, un site que vous consultez pourra demander à Chrome des thèmes pertinents pour personnaliser les annonces qui vous seront présentées.</translation>
 <translation id="8617269623452051934">si vous utilisez cet appareil</translation>
 <translation id="861775596732816396">Taille 4</translation>
 <translation id="8620276786115098679">Enveloppe Kaku 7</translation>
 <translation id="8623885649813806493">Aucun mot de passe enregistré. Afficher tous les mots de passe enregistrés.</translation>
 <translation id="8624354461147303341">Obtenir des remises</translation>
-<translation id="8625384913736129811">Enregistrer cette carte sur cet appareil</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637577059508742477">Votre profil et votre navigateur sont gérés par <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">Enveloppe Kaku 3</translation>

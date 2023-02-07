@@ -250,6 +250,7 @@
 <translation id="2426805022920575512">दूसरा खाता चुनें</translation>
 <translation id="2433507940547922241">दिखने का तरीका</translation>
 <translation id="2435457462613246316">पासवर्ड दिखाएं</translation>
+<translation id="2439153523196674349"><ph name="SITE_NAME" /> की झलक</translation>
 <translation id="2450083983707403292">क्या आप <ph name="FILE_NAME" /> को डाउनलोड करना फिर से शुरू करना चाहते हैं?</translation>
 <translation id="2453860139492968684">खत्म करें</translation>
 <translation id="2459390580524506445">वॉइस सर्च की बेहतर सुविधा</translation>
@@ -388,6 +389,7 @@
 <translation id="3066573403916685335">नीचे ले जाएं</translation>
 <translation id="3070005020161560471">अपने-आप अनुवाद करें</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" />, Chrome में खुलेगा. जारी रखने का मतलब है कि आप <ph name="BEGIN_LINK1" />Google की सेवा की शर्तों<ph name="END_LINK1" /> के साथ-साथ <ph name="BEGIN_LINK2" />Google Chrome और ChromeOS की सेवा की अन्य शर्तों<ph name="END_LINK2" /> से सहमत हैं. साथ ही, <ph name="BEGIN_LINK3" />निजता नीति<ph name="END_LINK3" /> भी लागू होगी.</translation>
+<translation id="3083194063661536258">साइन आउट किया गया. बटन. यह बटन, साइन इन करने और सिंक की सुविधा चालू करने के लिए, डायलॉग बॉक्स खोलता है.</translation>
 <translation id="3091010850649238832">क्लिपबोर्ड का कॉन्टेंट दिखाएं</translation>
 <translation id="3098745985164956033">कुछ इमेज Google को भेजी जाती हैं, ताकि आपको मिलने वाली जानकारी को बेहतर बनाया जा सके</translation>
 <translation id="3104179992611025423">आपके ब्राउज़र को आपके माता-पिता मैनेज करते हैं</translation>
@@ -924,6 +926,7 @@
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="604124094241169006">स्वचालित</translation>
 <translation id="6042308850641462728">और ज़्यादा</translation>
+<translation id="6049046116080614938"><ph name="USER_NAME" /> के तौर पर साइन इन किया गया. <ph name="USER_EMAIL" />. बटन. इस बटन से सेटिंग खुलती है.</translation>
 <translation id="604996488070107836">किसी अज्ञात गड़बड़ी के कारण <ph name="FILE_NAME" /> का डाउनलोड विफल रहा.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">अपनी खबरों और गतिविधि को यहां नियंत्रित करें</translation>
@@ -1297,6 +1300,7 @@
 <translation id="7968014550143838305">'पढ़ने की सूची' में जोड़ा गया</translation>
 <translation id="7971136598759319605">एक दिन पहले सिंक किया गया</translation>
 <translation id="7975379999046275268">पेज की झलक देखें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979"><ph name="USER_NAME" /> के तौर पर साइन इन किया गया. बटन. इस बटन से सेटिंग खुलती है.</translation>
 <translation id="7986497153528221272">पासवर्ड देखने के लिए, अपने डिवाइस पर एक स्क्रीन लॉक सेट करें</translation>
 <translation id="7995059495660416932">कॉन्टेंट तैयार होने तक इंतज़ार करें</translation>
 <translation id="799576009106109668">आपको ज़्यादा तेज़ी से ब्राउज़ करने का अनुभव मिलता है, क्योंकि कॉन्टेंट आपके हाल ही में देखे गए पेजों के हिसाब से लोड होता है</translation>

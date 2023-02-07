@@ -411,6 +411,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Нема угрожених лозинки}=1{1 угрожена лозинка}one{{NUM_COMPROMISED} угрожена лозинка}few{{NUM_COMPROMISED} угрожене лозинке}other{{NUM_COMPROMISED} угрожених лозинки}}</translation>
 <translation id="1380028686461971526">Аутоматско повезивање на мрежу</translation>
 <translation id="1381567580865186407">Говор (<ph name="LANGUAGE" />) се шаље Google-у ради обраде</translation>
+<translation id="1383381142702995121">Управљај овим додатком</translation>
 <translation id="1383597849754832576">Преузимање фајлова говора није успело. Пробајте касније.</translation>
 <translation id="1383861834909034572">Отварање кад се доврши</translation>
 <translation id="1383876407941801731">Претражи</translation>
@@ -4225,6 +4226,7 @@
 <translation id="4807098396393229769">Име и презиме на картици</translation>
 <translation id="4808667324955055115">Искачући прозори су блокирани:</translation>
 <translation id="4809079943450490359">Упутства администратора уређаја:</translation>
+<translation id="4809447465126035330">Избриши</translation>
 <translation id="480990236307250886">Отвори почетну страницу</translation>
 <translation id="4809927044794281115">Светла тема</translation>
 <translation id="4811212958317149293">Аутоматско скенирање тастатуре за приступ помоћу прекидача</translation>
@@ -5026,6 +5028,7 @@
 <translation id="5556459405103347317">Учитај поново</translation>
 <translation id="5558129378926964177">Zoom &amp;In (Увећај)</translation>
 <translation id="5558247502209241936">Омогући отварање апликације у прозору</translation>
+<translation id="5559311991468302423">Избришите адресу</translation>
 <translation id="55601339223879446">Прилагодите границе радне површине унутар приказа</translation>
 <translation id="5561162485081632007">Открива опасне догађаје када се догоде и упозорава вас на њих</translation>
 <translation id="5562781907504170924">Ова картица је повезана са Bluetooth уређајем.</translation>
@@ -6420,6 +6423,7 @@
 <translation id="6839916869147598086">Пријављивање је промењено</translation>
 <translation id="6840155290835956714">Питај пре слања</translation>
 <translation id="6840184929775541289">Није ауторитет за издавање сертификата</translation>
+<translation id="6840214587087739194">Адреса је избрисана</translation>
 <translation id="6841143363521180029">Шифровано</translation>
 <translation id="6841186874966388268">Грешке</translation>
 <translation id="6842136130964845393">Да бисте били сигурни да увек можете да приступате сачуваним лозинкама, потврдите да сте то ви</translation>
@@ -8263,6 +8267,7 @@
 <translation id="8525306231823319788">Цео екран</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Додај језике</translation>
+<translation id="8528479410903501741">Сачувај IBAN</translation>
 <translation id="8528962588711550376">Пријављивање.</translation>
 <translation id="8529925957403338845">Повезивање преко тренутног привезивања није успело</translation>
 <translation id="8531701051932785007">Побољшано безбедно прегледање је искључено</translation>

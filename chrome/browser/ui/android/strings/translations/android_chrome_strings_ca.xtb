@@ -250,6 +250,7 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="2426805022920575512">Tria un altre compte</translation>
 <translation id="2433507940547922241">Aparença</translation>
 <translation id="2435457462613246316">Mostra la contrasenya</translation>
+<translation id="2439153523196674349">Previsualització de <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Vols tornar a baixar el fitxer <ph name="FILE_NAME" />?</translation>
 <translation id="2453860139492968684">Finalitza</translation>
 <translation id="2459390580524506445">Cerca per veu millorada</translation>
@@ -388,6 +389,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="3066573403916685335">Mou cap avall</translation>
 <translation id="3070005020161560471">Tradueix automàticament</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> s'obrirà a Chrome. En continuar, acceptes les <ph name="BEGIN_LINK1" />condicions del servei de Google<ph name="END_LINK1" /> i les <ph name="BEGIN_LINK2" />condicions del servei addicionals de Google Chrome i Chrome OS<ph name="END_LINK2" />. També s'aplica la <ph name="BEGIN_LINK3" />política de privadesa<ph name="END_LINK3" />.</translation>
+<translation id="3083194063661536258">Has tancat la sessió. Botó. Obre el quadre de diàleg per iniciar la sessió i activar la sincronització.</translation>
 <translation id="3091010850649238832">Mostra els continguts del porta-retalls</translation>
 <translation id="3098745985164956033">Algunes imatges s'envien a Google per millorar-ne les descripcions per a tu</translation>
 <translation id="3104179992611025423">Els teus pares gestionen el navegador</translation>
@@ -924,6 +926,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="604124094241169006">Automàtic</translation>
 <translation id="6042308850641462728">Més</translation>
+<translation id="6049046116080614938">Has iniciat la sessió com a <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Botó. Obre la configuració.</translation>
 <translation id="604996488070107836">No s'ha pogut baixar <ph name="FILE_NAME" /> a causa d'un error desconegut.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla les teves històries i la teva activitat aquí</translation>
@@ -1297,6 +1300,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7968014550143838305">S'ha afegit a la llista de lectura</translation>
 <translation id="7971136598759319605">Actiu fa 1 dia</translation>
 <translation id="7975379999046275268">Previsualitza la pàgina <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">Has iniciat la sessió com a <ph name="USER_NAME" />. Botó. Obre la configuració.</translation>
 <translation id="7986497153528221272">Per veure les contrasenyes, primer has d'establir un bloqueig de pantalla al dispositiu</translation>
 <translation id="7995059495660416932">Veuràs contingut quan estigui disponible</translation>
 <translation id="799576009106109668">Navegaràs més de pressa perquè el contingut es carrega de forma proactiva en funció de la pàgina web que estiguis visitant</translation>

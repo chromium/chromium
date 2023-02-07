@@ -221,6 +221,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <ph name="DOMAIN" /> vyžaduje, aby ste svoju čipovú kartu ponechali vloženú.}many{Systém vás automaticky odhlási o # sekundy.
 <ph name="DOMAIN" /> vyžaduje, aby ste svoju čipovú kartu ponechali vloženú.}other{Systém vás automaticky odhlási o # sekúnd.
 <ph name="DOMAIN" /> vyžaduje, aby ste svoju čipovú kartu ponechali vloženú.}}</translation>
+<translation id="119330003005586565">Prečítané strany</translation>
 <translation id="1193927020065025187">Tento web sa vás môže pokúsiť naviesť, aby ste povolili obťažujúce upozornenia</translation>
 <translation id="1195210374336998651">Prejsť do nastavení aplikácie</translation>
 <translation id="1195447618553298278">Neznáma chyba.</translation>
@@ -5519,6 +5520,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6007240208646052708">Hlasové vyhľadávanie nie je k dispozícii vo vašom jazyku.</translation>
 <translation id="6010651352520077187">Keď je táto možnosť zapnutá, Prekladač Google bude ponúkať preklad webov do vášho preferovaného jazyka. Dokáže aj automaticky prekladať weby.</translation>
 <translation id="6011193465932186973">Odtlačok prsta</translation>
+<translation id="6011308810877101166">Zlepšovať návrhy vyhľadávania</translation>
 <translation id="6011908034087870826">Odosiela sa odkaz do zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">Získajte titulky pre svoj zvuk a video</translation>
 <translation id="6014293228235665243">Neprečítané</translation>
@@ -5836,6 +5838,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="630292539633944562">Návrhy osobných údajov</translation>
 <translation id="6305607932814307878">Globálne pravidlá:</translation>
 <translation id="6305909198255586420">Nainštalujte pomocou hlavného profilu</translation>
+<translation id="630750887748244481">Váš nadradený účet vypol Povolenia pre weby, aplikácie a rozšírenia v Chrome. Pridanie tohto rozšírenia nie je povolené.</translation>
 <translation id="6307990684951724544">Systém je zaneprázdnený</translation>
 <translation id="6308493641021088955">Prihlásenie poskytuje <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Uložiť &amp;odkaz ako...</translation>
@@ -7981,6 +7984,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8251509999076836464">Páruje sa so zariadením <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniatúra odstránená.</translation>
 <translation id="825238165904109940">Vždy zobrazovať celé webové adresy</translation>
+<translation id="8252538334423261825">Rozšírenie sa nedá pridať</translation>
 <translation id="8252569384384439529">Nahráva sa...</translation>
 <translation id="8253198102038551905">Vlastnosti siete otvoríte kliknutím na tlačidlo plus (+)</translation>
 <translation id="8255212965098517578">Nedávne fotky, upozornenia a aplikácie</translation>
@@ -8381,6 +8385,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8639635302972078117">Odosielanie údajov o využití a diagnostiky. Toto zariadenie momentálne automaticky odosiela Googlu diagnostiky a údaje o používaní zariadenia a aplikácií. Nebudú slúžiť na zistenie totožnosti vášho dieťaťa. Pomôžu zvýšiť stabilitu systému a aplikácií a poskytovať ďalšie zlepšenia. Niektoré súhrnné údaje tiež pomôžu aplikáciám Google a partnerom, ako napríklad vývojárom pre Android. Ak pre dieťa zapnete nastavenie ďalšej aktivity na internete a v aplikáciách, tieto údaje sa môžu uložiť do jeho účtu Google.</translation>
 <translation id="8642900771896232685">2 sekundy</translation>
 <translation id="8642947597466641025">Zväčšiť text</translation>
+<translation id="8643403533759285912">Odstrániť skupinu</translation>
 <translation id="8643443571868262066">Súbor <ph name="FILE_NAME" /> môže byť nebezpečný. Chcete ho odoslať na kontrolu do rozšírenej ochrany Googlu?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Žiadne súbory cookie}=1{1 súbor cookie je blokovaný}few{# súbory cookie sú blokované}many{# cookies are blocked}other{# súborov cookie je blokovaných}}</translation>
 <translation id="864423554496711319">Zariadenia uložené do účtu</translation>
@@ -8856,6 +8861,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="90528604757378587">Aktivita na pozadí a niektoré vizuálne efekty, napríklad plynulé posúvanie, môžu byť obmedzené.</translation>
 <translation id="9053563360605707198">Obojstranná tlač</translation>
 <translation id="9055636786322918818">Vynúťte šifrovanie RC4. Šifry RC4 sú nezabezpečené, takže použitím tejto možnosti zvýšite riziko.</translation>
+<translation id="9056788090206401048">Ak chcete použiť prístupový kľúč v inom zariadení, musíte zapnúť Bluetooth. Môžete to kedykoľvek zmeniť v nastaveniach.</translation>
 <translation id="9056810968620647706">Nenašli sa žiadne zhody.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> požaduje prístup k nasledujúcemu obsahu:</translation>
 <translation id="9057354806206861646">Plán aktualizácií</translation>

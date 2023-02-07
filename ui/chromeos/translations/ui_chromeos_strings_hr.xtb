@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">engleski (SAD) s programerskom tipkovnicom Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
 <translation id="1521655867290435174">Google tablice</translation>
+<translation id="1521795806314479294">Priprema <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">Otvaranje Linux datoteka...</translation>
 <translation id="1547964879613821194">kanadska (engleska)</translation>
 <translation id="1556189134700913550">Primijeni na sve</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Komprimiranje stavki (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="1722687688096767818">Dodaje se profil...</translation>
 <translation id="1726100011689679555">Poslužitelji naziva</translation>
+<translation id="1727562178154619254">Spremno za sinkronizaciju</translation>
 <translation id="1729953886957086472">njemački (Njemačka)</translation>
 <translation id="1730235522912993863">kineski cangjie</translation>
 <translation id="1731889557567069540">Kopirano stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">Prilagođeni poslužitelji naziva</translation>
 <translation id="4465725236958772856">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, upravlja administrator, povežite</translation>
 <translation id="4470564870223067757">hangul 2 set</translation>
+<translation id="4474142134969976028">Nema podudarnih rezultata</translation>
 <translation id="4477002475007461989">rumunjski</translation>
 <translation id="4477219268485577442">bugarska (fonetska)</translation>
 <translation id="4508265954913339219">Aktivacija nije uspjela</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">Broj znakova u nazivu može biti najviše <ph name="MAX_LENGTH" /></translation>
 <translation id="4973970068702235170">Komprimiranje nije uspjelo, neočekivana pogreška: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">japanski</translation>
+<translation id="4987699874727873250">engleski (Indija)</translation>
 <translation id="4988205478593450158">Jeste li sigurni da želite izbrisati datoteku "<ph name="FILE_NAME" />"?</translation>
 <translation id="498902553138568924">Crveni leptir</translation>
 <translation id="4992066212339426712">Uključi zvuk</translation>
@@ -509,6 +513,7 @@
        Uklanjanje uređaja dok je još u upotrebi može uzrokovati gubitak podataka. Pričekajte da uređaj dovrši radnju, a potom ga izbacite pomoću aplikacije Datoteke.</translation>
 <translation id="5163869187418756376">Dijeljenje nije uspjelo. Provjerite vezu i pokušajte ponovo kasnije.</translation>
 <translation id="516592729076796170">Američka programerska Dvorak</translation>
+<translation id="5167102019886320507">Priprema sljedećeg broja stavki: <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="5177526793333269655">Prikaz minijatura</translation>
 <translation id="5181896909298187506">Nema nedavnih datoteka</translation>
 <translation id="5194713942430106590">Kliknite da biste stavke u stupcu poredali uzlaznim redoslijedom.</translation>
@@ -813,6 +818,7 @@
 <translation id="7655441028674523381">Lako pristupajte Google fotografijama</translation>
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7663224033570512922">hindski</translation>
+<translation id="7665680517722058469">Pokušajte s nekim drugim pretraživanjem</translation>
 <translation id="7689532716264131859">Stavke premještene u otpad: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="7693909743393669729">Formatiranjem diska izbrisat će se svi podaci koji su na njemu pohranjeni i uklonit će se sve postojeće particije, uključujući particije koje možda nisu vidljive. Tu radnju nije moguće poništiti.</translation>
 <translation id="7695430100978772476">Nije uspjelo formatiranje diska <ph name="DRIVE_NAME" /></translation>

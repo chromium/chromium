@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Skedarët po përgatiten</translation>
 <translation id="1015730422737071372">Jep detaje të tjera</translation>
 <translation id="1019413721762100891">Joaktive</translation>
-<translation id="1021110881106174305">Kartat e pranuara</translation>
 <translation id="1021753677514347426">Ky problem ndodh për shkak të një certifikate që instalove ti ose dikush tjetër në pajisjen tënde. Certifikata njihet se është përdorur për të monitoruar dhe ndërhyrë në rrjete dhe nuk është e besuar nga Chromium. Megjithëse ekzistojnë disa raste legjitime për monitorimin, si p.sh. një rrjet shkolle ose kompanie, Chromium dëshiron të sigurohet që je në dijeni se kjo ndodh, edhe nëse nuk arrin ta ndalosh. Monitorimi mund të ndodhë në çdo shfletues ose aplikacion që ka qasje në ueb.</translation>
 <translation id="1024111578869940408">Sulmuesit ndonjëherë i imitojnë sajtet duke bërë tek adresa e uebit ndryshime që janë të vështira për t'u dalluar.</translation>
 <translation id="1028781062521375153">Shiko detajet</translation>
@@ -708,7 +707,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2688969097326701645">Po, vazhdo!</translation>
 <translation id="2691924980723297736">Paralajmërimi i sigurisë</translation>
 <translation id="2692131511336778528">Fantashkenca dhe fantazia</translation>
-<translation id="2699302886720511147">Kartat e pranuara</translation>
 <translation id="2701514975700770343">E kthyer poshtë</translation>
 <translation id="2702801445560668637">Lista e leximit</translation>
 <translation id="2704283930420550640">Vlera nuk përputhet me formatin.</translation>
@@ -991,7 +989,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="342781501876943858">Chromium rekomandon rivendosjen e fjalëkalimit tënd nëse e ke ripërdorur në sajte të tjera.</translation>
 <translation id="3428151540071562330">Një ose disa nga URI-të e shablloneve të serverit DnsOverHttpsTemplates janë të pavlefshme dhe nuk do të përdoren.</translation>
 <translation id="3431216045099978607">Shtyp |<ph name="ACCELERATOR" />| për të dalë nga ekrani i plotë dhe për të parë shkarkimin.</translation>
-<translation id="3431636764301398940">Ruaje këtë kartë në këtë pajisje</translation>
 <translation id="3432601291244612633">Mbyll faqen</translation>
 <translation id="3435738964857648380">Siguria</translation>
 <translation id="3438829137925142401">Përdor fjalëkalimet e ruajtura në "Llogarinë tënde të Google"</translation>
@@ -1122,7 +1119,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3744111561329211289">Sinkronizimi në sfond</translation>
 <translation id="3744286742364977428">Skedarët që shkarkon dërgohen te Google Cloud ose te palë të treta për analizim. Për shembull, ata mund të skanohen për të dhëna delikate ose softuerë keqdashës dhe mund të ruhen bazuar në politikat e kompanisë.</translation>
 <translation id="3744899669254331632">Nuk mund ta vizitosh <ph name="SITE" /> tani sepse sajti i uebit dërgoi kredenciale të koduara që nuk mund të përpunohen nga Chromium. Gabimet dhe sulmet në rrjet zakonisht janë të përkohshme, kështu që kjo faqe ndoshta do të punojë më vonë.</translation>
-<translation id="3745099705178523657">Pasi t'i konfirmosh, detajet e kartës nga "Llogaria jote e Google" do të ndahen me këtë sajt.</translation>
 <translation id="3748148204939282805">Sulmuesit në  <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> mund të të mashtrojnë që të bësh diçka të rrezikshme si instalimi i softuerëve ose të zbulosh informacion personal (për shembull, fjalëkalime, numra telefoni ose karta krediti). <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Industria e aviacionit</translation>
 <translation id="3752543821772132562">Shpërfillur sepse politika <ph name="POLICY_NAME" /> nuk është caktuar.</translation>
@@ -1140,7 +1136,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3781428340399460090">Rozë e ndezur</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Pajisjet me Bluetooth</translation>
-<translation id="3787705759683870569">Skadon më <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Madhësia 16</translation>
 <translation id="3789841737615482174">Instalo</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> inç)</translation>
@@ -3077,13 +3072,12 @@ Detaje shtesë:
 <translation id="860043288473659153">Emri i mbajtësit të kartës</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Çfarë të dhënash përdoren:<ph name="END_BOLD" /> Aktiviteti yt në një sajt që viziton duke përdorur Chrome në këtë pajisje.</translation>
 <translation id="8606726445206553943">Përdor pajisjet e tua MIDI</translation>
-<translation id="8606988009912891950">Temat e reklamave i ndihmojnë sajtet të të shfaqin reklama të përshtatshme ndërkohë që mbrojnë historikun e shfletimit dhe identitetin tënd. Chrome mund të mbajë shënim temat e interesit bazuar në historikun më të fundit të shfletimit. Më vonë, një sajt që ti viziton mund t'i kërkojë Chrome temat përkatëse që të personalizojë reklamat që shikon ti.</translation>
+<translation id="8606988009912891950">Temat e reklamave ndihmojnë sajtet të të shfaqin reklama të përshtatshme teksa mbrojnë historikun e shfletimit dhe identitetin tënd. Chrome mund të shënojë tema interesi bazuar në historikun më të fundit të shfletimit. Më vonë, një sajt që ti viziton mund t'i kërkojë Chrome tema të përshtatshme për të personalizuar reklamat që ti shikon.</translation>
 <translation id="8617269623452051934">përdorimi i pajisjes sate</translation>
 <translation id="861775596732816396">Madhësia 4</translation>
 <translation id="8620276786115098679">Zarf Kaku 7</translation>
 <translation id="8623885649813806493">Nuk ka asnjë fjalëkalim që përputhet. Shfaq të gjitha fjalëkalimet e ruajtura.</translation>
 <translation id="8624354461147303341">Merr uljet e çmimeve</translation>
-<translation id="8625384913736129811">Ruaje këtë kartë në këtë pajisje</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637577059508742477">Profili dhe shfletuesi yt menaxhohen nga <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">Zarf Kaku 3</translation>

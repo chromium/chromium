@@ -3021,6 +3021,14 @@ Si no estableces esta política, o la lista no contiene referencias de imagen v�
       Si no se establece esta política, los usuarios administrados por empresas no podrán usar la configuración predeterminada, pero los usuarios no administrados sí podrán usarla.</translation>
 <translation id="3791179836066841809">Documentación para la política</translation>
 <translation id="3791556154364029875">Habilitar Floating Workspace y abrir ventanas del navegador remotas al acceder</translation>
+<translation id="3793998702484455655">Chrome intentará actualizar algunos tipos de subrecursos con contenido mixto (HTTP en un sitio HTTPS) en iOS.
+Para obtener más información, consulta https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md.
+
+La función estará habilitada de forma predeterminada. Si habilitas la política o no la estableces, la función estará habilitada.
+
+Si la inhabilitas, se inhabilitará la función.
+
+Esta política es una solución temporal y se quitará en algunos momentos importantes (se prevé quitarla en la versión M113 de manera provisoria).</translation>
 <translation id="3795413481405077588">Esta política permite que un administrador especifique la configuración para las aplicaciones web instaladas.
 
       Esta política asigna una ID de aplicación web a su parámetro de configuración específico. Es posible establecer una configuración predeterminada usando la ID especial <ph name="DEFAULT_SCOPE" />, que se aplicará a todas las aplicaciones web que no tengan una configuración personalizada en esta política.
@@ -4740,6 +4748,10 @@ Si la inhabilitas o no la estableces, el restablecimiento completo de la configu
       Cuando se establece el valor de esta política y este no es 0, la sesión del usuario que haya accedido en ese momento en el modo de demostración se cerrará automáticamente una vez transcurrido el período de inactividad especificado.
 
       El valor de la política se debe especificar en milisegundos.</translation>
+<translation id="5501031245538651575">A partir de M110, se quitará la API no estándar de window.webkitStorageInfo. Esta política vuelve a habilitar la API.
+Si habilitas esta política, la API de window.webkitStorageInfo estará disponible.
+Si la inhabilitas o no la estableces, la API de window.webkitStorageInfo no estará disponible.
+Esto se quitó en M112.</translation>
 <translation id="5502683401545256109">Esta política controla si se le solicita al usuario que seleccione un certificado de cliente en la pantalla de acceso del marco que aloja el flujo de SAML cuando más de un certificado coincide con <ph name="DEVICE_LOGIN_SCREEN_AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Si habilitas esta política, se le pedirá al usuario que seleccione el certificado de cliente cada vez que la política de selección automática coincida con múltiples certificados.
       Si inhabilitas esta política o no la estableces, no se le solicitará nunca al usuario que seleccione un certificado de cliente en la pantalla de acceso.
@@ -6991,52 +7003,6 @@ Esto reemplaza la política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_N
 
       Si inhabilitas la política, cuando los usuarios realicen acciones que generen un diálogo de selección de archivos, como importar favoritos, subir archivos o guardar vínculos, se mostrará en su lugar un mensaje. Se considerará como si el usuario hubiera hecho clic en Cancelar en el diálogo de selección de archivos.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
-<translation id="7638726624761352254">Si estableces la política, se especificará una lista de apps web que se instalan de manera silenciosa, sin la interacción del usuario, y que este no podrá desinstalar ni desactivar.
-
-      Cada elemento de la lista de la política es un objeto con un miembro obligatorio:
-      <ph name="URL_LABEL" /> (la URL de la app web que se instalará)
-
-      y 6 miembros opcionales:
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
-      (establece la manera en la que se abrirá la app web; la opción predeterminada es una nueva pestaña)
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
-      (verdadero, si se crean accesos directos de escritorio para <ph name="LINUX_OS_NAME" /> y
-      <ph name="MS_WIN_NAME" />).
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" />
-      (A partir de la versión 90 de <ph name="PRODUCT_NAME" />,
-      te permite anular el nombre de la app si no es una
-      app web progresiva [AWP], o el nombre de la app instalada
-      temporalmente si es una AWP, pero se requiere autenticación para que la
-      instalación pueda completarse. Si se proporcionan
-      <ph name="CUSTOM_NAME_LABEL" /> y
-      <ph name="FALLBACK_APP_NAME_LABEL" />,
-      se ignorará este último).
-
-      - <ph name="OVERRIDE_APP_NAME_LABEL" />
-      (A partir de la versión 99 de <ph name="PRODUCT_OS_NAME" />,
-      y la versión 111 en los demás sistemas operativos, te permite
-      anular de forma permanente el nombre de la app para todas las apps web y AWP).
-
-      - <ph name="CUSTOM_ICON_LABEL" />
-      (A partir de la versión 99 de<ph name="PRODUCT_OS_NAME" />,
-      y la versión 111 en los demás sistemas operativos, te permite
-      anular el ícono de las apps instaladas. Los íconos deben tener forma cuadrada,
-      un tamaño máximo de 1 MB y uno de los siguientes formatos: jpeg, png, gif, webp o ico.
-      El valor de hash del archivo del ícono debe ser SHA256).
-
-      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
-      (A partir de la versión 107 de
-      <ph name="PRODUCT_NAME" />). Si se habilita, la <ph name="URL_LABEL" />
-      se instalará como acceso directo, como si se hiciera mediante la opción "Crear acceso directo…"
-      en la GUI del navegador para computadoras.
-      Ten en cuenta que, en caso de que se instale como acceso directo, no se actualizará si
-      cambia el manifiesto de <ph name="URL_LABEL" />.
-      Si se inhabilita o no se establece, la app web en la
-      <ph name="URL_LABEL" /> determinada se instalará normalmente.
-
-      Para fijar apps a la barra de <ph name="PRODUCT_OS_NAME" />, consulta <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" />.</translation>
 <translation id="7638764766629234761">Permite el uso de notificaciones del sistema</translation>
 <translation id="7643151458117317518">Una política para controlar si se puede inhabilitar la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> de medición de anuncios para los usuarios.
 

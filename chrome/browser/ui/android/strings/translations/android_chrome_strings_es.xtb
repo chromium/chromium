@@ -250,6 +250,7 @@ Si eliminas tu historial de navegación (entero o de un sitio en concreto), tamb
 <translation id="2426805022920575512">Elegir otra cuenta</translation>
 <translation id="2433507940547922241">Aspecto</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
+<translation id="2439153523196674349">Vista previa de <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">¿Quieres empezar a descargar <ph name="FILE_NAME" /> de nuevo?</translation>
 <translation id="2453860139492968684">Finalizar</translation>
 <translation id="2459390580524506445">Búsqueda por voz mejorada</translation>
@@ -388,6 +389,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="3066573403916685335">Mover hacia abajo</translation>
 <translation id="3070005020161560471">Traducir automáticamente</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> se abrirá en Chrome. Al continuar, aceptas los <ph name="BEGIN_LINK1" />Términos del Servicio de Google<ph name="END_LINK1" /> y los <ph name="BEGIN_LINK2" />Términos del Servicio Adicionales de Google Chrome y ChromeOS<ph name="END_LINK2" />. También se aplica la <ph name="BEGIN_LINK3" />Política de Privacidad<ph name="END_LINK3" />.</translation>
+<translation id="3083194063661536258">Has cerrado sesión. Botón. Abre el cuadro de diálogo para iniciar sesión y activar la sincronización.</translation>
 <translation id="3091010850649238832">Muestra el contenido del portapapeles</translation>
 <translation id="3098745985164956033">Algunas imágenes se envían a Google para mejorar las descripciones que recibes</translation>
 <translation id="3104179992611025423">Tus padres gestionan tu navegador</translation>
@@ -924,6 +926,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="604124094241169006">Automático</translation>
 <translation id="6042308850641462728">Más</translation>
+<translation id="6049046116080614938">Has iniciado sesión como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Botón. Abre la configuración.</translation>
 <translation id="604996488070107836">No ha sido posible descargar el archivo <ph name="FILE_NAME" /> debido a un error desconocido.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla tus noticias y tu actividad aquí</translation>
@@ -1297,6 +1300,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7968014550143838305">Añadido a la lista de lectura</translation>
 <translation id="7971136598759319605">Activo hace 1 día</translation>
 <translation id="7975379999046275268">Revisar página <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">Has iniciado sesión como <ph name="USER_NAME" />. Botón. Abre la configuración.</translation>
 <translation id="7986497153528221272">Para ver las contraseñas, primero debes establecer un bloqueo de pantalla en tu dispositivo</translation>
 <translation id="7995059495660416932">Verás contenido cuando esté disponible</translation>
 <translation id="799576009106109668">Navegarás más rápido porque el contenido se cargará de forma proactiva en función de la página web en la que estés.</translation>

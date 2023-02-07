@@ -22,6 +22,7 @@
 <translation id="2347208864470321755">Lorsque cette fonction est activée, Google Chrome vous propose de traduire les pages écrites dans d'autres langues à l'aide de Google Traduction. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome comprend des fonctionnalités qui vous aident à gérer vos données Internet et la vitesse de chargement des pages Web.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="2444854139071078915">Pour récupérer facilement vos mots de passe enregistrés dans vos autres applications, utilisez Chrome pour le remplissage automatique</translation>
 <translation id="2561231791489583059">Utilisez Chrome comme navigateur par défaut pour vous protéger des sites dangereux et conserver vos mots de passe en sécurité</translation>
 <translation id="2574249610672786438">Pour voir vos onglets partout où vous utilisez Chrome, connectez-vous sur tous vos appareils</translation>
 <translation id="2576431527583832481">Une nouvelle version améliorée de Google Chrome est maintenant offerte.</translation>
@@ -89,6 +90,7 @@
 <translation id="6709398533399187136">Votre mot de passe a été exposé dans une violation de données. Le Gestionnaire de mots de passe Google vous recommande de le modifier maintenant.</translation>
 <translation id="6822673484890854830">Chrome n'a pas pu vérifier tous les mots de passe. Réessayez plus tard.</translation>
 <translation id="6964931465519938134">Vous pouvez maintenant utiliser Chrome chaque fois que vous touchez des liens dans des messages, des documents et des applications.</translation>
+<translation id="6975725306479268850">Choisissez Chrome pour le remplissage automatique</translation>
 <translation id="701356708427365932">Découvrez le nouveau menu de Chrome</translation>
 <translation id="7059914902409643750">Personnalisez Chrome</translation>
 <translation id="7124339256045485976">Pour garder Chrome à jour</translation>
@@ -109,6 +111,7 @@
 <translation id="7754633291442704733">Votre organisation <ph name="DOMAIN" /> aura accès à vos données, favoris, historique, mots de passe et autres paramètres Chrome que vous stockez dans ce compte. Lorsque vous vous déconnectez, vos données sont effacées de cet appareil.  Cependant, vos données restent stockées dans votre compte Google géré et sont disponibles pour votre organisation. Votre organisation peut également définir des politiques relatives aux utilisateurs propres à ce compte, lesquelles peuvent modifier le comportement de Chrome.</translation>
 <translation id="7780154209050837198">Connectez-vous à Chrome avec votre compte Google pour en tirer le meilleur parti.</translation>
 <translation id="7855730255114109580">Google Chrome est à jour</translation>
+<translation id="7939179037291298976">Dans les paramètres de votre iPhone, accédez à « Options de mot de passe » et sélectionnez « Chrome »</translation>
 <translation id="8022947259858476807">Utilisez Chrome par défaut pour ouvrir des liens, faire des recherches dans des widgets et entrer automatiquement des mots de passe dans d'autres applications</translation>
 <translation id="81358522153858150">Chrome prend désormais en charge les politiques relatives aux utilisateurs pour votre compte géré</translation>
 <translation id="8160472928944011082">Impossible de mettre à jour Chrome</translation>
@@ -124,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Le gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe dans votre compte Google.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Demeurez en sécurité grâce à Chrome</translation>
+<translation id="8765470054473112089">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chrome achemine la requête saisie à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en mode de navigation privée.</translation>
 <translation id="8772179140489533211">Affiche l'invite de connexion dans Chrome.</translation>
 <translation id="8788269841521769222">Vous n'aurez pas à mémoriser ce mot de passe. Il sera enregistré dans le gestionnaire de mots de passe Google de ce compte : <ph name="EMAIL" /></translation>
 <translation id="8857676124663337448">Le gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez demain.</translation>

@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Fájlok előkészítése…</translation>
 <translation id="1015730422737071372">További részletek megadása</translation>
 <translation id="1019413721762100891">Ki</translation>
-<translation id="1021110881106174305">Elfogadott kártyák</translation>
 <translation id="1021753677514347426">A probléma oka az Ön vagy valaki más által az eszközre telepített egyik tanúsítvány. Erről a tanúsítványról tudni lehet, hogy hálózati forgalom megfigyelésére és elfogására használják, és a Chromium szerint nem megbízható. Bár a megfigyelésnek létezik néhány jogszerű formája (például iskolai vagy vállalati hálózatokon), a Chromium biztosra szeretne menni abban, hogy Ön ezzel tisztában van – még akkor is, ha Ön nem tud tenni ellene. A megfigyelés az internethez hozzáférő bármely böngészőben vagy alkalmazásban megtörténhet.</translation>
 <translation id="1024111578869940408">A támadók néha úgy próbálnak meg webhelyeket utánozni, hogy alig észrevehető változtatásokat végeznek a webhely címében.</translation>
 <translation id="1028781062521375153">Részletek megtekintése</translation>
@@ -708,7 +707,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2688969097326701645">Igen, folytatás</translation>
 <translation id="2691924980723297736">Biztonsági figyelmeztetés</translation>
 <translation id="2692131511336778528">Sci-fi és fantasy filmek</translation>
-<translation id="2699302886720511147">Elfogadott kártyák</translation>
 <translation id="2701514975700770343">Lefelé fordítva</translation>
 <translation id="2702801445560668637">Olvasási lista</translation>
 <translation id="2704283930420550640">Az érték nem egyezik a formátummal.</translation>
@@ -989,7 +987,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="342781501876943858">A Chromium azt javasolja, hogy adjon meg új jelszót a régi helyett, ha azt más webhelyeken is használta.</translation>
 <translation id="3428151540071562330">A DnsOverHttpsTemplates szerversablon-URI-k közül legalább egy érvénytelen, és nem használható.</translation>
 <translation id="3431216045099978607">Nyomja meg a(z) |<ph name="ACCELERATOR" />| gombot a teljes képernyős nézetből való kilépéshez és a letöltés megjelenítéséhez.</translation>
-<translation id="3431636764301398940">Kártya mentése az eszközre</translation>
 <translation id="3432601291244612633">Oldal bezárása</translation>
 <translation id="3435738964857648380">Biztonság</translation>
 <translation id="3438829137925142401">A Google-fiókba mentett jelszavak használata</translation>
@@ -1120,7 +1117,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3744111561329211289">Szinkronizálás a háttérben</translation>
 <translation id="3744286742364977428">A böngésző elemzés céljából a Google Cloudnak vagy harmadik feleknek továbbítja a letöltött fájlokat. A Google Cloud vagy a harmadik fél például bizalmas adatokat vagy rosszindulatú programokat kereshet a fájlokban, és az is előfordulhat, hogy a vállalati irányelvek alapján tárolni is fogják majd őket.</translation>
 <translation id="3744899669254331632">Most nem keresheti fel a(z) <ph name="SITE" /> webhelyet, mert az zavaros, a Chromium által nem feldolgozható hitelesítő adatokat küldött. A hálózati hibák és támadások általában ideiglenesek, úgyhogy az oldal később valószínűleg megfelelően fog működni.</translation>
-<translation id="3745099705178523657">A megerősítést követően a böngésző megosztja az Ön Google-fiókjából származó kártyaadatokat ezzel a webhellyel.</translation>
 <translation id="3748148204939282805">A támadók a(z) <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> webhelyen megpróbálhatják csellel rávenni Önt például arra, hogy veszélyes szoftvert telepítsen, vagy felfedje személyes adatait (jelszavakat, telefonszámokat, bankkártyaadatokat stb). <ph name="BEGIN_LEARN_MORE_LINK" />További információ<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3748912308089554501">Repülőipar</translation>
 <translation id="3752543821772132562">Figyelmen kívül hagyva, mert a következő házirend nincs beállítva: <ph name="POLICY_NAME" />.</translation>
@@ -1138,7 +1134,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3781428340399460090">Élénk rózsaszín</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-eszközök</translation>
-<translation id="3787705759683870569">Lejárat dátuma: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Méret: 16</translation>
 <translation id="3789841737615482174">Telepítés</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> hüvelyk)</translation>
@@ -1338,7 +1333,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4282346679996504092">Megtörtént a termékhez tartozó értesítések kikapcsolása és a könyvjelző eltávolítása</translation>
 <translation id="4285498937028063278">Rögzítés megszüntetése</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{A kártyát mentettük a Google-fiókjába.}other{Ezeket a kártyákat mentettük a Google-fiókjába.}}</translation>
-<translation id="4287495839370498922">Az adatok nagyobb védelme a Chrome-ban</translation>
+<translation id="4287495839370498922">Hirdetésekhez kapcsolódó fokozott adatvédelem a Chrome-ban</translation>
 <translation id="4287885627794386150">Jogosult a próbaverzióra, de nem aktív</translation>
 <translation id="4297502707443874121">A(z) <ph name="THUMBNAIL_PAGE" /> oldal indexképe</translation>
 <translation id="4298000214066716287">Befektetések</translation>
@@ -3083,7 +3078,6 @@ További részletek:
 <translation id="8620276786115098679">Kaku 7 boríték</translation>
 <translation id="8623885649813806493">Nincs egyező jelszó. Az összes mentett jelszó megjelenítése.</translation>
 <translation id="8624354461147303341">Kérem a kedvezményeket</translation>
-<translation id="8625384913736129811">Kártya mentése az eszközre</translation>
 <translation id="8634957317623797170">54 × 86 mm</translation>
 <translation id="8637577059508742477">Profilját és böngészőjét a következő kezeli: <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">Kaku 3 boríték</translation>

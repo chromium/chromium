@@ -22,6 +22,7 @@
 <translation id="2347208864470321755">Kadar je vklopljena ta funkcija, bo Chrome ponudil, da z uporabo Google Prevajalnika prevede strani v drugih jezikih. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome ima funkcije, s katerimi lažje upravljate internetne podatke in hitrost nalaganja spletnih strani.
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="2444854139071078915">Če želite preprosto do shranjenih gesel v drugih aplikacijah, uporabite Chrome za samodejno izpolnjevanje.</translation>
 <translation id="2561231791489583059">Uporabljajte Chrome kot privzeti brskalnik, če se želite zaščititi pred nevarnimi spletnimi mesti in poskrbeti za varnost gesel.</translation>
 <translation id="2574249610672786438">Če si želite ogledati zavihke iz naprav, v katerih uporabljate Chrome, se prijavite v vseh napravah</translation>
 <translation id="2576431527583832481">Chrome je izboljšan! Na voljo je nova različica.</translation>
@@ -89,6 +90,7 @@
 <translation id="6709398533399187136">Geslo je bilo razkrito zaradi podatkovne kršitve. Google Upravitelj gesel priporoča, da ga takoj spremenite.</translation>
 <translation id="6822673484890854830">Chromu ni uspelo preveriti vseh gesel. Poskusite znova pozneje.</translation>
 <translation id="6964931465519938134">Zdaj lahko uporabljate Chrome, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah.</translation>
+<translation id="6975725306479268850">Izbira Chroma za samodejno izpolnjevanje</translation>
 <translation id="701356708427365932">Spoznajte novi meni v Chromu</translation>
 <translation id="7059914902409643750">Prilagodite si Chrome</translation>
 <translation id="7124339256045485976">Posodobitev Chroma</translation>
@@ -109,6 +111,7 @@
 <translation id="7754633291442704733">Vaša organizacija <ph name="DOMAIN" /> bo imela dostop do podatkov Chroma, zaznamkov, zgodovine, gesel in drugih nastavitev, ki jih shranite v tem računu. Ko se odjavite, bodo podatki izbrisani iz te naprave.  Vaši podatki bodo kljub temu še naprej shranjeni v upravljanem računu Google in bodo na voljo vaši organizaciji. Vaša organizacija lahko nastavi tudi uporabniške pravilnike, specifične za ta račun, to pa lahko spremeni način delovanja Chroma.</translation>
 <translation id="7780154209050837198">Če želite kar najbolje izkoristiti Chrome, se prijavite vanj z računom Google.</translation>
 <translation id="7855730255114109580">Google Chrome je posodobljen</translation>
+<translation id="7939179037291298976">V nastavitvah iPhona odprite »Password Options« (Možnosti gesla) in izberite »Chrome«</translation>
 <translation id="8022947259858476807">Uporabljajte Chrome kot privzeto možnost odpiranja povezav, iskanja v pripomočkih in samodejnega izpolnjevanja gesel v drugih aplikacijah.</translation>
 <translation id="81358522153858150">Chrome zdaj podpira uporabniške pravilnike za vaš upravljani račun</translation>
 <translation id="8160472928944011082">Chroma ni mogoče posodobiti</translation>
@@ -124,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Googlovemu upravitelju gesel ni uspelo preveriti vseh gesel. Poskusite znova jutri ali <ph name="BEGIN_LINK" />preverite gesla v računu Google.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Ostanite varni z Google Chromom</translation>
+<translation id="8765470054473112089">Ko tipkate v naslovno vrstico ali iskalno polje, Chrome vaše vnose pošlje v privzeti iskalnik zaradi boljših predlogov. V anonimnem načinu je to izklopljeno.</translation>
 <translation id="8772179140489533211">Pokaže pozive za prijavo v Chrome.</translation>
 <translation id="8788269841521769222">Tega gesla si ne bo treba zapomniti. Shranjeno bo v Google Upravitelju gesel za račun <ph name="EMAIL" />.</translation>
 <translation id="8857676124663337448">Googlovemu upravitelju gesel ni uspelo preveriti vseh gesel. Poskusite znova jutri.</translation>

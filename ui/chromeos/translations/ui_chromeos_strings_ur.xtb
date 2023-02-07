@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">ڈوراک کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - میزبان</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
+<translation id="1521795806314479294"><ph name="FILE_NAME" /> کو تیار کیا جا رہا ہے...</translation>
 <translation id="1538729222189715449">‏Linux فائلز کھل رہی ہیں…</translation>
 <translation id="1547964879613821194">کینیڈین انگریزی</translation>
 <translation id="1556189134700913550">سبھی پر لاگو کریں</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> آئٹمز کو زِپ کیا جا رہا ہے...</translation>
 <translation id="1722687688096767818">پروفائل شامل کی جا رہی ہے...</translation>
 <translation id="1726100011689679555">نام سرورز</translation>
+<translation id="1727562178154619254">مطابقت پذیری کے لیے تیار ہے</translation>
 <translation id="1729953886957086472">جرمن (جرمنی)</translation>
 <translation id="1730235522912993863">‏چینی Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> آئٹمز کاپی ہو گئے۔</translation>
@@ -479,6 +481,7 @@
 <translation id="4973523518332075481">ایک ایسا نام استعمال کریں جو <ph name="MAX_LENGTH" /> یا اس سے کم حروف پر مشتمل ہو</translation>
 <translation id="4973970068702235170">زِپ کرنے کا عمل ناکام، غیر متوقع خرابی: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">جاپانی</translation>
+<translation id="4987699874727873250">انگریزی (ہندوستان)</translation>
 <translation id="4988205478593450158">کیا آپ واقعی "<ph name="FILE_NAME" />" کو حذف کرنا چاہتے ہیں؟</translation>
 <translation id="498902553138568924">سرخ تتلی</translation>
 <translation id="4992066212339426712">آواز چلائیں</translation>
@@ -509,6 +512,7 @@
    زیر استعمال ہونے پر آپ کا آلہ ہٹانے سے ڈیٹا کو نقصان پہنچ سکتا ہے۔  براہ کرم کارروائی مکمل ہونے تک انتظار کریں، پھر فائلز ایپ استعمال کر کے آلہ کو خارج کریں۔</translation>
 <translation id="5163869187418756376">اشتراک ناکام ہو گیا۔ اپنا کنکشن چیک کریں او بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="516592729076796170">‏US پروگرامر ڈووراک</translation>
+<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> آئٹمز کو تیار کیا جا رہا ہے...</translation>
 <translation id="5177526793333269655">تھمب نیل کا منظر</translation>
 <translation id="5181896909298187506">حالیہ کوئی فائل نہیں ہے</translation>
 <translation id="5194713942430106590">صعودی ترتیب میں کالم کو ترتیب دینے کے لیے کلک کریں۔</translation>
@@ -968,6 +972,7 @@
 <translation id="8866284467018526531">عربی نقل حرفی</translation>
 <translation id="8873014196523807561">ان آئٹمز کو بحال کرنے کے لیے، انہیں ایک نئے فولڈر میں گھسیٹیں۔ ان میں سے کچھ آئٹمز کے اصل فولڈرز کو حذف کر دیا گیا ہے۔</translation>
 <translation id="8874184842967597500">منسلک نہیں</translation>
+<translation id="8876368061475701452">قطار بند</translation>
 <translation id="8900820606136623064">ہنگیرین</translation>
 <translation id="8903931173357132290">گریجویٹ</translation>
 <translation id="8912078710089354287">دُم ہلاتا ہوا کتا</translation>

@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Klargjør filer</translation>
 <translation id="1015730422737071372">Oppgi flere detaljer</translation>
 <translation id="1019413721762100891">Av</translation>
-<translation id="1021110881106174305">Godkjente kort</translation>
 <translation id="1021753677514347426">Dette problemet oppstår på grunn av et sertifikat du eller noen andre har installert på enheten. Det er kjent at sertifikatet brukes til nettverksavlytting og -overvåking, og Chromium stoler ikke på det. Selv om det finnes legitime bruksområder for overvåking, f.eks. på skole- eller bedriftsnettverk, vil Chromium sørge for at du er klar over at det foregår, selv om du ikke kan stoppe det. Overvåking kan skje i alle nettlesere og applikasjoner som bruker nettet.</translation>
 <translation id="1024111578869940408">Noen ganger etterligner angripere nettsteder ved å gjøre endringer i nettadressen som er vanskelige å se.</translation>
 <translation id="1028781062521375153">Se detaljer</translation>
@@ -709,7 +708,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2688969097326701645">Ja, fortsett</translation>
 <translation id="2691924980723297736">Sikkerhetsadvarsel</translation>
 <translation id="2692131511336778528">Science fiction og fantasy</translation>
-<translation id="2699302886720511147">Godkjente kort</translation>
 <translation id="2701514975700770343">Forsiden ned</translation>
 <translation id="2702801445560668637">Leseliste</translation>
 <translation id="2704283930420550640">Verdien samsvarer ikke med formatet.</translation>
@@ -992,7 +990,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="342781501876943858">Chromium anbefaler at du tilbakestiller passordet ditt hvis du også har brukt det på andre nettsteder.</translation>
 <translation id="3428151540071562330">Én eller flere av URI-ene for DnsOverHttpsTemplates-tjenermaler er ugyldige og blir ikke brukt.</translation>
 <translation id="3431216045099978607">Trykk på |<ph name="ACCELERATOR" />| for å avslutte fullskjerm og se nedlastingen.</translation>
-<translation id="3431636764301398940">Lagre dette kortet på denne enheten</translation>
 <translation id="3432601291244612633">Lukk siden</translation>
 <translation id="3435738964857648380">Sikkerhet</translation>
 <translation id="3438829137925142401">Bruk passord som er lagret i Google-kontoen din</translation>
@@ -1123,7 +1120,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3744111561329211289">Bakgrunnssynkronisering</translation>
 <translation id="3744286742364977428">Filer du laster ned, sendes til Google Cloud eller tredjeparter for analyse. De kan for eksempel bli skannet for sensitive data eller skadelig programvare, og de kan bli lagret i henhold til bedriftens regler.</translation>
 <translation id="3744899669254331632">Du kan ikke gå til <ph name="SITE" /> akkurat nå, fordi nettstedet sendte kryptert legitimasjon som Chromium ikke kan behandle. Nettverksfeil og -angrep er vanligvis forbigående, så siden kommer sikkert til å virke senere.</translation>
-<translation id="3745099705178523657">Etter at du har bekreftet, deles kortopplysningene fra Google-kontoen din med dette nettstedet.</translation>
 <translation id="3748148204939282805">Angripere på <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> kan lure deg til å gjøre farlige ting, deriblant å installere programvare eller oppgi personopplysninger (for eksempel passord, telefonnumre og kredittkortinformasjon). <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Flybransjen</translation>
 <translation id="3752543821772132562">Ignorert fordi <ph name="POLICY_NAME" /> ikke er angitt.</translation>
@@ -1141,7 +1137,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3781428340399460090">Knallrosa</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-enheter</translation>
-<translation id="3787705759683870569">Utløper <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Størrelse 16</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> tommer)</translation>
@@ -3087,7 +3082,6 @@ Mer informasjon:
 <translation id="8620276786115098679">Kaku 7-konvolutt</translation>
 <translation id="8623885649813806493">Ingen samsvarende passord. Vis alle lagrede passord.</translation>
 <translation id="8624354461147303341">Få rabatter</translation>
-<translation id="8625384913736129811">Lagre dette kortet på denne enheten</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637577059508742477">Profilen og nettleseren din administreres av <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">Kaku 3-konvolutt</translation>

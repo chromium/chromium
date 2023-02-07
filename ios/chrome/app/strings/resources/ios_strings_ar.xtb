@@ -230,7 +230,7 @@
 <translation id="2704491540504985681">عمليات التنزيل</translation>
 <translation id="2704606927547763573">تم النسخ</translation>
 <translation id="2709516037105925701">الملء التلقائي</translation>
-<translation id="271033894570825754">جديدة</translation>
+<translation id="271033894570825754">جديد</translation>
 <translation id="2712127207578915686">تعذر فتح الملف</translation>
 <translation id="2718352093833049315">‏باستخدام شبكة Wi-Fi فقط</translation>
 <translation id="2747003861858887689">الحقل السابق</translation>
@@ -670,6 +670,7 @@
 <translation id="5988097621740394599">يمكنك الاطّلاع على الأسعار المخفَّضة في علامات التبويب.</translation>
 <translation id="5988851877894965432">‏فتح عناوين URL في Chrome</translation>
 <translation id="6006672969046233841">علامة تبويب جديدة</translation>
+<translation id="6011308810877101166">تحسين اقتراحات البحث</translation>
 <translation id="6012140227487808125">جارٍ التشفير...</translation>
 <translation id="6021332621416007159">فتح في...</translation>
 <translation id="6027945736510816438">هل كنت تقصد <ph name="WEBSITE" />؟</translation>
@@ -889,6 +890,7 @@
 <translation id="746684838091935575">‏3- اختَر Chrome.</translation>
 <translation id="7472734401283673885">اسم الشركة</translation>
 <translation id="7473891865547856676">لا، شكرًا</translation>
+<translation id="7491131399623468277">الانتقال إلى الإعدادات…</translation>
 <translation id="750493650310597496">لم يتم اختيار أي إشارات</translation>
 <translation id="7508728395076009983">‏لقفل علامات التبويب في وضع التصفّح المتخفي، ما عليك سوى إعداد رمز مرور أو ميزة Touch ID أو Face ID.</translation>
 <translation id="7514365320538308">تنزيل</translation>

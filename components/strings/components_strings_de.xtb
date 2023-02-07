@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Dateien werden vorbereitet</translation>
 <translation id="1015730422737071372">Weitere Details angeben</translation>
 <translation id="1019413721762100891">Aus</translation>
-<translation id="1021110881106174305">Akzeptierte Karten</translation>
 <translation id="1021753677514347426">Du siehst diesen Fehler aufgrund eines Zertifikats, das auf deinem Gerät installiert ist. Chromium vertraut dem Zertifikat nicht, weil es Netzwerke unterbrechen und überwachen kann. Natürlich gibt es berechtigte Gründe für eine Überwachung, z. B. im Netzwerk von Schulen oder Unternehmen. Trotzdem soll sichergestellt werden, dass du über die Überwachung informiert bist, selbst wenn du sie nicht unterbinden kannst. Die Überwachung ist in jedem Browser und jeder Anwendung mit Webzugriff möglich.</translation>
 <translation id="1024111578869940408">Angreifer kopieren manchmal Websites und nehmen unauffällige Änderungen an der Webadresse vor.</translation>
 <translation id="1028781062521375153">Details anzeigen</translation>
@@ -708,7 +707,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2688969097326701645">Ja, weiter</translation>
 <translation id="2691924980723297736">Sicherheitswarnung</translation>
 <translation id="2692131511336778528">Science-Fiction &amp; Fantasy</translation>
-<translation id="2699302886720511147">Akzeptierte Karten</translation>
 <translation id="2701514975700770343">Vorderseite nach unten</translation>
 <translation id="2702801445560668637">Leseliste</translation>
 <translation id="2704283930420550640">Wert stimmt nicht mit dem Format überein.</translation>
@@ -991,7 +989,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="342781501876943858">Chromium empfiehlt, dein Passwort zurückzusetzen, wenn du es auf anderen Websites verwendet hast.</translation>
 <translation id="3428151540071562330">Einer oder mehrere der "DnsOverHttpsTemplates"-Servervorlagen-URIs sind ungültig und werden nicht verwendet.</translation>
 <translation id="3431216045099978607">Drücke auf die |<ph name="ACCELERATOR" />|-Taste, um den Vollbildmodus zu beenden und den Download zu sehen.</translation>
-<translation id="3431636764301398940">Diese Karte für dieses Gerät speichern</translation>
 <translation id="3432601291244612633">Seite schließen</translation>
 <translation id="3435738964857648380">Sicherheit</translation>
 <translation id="3438829137925142401">Im Google-Konto gespeicherte Passwörter verwenden</translation>
@@ -1120,7 +1117,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3744111561329211289">Hintergrundsynchronisierung</translation>
 <translation id="3744286742364977428">Dateien, die du herunterlädst, werden zur Analyse an Google Cloud oder Dritte gesendet. Sie können beispielsweise auf sensible Daten oder Malware geprüft und gemäß den Unternehmensrichtlinien gespeichert werden.</translation>
 <translation id="3744899669254331632">Du kannst <ph name="SITE" /> zurzeit nicht aufrufen, weil die Website verschlüsselte Anmeldedaten gesendet hat, die von Chromium nicht verarbeitet werden können. Netzwerkfehler und Angriffe sind in der Regel nur vorübergehend, sodass die Seite wahrscheinlich später wieder funktioniert.</translation>
-<translation id="3745099705178523657">Nach erfolgter Bestätigung werden die Kartendetails deines Google-Kontos an diese Website weitergegeben.</translation>
 <translation id="3748148204939282805">Hacker könnten auf <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> etwa versuchen, dich zur Installation von Software oder zur Herausgabe von Daten wie Passwörtern, Telefonnummern oder Kreditkartendetails zu bewegen. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Luftfahrtindustrie</translation>
 <translation id="3752543821772132562">Ignoriert, weil <ph name="POLICY_NAME" /> nicht konfiguriert ist.</translation>
@@ -1138,7 +1134,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3781428340399460090">Dunkelrosa</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-Geräte</translation>
-<translation id="3787705759683870569">Ablaufdatum: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Größe 16</translation>
 <translation id="3789841737615482174">Installieren</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" />" × <ph name="HEIGHT" />")</translation>
@@ -1338,7 +1333,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4282346679996504092">Benachrichtigungen zu diesem Produkt wurden deaktiviert und das Lesezeichen wurde entfernt</translation>
 <translation id="4285498937028063278">Loslösen</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Diese Karte wurde in deinem Google-Konto gespeichert}other{Diese Karten wurden in deinem Google-Konto gespeichert}}</translation>
-<translation id="4287495839370498922">Erweiterter Datenschutz bei Werbung in Chrome</translation>
+<translation id="4287495839370498922">Erweiterter Datenschutz bei Anzeigen in Chrome</translation>
 <translation id="4287885627794386150">Testversion möglich, aber nicht aktiv</translation>
 <translation id="4297502707443874121">Miniaturansicht für Seite <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Investitionen</translation>
@@ -1781,7 +1776,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5337569431717511221">Schaltfläche „Google Chrome als Standardbrowser festlegen“ – Drück die Eingabetaste, um Chrome als Standardbrowser für das System festzulegen</translation>
 <translation id="5340250774223869109">Die App ist blockiert</translation>
 <translation id="534295439873310000">NFC-Geräte</translation>
-<translation id="5344522958567249764">Datenschutz bei Werbung verwalten</translation>
+<translation id="5344522958567249764">Datenschutz bei Anzeigen verwalten</translation>
 <translation id="5344579389779391559">Auf dieser Seite wird möglicherweise versucht, dir etwas in Rechnung zu stellen</translation>
 <translation id="5347645913823149105">Schaltfläche zum Anpassen von Schriftarten in Chrome – drücke die Eingabetaste, um Schriftgrößen und Schriftarten in Chrome anzupassen</translation>
 <translation id="5355557959165512791">Du kannst <ph name="SITE" /> zurzeit nicht aufrufen, da das Zertifikat widerrufen wurde. Netzwerkfehler und Angriffe sind in der Regel nur vorübergehend, sodass die Seite wahrscheinlich später wieder funktioniert.</translation>
@@ -2106,7 +2101,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6196640612572343990">Drittanbieter-Cookies blockieren</translation>
 <translation id="6197648101609735209">89 × 89 mm</translation>
 <translation id="6203231073485539293">Bitte überprüfe deine Internetverbindung.</translation>
-<translation id="6205314730813004066">Datenschutz bei Werbung</translation>
+<translation id="6205314730813004066">Datenschutz bei Anzeigen</translation>
 <translation id="6212314149070368045">Zickzackfaltung (USA)</translation>
 <translation id="6218753634732582820">Adresse aus Chromium entfernen?</translation>
 <translation id="622039917539443112">Parallele Faltung</translation>
@@ -3083,7 +3078,6 @@ Weitere Details:
 <translation id="8620276786115098679">Umschlag Kaku 7</translation>
 <translation id="8623885649813806493">Keine übereinstimmenden Passwörter. Alle gespeicherten Passwörter anzeigen.</translation>
 <translation id="8624354461147303341">Rabatte sichern</translation>
-<translation id="8625384913736129811">Diese Karte für dieses Gerät speichern</translation>
 <translation id="8634957317623797170">54 × 86 mm</translation>
 <translation id="8637577059508742477">Dein Profil und dein Browser werden von <ph name="DOMAIN" /> verwaltet</translation>
 <translation id="8643409044755049933">Umschlag Kaku 3</translation>

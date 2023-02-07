@@ -923,6 +923,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6000203700195075278">Följ på nytt</translation>
 <translation id="6002122790816966947">Dina enheter</translation>
 <translation id="6005538289190791541">Föreslaget lösenord</translation>
+<translation id="6011308810877101166">Förbättra sökförslag</translation>
 <translation id="6039379616847168523">Hoppa till nästa flik</translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="604124094241169006">Automatisk</translation>
@@ -1453,6 +1454,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8746155870861185046">Dela markering</translation>
 <translation id="8748850008226585750">Innehållet har dolts</translation>
 <translation id="8756969031206844760">Vill du uppdatera lösenordet?</translation>
+<translation id="8765470054473112089">När du skriver i adressfältet eller sökrutan skickar Chrome det du skriver till standardsökmotorn för att du ska få bättre förslag. Detta är inaktiverat i inkognitoläge.</translation>
 <translation id="8766529642647037772">Vill du skapa en markerad länk som denna?</translation>
 <translation id="8773160212632396039">Bearbetar begäran</translation>
 <translation id="8788265440806329501">Navigeringshistoriken har stängts</translation>

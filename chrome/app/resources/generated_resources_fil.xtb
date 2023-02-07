@@ -5738,7 +5738,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6200151268994853226">Pamahalaan ang Extension</translation>
 <translation id="6201608810045805374">Alisin ang account na ito?</translation>
 <translation id="6202304368170870640">Maaari mong gamitin ang iyong PIN para mag-sign in sa o para ma-unlock ang device mo.</translation>
-<translation id="6205314730813004066">Privacy sa ad</translation>
+<translation id="6205314730813004066">Privacy sa mga ad</translation>
 <translation id="6206199626856438589">Masa-sign out ka sa mga ipinapakitang site, pati na rin sa mga nakabukas na tab</translation>
 <translation id="6206311232642889873">Kop&amp;yahin ang Imahe</translation>
 <translation id="6206521455877863927">May kasamang mga site mula sa iisang domain, halimbawa, google.com at mail.google.com. Puwedeng i-save ng mga site na tinitingnan mo ang data sa iyong device.</translation>
@@ -8395,6 +8395,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8639635302972078117">Magpadala ng data ng paggamit at diagnostic. Sa kasalukuyan, ang device na ito ay awtomatikong nagpapadala ng diagnostic na data, data ng device, at data ng paggamit sa app sa Google. Hindi ito gagamitin para tukuyin ang pagkakakilanlan ng iyong anak, at makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Kung naka-on ang karagdagang setting ng Aktibidad sa Web at App para sa iyong anak, posibleng ma-save ang data na ito sa kanyang Google Account.</translation>
 <translation id="8642900771896232685">2 segundo</translation>
 <translation id="8642947597466641025">Gawing Mas Malaki Ang Teksto</translation>
+<translation id="8643403533759285912">I-delete ang Grupo</translation>
 <translation id="8643443571868262066">Posibleng mapanganib ang <ph name="FILE_NAME" />. Ipadala sa Advanced na Proteksyon ng Google para ma-scan?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Walang cookie}=1{Naka-block ang 1 cookie}one{Naka-block ang # cookie}other{Naka-block ang # na cookie}}</translation>
 <translation id="864423554496711319">Mga device na naka-save sa iyong account</translation>
@@ -8870,6 +8871,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="90528604757378587">Posibleng maging limitado ang aktibidad sa background at ilang visual effect, tulad ng maayos na pag-scroll.</translation>
 <translation id="9053563360605707198">Mag-print sa magkabilang bahagi</translation>
 <translation id="9055636786322918818">Ipatupad ang RC4 encryption. Magiging mas mapanganib para sa iyo kapag ginamit ang opsyong ito, dahil hindi secure ang mga RC4 cipher.</translation>
+<translation id="9056788090206401048">Dapat naka-on ang bluetooth para magamit ang iyong passkey sa ibang device. Puwede mong pamahalaan ito anumang oras sa mga setting.</translation>
 <translation id="9056810968620647706">Walang nakitang tugma.</translation>
 <translation id="9057007989365783744">Gustong i-access ni <ph name="SUPERVISED_USER_NAME" /> ang sumusunod na content:</translation>
 <translation id="9057354806206861646">I-update ang iskedyul</translation>

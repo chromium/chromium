@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">正在準備檔案</translation>
 <translation id="1015730422737071372">提供額外詳情</translation>
 <translation id="1019413721762100891">關閉</translation>
-<translation id="1021110881106174305">接受的信用卡</translation>
 <translation id="1021753677514347426">此問題由您或其他人在裝置上安裝的憑證而導致。由於憑證曾用作監控及網絡攔截，因此不獲 Chromium 信任。雖然有些監控理由合理 (例如學校或公司網絡)，且無法停止有關監控，但 Chromium 仍希望就此通知您。任何使用網絡的瀏覽器和應用程式都可能受到監控。</translation>
 <translation id="1024111578869940408">攻擊者有時會在網址中加入難以辨識的變更來仿冒網站。</translation>
 <translation id="1028781062521375153">查看詳情</translation>
@@ -708,7 +707,6 @@
 <translation id="2688969097326701645">是，請繼續</translation>
 <translation id="2691924980723297736">安全警告</translation>
 <translation id="2692131511336778528">科幻小說及奇幻文學</translation>
-<translation id="2699302886720511147">接受的付款卡</translation>
 <translation id="2701514975700770343">正面朝下</translation>
 <translation id="2702801445560668637">閱讀清單</translation>
 <translation id="2704283930420550640">政策值格式不符。</translation>
@@ -991,7 +989,6 @@
 <translation id="342781501876943858">如果您已在其他網站上重用密碼，Chromium 建議您重設密碼。</translation>
 <translation id="3428151540071562330">一或多個 DnsOverHttpsTemplates 伺服器範本 URI 無效，因此系統不會採用這些伺服器範本 URI。</translation>
 <translation id="3431216045099978607">按下 |<ph name="ACCELERATOR" />| 以離開全螢幕，並查看下載項目。</translation>
-<translation id="3431636764301398940">將這張信用卡儲存至此裝置</translation>
 <translation id="3432601291244612633">關閉頁面</translation>
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3438829137925142401">使用儲存在 Google 帳戶中的密碼</translation>
@@ -1121,7 +1118,6 @@
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3744286742364977428">您下載的檔案將會傳送給 Google Cloud 或第三方進行分析。例如，Google Cloud 或第三方可能會掃瞄檔案，檢查是否含有敏感資料或惡意軟件，並可能會根據公司政策儲存這些檔案。</translation>
 <translation id="3744899669254331632">您目前無法瀏覽 <ph name="SITE" />，因為該網站傳送了 Chromium 無法處理的干擾憑證。網絡錯誤及攻擊行為通常是短暫性問題，因此這個網頁稍後應可正常運作。</translation>
-<translation id="3745099705178523657">確認後，您的 Google 帳戶會與這個網站共用您的信用卡資料。</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的攻擊者可能會誘使您採取一些危險的行動，例如安裝軟件或洩漏您的個人資料 (包括密碼、電話號碼或信用卡資料)。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">航空業</translation>
 <translation id="3752543821772132562">由於未設定 <ph name="POLICY_NAME" />，因此已忽略。</translation>
@@ -1139,7 +1135,6 @@
 <translation id="3781428340399460090">豔粉紅色</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">藍牙裝置</translation>
-<translation id="3787705759683870569">到期日：<ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">粗幼：16</translation>
 <translation id="3789841737615482174">安裝</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> 吋)</translation>
@@ -3083,7 +3078,6 @@
 <translation id="8620276786115098679">Kaku 7 信封</translation>
 <translation id="8623885649813806493">沒有相符的密碼。顯示所有已儲存的密碼。</translation>
 <translation id="8624354461147303341">取得折扣</translation>
-<translation id="8625384913736129811">將這張信用卡儲存至此裝置</translation>
 <translation id="8634957317623797170">54 x 86 毫米</translation>
 <translation id="8637577059508742477">您的個人檔案和瀏覽器由 <ph name="DOMAIN" /> 管理</translation>
 <translation id="8643409044755049933">Kaku 3 信封</translation>

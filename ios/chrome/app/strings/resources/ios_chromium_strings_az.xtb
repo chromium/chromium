@@ -92,6 +92,7 @@
 <translation id="7045244423563602563">Chromium'u Fərdiləşdirin</translation>
 <translation id="7099326575020694068">Chromium kameranızı Bölünmüş Görüntü rejimində istifadə edə bilməz</translation>
 <translation id="7118091470949186573">İndi istənilən vaxt mesajlar, sənədlər və digər tətbiqlərdə keçidlərə toxunduqda Chromium'u istifadə edə bilərsiniz.</translation>
+<translation id="7165402419892018581">Avtodoldurma üçün Chromium'u seçin</translation>
 <translation id="7175400662502680481">Parolunuz data pozulması zamanı ələ keçirilib. Parol Meneceri onu indi dəyişmənizi tövsiyə edir.</translation>
 <translation id="7208566199746267865">Chromium hesablarınızı vebə gətirməklə vaxtınıza qənaət edir. Hesabları Ayarlar bölməsindən əlavə edə və ya silə bilərsiniz.</translation>
 <translation id="725427773388857052">Chromium sizi data pozuntuları, güvənli olmayan vebsaytlar və digər güvənlik məsələlərindən qoruya bilər.</translation>
@@ -106,6 +107,7 @@
 <translation id="7746854981345936341">Chromium məsləhəti. Geri, İrəli və Axtariş kimi bəzi düymələr artıq ekranın aşağısında yerləşir.</translation>
 <translation id="7763454117143368771">Təhlükəli saytlardan qorunmaq və parollarınızı qorumaq üçün defolt brauzeriniz olaraq Chromium istifadə edin</translation>
 <translation id="7812317783196516890"><ph name="DOMAIN" /> tərəfindən idarə olunan hesaba daxil olmusunuz və onunla datanızı sinxronizasiya edirsiniz. Bu hesabın administratoru indi Chromimum'un davranışını dəyişə biləcək həmin hesaba xas istifadəçi siyasətlərini ayarlaya bilər.</translation>
+<translation id="7859018312476869945">Ünvan panelinə və ya axtarış xanasına mətn daxil etdiyiniz zaman Chromium sizə daha yaxşı təkliflər təqdim etmək üçün yazdıqlarınızı defolt axtarış sisteminizə göndərir. Bu, Anonim rejimdə deaktivdir.</translation>
 <translation id="786327964234957808">Sinxronizasiya hesablarını <ph name="USER_EMAIL1" /> hesabından <ph name="USER_EMAIL2" /> hesabına keçirirsiniz. Mövcud Chromium datanız <ph name="DOMAIN" /> tərəfindən idarə olunur. Datanızı bu cihazdan siləcək, lakin data <ph name="USER_EMAIL1" /> hesabında qalacaq.</translation>
 <translation id="7890287942691234100">Chromium skanerindən istifadə etməyə başlayın</translation>
 <translation id="7928628054454574139">Digər tətbiqlərdə istənilən vaxt keçidlərə toxunduqda Chromium açılsın</translation>
@@ -115,6 +117,7 @@
 <translation id="8073677936375100957">Chromium datası bu cihazdan silinsin?</translation>
 <translation id="8240981428553046115">Chromium güncəlləmələri yoxlaya bilmədi. Sonra cəhd edin.</translation>
 <translation id="8409374867500149834">Zərərli vebsaytlara qarşı Chromium'un ən güclü təhlükəsizliyinə sahibsiniz</translation>
+<translation id="8460301378281140593">iPhone Ayarlarında "Parol Seçimləri" bölməsini açın və "Chromium" seçimini edin</translation>
 <translation id="858114650497379505">Parol Menecerində saxladığınız parolları iPhone'dakı digər tətbiqlərdə istifadə edə bilərsiniz.</translation>
 <translation id="8586442755830160949">Müəlliflik Hüququ <ph name="YEAR" /> Chromium Müəllifləri. Bütün hüquqlar qorunur.</translation>
 <translation id="8603022514504485810">Google Parol Meneceri bütün parolları yoxlaya bilmədi. Sabah yenidən cəhd edin və ya <ph name="BEGIN_LINK" />Google Hesabınızda parolları yoxlayın.<ph name="END_LINK" /></translation>

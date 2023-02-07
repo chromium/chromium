@@ -80,6 +80,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="149095475893949513">Ce site Web essaie de télécharger un profil de configuration.</translation>
 <translation id="1491277525950327607">Appuyer deux fois pour activer/désactiver le paramètre</translation>
 <translation id="1492417797159476138">Vous avez déjà enregistré ce nom d'utilisateur pour ce site</translation>
+<translation id="1498283581832036924">Votre compte <ph name="WEBSITE" /> ne sera pas supprimé.</translation>
 <translation id="1506063256525392513">Cela vous permet de prendre et d'importer des photos, et de scanner des codes QR</translation>
 <translation id="1509486075633541495">Connectez-vous au site Web</translation>
 <translation id="1509960214886564027">Des fonctionnalités sur de nombreux sites risquent de ne pas fonctionner</translation>
@@ -218,6 +219,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2664621323652615289">Arrêter</translation>
 <translation id="2671426118752779020">Vous pouvez utiliser les mots de passe enregistrés dans le Gestionnaire de mots de passe Google dans d'autres applis sur votre iPhone.</translation>
 <translation id="2690858294534178585">Caméra en cours d'utilisation</translation>
+<translation id="26915454213703967">Rech. dans image avec Google</translation>
 <translation id="2691653761409724435">Indisponible hors connexion</translation>
 <translation id="2695507686909505111">Page traduite</translation>
 <translation id="2697526135132990015">Se déconnecter et effacer les données</translation>
@@ -322,7 +324,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3371831930909698441">La traduction est disponible. Options disponibles au bas de l'écran.</translation>
 <translation id="3377063233124932127">Vos favoris, vos mots de passe et d'autres éléments sont désormais affichés en haut de la page.</translation>
 <translation id="3393920035788932672">Pop-up autorisés</translation>
-<translation id="3399930248910934354">Accéder aux paramètres de Chrome</translation>
+<translation id="3399930248910934354">Accédez aux paramètres de Chrome</translation>
 <translation id="3404744938087714423">Si vous vous déconnectez, la synchronisation sera désactivée.</translation>
 <translation id="3425644765244388016">Pseudo associé à la carte</translation>
 <translation id="3433057996795775706">La suppression de ce mot de passe n'entraînera pas la suppression de votre compte sur <ph name="WEBSITE" />. Modifiez votre mot de passe sur <ph name="WEBSITE" /> pour maintenir la sécurité de votre compte.</translation>
@@ -380,6 +382,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3819183753496523827">Vous êtes hors connexion. Vérifiez votre connexion Internet, puis réessayez.</translation>
 <translation id="3835964409414434850">Onglet suivant</translation>
 <translation id="385051799172605136">Retour</translation>
+<translation id="3851938967634752633">Les mots de passe pour <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> et <ph name="NUMBER_OF_ACCOUNTS" /> autres seront supprimés. Vos comptes ne seront pas supprimés.</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3861486700625780712">Se désabonner</translation>
 <translation id="3863769054730344136">Envoyer à vos appareils</translation>
@@ -515,6 +518,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4833786495304741580">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
 <translation id="4840495572919996524">Vos favoris, votre historique, vos mots de passe et d'autres paramètres ne seront plus synchronisés avec votre compte Google.</translation>
 <translation id="4844899002472726590">Voir et modifier les thèmes qui vous intéressent</translation>
+<translation id="4848999860252535517">Supprimer le mot pour <ph name="WEBSITE" /> ?</translation>
 <translation id="4854345657858711387">Définir un code secret</translation>
 <translation id="4858786880085262208">Passez à HTTPS, si possible. Les sites sécurisés peuvent intégrer du contenu non sécurisé.</translation>
 <translation id="4860895144060829044">Appeler</translation>
@@ -768,6 +772,7 @@ Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</trans
 <translation id="6598875554591387303">Trier par éditeur</translation>
 <translation id="6603393121510733479">Votre organisation a désactivé la navigation privée.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Les mots de passe pour <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> et <ph name="THIRD_WEBSITE" /> seront supprimés. Vos comptes ne seront pas supprimés.</translation>
 <translation id="6610002944194042868">Options de traduction</translation>
 <translation id="661266467055912436">Il renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>
 <translation id="6620279676667515405">Annuler</translation>
@@ -991,7 +996,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8283172974887967105">Définir…</translation>
 <translation id="8299417921174340354">Pour utiliser les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="8299613349954694191">Ouvrez un onglet de navigation privée pour naviguer sur le Web en mode privé.</translation>
-<translation id="8316944564970119719">Saisir le site et le mot de passe, puis enregistrer</translation>
+<translation id="8316944564970119719">Saisissez le site et le mot de passe, puis appuyez sur Enregistrer</translation>
 <translation id="8319076807703933069">Nouvelle recherche</translation>
 <translation id="8323906514956095947">Appuyez de manière prolongée pour afficher plus d'options d'onglets</translation>
 <translation id="8328777765163860529">Tout fermer</translation>
@@ -1046,6 +1051,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8756969031206844760">Mettre à jour le mot de passe ?</translation>
 <translation id="8763613688786959833">Accéder au dernier onglet</translation>
 <translation id="8764015330924122850">Ne plus suivre <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Les mots de passe pour <ph name="WEBSITE" /> et <ph name="SECOND_WEBSITE" /> seront supprimés. Vos comptes ne seront pas supprimés.</translation>
 <translation id="8775144690796719618">URL non valide.</translation>
 <translation id="8787968206789828143">Rechercher sur le Web</translation>
 <translation id="8792626944327216835">micro</translation>
@@ -1095,6 +1101,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9093271241977565440">En haut de l'écran, appuyez sur l'icône de recherche</translation>
 <translation id="9094033019050270033">Modifier le mot de passe</translation>
 <translation id="9097506547406246598">Impossible de vous désabonner en raison d'une erreur.</translation>
+<translation id="9098541895599151034">Supprimer <ph name="NUMBER_OF_ACCOUNTS" /> mots de passe ?</translation>
 <translation id="9100610230175265781">Veuillez saisir la phrase secrète.</translation>
 <translation id="9107664647686727385">Pour vérifier la présence de mots de passe compromis</translation>
 <translation id="9124387962554796433">Google pourra utiliser votre historique pour personnaliser la recherche et d'autres de ses services.</translation>

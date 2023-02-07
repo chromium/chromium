@@ -20,7 +20,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="1076785341346483463">Yönetilen Hesapla Senkronize Edin</translation>
 <translation id="1080365971383768617">Tüm cihazlarınızdaki şifreler</translation>
 <translation id="1084365883616172403">Facebook yayını tamamlandı.</translation>
-<translation id="1085696779717592361">Varsayılan olarak Chrome kullanın</translation>
+<translation id="1085696779717592361">Chrome'u Varsayılan Olarak Kullanın</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> dilini daima çevir</translation>
 <translation id="110724200315609752">Açık Pencereye Geç</translation>
 <translation id="1112015203684611006">Yazdırılamadı.</translation>
@@ -80,6 +80,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="149095475893949513">Bu web sitesi bir yapılandırma profili indirmeye çalışıyor.</translation>
 <translation id="1491277525950327607">Ayarı açıp kapatmak için iki kez dokunun</translation>
 <translation id="1492417797159476138">Bu site için bu kullanıcı adını zaten kaydettiniz</translation>
+<translation id="1498283581832036924"><ph name="WEBSITE" /> hesabınız silinmeyecek.</translation>
 <translation id="1506063256525392513">Bu şekilde, fotoğraf çekip yükleyebilir, QR kodlarını tarayabilirsiniz</translation>
 <translation id="1509486075633541495">Web sitesinde oturum açın</translation>
 <translation id="1509960214886564027">Birçok sitedeki özellikler çalışmayabilir</translation>
@@ -218,6 +219,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="2664621323652615289">Durdur</translation>
 <translation id="2671426118752779020">Google Şifre Yöneticisi'ne kaydettiğiniz şifreleri iPhone'unuzdaki diğer uygulamalarda kullanabilirsiniz.</translation>
 <translation id="2690858294534178585">Kamera kullanılıyor</translation>
+<translation id="26915454213703967">Resmin içinde Google'la ara</translation>
 <translation id="2691653761409724435">Çevrimdışı kullanılamaz</translation>
 <translation id="2695507686909505111">Sayfa Çevrildi</translation>
 <translation id="2697526135132990015">Oturumu Kapat ve Verileri Temizle</translation>
@@ -239,7 +241,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="2781331604911854368">Açık</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">Bağlantı Oluşturulamadı</translation>
-<translation id="2786701870377699570">Senkronize Edilmiş Cihazlardaki Sekmeleri Arayın</translation>
+<translation id="2786701870377699570">Senkronize Cihazlardaki Sekmeleri Arayın</translation>
 <translation id="2797029671965852011">Geçmişi Göster</translation>
 <translation id="2800683595868705743">Sekme Değiştirici'den Çık</translation>
 <translation id="2815198996063984598">2. Varsayılan Tarayıcı Uygulaması'na dokunun</translation>
@@ -380,6 +382,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="3819183753496523827">Çevrimdışısınız. İnternet bağlantınızı kontrol edip tekrar deneyin.</translation>
 <translation id="3835964409414434850">Sonraki Sekmeye Git</translation>
 <translation id="385051799172605136">Geri</translation>
+<translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ve <ph name="NUMBER_OF_ACCOUNTS" /> sitenin daha şifresi silinecek. Hesaplarınız silinmeyecek.</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3861486700625780712">Takibi bırak</translation>
 <translation id="3863769054730344136">Cihaza Gönder</translation>
@@ -515,6 +518,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="4833786495304741580">Kullanım istatistiklerini ve kilitlenme raporlarını Google'a otomatik olarak gönderir.</translation>
 <translation id="4840495572919996524">Yer işaretleri, geçmiş, şifreler ve diğer ayarlarınız artık Google Hesabınız ile senkronize edilmeyecek.</translation>
 <translation id="4844899002472726590">İlgilendiğiniz konuları görüp düzenleyin</translation>
+<translation id="4848999860252535517"><ph name="WEBSITE" /> kullanıcısının şifresi silinsin mi?</translation>
 <translation id="4854345657858711387">Şifre Kodu Ayarlayın</translation>
 <translation id="4858786880085262208">Mümkün olduğunda HTTPS'ye yükseltin. Güvenli siteler, güvenli olmayan içerikler yerleştirebilir.</translation>
 <translation id="4860895144060829044">Telefon et</translation>
@@ -652,7 +656,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5913600720976431809">Sayfayı çevirme seçenekleri</translation>
 <translation id="5938160824633642847">Cihazınızın depolama alanı dolmak üzere. Yer boşaltın ve tekrar deneyin.</translation>
 <translation id="5948291296578561264">Böylece, fotoğrafları fotoğraf kitaplığınıza kaydedebilirsiniz.</translation>
-<translation id="5951816930277761335">Bağlantıyı paylaşın</translation>
+<translation id="5951816930277761335">Bağlantıyı Paylaşın</translation>
 <translation id="5955891643922670672">Çevrimdışı Sürüm Gösteriliyor</translation>
 <translation id="5957613098218939406">Diğer Seçenekler</translation>
 <translation id="5963939892571022323">Seçili metin için bağlantı oluşturulamıyor.</translation>
@@ -768,6 +772,7 @@ Her site için benzersiz bir şifre kullanmaya çalışın.</translation>
 <translation id="6598875554591387303">Yayıncıya göre sırala</translation>
 <translation id="6603393121510733479">Kuruluşunuz gizli taramayı kapattı.
 <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ve <ph name="THIRD_WEBSITE" /> şifreleri silinecek. Hesaplarınız silinmeyecek.</translation>
 <translation id="6610002944194042868">Çeviri Seçenekleri</translation>
 <translation id="661266467055912436">Hem siz hem de web'deki herkes için güvenliği iyileştirir.</translation>
 <translation id="6620279676667515405">İptal</translation>
@@ -1045,6 +1050,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8756969031206844760">Şifre güncellensin mi?</translation>
 <translation id="8763613688786959833">Son Sekmeye Git</translation>
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> takibini bırak</translation>
+<translation id="8766790350274092814"><ph name="WEBSITE" /> ve <ph name="SECOND_WEBSITE" /> şifreleri silinecek. Hesaplarınız silinmeyecek.</translation>
 <translation id="8775144690796719618">Geçersiz URL</translation>
 <translation id="8787968206789828143">Web'de Arama</translation>
 <translation id="8792626944327216835">mikrofon</translation>
@@ -1094,6 +1100,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="9093271241977565440">Ekranın Üst Kısmındaki Arama Simgesine Dokunun</translation>
 <translation id="9094033019050270033">Şifreyi güncelle</translation>
 <translation id="9097506547406246598">Takip bırakılamıyor. Bir sorun oldu.</translation>
+<translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> şifre silinsin mi?</translation>
 <translation id="9100610230175265781">Parola gerekli</translation>
 <translation id="9107664647686727385">Güvenliği ihlal edilmiş şifreleri kontrol edin</translation>
 <translation id="9124387962554796433">Google; Arama ve diğer Google hizmetlerini kişiselleştirmek için geçmişinizi kullanabilir.</translation>

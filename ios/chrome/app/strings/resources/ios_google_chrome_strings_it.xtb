@@ -22,6 +22,7 @@
 <translation id="2347208864470321755">Quando questa funzione è attiva, Chrome si offre di tradurre le pagine scritte in altre lingue utilizzando Google Traduttore. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome offre funzionalità che ti consentono di gestire i tuoi dati Internet e la velocità di caricamento delle pagine web.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
+<translation id="2444854139071078915">Usa la funzionalità Compilazione automatica di Chrome per recuperare facilmente le tue password salvate nelle altre app</translation>
 <translation id="2561231791489583059">Usa Chrome come browser predefinito per proteggerti da siti pericolosi e tenere al sicuro le tue password</translation>
 <translation id="2574249610672786438">Esegui l'accesso su tutti i dispositivi su cui utilizzi Chrome per visualizzare le tue schede</translation>
 <translation id="2576431527583832481">Chrome è stato migliorato. È disponibile una nuova versione.</translation>
@@ -89,6 +90,7 @@
 <translation id="6709398533399187136">La tua password è stata compromessa nell'ambito di una violazione dei dati. Gestore delle password di Google consiglia di cambiarla subito.</translation>
 <translation id="6822673484890854830">Chrome non ha potuto controllare tutte le password. Riprova più tardi.</translation>
 <translation id="6964931465519938134">Ora puoi usare Chrome ogni volta che tocchi link in messaggi, documenti e altre app.</translation>
+<translation id="6975725306479268850">Scegli Chrome per la compilazione automatica</translation>
 <translation id="701356708427365932">Scopri il nuovo menu di Chrome</translation>
 <translation id="7059914902409643750">Personalizza Chrome</translation>
 <translation id="7124339256045485976">Mantieni Chrome aggiornato</translation>
@@ -109,6 +111,7 @@
 <translation id="7754633291442704733">La tua organizzazione <ph name="DOMAIN" /> avrà accesso ai dati, ai preferiti, alla cronologia, alle password e ad altre impostazioni di Chrome memorizzate in questo account. Quando esci, i dati verranno cancellati da questo dispositivo.  Tuttavia, i tuoi dati rimarranno memorizzati nel tuo Account Google gestito e saranno disponibili per la tua organizzazione. La tua organizzazione può anche impostare criteri relativi agli utenti specifici per l'account, in grado di modificare il comportamento di Chrome.</translation>
 <translation id="7780154209050837198">Accedi con il tuo Account Google a Chrome per usare al meglio questo browser.</translation>
 <translation id="7855730255114109580">Google Chrome è aggiornato</translation>
+<translation id="7939179037291298976">Dalle Impostazioni dell'iPhone, apri "Opzioni password" e seleziona "Chrome"</translation>
 <translation id="8022947259858476807">Usa Chrome per impostazione predefinita per aprire link, eseguire ricerche dai widget e compilare automaticamente le password in altre app</translation>
 <translation id="81358522153858150">Ora Chrome supporta i criteri relativi agli utenti per il tuo account gestito</translation>
 <translation id="8160472928944011082">Impossibile aggiornare Chrome</translation>
@@ -124,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Gestore delle password di Google non ha potuto controllare tutte le password. Riprova domani oppure <ph name="BEGIN_LINK" />controlla le password nel tuo Account Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Resta al sicuro con Google Chrome</translation>
+<translation id="8765470054473112089">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chrome invia ciò che digiti al tuo motore di ricerca predefinito per ricevere suggerimenti migliori. Questa opzione è disattivata in incognito.</translation>
 <translation id="8772179140489533211">Vengono mostrate richieste di accesso a Chrome.</translation>
 <translation id="8788269841521769222">Non dovrai ricordare questa password perché verrà salvata in Gestore delle password di Google per <ph name="EMAIL" /></translation>
 <translation id="8857676124663337448">Gestore delle password di Google non ha potuto controllare tutte le password. Riprova domani.</translation>

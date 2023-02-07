@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Dosyalar hazırlanıyor</translation>
 <translation id="1015730422737071372">Diğer ayrıntıları sağlayın</translation>
 <translation id="1019413721762100891">Kapalı</translation>
-<translation id="1021110881106174305">Kabul edilen kartlar</translation>
 <translation id="1021753677514347426">Bu sorunun nedeni sizin veya başka birinin cihazınıza yüklediği bir sertifika olabilir. Sertifikanın ağa müdahale etmek ve izlemek amacıyla kullanıldığı bilindiğinden, Chromium bu sertifikaya güvenmez. Okul veya şirket ağı gibi izlemenin meşru olduğu durumlar vardır. İzlemeyi durduramasanız bile Chromium yine de farkında olmanızı sağlamak ister. Web’e erişen her tarayıcı ve uygulamada izleme yapılabilir.</translation>
 <translation id="1024111578869940408">Saldırganlar bazen web adresinde görülmesi zor değişiklikler yaparak siteleri taklit ederler.</translation>
 <translation id="1028781062521375153">Ayrıntıları bakın</translation>
@@ -708,7 +707,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2688969097326701645">Evet, devam et</translation>
 <translation id="2691924980723297736">Güvenlik uyarısı</translation>
 <translation id="2692131511336778528">Bilim kurgu ve fantastik</translation>
-<translation id="2699302886720511147">Kabul Edilen Kartlar</translation>
 <translation id="2701514975700770343">Aşağı dönük</translation>
 <translation id="2702801445560668637">Okuma Listesi</translation>
 <translation id="2704283930420550640">Değer, biçimle eşleşmiyor.</translation>
@@ -991,7 +989,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="342781501876943858">Chromium, şifrenizi başka sitelerde kullandıysanız sıfırlamanızı önerir.</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates sunucu şablonu URI'larından biri veya daha fazlası geçersiz olduğundan kullanılmayacak.</translation>
 <translation id="3431216045099978607">Tam ekrandan çıkıp indirme işlemini görmek için |<ph name="ACCELERATOR" />| tuşuna basın.</translation>
-<translation id="3431636764301398940">Bu kartı bu cihaza kaydet</translation>
 <translation id="3432601291244612633">Sayfayı kapat</translation>
 <translation id="3435738964857648380">Güvenlik</translation>
 <translation id="3438829137925142401">Google Hesabınızdaki kayıtlı şifreleri kullanın</translation>
@@ -1122,7 +1119,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3744111561329211289">Arka plan senkronizasyonu</translation>
 <translation id="3744286742364977428">İndirdiğiniz dosyalar analiz amacıyla Google Cloud ve üçüncü taraflara gönderilir. Örneğin, dosyalarınızın hassas veriler veya kötü amaçlı yazılım içerip içermediği kontrol edilir ve şirket politikalarına bağlı olarak bu dosyalar saklanabilir.</translation>
 <translation id="3744899669254331632">Web sitesi Chromium'un işleyemediği karışık kimlik bilgileri gönderdiğinden <ph name="SITE" /> sitesini şu anda ziyaret edemezsiniz. Ağ hataları ve saldırılar genellikle geçici türdendir, dolayısıyla bu sayfa muhtemelen daha sonra çalışacaktır.</translation>
-<translation id="3745099705178523657">Onayladığınızda Google Hesabınızdaki kart bilgileriniz bu siteyle paylaşılır.</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> sitesine saldıranlar sizi yanıltarak yazılım yüklemek veya kişisel bilgilerinizi (örneğin, şifreler, telefon numaraları veya kredi kartları) ifşa etmek gibi tehlikeli bir şey yapmanızı sağlayabilirler. <ph name="BEGIN_LEARN_MORE_LINK" />Daha fazla bilgi<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Havacılık sektörü</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> ayarlanmadığı için yoksayıldı.</translation>
@@ -1140,7 +1136,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3781428340399460090">Canlı Pembe</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth cihazlar</translation>
-<translation id="3787705759683870569">Son kullanma tarihi: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Boyut 16</translation>
 <translation id="3789841737615482174">Yükle</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> inç)</translation>
@@ -3085,7 +3080,6 @@ Ek ayrıntılar:
 <translation id="8620276786115098679">Zarf Kaku 7</translation>
 <translation id="8623885649813806493">Eşleşen şifre yok. Tüm kayıtlı şifreleri göster.</translation>
 <translation id="8624354461147303341">İndirim alın</translation>
-<translation id="8625384913736129811">Bu Kartı Bu Cihaza Kaydet</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637577059508742477">Profiliniz ve tarayıcınız <ph name="DOMAIN" /> tarafından yönetiliyor</translation>
 <translation id="8643409044755049933">Zarf Kaku 3</translation>

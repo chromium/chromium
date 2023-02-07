@@ -221,6 +221,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1192706927100816598">{0,plural, =1{Jy sal oor # sekonde outomaties afgemeld word.
 <ph name="DOMAIN" /> vereis dat jy jou slimkaart ingesteek hou.}other{Jy sal oor # sekondes outomaties afgemeld word.
 <ph name="DOMAIN" /> vereis dat jy jou slimkaart ingesteek hou.}}</translation>
+<translation id="119330003005586565">Bladsye wat jy gelees het</translation>
 <translation id="1193927020065025187">Hierdie werf probeer jou dalk mislei om indringerige kennisgewings toe te laat</translation>
 <translation id="1195210374336998651">Gaan na programinstellings toe</translation>
 <translation id="1195447618553298278">Onbekende fout.</translation>
@@ -5534,6 +5535,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6007240208646052708">Stemsoektog is nie in jou taal beskikbaar nie.</translation>
 <translation id="6010651352520077187">Wanneer Google Vertaal aan is, sal dit aanbied om werwe in jou voorkeurtaal te vertaal. Dit kan werwe ook outomaties vertaal.</translation>
 <translation id="6011193465932186973">Vingerafdruk</translation>
+<translation id="6011308810877101166">Verbeter soekvoorstelle</translation>
 <translation id="6011908034087870826">Stuur tans skakel na <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">Kry onderskrifte vir jou oudio en video</translation>
 <translation id="6014293228235665243">Ongelees</translation>
@@ -5851,6 +5853,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="630292539633944562">Voorstelle oor persoonlike inligting</translation>
 <translation id="6305607932814307878">Globale beleid:</translation>
 <translation id="6305909198255586420">Installeer asseblief met jou primêre profiel</translation>
+<translation id="630750887748244481">Jou ouer het “Toestemmings vir werwe, programme en uitbreidings” vir Chrome afgeskakel. Hierdie uitbreiding mag nie bygevoeg word nie.</translation>
 <translation id="6307990684951724544">Stelsel besig</translation>
 <translation id="6308493641021088955">Aanmelding verskaf deur <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Stoor skakel as …</translation>
@@ -7991,6 +7994,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8251509999076836464">Bind tans saam met <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniprent verwyder.</translation>
 <translation id="825238165904109940">Wys altyd volle URL'e</translation>
+<translation id="8252538334423261825">Kan nie uitbreiding byvoeg nie</translation>
 <translation id="8252569384384439529">Laai tans op …</translation>
 <translation id="8253198102038551905">Klik '+' om netwerkeienskappe te kry</translation>
 <translation id="8255212965098517578">Onlangse foto's, kennisgewings en programme</translation>

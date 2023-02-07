@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Preparazione file</translation>
 <translation id="1015730422737071372">Fornisci ulteriori dettagli</translation>
 <translation id="1019413721762100891">Off</translation>
-<translation id="1021110881106174305">Carte di credito accettate</translation>
 <translation id="1021753677514347426">Questo problema si verifica a causa di un certificato installato sul dispositivo da te o da un'altra persona. È noto che il certificato viene usato per monitorare e intercettare le reti e non è considerato attendibile da Chromium. Esistono alcuni casi leciti per il monitoraggio, ad esempio su una rete scolastica o aziendale, ma Chromium vuole assicurarsi che tu sappia che viene effettuato, anche se non puoi interromperlo. Il monitoraggio potrebbe essere effettuato in qualsiasi browser o applicazione che accede al Web.</translation>
 <translation id="1024111578869940408">A volte gli utenti malintenzionati imitano i siti modificando l'indirizzo web in modo poco evidente.</translation>
 <translation id="1028781062521375153">Scopri i dettagli</translation>
@@ -525,6 +524,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2202627062836089804">parte posteriore della carta</translation>
 <translation id="22081806969704220">Vassoio 3</translation>
 <translation id="2210794033760923560">Carica report</translation>
+<translation id="2212579473415663542">Questo indirizzo è salvato nel tuo Account Google (<ph name="ACCOUNT" />). Puoi utilizzare l'indirizzo nei prodotti Google su qualsiasi dispositivo.</translation>
 <translation id="2212735316055980242">Criterio non trovato</translation>
 <translation id="2213606439339815911">Recupero voci...</translation>
 <translation id="2213612003795704869">La pagina è stampata</translation>
@@ -708,7 +708,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2688969097326701645">Sì, continua</translation>
 <translation id="2691924980723297736">Avviso di sicurezza</translation>
 <translation id="2692131511336778528">Fantascienza e fantasy</translation>
-<translation id="2699302886720511147">Carte accettate</translation>
 <translation id="2701514975700770343">A faccia in giù</translation>
 <translation id="2702801445560668637">Elenco di lettura</translation>
 <translation id="2704283930420550640">Il valore non corrisponde al formato.</translation>
@@ -824,7 +823,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="301521992641321250">Bloccata automaticamente</translation>
 <translation id="3016780570757425217">Conoscere la tua posizione</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, premi Tab e poi Invio per rimuovere il suggerimento.</translation>
-<translation id="3023165109041533893">Gli annunci suggeriti dai siti contribuiscono a proteggere la tua cronologia di navigazione e la tua identità, consentendo allo stesso tempo ai siti di mostrarti annunci pertinenti. In base alla tua attività, un sito che hai visitato può suggerire annunci correlati mentre continui a navigare. Puoi visualizzare un elenco di questi siti e bloccare quelli che non ti interessano nelle impostazioni.</translation>
+<translation id="3023165109041533893">Gli annunci suggeriti dai siti contribuiscono a proteggere la tua cronologia di navigazione e la tua identità, consentendo ai siti di mostrarti annunci pertinenti. In base alla tua attività, un sito che hai visitato può suggerire annunci correlati mentre continui a navigare. Nelle impostazioni puoi vedere un elenco di questi siti e bloccare quelli che non ti interessano.</translation>
 <translation id="3024663005179499861">Tipo di criterio errato</translation>
 <translation id="3029752078111257850">Notizie dal mondo</translation>
 <translation id="3037177537145227281">Monitoraggio del prezzo</translation>
@@ -914,7 +913,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per creare rapidamente un nuovo evento in Google Calendar</translation>
 <translation id="3261488570342242926">Scopri di più sulle carte virtuali</translation>
 <translation id="3264837738038045344">Pulsante Gestisci le impostazioni di Chrome, premi Invio per visitare le tue impostazioni di Chrome</translation>
-<translation id="3266367459139339908">Stiamo lanciando nuovi modi per limitare le informazioni che i siti possono apprendere su di te quando ti mostrano annunci personalizzati, ad esempio:</translation>
+<translation id="3266367459139339908">Stiamo lanciando nuovi modi per limitare ciò che i siti possono imparare su di te quando ti mostrano annunci personalizzati, ad esempio:</translation>
 <translation id="3266793032086590337">Valore (conflitto)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Nessun sito bloccato, inclusi i siti correlati}=1{1 sito bloccato, inclusi i siti correlati}other{# siti bloccati, inclusi i siti correlati}}</translation>
 <translation id="3268451620468152448">Schede aperte</translation>
@@ -988,7 +987,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="342781501876943858">Chromium ti consiglia di reimpostare la password, se l'hai utilizzata su altri siti.</translation>
 <translation id="3428151540071562330">Uno o più URI del modello server DnsOverHttpsTemplates non sono validi e non verranno utilizzati.</translation>
 <translation id="3431216045099978607">Premi |<ph name="ACCELERATOR" />| per uscire dalla modalità a schermo intero e visualizzare il download.</translation>
-<translation id="3431636764301398940">Salva la carta per questo dispositivo</translation>
 <translation id="3432601291244612633">Chiudi pagina</translation>
 <translation id="3435738964857648380">Sicurezza</translation>
 <translation id="3438829137925142401">Usa le password salvate nel tuo Account Google</translation>
@@ -1119,7 +1117,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3744111561329211289">Sincronizzazione in background</translation>
 <translation id="3744286742364977428">I file che scarichi vengono inviati a Google Cloud o a terze parti per l'analisi. Ad esempio, potrebbero essere sottoposti a scansione per rilevare dati sensibili o malware e archiviati in base ai criteri aziendali.</translation>
 <translation id="3744899669254331632">Al momento non puoi visitare il sito <ph name="SITE" /> perché tale sito web ha inviato credenziali criptate che Chromium non è riuscito a elaborare. Gli attacchi e gli errori di rete in genere sono temporanei, pertanto è possibile che questa pagina funzioni più tardi.</translation>
-<translation id="3745099705178523657">Dopo essere stati confermati, i dati della carta del tuo Account Google saranno condivisi con questo sito.</translation>
 <translation id="3748148204939282805">Gli utenti malintenzionati presenti sul sito <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> potrebbero indurti con l'inganno a effettuare operazioni pericolose, come installare software o rivelare informazioni personali (ad esempio password, numeri di telefono o carte di credito). <ph name="BEGIN_LEARN_MORE_LINK" />Ulteriori informazioni<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Industria aerospaziale</translation>
 <translation id="3752543821772132562">Ignorato perché il criterio <ph name="POLICY_NAME" /> non è stato configurato.</translation>
@@ -1137,7 +1134,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3781428340399460090">Fucsia</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositivi Bluetooth</translation>
-<translation id="3787705759683870569">Data di scadenza: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Dimensione 16</translation>
 <translation id="3789841737615482174">Installa</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
@@ -1228,7 +1224,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4063924980214801036">Utilizza lo sblocco con il dispositivo per confermare le carte più rapidamente</translation>
 <translation id="4067098466788473230">Borse di studio</translation>
 <translation id="4067947977115446013">Aggiungi un indirizzo valido</translation>
-<translation id="4070790659619547722">Per misurare il rendimento dei loro annunci, tra i siti vengono condivisi tipi di dati limitati, ad esempio l'ora del giorno in cui ti è stato mostrato un annuncio.</translation>
+<translation id="4070790659619547722">La valutazione degli annunci consente di condividere tra i siti tipi di dati limitati, ad esempio l'ora del giorno in cui ti è stato mostrato un annuncio, per misurare il rendimento dei loro annunci.</translation>
 <translation id="4072193657607981494">Caricamento criteri in corso…</translation>
 <translation id="4072486802667267160">Si è verificato un errore durante l'elaborazione dell'ordine. Riprova.</translation>
 <translation id="4073376909608563327">Impossibile usare lo sblocco con il dispositivo</translation>
@@ -1421,7 +1417,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="449126573531210296">Cripta le password sincronizzate con il tuo Account Google</translation>
 <translation id="4492519888999857993">Queste funzionalità sono disattivate per impostazione predefinita. Non saranno disponibili nelle future versioni di Chrome.</translation>
 <translation id="4493480324863638523">URL non valido. Deve essere un URL con schema standard, ad esempio http://example.com o https://example.com.</translation>
-<translation id="4494323206460475851">Puoi visualizzare gli argomenti degli annunci nelle impostazioni e bloccare quelli che non vuoi condividere con i siti. Inoltre, Chrome elimina automaticamente gli argomenti degli annunci risalenti a più di 4 settimane prima della data corrente.</translation>
+<translation id="4494323206460475851">Puoi vedere gli argomenti degli annunci nelle impostazioni e bloccare quelli che non vuoi condividere con i siti. Inoltre, Chrome elimina automaticamente gli argomenti degli annunci più vecchi di 4 settimane.</translation>
 <translation id="4500587658229086076">contenuti non sicuri</translation>
 <translation id="4506176782989081258">Errore di convalida. <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Contattare l'amministratore di sistema</translation>
@@ -1974,6 +1970,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5866898949289125849">Stai visualizzando una pagina di strumenti per sviluppatori</translation>
 <translation id="5869405914158311789">Impossibile raggiungere il sito</translation>
 <translation id="5869522115854928033">Password salvate</translation>
+<translation id="5872692522325383488">IBAN salvato</translation>
 <translation id="5873013647450402046">La tua banca vuole confermare la tua identità.</translation>
 <translation id="5877831137320480913">Bellezza e fitness</translation>
 <translation id="5884465125445718607">Busta Chinese #6</translation>
@@ -2142,6 +2139,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6300452962057769623">{0,plural, =0{Il tuo dispositivo verrà riavviato adesso}=1{Il tuo dispositivo verrà riavviato tra 1 secondo}other{Il tuo dispositivo verrà riavviato tra # secondi}}</translation>
 <translation id="6301104306974789820">Ricevi notifiche per il monitoraggio dei prezzi</translation>
 <translation id="6305205051461490394"><ph name="URL" /> non è raggiungibile.</translation>
+<translation id="6306713302480826305">Questo indirizzo verrà eliminato da questo dispositivo e da altri dispositivi su cui hai eseguito l'accesso</translation>
 <translation id="6311165245110979290">Carta virtuale disponibile</translation>
 <translation id="6312113039770857350">Pagina web non disponibile</translation>
 <translation id="6316226860534107313">Scooter e ciclomotori</translation>
@@ -2320,7 +2318,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6786145470008421571">Busta 6 x 9 pollici</translation>
 <translation id="67862343314499040">Lilla</translation>
 <translation id="6786747875388722282">Estensioni</translation>
-<translation id="6787094689637422836">Stiamo lanciando nuove funzionalità per la privacy che ti offrono più controllo sugli annunci che ti vengono mostrati.</translation>
+<translation id="6787094689637422836">Stiamo lanciando nuove funzionalità per la privacy che ti offrono maggiore controllo sugli annunci che vedi.</translation>
 <translation id="678982761784843853">ID contenuti protetti</translation>
 <translation id="6790428901817661496">Riproduci</translation>
 <translation id="679355240208270552">Ignorato perché la ricerca predefinita non è attiva secondo la norma.</translation>
@@ -3033,6 +3031,7 @@ Ulteriori dettagli:
 <translation id="8473863474539038330">Indirizzi e altro</translation>
 <translation id="8474910779563686872">Mostra i dettagli dello sviluppatore</translation>
 <translation id="8479754468255770962">Pinzatura in basso a sinistra</translation>
+<translation id="8483229036294884935">Questo indirizzo verrà eliminato dal tuo Account Google <ph name="ACCOUNT" /></translation>
 <translation id="8483780878231876732">Accedi a Chrome per usare le carte memorizzate nel tuo Account Google</translation>
 <translation id="8488350697529856933">Si applica a</translation>
 <translation id="8490137692873530638">Fascicolatore 10</translation>
@@ -3075,13 +3074,12 @@ Ulteriori dettagli:
 <translation id="860043288473659153">Nome del titolare della carta</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Quali dati vengono utilizzati:<ph name="END_BOLD" /> la tua attività svolta su un sito visitato da Chrome su questo dispositivo.</translation>
 <translation id="8606726445206553943">Utilizzare i tuoi dispositivi MIDI</translation>
-<translation id="8606988009912891950">Gli argomenti degli annunci consentono ai siti di mostrarti annunci pertinenti, proteggendo allo stesso tempo la tua cronologia di navigazione e la tua identità. Chrome può rilevare argomenti di interesse in base alla tua cronologia di navigazione recente. Dopodiché, un sito che visiti può chiedere a Chrome argomenti pertinenti per personalizzare gli annunci che ti vengono mostrati.</translation>
+<translation id="8606988009912891950">Gli argomenti degli annunci consentono ai siti di mostrarti annunci pertinenti proteggendo allo stesso tempo la tua cronologia di navigazione e la tua identità. Chrome può rilevare argomenti di interesse in base alla tua cronologia di navigazione recente. Dopodiché, un sito che visiti può chiedere a Chrome argomenti pertinenti per personalizzare gli annunci che vedi.</translation>
 <translation id="8617269623452051934">utilizzo del tuo dispositivo</translation>
 <translation id="861775596732816396">Dimensione 4</translation>
 <translation id="8620276786115098679">Busta Kaku 7</translation>
 <translation id="8623885649813806493">Nessuna password corrispondente. Mostra tutte le password salvate.</translation>
 <translation id="8624354461147303341">Ricevi sconti</translation>
-<translation id="8625384913736129811">Salva la carta su questo dispositivo</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637577059508742477">Il tuo profilo e il tuo browser sono gestiti da <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">Busta Kaku 3</translation>
@@ -3298,7 +3296,7 @@ Ulteriori dettagli:
 <translation id="9157595877708044936">Configurazione in corso...</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">I siti che visiti possono anche stabilire i tuoi interessi in base alla tua attività sul sito. Ad esempio, se visiti un sito che vende scarpe da corsa a lunga distanza, il sito potrebbe decidere che ti interessa partecipare a maratone.</translation>
-<translation id="9166851138617700776">Scopri di più sugli annunci suggeriti dai siti e sulla misurazione degli annunci</translation>
+<translation id="9166851138617700776">Scopri di più sugli annunci suggeriti dai siti e sulla valutazione degli annunci</translation>
 <translation id="9168814207360376865">Consenti ai siti di controllare se hai metodi di pagamento salvati</translation>
 <translation id="9169664750068251925">Blocca sempre su questo sito</translation>
 <translation id="9169931577761441333">Aggiungi <ph name="APP_NAME" /> alla schermata Home</translation>

@@ -408,6 +408,7 @@
 <translation id="4462159676511157176">خوادم أسماء مخصصة</translation>
 <translation id="4465725236958772856">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، يديرها المشرف، الاتصال</translation>
 <translation id="4470564870223067757">المجموعة رقم 2 الهانغولية</translation>
+<translation id="4474142134969976028">ما مِن نتائج مطابقة</translation>
 <translation id="4477002475007461989">الرومانية</translation>
 <translation id="4477219268485577442">بلغارية صوتية</translation>
 <translation id="4508265954913339219">تعذّر إتمام عملية التفعيل</translation>
@@ -813,6 +814,7 @@
 <translation id="7655441028674523381">‏الوصول بسهولة إلى "صور Google"</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7663224033570512922">الهندية</translation>
+<translation id="7665680517722058469">يُرجى تجربة عبارة بحث أخرى.</translation>
 <translation id="7689532716264131859">تم نقل <ph name="NUMBER_OF_ITEMS" /> عنصر إلى "المهملات".</translation>
 <translation id="7693909743393669729">ستؤدي تهيئة محرك أقراص إلى محو جميع البيانات المخزَّنة عليه وإزالة جميع الأقسام الحالية، بما فيها الأقسام التي قد تكون غير مرئية. ولا يمكن التراجع عن هذا الإجراء.</translation>
 <translation id="7695430100978772476">تعذّر ضبط <ph name="DRIVE_NAME" /></translation>
@@ -969,6 +971,7 @@
 <translation id="8866284467018526531">تحويل صوتي إلى اللغة العربية</translation>
 <translation id="8873014196523807561">لاستعادة هذه العناصر، اسحبها إلى مجلد جديد. تم حذف المجلدات الأصلية لبعض هذه العناصر.</translation>
 <translation id="8874184842967597500">غير متصل</translation>
+<translation id="8876368061475701452">تم الوضع في قائمة الانتظار</translation>
 <translation id="8900820606136623064">المجرية</translation>
 <translation id="8903931173357132290">خرّيج</translation>
 <translation id="8912078710089354287">كلب يهُز ذيله</translation>

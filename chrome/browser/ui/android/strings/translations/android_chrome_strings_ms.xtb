@@ -250,6 +250,7 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="2426805022920575512">Pilih akaun lain</translation>
 <translation id="2433507940547922241">Tampilan</translation>
 <translation id="2435457462613246316">Paparkan kata laluan</translation>
+<translation id="2439153523196674349">Pratonton <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Adakah anda mahu mula memuat turun <ph name="FILE_NAME" /> sekali lagi?</translation>
 <translation id="2453860139492968684">Selesai</translation>
 <translation id="2459390580524506445">Carian suara dipertingkatkan</translation>
@@ -388,6 +389,7 @@ Token keadaan sulit meningkatkan privasi pada web dan tidak boleh digunakan untu
 <translation id="3066573403916685335">Alihkan Ke Bawah</translation>
 <translation id="3070005020161560471">Terjemah secara automatik</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> akan dibuka dalam Chrome. Dengan meneruskan penggunaan, anda bersetuju menerima <ph name="BEGIN_LINK1" />Syarat Perkhidmatan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Syarat Perkhidmatan Tambahan Google Chrome dan Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Dasar Privasi<ph name="END_LINK3" /> juga dikenakan.</translation>
+<translation id="3083194063661536258">Dilog keluar. Butang. Membuka dialog untuk log masuk dan menghidupkan penyegerakan.</translation>
 <translation id="3091010850649238832">Paparkan kandungan papan keratan</translation>
 <translation id="3098745985164956033">Sesetengah imej dihantar kepada Google untuk meningkatkan perihalan untuk anda</translation>
 <translation id="3104179992611025423">Penyemak imbas anda diurus oleh ibu bapa anda</translation>
@@ -924,6 +926,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="604124094241169006">Automatik</translation>
 <translation id="6042308850641462728">Lagi</translation>
+<translation id="6049046116080614938">Log masuk sebagai <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Butang. Membuka tetapan.</translation>
 <translation id="604996488070107836">Muat turun <ph name="FILE_NAME" /> gagal disebabkan oleh ralat yang tidak diketahui.</translation>
 <translation id="605721222689873409">TT</translation>
 <translation id="6059830886158432458">Kawal cerita dan aktiviti anda di sini</translation>
@@ -1297,6 +1300,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7968014550143838305">Ditambahkan pada senarai bacaan</translation>
 <translation id="7971136598759319605">Aktif 1 hari yang lalu</translation>
 <translation id="7975379999046275268">Pratonton halaman <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">Log masuk sebagai <ph name="USER_NAME" />. Butang. Membuka tetapan.</translation>
 <translation id="7986497153528221272">Untuk melihat kata laluan, pertama sekali, tetapkan kunci skrin pada peranti anda</translation>
 <translation id="7995059495660416932">Anda akan melihat kandungan apabila tersedia</translation>
 <translation id="799576009106109668">Anda akan menyemak imbas dengan lebih pantas kerana kandungan dimuatkan secara proaktif berdasarkan lawatan halaman web semasa anda</translation>

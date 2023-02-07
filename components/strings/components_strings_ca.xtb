@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">S'estan preparant els fitxers</translation>
 <translation id="1015730422737071372">Proporcioneu més informació</translation>
 <translation id="1019413721762100891">Desactivat</translation>
-<translation id="1021110881106174305">Targetes acceptades</translation>
 <translation id="1021753677514347426">Aquest problema es produeix a causa d'un certificat que tu o una altra persona heu instal·lat al dispositiu. Se sap que aquest certificat s'utilitza per supervisar i interceptar xarxes, i Chromium no hi confia. Tot i que hi ha casos en què és legítim dur a terme una supervisió, per exemple, en el cas d'una empresa o d'un centre educatiu, Chromium vol assegurar-se que estiguis al cas d'aquesta situació, encara que no la puguis evitar. La supervisió es pot produir en qualsevol navegador o aplicació que accedeixi al web.</translation>
 <translation id="1024111578869940408">De vegades, els atacants imiten llocs web introduint canvis difícils de veure a l'adreça web.</translation>
 <translation id="1028781062521375153">Mostra els detalls</translation>
@@ -708,7 +707,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2688969097326701645">Sí, continua</translation>
 <translation id="2691924980723297736">Advertiment de seguretat</translation>
 <translation id="2692131511336778528">Ciència-ficció i fantasia</translation>
-<translation id="2699302886720511147">Targetes acceptades</translation>
 <translation id="2701514975700770343">Cara avall</translation>
 <translation id="2702801445560668637">Llista de lectura</translation>
 <translation id="2704283930420550640">El valor no coincideix amb el format.</translation>
@@ -991,7 +989,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="342781501876943858">Chromium et recomana que restableixis la contrasenya si l'has fet servir en altres llocs web.</translation>
 <translation id="3428151540071562330">Un o més dels URI de plantilla de servidor corresponents a DnsOverHttpsTemplates no són vàlids i no s'utilitzaran.</translation>
 <translation id="3431216045099978607">Prem |<ph name="ACCELERATOR" />| per sortir de la pantalla completa i veure la baixada.</translation>
-<translation id="3431636764301398940">Desa aquesta targeta al dispositiu</translation>
 <translation id="3432601291244612633">Tanca la pàgina</translation>
 <translation id="3435738964857648380">Seguretat</translation>
 <translation id="3438829137925142401">Utilitza les contrasenyes desades al teu Compte de Google</translation>
@@ -1122,7 +1119,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3744111561329211289">Sincronització en segon pla</translation>
 <translation id="3744286742364977428">Els fitxers que baixes s'envien a Google Cloud o a tercers perquè s'analitzin. Per exemple, pot ser que s'analitzin per detectar-hi dades sensibles o programari maliciós i que s'emmagatzemin d'acord amb les polítiques de l'empresa.</translation>
 <translation id="3744899669254331632">En aquest moments no podeu visitar la pàgina <ph name="SITE" /> perquè el lloc web ha enviat credencials aleatòries que Chromium no pot processar. Els atacs i els errors de xarxa acostumen a ser temporals, o sigui que probablement la pàgina funcionarà més endavant.</translation>
-<translation id="3745099705178523657">Un cop confirmada, la informació de la targeta del Compte de Google es compartirà amb aquest lloc web.</translation>
 <translation id="3748148204939282805">Els atacants del lloc web <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> et poden enganyar perquè facis alguna acció perillosa, com ara instal·lar programari o revelar informació personal (per exemple, contrasenyes, números de telèfon o targetes de crèdit). <ph name="BEGIN_LEARN_MORE_LINK" />Més informació<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Sector de l'aviació</translation>
 <translation id="3752543821772132562">S'ha ignorat perquè la política <ph name="POLICY_NAME" /> no està establerta.</translation>
@@ -1140,7 +1136,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3781428340399460090">Rosa fúcsia</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositius Bluetooth</translation>
-<translation id="3787705759683870569">Data de caducitat: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Mida 16</translation>
 <translation id="3789841737615482174">Instal·la</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> polzades)</translation>
@@ -3084,7 +3079,6 @@ Detalls addicionals:
 <translation id="8620276786115098679">Sobre Kaku 7</translation>
 <translation id="8623885649813806493">No hi ha cap contrasenya que coincideixi. Mostra totes les contrasenyes desades.</translation>
 <translation id="8624354461147303341">Obtén descomptes</translation>
-<translation id="8625384913736129811">Desa aquesta targeta al dispositiu</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637577059508742477">El teu perfil i el teu navegador estan gestionats per <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">Sobre Kaku 3</translation>

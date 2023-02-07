@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">ගොනු සූදානම් කරමින්</translation>
 <translation id="1015730422737071372">අමතර විස්තර සපයන්න</translation>
 <translation id="1019413721762100891">අක්‍රිය</translation>
-<translation id="1021110881106174305">පිළි ගත් කාඩ්පත්</translation>
 <translation id="1021753677514347426">මෙම ගැටලුව සිදු වන්නේ ඔබ හෝ වෙනත් කෙනෙක් ඔබේ උපාංගය මත ස්ථාපන කර ඇති සහතිකයක් හේතුවෙනි. එම සහතිකය ජාල නිරීක්‍ෂණ කිරීමටත් අතුරු ඇරීමටත් භාවිත වන බවට දන්නා අතර, Chromium විසින් විශ්වාස නොකෙරේ. පාසල් හෝ සමාගම් ජාලයක් මත වැනි නිරීක්‍ෂණ කිරීම සඳහා යම් නීත්‍යානුකූල සංදර්භ පවතින අතරතුර, ඔබට එය නැවැත්විය නොහැකි නමුත් ඔබ එය සිදු වන බවට දැන සිටීම ගැන Chromium කැමති වෙයි. වෙබයට ප්‍රවේශ වන ඕනෑම බ්‍රවුසරයක් හෝ යෙදුමක් තුළ නිරීක්‍ෂණය සිදු විය හැක.</translation>
 <translation id="1024111578869940408">ප්‍රහාරකයින් සමහර විට වෙබ් ලිපිනයට බැලීමට අපහසු වෙනස් කිරීම් සිදු කිරීමෙන් අඩවි අනුකරණය කරයි.</translation>
 <translation id="1028781062521375153">විස්තර බලන්න</translation>
@@ -708,7 +707,6 @@
 <translation id="2688969097326701645">ඔව්, දිගටම කරගෙන යන්න</translation>
 <translation id="2691924980723297736">ආරක්‍ෂක අවවාදය</translation>
 <translation id="2692131511336778528">විද්‍යා ප්‍රබන්ධ සහ මනඃකල්පිත</translation>
-<translation id="2699302886720511147">පිළිගත් කාඩ්පත්</translation>
 <translation id="2701514975700770343">මුහුණ පහළට</translation>
 <translation id="2702801445560668637">කියවීම් ලැයිස්තුව</translation>
 <translation id="2704283930420550640">අගය ආකෘතිය හා නොසැසඳේ.</translation>
@@ -991,7 +989,6 @@
 <translation id="342781501876943858">Chromium ඔබේ මුරපදය ඔබ වෙනත් අඩවිවල නැවත භාවිත කර තිබේ නම් යළි සැකසීමට නිර්දේශ කරයි.</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates සේවාදායක අච්චු URI-වලින් එකක් හෝ වැඩි ගණනක් අවලංගු බැවින් භාවිත නොකෙරේ.</translation>
 <translation id="3431216045099978607">පූර්ණ තිරයෙන් පිටවීමට සහ බාගැනීම දැකීමට |<ph name="ACCELERATOR" />| ඔබන්න.</translation>
-<translation id="3431636764301398940">මෙම උපාංගයට මෙම කාඩ්පත සුරකින්න</translation>
 <translation id="3432601291244612633">පිටුව වසන්න</translation>
 <translation id="3435738964857648380">ආරක්ෂක</translation>
 <translation id="3438829137925142401">ඔබේ Google ගිණුම තුළ සුරැකි මුරපද භාවිත කරන්න</translation>
@@ -1122,7 +1119,6 @@
 <translation id="3744111561329211289">පසුබිමෙහි සමමුහුර්තකරණය</translation>
 <translation id="3744286742364977428">ඔබ බාගත කරන ගොනු විශ්ලේෂණය සඳහා Google Cloud හෝ තෙවන පාර්ශව වෙත යවනු ලැබේ. උදාහරණයක් ලෙස, ඒවා සංවේදී දත්ත හෝ අනිෂ්ට මෘදුකාංග තිබේදැයි ස්කෑන් කළ හැකි අතර සමාගම් ප්‍රතිපත්තිවලට අනුව ගබඩා කළ හැක.</translation>
 <translation id="3744899669254331632">Chromium වලට ක්‍රියාවලිය කළ නොහැකි අවුල් අක්තපත්‍ර වෙබ් අඩවියට යැවූ නිසා ඔබට දැන් <ph name="SITE" /> වෙත පැමිණිය නොහැක. ජාල දෝෂ සහ ප්‍රහාර සාමාන්‍යයෙන් තාවකාලිකය, පෙනෙන හැටියට මෙම පිටුව පසුව වැඩ කරයි.</translation>
-<translation id="3745099705178523657">ඔබ තහවුරු කළ පසු, ඔබේ Google ගිණුමෙන් කාඩ්පත් විස්තර මෙම අඩවිය සමඟ බෙදා ගනු ලැබේ.</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> හි ප්‍රහාරකයන් මෘදුකාංගයක් ස්ථාපනය හෝ ඔබේ පුද්ගලික තොරතුරු (උදාහරණ ලෙස, මුරපද, දුරකථන අංක, හෝ ණයපත්) හෙළිදරව් කිරීම වැනි අවදානම් සහගත දේවල්වලට ඔබව පෙළඹවිය හැකිය. <ph name="BEGIN_LEARN_MORE_LINK" />තව දැන ගන්න<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">ගුවන් සේවා කර්මාන්තය</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> සකසා නැති නිසා නොසලකා හැර ඇත.</translation>
@@ -1140,7 +1136,6 @@
 <translation id="3781428340399460090">උණුසුම් රෝස</translation>
 <translation id="3783418713923659662">මාස්ටර්කාඩ්</translation>
 <translation id="3784372983762739446">බ්ලූටූත් උපාංග</translation>
-<translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /> කල් ඉකුත් වේ</translation>
 <translation id="3789155188480882154">ප්‍රමාණය 16</translation>
 <translation id="3789841737615482174">ස්ථාපනය</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (අඟ <ph name="WIDTH" /> x <ph name="HEIGHT" />)</translation>
@@ -3084,7 +3079,6 @@
 <translation id="8620276786115098679">ලියුම් කවරය කකු 7</translation>
 <translation id="8623885649813806493">ගැළපෙන මුරපද නැත. සුරැකි මුරපද සියල්ල පෙන්වන්න.</translation>
 <translation id="8624354461147303341">වට්ටම් ලබා ගන්න</translation>
-<translation id="8625384913736129811">මෙම උපාංගයට මෙම කාඩ්පත සුරකින්න</translation>
 <translation id="8634957317623797170">මිමි 54 x 86</translation>
 <translation id="8637577059508742477">ඔබේ පැතිකඩ සහ බ්‍රව්සරය කළමනාකරණය කරන්නේ <ph name="DOMAIN" /> විසිනි</translation>
 <translation id="8643409044755049933">ලියුම් කවරය කකු 3</translation>

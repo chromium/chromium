@@ -80,6 +80,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="149095475893949513">Webgunea konfigurazio-profil bat deskargatu nahian dabil.</translation>
 <translation id="1491277525950327607">Sakatu birritan ezarpena aldatzeko</translation>
 <translation id="1492417797159476138">Dagoeneko gorde duzu erabiltzaile-izen hau webgune honetarako</translation>
+<translation id="1498283581832036924"><ph name="WEBSITE" /> webguneko kontua ez da ezabatuko.</translation>
 <translation id="1506063256525392513">Horrela, argazkiak atera eta kargatu ahal izango dituzu, eta QR kodeak eskaneatu</translation>
 <translation id="1509486075633541495">Hasi saioa webgunean</translation>
 <translation id="1509960214886564027">Baliteke webgune askotako eginbideek ez funtzionatzea</translation>
@@ -218,6 +219,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2664621323652615289">Gelditu</translation>
 <translation id="2671426118752779020">iPhone-ko beste aplikazio batzuk erabiltzen ari zinela Google-ren Pasahitz-kudeatzailea zerbitzuan gorde zenituen pasahitzak erabil ditzakezu.</translation>
 <translation id="2690858294534178585">Kamera abian da</translation>
+<translation id="26915454213703967">Bilatu irudiaren barruan Google erabilita</translation>
 <translation id="2691653761409724435">Ez dago erabilgarri konexiorik gabe</translation>
 <translation id="2695507686909505111">Itzuli da orria</translation>
 <translation id="2697526135132990015">Amaitu saioa eta garbitu datuak</translation>
@@ -380,6 +382,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3819183753496523827">Ez dago Interneteko konexiorik. Egiaztatu Internetera konektatuta zaudela eta saiatu berriro.</translation>
 <translation id="3835964409414434850">Joan hurrengo fitxara</translation>
 <translation id="385051799172605136">Atzera</translation>
+<translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> eta beste <ph name="NUMBER_OF_ACCOUNTS" /> webgunetako pasahitzak ezabatuko dira. Zure kontuak ez dira ezabatuko.</translation>
 <translation id="3858860766373142691">Izena</translation>
 <translation id="3861486700625780712">Utzi jarraitzeari</translation>
 <translation id="3863769054730344136">Bidali zure gailuetara</translation>
@@ -515,6 +518,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="4833786495304741580">Erabilera-estatistikak eta hutsegite-txostenak automatikoki bidaltzen dizkio Google-ri.</translation>
 <translation id="4840495572919996524">Laster-markak, historia, pasahitzak eta beste ez dira sinkronizatuko Google-ko kontuarekin aurrerantzean.</translation>
 <translation id="4844899002472726590">Ikusi eta editatu interesatzen zaizkizun gaiak</translation>
+<translation id="4848999860252535517"><ph name="WEBSITE" /> webguneko pasahitza ezabatu nahi duzu?</translation>
 <translation id="4854345657858711387">Ezarri pasakode bat</translation>
 <translation id="4858786880085262208">Igo mailaz HTTPSra, posible denean. Baliteke webgune seguruek eduki ez-segurua kapsulatzea.</translation>
 <translation id="4860895144060829044">Deitu</translation>
@@ -768,6 +772,7 @@ Erabili pasahitz esklusibo bat webgune bakoitzerako.</translation>
 <translation id="6598875554591387303">Ordenatu argitaratzailearen arabera</translation>
 <translation id="6603393121510733479">Zure erakundeak arakatze pribatua desaktibatu du.
 <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> eta <ph name="THIRD_WEBSITE" /> webguneetako pasahitzak ezabatuko dira. Zure kontuak ez dira ezabatuko.</translation>
 <translation id="6610002944194042868">Itzultzeko aukerak</translation>
 <translation id="661266467055912436">Segurtasuna hobetzen du, bai zuretzat, bai sareko gainontzeko erabiltzaileentzat.</translation>
 <translation id="6620279676667515405">Utzi</translation>
@@ -1045,6 +1050,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8756969031206844760">Pasahitza eguneratu nahi duzu?</translation>
 <translation id="8763613688786959833">Joan azken fitxara</translation>
 <translation id="8764015330924122850">Utzi <ph name="DOMAIN_NAME" /> domeinuari jarraitzeari</translation>
+<translation id="8766790350274092814"><ph name="WEBSITE" /> eta <ph name="SECOND_WEBSITE" /> webguneetako pasahitzak ezabatuko dira. Zure kontuak ez dira ezabatuko.</translation>
 <translation id="8775144690796719618">URLak ez du balio</translation>
 <translation id="8787968206789828143">Bilatu sarean</translation>
 <translation id="8792626944327216835">mikrofonoa</translation>
@@ -1094,6 +1100,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="9093271241977565440">Pantailaren goialdean, sakatu bilatzeko botoia</translation>
 <translation id="9094033019050270033">Aldatu pasahitza</translation>
 <translation id="9097506547406246598">Ezin zaio jarraitzeari utzi. Arazoren bat izan da.</translation>
+<translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> pasahitz ezabatu nahi dituzu?</translation>
 <translation id="9100610230175265781">Pasaesaldia behar da</translation>
 <translation id="9107664647686727385">Egiaztatu ea badagoen pasahitzik arriskuan</translation>
 <translation id="9124387962554796433">Baliteke Google-k historia erabiltzea Bilaketa eta Google-ren beste zerbitzu batzuk pertsonalizatzeko.</translation>

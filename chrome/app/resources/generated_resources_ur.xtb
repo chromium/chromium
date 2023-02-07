@@ -409,6 +409,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{کوئی متاثرہ پاس ورڈ نہیں}=1{1 متاثرہ پاس ورڈ}other{{NUM_COMPROMISED} متاثرہ پاس ورڈز}}</translation>
 <translation id="1380028686461971526">نیٹ ورک سے خودکار طور پر منسلک ہوں</translation>
 <translation id="1381567580865186407">‏Google کو پروسیسنگ کے لیے <ph name="LANGUAGE" /> اسپیچ بھیجی جاتی ہے</translation>
+<translation id="1383381142702995121">اس ایکسٹینشن کا نظم کریں</translation>
 <translation id="1383597849754832576">اسپیچ فائلز ڈاؤن لوڈ نہیں کر سکتے۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="1383861834909034572">مکمل ہونے پر کھولی جائے گی</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
@@ -4228,6 +4229,7 @@
 <translation id="4807098396393229769">کارڈ پر نام</translation>
 <translation id="4808667324955055115">پوپ - اپس مسدود ہیں:</translation>
 <translation id="4809079943450490359">آپ کے آلہ کے منتظم کی طرف سے ہدایات:</translation>
+<translation id="4809447465126035330">حذف کریں</translation>
 <translation id="480990236307250886">ہوم صفحہ کھولیں</translation>
 <translation id="4809927044794281115">ہلکی تھیم</translation>
 <translation id="4811212958317149293">سوئچ رسائی کی بورڈ خودکار اسکین</translation>
@@ -5029,6 +5031,7 @@
 <translation id="5556459405103347317">دوبارہ لوڈ کریں</translation>
 <translation id="5558129378926964177">زوم &amp;ان کریں</translation>
 <translation id="5558247502209241936">ونڈو میں ایپ کو کھولنا فعال کریں</translation>
+<translation id="5559311991468302423">پتہ حذف کریں</translation>
 <translation id="55601339223879446">ڈسپلے کے اندر اپنے ڈیسک ٹاپ کی حدود کو ایڈجسٹ کریں</translation>
 <translation id="5561162485081632007">جب خطرناک ایونٹس ہوتے ہیں تو ان کا پتہ لگا کر آپ کو ان کے بارے میں متنبہ کرتا ہے۔</translation>
 <translation id="5562781907504170924">یہ ٹیب ایک بلوٹوتھ آلہ سے منسلک ہے۔</translation>
@@ -5722,7 +5725,7 @@
 <translation id="6200151268994853226">ایکسٹینشن کا نظم کریں</translation>
 <translation id="6201608810045805374">اس اکاؤنٹ کو ہٹائیں؟</translation>
 <translation id="6202304368170870640">‏آپ اپنا آلہ غیر مقفل کرنے یا اس میں سائن ان ہونے کے لیے اپنا PIN استعمال کر سکتے ہیں۔</translation>
-<translation id="6205314730813004066">اشتہار کی رازداری</translation>
+<translation id="6205314730813004066">اشتہارات کی رازداری</translation>
 <translation id="6206199626856438589">اوپن ٹیبز سمیت، آپ ڈسپلے کردہ سائٹس سے سائن آؤٹ ہو جائیں گے</translation>
 <translation id="6206311232642889873">تصویر &amp;کاپی کریں</translation>
 <translation id="6206521455877863927">‏ایک ہی ڈومین کی سائٹس سمیت، مثال کے طور پر، google.com اور mail.google.com۔ جو سائٹس آپ دیکھ رہے ہیں وہ آپ کے آلے پر ڈیٹا محفوظ کر سکتی ہیں۔</translation>
@@ -6418,6 +6421,7 @@
 <translation id="6839916869147598086">سائن ان تبدیل ہو چکا ہے</translation>
 <translation id="6840155290835956714">بھیجنے سے پہلے پوچھیں</translation>
 <translation id="6840184929775541289">ایک توثیقی ادارہ نہیں ہے</translation>
+<translation id="6840214587087739194">پتہ حذف ہو گیا</translation>
 <translation id="6841143363521180029">مرموز کردہ</translation>
 <translation id="6841186874966388268">خرابیاں</translation>
 <translation id="6842136130964845393">اس بات کو یقینی بنانے کیلئے کہ آپ ہمیشہ اپنے محفوظ کردہ پاس ورڈز تک رسائی حاصل کر سکتے ہیں، توثیق کریں کہ یہ آپ ہیں</translation>
@@ -8260,6 +8264,7 @@
 <translation id="8525306231823319788">پوری اسکرین</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">زبانیں شامل کریں</translation>
+<translation id="8528479410903501741">‏IBAN محفوظ کریں</translation>
 <translation id="8528962588711550376">سائن ان کیا جا رہا ہے۔</translation>
 <translation id="8529925957403338845">فوری ٹیدرنگ کا کنکشن ناکام ہو گیا</translation>
 <translation id="8531701051932785007">بہتر کردہ محفوظ براؤزنگ آف ہے</translation>
@@ -8375,6 +8380,7 @@
 <translation id="8639635302972078117">‏استعمال اور ڈائیگناسٹک کا ڈیٹا بھیجیں۔ فی الوقت یہ آلہ خود کار طور پر ڈائیگناسٹک، آلے اور ایپ کے استعمال کا ڈیٹا Google کو بھیج رہا ہے۔ اس کا استعمال آپ کے بچے کی شناخت کیلئے نہیں کیا جائے گا اور اس سے سسٹم اور ایپ کے استحکام اور دیگر بہتریوں میں مدد ملے گی۔ کچھ مجموعی ڈیٹا Google ایپس اور پارٹنرز، جیسے Android ڈیولپرز، کی مدد بھی کرے گا۔ اگر آپ کے بچے کیلئے ویب اور ایپ کی اضافی سرگرمی کی ترتیب آن ہے تو اس ڈیٹا کو اس کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔</translation>
 <translation id="8642900771896232685">2 سیکنڈز</translation>
 <translation id="8642947597466641025">متن کو اور بڑا بنائیں</translation>
+<translation id="8643403533759285912">گروپ حذف کریں</translation>
 <translation id="8643443571868262066">‏<ph name="FILE_NAME" /> خطرناک ہو سکتا ہے۔ اسکیننگ کے لیے Google کے اعلی تحفظ کو بھیجیں؟</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{کوئی کوکی نہیں}=1{1 کوکی مسدود ہے}other{# کوکیز مسدود ہیں}}</translation>
 <translation id="864423554496711319">آپ کے اکاؤنٹ میں محفوظ کردہ آلات</translation>
@@ -8848,6 +8854,7 @@
 <translation id="90528604757378587">پس منظر کی سرگرمی اور کچھ بصری اثرات، جیسے ہموار اسکرولنگ، محدود ہو سکتے ہیں۔</translation>
 <translation id="9053563360605707198">دونوں طرف پرنٹ کریں</translation>
 <translation id="9055636786322918818">‏RC4 مرموز کاری کو نافذ کریں۔ اس اختیار کے استعمال سے آپ کا خطرہ بڑھ جاتا ہے، کیوں کہ RC4 سائفرز غیر محفوظ ہیں۔</translation>
+<translation id="9056788090206401048">کسی دوسرے آلے پر آپ کی پاس کی استعمال کرنے کے لیے بلوٹوتھ آن ہونا ضروری ہے۔ آپ ترتیبات میں ہمیشہ اس کا نظم کر سکتے ہیں۔</translation>
 <translation id="9056810968620647706">کوئی مماثلتیں نہیں ملیں۔</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> درج ذیل مواد تک رسائی حاصل کرنا چاہتا ہے:</translation>
 <translation id="9057354806206861646">شیڈول اپ ڈیٹ کریں</translation>

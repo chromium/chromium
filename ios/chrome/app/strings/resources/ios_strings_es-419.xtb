@@ -80,6 +80,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="149095475893949513">Este sitio web intenta descargar un perfil de configuración.</translation>
 <translation id="1491277525950327607">Presiona dos veces para activar o desactivar la configuración</translation>
 <translation id="1492417797159476138">Ya guardaste este nombre de usuario en este sitio</translation>
+<translation id="1498283581832036924">No se borrará tu cuenta de <ph name="WEBSITE" />.</translation>
 <translation id="1506063256525392513">Te permite tomar fotos, subirlas y escanear códigos QR</translation>
 <translation id="1509486075633541495">Acceder al sitio web</translation>
 <translation id="1509960214886564027">Es posible que las características de muchos sitios no funcionen de forma correcta</translation>
@@ -218,6 +219,7 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="2664621323652615289">Detener</translation>
 <translation id="2671426118752779020">Puedes usar las contraseñas que guardaste en el Administrador de contraseñas de Google en otras apps de tu iPhone.</translation>
 <translation id="2690858294534178585">La cámara se está usando</translation>
+<translation id="26915454213703967">Buscar en la imagen con Google</translation>
 <translation id="2691653761409724435">No disponible sin conexión</translation>
 <translation id="2695507686909505111">Se tradujo la página</translation>
 <translation id="2697526135132990015">Salir y borrar datos</translation>
@@ -380,6 +382,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3819183753496523827">No tienes conexión. Revisa tu conexión a Internet y vuelve a intentarlo.</translation>
 <translation id="3835964409414434850">Ir a la pestaña siguiente</translation>
 <translation id="385051799172605136">Atrás</translation>
+<translation id="3851938967634752633">Se borrarán las contraseñas de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> y <ph name="NUMBER_OF_ACCOUNTS" /> más. No se borrarán tus cuentas.</translation>
 <translation id="3858860766373142691">Nombre</translation>
 <translation id="3861486700625780712">Dejar de seguir</translation>
 <translation id="3863769054730344136">Enviar a tus dispositivos</translation>
@@ -515,6 +518,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="4833786495304741580">Envía automáticamente informes de fallas y estadísticas de uso a Google.</translation>
 <translation id="4840495572919996524">Ya no se sincronizarán los favoritos, el historial, las contraseñas ni otras opciones de configuración con tu Cuenta de Google.</translation>
 <translation id="4844899002472726590">Ver y editar los temas que te interesan</translation>
+<translation id="4848999860252535517">¿Quieres borrar la contraseña de <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Establecer una contraseña</translation>
 <translation id="4858786880085262208">Actualiza a HTTPS cuando sea posible. Es posible que los sitios seguros incluyan contenido no seguro.</translation>
 <translation id="4860895144060829044">Llamar</translation>
@@ -768,6 +772,7 @@ Intenta usar una contraseña única para cada sitio.</translation>
 <translation id="6598875554591387303">Ordenar por publicador</translation>
 <translation id="6603393121510733479">Tu organización desactivó la navegación privada.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Se borrarán las contraseñas de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> y <ph name="THIRD_WEBSITE" />. No se borrarán tus cuentas.</translation>
 <translation id="6610002944194042868">Opciones de traducción</translation>
 <translation id="661266467055912436">Mejora la seguridad para ti y todos los usuarios de la Web.</translation>
 <translation id="6620279676667515405">Cancelar</translation>
@@ -1045,6 +1050,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8756969031206844760">¿Quieres actualizar la contraseña?</translation>
 <translation id="8763613688786959833">Ir a la última pestaña</translation>
 <translation id="8764015330924122850">Dejar de seguir a <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Se borrarán las contraseñas de <ph name="WEBSITE" /> y <ph name="SECOND_WEBSITE" />. No se borrarán tus cuentas.</translation>
 <translation id="8775144690796719618">URL no válida</translation>
 <translation id="8787968206789828143">Buscar en la Web</translation>
 <translation id="8792626944327216835">micrófono</translation>
@@ -1094,6 +1100,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="9093271241977565440">En la parte superior de la pantalla, presiona el ícono de Búsqueda</translation>
 <translation id="9094033019050270033">Actualizar contraseña</translation>
 <translation id="9097506547406246598">No se puede dejar de seguir. Se produjo un error.</translation>
+<translation id="9098541895599151034">¿Quieres borrar <ph name="NUMBER_OF_ACCOUNTS" /> contraseñas?</translation>
 <translation id="9100610230175265781">Se necesita una frase de contraseña.</translation>
 <translation id="9107664647686727385">Verifica si hay contraseñas hackeadas</translation>
 <translation id="9124387962554796433">Es posible que Google use tu historial para personalizar la Búsqueda y otros servicios de Google.</translation>

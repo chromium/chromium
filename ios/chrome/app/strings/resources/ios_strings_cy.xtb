@@ -80,6 +80,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="149095475893949513">Mae'r wefan hon yn ceisio lawrlwytho proffil ffurfweddiad.</translation>
 <translation id="1491277525950327607">Tapiwch ddwywaith i doglo'r gosodiad</translation>
 <translation id="1492417797159476138">Rydych eisoes wedi cadw'r enw defnyddiwr hwn ar gyfer y wefan hon.</translation>
+<translation id="1498283581832036924">Ni fydd eich cyfrif <ph name="WEBSITE" /> yn cael ei ddileu.</translation>
 <translation id="1506063256525392513">Mae hyn yn eich galluogi i dynnu ac uwchlwytho lluniau, yn ogystal â sganio codau QR</translation>
 <translation id="1509486075633541495">Mewngofnodi i'r wefan</translation>
 <translation id="1509960214886564027">Mae'n bosib y bydd nodweddion ar lawer o wefannau yn torri</translation>
@@ -218,6 +219,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2664621323652615289">Stopio</translation>
 <translation id="2671426118752779020">Gallwch ddefnyddio'r cyfrineiriau a gadwyd gennych i Reolwr Cyfrineiriau Google mewn apiau eraill ar eich iPhone.</translation>
 <translation id="2690858294534178585">Mae'r camera'n cael ei ddefnyddio</translation>
+<translation id="26915454213703967">Chwilio y tu mewn i Lun gyda Google</translation>
 <translation id="2691653761409724435">Nid yw ar gael all-lein</translation>
 <translation id="2695507686909505111">Mae'r dudalen wedi'i chyfieithu</translation>
 <translation id="2697526135132990015">Allgofnodi a Chlirio Data</translation>
@@ -380,6 +382,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3819183753496523827">Rydych chi all-lein. Gwiriwch eich cysylltiad rhyngrwyd a rhowch gynnig arall arni.</translation>
 <translation id="3835964409414434850">Mynd i'r Tab Nesaf</translation>
 <translation id="385051799172605136">Nôl</translation>
+<translation id="3851938967634752633">Bydd y cyfrineiriau ar gyfer <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, a <ph name="NUMBER_OF_ACCOUNTS" /> arall yn cael eu dileu. Ni fydd eich cyfrifon yn cael eu dileu.</translation>
 <translation id="3858860766373142691">Enw</translation>
 <translation id="3861486700625780712">Peidio â dilyn</translation>
 <translation id="3863769054730344136">Anfon at Eich Dyfeisiau</translation>
@@ -515,6 +518,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="4833786495304741580">Yn anfon ystadegau defnydd ac adroddiadau damweiniau at Google yn awtomatig.</translation>
 <translation id="4840495572919996524">Ni fydd eich nodau tudalen, eich hanes, eich cyfrineiriau, a rhagor yn cael eu cysoni i'ch Cyfrif Google mwyach.</translation>
 <translation id="4844899002472726590">Gweld a golygu pynciau y mae gennych ddiddordeb ynddynt</translation>
+<translation id="4848999860252535517">Dileu Cyfrinair ar gyfer <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Gosod Cod Pas</translation>
 <translation id="4858786880085262208">Uwchraddiwch i HTTPS, pan fo modd. Mae'n bosib y bydd gwefannau diogel yn ymgorffori cynnwys nad yw'n ddiogel.</translation>
 <translation id="4860895144060829044">Galw</translation>
@@ -768,6 +772,7 @@ Ceisiwch ddefnyddio cyfrinair unigryw ar gyfer pob gwefan.</translation>
 <translation id="6598875554591387303">Trefnu yn ôl Cyhoeddwr</translation>
 <translation id="6603393121510733479">Gwnaeth eich sefydliad ddiffodd pori preifat.
 <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Bydd y cyfrineiriau ar gyfer <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, a <ph name="THIRD_WEBSITE" /> yn cael eu dileu. Ni fydd eich cyfrifon yn cael eu dileu.</translation>
 <translation id="6610002944194042868">Opsiynau cyfieithu</translation>
 <translation id="661266467055912436">Yn gwella diogelwch i chi a phawb ar y we.</translation>
 <translation id="6620279676667515405">Canslo</translation>
@@ -1045,6 +1050,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8756969031206844760">Diweddaru'r cyfrinair?</translation>
 <translation id="8763613688786959833">Ewch i'r Tab Olaf</translation>
 <translation id="8764015330924122850">Dad-ddilyn <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Bydd Cyfrineiriau ar gyfer <ph name="WEBSITE" /> a <ph name="SECOND_WEBSITE" /> yn cael eu dileu. Ni fydd eich cyfrifon yn cael eu dileu.</translation>
 <translation id="8775144690796719618">URL Annilys</translation>
 <translation id="8787968206789828143">Chwilio ar y We</translation>
 <translation id="8792626944327216835">meicroffon</translation>
@@ -1094,6 +1100,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="9093271241977565440">Ar Ben y Sgrin, Tapiwch yr Eicon Chwilio</translation>
 <translation id="9094033019050270033">Diweddaru cyfrinair</translation>
 <translation id="9097506547406246598">Methu â dad-ddilyn. Aeth rhywbeth o'i le.</translation>
+<translation id="9098541895599151034">Dileu <ph name="NUMBER_OF_ACCOUNTS" /> o Gyfrineiriau?</translation>
 <translation id="9100610230175265781">Angen cyfrinymadrodd</translation>
 <translation id="9107664647686727385">Gwirio am gyfrineiriau sydd wedi'u datgelu</translation>
 <translation id="9124387962554796433">Mae'n bosib y bydd Google yn defnyddio'ch hanes i bersonoleiddio Search a gwasanaethau Google eraill.</translation>

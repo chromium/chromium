@@ -408,6 +408,7 @@
 <translation id="4462159676511157176">Fərdi ad serverləri</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, Administratorunuz tərəfindən idarə olunur, Qoşulun</translation>
 <translation id="4470564870223067757">Hangul 2 Dəsti</translation>
+<translation id="4474142134969976028">Uyğun nəticə yoxdur</translation>
 <translation id="4477002475007461989">Rumın</translation>
 <translation id="4477219268485577442">Bolqar fonetikası</translation>
 <translation id="4508265954913339219">Aktivləşdirilmə uğursuz oldu</translation>
@@ -812,6 +813,7 @@
 <translation id="7655441028674523381">Google Fotoya asan giriş</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7663224033570512922">Hind</translation>
+<translation id="7665680517722058469">Başqa axtarış edin</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> element zibil qutusuna köçürüldü</translation>
 <translation id="7693909743393669729">Formatdan sonra diskdə saxlanılan bütün data silinəcək və görünməyən arakəsmələr də daxil olmaqla bütün mövcud hissələr aradan qaldırılacaq. Bu əməliyyat geri qaytarıla bilməz.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> formatlanmadı</translation>
@@ -966,6 +968,7 @@
 <translation id="8866284467018526531">Ərəb dilində Transliterasiya</translation>
 <translation id="8873014196523807561">Bu elementləri bərpa etmək üçün yeni bir qovluğa sürüşdürün. Bu elementlərin bəziləri üçün orijinal qovluqlar silinib.</translation>
 <translation id="8874184842967597500">Qoşulmayıb</translation>
+<translation id="8876368061475701452">Növbədədir</translation>
 <translation id="8900820606136623064">Macar</translation>
 <translation id="8903931173357132290">Məzun</translation>
 <translation id="8912078710089354287">Quyruğunu tərpədən it</translation>

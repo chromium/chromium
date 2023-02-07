@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Inatayarisha faili</translation>
 <translation id="1015730422737071372">Toa maelezo ya ziada</translation>
 <translation id="1019413721762100891">Imezimwa</translation>
-<translation id="1021110881106174305">Kadi zinazokubaliwa</translation>
 <translation id="1021753677514347426">Tatizo hili hutokea kwa sababu ya cheti ambacho wewe au mtu mwingine amesakinisha kwenye kifaa chako. Cheti kinajulikana kuwa huwa kinatumika kufuatilia na kuvamia mitandao na hakiaminiki na Chromium. Ingawa baadhi ya hali halali za ufuatiliaji zipo, kama vile kwenye mtandao wa shule au kampuni, Chromium ingependa kuhakikisha kuwa unafahamu kwamba jambo hili linafanyika, hata ikiwa huwezi kulisimamisha. Ufuatiliaji unaweza kutokea katika kivinjari chochote au programu inayoweza kufikia wavuti.</translation>
 <translation id="1024111578869940408">Wakati mwingine, wadukuzi huiga tovuti kwa kufanya mabadiliko ambayo si rahisi kuonekana kwenye anwani ya tovuti.</translation>
 <translation id="1028781062521375153">Angalia maelezo</translation>
@@ -708,7 +707,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2688969097326701645">Ndiyo, endelea</translation>
 <translation id="2691924980723297736">Onyo la usalama</translation>
 <translation id="2692131511336778528">Sayansi dhahania na njozi</translation>
-<translation id="2699302886720511147">Kadi Zinazokubaliwa</translation>
 <translation id="2701514975700770343">Inayoangalia chini</translation>
 <translation id="2702801445560668637">Orodha ya Kusoma</translation>
 <translation id="2704283930420550640">Thamani haioani na umbizo.</translation>
@@ -991,7 +989,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="342781501876943858">Chromium inapendekeza ubadilishe nenosiri lako ikiwa ulilitumia tena kwenye tovuti zingine.</translation>
 <translation id="3428151540071562330">URI moja au zaidi ya violezo vya seva ya DnsOverHttpsTemplates si sahihi na haitatumika.</translation>
 <translation id="3431216045099978607">Bofya |<ph name="ACCELERATOR" />| ili uondoke kwenye hali ya skrini nzima na uone kipakuliwa.</translation>
-<translation id="3431636764301398940">Hifadhi kadi hii kwenye kifaa hiki</translation>
 <translation id="3432601291244612633">Funga ukurasa</translation>
 <translation id="3435738964857648380">Usalama</translation>
 <translation id="3438829137925142401">Tumia manenosiri uliyohifadhi kwenye Akaunti yako ya Google</translation>
@@ -1122,7 +1119,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3744111561329211289">Usawazishaji wa chini chini</translation>
 <translation id="3744286742364977428">Faili unazopakua hutumwa kwenye Wingu la Google au mifumo ya washirika wengine ili kuchanganuliwa. Kwa mfano, zinaweza kuchanganuliwa ili kubaini data nyeti au programu hasidi na zinaweza kuhifadhiwa kulingana na sera za kampuni.</translation>
 <translation id="3744899669254331632">Huwezi kutembelea <ph name="SITE" /> sasa hivi kwa sababu tovuti ilituma kitambulisho kilichoharibika ambacho Chromium haiwezi kuchakata. Hitilafu na uvamizi wa mtandao kwa kawaida huwa vya muda, kwa hivyo ukurasa huu huenda utafanya kazi baadaye.</translation>
-<translation id="3745099705178523657">Baada ya kuthibitisha, maelezo ya kadi kutoka Akaunti yako ya Google yatashirikiwa na tovuti hii.</translation>
 <translation id="3748148204939282805">Wavamizi kwenye <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> huenda wakakuhadaa ufanye kitu hatari kama vile kusakinisha programu au kuonyesha maelezo yako ya binafsi (kwa mfano, manenosiri, nambari za simu au kadi za mikopo). <ph name="BEGIN_LEARN_MORE_LINK" />Pata maelezo zaidi<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Sekta ya usafiri wa anga</translation>
 <translation id="3752543821772132562">Imepuuzwa kwa sababu <ph name="POLICY_NAME" /> haijawekwa.</translation>
@@ -1140,7 +1136,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3781428340399460090">Waridi Inayong'aa</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Vifaa vya Bluetooth</translation>
-<translation id="3787705759683870569">Muda wa matumizi utakwisha <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Ukubwa wa 16</translation>
 <translation id="3789841737615482174">Sakinisha</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (inchi <ph name="WIDTH" /> x <ph name="HEIGHT" />)</translation>
@@ -3081,7 +3076,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8620276786115098679">Bahasha ya muundo wa Kaku ya ukubwa wa 7</translation>
 <translation id="8623885649813806493">Hakuna manenosiri yanayolingana. Onyesha manenosiri yote yaliyohifadhiwa.</translation>
 <translation id="8624354461147303341">Pata punguzo</translation>
-<translation id="8625384913736129811">Hifadhi Maelezo ya Kadi Hii kwenye Kifaa Hiki</translation>
 <translation id="8634957317623797170">Milimita 54 x 86</translation>
 <translation id="8637577059508742477">Wasifu na kivinjari chako vinadhibitiwa na <ph name="DOMAIN" /></translation>
 <translation id="8643409044755049933">Bahasha ya muundo wa Kaku ya ukubwa wa 3</translation>

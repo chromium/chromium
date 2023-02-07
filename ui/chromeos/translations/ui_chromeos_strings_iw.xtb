@@ -408,6 +408,7 @@
 <translation id="4462159676511157176">שרתי שמות מותאמים אישית</translation>
 <translation id="4465725236958772856">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />, הרשת מנוהלת על ידי מנהל המערכת שלך, התחברות</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
+<translation id="4474142134969976028">אין תוצאות מתאימות</translation>
 <translation id="4477002475007461989">רומנית</translation>
 <translation id="4477219268485577442">בולגרית פונטית</translation>
 <translation id="4508265954913339219">ההפעלה נכשלה</translation>
@@ -814,6 +815,7 @@
 <translation id="7655441028674523381">‏גישה פשוטה ל-Google Photos</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7663224033570512922">הינדית</translation>
+<translation id="7665680517722058469">רוצה לחפש עם ניסוח אחר?</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> פריטים הועברו לאשפה</translation>
 <translation id="7693909743393669729">פירמוט של התקן אחסון ימחק את כל הנתונים המאוחסנים בו ויסיר את כל המחיצות הקיימות, כולל מחיצות שאינן גלויות. לא ניתן לבטל פעולה זו.</translation>
 <translation id="7695430100978772476">לא ניתן לפרמט את <ph name="DRIVE_NAME" /></translation>
@@ -970,6 +972,7 @@
 <translation id="8866284467018526531">תעתיק ערבית</translation>
 <translation id="8873014196523807561">כדי לשחזר את הפריטים האלה, גוררים אותם לתיקייה חדשה. התיקיות המקוריות של חלק מהפריטים נמחקו.</translation>
 <translation id="8874184842967597500">לא מחובר</translation>
+<translation id="8876368061475701452">בהמתנה בתור</translation>
 <translation id="8900820606136623064">הונגרית</translation>
 <translation id="8903931173357132290">בוגר/ת אוניברסיטה</translation>
 <translation id="8912078710089354287">כלב מקשקש בזנב</translation>

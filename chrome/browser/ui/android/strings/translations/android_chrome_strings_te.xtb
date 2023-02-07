@@ -404,7 +404,7 @@
 <translation id="316694332262407393">Chrome ఇప్పటికే రన్ అవుతోంది.</translation>
 <translation id="3167258285411721858">మీరు <ph name="HOST_NAME" /> కోసం మొబైల్ సైట్‌ను రిక్వెస్ట్ చేయవచ్చు</translation>
 <translation id="3169472444629675720">కనుగొనండి</translation>
-<translation id="3187472288455401631">యాడ్‌ల అంచనా</translation>
+<translation id="3187472288455401631">యాడ్ మెజర్‌మెంట్</translation>
 <translation id="3207960819495026254">బుక్‌మార్క్ చేయబడింది</translation>
 <translation id="3208584281581115441">ఇప్పుడే చెక్ చేయండి</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> తొలగించబడింది</translation>
@@ -922,6 +922,7 @@
 <translation id="6000203700195075278">మళ్లీ ఫాలో చేయి</translation>
 <translation id="6002122790816966947">మీ పరికరాలు</translation>
 <translation id="6005538289190791541">సూచించబడిన పాస్‌వర్డ్‌</translation>
+<translation id="6011308810877101166">సెర్చ్ సూచనలను మెరుగుపరుస్తుంది</translation>
 <translation id="6039379616847168523">తదుపరి ట్యాబ్‌కు వెళ్లండి</translation>
 <translation id="6040143037577758943">మూసివేయి</translation>
 <translation id="604124094241169006">ఆటోమేటిక్‌గా</translation>
@@ -1452,6 +1453,7 @@
 <translation id="8746155870861185046">హైలైట్‌ను షేర్ చేయండి</translation>
 <translation id="8748850008226585750">కంటెంట్‌లు దాచబడ్డాయి</translation>
 <translation id="8756969031206844760">పాస్‌వర్డ్‌ను అప్‌డేట్ చేయాలా?</translation>
+<translation id="8765470054473112089">మీరు అడ్రస్ బార్‌లో లేదా సెర్చ్ బాక్స్‌లో టైప్ చేసినప్పుడు, మెరుగైన సూచనలను పొందడానికి Chrome మీరు టైప్ చేసిన దానిని మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్‌కు పంపుతుంది. అజ్ఞాత మోడ్‌లో ఇది ఆఫ్‌లో ఉంటుంది.</translation>
 <translation id="8766529642647037772">ఇటువంటి హైలైట్ చేయబడిన లింక్‌ను క్రియేట్ చేయాలా?</translation>
 <translation id="8773160212632396039">రిక్వెస్ట్‌ను ప్రాసెస్ చేస్తోంది</translation>
 <translation id="8788265440806329501">నావిగేషన్ హిస్టరీ మూసివేయబడింది</translation>

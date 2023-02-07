@@ -8,7 +8,6 @@
 <translation id="1011206368273183593">Pripravljanje datotek</translation>
 <translation id="1015730422737071372">Navedite dodatne podrobnosti</translation>
 <translation id="1019413721762100891">Izklopljeno</translation>
-<translation id="1021110881106174305">Sprejete kartice</translation>
 <translation id="1021753677514347426">Do te težave pride zaradi potrdila, ki ste ga vi ali nekdo drug namestili v napravo. To potrdilo se je v preteklosti uporabljalo za prestrezanje in nadzor v omrežjih, zato ga Chromium ne obravnava kot zaupanja vrednega. Čeprav obstajajo nekateri legitimni primeri nadzora, denimo v šolah ali omrežjih v podjetjih, se želi Chromium prepričati, da se nadzora zavedate, tudi če ga ne morete preprečiti. Do nadzora lahko pride v katerem koli brskalniku ali aplikaciji, ki dostopa do spleta.</translation>
 <translation id="1024111578869940408">Napadalci včasih poskušajo posnemati spletna mesta, tako da skoraj neopazno spremenijo spletni naslov.</translation>
 <translation id="1028781062521375153">Ogled podrobnosti</translation>
@@ -525,6 +524,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2202627062836089804">hrbtni strani kartice</translation>
 <translation id="22081806969704220">Pladenj 3</translation>
 <translation id="2210794033760923560">Naloži poročilo</translation>
+<translation id="2212579473415663542">Ta naslov je shranjen v računu Google (<ph name="ACCOUNT" />). Naslov je mogoče uporabljati v Googlovih izdelkih v kateri koli napravi.</translation>
 <translation id="2212735316055980242">Pravilnika ni mogoče najti</translation>
 <translation id="2213606439339815911">Prenos vnosov ...</translation>
 <translation id="2213612003795704869">Stran je natisnjena</translation>
@@ -708,7 +708,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2688969097326701645">Da, nadaljuj</translation>
 <translation id="2691924980723297736">Varnostno opozorilo</translation>
 <translation id="2692131511336778528">Znanstvena fantastika in fantazija</translation>
-<translation id="2699302886720511147">Sprejete kartice</translation>
 <translation id="2701514975700770343">Z licem navzdol</translation>
 <translation id="2702801445560668637">Reading List</translation>
 <translation id="2704283930420550640">Vrednost se ne ujema z obliko.</translation>
@@ -991,7 +990,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="342781501876943858">Chromium priporoča, da ponastavite geslo, če ste ga uporabljali tudi na drugih spletnih mestih.</translation>
 <translation id="3428151540071562330">Eden ali več URI-jev strežniških predlog pravilnika DnsOverHttpsTemplates je neveljaven in ne bo uporabljen.</translation>
 <translation id="3431216045099978607">Pritisnite |<ph name="ACCELERATOR" />| za izhod iz celozaslonskega načina in prikaz prenosa.</translation>
-<translation id="3431636764301398940">Shrani to kartico v tej napravi</translation>
 <translation id="3432601291244612633">Zapri stran</translation>
 <translation id="3435738964857648380">Varnost</translation>
 <translation id="3438829137925142401">Uporabite gesla, shranjena v računu Google</translation>
@@ -1122,7 +1120,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3744111561329211289">Sinhroniziranje v ozadju</translation>
 <translation id="3744286742364977428">Datoteke, ki jih prenesete, so poslane v oblak Google Cloud ali drugim ponudnikom v analizo. Lahko so na primer pregledane glede tega, ali vsebujejo občutljive podatke ali zlonamerno programsko opremo, pri čemer so morda shranjene na podlagi pravilnikov podjetja.</translation>
 <translation id="3744899669254331632">Spletnega mesta <ph name="SITE" /> trenutno ne morete obiskati, ker je poslalo šifrirane poverilnice, ki jih Chromium ne more obdelati. Napake v omrežju in napadi so običajno začasni, zato bo ta stran verjetno delovala pozneje.</translation>
-<translation id="3745099705178523657">Ko potrdite, bodo temu spletnemu mestu razkriti podatki o kartici iz Google Računa.</translation>
 <translation id="3748148204939282805">Napadalci na <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> vas lahko z zavajanjem morda pripravijo do tega, da storite kaj nevarnega – denimo, da namestite programsko opremo ali razkrijete osebne podatke (na primer gesla, telefonske številke ali podatke kreditnih kartic). <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Letalska industrija</translation>
 <translation id="3752543821772132562">Prezrto, ker pravilnik <ph name="POLICY_NAME" /> ni nastavljen.</translation>
@@ -1140,7 +1137,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3781428340399460090">Živo rožnata</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Naprave Bluetooth</translation>
-<translation id="3787705759683870569">Poteče: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Velikost 16</translation>
 <translation id="3789841737615482174">Namesti</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> palcev)</translation>
@@ -1977,6 +1973,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5866898949289125849">Ogledujete si stran z orodji za razvijalce</translation>
 <translation id="5869405914158311789">Tega spletnega mesta ni mogoče doseči</translation>
 <translation id="5869522115854928033">Shranjena gesla</translation>
+<translation id="5872692522325383488">Številka IBAN je shranjena</translation>
 <translation id="5873013647450402046">Vaša banka želi potrditi vašo identiteto.</translation>
 <translation id="5877831137320480913">Lepota in fitnes</translation>
 <translation id="5884465125445718607">Kitajska kuverta št. 6</translation>
@@ -2146,6 +2143,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6300452962057769623">{0,plural, =0{Naprava se bo zdaj znova zagnala}=1{Naprava se bo znova zagnala čez 1 sekundo}one{Naprava se bo znova zagnala čez # sekundo}two{Naprava se bo znova zagnala čez # sekundi}few{Naprava se bo znova zagnala čez # sekunde}other{Naprava se bo znova zagnala čez # sekund}}</translation>
 <translation id="6301104306974789820">Prejemanje obvestil o spremljanju cen</translation>
 <translation id="6305205051461490394">Naslov <ph name="URL" /> je nedosegljiv.</translation>
+<translation id="6306713302480826305">Ta naslov bo izbrisan iz te in drugih naprav, v katerih ste prijavljeni.</translation>
 <translation id="6311165245110979290">Na voljo je virtualna kartica</translation>
 <translation id="6312113039770857350">Spletna stran ni na voljo</translation>
 <translation id="6316226860534107313">Skuterji in mopedi</translation>
@@ -3037,6 +3035,7 @@ Dodatne podrobnosti:
 <translation id="8473863474539038330">Naslovi in drugo</translation>
 <translation id="8474910779563686872">Pokaži podrobnosti o razvijalcu</translation>
 <translation id="8479754468255770962">Spenjanje spodaj levo</translation>
+<translation id="8483229036294884935">Ta naslov bo izbrisan iz vašega računa Google, <ph name="ACCOUNT" />.</translation>
 <translation id="8483780878231876732">Če želite uporabljati kartice iz Google Računa, se prijavite v Chrome</translation>
 <translation id="8488350697529856933">Velja za</translation>
 <translation id="8490137692873530638">Zlagalnik 10</translation>
@@ -3084,7 +3083,6 @@ Dodatne podrobnosti:
 <translation id="8620276786115098679">Kuverta Kaku 7</translation>
 <translation id="8623885649813806493">Ni gesel, ki bi se ujemala. Prikaži vsa shranjena gesla.</translation>
 <translation id="8624354461147303341">Prejmite popuste</translation>
-<translation id="8625384913736129811">Shrani to kartico v tej napravi</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637577059508742477">Vaš profil in brskalnik upravlja domena <ph name="DOMAIN" />.</translation>
 <translation id="8643409044755049933">Kuverta Kaku 3</translation>
