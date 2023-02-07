@@ -972,6 +972,7 @@ void CameraDeviceDelegate::ConfigureStreams(
 
     int32_t max_yuv_width = 0, max_yuv_height = 0;
     bool is_recording_multi_stream =
+        camera_app_device &&
         camera_app_device->GetCaptureIntent() ==
             cros::mojom::CaptureIntent::VIDEO_RECORD &&
         camera_app_device->IsMultipleStreamsEnabled();
