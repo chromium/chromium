@@ -8,25 +8,125 @@ import * as localStorage from '../models/local_storage.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import {Facing, Resolution} from '../type.js';
+import {sleep} from '../util.js';
 import {windowController} from '../window_controller.js';
 
-import {getUIComponent, UIComponent} from './cca_type.js';
+import {SELECTOR_MAP, UIComponent} from './cca_type.js';
+
+/**
+ * Possible HTMLElement types that can have a boolean attribute "disabled".
+ */
+type HTMLElementWithDisabled = HTMLElement&{disabled: boolean};
+interface Coordinate {
+  x: number;
+  y: number;
+}
+
+interface InputRange {
+  max: number;
+  min: number;
+}
+
+/**
+ * Get HTMLInputElement from the specified component and ensure that the type of
+ * the input element is "range".
+ */
+function getRangeInputComponent(component: UIComponent): HTMLInputElement {
+  const element = resolveElement(component);
+  const inputElement = assertInstanceof(
+      element, HTMLInputElement,
+      'The provided element is not an input element');
+  assert(
+      inputElement.type === 'range',
+      'The provided element is not an input with type range');
+  return inputElement;
+}
 
 /**
  * Returns HTMLVideoElement for the preview video.
  */
 function getPreviewVideo(): HTMLVideoElement {
-  const previewVideoInfo = getUIComponent(UIComponent.PREVIEW_VIDEO);
-  return dom.get(previewVideoInfo.selector, HTMLVideoElement);
+  const previewVideo = resolveElement('previewVideo');
+  return assertInstanceof(previewVideo, HTMLVideoElement);
 }
 
+/**
+ * Returns MediaStream from the preview video.
+ */
 function getPreviewVideoStream(): MediaStream {
   return assertInstanceof(getPreviewVideo().srcObject, MediaStream);
 }
 
+/**
+ * Returns MediaStreamTrack from the preview video stream.
+ */
 function getPreviewVideoTrack(): MediaStreamTrack {
   const track = getPreviewVideoStream().getVideoTracks()[0];
   return assertInstanceof(track, MediaStreamTrack);
+}
+
+/**
+ * Resolves selector of the component and returns a list of HTML elements with
+ * that selector.
+ */
+function getElementList(component: UIComponent): HTMLElement[] {
+  const selector = SELECTOR_MAP[component];
+  // Value from Tast may not be UIComponent and results in undefined.
+  assert(selector !== undefined, 'Invalid UIComponent value.');
+
+  const elements = Array.from(dom.getAll(selector, HTMLElement));
+  if (elements.length === 0) {
+    throw new Error(`Cannot find element with selector ${selector}`);
+  }
+  return elements;
+}
+
+
+/**
+ * Returns a list of HTML elements which are visible.
+ */
+function getVisibleElementList(component: UIComponent): HTMLElement[] {
+  const elements = getElementList(component);
+  const visibleElements =
+      elements.filter((element) => isVisibleElement(element));
+  if (visibleElements.length === 0) {
+    throw new Error(`There are no visible elements of component ${component}`);
+  }
+  return elements;
+}
+
+/**
+ * Returns whether the given element is current visible.
+ */
+function isVisibleElement(element: HTMLElement): boolean {
+  const style = window.getComputedStyle(element);
+  const opacity = Number(style.opacity);
+  return style.visibility !== 'hidden' && element.getClientRects().length > 0 &&
+      opacity > 0;
+}
+
+/**
+ * Resolves HTMLElement of the specified ui |component|. If |index| is
+ * specified, returns the |index|'th element, else returns the first element
+ * found.
+ */
+function resolveElement(component: UIComponent, index = 0): HTMLElement {
+  const elements = getElementList(component);
+  assert(
+      index < elements.length,
+      `Cannot access index ${index} from array of size ${elements.length}`);
+  return elements[index];
+}
+
+/**
+ * Returns the |index|'th visible HTMLElement of the specified ui |component|.
+ */
+function resolveVisibleElement(component: UIComponent, index = 0): HTMLElement {
+  const elements = getVisibleElementList(component);
+  assert(
+      index < elements.length,
+      `Cannot access index ${index} from array of size ${elements.length}`);
+  return elements[index];
 }
 
 /**
@@ -65,6 +165,28 @@ export class CCATest {
   }
 
   /**
+   * Clicks on the UI component if it's visible.
+   */
+  static click(component: UIComponent, index?: number): void {
+    const element = resolveVisibleElement(component, index);
+    element.click();
+  }
+
+  /**
+   * Returns the number of ui elements of the specified component.
+   */
+  static countUI(component: UIComponent): number {
+    return getElementList(component).length;
+  }
+
+  /**
+   * Returns the number of ui elements of the specified component.
+   */
+  static countVisibleUI(component: UIComponent): number {
+    return getVisibleElementList(component).length;
+  }
+
+  /**
    * Focuses the window.
    */
   static focusWindow(): Promise<void> {
@@ -76,6 +198,15 @@ export class CCATest {
    */
   static fullscreenWindow(): Promise<void> {
     return windowController.fullscreen();
+  }
+
+  /**
+   * Returns the attribute |attr| of the |index|'th ui.
+   */
+  static getAttribute(component: UIComponent, attr: string, index?: number):
+      string|null {
+    const element = resolveElement(component, index);
+    return element.getAttribute(attr);
   }
 
   /**
@@ -110,6 +241,18 @@ export class CCATest {
       default:
         throw new Error(`Unexpected CameraFacing value: ${facing}`);
     }
+  }
+
+  /**
+   * Get [min, max] range of the component. Throws an error if the component is
+   * not HTMLInputElement with type "range".
+   */
+  static getInputRange(component: UIComponent): InputRange {
+    const element = getRangeInputComponent(component);
+    const max = Number(element.max);
+    const min = Number(element.min);
+    assert(!isNaN(max) && !isNaN(min), 'Min or max is not a number.');
+    return {max, min};
   }
 
   /**
@@ -154,6 +297,62 @@ export class CCATest {
   }
 
   /**
+   * Gets screen x, y of the center of |index|'th ui component.
+   */
+  static getScreenXY(component: UIComponent, index?: number): Coordinate {
+    const element = resolveVisibleElement(component, index);
+    const rect = element.getBoundingClientRect();
+    const actionBarH = window.outerHeight - window.innerHeight;
+    return {
+      x: Math.round(rect.x + window.screenX),
+      y: Math.round(rect.y + actionBarH + window.screenY),
+    };
+  }
+
+  /**
+   * Gets width and height of the specified ui component.
+   */
+  static getSize(component: UIComponent, index?: number): Resolution {
+    const element = resolveVisibleElement(component, index);
+    const {width, height} = element.getBoundingClientRect();
+    return new Resolution(width, height);
+  }
+
+  /**
+   * Performs mouse hold by sending pointerdown and pointerup events.
+   */
+  static async hold(component: UIComponent, ms: number, index?: number):
+      Promise<void> {
+    const element = resolveVisibleElement(component, index);
+    element.dispatchEvent(new Event('pointerdown'));
+    await sleep(ms);
+    element.dispatchEvent(new Event('pointerup'));
+  }
+
+  /**
+   * Returns checked attribute of component. Throws an error if the component is
+   * not HTMLInputElement.
+   */
+  static isChecked(component: UIComponent, index?: number): boolean {
+    const element = resolveElement(component, index);
+    const inputElement = assertInstanceof(element, HTMLInputElement);
+    return inputElement.checked;
+  }
+
+  /**
+   * Returns disabled attribute of the component. In case the element with
+   * "disabled" attribute, always returns false.
+   */
+  static isDisabled(component: UIComponent, index?: number): boolean {
+    const element = resolveElement(component, index);
+    const withDisabledElement = element as HTMLElementWithDisabled;
+    if (withDisabledElement.disabled === undefined) {
+      return false;
+    }
+    return withDisabledElement.disabled;
+  }
+
+  /**
    * Checks whether the preview video stream has been set and the stream status
    * is active.
    *
@@ -162,6 +361,14 @@ export class CCATest {
   static isVideoActive(): boolean {
     const video = getPreviewVideo();
     return video.srcObject instanceof MediaStream && video.srcObject.active;
+  }
+
+  /**
+   * Returns whether the UI component is current visible.
+   */
+  static isVisible(component: UIComponent, index?: number): boolean {
+    const element = resolveElement(component, index);
+    return isVisibleElement(element);
   }
 
   /**
@@ -179,6 +386,38 @@ export class CCATest {
   }
 
   /**
+   * Selects the select component with the option with the provided value.
+   */
+  static selectOption(component: UIComponent, value: string): void {
+    const element = resolveElement(component);
+    const selectElement = assertInstanceof(element, HTMLSelectElement);
+    const option =
+        Array.from(selectElement.options).find((opt) => opt.value === value);
+    assert(
+        option !== undefined,
+        `There is no ${value} option in the select element`);
+
+    selectElement.value = value;
+    selectElement.dispatchEvent(new Event('change'));
+  }
+
+  /**
+   * Sets input value of the component. Throws an error if the component is not
+   * HTMLInputElement with type "range", or the value is not within [min, max]
+   * range.
+   */
+  static setRangeInputValue(component: UIComponent, value: number): void {
+    const {max, min} = CCATest.getInputRange(component);
+    if (value < min || value > max) {
+      new Error(`Invalid value ${value} within range ${min}-${max}`);
+    }
+
+    const element = getRangeInputComponent(component);
+    element.value = value.toString();
+    element.dispatchEvent(new Event('change'));
+  }
+
+  /**
    * Removes all the cached data in chrome.storage.local.
    */
   static removeCacheData(): void {
@@ -190,5 +429,13 @@ export class CCATest {
    */
   static restoreWindow(): Promise<void> {
     return windowController.restore();
+  }
+
+  /**
+   * Toggles expert mode by simulating the activation key press.
+   */
+  static toggleExpertMode(): void {
+    document.body.dispatchEvent(new KeyboardEvent(
+        'keydown', {ctrlKey: true, shiftKey: true, key: 'E'}));
   }
 }
