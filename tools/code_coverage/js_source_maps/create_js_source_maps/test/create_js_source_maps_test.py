@@ -91,9 +91,9 @@ class CreateSourceMapsTest(unittest.TestCase):
     shutil.copyfile(os.path.join(_HERE_DIR, "input.js"), original_file_name)
     node.RunNode([
         str(_SOURCE_MAP_PROCESSOR),
-        original_file_name,
-        input_file_name,
-        output_file_name,
+        "--originals={}".format(" ".join([original_file_name])),
+        "--inputs={}".format(" ".join([input_file_name])),
+        "--outputs={}".format(" ".join([output_file_name])),
     ] + (["--inline-sourcemaps"] if inline_sourcemap else []))
 
     if inline_sourcemap:

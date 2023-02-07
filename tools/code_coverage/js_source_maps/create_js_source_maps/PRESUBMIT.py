@@ -22,7 +22,7 @@ def CheckLint(input_api, output_api):
   try:
     old_sys_path = sys.path[:]
     cwd = input_api.PresubmitLocalPath()
-    sys.path += [input_api.os_path.join(cwd, '..', '..')]
+    sys.path += [input_api.os_path.join(cwd, '..', '..', '..')]
     # Suppress import warning because the import needs to be done inside a
     # try/finally block with sys.path modifications.
     # pylint: disable=import-outside-toplevel

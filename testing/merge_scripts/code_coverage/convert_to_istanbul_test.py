@@ -309,9 +309,9 @@ subtract(5, 2);
       output_file = os.path.join(out_dir, output_file_name)
       node.RunNode([
         str(_SOURCE_MAP_PROCESSOR),
-        original_file,
-        input_file,
-        output_file,
+        "--originals={}".format(" ".join([original_file])),
+        "--inputs={}".format(" ".join([input_file])),
+        "--outputs={}".format(" ".join([output_file])),
         "--inline-sourcemaps",
         "--sourceRoot={}".format(self.sourceRoot),
       ])

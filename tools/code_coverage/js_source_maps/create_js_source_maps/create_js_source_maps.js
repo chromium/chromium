@@ -21,6 +21,38 @@ import {SourceMapGenerator} from '../../../../third_party/js_code_coverage/node_
 const GRIT_REMOVED_LINES_REGEX = /grit-removed-lines:(\d+)/g;
 
 /**
+ * Processes the TypeScript or JavaScript files and produces
+ * source map file / appends a source map.
+ *
+ * @param {Array} originals Original paths of `inputs`.
+ * @param {Array} inputs The TypeScript or JavaScript files to read from.
+ * @param {Array} outputs If `inlineSourcemaps`, the output TypeScript
+ *                         or JavaScript files with the appended source map.
+ *                         Otherwise, the standalone map file.
+ * @param {boolean} verbose If true, print detailed information about the
+ *                          mappings as they are added.
+ * @param {string} sourceRoot The root for all source files.
+ * @param {boolean} inlineSourcemaps If true, append source map instead of
+ *                                   creating standalone map file.
+ */
+function processAllFiles(
+    originals, inputs, outputs, verbose, sourceRoot, inlineSourcemaps) {
+  if (originals.length != inputs.length || originals.length != outputs.length) {
+    console.error(
+        `The original files count(${originals.length}), ` +
+        `the input files count(${inputs.length}) and the ` +
+        `output files count(${outputs.length}) should be the same.`);
+    process.exit(1);
+  }
+
+  for (let i = 0; i < originals.length; i++) {
+    processOneFile(
+        originals[i], inputs[i], outputs[i], verbose, sourceRoot,
+        inlineSourcemaps);
+  }
+}
+
+/**
  * Adds a mapping for a line. We only map lines, not columns -- we don't have
  * enough information to map columns within a line. (And the usual usage of
  * preprocess_if_expr means we don't expect to see partial line removals with
@@ -124,9 +156,12 @@ function main() {
     help: 'Copies contents of input to output and appends inline source maps',
     action: 'storeTrue',
   });
-  parser.addArgument('original', {help: 'Original file name', action: 'store'});
-  parser.addArgument('input', {help: 'Input file name', action: 'store'});
-  parser.addArgument('output', {help: 'Output file name', action: 'store'});
+  parser.addArgument(
+      '--originals', {help: 'Original file name', nargs: '*', action: 'store'});
+  parser.addArgument(
+      '--inputs', {help: 'Input file name', nargs: '*', action: 'store'});
+  parser.addArgument(
+      '--outputs', {help: 'Output file name', nargs: '*', action: 'store'});
   parser.addArgument('--sourceRoot', {
     help: 'Source directory to store the source map',
     required: false,
@@ -135,8 +170,8 @@ function main() {
 
   const argv = parser.parseArgs();
 
-  processOneFile(
-      argv.original, argv.input, argv.output, argv.verbose, argv.sourceRoot,
+  processAllFiles(
+      argv.originals, argv.inputs, argv.outputs, argv.verbose, argv.sourceRoot,
       argv.inline_sourcemaps);
 }
 

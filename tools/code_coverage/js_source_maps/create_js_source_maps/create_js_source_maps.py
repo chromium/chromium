@@ -24,18 +24,19 @@ def main(argv):
   parser.add_argument('--inline-sourcemaps', action='store_true')
   args = parser.parse_args(argv)
 
-  for original_file, source_file, output_file in zip(args.originals,
-                                                     args.sources,
-                                                     args.outputs):
-    # Invokes "node create_js_source_maps.js (args)""
-    # We can't use third_party/node/node.py directly from the gni template
-    # because we don't have a good way to specify the path to
-    # create_js_source_maps.js in a gni template.
-    # TODO(crbug.com/1337530): Launching node is expensive. Instead, update the
-    # JS script to accept multiple input/output files and do only one node run.
-    node.RunNode(
-        [str(_SOURCE_MAP_CREATOR), original_file, source_file, output_file] +
-        (['--inline-sourcemaps'] if args.inline_sourcemaps else []))
+  # Invokes "node create_js_source_maps.js (args)""
+  # We can't use third_party/node/node.py directly from the gni template
+  # because we don't have a good way to specify the path to
+  # create_js_source_maps.js in a gni template.
+  node.RunNode([
+      str(_SOURCE_MAP_CREATOR),
+      "--originals",
+      *args.originals,
+      "--inputs",
+      *args.sources,
+      "--outputs",
+      *args.outputs,
+  ] + ['--inline-sourcemaps'] if args.inline_sourcemaps else [])
 
 
 if __name__ == '__main__':
