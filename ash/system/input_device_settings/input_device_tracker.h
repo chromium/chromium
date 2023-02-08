@@ -42,6 +42,10 @@ class ASH_EXPORT InputDeviceTracker
 
   // InputDeviceSettingsController::Observer:
   void OnKeyboardConnected(const mojom::Keyboard& keyboard) override;
+  void OnTouchpadConnected(const mojom::Touchpad& touchpad) override;
+  void OnMouseConnected(const mojom::Mouse& mouse) override;
+  void OnPointingStickConnected(
+      const mojom::PointingStick& pointing_stick) override;
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;

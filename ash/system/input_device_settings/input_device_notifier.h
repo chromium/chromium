@@ -58,9 +58,24 @@ class ASH_EXPORT InputDeviceNotifier : public ui::InputDeviceEventObserver {
 template <>
 ASH_EXPORT std::vector<ui::InputDevice>
 InputDeviceNotifier<mojom::KeyboardPtr>::GetUpdatedDeviceList();
+template <>
+ASH_EXPORT std::vector<ui::InputDevice>
+InputDeviceNotifier<mojom::TouchpadPtr>::GetUpdatedDeviceList();
+template <>
+ASH_EXPORT std::vector<ui::InputDevice>
+InputDeviceNotifier<mojom::MousePtr>::GetUpdatedDeviceList();
+template <>
+ASH_EXPORT std::vector<ui::InputDevice>
+InputDeviceNotifier<mojom::PointingStickPtr>::GetUpdatedDeviceList();
 
 extern template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
     InputDeviceNotifier<mojom::KeyboardPtr>;
+extern template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
+    InputDeviceNotifier<mojom::TouchpadPtr>;
+extern template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
+    InputDeviceNotifier<mojom::MousePtr>;
+extern template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
+    InputDeviceNotifier<mojom::PointingStickPtr>;
 
 }  // namespace ash
 

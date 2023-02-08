@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/input_device_settings/input_device_notifier.h"
+
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/containers/flat_map.h"
@@ -119,8 +120,32 @@ InputDeviceNotifier<mojom::KeyboardPtr>::GetUpdatedDeviceList() {
   return ui::DeviceDataManager::GetInstance()->GetKeyboardDevices();
 }
 
+template <>
+std::vector<ui::InputDevice>
+InputDeviceNotifier<mojom::TouchpadPtr>::GetUpdatedDeviceList() {
+  return ui::DeviceDataManager::GetInstance()->GetTouchpadDevices();
+}
+
+template <>
+std::vector<ui::InputDevice>
+InputDeviceNotifier<mojom::MousePtr>::GetUpdatedDeviceList() {
+  return ui::DeviceDataManager::GetInstance()->GetMouseDevices();
+}
+
+template <>
+std::vector<ui::InputDevice>
+InputDeviceNotifier<mojom::PointingStickPtr>::GetUpdatedDeviceList() {
+  return ui::DeviceDataManager::GetInstance()->GetPointingStickDevices();
+}
+
 // Explicit instantiations for each device type.
 template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
     InputDeviceNotifier<mojom::KeyboardPtr>;
+template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
+    InputDeviceNotifier<mojom::TouchpadPtr>;
+template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
+    InputDeviceNotifier<mojom::MousePtr>;
+template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
+    InputDeviceNotifier<mojom::PointingStickPtr>;
 
 }  // namespace ash

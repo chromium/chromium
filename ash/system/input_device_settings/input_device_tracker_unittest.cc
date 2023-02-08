@@ -9,7 +9,6 @@
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/contains.h"
-#include "base/notreached.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -65,8 +64,6 @@ class InputDeviceTrackerTest
     }
   }
 
-  // TODO(dpad): Implement for mouse/touchpad/pointing stick once mojo objects
-  // are available.
   void CallOnDeviceConnected(base::StringPiece device_key) {
     switch (category_) {
       case InputDeviceCategory::kKeyboard: {
@@ -75,10 +72,22 @@ class InputDeviceTrackerTest
         tracker_->OnKeyboardConnected(keyboard);
         break;
       }
-      case InputDeviceCategory::kMouse:
-      case InputDeviceCategory::kTouchpad:
+      case InputDeviceCategory::kMouse: {
+        mojom::Mouse mouse;
+        mouse.device_key = std::string(device_key);
+        tracker_->OnMouseConnected(mouse);
+        break;
+      }
+      case InputDeviceCategory::kTouchpad: {
+        mojom::Touchpad touchpad;
+        touchpad.device_key = std::string(device_key);
+        tracker_->OnTouchpadConnected(touchpad);
+        break;
+      }
       case InputDeviceCategory::kPointingStick:
-        NOTIMPLEMENTED();
+        mojom::PointingStick pointing_stick;
+        pointing_stick.device_key = std::string(device_key);
+        tracker_->OnPointingStickConnected(pointing_stick);
         break;
     }
   }
@@ -91,14 +100,18 @@ class InputDeviceTrackerTest
   base::StringPiece pref_path_;
 };
 
-// TODO(dpad): Add in mouse/touchpad/pointing stick once implemented.
 INSTANTIATE_TEST_SUITE_P(
     ,
     InputDeviceTrackerTest,
     testing::ValuesIn(
         std::vector<std::pair<InputDeviceCategory, base::StringPiece>>{
             {InputDeviceCategory::kKeyboard,
-             prefs::kKeyboardObservedDevicesPref}}));
+             prefs::kKeyboardObservedDevicesPref},
+            {InputDeviceCategory::kMouse, prefs::kMouseObservedDevicesPref},
+            {InputDeviceCategory::kTouchpad,
+             prefs::kTouchpadObservedDevicesPref},
+            {InputDeviceCategory::kPointingStick,
+             prefs::kPointingStickObservedDevicesPref}}));
 
 TEST_P(InputDeviceTrackerTest, RecordDevices) {
   CallOnDeviceConnected(kDeviceKey1);
@@ -145,9 +158,6 @@ TEST_P(InputDeviceTrackerTest, RecordDevicesTwoUsers) {
 TEST_P(InputDeviceTrackerTest, WasDevicePreviouslyConnected) {
   EXPECT_FALSE(tracker_->WasDevicePreviouslyConnected(category_, kDeviceKey1));
   CallOnDeviceConnected(kDeviceKey1);
-  // Device key is present and added to the correct prf list.
-  EXPECT_FALSE(tracker_->WasDevicePreviouslyConnected(
-      InputDeviceCategory::kMouse, kDeviceKey1));
   EXPECT_TRUE(tracker_->WasDevicePreviouslyConnected(category_, kDeviceKey1));
 }
 

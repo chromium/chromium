@@ -52,6 +52,20 @@ void InputDeviceTracker::OnKeyboardConnected(const mojom::Keyboard& keyboard) {
   RecordDeviceConnected(InputDeviceCategory::kKeyboard, keyboard.device_key);
 }
 
+void InputDeviceTracker::OnTouchpadConnected(const mojom::Touchpad& touchpad) {
+  RecordDeviceConnected(InputDeviceCategory::kTouchpad, touchpad.device_key);
+}
+
+void InputDeviceTracker::OnMouseConnected(const mojom::Mouse& mouse) {
+  RecordDeviceConnected(InputDeviceCategory::kMouse, mouse.device_key);
+}
+
+void InputDeviceTracker::OnPointingStickConnected(
+    const mojom::PointingStick& pointing_stick) {
+  RecordDeviceConnected(InputDeviceCategory::kPointingStick,
+                        pointing_stick.device_key);
+}
+
 void InputDeviceTracker::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   // When the user's `pref_service` changes, we need to re-initialize our
@@ -75,6 +89,25 @@ void InputDeviceTracker::RecordConnectedDevices() {
       Shell::Get()->input_device_settings_controller()->GetConnectedKeyboards();
   for (const auto& keyboard : keyboards) {
     OnKeyboardConnected(*keyboard);
+  }
+
+  const auto touchpads =
+      Shell::Get()->input_device_settings_controller()->GetConnectedTouchpads();
+  for (const auto& touchpad : touchpads) {
+    OnTouchpadConnected(*touchpad);
+  }
+
+  const auto mice =
+      Shell::Get()->input_device_settings_controller()->GetConnectedMice();
+  for (const auto& mouse : mice) {
+    OnMouseConnected(*mouse);
+  }
+
+  const auto pointing_sticks = Shell::Get()
+                                   ->input_device_settings_controller()
+                                   ->GetConnectedPointingSticks();
+  for (const auto& pointing_stick : pointing_sticks) {
+    OnPointingStickConnected(*pointing_stick);
   }
 }
 
