@@ -15,6 +15,7 @@
 #include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/sessions/sessions_api.h"
@@ -205,19 +206,12 @@ void ExtensionSessionsTest::CreateSessionModels() {
 
   service->ProxyTabsStateChanged(syncer::DataTypeController::RUNNING);
 
-  std::unique_ptr<syncer::DataTypeActivationResponse> activation_response;
-  base::RunLoop loop;
+  base::test::TestFuture<std::unique_ptr<syncer::DataTypeActivationResponse>>
+      sync_start_future;
   service->GetControllerDelegate()->OnSyncStarting(
-      request,
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<syncer::DataTypeActivationResponse> response) {
-            activation_response = std::move(response);
-            loop.Quit();
-          }));
-  loop.Run();
-
-  syncer::MockModelTypeWorker worker(sync_pb::ModelTypeState(),
-                                     activation_response->type_processor.get());
+      request, sync_start_future.GetCallback());
+  syncer::MockModelTypeWorker worker(
+      sync_pb::ModelTypeState(), sync_start_future.Get()->type_processor.get());
 
   const base::Time time_now = base::Time::Now();
   syncer::SyncDataList initial_data;

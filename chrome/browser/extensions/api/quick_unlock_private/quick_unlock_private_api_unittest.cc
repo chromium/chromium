@@ -21,6 +21,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_regular.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
@@ -516,18 +517,10 @@ class QuickUnlockPrivateUnitTest
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
 
-    bool called = false;
-    bool is_set = false;
+    base::test::TestFuture<bool> is_pin_set_future;
     ash::quick_unlock::PinBackend::GetInstance()->IsSet(
-        account_id, base::BindOnce(
-                        [](bool* out_called, bool* out_is_set, bool is_set) {
-                          *out_called = true;
-                          *out_is_set = is_set;
-                        },
-                        &called, &is_set));
-    base::RunLoop().RunUntilIdle();
-    CHECK(called);
-    return is_set;
+        account_id, is_pin_set_future.GetCallback());
+    return is_pin_set_future.Get();
   }
 
   // Checks whether there is a user value set for the PIN auto submit
@@ -616,38 +609,24 @@ class QuickUnlockPrivateUnitTest
     auto user_context = std::make_unique<ash::UserContext>(
         user_manager::USER_TYPE_REGULAR, account_id);
     user_context->SetIsUsingPin(true);
-    bool called = false;
-    bool success = false;
-    base::RunLoop loop;
+
+    base::test::TestFuture<std::unique_ptr<ash::UserContext>,
+                           absl::optional<ash::AuthenticationError>>
+        auth_future;
     ash::quick_unlock::PinBackend::GetInstance()->TryAuthenticate(
         std::move(user_context), ash::Key(password),
-        ash::quick_unlock::Purpose::kAny,
-        base::BindLambdaForTesting(
-            [&](std::unique_ptr<ash::UserContext>,
-                absl::optional<ash::AuthenticationError> error) {
-              called = true;
-              success = !error.has_value();
-              loop.Quit();
-            }));
-    loop.Run();
-    return success;
+        ash::quick_unlock::Purpose::kAny, auth_future.GetCallback());
+    return !auth_future.Get<absl::optional<ash::AuthenticationError>>()
+                .has_value();
   }
 
   bool SetPinAutosubmitEnabled(const std::string& pin, const bool enabled) {
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
-    bool called = false;
-    bool success = false;
-    base::RunLoop loop;
+    base::test::TestFuture<bool> set_pin_future;
     ash::quick_unlock::PinBackend::GetInstance()->SetPinAutoSubmitEnabled(
-        account_id, pin, enabled,
-        base::BindLambdaForTesting([&](bool autosubmit_success) {
-          called = true;
-          success = autosubmit_success;
-          loop.Quit();
-        }));
-    loop.Run();
-    return success;
+        account_id, pin, enabled, set_pin_future.GetCallback());
+    return set_pin_future.Get();
   }
 
   bool IsAutosubmitFeatureEnabled() { return std::get<1>(GetParam()); }

@@ -27,6 +27,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/certificate_provider/certificate_provider.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
@@ -92,14 +93,6 @@ using testing::Return;
 using testing::_;
 
 namespace {
-
-void StoreDigest(std::vector<uint8_t>* digest,
-                 base::OnceClosure callback,
-                 base::Value value) {
-  ASSERT_TRUE(value.is_blob()) << "Unexpected value in StoreDigest";
-  digest->assign(value.GetBlob().begin(), value.GetBlob().end());
-  std::move(callback).Run();
-}
 
 bool RsaSignRawData(uint16_t openssl_signature_algorithm,
                     const std::vector<uint8_t>& input,
@@ -278,17 +271,17 @@ class CertificateProviderApiTest : public extensions::ExtensionApiTest {
 
   std::vector<scoped_refptr<net::X509Certificate>>
   GetAllProvidedCertificates() {
-    base::RunLoop run_loop;
     std::unique_ptr<chromeos::CertificateProvider> cert_provider =
         cert_provider_service_->CreateCertificateProvider();
+
+    base::test::TestFuture<net::ClientCertIdentityList> get_certificates_future;
+    cert_provider->GetCertificates(get_certificates_future.GetCallback());
+
     std::vector<scoped_refptr<net::X509Certificate>> all_provided_certificates;
-    auto callback = base::BindLambdaForTesting(
-        [&](net::ClientCertIdentityList cert_identity_list) {
-          for (const auto& cert_identity : cert_identity_list)
-            all_provided_certificates.push_back(cert_identity->certificate());
-        });
-    cert_provider->GetCertificates(callback.Then(run_loop.QuitClosure()));
-    run_loop.Run();
+    for (const auto& cert_identity : get_certificates_future.Get()) {
+      all_provided_certificates.push_back(cert_identity->certificate());
+    }
+
     return all_provided_certificates;
   }
 
@@ -431,14 +424,11 @@ class CertificateProviderApiMockedExtensionTest
                                  "signatureRequestAlgorithm;")
             .GetString();
     EXPECT_EQ(expected_request_signature_algorithm, request_algorithm);
-    std::vector<uint8_t> request_data;
-    {
-      base::RunLoop run_loop;
-      GetExtensionMainFrame()->ExecuteJavaScriptForTests(
-          u"signatureRequestData;",
-          base::BindOnce(&StoreDigest, &request_data, run_loop.QuitClosure()));
-      run_loop.Run();
-    }
+
+    base::test::TestFuture<base::Value> exec_js_future;
+    GetExtensionMainFrame()->ExecuteJavaScriptForTests(
+        u"signatureRequestData;", exec_js_future.GetCallback());
+    std::vector<uint8_t> request_data(exec_js_future.Get().GetBlob());
 
     // Load the private key.
     std::string key_pk8 = GetKeyPk8();

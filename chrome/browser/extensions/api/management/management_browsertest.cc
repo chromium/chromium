@@ -444,16 +444,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
   ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdateResponse(
       temp_dir.GetPath(), "v3.crx", "manifest_v3.xml.template"));
 
-  extensions::ExtensionUpdater::CheckParams params2;
   {
+    extensions::ExtensionUpdater::CheckParams params2;
     base::RunLoop run_loop;
-    params2.callback = base::BindLambdaForTesting([&]() {
-      notification_listener.OnFinished();
-      run_loop.Quit();
-    });
+    params2.callback = run_loop.QuitClosure();
     service->updater()->CheckNow(std::move(params2));
     run_loop.Run();
+    notification_listener.OnFinished();
   }
+
   ASSERT_TRUE(notification_listener.finished());
   ASSERT_TRUE(base::Contains(notification_listener.updates(),
                              "ogjcoiohnmldgjemafoockdghcjciccf"));

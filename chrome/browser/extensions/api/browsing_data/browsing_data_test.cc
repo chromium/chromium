@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/browsing_data/browsing_data_api.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
@@ -76,26 +77,17 @@ bool SetGaiaCookieForProfile(Profile* profile) {
       /*secure=*/true, false, net::CookieSameSite::NO_RESTRICTION,
       net::COOKIE_PRIORITY_DEFAULT, false);
 
-  bool success = false;
-  base::RunLoop loop;
-  base::OnceClosure loop_quit = loop.QuitClosure();
-  base::OnceCallback<void(net::CookieAccessResult)> callback =
-      base::BindLambdaForTesting(
-          [&success, &loop_quit](net::CookieAccessResult r) {
-            success = r.status.IsInclude();
-            std::move(loop_quit).Run();
-          });
+  base::test::TestFuture<net::CookieAccessResult> set_cookie_future;
   network::mojom::CookieManager* cookie_manager =
       profile->GetDefaultStoragePartition()
           ->GetCookieManagerForBrowserProcess();
   cookie_manager->SetCanonicalCookie(
       *cookie, google_url, net::CookieOptions::MakeAllInclusive(),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          std::move(callback),
+          set_cookie_future.GetCallback(),
           net::CookieAccessResult(net::CookieInclusionStatus(
               net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR))));
-  loop.Run();
-  return success;
+  return set_cookie_future.Get().status.IsInclude();
 }
 #endif
 
@@ -206,15 +198,10 @@ void CreateLocalStorageForKey(Profile* profile, const blink::StorageKey& key) {
   local_storage_control->BindStorageArea(key,
                                          area.BindNewPipeAndPassReceiver());
   {
-    bool success = false;
-    base::RunLoop run_loop;
+    base::test::TestFuture<bool> put_future;
     area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, absl::nullopt,
-              "source", base::BindLambdaForTesting([&](bool success_in) {
-                success = success_in;
-                run_loop.Quit();
-              }));
-    run_loop.Run();
-    ASSERT_TRUE(success);
+              "source", put_future.GetCallback());
+    ASSERT_TRUE(put_future.Get());
   }
 }
 
@@ -222,17 +209,10 @@ std::vector<storage::mojom::StorageUsageInfoPtr> GetLocalStorage(
     Profile* profile) {
   auto* local_storage_control =
       profile->GetDefaultStoragePartition()->GetLocalStorageControl();
-  std::vector<storage::mojom::StorageUsageInfoPtr> usage_infos;
-  {
-    base::RunLoop run_loop;
-    local_storage_control->GetUsage(base::BindLambdaForTesting(
-        [&](std::vector<storage::mojom::StorageUsageInfoPtr> usage_infos_in) {
-          usage_infos.swap(usage_infos_in);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-  }
-  return usage_infos;
+  base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoPtr>>
+      get_usage_future;
+  local_storage_control->GetUsage(get_usage_future.GetCallback());
+  return get_usage_future.Take();
 }
 
 bool UsageInfosHasStorageKey(

@@ -8,6 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -83,22 +84,14 @@ class SuggestionParserUnitTest : public testing::Test {
  private:
   void ParseImpl(const std::vector<base::StringPiece>& strs,
                  DescriptionAndStylesResult* result_out) {
-    base::RunLoop run_loop;
-    auto get_result = [&run_loop,
-                       result_out](DescriptionAndStylesResult result) {
-      *result_out = std::move(result);
-      run_loop.Quit();
-    };
-
-    auto get_result_callback = base::BindLambdaForTesting(get_result);
+    base::test::TestFuture<DescriptionAndStylesResult> parse_future;
     if (strs.size() == 1) {
-      ParseDescriptionAndStyles(strs[0], std::move(get_result_callback));
+      ParseDescriptionAndStyles(strs[0], parse_future.GetCallback());
     } else {
-      ParseDescriptionsAndStyles(strs, std::move(get_result_callback));
+      ParseDescriptionsAndStyles(strs, parse_future.GetCallback());
     }
 
-    run_loop.Run();
-
+    *result_out = parse_future.Take();
     // Exactly one of error and result should be populated.
     bool has_parsed_entries = !result_out->descriptions_and_styles.empty();
     bool has_error = !result_out->error.empty();

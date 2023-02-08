@@ -244,16 +244,6 @@ class EnterprisePlatformKeysTest
         profile(), mock_policy_provider());
   }
 
-  void DidGetCertDatabase(base::OnceClosure done_callback,
-                          net::NSSCertDatabase* cert_db) {
-    // In order to use a prepared certificate, import a private key to the
-    // user's token for which the Javscript test will import the certificate.
-    ImportPrivateKeyPKCS8ToSlot(privateKeyPkcs8User,
-                                std::size(privateKeyPkcs8User),
-                                cert_db->GetPrivateSlot().get());
-    std::move(done_callback).Run();
-  }
-
  protected:
   bool IsSystemTokenEnabled() const {
     return system_token_status() == SystemTokenStatus::EXISTS &&
@@ -295,12 +285,14 @@ IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, PRE_Basic) {
 IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, Basic) {
   AddScreenplayTag();
   {
-    base::RunLoop loop;
+    base::test::TestFuture<net::NSSCertDatabase*> get_db_future;
     NssServiceFactory::GetForContext(profile())
-        ->UnsafelyGetNSSCertDatabaseForTesting(
-            base::BindOnce(&EnterprisePlatformKeysTest::DidGetCertDatabase,
-                           base::Unretained(this), loop.QuitClosure()));
-    loop.Run();
+        ->UnsafelyGetNSSCertDatabaseForTesting(get_db_future.GetCallback());
+    // In order to use a prepared certificate, import a private key to the
+    // user's token for which the Javscript test will import the certificate.
+    ImportPrivateKeyPKCS8ToSlot(privateKeyPkcs8User,
+                                std::size(privateKeyPkcs8User),
+                                get_db_future.Get()->GetPrivateSlot().get());
   }
 
   SetCustomArg(BuildCustomArg(/*user_session_test=*/true,

@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/trace_event_analyzer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -631,21 +632,13 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_TextareaAppendPerf) {
                                {.extension_url = "textarea_append_perf.html"}))
       << message_;
 
-  std::string trace_output;
-  {
-    base::RunLoop wait_for_tracing;
-    content::TracingController::GetInstance()->StopTracing(
-        content::TracingController::CreateStringEndpoint(base::BindOnce(
-            [](base::OnceClosure quit_closure, std::string* output,
-               std::unique_ptr<std::string> trace_str) {
-              *output = *trace_str;
-              std::move(quit_closure).Run();
-            },
-            wait_for_tracing.QuitClosure(), &trace_output)));
-    wait_for_tracing.Run();
-  }
+  base::test::TestFuture<std::unique_ptr<std::string>> stop_tracing_future;
+  content::TracingController::GetInstance()->StopTracing(
+      content::TracingController::CreateStringEndpoint(
+          stop_tracing_future.GetCallback()));
 
-  absl::optional<base::Value> trace_data = base::JSONReader::Read(trace_output);
+  absl::optional<base::Value> trace_data =
+      base::JSONReader::Read(*stop_tracing_future.Take());
   ASSERT_TRUE(trace_data);
 
   const base::Value* trace_events = trace_data->FindListKey("traceEvents");

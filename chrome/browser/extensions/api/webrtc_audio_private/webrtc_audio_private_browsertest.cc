@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -70,19 +71,13 @@ namespace {
 // resulting from that call.
 void GetAudioDeviceDescriptions(bool for_input,
                                 AudioDeviceDescriptions* device_descriptions) {
-  base::RunLoop run_loop;
+  base::test::TestFuture<AudioDeviceDescriptions>
+      audio_device_descriptions_future;
   std::unique_ptr<media::AudioSystem> audio_system =
       content::CreateAudioSystemForAudioService();
   audio_system->GetDeviceDescriptions(
-      for_input, base::BindOnce(
-                     [](base::OnceClosure finished_callback,
-                        AudioDeviceDescriptions* result,
-                        AudioDeviceDescriptions received) {
-                       *result = std::move(received);
-                       std::move(finished_callback).Run();
-                     },
-                     run_loop.QuitClosure(), device_descriptions));
-  run_loop.Run();
+      for_input, audio_device_descriptions_future.GetCallback());
+  *device_descriptions = audio_device_descriptions_future.Take();
 }
 
 }  // namespace
@@ -107,8 +102,6 @@ class AudioWaitingExtensionTest : public ExtensionApiTest {
 
 class WebrtcAudioPrivateTest : public AudioWaitingExtensionTest {
  public:
-  WebrtcAudioPrivateTest() {}
-
   void SetUpOnMainThread() override {
     AudioWaitingExtensionTest::SetUpOnMainThread();
     // Needs to happen after chrome's schemes are added.

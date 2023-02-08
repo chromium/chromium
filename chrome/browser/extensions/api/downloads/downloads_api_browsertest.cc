@@ -292,8 +292,9 @@ class DownloadOpenObserver : public download::DownloadItem::Observer {
  private:
   // download::DownloadItem::Observer
   void OnDownloadOpened(download::DownloadItem* item) override {
-    if (!completion_closure_.is_null())
+    if (completion_closure_) {
       std::move(completion_closure_).Run();
+    }
   }
 
   void OnDownloadDestroyed(download::DownloadItem* item) override {

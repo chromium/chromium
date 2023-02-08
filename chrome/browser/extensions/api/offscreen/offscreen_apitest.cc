@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -86,13 +87,10 @@ scoped_refptr<const Extension> SetExtensionIncognitoEnabled(
 // Wakes up the service worker for the `extension` in the given `profile`.
 void WakeUpServiceWorker(const Extension& extension, Profile& profile) {
   base::RunLoop run_loop;
-  auto quit_loop_adapter =
-      [&run_loop](std::unique_ptr<LazyContextTaskQueue::ContextInfo>) {
-        run_loop.QuitWhenIdle();
-      };
   ServiceWorkerTaskQueue::Get(&profile)->AddPendingTask(
       LazyContextId(&profile, extension.id(), extension.url()),
-      base::BindLambdaForTesting(quit_loop_adapter));
+      base::BindOnce([](std::unique_ptr<LazyContextTaskQueue::ContextInfo>) {
+      }).Then(run_loop.QuitWhenIdleClosure()));
   run_loop.Run();
 }
 

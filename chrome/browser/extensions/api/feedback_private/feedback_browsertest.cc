@@ -63,13 +63,13 @@ class FeedbackTest : public ExtensionBrowserTest {
 class TestFeedbackUploaderDelegate
     : public feedback::FeedbackUploaderChrome::Delegate {
  public:
-  explicit TestFeedbackUploaderDelegate(base::RunLoop* quit_on_dispatch)
-      : quit_on_dispatch_(quit_on_dispatch) {}
+  explicit TestFeedbackUploaderDelegate(base::OnceClosure quit_callback)
+      : quit_callback_(std::move(quit_callback)) {}
 
-  void OnStartDispatchingReport() override { quit_on_dispatch_->Quit(); }
+  void OnStartDispatchingReport() override { std::move(quit_callback_).Run(); }
 
  private:
-  raw_ptr<base::RunLoop> quit_on_dispatch_;
+  base::OnceClosure quit_callback_;
 };
 
 // TODO(crbug.com/1241504): disable tests.
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_SubmissionTest) {
   // normally would have been uploaded. We have it setup to then quit the
   // RunLoop which will then allow us to terminate.
   base::RunLoop run_loop;
-  TestFeedbackUploaderDelegate delegate(&run_loop);
+  TestFeedbackUploaderDelegate delegate(run_loop.QuitClosure());
   feedback::FeedbackUploaderFactoryChrome::GetInstance()
       ->GetForBrowserContext(browser()->profile())
       ->set_feedback_uploader_delegate(&delegate);
