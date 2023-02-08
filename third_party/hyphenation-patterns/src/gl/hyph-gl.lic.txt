@@ -1,0 +1,31 @@
+% title: Hyphenation patterns for Galician
+% copyright: Copyright (C) 2006, 2007, 2008, 2010 Javier A. Múgica
+% notice: This file is part of the hyph-utf8 package.
+%     See http://www.hyphenation.org/tex for more information.
+% language:
+%     name: Galician
+%     tag: gl
+% hyphenmins:
+%     typesetting:
+%         left: 2
+%         right: 2
+% version: 2.4 2010/04/23
+% authors:
+%   -
+%     name: Javier A. Múgica
+%     contact: javier (at) digi21.eu
+% licence:
+%     name: Unlicence
+%     url: https://unlicense.org/
+% texlive:
+%     encoding: ec
+%     babelname: galician
+%     legacy_patterns: glhyph.tex
+%     message: Galician hyphenation patterns
+%     description: Hyphenation patterns for Galician in T1/EC and UTF-8 encodings.
+% ==========================================
+% Generated with the mkpattern utility (v. 1.2), on 2010/04/23
+% The original source file were glpatter-utf8.tex
+% This is a generated file
+%
+% Note that there is no 'j' nor 'y' in Galician

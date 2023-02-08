@@ -1,0 +1,36 @@
+% title: Hyphenation patterns for Latvian
+% copyright: Copyright (C) 2004-2005 Janis Vilims
+% notice: This file is part of the hyph-utf8 package.
+%     See http://www.hyphenation.org/tex for more information.
+% source: >
+%     Latvian Lingucomponents for OpenOffice,
+%     http://sourceforge.net/projects/openoffice-lv
+% language:
+%     name: Latvian
+%     tag: lv
+% version: 0.3, 2005-09-14
+% authors:
+%   -
+%     name: Janis Vilims
+%     contact: jvilims (at) apollo.lv
+% licence:
+%     - This file is available under any of the following licences, at your option:
+%     -
+%         name: LGPL
+%         version: 2.1
+%         url: http://www.gnu.org/copyleft/lesser.txt
+%     -
+%         name: GPL
+%         version: 2
+%         or_later: true
+%         url: http://www.gnu.org/licenses/gpl.html
+% hyphenmins:
+%     typesetting:
+%         left: 2
+%         right: 2
+% texlive:
+%     encoding: l7x
+%     babelname: latvian
+%     message: Latvian hyphenation patterns
+%     description: Hyphenation patterns for Latvian in L7X and UTF-8 encodings.
+%
