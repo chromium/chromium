@@ -42,4 +42,18 @@ suite('FakeInputDeviceSettings', function() {
     return provider.getConnectedPointingStickSettings().then(
         result => assertDeepEquals(fakePointingSticks, result));
   });
+
+  test('setKeyboardSettings', () => {
+    provider.setFakeKeyboards(fakeKeyboards);
+    // Update the first keyboard settings with the second keyboard settings.
+    const updatedFirstKeyboard = {
+      ...fakeKeyboards[0],
+      settings: {...fakeKeyboards[1].settings},
+    };
+    provider.setKeyboardSettings(
+        updatedFirstKeyboard.id, updatedFirstKeyboard.settings);
+    // Verify if the first keyboard settings are updated.
+    return provider.getConnectedKeyboardSettings().then(
+        result => assertDeepEquals(updatedFirstKeyboard, result[0]));
+  });
 });

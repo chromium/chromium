@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, Mouse, MouseObserverInterface, PointingStick, PointingStickObserverInterface, Touchpad, TouchpadObserverInterface} from './input_device_settings_types.js';
+import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, Mouse, MouseObserverInterface, PointingStick, PointingStickObserverInterface, Touchpad, TouchpadObserverInterface} from './input_device_settings_types.js';
 
 /**
  * @fileoverview
@@ -29,6 +29,10 @@ class FakeMethodState {
     return promise;
   }
 
+  getResult(): any {
+    return this.result;
+  }
+
   setResult(result: any) {
     this.result = result;
   }
@@ -43,6 +47,11 @@ export class FakeMethodResolver {
 
   register(methodName: string): void {
     this.methodMap.set(methodName, new FakeMethodState());
+  }
+
+  getResult<K extends keyof InputDeviceType, T>(methodName: K):
+      InputDeviceType[K] extends T? InputDeviceType[K]: never {
+    return this.getState(methodName).getResult();
   }
 
   setResult<K extends keyof InputDeviceType, T>(
@@ -105,6 +114,16 @@ export class FakeInputDeviceSettingsProvider implements
 
   getConnectedPointingStickSettings(): Promise<PointingStick[]> {
     return this.methods.resolveMethod('fakePointingSticks');
+  }
+
+  setKeyboardSettings(id: number, settings: KeyboardSettings): void {
+    const keyboards = this.methods.getResult('fakeKeyboards');
+    for (const keyboard of keyboards) {
+      if (keyboard.id === id) {
+        keyboard.settings = settings;
+      }
+    }
+    this.methods.setResult('fakeKeyboards', keyboards);
   }
 
   observeKeyboardSettings(_observer: KeyboardObserverInterface): void {
