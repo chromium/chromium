@@ -897,7 +897,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     method add
 [Worker]     method averagePool2d
-[Worker]     method buildAsync
+[Worker]     method build
+[Worker]     method buildSync
 [Worker]     method clamp
 [Worker]     method constant
 [Worker]     method constructor

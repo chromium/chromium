@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
-Found 401 tests; 224 PASS, 177 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL idl_test setup promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+Found 401 tests; 227 PASS, 174 FAIL, 0 TIMEOUT, 0 NOTRUN.
+FAIL idl_test setup promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
 PASS Partial interface MLContext: member names are unique
@@ -179,7 +179,7 @@ PASS MLGraphBuilder interface: existence and properties of interface prototype o
 PASS MLGraphBuilder interface: operation input(DOMString, MLOperandDescriptor)
 FAIL MLGraphBuilder interface: operation constant(MLOperandDescriptor, MLBufferView) assert_equals: property has wrong .length expected 1 but got 2
 FAIL MLGraphBuilder interface: operation constant(double, optional MLOperandType) assert_equals: property has wrong .length expected 1 but got 2
-FAIL MLGraphBuilder interface: operation build(MLNamedOperands) assert_own_property: interface prototype object missing non-static operation expected property "build" missing
+PASS MLGraphBuilder interface: operation build(MLNamedOperands)
 PASS MLGraphBuilder interface: member buildSync
 FAIL MLGraphBuilder interface: operation batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions) assert_own_property: interface prototype object missing non-static operation expected property "batchNormalization" missing
 PASS MLGraphBuilder interface: operation clamp(MLOperand, optional MLClampOptions)
@@ -260,8 +260,8 @@ PASS MLGraphBuilder interface: builder must inherit property "constant(MLOperand
 PASS MLGraphBuilder interface: calling constant(MLOperandDescriptor, MLBufferView) on builder with too few arguments must throw TypeError
 PASS MLGraphBuilder interface: builder must inherit property "constant(double, optional MLOperandType)" with the proper type
 PASS MLGraphBuilder interface: calling constant(double, optional MLOperandType) on builder with too few arguments must throw TypeError
-FAIL MLGraphBuilder interface: builder must inherit property "build(MLNamedOperands)" with the proper type assert_inherits: property "build" not found in prototype chain
-FAIL MLGraphBuilder interface: calling build(MLNamedOperands) on builder with too few arguments must throw TypeError assert_inherits: property "build" not found in prototype chain
+PASS MLGraphBuilder interface: builder must inherit property "build(MLNamedOperands)" with the proper type
+PASS MLGraphBuilder interface: calling build(MLNamedOperands) on builder with too few arguments must throw TypeError
 PASS MLGraphBuilder interface: builder must not have property "buildSync"
 FAIL MLGraphBuilder interface: builder must inherit property "batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions)" with the proper type assert_inherits: property "batchNormalization" not found in prototype chain
 FAIL MLGraphBuilder interface: calling batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions) on builder with too few arguments must throw TypeError assert_inherits: property "batchNormalization" not found in prototype chain
