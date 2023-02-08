@@ -317,15 +317,18 @@ fuzzer_test("sandbox_policy_rule_fuzzer") {
 
 fuzzer_test("sandbox_nt_utils_fuzzer") {
   sources = [ "fuzzer/sandbox_nt_utils_fuzzer.cc" ]
-  deps = [
-    "//base",
-    "//sandbox",
-  ]
+  deps = [ "//sandbox" ]
+}
+
+fuzzer_test("sandbox_ipc_fuzzer") {
+  sources = [ "fuzzer/sandbox_ipc_fuzzer.cc" ]
+  deps = [ ":sandbox" ]
+  dict = "fuzzer/ipc.dict"
+  libfuzzer_options = [ "max_len=1024" ]
 }
 
 source_set("common") {
   sources = [
-    "fuzzer/fuzzer_types.h",
     "src/sandbox.h",
     "src/sandbox_policy.h",
     "src/sandbox_types.h",

@@ -5,22 +5,16 @@
 #ifndef SANDBOX_WIN_SRC_CROSSCALL_PARAMS_H_
 #define SANDBOX_WIN_SRC_CROSSCALL_PARAMS_H_
 
-#if !defined(SANDBOX_FUZZ_TARGET)
 #include <windows.h>
 
 #include <lmaccess.h>
-#else
-#include "sandbox/win/fuzzer/fuzzer_types.h"
-#endif
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include "sandbox/win/src/internal_types.h"
-#if !defined(SANDBOX_FUZZ_TARGET)
-#include "sandbox/win/src/sandbox_nt_types.h"
-#endif
 #include "sandbox/win/src/ipc_tags.h"
+#include "sandbox/win/src/sandbox_nt_types.h"
 #include "sandbox/win/src/sandbox_types.h"
 
 // This header is part of CrossCall: the sandbox inter-process communication.

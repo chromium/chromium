@@ -184,11 +184,9 @@ enum TerminationCodes {
   SBOX_FATAL_LAST
 };
 
-#if !defined(SANDBOX_FUZZ_TARGET)
 static_assert(SBOX_FATAL_MEMORY_EXCEEDED ==
                   base::win::kSandboxFatalMemoryExceeded,
               "Value for SBOX_FATAL_MEMORY_EXCEEDED must match base.");
-#endif  // !defined(SANDBOX_FUZZ_TARGET)
 
 class BrokerServices;
 class TargetServices;

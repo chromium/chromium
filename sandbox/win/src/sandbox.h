@@ -24,11 +24,7 @@
 #include <vector>
 
 #include "base/strings/string_piece.h"
-#if !defined(SANDBOX_FUZZ_TARGET)
 #include "base/win/windows_types.h"
-#else
-#include "sandbox/win/fuzzer/fuzzer_types.h"
-#endif
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/sandbox_types.h"
 
