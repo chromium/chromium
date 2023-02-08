@@ -238,8 +238,8 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
 
 - (BadgeButton*)saveAddressProfileBadgeButton {
   UIImage* image;
-  image = UseSymbols() ? DefaultSymbolWithPointSize(kPinFillSymbol,
-                                                    kInfobarSymbolPointSize)
+  image = UseSymbols() ? CustomSymbolWithPointSize(kLocationFillSymbol,
+                                                   kInfobarSymbolPointSize)
                        : [UIImage imageNamed:@"ic_place"];
 
   BadgeButton* button =

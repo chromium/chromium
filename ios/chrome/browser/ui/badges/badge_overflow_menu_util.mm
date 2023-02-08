@@ -62,8 +62,8 @@ UIAction* GetOverflowMenuElementForBadgeType(
       title =
           l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
 
-      image = UseSymbols() ? DefaultSymbolWithPointSize(kPinSymbol,
-                                                        kInfobarSymbolPointSize)
+      image = UseSymbols() ? CustomSymbolWithPointSize(kLocationSymbol,
+                                                       kInfobarSymbolPointSize)
                            : [UIImage imageNamed:@"ic_place"];
       image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       histogram_type = MobileMessagesInfobarType::AutofillSaveAddressProfile;

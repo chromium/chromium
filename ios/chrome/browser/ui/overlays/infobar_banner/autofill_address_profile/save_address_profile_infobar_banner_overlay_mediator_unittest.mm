@@ -77,7 +77,7 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest, SetUpConsumer) {
               consumer.subtitleText);
   if (UseSymbols()) {
     EXPECT_NSEQ(
-        DefaultSymbolWithPointSize(kPinFillSymbol, kInfobarSymbolPointSize),
+        CustomSymbolWithPointSize(kLocationFillSymbol, kInfobarSymbolPointSize),
         consumer.iconImage);
   } else {
     EXPECT_NSEQ([UIImage imageNamed:@"ic_place"], consumer.iconImage);

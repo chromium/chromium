@@ -68,8 +68,9 @@ using autofill_address_profile_infobar_overlays::
   [self.consumer setRestrictSubtitleTextToSingleLine:YES];
 
   if (UseSymbols()) {
-    [self.consumer setIconImage:DefaultSymbolWithPointSize(
-                                    kPinFillSymbol, kInfobarSymbolPointSize)];
+    [self.consumer
+        setIconImage:CustomSymbolWithPointSize(kLocationFillSymbol,
+                                               kInfobarSymbolPointSize)];
   } else {
     [self.consumer
         setIconImage:[UIImage imageNamed:self.config->icon_image_name()]];

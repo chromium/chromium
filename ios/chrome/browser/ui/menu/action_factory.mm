@@ -77,8 +77,8 @@
 }
 
 - (UIAction*)actionToPinTabWithBlock:(ProceduralBlock)block {
-  UIImage* image = UseSymbols() ? DefaultSymbolWithPointSize(
-                                      kPinSymbol, kSymbolActionPointSize)
+  UIImage* image = UseSymbols() ? CustomSymbolWithPointSize(
+                                      kLocationSymbol, kSymbolActionPointSize)
                                 : [UIImage imageNamed:@"pin"];
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_PINTAB)
@@ -88,7 +88,7 @@
 }
 
 - (UIAction*)actionToUnpinTabWithBlock:(ProceduralBlock)block {
-  UIImage* image = UseSymbols() ? DefaultSymbolWithPointSize(
+  UIImage* image = UseSymbols() ? CustomSymbolWithPointSize(
                                       kPinSlashSymbol, kSymbolActionPointSize)
                                 : [UIImage imageNamed:@"unpin"];
   return [self

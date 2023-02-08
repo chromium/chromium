@@ -456,7 +456,8 @@ const CGFloat kSymbolSize = 16;
       return DefaultSymbolTemplateWithPointSize(kPersonFillSymbol, kSymbolSize);
     case AutofillUITypeAddressHomeAddress:
     case AutofillUITypeProfileHomeAddressStreet:
-      return DefaultSymbolTemplateWithPointSize(kPinFillSymbol, kSymbolSize);
+      return CustomSymbolTemplateWithPointSize(kLocationFillSymbol,
+                                               kSymbolSize);
     case AutofillUITypeProfileEmailAddress:
       return DefaultSymbolTemplateWithPointSize(kMailFillSymbol, kSymbolSize);
     case AutofillUITypeProfileHomePhoneWholeNumber:

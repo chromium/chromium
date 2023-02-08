@@ -54,6 +54,20 @@ symbolset("password") {
   ]
 }
 
+symbolset("location") {
+  sources = [
+    "location.symbolset/Contents.json",
+    "location.symbolset/location.cr.svg",
+  ]
+}
+
+symbolset("location.fill") {
+  sources = [
+    "location.fill.symbolset/Contents.json",
+    "location.fill.symbolset/location.fill.cr.svg",
+  ]
+}
+
 if (target_environment != "catalyst") {
   symbolset("multicolor_password") {
     sources = [
