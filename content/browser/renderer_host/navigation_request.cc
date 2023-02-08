@@ -2501,11 +2501,7 @@ void NavigationRequest::BeginNavigationImpl() {
           /*is_renderer_initiated_check=*/false));
     }
 
-    // No throttles will actually run, but `CommitNavigation()` expects to be
-    // called only once the request has reached `WILL_PROCESS_RESPONSE`.
-    SetState(WILL_PROCESS_RESPONSE);
-
-    CommitNavigation();
+    WillCommitWithoutUrlLoader();
     return;
   }
 
@@ -3251,8 +3247,9 @@ bool NavigationRequest::IsIsolationImplied() {
 }
 
 void NavigationRequest::DetermineOriginAgentClusterEndResult() {
-  DCHECK(state_ == WILL_PROCESS_RESPONSE || state_ == WILL_FAIL_REQUEST ||
-         state_ == CANCELING);
+  DCHECK(state_ == WILL_PROCESS_RESPONSE ||
+         state_ == WILL_COMMIT_WITHOUT_URL_LOADER ||
+         state_ == WILL_FAIL_REQUEST || state_ == CANCELING);
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   url::Origin origin = GetOriginToCommit().value();
   const IsolationContext& isolation_context =
@@ -5068,6 +5065,23 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
   // NavigationRequest.
 }
 
+void NavigationRequest::OnWillCommitWithoutUrlLoaderChecksComplete(
+    NavigationThrottle::ThrottleCheckResult result) {
+  DCHECK(result.action() == NavigationThrottle::CANCEL_AND_IGNORE ||
+         result.action() == NavigationThrottle::PROCEED);
+  if (result.action() == NavigationThrottle::CANCEL_AND_IGNORE) {
+    OnRequestFailedInternal(
+        network::URLLoaderCompletionStatus(result.net_error_code()),
+        /*skip_throttles=*/true, result.error_page_content(),
+        /*collapse_frame=*/false);
+
+    // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
+    // has destroyed the NavigationRequest.
+    return;
+  }
+  CommitNavigation();
+}
+
 void NavigationRequest::RunCommitDeferringConditions() {
   // TODO(nhiroki): Make RegisterDeferringConditions() private and have
   // ProcessChecks() call it for code cleanup.
@@ -6193,6 +6207,9 @@ void NavigationRequest::OnNavigationEventProcessed(
     case NavigationThrottleRunner::Event::WillProcessResponse:
       OnWillProcessResponseProcessed(result);
       return;
+    case NavigationThrottleRunner::Event::WillCommitWithoutUrlLoader:
+      OnWillCommitWithoutUrlLoaderProcessed(result);
+      return;
     default:
       NOTREACHED();
   }
@@ -6291,6 +6308,24 @@ void NavigationRequest::OnWillProcessResponseProcessed(
   // deleted by the previous calls.
 }
 
+void NavigationRequest::OnWillCommitWithoutUrlLoaderProcessed(
+    NavigationThrottle::ThrottleCheckResult result) {
+  DCHECK_EQ(WILL_COMMIT_WITHOUT_URL_LOADER, state_);
+  DCHECK(result.action() == NavigationThrottle::CANCEL_AND_IGNORE ||
+         result.action() == NavigationThrottle::PROCEED);
+  DCHECK(processing_navigation_throttle_);
+  processing_navigation_throttle_ = false;
+  if (complete_callback_for_testing_ &&
+      std::move(complete_callback_for_testing_).Run(result)) {
+    return;
+  }
+
+  OnWillCommitWithoutUrlLoaderChecksComplete(result);
+
+  // DO NOT ADD CODE AFTER THIS, as the NavigationRequest might have been
+  // deleted by the previous calls.
+}
+
 NavigatorDelegate* NavigationRequest::GetDelegate() const {
   return frame_tree_node()->navigator().GetDelegate();
 }
@@ -6368,6 +6403,9 @@ void NavigationRequest::CancelDeferredNavigationInternal(
       return;
     case WILL_PROCESS_RESPONSE:
       OnWillProcessResponseChecksComplete(result);
+      return;
+    case WILL_COMMIT_WITHOUT_URL_LOADER:
+      OnWillCommitWithoutUrlLoaderChecksComplete(result);
       return;
     default:
       NOTREACHED();
@@ -6469,6 +6507,22 @@ void NavigationRequest::WillProcessResponse() {
       NavigationThrottleRunner::Event::WillProcessResponse);
   // DO NOT ADD CODE AFTER THIS, as the NavigationHandle might have been deleted
   // by the previous call.
+}
+
+void NavigationRequest::WillCommitWithoutUrlLoader() {
+  EnterChildTraceEvent("WillCommitWithoutUrlLoader", this);
+
+  throttle_runner_->RegisterNavigationThrottlesForCommitWithoutUrlLoader();
+
+  // `CommitNavigation()` expects to be called once the request has reached
+  // at least `WILL_PROCESS_REPSONSE`. `WILL_COMMIT_WITHOUT_URL_LOADER` meets
+  // that requirement, and is useful to clarify which throttles we are waiting
+  // for.
+  SetState(WILL_COMMIT_WITHOUT_URL_LOADER);
+  processing_navigation_throttle_ = true;
+
+  throttle_runner_->ProcessNavigationEvent(
+      NavigationThrottleRunner::Event::WillCommitWithoutUrlLoader);
 }
 
 bool NavigationRequest::IsSelfReferentialURL() {
@@ -8187,6 +8241,7 @@ void NavigationRequest::CheckStateTransition(NavigationState state) const {
           {WILL_START_REQUEST, {
               WILL_REDIRECT_REQUEST,
               WILL_PROCESS_RESPONSE,
+              WILL_COMMIT_WITHOUT_URL_LOADER,
               READY_TO_COMMIT,
               DID_COMMIT,
               CANCELING,
@@ -8200,6 +8255,11 @@ void NavigationRequest::CheckStateTransition(NavigationState state) const {
               WILL_FAIL_REQUEST,
           }},
           {WILL_PROCESS_RESPONSE, {
+              READY_TO_COMMIT,
+              CANCELING,
+              WILL_FAIL_REQUEST,
+          }},
+          {WILL_COMMIT_WITHOUT_URL_LOADER, {
               READY_TO_COMMIT,
               CANCELING,
               WILL_FAIL_REQUEST,

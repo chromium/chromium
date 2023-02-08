@@ -80,6 +80,11 @@ NavigationThrottle::WillProcessResponse() {
   return NavigationThrottle::PROCEED;
 }
 
+NavigationThrottle::ThrottleCheckResult
+NavigationThrottle::WillCommitWithoutUrlLoader() {
+  return NavigationThrottle::PROCEED;
+}
+
 void NavigationThrottle::Resume() {
   if (resume_callback_) {
     resume_callback_.Run();

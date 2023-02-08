@@ -46,6 +46,12 @@ class DeletingNavigationThrottle : public NavigationThrottle {
     return NavigationThrottle::PROCEED;
   }
 
+  NavigationThrottle::ThrottleCheckResult WillCommitWithoutUrlLoader()
+      override {
+    deletion_callback_.Run();
+    return NavigationThrottle::PROCEED;
+  }
+
   const char* GetNameForLogging() override {
     return "DeletingNavigationThrottle";
   }
@@ -130,6 +136,13 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
     } else {
       CHECK_EQ(0, throttle->GetCallCount(
                       TestNavigationThrottle::WILL_PROCESS_RESPONSE));
+    }
+    if (event == NavigationThrottleRunner::Event::WillCommitWithoutUrlLoader) {
+      CHECK_EQ(1, throttle->GetCallCount(
+                      TestNavigationThrottle::WILL_COMMIT_WITHOUT_URL_LOADER));
+    } else {
+      CHECK_EQ(0, throttle->GetCallCount(
+                      TestNavigationThrottle::WILL_COMMIT_WITHOUT_URL_LOADER));
     }
   }
 
@@ -264,10 +277,12 @@ TEST_P(NavigationThrottleRunnerTestWithEvent,
 INSTANTIATE_TEST_SUITE_P(
     AllEvents,
     NavigationThrottleRunnerTestWithEvent,
-    ::testing::Values(NavigationThrottleRunner::Event::WillStartRequest,
-                      NavigationThrottleRunner::Event::WillRedirectRequest,
-                      NavigationThrottleRunner::Event::WillFailRequest,
-                      NavigationThrottleRunner::Event::WillProcessResponse));
+    ::testing::Values(
+        NavigationThrottleRunner::Event::WillStartRequest,
+        NavigationThrottleRunner::Event::WillRedirectRequest,
+        NavigationThrottleRunner::Event::WillFailRequest,
+        NavigationThrottleRunner::Event::WillProcessResponse,
+        NavigationThrottleRunner::Event::WillCommitWithoutUrlLoader));
 
 class NavigationThrottleRunnerTestWithEventAndAction
     : public NavigationThrottleRunnerTest,
@@ -411,10 +426,12 @@ INSTANTIATE_TEST_SUITE_P(
     AllEvents,
     NavigationThrottleRunnerTestWithEventAndAction,
     ::testing::Combine(
-        ::testing::Values(NavigationThrottleRunner::Event::WillStartRequest,
-                          NavigationThrottleRunner::Event::WillRedirectRequest,
-                          NavigationThrottleRunner::Event::WillFailRequest,
-                          NavigationThrottleRunner::Event::WillProcessResponse),
+        ::testing::Values(
+            NavigationThrottleRunner::Event::WillStartRequest,
+            NavigationThrottleRunner::Event::WillRedirectRequest,
+            NavigationThrottleRunner::Event::WillFailRequest,
+            NavigationThrottleRunner::Event::WillProcessResponse,
+            NavigationThrottleRunner::Event::WillCommitWithoutUrlLoader),
         ::testing::Values(NavigationThrottle::PROCEED,
                           NavigationThrottle::CANCEL,
                           NavigationThrottle::CANCEL_AND_IGNORE,
@@ -490,10 +507,12 @@ INSTANTIATE_TEST_SUITE_P(
     AllEvents,
     NavigationThrottleRunnerTestWithEventAndError,
     ::testing::Combine(
-        ::testing::Values(NavigationThrottleRunner::Event::WillStartRequest,
-                          NavigationThrottleRunner::Event::WillRedirectRequest,
-                          NavigationThrottleRunner::Event::WillFailRequest,
-                          NavigationThrottleRunner::Event::WillProcessResponse),
+        ::testing::Values(
+            NavigationThrottleRunner::Event::WillStartRequest,
+            NavigationThrottleRunner::Event::WillRedirectRequest,
+            NavigationThrottleRunner::Event::WillFailRequest,
+            NavigationThrottleRunner::Event::WillProcessResponse,
+            NavigationThrottleRunner::Event::WillCommitWithoutUrlLoader),
         ::testing::Values(net::ERR_BLOCKED_BY_ADMINISTRATOR, net::ERR_ABORTED),
         ::testing::Values(absl::nullopt, "<html><body>test</body></html>")));
 

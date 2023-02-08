@@ -169,6 +169,24 @@ class CONTENT_EXPORT NavigationThrottle {
   // asynchronously.
   virtual ThrottleCheckResult WillProcessResponse();
 
+  // Called when a navigation is about to immediately commit because there's no
+  // need for a url loader. This includes browser-initiated same-document
+  // navigations, same-document history navigations, about:blank, about:srcdoc,
+  // any other empty document scheme, and MHTML subframes.
+  // Renderer-initiated non-history same-document navigations do NOT go through
+  // this path, because they are handled synchronously in the renderer and the
+  // browser process is only notified after the fact.
+  // BFCache and prerender activation also do NOT go through this path, because
+  // they are considered already loaded when they are activated.
+  // In order to get this event, a NavigationThrottle must register itself with
+  // RegisterNavigationThrottlesForCommitWithoutUrlLoader().
+  // This event is mutually exclusive with WillStartRequest,
+  // WillRedirectRequest, and WillProcessResponse. Only WillFailRequest can
+  // be called after WillCommitWithoutUrlLoader.
+  // Only PROCEED, DEFER, and CANCEL_AND_IGNORE results are supported at this
+  // time.
+  virtual ThrottleCheckResult WillCommitWithoutUrlLoader();
+
   // Returns the name of the throttle for logging purposes. It must not return
   // nullptr.
   virtual const char* GetNameForLogging() = 0;

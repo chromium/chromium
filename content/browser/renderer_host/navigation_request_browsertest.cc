@@ -87,19 +87,26 @@ class TestNavigationThrottle : public NavigationThrottle {
       NavigationThrottle::ThrottleCheckResult will_redirect_result,
       NavigationThrottle::ThrottleCheckResult will_fail_result,
       NavigationThrottle::ThrottleCheckResult will_process_result,
+      NavigationThrottle::ThrottleCheckResult
+          will_commit_without_url_loader_result,
       base::OnceClosure did_call_will_start,
       base::OnceClosure did_call_will_redirect,
       base::OnceClosure did_call_will_fail,
-      base::OnceClosure did_call_will_process)
+      base::OnceClosure did_call_will_process,
+      base::OnceClosure did_call_will_commit_without_url_loader)
       : NavigationThrottle(handle),
         will_start_result_(will_start_result),
         will_redirect_result_(will_redirect_result),
         will_fail_result_(will_fail_result),
         will_process_result_(will_process_result),
+        will_commit_without_url_loader_result_(
+            will_commit_without_url_loader_result),
         did_call_will_start_(std::move(did_call_will_start)),
         did_call_will_redirect_(std::move(did_call_will_redirect)),
         did_call_will_fail_(std::move(did_call_will_fail)),
-        did_call_will_process_(std::move(did_call_will_process)) {}
+        did_call_will_process_(std::move(did_call_will_process)),
+        did_call_will_commit_without_url_loader_(
+            std::move(did_call_will_commit_without_url_loader)) {}
   ~TestNavigationThrottle() override = default;
 
   const char* GetNameForLogging() override { return "TestNavigationThrottle"; }
@@ -159,14 +166,30 @@ class TestNavigationThrottle : public NavigationThrottle {
     return will_process_result_;
   }
 
+  NavigationThrottle::ThrottleCheckResult WillCommitWithoutUrlLoader()
+      override {
+    NavigationRequest* navigation_request =
+        NavigationRequest::From(navigation_handle());
+    CHECK_NE(blink::mojom::RequestContextType::UNSPECIFIED,
+             navigation_request->request_context_type());
+    request_context_type_ = navigation_request->request_context_type();
+
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, std::move(did_call_will_commit_without_url_loader_));
+    return will_commit_without_url_loader_result_;
+  }
+
   NavigationThrottle::ThrottleCheckResult will_start_result_;
   NavigationThrottle::ThrottleCheckResult will_redirect_result_;
   NavigationThrottle::ThrottleCheckResult will_fail_result_;
   NavigationThrottle::ThrottleCheckResult will_process_result_;
+  NavigationThrottle::ThrottleCheckResult
+      will_commit_without_url_loader_result_;
   base::OnceClosure did_call_will_start_;
   base::OnceClosure did_call_will_redirect_;
   base::OnceClosure did_call_will_fail_;
   base::OnceClosure did_call_will_process_;
+  base::OnceClosure did_call_will_commit_without_url_loader_;
   blink::mojom::RequestContextType request_context_type_ =
       blink::mojom::RequestContextType::UNSPECIFIED;
 };
@@ -182,6 +205,7 @@ class TestNavigationThrottleInstaller : public WebContentsObserver {
     WILL_REDIRECT_REQUEST,
     WILL_FAIL_REQUEST,
     WILL_PROCESS_RESPONSE,
+    WILL_COMMIT_WITHOUT_URL_LOADER,
   };
 
   TestNavigationThrottleInstaller(
@@ -190,12 +214,16 @@ class TestNavigationThrottleInstaller : public WebContentsObserver {
       NavigationThrottle::ThrottleCheckResult will_redirect_result,
       NavigationThrottle::ThrottleCheckResult will_fail_result,
       NavigationThrottle::ThrottleCheckResult will_process_result,
+      NavigationThrottle::ThrottleCheckResult
+          will_commit_without_url_loader_result,
       const GURL& expected_start_url = GURL())
       : WebContentsObserver(web_contents),
         will_start_result_(will_start_result),
         will_redirect_result_(will_redirect_result),
         will_fail_result_(will_fail_result),
         will_process_result_(will_process_result),
+        will_commit_without_url_loader_result_(
+            will_commit_without_url_loader_result),
         expected_start_url_(expected_start_url) {}
   ~TestNavigationThrottleInstaller() override = default;
 
@@ -210,6 +238,7 @@ class TestNavigationThrottleInstaller : public WebContentsObserver {
     auto will_redirect_result = will_start_result;
     auto will_fail_result = will_start_result;
     auto will_process_result = will_start_result;
+    auto will_commit_without_url_loader_result = will_start_result;
 
     switch (method) {
       case WILL_START_REQUEST:
@@ -224,11 +253,14 @@ class TestNavigationThrottleInstaller : public WebContentsObserver {
       case WILL_PROCESS_RESPONSE:
         will_process_result = result;
         break;
+      case WILL_COMMIT_WITHOUT_URL_LOADER:
+        will_commit_without_url_loader_result = result;
+        break;
     }
 
     return std::make_unique<TestNavigationThrottleInstaller>(
         web_contents, will_start_result, will_redirect_result, will_fail_result,
-        will_process_result);
+        will_process_result, will_commit_without_url_loader_result);
   }
 
   TestNavigationThrottle* navigation_throttle() { return navigation_throttle_; }
@@ -265,6 +297,15 @@ class TestNavigationThrottleInstaller : public WebContentsObserver {
     will_process_loop_runner_ = nullptr;
   }
 
+  void WaitForThrottleWillCommitWithoutUrlLoader() {
+    if (will_commit_without_url_loader_called_) {
+      return;
+    }
+    will_commit_without_url_loader_loop_runner_ = new MessageLoopRunner();
+    will_commit_without_url_loader_loop_runner_->Run();
+    will_commit_without_url_loader_loop_runner_ = nullptr;
+  }
+
   void Continue(NavigationThrottle::ThrottleCheckResult result) {
     ASSERT_NE(NavigationThrottle::DEFER, result.action());
     if (result.action() == NavigationThrottle::PROCEED)
@@ -277,6 +318,9 @@ class TestNavigationThrottleInstaller : public WebContentsObserver {
   int will_redirect_called() { return will_redirect_called_; }
   int will_fail_called() { return will_fail_called_; }
   int will_process_called() { return will_process_called_; }
+  int will_commit_without_url_loader_called() {
+    return will_commit_without_url_loader_called_;
+  }
 
   int install_count() { return install_count_; }
 
@@ -305,6 +349,13 @@ class TestNavigationThrottleInstaller : public WebContentsObserver {
       will_process_loop_runner_->Quit();
   }
 
+  virtual void DidCallWillCommitWithoutUrlLoader() {
+    will_commit_without_url_loader_called_++;
+    if (will_commit_without_url_loader_loop_runner_) {
+      will_commit_without_url_loader_loop_runner_->Quit();
+    }
+  }
+
  private:
   void DidStartNavigation(NavigationHandle* handle) override {
     if (!expected_start_url_.is_empty() &&
@@ -313,7 +364,7 @@ class TestNavigationThrottleInstaller : public WebContentsObserver {
 
     std::unique_ptr<NavigationThrottle> throttle(new TestNavigationThrottle(
         handle, will_start_result_, will_redirect_result_, will_fail_result_,
-        will_process_result_,
+        will_process_result_, will_commit_without_url_loader_result_,
         base::BindOnce(
             &TestNavigationThrottleInstaller::DidCallWillStartRequest,
             weak_factory_.GetWeakPtr()),
@@ -324,6 +375,9 @@ class TestNavigationThrottleInstaller : public WebContentsObserver {
                        weak_factory_.GetWeakPtr()),
         base::BindOnce(
             &TestNavigationThrottleInstaller::DidCallWillProcessResponse,
+            weak_factory_.GetWeakPtr()),
+        base::BindOnce(
+            &TestNavigationThrottleInstaller::DidCallWillCommitWithoutUrlLoader,
             weak_factory_.GetWeakPtr())));
     navigation_throttle_ = static_cast<TestNavigationThrottle*>(throttle.get());
     handle->RegisterThrottleForTesting(std::move(throttle));
@@ -342,16 +396,20 @@ class TestNavigationThrottleInstaller : public WebContentsObserver {
   NavigationThrottle::ThrottleCheckResult will_redirect_result_;
   NavigationThrottle::ThrottleCheckResult will_fail_result_;
   NavigationThrottle::ThrottleCheckResult will_process_result_;
+  NavigationThrottle::ThrottleCheckResult
+      will_commit_without_url_loader_result_;
   int will_start_called_ = 0;
   int will_redirect_called_ = 0;
   int will_fail_called_ = 0;
   int will_process_called_ = 0;
+  int will_commit_without_url_loader_called_ = 0;
   raw_ptr<TestNavigationThrottle> navigation_throttle_ = nullptr;
   int install_count_ = 0;
   scoped_refptr<MessageLoopRunner> will_start_loop_runner_;
   scoped_refptr<MessageLoopRunner> will_redirect_loop_runner_;
   scoped_refptr<MessageLoopRunner> will_fail_loop_runner_;
   scoped_refptr<MessageLoopRunner> will_process_loop_runner_;
+  scoped_refptr<MessageLoopRunner> will_commit_without_url_loader_loop_runner_;
   GURL expected_start_url_;
 
   // The throttle installer can be deleted before all tasks posted by its
@@ -371,8 +429,11 @@ class TestDeferringNavigationThrottleInstaller
       NavigationThrottle::ThrottleCheckResult will_redirect_result,
       NavigationThrottle::ThrottleCheckResult will_fail_result,
       NavigationThrottle::ThrottleCheckResult will_process_result,
+      NavigationThrottle::ThrottleCheckResult
+          will_commit_without_url_loader_result,
       GURL expected_start_url = GURL())
       : TestNavigationThrottleInstaller(web_contents,
+                                        NavigationThrottle::DEFER,
                                         NavigationThrottle::DEFER,
                                         NavigationThrottle::DEFER,
                                         NavigationThrottle::DEFER,
@@ -381,7 +442,9 @@ class TestDeferringNavigationThrottleInstaller
         will_start_deferred_result_(will_start_result),
         will_redirect_deferred_result_(will_redirect_result),
         will_fail_deferred_result_(will_fail_result),
-        will_process_deferred_result_(will_process_result) {}
+        will_process_deferred_result_(will_process_result),
+        will_commit_without_url_loader_result_(
+            will_commit_without_url_loader_result) {}
 
  protected:
   void DidCallWillStartRequest() override {
@@ -404,11 +467,18 @@ class TestDeferringNavigationThrottleInstaller
     Continue(will_process_deferred_result_);
   }
 
+  void DidCallWillCommitWithoutUrlLoader() override {
+    TestNavigationThrottleInstaller::DidCallWillCommitWithoutUrlLoader();
+    Continue(will_commit_without_url_loader_result_);
+  }
+
  private:
   NavigationThrottle::ThrottleCheckResult will_start_deferred_result_;
   NavigationThrottle::ThrottleCheckResult will_redirect_deferred_result_;
   NavigationThrottle::ThrottleCheckResult will_fail_deferred_result_;
   NavigationThrottle::ThrottleCheckResult will_process_deferred_result_;
+  NavigationThrottle::ThrottleCheckResult
+      will_commit_without_url_loader_result_;
 };
 
 // Records all navigation start URLs from the WebContents.
@@ -937,7 +1007,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleCancelStart) {
   TestNavigationThrottleInstaller installer(
       shell()->web_contents(), NavigationThrottle::CANCEL,
       NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-      NavigationThrottle::PROCEED);
+      NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
 
   EXPECT_FALSE(NavigateToURL(shell(), redirect_url));
 
@@ -963,7 +1033,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleCancelRedirect) {
     TestNavigationThrottleInstaller installer(
         shell()->web_contents(), NavigationThrottle::PROCEED,
         NavigationThrottle::CANCEL, NavigationThrottle::PROCEED,
-        NavigationThrottle::PROCEED);
+        NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
 
     EXPECT_FALSE(NavigateToURL(shell(), redirect_url));
 
@@ -980,7 +1050,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleCancelRedirect) {
     TestNavigationThrottleInstaller installer(
         shell()->web_contents(), NavigationThrottle::PROCEED,
         NavigationThrottle::CANCEL, NavigationThrottle::PROCEED,
-        NavigationThrottle::PROCEED);
+        NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
 
     EXPECT_TRUE(NavigateToURL(shell(), no_redirect_url));
 
@@ -1005,7 +1075,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleCancelFailure) {
     TestNavigationThrottleInstaller installer(
         shell()->web_contents(), NavigationThrottle::PROCEED,
         NavigationThrottle::PROCEED, NavigationThrottle::CANCEL,
-        NavigationThrottle::PROCEED);
+        NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
 
     NavigationHandleObserver observer(shell()->web_contents(), url);
 
@@ -1028,7 +1098,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleCancelFailure) {
         NavigationThrottle::PROCEED,
         NavigationThrottle::ThrottleCheckResult(NavigationThrottle::CANCEL,
                                                 net::ERR_CERT_DATE_INVALID),
-        NavigationThrottle::PROCEED);
+        NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
 
     NavigationHandleObserver observer(shell()->web_contents(), url);
 
@@ -1052,7 +1122,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleCancelFailure) {
     TestNavigationThrottleInstaller installer(
         shell()->web_contents(), NavigationThrottle::PROCEED,
         NavigationThrottle::PROCEED, NavigationThrottle::CANCEL,
-        NavigationThrottle::PROCEED);
+        NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
 
     EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -1073,7 +1143,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleCancelResponse) {
   TestNavigationThrottleInstaller installer(
       shell()->web_contents(), NavigationThrottle::PROCEED,
       NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-      NavigationThrottle::CANCEL);
+      NavigationThrottle::CANCEL, NavigationThrottle::PROCEED);
 
   EXPECT_FALSE(NavigateToURL(shell(), redirect_url));
 
@@ -1082,6 +1152,28 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleCancelResponse) {
   // The navigation should have been redirected first, and then canceled when
   // the response arrived.
   EXPECT_TRUE(observer.was_redirected());
+  EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), start_url);
+}
+
+// Ensure that a NavigationThrottle can cancel the navigation when committing
+// without a URLLoader.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       ThrottleCancelCommitWithoutUrlLoader) {
+  GURL start_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), start_url));
+
+  GURL about_blank_url(url::kAboutBlankURL);
+  NavigationHandleObserver observer(shell()->web_contents(), about_blank_url);
+  TestNavigationThrottleInstaller installer(
+      shell()->web_contents(), NavigationThrottle::PROCEED,
+      NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
+      NavigationThrottle::PROCEED, NavigationThrottle::CANCEL_AND_IGNORE);
+
+  EXPECT_FALSE(NavigateToURL(shell(), about_blank_url));
+
+  EXPECT_FALSE(observer.has_committed());
+  EXPECT_TRUE(observer.is_error());
+  EXPECT_FALSE(observer.was_redirected());
   EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), start_url);
 }
 
@@ -1098,7 +1190,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleDefer) {
   TestNavigationThrottleInstaller installer(
       shell()->web_contents(), NavigationThrottle::DEFER,
       NavigationThrottle::DEFER, NavigationThrottle::DEFER,
-      NavigationThrottle::DEFER);
+      NavigationThrottle::DEFER, NavigationThrottle::DEFER);
 
   shell()->LoadURL(redirect_url);
 
@@ -1108,6 +1200,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleDefer) {
   EXPECT_EQ(0, installer.will_redirect_called());
   EXPECT_EQ(0, installer.will_fail_called());
   EXPECT_EQ(0, installer.will_process_called());
+  EXPECT_EQ(0, installer.will_commit_without_url_loader_called());
   installer.navigation_throttle()->ResumeNavigation();
 
   // Wait for WillRedirectRequest.
@@ -1116,6 +1209,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleDefer) {
   EXPECT_EQ(1, installer.will_redirect_called());
   EXPECT_EQ(0, installer.will_fail_called());
   EXPECT_EQ(0, installer.will_process_called());
+  EXPECT_EQ(0, installer.will_commit_without_url_loader_called());
   installer.navigation_throttle()->ResumeNavigation();
 
   // Wait for WillProcessResponse.
@@ -1124,6 +1218,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleDefer) {
   EXPECT_EQ(1, installer.will_redirect_called());
   EXPECT_EQ(0, installer.will_fail_called());
   EXPECT_EQ(1, installer.will_process_called());
+  EXPECT_EQ(0, installer.will_commit_without_url_loader_called());
   installer.navigation_throttle()->ResumeNavigation();
 
   // Wait for the end of the navigation.
@@ -1149,7 +1244,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleDeferFailure) {
   TestNavigationThrottleInstaller installer(
       shell()->web_contents(), NavigationThrottle::DEFER,
       NavigationThrottle::DEFER, NavigationThrottle::DEFER,
-      NavigationThrottle::DEFER);
+      NavigationThrottle::DEFER, NavigationThrottle::DEFER);
 
   shell()->LoadURL(failure_url);
 
@@ -1159,6 +1254,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleDeferFailure) {
   EXPECT_EQ(0, installer.will_redirect_called());
   EXPECT_EQ(0, installer.will_fail_called());
   EXPECT_EQ(0, installer.will_process_called());
+  EXPECT_EQ(0, installer.will_commit_without_url_loader_called());
   installer.navigation_throttle()->ResumeNavigation();
 
   // Wait for WillFailRequest.
@@ -1167,6 +1263,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleDeferFailure) {
   EXPECT_EQ(0, installer.will_redirect_called());
   EXPECT_EQ(1, installer.will_fail_called());
   EXPECT_EQ(0, installer.will_process_called());
+  EXPECT_EQ(0, installer.will_commit_without_url_loader_called());
   installer.navigation_throttle()->ResumeNavigation();
 
   // Wait for the end of the navigation.
@@ -1175,6 +1272,180 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleDeferFailure) {
   EXPECT_TRUE(observer.has_committed());
   EXPECT_TRUE(observer.is_error());
   EXPECT_EQ(net::ERR_CERT_COMMON_NAME_INVALID, observer.net_error_code());
+}
+
+// Ensure that a NavigationThrottle can defer and resume the navigation when
+// navigating without a URLLoader. This test covers multiple types of
+// navigations that do not require a URLLoader (same-document navigations and
+// about:blank).
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       ThrottleDeferCommitWithoutUrlLoader) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  GURL url_fragment(embedded_test_server()->GetURL("/title1.html#id_1"));
+  GURL about_blank_url(url::kAboutBlankURL);
+
+  // Perform a new-document navigation (setup).
+  {
+    TestNavigationThrottleInstaller installer(
+        shell()->web_contents(), NavigationThrottle::PROCEED,
+        NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
+        NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
+    NavigationHandleObserver observer(shell()->web_contents(), url);
+    EXPECT_TRUE(NavigateToURL(shell(), url));
+    EXPECT_EQ(1, installer.will_start_called());
+    EXPECT_EQ(1, installer.will_process_called());
+    EXPECT_EQ(0, installer.will_commit_without_url_loader_called());
+    EXPECT_FALSE(observer.is_same_document());
+  }
+
+  // Same-document navigation
+  {
+    TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
+    NavigationHandleObserver observer(shell()->web_contents(), url_fragment);
+    TestNavigationThrottleInstaller installer(
+        shell()->web_contents(), NavigationThrottle::DEFER,
+        NavigationThrottle::DEFER, NavigationThrottle::DEFER,
+        NavigationThrottle::DEFER, NavigationThrottle::DEFER);
+
+    shell()->LoadURL(url_fragment);
+
+    // Wait for WillCommitWithoutUrlLoader.
+    installer.WaitForThrottleWillCommitWithoutUrlLoader();
+    EXPECT_EQ(0, installer.will_start_called());
+    EXPECT_EQ(0, installer.will_redirect_called());
+    EXPECT_EQ(0, installer.will_fail_called());
+    EXPECT_EQ(0, installer.will_process_called());
+    EXPECT_EQ(1, installer.will_commit_without_url_loader_called());
+    installer.navigation_throttle()->ResumeNavigation();
+
+    // Wait for the end of the navigation.
+    navigation_observer.Wait();
+
+    EXPECT_TRUE(observer.is_same_document());
+    EXPECT_TRUE(observer.has_committed());
+    EXPECT_FALSE(observer.was_redirected());
+    EXPECT_FALSE(observer.is_error());
+    EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), url_fragment);
+  }
+
+  // about:blank
+  {
+    TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
+    NavigationHandleObserver observer(shell()->web_contents(), about_blank_url);
+    TestNavigationThrottleInstaller installer(
+        shell()->web_contents(), NavigationThrottle::DEFER,
+        NavigationThrottle::DEFER, NavigationThrottle::DEFER,
+        NavigationThrottle::DEFER, NavigationThrottle::DEFER);
+
+    shell()->LoadURL(about_blank_url);
+
+    // Wait for WillCommitWithoutUrlLoader.
+    installer.WaitForThrottleWillCommitWithoutUrlLoader();
+    EXPECT_EQ(0, installer.will_start_called());
+    EXPECT_EQ(0, installer.will_redirect_called());
+    EXPECT_EQ(0, installer.will_fail_called());
+    EXPECT_EQ(0, installer.will_process_called());
+    EXPECT_EQ(1, installer.will_commit_without_url_loader_called());
+    installer.navigation_throttle()->ResumeNavigation();
+
+    // Wait for the end of the navigation.
+    navigation_observer.Wait();
+
+    EXPECT_FALSE(observer.is_same_document());
+    EXPECT_TRUE(observer.has_committed());
+    EXPECT_FALSE(observer.was_redirected());
+    EXPECT_FALSE(observer.is_error());
+    EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), about_blank_url);
+  }
+}
+
+// Ensure that a NavigationThrottle can defer and cancel the navigation when
+// navigating without a URLLoader. This test covers multiple types of
+// navigations that do not require a URLLoader (same-document navigations and
+// about:blank).
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       ThrottleDeferAndCancelCommitWithoutUrlLoader) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  GURL url_fragment(embedded_test_server()->GetURL("/title1.html#id_1"));
+  GURL about_blank_url(url::kAboutBlankURL);
+
+  // Perform a new-document navigation (setup).
+  {
+    TestNavigationThrottleInstaller installer(
+        shell()->web_contents(), NavigationThrottle::PROCEED,
+        NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
+        NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
+    NavigationHandleObserver observer(shell()->web_contents(), url);
+    EXPECT_TRUE(NavigateToURL(shell(), url));
+    EXPECT_EQ(1, installer.will_start_called());
+    EXPECT_EQ(1, installer.will_process_called());
+    EXPECT_EQ(0, installer.will_commit_without_url_loader_called());
+    EXPECT_FALSE(observer.is_same_document());
+  }
+
+  // Same-document navigation
+  {
+    TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
+    NavigationHandleObserver observer(shell()->web_contents(), url_fragment);
+    TestNavigationThrottleInstaller installer(
+        shell()->web_contents(), NavigationThrottle::DEFER,
+        NavigationThrottle::DEFER, NavigationThrottle::DEFER,
+        NavigationThrottle::DEFER, NavigationThrottle::DEFER);
+
+    shell()->LoadURL(url_fragment);
+
+    // Wait for WillCommitWithoutUrlLoader.
+    installer.WaitForThrottleWillCommitWithoutUrlLoader();
+    EXPECT_EQ(0, installer.will_start_called());
+    EXPECT_EQ(0, installer.will_redirect_called());
+    EXPECT_EQ(0, installer.will_fail_called());
+    EXPECT_EQ(0, installer.will_process_called());
+    EXPECT_EQ(1, installer.will_commit_without_url_loader_called());
+
+    // Cancel the deferred navigation.
+    installer.navigation_throttle()->CancelNavigation(
+        NavigationThrottle::CANCEL_AND_IGNORE);
+
+    // Wait for the end of the navigation.
+    navigation_observer.Wait();
+
+    EXPECT_TRUE(observer.is_same_document());
+    EXPECT_FALSE(observer.has_committed());
+    EXPECT_FALSE(observer.was_redirected());
+    EXPECT_TRUE(observer.is_error());
+  }
+
+  // about:blank
+  {
+    TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
+    NavigationHandleObserver observer(shell()->web_contents(), about_blank_url);
+    TestNavigationThrottleInstaller installer(
+        shell()->web_contents(), NavigationThrottle::DEFER,
+        NavigationThrottle::DEFER, NavigationThrottle::DEFER,
+        NavigationThrottle::DEFER, NavigationThrottle::DEFER);
+
+    shell()->LoadURL(about_blank_url);
+
+    // Wait for WillCommitWithoutUrlLoader.
+    installer.WaitForThrottleWillCommitWithoutUrlLoader();
+    EXPECT_EQ(0, installer.will_start_called());
+    EXPECT_EQ(0, installer.will_redirect_called());
+    EXPECT_EQ(0, installer.will_fail_called());
+    EXPECT_EQ(0, installer.will_process_called());
+    EXPECT_EQ(1, installer.will_commit_without_url_loader_called());
+
+    // Cancel the deferred navigation.
+    installer.navigation_throttle()->CancelNavigation(
+        NavigationThrottle::CANCEL_AND_IGNORE);
+
+    // Wait for the end of the navigation.
+    navigation_observer.Wait();
+
+    EXPECT_FALSE(observer.is_same_document());
+    EXPECT_FALSE(observer.has_committed());
+    EXPECT_FALSE(observer.was_redirected());
+    EXPECT_TRUE(observer.is_error());
+  }
 }
 
 // Ensure that a NavigationThrottle can block the navigation and collapse the
@@ -1220,13 +1491,15 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleBlockAndCollapse) {
           std::make_unique<TestDeferringNavigationThrottleInstaller>(
               shell()->web_contents(), test_case.will_start_result,
               test_case.will_redirect_result, NavigationThrottle::PROCEED,
-              NavigationThrottle::PROCEED, blocked_subframe_url);
+              NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
+              blocked_subframe_url);
     } else {
       subframe_throttle_installer =
           std::make_unique<TestNavigationThrottleInstaller>(
               shell()->web_contents(), test_case.will_start_result,
               test_case.will_redirect_result, NavigationThrottle::PROCEED,
-              NavigationThrottle::PROCEED, blocked_subframe_url);
+              NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
+              blocked_subframe_url);
     }
 
     {
@@ -1289,7 +1562,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   TestNavigationThrottleInstaller subframe_throttle_installer(
       shell()->web_contents(), NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
       NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-      NavigationThrottle::PROCEED, blocked_subframe_url);
+      NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
+      blocked_subframe_url);
 
   {
     SCOPED_TRACE("Initial navigation blocked on main frame load.");
@@ -1333,7 +1607,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   TestNavigationThrottleInstaller installer(
       shell()->web_contents(), NavigationThrottle::PROCEED,
       NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-      NavigationThrottle::PROCEED);
+      NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
   TestNavigationManager main_manager(shell()->web_contents(), main_url);
   TestNavigationManager b_manager(shell()->web_contents(), b_url);
   TestNavigationManager c_manager(shell()->web_contents(), c_url);
@@ -1385,7 +1659,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   TestNavigationThrottleInstaller installer(
       shell()->web_contents(), NavigationThrottle::PROCEED,
       NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-      NavigationThrottle::PROCEED);
+      NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
   TestNavigationManager link_manager(shell()->web_contents(), link_url);
   NavigationStartUrlRecorder url_recorder(shell()->web_contents());
 
@@ -1418,7 +1692,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   TestNavigationThrottleInstaller installer(
       shell()->web_contents(), NavigationThrottle::PROCEED,
       NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-      NavigationThrottle::PROCEED);
+      NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
   TestNavigationManager post_manager(shell()->web_contents(), post_url);
   NavigationStartUrlRecorder url_recorder(shell()->web_contents());
 
@@ -1456,7 +1730,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     TestNavigationThrottleInstaller installer(
         shell()->web_contents(), NavigationThrottle::CANCEL_AND_IGNORE,
         NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-        NavigationThrottle::PROCEED);
+        NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
     NavigationHandleObserver observer(shell()->web_contents(), kUrl);
 
     // Try to navigate to the url. The navigation should be canceled and the
@@ -1471,7 +1745,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     TestNavigationThrottleInstaller installer(
         shell()->web_contents(), NavigationThrottle::PROCEED,
         NavigationThrottle::CANCEL_AND_IGNORE, NavigationThrottle::PROCEED,
-        NavigationThrottle::PROCEED);
+        NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
     NavigationHandleObserver observer(shell()->web_contents(), kRedirectingUrl);
 
     // Try to navigate to the url. The navigation should be canceled and the
@@ -1486,7 +1760,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     TestNavigationThrottleInstaller installer(
         shell()->web_contents(), NavigationThrottle::PROCEED,
         NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-        NavigationThrottle::CANCEL_AND_IGNORE);
+        NavigationThrottle::CANCEL_AND_IGNORE, NavigationThrottle::PROCEED);
     NavigationHandleObserver observer(shell()->web_contents(), kUrl);
 
     // Try to navigate to the url. The navigation should be canceled and the
@@ -1501,7 +1775,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     TestNavigationThrottleInstaller installer(
         shell()->web_contents(), NavigationThrottle::BLOCK_REQUEST,
         NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-        NavigationThrottle::PROCEED);
+        NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
     NavigationHandleObserver observer(shell()->web_contents(), kUrl);
 
     // Try to navigate to the url. The navigation should be canceled and the
@@ -1515,7 +1789,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   TestNavigationThrottleInstaller installer(
       shell()->web_contents(), NavigationThrottle::PROCEED,
       NavigationThrottle::BLOCK_REQUEST, NavigationThrottle::PROCEED,
-      NavigationThrottle::PROCEED);
+      NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
   NavigationHandleObserver observer(shell()->web_contents(), kRedirectingUrl);
 
   // Try to navigate to the url. The navigation should be canceled and the
@@ -1545,7 +1819,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   TestNavigationThrottleInstaller installer(
       shell()->web_contents(), NavigationThrottle::CANCEL_AND_IGNORE,
       NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-      NavigationThrottle::PROCEED);
+      NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
 
   EXPECT_FALSE(NavigateToURL(shell(), kUrl2));
 }
@@ -1646,7 +1920,7 @@ class NavigationRequestHttpsUpgradeBrowserTest
     TestNavigationThrottleInstaller installer(
         shell()->web_contents(), NavigationThrottle::PROCEED,
         NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-        NavigationThrottle::PROCEED);
+        NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
     TestNavigationManager navigation_manager(shell()->web_contents(),
                                              iframe_secure_url);
 
@@ -1757,6 +2031,9 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
 
 // Ensure that browser-initiated same-document navigations are detected and
 // don't issue network requests.  See crbug.com/663777.
+// Browser-initiated same-document navigations should trigger a
+// WillCommitWithoutUrlLoader() callback, instead of the WillStartRequest()
+// and WillProcessResponse() callbacks used when there is a network request.
 IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
                        SameDocumentBrowserInitiatedNoReload) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
@@ -1768,11 +2045,12 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     TestNavigationThrottleInstaller installer(
         shell()->web_contents(), NavigationThrottle::PROCEED,
         NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-        NavigationThrottle::PROCEED);
+        NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
     NavigationHandleObserver observer(shell()->web_contents(), url);
     EXPECT_TRUE(NavigateToURL(shell(), url));
     EXPECT_EQ(1, installer.will_start_called());
     EXPECT_EQ(1, installer.will_process_called());
+    EXPECT_EQ(0, installer.will_commit_without_url_loader_called());
     EXPECT_FALSE(observer.is_same_document());
   }
 
@@ -1781,11 +2059,12 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     TestNavigationThrottleInstaller installer(
         shell()->web_contents(), NavigationThrottle::PROCEED,
         NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-        NavigationThrottle::PROCEED);
+        NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
     NavigationHandleObserver observer(shell()->web_contents(), url_fragment_1);
     EXPECT_TRUE(NavigateToURL(shell(), url_fragment_1));
     EXPECT_EQ(0, installer.will_start_called());
     EXPECT_EQ(0, installer.will_process_called());
+    EXPECT_EQ(1, installer.will_commit_without_url_loader_called());
     EXPECT_TRUE(observer.is_same_document());
   }
 
@@ -1794,11 +2073,12 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     TestNavigationThrottleInstaller installer(
         shell()->web_contents(), NavigationThrottle::PROCEED,
         NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-        NavigationThrottle::PROCEED);
+        NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
     NavigationHandleObserver observer(shell()->web_contents(), url_fragment_2);
     EXPECT_TRUE(NavigateToURL(shell(), url_fragment_2));
     EXPECT_EQ(0, installer.will_start_called());
     EXPECT_EQ(0, installer.will_process_called());
+    EXPECT_EQ(1, installer.will_commit_without_url_loader_called());
     EXPECT_TRUE(observer.is_same_document());
   }
 
@@ -1807,11 +2087,12 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     TestNavigationThrottleInstaller installer(
         shell()->web_contents(), NavigationThrottle::PROCEED,
         NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-        NavigationThrottle::PROCEED);
+        NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
     NavigationHandleObserver observer(shell()->web_contents(), url_fragment_2);
     EXPECT_TRUE(NavigateToURL(shell(), url_fragment_2));
     EXPECT_EQ(1, installer.will_start_called());
     EXPECT_EQ(1, installer.will_process_called());
+    EXPECT_EQ(0, installer.will_commit_without_url_loader_called());
     EXPECT_FALSE(observer.is_same_document());
   }
 
@@ -1820,11 +2101,12 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     TestNavigationThrottleInstaller installer(
         shell()->web_contents(), NavigationThrottle::PROCEED,
         NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-        NavigationThrottle::PROCEED);
+        NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
     NavigationHandleObserver observer(shell()->web_contents(), url);
     EXPECT_TRUE(NavigateToURL(shell(), url));
     EXPECT_EQ(1, installer.will_start_called());
     EXPECT_EQ(1, installer.will_process_called());
+    EXPECT_EQ(0, installer.will_commit_without_url_loader_called());
     EXPECT_FALSE(observer.is_same_document());
   }
 }
@@ -1900,7 +2182,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, BlockedOnRedirect) {
   TestNavigationThrottleInstaller installer(
       shell()->web_contents(), NavigationThrottle::PROCEED,
       NavigationThrottle::BLOCK_REQUEST, NavigationThrottle::PROCEED,
-      NavigationThrottle::PROCEED);
+      NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
   NavigationHandleObserver observer(shell()->web_contents(), kRedirectingUrl);
   NavigationLogger logger(shell()->web_contents());
 
@@ -1970,7 +2252,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   auto installer = std::make_unique<TestNavigationThrottleInstaller>(
       shell()->web_contents(), NavigationThrottle::BLOCK_REQUEST,
       NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-      NavigationThrottle::PROCEED);
+      NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
 
   {
     // A blocked, renderer-initiated navigation in the main frame should commit
@@ -2053,7 +2335,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   installer = std::make_unique<TestNavigationThrottleInstaller>(
       shell()->web_contents(), NavigationThrottle::BLOCK_REQUEST,
       NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-      NavigationThrottle::PROCEED);
+      NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
 
   {
     // A blocked, browser-initiated navigation should commit an error page in a
@@ -2094,7 +2376,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     installer = std::make_unique<TestNavigationThrottleInstaller>(
         shell()->web_contents(), NavigationThrottle::BLOCK_REQUEST,
         NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-        NavigationThrottle::PROCEED);
+        NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
 
     content::RenderFrameHost* rfh =
         shell()->web_contents()->GetPrimaryMainFrame();
@@ -2312,8 +2594,9 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
                 new TestNavigationThrottle(
                     handle, NavigationThrottle::DEFER,
                     NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-                    NavigationThrottle::PROCEED, base::DoNothing(),
-                    base::DoNothing(), base::DoNothing(), base::DoNothing()));
+                    NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
+                    base::DoNothing(), base::DoNothing(), base::DoNothing(),
+                    base::DoNothing(), base::DoNothing()));
             client_throttle = throttle.get();
             throttles.push_back(std::move(throttle));
             return throttles;
@@ -2324,7 +2607,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   // before browser client throttles are registered.
   TestNavigationThrottleInstaller test_throttle_installer(
       web_contents, NavigationThrottle::DEFER, NavigationThrottle::PROCEED,
-      NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
+      NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
+      NavigationThrottle::PROCEED);
 
   // Start navigating.
   TestNavigationManager manager(shell()->web_contents(), simple_url);
@@ -2374,7 +2658,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, BlockedRequestAfterWebUI) {
   TestNavigationThrottleInstaller installer(
       web_contents, NavigationThrottle::BLOCK_REQUEST,
       NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-      NavigationThrottle::PROCEED);
+      NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
   NavigationHandleObserver commit_observer(web_contents, blocked_url);
   EXPECT_FALSE(NavigateToURL(shell(), blocked_url));
   NavigationEntry* last_committed =
@@ -2513,7 +2797,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
       TestNavigationThrottleInstaller installer(
           shell()->web_contents(), NavigationThrottle::PROCEED,
           NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-          NavigationThrottle::PROCEED);
+          NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
 
       NavigateIframeToURL(shell()->web_contents(), "child0", iframe_url);
 
@@ -2809,7 +3093,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestDownloadBrowserTest,
   TestNavigationThrottleInstaller installer(
       shell()->web_contents(), NavigationThrottle::CANCEL,
       NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
-      NavigationThrottle::PROCEED);
+      NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
 
   EXPECT_TRUE(NavigateToURLAndExpectNoCommit(shell(), url));
   EXPECT_FALSE(observer.has_committed());
@@ -2836,7 +3120,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestDownloadBrowserTest,
   TestNavigationThrottleInstaller installer(
       shell()->web_contents(), NavigationThrottle::PROCEED,
       NavigationThrottle::CANCEL, NavigationThrottle::PROCEED,
-      NavigationThrottle::PROCEED);
+      NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
 
   EXPECT_FALSE(NavigateToURL(shell(), redirect_url));
 
@@ -3555,7 +3839,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
       NavigationThrottle::PROCEED /* will_start_result */,
       NavigationThrottle::PROCEED /* will_redirect_result */,
       NavigationThrottle::DEFER /* will_fail_result */,
-      NavigationThrottle::PROCEED /* will_process_result */);
+      NavigationThrottle::PROCEED /* will_process_result */,
+      NavigationThrottle::PROCEED /* will_commit_without_url_loader_result */);
 
   // Start a navigation to foo.com that will result in an error.
   shell()->web_contents()->GetController().LoadURL(

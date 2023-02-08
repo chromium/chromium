@@ -159,6 +159,11 @@ class CONTENT_EXPORT NavigationRequest
     // asynchronous.
     WILL_PROCESS_RESPONSE,
 
+    // The navigation does not require a request/response. Wait only for
+    // NavigationThrottles to finish before calling CommitNavigation(). This
+    // will only be asynchronous if a throttle defers the navigation.
+    WILL_COMMIT_WITHOUT_URL_LOADER,
+
     // The browser process has asked the renderer to commit the response
     // and is waiting for acknowledgement that it has been committed.
     READY_TO_COMMIT,
@@ -899,8 +904,9 @@ class CONTENT_EXPORT NavigationRequest
   // Note #2: Even though "javascript:" URL and RendererDebugURL fit very well
   // in this category, they don't use the NavigationRequest.
   //
-  // Note #3: Navigations that do not use a URL loader also bypass
-  //          NavigationThrottle.
+  // Note #3: Navigations that do not use a URL loader do not send the usual
+  // set of callbacks to NavigationThrottle. Instead, they send a single
+  // separate callback, WillCommitWithoutUrlLoader().
   bool NeedsUrlLoader();
 
   network::mojom::PrivateNetworkRequestPolicy private_network_request_policy()
@@ -1234,6 +1240,8 @@ class CONTENT_EXPORT NavigationRequest
   void OnFailureChecksComplete(NavigationThrottle::ThrottleCheckResult result);
   void OnWillProcessResponseChecksComplete(
       NavigationThrottle::ThrottleCheckResult result);
+  void OnWillCommitWithoutUrlLoaderChecksComplete(
+      NavigationThrottle::ThrottleCheckResult result);
 
   // Runs CommitDeferringConditions.
   //
@@ -1424,6 +1432,8 @@ class CONTENT_EXPORT NavigationRequest
       NavigationThrottle::ThrottleCheckResult result);
   void OnWillProcessResponseProcessed(
       NavigationThrottle::ThrottleCheckResult result);
+  void OnWillCommitWithoutUrlLoaderProcessed(
+      NavigationThrottle::ThrottleCheckResult result);
 
   void CancelDeferredNavigationInternal(
       NavigationThrottle::ThrottleCheckResult result);
@@ -1454,6 +1464,10 @@ class CONTENT_EXPORT NavigationRequest
   // If the result is PROCEED, then 'ReadyToCommitNavigation' will be called
   // just before calling |callback|.
   void WillProcessResponse();
+
+  // Called when no URLRequest will be needed to perform this navigation, just
+  // before commit.
+  void WillCommitWithoutUrlLoader();
 
   // Checks for attempts to navigate to a page that is already referenced more
   // than once in the frame's ancestors.  This is a helper function used by

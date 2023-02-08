@@ -37,6 +37,11 @@ TestNavigationThrottle::WillProcessResponse() {
   return ProcessMethod(WILL_PROCESS_RESPONSE);
 }
 
+NavigationThrottle::ThrottleCheckResult
+TestNavigationThrottle::WillCommitWithoutUrlLoader() {
+  return ProcessMethod(WILL_COMMIT_WITHOUT_URL_LOADER);
+}
+
 const char* TestNavigationThrottle::GetNameForLogging() {
   return "TestNavigationThrottle";
 }

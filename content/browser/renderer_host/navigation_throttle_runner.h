@@ -28,6 +28,7 @@ class CONTENT_EXPORT NavigationThrottleRunner {
     WillRedirectRequest = 2,
     WillFailRequest = 3,
     WillProcessResponse = 4,
+    WillCommitWithoutUrlLoader = 5,
   };
 
   class Delegate {
@@ -64,7 +65,15 @@ class CONTENT_EXPORT NavigationThrottleRunner {
   // deferring NavigationThrottle do the resuming.
   void CallResumeForTesting();
 
+  // Registers the appropriate NavigationThrottles are added for a "standard"
+  // navigation (i.e., one with a URLLoader that goes through the
+  // WillSendRequest/WillProcessResponse callback sequence).
   void RegisterNavigationThrottles();
+
+  // Registers the appropriate NavigationThrottles for a navigation that can
+  // immediately commit because no URLLoader is required (about:blank,
+  // about:srcdoc, and most same-document navigations).
+  void RegisterNavigationThrottlesForCommitWithoutUrlLoader();
 
   // Returns the throttle that is currently deferring the navigation (i.e. the
   // throttle at index |next_index_ -1|). If the handle is not deferred, returns
