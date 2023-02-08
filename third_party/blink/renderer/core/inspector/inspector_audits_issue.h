@@ -37,67 +37,6 @@ class InspectorIssue;
 }
 }  // namespace protocol
 
-// Please keep this alphabetized.
-enum class DeprecationIssueType {
-  kAuthorizationCoveredByWildcard,
-  kCanRequestURLHTTPContainingNewline,
-  kChromeLoadTimesConnectionInfo,
-  kChromeLoadTimesFirstPaintAfterLoadTime,
-  kChromeLoadTimesWasAlternateProtocolAvailable,
-  kCookieWithTruncatingChar,
-  kCrossOriginAccessBasedOnDocumentDomain,
-  kCrossOriginWindowAlert,
-  kCrossOriginWindowConfirm,
-  kCSSSelectorInternalMediaControlsOverlayCastButton,
-  kDeprecationExample,
-  kDocumentDomainSettingWithoutOriginAgentClusterHeader,
-  kEventPath,
-  kExpectCTHeader,
-  kGeolocationInsecureOrigin,
-  kGeolocationInsecureOriginDeprecatedNotRemoved,
-  kGetUserMediaInsecureOrigin,
-  kHostCandidateAttributeGetter,
-  kIdentityInCanMakePaymentEvent,
-  kInsecurePrivateNetworkSubresourceRequest,
-  kLocalCSSFileExtensionRejected,
-  kMediaSourceAbortRemove,
-  kMediaSourceDurationTruncatingBuffered,
-  kNoSysexWebMIDIWithoutPermission,
-  kNotDeprecated,
-  kNotificationInsecureOrigin,
-  kNotificationPermissionRequestedIframe,
-  kObsoleteCreateImageBitmapImageOrientationNone,
-  kObsoleteWebRtcCipherSuite,
-  kOpenWebDatabaseInsecureContext,
-  kOverflowVisibleOnReplacedElement,
-  kPaymentInstruments,
-  kPaymentRequestCSPViolation,
-  kPersistentQuotaType,
-  kPictureSourceSrc,
-  kPrefixedCancelAnimationFrame,
-  kPrefixedRequestAnimationFrame,
-  kPrefixedStorageInfo,
-  kPrefixedVideoDisplayingFullscreen,
-  kPrefixedVideoEnterFullScreen,
-  kPrefixedVideoEnterFullscreen,
-  kPrefixedVideoExitFullScreen,
-  kPrefixedVideoExitFullscreen,
-  kPrefixedVideoSupportsFullscreen,
-  kRangeExpand,
-  kRequestedSubresourceWithEmbeddedCredentials,
-  kRTCConstraintEnableDtlsSrtpFalse,
-  kRTCConstraintEnableDtlsSrtpTrue,
-  kRTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics,
-  kRTCPeerConnectionSdpSemanticsPlanB,
-  kRtcpMuxPolicyNegotiate,
-  kSharedArrayBufferConstructedWithoutIsolation,
-  kTextToSpeech_DisallowedByAutoplay,
-  kV8SharedArrayBufferConstructedInExtensionWithoutIsolation,
-  kXHRJSONEncodingDetection,
-  kXMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload,
-  kXRSupportsSession,
-};
-
 enum class RendererCorsIssueCode {
   kDisallowedByMode,
   kCorsDisabledScheme,
@@ -194,7 +133,7 @@ class CORE_EXPORT AuditsIssue {
   // `execution_context` is used to extract the affected frame and source.
   // `type` is the enum used to differentiate messages.
   static void ReportDeprecationIssue(ExecutionContext* execution_context,
-                                     DeprecationIssueType type);
+                                     String type);
 
   static void ReportClientHintIssue(LocalDOMWindow* local_dom_window,
                                     ClientHintIssueReason reason);

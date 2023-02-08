@@ -60,6 +60,8 @@ namespace devtools_instrumentation {
 
 namespace {
 
+const char kPrivacySandboxExtensionsAPI[] = "PrivacySandboxExtensionsAPI";
+
 template <typename Handler, typename... MethodArgs, typename... Args>
 void DispatchToAgents(DevToolsAgentHostImpl* host,
                       void (Handler::*method)(MethodArgs...),
@@ -283,12 +285,11 @@ BuildFederatedAuthRequestIssue(
   return issue;
 }
 
-protocol::Audits::DeprecationIssueType DeprecationIssueTypeToProtocol(
+const char* DeprecationIssueTypeToProtocol(
     blink::mojom::DeprecationIssueType error_type) {
   switch (error_type) {
     case blink::mojom::DeprecationIssueType::kPrivacySandboxExtensionsAPI:
-      return protocol::Audits::DeprecationIssueTypeEnum::
-          PrivacySandboxExtensionsAPI;
+      return kPrivacySandboxExtensionsAPI;
   }
 }
 

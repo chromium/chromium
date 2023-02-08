@@ -25,23 +25,24 @@ namespace blink {
 
 namespace {
 
+const char kNotDeprecated[] = "NotDeprecated";
+
 class DeprecationInfo final {
  public:
-  static const DeprecationInfo WithTranslation(
-      WebFeature feature,
-      const DeprecationIssueType& type) {
+  static const DeprecationInfo WithTranslation(WebFeature feature,
+                                               const String& type) {
     return DeprecationInfo(feature, type);
   }
 
   static const DeprecationInfo NotDeprecated(WebFeature feature) {
-    return DeprecationInfo(feature, DeprecationIssueType::kNotDeprecated);
+    return DeprecationInfo(feature, kNotDeprecated);
   }
 
   const WebFeature feature_;
-  const DeprecationIssueType type_;
+  const String type_;
 
  private:
-  DeprecationInfo(WebFeature feature, DeprecationIssueType type)
+  DeprecationInfo(WebFeature feature, String type)
       : feature_(feature), type_(type) {}
 };
 
@@ -49,11 +50,11 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
   // Please keep this alphabetized by DeprecationIssueType.
   switch (feature) {
     case WebFeature::kAuthorizationCoveredByWildcard:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kAuthorizationCoveredByWildcard);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "AuthorizationCoveredByWildcard");
     case WebFeature::kCanRequestURLHTTPContainingNewline:
       return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kCanRequestURLHTTPContainingNewline);
+          feature, "CanRequestURLHTTPContainingNewline");
     case WebFeature::kChromeLoadTimesCommitLoadTime:
     case WebFeature::kChromeLoadTimesConnectionInfo:
     case WebFeature::kChromeLoadTimesFinishDocumentLoadTime:
@@ -61,188 +62,163 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kChromeLoadTimesNavigationType:
     case WebFeature::kChromeLoadTimesRequestTime:
     case WebFeature::kChromeLoadTimesStartLoadTime:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kChromeLoadTimesConnectionInfo);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "ChromeLoadTimesConnectionInfo");
     case WebFeature::kChromeLoadTimesFirstPaintAfterLoadTime:
     case WebFeature::kChromeLoadTimesFirstPaintTime:
       return DeprecationInfo::WithTranslation(
-          feature,
-          DeprecationIssueType::kChromeLoadTimesFirstPaintAfterLoadTime);
+          feature, "ChromeLoadTimesFirstPaintAfterLoadTime");
     case WebFeature::kChromeLoadTimesWasAlternateProtocolAvailable:
     case WebFeature::kChromeLoadTimesWasFetchedViaSpdy:
     case WebFeature::kChromeLoadTimesNpnNegotiatedProtocol:
     case WebFeature::kChromeLoadTimesWasNpnNegotiated:
       return DeprecationInfo::WithTranslation(
-          feature,
-          DeprecationIssueType::kChromeLoadTimesWasAlternateProtocolAvailable);
+          feature, "ChromeLoadTimesWasAlternateProtocolAvailable");
     case WebFeature::kCookieWithTruncatingChar:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kCookieWithTruncatingChar);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "CookieWithTruncatingChar");
     case WebFeature::kCrossOriginAccessBasedOnDocumentDomain:
       return DeprecationInfo::WithTranslation(
-          feature,
-          DeprecationIssueType::kCrossOriginAccessBasedOnDocumentDomain);
+          feature, "CrossOriginAccessBasedOnDocumentDomain");
     case WebFeature::kCrossOriginWindowAlert:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kCrossOriginWindowAlert);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "CrossOriginWindowAlert");
     case WebFeature::kCrossOriginWindowConfirm:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kCrossOriginWindowConfirm);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "CrossOriginWindowConfirm");
     case WebFeature::kCSSSelectorInternalMediaControlsOverlayCastButton:
       return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::
-                       kCSSSelectorInternalMediaControlsOverlayCastButton);
+          feature, "CSSSelectorInternalMediaControlsOverlayCastButton");
     case WebFeature::kDeprecationExample:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kDeprecationExample);
+      return DeprecationInfo::WithTranslation(feature, "DeprecationExample");
     case WebFeature::kDocumentDomainSettingWithoutOriginAgentClusterHeader:
       return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::
-                       kDocumentDomainSettingWithoutOriginAgentClusterHeader);
+          feature, "DocumentDomainSettingWithoutOriginAgentClusterHeader");
     case WebFeature::kEventPath:
-      return DeprecationInfo::WithTranslation(feature,
-                                              DeprecationIssueType::kEventPath);
+      return DeprecationInfo::WithTranslation(feature, "EventPath");
     case WebFeature::kExpectCTHeader:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kExpectCTHeader);
+      return DeprecationInfo::WithTranslation(feature, "ExpectCTHeader");
     // Powerful features on insecure origins (https://goo.gl/rStTGz)
     case WebFeature::kGeolocationInsecureOrigin:
     case WebFeature::kGeolocationInsecureOriginIframe:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kGeolocationInsecureOrigin);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "GeolocationInsecureOrigin");
     case WebFeature::kGeolocationInsecureOriginDeprecatedNotRemoved:
     case WebFeature::kGeolocationInsecureOriginIframeDeprecatedNotRemoved:
       return DeprecationInfo::WithTranslation(
-          feature,
-          DeprecationIssueType::kGeolocationInsecureOriginDeprecatedNotRemoved);
+          feature, "GeolocationInsecureOriginDeprecatedNotRemoved");
     case WebFeature::kGetUserMediaInsecureOrigin:
     case WebFeature::kGetUserMediaInsecureOriginIframe:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kGetUserMediaInsecureOrigin);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "GetUserMediaInsecureOrigin");
     case WebFeature::kHostCandidateAttributeGetter:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kHostCandidateAttributeGetter);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "HostCandidateAttributeGetter");
     case WebFeature::kAddressSpacePrivateNonSecureContextEmbeddedLocal:
     case WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocal:
     case WebFeature::kAddressSpacePublicNonSecureContextEmbeddedPrivate:
       return DeprecationInfo::WithTranslation(
-          feature,
-          DeprecationIssueType::kInsecurePrivateNetworkSubresourceRequest);
+          feature, "InsecurePrivateNetworkSubresourceRequest");
     case WebFeature::kLocalCSSFileExtensionRejected:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kLocalCSSFileExtensionRejected);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "LocalCSSFileExtensionRejected");
     case WebFeature::kMediaSourceAbortRemove:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kMediaSourceAbortRemove);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "MediaSourceAbortRemove");
     case WebFeature::kMediaSourceDurationTruncatingBuffered:
       return DeprecationInfo::WithTranslation(
-          feature,
-          DeprecationIssueType::kMediaSourceDurationTruncatingBuffered);
+          feature, "MediaSourceDurationTruncatingBuffered");
     case WebFeature::kNoSysexWebMIDIWithoutPermission:
       return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kNoSysexWebMIDIWithoutPermission);
+          feature, "NoSysexWebMIDIWithoutPermission");
     case WebFeature::kNotificationAPIInsecureOriginIframe:
     case WebFeature::kNotificationInsecureOrigin:
     case WebFeature::kNotificationPermissionRequestedInsecureOrigin:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kNotificationInsecureOrigin);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "NotificationInsecureOrigin");
     case WebFeature::kNotificationPermissionRequestedIframe:
       return DeprecationInfo::WithTranslation(
-          feature,
-          DeprecationIssueType::kNotificationPermissionRequestedIframe);
+          feature, "NotificationPermissionRequestedIframe");
     case WebFeature::kObsoleteWebrtcTlsVersion:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kObsoleteWebRtcCipherSuite);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "ObsoleteWebRtcCipherSuite");
     case WebFeature::kObsoleteCreateImageBitmapImageOrientationNone:
       return DeprecationInfo::WithTranslation(
-          feature,
-          DeprecationIssueType::kObsoleteCreateImageBitmapImageOrientationNone);
+          feature, "ObsoleteCreateImageBitmapImageOrientationNone");
     case WebFeature::kPaymentInstruments:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kPaymentInstruments);
+      return DeprecationInfo::WithTranslation(feature, "PaymentInstruments");
     case WebFeature::kPaymentRequestCSPViolation:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kPaymentRequestCSPViolation);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "PaymentRequestCSPViolation");
     case WebFeature::kPersistentQuotaType:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kPersistentQuotaType);
+      return DeprecationInfo::WithTranslation(feature, "PersistentQuotaType");
     case WebFeature::kPictureSourceSrc:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kPictureSourceSrc);
+      return DeprecationInfo::WithTranslation(feature, "PictureSourceSrc");
     case WebFeature::kPrefixedCancelAnimationFrame:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kPrefixedCancelAnimationFrame);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "PrefixedCancelAnimationFrame");
     case WebFeature::kPrefixedRequestAnimationFrame:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kPrefixedRequestAnimationFrame);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "PrefixedRequestAnimationFrame");
     // Quota
     case WebFeature::kPrefixedStorageInfo:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kPrefixedStorageInfo);
+      return DeprecationInfo::WithTranslation(feature, "PrefixedStorageInfo");
     case WebFeature::kPrefixedVideoDisplayingFullscreen:
       return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kPrefixedVideoDisplayingFullscreen);
+          feature, "PrefixedVideoDisplayingFullscreen");
     case WebFeature::kPrefixedVideoEnterFullScreen:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kPrefixedVideoEnterFullScreen);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "PrefixedVideoEnterFullScreen");
     case WebFeature::kPrefixedVideoEnterFullscreen:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kPrefixedVideoEnterFullscreen);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "PrefixedVideoEnterFullscreen");
     case WebFeature::kPrefixedVideoExitFullScreen:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kPrefixedVideoExitFullScreen);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "PrefixedVideoExitFullScreen");
     case WebFeature::kPrefixedVideoExitFullscreen:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kPrefixedVideoExitFullscreen);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "PrefixedVideoExitFullscreen");
     case WebFeature::kPrefixedVideoSupportsFullscreen:
       return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kPrefixedVideoSupportsFullscreen);
+          feature, "PrefixedVideoSupportsFullscreen");
     case WebFeature::kRangeExpand:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kRangeExpand);
+      return DeprecationInfo::WithTranslation(feature, "RangeExpand");
     // Blocked subresource requests:
     case WebFeature::kRequestedSubresourceWithEmbeddedCredentials:
       return DeprecationInfo::WithTranslation(
-          feature,
-          DeprecationIssueType::kRequestedSubresourceWithEmbeddedCredentials);
+          feature, "RequestedSubresourceWithEmbeddedCredentials");
     case WebFeature::kRTCConstraintEnableDtlsSrtpFalse:
       return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kRTCConstraintEnableDtlsSrtpFalse);
+          feature, "RTCConstraintEnableDtlsSrtpFalse");
     case WebFeature::kRTCConstraintEnableDtlsSrtpTrue:
       return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kRTCConstraintEnableDtlsSrtpTrue);
+          feature, "RTCConstraintEnableDtlsSrtpTrue");
     case WebFeature::kRtcpMuxPolicyNegotiate:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kRtcpMuxPolicyNegotiate);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "RtcpMuxPolicyNegotiate");
     case WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation:
       return DeprecationInfo::WithTranslation(
-          feature,
-          DeprecationIssueType::kSharedArrayBufferConstructedWithoutIsolation);
+          feature, "SharedArrayBufferConstructedWithoutIsolation");
     case WebFeature::kTextToSpeech_SpeakDisallowedByAutoplay:
       return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kTextToSpeech_DisallowedByAutoplay);
+          feature, "TextToSpeech_DisallowedByAutoplay");
     case WebFeature::kV8SharedArrayBufferConstructedInExtensionWithoutIsolation:
       return DeprecationInfo::WithTranslation(
-          feature,
-          DeprecationIssueType::
-              kV8SharedArrayBufferConstructedInExtensionWithoutIsolation);
+          feature, "V8SharedArrayBufferConstructedInExtensionWithoutIsolation");
     case WebFeature::kXHRJSONEncodingDetection:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kXHRJSONEncodingDetection);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "XHRJSONEncodingDetection");
     case WebFeature::kXMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload:
       return DeprecationInfo::WithTranslation(
-          feature,
-          DeprecationIssueType::
-              kXMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload);
+          feature, "XMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload");
     case WebFeature::kXRSupportsSession:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kXRSupportsSession);
+      return DeprecationInfo::WithTranslation(feature, "XRSupportsSession");
     case WebFeature::kIdentityInCanMakePaymentEvent:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kIdentityInCanMakePaymentEvent);
+      return DeprecationInfo::WithTranslation(feature,
+                                              "IdentityInCanMakePaymentEvent");
     case WebFeature::kExplicitOverflowVisibleOnReplacedElement:
       return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kOverflowVisibleOnReplacedElement);
+          feature, "OverflowVisibleOnReplacedElement");
     default:
       return DeprecationInfo::NotDeprecated(feature);
   }
@@ -334,8 +310,7 @@ void Deprecation::CountDeprecation(ExecutionContext* context,
 
 // static
 bool Deprecation::IsDeprecated(WebFeature feature) {
-  return GetDeprecationInfo(feature).type_ !=
-         DeprecationIssueType::kNotDeprecated;
+  return GetDeprecationInfo(feature).type_ != kNotDeprecated;
 }
 
 }  // namespace blink

@@ -13,6 +13,12 @@ import sys
 
 USE_PYTHON3 = True
 
+# Deprecations in this list have no `WebFeature`s to generate code from as they
+# are not dispatched within the renderer. If this list starts to grow we should
+# add more formal support.
+EXEMPTED_FROM_RENDERER_GENERATION = {
+    "PrivacySandboxExtensionsAPI": True,
+}
 
 # pyright: reportMissingImports=false
 def _LoadDeprecation(input_api, filename):
@@ -78,11 +84,12 @@ def _CheckDeprecation(input_api, output_api):
                         long_text='\n'.join(diff))
                 ]
         else:
-            return [
-                output_api.PresubmitError(
-                    'deprecation.json5 items must all contain a non-empty list of "web_features".'
-                )
-            ]
+            if deprecation['name'] not in EXEMPTED_FROM_RENDERER_GENERATION:
+                return [
+                    output_api.PresubmitError(
+                        'deprecation.json5 items must all contain a non-empty list of "web_features".'
+                    )
+                ]
         if 'chrome_status_feature' in deprecation:
             if not deprecation['chrome_status_feature']:
                 return [

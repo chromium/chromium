@@ -432,6 +432,14 @@
       ],
     },
     {
+      name: "PrivacySandboxExtensionsAPI",
+      message: "We’re deprecating the API `chrome.privacy.websites.privacySandboxEnabled`, though it will remain active for backward compatibility until release M113. Instead, please use `chrome.privacy.websites.topicsEnabled`, `chrome.privacy.websites.fledgeEnabled` and `chrome.privacy.websites.adMeasurementEnabled`. See https://developer.chrome.com/docs/extensions/reference/privacy/#property-websites-privacySandboxEnabled.",
+      translation_note: "Warning displayed to developers that the API `chrome.privacy.websites.privacySandboxEnabled` is being deprecated in favour of three new more granular APIs: topicsEnabled, FledgeEnabled and adMeasurementEnabled. The `privacySandboxEnabled` API allowed extensions to control the homologous Chrome Setting. The existing Chrome Setting for Privacy Sandbox is also going away in favor of more granular settings that are matched by the new extensions APIs- topicsEnabled, FledgeEnabled and adMeasurementEnabled.",
+      web_features: [
+        // This deprecation is unique and is not dispatched from the renderer.
+      ],
+    },
+    {
       name: "RangeExpand",
       message: "Range.expand() is deprecated. Please use Selection.modify() instead.",
       translation_note: "Standard message when one web API is deprecated in favor of another.",

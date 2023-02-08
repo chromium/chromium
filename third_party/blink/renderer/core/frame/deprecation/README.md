@@ -27,15 +27,7 @@ Add a new dictionary to `data` like follows:
 Both `chrome_status_feature` and `milestone` are optional.
 More than one `web_features` can be added if needed.
 
-### (3) [DeprecationIssueType](/third_party/blink/renderer/core/inspector/inspector_audits_issue.h)
-
-Add an enum key called `kFeatureName`.
-
-### (4) [DeprecationIssueType](/third_party/blink/public/devtools_protocol/browser_protocol.pdl)
-
-Add an enum key called `FeatureName`.
-
-## (5) [GetDeprecationInfo](/third_party/blink/renderer/core/frame/deprecation/deprecation.cc)
+## (3) [GetDeprecationInfo](/third_party/blink/renderer/core/frame/deprecation/deprecation.cc)
 
 The new case statement should look like:
 ```
@@ -43,26 +35,17 @@ case WebFeature::kFeatureName:
   return DeprecationInfo::WithTranslation(feature, DeprecationIssueType::kFeatureName);
 ```
 
-## (6) [AuditsIssue::ReportDeprecationIssue](/third_party/blink/renderer/core/inspector/inspector_audits_issue.cc)
-
-The new case statement should look like:
-```
-case DeprecationIssueType::kFeatureName:
-  type = protocol::Audits::DeprecationIssueTypeEnum::FeatureName;
-  break;
-```
-
-## (7) Count the deprecation
+## (4) Count the deprecation
 
 Pick one (or both if needed) of the following methods.
 
-### (7a) Call `Deprecation::CountDeprecation`
+### (4a) Call `Deprecation::CountDeprecation`
 
 This function requires a subclass of `ExecutionContext` and your new `WebFeature` to be passed in.
 If you're already counting use with an existing `WebFeature`, you should swap `LocalDOMWindow::CountUse` with `ExecutionContext::CountDeprecation` as it will bump the counter for you.
 If you only care about cross-site iframes, you can call `Deprecation::CountDeprecationCrossOriginIframe`.
 
-### (7b) Add `DeprecateAs` to the relevant IDL
+### (4b) Add `DeprecateAs` to the relevant IDL
 
 The [`DeprecateAs`](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/third_party/blink/renderer/bindings/IDLExtendedAttributes.md#DeprecateAs_m_a_c) attribute can be added to the IDL as follows:
 
@@ -70,7 +53,7 @@ The [`DeprecateAs`](https://chromium.googlesource.com/chromium/src/+/refs/heads/
 [DeprecateAs=FeatureName] void myDeprecatedFunction();
 ```
 
-## (8) Test
+## (5) Test
 
 Please do not skip this step! Examples can be found in:
 (/third_party/blink/web_tests/http/tests/inspector-protocol/issues/deprecation-issue.js)
@@ -80,11 +63,11 @@ Tests in this folder can be run like:
 third_party/blink/tools/run_web_tests.py http/tests/inspector-protocol/issues
 ```
 
-## (9) Merge steps 1-8 in a `chromium/src` CL
+## (6) Merge steps 1-5 in a `chromium/src` CL
 
 Please tag deprecation-devtool-issues@chromium.org for review.
 
-## (10) Manually roll dependencies from `chromium/src` to `devtools/devtools-frontend`
+## (7) Manually roll dependencies from `chromium/src` to `devtools/devtools-frontend`
 
 [Check out](https://chromium.googlesource.com/devtools/devtools-frontend/+/refs/heads/main/docs/workflows.md) `devtools/devtools-frontend` on the same dev machine where you have `chromium/src` checked out.
 Check new branch out in `devtools/devtools-frontend`, and run (adjusting directories as needed):
@@ -92,17 +75,17 @@ Check new branch out in `devtools/devtools-frontend`, and run (adjusting directo
 ./scripts/deps/roll_deps.py ~/chromium/src ~/devtools/devtools-frontend
 npm run generate-protocol-resources
 ```
-This pushes the change from (9) into `devtools/devtools-frontend` so you can use it in (13).
+This pushes the change from (6) into `devtools/devtools-frontend` so you can use it in (10).
 
-## (11) Merge step 7 in a `devtools/devtools-frontend` CL
+## (8) Merge step 7 in a `devtools/devtools-frontend` CL
 
 Please tag deprecation-devtool-issues@chromium.org for review.
 
-## (12) Wait for automatic roll dependencies from `devtools/devtools-frontend` to `chromium/src`
+## (9) Wait for automatic roll dependencies from `devtools/devtools-frontend` to `chromium/src`
 
 This will be done by the [AutoRoller](https://autoroll.skia.org/r/devtools-frontend-chromium) within a few hours.
 
-## (13) Build Chrome from tip-of-trunk
+## (10) Build Chrome from tip-of-trunk
 
 Verify everything is working as expected.
 If something is broken and you can't figure out why, reach out to deprecation-devtool-issues@chromium.org.
