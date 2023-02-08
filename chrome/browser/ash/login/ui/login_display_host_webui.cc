@@ -550,8 +550,6 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
   }
 
   DVLOG(1) << "Starting wizard, first_screen: " << first_screen;
-  oobe_progress_bar_visible_ = !StartupUtils::IsDeviceRegistered();
-  SetOobeProgressBarVisible(oobe_progress_bar_visible_);
 
   // Create and show the wizard.
   if (wizard_controller_) {
@@ -585,10 +583,6 @@ void LoginDisplayHostWebUI::OnStartSignInScreen() {
   DVLOG(1) << "Starting sign in screen";
   CreateExistingUserController();
 
-  // TODO(crbug.com/784495): This is always false, since
-  // LoginDisplayHost::StartSignInScreen marks the device as registered.
-  oobe_progress_bar_visible_ = !StartupUtils::IsDeviceRegistered();
-  SetOobeProgressBarVisible(oobe_progress_bar_visible_);
   existing_user_controller_->Init(user_manager::UserManager::Get()->GetUsers());
 
   CHECK(login_display_);
@@ -767,6 +761,18 @@ bool LoginDisplayHostWebUI::IsOobeUIDialogVisible() const {
   return true;
 }
 
+bool LoginDisplayHostWebUI::HandleAccelerator(LoginAcceleratorAction action) {
+  if (action == LoginAcceleratorAction::kToggleSystemInfo) {
+    if (!GetOobeUI()) {
+      return false;
+    }
+    GetOobeUI()->GetCoreOobeView()->ToggleSystemInfo();
+    return true;
+  }
+
+  return LoginDisplayHostCommon::HandleAccelerator(action);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // LoginDisplayHostWebUI, private
 
@@ -895,10 +901,6 @@ void LoginDisplayHostWebUI::ResetLoginWindowAndView() {
   // Release wizard controller with the webui and hosting window so that it
   // does not find missing webui handlers in surprise.
   wizard_controller_.reset();
-}
-
-void LoginDisplayHostWebUI::SetOobeProgressBarVisible(bool visible) {
-  GetOobeUI()->ShowOobeUI(visible);
 }
 
 void LoginDisplayHostWebUI::TryToPlayOobeStartupSound() {

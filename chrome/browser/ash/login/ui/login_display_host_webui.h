@@ -108,6 +108,9 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
                                     int* value) const final;
   bool IsWebUIStarted() const final;
 
+  // LoginDisplayHostCommon:
+  bool HandleAccelerator(LoginAcceleratorAction action) final;
+
   // session_manager::SessionManagerObserver:
   void OnNetworkErrorScreenShown() override;
   void OnLoginOrLockScreenVisible() override;
@@ -213,9 +216,6 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
 
   // OOBE and some screens (camera, recovery) controller.
   std::unique_ptr<WizardController> wizard_controller_;
-
-  // Whether progress bar is shown on the OOBE page.
-  bool oobe_progress_bar_visible_ = false;
 
   // Container of the screen we are displaying.
   views::Widget* login_window_ = nullptr;

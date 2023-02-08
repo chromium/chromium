@@ -445,13 +445,6 @@ bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
     return true;
   }
 
-  if (action == LoginAcceleratorAction::kToggleSystemInfo) {
-    if (!GetOobeUI())
-      return false;
-    GetOobeUI()->GetCoreOobeView()->ToggleSystemInfo();
-    return true;
-  }
-
   // This path should only handle screen-specific acceletators, so we do not
   // need to create WebUI here.
   if (IsWizardControllerCreated() &&

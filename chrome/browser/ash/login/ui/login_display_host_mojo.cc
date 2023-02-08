@@ -523,6 +523,15 @@ bool LoginDisplayHostMojo::IsWebUIStarted() const {
   return dialog_;
 }
 
+bool LoginDisplayHostMojo::HandleAccelerator(LoginAcceleratorAction action) {
+  // This accelerator is handled by the lock contents view.
+  if (action == LoginAcceleratorAction::kToggleSystemInfo) {
+    return false;
+  }
+
+  return LoginDisplayHostCommon::HandleAccelerator(action);
+}
+
 void LoginDisplayHostMojo::HandleAuthenticateUserWithPasswordOrPin(
     const AccountId& account_id,
     const std::string& password,

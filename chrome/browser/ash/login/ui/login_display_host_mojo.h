@@ -108,6 +108,9 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
                                     int* value) const final;
   bool IsWebUIStarted() const final;
 
+  // LoginDisplayHostCommon:
+  bool HandleAccelerator(LoginAcceleratorAction action) final;
+
   // LoginScreenClientImpl::Delegate:
   void HandleAuthenticateUserWithPasswordOrPin(
       const AccountId& account_id,
