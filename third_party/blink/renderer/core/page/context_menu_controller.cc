@@ -483,8 +483,9 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   data.link_url = result.AbsoluteLinkURL();
 
   DomPathUtils dom_path_utils;
-  std::string dom_path = dom_path_utils.cssPath(result.InnerNode(), true);
-  LOG(ERROR) << "ContextMenuController::ShowContextMenu dom_path=" << dom_path;
+  std::string css_selector = dom_path_utils.cssPath(result.InnerNode(), true);
+  data.css_selector = css_selector;
+  LOG(ERROR) << "ContextMenuController::ShowContextMenu css_selector=" << css_selector;
   auto* html_element = DynamicTo<HTMLElement>(result.InnerNode());
   if (html_element) {
     data.title_text = html_element->title().Utf8();

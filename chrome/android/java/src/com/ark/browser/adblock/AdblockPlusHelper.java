@@ -121,6 +121,12 @@ public class AdblockPlusHelper {
         return false;
     }
 
+    public static String getAdblockJs(String selector) {
+        return "javascript:" +
+                "var ele = document.querySelector('" + selector + "'); " +
+                "console.log('ele=' + ele); ele.remove();";
+    }
+
     public static String getAdblockJs(String tag, String id, String srcUrl) {
         String js = "";
         if (!id.isEmpty()){

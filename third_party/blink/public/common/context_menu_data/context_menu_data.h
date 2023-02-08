@@ -66,6 +66,8 @@ struct ContextMenuData {
   // The encoding for the frame in context.
   std::string frame_encoding;
 
+  std::string css_selector;
+
   std::string class_attribute;
 
   std::string id_attribute;

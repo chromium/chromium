@@ -20,6 +20,7 @@ import com.ark.browser.adblock.AdblockPlusHelper;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.TabListManager;
+import com.ark.browser.utils.ArkLogger;
 import com.zpj.toast.ZToast;
 
 import org.chromium.base.ContextUtils;
@@ -309,6 +310,14 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
         if (mTab != null && mTab.getWebContents() != null) {
             String pageUrl = params.getPageUrl().getSpec();
             String srcUrl = params.getSrcUrl().getSpec();
+
+            ArkLogger.e(this, "onMarkAds cssSelector=" + params.getCssSelector());
+            if (!TextUtils.isEmpty(params.getCssSelector())) {
+                String js = AdblockPlusHelper.getAdblockJs(params.getCssSelector());
+                ArkLogger.e(this, "onMarkAds js=" + js);
+                mTab.getWebContents().evaluateJavaScript(js, null);
+            }
+
             markAd(pageUrl, params.getTagName(), params.getIdAttribute(), params.getClassAttribute(), srcUrl);
             markAd(pageUrl, params.getParentTagName(), params.getParentIdAttribute(),
                     params.getParentClassAttribute(), srcUrl);

@@ -191,6 +191,8 @@ struct UntrustworthyContextMenuParams {
   // Whether the context contains text highlighted by a text fragment.
   // See TextFragmentAnchor.
   bool opened_from_highlight;
+
+  mojo_base.mojom.String16 css_selector;
 };
 
 // Defines methods for Context menu to commnicate from the renderer to the
