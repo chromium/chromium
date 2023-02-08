@@ -2712,18 +2712,15 @@ IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
   run_loop.Run();
 }
 
-// TODO(crbug.com/1324410): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
-                       DISABLED_SkipEnrollmentAfterRollback) {
+                       AdvanceToEnrollmentAfterRollback) {
   CheckCurrentScreen(WelcomeView::kScreenId);
+
   EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
-  EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
+
   WizardController::default_controller()->AdvanceToScreen(
-      EnrollmentScreenView::kScreenId);
+      AutoEnrollmentCheckScreenView::kScreenId);
   CheckCurrentScreen(EnrollmentScreenView::kScreenId);
-  mock_enrollment_screen_->ExitScreen(EnrollmentScreen::Result::BACK);
-  CheckCurrentScreen(UserCreationView::kScreenId);
-  EXPECT_TRUE(StartupUtils::IsOobeCompleted());
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
