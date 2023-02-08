@@ -22,7 +22,7 @@ namespace storage {
 
 namespace {
 
-bool areSameStorageKey(const FileSystemURL& a, const FileSystemURL& b) {
+bool AreSameStorageKey(const FileSystemURL& a, const FileSystemURL& b) {
   // TODO(https://crbug.com/1396116): Make the `storage_key_` member optional.
   // This class improperly uses a StorageKey with an opaque origin to indicate a
   // lack of origin for FileSystemURLs corresponding to non-sandboxed file
@@ -211,7 +211,7 @@ bool FileSystemURL::IsInSameFileSystem(const FileSystemURL& other) const {
       !base::FeatureList::IsEnabled(
           features::kFileSystemURLComparatorsTreatOpaqueOriginAsNoOrigin) ||
       (is_valid() && other.is_valid());
-  return areSameStorageKey(*this, other) && is_maybe_valid &&
+  return AreSameStorageKey(*this, other) && is_maybe_valid &&
          type() == other.type() && filesystem_id() == other.filesystem_id() &&
          bucket() == other.bucket();
 }
@@ -221,7 +221,7 @@ bool FileSystemURL::operator==(const FileSystemURL& that) const {
     return true;
   }
 
-  return areSameStorageKey(*this, that) && type_ == that.type_ &&
+  return AreSameStorageKey(*this, that) && type_ == that.type_ &&
          path_ == that.path_ && filesystem_id_ == that.filesystem_id_ &&
          is_valid_ == that.is_valid_ && bucket_ == that.bucket_;
 }
@@ -229,14 +229,18 @@ bool FileSystemURL::operator==(const FileSystemURL& that) const {
 bool FileSystemURL::Comparator::operator()(const FileSystemURL& lhs,
                                            const FileSystemURL& rhs) const {
   DCHECK(lhs.is_valid_ && rhs.is_valid_);
-  if (lhs.storage_key() != rhs.storage_key())
+  if (!AreSameStorageKey(lhs, rhs)) {
     return lhs.storage_key() < rhs.storage_key();
-  if (lhs.type_ != rhs.type_)
+  }
+  if (lhs.type_ != rhs.type_) {
     return lhs.type_ < rhs.type_;
-  if (lhs.filesystem_id_ != rhs.filesystem_id_)
+  }
+  if (lhs.filesystem_id_ != rhs.filesystem_id_) {
     return lhs.filesystem_id_ < rhs.filesystem_id_;
-  if (lhs.bucket_ != rhs.bucket_)
+  }
+  if (lhs.bucket_ != rhs.bucket_) {
     return lhs.bucket_ < rhs.bucket_;
+  }
   return lhs.path_ < rhs.path_;
 }
 

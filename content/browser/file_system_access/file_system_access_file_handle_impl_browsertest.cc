@@ -12,11 +12,11 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
 
-// TODO(crbug.com/1408211): Make this a WPT once crbug.com/1114920 is fixed.
-class FileSystemAccessFileHandleMoveBrowserTest : public ContentBrowserTest {
+class FileSystemAccessFileHandleImplBrowserTest : public ContentBrowserTest {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -76,7 +76,8 @@ class FileSystemAccessFileHandleMoveBrowserTest : public ContentBrowserTest {
   GURL test_url_;
 };
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleMoveBrowserTest,
+// TODO(crbug.com/1408211): Make this a WPT once crbug.com/1114920 is fixed.
+IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleImplBrowserTest,
                        MoveLocalToSandboxed) {
   std::string file_contents = "move me to a sandboxed file system";
   CreateTestFileInDirectory(temp_dir_.GetPath(), file_contents);
@@ -91,7 +92,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleMoveBrowserTest,
       << result.error;
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleMoveBrowserTest,
+// TODO(crbug.com/1408211): Make this a WPT once crbug.com/1114920 is fixed.
+IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleImplBrowserTest,
                        MoveSandboxedToLocal) {
   CreateTestDirectoryInDirectory(temp_dir_.GetPath());
 
@@ -111,14 +113,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleMoveBrowserTest,
 }
 
 class FileSystemAccessFileHandleMoveLocalBrowserTest
-    : public FileSystemAccessFileHandleMoveBrowserTest {
+    : public FileSystemAccessFileHandleImplBrowserTest {
  public:
   FileSystemAccessFileHandleMoveLocalBrowserTest() {
     scoped_feature_list_.InitAndDisableFeature(
         features::kFileSystemAccessMoveLocalFiles);
   }
-
-  void SetUp() override { FileSystemAccessFileHandleMoveBrowserTest::SetUp(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -134,6 +134,60 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleMoveLocalBrowserTest,
                        "return await self.localFile.move('renamed.txt'); })()");
   EXPECT_TRUE(result.error.find("not support") != std::string::npos)
       << result.error;
+}
+
+class FileSystemAccessFileHandleGetUniqueIdBrowserTest
+    : public FileSystemAccessFileHandleImplBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    FileSystemAccessFileHandleImplBrowserTest::SetUpCommandLine(command_line);
+    // Enable File System Access experimental features, which includes the
+    // getUniqueId() method.
+    command_line->AppendSwitch(
+        "--enable-blink-features=FileSystemAccessAPIExperimental");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleGetUniqueIdBrowserTest,
+                       SameFileFromDifferentPickerInvocations) {
+  base::FilePath file_path;
+  std::string file_contents = "I am unique";
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(
+        base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &file_path));
+    EXPECT_TRUE(base::WriteFile(file_path, file_contents));
+  }
+
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({file_path}));
+  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
+  EXPECT_EQ(file_path.BaseName().AsUTF8Unsafe(),
+            EvalJs(shell(),
+                   "(async () => {"
+                   "  let [e] = await self.showOpenFilePicker();"
+                   "  self.file1 = e;"
+                   "  return e.name; })()"));
+  EXPECT_EQ(file_path.BaseName().AsUTF8Unsafe(),
+            EvalJs(shell(),
+                   "(async () => {"
+                   "  let [e] = await self.showOpenFilePicker();"
+                   "  self.file2 = e;"
+                   "  return e.name; })()"));
+
+  EXPECT_TRUE(EvalJs(shell(),
+                     "(async () => {"
+                     "return await self.file2.isSameEntry(self.file1); })()")
+                  .ExtractBool());
+  auto uniqueId1 = EvalJs(shell(),
+                          "(async () => {"
+                          "return await self.file1.getUniqueId(); })()")
+                       .ExtractString();
+  auto uniqueId2 = EvalJs(shell(),
+                          "(async () => {"
+                          "return await self.file2.getUniqueId(); })()")
+                       .ExtractString();
+  EXPECT_EQ(uniqueId1, uniqueId2);
 }
 
 }  // namespace content
