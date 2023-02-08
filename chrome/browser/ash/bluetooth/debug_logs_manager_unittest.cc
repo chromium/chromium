@@ -144,6 +144,11 @@ class DebugLogsManagerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  bool IsDebugEnabled() {
+    return debug_logs_manager_->GetDebugLogsState() ==
+           DebugLogsManager::DebugLogsState::kSupportedAndEnabled;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   bool is_debug_toggle_flag_enabled_ = false;
@@ -267,12 +272,14 @@ TEST_F(DebugLogsManagerTest, CheckFlossUpdatesOnPowerOn) {
   EnableFlossFlag();
   InitFeatures();
 
+  // Until we're powered, setting debug logging should fail but the default
+  // state should be persisted.
   EXPECT_EQ(fake_floss_logging_client()->GetDebugEnabledForTesting(), false);
   InstantiateDebugManager(kTestGooglerEmail);
-  EXPECT_EQ(fake_floss_logging_client()->GetDebugEnabledForTesting(), true);
-
-  fake_floss_logging_client()->SetDebugEnabledForTesting(false);
   EXPECT_EQ(fake_floss_logging_client()->GetDebugEnabledForTesting(), false);
+  EXPECT_EQ(IsDebugEnabled(), true);
+
+  // Powering on should enable the flag.
   SimulatePowered(/*powered=*/true);
   EXPECT_EQ(fake_floss_logging_client()->GetDebugEnabledForTesting(), true);
   SimulatePowered(/*powered=*/false);

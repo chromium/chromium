@@ -116,11 +116,13 @@ void DebugLogsManager::SendDBusVerboseLogsMessage(bool enable,
   VLOG(1) << (enable ? "Enabling" : "Disabling") << " bluetooth verbose logs";
 
   if (floss::features::IsFlossEnabled()) {
-    floss::FlossDBusManager::Get()->GetLoggingClient()->SetDebugLogging(
-        base::BindOnce(&DebugLogsManager::OnFlossSetDebugLogging,
-                       weak_ptr_factory_.GetWeakPtr(), enable,
-                       num_completed_attempts),
-        enable);
+    if (adapter_ && adapter_->IsPowered()) {
+      floss::FlossDBusManager::Get()->GetLoggingClient()->SetDebugLogging(
+          base::BindOnce(&DebugLogsManager::OnFlossSetDebugLogging,
+                         weak_ptr_factory_.GetWeakPtr(), enable,
+                         num_completed_attempts),
+          enable);
+    }
   } else {
     bluez::BluezDBusManager::Get()
         ->GetBluetoothDebugManagerClient()
