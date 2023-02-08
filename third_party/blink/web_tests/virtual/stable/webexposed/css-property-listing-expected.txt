@@ -57,6 +57,7 @@ All changes to this list should go through Blink's feature review process: http:
     align-self
     alignment-baseline
     all
+    animation-composition
     animation-delay
     animation-direction
     animation-duration
