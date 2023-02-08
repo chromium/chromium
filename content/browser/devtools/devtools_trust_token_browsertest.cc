@@ -269,4 +269,40 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, GetTrustTokens) {
   EXPECT_EQ(GetTrustTokensViaProtocol().size(), 1ul);
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, ClearTrustTokens) {
+  ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
+
+  // 1) Navigate to a test site.
+  GURL start_url = server_.GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+
+  // 2) Open DevTools.
+  Attach();
+
+  // 3) Request some Trust Tokens.
+  std::string command = R"(
+  (async () => {
+    await fetch('/issue', {trustToken: {version: 1,
+                                        operation: 'token-request'}});
+    return 'Success'; })(); )";
+
+  // We use EvalJs here, not ExecJs, because EvalJs waits for promises to
+  // resolve.
+  EXPECT_EQ("Success", EvalJs(shell(), command));
+
+  // 4) Call Storage.getTrustTokens and expect a Trust Token to be there.
+  AssertTrustTokensViaProtocol(IssuanceOriginFromHost("a.test"), 10);
+
+  // 5) Call Storage.clearTrustTokens
+  base::Value::Dict params;
+  params.Set("issuerOrigin", IssuanceOriginFromHost("a.test"));
+  auto* result = SendCommandSync("Storage.clearTrustTokens", std::move(params));
+
+  EXPECT_THAT(result->FindBool("didDeleteTokens"), ::testing::Optional(true));
+
+  // 6) Call Storage.getTrustTokens and expect no Trust Tokens to be there.
+  //    Note that we still get an entry for our 'issuerOrigin', but the actual
+  //    Token count must be 0.
+  AssertTrustTokensViaProtocol(IssuanceOriginFromHost("a.test"), 0);
+}
 }  // namespace content

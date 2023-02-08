@@ -95,6 +95,9 @@ class StorageHandler
 
   void GetTrustTokens(
       std::unique_ptr<GetTrustTokensCallback> callback) override;
+  void ClearTrustTokens(
+      const std::string& issuerOrigin,
+      std::unique_ptr<ClearTrustTokensCallback> callback) override;
 
   void GetInterestGroupDetails(
       const std::string& owner_origin_string,
