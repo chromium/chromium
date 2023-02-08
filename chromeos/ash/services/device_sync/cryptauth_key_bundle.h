@@ -12,9 +12,7 @@
 #include "chromeos/ash/services/device_sync/proto/cryptauth_directive.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-
-namespace device_sync {
+namespace ash::device_sync {
 
 // A group of related CryptAuthKeys, uniquely identified by their handles.
 //
@@ -62,7 +60,7 @@ class CryptAuthKeyBundle {
   static absl::optional<CryptAuthKeyBundle> FromDictionary(
       const base::Value::Dict& dict);
 
-  CryptAuthKeyBundle(Name name);
+  explicit CryptAuthKeyBundle(Name name);
 
   CryptAuthKeyBundle(const CryptAuthKeyBundle&);
 
@@ -102,7 +100,7 @@ class CryptAuthKeyBundle {
   // Remove the key corresponding to |handle| from the bundle.
   void DeleteKey(const std::string& handle);
 
-  base::Value AsDictionary() const;
+  base::Value::Dict AsDictionary() const;
 
   bool operator==(const CryptAuthKeyBundle& other) const;
   bool operator!=(const CryptAuthKeyBundle& other) const;
@@ -114,8 +112,6 @@ class CryptAuthKeyBundle {
   absl::optional<cryptauthv2::KeyDirective> key_directive_;
 };
 
-}  // namespace device_sync
-
-}  // namespace ash
+}  // namespace ash::device_sync
 
 #endif  // CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_BUNDLE_H_

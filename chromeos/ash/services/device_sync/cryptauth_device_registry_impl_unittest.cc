@@ -22,9 +22,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-
-namespace device_sync {
+namespace ash::device_sync {
 
 namespace {
 
@@ -90,13 +88,13 @@ class DeviceSyncCryptAuthDeviceRegistryImplTest : public testing::Test {
     return devices->at(index);
   }
 
-  base::Value AsDictionary(
+  base::Value::Dict AsDictionary(
       const CryptAuthDeviceRegistry::InstanceIdToDeviceMap& devices) const {
-    base::Value dict(base::Value::Type::DICT);
+    base::Value::Dict dict;
     for (const std::pair<std::string, CryptAuthDevice>& id_device_pair :
          devices) {
-      dict.SetKey(util::EncodeAsString(id_device_pair.first),
-                  base::Value(id_device_pair.second.AsDictionary()));
+      dict.Set(util::EncodeAsString(id_device_pair.first),
+               id_device_pair.second.AsDictionary());
     }
 
     return dict;
@@ -180,14 +178,12 @@ TEST_F(DeviceSyncCryptAuthDeviceRegistryImplTest, DeleteDevice) {
 TEST_F(DeviceSyncCryptAuthDeviceRegistryImplTest, PopulateRegistryFromPref) {
   CryptAuthDeviceRegistry::InstanceIdToDeviceMap expected_devices = {
       {kInstanceId0, GetDeviceForTest(0)}, {kInstanceId1, GetDeviceForTest(1)}};
-  pref_service()->Set(prefs::kCryptAuthDeviceRegistry,
-                      AsDictionary(expected_devices));
+  pref_service()->SetDict(prefs::kCryptAuthDeviceRegistry,
+                          AsDictionary(expected_devices));
 
   CreateDeviceRegistry();
 
   VerifyDeviceRegistry(expected_devices);
 }
 
-}  // namespace device_sync
-
-}  // namespace ash
+}  // namespace ash::device_sync

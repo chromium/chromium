@@ -10,9 +10,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace ash {
-
-namespace device_sync {
+namespace ash::device_sync {
 
 // static
 CryptAuthKeyRegistryImpl::Factory*
@@ -67,13 +65,13 @@ CryptAuthKeyRegistryImpl::CryptAuthKeyRegistryImpl(PrefService* pref_service)
 CryptAuthKeyRegistryImpl::~CryptAuthKeyRegistryImpl() = default;
 
 void CryptAuthKeyRegistryImpl::OnKeyRegistryUpdated() {
-  pref_service_->Set(prefs::kCryptAuthKeyRegistry, AsDictionary());
+  pref_service_->SetDict(prefs::kCryptAuthKeyRegistry, AsDictionary());
 }
 
-base::Value CryptAuthKeyRegistryImpl::AsDictionary() const {
-  base::Value dict(base::Value::Type::DICT);
+base::Value::Dict CryptAuthKeyRegistryImpl::AsDictionary() const {
+  base::Value::Dict dict;
   for (const auto& name_bundle_pair : key_bundles_) {
-    dict.SetKey(
+    dict.Set(
         CryptAuthKeyBundle::KeyBundleNameEnumToString(name_bundle_pair.first),
         name_bundle_pair.second.AsDictionary());
   }
@@ -81,6 +79,4 @@ base::Value CryptAuthKeyRegistryImpl::AsDictionary() const {
   return dict;
 }
 
-}  // namespace device_sync
-
-}  // namespace ash
+}  // namespace ash::device_sync

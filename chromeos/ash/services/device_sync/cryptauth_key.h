@@ -26,7 +26,8 @@ class CryptAuthKey {
   // this status is meaningless.
   enum Status { kActive, kInactive };
 
-  static absl::optional<CryptAuthKey> FromDictionary(const base::Value& value);
+  static absl::optional<CryptAuthKey> FromDictionary(
+      const base::Value::Dict& value);
 
   // Constructor for symmetric keys.
   CryptAuthKey(const std::string& symmetric_key,

@@ -44,11 +44,7 @@ bool IsAsymmetricKeyType(cryptauthv2::KeyType type) {
 
 // static
 absl::optional<CryptAuthKey> CryptAuthKey::FromDictionary(
-    const base::Value& value) {
-  if (!value.is_dict())
-    return absl::nullopt;
-
-  const base::Value::Dict& dict = value.GetDict();
+    const base::Value::Dict& dict) {
   absl::optional<int> opt_status = dict.FindInt(kStatusDictKey);
   if (!opt_status)
     return absl::nullopt;

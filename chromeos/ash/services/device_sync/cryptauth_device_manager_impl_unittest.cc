@@ -300,15 +300,14 @@ void ExpectSyncedDevicesAndPrefAreEqual(
                 beacon_seeds_from_prefs->size());
       for (size_t beacon_seed = 0;
            beacon_seed < beacon_seeds_from_prefs->size(); beacon_seed++) {
-        const base::Value& seed = (*beacon_seeds_from_prefs)[beacon_seed];
-        ASSERT_TRUE(seed.is_dict());
+        const base::Value::Dict& seed =
+            (*beacon_seeds_from_prefs)[beacon_seed].GetDict();
 
-        const std::string* data_b64 = seed.FindStringKey("beacon_seed_data");
+        const std::string* data_b64 = seed.FindString("beacon_seed_data");
         EXPECT_TRUE(data_b64);
-        const std::string* start_ms =
-            seed.FindStringKey("beacon_seed_start_ms");
+        const std::string* start_ms = seed.FindString("beacon_seed_start_ms");
         EXPECT_TRUE(start_ms);
-        const std::string* end_ms = seed.FindStringKey("beacon_seed_end_ms");
+        const std::string* end_ms = seed.FindString("beacon_seed_end_ms");
         EXPECT_TRUE(end_ms);
 
         const cryptauth::BeaconSeed& expected_seed =

@@ -12,9 +12,7 @@
 #include "chromeos/ash/services/device_sync/cryptauth_enrollment_constants.h"
 #include "chromeos/ash/services/device_sync/value_string_encoding.h"
 
-namespace ash {
-
-namespace device_sync {
+namespace ash::device_sync {
 
 namespace {
 
@@ -95,7 +93,8 @@ absl::optional<CryptAuthKeyBundle> CryptAuthKeyBundle::FromDictionary(
 
   bool active_key_exists = false;
   for (const base::Value& key_dict : *keys) {
-    absl::optional<CryptAuthKey> key = CryptAuthKey::FromDictionary(key_dict);
+    absl::optional<CryptAuthKey> key =
+        CryptAuthKey::FromDictionary(key_dict.GetDict());
     if (!key)
       return absl::nullopt;
 
@@ -175,7 +174,7 @@ void CryptAuthKeyBundle::DeactivateKeys() {
     handle_key_pair.second.set_status(CryptAuthKey::Status::kInactive);
 }
 
-base::Value CryptAuthKeyBundle::AsDictionary() const {
+base::Value::Dict CryptAuthKeyBundle::AsDictionary() const {
   base::Value::Dict dict;
 
   dict.Set(kBundleNameDictKey, KeyBundleNameEnumToString(name_));
@@ -197,7 +196,7 @@ base::Value CryptAuthKeyBundle::AsDictionary() const {
              util::EncodeProtoMessageAsValueString(&key_directive_.value()));
   }
 
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 bool CryptAuthKeyBundle::operator==(const CryptAuthKeyBundle& other) const {
@@ -212,6 +211,4 @@ bool CryptAuthKeyBundle::operator!=(const CryptAuthKeyBundle& other) const {
   return !(*this == other);
 }
 
-}  // namespace device_sync
-
-}  // namespace ash
+}  // namespace ash::device_sync
