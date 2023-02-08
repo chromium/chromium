@@ -104,6 +104,14 @@ VideoFrameHandlerProxyLacros::VideoFrameHandlerProxyLacros(
 
 VideoFrameHandlerProxyLacros::~VideoFrameHandlerProxyLacros() = default;
 
+void VideoFrameHandlerProxyLacros::OnCaptureConfigurationChanged() {
+  if (handler_.is_bound()) {
+    handler_->OnCaptureConfigurationChanged();
+  } else if (handler_in_process_) {
+    handler_in_process_->OnCaptureConfigurationChanged();
+  }
+}
+
 void VideoFrameHandlerProxyLacros::OnNewBuffer(
     int buffer_id,
     crosapi::mojom::VideoBufferHandlePtr buffer_handle) {

@@ -22,6 +22,10 @@ ReceiverMediaToCrosapiAdapter::ReceiverMediaToCrosapiAdapter(
 
 ReceiverMediaToCrosapiAdapter::~ReceiverMediaToCrosapiAdapter() = default;
 
+void ReceiverMediaToCrosapiAdapter::OnCaptureConfigurationChanged() {
+  handler_->OnCaptureConfigurationChanged();
+}
+
 void ReceiverMediaToCrosapiAdapter::OnNewBuffer(
     int buffer_id,
     crosapi::mojom::VideoBufferHandlePtr buffer_handle) {

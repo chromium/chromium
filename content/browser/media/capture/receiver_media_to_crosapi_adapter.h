@@ -36,6 +36,7 @@ class ReceiverMediaToCrosapiAdapter : public crosapi::mojom::VideoFrameHandler {
 
  private:
   // crosapi::mojom::VideoFrameHandler implementation.
+  void OnCaptureConfigurationChanged() override;
   void OnNewBuffer(int buffer_id,
                    crosapi::mojom::VideoBufferHandlePtr buffer_handle) override;
   void OnFrameReadyInBuffer(crosapi::mojom::ReadyFrameInBufferPtr buffer,

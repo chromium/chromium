@@ -120,7 +120,9 @@ VideoFrameHandlerAsh::ScopedFrameAccessHandlerNotifier::
   (*frame_access_handler_remote_)->OnFinishedConsumingBuffer(buffer_id_);
 }
 
-void VideoFrameHandlerAsh::OnCaptureConfigurationChanged() {}
+void VideoFrameHandlerAsh::OnCaptureConfigurationChanged() {
+  proxy_->OnCaptureConfigurationChanged();
+}
 
 void VideoFrameHandlerAsh::OnNewBuffer(
     int buffer_id,

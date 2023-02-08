@@ -132,9 +132,12 @@ interface ScopedAccessPermission {};
 
 // Similar to |video_capture.mojom.VideoFrameHandler| but depends on simplified
 // structures.
-// Next min method ID: 11
+// Next min method ID: 12
 [Stable, Uuid="590ab36a-9162-4c9d-8429-1753108825ea"]
 interface VideoFrameHandler {
+  [MinVersion=3]
+  OnCaptureConfigurationChanged@11();
+
   OnNewBuffer@0(int32 buffer_id, VideoBufferHandle buffer_handle);
 
   OnFrameReadyInBuffer@1(ReadyFrameInBuffer buffer,
