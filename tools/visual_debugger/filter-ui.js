@@ -42,7 +42,8 @@ class FilterUI extends HTMLElement {
       <div class='label' title='Filter annotation to match.
       For example frame.root.damage' >Annotation </div>
       <div class='input'>
-        <input placeholder='Substring to match' id='annotation' size=40>
+        <input list="knownAnnotations" placeholder='Substring to match'
+         id='annotation' size=40>
         <!-- TODO: A fancy drop-down here would be nice. -->
       </div>
     </div>
@@ -132,6 +133,26 @@ class FilterUI extends HTMLElement {
 };
 
 window.customElements.define('filter-ui', FilterUI);
+
+// A <datalist> element containing values of previously seen filter annotations.
+let dataListElement = undefined;
+let knownAnnotations = new Set();
+// Called when processing new sources from a frame.
+function notifyUiOfNewSource(source) {
+  if (dataListElement === undefined) {
+    dataListElement = document.createElement("datalist");
+    dataListElement.id = "knownAnnotations";
+    document.body.appendChild(dataListElement);
+  }
+
+  if (!knownAnnotations.has(source.anno)) {
+    let option = document.createElement("option");
+    option.value = source.anno;
+    dataListElement.appendChild(option);
+
+    knownAnnotations.add(source.anno);
+  }
+}
 
 function createFilterChip(filter) {
   const chip = document.createElement('div');

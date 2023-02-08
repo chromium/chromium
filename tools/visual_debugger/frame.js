@@ -80,6 +80,7 @@ class DrawFrame {
     if (json.new_sources) {
       for (const s of json.new_sources) {
         new Source(s);
+        notifyUiOfNewSource(s);
       }
     }
 
