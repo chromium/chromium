@@ -3413,7 +3413,6 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     }
   }
   CORE_EXPORT void SetInitialData(scoped_refptr<StyleInitialData> data) {
-    ClearVariableNamesCache();
     MutableInitialDataInternal() = std::move(data);
   }
 
@@ -3442,8 +3441,6 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   void OverrideTextDecorationColors(blink::Color propagated_color);
 
   ComputedStyleBuilder() = default;
-
-  CORE_EXPORT void ClearVariableNamesCache();
 
   scoped_refptr<ComputedStyle> style_;
 };

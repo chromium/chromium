@@ -2680,8 +2680,6 @@ CSSVariableData* ComputedStyleBuilder::GetVariableData(
 }
 
 StyleInheritedVariables& ComputedStyleBuilder::MutableInheritedVariables() {
-  ClearVariableNamesCache();
-
   scoped_refptr<StyleInheritedVariables>& variables =
       MutableInheritedVariablesInternal();
   if (!variables) {
@@ -2694,8 +2692,6 @@ StyleInheritedVariables& ComputedStyleBuilder::MutableInheritedVariables() {
 
 StyleNonInheritedVariables&
 ComputedStyleBuilder::MutableNonInheritedVariables() {
-  ClearVariableNamesCache();
-
   std::unique_ptr<StyleNonInheritedVariables>& variables =
       MutableNonInheritedVariablesInternal();
   if (!variables) {
@@ -2804,12 +2800,6 @@ void ComputedStyleBuilder::RestoreParentTextDecorations(
       parent_style.AppliedTextDecorationsInternal()) {
     SetAppliedTextDecorationsInternal(scoped_refptr<AppliedTextDecorationList>(
         parent_style.AppliedTextDecorationsInternal()));
-  }
-}
-
-void ComputedStyleBuilder::ClearVariableNamesCache() {
-  if (style_->cached_data_) {
-    style_->cached_data_->variable_names_.reset();
   }
 }
 
