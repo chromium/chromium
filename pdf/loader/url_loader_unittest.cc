@@ -168,8 +168,8 @@ class UrlLoaderTest : public testing::Test {
   std::unique_ptr<UrlLoader> loader_;
 
   // Becomes invalid if `loader_` is closed or destructed.
-  raw_ptr<MockWebAssociatedURLLoader> mock_url_loader_ =
-      fake_client_.mock_url_loader();
+  raw_ptr<MockWebAssociatedURLLoader, DisableDanglingPtrDetection>
+      mock_url_loader_ = fake_client_.mock_url_loader();
 
   blink::WebURLRequest saved_request_;
 };
