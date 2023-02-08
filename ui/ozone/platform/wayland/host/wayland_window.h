@@ -36,6 +36,8 @@
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/platform_window/wm/wm_drag_handler.h"
 
+struct zwp_keyboard_shortcuts_inhibitor_v1;
+
 namespace wl {
 
 struct WaylandOverlayConfig;
@@ -344,12 +346,6 @@ class WaylandWindow : public PlatformWindow,
 #endif
 
  protected:
-  enum class KeyboardShortcutsInhibitionMode {
-    kDisabled,
-    kAlwaysEnabled,
-    kFullscreenOnly
-  };
-
   WaylandWindow(PlatformWindowDelegate* delegate,
                 WaylandConnection* connection);
 
@@ -384,10 +380,6 @@ class WaylandWindow : public PlatformWindow,
   gfx::Rect AdjustBoundsToConstraintsDIP(const gfx::Rect& bounds_dip);
 
   const gfx::Size& restored_size_dip() const { return restored_size_dip_; }
-
-  KeyboardShortcutsInhibitionMode keyboard_shortcuts_inhibition_mode() const {
-    return keyboard_shortcuts_inhibition_mode_;
-  }
 
   // Configure related:
 
@@ -459,10 +451,6 @@ class WaylandWindow : public PlatformWindow,
   // Additional initialization of derived classes.
   virtual bool OnInitialize(PlatformWindowInitProperties properties,
                             PlatformWindowDelegate::State* state) = 0;
-
-  // Determines which keyboard shortcuts inhibition mode to be used and perform
-  // required initialization steps, if any.
-  void InitKeyboardShortcutsInhibition();
 
   // WaylandWindowDragController might need to take ownership of the wayland
   // surface whether the window that originated the DND session gets destroyed
@@ -631,8 +619,10 @@ class WaylandWindow : public PlatformWindow,
 
   base::OnceClosure drag_loop_quit_closure_;
 
-  KeyboardShortcutsInhibitionMode keyboard_shortcuts_inhibition_mode_{
-      KeyboardShortcutsInhibitionMode::kDisabled};
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  wl::Object<zwp_keyboard_shortcuts_inhibitor_v1>
+      permanent_keyboard_shortcuts_inhibitor_;
+#endif
 
 #if DCHECK_IS_ON()
   bool disable_null_target_dcheck_for_test_ = false;
