@@ -21,10 +21,8 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.consent_auditor.ConsentAuditorFeature;
@@ -109,18 +107,6 @@ public abstract class SyncConsentFragmentBase
         int GROUP_A = 1;
         int GROUP_B = 2;
         int GROUP_C = 3;
-    }
-
-    /** Used for Signin.SyncConsentScreen.DataRowClicked histogram. Don't change existing values. */
-    @VisibleForTesting
-    @IntDef({SyncDataRowClicked.BOOKMARKS, SyncDataRowClicked.AUTOFILL, SyncDataRowClicked.HISTORY,
-            SyncDataRowClicked.COUNT})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface SyncDataRowClicked {
-        int BOOKMARKS = 0;
-        int AUTOFILL = 1;
-        int HISTORY = 2;
-        int COUNT = 3;
     }
 
     private final AccountManagerFacade mAccountManagerFacade;
@@ -404,10 +390,6 @@ public abstract class SyncConsentFragmentBase
         mSyncConsentView =
                 (SyncConsentView) inflater.inflate(R.layout.sync_consent_view, container, false);
 
-        mSyncConsentView.getBookmarksRow().setOnClickListener(this::recordClickAndResetListener);
-        mSyncConsentView.getAutofillRow().setOnClickListener(this::recordClickAndResetListener);
-        mSyncConsentView.getHistoryRow().setOnClickListener(this::recordClickAndResetListener);
-
         mSyncConsentView.getRefuseButton().setOnClickListener(this::onRefuseButtonClicked);
         mSyncConsentView.getRefuseButton().setVisibility(View.GONE);
         mSyncConsentView.getAcceptButton().setOnClickListener(this::onAcceptButtonClicked);
@@ -522,7 +504,7 @@ public abstract class SyncConsentFragmentBase
                 new SpanApplier.SpanInfo(SETTINGS_LINK_OPEN, SETTINGS_LINK_CLOSE, settingsLinkSpan);
         if (mSyncConsentView != null) {
             mConsentTextTracker.setText(mSyncConsentView.getDetailsDescriptionView(),
-                    R.string.sync_consent_details_description,
+                    R.string.history_sync_consent_details_description,
                     input -> SpanApplier.applySpans(input.toString(), spanInfo));
         } else {
             mConsentTextTracker.setText(mSigninView.getDetailsDescriptionView(),
@@ -539,7 +521,7 @@ public abstract class SyncConsentFragmentBase
                 ? R.string.no_thanks
                 : R.string.cancel;
         if (mSyncConsentView != null) {
-            updateSyncConsentViewText(refuseButtonTextId);
+            updateSyncConsentViewText(R.string.no_thanks);
         } else {
             updateSigninViewText(refuseButtonTextId);
         }
@@ -553,12 +535,11 @@ public abstract class SyncConsentFragmentBase
     private static @StringRes int getSyncConsentViewTitleText() {
         switch (getTangibleSyncGroup()) {
             case TangibleSyncGroup.GROUP_A:
-                return R.string.sync_consent_title;
+                return R.string.history_sync_consent_title;
             case TangibleSyncGroup.GROUP_B:
-                return R.string.sync_consent_title_variation;
             case TangibleSyncGroup.GROUP_C:
-                return R.string.sync_consent_title;
             default:
+                // TODO(https://crbug.com/1412453): Update when variation strings are known.
                 throw new IllegalStateException("Invalid group id");
         }
     }
@@ -566,48 +547,19 @@ public abstract class SyncConsentFragmentBase
     private static @StringRes int getSyncConsentViewSubtitleText() {
         switch (getTangibleSyncGroup()) {
             case TangibleSyncGroup.GROUP_A:
-                return R.string.sync_consent_subtitle;
+                return R.string.history_sync_consent_subtitle;
             case TangibleSyncGroup.GROUP_B:
-                return R.string.sync_consent_subtitle;
             case TangibleSyncGroup.GROUP_C:
-                return R.string.sync_consent_subtitle_variation;
             default:
+                // TODO(https://crbug.com/1412453): Update when variation strings are known.
                 throw new IllegalStateException("Invalid group id");
         }
-    }
-
-    /**
-     * Records histogram for the sync data row clicks only once. Resets listener after recording.
-     */
-    private void recordClickAndResetListener(View view) {
-        if (view == mSyncConsentView.getBookmarksRow()) {
-            recordSyncDataRowClicked(SyncDataRowClicked.BOOKMARKS);
-        } else if (view == mSyncConsentView.getAutofillRow()) {
-            recordSyncDataRowClicked(SyncDataRowClicked.AUTOFILL);
-        } else if (view == mSyncConsentView.getHistoryRow()) {
-            recordSyncDataRowClicked(SyncDataRowClicked.HISTORY);
-        } else {
-            throw new IllegalStateException("Sync data row view does not exist");
-        }
-        view.setOnClickListener(null);
-    }
-
-    private static void recordSyncDataRowClicked(@SyncDataRowClicked int syncRowClicked) {
-        RecordHistogram.recordEnumeratedHistogram("Signin.SyncConsentScreen.DataRowClicked",
-                syncRowClicked, SyncDataRowClicked.COUNT);
     }
 
     private void updateSyncConsentViewText(@StringRes int refuseButtonTextId) {
         mConsentTextTracker.setText(mSyncConsentView.getTitleView(), getSyncConsentViewTitleText());
         mConsentTextTracker.setText(
                 mSyncConsentView.getSubtitleView(), getSyncConsentViewSubtitleText());
-
-        mConsentTextTracker.setText(
-                mSyncConsentView.getBookmarksRow(), R.string.sync_consent_bookmarks_text);
-        mConsentTextTracker.setText(
-                mSyncConsentView.getAutofillRow(), R.string.sync_consent_autofill_text);
-        mConsentTextTracker.setText(
-                mSyncConsentView.getHistoryRow(), R.string.sync_consent_history_text);
 
         mConsentTextTracker.setText(mSyncConsentView.getRefuseButton(), refuseButtonTextId);
         mConsentTextTracker.setText(

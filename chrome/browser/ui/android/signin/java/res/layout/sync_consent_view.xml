@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Copyright 2022 The Chromium Authors
+Copyright 2023 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -8,7 +8,6 @@ found in the LICENSE file.
 <org.chromium.chrome.browser.ui.signin.SyncConsentView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginHorizontal="24dp"
@@ -43,12 +42,26 @@ found in the LICENSE file.
                 android:layout_weight="1"
                 android:visibility="invisible" />
 
-            <ImageView
-                android:id="@+id/account_image"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginBottom="16dp"
-                tools:ignore="ContentDescription" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="36dp">
+                    <ImageView
+                        android:id="@+id/history_sync_illustration"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scaleType="center"
+                        app:srcCompat="@drawable/history_sync_illustration"
+                        android:importantForAccessibility="no" />
+                    <ImageView
+                        android:id="@+id/account_image"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_centerVertical="@id/history_sync_illustration"
+                        android:layout_centerInParent="true"
+                        android:importantForAccessibility="no" />
+                </RelativeLayout>
 
             <org.chromium.ui.widget.TextViewWithLeading
                 android:id="@+id/sync_consent_title"
@@ -67,51 +80,6 @@ found in the LICENSE file.
                 android:gravity="center"
                 android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
                 app:leading="@dimen/text_size_medium_leading" />
-
-            <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
-                style="@style/MaterialCardStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="24dp"
-                android:paddingVertical="16dp">
-
-                <LinearLayout
-                    android:id="@+id/sync_data_types"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/bookmarks_row"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/sync_data_type_row_space"
-                        android:drawablePadding="@dimen/sync_data_type_drawable_padding"
-                        android:gravity="center"
-                        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
-                        app:drawableStartCompat="@drawable/btn_star"
-                        app:drawableTint="@macro/default_control_color_active" />
-
-                    <TextView
-                        android:id="@+id/autofill_row"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/sync_data_type_row_space"
-                        android:drawablePadding="@dimen/sync_data_type_drawable_padding"
-                        android:gravity="center"
-                        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
-                        app:drawableStartCompat="@drawable/autofill_key" />
-
-                    <TextView
-                        android:id="@+id/history_row"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:drawablePadding="@dimen/sync_data_type_drawable_padding"
-                        android:gravity="center"
-                        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
-                        app:drawableStartCompat="@drawable/devices_icon" />
-                </LinearLayout>
-            </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
 
             <!-- Refer to the comment above @id/space_above_account_image -->
             <View

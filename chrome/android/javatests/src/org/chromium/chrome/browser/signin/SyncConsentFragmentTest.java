@@ -60,7 +60,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.chrome.browser.ui.signin.SyncConsentFragmentBase.SyncDataRowClicked;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
@@ -207,40 +206,6 @@ public class SyncConsentFragmentTest {
                 });
         mRenderTestRule.render(mSyncConsentActivity.findViewById(R.id.fragment_container),
                 "tangible_sync_consent_fragment_default_account");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC + ":group_id/2"})
-    public void testTangibleSyncConsentFragmentVariationTwoDefaultAccount() throws IOException {
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
-                            mChromeActivityTestRule.getActivity(),
-                            SigninAccessPoint.BOOKMARK_MANAGER, accountInfo.getEmail());
-                });
-        mRenderTestRule.render(mSyncConsentActivity.findViewById(R.id.fragment_container),
-                "tangible_sync_consent_fragment_variation_two_default_account");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC + ":group_id/3"})
-    public void testTangibleSyncConsentFragmentVariationThreeDefaultAccount() throws IOException {
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
-                            mChromeActivityTestRule.getActivity(),
-                            SigninAccessPoint.BOOKMARK_MANAGER, accountInfo.getEmail());
-                });
-        mRenderTestRule.render(mSyncConsentActivity.findViewById(R.id.fragment_container),
-                "tangible_sync_consent_fragment_variation_three_default_account");
     }
 
     @Test
@@ -914,109 +879,6 @@ public class SyncConsentFragmentTest {
                 mHistogramTestRule.getHistogramValueCount(
                         "Signin.AddAccountState", State.NULL_ACCOUNT_NAME));
         assertEquals(4, mHistogramTestRule.getHistogramTotalCount("Signin.AddAccountState"));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
-    public void testTangibleSyncConsentFragmentBookmarkRowClicked() {
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
-                            mChromeActivityTestRule.getActivity(),
-                            SigninAccessPoint.BOOKMARK_MANAGER,
-                            AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-                });
-
-        onView(withId(R.id.bookmarks_row)).perform(click());
-
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(
-                        "Signin.SyncConsentScreen.DataRowClicked", SyncDataRowClicked.BOOKMARKS));
-        assertEquals(1,
-                mHistogramTestRule.getHistogramTotalCount(
-                        "Signin.SyncConsentScreen.DataRowClicked"));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
-    public void testTangibleSyncConsentFragmentAutofillRowClicked() {
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
-                            mChromeActivityTestRule.getActivity(),
-                            SigninAccessPoint.BOOKMARK_MANAGER,
-                            AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-                });
-
-        onView(withId(R.id.autofill_row)).perform(click());
-
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(
-                        "Signin.SyncConsentScreen.DataRowClicked", SyncDataRowClicked.AUTOFILL));
-        assertEquals(1,
-                mHistogramTestRule.getHistogramTotalCount(
-                        "Signin.SyncConsentScreen.DataRowClicked"));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
-    public void testTangibleSyncConsentFragmentHistoryRowClicked() {
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
-                            mChromeActivityTestRule.getActivity(),
-                            SigninAccessPoint.BOOKMARK_MANAGER,
-                            AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-                });
-
-        onView(withId(R.id.history_row)).perform(click());
-
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(
-                        "Signin.SyncConsentScreen.DataRowClicked", SyncDataRowClicked.HISTORY));
-        assertEquals(1,
-                mHistogramTestRule.getHistogramTotalCount(
-                        "Signin.SyncConsentScreen.DataRowClicked"));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
-    public void testTangibleSyncConsentFragmentSyncRowClickOnlyRecordedOnce() {
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
-                            mChromeActivityTestRule.getActivity(),
-                            SigninAccessPoint.BOOKMARK_MANAGER,
-                            AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-                });
-
-        onView(withId(R.id.bookmarks_row)).perform(click());
-        onView(withId(R.id.bookmarks_row)).perform(click());
-        onView(withId(R.id.autofill_row)).perform(click());
-        onView(withId(R.id.autofill_row)).perform(click());
-        onView(withId(R.id.history_row)).perform(click());
-        onView(withId(R.id.history_row)).perform(click());
-
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(
-                        "Signin.SyncConsentScreen.DataRowClicked", SyncDataRowClicked.BOOKMARKS));
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(
-                        "Signin.SyncConsentScreen.DataRowClicked", SyncDataRowClicked.AUTOFILL));
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(
-                        "Signin.SyncConsentScreen.DataRowClicked", SyncDataRowClicked.HISTORY));
-        assertEquals(3,
-                mHistogramTestRule.getHistogramTotalCount(
-                        "Signin.SyncConsentScreen.DataRowClicked"));
     }
 
     private void launchActivityWithFragment(Fragment fragment) {

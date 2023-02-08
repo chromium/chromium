@@ -12,7 +12,4 @@ found in the LICENSE file.
     <!-- Signin fre uma dialog dimensions -->
     <dimen name="signin_fre_uma_dialog_padding">24dp</dimen>
     <dimen name="signin_fre_uma_dialog_button_padding">16dp</dimen>
-    <!-- Sync consent page dimensions -->
-    <dimen name="sync_data_type_drawable_padding">16dp</dimen>
-    <dimen name="sync_data_type_row_space">24dp</dimen>
 </resources>

@@ -21,9 +21,6 @@ class SyncConsentView extends LinearLayout {
     private ImageView mAccountImage;
     private TextView mTitle;
     private TextView mSubtitle;
-    private TextView mBookmarksRow;
-    private TextView mAutofillRow;
-    private TextView mHistoryRow;
     private Button mRefuseButton;
     private Button mMoreButton;
     private ButtonCompat mAcceptButton;
@@ -41,9 +38,6 @@ class SyncConsentView extends LinearLayout {
         mAccountImage = findViewById(R.id.account_image);
         mTitle = findViewById(R.id.sync_consent_title);
         mSubtitle = findViewById(R.id.sync_consent_subtitle);
-        mBookmarksRow = findViewById(R.id.bookmarks_row);
-        mAutofillRow = findViewById(R.id.autofill_row);
-        mHistoryRow = findViewById(R.id.history_row);
         mRefuseButton = findViewById(R.id.negative_button);
         mMoreButton = findViewById(R.id.more_button);
         mAcceptButton = findViewById(R.id.positive_button);
@@ -64,18 +58,6 @@ class SyncConsentView extends LinearLayout {
 
     TextView getSubtitleView() {
         return mSubtitle;
-    }
-
-    TextView getBookmarksRow() {
-        return mBookmarksRow;
-    }
-
-    TextView getAutofillRow() {
-        return mAutofillRow;
-    }
-
-    TextView getHistoryRow() {
-        return mHistoryRow;
     }
 
     Button getRefuseButton() {
