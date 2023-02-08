@@ -556,6 +556,27 @@ TEST_P(CookieSettingsTest, DeleteSessionOnly) {
   EXPECT_TRUE(ShouldDeleteCookieOnExit(kSubDomain, true));
 }
 
+TEST_P(CookieSettingsTest, DeleteSessionOnlyWithThirdPartyBlocking) {
+  cookie_settings_->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+  EXPECT_TRUE(cookie_settings_->IsCookieSessionOnly(kBlockedSite,
+                                                    QueryReason::kSetting));
+  EXPECT_TRUE(ShouldDeleteCookieOnExit(kDomain, false));
+}
+
+#if !BUILDFLAG(IS_IOS)
+TEST_P(CookieSettingsTestSandboxV4Enabled,
+       DeleteSessionOnlyWithThirdPartyBlocking) {
+  cookie_settings_->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+  EXPECT_TRUE(cookie_settings_->IsCookieSessionOnly(kBlockedSite,
+                                                    QueryReason::kSetting));
+  EXPECT_TRUE(ShouldDeleteCookieOnExit(kDomain, false));
+}
+#endif
+
 TEST_P(CookieSettingsTest, DeletionWithDifferentPorts) {
   // Keep cookies for site with special port.
   cookie_settings_->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
@@ -674,15 +695,13 @@ TEST_P(CookieSettingsTest, CookiesThirdPartyBlockedAllSitesAllowed) {
   EXPECT_FALSE(cookie_settings_->IsCookieSessionOnly(kAllowedSite,
                                                      QueryReason::kCookies));
 
-  // HTTP sites should be allowed, session_only attributes are ignored for
-  // exceptions with secondary pattern.
+  // HTTP sites should be allowed.
   EXPECT_TRUE(cookie_settings_->IsFullCookieAccessAllowed(
       kFirstPartySite, kFirstPartySiteForCookies,
       /*top_frame_origin=*/absl::nullopt, cookie_setting_overrides,
       QueryReason::kCookies));
-  EXPECT_EQ(cookie_settings_->IsCookieSessionOnly(kFirstPartySite,
-                                                  QueryReason::kCookies),
-            !is_privacy_sandbox_v4_enabled_);
+  EXPECT_TRUE(cookie_settings_->IsCookieSessionOnly(kFirstPartySite,
+                                                    QueryReason::kCookies));
 
   // Third-party cookies should be blocked.
   EXPECT_EQ(cookie_setting_overrides.Has(
