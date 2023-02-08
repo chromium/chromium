@@ -913,12 +913,8 @@ void HotseatWidget::CalculateTargetBounds() {
   const gfx::Size hotseat_target_size =
       CalculateTargetBoundsSize(hotseat_target_state);
 
-  if (hotseat_target_state == HotseatState::kShownHomeLauncher) {
-    target_size_for_shown_state_ = hotseat_target_size;
-  } else {
-    target_size_for_shown_state_ =
-        CalculateTargetBoundsSize(HotseatState::kShownHomeLauncher);
-  }
+  target_size_for_shown_state_ =
+      CalculateTargetBoundsSize(HotseatState::kShownHomeLauncher);
 
   const gfx::Rect shelf_bounds = shelf_->shelf_widget()->GetTargetBounds();
   const gfx::Rect status_area_bounds =
