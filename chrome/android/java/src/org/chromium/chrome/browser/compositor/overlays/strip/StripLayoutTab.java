@@ -204,6 +204,7 @@ public class StripLayoutTab implements VirtualView {
 
     private boolean mVisible = true;
     private boolean mIsDying;
+    private boolean mIsReordering;
     private boolean mCanShowCloseButton = true;
     private boolean mFolioAttached = true;
     private boolean mStartDividerVisible;
@@ -336,6 +337,14 @@ public class StripLayoutTab implements VirtualView {
     }
 
     /**
+     * Marks if we are currently reordering this tab.
+     * @param isReordering Whether the tab is reordering.
+     */
+    public void setIsReordering(boolean isReordering) {
+        mIsReordering = isReordering;
+    }
+
+    /**
      * Marks if tab container is attached to the toolbar for the Tab Strip Redesign folio treatment.
      * @param folioAttached Whether the tab should be attached or not.
      */
@@ -385,7 +394,8 @@ public class StripLayoutTab implements VirtualView {
         // TODO(https://crbug.com/1408276): Avoid calculating every time. Instead, store the tab's
         //  color and only re-determine when the color could have changed (i.e. on selection).
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-            return TabUiThemeUtil.getTabStripContainerColor(mContext, mIncognito, foreground);
+            return TabUiThemeUtil.getTabStripContainerColor(
+                    mContext, mIncognito, foreground, mIsReordering);
         }
 
         if (foreground) {
