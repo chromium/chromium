@@ -432,15 +432,14 @@ struct FileMetadata {
 
 // Details relating to the target item that a shortcut refers to.
 struct ShortcutDetails {
-  // The `stable_id` that refers to the target.
   int64 target_stable_id = 0;
 
   [Extensible]
   enum LookupStatus {
-    [Default] kOk,
+    [Default] kUnknown,
+    kOk,
     kNotFound,
     kPermissionDenied,
-    kUnknown,
   };
 
   // In the case the target the shortcut points to can't be found or doesn't
