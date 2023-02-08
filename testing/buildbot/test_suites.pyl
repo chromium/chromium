@@ -5586,7 +5586,7 @@
     'wpt_web_tests_ios': {
       'wpt_tests_suite': {
         'args': [
-          '--product=chrome_ios'
+          '--log-wptreport'
         ],
         'merge': {
           'args': [

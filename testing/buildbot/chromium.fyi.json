@@ -19746,7 +19746,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--product=chrome_ios",
+          "--log-wptreport",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
