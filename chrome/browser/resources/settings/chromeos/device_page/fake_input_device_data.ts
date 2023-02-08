@@ -23,6 +23,11 @@ export const fakeKeyboards: Keyboard[] = [
         [ModifierKey.META, ModifierKey.VOID],
         [ModifierKey.CAPS_LOCK, ModifierKey.ASSISTANT],
       ]),
+      topRowAreFKeys: false,
+      suppressMetaFKeyRewrites: false,
+      autoRepeatEnabled: false,
+      autoRepeatDelay: 2000,
+      autoRepeatInterval: 2000,
     },
   },
   {
@@ -40,6 +45,11 @@ export const fakeKeyboards: Keyboard[] = [
     ],
     settings: {
       modifierRemappings: new Map<ModifierKey, ModifierKey>(),
+      topRowAreFKeys: true,
+      suppressMetaFKeyRewrites: true,
+      autoRepeatEnabled: true,
+      autoRepeatDelay: 150,
+      autoRepeatInterval: 20,
     },
   },
 ];
@@ -50,12 +60,36 @@ export const fakeTouchpads: Touchpad[] = [
     name: 'Default Touchpad',
     isExternal: false,
     isHaptic: true,
+    settings: {
+      sensitivity: 1,
+      reverseScrolling: false,
+      accelerationEnabled: false,
+      tapToClickEnabled: false,
+      threeFingerClickEnabled: false,
+      tapDraggingEnabled: false,
+      scrollSensitivity: 1,
+      scrollAcceleration: false,
+      hapticSensitivity: 1,
+      hapticEnabled: false,
+    },
   },
   {
     id: 3,
     name: 'Logitech T650',
     isExternal: true,
     isHaptic: false,
+    settings: {
+      sensitivity: 5,
+      reverseScrolling: true,
+      accelerationEnabled: true,
+      tapToClickEnabled: true,
+      threeFingerClickEnabled: true,
+      tapDraggingEnabled: true,
+      scrollSensitivity: 5,
+      scrollAcceleration: true,
+      hapticSensitivity: 5,
+      hapticEnabled: true,
+    },
   },
 ];
 
@@ -64,11 +98,27 @@ export const fakeMice: Mouse[] = [
     id: 4,
     name: 'Razer Basilisk V3',
     isExternal: true,
+    settings: {
+      swapRight: true,
+      sensitivity: 5,
+      reverseScrolling: true,
+      accelerationEnabled: true,
+      scrollSensitivity: 5,
+      scrollAcceleration: true,
+    },
   },
   {
     id: 5,
     name: 'MX Anywhere 2S',
     isExternal: false,
+    settings: {
+      swapRight: false,
+      sensitivity: 1,
+      reverseScrolling: false,
+      accelerationEnabled: false,
+      scrollSensitivity: 1,
+      scrollAcceleration: false,
+    },
   },
 ];
 
@@ -77,10 +127,20 @@ export const fakePointingSticks: PointingStick[] = [
     id: 6,
     name: 'Default Pointing Stick',
     isExternal: false,
+    settings: {
+      swapRight: false,
+      sensitivity: 1,
+      accelerationEnabled: false,
+    },
   },
   {
     id: 7,
     name: 'Lexmark-Unicomp FSR',
     isExternal: true,
+    settings: {
+      swapRight: true,
+      sensitivity: 5,
+      accelerationEnabled: true,
+    },
   },
 ];
