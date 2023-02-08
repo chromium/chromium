@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 
 // static
@@ -30,6 +31,7 @@ BoundSessionCookieRefreshServiceFactory::
     : ProfileKeyedServiceFactory("BoundSessionCookieRefreshService") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(AccountConsistencyModeManagerFactory::GetInstance());
+  DependsOn(ChromeSigninClientFactory::GetInstance());
 }
 
 BoundSessionCookieRefreshServiceFactory::
@@ -44,6 +46,10 @@ KeyedService* BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return new BoundSessionCookieRefreshService(
-      IdentityManagerFactory::GetForProfile(profile));
+  auto* bound_session_cookie_refresh_service =
+      new BoundSessionCookieRefreshService(
+          ChromeSigninClientFactory::GetForProfile(profile),
+          IdentityManagerFactory::GetForProfile(profile));
+  bound_session_cookie_refresh_service->Initialize();
+  return bound_session_cookie_refresh_service;
 }
