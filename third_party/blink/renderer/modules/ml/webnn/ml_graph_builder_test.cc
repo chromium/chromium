@@ -2390,8 +2390,8 @@ MLGraphTestBase::BuildResult MLGraphTestBase::BuildGraph(
     case ExecutionMode::kAsync: {
       ScriptPromiseTester tester(
           scope.GetScriptState(),
-          builder->build(scope.GetScriptState(), named_operands,
-                         scope.GetExceptionState()));
+          builder->buildAsync(scope.GetScriptState(), named_operands,
+                              scope.GetExceptionState()));
       tester.WaitUntilSettled();
       if (tester.IsFulfilled()) {
         return BuildResult{.graph = ToMLGraph(&scope, tester.Value()),

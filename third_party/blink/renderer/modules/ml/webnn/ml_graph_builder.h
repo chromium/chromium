@@ -138,10 +138,13 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* sigmoid(const MLOperand* input, ExceptionState& exception_state);
   MLOperator* sigmoid(ExceptionState& exception_state);
 
-  ScriptPromise build(ScriptState* script_state,
-                      const MLNamedOperands& outputs,
-                      ExceptionState& exception_state);
+  ScriptPromise buildAsync(ScriptState* script_state,
+                           const MLNamedOperands& named_outputs,
+                           ExceptionState& exception_state);
 
+  // TODO(ningxin.hu@intel.com): Once the web-platform-tests are updated, add
+  // MLGraphBuilder.buildSync() into ml_graph_builder.idl for dedicated worker
+  // as WebNN spec: https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-buildsync
   MLGraph* buildSync(const MLNamedOperands& named_outputs,
                      ExceptionState& exception_state);
 

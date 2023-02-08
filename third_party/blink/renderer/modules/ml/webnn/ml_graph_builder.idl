@@ -106,6 +106,5 @@ dictionary MLResample2dOptions {
   [RaisesException] MLOperand sigmoid(MLOperand input);
   [RaisesException] MLOperator sigmoid();
 
-  [CallWith=ScriptState, RaisesException] Promise<MLGraph> build(MLNamedOperands outputs);
-  [RaisesException, Exposed=DedicatedWorker] MLGraph buildSync(MLNamedOperands outputs);
+  [CallWith=ScriptState, RaisesException] Promise<MLGraph> buildAsync(MLNamedOperands outputs);
 };

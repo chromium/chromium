@@ -5238,7 +5238,7 @@ interface MLGraphBuilder
     attribute @@toStringTag
     method add
     method averagePool2d
-    method build
+    method buildAsync
     method clamp
     method constant
     method constructor

@@ -1179,9 +1179,9 @@ MLOperator* MLGraphBuilder::sigmoid(ExceptionState& exception_state) {
                                           MLOperator::OperatorKind::kSigmoid);
 }
 
-ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
-                                    const MLNamedOperands& named_outputs,
-                                    ExceptionState& exception_state) {
+ScriptPromise MLGraphBuilder::buildAsync(ScriptState* script_state,
+                                         const MLNamedOperands& named_outputs,
+                                         ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
