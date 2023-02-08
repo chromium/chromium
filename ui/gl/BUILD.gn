@@ -512,7 +512,6 @@ static_library("test_support") {
 
   if (!is_android) {
     sources += [
-      "test/gl_image_bind_test_template.h",
       "test/gl_image_test_template.cc",
       "test/gl_image_test_template.h",
     ]
