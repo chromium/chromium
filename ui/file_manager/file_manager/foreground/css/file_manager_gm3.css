@@ -1346,7 +1346,7 @@ body[type='full-page'] .detail-name .detail-icon:active {
 .thumbnail-grid .thumbnail-item {
   background-color: inherit;
   border-radius: 12px;
-  height: 168px;
+  height: 160px;
   margin-inline-start: 16px;
   margin-top: 16px;
   overflow: hidden;
@@ -1384,7 +1384,7 @@ grid .thumbnail-bottom .detail-icon:active {
 
 .thumbnail-grid .img-container {
   color: var(--cros-sys-on_surface_bodytext);
-  height: 120px;
+  height: 112px;
   width: 100%;
 }
 
