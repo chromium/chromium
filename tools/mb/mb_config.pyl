@@ -3087,7 +3087,7 @@
     ],
 
     'libfuzzer_ubsan_release_bot_reclient': [
-      'libfuzzer', 'ubsan_security_non_vptr', 'release_bot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
+      'libfuzzer', 'ubsan_security_non_vptr', 'release_bot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus', 'shared',
     ],
 
     'libfuzzer_windows_asan_clang_tot_release_bot': [

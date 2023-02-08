@@ -238,7 +238,7 @@
       "dcheck_always_on": false,
       "enable_nacl": false,
       "ffmpeg_branding": "ChromeOS",
-      "is_component_build": false,
+      "is_component_build": true,
       "is_debug": false,
       "is_ubsan_security": true,
       "is_ubsan_vptr": false,
