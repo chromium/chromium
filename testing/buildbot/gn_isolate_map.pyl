@@ -768,10 +768,6 @@
     "label": "//components/cronet/android:cronet_unittests_android",
     "type": "console_test_launcher",
   },
-  "cronet_unittests_ios": {
-    "label": "//components/cronet/ios:cronet_unittests_ios",
-    "type": "console_test_launcher",
-  },
   "crypto_unittests": {
     "label": "//crypto:crypto_unittests",
     "type": "console_test_launcher",
@@ -981,51 +977,12 @@
     "label": "//ios/chrome/test:all_fuzzer_tests",
     "type": "additional_compile_target",
   },
-  "ios_chrome_bookmarks_egtests": {
-    "label": "//ios/chrome/test/earl_grey:ios_chrome_bookmarks_egtests",
-    "type": "generated_script",
-  },
   "ios_chrome_clusterfuzz_asan_build": {
     "label": "//ios/chrome/test/wpt:ios_chrome_clusterfuzz_asan_build",
     "type": "additional_compile_target",
   },
-  "ios_chrome_integration_egtests": {
-    "label": "//ios/chrome/test/earl_grey:ios_chrome_integration_egtests",
-    "type": "generated_script",
-  },
-  "ios_chrome_reading_list_egtests": {
-    "label": "//ios/chrome/test/earl_grey:ios_chrome_reading_list_egtests",
-    "type": "generated_script",
-  },
-  "ios_chrome_settings_egtests": {
-    "args": [
-      "--enable-features=ClearSyncedData",
-    ],
-    "label": "//ios/chrome/test/earl_grey:ios_chrome_settings_egtests",
-    "type": "generated_script",
-  },
-  "ios_chrome_signin_egtests": {
-    "label": "//ios/chrome/test/earl_grey:ios_chrome_signin_egtests",
-    "type": "generated_script",
-  },
-  "ios_chrome_translate_egtests": {
-    "label": "//ios/chrome/test/earl_grey:ios_chrome_translate_egtests",
-    "type": "generated_script",
-  },
-  "ios_chrome_smoke_egtests": {
-    "label": "//ios/chrome/test/earl_grey:ios_chrome_smoke_egtests",
-    "type": "generated_script",
-  },
-  "ios_chrome_ui_egtests": {
-    "label": "//ios/chrome/test/earl_grey:ios_chrome_ui_egtests",
-    "type": "generated_script",
-  },
   "ios_chrome_unittests": {
     "label": "//ios/chrome/test:ios_chrome_unittests",
-    "type": "generated_script",
-  },
-  "ios_chrome_web_egtests": {
-    "label": "//ios/chrome/test/earl_grey:ios_chrome_web_egtests",
     "type": "generated_script",
   },
   "ios_chrome_bookmarks_eg2tests_module": {
@@ -1072,10 +1029,6 @@
     "label": "//remoting/ios:ios_remoting_unittests",
     "type": "generated_script",
   },
-  "ios_showcase_egtests": {
-    "label": "//ios/showcase:ios_showcase_egtests",
-    "type": "generated_script",
-  },
   "ios_showcase_eg2tests_module": {
     "label": "//ios/showcase:ios_showcase_eg2tests_module",
     "type": "generated_script",
@@ -1094,10 +1047,6 @@
   },
   "ios_web_shell_eg2tests_module": {
     "label": "//ios/web/shell/test:ios_web_shell_eg2tests_module",
-    "type": "generated_script",
-  },
-  "ios_web_shell_egtests": {
-    "label": "//ios/web/shell/test:ios_web_shell_egtests",
     "type": "generated_script",
   },
   "ios_web_unittests": {
