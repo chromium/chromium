@@ -1131,7 +1131,7 @@ c_equal_range(Sequence& sequence, const T& value, LessThan&& comp) {
 // to test if any element in the sorted container contains a value equivalent to
 // 'value'.
 template <typename Sequence, typename T>
-bool c_binary_search(Sequence&& sequence, const T& value) {
+bool c_binary_search(const Sequence& sequence, const T& value) {
   return std::binary_search(container_algorithm_internal::c_begin(sequence),
                             container_algorithm_internal::c_end(sequence),
                             value);
@@ -1140,7 +1140,8 @@ bool c_binary_search(Sequence&& sequence, const T& value) {
 // Overload of c_binary_search() for performing a `comp` comparison other than
 // the default `operator<`.
 template <typename Sequence, typename T, typename LessThan>
-bool c_binary_search(Sequence&& sequence, const T& value, LessThan&& comp) {
+bool c_binary_search(const Sequence& sequence, const T& value,
+                     LessThan&& comp) {
   return std::binary_search(container_algorithm_internal::c_begin(sequence),
                             container_algorithm_internal::c_end(sequence),
                             value, std::forward<LessThan>(comp));

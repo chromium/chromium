@@ -1,0 +1,12 @@
+diff --git a/third_party/abseil-cpp/absl/base/prefetch.h b/third_party/abseil-cpp/absl/base/prefetch.h
+index 6bc98637495dd..2de0b0a91a1ae 100644
+--- a/third_party/abseil-cpp/absl/base/prefetch.h
++++ b/third_party/abseil-cpp/absl/base/prefetch.h
+@@ -34,7 +34,6 @@
+     (defined(_M_X64) || defined(_M_IX86))
+ #include <intrin.h>
+ #pragma intrinsic(_mm_prefetch)
+-#pragma intrinsic(_m_prefetchw)
+ #endif
+ 
+ namespace absl {

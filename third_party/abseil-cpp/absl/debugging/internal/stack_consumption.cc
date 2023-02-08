@@ -162,7 +162,7 @@ int GetSignalHandlerStackConsumption(void (*signal_handler)(int)) {
     // versions of musl have a bug that rejects ss_size==0. Work around this by
     // setting ss_size to MINSIGSTKSZ, which should be ignored by the kernel
     // when SS_DISABLE is set.
-    old_sigstk.ss_size = MINSIGSTKSZ;
+    old_sigstk.ss_size = static_cast<size_t>(MINSIGSTKSZ);
   }
   ABSL_RAW_CHECK(sigaltstack(&old_sigstk, nullptr) == 0,
                  "sigaltstack() failed");

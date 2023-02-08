@@ -12,10 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// TODO(b/265984188): remove all uses and delete this header.
+
 #ifndef ABSL_BASE_INTERNAL_PREFETCH_H_
 #define ABSL_BASE_INTERNAL_PREFETCH_H_
 
+#include "absl/base/attributes.h"
 #include "absl/base/config.h"
+#include "absl/base/prefetch.h"
 
 #ifdef __SSE__
 #include <xmmintrin.h>
@@ -72,10 +76,21 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace base_internal {
 
-void PrefetchT0(const void* addr);
+ABSL_DEPRECATED("Use absl::PrefetchToLocalCache() instead")
+inline void PrefetchT0(const void* address) {
+  absl::PrefetchToLocalCache(address);
+}
+
+ABSL_DEPRECATED("Use absl::PrefetchToLocalCache() instead")
+inline void PrefetchNta(const void* address) {
+  absl::PrefetchToLocalCacheNta(address);
+}
+
+ABSL_DEPRECATED("Use __builtin_prefetch() for advanced prefetch logic instead")
 void PrefetchT1(const void* addr);
+
+ABSL_DEPRECATED("Use __builtin_prefetch() for advanced prefetch logic instead")
 void PrefetchT2(const void* addr);
-void PrefetchNta(const void* addr);
 
 // Implementation details follow.
 
@@ -90,10 +105,6 @@ void PrefetchNta(const void* addr);
 // safe for all currently supported platforms. However, prefetch for
 // store may have problems depending on the target platform.
 //
-inline void PrefetchT0(const void* addr) {
-  // Note: this uses prefetcht0 on Intel.
-  __builtin_prefetch(addr, 0, 3);
-}
 inline void PrefetchT1(const void* addr) {
   // Note: this uses prefetcht1 on Intel.
   __builtin_prefetch(addr, 0, 2);
@@ -102,33 +113,21 @@ inline void PrefetchT2(const void* addr) {
   // Note: this uses prefetcht2 on Intel.
   __builtin_prefetch(addr, 0, 1);
 }
-inline void PrefetchNta(const void* addr) {
-  // Note: this uses prefetchtnta on Intel.
-  __builtin_prefetch(addr, 0, 0);
-}
 
 #elif defined(ABSL_INTERNAL_HAVE_SSE)
 
 #define ABSL_INTERNAL_HAVE_PREFETCH 1
 
-inline void PrefetchT0(const void* addr) {
-  _mm_prefetch(reinterpret_cast<const char*>(addr), _MM_HINT_T0);
-}
 inline void PrefetchT1(const void* addr) {
   _mm_prefetch(reinterpret_cast<const char*>(addr), _MM_HINT_T1);
 }
 inline void PrefetchT2(const void* addr) {
   _mm_prefetch(reinterpret_cast<const char*>(addr), _MM_HINT_T2);
 }
-inline void PrefetchNta(const void* addr) {
-  _mm_prefetch(reinterpret_cast<const char*>(addr), _MM_HINT_NTA);
-}
 
 #else
-inline void PrefetchT0(const void*) {}
 inline void PrefetchT1(const void*) {}
 inline void PrefetchT2(const void*) {}
-inline void PrefetchNta(const void*) {}
 #endif
 
 }  // namespace base_internal

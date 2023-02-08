@@ -82,6 +82,10 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS + select({
         "//absl:msvc_compiler": ["-DEFAULTLIB:bcrypt.lib"],
         "//absl:clang-cl_compiler": ["-DEFAULTLIB:bcrypt.lib"],
+        "//absl:mingw_compiler": [
+            "-DEFAULTLIB:bcrypt.lib",
+            "-lbcrypt",
+        ],
         "//conditions:default": [],
     }),
     deps = [

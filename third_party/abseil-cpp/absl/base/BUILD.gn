@@ -272,13 +272,18 @@ absl_source_set("fast_type_id") {
 }
 
 absl_source_set("prefetch") {
-  public = [ "internal/prefetch.h" ]
-  deps = [ ":config" ]
-  visibility = [ "//third_party/abseil-cpp/absl/*" ]
+  public = [
+    "internal/prefetch.h",
+    "prefetch.h",
+  ]
+  deps = [
+    ":config",
+    ":core_headers",
+  ]
 }
 
 absl_test("prefetch_test") {
-  sources = [ "internal/prefetch_test.cc" ]
+  sources = [ "prefetch_test.cc" ]
   deps = [ ":prefetch" ]
 }
 

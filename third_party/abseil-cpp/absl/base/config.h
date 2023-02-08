@@ -759,6 +759,18 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_DLL
 #endif  // defined(_MSC_VER)
 
+#if defined(_MSC_VER)
+#if defined(ABSL_BUILD_TEST_DLL)
+#define ABSL_TEST_DLL __declspec(dllexport)
+#elif defined(ABSL_CONSUME_TEST_DLL)
+#define ABSL_TEST_DLL __declspec(dllimport)
+#else
+#define ABSL_TEST_DLL
+#endif
+#else
+#define ABSL_TEST_DLL
+#endif  // defined(_MSC_VER)
+
 // ABSL_HAVE_MEMORY_SANITIZER
 //
 // MemorySanitizer (MSan) is a detector of uninitialized reads. It consists of

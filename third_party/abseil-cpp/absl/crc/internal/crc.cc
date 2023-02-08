@@ -44,8 +44,8 @@
 #include <cstdint>
 
 #include "absl/base/internal/endian.h"
-#include "absl/base/internal/prefetch.h"
 #include "absl/base/internal/raw_logging.h"
+#include "absl/base/prefetch.h"
 #include "absl/crc/internal/crc_internal.h"
 
 namespace absl {
@@ -309,7 +309,7 @@ void CRC32::Extend(uint32_t* crc, const void* bytes, size_t length) const {
 
     // Process kStride interleaved swaths through the data in parallel.
     while ((e - p) > kPrefetchHorizon) {
-      base_internal::PrefetchNta(
+      PrefetchToLocalCacheNta(
           reinterpret_cast<const void*>(p + kPrefetchHorizon));
       // Process 64 bytes at a time
       step_stride();

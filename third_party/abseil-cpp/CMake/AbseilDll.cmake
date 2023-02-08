@@ -27,6 +27,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "base/internal/low_level_scheduling.h"
   "base/internal/per_thread_tls.h"
   "base/internal/prefetch.h"
+  "base/prefetch.h"
   "base/internal/pretty_function.h"
   "base/internal/raw_logging.cc"
   "base/internal/raw_logging.h"
@@ -652,7 +653,7 @@ function(absl_internal_test_dll_contains)
   STRING(REGEX REPLACE "^absl::" "" _target ${ABSL_INTERNAL_TEST_DLL_TARGET})
 
   list(FIND
-    ABSL_INTERNA_TEST_DLL_TARGETS
+    ABSL_INTERNAL_TEST_DLL_TARGETS
     "${_target}"
     _index)
 
@@ -701,14 +702,18 @@ function(absl_make_dll)
     set(_dll "abseil_test_dll")
     set(_dll_files ${ABSL_INTERNAL_TEST_DLL_FILES})
     set(_dll_libs "abseil_dll" "GTest::gtest" "GTest::gmock")
-    set(_dll_compile_definiations "GTEST_LINKED_AS_SHARED_LIBRARY=1")
-    set(_dll_includes ${GMOCK_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS})
+    set(_dll_compile_definitions "GTEST_LINKED_AS_SHARED_LIBRARY=1")
+    set(_dll_includes ${absl_gtest_src_dir}/googletest/include ${absl_gtest_src_dir}/googlemock/include)
+    set(_dll_consume "ABSL_CONSUME_TEST_DLL")
+    set(_dll_build "ABSL_BUILD_TEST_DLL")
   else()
     set(_dll "abseil_dll")
     set(_dll_files ${ABSL_INTERNAL_DLL_FILES})
     set(_dll_libs "")
-    set(_dll_compile_definiations "")
+    set(_dll_compile_definitions "")
     set(_dll_includes "")
+    set(_dll_consume "ABSL_CONSUME_DLL")
+    set(_dll_build "ABSL_BUILD_DLL")
   endif()
 
   add_library(
@@ -760,7 +765,7 @@ Name: ${_dll}\n\
 Description: Abseil DLL library\n\
 URL: https://abseil.io/\n\
 Version: ${absl_VERSION}\n\
-Libs: -L\${libdir} ${PC_LINKOPTS} $<$<NOT:$<BOOL:${ABSL_CC_LIB_IS_INTERFACE}>>:-labseil_dll>\n\
+Libs: -L\${libdir} ${PC_LINKOPTS} $<$<NOT:$<BOOL:${ABSL_CC_LIB_IS_INTERFACE}>>:-l${_dll}>\n\
 Cflags: -I\${includedir}${PC_CFLAGS}\n")
   INSTALL(FILES "${CMAKE_BINARY_DIR}/lib/pkgconfig/${_dll}.pc"
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
@@ -768,13 +773,13 @@ Cflags: -I\${includedir}${PC_CFLAGS}\n")
   target_compile_definitions(
     ${_dll}
     PUBLIC
-      GTEST_LINKED_AS_SHARED_LIBRARY=1
+      ${_dll_compile_definitions}
     PRIVATE
-      ABSL_BUILD_DLL
+      ${_dll_build}
       NOMINMAX
     INTERFACE
       ${ABSL_CC_LIB_DEFINES}
-      ABSL_CONSUME_DLL
+      ${_dll_consume}
   )
 
   if(ABSL_PROPAGATE_CXX_STD)

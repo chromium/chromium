@@ -21,7 +21,7 @@
 #include "absl/base/config.h"
 #include "absl/base/dynamic_annotations.h"
 #include "absl/base/internal/endian.h"
-#include "absl/base/internal/prefetch.h"
+#include "absl/base/prefetch.h"
 #include "absl/crc/internal/cpu_detect.h"
 #include "absl/crc/internal/crc.h"
 #include "absl/crc/internal/crc32_x86_arm_combined_simd.h"
@@ -429,11 +429,11 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
           ABSL_INTERNAL_STEP8BY3(l64, l641, l642, p, p1, p2);
           ABSL_INTERNAL_STEP8BY3(l64, l641, l642, p, p1, p2);
           ABSL_INTERNAL_STEP8BY3(l64, l641, l642, p, p1, p2);
-          base_internal::PrefetchT0(
+          PrefetchToLocalCache(
               reinterpret_cast<const char*>(p + kPrefetchHorizonMedium));
-          base_internal::PrefetchT0(
+          PrefetchToLocalCache(
               reinterpret_cast<const char*>(p1 + kPrefetchHorizonMedium));
-          base_internal::PrefetchT0(
+          PrefetchToLocalCache(
               reinterpret_cast<const char*>(p2 + kPrefetchHorizonMedium));
         }
         // Don't run crc on last 8 bytes.
@@ -517,12 +517,12 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
       for (size_t i = 1; i < bs; i++) {
         // Prefetch data for next itterations.
         for (size_t j = 0; j < num_crc_streams; j++) {
-          base_internal::PrefetchT0(
+          PrefetchToLocalCache(
               reinterpret_cast<const char*>(crc_streams[j] + kPrefetchHorizon));
         }
         for (size_t j = 0; j < num_pclmul_streams; j++) {
-          base_internal::PrefetchT0(reinterpret_cast<const char*>(
-              pclmul_streams[j] + kPrefetchHorizon));
+          PrefetchToLocalCache(reinterpret_cast<const char*>(pclmul_streams[j] +
+                                                             kPrefetchHorizon));
         }
 
         // We process each stream in 64 byte blocks. This can be written as
