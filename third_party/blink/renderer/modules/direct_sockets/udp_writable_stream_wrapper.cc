@@ -93,13 +93,6 @@ ScriptPromise UDPWritableStreamWrapper::Write(ScriptValue chunk,
           "in 'connected' mode.");
       return ScriptPromise();
     }
-    if (net::IPAddress address;
-        !address.AssignFromIPLiteral(message->remoteAddress().Utf8())) {
-      exception_state.ThrowTypeError(
-          "UDPMessage: 'remoteAddress' must be a valid IP address -- DNS "
-          "resolution is currently unsupported.");
-      return ScriptPromise();
-    }
     dest_addr = net::HostPortPair(message->remoteAddress().Utf8(),
                                   message->remotePort());
   } else if (message->hasRemoteAddress() || message->hasRemotePort()) {

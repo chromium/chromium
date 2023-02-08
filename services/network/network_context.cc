@@ -107,6 +107,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/parsed_headers.h"
+#include "services/network/public/cpp/simple_host_resolver.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/reporting_service.mojom.h"
@@ -1474,9 +1475,11 @@ void NetworkContext::CreateRestrictedUDPSocket(
     mojo::PendingReceiver<mojom::RestrictedUDPSocket> receiver,
     mojo::PendingRemote<mojom::UDPSocketListener> listener,
     CreateRestrictedUDPSocketCallback callback) {
+  // SimpleHostResolver is transitively owned by |this|.
   socket_factory_->CreateRestrictedUDPSocket(
       addr, mode, traffic_annotation, std::move(options), std::move(receiver),
-      std::move(listener), std::move(callback));
+      std::move(listener), SimpleHostResolver::Create(this),
+      std::move(callback));
 }
 
 void NetworkContext::CreateTCPServerSocket(

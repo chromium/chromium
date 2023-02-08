@@ -33,14 +33,15 @@ class NetLog;
 
 namespace network {
 
+class SimpleHostResolver;
+
 // Helper class that handles socket requests. It takes care of destroying
 // socket implementation instances when mojo  pipes are broken.
 class COMPONENT_EXPORT(NETWORK_SERVICE) SocketFactory
     : public TCPServerSocket::Delegate {
  public:
   // Constructs a SocketFactory. If |net_log| is non-null, it is used to
-  // log NetLog events when logging is enabled. |net_log| used to must outlive
-  // |this|.
+  // log NetLog events when logging is enabled. |net_log| must outlive |this|.
   SocketFactory(net::NetLog* net_log,
                 net::URLRequestContext* url_request_context);
 
@@ -59,6 +60,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketFactory
       mojom::UDPSocketOptionsPtr options,
       mojo::PendingReceiver<mojom::RestrictedUDPSocket> receiver,
       mojo::PendingRemote<mojom::UDPSocketListener> listener,
+      std::unique_ptr<SimpleHostResolver> resolver,
       mojom::NetworkContext::CreateRestrictedUDPSocketCallback callback);
   void CreateTCPServerSocket(
       const net::IPEndPoint& local_addr,

@@ -422,21 +422,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, UdpMessageConfigurations) {
         localAddress: '127.0.0.1',
       }, {
         data: (new TextEncoder()).encode("meow"),
-        remoteAddress: 'direct-sockets.com',
-        remotePort: 53,
-      })
-    )";
-    ASSERT_THAT(
-        EvalJs(shell(), script).ExtractString(),
-        testing::HasSubstr("UDPMessage: 'remoteAddress' must be a valid IP"));
-  }
-
-  {
-    const std::string script = R"(
-      testUdpMessageConfiguration({
-        localAddress: '127.0.0.1',
-      }, {
-        data: (new TextEncoder()).encode("meow"),
       })
     )";
     ASSERT_THAT(

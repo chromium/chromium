@@ -420,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpServerReadWrite) {
   dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
     chrome.test.sendMessage("ready", async (message) => {
       try {
-        const clientPort = message;
+        const [clientAddress, clientPort] = message.split(':');
 
         const socket = new UDPSocket({ localAddress: "127.0.0.1" });
 
@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpServerReadWrite) {
 
         writer.write({
           data: (new TextEncoder()).encode(kUdpMessage),
-          remoteAddress: "127.0.0.1",
+          remoteAddress: clientAddress,
           remotePort: clientPort,
         });
       } catch (e) {
@@ -462,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpServerReadWrite) {
   ASSERT_TRUE(LoadExtension(dir.UnpackedPath()));
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
-  listener.Reply(base::StringPrintf("%d", test_server()->port()));
+  listener.Reply(base::StringPrintf("%s:%d", kHostname, test_server()->port()));
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
@@ -616,8 +616,8 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
         const kUdpMessage = "udp_message";
         writable.getWriter().write({
           data: (new TextEncoder()).encode(kUdpMessage),
-          remoteAddress: "127.0.0.1",
-          remotePort: $1,
+          remoteAddress: $1,
+          remotePort: $2,
         });
         return await readable.getReader().read().then(packet => {
           const { value, done } = packet;
@@ -631,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
           if (remoteAddress !== "127.0.0.1") {
             return false;
           }
-          if (remotePort !== $1) {
+          if (remotePort !== $2) {
             return false;
           }
           return true;
@@ -645,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
 
   ASSERT_TRUE(
       EvalJs(app_frame, content::JsReplace(kUdpServerSendReceiveEchoScript,
-                                           test_server()->port()))
+                                           kHostname, test_server()->port()))
           .ExtractBool());
 }
 
