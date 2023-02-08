@@ -9,14 +9,20 @@ namespace blink {
 GPUSupportedFeatures::GPUSupportedFeatures() = default;
 
 GPUSupportedFeatures::GPUSupportedFeatures(
-    const Vector<String>& feature_names) {
+    const Vector<V8GPUFeatureName>& feature_names) {
   for (const auto& feature : feature_names) {
     AddFeatureName(feature);
   }
 }
 
-void GPUSupportedFeatures::AddFeatureName(const String& feature_name) {
-  features_.insert(feature_name);
+void GPUSupportedFeatures::AddFeatureName(const V8GPUFeatureName feature_name) {
+  // features_ and features_bitset_ must be kept synched.
+  features_.insert(feature_name.AsString());
+  features_bitset_.set(static_cast<size_t>(feature_name.AsEnum()));
+}
+
+bool GPUSupportedFeatures::has(const V8GPUFeatureName::Enum feature) const {
+  return features_bitset_.test(static_cast<size_t>(feature));
 }
 
 bool GPUSupportedFeatures::has(const String& feature) const {

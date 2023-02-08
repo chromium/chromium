@@ -26,6 +26,39 @@ namespace blink {
 
 namespace {
 
+absl::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(WGPUFeatureName f) {
+  switch (f) {
+    case WGPUFeatureName_Depth32FloatStencil8:
+      return V8GPUFeatureName::Enum::kDepth32FloatStencil8;
+    case WGPUFeatureName_TimestampQuery:
+      return V8GPUFeatureName::Enum::kTimestampQuery;
+    case WGPUFeatureName_TimestampQueryInsidePasses:
+      return V8GPUFeatureName::Enum::kTimestampQueryInsidePasses;
+    case WGPUFeatureName_PipelineStatisticsQuery:
+      return V8GPUFeatureName::Enum::kPipelineStatisticsQuery;
+    case WGPUFeatureName_TextureCompressionBC:
+      return V8GPUFeatureName::Enum::kTextureCompressionBc;
+    case WGPUFeatureName_TextureCompressionETC2:
+      return V8GPUFeatureName::Enum::kTextureCompressionEtc2;
+    case WGPUFeatureName_TextureCompressionASTC:
+      return V8GPUFeatureName::Enum::kTextureCompressionAstc;
+    case WGPUFeatureName_IndirectFirstInstance:
+      return V8GPUFeatureName::Enum::kIndirectFirstInstance;
+    case WGPUFeatureName_DepthClipControl:
+      return V8GPUFeatureName::Enum::kDepthClipControl;
+    case WGPUFeatureName_DawnShaderFloat16:
+      return V8GPUFeatureName::Enum::kShaderFloat16;
+    case WGPUFeatureName_RG11B10UfloatRenderable:
+      return V8GPUFeatureName::Enum::kRg11B10UfloatRenderable;
+    default:
+      return absl::nullopt;
+  }
+}
+
+}  // anonymous namespace
+
+namespace {
+
 GPUSupportedFeatures* MakeFeatureNameSet(const DawnProcTable& procs,
                                          WGPUAdapter adapter) {
   GPUSupportedFeatures* features = MakeGarbageCollected<GPUSupportedFeatures>();
@@ -38,42 +71,10 @@ GPUSupportedFeatures* MakeFeatureNameSet(const DawnProcTable& procs,
   procs.adapterEnumerateFeatures(adapter, feature_names.data());
 
   for (WGPUFeatureName f : feature_names) {
-    switch (f) {
-      case WGPUFeatureName_Depth32FloatStencil8:
-        features->AddFeatureName("depth32float-stencil8");
-        break;
-      case WGPUFeatureName_TimestampQuery:
-        features->AddFeatureName("timestamp-query");
-        break;
-      case WGPUFeatureName_TimestampQueryInsidePasses:
-        features->AddFeatureName("timestamp-query-inside-passes");
-        break;
-      case WGPUFeatureName_PipelineStatisticsQuery:
-        features->AddFeatureName("pipeline-statistics-query");
-        break;
-      case WGPUFeatureName_TextureCompressionBC:
-        features->AddFeatureName("texture-compression-bc");
-        break;
-      case WGPUFeatureName_TextureCompressionETC2:
-        features->AddFeatureName("texture-compression-etc2");
-        break;
-      case WGPUFeatureName_TextureCompressionASTC:
-        features->AddFeatureName("texture-compression-astc");
-        break;
-      case WGPUFeatureName_IndirectFirstInstance:
-        features->AddFeatureName("indirect-first-instance");
-        break;
-      case WGPUFeatureName_DepthClipControl:
-        features->AddFeatureName("depth-clip-control");
-        break;
-      case WGPUFeatureName_DawnShaderFloat16:
-        features->AddFeatureName("shader-float16");
-        break;
-      case WGPUFeatureName_RG11B10UfloatRenderable:
-        features->AddFeatureName("rg11b10ufloat-renderable");
-        break;
-      default:
-        break;
+    auto feature_name_enum_optional = ToV8FeatureNameEnum(f);
+    if (feature_name_enum_optional) {
+      features->AddFeatureName(
+          V8GPUFeatureName(feature_name_enum_optional.value()));
     }
   }
   return features;
@@ -218,7 +219,7 @@ ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
     HashSet<WGPUFeatureName> required_features_set;
     for (const V8GPUFeatureName& f : descriptor->requiredFeatures()) {
       // If the feature is not a valid feature reject with a type error.
-      if (!features_->has(f.AsString())) {
+      if (!features_->has(f.AsEnum())) {
         resolver->RejectWithTypeError(
             String::Format("Unsupported feature: %s", f.AsCStr()));
         return promise;

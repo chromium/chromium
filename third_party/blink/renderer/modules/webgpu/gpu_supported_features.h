@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_SUPPORTED_FEATURES_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_gpu_supported_features.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -18,14 +19,18 @@ class GPUSupportedFeatures : public ScriptWrappable,
 
  public:
   GPUSupportedFeatures();
-  explicit GPUSupportedFeatures(const Vector<String>& feature_names);
+  explicit GPUSupportedFeatures(const Vector<V8GPUFeatureName>& feature_names);
 
-  void AddFeatureName(const String& feature_name);
+  void AddFeatureName(const V8GPUFeatureName feature_name);
 
   bool has(const String& feature) const;
   bool hasForBinding(ScriptState* script_state,
                      const String& feature,
                      ExceptionState& exception_state) const;
+
+  // Fast path, it allows to avoid hash computation from string for
+  // checking features.
+  bool has(const V8GPUFeatureName::Enum feature) const;
 
   unsigned size() const { return features_.size(); }
 
@@ -33,6 +38,10 @@ class GPUSupportedFeatures : public ScriptWrappable,
 
  private:
   HashSet<String> features_;
+
+  // For fast path. Make a copy that is synched with features_ to allow
+  // checking features with bitset test by V8GPUFeatureName::Enum.
+  std::bitset<V8GPUFeatureName::kEnumSize> features_bitset_;
 
   class IterationSource final
       : public ValueSyncIterable<GPUSupportedFeatures>::IterationSource {

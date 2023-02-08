@@ -50,11 +50,73 @@ namespace blink {
 
 namespace {
 
-Vector<String> ToStringVector(const Vector<V8GPUFeatureName>& features) {
-  Vector<String> str_features;
-  for (auto&& feature : features)
-    str_features.push_back(IDLEnumAsString(feature));
-  return str_features;
+absl::optional<V8GPUFeatureName::Enum> RequiredFeatureForTextureFormat(
+    V8GPUTextureFormat::Enum format) {
+  switch (format) {
+    case V8GPUTextureFormat::Enum::kBc1RgbaUnorm:
+    case V8GPUTextureFormat::Enum::kBc1RgbaUnormSrgb:
+    case V8GPUTextureFormat::Enum::kBc2RgbaUnorm:
+    case V8GPUTextureFormat::Enum::kBc2RgbaUnormSrgb:
+    case V8GPUTextureFormat::Enum::kBc3RgbaUnorm:
+    case V8GPUTextureFormat::Enum::kBc3RgbaUnormSrgb:
+    case V8GPUTextureFormat::Enum::kBc4RUnorm:
+    case V8GPUTextureFormat::Enum::kBc4RSnorm:
+    case V8GPUTextureFormat::Enum::kBc5RgUnorm:
+    case V8GPUTextureFormat::Enum::kBc5RgSnorm:
+    case V8GPUTextureFormat::Enum::kBc6HRgbUfloat:
+    case V8GPUTextureFormat::Enum::kBc6HRgbFloat:
+    case V8GPUTextureFormat::Enum::kBc7RgbaUnorm:
+    case V8GPUTextureFormat::Enum::kBc7RgbaUnormSrgb:
+      return V8GPUFeatureName::Enum::kTextureCompressionBc;
+
+    case V8GPUTextureFormat::Enum::kEtc2Rgb8Unorm:
+    case V8GPUTextureFormat::Enum::kEtc2Rgb8UnormSrgb:
+    case V8GPUTextureFormat::Enum::kEtc2Rgb8A1Unorm:
+    case V8GPUTextureFormat::Enum::kEtc2Rgb8A1UnormSrgb:
+    case V8GPUTextureFormat::Enum::kEtc2Rgba8Unorm:
+    case V8GPUTextureFormat::Enum::kEtc2Rgba8UnormSrgb:
+    case V8GPUTextureFormat::Enum::kEacR11Unorm:
+    case V8GPUTextureFormat::Enum::kEacR11Snorm:
+    case V8GPUTextureFormat::Enum::kEacRg11Unorm:
+    case V8GPUTextureFormat::Enum::kEacRg11Snorm:
+      return V8GPUFeatureName::Enum::kTextureCompressionEtc2;
+
+    case V8GPUTextureFormat::Enum::kAstc4X4Unorm:
+    case V8GPUTextureFormat::Enum::kAstc4X4UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc5X4Unorm:
+    case V8GPUTextureFormat::Enum::kAstc5X4UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc5X5Unorm:
+    case V8GPUTextureFormat::Enum::kAstc5X5UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc6X5Unorm:
+    case V8GPUTextureFormat::Enum::kAstc6X5UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc6X6Unorm:
+    case V8GPUTextureFormat::Enum::kAstc6X6UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc8X5Unorm:
+    case V8GPUTextureFormat::Enum::kAstc8X5UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc8X6Unorm:
+    case V8GPUTextureFormat::Enum::kAstc8X6UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc8X8Unorm:
+    case V8GPUTextureFormat::Enum::kAstc8X8UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc10X5Unorm:
+    case V8GPUTextureFormat::Enum::kAstc10X5UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc10X6Unorm:
+    case V8GPUTextureFormat::Enum::kAstc10X6UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc10X8Unorm:
+    case V8GPUTextureFormat::Enum::kAstc10X8UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc10X10Unorm:
+    case V8GPUTextureFormat::Enum::kAstc10X10UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc12X10Unorm:
+    case V8GPUTextureFormat::Enum::kAstc12X10UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc12X12Unorm:
+    case V8GPUTextureFormat::Enum::kAstc12X12UnormSrgb:
+      return V8GPUFeatureName::Enum::kTextureCompressionAstc;
+
+    case V8GPUTextureFormat::Enum::kDepth32FloatStencil8:
+      return V8GPUFeatureName::Enum::kDepth32FloatStencil8;
+
+    default:
+      return absl::nullopt;
+  }
 }
 
 }  // anonymous namespace
@@ -68,7 +130,7 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
       DawnObject(dawn_control_client, dawn_device),
       adapter_(adapter),
       features_(MakeGarbageCollected<GPUSupportedFeatures>(
-          ToStringVector(descriptor->requiredFeatures()))),
+          descriptor->requiredFeatures())),
       queue_(MakeGarbageCollected<GPUQueue>(
           this,
           GetProcs().deviceGetQueue(GetHandle()))),
@@ -149,88 +211,25 @@ void GPUDevice::AddConsoleWarning(const char* message) {
 // browsers that haven't yet implemented the feature.
 bool GPUDevice::ValidateTextureFormatUsage(V8GPUTextureFormat format,
                                            ExceptionState& exception_state) {
-  const char* requiredFeature = nullptr;
+  auto requiredFeatureOptional =
+      RequiredFeatureForTextureFormat(format.AsEnum());
 
-  switch (format.AsEnum()) {
-    case V8GPUTextureFormat::Enum::kBc1RgbaUnorm:
-    case V8GPUTextureFormat::Enum::kBc1RgbaUnormSrgb:
-    case V8GPUTextureFormat::Enum::kBc2RgbaUnorm:
-    case V8GPUTextureFormat::Enum::kBc2RgbaUnormSrgb:
-    case V8GPUTextureFormat::Enum::kBc3RgbaUnorm:
-    case V8GPUTextureFormat::Enum::kBc3RgbaUnormSrgb:
-    case V8GPUTextureFormat::Enum::kBc4RUnorm:
-    case V8GPUTextureFormat::Enum::kBc4RSnorm:
-    case V8GPUTextureFormat::Enum::kBc5RgUnorm:
-    case V8GPUTextureFormat::Enum::kBc5RgSnorm:
-    case V8GPUTextureFormat::Enum::kBc6HRgbUfloat:
-    case V8GPUTextureFormat::Enum::kBc6HRgbFloat:
-    case V8GPUTextureFormat::Enum::kBc7RgbaUnorm:
-    case V8GPUTextureFormat::Enum::kBc7RgbaUnormSrgb:
-      requiredFeature = "texture-compression-bc";
-      break;
-
-    case V8GPUTextureFormat::Enum::kEtc2Rgb8Unorm:
-    case V8GPUTextureFormat::Enum::kEtc2Rgb8UnormSrgb:
-    case V8GPUTextureFormat::Enum::kEtc2Rgb8A1Unorm:
-    case V8GPUTextureFormat::Enum::kEtc2Rgb8A1UnormSrgb:
-    case V8GPUTextureFormat::Enum::kEtc2Rgba8Unorm:
-    case V8GPUTextureFormat::Enum::kEtc2Rgba8UnormSrgb:
-    case V8GPUTextureFormat::Enum::kEacR11Unorm:
-    case V8GPUTextureFormat::Enum::kEacR11Snorm:
-    case V8GPUTextureFormat::Enum::kEacRg11Unorm:
-    case V8GPUTextureFormat::Enum::kEacRg11Snorm:
-      requiredFeature = "texture-compression-etc2";
-      break;
-
-    case V8GPUTextureFormat::Enum::kAstc4X4Unorm:
-    case V8GPUTextureFormat::Enum::kAstc4X4UnormSrgb:
-    case V8GPUTextureFormat::Enum::kAstc5X4Unorm:
-    case V8GPUTextureFormat::Enum::kAstc5X4UnormSrgb:
-    case V8GPUTextureFormat::Enum::kAstc5X5Unorm:
-    case V8GPUTextureFormat::Enum::kAstc5X5UnormSrgb:
-    case V8GPUTextureFormat::Enum::kAstc6X5Unorm:
-    case V8GPUTextureFormat::Enum::kAstc6X5UnormSrgb:
-    case V8GPUTextureFormat::Enum::kAstc6X6Unorm:
-    case V8GPUTextureFormat::Enum::kAstc6X6UnormSrgb:
-    case V8GPUTextureFormat::Enum::kAstc8X5Unorm:
-    case V8GPUTextureFormat::Enum::kAstc8X5UnormSrgb:
-    case V8GPUTextureFormat::Enum::kAstc8X6Unorm:
-    case V8GPUTextureFormat::Enum::kAstc8X6UnormSrgb:
-    case V8GPUTextureFormat::Enum::kAstc8X8Unorm:
-    case V8GPUTextureFormat::Enum::kAstc8X8UnormSrgb:
-    case V8GPUTextureFormat::Enum::kAstc10X5Unorm:
-    case V8GPUTextureFormat::Enum::kAstc10X5UnormSrgb:
-    case V8GPUTextureFormat::Enum::kAstc10X6Unorm:
-    case V8GPUTextureFormat::Enum::kAstc10X6UnormSrgb:
-    case V8GPUTextureFormat::Enum::kAstc10X8Unorm:
-    case V8GPUTextureFormat::Enum::kAstc10X8UnormSrgb:
-    case V8GPUTextureFormat::Enum::kAstc10X10Unorm:
-    case V8GPUTextureFormat::Enum::kAstc10X10UnormSrgb:
-    case V8GPUTextureFormat::Enum::kAstc12X10Unorm:
-    case V8GPUTextureFormat::Enum::kAstc12X10UnormSrgb:
-    case V8GPUTextureFormat::Enum::kAstc12X12Unorm:
-    case V8GPUTextureFormat::Enum::kAstc12X12UnormSrgb:
-      requiredFeature = "texture-compression-astc";
-      break;
-
-    case V8GPUTextureFormat::Enum::kDepth32FloatStencil8:
-      requiredFeature = "depth32float-stencil8";
-      break;
-
-    default:
-      return true;
-  }
-
-  DCHECK(requiredFeature != nullptr);
-
-  if (features_->has(requiredFeature)) {
+  if (!requiredFeatureOptional) {
     return true;
   }
+
+  V8GPUFeatureName::Enum requiredFeatureEnum = requiredFeatureOptional.value();
+
+  if (features_->has(requiredFeatureEnum)) {
+    return true;
+  }
+
+  V8GPUFeatureName requiredFeature = V8GPUFeatureName(requiredFeatureEnum);
 
   exception_state.ThrowTypeError(String::Format(
       "Use of the '%s' texture format requires the '%s' feature "
       "to be enabled on %s.",
-      format.AsCStr(), requiredFeature, formattedLabel().c_str()));
+      format.AsCStr(), requiredFeature.AsCStr(), formattedLabel().c_str()));
   return false;
 }
 
@@ -534,11 +533,9 @@ GPURenderBundleEncoder* GPUDevice::createRenderBundleEncoder(
 
 GPUQuerySet* GPUDevice::createQuerySet(const GPUQuerySetDescriptor* descriptor,
                                        ExceptionState& exception_state) {
-  // TODO(crbug.com/1379384): Avoid using string comparisons for checking type
-  // and features because of inefficiency, maybe we can use V8GPUQueryType and
-  // V8GPUFeatureName instead of string.
-  if (descriptor->type() == "timestamp" && !features_->has("timestamp-query") &&
-      !features_->has("timestamp-query-inside-passes")) {
+  if (descriptor->type() == V8GPUQueryType::Enum::kTimestamp &&
+      !features_->has(V8GPUFeatureName::Enum::kTimestampQuery) &&
+      !features_->has(V8GPUFeatureName::Enum::kTimestampQueryInsidePasses)) {
     exception_state.ThrowTypeError(String::Format(
         "Use of 'timestamp' queries requires the 'timestamp-query' or "
         "'timestamp-query-inside-passes' feature to "

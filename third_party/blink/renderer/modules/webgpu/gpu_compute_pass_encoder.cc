@@ -52,15 +52,14 @@ void GPUComputePassEncoder::writeTimestamp(
     const DawnObject<WGPUQuerySet>* querySet,
     uint32_t queryIndex,
     ExceptionState& exception_state) {
-  // TODO(crbug.com/1379384): Avoid using string comparisons for checking
-  // features because of inefficiency, maybe we can use V8GPUFeatureName instead
-  // of string.
-  const char* requiredFeature = "timestamp-query-inside-passes";
-  if (!device_->features()->has(requiredFeature)) {
+  V8GPUFeatureName::Enum requiredFeatureEnum =
+      V8GPUFeatureName::Enum::kTimestampQueryInsidePasses;
+  if (!device_->features()->has(requiredFeatureEnum)) {
     exception_state.ThrowTypeError(String::Format(
         "Use of the writeTimestamp() method on compute pass requires the '%s' "
         "feature to be enabled on %s.",
-        requiredFeature, device_->formattedLabel().c_str()));
+        V8GPUFeatureName(requiredFeatureEnum).AsCStr(),
+        device_->formattedLabel().c_str()));
     return;
   }
   GetProcs().computePassEncoderWriteTimestamp(
