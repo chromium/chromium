@@ -1794,12 +1794,6 @@ const char kInProductHelpUseClientConfigName[] = "IPH Use Client Config";
 const char kInProductHelpUseClientConfigDescription[] =
     "Enable In-Product Help to use client side configuration.";
 
-const char kInstallIsolatedWebAppFromFile[] =
-    "Install Isolated Web App from Unsigned Web Bundle";
-const char kInstallIsolatedWebAppFromFileDescription[] =
-    "Installs a new developer mode Isolated Web App backed by the unsigned "
-    "Web Bundle at the provided path.";
-
 const char kInstallIsolatedWebAppFromUrl[] =
     "Install Isolated Web App from Proxy URL";
 const char kInstallIsolatedWebAppFromUrlDescription[] =

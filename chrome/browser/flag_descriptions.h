@@ -996,9 +996,6 @@ extern const char kInProductHelpSnoozeDescription[];
 extern const char kInProductHelpUseClientConfigName[];
 extern const char kInProductHelpUseClientConfigDescription[];
 
-extern const char kInstallIsolatedWebAppFromFile[];
-extern const char kInstallIsolatedWebAppFromFileDescription[];
-
 extern const char kInstallIsolatedWebAppFromUrl[];
 extern const char kInstallIsolatedWebAppFromUrlDescription[];
 

@@ -4311,11 +4311,6 @@
     "expiry_milestone": 121
   },
   {
-    "name": "install-isolated-web-app-from-file",
-    "owners": [ "kuragin", "reillyg", "rmcelrath" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "install-isolated-web-app-from-url",
     "owners": [ "kuragin", "reillyg", "rmcelrath" ],
     "expiry_milestone": 140
