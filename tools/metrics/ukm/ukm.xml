@@ -17044,7 +17044,7 @@ be describing additional metrics about the same event.
   <metric name="ResidentSetSize">
     <summary>
       The total resident set size footprint of this page at the moment the
-      sample was recorded, in bytes.
+      sample was recorded, in kilobytes.
     </summary>
   </metric>
   <metric name="SliceId">
