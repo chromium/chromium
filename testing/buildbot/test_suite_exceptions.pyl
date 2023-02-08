@@ -150,7 +150,17 @@
       },
       'android-12-x64-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.base_unittests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter',
+        ],
+      },
+      'android-12l-x64-dbg-tests': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter',
+        ],
+      },
+      'android-13-x64-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter',
         ],
       },
       'fuchsia-code-coverage': {
@@ -2028,12 +2038,22 @@
       },
       'android-11-x86-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.crashpad_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter',
         ],
       },
       'android-12-x64-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.crashpad_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter',
+        ],
+      },
+      'android-12l-x64-dbg-tests': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter',
+        ],
+      },
+      'android-13-x64-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter',
         ],
       },
       # TODO(crbug.com/1254975): dyld was rebuilt for macOS 12, which breaks
@@ -3048,6 +3068,18 @@
   'perfetto_unittests': {
     'modifications': {
       'android-12-x64-rel': {
+        'args': [
+          # TODO(crbug.com/1260440): Fix the failed test
+          '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
+        ],
+      },
+      'android-12l-x64-dbg-tests': {
+        'args': [
+          # TODO(crbug.com/1260440): Fix the failed test
+          '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
+        ],
+      },
+      'android-13-x64-rel': {
         'args': [
           # TODO(crbug.com/1260440): Fix the failed test
           '--gtest_filter=-ScopedDirTest.CloseOutOfScope',

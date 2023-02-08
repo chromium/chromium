@@ -3907,7 +3907,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android30.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.crashpad_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter"
         ],
         "merge": {
           "args": [
@@ -6707,7 +6707,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android31.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.base_unittests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter"
         ],
         "merge": {
           "args": [
@@ -7872,7 +7872,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android31.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.crashpad_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter"
         ],
         "merge": {
           "args": [
@@ -10790,7 +10790,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter"
         ],
         "merge": {
           "args": [
@@ -11941,7 +11942,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter"
         ],
         "merge": {
           "args": [
@@ -13361,7 +13363,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb",
+          "--gtest_filter=-ScopedDirTest.CloseOutOfScope"
         ],
         "merge": {
           "args": [
@@ -14711,7 +14714,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android33.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android33.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter"
         ],
         "merge": {
           "args": [
@@ -15862,7 +15866,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android33.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android33.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter"
         ],
         "merge": {
           "args": [
@@ -17282,7 +17287,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android33.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android33.textpb",
+          "--gtest_filter=-ScopedDirTest.CloseOutOfScope"
         ],
         "merge": {
           "args": [

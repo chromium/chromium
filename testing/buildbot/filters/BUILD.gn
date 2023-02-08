@@ -31,7 +31,7 @@ source_set("base_unittests_filters") {
   testonly = true
 
   data = [
-    "//testing/buildbot/filters/android.emulator_12.base_unittests.filter",
+    "//testing/buildbot/filters/android.emulator.base_unittests.filter",
     "//testing/buildbot/filters/android.pie_tot.base_unittests.filter",
     "//testing/buildbot/filters/fuchsia.lsan.base_unittests.filter",
   ]
@@ -169,8 +169,7 @@ source_set("crashpad_tests_filters") {
   testonly = true
 
   data = [
-    "//testing/buildbot/filters/android.emulator_11.crashpad_tests.filter",
-    "//testing/buildbot/filters/android.emulator_12.crashpad_tests.filter",
+    "//testing/buildbot/filters/android.emulator.crashpad_tests.filter",
     "//testing/buildbot/filters/android.pie_tot.crashpad_tests.filter",
   ]
 }
