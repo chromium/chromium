@@ -20,6 +20,7 @@ ChromeVoxEditingTest = class extends ChromeVoxE2ETest {
     await importModule(
         'BrailleCommandHandler',
         '/chromevox/background/braille/braille_command_handler.js');
+    await importModule('ChromeVox', '/chromevox/background/chromevox.js');
     await importModule(
         'DesktopAutomationInterface',
         '/chromevox/background/desktop_automation_interface.js');

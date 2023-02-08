@@ -88,7 +88,7 @@ ChromeVoxE2ETest = class extends E2ETestBase {
    * @return {Object} The mock event.
    */
   createMockKeyEvent(keyCode, opt_modifiers) {
-    const modifiers = opt_modifiers === undefined ? {} : opt_modifiers;
+    const modifiers = opt_modifiers || {};
     const keyEvent = {};
     keyEvent.keyCode = keyCode;
     for (const key in modifiers) {
@@ -105,9 +105,7 @@ ChromeVoxE2ETest = class extends E2ETestBase {
    * @return {function(): void}
    */
   doCmd(cmd) {
-    return () => {
-      CommandHandlerInterface.instance.onCommand(cmd);
-    };
+    return () => CommandHandlerInterface.instance.onCommand(cmd);
   }
 
   /**
@@ -140,13 +138,7 @@ ChromeVoxE2ETest = class extends E2ETestBase {
         'BaseAutomationHandler',
         '/chromevox/background/base_automation_handler.js');
     await importModule(
-        'BrailleInterface',
-        '/chromevox/background/braille/braille_interface.js');
-    await importModule('ChromeVox', '/chromevox/background/chromevox.js');
-    await importModule(
         'ChromeVoxState', '/chromevox/background/chromevox_state.js');
-    await importModule(
-        'CommandHandler', '/chromevox/background/command_handler.js');
     await importModule(
         'CommandHandlerInterface',
         '/chromevox/background/command_handler_interface.js');
@@ -157,10 +149,6 @@ ChromeVoxE2ETest = class extends E2ETestBase {
         'OutputRoleInfo', '/chromevox/background/output/output_role_info.js');
     await importModule(
         'OutputContextOrder', '/chromevox/background/output/output_types.js');
-    await importModule(
-        'NavBraille', '/chromevox/common/braille/nav_braille.js');
-    await importModule('TtsInterface', '/chromevox/common/tts_interface.js');
-    await importModule('QueueMode', '/chromevox/common/tts_types.js');
 
     // For tests, enable announcement of events we trigger via automation.
     BaseAutomationHandler.announceActions = true;

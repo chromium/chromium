@@ -91,10 +91,15 @@ ChromeVoxEditableTextUnitTest = class extends AccessibilityTestBase {
 
     // Alphabetical based on file path.
     await importModule(
+        'BrailleInterface',
+        '/chromevox/background/braille/braille_interface.js');
+    await importModule('ChromeVox', '/chromevox/background/chromevox.js');
+    await importModule(
         'ChromeVoxState', '/chromevox/background/chromevox_state.js');
     await importModule(
         ['ChromeVoxEditableTextBase', 'TextChangedEvent', 'TypingEcho'],
         '/chromevox/background/editing/editable_text_base.js');
+    await importModule('TtsInterface', '/chromevox/common/tts_interface.js');
     await importModule('LocalStorage', '/common/local_storage.js');
 
     LocalStorage.set('typingEcho', TypingEcho.CHARACTER_AND_WORD);

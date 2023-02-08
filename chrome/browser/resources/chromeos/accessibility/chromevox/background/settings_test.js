@@ -34,6 +34,7 @@ ChromeVoxSettingsPagesTest = class extends ChromeVoxE2ETest {
     await super.setUpDeferred();
 
     // Alphabetical based on file path.
+    await importModule('ChromeVox', '/chromevox/background/chromevox.js');
     await importModule('TtsSettings', '/chromevox/common/tts_types.js');
   }
 };

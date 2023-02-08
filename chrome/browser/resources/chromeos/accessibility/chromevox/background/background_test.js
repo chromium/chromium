@@ -22,6 +22,7 @@ ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
     await importModule(
         'BrailleCommandHandler',
         '/chromevox/background/braille/braille_command_handler.js');
+    await importModule('ChromeVox', '/chromevox/background/chromevox.js');
     await importModule(
         'ChromeVoxRange', '/chromevox/background/chromevox_range.js');
     await importModule(

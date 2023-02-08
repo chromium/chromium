@@ -98,6 +98,7 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxE2ETest {
     await super.setUpDeferred();
 
     // Alphabetical based on file path.
+    await importModule('ChromeVox', '/chromevox/background/chromevox.js');
     await importModule('EventSource', '/chromevox/background/event_source.js');
     await importModule('FocusBounds', '/chromevox/background/focus_bounds.js');
     await importModule('Output', '/chromevox/background/output/output.js');

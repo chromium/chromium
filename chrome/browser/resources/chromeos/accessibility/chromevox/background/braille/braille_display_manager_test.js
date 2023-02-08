@@ -29,6 +29,8 @@ ChromeVoxBrailleDisplayManagerTest = class extends ChromeVoxE2ETest {
     await importModule(
         'ExpandingBrailleTranslator',
         '/chromevox/background/braille/expanding_braille_translator.js');
+    await importModule(
+        'NavBraille', '/chromevox/common/braille/nav_braille.js');
     await importModule('LocalStorage', '/common/local_storage.js');
     await importModule(
         'SettingsManager', '/chromevox/common/settings_manager.js');
