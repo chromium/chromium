@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_TEST_ATTRIBUTION_SIMULATOR_H_
-#define CONTENT_PUBLIC_TEST_ATTRIBUTION_SIMULATOR_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_SIMULATOR_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_SIMULATOR_H_
 
 #include <string>
 
@@ -23,4 +23,4 @@ base::expected<base::Value::Dict, std::string> RunAttributionSimulation(
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_TEST_ATTRIBUTION_SIMULATOR_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_SIMULATOR_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/test/attribution_simulator_input_parser.h"
+#include "content/browser/attribution_reporting/attribution_simulator_input_parser.h"
 
 #include <ostream>
 #include <vector>

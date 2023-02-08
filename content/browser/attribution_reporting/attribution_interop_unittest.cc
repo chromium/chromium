@@ -16,7 +16,7 @@
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
-#include "content/public/test/attribution_simulator.h"
+#include "content/browser/attribution_reporting/attribution_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

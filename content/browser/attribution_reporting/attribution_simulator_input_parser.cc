@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/test/attribution_simulator_input_parser.h"
+#include "content/browser/attribution_reporting/attribution_simulator_input_parser.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -110,8 +110,9 @@ class AttributionSimulatorInputParser {
   }
 
   void ParseSource(base::Value source) {
-    if (!EnsureDictionary(source))
+    if (!EnsureDictionary(source)) {
       return;
+    }
 
     base::Value::Dict& source_dict = source.GetDict();
 
@@ -124,8 +125,9 @@ class AttributionSimulatorInputParser {
         ParseSourceType(source_dict);
     bool debug_permission = ParseDebugPermission(source_dict);
 
-    if (has_error())
+    if (has_error()) {
       return;
+    }
 
     ParseAttributionEvent(
         source_dict, "Attribution-Reporting-Register-Source",
@@ -150,8 +152,9 @@ class AttributionSimulatorInputParser {
   }
 
   void ParseTrigger(base::Value trigger) {
-    if (!EnsureDictionary(trigger))
+    if (!EnsureDictionary(trigger)) {
       return;
+    }
 
     base::Value::Dict& trigger_dict = trigger.GetDict();
 
@@ -162,8 +165,9 @@ class AttributionSimulatorInputParser {
         ParseOrigin(trigger_dict, "destination_origin");
     bool debug_permission = ParseDebugPermission(trigger_dict);
 
-    if (has_error())
+    if (has_error()) {
       return;
+    }
 
     ParseAttributionEvent(
         trigger_dict, "Attribution-Reporting-Register-Trigger",
@@ -193,11 +197,13 @@ class AttributionSimulatorInputParser {
     auto context = PushContext(key);
 
     absl::optional<SuitableOrigin> origin;
-    if (const std::string* s = dict.FindString(key))
+    if (const std::string* s = dict.FindString(key)) {
       origin = SuitableOrigin::Deserialize(*s);
+    }
 
-    if (!origin.has_value())
+    if (!origin.has_value()) {
       *Error() << "must be a valid, secure origin";
+    }
 
     return origin;
   }
@@ -210,8 +216,9 @@ class AttributionSimulatorInputParser {
 
     if (v && base::StringToInt64(*v, &milliseconds)) {
       base::Time time = offset_time_ + base::Milliseconds(milliseconds);
-      if (!time.is_null() && !time.is_inf())
+      if (!time.is_null() && !time.is_inf()) {
         return time;
+      }
     }
 
     *Error() << "must be an integer number of milliseconds since the Unix "
@@ -278,8 +285,9 @@ class AttributionSimulatorInputParser {
       return false;
     }
 
-    if (!EnsureDictionary(*dict))
+    if (!EnsureDictionary(*dict)) {
       return false;
+    }
 
     parse_dict(std::move(*dict).TakeDict());
     return true;
