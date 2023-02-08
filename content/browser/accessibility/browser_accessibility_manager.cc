@@ -862,6 +862,9 @@ void BrowserAccessibilityManager::Decrement(const BrowserAccessibility& node) {
 
 void BrowserAccessibilityManager::DoDefaultAction(
     const BrowserAccessibility& node) {
+  DCHECK(node.node()->data().GetDefaultActionVerb() !=
+         ax::mojom::DefaultActionVerb::kNone);
+
   if (!delegate_)
     return;
 

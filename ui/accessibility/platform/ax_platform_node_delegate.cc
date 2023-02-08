@@ -858,8 +858,9 @@ std::vector<ax::mojom::Action> AXPlatformNodeDelegate::GetSupportedActions()
   std::vector<ax::mojom::Action> supported_actions;
 
   // The default action must be listed at index 0.
-  // TODO(crbug.com/1370076): Find out why some nodes do not expose a
-  // default action (HasDefaultActionVerb() is false).
+  // TODO(crbug.com/1370076): Do this only if (HasDefaultActionVerb()), After
+  // some time tracking the DCHECK at
+  // BrowserAccessibilityManager::DoDefaultAction()
   supported_actions.push_back(ax::mojom::Action::kDoDefault);
 
   // Users expect to be able to bring a context menu on any object via e.g.
