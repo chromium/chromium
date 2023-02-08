@@ -669,44 +669,18 @@ void VideoResourceUpdater::AppendQuads(
                               overlay_plane_id_);
       break;
     }
-    case VideoFrameResourceType::YUV: {
-      DCHECK_EQ(frame_resources_.size(),
-                VideoFrame::NumPlanes(frame->format()));
-      if (frame->HasTextures()) {
-        DCHECK(frame->format() == PIXEL_FORMAT_NV12 ||
-               frame->format() == PIXEL_FORMAT_P016LE ||
-               frame->format() == PIXEL_FORMAT_I420);
-      }
-
-      // Get the scaling factor of the YA texture relative to the UV texture.
-      const gfx::Size uv_sample_size =
-          VideoFrame::SampleSize(frame->format(), VideoFrame::kUPlane);
-
-      auto* yuv_video_quad =
-          render_pass->CreateAndAppendDrawQuad<viz::YUVVideoDrawQuad>();
-      yuv_video_quad->SetNew(
-          shared_quad_state, quad_rect, visible_quad_rect, needs_blending,
-          coded_size, visible_rect, uv_sample_size, frame_resources_[0].id,
-          frame_resources_[1].id,
-          frame_resources_.size() > 2 ? frame_resources_[2].id
-                                      : frame_resources_[1].id,
-          frame_resources_.size() > 3 ? frame_resources_[3].id
-                                      : viz::kInvalidResourceId,
-          frame->ColorSpace(), frame_resource_offset_,
-          frame_resource_multiplier_, frame_bits_per_channel_,
-          ProtectedVideoTypeFromMetadata(frame->metadata()),
-          frame->hdr_metadata());
-
-      for (viz::ResourceId resource_id : yuv_video_quad->resources) {
-        resource_provider_->ValidateResource(resource_id);
-      }
-      break;
-    }
+    case VideoFrameResourceType::YUV:
     case VideoFrameResourceType::YUVA: {
       DCHECK_EQ(frame_resources_.size(),
                 VideoFrame::NumPlanes(frame->format()));
       if (frame->HasTextures()) {
-        DCHECK_EQ(frame->format(), PIXEL_FORMAT_NV12A);
+        if (frame_resource_type_ == VideoFrameResourceType::YUV) {
+          DCHECK(frame->format() == PIXEL_FORMAT_NV12 ||
+                 frame->format() == PIXEL_FORMAT_P016LE ||
+                 frame->format() == PIXEL_FORMAT_I420);
+        } else {
+          DCHECK_EQ(frame->format(), PIXEL_FORMAT_NV12A);
+        }
       }
 
       // Get the scaling factor of the YA texture relative to the UV texture.
@@ -715,16 +689,25 @@ void VideoResourceUpdater::AppendQuads(
 
       auto* yuv_video_quad =
           render_pass->CreateAndAppendDrawQuad<viz::YUVVideoDrawQuad>();
+      viz::ResourceId v_plane_id;
+      viz::ResourceId a_plane_id;
+      if (frame_resource_type_ == VideoFrameResourceType::YUV) {
+        v_plane_id = frame_resources_.size() > 2 ? frame_resources_[2].id
+                                                 : frame_resources_[1].id;
+        a_plane_id = frame_resources_.size() > 3 ? frame_resources_[3].id
+                                                 : viz::kInvalidResourceId;
+      } else {
+        v_plane_id = frame_resources_.size() > 3 ? frame_resources_[2].id
+                                                 : frame_resources_[1].id;
+        a_plane_id = frame_resources_.size() > 3 ? frame_resources_[3].id
+                                                 : frame_resources_[2].id;
+      }
       yuv_video_quad->SetNew(
           shared_quad_state, quad_rect, visible_quad_rect, needs_blending,
           coded_size, visible_rect, uv_sample_size, frame_resources_[0].id,
-          frame_resources_[1].id,
-          frame_resources_.size() > 3 ? frame_resources_[2].id
-                                      : frame_resources_[1].id,
-          frame_resources_.size() > 3 ? frame_resources_[3].id
-                                      : frame_resources_[2].id,
-          frame->ColorSpace(), frame_resource_offset_,
-          frame_resource_multiplier_, frame_bits_per_channel_,
+          frame_resources_[1].id, v_plane_id, a_plane_id, frame->ColorSpace(),
+          frame_resource_offset_, frame_resource_multiplier_,
+          frame_bits_per_channel_,
           ProtectedVideoTypeFromMetadata(frame->metadata()),
           frame->hdr_metadata());
 
