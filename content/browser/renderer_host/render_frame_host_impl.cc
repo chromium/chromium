@@ -14448,12 +14448,6 @@ void RenderFrameHostImpl::OnDidRunInsecureContent(const GURL& security_origin,
                         "security_origin", security_origin, "target_url",
                         target_url);
 
-  // TODO(nick, estark): Should we call FilterURL using this frame's process on
-  // these parameters? |target_url| seems unused, except for a log message. And
-  // |security_origin| might be replaceable with the origin of the main frame.
-
-  LOG(WARNING) << security_origin << " ran insecure content from "
-               << target_url.possibly_invalid_spec();
   RecordAction(base::UserMetricsAction("SSL.RanInsecureContent"));
   if (base::EndsWith(security_origin.spec(), kDotGoogleDotCom,
                      base::CompareCase::INSENSITIVE_ASCII)) {
