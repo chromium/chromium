@@ -144,7 +144,6 @@ Resource::Resource(const ResourceRequestHead& request,
     : type_(type),
       status_(ResourceStatus::kNotStarted),
       encoded_size_(0),
-      encoded_size_memory_usage_(0),
       decoded_size_(0),
       cache_identifier_(MemoryCache::DefaultCacheIdentifier()),
       link_preload_(false),
@@ -278,7 +277,6 @@ void Resource::SetResourceBuffer(scoped_refptr<SharedBuffer> resource_buffer) {
 
 void Resource::ClearData() {
   data_ = nullptr;
-  encoded_size_memory_usage_ = 0;
 }
 
 void Resource::TriggerNotificationForFinishObservers(
@@ -684,12 +682,11 @@ void Resource::SetDecodedSize(size_t decoded_size) {
 }
 
 void Resource::SetEncodedSize(size_t encoded_size) {
-  if (encoded_size == encoded_size_ &&
-      encoded_size == encoded_size_memory_usage_)
+  if (encoded_size == encoded_size_) {
     return;
+  }
   size_t old_size = size();
   encoded_size_ = encoded_size;
-  encoded_size_memory_usage_ = encoded_size;
   if (IsMainThread())
     MemoryCache::Get()->Update(this, old_size, size());
 }
@@ -852,11 +849,6 @@ void Resource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
   const String dump_name = GetMemoryDumpName();
   WebMemoryAllocatorDump* dump =
       memory_dump->CreateMemoryAllocatorDump(dump_name);
-  dump->AddScalar("encoded_size", "bytes", encoded_size_memory_usage_);
-  if (HasClientsOrObservers())
-    dump->AddScalar("live_size", "bytes", encoded_size_memory_usage_);
-  else
-    dump->AddScalar("dead_size", "bytes", encoded_size_memory_usage_);
 
   if (data_)
     GetSharedBufferMemoryDump(Data(), dump_name, memory_dump);

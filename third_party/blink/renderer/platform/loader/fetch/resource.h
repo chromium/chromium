@@ -226,16 +226,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // need to be refactored (crbug/643135).
   size_t EncodedSize() const { return encoded_size_; }
 
-  // Returns the current memory usage for the encoded data. Adding a new usage
-  // of this function is not recommended as the same reason as |EncodedSize()|.
-  //
-  // |EncodedSize()| and |EncodedSizeMemoryUsageForTesting()| can return
-  // different values, e.g., when ImageResource purges encoded image data after
-  // finishing loading.
-  size_t EncodedSizeMemoryUsageForTesting() const {
-    return encoded_size_memory_usage_;
-  }
-
   size_t DecodedSize() const { return decoded_size_; }
   size_t OverheadSize() const { return overhead_size_; }
   virtual size_t CodeCacheSize() const { return 0; }
@@ -532,7 +522,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   base::TimeTicks load_response_end_;
 
   size_t encoded_size_;
-  size_t encoded_size_memory_usage_;
   size_t decoded_size_;
 
   String cache_identifier_;

@@ -461,9 +461,7 @@ TEST_F(ImageResourceTest, DecodedDataRemainsWhileHasClients) {
   image_resource->ResponseReceived(resource_response);
   image_resource->AppendData(reinterpret_cast<const char*>(kJpegImage),
                              sizeof(kJpegImage));
-  EXPECT_NE(0u, image_resource->EncodedSizeMemoryUsageForTesting());
   image_resource->FinishForTest();
-  EXPECT_EQ(0u, image_resource->EncodedSizeMemoryUsageForTesting());
   EXPECT_FALSE(image_resource->ErrorOccurred());
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
   EXPECT_FALSE(image_resource->GetContent()->GetImage()->IsNull());
