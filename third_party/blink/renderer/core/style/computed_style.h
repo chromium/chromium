@@ -3440,8 +3440,6 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   void AddAppliedTextDecoration(const AppliedTextDecoration&);
   void OverrideTextDecorationColors(blink::Color propagated_color);
 
-  ComputedStyleBuilder() = default;
-
   scoped_refptr<ComputedStyle> style_;
 };
 
