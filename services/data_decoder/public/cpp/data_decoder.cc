@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "net/http/structured_headers.h"
 #include "services/data_decoder/public/mojom/gzipper.mojom.h"
@@ -23,7 +24,7 @@
 #include "services/data_decoder/public/cpp/json_sanitizer.h"
 #endif
 
-#if BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(USE_BLINK)
 #include "services/data_decoder/data_decoder_service.h"  // nogncheck
 #endif
 
@@ -114,7 +115,7 @@ class ValueParseRequest : public base::RefCounted<ValueParseRequest<T, V>> {
   scoped_refptr<DataDecoder::CancellationFlag> is_cancelled_;
 };
 
-#if BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(USE_BLINK)
 void BindInProcessService(
     mojo::PendingReceiver<mojom::DataDecoderService> receiver) {
   static base::NoDestructor<scoped_refptr<base::SequencedTaskRunner>>
@@ -167,7 +168,7 @@ mojom::DataDecoderService* DataDecoder::GetService() {
     if (provider) {
       provider->BindDataDecoderService(service_.BindNewPipeAndPassReceiver());
     } else {
-#if BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(USE_BLINK)
       BindInProcessService(service_.BindNewPipeAndPassReceiver());
 #else
       LOG(FATAL) << "data_decoder::ServiceProvider::Set() must be called "

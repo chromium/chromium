@@ -42,7 +42,7 @@ source_set("cpp") {
     "//net",
     "//services/data_decoder/public/mojom",
   ]
-  deps = []
+  deps = [ "//build:blink_buildflags" ]
 
   if (is_android) {
     sources += [ "json_sanitizer_android.cc" ]
@@ -57,7 +57,7 @@ source_set("cpp") {
     # NOTE: We depend on this target here for iOS only, to support in-process
     # use of the service. Non-test targets in this directory should otherwise
     # NEVER depend on this target.
-    deps = [ "//services/data_decoder:lib" ]
+    deps += [ "//services/data_decoder:lib" ]
   } else {
     public += [
       "decode_image.h",
