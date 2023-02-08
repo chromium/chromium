@@ -18070,15 +18070,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="MobileBookmarkManagerMultipleEntriesOpened">
-  <owner>wylieb@chromium.org</owner>
-  <owner>chrome-collections@google.com</owner>
-  <description>
-    Recorded when multi-selection is opened from the bookmark manager. Possible
-    that the selection is only 1 bookmark.
-  </description>
-</action>
-
 <action name="MobileBookmarkManagerOpen">
   <owner>ianwen@chromium.org</owner>
   <description>

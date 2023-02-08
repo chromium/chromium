@@ -359,6 +359,8 @@ public class ReadingListTest {
     @SmallTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void testReadingListOpenInRegularTab() throws Exception {
+        setFieldTrialParamForReadLater("use_cct", "false");
+
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
 
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
@@ -380,18 +382,17 @@ public class ReadingListTest {
             Criteria.checkThat(activityTab.isIncognito(), Matchers.is(false));
         });
         pressBack();
-        BookmarkActivity bookmarkActivity = BookmarkTestUtil.waitForBookmarkActivity();
-
         onView(withText("Reading list")).check(matches(isDisplayed()));
     }
 
     @Test
     @SmallTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @DisabledTest(message = "crbug.com/1369307")
     public void testReadingListOpenInIncognitoTab() throws Exception {
-        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
+        setFieldTrialParamForReadLater("use_cct", "false");
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_NON_NATIVE_URL, /*incognito=*/true);
+        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
 
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
         openBookmarkManager();
@@ -412,8 +413,6 @@ public class ReadingListTest {
             Criteria.checkThat(activityTab.isIncognito(), Matchers.is(true));
         });
         pressBack();
-        BookmarkActivity bookmarkActivity = BookmarkTestUtil.waitForBookmarkActivity();
-
         onView(withText("Reading list")).check(matches(isDisplayed()));
     }
 
