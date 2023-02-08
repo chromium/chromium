@@ -6034,7 +6034,7 @@
     ],
 
     'chromium_win_rel_isolated_scripts_code_coverage': [
-      # TODO(crbug.com/1399354): Enable gpu_dawn_webgpu_blink_web_tests
+      'gpu_dawn_webgpu_blink_web_tests',
     ],
 
     'cronet_dbg_isolated_scripts': [

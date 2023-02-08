@@ -24053,6 +24053,83 @@
         "test_id_prefix": "ninja://components/zucchini:zucchini_unittests/"
       }
     ],
-    "isolated_scripts": []
+    "isolated_scripts": [
+      {
+        "args": [
+          "--flag-specific=webgpu",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
+          "--target=Release_x64",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "webgpu_blink_web_tests",
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "webgpu_blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "gpu": "10de:2184-27.21.14.5638",
+              "os": "Windows-10-18363",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
+      },
+      {
+        "args": [
+          "webgpu_cts",
+          "--show-stdout",
+          "--browser=release_x64",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--jobs=4"
+        ],
+        "isolate_name": "telemetry_gpu_integration_test",
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "webgpu_cts_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "should_retry_with_patch": false,
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "gpu": "10de:2184-27.21.14.5638",
+              "os": "Windows-10-18363",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 14
+        },
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+      }
+    ]
   }
 }
