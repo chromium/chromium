@@ -219,11 +219,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".Unknown" summary="Unknown form type"/>
 </variants>
 
-<variants name="AutofillLocalCardMigrationBubbleShow">
-  <variant name=".FirstShow" summary="First time bubble is shown"/>
-  <variant name=".Reshows" summary="Bubble was reopened after being closed"/>
-</variants>
-
 <variants name="AutofillProfileCategory">
   <variant name="AccountChrome"
       summary="kAccount profiles originating from Chrome"/>
@@ -2420,34 +2415,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Autofill.LocalCardMigrationBubbleOffer{AutofillLocalCardMigrationBubbleShow}"
+<histogram name="Autofill.LocalCardMigrationBubbleOffer.{ShowType}"
     enum="AutofillLocalCardMigrationBubbleOffer" expires_after="2023-09-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
     Record events related to bubble showing. Logged when bubble is requested or
-    is actually shown to users. {AutofillLocalCardMigrationBubbleShow}
+    is actually shown to users.
   </summary>
-  <token key="AutofillLocalCardMigrationBubbleShow"
-      variants="AutofillLocalCardMigrationBubbleShow">
-    <variant name=""/>
-  </token>
+  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
 </histogram>
 
-<histogram
-    name="Autofill.LocalCardMigrationBubbleResult{AutofillLocalCardMigrationBubbleShow}"
+<histogram name="Autofill.LocalCardMigrationBubbleResult.{ShowType}"
     enum="AutofillLocalCardMigrationBubbleResult" expires_after="2023-09-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
     Records whether and how the local card migration bubble was accepted or
-    closed. {AutofillLocalCardMigrationBubbleShow}
+    closed.
   </summary>
-  <token key="AutofillLocalCardMigrationBubbleShow"
-      variants="AutofillLocalCardMigrationBubbleShow">
-    <variant name=""/>
-  </token>
+  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
 </histogram>
 
 <histogram name="Autofill.LocalCardMigrationBubbleUserInteraction"
@@ -3566,7 +3553,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.SaveCreditCardPromptOffer{AutofillSaveCreditCardPromptDestination}"
-    enum="AutofillSaveCreditCardPromptOfferEnum" expires_after="2023-11-01">
+    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2023-11-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -3583,7 +3570,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.SaveCreditCardPromptResult{AutofillSaveCreditCardPromptDestination}"
-    enum="AutofillSaveCreditCardPromptResultEnum" expires_after="2023-11-01">
+    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2023-11-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -3596,6 +3583,44 @@ chromium-metrics-reviews@google.com.
       variants="AutofillSaveCreditCardPromptDestination">
     <variant name=""/>
   </token>
+</histogram>
+
+<histogram name="Autofill.SaveIbanPromptOffer{IbanTypeToBeSaved}.{ShowType}"
+    enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2023-09-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records every time the save IBAN bubble or omnibox icon (due to maxstrike
+    reached) is offered to the user, broken down by destination and show type.
+  </summary>
+  <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
+  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
+</histogram>
+
+<histogram
+    name="Autofill.SaveIbanPromptResult{IbanTypeToBeSaved}.SavedWithNickname"
+    enum="Boolean" expires_after="2023-09-01">
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records when the user accepts the bubble to save an IBAN, with or without
+    nickname.
+  </summary>
+  <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
+</histogram>
+
+<histogram name="Autofill.SaveIbanPromptResult{IbanTypeToBeSaved}.{ShowType}"
+    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2023-09-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records when the user makes a decision on the save IBAN bubble, broken down
+    by destinations.
+  </summary>
+  <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
+  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
 </histogram>
 
 <histogram name="Autofill.ScanCreditCard.Completed" enum="BooleanCompleted"

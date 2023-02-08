@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
@@ -19,6 +20,7 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
@@ -338,6 +340,11 @@ class SaveIbanBubbleViewFullFormBrowserTest
     EXPECT_FALSE(GetSaveIbanBubbleView());
   }
 
+  views::Textfield* nickname_input() {
+    return static_cast<views::Textfield*>(
+        FindViewInBubbleById(DialogViewId::NICKNAME_TEXTFIELD));
+  }
+
   void WaitForObservedEvent() { event_waiter_->Wait(); }
 
   raw_ptr<IBANSaveManager, DanglingUntriaged> iban_save_manager_ = nullptr;
@@ -352,6 +359,7 @@ class SaveIbanBubbleViewFullFormBrowserTest
 // successfully causes the bubble to go away, and causes a strike to be added.
 IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
                        Local_ClickingNoThanksClosesBubble) {
+  base::HistogramTester histogram_tester;
   FillForm(kIbanValue);
   SubmitFormAndWaitForIbanLocalSaveBubble();
 
@@ -364,6 +372,12 @@ IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
   EXPECT_EQ(
       1, iban_save_manager_->GetIBANSaveStrikeDatabaseForTesting()->GetStrikes(
              kIbanValue));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveIbanPromptOffer.Local.FirstShow",
+      autofill_metrics::SaveIbanPromptOffer::kShown, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveIbanPromptResult.Local.FirstShow",
+      autofill_metrics::SaveIbanBubbleResult::kCancelled, 1);
 }
 
 // Tests overall StrikeDatabase interaction with the local save bubble. Runs an
@@ -372,6 +386,7 @@ IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
 // strikes are added if the IBAN already has max strikes.
 IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
                        StrikeDatabase_Local_FullFlowTest) {
+  base::HistogramTester histogram_tester;
   // Show and ignore the bubble enough times in order to accrue maximum strikes.
   for (int i = 0; i < iban_save_manager_->GetIBANSaveStrikeDatabaseForTesting()
                           ->GetMaxStrikesLimit();
@@ -408,15 +423,25 @@ IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
   WaitForObservedEvent();
   EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_LOCAL)
                   ->GetVisible());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveIbanPromptOffer.Local.Reshows",
+      autofill_metrics::SaveIbanPromptOffer::kShown, 1);
 
   ClickOnCancelButton();
   WaitForObservedEvent();
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveIbanPromptOffer.Local.FirstShow",
+      autofill_metrics::SaveIbanPromptOffer::kNotShownMaxStrikesReached, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveIbanPromptOffer.Local.FirstShow",
+      autofill_metrics::SaveIbanPromptOffer::kShown, 3);
 }
 
 // Tests the local save bubble. Ensures that clicking the 'Save' button
 // successfully causes the bubble to go away.
 IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
                        Local_ClickingSaveClosesBubble) {
+  base::HistogramTester histogram_tester;
   FillForm();
   SubmitFormAndWaitForIbanLocalSaveBubble();
 
@@ -425,18 +450,57 @@ IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
   WaitForObservedEvent();
 
   EXPECT_FALSE(GetSaveIbanBubbleView());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveIbanPromptOffer.Local.FirstShow",
+      autofill_metrics::SaveIbanPromptOffer::kShown, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveIbanPromptResult.Local.FirstShow",
+      autofill_metrics::SaveIbanBubbleResult::kAccepted, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveIbanPromptResult.Local.SavedWithNickname", false, 1);
+}
+
+// Tests the local save bubble. Ensures that clicking the 'Save' button
+// successfully causes the bubble to go away.
+IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
+                       Local_ClickingSaveClosesBubble_WithNickname) {
+  base::HistogramTester histogram_tester;
+  FillForm();
+  SubmitFormAndWaitForIbanLocalSaveBubble();
+  nickname_input()->SetText(u"My doctor's IBAN");
+
+  ResetEventWaiterForSequence({DialogEvent::ACCEPT_SAVE_IBAN_COMPLETE});
+  ClickOnSaveButton();
+  WaitForObservedEvent();
+
+  EXPECT_FALSE(GetSaveIbanBubbleView());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveIbanPromptOffer.Local.FirstShow",
+      autofill_metrics::SaveIbanPromptOffer::kShown, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveIbanPromptResult.Local.FirstShow",
+      autofill_metrics::SaveIbanBubbleResult::kAccepted, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveIbanPromptResult.Local.SavedWithNickname", true, 1);
 }
 
 // Tests the local save bubble. Ensures that clicking the [X] button will still
 // see the omnibox icon.
 IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
                        Local_ClickingClosesBubbleStillShowOmnibox) {
+  base::HistogramTester histogram_tester;
   FillForm();
   SubmitFormAndWaitForIbanLocalSaveBubble();
 
   ClickOnCloseButton();
   EXPECT_TRUE(GetSaveIbanIconView()->GetVisible());
   EXPECT_FALSE(GetSaveIbanBubbleView());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveIbanPromptOffer.Local.FirstShow",
+      autofill_metrics::SaveIbanPromptOffer::kShown, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveIbanPromptResult.Local.FirstShow",
+      autofill_metrics::SaveIbanBubbleResult::kClosed, 1);
 }
 
 // Tests the local save bubble. Ensures that clicking the eye icon button

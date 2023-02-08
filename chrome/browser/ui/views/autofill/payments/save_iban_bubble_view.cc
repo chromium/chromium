@@ -201,6 +201,10 @@ void SaveIbanBubbleView::AssignIdsToDialogButtonsForTesting() {
 
   DCHECK(iban_value_);
   iban_value_->SetID(DialogViewId::IBAN_VALUE_LABEL);
+
+  if (nickname_textfield_) {
+    nickname_textfield_->SetID(DialogViewId::NICKNAME_TEXTFIELD);
+  }
 }
 
 void SaveIbanBubbleView::OnDialogAccepted() {

@@ -48,7 +48,7 @@ class SaveIbanBubbleControllerImpl
       AutofillClient::LocalSaveIBANPromptCallback save_iban_prompt_callback);
 
   // No-op if the bubble is already shown, otherwise, shows the bubble.
-  void EnsureBubbleShown();
+  void ReshowBubble();
 
   // SaveIbanBubbleController:
   std::u16string GetWindowTitle() const override;
@@ -108,6 +108,9 @@ class SaveIbanBubbleControllerImpl
   // Callback to run once the user makes a decision with respect to the local
   // IBAN offer-to-save prompt.
   AutofillClient::LocalSaveIBANPromptCallback local_save_iban_prompt_callback_;
+
+  // Whether the bubble is shown after user interacted with the omnibox icon.
+  bool is_reshow_ = false;
 
   // Contains the details of the IBAN that will be saved if the user accepts.
   IBAN iban_;

@@ -50,6 +50,7 @@ enum DialogViewId : int {
 
   // The following are views::Textfield objects.
   CARDHOLDER_NAME_TEXTFIELD,  // Used for cardholder name entry/confirmation
+  NICKNAME_TEXTFIELD,         // Used for IBAN nickname entry/confirmation
 
   // The following are views::TooltipIcon objects.
   CARDHOLDER_NAME_TOOLTIP,  // Appears during cardholder name entry/confirmation

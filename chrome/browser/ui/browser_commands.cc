@@ -1276,7 +1276,7 @@ void SaveIBAN(Browser* browser) {
       browser->tab_strip_model()->GetActiveWebContents();
   autofill::SaveIbanBubbleControllerImpl* controller =
       autofill::SaveIbanBubbleControllerImpl::FromWebContents(web_contents);
-  controller->EnsureBubbleShown();
+  controller->ReshowBubble();
 }
 
 void MigrateLocalCards(Browser* browser) {

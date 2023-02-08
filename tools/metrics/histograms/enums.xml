@@ -9249,12 +9249,12 @@ others/histograms.xml -->
   <int value="14" label="Omnibox icon shown, but not bubble (max strikes)"/>
 </enum>
 
-<enum name="AutofillSaveCreditCardPromptOfferEnum">
+<enum name="AutofillSavePaymentMethodPromptOfferEnum">
   <int value="0" label="Shown"/>
   <int value="1" label="Not shown, max strikes reached"/>
 </enum>
 
-<enum name="AutofillSaveCreditCardPromptResultEnum">
+<enum name="AutofillSavePaymentMethodPromptResultEnum">
   <int value="0" label="Accepted"/>
   <int value="1" label="Cancelled"/>
   <int value="2" label="Closed"/>
