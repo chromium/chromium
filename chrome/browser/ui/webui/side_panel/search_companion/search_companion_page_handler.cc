@@ -67,11 +67,8 @@ SearchCompanionPageHandler::SearchCompanionPageHandler(
     opt_guide_ = OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
 
     if (opt_guide_) {
-      std::vector<optimization_guide::proto::OptimizationType> types;
-      types.push_back(
-          optimization_guide::proto::OptimizationType::PAGE_ENTITIES);
-
-      opt_guide_->RegisterOptimizationTypes(types);
+      opt_guide_->RegisterOptimizationTypes(
+          {optimization_guide::proto::OptimizationType::PAGE_ENTITIES});
     }
   }
 }
@@ -87,7 +84,7 @@ void SearchCompanionPageHandler::OnZeroSuggestResponseUpdated(
 
   // Use zero suggest returning as the trigger to request entities from
   // optimization guide.
-  // TODO(mercerd): In the future use web navigation in the main frame to
+  // TODO(b/268285939): In the future use web navigation in the main frame to
   // trigger.
   if (opt_guide_) {
     opt_guide_->CanApplyOptimization(
@@ -100,8 +97,8 @@ void SearchCompanionPageHandler::OnZeroSuggestResponseUpdated(
 
   // Use zero suggest returning as the trigger to start a recurring timer to
   // fetch images from the main frame.
-  // TODO(mercerd): Rather than using a timer explore listening to page scroll
-  // events.
+  // TODO(b/268285663): Rather than using a timer explore listening to page
+  // scroll events.
   ExecuteFetchImagesJavascript();  // Fetching images one time right away
   fetch_images_timer_.Start(
       FROM_HERE, kTimerInterval, this,
@@ -117,9 +114,8 @@ void SearchCompanionPageHandler::HandleOptGuidePageEntitiesResponse(
   absl::optional<PageEntitiesMetadata> page_entities_metadata =
       metadata.ParsedMetadata<PageEntitiesMetadata>();
   if (page_entities_metadata) {
-    PageEntitiesMetadata entities_metadata = *page_entities_metadata;
     NotifyNewOptimizationGuidePageAnnotations(
-        ContentAnnotationsToString(entities_metadata));
+        ContentAnnotationsToString(*page_entities_metadata));
   }
 }
 
@@ -140,22 +136,20 @@ void SearchCompanionPageHandler::ExecuteFetchImagesJavascript() {
   main_frame_render_host->ExecuteJavaScriptInIsolatedWorld(
       base::UTF8ToUTF16(script),
       base::BindOnce(&SearchCompanionPageHandler::OnFetchImagesJavascriptResult,
-                     weak_ptr_factory_.GetWeakPtr(), GURL("www.foo.com")),
+                     weak_ptr_factory_.GetWeakPtr()),
       ISOLATED_WORLD_ID_CHROME_INTERNAL);
 }
 
 void SearchCompanionPageHandler::OnFetchImagesJavascriptResult(
-    const GURL url,
     base::Value result) {
   data_decoder::DataDecoder::ParseJsonIsolated(
       result.GetString(),
       base::BindOnce(
           &SearchCompanionPageHandler::OnImageFetchJsonSanitizationCompleted,
-          weak_ptr_factory_.GetWeakPtr(), url));
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SearchCompanionPageHandler::OnImageFetchJsonSanitizationCompleted(
-    const GURL url,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.has_value() || !result.value().is_dict()) {
     return;

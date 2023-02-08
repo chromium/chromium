@@ -24,14 +24,14 @@ interface SearchCompanionPage {
   OnURLChanged(string new_url);
 
   // Pass the Zero Suggest Prefix data to frontend
-  // TODO(mercerd): Use actual struct instead of string
+  // TODO(b/268286065): Use actual struct instead of string
   OnNewZeroSuggestPrefixData(string suggest_response);
 
   // Pass the optimization guide page annotations to the frontend
-  // TODO(mercerd): Use actual struct instead of string
+  // TODO(b/268286065): Use actual struct instead of string
   OnNewOptimizationGuidePageAnnotations(string content_annotations);
 
   // Pass the current viewport images to the frontend
-  // TODO(mercerd): Pass actual Image struct instead of assembling a string
+  // TODO(b/268286065): Pass actual Image struct instead of assembling a string
   OnNewViewportImages(string images_string);
 };

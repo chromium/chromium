@@ -77,10 +77,9 @@ class SearchCompanionPageHandler
   // image url of images on screen which fill certain filtering criteria.
   void ExecuteFetchImagesJavascript();
   // Handle the output of the fetch images javascript to ensure it is valid.
-  void OnFetchImagesJavascriptResult(const GURL url, base::Value result);
+  void OnFetchImagesJavascriptResult(base::Value result);
   // Handle the output of the fetch images javascript after validity is ensured.
   void OnImageFetchJsonSanitizationCompleted(
-      const GURL url,
       data_decoder::DataDecoder::ValueOrError result);
 
   base::RepeatingTimer fetch_images_timer_;
