@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -691,16 +692,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest,
   const base::Value::Dict* result = SendCommandSync("Target.getTargets");
 
   std::string target_id;
-  base::Value ext_target;
+  base::Value::Dict ext_target;
   for (const auto& target : *result->FindList("targetInfos")) {
     if (*target.FindStringKey("type") == "service_worker") {
-      ext_target = target.Clone();
+      ext_target = target.Clone().TakeDict();
       break;
     }
   }
   {
     base::Value::Dict params;
-    params.Set("targetId", *ext_target.FindStringKey("targetId"));
+    params.Set("targetId", CHECK_DEREF(ext_target.FindString("targetId")));
     params.Set("waitForDebuggerOnStart", false);
     SendCommandSync("Target.autoAttachRelated", std::move(params));
   }
@@ -712,8 +713,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest,
   EXPECT_THAT(
       targetInfo->GetDict(),
       base::test::DictionaryHasValue("type", base::Value("service_worker")));
-  EXPECT_THAT(targetInfo->GetDict(), base::test::DictionaryHasValue(
-                                         "url", *ext_target.FindKey("url")));
+  EXPECT_THAT(targetInfo->GetDict(),
+              base::test::DictionaryHasValue(
+                  "url", CHECK_DEREF(ext_target.Find("url"))));
   EXPECT_THAT(attached.FindBool("waitingForDebugger"),
               testing::Optional(false));
 
