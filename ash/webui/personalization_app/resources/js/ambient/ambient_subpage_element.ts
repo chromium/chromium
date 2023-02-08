@@ -63,10 +63,10 @@ export class AmbientSubpage extends WithPersonalizationStore {
         type: Number,
         value: null,
       },
-      loadingSettings_: {
+      loading_: {
         type: Boolean,
         computed:
-            'computeLoadingSettings_(albums_, temperatureUnit_, topicSource_)',
+            'computeLoading_(ambientModeEnabled_, albums_, temperatureUnit_, topicSource_)',
       },
       isPersonalizationJellyEnabled_: {
         type: Boolean,
@@ -201,9 +201,9 @@ export class AmbientSubpage extends WithPersonalizationStore {
     return this.ambientModeEnabled_ === null;
   }
 
-  private computeLoadingSettings_(): boolean {
-    return this.albums_ === null || this.topicSource_ === null ||
-        this.temperatureUnit_ === null;
+  private computeLoading_(): boolean {
+    return this.ambientModeEnabled_ === null || this.albums_ === null ||
+        this.topicSource_ === null || this.temperatureUnit_ === null;
   }
 
   private getPlaceholders_(x: number): number[] {

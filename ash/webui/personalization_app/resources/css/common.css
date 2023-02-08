@@ -269,6 +269,19 @@ cr-button[aria-selected=true] {
   background-color: var(--cros-bg-color);
 }
 
+:host-context(body.jelly-enabled) .ambient-toggle-row-container {
+  border: none;
+}
+
+:host-context(body.jelly-enabled) .ambient-toggle-row {
+  margin: 0;
+}
+
+:host-context(body.jelly-enabled) .ambient-toggle-row > p {
+  color: var(--cros-text-color-secondary);
+  font: var(--cros-body-2-font);
+}
+
 :host-context([dir=rtl]) iron-icon[icon='cr:chevron-right'] {
   transform: scaleX(-1);
 }

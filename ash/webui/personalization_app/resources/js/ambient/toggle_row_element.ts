@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
+import {isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {getTemplate} from './toggle_row_element.html.js';
@@ -32,10 +33,18 @@ export class ToggleRow extends WithPersonalizationStore {
     return {
       checked:
           {type: Boolean, value: false, notify: true, reflectToAttribute: true},
+
+      isPersonalizationJellyEnabled_: {
+        type: Boolean,
+        value() {
+          return isPersonalizationJellyEnabled();
+        },
+      },
     };
   }
 
   checked: boolean;
+  private isPersonalizationJellyEnabled_: boolean;
   override ariaLabel: string;
 
   override focus() {
@@ -44,6 +53,10 @@ export class ToggleRow extends WithPersonalizationStore {
 
   private getAriaLabel_(): string {
     return this.i18n(this.checked ? 'ambientModeOn' : 'ambientModeOff');
+  }
+
+  private getToggleRowTitle_(): string {
+    return this.getAriaLabel_().toUpperCase();
   }
 }
 

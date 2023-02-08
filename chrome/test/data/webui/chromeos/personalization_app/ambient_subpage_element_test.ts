@@ -80,25 +80,6 @@ suite('AmbientSubpageTest', function() {
             '#toggleRowPlaceholder');
     assertTrue(!!toggleRowPlaceholder);
 
-    personalizationStore.data.ambient.ambientModeEnabled = false;
-    personalizationStore.notifyObservers();
-    await waitAfterNextRender(ambientSubpageElement);
-
-    // Ambient mode is loaded, should not show toggle row placeholder.
-    assertTrue(!!toggleRowPlaceholder);
-    assertEquals(getComputedStyle(toggleRowPlaceholder).display, 'none');
-
-    const toggleRow =
-        ambientSubpageElement.shadowRoot!.querySelector('toggle-row');
-    assertTrue(!!toggleRow, 'toggle-row element exists');
-    const toggleButton = toggleRow!.shadowRoot!.querySelector('cr-toggle');
-    assertTrue(!!toggleButton, 'cr-toggle element exists');
-    assertFalse(toggleButton!.checked);
-
-    personalizationStore.data.ambient.ambientModeEnabled = true;
-    personalizationStore.notifyObservers();
-    await waitAfterNextRender(ambientSubpageElement);
-
     // Preview element should show placeholders for preview images, preview
     // album info and preview album collage.
     const ambientPreview = ambientSubpageElement.shadowRoot!.querySelector(
@@ -138,12 +119,25 @@ suite('AmbientSubpageTest', function() {
             '#weatherUnitTextPlaceholder:not([hidden])');
     assertEquals(2, weatherUnitItemPlaceholders!.length);
 
+    personalizationStore.data.ambient.ambientModeEnabled = false;
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.topicSource = TopicSource.kGooglePhotos;
     personalizationStore.data.ambient.temperatureUnit =
         TemperatureUnit.kFahrenheit;
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientSubpageElement);
+
+    // Loading finished, should not show toggle row placeholder.
+    assertTrue(!!toggleRowPlaceholder);
+    assertEquals(getComputedStyle(toggleRowPlaceholder).display, 'none');
+
+    // Toggle row is shown but in off status (the button is unchecked).
+    const toggleRow =
+        ambientSubpageElement.shadowRoot!.querySelector('toggle-row');
+    assertTrue(!!toggleRow, 'toggle-row element exists');
+    const toggleButton = toggleRow!.shadowRoot!.querySelector('cr-toggle');
+    assertTrue(!!toggleButton, 'cr-toggle element exists');
+    assertFalse(toggleButton!.checked);
 
     // Placeholders will be hidden for animation theme, topic source
     // and temperature unit elements.

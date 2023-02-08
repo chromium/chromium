@@ -5,6 +5,15 @@
   #container {
     display: grid;
     grid-template-areas:
+      '. . content . .';
+    grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
+    grid-template-rows: minmax(0, 1fr);
+    height: 100%;
+    margin-block-end: 48px;
+  }
+  :host-context(body.jelly-enabled) #container {
+    display: grid;
+    grid-template-areas:
       '. . preview . .'
       '. . content . .';
     grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
@@ -19,11 +28,12 @@
   }
   toggle-row,
   #toggleRowPlaceholder {
-    grid-area: toggles;
     margin: 0 8px;
   }
-  ambient-zero-state {
-    grid-area: zeroState;
+  .ambient-toggle-label-placeholder {
+    height: 20px;
+    margin: 34px 0 2px 0;
+    width: 10%;
   }
   /* TODO(b/253470553): Remove after Ambient subpage UI change is released. */
   ambient-preview-small.jelly-disabled {
@@ -71,7 +81,6 @@
     justify-content: center;
     overflow: hidden;
     padding-inline: var(--cr-section-padding) var(--cr-icon-ripple-padding);
-    position: relative;
     width: 100%;
   }
   #topicSourceTextPlaceholder {
@@ -98,28 +107,18 @@
 <div id="container">
   <template is="dom-if" if="[[isPersonalizationJellyEnabled_]]">
     <ambient-preview-small></ambient-preview-small>
-  </template>
-  <!-- restamp to avoid layout issues with iron-list resizing while hidden -->
-  <template is="dom-if" if="[[shouldShowMainSettings_(path)]]" restamp>
-    <div id="mainSettings">
-      <template is="dom-if" if="[[isLoadingAmbientMode_(ambientModeEnabled_)]]">
-        <div id="toggleRowPlaceholder" class="ambient-toggle-row-container">
-          <div class="ambient-toggle-row">
-            <div class="ambient-primary-text-placeholder placeholder"></div>
+    <!-- restamp to avoid layout issues with iron-list resizing while hidden -->
+    <template is="dom-if" if="[[shouldShowMainSettings_(path)]]" restamp>
+      <div id="mainSettings">
+        <template is="dom-if" if="[[loading_]]">
+          <div id="toggleRowPlaceholder">
+            <div class="ambient-toggle-label-placeholder placeholder"></div>
+            <div class="ambient-toggle-row-container">
+              <div class="ambient-toggle-row">
+                <div class="ambient-primary-text-placeholder placeholder"></div>
+              </div>
+            </div>
           </div>
-        </div>
-      </template>
-      <template is="dom-if" if="[[!isLoadingAmbientMode_(ambientModeEnabled_)]]">
-        <toggle-row id="ambientToggleRow" checked="[[ambientModeEnabled_]]"
-            on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
-        </toggle-row>
-      </template>
-      <template is="dom-if" if="[[ambientModeEnabled_]]">
-        <!-- TODO(b/253470553): Remove after Ambient subpage UI change is released. -->
-        <template is="dom-if" if="[[!isPersonalizationJellyEnabled_]]">
-          <ambient-preview-small class="jelly-disabled"></ambient-preview-small>
-        </template>
-        <template is="dom-if" if="[[loadingSettings_]]">
           <div id="animationThemePlaceholder">
             <h3 id="animationTitle" class="ambient-subpage-element-title" aria-hidden="true">
               $i18n{ambientModeAnimationTitle}
@@ -160,27 +159,108 @@
             </iron-list>
           </div>
         </template>
-        <template is="dom-if" if="[[!loadingSettings_]]">
-          <animation-theme-list
-              selected-animation-theme="[[animationTheme_]]">
-          </animation-theme-list>
-          <topic-source-list selected-topic-source="[[topicSource_]]"
-              has-google-photos-albums="[[hasGooglePhotosAlbums_(albums_)]]">
-          </topic-source-list>
-          <ambient-weather-unit
-              selected-temperature-unit="[[temperatureUnitToString_(temperatureUnit_)]]">
-          </ambient-weather-unit>
+        <template is="dom-if" if="[[!loading_]]">
+          <toggle-row id="ambientToggleRow" checked="[[ambientModeEnabled_]]"
+          on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
+          </toggle-row>
+          <template is="dom-if" if="[[ambientModeEnabled_]]">
+            <animation-theme-list
+                selected-animation-theme="[[animationTheme_]]">
+            </animation-theme-list>
+            <topic-source-list selected-topic-source="[[topicSource_]]"
+                has-google-photos-albums="[[hasGooglePhotosAlbums_(albums_)]]">
+            </topic-source-list>
+            <ambient-weather-unit
+                selected-temperature-unit="[[temperatureUnitToString_(temperatureUnit_)]]">
+            </ambient-weather-unit>
+          </template>
         </template>
-      </template>
-      <template is="dom-if" if="[[shouldShowZeroState_(ambientModeEnabled_, isPersonalizationJellyEnabled_)]]">
-        <ambient-zero-state id="zeroState"></ambient-zero-state>
-      </template>
-    </div>
+      </div>
+    </template>
+    <template is="dom-if" if="[[shouldShowAlbums_(path)]]" restamp>
+      <albums-subpage topic-source="[[getTopicSource_(queryParams)]]"
+          albums="[[getAlbums_(albums_, queryParams)]]">
+      </albums-subpage>
+    </template>
   </template>
-  <!-- restamp to avoid layout issues with iron-list resizing while hidden -->
-  <template is="dom-if" if="[[shouldShowAlbums_(path)]]" restamp>
-    <albums-subpage topic-source="[[getTopicSource_(queryParams)]]"
-        albums="[[getAlbums_(albums_, queryParams)]]">
-    </albums-subpage>
+  <template is="dom-if" if="[[!isPersonalizationJellyEnabled_]]">
+    <!-- restamp to avoid layout issues with iron-list resizing while hidden -->
+    <template is="dom-if" if="[[shouldShowMainSettings_(path)]]" restamp>
+      <div id="mainSettings">
+        <template is="dom-if" if="[[loading_]]">
+          <div id="toggleRowPlaceholder" class="ambient-toggle-row-container">
+            <div class="ambient-toggle-row">
+              <div class="ambient-primary-text-placeholder placeholder"></div>
+            </div>
+          </div>
+          <ambient-preview-small class="jelly-disabled"></ambient-preview-small>
+          <div id="animationThemePlaceholder">
+            <h3 id="animationTitle" class="ambient-subpage-element-title" aria-hidden="true">
+              $i18n{ambientModeAnimationTitle}
+            </h3>
+            <iron-list class="animation-placeholder-list" items="[[getPlaceholders_(3)]]" grid>
+              <template>
+                <div class="animation-placeholder-container">
+                  <div class="animation-item-placeholder placeholder"></div>
+                  <div class="animation-item-title-placeholder
+                      ambient-primary-text-placeholder placeholder"></div>
+                </div>
+              </template>
+            </iron-list>
+          </div>
+          <div id="topicSourcePlaceholder">
+            <h3 id="topicSourceTitle" class="ambient-subpage-element-title" aria-hidden="true">
+              $i18n{ambientModeTopicSourceTitle}
+            </h3>
+            <iron-list items="[[getPlaceholders_(2)]]" grid>
+              <template>
+                  <div id="topicSourceTextPlaceholder" class$="{{getClassContainer_(index)}}">
+                    <div class="ambient-primary-text-placeholder placeholder"></div>
+                    <div class="ambient-secondary-text-placeholder placeholder"></div>
+                  </div>
+              </template>
+            </iron-list>
+          </div>
+          <div id="weatherUnitPlaceholder">
+            <h3 id="weatherTitle" class="ambient-subpage-element-title" aria-hidden="true">
+              $i18n{ambientModeWeatherTitle}
+            </h3>
+            <iron-list items="[[getPlaceholders_(2)]]" grid>
+              <template>
+                <div id="weatherUnitTextPlaceholder" class$="{{getClassContainer_(index)}}">
+                  <div class="ambient-secondary-text-placeholder placeholder"></div>
+                </div>
+              </template>
+            </iron-list>
+          </div>
+        </template>
+        <template is="dom-if" if="[[!loading_]]">
+          <toggle-row id="ambientToggleRow" checked="[[ambientModeEnabled_]]"
+          on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
+          </toggle-row>
+          <template is="dom-if" if="[[!ambientModeEnabled_]]">
+            <ambient-zero-state id="zeroState"></ambient-zero-state>
+          </template>
+          <template is="dom-if" if="[[ambientModeEnabled_]]">
+            <ambient-preview-small class="jelly-disabled"></ambient-preview-small>
+            <animation-theme-list
+                selected-animation-theme="[[animationTheme_]]">
+            </animation-theme-list>
+            <topic-source-list selected-topic-source="[[topicSource_]]"
+                has-google-photos-albums="[[hasGooglePhotosAlbums_(albums_)]]">
+            </topic-source-list>
+            <ambient-weather-unit
+                selected-temperature-unit="[[temperatureUnitToString_(temperatureUnit_)]]">
+            </ambient-weather-unit>
+          </template>
+        </template>
+      </div>
+    </template>
+    <!-- restamp to avoid layout issues with iron-list resizing while hidden -->
+    <template is="dom-if" if="[[shouldShowAlbums_(path)]]" restamp>
+      <albums-subpage topic-source="[[getTopicSource_(queryParams)]]"
+          albums="[[getAlbums_(albums_, queryParams)]]">
+      </albums-subpage>
+    </template>
   </template>
 </div>
