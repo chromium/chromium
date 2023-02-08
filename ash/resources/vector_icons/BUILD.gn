@@ -482,6 +482,8 @@ aggregate_vector_icons("ash_vector_icons") {
     "unified_menu_locale.icon",
     "unified_menu_lock.icon",
     "unified_menu_managed.icon",
+    "unified_menu_mic_noise_cancel_high.icon",
+    "unified_menu_mic_noise_cancel_off.icon",
     "unified_menu_more.icon",
     "unified_menu_nearby_share_not_visible.icon",
     "unified_menu_nearby_share_visible.icon",

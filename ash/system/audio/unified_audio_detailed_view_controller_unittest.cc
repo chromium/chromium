@@ -200,7 +200,13 @@ class UnifiedAudioDetailedViewControllerTest
   }
 
   void ToggleLiveCaption() {
-    audio_detailed_view()->HandleViewClicked(live_caption_view());
+    GetAudioDetailedView()->HandleViewClicked(live_caption_view());
+  }
+
+  // Toggles the noise cancellation button for QsRevamp.
+  void ToggleNoiseCancellation() {
+    GetAudioDetailedView()->HandleViewClicked(
+        GetAudioDetailedView()->noise_cancellation_view_);
   }
 
  protected:
@@ -208,7 +214,7 @@ class UnifiedAudioDetailedViewControllerTest
     return FakeCrasAudioClient::Get();
   }
 
-  AudioDetailedView* audio_detailed_view() {
+  AudioDetailedView* GetAudioDetailedView() {
     if (!audio_detailed_view_) {
       audio_detailed_view_ = base::WrapUnique(static_cast<AudioDetailedView*>(
           audio_detailed_view_controller_->CreateView().release()));
@@ -217,7 +223,11 @@ class UnifiedAudioDetailedViewControllerTest
   }
 
   HoverHighlightView* live_caption_view() {
-    return audio_detailed_view()->live_caption_view_;
+    return GetAudioDetailedView()->live_caption_view_;
+  }
+
+  views::ToggleButton* noise_cancellation_button() {
+    return GetAudioDetailedView()->noise_cancellation_button_;
   }
 
   bool live_caption_enabled() {
@@ -420,13 +430,18 @@ TEST_P(UnifiedAudioDetailedViewControllerTest,
   cras_audio_handler_->SwitchToDevice(internal_mic, true,
                                       CrasAudioHandler::ACTIVATE_BY_USER);
 
-  std::unique_ptr<views::View> view =
-      audio_detailed_view_controller_->CreateView();
+  // If `audio_detailed_view_` doesn't exist, this getter method will create the
+  // view first.
+  GetAudioDetailedView();
   EXPECT_EQ(1u, toggles_map_.size());
 
-  views::ToggleButton* toggle =
-      (views::ToggleButton*)toggles_map_[internal_mic.id]->children()[1];
-  EXPECT_TRUE(toggle->GetIsOn());
+  if (!IsQsRevampEnabled()) {
+    views::ToggleButton* toggle =
+        (views::ToggleButton*)toggles_map_[internal_mic.id]->children()[1];
+    EXPECT_TRUE(toggle->GetIsOn());
+  } else {
+    EXPECT_TRUE(noise_cancellation_button());
+  }
 }
 
 TEST_P(UnifiedAudioDetailedViewControllerTest,
@@ -442,31 +457,47 @@ TEST_P(UnifiedAudioDetailedViewControllerTest,
   cras_audio_handler_->SwitchToDevice(internal_mic, true,
                                       CrasAudioHandler::ACTIVATE_BY_USER);
 
-  std::unique_ptr<views::View> view =
-      audio_detailed_view_controller_->CreateView();
+  // If `audio_detailed_view_` doesn't exist, this getter method will create the
+  // view first.
+  GetAudioDetailedView();
   EXPECT_EQ(1u, toggles_map_.size());
 
-  views::ToggleButton* toggle =
-      (views::ToggleButton*)toggles_map_[internal_mic.id]->children()[1];
-  auto widget = CreateFramelessTestWidget();
-  widget->SetContentsView(toggle);
+  if (!IsQsRevampEnabled()) {
+    views::ToggleButton* toggle =
+        (views::ToggleButton*)toggles_map_[internal_mic.id]->children()[1];
+    auto widget = CreateFramelessTestWidget();
+    widget->SetContentsView(toggle);
 
-  // The toggle loaded the pref correctly.
-  EXPECT_FALSE(toggle->GetIsOn());
-  EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
+    // The toggle loaded the pref correctly.
+    EXPECT_FALSE(toggle->GetIsOn());
+    EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
+    ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::PointF(), gfx::PointF(),
+                         ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                         ui::EF_NONE);
 
-  ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::PointF(), gfx::PointF(),
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                       ui::EF_NONE);
+    // Flipping the toggle.
+    views::test::ButtonTestApi(toggle).NotifyClick(press);
+    // The new state of the toggle must be saved to the prefs.
+    EXPECT_TRUE(audio_pref_handler_->GetNoiseCancellationState());
 
-  // Flipping the toggle.
-  views::test::ButtonTestApi(toggle).NotifyClick(press);
-  // The new state of the toggle must be saved to the prefs.
-  EXPECT_TRUE(audio_pref_handler_->GetNoiseCancellationState());
+    // Flipping back and checking the prefs again.
+    views::test::ButtonTestApi(toggle).NotifyClick(press);
+    EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
+  } else {
+    auto widget = CreateFramelessTestWidget();
+    widget->SetContentsView(noise_cancellation_button());
 
-  // Flipping back and checking the prefs again.
-  views::test::ButtonTestApi(toggle).NotifyClick(press);
-  EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
+    // The toggle loaded the pref correctly.
+    EXPECT_FALSE(noise_cancellation_button()->GetIsOn());
+    EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
+
+    // For QsRevamp, the entire row of `noise_cancellation_view_` is clickable.
+    ToggleNoiseCancellation();
+    EXPECT_TRUE(audio_pref_handler_->GetNoiseCancellationState());
+
+    ToggleNoiseCancellation();
+    EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
+  }
 }
 
 TEST_P(UnifiedAudioDetailedViewControllerTest,

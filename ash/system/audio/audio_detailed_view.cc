@@ -41,6 +41,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/focus_ring.h"
@@ -61,6 +62,11 @@ const int kToggleButtonRowViewSpacing = 18;
 constexpr auto kLiveCaptionContainerMargins = gfx::Insets::TLBR(0, 0, 8, 0);
 constexpr auto kToggleButtonRowLabelPadding = gfx::Insets::TLBR(16, 0, 15, 0);
 constexpr auto kToggleButtonRowViewPadding = gfx::Insets::TLBR(0, 56, 8, 0);
+constexpr auto kQsToggleButtonRowViewPadding = gfx::Insets::VH(0, 32);
+constexpr auto kQsToggleButtonRowPreferredSize = gfx::Size(0, 32);
+constexpr auto kQsToggleButtonRowLabelPadding = gfx::Insets::VH(8, 12);
+constexpr auto kQsToggleButtonRowMargins = gfx::Insets::VH(4, 0);
+constexpr auto kSeparatorMargins = gfx::Insets::TLBR(4, 32, 12, 32);
 constexpr auto kTextRowInsets = gfx::Insets::VH(8, 24);
 constexpr auto kDevicesNameViewPreferredSize = gfx::Size(0, 44);
 constexpr auto kDevicesTriViewInsets = gfx::Insets::TLBR(0, 24, 0, 32);
@@ -317,7 +323,7 @@ void AudioDetailedView::CreateLiveCaptionView() {
       live_caption_enabled ? kUnifiedMenuLiveCaptionIcon
                            : kUnifiedMenuLiveCaptionOffIcon,
       cros_tokens::kCrosSysOnSurface, kQsSliderIconSize));
-  toggle_icon_ = toggle_icon.get();
+  live_caption_icon_ = toggle_icon.get();
   // TODO(b/262281693): Update the font and color for `live_caption_view_` text.
   live_caption_view_->AddViewAndLabel(
       std::move(toggle_icon),
@@ -338,7 +344,7 @@ void AudioDetailedView::CreateLiveCaptionView() {
                 IDS_ASH_STATUS_TRAY_LIVE_CAPTION_DISABLED_STATE_TOOLTIP);
   toggle->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_LIVE_CAPTION_TOGGLE_TOOLTIP, toggle_tooltip));
-  toggle_button_ = toggle.get();
+  live_caption_button_ = toggle.get();
   live_caption_view_->AddRightView(toggle.release());
 
   // Allows the row to be taller than a typical tray menu item.
@@ -396,6 +402,65 @@ AudioDetailedView::CreateNoiseCancellationToggleRow(const AudioDevice& device) {
   return noise_cancellation_toggle_row;
 }
 
+std::unique_ptr<HoverHighlightView>
+AudioDetailedView::CreateQsNoiseCancellationToggleRow(
+    const AudioDevice& device) {
+  bool noise_cancellation_state =
+      CrasAudioHandler::Get()->GetNoiseCancellationState();
+
+  auto noise_cancellation_view =
+      std::make_unique<HoverHighlightView>(/*listener=*/this);
+
+  auto toggle_icon =
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          noise_cancellation_state ? kUnifiedMenuMicNoiseCancelHighIcon
+                                   : kUnifiedMenuMicNoiseCancelOffIcon,
+          cros_tokens::kCrosSysOnSurface, kQsSliderIconSize));
+  noise_cancellation_icon_ = toggle_icon.get();
+
+  noise_cancellation_view->AddViewAndLabel(
+      std::move(toggle_icon),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_AUDIO_INPUT_NOISE_CANCELLATION));
+
+  // Create a non-clickable non-focusable toggle button on the right. The events
+  // and focus behavior should be handled by `noise_cancellation_view_` instead.
+  auto toggle =
+      std::make_unique<TrayToggleButton>(views::Button::PressedCallback(),
+                                         /*accessible_name_id=*/absl::nullopt,
+                                         /*use_empty_border=*/true);
+  toggle->SetIsOn(noise_cancellation_state);
+  toggle->SetCanProcessEventsWithinSubtree(false);
+  toggle->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+  // Ignore the toggle for accessibility.
+  auto& view_accessibility = toggle->GetViewAccessibility();
+  view_accessibility.OverrideIsLeaf(true);
+  view_accessibility.OverrideIsIgnored(true);
+  noise_cancellation_button_ = toggle.get();
+  noise_cancellation_view->AddRightView(toggle.release());
+
+  noise_cancellation_view->tri_view()->SetInsets(kQsToggleButtonRowViewPadding);
+  noise_cancellation_view->tri_view()->SetContainerLayout(
+      TriView::Container::CENTER, std::make_unique<views::BoxLayout>(
+                                      views::BoxLayout::Orientation::kVertical,
+                                      kQsToggleButtonRowLabelPadding));
+  noise_cancellation_view->SetPreferredSize(kQsToggleButtonRowPreferredSize);
+  noise_cancellation_view->SetProperty(views::kMarginsKey,
+                                       kQsToggleButtonRowMargins);
+  noise_cancellation_view->SetAccessibilityState(
+      noise_cancellation_state
+          ? HoverHighlightView::AccessibilityState::CHECKED_CHECKBOX
+          : HoverHighlightView::AccessibilityState::UNCHECKED_CHECKBOX);
+
+  // This is only used for testing.
+  if (g_noise_cancellation_toggle_callback) {
+    g_noise_cancellation_toggle_callback->Run(device.id,
+                                              noise_cancellation_view.get());
+  }
+
+  return noise_cancellation_view;
+}
+
 void AudioDetailedView::MaybeShowSodaMessage(speech::LanguageCode language_code,
                                              std::u16string message) {
   AccessibilityControllerImpl* controller =
@@ -421,6 +486,13 @@ void AudioDetailedView::OnInputNoiseCancellationTogglePressed() {
   const bool new_state = !audio_handler->GetNoiseCancellationState();
   audio_handler->SetNoiseCancellationState(new_state);
   audio_handler->SetNoiseCancellationPrefState(new_state);
+  if (features::IsQsRevampEnabled()) {
+    noise_cancellation_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        new_state ? kUnifiedMenuMicNoiseCancelHighIcon
+                  : kUnifiedMenuMicNoiseCancelOffIcon,
+        cros_tokens::kCrosSysOnSurface, kQsSliderIconSize));
+    noise_cancellation_button_->SetIsOn(new_state);
+  }
 }
 
 void AudioDetailedView::ToggleLiveCaptionState() {
@@ -431,7 +503,7 @@ void AudioDetailedView::ToggleLiveCaptionState() {
 }
 
 void AudioDetailedView::UpdateLiveCaptionView(bool is_enabled) {
-  toggle_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+  live_caption_icon_->SetImage(ui::ImageModel::FromVectorIcon(
       is_enabled ? kUnifiedMenuLiveCaptionIcon : kUnifiedMenuLiveCaptionOffIcon,
       cros_tokens::kCrosSysOnSurface, kQsSliderIconSize));
 
@@ -441,12 +513,12 @@ void AudioDetailedView::UpdateLiveCaptionView(bool is_enabled) {
                        IDS_ASH_STATUS_TRAY_LIVE_CAPTION_ENABLED_STATE_TOOLTIP)
                  : l10n_util::GetStringUTF16(
                        IDS_ASH_STATUS_TRAY_LIVE_CAPTION_DISABLED_STATE_TOOLTIP);
-  toggle_button_->SetTooltipText(l10n_util::GetStringFUTF16(
+  live_caption_button_->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_LIVE_CAPTION_TOGGLE_TOOLTIP, toggle_tooltip));
 
   // Ensures the toggle button is in sync with the current Live Caption state.
-  if (toggle_button_->GetIsOn() != is_enabled) {
-    toggle_button_->SetIsOn(is_enabled);
+  if (live_caption_button_->GetIsOn() != is_enabled) {
+    live_caption_button_->SetIsOn(is_enabled);
   }
 
   InvalidateLayout();
@@ -587,8 +659,22 @@ void AudioDetailedView::UpdateScrollableList() {
     if (audio_handler->GetPrimaryActiveInputNode() == device.id &&
         audio_handler->noise_cancellation_supported() &&
         (device.audio_effect & cras::EFFECT_TYPE_NOISE_CANCELLATION)) {
-      container->AddChildView(
-          AudioDetailedView::CreateNoiseCancellationToggleRow(device));
+      if (features::IsQsRevampEnabled()) {
+        noise_cancellation_view_ = container->AddChildView(
+            AudioDetailedView::CreateQsNoiseCancellationToggleRow(device));
+
+        // Adds a `Separator` if this input device is not the last one.
+        if (&device != &input_devices_.back()) {
+          auto* separator =
+              container->AddChildView(std::make_unique<views::Separator>());
+          separator->SetColorId(cros_tokens::kCrosSysSeparator);
+          separator->SetOrientation(views::Separator::Orientation::kHorizontal);
+          separator->SetProperty(views::kMarginsKey, kSeparatorMargins);
+        }
+      } else {
+        container->AddChildView(
+            AudioDetailedView::CreateNoiseCancellationToggleRow(device));
+      }
     }
 
     if (!features::IsQsRevampEnabled()) {
@@ -604,6 +690,11 @@ void AudioDetailedView::UpdateScrollableList() {
 void AudioDetailedView::HandleViewClicked(views::View* view) {
   if (live_caption_view_ && view == live_caption_view_) {
     ToggleLiveCaptionState();
+    return;
+  }
+
+  if (noise_cancellation_view_ && view == noise_cancellation_view_) {
+    OnInputNoiseCancellationTogglePressed();
     return;
   }
 

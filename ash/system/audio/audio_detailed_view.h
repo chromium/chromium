@@ -11,6 +11,7 @@
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
+#include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "components/soda/soda_installer.h"
@@ -77,6 +78,11 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
   std::unique_ptr<views::View> CreateNoiseCancellationToggleRow(
       const AudioDevice& device);
 
+  // For QsRevamp: Creates the noise cancellation toggle row in the input
+  // subsection.
+  std::unique_ptr<HoverHighlightView> CreateQsNoiseCancellationToggleRow(
+      const AudioDevice& device);
+
   // Sets the subtext for `live_caption_view_` based on whether live caption has
   // updated if this feature is enabled and visible in tray.
   void MaybeShowSodaMessage(speech::LanguageCode language_code,
@@ -119,8 +125,11 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
   uint64_t focused_device_id_ = -1;
   // Owned by the views hierarchy.
   HoverHighlightView* live_caption_view_ = nullptr;
-  views::ImageView* toggle_icon_ = nullptr;
-  views::ToggleButton* toggle_button_ = nullptr;
+  views::ImageView* live_caption_icon_ = nullptr;
+  views::ToggleButton* live_caption_button_ = nullptr;
+  HoverHighlightView* noise_cancellation_view_ = nullptr;
+  views::ImageView* noise_cancellation_icon_ = nullptr;
+  views::ToggleButton* noise_cancellation_button_ = nullptr;
 
   base::WeakPtrFactory<AudioDetailedView> weak_factory_{this};
 };
