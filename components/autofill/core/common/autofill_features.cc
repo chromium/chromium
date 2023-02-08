@@ -229,13 +229,7 @@ BASE_FEATURE(kAutofillEnableSupportForApartmentNumbers,
 // account-based storage when sync the transport is enabled.
 BASE_FEATURE(kAutofillEnableAccountWalletStorage,
              "AutofillEnableAccountWalletStorage",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-             // Wallet transport is currently unavailable on ChromeOS.
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables parsing for birthdate fields. Filling is not supported and parsing
 // is meant to prevent false positive credit card expiration dates.
