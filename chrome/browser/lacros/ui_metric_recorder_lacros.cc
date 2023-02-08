@@ -10,9 +10,15 @@ UiMetricRecorderLacros::UiMetricRecorderLacros() = default;
 UiMetricRecorderLacros::~UiMetricRecorderLacros() = default;
 
 void UiMetricRecorderLacros::ReportPercentDroppedFramesInOneSecondWindow(
-    double percentage) {
+    double percent) {
   UMA_HISTOGRAM_PERCENTAGE(
-      "Chrome.Lacros.Smoothness.PercentDroppedFrames_1sWindow", percentage);
+      "Chrome.Lacros.Smoothness.PercentDroppedFrames_1sWindow", percent);
+}
+
+void UiMetricRecorderLacros::ReportPercentDroppedFramesInOneSecondWindow2(
+    double percent) {
+  UMA_HISTOGRAM_PERCENTAGE(
+      "Chrome.Lacros.Smoothness.PercentDroppedFrames_1sWindow2", percent);
 }
 
 // A stub method for CustomMetricRecorder::ReportEventLatency.

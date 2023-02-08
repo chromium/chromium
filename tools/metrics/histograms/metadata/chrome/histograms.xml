@@ -106,10 +106,25 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Chrome.Lacros.Smoothness.PercentDroppedFrames_1sWindow"
     units="%" expires_after="2023-07-25">
+  <obsolete>
+    This metric is reported on every dropped frame instead of every frame. It is
+    deprecated in favor of
+    Chrome.Lacros.Smoothness.PercentDroppedFrames_1sWindow2
+  </obsolete>
   <owner>xiyuan@chromium.org</owner>
   <owner>chromeos-perfmetrics-eng@google.com</owner>
   <summary>
     Similar to Ash.Smoothness.PercentDroppedFrames_1sWindow but emitted for the
+    browser UI of lacros-chrome.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.Lacros.Smoothness.PercentDroppedFrames_1sWindow2"
+    units="%" expires_after="2024-01-29">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <summary>
+    Similar to Ash.Smoothness.PercentDroppedFrames_1sWindow2 but emitted for the
     browser UI of lacros-chrome.
   </summary>
 </histogram>

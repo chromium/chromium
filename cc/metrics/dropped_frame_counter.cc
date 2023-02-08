@@ -292,6 +292,13 @@ void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
 
   if (fcp_received_)
     frame_sorter_.AddFrameResult(args, frame_info);
+
+  // Report frames on every frame for UI. And this needs to happen after
+  // `frame_sorter_.AddFrameResult` so that the current ending frame is included
+  // in the sliding window.
+  if (report_for_ui_) {
+    ReportFramesOnEveryFrameForUI();
+  }
 }
 
 void DroppedFrameCounter::ReportFrames() {
@@ -398,12 +405,33 @@ void DroppedFrameCounter::ReportFrames() {
 void DroppedFrameCounter::ReportFramesForUI() {
   DCHECK(report_for_ui_);
 
-  auto* recorder = CustomMetricRecorder::Get();
-  if (!recorder)
+  if (!sliding_window_current_percent_dropped_) {
     return;
+  }
+
+  auto* recorder = CustomMetricRecorder::Get();
+  if (!recorder) {
+    return;
+  }
 
   recorder->ReportPercentDroppedFramesInOneSecondWindow(
-      sliding_window_current_percent_dropped_);
+      *sliding_window_current_percent_dropped_);
+}
+
+void DroppedFrameCounter::ReportFramesOnEveryFrameForUI() {
+  DCHECK(report_for_ui_);
+
+  if (!sliding_window_current_percent_dropped_) {
+    return;
+  }
+
+  auto* recorder = CustomMetricRecorder::Get();
+  if (!recorder) {
+    return;
+  }
+
+  recorder->ReportPercentDroppedFramesInOneSecondWindow2(
+      *sliding_window_current_percent_dropped_);
 }
 
 double DroppedFrameCounter::GetMostRecentAverageSmoothness() const {
@@ -447,6 +475,7 @@ void DroppedFrameCounter::Reset() {
       .Clear();
   ring_buffer_.Clear();
   last_reported_metrics_ = {};
+  sliding_window_current_percent_dropped_.reset();
 }
 
 base::TimeDelta DroppedFrameCounter::ComputeCurrentWindowSize() const {

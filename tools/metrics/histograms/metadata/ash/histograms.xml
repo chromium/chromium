@@ -4878,8 +4878,38 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.Smoothness.PercentDroppedFrames_1sWindow2{Stage}"
+    units="%" expires_after="2024-01-29">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <summary>
+    Tracks the percent of dropped frames in a 1 second sliding window.
+
+    PercentDroppedFrames is measured by tracking the number of frames which were
+    not displayed on screen out of the total number of frames expected to be
+    produced and displayed. In other words, the lower this number is, the
+    smoother experience.
+
+    The &quot;.InSession&quot; covers the time of 1 minute beyond into user
+    sessions. The 1 minute timeline is picked based on
+    &quot;Ash.Login.TimeUntilGoodADF&quot; histogram, where about 93-94% user
+    sessions fall under the 1 minute bar.
+
+    The metric is reported {Stage}.
+  </summary>
+  <token key="Stage">
+    <variant name="" summary="on every frame"/>
+    <variant name=".InSession"
+        summary="on every frame after 1 min into session"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Smoothness.PercentDroppedFrames_1sWindow{Stage}" units="%"
     expires_after="2023-10-30">
+  <obsolete>
+    This metric is reported on every dropped frame instead of every frame. It is
+    deprecated in favor of Ash.Smoothness.PercentDroppedFrames_1sWindow2.
+  </obsolete>
   <owner>xiyuan@chromium.org</owner>
   <owner>chromeos-perfmetrics-eng@google.com</owner>
   <summary>

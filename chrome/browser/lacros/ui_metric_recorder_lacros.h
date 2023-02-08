@@ -14,7 +14,8 @@ class UiMetricRecorderLacros : public cc::CustomMetricRecorder {
   ~UiMetricRecorderLacros() override;
 
   // cc::CustomMetricRecorder:
-  void ReportPercentDroppedFramesInOneSecondWindow(double percentage) override;
+  void ReportPercentDroppedFramesInOneSecondWindow(double percent) override;
+  void ReportPercentDroppedFramesInOneSecondWindow2(double percent) override;
   void ReportEventLatency(
       std::vector<cc::EventLatencyTracker::LatencyData> latencies) override;
 };

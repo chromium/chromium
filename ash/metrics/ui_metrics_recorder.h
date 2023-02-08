@@ -30,7 +30,8 @@ class ASH_EXPORT UiMetricsRecorder : public cc::CustomMetricRecorder {
   void OnPostLoginAnimationFinish();
 
   // cc::CustomMetricRecorder:
-  void ReportPercentDroppedFramesInOneSecondWindow(double percentage) override;
+  void ReportPercentDroppedFramesInOneSecondWindow(double percent) override;
+  void ReportPercentDroppedFramesInOneSecondWindow2(double percent) override;
   void ReportEventLatency(
       std::vector<cc::EventLatencyTracker::LatencyData> latencies) override;
 
@@ -52,7 +53,10 @@ class ASH_EXPORT UiMetricsRecorder : public cc::CustomMetricRecorder {
   // observing good ADF for 5s during login.
   bool session_initialized_ = false;
 
+  // Login time and session start time of the primary user.
   absl::optional<base::TimeTicks> user_logged_in_time_;
+  absl::optional<base::TimeTicks> user_session_start_time_;
+
   absl::optional<base::TimeTicks> last_good_dropped_frame_time_;
 };
 
