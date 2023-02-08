@@ -67,10 +67,6 @@ suite('CrSettingsReviewNotificationPermissionsInteractiveUITest', function() {
     flush();
   });
 
-  teardown(function() {
-    testElement.remove();
-  });
-
   // Opens the action menu for a particular element in the list.
   function openActionMenu(index: number) {
     const item = getEntries()[index];

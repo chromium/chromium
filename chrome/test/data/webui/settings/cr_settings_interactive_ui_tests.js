@@ -9,6 +9,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_interactive_ui_test.js']);
 
 GEN('#include "build/build_config.h"');
 GEN('#include "chrome/common/chrome_features.h"');
+GEN('#include "components/content_settings/core/common/features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 /** Test fixture for shared Polymer 3 elements. */
@@ -125,3 +126,25 @@ TEST_F(
     function() {
       mocha.run();
     });
+
+
+var CrSettingsUnusedSitePermissionsInteractiveUITest =
+    class extends CrSettingsInteractiveUITest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/unused_site_permissions_interactive_ui_test.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'content_settings::features::kSafetyCheckUnusedSitePermissions',
+      ],
+    };
+  }
+};
+
+TEST_F('CrSettingsUnusedSitePermissionsInteractiveUITest', 'All', function() {
+  mocha.run();
+});
