@@ -34,10 +34,6 @@ WGPURenderPassColorAttachment AsDawnType(
   DCHECK(webgpu_desc);
 
   WGPURenderPassColorAttachment dawn_desc = {};
-  // TODO(dawn:1269): Remove after the deprecation period.
-  // clearColor needs to be set to all NaNs to signal that it is not in use.
-  dawn_desc.clearColor = {NAN, NAN, NAN, NAN};
-
   dawn_desc.view = webgpu_desc->view()->GetHandle();
   dawn_desc.resolveTarget = webgpu_desc->hasResolveTarget()
                                 ? webgpu_desc->resolveTarget()->GetHandle()
@@ -88,10 +84,6 @@ WGPURenderPassDepthStencilAttachment AsDawnType(
   DCHECK(webgpu_desc);
 
   WGPURenderPassDepthStencilAttachment dawn_desc = {};
-  // TODO(dawn:1269): Remove after the deprecation period.
-  // clearDepth needs to be set to NaN to signal that it is not in use.
-  dawn_desc.clearDepth = NAN;
-
   dawn_desc.view = webgpu_desc->view()->GetHandle();
 
   if (webgpu_desc->hasDepthLoadOp()) {
