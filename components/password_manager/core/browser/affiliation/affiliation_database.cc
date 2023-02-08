@@ -411,7 +411,8 @@ int AffiliationDatabase::GetDatabaseVersionForTesting() {
   // that a metatable already exists. Hence they are not influencing the version
   // of the underlying database.
   DCHECK(sql::MetaTable::DoesTableExist(sql_connection_.get()));
-  metatable.Init(sql_connection_.get(), 1, 1);
+  bool ok = metatable.Init(sql_connection_.get(), 1, 1);
+  DCHECK(ok);
   return metatable.GetVersionNumber();
 }
 
