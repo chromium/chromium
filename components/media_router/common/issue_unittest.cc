@@ -10,21 +10,23 @@ namespace media_router {
 
 namespace {
 
+constexpr char kMediaSinkId[] = "sinkId1";
+
 IssueInfo CreateWarningIssueInfo() {
-  IssueInfo issue("title", IssueInfo::Severity::WARNING);
+  IssueInfo issue("title", IssueInfo::Severity::WARNING, kMediaSinkId);
   issue.message = "message";
   return issue;
 }
 
 IssueInfo CreateNotificationRouteIssueInfoWithMessage() {
-  IssueInfo issue("title", IssueInfo::Severity::NOTIFICATION);
+  IssueInfo issue("title", IssueInfo::Severity::NOTIFICATION, kMediaSinkId);
   issue.message = "message";
   issue.route_id = "routeid";
   return issue;
 }
 
 IssueInfo CreateNotificationRouteIssueInfo() {
-  IssueInfo issue("title", IssueInfo::Severity::NOTIFICATION);
+  IssueInfo issue("title", IssueInfo::Severity::NOTIFICATION, kMediaSinkId);
   issue.route_id = "routeid";
   return issue;
 }
