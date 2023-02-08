@@ -130,6 +130,9 @@ def main(argv):
     tsconfig['files'].extend([os.path.join(root_dir, f) for f in args.in_files])
 
   if args.definitions is not None:
+    for d in args.definitions:
+      assert d.endswith(
+          '.d.ts'), f'Invalid definition \'{d}\'. Should end with \'.d.ts\''
     tsconfig['files'].extend(args.definitions)
 
   # Handle path mappings, for example chrome://resources/ URLs.

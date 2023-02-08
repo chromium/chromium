@@ -103,7 +103,15 @@ template("ash_ts_library") {
     }
 
     in_files = []
-    foreach(_file, invoker.in_files) {
+
+    if (!defined(invoker.manifest_excludes)) {
+      in_files_to_consider = invoker.in_files
+    } else {
+      in_files_to_consider =
+          filter_exclude(invoker.in_files, invoker.manifest_excludes)
+    }
+
+    foreach(_file, in_files_to_consider) {
       in_files += [ string_replace(_file, ".ts", ".js") ]
     }
   }

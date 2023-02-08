@@ -149,10 +149,12 @@ ash_ts_library("build_ts") {
                         target_gen_dir) ]
 
   in_files = static_js_files + generated_js_files + ts_files + ts_polymer +
-             ts_generated_templates + image_loader_static_js_files
+             ts_generated_templates + image_loader_static_js_files +
+             [ "file_manager/externs/file_manager_private.js" ]
+
+  manifest_excludes = [ "file_manager/externs/file_manager_private.js" ]
 
   definitions = [
-    "$preprocess_folder/file_manager/externs/file_manager_private.js",
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/runtime.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
@@ -172,7 +174,10 @@ ts_library("test_build_ts") {
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
 
-  in_files = ts_test_files
+  in_files =
+      ts_test_files + [ "file_manager/externs/test/file_manager_private.js" ]
+
+  manifest_excludes = [ "file_manager/externs/test/file_manager_private.js" ]
 
   path_mappings = [
     # for chai_assert.js.
@@ -181,8 +186,7 @@ ts_library("test_build_ts") {
                     target_gen_dir),
   ]
 
-  definitions =
-      [ "$preprocess_folder/file_manager/externs/file_manager_private.js" ]
+  definitions = []
   foreach(_file, generate_definitions_js_files) {
     definitions +=
         [ "$target_gen_dir/" + string_replace(_file, ".js", ".d.ts") ]
@@ -200,7 +204,7 @@ ts_library("test_build_ts") {
   extra_deps = [
     ":copy_definitions_to_gen",
     ":copy_definitions_to_proprocess",
-    ":copy_fmp",
+    ":copy_fmp_test",
     ":copy_ts",
     ":generate_definitions",
   ]
@@ -236,6 +240,16 @@ copy("copy_ts") {
 copy("copy_fmp") {
   sources = [ "//third_party/closure_compiler/externs/file_manager_private.js" ]
   outputs = [ "$preprocess_folder/file_manager/externs/{{source_file_part}}" ]
+}
+
+# Copy file_manager_private.js to a different location than copy_fmp, to
+# work-around the fact that both :build_ts__ts_library and :test_build_ts
+# generate files in the same folder and both have file_manager_private.js as an
+# input file.
+copy("copy_fmp_test") {
+  sources = [ "//third_party/closure_compiler/externs/file_manager_private.js" ]
+  outputs =
+      [ "$preprocess_folder/file_manager/externs/test/{{source_file_part}}" ]
 }
 
 copy("for_image_loader") {
