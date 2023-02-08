@@ -246,6 +246,9 @@
         <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_SUBLABEL" desc="Sublabel for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking for Android. Sentence-Cased." formatter_data="android_java">
           Use screen lock to confirm cards faster
         </message>
+        <message name="IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_ERROR" desc="Validation error message for missing required address field." formatter_data="android_java">
+          <ph name="FIELD">$1<ex>Postal code</ex></ph> can't be empty
+        </message>
       </if>
       <if expr="not is_macosx and not is_win and not is_android">
         <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_LABEL" desc="Label for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking. Title-Cased.">

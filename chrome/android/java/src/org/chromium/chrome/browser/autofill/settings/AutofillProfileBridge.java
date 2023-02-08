@@ -166,20 +166,21 @@ public class AutofillProfileBridge {
      * @param languageCode The language code associated with the saved autofill profile that ui
      *                     components are being retrieved for; can be null if ui components are
      *                     being retrieved for a new profile.
+     * @param validation The target usage validation rules.
      * @return A list of address UI components. The ordering in the list specifies the order these
      *         components should appear in the UI.
      */
     public List<AddressUiComponent> getAddressUiComponents(
-            String countryCode, String languageCode) {
+            String countryCode, String languageCode, @AddressValidationType int validationType) {
         List<Integer> componentIds = new ArrayList<>();
         List<String> componentNames = new ArrayList<>();
         List<Integer> componentRequired = new ArrayList<>();
         List<Integer> componentLengths = new ArrayList<>();
         List<AddressUiComponent> uiComponents = new ArrayList<>();
 
-        mCurrentBestLanguageCode =
-                AutofillProfileBridgeJni.get().getAddressUiComponents(countryCode, languageCode,
-                        componentIds, componentNames, componentRequired, componentLengths);
+        mCurrentBestLanguageCode = AutofillProfileBridgeJni.get().getAddressUiComponents(
+                countryCode, languageCode, validationType, componentIds, componentNames,
+                componentRequired, componentLengths);
 
         for (int i = 0; i < componentIds.size(); i++) {
             uiComponents.add(new AddressUiComponent(componentIds.get(i), componentNames.get(i),
@@ -237,7 +238,8 @@ public class AutofillProfileBridge {
         void getSupportedCountries(List<String> countryCodes, List<String> countryNames);
         void getRequiredFields(String countryCode, List<Integer> requiredFields);
         String getAddressUiComponents(String countryCode, String languageCode,
-                List<Integer> componentIds, List<String> componentNames,
-                List<Integer> componentRequired, List<Integer> componentLengths);
+                @AddressValidationType int validationType, List<Integer> componentIds,
+                List<String> componentNames, List<Integer> componentRequired,
+                List<Integer> componentLengths);
     }
 }

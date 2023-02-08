@@ -367,68 +367,73 @@ PersonalDataManagerAndroid::CreateJavaProfileFromNative(
 }
 
 // static
-void PersonalDataManagerAndroid::PopulateNativeProfileFromJava(
+AutofillProfile PersonalDataManagerAndroid::CreateNativeProfileFromJava(
     const JavaParamRef<jobject>& jprofile,
-    JNIEnv* env,
-    AutofillProfile* profile) {
+    JNIEnv* env) {
+  AutofillProfile profile(static_cast<AutofillProfile::Source>(
+      Java_AutofillProfile_getSource(env, jprofile)));
+
   // Only set the guid if it is an existing profile (java guid not empty).
   // Otherwise, keep the generated one.
   std::string guid =
       ConvertJavaStringToUTF8(Java_AutofillProfile_getGUID(env, jprofile));
   if (!guid.empty())
-    profile->set_guid(guid);
+    profile.set_guid(guid);
 
-  profile->set_origin(
+  profile.set_origin(
       ConvertJavaStringToUTF8(Java_AutofillProfile_getOrigin(env, jprofile)));
   MaybeSetInfoWithVerificationStatus(
-      profile, NAME_FULL, Java_AutofillProfile_getFullName(env, jprofile),
+      &profile, NAME_FULL, Java_AutofillProfile_getFullName(env, jprofile),
       Java_AutofillProfile_getFullNameStatus(env, jprofile));
   MaybeSetRawInfoWithVerificationStatus(
-      profile, NAME_HONORIFIC_PREFIX,
+      &profile, NAME_HONORIFIC_PREFIX,
       Java_AutofillProfile_getHonorificPrefix(env, jprofile),
       Java_AutofillProfile_getHonorificPrefixStatus(env, jprofile));
   MaybeSetRawInfoWithVerificationStatus(
-      profile, COMPANY_NAME, Java_AutofillProfile_getCompanyName(env, jprofile),
+      &profile, COMPANY_NAME,
+      Java_AutofillProfile_getCompanyName(env, jprofile),
       Java_AutofillProfile_getCompanyNameStatus(env, jprofile));
   MaybeSetRawInfoWithVerificationStatus(
-      profile, ADDRESS_HOME_STREET_ADDRESS,
+      &profile, ADDRESS_HOME_STREET_ADDRESS,
       Java_AutofillProfile_getStreetAddress(env, jprofile),
       Java_AutofillProfile_getStreetAddressStatus(env, jprofile));
   MaybeSetRawInfoWithVerificationStatus(
-      profile, ADDRESS_HOME_STATE,
+      &profile, ADDRESS_HOME_STATE,
       Java_AutofillProfile_getRegion(env, jprofile),
       Java_AutofillProfile_getRegionStatus(env, jprofile));
   MaybeSetRawInfoWithVerificationStatus(
-      profile, ADDRESS_HOME_CITY,
+      &profile, ADDRESS_HOME_CITY,
       Java_AutofillProfile_getLocality(env, jprofile),
       Java_AutofillProfile_getLocalityStatus(env, jprofile));
   MaybeSetRawInfoWithVerificationStatus(
-      profile, ADDRESS_HOME_DEPENDENT_LOCALITY,
+      &profile, ADDRESS_HOME_DEPENDENT_LOCALITY,
       Java_AutofillProfile_getDependentLocality(env, jprofile),
       Java_AutofillProfile_getDependentLocalityStatus(env, jprofile));
   MaybeSetRawInfoWithVerificationStatus(
-      profile, ADDRESS_HOME_ZIP,
+      &profile, ADDRESS_HOME_ZIP,
       Java_AutofillProfile_getPostalCode(env, jprofile),
       Java_AutofillProfile_getPostalCodeStatus(env, jprofile));
   MaybeSetRawInfoWithVerificationStatus(
-      profile, ADDRESS_HOME_SORTING_CODE,
+      &profile, ADDRESS_HOME_SORTING_CODE,
       Java_AutofillProfile_getSortingCode(env, jprofile),
       Java_AutofillProfile_getSortingCodeStatus(env, jprofile));
   MaybeSetInfoWithVerificationStatus(
-      profile, ADDRESS_HOME_COUNTRY,
+      &profile, ADDRESS_HOME_COUNTRY,
       Java_AutofillProfile_getCountryCode(env, jprofile),
       Java_AutofillProfile_getCountryCodeStatus(env, jprofile));
   MaybeSetRawInfoWithVerificationStatus(
-      profile, PHONE_HOME_WHOLE_NUMBER,
+      &profile, PHONE_HOME_WHOLE_NUMBER,
       Java_AutofillProfile_getPhoneNumber(env, jprofile),
       Java_AutofillProfile_getPhoneNumberStatus(env, jprofile));
   MaybeSetRawInfoWithVerificationStatus(
-      profile, EMAIL_ADDRESS,
+      &profile, EMAIL_ADDRESS,
       Java_AutofillProfile_getEmailAddress(env, jprofile),
       Java_AutofillProfile_getEmailAddressStatus(env, jprofile));
-  profile->set_language_code(ConvertJavaStringToUTF8(
+  profile.set_language_code(ConvertJavaStringToUTF8(
       Java_AutofillProfile_getLanguageCode(env, jprofile)));
-  profile->FinalizeAfterImport();
+  profile.FinalizeAfterImport();
+
+  return profile;
 }
 
 jboolean PersonalDataManagerAndroid::IsDataLoaded(
@@ -470,8 +475,7 @@ ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetProfile(
   std::string guid = ConvertJavaStringToUTF8(
       env, Java_AutofillProfile_getGUID(env, jprofile).obj());
 
-  AutofillProfile profile;
-  PopulateNativeProfileFromJava(jprofile, env, &profile);
+  AutofillProfile profile = CreateNativeProfileFromJava(jprofile, env);
 
   if (guid.empty()) {
     personal_data_manager_->AddProfile(profile);
@@ -487,8 +491,7 @@ ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetProfileToLocal(
     JNIEnv* env,
     const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jobject>& jprofile) {
-  AutofillProfile profile;
-  PopulateNativeProfileFromJava(jprofile, env, &profile);
+  AutofillProfile profile = CreateNativeProfileFromJava(jprofile, env);
 
   AutofillProfile* target_profile =
       personal_data_manager_->GetProfileByGUID(ConvertJavaStringToUTF8(
@@ -560,8 +563,7 @@ PersonalDataManagerAndroid::GetBillingAddressLabelForPaymentRequest(
       ADDRESS_HOME_ZIP,   ADDRESS_HOME_SORTING_CODE,
   };
 
-  AutofillProfile profile;
-  PopulateNativeProfileFromJava(jprofile, env, &profile);
+  AutofillProfile profile = CreateNativeProfileFromJava(jprofile, env);
 
   return ConvertUTF16ToJavaString(
       env, profile.ConstructInferredLabel(
@@ -840,8 +842,7 @@ void PersonalDataManagerAndroid::StartAddressNormalization(
     const JavaParamRef<jobject>& jprofile,
     jint jtimeout_seconds,
     const JavaParamRef<jobject>& jdelegate) {
-  AutofillProfile profile;
-  PopulateNativeProfileFromJava(jprofile, env, &profile);
+  AutofillProfile profile = CreateNativeProfileFromJava(jprofile, env);
 
   // Start the normalization.
   AddressNormalizer* normalizer = AddressNormalizerFactory::GetInstance();
@@ -976,8 +977,7 @@ PersonalDataManagerAndroid::GetShippingAddressLabelForPaymentRequest(
   if (!include_country_in_label)
     --kLabelFields_size;
 
-  AutofillProfile profile;
-  PopulateNativeProfileFromJava(jprofile, env, &profile);
+  AutofillProfile profile = CreateNativeProfileFromJava(jprofile, env);
 
   return ConvertUTF16ToJavaString(
       env, profile.ConstructInferredLabel(
