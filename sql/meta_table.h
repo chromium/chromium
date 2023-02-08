@@ -77,9 +77,7 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   // Versions must be greater than 0 to distinguish missing versions (see
   // GetVersionNumber()). If there was no meta table (proxy for a fresh
   // database), mmap status is set to `kMmapSuccess`.
-  // TODO(apaseltiner): Mark this [[nodiscard]] once all callers have been
-  // updated.
-  bool Init(Database* db, int version, int compatible_version);
+  [[nodiscard]] bool Init(Database* db, int version, int compatible_version);
 
   // Resets this MetaTable object, making another call to Init() possible.
   void Reset();
