@@ -12,6 +12,7 @@
 
 #include "base/strings/string_piece.h"
 #include "ui/base/ime/grammar_fragment.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
 
@@ -117,7 +118,8 @@ class ZWPTextInputWrapper {
 
   virtual void Reset() = 0;
 
-  virtual void Activate(WaylandWindow* window) = 0;
+  virtual void Activate(WaylandWindow* window,
+                        ui::TextInputClient::FocusReason reason) = 0;
   virtual void Deactivate() = 0;
 
   virtual void ShowInputPanel() = 0;

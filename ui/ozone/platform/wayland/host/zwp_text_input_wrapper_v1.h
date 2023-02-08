@@ -39,7 +39,8 @@ class ZWPTextInputWrapperV1 : public ZWPTextInputWrapper {
 
   void Reset() override;
 
-  void Activate(WaylandWindow* window) override;
+  void Activate(WaylandWindow* window,
+                ui::TextInputClient::FocusReason reason) override;
   void Deactivate() override;
 
   void ShowInputPanel() override;

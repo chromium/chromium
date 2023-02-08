@@ -129,7 +129,9 @@ class TextInput : public ui::TextInputClient,
   // Request to activate the text input context on the surface. Activation will
   // occur immediately if the associated window is already focused, or
   // otherwise when the window gains focus.
-  void Activate(Seat* seat, Surface* surface);
+  void Activate(Seat* seat,
+                Surface* surface,
+                ui::TextInputClient::FocusReason reason);
 
   // Deactivates the text input context.
   void Deactivate();
@@ -274,6 +276,8 @@ class TextInput : public ui::TextInputClient,
   ui::TextInputMode input_mode_ = ui::TEXT_INPUT_MODE_DEFAULT;
   int flags_ = ui::TEXT_INPUT_FLAG_NONE;
   bool should_do_learning_ = true;
+  ui::TextInputClient::FocusReason focus_reason_ =
+      ui::TextInputClient::FOCUS_REASON_NONE;
 
   // Tracks the surrounding text.
   ui::SurroundingTextTracker surrounding_text_tracker_;

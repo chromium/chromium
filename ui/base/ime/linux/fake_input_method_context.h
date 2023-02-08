@@ -25,7 +25,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) FakeInputMethodContext
   void Reset() override;
   void UpdateFocus(bool has_client,
                    TextInputType old_type,
-                   TextInputType new_type) override;
+                   TextInputType new_type,
+                   TextInputClient::FocusReason reason) override;
   void SetCursorLocation(const gfx::Rect& rect) override;
   void SetSurroundingText(const std::u16string& text,
                           const gfx::Range& selection_range) override;

@@ -349,7 +349,16 @@ void InputMethodAuraLinux::UpdateContextFocusState() {
 
   auto* client = GetTextInputClient();
   bool has_client = client != nullptr;
-  context_->UpdateFocus(has_client, old_text_input_type, text_input_type_);
+  TextInputClient::FocusReason reason;
+  if (client) {
+    reason = client->GetFocusReason();
+  } else {
+    reason = text_input_type_ == TEXT_INPUT_TYPE_NONE
+                 ? TextInputClient::FocusReason::FOCUS_REASON_NONE
+                 : TextInputClient::FocusReason::FOCUS_REASON_OTHER;
+  }
+  context_->UpdateFocus(has_client, old_text_input_type, text_input_type_,
+                        reason);
 
   TextInputMode mode = TEXT_INPUT_MODE_DEFAULT;
   int flags = TEXT_INPUT_FLAG_NONE;

@@ -83,6 +83,14 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
 
   wl_resource* resource() { return text_input_; }
 
+  ui::TextInputClient::FocusReason pending_focus_reason() const {
+    return pending_focus_reason_;
+  }
+
+  void set_pending_focus_reason(ui::TextInputClient::FocusReason reason) {
+    pending_focus_reason_ = reason;
+  }
+
  private:
   wl_client* client() { return wl_resource_get_client(text_input_); }
 
@@ -358,6 +366,10 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
   ui::XkbModifierConverter modifier_converter_{
       std::vector<std::string>(std::begin(kModifierNames),
                                std::end(kModifierNames))};
+
+  // Pending focus reason.
+  ui::TextInputClient::FocusReason pending_focus_reason_;
+
   base::WeakPtrFactory<WaylandTextInputDelegate> weak_factory_{this};
 };
 
@@ -390,9 +402,12 @@ void text_input_activate(wl_client* client,
   TextInput* text_input = GetUserDataAs<TextInput>(resource);
   Surface* surface = GetUserDataAs<Surface>(surface_resource);
   Seat* seat = GetUserDataAs<WaylandSeat>(seat_resource)->seat;
-  static_cast<WaylandTextInputDelegate*>(text_input->delegate())
-      ->set_surface(surface_resource);
-  text_input->Activate(seat, surface);
+  auto* delegate =
+      static_cast<WaylandTextInputDelegate*>(text_input->delegate());
+  delegate->set_surface(surface_resource);
+  auto focus_reason = delegate->pending_focus_reason();
+  delegate->set_pending_focus_reason(ui::TextInputClient::FOCUS_REASON_OTHER);
+  text_input->Activate(seat, surface, focus_reason);
 
   // Sending modifiers.
   wl_array modifiers;
@@ -410,6 +425,9 @@ void text_input_deactivate(wl_client* client,
                            wl_resource* resource,
                            wl_resource* seat) {
   TextInput* text_input = GetUserDataAs<TextInput>(resource);
+  auto* delegate =
+      static_cast<WaylandTextInputDelegate*>(text_input->delegate());
+  delegate->set_pending_focus_reason(ui::TextInputClient::FOCUS_REASON_OTHER);
   text_input->Deactivate();
 }
 
@@ -669,6 +687,41 @@ void extended_text_input_finalize_virtual_keyboard_changes(
   text_input->FinalizeVirtualKeyboardChanges();
 }
 
+void extended_text_input_set_focus_reason(wl_client* client,
+                                          wl_resource* resource,
+                                          uint32_t reason) {
+  ui::TextInputClient::FocusReason focus_reason;
+  switch (reason) {
+    case ZCR_EXTENDED_TEXT_INPUT_V1_FOCUS_REASON_TYPE_NONE:
+      focus_reason = ui::TextInputClient::FOCUS_REASON_NONE;
+      break;
+    case ZCR_EXTENDED_TEXT_INPUT_V1_FOCUS_REASON_TYPE_MOUSE:
+      focus_reason = ui::TextInputClient::FOCUS_REASON_MOUSE;
+      break;
+    case ZCR_EXTENDED_TEXT_INPUT_V1_FOCUS_REASON_TYPE_TOUCH:
+      focus_reason = ui::TextInputClient::FOCUS_REASON_TOUCH;
+      break;
+    case ZCR_EXTENDED_TEXT_INPUT_V1_FOCUS_REASON_TYPE_PEN:
+      focus_reason = ui::TextInputClient::FOCUS_REASON_PEN;
+      break;
+    case ZCR_EXTENDED_TEXT_INPUT_V1_FOCUS_REASON_TYPE_OTHER:
+      focus_reason = ui::TextInputClient::FOCUS_REASON_OTHER;
+      break;
+    default:
+      LOG(ERROR) << "Unknown focus reason: " << reason;
+      return;
+  }
+
+  // Keep tracking in WaylandExtendedTextInput. This will be passed to
+  // TextInput::Activate.
+  auto* delegate =
+      GetUserDataAs<WaylandExtendedTextInput>(resource)->delegate();
+  if (!delegate) {
+    return;
+  }
+  delegate->set_pending_focus_reason(focus_reason);
+}
+
 constexpr struct zcr_extended_text_input_v1_interface
     extended_text_input_implementation = {
         extended_text_input_destroy,
@@ -676,6 +729,7 @@ constexpr struct zcr_extended_text_input_v1_interface
         extended_text_input_set_grammar_fragment_at_cursor,
         extended_text_input_set_autocorrect_info,
         extended_text_input_finalize_virtual_keyboard_changes,
+        extended_text_input_set_focus_reason,
 };
 
 ////////////////////////////////////////////////////////////////////////////////

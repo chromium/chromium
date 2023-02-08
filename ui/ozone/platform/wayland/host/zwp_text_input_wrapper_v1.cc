@@ -153,9 +153,39 @@ void ZWPTextInputWrapperV1::Reset() {
   zwp_text_input_v1_reset(obj_.get());
 }
 
-void ZWPTextInputWrapperV1::Activate(WaylandWindow* window) {
+void ZWPTextInputWrapperV1::Activate(WaylandWindow* window,
+                                     TextInputClient::FocusReason reason) {
   DCHECK(connection_->seat());
+  if (wl::get_version_of_object(extended_obj_.get()) >=
+      ZCR_EXTENDED_TEXT_INPUT_V1_SET_FOCUS_REASON_SINCE_VERSION) {
+    absl::optional<uint32_t> wayland_focus_reason;
+    switch (reason) {
+      case ui::TextInputClient::FocusReason::FOCUS_REASON_NONE:
+        wayland_focus_reason =
+            ZCR_EXTENDED_TEXT_INPUT_V1_FOCUS_REASON_TYPE_NONE;
+        break;
+      case ui::TextInputClient::FocusReason::FOCUS_REASON_MOUSE:
+        wayland_focus_reason =
+            ZCR_EXTENDED_TEXT_INPUT_V1_FOCUS_REASON_TYPE_MOUSE;
+        break;
+      case ui::TextInputClient::FocusReason::FOCUS_REASON_TOUCH:
+        wayland_focus_reason =
+            ZCR_EXTENDED_TEXT_INPUT_V1_FOCUS_REASON_TYPE_TOUCH;
+        break;
+      case ui::TextInputClient::FocusReason::FOCUS_REASON_PEN:
+        wayland_focus_reason = ZCR_EXTENDED_TEXT_INPUT_V1_FOCUS_REASON_TYPE_PEN;
+        break;
+      case ui::TextInputClient::FocusReason::FOCUS_REASON_OTHER:
+        wayland_focus_reason =
+            ZCR_EXTENDED_TEXT_INPUT_V1_FOCUS_REASON_TYPE_OTHER;
+        break;
+    }
 
+    if (wayland_focus_reason.has_value()) {
+      zcr_extended_text_input_v1_set_focus_reason(extended_obj_.get(),
+                                                  wayland_focus_reason.value());
+    }
+  }
   zwp_text_input_v1_activate(obj_.get(), connection_->seat()->wl_object(),
                              window->root_surface()->surface());
 }

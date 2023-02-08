@@ -226,7 +226,8 @@ TEST_F(TextInputTest, Activate) {
   EXPECT_EQ(ui::TEXT_INPUT_MODE_DEFAULT, text_input()->GetTextInputMode());
 
   EXPECT_CALL(*delegate(), Activated).Times(1);
-  text_input()->Activate(seat(), surface());
+  text_input()->Activate(seat(), surface(),
+                         ui::TextInputClient::FOCUS_REASON_OTHER);
   testing::Mock::VerifyAndClearExpectations(delegate());
 
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT, text_input()->GetTextInputType());
@@ -250,7 +251,8 @@ TEST_F(TextInputTest, ActivationRequiresFocus) {
   focus_client->FocusWindow(nullptr);
   EXPECT_CALL(observer, OnTextInputStateChanged(_)).Times(0);
   EXPECT_CALL(*delegate(), Activated).Times(0);
-  text_input()->Activate(seat(), surface());
+  text_input()->Activate(seat(), surface(),
+                         ui::TextInputClient::FOCUS_REASON_OTHER);
   testing::Mock::VerifyAndClearExpectations(&observer);
   testing::Mock::VerifyAndClearExpectations(delegate());
 
@@ -285,19 +287,22 @@ TEST_F(TextInputTest, MultipleActivations) {
   focus_client->FocusWindow(surface()->window());
   EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
   EXPECT_CALL(*delegate(), Activated).Times(1);
-  text_input()->Activate(seat(), surface());
+  text_input()->Activate(seat(), surface(),
+                         ui::TextInputClient::FOCUS_REASON_OTHER);
   testing::Mock::VerifyAndClearExpectations(&observer);
   testing::Mock::VerifyAndClearExpectations(delegate());
 
   // Attempting to activate the same surface is a no-op.
   EXPECT_CALL(*delegate(), Activated).Times(0);
-  text_input()->Activate(seat(), surface());
+  text_input()->Activate(seat(), surface(),
+                         ui::TextInputClient::FOCUS_REASON_OTHER);
   testing::Mock::VerifyAndClearExpectations(delegate());
 
   // Activating a non-focused surface causes deactivation until focus.
   EXPECT_CALL(observer, OnTextInputStateChanged(nullptr)).Times(1);
   EXPECT_CALL(*delegate(), Deactivated).Times(1);
-  text_input()->Activate(seat(), surface2.surface());
+  text_input()->Activate(seat(), surface2.surface(),
+                         ui::TextInputClient::FOCUS_REASON_OTHER);
   testing::Mock::VerifyAndClearExpectations(&observer);
   testing::Mock::VerifyAndClearExpectations(delegate());
 
@@ -313,7 +318,8 @@ TEST_F(TextInputTest, ShowVirtualKeyboardIfEnabled) {
 
   EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
   EXPECT_CALL(*delegate(), Activated).Times(1);
-  text_input()->Activate(seat(), surface());
+  text_input()->Activate(seat(), surface(),
+                         ui::TextInputClient::FOCUS_REASON_OTHER);
   testing::Mock::VerifyAndClearExpectations(&observer);
   testing::Mock::VerifyAndClearExpectations(delegate());
 
@@ -363,7 +369,8 @@ TEST_F(TextInputTest, ShowVirtualKeyboardIfEnabledBeforeActivated) {
       }));
   EXPECT_CALL(*delegate(), Activated).Times(1);
   EXPECT_CALL(*delegate(), OnVirtualKeyboardVisibilityChanged(true)).Times(1);
-  text_input()->Activate(seat(), surface());
+  text_input()->Activate(seat(), surface(),
+                         ui::TextInputClient::FOCUS_REASON_OTHER);
   testing::Mock::VerifyAndClearExpectations(&observer);
   testing::Mock::VerifyAndClearExpectations(delegate());
 
@@ -375,7 +382,8 @@ TEST_F(TextInputTest, VirtualKeyboardObserver) {
   EXPECT_EQ(ui::TEXT_INPUT_MODE_DEFAULT, text_input()->GetTextInputMode());
 
   EXPECT_CALL(*delegate(), Activated).Times(1);
-  text_input()->Activate(seat(), surface());
+  text_input()->Activate(seat(), surface(),
+                         ui::TextInputClient::FOCUS_REASON_OTHER);
   testing::Mock::VerifyAndClearExpectations(delegate());
 
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT, text_input()->GetTextInputType());
@@ -398,7 +406,8 @@ TEST_F(TextInputTest, SetTypeModeFlag) {
 
   EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
   EXPECT_CALL(*delegate(), Activated).Times(1);
-  text_input()->Activate(seat(), surface());
+  text_input()->Activate(seat(), surface(),
+                         ui::TextInputClient::FOCUS_REASON_OTHER);
   testing::Mock::VerifyAndClearExpectations(&observer);
   testing::Mock::VerifyAndClearExpectations(delegate());
 
@@ -422,12 +431,40 @@ TEST_F(TextInputTest, SetTypeModeFlag) {
   EXPECT_CALL(*delegate(), Deactivated).Times(1);
 }
 
+TEST_F(TextInputTest, FocusReason) {
+  EXPECT_EQ(ui::TextInputClient::FOCUS_REASON_NONE,
+            text_input()->GetFocusReason());
+
+  EXPECT_CALL(*delegate(), Activated).Times(1);
+  text_input()->Activate(seat(), surface(),
+                         ui::TextInputClient::FOCUS_REASON_OTHER);
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
+  EXPECT_EQ(ui::TextInputClient::FOCUS_REASON_OTHER,
+            text_input()->GetFocusReason());
+
+  EXPECT_CALL(*delegate(), Deactivated).Times(1);
+  text_input()->Deactivate();
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
+  EXPECT_CALL(*delegate(), Activated).Times(1);
+  text_input()->Activate(seat(), surface(),
+                         ui::TextInputClient::FOCUS_REASON_PEN);
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
+  EXPECT_EQ(ui::TextInputClient::FOCUS_REASON_PEN,
+            text_input()->GetFocusReason());
+
+  EXPECT_CALL(*delegate(), Deactivated).Times(1);
+}
+
 TEST_F(TextInputTest, CaretBounds) {
   TestingInputMethodObserver observer(GetInputMethod());
 
   EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
   EXPECT_CALL(*delegate(), Activated).Times(1);
-  text_input()->Activate(seat(), surface());
+  text_input()->Activate(seat(), surface(),
+                         ui::TextInputClient::FOCUS_REASON_OTHER);
   testing::Mock::VerifyAndClearExpectations(&observer);
   testing::Mock::VerifyAndClearExpectations(delegate());
 
@@ -518,7 +555,8 @@ TEST_F(TextInputTest, Commit) {
 }
 
 TEST_F(TextInputTest, InsertChar) {
-  text_input()->Activate(seat(), surface());
+  text_input()->Activate(seat(), surface(),
+                         ui::TextInputClient::FOCUS_REASON_OTHER);
 
   ui::KeyEvent ev(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, 0);
 
@@ -527,7 +565,8 @@ TEST_F(TextInputTest, InsertChar) {
 }
 
 TEST_F(TextInputTest, InsertCharCtrlV) {
-  text_input()->Activate(seat(), surface());
+  text_input()->Activate(seat(), surface(),
+                         ui::TextInputClient::FOCUS_REASON_OTHER);
 
   // CTRL+V is interpreted as non-IME consumed KeyEvent, so should
   // not be sent.
@@ -537,7 +576,8 @@ TEST_F(TextInputTest, InsertCharCtrlV) {
 }
 
 TEST_F(TextInputTest, InsertCharNormalKey) {
-  text_input()->Activate(seat(), surface());
+  text_input()->Activate(seat(), surface(),
+                         ui::TextInputClient::FOCUS_REASON_OTHER);
 
   char16_t ch = 'x';
   ui::KeyEvent ev(ch, ui::VKEY_X, ui::DomCode::NONE, 0);
@@ -558,7 +598,8 @@ TEST_F(TextInputTest, SurroundingText) {
   std::u16string got_text;
   EXPECT_FALSE(text_input()->GetTextFromRange(gfx::Range(0, 1), &got_text));
 
-  text_input()->Activate(seat(), surface());
+  text_input()->Activate(seat(), surface(),
+                         ui::TextInputClient::FOCUS_REASON_OTHER);
 
   EXPECT_CALL(observer, OnCaretBoundsChanged(text_input())).Times(1);
   std::u16string text = u"surrounding\u3000text";

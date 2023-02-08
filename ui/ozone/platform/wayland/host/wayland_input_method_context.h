@@ -60,7 +60,8 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
                        TextInputClient* new_client) override;
   void UpdateFocus(bool has_client,
                    TextInputType old_type,
-                   TextInputType new_type) override;
+                   TextInputType new_type,
+                   TextInputClient::FocusReason reason) override;
   void SetGrammarFragmentAtCursor(const GrammarFragment& fragment) override;
   void SetAutocorrectInfo(const gfx::Range& autocorrect_range,
                           const gfx::Rect& autocorrect_bounds) override;
@@ -101,14 +102,16 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   }
 
  private:
-  void Focus(bool skip_virtual_keyboard_update);
+  void Focus(bool skip_virtual_keyboard_update,
+             TextInputClient::FocusReason reason);
   void Blur(bool skip_virtual_keyboard_update);
   void UpdatePreeditText(const std::u16string& preedit_text);
   // If |skip_virtual_keyboard_update| is true, no virtual keyboard show/hide
   // requests will be sent. This is used to prevent flickering the virtual
   // keyboard when it would be immediately reshown anyway, e.g. when changing
   // focus from one text input to another.
-  void MaybeUpdateActivated(bool skip_virtual_keyboard_update);
+  void MaybeUpdateActivated(bool skip_virtual_keyboard_update,
+                            TextInputClient::FocusReason reason);
 
   const raw_ptr<WaylandConnection>
       connection_;  // TODO(jani) Handle this better

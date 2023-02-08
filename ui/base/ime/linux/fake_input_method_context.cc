@@ -23,7 +23,8 @@ void FakeInputMethodContext::Reset() {}
 
 void FakeInputMethodContext::UpdateFocus(bool has_client,
                                          TextInputType old_type,
-                                         TextInputType new_type) {}
+                                         TextInputType new_type,
+                                         TextInputClient::FocusReason reason) {}
 
 void FakeInputMethodContext::SetCursorLocation(const gfx::Rect& rect) {}
 

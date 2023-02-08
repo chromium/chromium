@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_text_input_extension_v1" version="6">
+  <interface name="zcr_text_input_extension_v1" version="7">
     <description summary="extends text_input to support richer operations">
       Allows a text_input to sends more variation of operations to support
       richer features, such as set_preedit_region.
@@ -57,7 +57,7 @@
 
   </interface>
 
-  <interface name="zcr_extended_text_input_v1" version="6">
+  <interface name="zcr_extended_text_input_v1" version="7">
     <description summary="extension of text_input protocol">
       The zcr_extended_text_input_v1 interface extends the text_input interface
       to support more rich operations on text_input.
@@ -299,6 +299,32 @@
           - zwp_text_input_v1.show_input_panel
           - zwp_text_input_v1.hide_input_panel
       </description>
+    </request>
+
+    <!-- Version 7 -->
+
+    <enum name="focus_reason_type" since="7">
+      <description summary="Chrome's TextInputClient::FocusReason">
+        This represents the reasons why the text input gets focused.
+      </description>
+      <entry name="none" value="0" />
+      <entry name="mouse" value="1" />
+      <entry name="touch" value="2" />
+      <entry name="pen" value="3" />
+      <entry name="other" value="4" />
+    </enum>
+
+    <request name="set_focus_reason" since="7">
+      <description summary="Specifies the reason of the following focus event">
+        Updates the reason why the following focus event is triggered.
+        This should be called just before text_input::activate,
+        and is in effect when it is called together (i.e. it is not in effect
+        until text_input::activate is called).
+
+        `reason` is an extended parameter providing the mode for the next
+        `text_input::active request`.
+      </description>
+      <arg name="reason" type="uint" enum="focus_reason_type" />
     </request>
 
   </interface>

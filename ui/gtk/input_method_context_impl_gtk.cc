@@ -192,9 +192,11 @@ void InputMethodContextImplGtk::Reset() {
   }
 }
 
-void InputMethodContextImplGtk::UpdateFocus(bool has_client,
-                                            ui::TextInputType old_type,
-                                            ui::TextInputType new_type) {
+void InputMethodContextImplGtk::UpdateFocus(
+    bool has_client,
+    ui::TextInputType old_type,
+    ui::TextInputType new_type,
+    ui::TextInputClient::FocusReason reason) {
   type_ = new_type;
 
   // We only focus when the focus is in a textfield.

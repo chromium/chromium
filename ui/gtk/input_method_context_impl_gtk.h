@@ -38,7 +38,8 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
   void Reset() override;
   void UpdateFocus(bool has_client,
                    ui::TextInputType old_type,
-                   ui::TextInputType new_type) override;
+                   ui::TextInputType new_type,
+                   ui::TextInputClient::FocusReason reason) override;
   void SetSurroundingText(const std::u16string& text,
                           const gfx::Range& selection_range) override;
   void SetContentType(ui::TextInputType type,
