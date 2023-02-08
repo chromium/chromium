@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 window.addEventListener('unload', (e) => {
-  chrome.runtime.sendMessage('did_run_unload_2');
+  chrome.storage.local.set({'did_run_unload_2': 'yes'});
 });

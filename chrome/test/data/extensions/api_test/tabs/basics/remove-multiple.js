@@ -7,12 +7,15 @@ var secondTabId;
 var thirdTabId;
 var fourthTabId;
 
-function resolveOnMessage(expected_message, resolve) {
-  chrome.runtime.onMessage.addListener(function local(message) {
-    if (message == expected_message) {
-      chrome.runtime.onMessage.removeListener(local);
-      resolve();
-    }
+function resolveOnStorageChanged(key, resolve) {
+  chrome.storage.local.onChanged.addListener(function local(changes,
+                                                            areaName) {
+    let change = changes[key];
+    if (change == undefined)
+      return;
+    assertEq({'newValue': 'yes'}, change)
+    chrome.storage.local.onChanged.removeListener(local);
+    resolve();
   });
 }
 
@@ -65,10 +68,10 @@ chrome.test.runTests([
       });
   },
   function removeCreatedTabs() {
-    let onMessagePromise1 =
-        new Promise(resolveOnMessage.bind(this, 'did_run_unload_1'));
-    let onMessagePromise2 =
-        new Promise(resolveOnMessage.bind(this, 'did_run_unload_2'));
+    let onStorageChangedPromise1 =
+        new Promise(resolveOnStorageChanged.bind(this, 'did_run_unload_1'));
+    let onStorageChangedPromise2 =
+        new Promise(resolveOnStorageChanged.bind(this, 'did_run_unload_2'));
 
     let removePromise = new Promise((resolve) => {
       chrome.tabs.remove([secondTabId, thirdTabId, fourthTabId], () => {
@@ -83,7 +86,7 @@ chrome.test.runTests([
       });
     });
 
-    Promise.all([onMessagePromise1, onMessagePromise2, removePromise]).then(
-        chrome.test.succeed);
+    Promise.all([onStorageChangedPromise1, onStorageChangedPromise2,
+                 removePromise]).then(chrome.test.succeed);
   }
 ]);

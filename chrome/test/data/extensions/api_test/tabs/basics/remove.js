@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function resolveOnMessage(resolve) {
-  chrome.runtime.onMessage.addListener(function local(message) {
-    chrome.runtime.onMessage.removeListener(local);
-    assertEq('did_run_unload_1', message);
+function resolveOnStorageChanged(resolve) {
+  chrome.storage.local.onChanged.addListener(function local(changes,
+                                                            areaName) {
+    assertEq({'newValue': 'yes'}, changes['did_run_unload_1'])
+    chrome.storage.local.onChanged.removeListener(local);
     resolve();
   });
 }
@@ -19,16 +20,19 @@ chrome.test.runTests([
         secondTabId = tab.id;
         assertTrue(tab.active);
         assertEq(1, tab.index);
-        chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+        chrome.tabs.onUpdated.addListener(function local(tabId,
+                                                         changeInfo,
+                                                         tab) {
           // Wait for the second tab to finish loading before moving on.
           if (tabId == secondTabId && changeInfo.status == 'complete') {
+            chrome.tabs.onUpdated.removeListener(local);
             chrome.test.succeed();
           }
         });
       });
   },
   function removeSecondTab() {
-    let onMessagePromise = new Promise(resolveOnMessage);
+    let onStoragePromise = new Promise(resolveOnStorageChanged);
 
     let removePromise = new Promise((resolve) => {
       chrome.tabs.remove(secondTabId, () => {
@@ -36,6 +40,6 @@ chrome.test.runTests([
       });
     });
 
-    Promise.all([onMessagePromise, removePromise]).then(chrome.test.succeed);
+    Promise.all([onStoragePromise, removePromise]).then(chrome.test.succeed);
   }
 ]);
