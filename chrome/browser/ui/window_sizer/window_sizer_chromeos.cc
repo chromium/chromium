@@ -190,6 +190,13 @@ bool WindowSizerChromeOS::GetAppBrowserBoundsFromLastActive(
 
   if (state_provider() && state_provider()->GetLastActiveWindowState(
                               bounds_in_screen, show_state)) {
+    // TODO(crbug.com/1413902): This is broken when the last active window is
+    // minimized as bounds_in_screen doesn't get updated. If
+    // GetLastActiveWindowState can return false for minimized windows, this
+    // code can be reverted.
+    if (bounds_in_screen->IsEmpty()) {
+      return false;
+    }
     bounds_in_screen->Offset(kWindowTilePixels, kWindowTilePixels);
     // Adjusting bounds_in_screen to fit on the display as returned by
     // GetDisplayForNewWindow here matches behavior for tabbed browsers above.
