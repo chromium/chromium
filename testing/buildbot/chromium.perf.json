@@ -18,34 +18,6 @@
     "isolated_scripts": [
       {
         "args": [],
-        "isolate_name": "resource_sizes_chrome_modern_minimal_apks",
-        "merge": {
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "resource_sizes_chrome_modern_minimal_apks",
-        "override_compile_targets": [
-          "resource_sizes_chrome_modern_minimal_apks"
-        ],
-        "resultdb": {
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
-          "expiration": 7200,
-          "hard_timeout": 21600,
-          "io_timeout": 21600,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        }
-      },
-      {
-        "args": [],
         "isolate_name": "resource_sizes_chrome_modern_public_minimal_apks",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
@@ -1188,34 +1160,6 @@
       "system_webview_shell_apk"
     ],
     "isolated_scripts": [
-      {
-        "args": [],
-        "isolate_name": "resource_sizes_chrome_modern_minimal_apks",
-        "merge": {
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "resource_sizes_chrome_modern_minimal_apks",
-        "override_compile_targets": [
-          "resource_sizes_chrome_modern_minimal_apks"
-        ],
-        "resultdb": {
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
-          "expiration": 7200,
-          "hard_timeout": 21600,
-          "io_timeout": 21600,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        }
-      },
       {
         "args": [],
         "isolate_name": "resource_sizes_chrome_modern_public_minimal_apks",
