@@ -726,6 +726,7 @@ class ConsolidatedConsentScreenTester extends ScreenElementApi {
     this.nextButton = new PolymerElementApi(this, '#acceptButton');
     this.readMoreButton =
         new PolymerElementApi(this.loadedStep, '#readMoreButton');
+    this.recoveryToggle = new PolymerElementApi(this, '#recoveryOptIn');
   }
 
   /** @override */
@@ -751,6 +752,14 @@ class ConsolidatedConsentScreenTester extends ScreenElementApi {
   getNextButtonName() {
     return loadTimeData.getString('consolidatedConsentAcceptAndContinue');
   }
+
+  /**
+   * Enable the toggle which controls whether the user opted-in the the
+   * cryptohome recovery feature.
+   */
+  enableRecoveryToggle() {
+    this.recoveryToggle.element().checked = true;
+  }
 }
 
 class SmartPrivacyProtectionScreenTester extends ScreenElementApi {
@@ -772,6 +781,12 @@ class SmartPrivacyProtectionScreenTester extends ScreenElementApi {
   /** @return {string} */
   getNoThanksButtonName() {
     return loadTimeData.getString('smartPrivacyProtectionTurnOffButton');
+  }
+}
+
+class CryptohomeRecoverySetupScreenTester extends ScreenElementApi {
+  constructor() {
+    super('cryptohome-recovery-setup');
   }
 }
 
@@ -801,6 +816,7 @@ export class OobeApiProvider {
       GestureNavigation: new GestureNavigationScreenTester(),
       ConsolidatedConsentScreen: new ConsolidatedConsentScreenTester(),
       SmartPrivacyProtectionScreen: new SmartPrivacyProtectionScreenTester(),
+      CryptohomeRecoverySetupScreen: new CryptohomeRecoverySetupScreenTester(),
     };
 
     this.loginWithPin = function(username, pin) {
