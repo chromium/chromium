@@ -287,8 +287,16 @@ export class BannerController extends EventTarget {
     }
   }
 
-  /** @param {!State} state latest state from the store. */
+  /**
+   * Checks if the DlpRestrictedBanner should be shown/hidden based on the
+   * latest state and reconciles banners if necessary.
+   * @param {!State} state latest state from the store.
+   */
   onStateChanged(state) {
+    if (this.dialogType_ !== DialogType.SELECT_OPEN_FILE &&
+        this.dialogType_ !== DialogType.SELECT_OPEN_MULTI_FILE) {
+      return;
+    }
     const changedHasDlpDisabledFiles =
         !!state.currentDirectory?.hasDlpDisabledFiles;
     if (this.hasDlpDisabledFiles_ !== changedHasDlpDisabledFiles) {
