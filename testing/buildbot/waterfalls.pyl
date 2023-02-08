@@ -2953,14 +2953,6 @@
           'all'
         ],
       },
-      'Linux CFI (reclient shadow)': {
-        'mixins': [
-          'linux-bionic',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_linux_and_gl_gtests',
-        },
-      },
       'Linux Viz': {
         'mixins': [
           'linux-bionic',

@@ -1,18 +1,4 @@
 {
-  "CFI Linux CF (reclient shadow)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_cfi": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_cfi_cast": true,
-      "use_cfi_diag": true,
-      "use_cfi_icall": true,
-      "use_cfi_recover": true,
-      "use_remoteexec": true,
-      "use_thin_lto": true
-    }
-  },
   "Comparison Android (reclient)": {
     "goma": {
       "gn_args": {
@@ -263,19 +249,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "use_remoteexec": true
-    }
-  },
-  "Linux CFI (reclient shadow)": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_cfi": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_cfi_cast": true,
-      "use_cfi_diag": true,
-      "use_cfi_icall": true,
-      "use_remoteexec": true,
-      "use_thin_lto": true
     }
   },
   "Linux Viz": {

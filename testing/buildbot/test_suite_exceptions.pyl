@@ -2012,7 +2012,6 @@
       'ToTLinuxTSan',
       # https://crbug.com/crashpad/306
       'Linux CFI',
-      'Linux CFI (reclient shadow)',
       'CFI Linux ToT',
     ],
     'modifications': {
@@ -2224,21 +2223,6 @@
         },
       },
       'Linux CFI': {
-        'args': [
-          '--use-gpu-in-tests',
-          '--no-xvfb',
-        ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'gpu': '10de:2184',
-              'os': 'Ubuntu',
-              'pool': 'chromium.tests.gpu',
-            },
-          ],
-        },
-      },
-      'Linux CFI (reclient shadow)': {
         'args': [
           '--use-gpu-in-tests',
           '--no-xvfb',
