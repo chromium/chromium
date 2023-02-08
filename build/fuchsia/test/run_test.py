@@ -84,8 +84,6 @@ def main():
                 stack.enter_context(tempfile.TemporaryDirectory()))
             stack.enter_context(
                 ScopedFfxConfig('repository.server.listen', '"[::]:0"'))
-        # crbug.com/1408189: overnet.cso causes flakes in overnet.
-        stack.enter_context(ScopedFfxConfig('overnet.cso', 'disabled'))
         log_manager = stack.enter_context(LogManager(runner_args.logs_dir))
         if runner_args.device:
             update(runner_args.system_image_dir, runner_args.os_check,
