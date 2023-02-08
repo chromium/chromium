@@ -9,7 +9,12 @@
                 "chrome_crashpad_handler",
                 "icudtl.dat",
                 "keyboard_resources.pak",
+                "libEGL.so",
+                "libGLESv2.so",
                 "libminigbm.so",
+                "libmojo_core.so",
+                "libmojo_core_arc32.so",
+                "libmojo_core_arc64.so",
                 "MEIPreload/manifest.json",
                 "MEIPreload/preloaded_data.pb",
                 "nacl_helper",
@@ -21,7 +26,7 @@
                 "xdg-mime",
                 "xdg-settings"
             ],
-            "dirs": ["ClearKeyCdm", "locales", "resources"],
+            "dirs": ["ClearKeyCdm", "locales", "resources", "mojo_service_manager"],
             "rename_dirs": [
                 {"from_dir": ".", "to_dir": "chrome-chromeos"}
             ],
