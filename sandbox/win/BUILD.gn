@@ -207,6 +207,7 @@ test("sbox_integration_tests") {
 
   deps = [
     ":sandbox",
+    ":test_support",
     "//base/test:test_support",
     "//sandbox/policy:tests",
     "//testing/gtest",
@@ -244,18 +245,26 @@ if (current_cpu == target_cpu && host_os == "win") {
 }
 
 shared_library("sbox_integration_test_hooking_dll") {
+  testonly = true
   sources = [ "tests/integration_tests/hooking_dll.cc" ]
 
-  deps = [ ":common_test" ]
+  deps = [
+    ":common",
+    ":test_support",
+  ]
 }
 
 executable("sbox_integration_test_win_proc") {
+  testonly = true
   sources = [ "tests/integration_tests/hooking_win_proc.cc" ]
 
   configs -= [ "//build/config/win:console" ]
   configs += [ "//build/config/win:windowed" ]
 
-  deps = [ ":common_test" ]
+  deps = [
+    ":common",
+    ":test_support",
+  ]
 }
 
 test("sbox_validation_tests") {
@@ -269,6 +278,7 @@ test("sbox_validation_tests") {
 
   deps = [
     ":sandbox",
+    ":test_support",
     "//base/test:test_support",
     "//testing/gtest",
   ]
@@ -299,6 +309,7 @@ test("sbox_unittests") {
 
   deps = [
     ":sandbox",
+    ":test_support",
     "//base/test:test_support",
     "//testing/gtest",
   ]
@@ -310,14 +321,14 @@ fuzzer_test("sandbox_policy_rule_fuzzer") {
   sources = [ "fuzzer/sandbox_policy_rule_fuzzer.cc" ]
   dict = "fuzzer/sandbox_policy_rule.dict"
   deps = [
+    ":sandbox",
     "//base",
-    "//sandbox",
   ]
 }
 
 fuzzer_test("sandbox_nt_utils_fuzzer") {
   sources = [ "fuzzer/sandbox_nt_utils_fuzzer.cc" ]
-  deps = [ "//sandbox" ]
+  deps = [ ":sandbox" ]
 }
 
 fuzzer_test("sandbox_ipc_fuzzer") {
@@ -333,16 +344,20 @@ source_set("common") {
     "src/sandbox_policy.h",
     "src/sandbox_types.h",
     "src/security_level.h",
-    "tests/common/controller.h",
   ]
 
   deps = [ "//base" ]
-  public_deps = [ ":common_test" ]
 }
 
-source_set("common_test") {
+source_set("test_support") {
+  testonly = true
   sources = [
+    "tests/common/controller.h",
     "tests/integration_tests/hooking_dll.h",
     "tests/integration_tests/hooking_win_proc.h",
+  ]
+  deps = [
+    ":common",
+    "//base",
   ]
 }
