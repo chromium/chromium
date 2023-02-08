@@ -2932,17 +2932,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.ThreadedIconLoader.LoadTime" units="ms"
-    expires_after="2021-11-30">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    The number of milliseconds it took to finish successfully loading an icon
-    using ThreadedIconLoader. Recorded whenever a blink module loads an icon
-    using ThreadedIconLoader.
-  </summary>
-</histogram>
-
 <histogram name="Blink.UpdateViewportIntersection.UpdateTime"
     units="microseconds" expires_after="2023-12-11">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->

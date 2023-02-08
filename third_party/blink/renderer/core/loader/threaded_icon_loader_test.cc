@@ -136,12 +136,6 @@ TEST_F(ThreadedIconLoaderTest, InvalidResourceReturnsNullIcon) {
   EXPECT_EQ(resize_scale, -1.0);
 }
 
-TEST_F(ThreadedIconLoaderTest, LoadTimeRecordedByUMA) {
-  HistogramTester histogram_tester;
-  LoadIcon(RegisterMockedURL(kIconLoaderIcon100x100));
-  histogram_tester.ExpectTotalCount("Blink.ThreadedIconLoader.LoadTime", 1);
-}
-
 TEST_F(ThreadedIconLoaderTest, ResizeFailed) {
   gfx::Size dimensions = {25, 0};
   auto result = LoadIcon(RegisterMockedURL(kIconLoaderIcon100x100), dimensions);

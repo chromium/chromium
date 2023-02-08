@@ -68,8 +68,6 @@ class CORE_EXPORT ThreadedIconLoader final
 
   IconCallback icon_callback_;
 
-  base::TimeTicks start_time_;
-
   bool stopped_ = false;
 };
 

@@ -145,8 +145,6 @@ void ThreadedIconLoader::Start(
       *execution_context, this, resource_loader_options);
   threadable_loader_->SetTimeout(resource_request.TimeoutInterval());
   threadable_loader_->Start(ResourceRequest(resource_request));
-
-  start_time_ = base::TimeTicks::Now();
 }
 
 void ThreadedIconLoader::Stop() {
@@ -176,9 +174,6 @@ void ThreadedIconLoader::DidFinishLoading(uint64_t resource_identifier) {
     std::move(icon_callback_).Run(SkBitmap(), -1);
     return;
   }
-
-  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.ThreadedIconLoader.LoadTime",
-                             base::TimeTicks::Now() - start_time_);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       threadable_loader_->GetTaskRunner();
