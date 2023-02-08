@@ -15,6 +15,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 
+import {isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {UserImage, UserInfo} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -62,6 +63,12 @@ export class UserPreview extends WithPersonalizationStore {
         type: Boolean,
         value: null,
       },
+      isPersonalizationJellyEnabled_: {
+        type: Boolean,
+        value() {
+          return isPersonalizationJellyEnabled();
+        },
+      },
     };
   }
 
@@ -70,6 +77,7 @@ export class UserPreview extends WithPersonalizationStore {
   private image_: UserImage|null;
   private imageUrl_: Url|null;
   private imageIsEnterpriseManaged_: boolean|null;
+  private isPersonalizationJellyEnabled_: boolean;
 
   override ready() {
     super.ready();

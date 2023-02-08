@@ -10,6 +10,14 @@
     height: 100%;
   }
 
+  :host-context(body.jelly-enabled) #container {
+    grid-template-areas:
+      '.     . .'
+      'image . text';
+    grid-template-columns: 96px 20px minmax(0, 1fr);
+    grid-template-rows: 20px 96px;
+  }
+
   #imageContainer {
     grid-area: image;
     position: relative;
@@ -31,11 +39,24 @@
     width: 80px;
   }
 
+  :host-context(body.jelly-enabled) #imageContainer #imageBorderContainer img {
+    background-size: 96px 96px;
+    height: 96px;
+    width: 96px;
+  }
+
   #imageContainer img {
     border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 50%;
     height: 80px;
     width: 80px;
+  }
+
+  :host-context(body.jelly-enabled) #imageBorderContainer,
+  :host-context(body.jelly-enabled) #imageContainer img {
+    border: 0;
+    height: 96px;
+    width: 96px;
   }
 
   #imageContainer img.clickable {
@@ -64,6 +85,10 @@
     font: 400 22px/28px var(--cros-font-family-google-sans);
   }
 
+  :host-context(body.jelly-enabled) #infoContainer > h2 {
+    font: 400 22px/24px var(--cros-font-family-google-sans);
+  }
+
   .avatar-link {
     align-items: center;
     cursor: pointer;
@@ -84,11 +109,22 @@
     margin: 0;
   }
 
+  :host-context(body.jelly-enabled) .avatar-link > span {
+    color: var(--cros-sys-secondary, var(--cros-link-color));
+    font: 400 13px/20px var(--cros-font-family-google-sans);
+  }
+
   iron-icon[icon='cr:open-in-new'] {
     --iron-icon-height: 16px;
     --iron-icon-width: 16px;
     --iron-icon-fill-color: var(--cros-link-color);
     margin-inline-start: 6px;
+  }
+
+  :host-context(body.jelly-enabled) iron-icon[icon='cr:open-in-new'] {
+    --iron-icon-height: 12px;
+    --iron-icon-width: 12px;
+    --iron-icon-fill-color: var(--cros-sys-secondary, var(--cros-link-color));
   }
 
   paper-ripple {
@@ -112,6 +148,14 @@
     width: 24px;
   }
 
+  :host-context(body.jelly-enabled) #iconContainer,
+  :host-context(body.jelly-enabled) #enterpriseIconContainer {
+    height: 32px;
+    line-height: 32px;
+    right: 0;
+    width: 32px;
+  }
+
   #iconContainer {
     align-items: center;
     background-color: var(--cros-icon-color-prominent);
@@ -123,7 +167,7 @@
   }
 
   #iconContainer > svg {
-    fill: var(--cros-button-label-color-primary);
+    fill: var(--cros-sys-on_primary, var(--cros-button-label-color-primary));
   }
 
   #enterpriseIconContainer {
@@ -139,6 +183,16 @@
     }
   }
 
+  :host-context(body.jelly-enabled) #enterpriseIconContainer {
+    background-color: var(--cros-sys-on_primary_container);
+  }
+
+  :host-context(body.jelly-enabled) #enterpriseIconContainer svg {
+    fill: var(--cros-sys-on_primary);
+    margin-top: 10px;
+    text-align: center;
+  }
+
   #avatar:focus-visible {
     outline: 2px solid var(--cros-focus-ring-color);
   }
@@ -152,8 +206,16 @@
         <img id="avatar" class="managed" src$="[[imageUrl_.url]]"
             alt="$i18n{managedSetting}" title="$i18n{managedSetting}">
         <div id="enterpriseIconContainer">
-          <iron-icon icon="personalization:managed">
-          </iron-icon>
+          <template is="dom-if" if="[[!isPersonalizationJellyEnabled_]]">
+            <iron-icon icon="personalization:managed">
+            </iron-icon>
+          </template>
+          <template is="dom-if" if="[[isPersonalizationJellyEnabled_]]">
+            <svg width="13.33" height="12" viewBox="0 0 13.33 12" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7.00004 2.66667V0H0.333374V12H13.6667V2.66667H7.00004ZM5.66671 10.6667H1.66671V9.33333H5.66671V10.6667ZM5.66671 8H1.66671V6.66667H5.66671V8ZM5.66671 5.33333H1.66671V4H5.66671V5.33333ZM5.66671 2.66667H1.66671V1.33333H5.66671V2.66667ZM12.3334 10.6667H7.00004V4H12.3334V10.6667ZM11 5.33333H8.33337V6.66667H11V5.33333ZM11 8H8.33337V9.33333H11V8Z">
+              </path>
+            </svg>
+          </template>
         </div>
       </template>
       <template is="dom-if"
@@ -161,11 +223,20 @@
         <div id="iconContainer"
             on-click="onClickUserSubpageLink_"
             on-keypress="onClickUserSubpageLink_">
-          <svg viewBox="0 0 16 16" width="16" height="16">
-            <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M13.5575 3.45125L12.545 2.43875C11.96 1.85375 11.0075 1.85375 10.4225 2.43875L8.3 4.55375L2 10.8612V13.9962H5.135L13.5575 5.57375C14.15 4.98875 14.15 4.03625 13.5575 3.45125ZM3.5 12.4963V11.4763L9.365 5.61125L10.4225 6.66875L4.5575 12.5413L3.5 12.4963Z">
-            </path>
-          </svg>
+          <template is="dom-if" if="[[!isPersonalizationJellyEnabled_]]">
+            <svg viewBox="0 0 16 16" width="16" height="16">
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M13.5575 3.45125L12.545 2.43875C11.96 1.85375 11.0075 1.85375 10.4225 2.43875L8.3 4.55375L2 10.8612V13.9962H5.135L13.5575 5.57375C14.15 4.98875 14.15 4.03625 13.5575 3.45125ZM3.5 12.4963V11.4763L9.365 5.61125L10.4225 6.66875L4.5575 12.5413L3.5 12.4963Z">
+              </path>
+            </svg>
+          </template>
+          <template is="dom-if" if="[[isPersonalizationJellyEnabled_]]">
+            <svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M12.928 2.148L11.848 1.068C11.224 0.443998 10.208 0.443998 9.58397 1.068L7.31997 3.324L0.599976 10.052V13.396H3.94398L12.928 4.412C13.56 3.788 13.56 2.772 12.928 2.148ZM2.19998 11.796V10.708L8.45598 4.452L9.58397 5.58L3.32798 11.844L2.19998 11.796Z">
+              </path>
+            </svg>
+          </template>
         </div>
         <paper-ripple class="circle"></paper-ripple>
         <div id="imageBorderContainer">
