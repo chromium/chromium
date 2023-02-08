@@ -8,6 +8,11 @@ import "media/mojo/mojom/media_types.mojom";
 import "media/mojo/mojom/audio_parameters.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
+enum AacOutputFormat { kAAC, kADTS };
+struct AacAudioEncoderConfig {
+  AacOutputFormat format;
+};
+
 // This defines a mojo transport format for media::AudioEncoderConfig.
 // See media/base/audio_encoder.h for descriptions.
 struct AudioEncoderConfig {
@@ -23,6 +28,9 @@ struct AudioEncoderConfig {
   // Target encoded bitrate - bits per second of playback
   // 0 - if client has no bitrate preference.
   uint32 bitrate;
+
+  // AAC specific parts of the config
+  AacAudioEncoderConfig aac;
 };
 
 // This defines a mojo transport format for media::EncodedAudioBuffer.

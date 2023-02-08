@@ -38,8 +38,14 @@ async function main(args) {
     codec: args.codec,
     sampleRate: args.sample_rate,
     numberOfChannels: args.channels,
-    bitrate: 96000,
+    bitrate: 96000
   };
+
+  if (args.aac_format) {
+    config.aac = {
+      format : args.aac_format
+    };
+  }
   let decoder_config = null;
 
   let support = await AudioEncoder.isConfigSupported(config);
@@ -92,6 +98,13 @@ async function main(args) {
   timestamp_us += 2 * (2112 / config.sampleRate) * 1_000_000;
 
   TEST.assert(decoder_config != null, "No decoder config");
+  if (args.aac_format == "adts") {
+    TEST.assert(decoder_config.description == null, "ADTS should carry desc");
+  } else if (args.aac_format == "aac") {
+    TEST.assert(decoder_config.description != null, "AAC should carry desc");
+    TEST.assert(decoder_config.description.byteLength > 1,
+                "AAC desc is too short");
+  }
   TEST.assert(outputs.length > 0, "no outputs");
   TEST.assert(outputs[0].timestamp == 0, "first chunk timestamp non zero");
 
@@ -102,6 +115,12 @@ async function main(args) {
         `chunk timestamp is too small. ${timestamp_us} vs ${chunk.timestamp}`);
     TEST.assert(chunk.duration >= 0, "chunk duration is zero");
     total_encoded_duration += chunk.duration;
+    let buf = new ArrayBuffer(chunk.byteLength);
+    chunk.copyTo(buf);
+    if (args.aac_format == "adts") {
+      let adts_header = new DataView(buf).getUint8(0);
+      TEST.assert(adts_header == 0xff,  "Incorrect ADTS header");
+    }
   }
 
   // The total duration might be padded with silence.

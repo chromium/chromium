@@ -186,6 +186,7 @@ class MEDIA_GPU_EXPORT MFAudioEncoder : public AudioEncoder {
   int input_buffer_alignment_;
   int output_buffer_alignment_;
   bool initialized_ = false;
+  std::vector<uint8_t> codec_desc_;
 
   // We can't produce output until at least `kMinSamplesForOutput` have been
   // provided. Until then, `output_cb_` will not be run.

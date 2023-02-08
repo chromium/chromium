@@ -88,7 +88,19 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         'sample_rate':
         48000,
         'channels':
-        2
+        2,
+        'aac_format':
+        'aac'
+    }])
+    yield ('WebCodecs_AudioEncoding_AAC_LC_ADTS', 'audio-encode-decode.html', [{
+        'codec':
+        'mp4a.67',
+        'sample_rate':
+        48000,
+        'channels':
+        2,
+        'aac_format':
+        'adts'
     }])
 
   @classmethod

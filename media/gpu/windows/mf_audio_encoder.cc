@@ -155,6 +155,7 @@ HRESULT CreateInputMediaType(const int sample_rate,
 HRESULT CreateOutputMediaType(const int sample_rate,
                               const int channels,
                               const int bitrate,
+                              media::AudioEncoder::AacOutputFormat format,
                               ComPtr<IMFMediaType>* output_media_type) {
   // https://docs.microsoft.com/en-us/windows/win32/medfound/aac-encoder#output-types
   ComPtr<IMFMediaType> media_type;
@@ -173,9 +174,14 @@ HRESULT CreateOutputMediaType(const int sample_rate,
   RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND,
                                          adjusted_bitrate / 8));
 
-  // The encoder can produce ADTS headers for us if we set the payload
-  // type to 1.
-  RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_AAC_PAYLOAD_TYPE, 1));
+  // Set payload format.
+  // https://learn.microsoft.com/en-us/windows/win32/medfound/mf-mt-aac-payload-type
+  // 0 - The stream contains raw_data_block elements only. (default)
+  // 1 - Audio Data Transport Stream (ADTS).
+  //     The stream contains an adts_sequence, as defined by MPEG-2.
+  if (format == media::AudioEncoder::AacOutputFormat::ADTS) {
+    RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_AAC_PAYLOAD_TYPE, 1));
+  }
 
   *output_media_type = std::move(media_type);
   return S_OK;
@@ -429,9 +435,10 @@ void MFAudioEncoder::Initialize(const Options& options,
     return;
   }
 
+  auto format = options_.aac.value_or(AacOptions()).format;
   ComPtr<IMFMediaType> output_media_type;
   hr = CreateOutputMediaType(options_.sample_rate, options_.channels, bitrate,
-                             &output_media_type);
+                             format, &output_media_type);
   if (FAILED(hr) || !output_media_type) {
     std::move(done_cb).Run(EncoderStatus::Codes::kEncoderInitializationError);
     return;
@@ -457,6 +464,33 @@ void MFAudioEncoder::Initialize(const Options& options,
   hr =
       GetOutputBufferRequirements(mf_encoder_, output_media_type,
                                   options_.channels, &output_buffer_alignment_);
+
+  /*
+    https://learn.microsoft.com/en-us/windows/win32/medfound/aac-encoder
+
+    After the output type is set, the AAC encoder updates the type by adding
+    the MF_MT_USER_DATA attribute. This attribute contains the portion of
+    the HEAACWAVEINFO structure that appears after the WAVEFORMATEX structure
+    (that is, after the wfx member).
+    This is followed by the AudioSpecificConfig() data,
+    as defined by ISO/IEC 14496-3.
+  */
+  UINT32 desc_size = 0;
+  if (output_media_type->GetBlobSize(MF_MT_USER_DATA, &desc_size) == S_OK &&
+      desc_size > 0 && format == media::AudioEncoder::AacOutputFormat::AAC) {
+    codec_desc_.resize(desc_size);
+    size_t aac_config_offset =
+        sizeof(HEAACWAVEINFO) - offsetof(HEAACWAVEINFO, wPayloadType);
+    hr = output_media_type->GetBlob(MF_MT_USER_DATA, codec_desc_.data(),
+                                    desc_size, nullptr);
+    if (FAILED(hr) || aac_config_offset > codec_desc_.size()) {
+      std::move(done_cb).Run(EncoderStatus::Codes::kEncoderInitializationError);
+      return;
+    }
+    codec_desc_.erase(codec_desc_.begin(),
+                      codec_desc_.begin() + aac_config_offset);
+  }
+
   if (FAILED(hr)) {
     std::move(done_cb).Run(EncoderStatus::Codes::kEncoderInitializationError);
     return;
@@ -728,7 +762,13 @@ void MFAudioEncoder::TryProcessOutput(FlushCB flush_cb) {
       return;
     }
 
-    output_cb_.Run(std::move(encoded_audio), absl::nullopt);
+    absl::optional<CodecDescription> desc;
+    if (!codec_desc_.empty()) {
+      desc = codec_desc_;
+      codec_desc_.clear();
+    }
+
+    output_cb_.Run(std::move(encoded_audio), desc);
     samples_in_encoder_ -= kSamplesPerFrame;
     hr = mf_encoder_->GetOutputStatus(&status);
   }

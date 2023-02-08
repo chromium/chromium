@@ -13,6 +13,28 @@
 namespace mojo {
 
 template <>
+struct EnumTraits<media::mojom::AacOutputFormat,
+                  media::AudioEncoder::AacOutputFormat> {
+  static media::mojom::AacOutputFormat ToMojom(
+      media::AudioEncoder::AacOutputFormat input);
+
+  static bool FromMojom(media::mojom::AacOutputFormat,
+                        media::AudioEncoder::AacOutputFormat* output);
+};
+
+template <>
+struct StructTraits<media::mojom::AacAudioEncoderConfigDataView,
+                    media::AudioEncoder::AacOptions> {
+  static media::AudioEncoder::AacOutputFormat format(
+      media::AudioEncoder::AacOptions& input) {
+    return input.format;
+  }
+
+  static bool Read(media::mojom::AacAudioEncoderConfigDataView input,
+                   media::AudioEncoder::AacOptions* output);
+};
+
+template <>
 struct StructTraits<media::mojom::AudioEncoderConfigDataView,
                     media::AudioEncoderConfig> {
   static media::AudioCodec codec(const media::AudioEncoderConfig& input) {
@@ -29,6 +51,11 @@ struct StructTraits<media::mojom::AudioEncoderConfigDataView,
 
   static uint32_t bitrate(const media::AudioEncoderConfig& input) {
     return input.bitrate.value_or(0);
+  }
+
+  static media::AudioEncoder::AacOptions aac(
+      const media::AudioEncoderConfig& input) {
+    return input.aac.value_or(media::AudioEncoder::AacOptions());
   }
 
   static bool Read(media::mojom::AudioEncoderConfigDataView input,
