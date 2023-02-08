@@ -21,6 +21,28 @@
 
 namespace {
 
+class UpdatedAcceleratorsObserver
+    : public ash::AshAcceleratorConfiguration::Observer {
+ public:
+  UpdatedAcceleratorsObserver() = default;
+  UpdatedAcceleratorsObserver(const UpdatedAcceleratorsObserver&) = delete;
+  UpdatedAcceleratorsObserver& operator=(const UpdatedAcceleratorsObserver&) =
+      delete;
+  ~UpdatedAcceleratorsObserver() override = default;
+
+  // ash::AshAcceleratorConfiguration::Observer:
+  void OnAcceleratorsUpdated() override {
+    ++num_times_accelerator_updated_called_;
+  }
+
+  int num_times_accelerator_updated_called() {
+    return num_times_accelerator_updated_called_;
+  }
+
+ private:
+  int num_times_accelerator_updated_called_ = 0;
+};
+
 bool CompareAccelerators(const ash::AcceleratorData& expected_data,
                          const ui::Accelerator& actual_accelerator) {
   ui::Accelerator expected_accel(expected_data.keycode,
@@ -53,12 +75,19 @@ namespace ash {
 class AshAcceleratorConfigurationTest : public testing::Test {
  public:
   AshAcceleratorConfigurationTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kShortcutCustomization);
     config_ = std::make_unique<AshAcceleratorConfiguration>();
+    config_->AddObserver(&observer_);
   }
 
-  ~AshAcceleratorConfigurationTest() override = default;
+  ~AshAcceleratorConfigurationTest() override {
+    config_->RemoveObserver(&observer_);
+  }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  UpdatedAcceleratorsObserver observer_;
   std::unique_ptr<AshAcceleratorConfiguration> config_;
 };
 
@@ -183,6 +212,39 @@ TEST_F(AshAcceleratorConfigurationTest, GetAcceleratorsFromActionId) {
         config_->GetAcceleratorsForAction(data.action);
     ExpectAllAcceleratorsEqual(expected, actual);
   }
+}
+
+TEST_F(AshAcceleratorConfigurationTest, VerifyObserversAreNotified) {
+  EXPECT_EQ(0, observer_.num_times_accelerator_updated_called());
+
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       SWITCH_TO_LAST_USED_IME},
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE,
+       ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, SWITCH_TO_LAST_USED_IME},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+       CYCLE_FORWARD_MRU},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB,
+       ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, CYCLE_BACKWARD_MRU},
+  };
+
+  config_->Initialize(test_data);
+  const std::vector<ui::Accelerator>& accelerators =
+      config_->GetAllAccelerators();
+  ExpectAllAcceleratorsEqual(test_data, accelerators);
+  EXPECT_EQ(1, observer_.num_times_accelerator_updated_called());
+
+  // Now update accelerators with a different set of accelerators.
+  const AcceleratorData test_data_updated[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_J, ui::EF_CONTROL_DOWN,
+       TOGGLE_FULLSCREEN},
+  };
+
+  config_->Initialize(test_data_updated);
+  const std::vector<ui::Accelerator>& accelerators_updated =
+      config_->GetAllAccelerators();
+  ExpectAllAcceleratorsEqual(test_data_updated, accelerators_updated);
+  EXPECT_EQ(2, observer_.num_times_accelerator_updated_called());
 }
 
 }  // namespace ash

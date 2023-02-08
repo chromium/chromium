@@ -15,6 +15,8 @@
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/accelerators/accelerator_map.h"
 
@@ -25,6 +27,15 @@ namespace ash {
 // accelerators.
 class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
  public:
+  // Observer to notify clients of when accelerators are updated.
+  // Clients can receive a list of accelerators via
+  // `AshAcceleratorConfiguration::GetAllAccelerators()`.
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+    virtual void OnAcceleratorsUpdated() = 0;
+  };
+
   AshAcceleratorConfiguration();
   AshAcceleratorConfiguration(const AshAcceleratorConfiguration&) = delete;
   AshAcceleratorConfiguration& operator=(const AshAcceleratorConfiguration&) =
@@ -59,6 +70,9 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
   void InitializeDeprecatedAccelerators(
       base::span<const DeprecatedAcceleratorData> deprecated_datas,
       base::span<const AcceleratorData> deprecated_accelerators);
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   AcceleratorAction* FindAcceleratorAction(const ui::Accelerator& accelerator) {
     return accelerator_to_id_.Find(accelerator);
@@ -99,6 +113,8 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
 
   void AddAccelerators(base::span<const AcceleratorData> accelerators);
 
+  void NotfiyAcceleratorsUpdated();
+
   std::vector<ui::Accelerator> accelerators_;
 
   base::flat_set<ui::Accelerator> deprecated_accelerators_;
@@ -113,6 +129,9 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
   // A map from accelerators to the AcceleratorAction values, which are used in
   // the implementation.
   AcceleratorActionMap accelerator_to_id_;
+
+  // List of all observer clients.
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace ash

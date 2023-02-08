@@ -1429,19 +1429,32 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleQuickSettings) {
 
 TEST_F(AcceleratorControllerTest, ToggleMultitaskMenu) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chromeos::wm::features::kWindowLayoutMenu);
-  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  // Accelerators behind a flag should also be accompanied by the
+  // `kShortcutCustomization` to support dynamic accelerator registration.
+  scoped_feature_list.InitWithFeatures(
+      {chromeos::wm::features::kWindowLayoutMenu,
+       ::features::kShortcutCustomization},
+      {});
+  // Enabling `kShortcutCustomization` will start letting
+  // `AcceleratorControllerImpl` to observe changes to the accelerator list.
+  // This includes accelerators added by enabling flags.
+  test_api_->ObserveAcceleratorUpdates();
 
+  // Typically updating flags will restart chrome and re-initialize accelerator
+  // targeting.
+  Shell::Get()->ash_accelerator_configuration()->Initialize();
+
+  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  ui::Accelerator accelerator(ui::VKEY_Z, ui::EF_COMMAND_DOWN);
   // Pressing accelerator once should show the multitask menu.
-  controller_->PerformActionIfEnabled(TOGGLE_MULTITASK_MENU, {});
+  EXPECT_TRUE(ProcessInController(accelerator));
   auto* frame_view = NonClientFrameViewAsh::Get(window.get());
   auto* size_button = static_cast<chromeos::FrameSizeButton*>(
       frame_view->GetHeaderView()->caption_button_container()->size_button());
   ASSERT_TRUE(size_button->IsMultitaskMenuShown());
 
   // Pressing accelerator a second time should close the menu.
-  controller_->PerformActionIfEnabled(TOGGLE_MULTITASK_MENU, {});
+  EXPECT_TRUE(ProcessInController(accelerator));
   ASSERT_FALSE(size_button->IsMultitaskMenuShown());
 }
 

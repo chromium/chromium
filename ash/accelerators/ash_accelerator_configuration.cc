@@ -172,6 +172,14 @@ void AshAcceleratorConfiguration::InitializeDeprecatedAccelerators() {
                                    std::move(deprecated_accelerators));
 }
 
+void AshAcceleratorConfiguration::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void AshAcceleratorConfiguration::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
 // This function must only be called after Initialize().
 void AshAcceleratorConfiguration::InitializeDeprecatedAccelerators(
     base::span<const DeprecatedAcceleratorData> deprecated_data,
@@ -201,6 +209,7 @@ void AshAcceleratorConfiguration::AddAccelerators(
     accelerators_.push_back(accelerator);
   }
   UpdateAccelerators(id_to_accelerators_);
+  NotfiyAcceleratorsUpdated();
 }
 
 const DeprecatedAcceleratorData*
@@ -211,6 +220,16 @@ AshAcceleratorConfiguration::GetDeprecatedAcceleratorData(
     return nullptr;
   }
   return it->second;
+}
+
+void AshAcceleratorConfiguration::NotfiyAcceleratorsUpdated() {
+  if (!::features::IsShortcutCustomizationEnabled()) {
+    return;
+  }
+
+  for (auto& observer : observer_list_) {
+    observer.OnAcceleratorsUpdated();
+  }
 }
 
 }  // namespace ash

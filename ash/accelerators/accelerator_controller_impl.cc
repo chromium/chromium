@@ -276,8 +276,17 @@ bool AcceleratorControllerImpl::TestApi::TriggerTabletModeVolumeAdjustTimer() {
 
 void AcceleratorControllerImpl::TestApi::RegisterAccelerators(
     base::span<const AcceleratorData> accelerators) {
+  // Initializing accelerators will register them.
   controller_->accelerator_configuration()->Initialize(accelerators);
-  controller_->RegisterAccelerators(accelerators);
+  // If customization is not available, register the accelerators manually.
+  if (!::features::IsShortcutCustomizationEnabled()) {
+    controller_->RegisterAccelerators(accelerators);
+  }
+}
+
+void AcceleratorControllerImpl::TestApi::ObserveAcceleratorUpdates() {
+  DCHECK(::features::IsShortcutCustomizationEnabled());
+  controller_->accelerator_configuration()->AddObserver(controller_);
 }
 
 bool AcceleratorControllerImpl::TestApi::IsActionForAcceleratorEnabled(
@@ -332,6 +341,10 @@ AcceleratorControllerImpl::AcceleratorControllerImpl(
 
   Init();
 
+  if (::features::IsShortcutCustomizationEnabled()) {
+    accelerator_configuration_->AddObserver(this);
+  }
+
   // Let AcceleratorHistory be a PreTargetHandler on aura::Env to ensure that it
   // receives KeyEvents and MouseEvents. In some cases Shell PreTargetHandlers
   // will handle Events before AcceleratorHistory gets to see them. This
@@ -345,6 +358,9 @@ AcceleratorControllerImpl::~AcceleratorControllerImpl() {
   // deconstructed before |InputMethodManager|
   if (::features::IsImprovedKeyboardShortcutsEnabled()) {
     InputMethodManager::Get()->RemoveObserver(this);
+  }
+  if (::features::IsShortcutCustomizationEnabled()) {
+    accelerator_configuration_->RemoveObserver(this);
   }
   aura::Env::GetInstance()->RemovePreTargetHandler(accelerator_history_.get());
 }
@@ -362,6 +378,15 @@ void AcceleratorControllerImpl::InputMethodChanged(InputMethodManager* manager,
       manager->ArePositionalShortcutsUsedByCurrentInputMethod();
   accelerator_configuration_->SetUsePositionalLookup(use_positional_lookup);
   accelerator_manager_->SetUsePositionalLookup(use_positional_lookup);
+}
+
+void AcceleratorControllerImpl::OnAcceleratorsUpdated() {
+  DCHECK(::features::IsShortcutCustomizationEnabled());
+
+  // Accelerators have been updated, unregister all accelerators and re-register
+  // them.
+  UnregisterAll(this);
+  RegisterAccelerators(accelerator_configuration_->GetAllAccelerators());
 }
 
 void AcceleratorControllerImpl::Register(
