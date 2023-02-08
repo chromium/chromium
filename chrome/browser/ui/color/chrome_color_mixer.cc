@@ -191,6 +191,13 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorDownloadToolbarButtonActive] =
       ui::PickGoogleColor(ui::kColorThrobber, kColorToolbar,
                           color_utils::kMinimumVisibleContrastRatio);
+  // TODO(chlily): The opacity should be kToolbarInkDropHighlightVisibleOpacity
+  // (same as used in AdjustHighlightColorForContrast()). Pull out usages of the
+  // constant.
+  mixer[kColorDownloadToolbarButtonAnimationBackground] = ui::AlphaBlend(
+      kColorDownloadToolbarButtonAnimationForeground, kColorToolbar, 0x14);
+  mixer[kColorDownloadToolbarButtonAnimationForeground] =
+      AdjustHighlightColorForContrast(ui::kColorAccent, kColorToolbar);
   mixer[kColorDownloadToolbarButtonInactive] = {kColorToolbarButtonIcon};
   mixer[kColorDownloadToolbarButtonRingBackground] = {
       SkColorSetA(kColorDownloadToolbarButtonInactive, 0x33)};

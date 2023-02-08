@@ -118,7 +118,8 @@ DownloadDisplayController::~DownloadDisplayController() {
   base::PowerMonitor::RemovePowerSuspendObserver(this);
 }
 
-void DownloadDisplayController::OnNewItem(bool show_details) {
+void DownloadDisplayController::OnNewItem(bool show_details,
+                                          bool show_animation) {
   if (!download::ShouldShowDownloadBubble(browser_->profile())) {
     return;
   }
@@ -142,7 +143,7 @@ void DownloadDisplayController::OnNewItem(bool show_details) {
           /*force_update=*/true);
     }
   } else {
-    display_->ShowDetails();
+    display_->ShowDetails(show_animation);
   }
 }
 
@@ -242,7 +243,7 @@ void DownloadDisplayController::OnFullscreenStateChanged() {
   int in_progress_count = InProgressDownloadCount(all_models);
   if (in_progress_count > 0 &&
       download::ShouldShowDownloadBubble(browser_->profile())) {
-    display_->ShowDetails();
+    display_->ShowDetails(/*show_animation=*/false);
   }
 }
 

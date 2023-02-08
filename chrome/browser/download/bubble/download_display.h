@@ -21,7 +21,8 @@ class DownloadDisplay {
   virtual void UpdateDownloadIcon() = 0;
   // Shows detailed information on the download display. It can be a popup or
   // dialog or partial view, essentially anything other than the main view.
-  virtual void ShowDetails() = 0;
+  // If |show_animation| is true, an animated icon will be shown.
+  virtual void ShowDetails(bool show_animation) = 0;
   // Hide the detailed information on the download display.
   virtual void HideDetails() = 0;
   // Returns whether the details are visible.

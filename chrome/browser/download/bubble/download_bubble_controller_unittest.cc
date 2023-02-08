@@ -33,6 +33,7 @@
 using testing::_;
 using testing::NiceMock;
 using testing::Return;
+using testing::ReturnRef;
 using testing::ReturnRefOfCopy;
 using testing::SetArgPointee;
 
@@ -48,7 +49,7 @@ class MockDownloadDisplayController : public DownloadDisplayController {
                                 DownloadBubbleUIController* bubble_controller)
       : DownloadDisplayController(nullptr, browser, bubble_controller) {}
   void MaybeShowButtonWhenCreated() override {}
-  MOCK_METHOD1(OnNewItem, void(bool));
+  MOCK_METHOD2(OnNewItem, void(bool, bool));
   MOCK_METHOD2(OnUpdatedItem, void(bool, bool));
   MOCK_METHOD1(OnRemovedItem, void(const ContentId&));
 };
@@ -165,7 +166,7 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     items_.push_back(std::make_unique<StrictMockDownloadItem>());
     EXPECT_CALL(item(index), GetId())
         .WillRepeatedly(Return(static_cast<uint32_t>(items_.size() + 1)));
-    EXPECT_CALL(item(index), GetGuid()).WillRepeatedly(testing::ReturnRef(id));
+    EXPECT_CALL(item(index), GetGuid()).WillRepeatedly(ReturnRef(id));
     EXPECT_CALL(item(index), GetState()).WillRepeatedly(Return(state));
     EXPECT_CALL(item(index), GetStartTime()).WillRepeatedly(Return(start_time));
     EXPECT_CALL(item(index), GetTargetFilePath())
@@ -188,6 +189,15 @@ class DownloadBubbleUIControllerTest : public testing::Test {
         .WillRepeatedly(Return(download::DownloadItem::DownloadCreationType::
                                    TYPE_ACTIVE_DOWNLOAD));
     EXPECT_CALL(item(index), IsPaused()).WillRepeatedly(Return(false));
+    // Functions called when checking ShouldShowDownloadStartedAnimation().
+    EXPECT_CALL(item(index), IsSavePackageDownload())
+        .WillRepeatedly(Return(false));
+    EXPECT_CALL(item(index), GetTargetDisposition())
+        .WillRepeatedly(
+            Return(download::DownloadItem::TARGET_DISPOSITION_PROMPT));
+    EXPECT_CALL(item(index), GetMimeType()).WillRepeatedly(Return(""));
+    EXPECT_CALL(item(index), GetURL())
+        .WillRepeatedly(ReturnRef(GURL::EmptyGURL()));
     std::vector<download::DownloadItem*> items;
     for (size_t i = 0; i < items_.size(); ++i) {
       items.push_back(&item(i));
@@ -255,15 +265,15 @@ class DownloadBubbleUIControllerTest : public testing::Test {
 TEST_F(DownloadBubbleUIControllerTest, ProcessesNewItems) {
   std::vector<std::string> ids = {"Download 1", "Download 2", "Offline 1",
                                   "Download 3"};
-  EXPECT_CALL(display_controller(), OnNewItem(true)).Times(1);
+  EXPECT_CALL(display_controller(), OnNewItem(true, true)).Times(1);
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS, ids[0]);
-  EXPECT_CALL(display_controller(), OnNewItem(false)).Times(1);
+  EXPECT_CALL(display_controller(), OnNewItem(false, true)).Times(1);
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar2.pdf"),
                    download::DownloadItem::COMPLETE, ids[1]);
-  EXPECT_CALL(display_controller(), OnNewItem(true)).Times(1);
+  EXPECT_CALL(display_controller(), OnNewItem(true, false)).Times(1);
   InitOfflineItem(OfflineItemState::IN_PROGRESS, ids[2]);
-  EXPECT_CALL(display_controller(), OnNewItem(false)).Times(1);
+  EXPECT_CALL(display_controller(), OnNewItem(false, true)).Times(1);
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS, ids[3],
                    /*is_transient=*/false, base::Time::Now(),
@@ -272,7 +282,7 @@ TEST_F(DownloadBubbleUIControllerTest, ProcessesNewItems) {
 
 TEST_F(DownloadBubbleUIControllerTest, ProcessesUpdatedItems) {
   std::vector<std::string> ids = {"Download 1", "Offline 1"};
-  EXPECT_CALL(display_controller(), OnNewItem(true)).Times(1);
+  EXPECT_CALL(display_controller(), OnNewItem(true, true)).Times(1);
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS, ids[0]);
   EXPECT_CALL(display_controller(), OnUpdatedItem(false, true)).Times(1);
@@ -280,7 +290,7 @@ TEST_F(DownloadBubbleUIControllerTest, ProcessesUpdatedItems) {
   EXPECT_CALL(display_controller(), OnUpdatedItem(true, true)).Times(1);
   UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE);
 
-  EXPECT_CALL(display_controller(), OnNewItem(true)).Times(1);
+  EXPECT_CALL(display_controller(), OnNewItem(true, false)).Times(1);
   InitOfflineItem(OfflineItemState::IN_PROGRESS, ids[1]);
   EXPECT_CALL(display_controller(), OnUpdatedItem(true, true)).Times(1);
   UpdateOfflineItem(/*item_index=*/0, OfflineItemState::COMPLETE);

@@ -53,7 +53,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   void Enable() override;
   void Disable() override;
   void UpdateDownloadIcon() override;
-  void ShowDetails() override;
+  void ShowDetails(bool show_animation) override;
   void HideDetails() override;
   bool IsShowingDetails() override;
   bool IsFullscreenWithParentViewHidden() override;
@@ -101,6 +101,10 @@ class DownloadToolbarButtonView : public ToolbarButton,
   std::unique_ptr<View> CreateRowListView(
       std::vector<DownloadUIModel::DownloadUIModelPtr> model_list);
 
+  // If |has_pending_download_started_animation_| is true, shows an animation of
+  // a download icon moving upwards towards the toolbar icon.
+  void ShowPendingDownloadStartedAnimation();
+
   SkColor GetProgressColor(bool is_disabled, bool is_active) const;
 
   raw_ptr<Browser> browser_;
@@ -112,6 +116,12 @@ class DownloadToolbarButtonView : public ToolbarButton,
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
   raw_ptr<View> primary_view_ = nullptr;
   raw_ptr<DownloadBubbleSecurityView> security_view_ = nullptr;
+
+  // Marks whether there is a pending download started animation. This is needed
+  // because the animation should only be triggered after the view has been
+  // laid out properly, so this provides a way to remember to show the animation
+  // if needed, when calling Layout().
+  bool has_pending_download_started_animation_ = false;
 
   // RenderTexts used for the number in the badge. Stores the text for "n" at
   // index n - 1, and stores the text for the placeholder ("9+") at index 0.

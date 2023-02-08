@@ -63,6 +63,8 @@
   E_CPONLY(kColorDownloadShelfForeground) \
   E_CPONLY(kColorDownloadStartedAnimationForeground) \
   E_CPONLY(kColorDownloadToolbarButtonActive) \
+  E_CPONLY(kColorDownloadToolbarButtonAnimationBackground) \
+  E_CPONLY(kColorDownloadToolbarButtonAnimationForeground) \
   E_CPONLY(kColorDownloadToolbarButtonInactive) \
   E_CPONLY(kColorDownloadToolbarButtonRingBackground) \
   /* Extension colors. */ \

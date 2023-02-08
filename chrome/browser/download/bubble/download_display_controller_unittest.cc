@@ -79,7 +79,7 @@ class FakeDownloadDisplay : public DownloadDisplay {
     is_active_ = controller_->GetIconInfo().is_active;
   }
 
-  void ShowDetails() override { detail_shown_ = true; }
+  void ShowDetails(bool show_animation) override { detail_shown_ = true; }
   void HideDetails() override { detail_shown_ = false; }
   bool IsShowingDetails() override { return detail_shown_; }
   bool IsFullscreenWithParentViewHidden() override { return is_fullscreen_; }
@@ -259,15 +259,17 @@ class DownloadDisplayControllerTest : public testing::Test {
     item(index).AddObserver(&controller().get_download_notifier_for_testing());
     content::DownloadItemUtils::AttachInfoForTesting(&(item(index)), profile_,
                                                      nullptr);
-    controller().OnNewItem((state == download::DownloadItem::IN_PROGRESS) &&
-                           show_details);
+    controller().OnNewItem(
+        (state == download::DownloadItem::IN_PROGRESS) && show_details,
+        /*show_animation=*/false);
   }
 
   void InitOfflineItem(OfflineItemState state) {
     OfflineItem item;
     item.state = state;
     bubble_controller().AddOfflineItem(item);
-    controller().OnNewItem(state == OfflineItemState::IN_PROGRESS);
+    controller().OnNewItem(state == OfflineItemState::IN_PROGRESS,
+                           /*show_animation=*/false);
   }
 
   void UpdateOfflineItem(int item_index, OfflineItemState state) {
@@ -583,7 +585,7 @@ TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState_EmptyFilePath) {
   EXPECT_CALL(item(0), GetTargetFilePath())
       .WillRepeatedly(
           ReturnRefOfCopy(base::FilePath(FILE_PATH_LITERAL("bar.pdf"))));
-  controller().OnNewItem(/*show_details=*/true);
+  controller().OnNewItem(/*show_details=*/true, /*show_animation=*/false);
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));

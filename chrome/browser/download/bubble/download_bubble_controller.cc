@@ -207,18 +207,21 @@ void DownloadBubbleUIController::OnItemsAdded(
     }
   }
   if (any_new) {
-    display_controller_->OnNewItem(/*show_details=*/(
-        any_in_progress &&
-        (browser_ == chrome::FindLastActiveWithProfile(profile_.get()))));
+    display_controller_->OnNewItem(
+        /*show_details=*/(
+            any_in_progress &&
+            (browser_ == chrome::FindLastActiveWithProfile(profile_.get()))),
+        /*show_animation=*/false);
   }
 }
 
 void DownloadBubbleUIController::OnNewItem(download::DownloadItem* item,
                                            bool show_details) {
-  std::make_unique<DownloadItemModel>(item)->SetActionedOn(false);
+  auto model = std::make_unique<DownloadItemModel>(item);
+  model->SetActionedOn(false);
   display_controller_->OnNewItem(
-      (item->GetState() == download::DownloadItem::IN_PROGRESS) &&
-      show_details);
+      (item->GetState() == download::DownloadItem::IN_PROGRESS) && show_details,
+      model->ShouldShowDownloadStartedAnimation());
 }
 
 bool DownloadBubbleUIController::ShouldShowIncognitoIcon(
