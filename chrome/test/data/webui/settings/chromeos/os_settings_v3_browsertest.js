@@ -433,6 +433,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['KeyboardShortcutBanner', 'keyboard_shortcut_banner_test.js'],
  ['LockScreenPage', 'lock_screen_tests.js'],
  ['ManageAccessibilityPage', 'manage_accessibility_page_tests.js'],
+ ['ManageUsersPage', 'manage_users_page_tests.js'],
  ['MultideviceCombinedSetupItem', 'multidevice_combined_setup_item_tests.js'],
  // TODO(b/208932892): Re-enable once flakiness is fixed.
  // ['MultideviceFeatureItem', 'multidevice_feature_item_tests.js'],
@@ -552,7 +553,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['TimezoneSelector', 'timezone_selector_test.js'],
  ['TimezoneSubpage', 'timezone_subpage_test.js'],
  ['TtsSubpage', 'tts_subpage_test.js'],
- ['UserPage', 'user_page_tests.js'],
 ].forEach(test => registerTest(...test));
 
 function registerTest(testName, module, featureList) {

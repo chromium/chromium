@@ -45,7 +45,7 @@ const users = [
 
 function createUsersPage() {
   PolymerTest.clearBody();
-  page = document.createElement('settings-users-page');
+  page = document.createElement('settings-manage-users-page');
   page.set('prefs', {
     cros: {
       accounts: {
@@ -81,7 +81,7 @@ function removeManagedUsers(removeUserIcons, userList) {
   }
 }
 
-suite('UserPage', () => {
+suite('ManageUsersPage', () => {
   setup(function() {
     createUsersPage();
   });

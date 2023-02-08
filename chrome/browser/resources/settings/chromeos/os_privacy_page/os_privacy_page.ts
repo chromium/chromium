@@ -16,10 +16,10 @@ import './peripheral_data_access_protection_dialog.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 import '../os_settings_page/os_settings_subpage.js';
-import '../os_people_page/users_page.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_people_page/lock_screen.js';
 import '../os_people_page/lock_screen_password_prompt_dialog.js';
+import './manage_users_page.js';
 import './metrics_consent_toggle_button.js';
 
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';

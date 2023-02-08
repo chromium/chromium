@@ -195,7 +195,7 @@ suite('PrivacyPageTests', function() {
     flush();
 
     const deepLinkElement =
-        privacyPage.shadowRoot.querySelector('settings-users-page')
+        privacyPage.shadowRoot.querySelector('settings-manage-users-page')
             .shadowRoot.querySelector('#allowGuestBrowsing')
             .shadowRoot.querySelector('cr-toggle');
     await waitAfterNextRender(deepLinkElement);
@@ -212,7 +212,7 @@ suite('PrivacyPageTests', function() {
     flush();
 
     const deepLinkElement =
-        privacyPage.shadowRoot.querySelector('settings-users-page')
+        privacyPage.shadowRoot.querySelector('settings-manage-users-page')
             .shadowRoot.querySelector('#showUserNamesOnSignIn')
             .shadowRoot.querySelector('cr-toggle');
     await waitAfterNextRender(deepLinkElement);

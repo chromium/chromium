@@ -95,6 +95,7 @@ test_files = [
   "keyboard_shortcut_banner_test.js",
   "lock_screen_tests.js",
   "manage_accessibility_page_tests.js",
+  "manage_users_page_tests.js",
   "multidevice_combined_setup_item_tests.js",
   "multidevice_feature_item_tests.js",
   "multidevice_feature_toggle_tests.js",
@@ -199,7 +200,6 @@ test_files = [
   "timezone_selector_test.js",
   "timezone_subpage_test.js",
   "tts_subpage_test.js",
-  "user_page_tests.js",
   "utils.ts",
 ]
 

@@ -4,8 +4,8 @@
 
 /**
  * @fileoverview
- * 'settings-users-page' is the settings page for managing user accounts on
- * the device.
+ * 'settings-manage-users-page' is the settings page for managing user accounts
+ * on the device.
  */
 
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
@@ -13,8 +13,8 @@ import 'chrome://resources/cr_elements/action_link.css.js';
 import 'chrome://resources/js/action_link.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
-import './user_list.js';
-import './users_add_user_dialog.js';
+import '../os_people_page/user_list.js';
+import '../os_people_page/users_add_user_dialog.js';
 
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -23,12 +23,12 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {SettingsUsersAddUserDialogElement} from '../os_people_page/users_add_user_dialog.js';
 import {routes} from '../os_route.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
-import {SettingsUsersAddUserDialogElement} from './users_add_user_dialog.js';
-import {getTemplate} from './users_page.html.js';
+import {getTemplate} from './manage_users_page.html.js';
 
 const SettingsUsersPageElementBase =
     DeepLinkingMixin(RouteObserverMixin(PolymerElement));
@@ -41,7 +41,7 @@ interface SettingsUsersPageElement {
 
 class SettingsUsersPageElement extends SettingsUsersPageElementBase {
   static get is() {
-    return 'settings-users-page' as const;
+    return 'settings-manage-users-page' as const;
   }
 
   static get template() {

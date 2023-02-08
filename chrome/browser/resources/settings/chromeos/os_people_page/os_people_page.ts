@@ -21,7 +21,6 @@ import './account_manager.js';
 import './fingerprint_list.js';
 import './lock_screen.js';
 import './lock_screen_password_prompt_dialog.js';
-import './users_page.js';
 import './os_sync_controls.js';
 import './os_signout_dialog.js';
 import './os_sync_page.js';
