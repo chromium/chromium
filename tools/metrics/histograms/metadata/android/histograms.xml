@@ -4294,6 +4294,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Gfx.SaveHWUIStateDuration" units="ms"
+    expires_after="2023-12-01">
+  <owner>blundell@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    Tracks the amount of time that it took for WebView to save HWUI state.
+    Recorded once per saving of HWUI state.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.InputStreamTime" units="ms"
     expires_after="2023-07-30">
   <owner>jam@chromium.org</owner>
