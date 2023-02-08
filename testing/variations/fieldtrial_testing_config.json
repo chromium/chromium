@@ -13198,6 +13198,21 @@
             ]
         }
     ],
+    "WebRTC-Audio-GainController2": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled,switch_to_agc2:true,target_range_min_dbfs:-50,target_range_max_dbfs:-30,max_gain_db:50,initial_gain_db:20,enable_clipping_predictor:true,disallow_transient_suppressor_usage:true,_20230208"
+                }
+            ]
+        }
+    ],
     "WebRTC-Audio-NetEqDecisionLogicConfig": [
         {
             "platforms": [
