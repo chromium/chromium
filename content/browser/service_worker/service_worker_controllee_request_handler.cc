@@ -272,7 +272,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
 
   // Look up a registration.
   context_->registry()->FindRegistrationForClientUrl(
-      stripped_url_, storage_key_,
+      ServiceWorkerRegistry::Purpose::kNavigation, stripped_url_, storage_key_,
       base::BindOnce(
           &ServiceWorkerControlleeRequestHandler::ContinueWithRegistration,
           weak_factory_.GetWeakPtr(), /*is_for_navigation=*/true,
@@ -648,11 +648,12 @@ void ServiceWorkerControlleeRequestHandler::DidUpdateRegistration(
     // Update failed. Look up the registration again since the original
     // registration was possibly unregistered in the meantime.
     context_->registry()->FindRegistrationForClientUrl(
-        stripped_url_, storage_key_,
+        ServiceWorkerRegistry::Purpose::kNotForNavigation, stripped_url_,
+        storage_key_,
         base::BindOnce(
             &ServiceWorkerControlleeRequestHandler::ContinueWithRegistration,
-            weak_factory_.GetWeakPtr(), /*is_for_navigation=*/false,
-            base::TimeTicks()));
+            weak_factory_.GetWeakPtr(),
+            /*is_for_navigation=*/false, base::TimeTicks()));
     TRACE_EVENT_WITH_FLOW1(
         "ServiceWorker",
         "ServiceWorkerControlleeRequestHandler::DidUpdateRegistration",
@@ -705,11 +706,12 @@ void ServiceWorkerControlleeRequestHandler::OnUpdatedVersionStatusChanged(
     // continue with the incumbent version.
     // In case unregister job may have run, look up the registration again.
     context_->registry()->FindRegistrationForClientUrl(
-        stripped_url_, storage_key_,
+        ServiceWorkerRegistry::Purpose::kNotForNavigation, stripped_url_,
+        storage_key_,
         base::BindOnce(
             &ServiceWorkerControlleeRequestHandler::ContinueWithRegistration,
-            weak_factory_.GetWeakPtr(), /*is_for_navigation=*/false,
-            base::TimeTicks()));
+            weak_factory_.GetWeakPtr(),
+            /*is_for_navigation=*/false, base::TimeTicks()));
     return;
   }
   version->RegisterStatusChangeCallback(base::BindOnce(

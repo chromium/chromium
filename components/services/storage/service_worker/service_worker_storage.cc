@@ -1744,6 +1744,10 @@ void ServiceWorkerStorage::FindForClientUrlInDB(
   auto resources = std::make_unique<ResourceList>();
   status = ServiceWorkerDatabase::Status::kErrorNotFound;
 
+  base::UmaHistogramCounts1000(
+      "ServiceWorker.Storage.FindForClientUrlInDB.ScopeCountForStorageKey",
+      registration_data_list.size());
+
   // Find one with a scope match.
   blink::ServiceWorkerLongestScopeMatcher matcher(client_url);
   int64_t match = blink::mojom::kInvalidServiceWorkerRegistrationId;

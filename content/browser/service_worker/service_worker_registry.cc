@@ -249,6 +249,7 @@ void ServiceWorkerRegistry::CreateNewVersion(
 }
 
 void ServiceWorkerRegistry::FindRegistrationForClientUrl(
+    Purpose purpose,
     const GURL& client_url,
     const blink::StorageKey& key,
     FindRegistrationCallback callback) {
@@ -265,6 +266,15 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
       return blink::ServiceWorkerScopeMatches(scope, client_url);
     });
   }
+  if (purpose == Purpose::kNavigation) {
+    base::UmaHistogramBoolean(
+        "ServiceWorker.FindRegistrationForClientUrl.SkippedMojoCall."
+        "OnNavigation",
+        no_registration);
+  }
+  base::UmaHistogramBoolean(
+      "ServiceWorker.FindRegistrationForClientUrl.IsCalledForNavigation",
+      purpose == Purpose::kNavigation);
   // To connect this TRACE_EVENT with the callback, Time::Now() is used as a
   // trace event id.
   int64_t trace_event_id =

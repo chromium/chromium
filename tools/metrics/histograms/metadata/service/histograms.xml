@@ -443,6 +443,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="ServiceWorker.FindRegistrationForClientUrl.IsCalledForNavigation"
+    enum="Boolean" expires_after="2023-12-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Whether FindRegistrationForClientUrl() is called for navigation or not. This
+    is recorded when FindRegistrationForClientUrl() function is called.
+  </summary>
+</histogram>
+
+<histogram
+    name="ServiceWorker.FindRegistrationForClientUrl.SkippedMojoCall.OnNavigation"
+    enum="BooleanSkipped" expires_after="2023-12-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Whether FindRegistrationForClientUrl() could skip calling mojo API by using
+    scope cache. This is recorded only when FindRegistrationForClientUrl() is
+    used for navigation.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.FindRegistrationForClientUrl.Time" units="ms"
     expires_after="2023-10-01">
   <owner>chikamune@chromium.org</owner>
@@ -1177,6 +1200,17 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-worker@google.com</owner>
   <summary>
     Records result of storage recovery operations in ServiceWorkerStorage.
+  </summary>
+</histogram>
+
+<histogram
+    name="ServiceWorker.Storage.FindForClientUrlInDB.ScopeCountForStorageKey"
+    units="count" expires_after="2023-12-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The scope count for a given StorageKey. This is recorded when
+    ServiceWorkerStorage::FindForClientUrlInDB() function is called.
   </summary>
 </histogram>
 

@@ -337,12 +337,12 @@ TEST_F(ServiceWorkerJobTest, SameDocumentSameRegistration) {
   base::RepeatingClosure barrier_closure =
       base::BarrierClosure(2, run_loop.QuitClosure());
   registry()->FindRegistrationForClientUrl(
-      url, key,
+      ServiceWorkerRegistry::Purpose::kNotForNavigation, url, key,
       SaveFoundRegistration(blink::ServiceWorkerStatusCode::kOk, &registration1,
                             barrier_closure));
   scoped_refptr<ServiceWorkerRegistration> registration2;
   registry()->FindRegistrationForClientUrl(
-      url, key,
+      ServiceWorkerRegistry::Purpose::kNotForNavigation, url, key,
       SaveFoundRegistration(blink::ServiceWorkerStatusCode::kOk, &registration2,
                             barrier_closure));
   run_loop.Run();
@@ -368,12 +368,14 @@ TEST_F(ServiceWorkerJobTest, SameMatchSameRegistration) {
   base::RepeatingClosure barrier_closure =
       base::BarrierClosure(2, run_loop.QuitClosure());
   registry()->FindRegistrationForClientUrl(
+      ServiceWorkerRegistry::Purpose::kNotForNavigation,
       GURL("https://www.example.com/one"), key,
       SaveFoundRegistration(blink::ServiceWorkerStatusCode::kOk, &registration1,
                             barrier_closure));
 
   scoped_refptr<ServiceWorkerRegistration> registration2;
   registry()->FindRegistrationForClientUrl(
+      ServiceWorkerRegistry::Purpose::kNotForNavigation,
       GURL("https://www.example.com/two"), key,
       SaveFoundRegistration(blink::ServiceWorkerStatusCode::kOk, &registration2,
                             barrier_closure));
@@ -400,12 +402,12 @@ TEST_F(ServiceWorkerJobTest, DifferentMatchDifferentRegistration) {
   base::RepeatingClosure barrier_closure =
       base::BarrierClosure(2, run_loop.QuitClosure());
   registry()->FindRegistrationForClientUrl(
-      scope1, key,
+      ServiceWorkerRegistry::Purpose::kNotForNavigation, scope1, key,
       SaveFoundRegistration(blink::ServiceWorkerStatusCode::kOk, &registration1,
                             barrier_closure));
   scoped_refptr<ServiceWorkerRegistration> registration2;
   registry()->FindRegistrationForClientUrl(
-      scope2, key,
+      ServiceWorkerRegistry::Purpose::kNotForNavigation, scope2, key,
       SaveFoundRegistration(blink::ServiceWorkerStatusCode::kOk, &registration2,
                             barrier_closure));
 

@@ -93,6 +93,8 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   using StatusCallback =
       base::OnceCallback<void(blink::ServiceWorkerStatusCode status)>;
 
+  enum class Purpose { kNotForNavigation, kNavigation };
+
   ServiceWorkerRegistry(ServiceWorkerContextCore* context,
                         storage::QuotaManagerProxy* quota_manager_proxy,
                         storage::SpecialStoragePolicy* special_storage_policy);
@@ -135,7 +137,8 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   // for `client_url` or `registration_id` may complete immediately
   // (the callback may be called prior to the method returning) or
   // asynchronously.
-  void FindRegistrationForClientUrl(const GURL& client_url,
+  void FindRegistrationForClientUrl(Purpose purpose,
+                                    const GURL& client_url,
                                     const blink::StorageKey& key,
                                     FindRegistrationCallback callback);
   void FindRegistrationForScope(const GURL& scope,

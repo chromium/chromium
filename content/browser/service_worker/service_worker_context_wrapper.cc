@@ -830,6 +830,7 @@ void ServiceWorkerContextWrapper::StartServiceWorkerForNavigationHint(
   }
 
   context_core_->registry()->FindRegistrationForClientUrl(
+      ServiceWorkerRegistry::Purpose::kNotForNavigation,
       net::SimplifyUrlForRequest(document_url), key,
       base::BindOnce(
           &ServiceWorkerContextWrapper::DidFindRegistrationForNavigationHint,
@@ -986,6 +987,7 @@ void ServiceWorkerContextWrapper::FindReadyRegistrationForClientUrl(
     return;
   }
   context_core_->registry()->FindRegistrationForClientUrl(
+      ServiceWorkerRegistry::Purpose::kNotForNavigation,
       net::SimplifyUrlForRequest(client_url), key,
       base::BindOnce(
           &ServiceWorkerContextWrapper::DidFindRegistrationForFindImpl, this,

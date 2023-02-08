@@ -888,7 +888,7 @@ void ServiceWorkerContextCore::CheckHasServiceWorker(
     const blink::StorageKey& key,
     ServiceWorkerContext::CheckHasServiceWorkerCallback callback) {
   registry()->FindRegistrationForClientUrl(
-      url, key,
+      ServiceWorkerRegistry::Purpose::kNotForNavigation, url, key,
       base::BindOnce(&ServiceWorkerContextCore::
                          DidFindRegistrationForCheckHasServiceWorker,
                      AsWeakPtr(), std::move(callback)));

@@ -35,7 +35,7 @@ void ServiceWorkerOfflineCapabilityChecker::Start(
     ServiceWorkerContext::CheckOfflineCapabilityCallback callback) {
   callback_ = std::move(callback);
   registry->FindRegistrationForClientUrl(
-      url_, key_,
+      ServiceWorkerRegistry::Purpose::kNotForNavigation, url_, key_,
       base::BindOnce(
           &ServiceWorkerOfflineCapabilityChecker::DidFindRegistration,
           // We can use base::Unretained(this) because |this| is expected

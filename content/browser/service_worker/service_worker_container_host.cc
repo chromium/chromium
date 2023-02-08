@@ -289,7 +289,7 @@ void ServiceWorkerContainerHost::GetRegistration(
       GetCorrectStorageKeyForWebSecurityState(client_url);
 
   context_->registry()->FindRegistrationForClientUrl(
-      client_url, key,
+      ServiceWorkerRegistry::Purpose::kNotForNavigation, client_url, key,
       base::BindOnce(&ServiceWorkerContainerHost::GetRegistrationComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      trace_id));

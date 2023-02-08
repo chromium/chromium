@@ -341,7 +341,7 @@ class ServiceWorkerRegistryTest : public testing::Test {
     blink::ServiceWorkerStatusCode result;
     base::RunLoop loop;
     registry()->FindRegistrationForClientUrl(
-        document_url, key,
+        ServiceWorkerRegistry::Purpose::kNotForNavigation, document_url, key,
         base::BindLambdaForTesting(
             [&](blink::ServiceWorkerStatusCode status,
                 scoped_refptr<ServiceWorkerRegistration> registration) {
@@ -1176,7 +1176,7 @@ TEST_P(ServiceWorkerRegistryMergeTest, MergeDuplicateFindRegistrationCalls) {
   base::RunLoop loop;
   for (int i = 0; i < kCallCount; i++) {
     registry()->FindRegistrationForClientUrl(
-        kScope, kKey,
+        ServiceWorkerRegistry::Purpose::kNotForNavigation, kScope, kKey,
         base::BindLambdaForTesting(
             [&](blink::ServiceWorkerStatusCode status,
                 scoped_refptr<ServiceWorkerRegistration> found_registration) {
@@ -1232,7 +1232,8 @@ class ServiceWorkerScopeCacheTest : public ServiceWorkerRegistryTest {
       int expected_registration_scope_cache_size) {
     base::RunLoop loop;
     registry()->FindRegistrationForClientUrl(
-        scope, blink::StorageKey(url::Origin::Create(scope)),
+        ServiceWorkerRegistry::Purpose::kNotForNavigation, scope,
+        blink::StorageKey(url::Origin::Create(scope)),
         base::BindLambdaForTesting(
             [&](blink::ServiceWorkerStatusCode status,
                 scoped_refptr<ServiceWorkerRegistration> found_registration) {
@@ -1848,7 +1849,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
   {
     base::RunLoop loop1;
     registry()->FindRegistrationForClientUrl(
-        kScope1, kKey1,
+        ServiceWorkerRegistry::Purpose::kNotForNavigation, kScope1, kKey1,
         base::BindLambdaForTesting(
             [&](blink::ServiceWorkerStatusCode status,
                 scoped_refptr<ServiceWorkerRegistration> found_registration) {
