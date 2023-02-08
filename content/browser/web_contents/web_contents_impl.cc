@@ -4595,13 +4595,6 @@ std::string WebContentsImpl::DumpAccessibilityTree(
     std::vector<ui::AXPropertyFilter> property_filters) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DumpAccessibilityTree");
   auto* ax_mgr = GetOrCreateRootBrowserAccessibilityManager();
-  DCHECK(ax_mgr);
-
-  // Developer mode: crash immediately on any accessibility fatal error.
-  // This only runs during integration tests, or if a developer is
-  // using an inspection tool, e.g. chrome://accessibility.
-  BrowserAccessibilityManager::AlwaysFailFast();
-
   // Since for Web Content we get the AXTree updates through the renderer at a
   // point after the manager is created, there are cases where at this point in
   // the lifecycle the AXTree associated with `ax_mgr` does not have a valid
@@ -4609,8 +4602,13 @@ std::string WebContentsImpl::DumpAccessibilityTree(
   // we don't have this check, there will be a scenario where we then try to get
   // the manager using the ID (which at this point is invalid) which leads to a
   // crash. See https://crbug.com/1405036.
-  if (!ax_mgr->HasValidTreeID())
+  if (!ax_mgr || !ax_mgr->HasValidTreeID())
     return "-";
+
+  // Developer mode: crash immediately on any accessibility fatal error.
+  // This only runs during integration tests, or if a developer is
+  // using an inspection tool, e.g. chrome://accessibility.
+  BrowserAccessibilityManager::AlwaysFailFast();
 
   std::unique_ptr<ui::AXTreeFormatter> formatter =
       internal ? AXInspectFactory::CreateBlinkFormatter()

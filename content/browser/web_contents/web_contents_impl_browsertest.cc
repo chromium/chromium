@@ -310,6 +310,26 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, DidStopLoadingDetails) {
             load_observer.controller_);
 }
 
+// Regression test for https://crbug.com/1405036
+// Dumping the accessibility tree should not crash, even if it has not received
+// an ID through a renderer tree yet.
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       DumpAccessibilityTreeWithoutTreeID) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  LoadStopNotificationObserver load_observer(
+      &shell()->web_contents()->GetController());
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  load_observer.Wait();
+  std::string expected = "-";
+
+  std::vector<ui::AXPropertyFilter> property_filters;
+  EXPECT_EQ(
+      shell()->web_contents()->DumpAccessibilityTree(false, property_filters),
+      expected);
+}
+
 // Test that DidStopLoading includes the correct URL in the details when a
 // pending entry is present.
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
