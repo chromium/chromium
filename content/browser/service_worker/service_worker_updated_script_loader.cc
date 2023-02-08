@@ -492,8 +492,6 @@ void ServiceWorkerUpdatedScriptLoader::CommitCompleted(
       error_code = net::ERR_FILE_EXISTS;
     }
     bytes_written = cache_writer_->bytes_written();
-    DCHECK_EQ(cache_writer_->checksum_update_timing(),
-              ServiceWorkerCacheWriter::ChecksumUpdateTiming::kCacheMismatch);
     sha256_checksum = cache_writer_->GetSha256Checksum();
   } else {
     // AddMessageConsole must be called before notifying that an error occurred

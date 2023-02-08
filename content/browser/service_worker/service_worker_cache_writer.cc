@@ -856,7 +856,11 @@ int ServiceWorkerCacheWriter::WriteDataToResponseWriter(
   scoped_refptr<AsyncOnlyCompletionCallbackAdaptor> adaptor(
       new AsyncOnlyCompletionCallbackAdaptor(std::move(run_callback)));
 
-  checksum_->Update(data->data(), length);
+  // If |checksum_update_timing_| is kAlways, the checksum update should be
+  // handled in MaybeWriteData().
+  if (checksum_update_timing_ == ChecksumUpdateTiming::kCacheMismatch) {
+    checksum_->Update(data->data(), length);
+  }
 
   mojo_base::BigBuffer big_buffer(
       base::as_bytes(base::make_span(data->data(), length)));

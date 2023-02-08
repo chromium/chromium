@@ -1033,7 +1033,7 @@ class ServiceWorkerCacheWriterSha256ChecksumTest
   }
 };
 
-TEST_P(ServiceWorkerCacheWriterSha256ChecksumTest, ForceUpdateSha256Checksum) {
+TEST_P(ServiceWorkerCacheWriterSha256ChecksumTest, CompareDataOk) {
   const std::string data = "abcdef";
   size_t response_size = data.size();
 
@@ -1072,6 +1072,74 @@ TEST_P(ServiceWorkerCacheWriterSha256ChecksumTest, ForceUpdateSha256Checksum) {
       break;
   }
   EXPECT_EQ(expected_checksum, cache_writer_->GetSha256Checksum());
+}
+
+TEST_P(ServiceWorkerCacheWriterSha256ChecksumTest, CompareFailed) {
+  std::string data1 = "abcdef";
+  std::string cache_data2 = "mnop";
+  std::string net_data2 = "mnopqr";
+  std::string data3 = "stuvwxyz";
+  size_t cache_response_size = data1.size() + cache_data2.size() + data3.size();
+  size_t net_response_size = data1.size() + net_data2.size() + data3.size();
+
+  MockServiceWorkerResourceWriter* writer = ExpectWriter();
+  MockServiceWorkerResourceReader* compare_reader = ExpectReader();
+  MockServiceWorkerResourceReader* copy_reader = ExpectReader();
+
+  compare_reader->ExpectReadResponseHeadOk(cache_response_size);
+  compare_reader->ExpectReadDataOk(data1);
+  compare_reader->ExpectReadDataOk(cache_data2);
+  compare_reader->ExpectReadDataOk("");  // EOF read
+
+  copy_reader->ExpectReadResponseHeadOk(cache_response_size);
+  copy_reader->ExpectReadDataOk(data1);
+
+  writer->ExpectWriteResponseHeadOk(net_response_size);
+  writer->ExpectWriteDataOk(data1.size());
+  writer->ExpectWriteDataOk(net_data2.size());
+  writer->ExpectWriteDataOk(data3.size());
+
+  Initialize();
+
+  net::Error error = WriteHeaders(net_response_size);
+  EXPECT_EQ(net::ERR_IO_PENDING, error);
+  // Read the header from |compare_reader|.
+  compare_reader->CompletePendingRead();
+  EXPECT_EQ(net::OK, last_error_);
+
+  error = WriteData(data1);
+  EXPECT_EQ(net::ERR_IO_PENDING, error);
+  // Read |data1| from |compare_reader| for the comparison.
+  compare_reader->CompletePendingRead();
+  EXPECT_EQ(net::OK, last_error_);
+
+  error = WriteData(net_data2);
+  EXPECT_EQ(net::ERR_IO_PENDING, error);
+  // Read |cache_data2| and |data3| from |compare_reader|.
+  compare_reader->CompletePendingRead();
+  compare_reader->CompletePendingRead();
+  // After that, the cache writer uses |copy_reader| to read the header and
+  // |data1|.
+  copy_reader->CompletePendingRead();
+  writer->CompletePendingWrite();
+  copy_reader->CompletePendingRead();
+  writer->CompletePendingWrite();
+  EXPECT_EQ(net::OK, last_error_);
+
+  // |net_data2| is written to the |writer|.
+  writer->CompletePendingWrite();
+  // |data3| is directly written to the disk.
+  error = WriteData(data3);
+  EXPECT_EQ(net::ERR_IO_PENDING, error);
+  writer->CompletePendingWrite();
+
+  EXPECT_TRUE(writer->AllExpectedWritesDone());
+  EXPECT_TRUE(compare_reader->AllExpectedReadsDone());
+  EXPECT_TRUE(copy_reader->AllExpectedReadsDone());
+
+  // Expected value is calculated from SHA256("abcdefmnopqrstuvwxyz")
+  EXPECT_EQ("50DCEABE70B3474ACF0E608D9E77B1ED2700FB74431FA8D8E0ED62ECDA7DCFEB",
+            cache_writer_->GetSha256Checksum());
 }
 
 INSTANTIATE_TEST_SUITE_P(
