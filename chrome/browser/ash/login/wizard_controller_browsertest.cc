@@ -2712,8 +2712,15 @@ IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
   run_loop.Run();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Disabled due to crbug.com/1414116.
+#define MAYBE_AdvanceToEnrollmentAfterRollback \
+  DISABLED_AdvanceToEnrollmentAfterRollback
+#else
+#define MAYBE_AdvanceToEnrollmentAfterRollback AdvanceToEnrollmentAfterRollback
+#endif
 IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
-                       AdvanceToEnrollmentAfterRollback) {
+                       MAYBE_AdvanceToEnrollmentAfterRollback) {
   CheckCurrentScreen(WelcomeView::kScreenId);
 
   EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
