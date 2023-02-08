@@ -11,8 +11,9 @@ namespace blink {
 
 enum class VisionDeficiency {
   kNoVisionDeficiency,
-  kAchromatopsia,
   kBlurredVision,
+  kReducedContrast,
+  kAchromatopsia,
   kDeuteranopia,
   kProtanopia,
   kTritanopia,

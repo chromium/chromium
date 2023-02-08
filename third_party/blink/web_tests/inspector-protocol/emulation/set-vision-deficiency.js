@@ -35,6 +35,7 @@
   await setEmulatedVisionDeficiency('none');
   await setEmulatedVisionDeficiency('achromatopsia');
   await setEmulatedVisionDeficiency('blurredVision');
+  await setEmulatedVisionDeficiency('reducedContrast');
   await setEmulatedVisionDeficiency('none');
   await setEmulatedVisionDeficiency('deuteranopia');
   await setEmulatedVisionDeficiency('none');

@@ -203,7 +203,7 @@ experimental domain Accessibility
       optional DOM.BackendNodeId backendNodeId
       # JavaScript object id of the node wrapper to get the partial accessibility tree for.
       optional Runtime.RemoteObjectId objectId
-      # Whether to fetch this nodes ancestors, siblings and children. Defaults to true.
+      # Whether to fetch this node's ancestors, siblings and children. Defaults to true.
       optional boolean fetchRelatives
     returns
       # The `Accessibility.AXNode` for this DOM node, if it exists, plus its ancestors, siblings and
@@ -1902,7 +1902,7 @@ experimental domain CSS
   # Polls the next batch of computed style updates.
   experimental command takeComputedStyleUpdates
     returns
-      # The list of node Ids that have their tracked computed styles updated
+      # The list of node Ids that have their tracked computed styles updated.
       array of DOM.NodeId nodeIds
 
   # Find a rule with the given active property for the given node and set the new value for this
@@ -1995,13 +1995,13 @@ experimental domain CSS
   command startRuleUsageTracking
 
   # Stop tracking rule usage and return the list of rules that were used since last call to
-  # `takeCoverageDelta` (or since start of coverage instrumentation)
+  # `takeCoverageDelta` (or since start of coverage instrumentation).
   command stopRuleUsageTracking
     returns
       array of RuleUsage ruleUsage
 
   # Obtain list of rules that became used since last call to this method (or since start of coverage
-  # instrumentation)
+  # instrumentation).
   command takeCoverageDelta
     returns
       array of RuleUsage coverage
@@ -2015,7 +2015,7 @@ experimental domain CSS
       boolean enabled
 
   # Fires whenever a web font is updated.  A non-empty font parameter indicates a successfully loaded
-  # web font
+  # web font.
   event fontsUpdated
     parameters
       # The web font that has loaded.
@@ -3810,11 +3810,13 @@ domain Emulation
   # Emulates the given vision deficiency.
   experimental command setEmulatedVisionDeficiency
     parameters
-      # Vision deficiency to emulate.
+      # Vision deficiency to emulate. Order: best-effort emulations come first, followed by any
+      # physiologically accurate emulations for medically recognized color vision deficiencies.
       enum type
         none
-        achromatopsia
         blurredVision
+        reducedContrast
+        achromatopsia
         deuteranopia
         protanopia
         tritanopia
@@ -4196,7 +4198,7 @@ experimental domain IndexedDB
       # If true, there are more entries to fetch in the given range.
       boolean hasMore
 
-  # Gets metadata of an object store
+  # Gets metadata of an object store.
   command getMetadata
     parameters
       # At least and at most one of securityOrigin, storageKey must be specified.

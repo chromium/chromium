@@ -365,10 +365,12 @@ Response InspectorEmulationAgent::setEmulatedVisionDeficiency(
       protocol::Emulation::SetEmulatedVisionDeficiency::TypeEnum;
   if (type == TypeEnum::None)
     vision_deficiency = VisionDeficiency::kNoVisionDeficiency;
-  else if (type == TypeEnum::Achromatopsia)
-    vision_deficiency = VisionDeficiency::kAchromatopsia;
   else if (type == TypeEnum::BlurredVision)
     vision_deficiency = VisionDeficiency::kBlurredVision;
+  else if (type == TypeEnum::ReducedContrast)
+    vision_deficiency = VisionDeficiency::kReducedContrast;
+  else if (type == TypeEnum::Achromatopsia)
+    vision_deficiency = VisionDeficiency::kAchromatopsia;
   else if (type == TypeEnum::Deuteranopia)
     vision_deficiency = VisionDeficiency::kDeuteranopia;
   else if (type == TypeEnum::Protanopia)

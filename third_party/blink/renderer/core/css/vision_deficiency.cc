@@ -39,6 +39,16 @@ AtomicString CreateVisionDeficiencyFilterUrl(
   // Honolulu, HI, 2017. pp. 6750-6758.
   // https://openaccess.thecvf.com/content_cvpr_2017/papers/Nguyen_Why_You_Should_CVPR_2017_paper.pdf
   switch (vision_deficiency) {
+    case VisionDeficiency::kBlurredVision:
+      return CreateFilterDataUrl("<feGaussianBlur stdDeviation=\"2\"/>");
+    case VisionDeficiency::kReducedContrast:
+      return CreateFilterDataUrl(
+          "<feColorMatrix values=\""
+          "0.500  0.000  0.000  0.000  0.000 "
+          "0.500  0.000  0.000  0.000  0.000 "
+          "0.500  0.000  0.000  0.000  0.000 "
+          "0.500  0.250  0.250  0.250  0.000 "
+          "\"/>");
     case VisionDeficiency::kAchromatopsia:
       return CreateFilterDataUrl(
           "<feColorMatrix values=\""
@@ -47,8 +57,6 @@ AtomicString CreateVisionDeficiencyFilterUrl(
           "0.213  0.715  0.072  0.000  0.000 "
           "0.000  0.000  0.000  1.000  0.000 "
           "\"/>");
-    case VisionDeficiency::kBlurredVision:
-      return CreateFilterDataUrl("<feGaussianBlur stdDeviation=\"2\"/>");
     case VisionDeficiency::kDeuteranopia:
       return CreateFilterDataUrl(
           "<feColorMatrix values=\""
