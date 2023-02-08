@@ -14,7 +14,15 @@ namespace base::internal {
 PA_NO_SANITIZE("address")
 bool RawPtrAsanUnownedImpl::EndOfAliveAllocation(const volatile void* ptr) {
   uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
-  return __asan_region_is_poisoned(reinterpret_cast<void*>(address), 1) &&
+
+  // Alas, ASAN will claim an unmapped page is unpoisoned, so willfully ignore
+  // the fist address of a page, since "end + 1" of an object allocated exactly
+  // up to a page  boundary will SEGV on probe. This will cause false negatives
+  // for pointers that happen to be page aligned, which is undesirable but
+  // necessary for now.
+  // TODO(tsepez): investigate pointer tracking approaches to avoid this.
+  return ((address & 0x0fff) == 0 ||
+          __asan_region_is_poisoned(reinterpret_cast<void*>(address), 1)) &&
          !__asan_region_is_poisoned(reinterpret_cast<void*>(address - 1), 1);
 }
 
