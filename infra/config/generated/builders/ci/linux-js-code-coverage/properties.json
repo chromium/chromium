@@ -45,6 +45,7 @@
     }
   },
   "$build/code_coverage": {
+    "export_coverage_to_zoss": true,
     "use_javascript_coverage": true
   },
   "$build/reclient": {

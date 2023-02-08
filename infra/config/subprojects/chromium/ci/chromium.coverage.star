@@ -251,6 +251,7 @@ coverage_builder(
     ],
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     use_javascript_coverage = True,
+    export_coverage_to_zoss = True,
 )
 
 coverage_builder(
