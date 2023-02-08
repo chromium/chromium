@@ -319,7 +319,7 @@ inline bool NGLineBreaker::ShouldAutoWrap(const ComputedStyle& style) const {
   //  <p>(A) punctuation characters can be part of ::first-letter.</p>
   if (UNLIKELY(is_initial_letter_box_))
     return false;
-  return style.AutoWrap();
+  return style.ShouldWrapLine();
 }
 
 LayoutUnit NGLineBreaker::ComputeAvailableWidth() const {
@@ -1364,7 +1364,7 @@ bool NGLineBreaker::BreakTextAtPreviousBreakOpportunity(
   DCHECK(item_result->may_break_inside);
   const NGInlineItem& item = *item_result->item;
   DCHECK_EQ(item.Type(), NGInlineItem::kText);
-  DCHECK(item.Style() && item.Style()->AutoWrap());
+  DCHECK(item.Style() && item.Style()->ShouldWrapLine());
   DCHECK(!is_text_combine_);
 
   // TODO(jfernandez): Should we use the non-hangable-run-end instead ?
@@ -2741,9 +2741,7 @@ void NGLineBreaker::RewindOverflow(unsigned new_end, NGLineInfo* line_info) {
       if (item_result.shape_result ||  // kNoResultIfOverflow if 'break-word'
           (break_anywhere_if_overflow_ && !override_break_anywhere_)) {
         DCHECK(item.Style());
-        const EWhiteSpace white_space = item.Style()->WhiteSpace();
-        if (ComputedStyle::AutoWrap(white_space) &&
-            white_space != EWhiteSpace::kBreakSpaces &&
+        if (item.Style()->ShouldWrapLineTrailingSpaces() &&
             IsBreakableSpace(text[item_result.StartOffset()])) {
           // If all characters are trailable spaces, check the next item.
           if (item_result.shape_result &&
@@ -2768,10 +2766,9 @@ void NGLineBreaker::RewindOverflow(unsigned new_end, NGLineInfo* line_info) {
       // controls are trailable.
       DCHECK_NE(text[item_result.StartOffset()], kNewlineCharacter);
       DCHECK(item.Style());
-      const EWhiteSpace white_space = item.Style()->WhiteSpace();
-      if (ComputedStyle::AutoWrap(white_space) &&
-          white_space != EWhiteSpace::kBreakSpaces)
+      if (item.Style()->ShouldWrapLineTrailingSpaces()) {
         continue;
+      }
     } else if (item.Type() == NGInlineItem::kOpenTag) {
       // Open tags are ambiguous. This open tag is not trailable:
       //   <span>text
@@ -3007,8 +3004,9 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
     enable_soft_hyphen_ = style.GetHyphens() != Hyphens::kNone;
     hyphenation_ = style.GetHyphenationWithLimits();
 
-    if (style.WhiteSpace() == EWhiteSpace::kBreakSpaces)
+    if (style.ShouldWrapLineBreakingSpaces()) {
       break_iterator_.SetBreakSpace(BreakSpaceType::kAfterEverySpace);
+    }
 
     break_iterator_.SetLocale(style.LocaleForLineBreakIterator());
   }

@@ -207,7 +207,7 @@ MinMaxSizes LayoutTableCell::PreferredLogicalWidths() const {
   if (logical_height > -1)
     mutable_this->SetOverrideLogicalHeight(logical_height);
 
-  if (GetNode() && StyleRef().AutoWrap()) {
+  if (GetNode() && StyleRef().ShouldWrapLine()) {
     // See if nowrap was set.
     Length w = StyleOrColLogicalWidth();
     const AtomicString& nowrap =

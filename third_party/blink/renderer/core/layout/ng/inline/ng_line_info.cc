@@ -108,8 +108,9 @@ unsigned NGLineInfo::InflowEndOffset() const {
 bool NGLineInfo::ShouldHangTrailingSpaces() const {
   if (!HasTrailingSpaces())
     return false;
-  if (!line_style_->AutoWrap())
+  if (!line_style_->ShouldWrapLine()) {
     return false;
+  }
   switch (text_align_) {
     case ETextAlign::kStart:
     case ETextAlign::kJustify:
@@ -132,7 +133,7 @@ void NGLineInfo::UpdateTextAlign() {
   text_align_ = GetTextAlign(IsLastLine());
   allow_hang_for_alignment_ = false;
 
-  if (HasTrailingSpaces() && line_style_->AutoWrap()) {
+  if (HasTrailingSpaces() && line_style_->ShouldWrapLine()) {
     if (ShouldHangTrailingSpaces()) {
       hang_width_ = ComputeTrailingSpaceWidth(&end_offset_for_justify_);
       allow_hang_for_alignment_ = true;

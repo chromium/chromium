@@ -375,17 +375,19 @@ inline void BreakingContext::InitializeForCurrentObject() {
                  : last_object_.Parent().StyleRef().WhiteSpace();
 
   bool is_svg_text = current_.GetLineLayoutItem().IsSVGInlineText();
-  auto_wrap_ = !is_svg_text && ComputedStyle::AutoWrap(curr_ws_);
+  auto_wrap_ = !is_svg_text && ComputedStyle::DeprecatedAutoWrap(curr_ws_);
   auto_wrap_was_ever_true_on_line_ =
       auto_wrap_was_ever_true_on_line_ || auto_wrap_;
 
-  preserves_newline_ = !is_svg_text && ComputedStyle::PreserveNewline(curr_ws_);
+  preserves_newline_ =
+      !is_svg_text && ComputedStyle::DeprecatedPreserveNewline(curr_ws_);
 
-  collapse_white_space_ = ComputedStyle::CollapseWhiteSpace(curr_ws_);
+  collapse_white_space_ = ComputedStyle::DeprecatedCollapseWhiteSpace(curr_ws_);
 
   // Ensure the whitespace in constructions like '<span style="white-space:
   // pre-wrap">text <span><span> text</span>' does not collapse.
-  if (collapse_white_space_ && !ComputedStyle::CollapseWhiteSpace(last_ws_)) {
+  if (collapse_white_space_ &&
+      !ComputedStyle::DeprecatedCollapseWhiteSpace(last_ws_)) {
     current_character_is_space_ = false;
     is_space_or_other_space_separator_ = false;
   }
@@ -663,7 +665,7 @@ inline void BreakingContext::HandleReplaced() {
 
   // Break on replaced elements if either has normal white-space,
   // or if the replaced element is ruby that can break before.
-  if ((auto_wrap_ || ComputedStyle::AutoWrap(last_ws_)) &&
+  if ((auto_wrap_ || ComputedStyle::DeprecatedAutoWrap(last_ws_)) &&
       (!current_.GetLineLayoutItem().IsRubyRun() ||
        LineLayoutRubyRun(current_.GetLineLayoutItem())
            .CanBreakBefore(layout_text_info_.line_break_iterator_))) {
@@ -843,7 +845,7 @@ ALWAYS_INLINE bool BreakingContext::CanMidWordBreakBefore(LineLayoutText text) {
   if (LineLayoutItem element = text.Parent()) {
     if (LineLayoutItem parent = element.Parent()) {
       const ComputedStyle& parent_style = parent.StyleRef();
-      return parent_style.AutoWrap() &&
+      return parent_style.ShouldWrapLine() &&
              ((parent_style.BreakWords() && !width_.CommittedWidth()) ||
               parent_style.WordBreak() == EWordBreak::kBreakAll);
     }
@@ -990,7 +992,8 @@ inline bool BreakingContext::HandleText(WordMeasurements& word_measurements,
   // If we have left a no-wrap inline and entered an autowrap inline while
   // ignoring spaces then we need to mark the start of the autowrap inline as a
   // potential linebreak now.
-  if (auto_wrap_ && !ComputedStyle::AutoWrap(last_ws_) && ignoring_spaces_) {
+  if (auto_wrap_ && !ComputedStyle::DeprecatedAutoWrap(last_ws_) &&
+      ignoring_spaces_) {
     width_.Commit();
     line_break_.MoveToStartOf(current_.GetLineLayoutItem());
   }
@@ -1584,14 +1587,14 @@ inline void BreakingContext::CommitAndUpdateLineBreakIfNeeded() {
     // next item is auto-wrap, break before the next item.
     // TODO(kojii): This case should be handled when we read next item.
     if (width_.FitsOnLine(0, kExcludeWhitespace) &&
-        (!next_object_ || next_object_.StyleRef().AutoWrap())) {
+        (!next_object_ || next_object_.StyleRef().ShouldWrapLine())) {
       width_.Commit();
       line_break_.MoveToStartOf(next_object_);
     }
     check_for_break = true;
   } else if (next_object_ && current_.GetLineLayoutItem().IsText() &&
              next_object_.IsText() && !next_object_.IsBR() &&
-             (auto_wrap_ || next_object_.StyleRef().AutoWrap())) {
+             (auto_wrap_ || next_object_.StyleRef().ShouldWrapLine())) {
     if (auto_wrap_ && current_character_is_space_) {
       check_for_break = true;
     } else {
@@ -1652,7 +1655,7 @@ inline void BreakingContext::CommitAndUpdateLineBreakIfNeeded() {
       at_end_ = true;
       return;
     }
-  } else if (block_style_->AutoWrap() && !width_.FitsOnLine() &&
+  } else if (block_style_->ShouldWrapLine() && !width_.FitsOnLine() &&
              !width_.CommittedWidth()) {
     // If the container autowraps but the current child does not then we still
     // need to ensure that it wraps and moves below any floats.

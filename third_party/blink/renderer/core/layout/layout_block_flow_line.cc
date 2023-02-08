@@ -1650,7 +1650,7 @@ void LayoutBlockFlow::ComputeInlinePreferredLogicalWidths(
                                style_to_use.LogicalWidth().IsSpecified();
 
   bool auto_wrap, old_auto_wrap;
-  auto_wrap = old_auto_wrap = style_to_use.AutoWrap();
+  auto_wrap = old_auto_wrap = style_to_use.ShouldWrapLine();
 
   InlineMinMaxIterator child_iterator(this);
 
@@ -1667,8 +1667,8 @@ void LayoutBlockFlow::ComputeInlinePreferredLogicalWidths(
   bool should_break_line_after_text = false;
   while (LayoutObject* child = child_iterator.Next()) {
     auto_wrap = child->IsAtomicInlineLevel()
-                    ? child->Parent()->StyleRef().AutoWrap()
-                    : child->StyleRef().AutoWrap();
+                    ? child->Parent()->StyleRef().ShouldWrapLine()
+                    : child->StyleRef().ShouldWrapLine();
 
     if (!child->IsBR()) {
       // Step One: determine whether or not we need to go ahead and

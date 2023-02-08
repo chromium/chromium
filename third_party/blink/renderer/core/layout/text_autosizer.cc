@@ -230,8 +230,9 @@ static bool BlockSuppressesAutosizing(const LayoutBlock* block) {
 
   // Don't autosize block-level text that can't wrap (as it's likely to
   // expand sideways and break the page's layout).
-  if (!block->StyleRef().AutoWrap())
+  if (!block->StyleRef().ShouldWrapLine()) {
     return true;
+  }
 
   if (BlockHeightConstrained(block))
     return true;

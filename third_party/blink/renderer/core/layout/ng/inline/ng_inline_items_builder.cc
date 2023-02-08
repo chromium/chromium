@@ -376,8 +376,9 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
 
     // On nowrap -> wrap boundary, a break opporunity may be inserted.
     DCHECK(last_item->Style());
-    if (!last_item->Style()->AutoWrap() && new_style.AutoWrap())
+    if (!last_item->Style()->ShouldWrapLine() && new_style.ShouldWrapLine()) {
       return false;
+    }
 
   } else if (collapse_spaces) {
     // If the original string starts with a collapsible space, it may be
@@ -536,7 +537,6 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
                                                        layout_object);
 
   const ComputedStyle& style = layout_object->StyleRef();
-  EWhiteSpace whitespace = style.WhiteSpace();
   const bool should_not_preserve_newline =
       (layout_object && layout_object->IsSVGInlineText()) ||
       UNLIKELY(is_text_combine_);
@@ -545,13 +545,13 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
 
   if (text_chunk_offsets_ && AppendTextChunks(string, *layout_object))
     return;
-  if (!ComputedStyle::CollapseWhiteSpace(whitespace))
+  if (!style.CollapseWhiteSpace()) {
     AppendPreserveWhitespace(string, &style, layout_object);
-  else if (ComputedStyle::PreserveNewline(whitespace) &&
-           !should_not_preserve_newline)
+  } else if (style.PreserveNewline() && !should_not_preserve_newline) {
     AppendPreserveNewline(string, &style, layout_object);
-  else
+  } else {
     AppendCollapseWhitespace(string, &style, layout_object);
+  }
 }
 
 template <typename OffsetMappingBuilder>
@@ -562,12 +562,12 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextChunks(
   if (iter == text_chunk_offsets_->end())
     return false;
   const ComputedStyle& style = layout_text.StyleRef();
-  EWhiteSpace whitespace = style.WhiteSpace();
+  const bool should_collapse_space = style.CollapseWhiteSpace();
   unsigned start = 0;
   for (unsigned offset : iter->value) {
     DCHECK_LE(offset, string.length());
     if (start < offset) {
-      if (!ComputedStyle::CollapseWhiteSpace(whitespace)) {
+      if (!should_collapse_space) {
         AppendPreserveWhitespace(string.Substring(start, offset - start),
                                  &style, &layout_text);
       } else {
@@ -580,7 +580,7 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextChunks(
   }
   if (start >= string.length())
     return true;
-  if (!ComputedStyle::CollapseWhiteSpace(whitespace)) {
+  if (!should_collapse_space) {
     AppendPreserveWhitespace(string.Substring(start), &style, &layout_text);
   } else {
     AppendCollapseWhitespace(StringView(string, start), &style, &layout_text);
@@ -649,7 +649,8 @@ void NGInlineItemsBuilderTemplate<
                                 StringView(string, i), style)) {
           RemoveTrailingCollapsibleSpace(item);
           space_run_has_newline = false;
-        } else if (!item->Style()->AutoWrap() && style->AutoWrap()) {
+        } else if (!item->Style()->ShouldWrapLine() &&
+                   style->ShouldWrapLine()) {
           // Otherwise, remove the space run entirely, collapsing to the space
           // in the last item.
 
@@ -796,9 +797,11 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::
   if (UNLIKELY(is_text_combine_))
     return false;
   // Check if we are at a preserved space character and auto-wrap is enabled.
-  if (style.CollapseWhiteSpace() || !style.AutoWrap() || !string.length() ||
-      index >= string.length() || string[index] != kSpaceCharacter)
+  if (style.CollapseWhiteSpace() || !style.ShouldWrapLine() ||
+      !string.length() || index >= string.length() ||
+      string[index] != kSpaceCharacter) {
     return false;
+  }
 
   // Preserved leading spaces must be at the beginning of the first line or just
   // after a forced break.

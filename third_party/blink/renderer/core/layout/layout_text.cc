@@ -1227,8 +1227,9 @@ void LayoutText::TrimmedPrefWidths(LayoutUnit lead_width_layout_unit,
 
   strip_front_spaces = collapse_white_space && has_end_white_space_;
 
-  if (!StyleRef().AutoWrap() || float_min_width > float_max_width)
+  if (!StyleRef().ShouldWrapLine() || float_min_width > float_max_width) {
     float_min_width = float_max_width;
+  }
 
   // Compute our max widths by scanning the string for newlines.
   if (has_break) {
@@ -1416,7 +1417,7 @@ void LayoutText::ComputePreferredLogicalWidths(
 
   EWordBreak break_all_or_break_word = EWordBreak::kNormal;
   LineBreakType line_break_type = LineBreakType::kNormal;
-  if (style_to_use.AutoWrap()) {
+  if (style_to_use.ShouldWrapLine()) {
     if (style_to_use.WordBreak() == EWordBreak::kBreakAll ||
         style_to_use.WordBreak() == EWordBreak::kBreakWord) {
       break_all_or_break_word = style_to_use.WordBreak();
@@ -1428,7 +1429,7 @@ void LayoutText::ComputePreferredLogicalWidths(
   }
 
   Hyphenation* hyphenation =
-      style_to_use.AutoWrap() ? style_to_use.GetHyphenation() : nullptr;
+      style_to_use.ShouldWrapLine() ? style_to_use.GetHyphenation() : nullptr;
   bool disable_soft_hyphen = style_to_use.GetHyphens() == Hyphens::kNone;
   float max_word_width = 0;
   if (!hyphenation)
@@ -1499,7 +1500,7 @@ void LayoutText::ComputePreferredLogicalWidths(
     }
 
     bool is_breakable_location =
-        is_newline || (is_whitespace && style_to_use.AutoWrap()) ||
+        is_newline || (is_whitespace && style_to_use.ShouldWrapLine()) ||
         break_all_or_break_word == EWordBreak::kBreakWord;
     if (!i)
       has_breakable_start_ = is_breakable_location;
@@ -1634,8 +1635,9 @@ void LayoutText::ComputePreferredLogicalWidths(
 
       bool is_collapsible_white_space =
           (j < len) && style_to_use.IsCollapsibleWhiteSpace(c);
-      if (j < len && style_to_use.AutoWrap())
+      if (j < len && style_to_use.ShouldWrapLine()) {
         has_breakable_char_ = true;
+      }
 
       // Add in wordSpacing to our curr_max_width, but not if this is the last
       // word on a line or the
@@ -1665,8 +1667,9 @@ void LayoutText::ComputePreferredLogicalWidths(
     } else {
       // Nowrap can never be broken, so don't bother setting the breakable
       // character boolean. Pre can only be broken if we encounter a newline.
-      if (StyleRef().AutoWrap() || is_newline)
+      if (StyleRef().ShouldWrapLine() || is_newline) {
         has_breakable_char_ = true;
+      }
 
       if (curr_min_width > min_width_)
         min_width_ = curr_min_width;
@@ -1677,8 +1680,9 @@ void LayoutText::ComputePreferredLogicalWidths(
         if (first_line) {
           first_line = false;
           lead_width = 0;
-          if (!style_to_use.AutoWrap())
+          if (!style_to_use.ShouldWrapLine()) {
             first_line_min_width_ = curr_max_width;
+          }
         }
 
         if (curr_max_width > max_width_)
@@ -1710,8 +1714,9 @@ void LayoutText::ComputePreferredLogicalWidths(
   min_width_ = std::max(curr_min_width, min_width_);
   max_width_ = std::max(curr_max_width, max_width_);
 
-  if (!style_to_use.AutoWrap())
+  if (!style_to_use.ShouldWrapLine()) {
     min_width_ = max_width_;
+  }
 
   if (style_to_use.WhiteSpace() == EWhiteSpace::kPre) {
     if (first_line)

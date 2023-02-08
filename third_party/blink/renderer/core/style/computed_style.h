@@ -2212,32 +2212,40 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // Whitespace utility functions.
-  static bool Is(EWhiteSpace a, EWhiteSpace b) {
-    return static_cast<unsigned>(a) & static_cast<unsigned>(b);
-  }
-  static bool IsNot(EWhiteSpace a, EWhiteSpace b) { return !Is(a, b); }
-  static bool AutoWrap(EWhiteSpace ws) {
+  // Don't use these `EWhiteSpace` static functions directly, because the
+  // `white-space` property may become a shorthand in future.
+  // https://drafts.csswg.org/css-text-4/#white-space-property
+  static bool DeprecatedAutoWrap(EWhiteSpace ws) {
     // Nowrap and pre don't automatically wrap.
     return IsNot(ws, EWhiteSpace::kNowrap | EWhiteSpace::kPre);
   }
-
-  bool AutoWrap() const { return AutoWrap(WhiteSpace()); }
-
-  static bool PreserveNewline(EWhiteSpace ws) {
+  static bool DeprecatedPreserveNewline(EWhiteSpace ws) {
     // Normal and nowrap do not preserve newlines.
-    return ws != EWhiteSpace::kNormal && ws != EWhiteSpace::kNowrap;
+    return IsNot(ws, EWhiteSpace::kNormal | EWhiteSpace::kNowrap);
   }
-
-  bool PreserveNewline() const { return PreserveNewline(WhiteSpace()); }
-
-  static bool CollapseWhiteSpace(EWhiteSpace ws) {
+  static bool DeprecatedCollapseWhiteSpace(EWhiteSpace ws) {
     // Pre and prewrap do not collapse whitespace.
     return IsNot(ws, EWhiteSpace::kPre | EWhiteSpace::kPreWrap |
                          EWhiteSpace::kBreakSpaces);
   }
 
-  bool CollapseWhiteSpace() const { return CollapseWhiteSpace(WhiteSpace()); }
+  bool ShouldWrapLine() const { return DeprecatedAutoWrap(WhiteSpace()); }
+  bool ShouldWrapLineBreakingSpaces() const {
+    // `ShouldWrapLine` should be `true` if `break-spaces`.
+    DCHECK(WhiteSpace() != EWhiteSpace::kBreakSpaces || ShouldWrapLine());
+    return WhiteSpace() == EWhiteSpace::kBreakSpaces;
+  }
+  bool ShouldWrapLineTrailingSpaces() const {
+    return IsNot(WhiteSpace(), EWhiteSpace::kNowrap | EWhiteSpace::kPre |
+                                   EWhiteSpace::kBreakSpaces);
+  }
 
+  bool PreserveNewline() const {
+    return DeprecatedPreserveNewline(WhiteSpace());
+  }
+  bool CollapseWhiteSpace() const {
+    return DeprecatedCollapseWhiteSpace(WhiteSpace());
+  }
   bool IsCollapsibleWhiteSpace(UChar c) const {
     switch (c) {
       case ' ':
@@ -2248,20 +2256,20 @@ class ComputedStyle : public ComputedStyleBase,
     }
     return false;
   }
+
   bool BreakOnlyAfterWhiteSpace() const {
     return Is(WhiteSpace(),
               EWhiteSpace::kPreWrap | EWhiteSpace::kBreakSpaces) ||
            GetLineBreak() == LineBreak::kAfterWhiteSpace;
   }
-
   bool NeedsTrailingSpace() const {
-    return BreakOnlyAfterWhiteSpace() && AutoWrap();
+    return BreakOnlyAfterWhiteSpace() && ShouldWrapLine();
   }
 
   bool BreakWords() const {
     return (WordBreak() == EWordBreak::kBreakWord ||
             OverflowWrap() != EOverflowWrap::kNormal) &&
-           IsNot(WhiteSpace(), EWhiteSpace::kPre | EWhiteSpace::kNowrap);
+           ShouldWrapLine();
   }
 
   // Text direction utility functions.
@@ -2491,6 +2499,12 @@ class ComputedStyle : public ComputedStyleBase,
            display == EDisplay::kTableCell ||
            display == EDisplay::kTableCaption;
   }
+
+  // Whitespace utility functions.
+  static bool Is(EWhiteSpace a, EWhiteSpace b) {
+    return static_cast<unsigned>(a) & static_cast<unsigned>(b);
+  }
+  static bool IsNot(EWhiteSpace a, EWhiteSpace b) { return !Is(a, b); }
 
   bool InternalVisitedBorderLeftColorHasNotChanged(
       const ComputedStyle& other) const {

@@ -1350,7 +1350,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
     if (line_info.HasOverflow() &&
         !line_opportunity.IsEqualToAvailableFloatInlineSize(
             ConstraintSpace().AvailableSize().inline_size) &&
-        Node().Style().AutoWrap()) {
+        Node().Style().ShouldWrapLine()) {
       DCHECK(!line_info.IsBlockInInline());
 
       // Shapes are *special*. We need to potentially increment the block-delta
