@@ -143,14 +143,12 @@ TEST_P(InputDeviceTrackerTest, RecordDevicesTwoUsers) {
 }
 
 TEST_P(InputDeviceTrackerTest, WasDevicePreviouslyConnected) {
-  EXPECT_FALSE(tracker_->WasDevicePreviouslyConnected(
-      InputDeviceCategory::kKeyboard, kDeviceKey1));
+  EXPECT_FALSE(tracker_->WasDevicePreviouslyConnected(category_, kDeviceKey1));
   CallOnDeviceConnected(kDeviceKey1);
-  // Device key is present and added to the correct pref list.
+  // Device key is present and added to the correct prf list.
   EXPECT_FALSE(tracker_->WasDevicePreviouslyConnected(
       InputDeviceCategory::kMouse, kDeviceKey1));
-  EXPECT_TRUE(tracker_->WasDevicePreviouslyConnected(
-      InputDeviceCategory::kKeyboard, kDeviceKey1));
+  EXPECT_TRUE(tracker_->WasDevicePreviouslyConnected(category_, kDeviceKey1));
 }
 
 }  // namespace ash

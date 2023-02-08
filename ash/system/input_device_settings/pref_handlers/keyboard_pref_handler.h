@@ -15,6 +15,8 @@ namespace ash {
 // Handles reading and updating prefs that store keyboard settings.
 class ASH_EXPORT KeyboardPrefHandler {
  public:
+  virtual ~KeyboardPrefHandler() = default;
+
   // Initializes device settings in prefs and update the `settings` member of
   // the `mojom::Keyboard` object.
   virtual void InitializeKeyboardSettings(PrefService* pref_service,
@@ -24,9 +26,6 @@ class ASH_EXPORT KeyboardPrefHandler {
   // `keyboard.settings`.
   virtual void UpdateKeyboardSettings(PrefService* pref_service,
                                       const mojom::Keyboard& keyboard) = 0;
-
- protected:
-  virtual ~KeyboardPrefHandler() = default;
 };
 
 }  // namespace ash

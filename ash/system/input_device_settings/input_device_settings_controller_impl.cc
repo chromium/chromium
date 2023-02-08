@@ -9,12 +9,16 @@
 #include <vector>
 
 #include "ash/public/mojom/input_device_settings.mojom.h"
-#include "ash/system/input_device_settings/input_device_pref_manager.h"
-#include "ash/system/input_device_settings/input_device_pref_manager_impl.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "ash/system/input_device_settings/input_device_settings_utils.h"
+#include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler_impl.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "ui/events/devices/input_device.h"
 
 namespace ash {
@@ -25,24 +29,26 @@ mojom::KeyboardPtr BuildMojomKeyboard(const ui::InputDevice& keyboard) {
   mojom::KeyboardPtr mojom_keyboard = mojom::Keyboard::New();
   mojom_keyboard->id = keyboard.id;
   mojom_keyboard->name = keyboard.name;
-  mojom_keyboard->device_key =
-      InputDevicePrefManagerImpl::BuildDeviceKey(keyboard);
+  mojom_keyboard->device_key = BuildDeviceKey(keyboard);
   return mojom_keyboard;
 }
 }  // namespace
 
 InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl()
-    : pref_manager_(std::make_unique<InputDevicePrefManagerImpl>()) {
+    : keyboard_pref_handler_(std::make_unique<KeyboardPrefHandlerImpl>()) {
   Init();
 }
 
 InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl(
-    std::unique_ptr<InputDevicePrefManager> pref_manager)
-    : pref_manager_(std::move(pref_manager)) {
+    std::unique_ptr<KeyboardPrefHandler> keyboard_pref_handler)
+    : keyboard_pref_handler_(std::move(keyboard_pref_handler)) {
   Init();
 }
 
 void InputDeviceSettingsControllerImpl::Init() {
+  if (features::IsInputDeviceSettingsSplitEnabled()) {
+    Shell::Get()->session_controller()->AddObserver(this);
+  }
   keyboard_notifier_ =
       std::make_unique<InputDeviceNotifier<mojom::KeyboardPtr>>(
           &keyboards_,
@@ -52,9 +58,27 @@ void InputDeviceSettingsControllerImpl::Init() {
 }
 
 InputDeviceSettingsControllerImpl::~InputDeviceSettingsControllerImpl() {
+  if (features::IsInputDeviceSettingsSplitEnabled()) {
+    Shell::Get()->session_controller()->RemoveObserver(this);
+  }
   // Manually reset `keyboard_notifier_` to avoid any race conditions between
   // `keyboard_notifier_` and `keyboards_`.
   keyboard_notifier_.reset();
+}
+
+void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
+    PrefRegistrySimple* pref_registry) {
+  pref_registry->RegisterDictionaryPref(prefs::kKeyboardDeviceSettingsDictPref);
+  pref_registry->RegisterDictionaryPref(prefs::kMouseDeviceSettingsDictPref);
+  pref_registry->RegisterDictionaryPref(
+      prefs::kPointingStickDeviceSettingsDictPref);
+  pref_registry->RegisterDictionaryPref(prefs::kTouchpadDeviceSettingsDictPref);
+}
+
+void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
+    PrefService* pref_service) {
+  active_pref_service_ = pref_service;
+  // TODO(michaelcheco): Initialize settings and notify observers.
 }
 
 std::vector<mojom::KeyboardPtr>
@@ -108,7 +132,10 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
     // Get initial settings from the pref manager and generate our local storage
     // of the device.
     mojom::KeyboardPtr mojom_keyboard = BuildMojomKeyboard(keyboard);
-    pref_manager_->InitializeKeyboardSettings(mojom_keyboard.get());
+    if (active_pref_service_) {
+      keyboard_pref_handler_->InitializeKeyboardSettings(active_pref_service_,
+                                                         mojom_keyboard.get());
+    }
     keyboards_.insert_or_assign(keyboard.id, std::move(mojom_keyboard));
     DispatchKeyboardConnected(keyboard.id);
   }
@@ -117,6 +144,11 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
     DispatchKeyboardDisconnected(id);
     keyboards_.erase(id);
   }
+}
+
+void InputDeviceSettingsControllerImpl::SetPrefHandlersForTesting(
+    std::unique_ptr<KeyboardPrefHandler> keyboard_pref_handler) {
+  keyboard_pref_handler_ = std::move(keyboard_pref_handler);
 }
 
 }  // namespace ash

@@ -5,12 +5,31 @@
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 
 namespace ash {
+
+namespace {
+std::string HexEncode(uint16_t v) {
+  // Load the bytes into the bytes array in reverse order as hex number should
+  // be read from left to right.
+  uint8_t bytes[sizeof(uint16_t)];
+  bytes[1] = v & 0xFF;
+  bytes[0] = v >> 8;
+  return base::ToLowerASCII(base::HexEncode(bytes));
+}
+}  // namespace
 
 bool IsValidModifier(int val) {
   return val >= static_cast<int>(mojom::ModifierKey::kMinValue) &&
          val <= static_cast<int>(mojom::ModifierKey::kMaxValue);
+}
+
+std::string BuildDeviceKey(const ui::InputDevice& device) {
+  return base::StrCat(
+      {HexEncode(device.vendor_id), ":", HexEncode(device.product_id)});
 }
 
 }  // namespace ash

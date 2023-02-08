@@ -7,27 +7,34 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_notifier.h"
-#include "ash/system/input_device_settings/input_device_pref_manager.h"
+#include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/events/devices/input_device.h"
+
+class PrefRegistrySimple;
 
 namespace ash {
 
 // Controller to manage input device settings.
 class ASH_EXPORT InputDeviceSettingsControllerImpl
-    : public InputDeviceSettingsController {
+    : public InputDeviceSettingsController,
+      public SessionObserver {
  public:
   InputDeviceSettingsControllerImpl();
   explicit InputDeviceSettingsControllerImpl(
-      std::unique_ptr<InputDevicePrefManager> pref_manager);
+      std::unique_ptr<KeyboardPrefHandler> keyboard_pref_handler);
   InputDeviceSettingsControllerImpl(const InputDeviceSettingsControllerImpl&) =
       delete;
   InputDeviceSettingsControllerImpl& operator=(
       const InputDeviceSettingsControllerImpl&) = delete;
   ~InputDeviceSettingsControllerImpl() override;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* pref_rCegistry);
 
   // InputDeviceSettingsController:
   std::vector<mojom::KeyboardPtr> GetConnectedKeyboards() override;
@@ -39,17 +46,25 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   void OnKeyboardListUpdated(std::vector<ui::InputDevice> keyboards_to_add,
                              std::vector<DeviceId> keyboard_ids_to_remove);
 
+  // SessionObserver:
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
+
+  void SetPrefHandlersForTesting(
+      std::unique_ptr<KeyboardPrefHandler> keyboard_pref_handler);
+
  private:
   void Init();
 
   void DispatchKeyboardConnected(DeviceId id);
   void DispatchKeyboardDisconnected(DeviceId id);
 
-  std::unique_ptr<InputDevicePrefManager> pref_manager_;
+  std::unique_ptr<KeyboardPrefHandler> keyboard_pref_handler_;
   base::flat_map<DeviceId, mojom::KeyboardPtr> keyboards_;
   base::ObserverList<InputDeviceSettingsController::Observer> observers_;
 
   std::unique_ptr<InputDeviceNotifier<mojom::KeyboardPtr>> keyboard_notifier_;
+
+  raw_ptr<PrefService> active_pref_service_ = nullptr;  // Not owned.
 };
 
 }  // namespace ash

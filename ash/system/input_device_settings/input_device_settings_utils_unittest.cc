@@ -1,42 +1,15 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/input_device_settings/input_device_pref_manager_impl.h"
+#include "ash/system/input_device_settings/input_device_settings_utils.h"
 
 #include <cstdint>
 
-#include "ash/test/ash_test_base.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/input_device.h"
 
 namespace ash {
-
-class InputDevicePrefManagerTest : public AshTestBase {
- public:
-  InputDevicePrefManagerTest() = default;
-  InputDevicePrefManagerTest(const InputDevicePrefManagerTest&) = delete;
-  InputDevicePrefManagerTest& operator=(const InputDevicePrefManagerTest&) =
-      delete;
-  ~InputDevicePrefManagerTest() override = default;
-
-  // testing::Test:
-  void SetUp() override {
-    AshTestBase::SetUp();
-    controller_ = std::make_unique<InputDevicePrefManagerImpl>();
-  }
-
-  void TearDown() override {
-    controller_.reset();
-    AshTestBase::TearDown();
-  }
-
- protected:
-  std::unique_ptr<InputDevicePrefManagerImpl> controller_;
-};
-
-TEST_F(InputDevicePrefManagerTest, InitializationTest) {
-  EXPECT_NE(controller_.get(), nullptr);
-}
 
 class DeviceKeyTest : public testing::TestWithParam<
                           std::tuple<uint16_t, uint16_t, std::string>> {};
@@ -58,7 +31,7 @@ TEST_P(DeviceKeyTest, BuildDeviceKey) {
   ui::InputDevice device;
   std::tie(device.vendor_id, device.product_id, expected_key) = GetParam();
 
-  auto key = InputDevicePrefManagerImpl::BuildDeviceKey(device);
+  auto key = BuildDeviceKey(device);
   EXPECT_EQ(expected_key, key);
 }
 
