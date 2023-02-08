@@ -19,12 +19,12 @@ uses.
 ## Step 2: Opt-In to Chromium Updater Deployment
 On macOS, and with a per-user Keystone (this is common), run:
 ```
-~/Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin -C chromium-updater-opt-in -P com.google.Keystone && ~/Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin --install -P com.google.Keystone && sleep 10 && "~/Library/Application Support/Google/GoogleUpdater/*/GoogleUpdater.app/Contents/MacOS/GoogleUpdater" --wake --enable-logging --vmodule="*/updater/*=2"
+~/Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin -C chromium-updater-opt-in -P com.google.Keystone && ~/Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin --install -P com.google.Keystone && sleep 10 && ~/Library/Application\ Support/Google/GoogleUpdater/*/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --wake --enable-logging --vmodule="*/updater/*=2"
 ```
 
 On macOS, and with a system-wide Keystone, run:
 ```
-sudo /Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin -C chromium-updater-opt-in -P com.google.Keystone -S && /Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/Contents/Resources/CheckForUpdatesNow.command && sleep 10 && sudo "~/Library/Application Support/Google/GoogleUpdater/*/GoogleUpdater.app/Contents/MacOS/GoogleUpdater" --wake --system --enable-logging --vmodule="*/updater/*=2"
+sudo /Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin -C chromium-updater-opt-in -P com.google.Keystone -S && /Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/Contents/Resources/CheckForUpdatesNow.command && sleep 10 && sudo /Library/Application\ Support/Google/GoogleUpdater/*/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --wake --system --enable-logging --vmodule="*/updater/*=2"
 ```
 
 On Windows, and with a per-user Omaha 3, use `regedit.exe` to open the key
@@ -64,10 +64,10 @@ Updater to update it automatically, or you can trigger an early check by
 running:
 
 (macOS, per-user):
-`~/Library/Application Support/Google/GoogleUpdater/*/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --wake --enable-logging --vmodule="*/updater/*=2"`
+`~/Library/Application\ Support/Google/GoogleUpdater/*/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --wake --enable-logging --vmodule="*/updater/*=2"`
 
 (macOS, system-wide):
-`sudo /Library/Google/GoogleUpdater/*/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --wake --system --enable-logging --vmodule="*/updater/*=2"`
+`sudo /Library/Application\ Support/Google/GoogleUpdater/*/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --wake --system --enable-logging --vmodule="*/updater/*=2"`
 
 (Windows, per-user):
 `%LOCALAPPDATA%\Google\GoogleUpdater\*\updater.exe --wake --enable-logging --vmodule="*/updater/*=2"`
