@@ -7,6 +7,7 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_item.h"
@@ -16,6 +17,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_text_link_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -33,24 +35,23 @@
 namespace {
 
 const CGFloat kVerticalTableViewSectionSpacing = 30;
-const CGFloat kDescriptionPadding = 16;
-const CGFloat kDescriptionLabelHeight = 18;
-const CGFloat kDescriptionTopSpacing = 10;
-const CGFloat kDescriptionBottomSpacing = 26;
-const CGFloat kSectionHeaderHeight = 22;
 
 // Types of ListItems used by the price notifications UI.
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeHeader = kItemTypeEnumZero,
   ItemTypeSectionHeader,
   ItemTypeListItem,
+  ItemTypeTableViewHeader,
 };
 
 // Identifiers for sections in the price notifications.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierTrackableItemsOnCurrentSite = kSectionIdentifierEnumZero,
   SectionIdentifierTrackedItems,
+  SectionIdentifierTableViewHeader
 };
+
+const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 
 }  // namespace
 
@@ -82,18 +83,21 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   self.tableView.accessibilityIdentifier =
       kPriceNotificationsTableViewIdentifier;
-  self.tableView.estimatedSectionHeaderHeight = kSectionHeaderHeight;
   self.tableView.estimatedRowHeight = 100;
 
   self.title =
       l10n_util::GetNSString(IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TITLE);
-  [self createTableViewHeader];
 }
 
 #pragma mark - UITableViewDelegate
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForFooterInSection:(NSInteger)section {
+  if (section ==
+      [self.tableViewModel
+          sectionForSectionIdentifier:SectionIdentifierTableViewHeader]) {
+    return 0;
+  }
   return kVerticalTableViewSectionSpacing;
 }
 
@@ -101,7 +105,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
     willSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   if (@available(iOS 16.0, *)) {
     return [super tableView:tableView willSelectRowAtIndexPath:indexPath];
-    ;
   }
 
   PriceNotificationsTableViewItem* item =
@@ -158,6 +161,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
                                    SectionIdentifierTrackableItemsOnCurrentSite
                                                    isEmpty:!trackableItem]
       forSectionWithIdentifier:SectionIdentifierTrackableItemsOnCurrentSite];
+  [self.tableViewModel setHeader:[self createHeaderForSectionIndex:
+                                           SectionIdentifierTableViewHeader
+                                                           isEmpty:NO]
+        forSectionWithIdentifier:SectionIdentifierTableViewHeader];
 
   if (trackableItem && !currentlyTracking) {
     [self addItem:trackableItem
@@ -169,11 +176,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   }
 
   [self.tableView
-        reloadSections:
-            [NSIndexSet
-                indexSetWithIndexesInRange:
-                    [self createRangeForSectionIdentifier:
-                              SectionIdentifierTrackableItemsOnCurrentSite]]
+        reloadSections:[self createIndexSetForSectionIdentifiers:
+                                 {SectionIdentifierTableViewHeader,
+                                  SectionIdentifierTrackableItemsOnCurrentSite}]
       withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
@@ -200,11 +205,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
     return;
   }
 
-  [self.tableView
-        reloadSections:[NSIndexSet indexSetWithIndexesInRange:
-                                       [self createRangeForSectionIdentifier:
-                                                 SectionIdentifierTrackedItems]]
-      withRowAnimation:UITableViewRowAnimationAutomatic];
+  [self.tableView reloadSections:[self createIndexSetForSectionIdentifiers:
+                                           {SectionIdentifierTrackedItems}]
+                withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 - (void)didStopPriceTrackingItem:(PriceNotificationsTableViewItem*)trackedItem
@@ -231,10 +234,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
                                                      isEmpty:YES]
               forSectionWithIdentifier:trackedSection];
           [self.tableView
-                reloadSections:[NSIndexSet
-                                   indexSetWithIndexesInRange:
-                                       [self createRangeForSectionIdentifier:
-                                                 SectionIdentifierTrackedItems]]
+                reloadSections:[self createIndexSetForSectionIdentifiers:
+                                         {SectionIdentifierTrackedItems}]
               withRowAnimation:UITableViewRowAnimationAutomatic];
         }
 
@@ -268,13 +269,15 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   [model setHeader:[self createHeaderForSectionIndex:trackableSectionID
                                              isEmpty:YES]
       forSectionWithIdentifier:trackableSectionID];
+  [self.tableViewModel setHeader:[self createHeaderForSectionIndex:
+                                           SectionIdentifierTableViewHeader
+                                                           isEmpty:NO]
+        forSectionWithIdentifier:SectionIdentifierTableViewHeader];
 
   [self.tableView
-        reloadSections:
-            [NSIndexSet
-                indexSetWithIndexesInRange:
-                    [self createRangeForSectionIdentifier:
-                              SectionIdentifierTrackableItemsOnCurrentSite]]
+        reloadSections:[self createIndexSetForSectionIdentifiers:
+                                 {SectionIdentifierTableViewHeader,
+                                  SectionIdentifierTrackableItemsOnCurrentSite}]
       withRowAnimation:UITableViewRowAnimationAutomatic];
 
   [self addTrackedItem:trackableItem];
@@ -324,32 +327,19 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (TableViewHeaderFooterItem*)createHeaderForSectionIndex:
                                   (SectionIdentifier)sectionID
                                                   isEmpty:(BOOL)isEmpty {
-  TableViewTextHeaderFooterItem* header =
-      [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
-
   switch (sectionID) {
-    case SectionIdentifierTrackableItemsOnCurrentSite:
-      header.text = l10n_util::GetNSString(
-          IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKABLE_SECTION_HEADER);
-      if (self.itemOnCurrentSiteIsTracked) {
-        header.subtitleText = l10n_util::GetNSString(
-            IDS_IOS_PRICE_NOTIFICAITONS_PRICE_TRACK_TRACKABLE_ITEM_IS_TRACKED);
-      } else if (isEmpty) {
-        header.subtitleText = l10n_util::GetNSString(
-            IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKABLE_EMPTY_LIST);
-      }
-      break;
-    case SectionIdentifierTrackedItems:
-      header.text = l10n_util::GetNSString(
-          IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKED_SECTION_HEADER);
-      if (isEmpty) {
-        header.subtitleText = l10n_util::GetNSString(
-            IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKING_EMPTY_LIST);
-      }
-      break;
+    case SectionIdentifierTrackableItemsOnCurrentSite: {
+      return [self createHeaderForTrackableSection:isEmpty];
+    }
+    case SectionIdentifierTrackedItems: {
+      return [self createHeaderForTrackedSection:isEmpty];
+    }
+    case SectionIdentifierTableViewHeader: {
+      return [self createHeaderForTableViewHeaderSection];
+    }
   }
 
-  return header;
+  return nil;
 }
 
 // Constructs the TableViewModel's sections and section headers and initializes
@@ -365,6 +355,12 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifier trackedSectionID = SectionIdentifierTrackedItems;
   TableViewModel* model = self.tableViewModel;
 
+  [model addSectionWithIdentifier:SectionIdentifierTableViewHeader];
+  [model setHeader:
+             [self createHeaderForSectionIndex:SectionIdentifierTableViewHeader
+                                       isEmpty:NO]
+      forSectionWithIdentifier:SectionIdentifierTableViewHeader];
+
   [model addSectionWithIdentifier:trackableSectionID];
   [model setHeader:[self createHeaderForSectionIndex:trackableSectionID
                                              isEmpty:NO]
@@ -374,31 +370,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   [model setHeader:[self createHeaderForSectionIndex:trackedSectionID
                                              isEmpty:YES]
       forSectionWithIdentifier:trackedSectionID];
-}
-
-// Creates, configures, and sets a UIView to the TableViewControllers's
-// TableHeaderView property.
-- (void)createTableViewHeader {
-  UIView* view =
-      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0,
-                                               kDescriptionLabelHeight +
-                                                   kDescriptionTopSpacing +
-                                                   kDescriptionBottomSpacing)];
-  UILabel* description = [[UILabel alloc] init];
-  description.translatesAutoresizingMaskIntoConstraints = NO;
-  description.font =
-      [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
-  description.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  description.text = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_DESCRIPTION);
-
-  [view addSubview:description];
-  self.tableView.tableHeaderView = view;
-
-  AddSameConstraintsWithInsets(
-      description, view,
-      NSDirectionalEdgeInsetsMake(kDescriptionPadding, kDescriptionPadding,
-                                  kDescriptionPadding, kDescriptionPadding));
 }
 
 // Adds placeholder items into each section.
@@ -457,23 +428,73 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   [self.tableView deleteRowsAtIndexPaths:itemIndexPaths
                         withRowAnimation:UITableViewRowAnimationAutomatic];
-  [self.tableView
-        reloadSections:[NSIndexSet indexSetWithIndexesInRange:
-                                       [self createRangeForSectionIdentifier:
-                                                 SectionIdentifierTrackedItems]]
-      withRowAnimation:UITableViewRowAnimationAutomatic];
+  [self.tableView reloadSections:[self createIndexSetForSectionIdentifiers:
+                                           {SectionIdentifierTrackedItems}]
+                withRowAnimation:UITableViewRowAnimationAutomatic];
   _displayedLoadingState = NO;
 }
 
-// Creates the NSRanges that encapsulate the various sections within the table
-// view.
-- (NSRange)createRangeForSectionIdentifier:(SectionIdentifier)sectionID {
-  switch (sectionID) {
-    case SectionIdentifierTrackableItemsOnCurrentSite:
-      return NSMakeRange(0, 1);
-    case SectionIdentifierTrackedItems:
-      return NSMakeRange(1, 1);
+// Creates the IndexSet that encapsulate the various sections provided in
+// `sectionIDs`
+- (NSIndexSet*)createIndexSetForSectionIdentifiers:
+    (std::vector<SectionIdentifier>)sectionIDs {
+  NSMutableIndexSet* indexSet = [[NSMutableIndexSet alloc] init];
+  for (auto& sectionID : sectionIDs) {
+    NSUInteger sectionIndex =
+        [self.tableViewModel sectionForSectionIdentifier:sectionID];
+    [indexSet addIndex:sectionIndex];
   }
+  return indexSet;
+}
+
+// Creates the TableViewHeaderFooterItem for the section
+// `SectionIdentifierTrackableItemsOnCurrentSite`
+- (TableViewTextHeaderFooterItem*)createHeaderForTrackableSection:
+    (BOOL)isEmpty {
+  TableViewTextHeaderFooterItem* header =
+      [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
+  header.text = l10n_util::GetNSString(
+      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKABLE_SECTION_HEADER);
+  if (self.itemOnCurrentSiteIsTracked) {
+    header.subtitleText = l10n_util::GetNSString(
+        IDS_IOS_PRICE_NOTIFICAITONS_PRICE_TRACK_TRACKABLE_ITEM_IS_TRACKED);
+  } else if (isEmpty) {
+    header.subtitleText = l10n_util::GetNSString(
+        IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKABLE_EMPTY_LIST);
+  }
+  return header;
+}
+
+// Creates the TableViewHeaderFooterItem for the section
+// `SectionIdentifierTrackedItems`
+- (TableViewTextHeaderFooterItem*)createHeaderForTrackedSection:(BOOL)isEmpty {
+  TableViewTextHeaderFooterItem* header =
+      [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
+  header.text = l10n_util::GetNSString(
+      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKED_SECTION_HEADER);
+  if (isEmpty) {
+    header.subtitleText = l10n_util::GetNSString(
+        IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKABLE_EMPTY_LIST);
+  }
+  return header;
+}
+
+// Creates the TableViewHeaderFooterItem for the section
+// `SectionIdentifierTableViewHeader`
+- (TableViewLinkHeaderFooterItem*)createHeaderForTableViewHeaderSection {
+  TableViewLinkHeaderFooterItem* header = [[TableViewLinkHeaderFooterItem alloc]
+      initWithType:ItemTypeTableViewHeader];
+
+  if (self.itemOnCurrentSiteIsTracked) {
+    header.text = l10n_util::GetNSString(
+        IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_DESCRIPTION_FOR_TRACKED_ITEM);
+    header.urls = @[ [[CrURL alloc] initWithGURL:GURL(kBookmarksSettingsURL)] ];
+    return header;
+  }
+
+  header.text = l10n_util::GetNSString(
+      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_DESCRIPTION);
+  return header;
 }
 
 @end

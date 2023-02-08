@@ -61,6 +61,7 @@ source_set("price_notifications_ui") {
     ":constants",
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/price_notifications/cells",
