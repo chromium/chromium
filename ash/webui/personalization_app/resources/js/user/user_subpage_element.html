@@ -1,12 +1,11 @@
-<style>
+<style include="common">
   #container {
     display: grid;
     grid-template-areas:
-      '. . userpreview . .'
-      '. . avatars     . .'
-      '. . .           . .';
+      '. leftspacertop    userpreview rightspacertop    .'
+      '. leftspacerbottom avatars     rightspacerbottom .';
     grid-template-columns: 1fr 24px minmax(568px, 920px) 24px 1fr;
-    grid-template-rows: auto auto 12px;
+    grid-template-rows: auto auto;
   }
   user-preview {
     grid-area: userpreview;
@@ -14,16 +13,25 @@
   }
   avatar-list {
     grid-area: avatars;
+    padding-bottom: 12px;
   }
   user-preview + avatar-list {
     border-top: 1px solid var(--cros-separator-color);
     padding-top: 8px;
   }
+  :host-context(body.jelly-enabled) avatar-list {
+    background-color: var(--cros-bg-color);
+    border: none;
+  }
 </style>
 <div id="container">
+  <div class="leftspacertop"></div>
+  <div class="leftspacerbottom"></div>
   <template is="dom-if"
       if="[[isNotEnterpriseManaged_(isUserImageEnterpriseManaged_)]]">
     <user-preview path="[[path]]"></user-preview>
     <avatar-list></avatar-list>
   </template>
+  <div class="rightspacertop"></div>
+  <div class="rightspacerbottom"></div>
 </div>

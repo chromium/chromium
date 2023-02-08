@@ -2,23 +2,13 @@
   #wallpaperContainer {
     display: grid;
     grid-template-areas:
-      '. leftspacer selected   rightspacer .'
-      '. leftspacer .          rightspacer .'
-      '. leftspacer imagegrid  rightspacer .'
-      '. leftspacer .          rightspacer .';
+      '. leftspacertop    selected   rightspacertop    .'
+      '. leftspacerbottom imagegrid  rightspacerbottom .';
     grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
-    grid-template-rows: 172px 12px minmax(0, 1fr) 32px;
+    grid-template-rows: 172px minmax(0, 1fr);
     height: 100%;
     position: relative;
     width: 100%;
-  }
-
-  #leftspacer {
-    grid-area: leftspacer;
-  }
-
-  #rightspacer {
-    grid-area: rightspacer;
   }
 
   wallpaper-selected {
@@ -34,11 +24,30 @@
   google-photos-collection,
   local-images {
     grid-area: imagegrid;
+    padding: 12px 0 32px 0;
+  }
+
+  :host-context(body.jelly-enabled) div[class$='spacertop'] {
+    position: sticky;
+    top: 56px;
+    z-index: 1;
+  }
+
+  :host-context(body.jelly-enabled) wallpaper-selected {
+    background-color: var(--cros-sys-app_base_shaded);
+  }
+
+  :host-context(body.jelly-enabled) wallpaper-collections,
+  wallpaper-images,
+  google-photos-collection,
+  local-images {
+    background-color: var(--cros-bg-color);
   }
 </style>
 <div id="wallpaperContainer">
   <!-- Prevent left margin from collapsing on narrow window in RTL -->
-  <div id="leftspacer"></div>
+  <div class="leftspacertop"></div>
+  <div class="leftspacerbottom"></div>
   <wallpaper-selected path="[[path]]" collection-id="[[queryParams.id]]"
       google-photos-album-id="[[queryParams.googlePhotosAlbumId]]"
       google-photos-album-is-shared="[[queryParams.googlePhotosAlbumIsShared]]">
@@ -60,6 +69,7 @@
   </local-images>
   <!-- Prevent the right margin from collapsing when window gets very
            narrow -->
-  <div id="rightspacer"></div>
+  <div class="rightspacertop"></div>
+  <div class="rightspacerbottom"></div>
   <wallpaper-fullscreen></wallpaper-fullscreen>
 </div>

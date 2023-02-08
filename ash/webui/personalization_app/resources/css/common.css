@@ -233,6 +233,42 @@ cr-button[aria-selected=true] {
   cursor: pointer;
 }
 
+.leftspacertop {
+  grid-area: leftspacertop;
+}
+
+.leftspacerbottom {
+  grid-area: leftspacerbottom;
+}
+
+.rightspacertop {
+  grid-area: rightspacertop;
+}
+
+.rightspacerbottom {
+  grid-area: rightspacerbottom;
+}
+
+:host-context(body.jelly-enabled) div[class$='spacertop'] {
+  background-color: var(--cros-sys-app_base_shaded);
+}
+
+:host-context(body.jelly-enabled) div[class$='spacerbottom'] {
+  background-color: var(--cros-bg-color);
+}
+
+:host-context(body.jelly-enabled) .leftspacerbottom {
+  border-radius: 12px 0 0 12px;
+}
+
+:host-context(body.jelly-enabled) .rightspacerbottom {
+  border-radius: 0 12px 12px 0;
+}
+
+:host-context(body.jelly-enabled) .preview-container {
+  background-color: var(--cros-bg-color);
+}
+
 :host-context([dir=rtl]) iron-icon[icon='cr:chevron-right'] {
   transform: scaleX(-1);
 }

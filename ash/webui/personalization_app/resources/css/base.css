@@ -12,6 +12,10 @@ body {
     background-color: var(--cros-bg-color);
 }
 
+body.jelly-enabled {
+    background-color: var(--cros-sys-app_base_shaded);
+}
+
 body.fullscreen-preview {
     background-color: transparent;
     opacity: 0;

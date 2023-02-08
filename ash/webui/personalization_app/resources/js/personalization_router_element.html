@@ -20,6 +20,9 @@
     during scrolling in hub subpages */
     z-index: 3;
   }
+  :host-context(body.jelly-enabled) #breadcrumbArea {
+    background-color: var(--cros-sys-app_base_shaded);
+  }
   personalization-breadcrumb {
     grid-area: breadcrumb;
   }
