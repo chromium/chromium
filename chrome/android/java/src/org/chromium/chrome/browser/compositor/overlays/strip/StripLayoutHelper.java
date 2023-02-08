@@ -918,11 +918,15 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
             /**
              * Start divider should be visible when:
-             * 1. In reorder mode and currTab container is hidden
+             * 1. In reorder mode and currTab container is hidden and
+             * (a) prevTab has trailing margin (ie: currTab is start of group or an individual tab)
+             * OR (b) prevTab container is also hidden.
              * 2. Not in reorder mode and prevTab is not selected and currTab is not selected
              */
             boolean startDividerVisible =
-                    (mInReorderMode && currTab.getContainerOpacity() == TAB_OPACITY_HIDDEN)
+                    (mInReorderMode && currTab.getContainerOpacity() == TAB_OPACITY_HIDDEN
+                            && (prevTab.getTrailingMargin() > 0
+                                    || prevTab.getContainerOpacity() == TAB_OPACITY_HIDDEN))
                     || (!mInReorderMode && prevTab.getId() != selectedTabId
                             && currTab.getId() != selectedTabId);
             currTab.setStartDividerVisible(startDividerVisible);

@@ -514,6 +514,35 @@ public class StripLayoutHelperTest {
         // Setup with 5 tabs. Select 2nd tab.
         initializeTest(false, false, true, 1, 5);
         mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+
+        // Start reorder mode at 2nd tab
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(1);
+        // Trigger update to set divider values.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabs();
+        // Verify only 4th and 5th tab's start divider is visible.
+        assertFalse(
+                "First start divider should always be hidden.", tabs[0].isStartDividerVisible());
+        assertFalse("Start divider should be hidden.", tabs[1].isStartDividerVisible());
+        assertFalse("Start divider should be hidden.", tabs[2].isStartDividerVisible());
+        assertTrue("Start divider should be hidden.", tabs[3].isStartDividerVisible());
+        assertTrue("Start divider should be visible.", tabs[4].isStartDividerVisible());
+
+        // Verify end divider visible only for 5th tab.
+        assertFalse("End divider should be hidden.", tabs[0].isEndDividerVisible());
+        assertFalse("End divider should be hidden.", tabs[1].isEndDividerVisible());
+        assertFalse("End divider should be hidden.", tabs[2].isEndDividerVisible());
+        assertFalse("End divider should be hidden.", tabs[3].isEndDividerVisible());
+        assertTrue("End divider should be visible.", tabs[4].isEndDividerVisible());
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testUpdateDividers_InReorderModeWithTabGroups() {
+        // Setup with 5 tabs. Select 2nd tab.
+        initializeTest(false, false, true, 1, 5);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
         // group 2nd and 3rd tab.
         groupTabs(1, 3);
 
