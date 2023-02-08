@@ -14,11 +14,11 @@
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
-#include "content/test/test_content_browser_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -26,7 +26,7 @@ namespace content {
 
 namespace {
 
-class MockContentBrowserClient : public ContentBrowserClient {
+class MockContentBrowserClient : public ContentBrowserTestContentBrowserClient {
  public:
   bool ShouldDisableOriginAgentClusterDefault(BrowserContext*) override {
     return should_disable_origin_agent_cluster_default_;
@@ -82,13 +82,10 @@ class OriginAgentClusterBrowserTest : public ContentBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     SetupCrossSiteRedirector(server());
     ASSERT_TRUE(server()->Start());
-    original_browser_client_ = SetBrowserClientForTesting(&browser_client_);
+    browser_client_ = std::make_unique<MockContentBrowserClient>();
   }
 
-  void TearDownOnMainThread() override {
-    SetBrowserClientForTesting(original_browser_client_);
-    original_browser_client_ = nullptr;
-  }
+  void TearDownOnMainThread() override { browser_client_.reset(); }
 
   void SetUpInProcessBrowserTestFixture() override {
     ContentBrowserTest::SetUpInProcessBrowserTestFixture();
@@ -144,7 +141,7 @@ class OriginAgentClusterBrowserTest : public ContentBrowserTest {
     // ContentBrowserClientShould::DisableOriginAgentClusterDefault is a
     // disable switch, meaning that false means Chromium picks the default
     // and true is legacy behaviour.
-    browser_client_.should_disable_origin_agent_cluster_default_ = !value;
+    browser_client_->should_disable_origin_agent_cluster_default_ = !value;
   }
 
  private:
@@ -193,8 +190,7 @@ class OriginAgentClusterBrowserTest : public ContentBrowserTest {
   net::EmbeddedTestServer server_;
   content::ContentMockCertVerifier mock_cert_verifier_;
 
-  MockContentBrowserClient browser_client_;
-  raw_ptr<ContentBrowserClient> original_browser_client_ = nullptr;
+  std::unique_ptr<MockContentBrowserClient> browser_client_;
 
   const bool origin_cluster_default_enabled_;
   const bool origin_cluster_absent_warning_;

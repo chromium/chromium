@@ -26,6 +26,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -707,6 +708,44 @@ class TestNavigationObserverInternal : public TestNavigationObserver {
 RenderFrameHostImpl* DescendantRenderFrameHostImplAt(
     const ToRenderFrameHost& adapter,
     std::vector<size_t> descendant_indices);
+
+class EffectiveURLContentBrowserTestContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  explicit EffectiveURLContentBrowserTestContentBrowserClient(
+      bool requires_dedicated_process);
+  EffectiveURLContentBrowserTestContentBrowserClient(
+      const GURL& url_to_modify,
+      const GURL& url_to_return,
+      bool requires_dedicated_process);
+  ~EffectiveURLContentBrowserTestContentBrowserClient() override;
+
+  // Adds effective URL translation from |url_to_modify| to |url_to_return|.
+  void AddTranslation(const GURL& url_to_modify, const GURL& url_to_return);
+
+ private:
+  GURL GetEffectiveURL(BrowserContext* browser_context,
+                       const GURL& url) override;
+  bool DoesSiteRequireDedicatedProcess(BrowserContext* browser_context,
+                                       const GURL& effective_site_url) override;
+
+  EffectiveURLContentBrowserClientHelper helper_;
+};
+
+// Class that requests that all pages belonging to the provided site get loaded
+// in a non-default StoragePartition.
+class CustomStoragePartitionBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  explicit CustomStoragePartitionBrowserClient(const GURL& site_to_isolate);
+
+  StoragePartitionConfig GetStoragePartitionConfigForSite(
+      BrowserContext* browser_context,
+      const GURL& site) override;
+
+ private:
+  GURL site_to_isolate_;
+};
 
 }  // namespace content
 

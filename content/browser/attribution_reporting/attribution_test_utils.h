@@ -88,22 +88,22 @@ const AttributionSourceType kSourceTypes[] = {
     AttributionSourceType::kEvent,
 };
 
-class MockAttributionReportingContentBrowserClient
-    : public TestContentBrowserClient {
+template <class SuperClass>
+class MockAttributionReportingContentBrowserClientBase : public SuperClass {
  public:
-  MockAttributionReportingContentBrowserClient();
-  ~MockAttributionReportingContentBrowserClient() override;
-
   // ContentBrowserClient:
   MOCK_METHOD(bool,
               IsAttributionReportingOperationAllowed,
               (content::BrowserContext * browser_context,
-               AttributionReportingOperation operation,
+               ContentBrowserClient::AttributionReportingOperation operation,
                const url::Origin* source_origin,
                const url::Origin* destination_origin,
                const url::Origin* reporting_origin),
               (override));
 };
+
+using MockAttributionReportingContentBrowserClient =
+    MockAttributionReportingContentBrowserClientBase<TestContentBrowserClient>;
 
 class MockAttributionHost : public AttributionHost {
  public:

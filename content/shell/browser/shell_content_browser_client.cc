@@ -127,7 +127,7 @@ namespace {
 // Tests may install their own ShellContentBrowserClient, track the list here.
 // The list is ordered with oldest first and newer ones added after it.
 std::vector<ShellContentBrowserClient*>&
-GetShellContentBrowserClientInstances() {
+GetShellContentBrowserClientInstancesImpl() {
   static base::NoDestructor<std::vector<ShellContentBrowserClient*>> instances;
   return *instances;
 }
@@ -241,6 +241,54 @@ base::flat_set<url::Origin> GetIsolatedContextOriginSetFromFlag() {
   return origin_set;
 }
 
+// In content browser tests we allow more than one ShellContentBrowserClient
+// to be created (actually, ContentBrowserTestContentBrowserClient). Any state
+// needed should be added here so that it's shared between the instances.
+struct SharedState {
+  SharedState() {
+#if BUILDFLAG(IS_MAC)
+    location_manager = std::make_unique<device::FakeGeolocationManager>();
+    location_manager->SetSystemPermission(
+        device::LocationSystemPermissionStatus::kAllowed);
+#endif
+  }
+
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<device::FakeGeolocationManager> location_manager;
+#endif
+
+  // Owned by content::BrowserMainLoop.
+  raw_ptr<ShellBrowserMainParts, DanglingUntriaged> shell_browser_main_parts =
+      nullptr;
+
+  std::unique_ptr<PrefService> local_state;
+};
+
+SharedState& GetSharedState() {
+  static SharedState* g_shared_state = nullptr;
+  if (!g_shared_state) {
+    g_shared_state = new SharedState();
+  }
+  return *g_shared_state;
+}
+
+std::unique_ptr<PrefService> CreateLocalState() {
+  auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
+
+  metrics::MetricsService::RegisterPrefs(pref_registry.get());
+  variations::VariationsService::RegisterPrefs(pref_registry.get());
+
+  base::FilePath path;
+  CHECK(base::PathService::Get(SHELL_DIR_USER_DATA, &path));
+  path = path.AppendASCII("Local State");
+
+  PrefServiceFactory pref_service_factory;
+  pref_service_factory.set_user_prefs(
+      base::MakeRefCounted<JsonPrefStore>(path));
+
+  return pref_service_factory.Create(pref_registry);
+}
+
 }  // namespace
 
 std::string GetShellUserAgent() {
@@ -280,28 +328,24 @@ bool ShellContentBrowserClient::allow_any_cors_exempt_header_for_browser_ =
     false;
 
 ShellContentBrowserClient* ShellContentBrowserClient::Get() {
-  auto& instances = GetShellContentBrowserClientInstances();
+  auto& instances = GetShellContentBrowserClientInstancesImpl();
   return instances.empty() ? nullptr : instances.back();
 }
 
 ShellContentBrowserClient::ShellContentBrowserClient() {
-  GetShellContentBrowserClientInstances().push_back(this);
-#if BUILDFLAG(IS_MAC)
-  location_manager_ = std::make_unique<device::FakeGeolocationManager>();
-  location_manager_->SetSystemPermission(
-      device::LocationSystemPermissionStatus::kAllowed);
-#endif
+  GetShellContentBrowserClientInstancesImpl().push_back(this);
 }
 
 ShellContentBrowserClient::~ShellContentBrowserClient() {
-  base::Erase(GetShellContentBrowserClientInstances(), this);
+  base::Erase(GetShellContentBrowserClientInstancesImpl(), this);
 }
 
 std::unique_ptr<BrowserMainParts>
 ShellContentBrowserClient::CreateBrowserMainParts(
     bool /* is_integration_test */) {
   auto browser_main_parts = std::make_unique<ShellBrowserMainParts>();
-  shell_browser_main_parts_ = browser_main_parts.get();
+  DCHECK(!GetSharedState().shell_browser_main_parts);
+  GetSharedState().shell_browser_main_parts = browser_main_parts.get();
   return browser_main_parts;
 }
 
@@ -387,7 +431,7 @@ void ShellContentBrowserClient::AppendExtraCommandLineSwitches(
 
 device::GeolocationManager* ShellContentBrowserClient::GetGeolocationManager() {
 #if BUILDFLAG(IS_MAC)
-  return location_manager_.get();
+  return GetSharedState().location_manager.get();
 #else
   return nullptr;
 #endif
@@ -643,13 +687,23 @@ void ShellContentBrowserClient::BindBrowserControlInterface(
       mojo::PendingReceiver<mojom::ShellController>(std::move(pipe)));
 }
 
+void ShellContentBrowserClient::set_browser_main_parts(
+    ShellBrowserMainParts* parts) {
+  GetSharedState().shell_browser_main_parts = parts;
+}
+
 ShellBrowserContext* ShellContentBrowserClient::browser_context() {
-  return shell_browser_main_parts_->browser_context();
+  return GetSharedState().shell_browser_main_parts->browser_context();
 }
 
 ShellBrowserContext*
 ShellContentBrowserClient::off_the_record_browser_context() {
-  return shell_browser_main_parts_->off_the_record_browser_context();
+  return GetSharedState()
+      .shell_browser_main_parts->off_the_record_browser_context();
+}
+
+ShellBrowserMainParts* ShellContentBrowserClient::shell_browser_main_parts() {
+  return GetSharedState().shell_browser_main_parts;
 }
 
 void ShellContentBrowserClient::ConfigureNetworkContextParamsForShell(
@@ -686,28 +740,11 @@ bool ShellContentBrowserClient::HasErrorPage(int http_status_code) {
 }
 
 void ShellContentBrowserClient::CreateFeatureListAndFieldTrials() {
-  local_state_ = CreateLocalState();
+  GetSharedState().local_state = CreateLocalState();
   SetUpFieldTrials();
   // Schedule a Local State write since the above function resulted in some
   // prefs being updated.
-  local_state_->CommitPendingWrite();
-}
-
-std::unique_ptr<PrefService> ShellContentBrowserClient::CreateLocalState() {
-  auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
-
-  metrics::MetricsService::RegisterPrefs(pref_registry.get());
-  variations::VariationsService::RegisterPrefs(pref_registry.get());
-
-  base::FilePath path;
-  CHECK(base::PathService::Get(SHELL_DIR_USER_DATA, &path));
-  path = path.AppendASCII("Local State");
-
-  PrefServiceFactory pref_service_factory;
-  pref_service_factory.set_user_prefs(
-      base::MakeRefCounted<JsonPrefStore>(path));
-
-  return pref_service_factory.Create(pref_registry);
+  GetSharedState().local_state->CommitPendingWrite();
 }
 
 void ShellContentBrowserClient::SetUpFieldTrials() {
@@ -717,8 +754,8 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
   base::PathService::Get(SHELL_DIR_USER_DATA, &path);
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager =
       metrics::MetricsStateManager::Create(
-          local_state_.get(), &enabled_state_provider, std::wstring(), path,
-          metrics::StartupVisibility::kUnknown,
+          GetSharedState().local_state.get(), &enabled_state_provider,
+          std::wstring(), path, metrics::StartupVisibility::kUnknown,
           {
               .force_benchmarking_mode =
                   base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -731,7 +768,8 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
 
   std::unique_ptr<variations::SeedResponse> initial_seed;
 #if BUILDFLAG(IS_ANDROID)
-  if (!local_state_->HasPrefPath(variations::prefs::kVariationsSeedSignature)) {
+  if (!GetSharedState().local_state->HasPrefPath(
+          variations::prefs::kVariationsSeedSignature)) {
     DVLOG(1) << "Importing first run seed from Java preferences.";
     initial_seed = variations::android::GetVariationsFirstRunSeed();
   }
@@ -741,11 +779,12 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
   variations::VariationsFieldTrialCreator field_trial_creator(
       &variations_service_client,
       std::make_unique<variations::VariationsSeedStore>(
-          local_state_.get(), std::move(initial_seed),
+          GetSharedState().local_state.get(), std::move(initial_seed),
           /*signature_verification_enabled=*/true),
       variations::UIStringOverrider());
 
-  variations::SafeSeedManager safe_seed_manager(local_state_.get());
+  variations::SafeSeedManager safe_seed_manager(
+      GetSharedState().local_state.get());
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
@@ -791,6 +830,14 @@ ShellContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
                                           /*has_subdomain_wildcard=*/false)},
       /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
   return {{decl}};
+}
+
+// Tests may install their own ShellContentBrowserClient, track the list here.
+// The list is ordered with oldest first and newer ones added after it.
+// static
+const std::vector<ShellContentBrowserClient*>&
+ShellContentBrowserClient::GetShellContentBrowserClientInstances() {
+  return GetShellContentBrowserClientInstancesImpl();
 }
 
 }  // namespace content

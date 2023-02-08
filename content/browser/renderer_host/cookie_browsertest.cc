@@ -24,6 +24,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -378,7 +379,8 @@ class RestrictedCookieManagerInterceptor
   mojo::Remote<network::mojom::RestrictedCookieManager> real_rcm_;
 };
 
-class CookieStoreContentBrowserClient : public ContentBrowserClient {
+class CookieStoreContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   ~CookieStoreContentBrowserClient() override = default;
 
@@ -458,12 +460,8 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CrossSiteCookieSecurityEnforcement) {
   // Try to get cross-site cookies from the subframe's process.
   {
     CookieStoreContentBrowserClient browser_client;
-    content::ContentBrowserClient* old_browser_client =
-        content::SetBrowserClientForTesting(&browser_client);
     browser_client.set_override_url("http://127.0.0.1/");
     EXPECT_EQ("", GetCookieFromJS(iframe));
-
-    content::SetBrowserClientForTesting(old_browser_client);
   }
 
   EXPECT_EQ(
@@ -476,15 +474,11 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CrossSiteCookieSecurityEnforcement) {
   // Now set a cross-site cookie from the main frame's process.
   {
     CookieStoreContentBrowserClient browser_client;
-    content::ContentBrowserClient* old_browser_client =
-        content::SetBrowserClientForTesting(&browser_client);
 
     browser_client.set_override_url("https://baz.com/");
     SetCookieFromJS(iframe, "pwn=ed");
 
     EXPECT_EQ("B_cookie=child", GetCookiesDirect(tab, GURL("http://baz.com/")));
-
-    content::SetBrowserClientForTesting(old_browser_client);
   }
 
   EXPECT_EQ(

@@ -18,9 +18,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "content/test/test_content_browser_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
@@ -151,7 +151,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
 namespace {
 
 // ContentBrowserClient that skips assigning a site URL for a given scheme.
-class DontAssignSiteContentBrowserClient : public TestContentBrowserClient {
+class DontAssignSiteContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   // Any visit to |scheme_to_skip| will not cause the site to be assigned to the
   // SiteInstance. This requires setting it as an empty document scheme.
@@ -188,8 +189,6 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
   // Set up an empty page scheme whose URLs will have no site assigned.
   DontAssignSiteContentBrowserClient content_browser_client("siteless");
   GURL empty_site_url = GURL("siteless://test");
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&content_browser_client);
 
   // Register the service worker.
   RegisterServiceWorker();
@@ -231,8 +230,6 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/service_worker/empty.html")));
   EXPECT_EQ(page_process_id, current_frame_host()->GetProcess()->GetID());
-
-  SetBrowserClientForTesting(old_client);
 }
 
 // Toggle Site Isolation.

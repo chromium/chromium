@@ -623,7 +623,8 @@ void BrowserTestBase::SetUp() {
   tracing::EnableStartupTracingIfNeeded();
 
   {
-    SetBrowserClientForTesting(delegate->CreateContentBrowserClient());
+    ContentClient::SetBrowserClientAlwaysAllowForTesting(
+        delegate->CreateContentBrowserClient());
     if (command_line->HasSwitch(switches::kSingleProcess))
       SetRendererClientForTesting(delegate->CreateContentRendererClient());
 

@@ -7,14 +7,15 @@
 
 #include <memory>
 
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 
 namespace content {
 
 // Implements ContentBrowserClient to allow calls out to the Chrome layer to
 // be stubbed for tests.
-class WebIdTestContentBrowserClient : public ContentBrowserClient {
+class WebIdTestContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   WebIdTestContentBrowserClient();
   ~WebIdTestContentBrowserClient() override;

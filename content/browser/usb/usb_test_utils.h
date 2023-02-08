@@ -90,24 +90,20 @@ class MockUsbDelegate : public UsbDelegate {
   base::ObserverList<UsbDelegate::Observer> observer_list_;
 };
 
-class UsbTestContentBrowserClient : public ContentBrowserClient {
+template <typename SuperClass>
+class UsbTestContentBrowserClientBase : public SuperClass {
  public:
-  UsbTestContentBrowserClient();
-
-  UsbTestContentBrowserClient(const UsbTestContentBrowserClient&) = delete;
-  UsbTestContentBrowserClient& operator=(const UsbTestContentBrowserClient&) =
-      delete;
-
-  ~UsbTestContentBrowserClient() override;
-
   MockUsbDelegate& delegate() { return delegate_; }
 
   // ContentBrowserClient:
-  UsbDelegate* GetUsbDelegate() override;
+  UsbDelegate* GetUsbDelegate() override { return &delegate_; }
 
  private:
   testing::NiceMock<MockUsbDelegate> delegate_;
 };
+
+using UsbTestContentBrowserClient =
+    UsbTestContentBrowserClientBase<ContentBrowserClient>;
 
 }  // namespace content
 

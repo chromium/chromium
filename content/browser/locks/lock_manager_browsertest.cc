@@ -16,6 +16,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/shell/browser/shell.h"
@@ -32,7 +33,7 @@ namespace content {
 
 namespace {
 
-class TestBrowserClient : public ContentBrowserClient {
+class TestBrowserClient : public ContentBrowserTestContentBrowserClient {
  public:
   explicit TestBrowserClient(FeatureObserverClient* feature_observer_client)
       : feature_observer_client_(feature_observer_client) {}
@@ -84,7 +85,8 @@ class LockManagerBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::SetUpOnMainThread();
     mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
 
-    original_client_ = SetBrowserClientForTesting(&test_browser_client_);
+    test_browser_client_ =
+        std::make_unique<TestBrowserClient>(&mock_observer_client_);
 
     host_resolver()->AddRule("*", "127.0.0.1");
     server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
@@ -93,8 +95,7 @@ class LockManagerBrowserTest : public ContentBrowserTest {
 
   void TearDownOnMainThread() override {
     ContentBrowserTest::TearDownOnMainThread();
-    if (original_client_)
-      SetBrowserClientForTesting(original_client_);
+    test_browser_client_.reset();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -113,19 +114,6 @@ class LockManagerBrowserTest : public ContentBrowserTest {
   }
 
   bool CheckShouldRunTestAndNavigate() const {
-#if BUILDFLAG(IS_ANDROID)
-    // Don't run the test if we couldn't override BrowserClient. It happens only
-    // on Android Kitkat or older systems.
-    if (!original_client_)
-      return false;
-
-    // TODO(https://crbug.com/1011765, https://crbug.com/1019659):
-    // Navigation fails on Android Kit Kat.
-    if (base::android::BuildInfo::GetInstance()->sdk_int() <=
-        base::android::SDK_VERSION_KITKAT) {
-      return false;
-    }
-#endif  // BUILDFLAG(IS_ANDROID)
     EXPECT_TRUE(NavigateToURL(shell(), GetLocksURL("a.com")));
     return true;
   }
@@ -139,8 +127,7 @@ class LockManagerBrowserTest : public ContentBrowserTest {
  private:
   content::ContentMockCertVerifier mock_cert_verifier_;
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
-  TestBrowserClient test_browser_client_{&mock_observer_client_};
+  std::unique_ptr<TestBrowserClient> test_browser_client_;
 };
 
 // Verify that content::FeatureObserver is notified when a frame acquires a

@@ -68,6 +68,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/mock_client_hints_controller_delegate.h"
 #include "content/public/test/mock_web_contents_observer.h"
@@ -80,13 +81,11 @@
 #include "content/public/test/theme_change_waiter.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
-#include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/mock_commit_deferring_condition.h"
 #include "content/test/portal/portal_activated_observer.h"
 #include "content/test/portal/portal_created_observer.h"
 #include "content/test/render_document_feature.h"
-#include "content/test/test_content_browser_client.h"
 #include "content/test/test_mojo_binder_policy_applier_unittest.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -2758,7 +2757,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 }
 
 class MojoCapabilityControlTestContentBrowserClient
-    : public TestContentBrowserClient,
+    : public ContentBrowserTestContentBrowserClient,
       mojom::TestInterfaceForDefer,
       mojom::TestInterfaceForGrant,
       mojom::TestInterfaceForCancel,
@@ -2833,7 +2832,6 @@ class MojoCapabilityControlTestContentBrowserClient
 // during prerendering.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl) {
   MojoCapabilityControlTestContentBrowserClient test_browser_client;
-  auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
 
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/page_with_iframe.html");
@@ -2897,8 +2895,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl) {
   // Wait until the deferred interface is granted on all frames.
   run_loop.Run();
   EXPECT_EQ(test_browser_client.GetDeferReceiverSetSize(), frames.size());
-
-  SetBrowserClientForTesting(old_browser_client);
 }
 
 // Tests that mojo capability control will cancel prerendering if the main frame
@@ -2906,7 +2902,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl) {
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        MojoCapabilityControl_CancelMainFrame) {
   MojoCapabilityControlTestContentBrowserClient test_browser_client;
-  auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
 
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/page_with_iframe.html");
@@ -2940,7 +2935,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       "Prerender.Experimental.PrerenderCancelledUnknownInterface."
       "SpeculationRule",
       InterfaceNameHasher(mojom::TestInterfaceForCancel::Name_), 1);
-  SetBrowserClientForTesting(old_browser_client);
 }
 
 // Tests that mojo capability control will cancel prerendering if child frames
@@ -2948,7 +2942,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        MojoCapabilityControl_CancelIframe) {
   MojoCapabilityControlTestContentBrowserClient test_browser_client;
-  auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
 
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/page_with_iframe.html");
@@ -2977,7 +2970,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   prerender_broker->GetInterface(remote.BindNewPipeAndPassReceiver());
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
 
-  SetBrowserClientForTesting(old_browser_client);
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kMojoBinderPolicy);
   // `TestInterfaceForCancel` doesn't have a enum value because it is not used
   // in production, so histogram_tester_ should log
@@ -2996,7 +2988,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        MojoCapabilityControl_HandleUnexpected) {
   MojoCapabilityControlTestContentBrowserClient test_browser_client;
-  auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
 
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender1");
@@ -3043,14 +3034,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   EXPECT_EQ(bad_message_error,
             "MBPA_BAD_INTERFACE: content.mojom.TestInterfaceForUnexpected");
-
-  SetBrowserClientForTesting(old_browser_client);
 }
 
 // Regression test for https://crbug.com/1268714.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl_LoosenMode) {
   MojoCapabilityControlTestContentBrowserClient test_browser_client;
-  auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
   IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   GURL initial_url = GetUrl("/empty.html");
   GURL prerendering_url =
@@ -3121,7 +3109,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl_LoosenMode) {
     prerender_broker->GetInterface(remote.BindNewPipeAndPassReceiver());
     remote.FlushForTesting();
   }
-  SetBrowserClientForTesting(old_browser_client);
 }
 
 // Test that a PrerenderHost triggered by speculation rules is canceled when

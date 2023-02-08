@@ -36,6 +36,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
@@ -133,6 +134,10 @@ const char kRemainingBudgetPrefix[] = "remaining budget: ";
 std::string TimeDeltaToString(base::TimeDelta delta) {
   return base::StrCat({base::NumberToString(delta.InMilliseconds()), "ms"});
 }
+
+using MockPrivateAggregationShellContentBrowserClient =
+    MockPrivateAggregationContentBrowserClientBase<
+        ContentBrowserTestContentBrowserClient>;
 
 // With `WebContentsConsoleObserver`, we can only wait for the last message in a
 // group.
@@ -4019,7 +4024,8 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
   void SetUpOnMainThread() override {
     SharedStorageBrowserTest::SetUpOnMainThread();
 
-    SetBrowserClientForTesting(&browser_client_);
+    browser_client_ =
+        std::make_unique<MockPrivateAggregationShellContentBrowserClient>();
 
     a_test_origin_ = https_server()->GetOrigin("a.test");
 
@@ -4049,8 +4055,8 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
     return mock_callback_;
   }
 
-  MockPrivateAggregationContentBrowserClient& browser_client() {
-    return browser_client_;
+  MockPrivateAggregationShellContentBrowserClient& browser_client() {
+    return *browser_client_;
   }
 
  protected:
@@ -4065,7 +4071,8 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
                                    PrivateAggregationBudgetKey)>
       mock_callback_;
 
-  MockPrivateAggregationContentBrowserClient browser_client_;
+  std::unique_ptr<MockPrivateAggregationShellContentBrowserClient>
+      browser_client_;
 };
 
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,

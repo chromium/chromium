@@ -929,6 +929,8 @@ static_library("browsertest_support") {
     "../browser/browsing_data/storage_bucket_clear_site_data_tester.h",
     "../public/test/content_browser_test.cc",
     "../public/test/content_browser_test.h",
+    "../public/test/content_browser_test_content_browser_client.cc",
+    "../public/test/content_browser_test_content_browser_client.h",
     "../public/test/content_browser_test_shell_main_delegate.cc",
     "../public/test/content_browser_test_shell_main_delegate.h",
     "../public/test/content_browser_test_utils.cc",
@@ -1535,7 +1537,7 @@ test("content_browsertests") {
     "../test/browser_test_utils_browsertest.cc",
     "../test/content_browser_test_test.cc",
     "../test/top_frame_population_browsertest.cc",
-    "../test/url_loader_interceptor_test.cc",
+    "../test/url_loader_interceptor_browsertest.cc",
   ]
 
   if (enable_reporting) {
@@ -2558,8 +2560,6 @@ test("content_unittests") {
     "../browser/webid/test/mock_idp_network_request_manager.h",
     "../browser/webid/test/mock_permission_delegate.cc",
     "../browser/webid/test/mock_permission_delegate.h",
-    "../browser/webid/test/webid_test_content_browser_client.cc",
-    "../browser/webid/test/webid_test_content_browser_client.h",
     "../browser/webrtc/webrtc_internals_message_handler_unittest.cc",
     "../browser/webrtc/webrtc_internals_unittest.cc",
     "../browser/webtransport/web_transport_throttle_context_unittest.cc",

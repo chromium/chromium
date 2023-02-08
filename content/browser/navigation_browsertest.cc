@@ -56,6 +56,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/download_test_observer.h"
@@ -68,13 +69,11 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_monitor.h"
 #include "content/shell/browser/shell.h"
-#include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "content/test/task_runner_deferring_throttle.h"
-#include "content/test/test_content_browser_client.h"
 #include "content/test/test_render_frame_host_factory.h"
 #include "ipc/ipc_security_test_util.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -1973,7 +1972,7 @@ class CorsInjectingUrlLoader : public blink::URLLoaderThrottle {
 };
 
 // ContentBrowserClient responsible for creating CorsInjectingUrlLoader.
-class CorsContentBrowserClient : public TestContentBrowserClient {
+class CorsContentBrowserClient : public ContentBrowserTestContentBrowserClient {
  public:
   explicit CorsContentBrowserClient(std::string* last_cors_header_value)
       : last_cors_header_value_(last_cors_header_value) {}
@@ -2012,13 +2011,12 @@ class NavigationCorsExemptBrowserTest : public NavigationBaseBrowserTest {
     NavigationBaseBrowserTest::SetUpCommandLine(command_line);
   }
   void SetUpOnMainThread() override {
-    original_client_ =
-        SetBrowserClientForTesting(&cors_content_browser_client_);
+    cors_content_browser_client_ =
+        std::make_unique<CorsContentBrowserClient>(&last_cors_header_value_);
     host_resolver()->AddRule("*", "127.0.0.1");
   }
   void TearDownOnMainThread() override {
-    if (original_client_)
-      SetBrowserClientForTesting(original_client_);
+    cors_content_browser_client_.reset();
     ShellContentBrowserClient::set_allow_any_cors_exempt_header_for_browser(
         false);
   }
@@ -2026,9 +2024,7 @@ class NavigationCorsExemptBrowserTest : public NavigationBaseBrowserTest {
  private:
   // Last value of kCorsHeaderName. Set by CorsInjectingUrlLoader.
   std::string last_cors_header_value_;
-  CorsContentBrowserClient cors_content_browser_client_{
-      &last_cors_header_value_};
-  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
+  std::unique_ptr<CorsContentBrowserClient> cors_content_browser_client_;
 };
 
 // Verifies a header added by way of SetRequestHeader() makes it into
@@ -3199,7 +3195,7 @@ class NavigationUrlRewriteBrowserTest : public NavigationBaseBrowserTest {
   static constexpr const char* kNoAccessScheme = "no-access";
   static constexpr const char* kNoAccessURL = "no-access://testing/";
 
-  class BrowserClient : public ContentBrowserClient {
+  class BrowserClient : public ContentBrowserTestContentBrowserClient {
    public:
     void BrowserURLHandlerCreated(BrowserURLHandler* handler) override {
       handler->AddHandlerPair(RewriteUrl,
@@ -3246,12 +3242,9 @@ class NavigationUrlRewriteBrowserTest : public NavigationBaseBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     browser_client_ = std::make_unique<BrowserClient>();
-    old_browser_client_ = SetBrowserClientForTesting(browser_client_.get());
   }
 
   void TearDownOnMainThread() override {
-    SetBrowserClientForTesting(old_browser_client_);
-    old_browser_client_ = nullptr;
     browser_client_.reset();
 
     NavigationBaseBrowserTest::TearDownOnMainThread();
@@ -3261,7 +3254,6 @@ class NavigationUrlRewriteBrowserTest : public NavigationBaseBrowserTest {
 
  private:
   std::unique_ptr<BrowserClient> browser_client_;
-  raw_ptr<ContentBrowserClient> old_browser_client_;
   url::ScopedSchemeRegistryForTests scoped_registry_;
 };
 
@@ -3570,7 +3562,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   EXPECT_FALSE(navigation_2.was_same_document());
 }
 
-class GetEffectiveUrlClient : public ContentBrowserClient {
+class GetEffectiveUrlClient : public ContentBrowserTestContentBrowserClient {
  public:
   GURL GetEffectiveURL(content::BrowserContext* browser_context,
                        const GURL& url) override {
@@ -3607,8 +3599,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   GURL url1 = embedded_test_server()->GetURL("a.com", "/title1.html#ref2");
 
   GetEffectiveUrlClient new_client;
-  ContentBrowserClient* old_client =
-      content::SetBrowserClientForTesting(&new_client);
 
   NavigationHandleCommitObserver navigation_0(wc, url0);
   EXPECT_TRUE(NavigateToURL(shell(), url0));
@@ -3635,8 +3625,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   // navigation in the currently loaded document.
   EXPECT_EQ(main_frame_host, wc->GetPrimaryMainFrame());
   EXPECT_EQ(main_frame_process_host, wc->GetPrimaryMainFrame()->GetProcess());
-
-  content::SetBrowserClientForTesting(old_client);
 }
 
 // This tests the same ideas as the above test except in this case the same-
@@ -3652,8 +3640,6 @@ IN_PROC_BROWSER_TEST_F(
   NavigationHandleCommitObserver navigation_1(wc, url1);
 
   GetEffectiveUrlClient new_client;
-  ContentBrowserClient* old_client =
-      content::SetBrowserClientForTesting(&new_client);
 
   EXPECT_TRUE(NavigateToURL(shell(), url0));
   EXPECT_TRUE(navigation_0.has_committed());
@@ -3685,8 +3671,6 @@ IN_PROC_BROWSER_TEST_F(
   // navigation in the currently loaded document.
   EXPECT_EQ(main_frame_host, wc->GetPrimaryMainFrame());
   EXPECT_EQ(main_frame_process_host, wc->GetPrimaryMainFrame()->GetProcess());
-
-  content::SetBrowserClientForTesting(old_client);
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,

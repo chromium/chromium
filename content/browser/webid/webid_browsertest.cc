@@ -202,14 +202,9 @@ class WebIdBrowserTest : public ContentBrowserTest {
 
     test_browser_client_ = std::make_unique<WebIdTestContentBrowserClient>();
     SetTestIdentityRequestDialogController("not_real_account");
-    old_client_ = SetBrowserClientForTesting(test_browser_client_.get());
   }
 
-  void TearDown() override {
-    CHECK_EQ(SetBrowserClientForTesting(old_client_),
-             test_browser_client_.get());
-    ContentBrowserTest::TearDown();
-  }
+  void TearDown() override { ContentBrowserTest::TearDown(); }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     std::vector<base::test::FeatureRef> features;
@@ -275,7 +270,6 @@ class WebIdBrowserTest : public ContentBrowserTest {
   EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<IdpTestServer> idp_server_;
   std::unique_ptr<WebIdTestContentBrowserClient> test_browser_client_;
-  raw_ptr<ContentBrowserClient> old_client_ = nullptr;
 };
 
 class WebIdIdpSigninStatusBrowserTest : public WebIdBrowserTest {

@@ -19,13 +19,13 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/commit_message_delayer.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/render_document_feature.h"
-#include "content/test/test_content_browser_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "url/gurl.h"
 
@@ -65,7 +65,8 @@ const std::string kEmptySchemeForTesting = "empty-scheme";
 // document scheme. Also skips all URLs matching a given URL's scheme and host,
 // for non-empty cases.
 // TODO(https://crbug.com/1296173): Remove the non-empty document case.
-class DontAssignSiteContentBrowserClient : public TestContentBrowserClient {
+class DontAssignSiteContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   // Any visit to |scheme_to_skip| or |url_to_skip| will not cause the site to
   // be assigned to the SiteInstance.
@@ -165,13 +166,10 @@ class UnassignedSiteInstanceBrowserTest
     content_browser_client_override_ =
         std::make_unique<DontAssignSiteContentBrowserClient>(
             kEmptySchemeForTesting, embedder_defined_nonempty_unassigned_url_);
-    old_content_browser_client_ =
-        SetBrowserClientForTesting(content_browser_client_override_.get());
   }
 
   void TearDownOnMainThread() override {
-    if (old_content_browser_client_)
-      SetBrowserClientForTesting(old_content_browser_client_);
+    content_browser_client_override_.reset();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -247,7 +245,6 @@ class UnassignedSiteInstanceBrowserTest
 
   std::unique_ptr<DontAssignSiteContentBrowserClient>
       content_browser_client_override_;
-  raw_ptr<ContentBrowserClient> old_content_browser_client_ = nullptr;
 
   base::test::ScopedFeatureList feature_list_for_render_document_;
   base::test::ScopedFeatureList feature_list_for_back_forward_cache_;

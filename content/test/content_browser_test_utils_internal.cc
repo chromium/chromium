@@ -961,4 +961,58 @@ RenderFrameHostImpl* DescendantRenderFrameHostImplAt(
       descendant_indices);
 }
 
+EffectiveURLContentBrowserTestContentBrowserClient::
+    EffectiveURLContentBrowserTestContentBrowserClient(
+        bool requires_dedicated_process)
+    : helper_(requires_dedicated_process) {}
+
+EffectiveURLContentBrowserTestContentBrowserClient::
+    EffectiveURLContentBrowserTestContentBrowserClient(
+        const GURL& url_to_modify,
+        const GURL& url_to_return,
+        bool requires_dedicated_process)
+    : helper_(requires_dedicated_process) {
+  AddTranslation(url_to_modify, url_to_return);
+}
+
+EffectiveURLContentBrowserTestContentBrowserClient::
+    ~EffectiveURLContentBrowserTestContentBrowserClient() = default;
+
+void EffectiveURLContentBrowserTestContentBrowserClient::AddTranslation(
+    const GURL& url_to_modify,
+    const GURL& url_to_return) {
+  helper_.AddTranslation(url_to_modify, url_to_return);
+}
+
+GURL EffectiveURLContentBrowserTestContentBrowserClient::GetEffectiveURL(
+    BrowserContext* browser_context,
+    const GURL& url) {
+  return helper_.GetEffectiveURL(url);
+}
+
+bool EffectiveURLContentBrowserTestContentBrowserClient::
+    DoesSiteRequireDedicatedProcess(BrowserContext* browser_context,
+                                    const GURL& effective_site_url) {
+  return helper_.DoesSiteRequireDedicatedProcess(browser_context,
+                                                 effective_site_url);
+}
+
+CustomStoragePartitionBrowserClient::CustomStoragePartitionBrowserClient(
+    const GURL& site_to_isolate)
+    : site_to_isolate_(site_to_isolate) {}
+
+StoragePartitionConfig
+CustomStoragePartitionBrowserClient::GetStoragePartitionConfigForSite(
+    BrowserContext* browser_context,
+    const GURL& site) {
+  // Override for |site_to_isolate_|.
+  if (site == site_to_isolate_) {
+    return StoragePartitionConfig::Create(
+        browser_context, "blah_isolated_storage", "blah_isolated_storage",
+        false /* in_memory */);
+  }
+
+  return StoragePartitionConfig::CreateDefault(browser_context);
+}
+
 }  // namespace content

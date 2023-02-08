@@ -16,6 +16,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/shell/browser/shell.h"
@@ -39,7 +40,7 @@ void RunLoopWithTimeout() {
   run_loop.Run();
 }
 
-class TestBrowserClient : public ContentBrowserClient {
+class TestBrowserClient : public ContentBrowserTestContentBrowserClient {
  public:
   explicit TestBrowserClient(FeatureObserverClient* feature_observer_client)
       : feature_observer_client_(feature_observer_client) {}
@@ -78,19 +79,6 @@ class IndexedDBFeatureObserverBrowserTest : public ContentBrowserTest {
   // Check if the test can run on the current system. If the test can run,
   // navigates to the test page and returns true. Otherwise, returns false.
   bool CheckShouldRunTestAndNavigate() const {
-#if BUILDFLAG(IS_ANDROID)
-    // Don't run the test if we couldn't override BrowserClient. It happens only
-    // on Android Kitkat or older systems.
-    if (!original_client_)
-      return false;
-
-    // TODO(https://crbug.com/1011765, https://crbug.com/1019659):
-    // Navigation fails on Android Kit Kat.
-    if (base::android::BuildInfo::GetInstance()->sdk_int() <=
-        base::android::SDK_VERSION_KITKAT) {
-      return false;
-    }
-#endif  // BUILDFLAG(IS_ANDROID)
     EXPECT_TRUE(NavigateToURL(shell(), GetTestURL("a.com")));
     return true;
   }
@@ -107,7 +95,8 @@ class IndexedDBFeatureObserverBrowserTest : public ContentBrowserTest {
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
     mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
-    original_client_ = SetBrowserClientForTesting(&test_browser_client_);
+    browser_client_ =
+        std::make_unique<TestBrowserClient>(&mock_observer_client_);
 
     host_resolver()->AddRule("*", "127.0.0.1");
     server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
@@ -115,8 +104,7 @@ class IndexedDBFeatureObserverBrowserTest : public ContentBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    if (original_client_)
-      SetBrowserClientForTesting(original_client_);
+    browser_client_.reset();
     ContentBrowserTest::TearDownOnMainThread();
   }
 
@@ -137,8 +125,7 @@ class IndexedDBFeatureObserverBrowserTest : public ContentBrowserTest {
 
   content::ContentMockCertVerifier mock_cert_verifier_;
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
-  TestBrowserClient test_browser_client_{&mock_observer_client_};
+  std::unique_ptr<TestBrowserClient> browser_client_;
 
   IndexedDBFeatureObserverBrowserTest(
       const IndexedDBFeatureObserverBrowserTest&) = delete;

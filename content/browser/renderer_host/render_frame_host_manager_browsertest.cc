@@ -66,6 +66,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/commit_message_delayer.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_frame_navigation_observer.h"
@@ -78,7 +79,6 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/render_document_feature.h"
 #include "content/test/storage_partition_test_helpers.h"
-#include "content/test/test_content_browser_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -4354,9 +4354,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Set up a ContentBrowserClient that maps b.com to a non-default partition.
-  CustomStoragePartitionForSomeSites modified_client(GURL("http://b.com/"));
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&modified_client);
+  CustomStoragePartitionBrowserClient modified_client(GURL("http://b.com/"));
 
   // Load a page on a.com and verify that it uses the default partition.
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -4381,9 +4379,6 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_FALSE(
       b_site_instance->GetSiteInfo().storage_partition_config().is_default());
   EXPECT_FALSE(a_site_instance->IsRelatedSiteInstance(b_site_instance));
-
-  // Restore the original ContentBrowserClient.
-  SetBrowserClientForTesting(old_client);
 }
 
 // Verifies that iframes inherit their StoragePartition, even if
@@ -4394,9 +4389,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Set up a ContentBrowserClient that maps b.com to a non-default partition.
-  CustomStoragePartitionForSomeSites modified_client(GURL("http://b.com/"));
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&modified_client);
+  CustomStoragePartitionBrowserClient modified_client(GURL("http://b.com/"));
 
   // Load a page on b.com to verify that it uses the correct partition.
   GURL b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -4435,9 +4428,6 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   }
   EXPECT_TRUE(
       b_site_instance->GetSiteInfo().storage_partition_config().is_default());
-
-  // Restore the original ContentBrowserClient.
-  SetBrowserClientForTesting(old_client);
 }
 
 // Ensure that these two browser-initiated navigations:
@@ -5502,7 +5492,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 }
 // A custom ContentBrowserClient that simulates GetEffectiveURL() translation
 // for all URLs that are in the same page (including URL with refs).
-class PageEffectiveURLContentBrowserClient : public ContentBrowserClient {
+class PageEffectiveURLContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   PageEffectiveURLContentBrowserClient(const GURL& url_to_modify,
                                        const GURL& url_to_return)
@@ -5540,8 +5531,6 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // The effective URL for |page_url| and |anchor_in_page_url| will be
   // |effective_url|.
   PageEffectiveURLContentBrowserClient modified_client(page_url, effective_url);
-  ContentBrowserClient* regular_client =
-      SetBrowserClientForTesting(&modified_client);
 
   // Make a navigation to |page_url|.
   EXPECT_TRUE(NavigateToURL(shell(), page_url));
@@ -5555,9 +5544,6 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // We should reuse the same SiteInstance.
   EXPECT_EQ(orig_site_instance,
             web_contents->GetPrimaryMainFrame()->GetSiteInstance());
-
-  // Set the browser client back to the regular client.
-  SetBrowserClientForTesting(regular_client);
 }
 
 // A test ContentBrowserClient implementation which enforces
@@ -5565,7 +5551,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 // reloading of an error page to an URL that requires BrowsingInstance swap
 // works correctly.
 class BrowsingInstanceSwapContentBrowserClient
-    : public TestContentBrowserClient {
+    : public ContentBrowserTestContentBrowserClient {
  public:
   BrowsingInstanceSwapContentBrowserClient() = default;
 
@@ -5654,8 +5640,6 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   // Install a client forcing every navigation to swap BrowsingInstances.
   BrowsingInstanceSwapContentBrowserClient content_browser_client;
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&content_browser_client);
 
   // Allow the navigation to succeed and ensure it swapped to a non-related
   // SiteInstance.
@@ -5671,8 +5655,6 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
     EXPECT_FALSE(success_site_instance->IsRelatedSiteInstance(
         shell()->web_contents()->GetPrimaryMainFrame()->GetSiteInstance()));
   }
-
-  SetBrowserClientForTesting(old_client);
 }
 
 // Helper class to simplify testing of unload handlers.  It allows waiting for
@@ -6423,7 +6405,8 @@ namespace {
 
 // ContentBrowserClient that skips assigning a site URL for all URLs that match
 // a given URL's scheme and host.
-class DontAssignSiteContentBrowserClient : public TestContentBrowserClient {
+class DontAssignSiteContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   // Any visit to |url_to_skip| will not cause the site to be assigned to the
   // SiteInstance.
@@ -6488,8 +6471,6 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerDefaultProcessTest,
   GURL siteless_url(
       embedded_test_server()->GetURL("siteless.com", "/title1.html"));
   DontAssignSiteContentBrowserClient content_browser_client(siteless_url);
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&content_browser_client);
 
   // Set up the work to be done after the renderer is asked to commit
   // |siteless_url|, but before the corresponding DidCommitProvisionalLoad IPC
@@ -6541,8 +6522,6 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerDefaultProcessTest,
 
   EXPECT_EQ(original_process,
             web_contents->GetPrimaryMainFrame()->GetProcess());
-
-  SetBrowserClientForTesting(old_client);
 }
 
 // 1. Navigate to A1(B2, B3(B4), C5)

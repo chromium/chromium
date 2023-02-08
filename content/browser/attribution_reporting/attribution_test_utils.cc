@@ -68,12 +68,6 @@ const int64_t kExpiryTime = 30;
 
 }  // namespace
 
-MockAttributionReportingContentBrowserClient::
-    MockAttributionReportingContentBrowserClient() = default;
-
-MockAttributionReportingContentBrowserClient::
-    ~MockAttributionReportingContentBrowserClient() = default;
-
 // static
 MockAttributionHost* MockAttributionHost::Override(WebContents* web_contents) {
 #if BUILDFLAG(IS_ANDROID)

@@ -47,6 +47,7 @@
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_cert_verifier_browser_test.h"
 #include "content/public/test/navigation_handle_observer.h"
@@ -55,7 +56,6 @@
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
-#include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "media/media_buildflags.h"
@@ -151,7 +151,8 @@ class FinishNavigationObserver : public WebContentsObserver {
   absl::optional<net::Error> error_code_;
 };
 
-class MockContentBrowserClient final : public ContentBrowserClient {
+class MockContentBrowserClient final
+    : public ContentBrowserTestContentBrowserClient {
  public:
   std::string GetAcceptLangs(BrowserContext* context) override {
     return accept_langs_;
@@ -193,12 +194,12 @@ class SignedExchangeRequestHandlerBrowserTestBase
     inactive_rfh_deletion_observer_ =
         std::make_unique<InactiveRenderFrameHostDeletionObserver>(
             shell()->web_contents());
-    original_client_ = SetBrowserClientForTesting(&client_);
+    client_ = std::make_unique<MockContentBrowserClient>();
   }
 
   void TearDownOnMainThread() override {
     sxg_test_helper_.TearDownOnMainThread();
-    SetBrowserClientForTesting(original_client_);
+    client_.reset();
   }
 
  protected:
@@ -232,7 +233,7 @@ class SignedExchangeRequestHandlerBrowserTestBase
   }
 
   void SetAcceptLangs(const std::string langs) {
-    client_.SetAcceptLangs(langs);
+    client_->SetAcceptLangs(langs);
     StoragePartitionImpl* partition =
         static_cast<StoragePartitionImpl*>(shell()
                                                ->web_contents()
@@ -246,11 +247,9 @@ class SignedExchangeRequestHandlerBrowserTestBase
 
   const base::HistogramTester histogram_tester_;
 
-  MockContentBrowserClient client_;
+  std::unique_ptr<MockContentBrowserClient> client_;
 
  private:
-  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
-
   base::test::ScopedFeatureList feature_list_;
   SignedExchangeBrowserTestHelper sxg_test_helper_;
 };

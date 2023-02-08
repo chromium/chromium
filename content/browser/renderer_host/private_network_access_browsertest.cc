@@ -25,12 +25,12 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/private_network_access_util.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/resource_load_observer.h"
-#include "content/test/test_content_browser_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_util.h"
@@ -128,7 +128,8 @@ std::string FetchSubresourceScript(const GURL& url) {
 
 // A |ContentBrowserClient| implementation that allows modifying the return
 // value of |ShouldAllowInsecurePrivateNetworkRequests()| at will.
-class PolicyTestContentBrowserClient : public TestContentBrowserClient {
+class PolicyTestContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   PolicyTestContentBrowserClient() = default;
 
@@ -152,20 +153,6 @@ class PolicyTestContentBrowserClient : public TestContentBrowserClient {
 
  private:
   std::set<url::Origin> allowlisted_origins_;
-};
-
-// RAII wrapper for |SetContentBrowserClientForTesting()|.
-class ContentBrowserClientRegistration {
- public:
-  explicit ContentBrowserClientRegistration(ContentBrowserClient* client)
-      : old_client_(SetBrowserClientForTesting(client)) {}
-
-  ~ContentBrowserClientRegistration() {
-    SetBrowserClientForTesting(old_client_);
-  }
-
- private:
-  const raw_ptr<ContentBrowserClient> old_client_;
 };
 
 // An embedded test server connection listener that simply counts connections.
@@ -2752,10 +2739,6 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
   PolicyTestContentBrowserClient client;
   client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
 
-  // Register the client before we navigate, so that the navigation commits the
-  // correct PrivateNetworkRequestPolicy.
-  ContentBrowserClientRegistration registration(&client);
-
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   RenderFrameHostImpl* child_frame =
@@ -2780,10 +2763,6 @@ IN_PROC_BROWSER_TEST_F(
   PolicyTestContentBrowserClient client;
   client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
 
-  // Register the client before we navigate, so that the navigation commits the
-  // correct PrivateNetworkRequestPolicy.
-  ContentBrowserClientRegistration registration(&client);
-
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   RenderFrameHostImpl* child_frame = AddChildInitialEmptyDoc(root_frame_host());
@@ -2806,10 +2785,6 @@ IN_PROC_BROWSER_TEST_F(
 
   PolicyTestContentBrowserClient client;
   client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
-
-  // Register the client before we navigate, so that the navigation commits the
-  // correct PrivateNetworkRequestPolicy.
-  ContentBrowserClientRegistration registration(&client);
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -2834,10 +2809,6 @@ IN_PROC_BROWSER_TEST_F(
   PolicyTestContentBrowserClient client;
   client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
 
-  // Register the client before we navigate, so that the navigation commits the
-  // correct PrivateNetworkRequestPolicy.
-  ContentBrowserClientRegistration registration(&client);
-
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
@@ -2861,10 +2832,6 @@ IN_PROC_BROWSER_TEST_F(
 
   PolicyTestContentBrowserClient client;
   client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
-
-  // Register the client before we navigate, so that the navigation commits the
-  // correct PrivateNetworkRequestPolicy.
-  ContentBrowserClientRegistration registration(&client);
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -2891,10 +2858,6 @@ IN_PROC_BROWSER_TEST_F(
 
   PolicyTestContentBrowserClient client;
   client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
-
-  // Register the client before we navigate, so that the navigation commits the
-  // correct PrivateNetworkRequestPolicy.
-  ContentBrowserClientRegistration registration(&client);
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -3374,10 +3337,6 @@ IN_PROC_BROWSER_TEST_F(
 
   PolicyTestContentBrowserClient client;
   client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
-
-  // Register the client before we navigate, so that the navigation commits the
-  // correct PrivateNetworkRequestPolicy.
-  ContentBrowserClientRegistration registration(&client);
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 

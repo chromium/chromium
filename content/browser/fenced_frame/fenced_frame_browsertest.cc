@@ -32,6 +32,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/mock_web_contents_observer.h"
@@ -41,11 +42,9 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
-#include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/fenced_frame_test_utils.h"
 #include "content/test/resource_load_observer.h"
-#include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
@@ -3320,23 +3319,14 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
 }
 
 namespace {
-class ScopedInsecureContentTestContentBrowserClient
-    : public TestContentBrowserClient {
+class InsecureContentTestContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
-  ScopedInsecureContentTestContentBrowserClient()
-      : old_client(SetBrowserClientForTesting(this)) {}
-  ~ScopedInsecureContentTestContentBrowserClient() override {
-    SetBrowserClientForTesting(old_client);
-  }
-
   void OverrideWebkitPrefs(WebContents* web_contents,
                            blink::web_pref::WebPreferences* prefs) override {
     // Browser will both run and display insecure content.
     prefs->allow_running_insecure_content = true;
   }
-
- private:
-  raw_ptr<ContentBrowserClient> old_client;
 };
 }  // namespace
 
@@ -3406,7 +3396,7 @@ class FencedFrameIgnoreCertErrors : public FencedFrameParameterizedBrowserTest {
 IN_PROC_BROWSER_TEST_F(FencedFrameIgnoreCertErrors, FencedframeHasCertError) {
   CreateWebContents();
   // Allow insecure content.
-  ScopedInsecureContentTestContentBrowserClient scoped_content_browser_client;
+  InsecureContentTestContentBrowserClient scoped_content_browser_client;
 
   GURL main_frame_url =
       https_server_mismatched()->GetURL("a.test", "/hello.html");

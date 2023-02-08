@@ -38,6 +38,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_utils.h"
@@ -407,7 +408,8 @@ class WebAuthBrowserTestClientDelegate
 
 // Implements ContentBrowserClient and allows webauthn-related calls to be
 // mocked.
-class WebAuthBrowserTestContentBrowserClient : public ContentBrowserClient {
+class WebAuthBrowserTestContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   explicit WebAuthBrowserTestContentBrowserClient(
       WebAuthBrowserTestState* test_state)
@@ -454,14 +456,13 @@ class WebAuthBrowserTestBase : public content::ContentBrowserTest {
 
     test_client_ =
         std::make_unique<WebAuthBrowserTestContentBrowserClient>(&test_state_);
-    old_client_ = SetBrowserClientForTesting(test_client_.get());
 
     EXPECT_TRUE(
         NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title1.html")));
   }
 
   void TearDown() override {
-    CHECK_EQ(SetBrowserClientForTesting(old_client_), test_client_.get());
+    test_client_.reset();
     ContentBrowserTest::TearDown();
   }
 
@@ -508,7 +509,6 @@ class WebAuthBrowserTestBase : public content::ContentBrowserTest {
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<WebAuthBrowserTestContentBrowserClient> test_client_;
   WebAuthBrowserTestState test_state_;
-  raw_ptr<ContentBrowserClient> old_client_ = nullptr;
 };
 
 // WebAuthLocalClientBrowserTest ----------------------------------------------

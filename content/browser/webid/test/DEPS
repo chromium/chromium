@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "webid_test_content_browser_client.h": [
+    "+content/public/test/content_browser_test_content_browser_client.h",
+  ],
+}

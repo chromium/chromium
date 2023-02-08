@@ -99,6 +99,7 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -118,7 +119,6 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/render_document_feature.h"
-#include "content/test/test_content_browser_client.h"
 #include "ipc/constants.mojom.h"
 #include "ipc/ipc_security_test_util.h"
 #include "media/base/media_switches.h"
@@ -11115,7 +11115,8 @@ class SitePerProcessBrowserTouchActionTest : public SitePerProcessBrowserTest {
 
 #if BUILDFLAG(IS_ANDROID)
 // Class to set |force_enable_zoom| to true in WebkitPrefs.
-class EnableForceZoomContentClient : public TestContentBrowserClient {
+class EnableForceZoomContentClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   EnableForceZoomContentClient() = default;
 
@@ -11125,17 +11126,8 @@ class EnableForceZoomContentClient : public TestContentBrowserClient {
 
   void OverrideWebkitPrefs(WebContents* web_contents,
                            blink::web_pref::WebPreferences* prefs) override {
-    DCHECK(old_client_);
-    old_client_->OverrideWebkitPrefs(web_contents, prefs);
     prefs->force_enable_zoom = true;
   }
-
-  void set_old_client(ContentBrowserClient* old_client) {
-    old_client_ = old_client;
-  }
-
- private:
-  raw_ptr<ContentBrowserClient> old_client_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
@@ -11156,8 +11148,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
   EXPECT_FALSE(GetTouchActionForceEnableZoom(child_rwh));
 
   EnableForceZoomContentClient new_client;
-  ContentBrowserClient* old_client = SetBrowserClientForTesting(&new_client);
-  new_client.set_old_client(old_client);
 
   web_contents()->OnWebPreferencesChanged();
 
@@ -11180,8 +11170,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
             new_child->current_frame_host()->GetRenderWidgetHost());
   EXPECT_TRUE(GetTouchActionForceEnableZoom(
       new_child->current_frame_host()->GetRenderWidgetHost()));
-
-  SetBrowserClientForTesting(old_client);
 }
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
@@ -11192,8 +11180,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
       web_contents()->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget()));
 
   EnableForceZoomContentClient new_client;
-  ContentBrowserClient* old_client = SetBrowserClientForTesting(&new_client);
-  new_client.set_old_client(old_client);
 
   web_contents()->OnWebPreferencesChanged();
 
@@ -11205,7 +11191,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
 
   EXPECT_TRUE(GetTouchActionForceEnableZoom(
       web_contents()->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget()));
-  SetBrowserClientForTesting(old_client);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -12107,7 +12092,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 // A test ContentBrowserClient implementation which enforces
 // WebPreferences' |double_tap_to_zoom_enabled| to be true.
-class DoubleTapZoomContentBrowserClient : public TestContentBrowserClient {
+class DoubleTapZoomContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   DoubleTapZoomContentBrowserClient() = default;
 
@@ -12127,8 +12113,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        TouchscreenAnimateDoubleTapZoomInOOPIF) {
   // Install a client forcing double-tap zoom to be enabled.
   DoubleTapZoomContentBrowserClient content_browser_client;
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&content_browser_client);
   web_contents()->OnWebPreferencesChanged();
 
   GURL main_url(embedded_test_server()->GetURL(
@@ -12205,8 +12189,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     observer_a.WaitForAnyFrameSubmission();
     new_page_scale = observer_a.LastRenderFrameMetadata().page_scale_factor;
   } while (new_page_scale < target_scale);
-
-  SetBrowserClientForTesting(old_client);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 

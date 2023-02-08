@@ -177,8 +177,6 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
 
     client_ = std::make_unique<test::IsolatedWebAppContentBrowserClient>(
         url::Origin::Create(GetTestOpenPageURL()));
-    scoped_client_ =
-        std::make_unique<ScopedContentBrowserClientSetting>(client_.get());
 
     ASSERT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
   }
@@ -194,7 +192,6 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList feature_list_{features::kIsolatedWebApps};
 
   std::unique_ptr<test::IsolatedWebAppContentBrowserClient> client_;
-  std::unique_ptr<ScopedContentBrowserClientSetting> scoped_client_;
 };
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_Success_Hostname) {

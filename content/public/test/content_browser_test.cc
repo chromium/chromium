@@ -17,9 +17,9 @@
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
-#include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/test/test_content_client.h"
 #include "ui/events/platform/platform_event_source.h"
@@ -45,6 +45,10 @@
 namespace content {
 
 ContentBrowserTest::ContentBrowserTest() {
+  // In content browser tests ContentBrowserTestContentBrowserClient must be
+  // used. ContentBrowserTestContentBrowserClient's constructor (and destructor)
+  // uses this same function to change the ContentBrowserClient.
+  ContentClient::SetCanChangeContentBrowserClientForTesting(false);
 #if BUILDFLAG(IS_MAC)
   base::mac::SetOverrideAmIBundled(true);
 

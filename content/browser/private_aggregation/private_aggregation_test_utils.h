@@ -100,12 +100,9 @@ class MockPrivateAggregationManager : public PrivateAggregationManager {
               (override));
 };
 
-class MockPrivateAggregationContentBrowserClient
-    : public TestContentBrowserClient {
+template <typename SuperClass>
+class MockPrivateAggregationContentBrowserClientBase : public SuperClass {
  public:
-  MockPrivateAggregationContentBrowserClient();
-  ~MockPrivateAggregationContentBrowserClient() override;
-
   // ContentBrowserClient:
   MOCK_METHOD(bool,
               IsPrivateAggregationAllowed,
@@ -125,6 +122,9 @@ class MockPrivateAggregationContentBrowserClient
                const url::Origin& accessing_origin),
               (override));
 };
+
+using MockPrivateAggregationContentBrowserClient =
+    MockPrivateAggregationContentBrowserClientBase<TestContentBrowserClient>;
 
 bool operator==(const PrivateAggregationBudgetKey::TimeWindow&,
                 const PrivateAggregationBudgetKey::TimeWindow&);

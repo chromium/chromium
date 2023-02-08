@@ -479,11 +479,32 @@ class TestPageScaleObserver : public WebContentsObserver {
   float last_scale_ = 0.f;
 };
 
+class EffectiveURLContentBrowserClientHelper {
+ public:
+  explicit EffectiveURLContentBrowserClientHelper(
+      bool requires_dedicated_process = false);
+  ~EffectiveURLContentBrowserClientHelper();
+
+  void AddTranslation(const GURL& url_to_modify, const GURL& url_to_return);
+  GURL GetEffectiveURL(const GURL& url);
+  bool DoesSiteRequireDedicatedProcess(BrowserContext* browser_context,
+                                       const GURL& effective_site_url);
+
+ private:
+  // A map of original URLs to effective URLs.
+  std::map<GURL, GURL> urls_to_modify_;
+
+  const bool requires_dedicated_process_;
+};
+
 // A custom ContentBrowserClient that simulates GetEffectiveURL() translation
 // for one or more URL pairs.  |requires_dedicated_process| indicates whether
 // the client should indicate that each registered URL requires a dedicated
 // process.  Passing |false| for it will rely on default behavior computed in
 // SiteInstanceImpl::DoesSiteRequireDedicatedProcess().
+//
+// Do not use this in browser tests. Instead use
+// EffectiveURLContentBrowserTestContentBrowserClient.
 class EffectiveURLContentBrowserClient : public ContentBrowserClient {
  public:
   explicit EffectiveURLContentBrowserClient(bool requires_dedicated_process);
@@ -507,14 +528,13 @@ class EffectiveURLContentBrowserClient : public ContentBrowserClient {
   bool DoesSiteRequireDedicatedProcess(BrowserContext* browser_context,
                                        const GURL& effective_site_url) override;
 
-  // A map of original URLs to effective URLs.
-  std::map<GURL, GURL> urls_to_modify_;
-
-  bool requires_dedicated_process_;
+  EffectiveURLContentBrowserClientHelper helper_;
 };
 
 // Wrapper around `SetBrowserClientForTesting()` that ensures the
-// previous content browser client is restored upon destruction.
+// previous content browser client is restored upon destruction. This is
+// unnecessary in browser tests. In browser tests subclass
+// ContentBrowserTestContentBrowserClient and it will take care of this for you.
 class ScopedContentBrowserClientSetting final {
  public:
   explicit ScopedContentBrowserClientSetting(ContentBrowserClient* new_client);

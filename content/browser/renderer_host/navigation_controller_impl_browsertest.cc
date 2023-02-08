@@ -59,6 +59,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/navigation_handle_observer.h"
@@ -71,7 +72,6 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/render_document_feature.h"
-#include "content/test/test_content_browser_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -1262,7 +1262,8 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
 
 // ContentBrowserClient that blocks normal commits to any URL in
 // VerifyDidCommitParams.
-class BlockAllCommitContentBrowserClient : public TestContentBrowserClient {
+class BlockAllCommitContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   // Any visit to any URL will be blocked by VerifyDidCommitParams, except if
   // the checks are skipped (e.g. loadDataWithBaseURL).
@@ -1301,8 +1302,6 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
     return;
 
   BlockAllCommitContentBrowserClient content_browser_client;
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&content_browser_client);
   const GURL base_url = embedded_test_server()->GetURL("/title1.html");
   const GURL history_url("http://historyurl");
   const std::string title = "blocked_url";
@@ -1376,8 +1375,6 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
   // Verify that the page is not classified as an error page.
   EXPECT_EQ(PAGE_TYPE_NORMAL, entry->GetPageType());
   EXPECT_FALSE(contents()->GetPrimaryMainFrame()->IsErrorDocument());
-
-  SetBrowserClientForTesting(old_client);
 }
 
 // Tests that a LoadDataWithBaseURL to a blocked data URL and an invalid
@@ -1412,8 +1409,6 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
       title.c_str());
 
   BlockAllCommitContentBrowserClient content_browser_client;
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&content_browser_client);
   RenderProcessHostBadIpcMessageWaiter kill_waiter(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
 
@@ -1430,8 +1425,6 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
   // The renderer got killed because the ContentBrowserClient blocks the
   // navigation.
   EXPECT_EQ(bad_message::RFH_CAN_COMMIT_URL_BLOCKED, kill_waiter.Wait());
-
-  SetBrowserClientForTesting(old_client);
 }
 
 // Checks that a browser-initiated same-document navigation after a javascript:

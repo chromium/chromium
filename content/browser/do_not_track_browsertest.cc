@@ -13,6 +13,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -28,7 +29,8 @@ namespace content {
 
 namespace {
 
-class MockContentBrowserClient final : public ContentBrowserClient {
+class MockContentBrowserClient final
+    : public ContentBrowserTestContentBrowserClient {
  public:
   void UpdateRendererPreferencesForWorker(
       BrowserContext*,
@@ -59,19 +61,15 @@ class DoNotTrackTest : public ContentBrowserTest {
       return;
 #endif
 
-    original_client_ = SetBrowserClientForTesting(&client_);
+    client_ = std::make_unique<MockContentBrowserClient>();
   }
-  void TearDownOnMainThread() override {
-    if (original_client_)
-      SetBrowserClientForTesting(original_client_);
-  }
+
+  void TearDownOnMainThread() override { client_.reset(); }
 
   // Returns false if we cannot enable do not track. It happens only when
   // Android Kitkat or older systems.
   bool EnableDoNotTrack() {
-    if (!original_client_)
-      return false;
-    client_.EnableDoNotTrack();
+    client_->EnableDoNotTrack();
     blink::RendererPreferences* prefs =
         shell()->web_contents()->GetMutableRendererPrefs();
     EXPECT_FALSE(prefs->enable_do_not_track);
@@ -94,8 +92,7 @@ class DoNotTrackTest : public ContentBrowserTest {
   }
 
  private:
-  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
-  MockContentBrowserClient client_;
+  std::unique_ptr<MockContentBrowserClient> client_;
 };
 
 std::unique_ptr<net::test_server::HttpResponse>

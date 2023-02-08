@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_WEB_PACKAGE_WEB_BUNDLE_BROWSERTEST_BASE_H_
 #define CONTENT_BROWSER_WEB_PACKAGE_WEB_BUNDLE_BROWSERTEST_BASE_H_
 
+#include <memory>
+
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -23,6 +25,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/filename_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -112,7 +115,7 @@ class MockParserFactory {
   web_package::MockWebBundleParserFactory wrapped_factory_;
 };
 
-class TestBrowserClient : public ContentBrowserClient {
+class TestBrowserClient : public ContentBrowserTestContentBrowserClient {
  public:
   TestBrowserClient() = default;
 
@@ -121,6 +124,7 @@ class TestBrowserClient : public ContentBrowserClient {
 
   ~TestBrowserClient() override = default;
   bool CanAcceptUntrustedExchangesIfNeeded() override;
+  bool IsHandledURL(const GURL& url) override;
 };
 
 class WebBundleBrowserTestBase : public ContentBrowserTest {
@@ -129,8 +133,8 @@ class WebBundleBrowserTestBase : public ContentBrowserTest {
   WebBundleBrowserTestBase& operator=(const WebBundleBrowserTestBase&) = delete;
 
  protected:
-  WebBundleBrowserTestBase() = default;
-  ~WebBundleBrowserTestBase() override = default;
+  WebBundleBrowserTestBase();
+  ~WebBundleBrowserTestBase() override;
 
   void SetUpOnMainThread() override;
 
@@ -150,8 +154,7 @@ class WebBundleBrowserTestBase : public ContentBrowserTest {
                                     base::FilePath* file_path);
 
  private:
-  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
-  TestBrowserClient browser_client_;
+  std::unique_ptr<TestBrowserClient> browser_client_;
   base::ScopedTempDir temp_dir_;
 };
 

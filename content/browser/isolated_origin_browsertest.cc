@@ -2781,12 +2781,10 @@ IN_PROC_BROWSER_TEST_F(StrictOriginIsolationTest,
 
   // Set up effective URL translation that maps both `foo_url` and `bar_url` to
   // `app_url`.
-  EffectiveURLContentBrowserClient modified_client(
+  EffectiveURLContentBrowserTestContentBrowserClient modified_client(
       false /* requires_dedicated_process */);
   modified_client.AddTranslation(foo_url, app_url);
   modified_client.AddTranslation(bar_url, app_url);
-  ContentBrowserClient* regular_client =
-      SetBrowserClientForTesting(&modified_client);
 
   // Calculate the expected SiteInfo for each URL.  Both `foo_url` and
   // `bar_url` should have a site URL of `app_url`, but the process locks
@@ -2831,8 +2829,6 @@ IN_PROC_BROWSER_TEST_F(StrictOriginIsolationTest,
   modified_client.AddTranslation(redirect_url, app_url);
   EXPECT_TRUE(NavigateToURL(shell(), redirect_url, bar_url));
   EXPECT_EQ(bar_site_info, web_contents()->GetSiteInstance()->GetSiteInfo());
-
-  SetBrowserClientForTesting(regular_client);
 }
 
 // Check that navigating a main frame from an non-isolated origin to an
@@ -5883,7 +5879,7 @@ class COOPIsolationTest : public IsolatedOriginTestBase {
     https_server()->AddDefaultHandlers(GetTestDataFilePath());
     ASSERT_TRUE(https_server()->Start());
 
-    original_client_ = SetBrowserClientForTesting(&browser_client_);
+    browser_client_ = std::make_unique<NoSiteIsolationContentBrowserClient>();
 
     // The custom ContentBrowserClient above typically ensures that this test
     // runs without strict site isolation, but it's still possible to
@@ -5901,7 +5897,7 @@ class COOPIsolationTest : public IsolatedOriginTestBase {
 
   void TearDownOnMainThread() override {
     IsolatedOriginTestBase::TearDownOnMainThread();
-    SetBrowserClientForTesting(original_client_);
+    browser_client_.reset();
   }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
@@ -5910,7 +5906,8 @@ class COOPIsolationTest : public IsolatedOriginTestBase {
   // COOP isolation only matters in environments like Android where it
   // is not used.  Note that kSitePerProcess is a higher-layer feature, so we
   // can't just disable it here.
-  class NoSiteIsolationContentBrowserClient : public ContentBrowserClient {
+  class NoSiteIsolationContentBrowserClient
+      : public ContentBrowserTestContentBrowserClient {
    public:
     bool ShouldEnableStrictSiteIsolation() override { return false; }
   };
@@ -5920,8 +5917,7 @@ class COOPIsolationTest : public IsolatedOriginTestBase {
 
   net::EmbeddedTestServer https_server_;
 
-  NoSiteIsolationContentBrowserClient browser_client_;
-  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
+  std::unique_ptr<NoSiteIsolationContentBrowserClient> browser_client_;
 };
 
 // Check that a main frame navigation to a COOP site (with no subsequent user
@@ -6556,61 +6552,45 @@ class JITIsolationTest : public IsolatedOriginTest,
 
   ~JITIsolationTest() override = default;
 
-  // Utility class to override BrowserClient within a scope with a BrowserClient
-  // that has a different JIT policy.
-  class ScopedBrowserClientOverride {
+  // A custom ContentBrowserTestContentBrowserClient to selectively turn off JIT
+  // for certain sites.
+  class JitContentBrowserClient
+      : public ContentBrowserTestContentBrowserClient {
    public:
-    // A custom ContentBrowserClient to selectively turn off JIT for certain
-    // sites.
-    class JitContentBrowserClient : public ContentBrowserClient {
-     public:
-      JitContentBrowserClient(bool jit_disabled_default,
-                              bool disable_site_isolation_entirely)
-          : is_jit_disabled_by_default_(jit_disabled_default),
-            is_site_isolation_disabled_entirely_(
-                disable_site_isolation_entirely) {}
+    JitContentBrowserClient(bool jit_disabled_default,
+                            bool disable_site_isolation_entirely)
+        : is_jit_disabled_by_default_(jit_disabled_default),
+          is_site_isolation_disabled_entirely_(
+              disable_site_isolation_entirely) {}
 
-      bool IsJitDisabledForSite(BrowserContext* browser_context,
-                                const GURL& site_url) override {
-        if (site_url.is_empty())
-          return is_jit_disabled_by_default_;
-        if (site_url.DomainIs("jit-disabled.com"))
-          return true;
-        if (site_url.DomainIs("jit-enabled.com"))
-          return false;
+    bool IsJitDisabledForSite(BrowserContext* browser_context,
+                              const GURL& site_url) override {
+      if (site_url.is_empty()) {
         return is_jit_disabled_by_default_;
       }
-
-      bool ShouldEnableStrictSiteIsolation() override {
-        return !is_site_isolation_disabled_entirely_;
+      if (site_url.DomainIs("jit-disabled.com")) {
+        return true;
       }
-
-     private:
-      bool is_jit_disabled_by_default_;
-      bool is_site_isolation_disabled_entirely_;
-    };
-
-    ScopedBrowserClientOverride(bool jit_disabled_default,
-                                bool disable_site_isolation_entirely) {
-      overriden_client_ = std::make_unique<JitContentBrowserClient>(
-          jit_disabled_default, disable_site_isolation_entirely);
-      original_client_ = SetBrowserClientForTesting(overriden_client_.get());
+      if (site_url.DomainIs("jit-enabled.com")) {
+        return false;
+      }
+      return is_jit_disabled_by_default_;
     }
 
-    ~ScopedBrowserClientOverride() {
-      SetBrowserClientForTesting(original_client_);
+    bool ShouldEnableStrictSiteIsolation() override {
+      return !is_site_isolation_disabled_entirely_;
     }
 
    private:
-    std::unique_ptr<JitContentBrowserClient> overriden_client_;
-    raw_ptr<ContentBrowserClient> original_client_;
+    bool is_jit_disabled_by_default_;
+    bool is_site_isolation_disabled_entirely_;
   };
 };
 
 IN_PROC_BROWSER_TEST_P(JITIsolationTest, MainFrameTest) {
   bool jit_disabled_by_default = GetParam();
-  ScopedBrowserClientOverride policy(
-      jit_disabled_by_default, /* disable_site_isolation_entirely */ false);
+  JitContentBrowserClient policy(jit_disabled_by_default,
+                                 /* disable_site_isolation_entirely */ false);
 
   // Navigate to jit-disabled.com which should always have JIT disabled.
   GURL disabled_url(
@@ -6649,13 +6629,13 @@ IN_PROC_BROWSER_TEST_P(JITIsolationTest, MainFrameTest) {
 IN_PROC_BROWSER_TEST_P(JITIsolationTest, DefaultSiteTest) {
   // Skip the test if --site-per-process is used on the command line, as the
   // test needs to run without strict site isolation (see
-  // ScopedBrowserClientOverride below).
+  // JitContentBrowserClient below).
   if (AreAllSitesIsolatedForTesting())
     return;
 
   bool jit_disabled_by_default = GetParam();
-  ScopedBrowserClientOverride policy(
-      jit_disabled_by_default, /* disable_site_isolation_entirely */ true);
+  JitContentBrowserClient policy(jit_disabled_by_default,
+                                 /* disable_site_isolation_entirely */ true);
 
   // All three sites should have JIT enabled or disabled together, if site
   // isolation is disabled, since they are all put into the default
@@ -6700,7 +6680,7 @@ INSTANTIATE_TEST_SUITE_P(JITDisabledByDefault,
 
 IN_PROC_BROWSER_TEST_F(JITIsolationTest, SubFrameTest) {
   // Set JIT to be enabled by default.
-  ScopedBrowserClientOverride policy(
+  JitContentBrowserClient policy(
       /* jit_disabled_default */ false,
       /* disable_site_isolation_entirely */ false);
 
@@ -6740,7 +6720,7 @@ IN_PROC_BROWSER_TEST_F(JITIsolationTest, SubFrameTest) {
 // Check that jitless subframes obey process reuse policies.
 IN_PROC_BROWSER_TEST_F(JITIsolationTest, SubFrameProcessReuse) {
   // Set JIT to be enabled by default.
-  ScopedBrowserClientOverride policy(
+  JitContentBrowserClient policy(
       /* jit_disabled_default */ false,
       /* disable_site_isolation_entirely */ false);
 

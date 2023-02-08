@@ -55,6 +55,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -70,7 +71,6 @@
 #include "content/shell/browser/shell_download_manager_delegate.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/fake_network_url_loader_factory.h"
-#include "content/test/test_content_browser_client.h"
 #include "net/base/features.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -152,7 +152,8 @@ void ExpectRequestIsolationInfo(
 
 // Implementation of TestContentBrowserClient that overrides
 // AllowRenderingMhtmlOverHttp() and allows consumers to set a value.
-class DownloadTestContentBrowserClient : public TestContentBrowserClient {
+class DownloadTestContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   DownloadTestContentBrowserClient() {
 #if BUILDFLAG(IS_ANDROID)
@@ -4955,23 +4956,22 @@ class MhtmlDownloadTest : public DownloadContentTest {
   void SetUpOnMainThread() override {
     DownloadContentTest::SetUpOnMainThread();
 
+    browser_client_ = std::make_unique<DownloadTestContentBrowserClient>();
     // Force downloading the MHTML.
-    new_client_.set_allowed_rendering_mhtml_over_http(false);
+    browser_client_->set_allowed_rendering_mhtml_over_http(false);
     // Enable RegisterNonNetworkNavigationURLLoaderFactories for
     // test white list for non http shemes which should not trigger
     // download.
-    new_client_.enable_register_non_network_url_loader(true);
-    old_client_ = SetBrowserClientForTesting(&new_client_);
+    browser_client_->enable_register_non_network_url_loader(true);
   }
 
   void TearDownOnMainThread() override {
-    SetBrowserClientForTesting(old_client_);
+    browser_client_.reset();
     DownloadContentTest::TearDownOnMainThread();
   }
 
  private:
-  DownloadTestContentBrowserClient new_client_;
-  raw_ptr<ContentBrowserClient> old_client_;
+  std::unique_ptr<DownloadTestContentBrowserClient> browser_client_;
 };
 
 // Test allow list for non http schemes which should not trigger

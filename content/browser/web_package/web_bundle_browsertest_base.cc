@@ -168,14 +168,22 @@ bool TestBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
   return true;
 }
 
+bool TestBrowserClient::IsHandledURL(const GURL& url) {
+  return false;
+}
+
+WebBundleBrowserTestBase::WebBundleBrowserTestBase() = default;
+
+WebBundleBrowserTestBase::~WebBundleBrowserTestBase() = default;
+
 void WebBundleBrowserTestBase::SetUpOnMainThread() {
   ContentBrowserTest::SetUpOnMainThread();
-  original_client_ = SetBrowserClientForTesting(&browser_client_);
+  browser_client_ = std::make_unique<TestBrowserClient>();
 }
 
 void WebBundleBrowserTestBase::TearDownOnMainThread() {
   ContentBrowserTest::TearDownOnMainThread();
-  SetBrowserClientForTesting(original_client_);
+  browser_client_.reset();
 }
 
 void WebBundleBrowserTestBase::NavigateToBundleAndWaitForReady(

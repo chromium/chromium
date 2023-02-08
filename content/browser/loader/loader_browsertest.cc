@@ -30,13 +30,12 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
-#include "content/shell/browser/shell_content_browser_client.h"
-#include "content/test/test_content_browser_client.h"
 #include "net/base/filename_util.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -1138,12 +1137,11 @@ class URLModifyingThrottle : public blink::URLLoaderThrottle {
   bool modified_redirect_url_ = false;
 };
 
-class ThrottleContentBrowserClient : public TestContentBrowserClient {
+class ThrottleContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   ThrottleContentBrowserClient(bool modify_start, bool modify_redirect)
-      : TestContentBrowserClient(),
-        modify_start_(modify_start),
-        modify_redirect_(modify_redirect) {}
+      : modify_start_(modify_start), modify_redirect_(modify_redirect) {}
 
   ThrottleContentBrowserClient(const ThrottleContentBrowserClient&) = delete;
   ThrottleContentBrowserClient& operator=(const ThrottleContentBrowserClient&) =
@@ -1176,8 +1174,6 @@ class ThrottleContentBrowserClient : public TestContentBrowserClient {
 IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, URLLoaderThrottleStartModify) {
   base::Lock lock;
   ThrottleContentBrowserClient content_browser_client(true, false);
-  auto* old_content_browser_client =
-      SetBrowserClientForTesting(&content_browser_client);
 
   std::set<GURL> urls_requested;
   std::map<GURL, net::test_server::HttpRequest::HeaderMap> header_map;
@@ -1201,8 +1197,6 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, URLLoaderThrottleStartModify) {
     ASSERT_TRUE(header_map[expected_url]["Foo"] == "BarRequest");
     ASSERT_TRUE(header_map[expected_url]["ExemptFoo"] == "ExemptBarRequest");
   }
-
-  SetBrowserClientForTesting(old_content_browser_client);
 }
 
 // Ensures if a URLLoaderThrottle modifies a URL and headers in
@@ -1210,8 +1204,6 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, URLLoaderThrottleStartModify) {
 IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, URLLoaderThrottleRedirectModify) {
   base::Lock lock;
   ThrottleContentBrowserClient content_browser_client(false, true);
-  auto* old_content_browser_client =
-      SetBrowserClientForTesting(&content_browser_client);
 
   std::set<GURL> urls_requested;
   std::map<GURL, net::test_server::HttpRequest::HeaderMap> header_map;
@@ -1237,8 +1229,6 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, URLLoaderThrottleRedirectModify) {
     ASSERT_EQ(header_map[expected_url]["ExemptFoo"], "ExemptBarRedirect");
     ASSERT_NE(urls_requested.find(expected_url), urls_requested.end());
   }
-
-  SetBrowserClientForTesting(old_content_browser_client);
 }
 
 }  // namespace content

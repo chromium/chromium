@@ -13,7 +13,8 @@
 
 namespace content {
 
-// Base for unit tests that need a ContentBrowserClient.
+// Base for unit tests that need a ContentBrowserClient. Browser tests should
+// not use this class, instead use ContentBrowserTestContentBrowserClient.
 class TestContentBrowserClient : public ContentBrowserClient {
  public:
   TestContentBrowserClient();

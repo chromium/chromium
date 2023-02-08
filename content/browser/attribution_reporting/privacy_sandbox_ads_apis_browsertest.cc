@@ -20,6 +20,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -41,7 +42,8 @@ constexpr char kAddFencedFrameScript[] = R"(
   document.body.appendChild(fenced_frame);
 )";
 
-class FixedTopicsContentBrowserClient : public ContentBrowserClient {
+class FixedTopicsContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   bool HandleTopicsWebApi(
       const url::Origin& context_origin,
@@ -95,11 +97,11 @@ class PrivacySandboxAdsAPIsBrowserTestBase : public ContentBrowserTest {
               return true;
             }));
 
-    original_client_ = SetBrowserClientForTesting(&browser_client_);
+    browser_client_ = std::make_unique<FixedTopicsContentBrowserClient>();
   }
 
   void TearDownOnMainThread() override {
-    SetBrowserClientForTesting(original_client_);
+    browser_client_.reset();
     url_loader_interceptor_.reset();
   }
 
@@ -123,8 +125,7 @@ class PrivacySandboxAdsAPIsBrowserTestBase : public ContentBrowserTest {
   bool last_request_is_topics_request_ = false;
   absl::optional<std::string> last_topics_header_;
 
-  FixedTopicsContentBrowserClient browser_client_;
-  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
+  std::unique_ptr<FixedTopicsContentBrowserClient> browser_client_;
 
   std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
 };

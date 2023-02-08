@@ -9,6 +9,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/test/render_document_feature.h"
@@ -126,7 +127,8 @@ class SitePerProcessIsolatedSandboxWithoutStrictSiteIsolationBrowserTest
     SitePerProcessIsolatedSandboxedIframeTest::SetUpOnMainThread();
 
     // Override BrowserClient to disable strict site isolation.
-    original_client_ = SetBrowserClientForTesting(&browser_client_);
+    browser_client_ =
+        std::make_unique<PartialSiteIsolationContentBrowserClient>();
     // The custom ContentBrowserClient below typically ensures that this test
     // runs without strict site isolation, but it's still possible to
     // inadvertently override this when running with --site-per-process on the
@@ -143,14 +145,15 @@ class SitePerProcessIsolatedSandboxWithoutStrictSiteIsolationBrowserTest
 
   void TearDownOnMainThread() override {
     SitePerProcessIsolatedSandboxedIframeTest::TearDownOnMainThread();
-    SetBrowserClientForTesting(original_client_);
+    browser_client_.reset();
   }
 
   // A custom ContentBrowserClient to turn off strict site isolation, since
   // isolated sandboxed iframes behave differently in environments like Android
   // where it is not (generally) used. Note that kSitePerProcess is a
   // higher-layer feature, so we can't just disable it here.
-  class PartialSiteIsolationContentBrowserClient : public ContentBrowserClient {
+  class PartialSiteIsolationContentBrowserClient
+      : public ContentBrowserTestContentBrowserClient {
    public:
     bool ShouldEnableStrictSiteIsolation() override { return false; }
     bool DoesSiteRequireDedicatedProcess(
@@ -162,8 +165,7 @@ class SitePerProcessIsolatedSandboxWithoutStrictSiteIsolationBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  PartialSiteIsolationContentBrowserClient browser_client_;
-  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
+  std::unique_ptr<PartialSiteIsolationContentBrowserClient> browser_client_;
 };
 
 // A test class to allow testing isolated sandboxed iframes using the

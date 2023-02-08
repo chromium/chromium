@@ -17,7 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/shell/browser/shell_content_browser_client.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -171,7 +171,8 @@ std::string WrapAsync(const std::string& script);
 
 // Mock ContentBrowserClient that enableds direct sockets via permissions policy
 // for isolated apps.
-class IsolatedWebAppContentBrowserClient : public ShellContentBrowserClient {
+class IsolatedWebAppContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   explicit IsolatedWebAppContentBrowserClient(
       const url::Origin& isolated_app_origin);

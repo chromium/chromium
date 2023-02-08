@@ -31,12 +31,13 @@ class InvalidTrustableWebBundleFileUrlBrowserTest : public ContentBrowserTest {
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
-    original_client_ = SetBrowserClientForTesting(&browser_client_);
+    browser_client_ =
+        std::make_unique<web_bundle_browsertest_utils::TestBrowserClient>();
   }
 
   void TearDownOnMainThread() override {
     ContentBrowserTest::TearDownOnMainThread();
-    SetBrowserClientForTesting(original_client_);
+    browser_client_.reset();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -45,8 +46,8 @@ class InvalidTrustableWebBundleFileUrlBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
-  web_bundle_browsertest_utils::TestBrowserClient browser_client_;
+  std::unique_ptr<web_bundle_browsertest_utils::TestBrowserClient>
+      browser_client_;
 };
 
 IN_PROC_BROWSER_TEST_F(InvalidTrustableWebBundleFileUrlBrowserTest,

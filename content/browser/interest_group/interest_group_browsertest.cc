@@ -44,6 +44,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -51,7 +52,6 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/fenced_frame_test_utils.h"
-#include "content/test/test_content_browser_client.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/mock_host_resolver.h"
@@ -203,7 +203,8 @@ base::Value::Dict SizeGroupsToDict(
   return dict;
 }
 
-class AllowlistedOriginContentBrowserClient : public TestContentBrowserClient {
+class AllowlistedOriginContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   explicit AllowlistedOriginContentBrowserClient() = default;
 
@@ -535,10 +536,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         {blink::features::kFencedFrames});
   }
 
-  ~InterestGroupBrowserTest() override {
-    if (old_content_browser_client_)
-      SetBrowserClientForTesting(old_content_browser_client_);
-  }
+  ~InterestGroupBrowserTest() override { content_browser_client_.reset(); }
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
@@ -562,7 +560,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
             ->GetDefaultStoragePartition()
             ->GetInterestGroupManager());
     observer_ = std::make_unique<InterestGroupTestObserver>();
-    content_browser_client_.SetAllowList(
+    content_browser_client_ =
+        std::make_unique<AllowlistedOriginContentBrowserClient>();
+    content_browser_client_->SetAllowList(
         {https_server_->GetOrigin("a.test"), https_server_->GetOrigin("b.test"),
          https_server_->GetOrigin("c.test"),
          // Magic interest group origins used in cross-site join/leave tests.
@@ -574,8 +574,6 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          // are allowed by the allowlist.
          https_server_->GetOrigin("a.test"), https_server_->GetOrigin("b.test"),
          https_server_->GetOrigin("c.test")});
-    old_content_browser_client_ =
-        SetBrowserClientForTesting(&content_browser_client_);
   }
 
   // Attempts to join the specified interest group. Returns kSuccess if the
@@ -1289,8 +1287,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
  protected:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::test::ScopedFeatureList feature_list_;
-  AllowlistedOriginContentBrowserClient content_browser_client_;
-  raw_ptr<ContentBrowserClient, DanglingUntriaged> old_content_browser_client_;
+  std::unique_ptr<AllowlistedOriginContentBrowserClient>
+      content_browser_client_;
   std::unique_ptr<InterestGroupTestObserver> observer_;
   raw_ptr<InterestGroupManagerImpl, DanglingUntriaged> manager_;
   base::Lock requests_lock_;
@@ -1672,7 +1670,7 @@ class InterestGroupPrivateNetworkBrowserTest : public InterestGroupBrowserTest {
     InterestGroupBrowserTest::SetUpOnMainThread();
 
     // Extend allow list to include the remote server.
-    content_browser_client_.AddToAllowList(
+    content_browser_client_->AddToAllowList(
         {url::Origin::Create(remote_test_server_.GetURL("a.test", "/")),
          url::Origin::Create(remote_test_server_.GetURL("b.test", "/")),
          url::Origin::Create(remote_test_server_.GetURL("c.test", "/"))});
@@ -2158,7 +2156,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, CrossOriginJoinQueue) {
       other_origin_host = "2.b.test";
     }
     url::Origin other_origin = cross_origin_server.GetOrigin(other_origin_host);
-    content_browser_client_.AddToAllowList({other_origin});
+    content_browser_client_->AddToAllowList({other_origin});
 
     ExecuteScriptAsync(shell(),
                        JsReplace(R"(
@@ -2293,7 +2291,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, CrossOriginLeaveQueue) {
       other_origin_host = "2.b.test";
     }
     url::Origin other_origin = cross_origin_server.GetOrigin(other_origin_host);
-    content_browser_client_.AddToAllowList({other_origin});
+    content_browser_client_->AddToAllowList({other_origin});
 
     ExecuteScriptAsync(shell(),
                        JsReplace(R"(
@@ -2434,7 +2432,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       other_origin_host = "2.b.test";
     }
     url::Origin other_origin = cross_origin_server.GetOrigin(other_origin_host);
-    content_browser_client_.AddToAllowList({other_origin});
+    content_browser_client_->AddToAllowList({other_origin});
 
     ExecuteScriptAsync(shell(),
                        JsReplace(R"(
@@ -5756,7 +5754,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, Iframe) {
   const char kSellerHost[] = "c.test";
   const char kIframeHost[] = "d.test";
   const char kAdHost[] = "ad.d.test";
-  content_browser_client_.AddToAllowList(
+  content_browser_client_->AddToAllowList(
       {url::Origin::Create(https_server_->GetURL(kIframeHost, "/"))});
 
   // Navigate to bidder site, and add an interest group.
@@ -7252,7 +7250,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
   constexpr char kSellerHost[] = "b.test";
   constexpr char kTopFrameHost[] = "c.test";
   constexpr char kSecondBidderHost[] = "d.test";
-  content_browser_client_.AddToAllowList(
+  content_browser_client_->AddToAllowList(
       {url::Origin::Create(https_server_->GetURL(kSecondBidderHost, "/"))});
   const url::Origin top_frame_origin =
       url::Origin::Create(https_server_->GetURL(kTopFrameHost, "/echo"));
@@ -7522,7 +7520,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   constexpr char kTopFrameHost[] = "c.test";
   constexpr char kComponentSellerHost[] = "d.test";
 
-  content_browser_client_.AddToAllowList(
+  content_browser_client_->AddToAllowList(
       {url::Origin::Create(https_server_->GetURL(kComponentSellerHost, "/"))});
   const url::Origin top_frame_origin =
       url::Origin::Create(https_server_->GetURL(kTopFrameHost, "/echo"));
@@ -8718,7 +8716,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL bidder2_url = https_server_->GetURL(kBidder2, "/echo");
   ASSERT_TRUE(NavigateToURL(shell(), bidder2_url));
   url::Origin bidder2_origin = url::Origin::Create(bidder2_url);
-  content_browser_client_.AddToAllowList({bidder2_origin});
+  content_browser_client_->AddToAllowList({bidder2_origin});
   EXPECT_EQ(
       kSuccess,
       JoinInterestGroupAndVerify(

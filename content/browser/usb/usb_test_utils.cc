@@ -49,12 +49,4 @@ void MockUsbDelegate::OnPermissionRevoked(const url::Origin& origin) {
     observer.OnPermissionRevoked(origin);
 }
 
-UsbTestContentBrowserClient::UsbTestContentBrowserClient() = default;
-
-UsbTestContentBrowserClient::~UsbTestContentBrowserClient() = default;
-
-UsbDelegate* UsbTestContentBrowserClient::GetUsbDelegate() {
-  return &delegate_;
-}
-
 }  // namespace content

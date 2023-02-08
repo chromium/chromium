@@ -15,6 +15,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
@@ -106,7 +107,7 @@ class TestVideoOverlayWindow : public VideoOverlayWindow {
   absl::optional<bool> next_track_button_visible_;
 };
 
-class TestContentBrowserClient : public ContentBrowserClient {
+class TestContentBrowserClient : public ContentBrowserTestContentBrowserClient {
  public:
   std::unique_ptr<VideoOverlayWindow> CreateWindowForVideoPictureInPicture(
       VideoPictureInPictureWindowController* controller) override {
@@ -146,17 +147,12 @@ class TestWebContentsDelegate : public WebContentsDelegate {
 
 class VideoPictureInPictureContentBrowserTest : public ContentBrowserTest {
  public:
-  ~VideoPictureInPictureContentBrowserTest() override {
-    if (old_browser_client_.has_value())
-      SetBrowserClientForTesting(old_browser_client_.value());
-  }
-
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
 
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    old_browser_client_ = SetBrowserClientForTesting(&content_browser_client_);
+    content_browser_client_ = std::make_unique<TestContentBrowserClient>();
 
     web_contents_delegate_ = std::make_unique<TestWebContentsDelegate>(shell());
     shell()->web_contents()->SetDelegate(web_contents_delegate_.get());
@@ -200,8 +196,7 @@ class VideoPictureInPictureContentBrowserTest : public ContentBrowserTest {
 
  private:
   std::unique_ptr<TestWebContentsDelegate> web_contents_delegate_;
-  absl::optional<raw_ptr<ContentBrowserClient>> old_browser_client_;
-  TestContentBrowserClient content_browser_client_;
+  std::unique_ptr<TestContentBrowserClient> content_browser_client_;
 };
 
 }  // namespace

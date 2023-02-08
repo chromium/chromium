@@ -73,6 +73,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/mock_client_hints_controller_delegate.h"
@@ -80,9 +81,7 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
-#include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/content_browser_test_utils_internal.h"
-#include "content/test/test_content_browser_client.h"
 #include "media/media_buildflags.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/cert_status_flags.h"
@@ -495,10 +494,9 @@ class ServiceWorkerBrowserTest : public ContentBrowserTest {
       content::GetShellUserAgentMetadata()};
 };
 
-class MockContentBrowserClient : public TestContentBrowserClient {
+class MockContentBrowserClient : public ContentBrowserTestContentBrowserClient {
  public:
-  MockContentBrowserClient()
-      : TestContentBrowserClient(), data_saver_enabled_(false) {}
+  MockContentBrowserClient() : data_saver_enabled_(false) {}
 
   ~MockContentBrowserClient() override = default;
 
@@ -631,8 +629,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, FetchPageWithSaveData) {
   const char kWorkerUrl[] = "/service_worker/add_save_data_to_title.js";
   MockContentBrowserClient content_browser_client;
   content_browser_client.set_data_saver_enabled(true);
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&content_browser_client);
   shell()->web_contents()->OnWebPreferencesChanged();
   WorkerStateObserver observer(wrapper(), ServiceWorkerVersion::ACTIVATED);
   blink::mojom::ServiceWorkerRegistrationOptions options(
@@ -651,7 +647,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, FetchPageWithSaveData) {
   EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(kPageUrl)));
   EXPECT_EQ(title1, title_watcher1.WaitAndGetTitle());
 
-  SetBrowserClientForTesting(old_client);
   shell()->Close();
 
   base::RunLoop run_loop;
@@ -677,8 +672,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, CrossOriginFetchWithSaveData) {
 
   MockContentBrowserClient content_browser_client;
   content_browser_client.set_data_saver_enabled(true);
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&content_browser_client);
   shell()->web_contents()->OnWebPreferencesChanged();
   WorkerStateObserver observer(wrapper(), ServiceWorkerVersion::ACTIVATED);
   blink::mojom::ServiceWorkerRegistrationOptions options(
@@ -702,7 +695,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, CrossOriginFetchWithSaveData) {
                        .c_str()))));
   EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
 
-  SetBrowserClientForTesting(old_client);
   shell()->Close();
 
   base::RunLoop run_loop;
@@ -719,8 +711,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   const char kWorkerUrl[] = "/service_worker/fetch_event_pass_through.js";
   MockContentBrowserClient content_browser_client;
   content_browser_client.set_data_saver_enabled(true);
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&content_browser_client);
   shell()->web_contents()->OnWebPreferencesChanged();
   WorkerStateObserver observer(wrapper(), ServiceWorkerVersion::ACTIVATED);
 
@@ -742,7 +732,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   NavigateToURLBlockUntilNavigationsComplete(
       shell(), embedded_test_server()->GetURL(kPageUrl), 1);
 
-  SetBrowserClientForTesting(old_client);
   shell()->Close();
 
   base::RunLoop run_loop;
@@ -3008,7 +2997,8 @@ class HeaderInjectingThrottle : public blink::URLLoaderThrottle {
   }
 };
 
-class ThrottlingContentBrowserClient : public TestContentBrowserClient {
+class ThrottlingContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   ThrottlingContentBrowserClient() = default;
 
@@ -3071,8 +3061,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerURLLoaderThrottleTest,
                        FetchEventForNavigationHasThrottledRequest) {
   // Add a throttle which injects a header.
   ThrottlingContentBrowserClient content_browser_client;
-  auto* old_content_browser_client =
-      SetBrowserClientForTesting(&content_browser_client);
 
   // Register the service worker.
   RegisterServiceWorker("/service_worker/echo_request_headers.js");
@@ -3100,8 +3088,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerURLLoaderThrottleTest,
 
   // Injected headers are present.
   EXPECT_TRUE(CheckHeader(*dict, "x-injected", "injected value"));
-
-  SetBrowserClientForTesting(old_content_browser_client);
 }
 
 // Test that redirects by throttles occur before service worker interception.
@@ -3109,8 +3095,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerURLLoaderThrottleTest,
                        RedirectOccursBeforeFetchEvent) {
   // Add a throttle which performs a redirect.
   ThrottlingContentBrowserClient content_browser_client;
-  auto* old_content_browser_client =
-      SetBrowserClientForTesting(&content_browser_client);
 
   // Register the service worker.
   RegisterServiceWorker("/service_worker/fetch_event_pass_through.js");
@@ -3144,8 +3128,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerURLLoaderThrottleTest,
   list.Append(redirect_url.spec());
   EXPECT_EQ(base::Value(std::move(list)),
             EvalJs(shell()->web_contents()->GetPrimaryMainFrame(), script));
-
-  SetBrowserClientForTesting(old_content_browser_client);
 }
 
 // Test that the headers injected by throttles during navigation are
@@ -3155,8 +3137,6 @@ IN_PROC_BROWSER_TEST_F(
     NavigationHasThrottledRequestHeadersAfterNetworkFallback) {
   // Add a throttle which injects a header.
   ThrottlingContentBrowserClient content_browser_client;
-  auto* old_content_browser_client =
-      SetBrowserClientForTesting(&content_browser_client);
 
   // Register the service worker. Use "/" scope so the "/echoheader" default
   // handler of EmbeddedTestServer is in-scope.
@@ -3176,8 +3156,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("injected value",
             EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                    "document.body.textContent"));
-
-  SetBrowserClientForTesting(old_content_browser_client);
 }
 
 // Test that the headers injected by throttles during navigation are
@@ -3186,8 +3164,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerURLLoaderThrottleTest,
                        NavigationPreloadHasThrottledRequestHeaders) {
   // Add a throttle which injects a header.
   ThrottlingContentBrowserClient content_browser_client;
-  auto* old_content_browser_client =
-      SetBrowserClientForTesting(&content_browser_client);
 
   // Register the service worker. Use "/" scope so the "/echoheader" default
   // handler of EmbeddedTestServer is in-scope.
@@ -3207,8 +3183,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerURLLoaderThrottleTest,
   EXPECT_EQ("true\ninjected value",
             EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                    "document.body.textContent"));
-
-  SetBrowserClientForTesting(old_content_browser_client);
 }
 
 // Test fixture to support validating throttling from within an installing

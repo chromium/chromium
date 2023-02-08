@@ -18,6 +18,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/find_test_utils.h"
@@ -1085,11 +1086,9 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_HistoryBackAndForth) {
   test_page();
 }
 
-class FindInPageDisabledForOriginBrowserClient : public ContentBrowserClient {
+class FindInPageDisabledForOriginBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
-  FindInPageDisabledForOriginBrowserClient() = default;
-  ~FindInPageDisabledForOriginBrowserClient() override = default;
-
   // ContentBrowserClient:
   bool IsFindInPageDisabledForOrigin(const url::Origin& origin) override {
     return origin.host() == "b.com";
@@ -1100,7 +1099,6 @@ class FindInPageDisabledForOriginBrowserClient : public ContentBrowserClient {
 // find-in-page.
 IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, FindInPageDisabledForOrigin) {
   FindInPageDisabledForOriginBrowserClient browser_client;
-  auto* old_client = content::SetBrowserClientForTesting(&browser_client);
 
   // Start with a basic case to set a baseline.
   LoadAndWait("/find_in_page.html");
@@ -1175,8 +1173,6 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, FindInPageDisabledForOrigin) {
   results = delegate()->GetFindResults();
   EXPECT_EQ(last_request_id(), results.request_id);
   EXPECT_EQ(7, results.number_of_matches);
-
-  content::SetBrowserClientForTesting(old_client);
 }
 
 class FindRequestManagerPortalTest : public FindRequestManagerTest {

@@ -34,6 +34,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -255,8 +256,8 @@ class TestWebUIControllerFactory : public WebUIControllerFactory {
       registered_controllers_;
 };
 
-// Base for unit tests that need a ContentBrowserClient.
-class TestWebUIContentBrowserClient : public ContentBrowserClient {
+class TestWebUIContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   TestWebUIContentBrowserClient() {}
   TestWebUIContentBrowserClient(const TestWebUIContentBrowserClient&) = delete;
@@ -303,20 +304,16 @@ class WebUIMojoTest : public ContentBrowserTest,
   }
 
   void SetUpOnMainThread() override {
-    original_client_ = SetBrowserClientForTesting(&client_);
+    client_ = std::make_unique<TestWebUIContentBrowserClient>();
   }
 
-  void TearDownOnMainThread() override {
-    if (original_client_)
-      SetBrowserClientForTesting(original_client_);
-  }
+  void TearDownOnMainThread() override { client_.reset(); }
 
  private:
   TestWebUIControllerFactory factory_;
   content::ScopedWebUIControllerFactoryRegistration factory_registration_{
       &factory_};
-  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
-  TestWebUIContentBrowserClient client_;
+  std::unique_ptr<TestWebUIContentBrowserClient> client_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All, WebUIMojoTest, testing::Bool());

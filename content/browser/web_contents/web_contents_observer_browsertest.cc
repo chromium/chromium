@@ -16,10 +16,10 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "content/test/test_content_browser_client.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
 namespace {
 
 class ServiceWorkerAccessContentBrowserClient
-    : public TestContentBrowserClient {
+    : public ContentBrowserTestContentBrowserClient {
  public:
   ServiceWorkerAccessContentBrowserClient() = default;
 
@@ -174,8 +174,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
 
   // 2) Set content client and disallow javascript.
   ServiceWorkerAccessContentBrowserClient content_browser_client;
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&content_browser_client);
   content_browser_client.SetJavascriptAllowed(false);
 
   {
@@ -218,8 +216,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
         embedded_test_server()->GetURL("/service_worker/empty.html")));
     run_loop.Run();
   }
-
-  SetBrowserClientForTesting(old_client);
 }
 
 namespace {
@@ -700,8 +696,7 @@ class WebContentsObserverColorSchemeBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WebContentsObserverBrowserTest::SetUpCommandLine(command_line);
     // ShellContentBrowserClient::OverrideWebkitPrefs() overrides the
-    // prefers-color-scheme according to switches::kForceDarkMode
-    // command line.
+    // prefers-color-scheme according to switches::kForceDarkMode command line.
     if (GetParam() == blink::mojom::PreferredColorScheme::kDark)
       command_line->AppendSwitch(switches::kForceDarkMode);
   }

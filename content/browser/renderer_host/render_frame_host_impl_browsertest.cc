@@ -59,6 +59,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/navigation_handle_observer.h"
@@ -75,7 +76,6 @@
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/frame_host_test_interface.mojom.h"
 #include "content/test/navigation_simulator_impl.h"
-#include "content/test/test_content_browser_client.h"
 #include "content/test/test_render_frame_host_factory.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/features.h"
@@ -120,7 +120,8 @@ namespace {
 
 // Implementation of ContentBrowserClient that overrides
 // OverridePageVisibilityState() and allows consumers to set a value.
-class PrerenderTestContentBrowserClient : public TestContentBrowserClient {
+class PrerenderTestContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   PrerenderTestContentBrowserClient()
       : override_enabled_(false),
@@ -159,7 +160,8 @@ const char kTrustMeIfEmbeddingSecureUrl[] =
 // makes all requests to it via kTrustMeUrl return a particular iframe.
 // Same for trustmeifembeddingsecure, which does the same if the embedded origin
 // is secure.
-class FirstPartySchemeContentBrowserClient : public TestContentBrowserClient {
+class FirstPartySchemeContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   explicit FirstPartySchemeContentBrowserClient(const GURL& iframe_url)
       : iframe_url_(iframe_url) {
@@ -446,7 +448,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,foo")));
 
   PrerenderTestContentBrowserClient new_client;
-  ContentBrowserClient* old_client = SetBrowserClientForTesting(&new_client);
 
   web_contents()->WasShown();
   EXPECT_EQ(PageVisibilityState::kVisible,
@@ -455,8 +456,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   new_client.EnableVisibilityOverride(PageVisibilityState::kHiddenButPainting);
   EXPECT_EQ(PageVisibilityState::kHiddenButPainting,
             web_contents()->GetPrimaryMainFrame()->GetVisibilityState());
-
-  SetBrowserClientForTesting(old_client);
 }
 
 // Check that the URLLoaderFactories created by RenderFrameHosts for renderers
@@ -3978,7 +3977,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       "a.com", "/cross_site_iframe_factory.html?a(a(b(d)),c())");
 
   FirstPartySchemeContentBrowserClient new_client(url);
-  ContentBrowserClient* old_client = SetBrowserClientForTesting(&new_client);
 
   GURL b_url = embedded_test_server()->GetURL("b.com", "/");
   GURL c_url = embedded_test_server()->GetURL("c.com", "/");
@@ -4200,8 +4198,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                               ->ComputeIsolationInfoForNavigation(secure_url)
                               .site_for_cookies()));
   }
-
-  SetBrowserClientForTesting(old_client);
 }
 
 // Test that when ancestor iframes differ in scheme that the SiteForCookies
@@ -5530,7 +5526,8 @@ const char kAppHost[] = "app.com";
 const char kNonAppHost[] = "non-app.com";
 }  // namespace
 
-class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
+class IsolatedWebAppContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   IsolatedWebAppContentBrowserClient() = default;
 
@@ -5566,18 +5563,16 @@ class RenderFrameHostImplBrowserTestWithRestrictedApis
     https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
     net::test_server::RegisterDefaultHandlers(https_server());
     ASSERT_TRUE(https_server()->Start());
-
-    old_client_ = SetBrowserClientForTesting(&test_client_);
+    test_client_ = std::make_unique<IsolatedWebAppContentBrowserClient>();
   }
 
   void TearDownOnMainThread() override {
     RenderFrameHostImplBrowserTest::TearDownOnMainThread();
-    SetBrowserClientForTesting(old_client_);
+    test_client_.reset();
   }
 
  private:
-  IsolatedWebAppContentBrowserClient test_client_;
-  raw_ptr<ContentBrowserClient> old_client_;
+  std::unique_ptr<IsolatedWebAppContentBrowserClient> test_client_;
   ContentMockCertVerifier mock_cert_verifier_;
 };
 

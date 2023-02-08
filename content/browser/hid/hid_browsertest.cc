@@ -17,6 +17,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/shell/browser/shell.h"
@@ -50,14 +51,20 @@ device::mojom::HidDeviceInfoPtr CreateTestDeviceWithInputAndOutputReports() {
   return device;
 }
 
+class HidBrowserTestContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  MockHidDelegate& delegate() { return delegate_; }
+
+  // ContentBrowserClient:
+  HidDelegate* GetHidDelegate() override { return &delegate_; }
+
+ private:
+  MockHidDelegate delegate_;
+};
+
 class HidTest : public ContentBrowserTest {
  public:
-  HidTest() {
-    ON_CALL(delegate(), GetHidManager).WillByDefault(Return(&hid_manager_));
-  }
-
-  ~HidTest() override = default;
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(
@@ -65,20 +72,17 @@ class HidTest : public ContentBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    original_client_ = SetBrowserClientForTesting(&test_client_);
+    test_client_ = std::make_unique<HidBrowserTestContentBrowserClient>();
+    ON_CALL(delegate(), GetHidManager).WillByDefault(Return(&hid_manager_));
   }
 
-  void TearDownOnMainThread() override {
-    if (original_client_)
-      SetBrowserClientForTesting(original_client_);
-  }
+  void TearDownOnMainThread() override { test_client_.reset(); }
 
-  MockHidDelegate& delegate() { return test_client_.delegate(); }
+  MockHidDelegate& delegate() { return test_client_->delegate(); }
   device::FakeHidManager* hid_manager() { return &hid_manager_; }
 
  private:
-  HidTestContentBrowserClient test_client_;
-  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
+  std::unique_ptr<HidBrowserTestContentBrowserClient> test_client_;
   device::FakeHidManager hid_manager_;
 };
 

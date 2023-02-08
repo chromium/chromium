@@ -24,12 +24,6 @@ MockPrivateAggregationHost::~MockPrivateAggregationHost() = default;
 MockPrivateAggregationManager::MockPrivateAggregationManager() = default;
 MockPrivateAggregationManager::~MockPrivateAggregationManager() = default;
 
-MockPrivateAggregationContentBrowserClient::
-    MockPrivateAggregationContentBrowserClient() = default;
-
-MockPrivateAggregationContentBrowserClient::
-    ~MockPrivateAggregationContentBrowserClient() = default;
-
 bool operator==(const PrivateAggregationBudgetKey::TimeWindow& a,
                 const PrivateAggregationBudgetKey::TimeWindow& b) {
   return a.start_time() == b.start_time();

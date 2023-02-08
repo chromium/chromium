@@ -203,8 +203,20 @@ class CONTENT_EXPORT ContentClient {
       mojo::BinderMap* binders);
 
  private:
+  // For SetBrowserClientAlwaysAllowForTesting().
+  friend class BrowserTestBase;
   friend class ContentClientInitializer;  // To set these pointers.
   friend class InternalTestInitializer;
+  // For SetCanChangeContentBrowserClientForTesting().
+  friend class ContentBrowserTest;
+  // For SetCanChangeContentBrowserClientForTesting().
+  friend class ContentBrowserTestContentBrowserClient;
+
+  // Controls whether test code may change the ContentBrowserClient. This is
+  // used to enforce the right ContentBrowserClient is used.
+  static void SetCanChangeContentBrowserClientForTesting(bool value);
+  // Same as SetBrowserClientForTesting(), but always succeeds.
+  static void SetBrowserClientAlwaysAllowForTesting(ContentBrowserClient* b);
 
   // The embedder API for participating in browser logic.
   raw_ptr<ContentBrowserClient, DanglingUntriaged> browser_;

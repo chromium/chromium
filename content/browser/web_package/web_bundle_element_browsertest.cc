@@ -21,6 +21,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/shell/browser/shell.h"
@@ -42,7 +43,7 @@ const char kUuidTestBundlePath[] = "/web_bundle/uuid-in-package.wbn";
 const char kUuidTestPagePath[] =
     "/web_bundle/script_web_bundle_uuid_in_package.html";
 
-class TestBrowserClient : public ContentBrowserClient {
+class TestBrowserClient : public ContentBrowserTestContentBrowserClient {
  public:
   TestBrowserClient() = default;
   ~TestBrowserClient() override = default;
@@ -64,6 +65,7 @@ class TestBrowserClient : public ContentBrowserClient {
     observed_url_ = url;
     return true;
   }
+  bool HasErrorPage(int http_status_code) override { return false; }
 
   GURL observed_url() const { return observed_url_ ? *observed_url_ : GURL(); }
 
@@ -144,7 +146,7 @@ class WebBundleElementBrowserTest : public ContentBrowserTest {
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
     mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
-    original_client_ = SetBrowserClientForTesting(&browser_client_);
+    browser_client_ = std::make_unique<TestBrowserClient>();
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server_.RegisterRequestHandler(base::BindRepeating(
         &WebBundleElementBrowserTest::HandleTestWebBundleRequest,
@@ -161,7 +163,7 @@ class WebBundleElementBrowserTest : public ContentBrowserTest {
 
   void TearDownOnMainThread() override {
     ContentBrowserTest::TearDownOnMainThread();
-    SetBrowserClientForTesting(original_client_);
+    browser_client_.reset();
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -238,7 +240,7 @@ class WebBundleElementBrowserTest : public ContentBrowserTest {
         "", "Not a valid HTTP response.");
   }
 
-  GURL GetObservedUnknownSchemeUrl() { return browser_client_.observed_url(); }
+  GURL GetObservedUnknownSchemeUrl() { return browser_client_->observed_url(); }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
@@ -258,8 +260,7 @@ class WebBundleElementBrowserTest : public ContentBrowserTest {
 
  private:
   content::ContentMockCertVerifier mock_cert_verifier_;
-  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
-  TestBrowserClient browser_client_;
+  std::unique_ptr<TestBrowserClient> browser_client_;
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_{
       net::EmbeddedTestServer::Type::TYPE_HTTPS};

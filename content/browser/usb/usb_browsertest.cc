@@ -19,6 +19,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
@@ -41,14 +42,16 @@ class WebUsbTest : public ContentBrowserTest {
   void SetUpOnMainThread() override {
     embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
     ASSERT_TRUE(embedded_test_server()->Start());
+
+    test_client_ = std::make_unique<UsbTestContentBrowserClientBase<
+        ContentBrowserTestContentBrowserClient>>();
+
     AddFakeDevice("123456");
 
     // Connect with the FakeUsbDeviceManager.
     mojo::PendingRemote<device::mojom::UsbDeviceManager> device_manager;
     device_manager_.AddReceiver(
         device_manager.InitWithNewPipeAndPassReceiver());
-
-    original_client_ = SetBrowserClientForTesting(&test_client_);
 
     // The chooser will always select the last-created `fake_device_info_`.
     EXPECT_CALL(delegate(), RunChooserInternal).WillRepeatedly([&]() {
@@ -90,9 +93,7 @@ class WebUsbTest : public ContentBrowserTest {
     EXPECT_EQ(origin_, render_frame_host->GetLastCommittedOrigin());
   }
 
-  void TearDownOnMainThread() override {
-    SetBrowserClientForTesting(original_client_);
-  }
+  void TearDownOnMainThread() override { test_client_.reset(); }
 
   void AddFakeDevice(const std::string& serial_number) {
     DCHECK(!fake_device_info_);
@@ -108,13 +109,14 @@ class WebUsbTest : public ContentBrowserTest {
     fake_device_info_ = nullptr;
   }
 
-  MockUsbDelegate& delegate() { return test_client_.delegate(); }
+  MockUsbDelegate& delegate() { return test_client_->delegate(); }
 
   WebContents* web_contents() { return shell()->web_contents(); }
 
  private:
-  UsbTestContentBrowserClient test_client_;
-  raw_ptr<ContentBrowserClient> original_client_;
+  std::unique_ptr<
+      UsbTestContentBrowserClientBase<ContentBrowserTestContentBrowserClient>>
+      test_client_;
   device::FakeUsbDeviceManager device_manager_;
   device::mojom::UsbDeviceInfoPtr fake_device_info_;
   url::Origin origin_;

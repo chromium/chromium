@@ -37,6 +37,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/mock_web_contents_observer.h"
@@ -48,7 +49,6 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
-#include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/mock_commit_deferring_condition.h"
@@ -3436,13 +3436,11 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
 IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
                        SiteIsSetAtResponseTimeWithoutSiteIsolation) {
   // A custom ContentBrowserClient to turn off strict site isolation.
-  class NoSiteIsolationContentBrowserClient : public ContentBrowserClient {
+  class NoSiteIsolationContentBrowserClient
+      : public ContentBrowserTestContentBrowserClient {
    public:
     bool ShouldEnableStrictSiteIsolation() override { return false; }
   } no_site_isolation_client;
-
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&no_site_isolation_client);
 
   // The test should start in a blank shell with a siteless SiteInstance.
   EXPECT_FALSE(
@@ -3475,8 +3473,6 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   // The process should also be considered used at this point.
   EXPECT_FALSE(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->IsUnused());
-
-  SetBrowserClientForTesting(old_client);
 }
 
 // Check that a subframe can load an error page with an about:srcdoc URL, and
@@ -3531,13 +3527,11 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   // The scenario in this test originally led to a site isolation bypass only
   // when error page isolation for main frames is turned off.  Do this via a
   // custom ContentBrowserClient.
-  class NoErrorPageIsolationContentBrowserClient : public ContentBrowserClient {
+  class NoErrorPageIsolationContentBrowserClient
+      : public ContentBrowserTestContentBrowserClient {
    public:
     bool ShouldIsolateErrorPage(bool in_main_frame) override { return false; }
   } no_error_isolation_client;
-
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&no_error_isolation_client);
 
   // Set the process limit to 1.  This will force main frame navigations to
   // attempt to reuse existing processes.
@@ -3591,8 +3585,6 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   // Ensure that bar.com didn't reuse the foo.com error page process.
   EXPECT_NE(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
             new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
-
-  SetBrowserClientForTesting(old_client);
 }
 
 using CSPEmbeddedEnforcementBrowserTest = NavigationRequestBrowserTest;

@@ -14,6 +14,7 @@
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -294,7 +295,8 @@ const char kAppHost[] = "app.com";
 const char kNonAppHost[] = "other.com";
 }  // namespace
 
-class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
+class IsolatedWebAppContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url) override {
@@ -325,7 +327,7 @@ class ContentSecurityPolicyIsolatedAppBrowserTest
 
   void SetUpOnMainThread() override {
     ContentSecurityPolicyBrowserTest::SetUpOnMainThread();
-    old_client_ = SetBrowserClientForTesting(&client_);
+    client_ = std::make_unique<IsolatedWebAppContentBrowserClient>();
 
     host_resolver()->AddRule("*", "127.0.0.1");
     mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
@@ -334,7 +336,7 @@ class ContentSecurityPolicyIsolatedAppBrowserTest
   }
 
   void TearDownOnMainThread() override {
-    SetBrowserClientForTesting(old_client_);
+    client_.reset();
     ContentSecurityPolicyBrowserTest::TearDownOnMainThread();
   }
 
@@ -345,8 +347,7 @@ class ContentSecurityPolicyIsolatedAppBrowserTest
   net::EmbeddedTestServer https_server_;
   ContentMockCertVerifier mock_cert_verifier_;
 
-  IsolatedWebAppContentBrowserClient client_;
-  raw_ptr<ContentBrowserClient> old_client_;
+  std::unique_ptr<IsolatedWebAppContentBrowserClient> client_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyIsolatedAppBrowserTest, Base) {

@@ -273,8 +273,6 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
 
     client_ = std::make_unique<test::IsolatedWebAppContentBrowserClient>(
         url::Origin::Create(GetTestPageURL()));
-    scoped_client_ =
-        std::make_unique<ScopedContentBrowserClientSetting>(client_.get());
     runner_ =
         std::make_unique<content::test::AsyncJsRunner>(shell()->web_contents());
 
@@ -298,7 +296,6 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
   mojo::Remote<network::mojom::TCPServerSocket> tcp_server_socket_;
 
   std::unique_ptr<test::IsolatedWebAppContentBrowserClient> client_;
-  std::unique_ptr<ScopedContentBrowserClientSetting> scoped_client_;
   std::unique_ptr<content::test::AsyncJsRunner> runner_;
 };
 

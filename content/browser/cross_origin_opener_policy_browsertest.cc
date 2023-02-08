@@ -19,6 +19,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -309,7 +310,7 @@ class NoSiteIsolationCrossOriginIsolationBrowserTest
 
   void SetUpOnMainThread() override {
     CrossOriginOpenerPolicyBrowserTest::SetUpOnMainThread();
-    original_client_ = SetBrowserClientForTesting(&browser_client_);
+    browser_client_ = std::make_unique<NoSiteIsolationContentBrowserClient>();
 
     // The custom ContentBrowserClient above typically ensures that this test
     // runs without strict site isolation, but it's still possible to
@@ -326,21 +327,21 @@ class NoSiteIsolationCrossOriginIsolationBrowserTest
 
   void TearDownOnMainThread() override {
     CrossOriginOpenerPolicyBrowserTest::TearDownOnMainThread();
-    SetBrowserClientForTesting(original_client_);
+    browser_client_.reset();
   }
 
   // A custom ContentBrowserClient to turn off strict site isolation, since
   // process model differences exist in environments like Android. Note that
   // kSitePerProcess is a higher-layer feature, so we can't just disable it
   // here.
-  class NoSiteIsolationContentBrowserClient : public ContentBrowserClient {
+  class NoSiteIsolationContentBrowserClient
+      : public ContentBrowserTestContentBrowserClient {
    public:
     bool ShouldEnableStrictSiteIsolation() override { return false; }
   };
 
  private:
-  NoSiteIsolationContentBrowserClient browser_client_;
-  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
+  std::unique_ptr<NoSiteIsolationContentBrowserClient> browser_client_;
 
   base::test::ScopedFeatureList feature_list_;
 };

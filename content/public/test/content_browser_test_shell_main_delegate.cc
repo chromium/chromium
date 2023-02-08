@@ -4,24 +4,12 @@
 
 #include "content/public/test/content_browser_test_shell_main_delegate.h"
 
-#include "base/test/task_environment.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
-
-// Acts like normal ShellContentBrowserClient but injects a test TaskTracker to
-// watch for long-running tasks and produce a useful timeout message in order to
-// find the cause of flaky timeout tests.
-class ContentBrowserTestShellContentBrowserClient
-    : public ShellContentBrowserClient {
- public:
-  bool CreateThreadPool(base::StringPiece name) override {
-    base::test::TaskEnvironment::CreateThreadPool();
-    return true;
-  }
-};
 
 ContentBrowserTestShellMainDelegate::ContentBrowserTestShellMainDelegate()
     : ShellMainDelegate(/*is_content_browsertests=*/true) {}
@@ -44,8 +32,7 @@ ContentBrowserTestShellMainDelegate::PostEarlyInitialization(
 
 ContentBrowserClient*
 ContentBrowserTestShellMainDelegate::CreateContentBrowserClient() {
-  browser_client_ =
-      std::make_unique<ContentBrowserTestShellContentBrowserClient>();
+  browser_client_ = std::make_unique<ContentBrowserTestContentBrowserClient>();
   return browser_client_.get();
 }
 

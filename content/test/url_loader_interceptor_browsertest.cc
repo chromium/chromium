@@ -16,6 +16,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -153,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(URLLoaderInterceptorTest,
 }
 
 class TestBrowserClientWithHeaderClient
-    : public ContentBrowserClient,
+    : public ContentBrowserTestContentBrowserClient,
       public network::mojom::TrustedURLLoaderHeaderClient {
  private:
   // ContentBrowserClient:
@@ -171,8 +172,9 @@ class TestBrowserClientWithHeaderClient
       bool* bypass_redirect_checks,
       bool* disable_secure_dns,
       network::mojom::URLLoaderFactoryOverridePtr* factory_override) override {
-    if (header_client)
+    if (header_client) {
       receivers_.Add(this, header_client->InitWithNewPipeAndPassReceiver());
+    }
     return true;
   }
 
@@ -192,8 +194,6 @@ class TestBrowserClientWithHeaderClient
 IN_PROC_BROWSER_TEST_F(URLLoaderInterceptorTest,
                        InterceptFrameWithHeaderClient) {
   TestBrowserClientWithHeaderClient browser_client;
-  content::ContentBrowserClient* old_browser_client =
-      content::SetBrowserClientForTesting(&browser_client);
 
   bool seen = false;
   GURL url = GetPageURL();
@@ -209,8 +209,6 @@ IN_PROC_BROWSER_TEST_F(URLLoaderInterceptorTest,
       }));
   EXPECT_FALSE(NavigateToURL(shell(), GetPageURL()));
   EXPECT_TRUE(seen);
-
-  SetBrowserClientForTesting(old_browser_client);
 }
 
 IN_PROC_BROWSER_TEST_F(URLLoaderInterceptorTest, MonitorSubresource) {

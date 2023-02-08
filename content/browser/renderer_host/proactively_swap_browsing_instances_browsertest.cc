@@ -13,13 +13,13 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/render_document_feature.h"
-#include "content/test/test_content_browser_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -319,7 +319,8 @@ IN_PROC_BROWSER_TEST_P(
 // if |should_use_process_per_site_| is true. It is used to verify that we don't
 // reuse the current page's renderer process when navigating to sites that uses
 // process-per-site.
-class ProcessPerSiteContentBrowserClient : public TestContentBrowserClient {
+class ProcessPerSiteContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
  public:
   ProcessPerSiteContentBrowserClient() = default;
 
@@ -356,8 +357,6 @@ IN_PROC_BROWSER_TEST_P(
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
   ProcessPerSiteContentBrowserClient content_browser_client;
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&content_browser_client);
   // Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), a_url));
   scoped_refptr<SiteInstanceImpl> a_site_instance =
@@ -420,8 +419,6 @@ IN_PROC_BROWSER_TEST_P(
   // B will reuse C's process here, even though C is process-per-site, because
   // neither of them require a dedicated process.
   EXPECT_EQ(b2_site_instance->GetProcess(), c_site_instance->GetProcess());
-
-  SetBrowserClientForTesting(old_client);
 }
 
 // We should not reuse the current process on renderer-initiated navigations to
@@ -438,8 +435,6 @@ IN_PROC_BROWSER_TEST_P(
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
   ProcessPerSiteContentBrowserClient content_browser_client;
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&content_browser_client);
 
   // Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), a_url));
@@ -483,8 +478,6 @@ IN_PROC_BROWSER_TEST_P(
             RenderProcessHostImpl::GetSoleProcessHostForSite(
                 b_site_instance->GetIsolationContext(),
                 b_site_instance->GetSiteInfo()));
-
-  SetBrowserClientForTesting(old_client);
 }
 
 // We should not reuse the current process on renderer-initiated navigations to
@@ -501,10 +494,8 @@ IN_PROC_BROWSER_TEST_P(
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
   // The client will make sure b.com require a dedicated process.
-  EffectiveURLContentBrowserClient modified_client(
+  EffectiveURLContentBrowserTestContentBrowserClient modified_client(
       b_url /* url_to_modify */, b_url, true /* requires_dedicated_process */);
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&modified_client);
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), a_url));
   scoped_refptr<SiteInstanceImpl> a_site_instance =
@@ -522,7 +513,6 @@ IN_PROC_BROWSER_TEST_P(
   // Check that A and B are in different BrowsingInstances and processes.
   EXPECT_FALSE(a_site_instance->IsRelatedSiteInstance(b_site_instance.get()));
   EXPECT_NE(a_site_instance->GetProcess(), b_site_instance->GetProcess());
-  SetBrowserClientForTesting(old_client);
 }
 
 // We should not reuse the current process on renderer-initiated navigations to
@@ -539,10 +529,8 @@ IN_PROC_BROWSER_TEST_P(
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
   // The client will make sure a.com require a dedicated process.
-  EffectiveURLContentBrowserClient modified_client(
+  EffectiveURLContentBrowserTestContentBrowserClient modified_client(
       a_url /* url_to_modify */, a_url, true /* requires_dedicated_process */);
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&modified_client);
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), a_url));
   scoped_refptr<SiteInstanceImpl> a_site_instance =
@@ -560,7 +548,6 @@ IN_PROC_BROWSER_TEST_P(
   // Check that A and B are in different BrowsingInstances and processes.
   EXPECT_FALSE(a_site_instance->IsRelatedSiteInstance(b_site_instance.get()));
   EXPECT_NE(a_site_instance->GetProcess(), b_site_instance->GetProcess());
-  SetBrowserClientForTesting(old_client);
 }
 
 class ProactivelySwapBrowsingInstancesSameSiteTest
@@ -1403,10 +1390,8 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
   // Make sure the site require a dedicated process.
-  EffectiveURLContentBrowserClient modified_client(
+  EffectiveURLContentBrowserTestContentBrowserClient modified_client(
       url_1 /* url_to_modify */, url_1, /* requires_dedicated_process */ true);
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&modified_client);
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
@@ -1426,7 +1411,6 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   // process.
   EXPECT_FALSE(site_instance_1->IsRelatedSiteInstance(site_instance_2.get()));
   EXPECT_EQ(site_instance_1->GetProcess(), site_instance_2->GetProcess());
-  SetBrowserClientForTesting(old_client);
 }
 
 // Tests that pagehide handlers of the old RFH are run during the commit

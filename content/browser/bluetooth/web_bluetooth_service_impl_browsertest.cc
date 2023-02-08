@@ -18,6 +18,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
@@ -255,7 +256,7 @@ class TestBluetoothDelegate : public BluetoothDelegate {
   bool showed_bluetooth_scanning_prompt_ = false;
 };
 
-class TestContentBrowserClient : public ContentBrowserClient {
+class TestContentBrowserClient : public ContentBrowserTestContentBrowserClient {
  public:
   TestContentBrowserClient() = default;
   ~TestContentBrowserClient() override = default;
@@ -313,7 +314,7 @@ class WebBluetoothServiceImplBrowserTest : public ContentBrowserTest {
                     embedded_test_server()->StartAndReturnHandle());
 
     // Hook up the test bluetooth delegate.
-    old_browser_client_ = SetBrowserClientForTesting(&browser_client_);
+    browser_client_ = std::make_unique<TestContentBrowserClient>();
     SetFakeBlueboothAdapter();
   }
 
@@ -347,14 +348,14 @@ class WebBluetoothServiceImplBrowserTest : public ContentBrowserTest {
   }
 
   void SetDeviceToSelect(const std::string& device_address) {
-    browser_client_.bluetooth_delegate()->SetDeviceToSelect(device_address);
+    browser_client_->bluetooth_delegate()->SetDeviceToSelect(device_address);
   }
 
   bool CheckedAllowWebBluetooth() {
-    return browser_client_.checked_allow_web_bluetooth();
+    return browser_client_->checked_allow_web_bluetooth();
   }
 
-  void BlockGloballyDisabled() { browser_client_.block_globally_disabled(); }
+  void BlockGloballyDisabled() { browser_client_->block_globally_disabled(); }
 
   WebBluetoothServiceImpl* GetWebBluetoothServiceForTesting(
       RenderFrameHost* render_frame_host) {
@@ -364,7 +365,7 @@ class WebBluetoothServiceImplBrowserTest : public ContentBrowserTest {
 
   WebContents* GetWebContents() { return shell()->web_contents(); }
   TestBluetoothDelegate* GetBluetoothDelegate() {
-    return browser_client_.bluetooth_delegate();
+    return browser_client_->bluetooth_delegate();
   }
 
   test::PrerenderTestHelper* prerender_helper() { return &prerender_helper_; }
@@ -374,8 +375,7 @@ class WebBluetoothServiceImplBrowserTest : public ContentBrowserTest {
   test::PrerenderTestHelper prerender_helper_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
-  TestContentBrowserClient browser_client_;
-  raw_ptr<ContentBrowserClient> old_browser_client_ = nullptr;
+  std::unique_ptr<TestContentBrowserClient> browser_client_;
 };
 
 // Tests that the scanning prompt is not shown in the prerendering. It also

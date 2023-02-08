@@ -17,6 +17,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "services/device/public/cpp/test/fake_serial_port_manager.h"
@@ -32,14 +33,20 @@ namespace content {
 
 namespace {
 
+class SerialTestShellContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  MockSerialDelegate& delegate() { return delegate_; }
+
+  // ContentBrowserClient:
+  SerialDelegate* GetSerialDelegate() override { return &delegate_; }
+
+ private:
+  MockSerialDelegate delegate_;
+};
+
 class SerialTest : public ContentBrowserTest {
  public:
-  SerialTest() {
-    ON_CALL(delegate(), GetPortManager).WillByDefault(Return(&port_manager_));
-  }
-
-  ~SerialTest() override = default;
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(
@@ -47,20 +54,17 @@ class SerialTest : public ContentBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    original_client_ = SetBrowserClientForTesting(&test_client_);
+    test_client_ = std::make_unique<SerialTestShellContentBrowserClient>();
+    ON_CALL(delegate(), GetPortManager).WillByDefault(Return(&port_manager_));
   }
 
-  void TearDownOnMainThread() override {
-    if (original_client_)
-      SetBrowserClientForTesting(original_client_);
-  }
+  void TearDownOnMainThread() override { test_client_.reset(); }
 
-  MockSerialDelegate& delegate() { return test_client_.delegate(); }
+  MockSerialDelegate& delegate() { return test_client_->delegate(); }
   device::FakeSerialPortManager* port_manager() { return &port_manager_; }
 
  private:
-  SerialTestContentBrowserClient test_client_;
-  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
+  std::unique_ptr<SerialTestShellContentBrowserClient> test_client_;
   device::FakeSerialPortManager port_manager_;
 };
 

@@ -575,15 +575,53 @@ float TestPageScaleObserver::WaitForPageScaleUpdate() {
   return last_scale_;
 }
 
-EffectiveURLContentBrowserClient::EffectiveURLContentBrowserClient(
+EffectiveURLContentBrowserClientHelper::EffectiveURLContentBrowserClientHelper(
     bool requires_dedicated_process)
     : requires_dedicated_process_(requires_dedicated_process) {}
+
+EffectiveURLContentBrowserClientHelper::
+    ~EffectiveURLContentBrowserClientHelper() = default;
+
+void EffectiveURLContentBrowserClientHelper::AddTranslation(
+    const GURL& url_to_modify,
+    const GURL& url_to_return) {
+  urls_to_modify_[url_to_modify] = url_to_return;
+}
+
+GURL EffectiveURLContentBrowserClientHelper::GetEffectiveURL(const GURL& url) {
+  auto it = urls_to_modify_.find(url);
+  if (it != urls_to_modify_.end()) {
+    return it->second;
+  }
+  return url;
+}
+
+bool EffectiveURLContentBrowserClientHelper::DoesSiteRequireDedicatedProcess(
+    BrowserContext* browser_context,
+    const GURL& effective_site_url) {
+  if (!requires_dedicated_process_) {
+    return false;
+  }
+
+  for (const auto& pair : urls_to_modify_) {
+    auto site_info = SiteInfo::CreateForTesting(
+        IsolationContext(browser_context), pair.first);
+    if (site_info.site_url() == effective_site_url) {
+      return true;
+    }
+  }
+  return false;
+}
+
+EffectiveURLContentBrowserClient::EffectiveURLContentBrowserClient(
+    bool requires_dedicated_process)
+    : helper_(requires_dedicated_process) {}
 
 EffectiveURLContentBrowserClient::EffectiveURLContentBrowserClient(
     const GURL& url_to_modify,
     const GURL& url_to_return,
     bool requires_dedicated_process)
-    : requires_dedicated_process_(requires_dedicated_process) {
+    : helper_(requires_dedicated_process) {
   AddTranslation(url_to_modify, url_to_return);
 }
 
@@ -592,31 +630,20 @@ EffectiveURLContentBrowserClient::~EffectiveURLContentBrowserClient() = default;
 void EffectiveURLContentBrowserClient::AddTranslation(
     const GURL& url_to_modify,
     const GURL& url_to_return) {
-  urls_to_modify_[url_to_modify] = url_to_return;
+  helper_.AddTranslation(url_to_modify, url_to_return);
 }
 
 GURL EffectiveURLContentBrowserClient::GetEffectiveURL(
     BrowserContext* browser_context,
     const GURL& url) {
-  auto it = urls_to_modify_.find(url);
-  if (it != urls_to_modify_.end())
-    return it->second;
-  return url;
+  return helper_.GetEffectiveURL(url);
 }
 
 bool EffectiveURLContentBrowserClient::DoesSiteRequireDedicatedProcess(
     BrowserContext* browser_context,
     const GURL& effective_site_url) {
-  if (!requires_dedicated_process_)
-    return false;
-
-  for (const auto& pair : urls_to_modify_) {
-    auto site_info = SiteInfo::CreateForTesting(
-        IsolationContext(browser_context), pair.first);
-    if (site_info.site_url() == effective_site_url)
-      return true;
-  }
-  return false;
+  return helper_.DoesSiteRequireDedicatedProcess(browser_context,
+                                                 effective_site_url);
 }
 
 ScopedContentBrowserClientSetting::ScopedContentBrowserClientSetting(

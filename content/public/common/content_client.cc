@@ -20,9 +20,15 @@ namespace content {
 
 static ContentClient* g_client;
 
+static bool g_can_change_browser_client = true;
+
 class InternalTestInitializer {
  public:
   static ContentBrowserClient* SetBrowser(ContentBrowserClient* b) {
+    CHECK(g_can_change_browser_client)
+        << "The wrong ContentBrowserClient subclass is being used. In "
+           "content_browsertests, subclass "
+           "ContentBrowserTestContentBrowserClient.";
     ContentBrowserClient* rv = g_client->browser_;
     g_client->browser_ = b;
     return rv;
@@ -40,6 +46,20 @@ class InternalTestInitializer {
     return rv;
   }
 };
+
+// static
+void ContentClient::SetCanChangeContentBrowserClientForTesting(bool value) {
+  g_can_change_browser_client = value;
+}
+
+// static
+void ContentClient::SetBrowserClientAlwaysAllowForTesting(
+    ContentBrowserClient* b) {
+  bool old = g_can_change_browser_client;
+  g_can_change_browser_client = true;
+  SetBrowserClientForTesting(b);  // IN-TEST
+  g_can_change_browser_client = old;
+}
 
 void SetContentClient(ContentClient* client) {
   g_client = client;
