@@ -12,11 +12,11 @@
 
 namespace extensions {
 
-ContentScriptInjectionUrlGetter::FrameAdapter::~FrameAdapter() = default;
+ContentScriptInjectionUrlGetter::ContextData::~ContextData() = default;
 
 // static
 GURL ContentScriptInjectionUrlGetter::Get(
-    const FrameAdapter& frame,
+    const ContextData& context_data,
     const GURL& document_url,
     MatchOriginAsFallbackBehavior match_origin_as_fallback,
     bool allow_inaccessible_parents) {
@@ -89,7 +89,7 @@ GURL ContentScriptInjectionUrlGetter::Get(
   // https://example.com will have the security origin of https://example.com.
   // Other frames, like data: frames, will have an opaque origin. For these,
   // we can get the precursor origin.
-  const url::Origin frame_origin = frame.GetOrigin();
+  const url::Origin frame_origin = context_data.GetOrigin();
   const url::SchemeHostPort& tuple_or_precursor_tuple =
       frame_origin.GetTupleOrPrecursorTupleIfOpaque();
 
@@ -106,8 +106,8 @@ GURL ContentScriptInjectionUrlGetter::Get(
       url::Origin::Create(tuple_or_precursor_tuple.GetURL());
 
   if (!allow_inaccessible_parents &&
-      !frame.CanAccess(origin_or_precursor_origin)) {
-    // The `frame` can't access its precursor. Bail.
+      !context_data.CanAccess(origin_or_precursor_origin)) {
+    // The `context_data` can't access its precursor. Bail.
     TRACE_EVENT_INSTANT(
         "extensions",
         "ContentScriptInjectionUrlGetter::Get/no-precursor-access");
@@ -144,17 +144,17 @@ GURL ContentScriptInjectionUrlGetter::Get(
   // with the same origin as the precursor and return its URL.
   // TODO(https://crbug.com/1186321): This can return the incorrect result, e.g.
   // if a parent frame navigates a grandchild frame to about:blank.
-  std::unique_ptr<FrameAdapter> parent = frame.Clone();
+  std::unique_ptr<ContextData> parent_context_data = context_data.Clone();
   GURL parent_url;
   base::flat_set<uintptr_t> already_visited_frame_ids;
   do {
-    already_visited_frame_ids.insert(parent->GetId());
-    parent = parent->GetLocalParentOrOpener();
+    already_visited_frame_ids.insert(parent_context_data->GetId());
+    parent_context_data = parent_context_data->GetLocalParentOrOpener();
 
     // We reached the end of the ancestral chain without finding a valid parent,
     // or found a remote web frame (in which case, it's a different origin).
     // Bail and use the original URL.
-    if (!parent) {
+    if (!parent_context_data) {
       TRACE_EVENT_INSTANT(
           "extensions", "ContentScriptInjectionUrlGetter::Get/no-more-parents");
       return document_url;
@@ -162,14 +162,16 @@ GURL ContentScriptInjectionUrlGetter::Get(
 
     // Avoid an infinite loop - see https://crbug.com/568432 and
     // https://crbug.com/883526.
-    if (base::Contains(already_visited_frame_ids, parent->GetId())) {
+    if (base::Contains(already_visited_frame_ids,
+                       parent_context_data->GetId())) {
       TRACE_EVENT_INSTANT("extensions",
                           "ContentScriptInjectionUrlGetter::Get/infinite-loop");
       return document_url;
     }
 
     url::SchemeHostPort parent_tuple_or_precursor_tuple =
-        url::Origin(parent->GetOrigin()).GetTupleOrPrecursorTupleIfOpaque();
+        url::Origin(parent_context_data->GetOrigin())
+            .GetTupleOrPrecursorTupleIfOpaque();
     if (!parent_tuple_or_precursor_tuple.IsValid() ||
         parent_tuple_or_precursor_tuple != tuple_or_precursor_tuple) {
       // The parent has a different tuple origin than frame; this could happen
@@ -199,7 +201,8 @@ GURL ContentScriptInjectionUrlGetter::Get(
     // If we don't allow inaccessible parents, the security origin may still
     // be restricted if the author has prevented same-origin access via the
     // disallowdocumentaccess attribute on iframe.
-    if (!allow_inaccessible_parents && !frame.CanAccess(*parent)) {
+    if (!allow_inaccessible_parents &&
+        !context_data.CanAccess(*parent_context_data)) {
       // The frame can't access its precursor. Bail.
       TRACE_EVENT_INSTANT(
           "extensions",
@@ -207,7 +210,7 @@ GURL ContentScriptInjectionUrlGetter::Get(
       return document_url;
     }
 
-    parent_url = parent->GetUrl();
+    parent_url = parent_context_data->GetUrl();
   } while (parent_url.SchemeIs(url::kAboutScheme));
 
   DCHECK(!parent_url.is_empty());
@@ -217,7 +220,8 @@ GURL ContentScriptInjectionUrlGetter::Get(
   // frame, and we checked the frame access above.
   TRACE_EVENT_INSTANT("extensions",
                       "ContentScriptInjectionUrlGetter::Get/parent-url");
-  DCHECK(allow_inaccessible_parents || frame.CanAccess(parent->GetOrigin()));
+  DCHECK(allow_inaccessible_parents ||
+         context_data.CanAccess(parent_context_data->GetOrigin()));
   return parent_url;
 }
 

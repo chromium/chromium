@@ -26,21 +26,23 @@ class ContentScriptInjectionUrlGetter {
   // Only static methods.
   ContentScriptInjectionUrlGetter() = delete;
 
-  // Adapter abstracting away differences between RenderFrameHost and
-  // RenderFrame.
-  class FrameAdapter {
+  // An interface that contains data about the current context. Additionally,
+  // it abstracts away differences in data between the browser and renderer,
+  // for example between a RenderFrameHost and RenderFrame.
+  // TODO(b/267673751): Adjust ContextData to hold more data.
+  class ContextData {
    public:
-    virtual ~FrameAdapter();
-    virtual std::unique_ptr<FrameAdapter> Clone() const = 0;
-    virtual std::unique_ptr<FrameAdapter> GetLocalParentOrOpener() const = 0;
+    virtual ~ContextData();
+    virtual std::unique_ptr<ContextData> Clone() const = 0;
+    virtual std::unique_ptr<ContextData> GetLocalParentOrOpener() const = 0;
     virtual GURL GetUrl() const = 0;
     virtual url::Origin GetOrigin() const = 0;
     virtual bool CanAccess(const url::Origin& target) const = 0;
-    virtual bool CanAccess(const FrameAdapter& target) const = 0;
+    virtual bool CanAccess(const ContextData& target) const = 0;
     virtual uintptr_t GetId() const = 0;
   };
 
-  static GURL Get(const FrameAdapter& frame,
+  static GURL Get(const ContextData& frame,
                   const GURL& document_url,
                   MatchOriginAsFallbackBehavior match_origin_as_fallback,
                   bool allow_inaccessible_parents);
