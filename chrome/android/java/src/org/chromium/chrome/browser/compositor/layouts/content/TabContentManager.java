@@ -34,6 +34,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.flags.PostNativeFlag;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -58,6 +59,9 @@ import java.util.Set;
  */
 @JNINamespace("android")
 public class TabContentManager {
+    private static PostNativeFlag sThumbnailCacheRefactor =
+            new PostNativeFlag(ChromeFeatureList.THUMBNAIL_CACHE_REFACTOR);
+
     // These are used for UMA logging, so append only. Please update the
     // GridTabSwitcherThumbnailFetchingResult enum in enums.xml if these change.
     @IntDef({ThumbnailFetchingResult.GOT_JPEG, ThumbnailFetchingResult.GOT_ETC1,
@@ -191,7 +195,8 @@ public class TabContentManager {
                 ChromeSwitches.APPROXIMATION_THUMBNAILS);
 
         boolean useApproximationThumbnails =
-                !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
+                !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                && !sThumbnailCacheRefactor.isEnabled();
         boolean saveJpegThumbnails = TabUiFeatureUtilities.isGridTabSwitcherEnabled(mContext);
 
         mNativeTabContentManager =

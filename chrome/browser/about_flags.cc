@@ -9308,6 +9308,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebViewTagMPArchBehaviorDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(extensions_features::kWebviewTagMPArchBehavior)},
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+        //
+#if BUILDFLAG(IS_ANDROID)
+    {"thumbnail-cache-refactor", flag_descriptions::kThumbnailCacheRefactorName,
+     flag_descriptions::kThumbnailCacheRefactorDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kThumbnailCacheRefactor)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
     {"autofill-enable-page-load-metadata-integration",
      flag_descriptions::kAutofillEnablePageLoadMetadataIntegrationName,

@@ -6731,6 +6731,11 @@
     "expiry_milestone": 114
   },
   {
+    "name": "thumbnail-cache-refactor",
+    "owners": [ "ckitagawa", "fredmello" ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "tint-composited-content",
     "owners": [ "chromeos-gfx@google.com" ],
     // This flag is used for QA & development on ChromeOS, which has no way to

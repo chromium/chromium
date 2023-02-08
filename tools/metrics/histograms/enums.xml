@@ -60480,6 +60480,7 @@ from previous Chrome versions.
   <int value="-617452890" label="media-router"/>
   <int value="-616818899" label="SameSiteByDefaultCookies:enabled"/>
   <int value="-616508634" label="DisableCryptAuthV1DeviceSync:enabled"/>
+  <int value="-616414905" label="ThumbnailCacheRefactor:disabled"/>
   <int value="-615974325" label="ArcMouseWheelSmoothScroll:disabled"/>
   <int value="-615254902" label="SystemJapanesePhysicalTyping:enabled"/>
   <int value="-614223913"
@@ -63652,6 +63653,7 @@ from previous Chrome versions.
   <int value="1220274247" label="AllowReaderForAccessibility:disabled"/>
   <int value="1220464509" label="enable-first-run-ui-transitions"/>
   <int value="1220655015" label="kScrollableTabStripOverflow:enabled"/>
+  <int value="1221104166" label="ThumbnailCacheRefactor:enabled"/>
   <int value="1221394044" label="SharingUseDeviceInfo:enabled"/>
   <int value="1221559505" label="enable-spelling-feedback-field-trial"/>
   <int value="1222017136" label="WebRtcUseEchoCanceller3:disabled"/>
