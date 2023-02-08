@@ -438,6 +438,7 @@ mojom_webui_files = [
   "mojom-webui/setting.mojom-webui.js",
 ]
 
+# TODO(b/207087930) Consider moving these shared files to chrome://resources
 # Files below are from Nearby Share and shared with ChromeOS Settings
 nearby_share_shared_files = [
   "shared/nearby_contact_visibility.js",
@@ -473,16 +474,6 @@ nearby_share_shared_files = [
 # TODO(crbug/1315757) JS files here are available for TS conversion
 src_ts_files = non_web_component_files + web_component_files
 
-# TODO(crbug.com/1121865): browser_resolver_prefix_replacements allows path
-# from ../../shared/* to resolve to ../../../nearby_share/shared/* for closure
-# purposes.
-nearby_share_closure_flags = [
-  "js_module_root=" +
-      rebase_path("//chrome/browser/resources/nearby_share", root_build_dir),
-  "js_module_root=./gen/chrome/browser/resources/nearby_share",
-  "browser_resolver_prefix_replacements=\"../../shared/=../../../nearby_share/shared/\"",
-]
-
 # TODO(crbug.com/1179821) This allows WebUI mojom files listed under the
 # mojom-webui/ folder to be properly resolved during closure compilation.
 mojom_webui_closure_flags = [
@@ -515,5 +506,4 @@ mojom_webui_closure_flags = [
 # TODO(crbug.com/1315757) Remove once ChromeOS Settings is fully migrated to
 # TypeScript and no longer using Closure compilation
 os_settings_closure_flags =
-    settings_closure_flags + nearby_share_closure_flags + mojom_js_args +
-    mojom_webui_closure_flags
+    settings_closure_flags + mojom_js_args + mojom_webui_closure_flags
