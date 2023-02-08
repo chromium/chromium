@@ -74,7 +74,7 @@ class Gpu : public gpu::GpuChannelEstablishFactory {
 
   // Sends a request to establish a gpu channel. If a request is currently
   // pending this will do nothing.
-  void SendEstablishGpuChannelRequest();
+  void SendEstablishGpuChannelRequest(base::WaitableEvent* waitable_event);
 
   // Handles results of request to establish a gpu channel in
   // |pending_request_|.
