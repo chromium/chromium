@@ -69,7 +69,13 @@ const std::vector<SearchConcept>& GetPrivacySearchConcepts() {
     if (!IsGuestModeActive()) {
       all_tags.insert(
           all_tags.end(),
-          {{IDS_OS_SETTINGS_TAG_GUEST_BROWSING,
+          {{IDS_OS_SETTINGS_TAG_MANAGE_OTHER_PEOPLE_PAGE,
+            mojom::kManageOtherPeopleSubpagePathV2,
+            mojom::SearchResultIcon::kAvatar,
+            mojom::SearchResultDefaultRank::kMedium,
+            mojom::SearchResultType::kSubpage,
+            {.subpage = mojom::Subpage::kManageOtherPeopleV2}},
+           {IDS_OS_SETTINGS_TAG_GUEST_BROWSING,
             mojom::kManageOtherPeopleSubpagePathV2,
             mojom::SearchResultIcon::kAvatar,
             mojom::SearchResultDefaultRank::kMedium,

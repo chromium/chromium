@@ -388,6 +388,9 @@
   <message name="IDS_OS_SETTINGS_TAG_LOCK_SCREEN_PIN_OR_PASSWORD_ALT1" desc="Text for search result item which, when clicked, navigates the user to lock screen settings, with an option to determine whether the device can be unlocked with a PIN or a password. Alternate phrase for: 'Screen lock PIN'">
     Screen lock password
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_MANAGE_OTHER_PEOPLE_PAGE" desc="Text for search result item which, when clicked, navigates the user to manage other user account privileges.">
+    Manage other people
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_GUEST_BROWSING" desc="Text for search result item which, when clicked, navigates the user to account settings, with a toggle to enable/disable guest browsing.">
     Guest browsing
   </message>
