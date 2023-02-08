@@ -120,8 +120,6 @@ void MessagePumpForUI::ScheduleWork() {
 
   // Clarify that we didn't really insert.
   work_scheduled_ = false;
-  UMA_HISTOGRAM_ENUMERATION("Chrome.MessageLoopProblem", MESSAGE_POST_ERROR,
-                            MESSAGE_LOOP_PROBLEM_MAX);
   TRACE_EVENT_INSTANT0("base", "Chrome.MessageLoopProblem.MESSAGE_POST_ERROR",
                        TRACE_EVENT_SCOPE_THREAD);
 }
@@ -425,8 +423,6 @@ void MessagePumpForUI::ScheduleNativeTimer(
     // full). Since we only use ScheduleNativeTimer() in native nested loops
     // this likely means this pump will not be given a chance to run application
     // tasks until the nested loop completes.
-    UMA_HISTOGRAM_ENUMERATION("Chrome.MessageLoopProblem", SET_TIMER_ERROR,
-                              MESSAGE_LOOP_PROBLEM_MAX);
     TRACE_EVENT_INSTANT0("base", "Chrome.MessageLoopProblem.SET_TIMER_ERROR",
                          TRACE_EVENT_SCOPE_THREAD);
   }
@@ -507,8 +503,9 @@ bool MessagePumpForUI::ProcessMessageHelper(const MSG& msg) {
     // WM_QUIT is the standard way to exit a ::GetMessage() loop. Our
     // MessageLoop has its own quit mechanism, so WM_QUIT is generally
     // unexpected.
-    UMA_HISTOGRAM_ENUMERATION("Chrome.MessageLoopProblem",
-                              RECEIVED_WM_QUIT_ERROR, MESSAGE_LOOP_PROBLEM_MAX);
+    TRACE_EVENT_INSTANT0("base",
+                         "Chrome.MessageLoopProblem.RECEIVED_WM_QUIT_ERROR",
+                         TRACE_EVENT_SCOPE_THREAD);
     return true;
   }
 
@@ -654,8 +651,6 @@ void MessagePumpForIO::ScheduleWork() {
   // See comment in MessagePumpForUI::ScheduleWork() for this error recovery.
 
   work_scheduled_ = false;  // Clarify that we didn't succeed.
-  UMA_HISTOGRAM_ENUMERATION("Chrome.MessageLoopProblem", COMPLETION_POST_ERROR,
-                            MESSAGE_LOOP_PROBLEM_MAX);
   TRACE_EVENT_INSTANT0("base",
                        "Chrome.MessageLoopProblem.COMPLETION_POST_ERROR",
                        TRACE_EVENT_SCOPE_THREAD);

@@ -114,17 +114,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Chrome.MessageLoopProblem" enum="MessageLoopProblems"
-    expires_after="2021-07-31">
-  <owner>fdoray@chromium.org</owner>
-  <owner>gab@chromium.org</owner>
-  <summary>
-    Track set of Windows errors inside the meessage loop/pump system, where
-    system calls fail, and we try to gracefully recover. These errors should
-    really never happen, so we should be sure to look closer if they do.
-  </summary>
-</histogram>
-
 <histogram name="Chrome.ProcessSingleton.NotifyResult" enum="NotifyResult"
     expires_after="2023-07-30">
   <owner>gab@chromium.org</owner>
