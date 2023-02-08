@@ -84,9 +84,9 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
                                          LPARAM lparam);
 
     // Instance of the module containing the window procedure.
-    HMODULE instance_;
+    HMODULE instance_ = nullptr;
     // A hidden message-only window.
-    HWND message_hwnd_;
+    HWND message_hwnd_ = nullptr;
     // A handle, returned when we register for power setting notification
     HPOWERNOTIFY power_notify_handle_ = nullptr;
   };

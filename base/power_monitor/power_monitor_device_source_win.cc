@@ -32,9 +32,8 @@ void ProcessWmPowerBroadcastMessage(WPARAM event_id) {
       power_event = PowerMonitorSource::POWER_STATE_EVENT;
       break;
     case PBT_APMRESUMEAUTOMATIC:  // Resume from suspend.
-      //case PBT_APMRESUMESUSPEND:  // User-initiated resume from suspend.
-      // We don't notify for this latter event
-      // because if it occurs it is always sent as a
+      // We don't notify for PBT_APMRESUMESUSPEND
+      // because, if it occurs, it is always sent as a
       // second event after PBT_APMRESUMEAUTOMATIC.
       power_event = PowerMonitorSource::RESUME_EVENT;
       break;
@@ -54,28 +53,6 @@ void ProcessWmPowerBroadcastMessage(WPARAM event_id) {
   }
 
   ProcessPowerEventHelper(power_event);
-}
-
-HPOWERNOTIFY RegisterSuspendResumeNotification(HANDLE hRecipient, DWORD Flags) {
-  const auto register_suspend_resume_notification_ptr =
-      reinterpret_cast<decltype(&::RegisterSuspendResumeNotification)>(
-          ::GetProcAddress(::GetModuleHandle(L"user32.dll"),
-                           "RegisterSuspendResumeNotification"));
-  if (!register_suspend_resume_notification_ptr)
-    return nullptr;
-
-  return register_suspend_resume_notification_ptr(hRecipient, Flags);
-}
-
-BOOL UnregisterSuspendResumeNotification(HPOWERNOTIFY Handle) {
-  const auto unregister_suspend_resume_notification_ptr =
-      reinterpret_cast<decltype(&::UnregisterSuspendResumeNotification)>(
-          ::GetProcAddress(::GetModuleHandle(L"user32.dll"),
-                           "UnregisterSuspendResumeNotification"));
-  if (!unregister_suspend_resume_notification_ptr)
-    return FALSE;
-
-  return unregister_suspend_resume_notification_ptr(Handle);
 }
 
 }  // namespace
@@ -102,7 +79,7 @@ void PowerMonitorDeviceSource::PlatformDestroy() {
 // battery power.  Returns true if running on battery.
 bool PowerMonitorDeviceSource::IsOnBatteryPower() {
   SYSTEM_POWER_STATUS status;
-  if (!GetSystemPowerStatus(&status)) {
+  if (!::GetSystemPowerStatus(&status)) {
     DPLOG(ERROR) << "GetSystemPowerStatus failed";
     return false;
   }
@@ -115,8 +92,7 @@ int PowerMonitorDeviceSource::GetInitialSpeedLimit() {
   return PowerThermalObserver::kSpeedLimitMax;
 }
 
-PowerMonitorDeviceSource::PowerMessageWindow::PowerMessageWindow()
-    : instance_(NULL), message_hwnd_(NULL) {
+PowerMonitorDeviceSource::PowerMessageWindow::PowerMessageWindow() {
   if (!CurrentUIThread::IsSet()) {
     // Creating this window in (e.g.) a renderer inhibits shutdown on Windows.
     // See http://crbug.com/230122. TODO(vandebo): http://crbug.com/236031
@@ -129,21 +105,18 @@ PowerMonitorDeviceSource::PowerMessageWindow::PowerMessageWindow()
       kWindowClassName,
       &base::win::WrappedWindowProc<
           PowerMonitorDeviceSource::PowerMessageWindow::WndProcThunk>,
-      0, 0, 0, NULL, NULL, NULL, NULL, NULL,
-      &window_class);
+      0, 0, 0, nullptr, nullptr, nullptr, nullptr, nullptr, &window_class);
   instance_ = window_class.hInstance;
-  ATOM clazz = RegisterClassEx(&window_class);
+  ATOM clazz = ::RegisterClassEx(&window_class);
   DCHECK(clazz);
 
   message_hwnd_ =
-      CreateWindowEx(WS_EX_NOACTIVATE, kWindowClassName, NULL, WS_POPUP, 0, 0,
-                     0, 0, NULL, NULL, instance_, NULL);
+      ::CreateWindowEx(WS_EX_NOACTIVATE, kWindowClassName, nullptr, WS_POPUP, 0,
+                       0, 0, 0, nullptr, nullptr, instance_, nullptr);
   if (message_hwnd_) {
-    // On machines with modern standby and Win8+, calling
-    // RegisterSuspendResumeNotification is required in order to get the
-    // PBT_APMSUSPEND message. The notification is no longer automatically
-    // fired.
-    power_notify_handle_ = base::RegisterSuspendResumeNotification(
+    // On machines with modern standby calling RegisterSuspendResumeNotification
+    // is required in order to get the PBT_APMSUSPEND message.
+    power_notify_handle_ = ::RegisterSuspendResumeNotification(
         message_hwnd_, DEVICE_NOTIFY_WINDOW_HANDLE);
   }
 }
@@ -151,10 +124,10 @@ PowerMonitorDeviceSource::PowerMessageWindow::PowerMessageWindow()
 PowerMonitorDeviceSource::PowerMessageWindow::~PowerMessageWindow() {
   if (message_hwnd_) {
     if (power_notify_handle_)
-      base::UnregisterSuspendResumeNotification(power_notify_handle_);
+      ::UnregisterSuspendResumeNotification(power_notify_handle_);
 
-    DestroyWindow(message_hwnd_);
-    UnregisterClass(kWindowClassName, instance_);
+    ::DestroyWindow(message_hwnd_);
+    ::UnregisterClass(kWindowClassName, instance_);
   }
 }
 
