@@ -389,7 +389,12 @@
       if (!gfxImage.IsEmpty()) {
         image = gfxImage.ToUIImage();
       } else {
-        image = [UIImage imageNamed:@"default_favicon"];
+        if (UseSymbols()) {
+          image =
+              DefaultSymbolWithPointSize(kDocSymbol, kInfobarSymbolPointSize);
+        } else {
+          image = [UIImage imageNamed:@"default_favicon"];
+        }
       }
     }
 

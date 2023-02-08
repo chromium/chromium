@@ -126,6 +126,7 @@ extern NSString* const kPhoneFillSymbol;
 extern NSString* const kDownloadPromptFillSymbol;
 extern NSString* const kDownloadPromptFilliOS14Symbol;
 extern NSString* const kDownloadDocFillSymbol;
+extern NSString* const kDocSymbol;
 extern NSString* const kOpenInDownloadsSymbol;
 extern NSString* const kOpenInDownloadsiOS14Symbol;
 extern NSString* const kExternalLinkSymbol;
