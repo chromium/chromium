@@ -105,6 +105,11 @@ class LevelDbPersistenceProvider : public OriginTrialsPersistenceProvider {
   // Callback to swap out the |trial_status_cache_| with one built from the
   // loaded database.
   void OnMapBuild(std::unique_ptr<DbLoadResult> result);
+
+  // Merges the |trial_status_cache_| entries into |result|.
+  // This merge ensures that any cached token and partition information is
+  // preserved after the load result is applied.
+  void MergeCacheIntoLoadResult(DbLoadResult& result);
 };
 
 }  // namespace origin_trials
