@@ -22,10 +22,10 @@ namespace {
 
 // Ensure that both version numbers are updated together to prevent crashes on
 // downgrades as in crbug.com/1413728.
-void SetVersionNumbers(sql::MetaTable* meta_table, int version) {
+[[nodiscard]] bool SetVersionNumbers(sql::MetaTable* meta_table, int version) {
   DCHECK(meta_table);
-  meta_table->SetVersionNumber(version);
-  meta_table->SetCompatibleVersionNumber(version);
+  return meta_table->SetVersionNumber(version) &&
+         meta_table->SetCompatibleVersionNumber(version);
 }
 
 // Wrap each migration in its own transaction. This results in smaller
@@ -54,8 +54,7 @@ bool MigrateToVersion36(sql::Database* db, sql::MetaTable* meta_table) {
     return false;
   }
 
-  SetVersionNumbers(meta_table, 36);
-  return transaction.Commit();
+  return SetVersionNumbers(meta_table, 36) && transaction.Commit();
 }
 
 bool MigrateToVersion37(sql::Database* db, sql::MetaTable* meta_table) {
@@ -99,8 +98,7 @@ bool MigrateToVersion37(sql::Database* db, sql::MetaTable* meta_table) {
     return false;
   }
 
-  SetVersionNumbers(meta_table, 37);
-  return transaction.Commit();
+  return SetVersionNumbers(meta_table, 37) && transaction.Commit();
 }
 
 bool MigrateToVersion38(sql::Database* db, sql::MetaTable* meta_table) {
@@ -197,8 +195,7 @@ bool MigrateToVersion38(sql::Database* db, sql::MetaTable* meta_table) {
     return false;
   }
 
-  SetVersionNumbers(meta_table, 38);
-  return transaction.Commit();
+  return SetVersionNumbers(meta_table, 38) && transaction.Commit();
 }
 
 bool MigrateToVersion39(sql::Database* db, sql::MetaTable* meta_table) {
@@ -282,8 +279,7 @@ bool MigrateToVersion39(sql::Database* db, sql::MetaTable* meta_table) {
     return false;
   }
 
-  SetVersionNumbers(meta_table, 39);
-  return transaction.Commit();
+  return SetVersionNumbers(meta_table, 39) && transaction.Commit();
 }
 
 bool MigrateToVersion40(sql::Database* db, sql::MetaTable* meta_table) {
@@ -329,8 +325,7 @@ bool MigrateToVersion40(sql::Database* db, sql::MetaTable* meta_table) {
     return false;
   }
 
-  SetVersionNumbers(meta_table, 40);
-  return transaction.Commit();
+  return SetVersionNumbers(meta_table, 40) && transaction.Commit();
 }
 
 bool MigrateToVersion41(sql::Database* db, sql::MetaTable* meta_table) {
@@ -346,8 +341,7 @@ bool MigrateToVersion41(sql::Database* db, sql::MetaTable* meta_table) {
     return false;
   }
 
-  SetVersionNumbers(meta_table, 41);
-  return transaction.Commit();
+  return SetVersionNumbers(meta_table, 41) && transaction.Commit();
 }
 
 bool MigrateToVersion42(sql::Database* db, sql::MetaTable* meta_table) {
@@ -377,8 +371,7 @@ bool MigrateToVersion42(sql::Database* db, sql::MetaTable* meta_table) {
     return false;
   }
 
-  SetVersionNumbers(meta_table, 42);
-  return transaction.Commit();
+  return SetVersionNumbers(meta_table, 42) && transaction.Commit();
 }
 
 bool MigrateToVersion43(sql::Database* db, sql::MetaTable* meta_table) {
@@ -403,8 +396,7 @@ bool MigrateToVersion43(sql::Database* db, sql::MetaTable* meta_table) {
     return false;
   }
 
-  SetVersionNumbers(meta_table, 43);
-  return transaction.Commit();
+  return SetVersionNumbers(meta_table, 43) && transaction.Commit();
 }
 
 bool MigrateToVersion44(sql::Database* db, sql::MetaTable* meta_table) {
@@ -534,8 +526,7 @@ bool MigrateToVersion44(sql::Database* db, sql::MetaTable* meta_table) {
     }
   }
 
-  SetVersionNumbers(meta_table, 44);
-  return transaction.Commit();
+  return SetVersionNumbers(meta_table, 44) && transaction.Commit();
 }
 
 bool MigrateToVersion45(sql::Database* db, sql::MetaTable* meta_table) {
@@ -551,8 +542,7 @@ bool MigrateToVersion45(sql::Database* db, sql::MetaTable* meta_table) {
     return false;
   }
 
-  SetVersionNumbers(meta_table, 45);
-  return transaction.Commit();
+  return SetVersionNumbers(meta_table, 45) && transaction.Commit();
 }
 
 bool MigrateToVersion46(sql::Database* db, sql::MetaTable* meta_table) {
@@ -565,8 +555,7 @@ bool MigrateToVersion46(sql::Database* db, sql::MetaTable* meta_table) {
     return false;
   }
 
-  SetVersionNumbers(meta_table, 46);
-  return transaction.Commit();
+  return SetVersionNumbers(meta_table, 46) && transaction.Commit();
 }
 
 }  // namespace
