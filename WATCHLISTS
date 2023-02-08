@@ -1188,6 +1188,9 @@
                   'extensions/renderer/resources/guest_view|'\
                   'extensions/test/data/(app|web)_view',
     },
+    'hashprefix_realtime': {
+      'filepath': 'components/safe_browsing/core/browser/hashprefix_realtime/'
+    },
     'hats': {
       'filepath': 'chrome/browser/ash/hats/',
     },
@@ -2714,6 +2717,7 @@
     'gpu_passthrough_cmd_decoder': ['geofflang+watch@chromium.org'],
     'guest_view': ['mcnee@chromium.org',
                    'wjmaclean@chromium.org'],
+    'hashprefix_realtime': ['thefrog+watch@chromium.org'],
     'hats': ['cros-telemetry+hats@google.com'],
     'headless': ['headless-reviews@chromium.org'],
     'heap_mojo': ['chikamune+watch@chromium.org'],
