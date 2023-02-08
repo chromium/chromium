@@ -17,9 +17,7 @@
 namespace base {
 
 ProcessIterator::ProcessIterator(const ProcessFilter* filter)
-    : index_of_kinfo_proc_(),
-      filter_(filter) {
-
+    : filter_(filter) {
   int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_UID, getuid() };
 
   bool done = false;
@@ -62,8 +60,7 @@ ProcessIterator::ProcessIterator(const ProcessFilter* filter)
   }
 }
 
-ProcessIterator::~ProcessIterator() {
-}
+ProcessIterator::~ProcessIterator() = default;
 
 bool ProcessIterator::CheckForNextProcess() {
   std::string data;

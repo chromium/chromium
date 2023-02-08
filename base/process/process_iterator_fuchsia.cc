@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/notreached.h"
 #include "base/process/process_iterator.h"
+
+#include "base/notreached.h"
 
 namespace base {
 
@@ -12,7 +13,7 @@ ProcessIterator::ProcessIterator(const ProcessFilter* filter) {
   NOTREACHED();
 }
 
-ProcessIterator::~ProcessIterator() {}
+ProcessIterator::~ProcessIterator() = default;
 
 bool ProcessIterator::CheckForNextProcess() {
   return false;

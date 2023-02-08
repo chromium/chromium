@@ -9,10 +9,8 @@
 namespace base {
 
 ProcessIterator::ProcessIterator(const ProcessFilter* filter)
-    : started_iteration_(false),
-      filter_(filter) {
-  snapshot_ = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-}
+    : snapshot_(CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)),
+      filter_(filter) {}
 
 ProcessIterator::~ProcessIterator() {
   CloseHandle(snapshot_);

@@ -114,10 +114,10 @@ class BASE_EXPORT ProcessIterator {
 
 #if BUILDFLAG(IS_WIN)
   HANDLE snapshot_;
-  bool started_iteration_;
+  bool started_iteration_ = false;
 #elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_BSD)
   std::vector<kinfo_proc> kinfo_procs_;
-  size_t index_of_kinfo_proc_;
+  size_t index_of_kinfo_proc_ = 0;
 #elif BUILDFLAG(IS_POSIX)
   struct DIRClose {
     inline void operator()(DIR* x) const {
