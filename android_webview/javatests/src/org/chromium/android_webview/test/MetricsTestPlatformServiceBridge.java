@@ -36,7 +36,7 @@ public class MetricsTestPlatformServiceBridge extends PlatformServiceBridge {
     }
 
     @Override
-    public void logMetrics(byte[] data) {
+    public void logMetrics(byte[] data, boolean useDefaultUploadQos) {
         mQueue.add(data);
     }
 

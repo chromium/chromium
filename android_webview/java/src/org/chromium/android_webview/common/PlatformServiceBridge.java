@@ -91,18 +91,8 @@ public abstract class PlatformServiceBridge {
         callback.onResult(false);
     }
 
-    // TODO(crbug/1410592) remove after downstream implementation lands
-    public void logMetrics(byte[] data) {}
-
     // Takes an uncompressed, serialized UMA proto and logs it via a platform-specific mechanism.
-    public void logMetrics(byte[] data, boolean useDefaultUploadQos) {
-        logMetrics(data);
-    }
-
-    // TODO(crbug/1410592) remove after downstream implementation lands
-    public int logMetricsBlocking(byte[] data) {
-        return logMetricsBlocking(data, false);
-    }
+    public void logMetrics(byte[] data, boolean useDefaultUploadQos) {}
 
     /**
      * Similar to {@link logMetrics}, logs a serialized UMA proto via a platform-specific mechanism
