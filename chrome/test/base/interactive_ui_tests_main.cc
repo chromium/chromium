@@ -22,7 +22,6 @@
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
-#include "ui/views/test/ui_controls_factory_desktop_aura_ozone.h"
 #endif  // BUILDFLAG(IS_OZONE)
 #endif  // defined(USE_AURA)
 
@@ -60,8 +59,7 @@ class InteractiveUITestSuite : public ChromeTestSuite {
     ui::OzonePlatform::InitParams params;
     params.single_process = true;
     ui::OzonePlatform::InitializeForUI(params);
-    ui_controls::InstallUIControlsAura(
-        views::test::CreateUIControlsDesktopAuraOzone());
+    ui_controls::EnableUIControls();
 #else
     ui_controls::EnableUIControls();
 #endif

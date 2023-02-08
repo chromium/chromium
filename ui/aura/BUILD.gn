@@ -248,10 +248,7 @@ static_library("test_support") {
     sources += [ "test/ui_controls_factory_aurawin.cc" ]
   }
 
-  if (use_ozone) {
-    if (is_fuchsia) {
-      deps += [ "//ui/ozone" ]
-    }
+  if (use_ozone && (is_chromeos_ash || is_castos)) {
     sources += [
       "test/ui_controls_ozone.cc",
       "test/ui_controls_ozone.h",

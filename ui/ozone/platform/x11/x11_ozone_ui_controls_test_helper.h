@@ -19,6 +19,8 @@ class X11OzoneUIControlsTestHelper : public OzoneUIControlsTestHelper {
       delete;
   ~X11OzoneUIControlsTestHelper() override;
 
+  // OzoneUIControlsTestHelper:
+  bool SupportsScreenCoordinates() const override;
   unsigned ButtonDownMask() const override;
   void SendKeyPressEvent(gfx::AcceleratedWidget widget,
                          ui::KeyboardCode key,
