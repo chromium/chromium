@@ -1320,6 +1320,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Omnibox.SearchSuggestionNumberOfLines" units="count"
+    expires_after="2023-09-27">
+  <owner>christianxu@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>Histogram of the number of lines of search suggestions.</summary>
+</histogram>
+
 <histogram name="IOS.OpenIn.DownloadResult" enum="IOSOpenInDownloadResult"
     expires_after="2023-07-16">
   <owner>ewannpv@chromium.org</owner>

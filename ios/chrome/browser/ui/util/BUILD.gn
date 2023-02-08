@@ -13,6 +13,8 @@ source_set("util") {
     "accessibility_close_menu_button.mm",
     "animation_util.h",
     "animation_util.mm",
+    "attributed_string_util.h",
+    "attributed_string_util.mm",
     "dynamic_type_util.h",
     "dynamic_type_util.mm",
     "force_touch_long_press_gesture_recognizer.h",
