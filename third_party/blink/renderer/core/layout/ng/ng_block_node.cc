@@ -558,10 +558,7 @@ const NGLayoutResult* NGBlockNode::Layout(
   // block-start edge or the inline-start edge, it produces a negative
   // MaximumScrollOffset(), and can cause a wrong clamping. So we delay
   // clamping the offset.
-  absl::optional<PaintLayerScrollableArea::DelayScrollOffsetClampScope>
-      delay_clamp_scope;
-  if (RuntimeEnabledFeatures::LayoutNGDelayScrollOffsetClampingEnabled())
-    delay_clamp_scope.emplace();
+  PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
 
   FinishLayout(block_flow, constraint_space, break_token, layout_result);
 

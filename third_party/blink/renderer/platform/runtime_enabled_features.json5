@@ -1652,11 +1652,6 @@
       settable_from_internals: true,
     },
     {
-      name: "LangAttributeAwareSvgText",
-      base_feature: "LangAttributeAwareSvgText",
-      status: "stable",
-    },
-    {
       name: "LayoutMediaNGContainer",
       // This feature doesn't work in the legacy layout.
       depends_on: ["LayoutNGPrinting"],
@@ -1667,12 +1662,6 @@
       name: "LayoutMediaNoInlineChildren",
       base_feature: "LayoutMediaNoInlineChildren",
       status: "stable",  // Since M112.
-    },
-    {
-      // A kill-switch for a fix of crbug.com/1366268.
-      name: "LayoutNGDelayScrollOffsetClamping",
-      base_feature: "LayoutNGDelayScrollOffsetClamping",
-      status: "stable",
     },
     {
       // crbug.com/1353190

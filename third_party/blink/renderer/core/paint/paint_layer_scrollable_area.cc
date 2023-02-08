@@ -1126,10 +1126,6 @@ void PaintLayerScrollableArea::DelayableClampScrollOffsetAfterOverflowChange() {
 }
 
 void PaintLayerScrollableArea::ClampScrollOffsetAfterOverflowChange() {
-  if (!RuntimeEnabledFeatures::LayoutNGDelayScrollOffsetClampingEnabled()) {
-    DelayableClampScrollOffsetAfterOverflowChange();
-    return;
-  }
   ClampScrollOffsetAfterOverflowChangeInternal();
 }
 

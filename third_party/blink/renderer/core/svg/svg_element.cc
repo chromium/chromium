@@ -780,8 +780,7 @@ bool SVGElement::IsAnimatableCSSProperty(const QualifiedName& attr_name) {
 bool SVGElement::IsPresentationAttribute(const QualifiedName& name) const {
   if (const SVGAnimatedPropertyBase* property = PropertyFromAttribute(name))
     return property->HasPresentationAttributeMapping();
-  if (RuntimeEnabledFeatures::LangAttributeAwareSvgTextEnabled() &&
-      (name.Matches(xml_names::kLangAttr) || name == svg_names::kLangAttr)) {
+  if (name.Matches(xml_names::kLangAttr) || name == svg_names::kLangAttr) {
     return true;
   }
   return CssPropertyIdForSVGAttributeName(GetExecutionContext(), name) >
@@ -835,11 +834,9 @@ void SVGElement::CollectStyleForPresentationAttribute(
       AddPropertyToPresentationAttributeStyle(style, property_id, value);
     }
   } else if (name.Matches(xml_names::kLangAttr)) {
-    if (RuntimeEnabledFeatures::LangAttributeAwareSvgTextEnabled())
-      MapLanguageAttributeToLocale(value, style);
+    MapLanguageAttributeToLocale(value, style);
   } else if (name == svg_names::kLangAttr) {
-    if (RuntimeEnabledFeatures::LangAttributeAwareSvgTextEnabled() &&
-        !FastHasAttribute(xml_names::kLangAttr)) {
+    if (!FastHasAttribute(xml_names::kLangAttr)) {
       MapLanguageAttributeToLocale(value, style);
     }
   }
