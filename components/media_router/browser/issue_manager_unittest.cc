@@ -17,7 +17,7 @@ namespace media_router {
 namespace {
 
 IssueInfo CreateTestIssue(IssueInfo::Severity severity) {
-  IssueInfo issue("title", severity, "sinkId1");
+  IssueInfo issue("title", severity);
   issue.message = "message";
   return issue;
 }

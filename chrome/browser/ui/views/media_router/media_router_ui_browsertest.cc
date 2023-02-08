@@ -43,8 +43,7 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
  public:
   MediaRouterUIBrowserTest()
       : issue_(IssueInfo("title notification",
-                         IssueInfo::Severity::NOTIFICATION,
-                         "sinkId1")) {}
+                         IssueInfo::Severity::NOTIFICATION)) {}
   ~MediaRouterUIBrowserTest() override {}
 
   void SetUpOnMainThread() override {

@@ -74,8 +74,7 @@ TEST_F(CastDialogSinkButtonTest, SetStatusLabelForActiveSink) {
 
 TEST_F(CastDialogSinkButtonTest, SetStatusLabelForSinkWithIssue) {
   UIMediaSink sink{mojom::MediaRouteProviderId::CAST};
-  sink.issue =
-      Issue(IssueInfo("issue", IssueInfo::Severity::WARNING, "sinkId1"));
+  sink.issue = Issue(IssueInfo("issue", IssueInfo::Severity::WARNING));
   // Issue info should be the status text regardless of the sink state.
   sink.state = UIMediaSinkState::AVAILABLE;
   CastDialogSinkButton button1(views::Button::PressedCallback(), sink);
