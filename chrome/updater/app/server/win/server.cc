@@ -18,8 +18,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/ref_counted.h"
-#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -28,8 +26,6 @@
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
 #include "chrome/installer/util/work_item_list.h"
-#include "chrome/updater/app/server/win/com_classes.h"
-#include "chrome/updater/app/server/win/com_classes_legacy.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
@@ -70,8 +66,9 @@ bool SwapUninstallCmdLine(UpdaterScope scope,
   // TODO(crbug.com/1270520) - use a switch that can uninstall immediately if
   // unused, instead of requiring server starts.
   uninstall_if_unused_command.AppendSwitch(kWakeSwitch);
-  if (IsSystemInstall(scope))
+  if (IsSystemInstall(scope)) {
     uninstall_if_unused_command.AppendSwitch(kSystemSwitch);
+  }
   uninstall_if_unused_command.AppendSwitch(kEnableLoggingSwitch);
   uninstall_if_unused_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                                 kLoggingModuleSwitchValue);
@@ -149,8 +146,9 @@ bool SwapGoogleUpdate(UpdaterScope scope,
 
   const absl::optional<base::FilePath> target_path =
       GetGoogleUpdateExePath(scope);
-  if (!target_path)
+  if (!target_path) {
     return false;
+  }
   list->AddCopyTreeWorkItem(updater_path, *target_path, temp_path,
                             WorkItem::ALWAYS);
 
@@ -236,8 +234,9 @@ void ComServerApp::Start(base::OnceCallback<HRESULT()> register_callback) {
   main_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   CreateWRLModule();
   HRESULT hr = std::move(register_callback).Run();
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     Shutdown(hr);
+  }
 }
 
 void ComServerApp::UninstallSelf() {
@@ -249,8 +248,9 @@ bool ComServerApp::SwapInNewVersion() {
 
   const absl::optional<base::FilePath> versioned_directory =
       GetVersionedInstallDirectory(updater_scope());
-  if (!versioned_directory)
+  if (!versioned_directory) {
     return false;
+  }
 
   const base::FilePath updater_path =
       versioned_directory->Append(GetExecutableRelativePath());
@@ -260,8 +260,9 @@ bool ComServerApp::SwapInNewVersion() {
   }
 
   absl::optional<base::ScopedTempDir> temp_dir = CreateSecureTempDir();
-  if (!temp_dir)
+  if (!temp_dir) {
     return false;
+  }
 
   if (!SwapGoogleUpdate(updater_scope(), updater_path, temp_dir->GetPath(),
                         UpdaterScopeToHKeyRoot(updater_scope()), list.get())) {
@@ -290,8 +291,9 @@ bool ComServerApp::MigrateLegacyUpdaters(
     const std::wstring app_id = it.Name();
 
     // Skip importing legacy updater.
-    if (base::EqualsCaseInsensitiveASCII(app_id, kLegacyGoogleUpdaterAppID))
+    if (base::EqualsCaseInsensitiveASCII(app_id, kLegacyGoogleUpdaterAppID)) {
       continue;
+    }
 
     base::win::RegKey key;
     if (key.Open(root, GetAppClientsKey(app_id).c_str(), Wow6432(KEY_READ)) !=
@@ -302,20 +304,24 @@ bool ComServerApp::MigrateLegacyUpdaters(
     RegistrationRequest registration;
     registration.app_id = base::SysWideToUTF8(app_id);
     std::wstring pv;
-    if (key.ReadValue(kRegValuePV, &pv) != ERROR_SUCCESS)
+    if (key.ReadValue(kRegValuePV, &pv) != ERROR_SUCCESS) {
       continue;
+    }
 
     registration.version = base::Version(base::SysWideToUTF8(pv));
-    if (!registration.version.IsValid())
+    if (!registration.version.IsValid()) {
       continue;
+    }
 
     std::wstring brand_code;
-    if (key.ReadValue(kRegValueBrandCode, &brand_code) == ERROR_SUCCESS)
+    if (key.ReadValue(kRegValueBrandCode, &brand_code) == ERROR_SUCCESS) {
       registration.brand_code = base::SysWideToUTF8(brand_code);
+    }
 
     std::wstring ap;
-    if (key.ReadValue(kRegValueAP, &ap) == ERROR_SUCCESS)
+    if (key.ReadValue(kRegValueAP, &ap) == ERROR_SUCCESS) {
       registration.ap = base::SysWideToUTF8(ap);
+    }
 
     register_callback.Run(registration);
   }

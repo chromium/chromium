@@ -11,7 +11,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/updater/app/app.h"
 #include "chrome/updater/app/app_server.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"

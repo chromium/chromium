@@ -14,15 +14,11 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/path_service.h"
-#include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -33,14 +29,10 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/scoped_process_information.h"
-#include "base/win/win_util.h"
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/external_constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
@@ -53,7 +45,6 @@
 #include "chrome/updater/win/app_command_runner.h"
 #include "chrome/updater/win/scoped_handle.h"
 #include "chrome/updater/win/setup/setup_util.h"
-#include "chrome/updater/win/win_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
@@ -634,8 +625,9 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
   IFACEMETHODIMP createInstalledApp(BSTR app_id) override {
     base::AutoLock lock{lock_};
 
-    if (app_web_)
+    if (app_web_) {
       return E_UNEXPECTED;
+    }
 
     return Microsoft::WRL::MakeAndInitialize<AppWebImpl>(&app_web_, app_id);
   }
@@ -662,8 +654,9 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
   IFACEMETHODIMP get_appWeb(int index, IDispatch** app_web) override {
     base::AutoLock lock{lock_};
 
-    if (index != 0 || !app_web_)
+    if (index != 0 || !app_web_) {
       return E_UNEXPECTED;
+    }
 
     return app_web_.CopyTo(app_web);
   }
@@ -674,8 +667,9 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
   IFACEMETHODIMP checkForUpdate() override {
     base::AutoLock lock{lock_};
 
-    if (!app_web_)
+    if (!app_web_) {
       return E_UNEXPECTED;
+    }
 
     return app_web_->Update(/*do_update_check_only=*/true);
   }
@@ -862,8 +856,9 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
         substitution9}) {
     const absl::optional<std::wstring> substitution_string =
         StringFromVariant(substitution);
-    if (!substitution_string)
+    if (!substitution_string) {
       break;
+    }
 
     VLOG(2) << __func__
             << " substitution_string: " << substitution_string.value();
@@ -887,8 +882,9 @@ STDMETHODIMP PolicyStatusImpl::get_lastCheckPeriodMinutes(DWORD* minutes) {
   DCHECK(minutes);
 
   PolicyStatus<base::TimeDelta> period = policy_service_->GetLastCheckPeriod();
-  if (!period)
+  if (!period) {
     return E_FAIL;
+  }
 
   *minutes = period.policy().InMinutes();
   return S_OK;
@@ -1104,8 +1100,9 @@ STDMETHODIMP PolicyStatusImpl::get_lastCheckedTime(DATE* last_checked) {
                     GetUpdaterScope(),
                     AppServerSingletonInstance()->prefs()->GetPrefService())
                     ->GetLastChecked();
-            if (last_checked_time.is_null())
+            if (last_checked_time.is_null()) {
               return;
+            }
 
             const FILETIME last_checked_filetime =
                 last_checked_time.ToFileTime();
@@ -1164,12 +1161,14 @@ STDMETHODIMP PolicyStatusImpl::get_updatesSuppressedTimes(
   auto policy_status =
       PolicyStatusResult<UpdatesSuppressedTimes>::Get(base::BindRepeating(
           &PolicyService::GetUpdatesSuppressedTimes, policy_service_));
-  if (!policy_status.has_value())
+  if (!policy_status.has_value()) {
     return E_FAIL;
+  }
   const UpdatesSuppressedTimes updates_suppressed_times =
       policy_status->effective_policy()->policy;
-  if (!updates_suppressed_times.valid())
+  if (!updates_suppressed_times.valid()) {
     return E_FAIL;
+  }
   base::Time::Exploded now;
   base::Time::Now().LocalExplode(&now);
   *are_updates_suppressed =

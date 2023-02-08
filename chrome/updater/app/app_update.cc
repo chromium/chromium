@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/setup.h"
 
@@ -22,11 +21,9 @@ class AppUpdate : public App {
   void SetupDone(int result);
 };
 
-void AppUpdate::Initialize() {
-}
+void AppUpdate::Initialize() {}
 
-void AppUpdate::Uninitialize() {
-}
+void AppUpdate::Uninitialize() {}
 
 void AppUpdate::FirstTaskRun() {
   InstallCandidate(updater_scope(),

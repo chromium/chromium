@@ -25,7 +25,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/process/launch.h"
 #include "base/sequence_checker.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -39,11 +38,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "base/win/atl.h"
 #include "base/win/registry.h"
-#include "base/win/scoped_bstr.h"
-#include "base/win/scoped_variant.h"
-#include "base/win/shlwapi.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
@@ -54,9 +49,7 @@
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/install_progress_observer.h"
 #include "chrome/updater/win/manifest_util.h"
-#include "chrome/updater/win/scoped_impersonation.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
-#include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
 
 #pragma clang diagnostic push
@@ -65,7 +58,6 @@
 #include "chrome/updater/win/ui/progress_wnd.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/ui/splash_screen.h"
-#include "chrome/updater/win/ui/ui_util.h"
 #pragma clang diagnostic pop
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -495,10 +487,12 @@ void AppInstallControllerImpl::DoInstallApp() {
   request.app_id = app_id_;
   absl::optional<tagging::AppArgs> app_args = GetAppArgs(app_id_);
   absl::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
-  if (app_args)
+  if (app_args) {
     request.ap = app_args->ap;
-  if (tag_args)
+  }
+  if (tag_args) {
     request.brand_code = tag_args->brand_code;
+  }
 
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
@@ -616,10 +610,12 @@ void AppInstallControllerImpl::DoInstallAppOffline(
 
   absl::optional<tagging::AppArgs> app_args =
       GetAppArgsForCommandLine(cmd_line, app_id_);
-  if (app_args)
+  if (app_args) {
     request.ap = app_args->ap;
-  if (tag_args)
+  }
+  if (tag_args) {
     request.brand_code = tag_args->brand_code;
+  }
 
   VLOG(1) << __func__ << ": " << installer_path << ": " << install_args << ": "
           << install_data;

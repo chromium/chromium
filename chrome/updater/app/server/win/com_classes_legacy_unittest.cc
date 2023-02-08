@@ -13,16 +13,11 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
-#include "base/test/test_timeouts.h"
-#include "base/time/time.h"
-#include "base/win/scoped_handle.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/win_util.h"
 #include "build/branding_buildflags.h"
@@ -31,13 +26,11 @@
 #include "chrome/updater/util/unittest_util.h"
 #include "chrome/updater/util/unittest_util_win.h"
 #include "chrome/updater/util/util.h"
-#include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/test/test_executables.h"
 #include "chrome/updater/win/test/test_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -185,8 +178,9 @@ TEST_F(LegacyAppCommandWebImplTest, FailedToLaunchStatus) {
 }
 
 TEST_F(LegacyAppCommandWebImplTest, CommandRunningStatus) {
-  if (IsSystemInstall(GetTestScope()))
+  if (IsSystemInstall(GetTestScope())) {
     return;
+  }
 
   Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
   base::CommandLine command_line =

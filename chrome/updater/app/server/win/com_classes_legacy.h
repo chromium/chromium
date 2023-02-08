@@ -16,7 +16,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
-#include "base/synchronization/lock.h"
 #include "base/types/expected.h"
 #include "base/win/win_util.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
@@ -27,7 +26,6 @@
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/app_command_runner.h"
 #include "chrome/updater/win/setup/setup_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Definitions for COM updater classes provided for backward compatibility
 // with Google Update.
@@ -53,8 +51,9 @@ class IDispatchImpl
 
   // Overrides for IDispatch.
   IFACEMETHODIMP GetTypeInfoCount(UINT* type_info_count) override {
-    if (FAILED(hr_load_typelib_))
+    if (FAILED(hr_load_typelib_)) {
       return hr_load_typelib_;
+    }
 
     *type_info_count = 1;
     return S_OK;
@@ -63,8 +62,9 @@ class IDispatchImpl
   IFACEMETHODIMP GetTypeInfo(UINT type_info_index,
                              LCID locale_id,
                              ITypeInfo** type_info) override {
-    if (FAILED(hr_load_typelib_))
+    if (FAILED(hr_load_typelib_)) {
       return hr_load_typelib_;
+    }
 
     return type_info_index == 0 ? type_info_.CopyTo(type_info) : E_INVALIDARG;
   }
@@ -74,8 +74,9 @@ class IDispatchImpl
                                UINT count_of_names_to_be_mapped,
                                LCID locale_id,
                                DISPID* dispatch_ids) override {
-    if (FAILED(hr_load_typelib_))
+    if (FAILED(hr_load_typelib_)) {
       return hr_load_typelib_;
+    }
 
     return type_info_->GetIDsOfNames(names_to_be_mapped,
                                      count_of_names_to_be_mapped, dispatch_ids);
@@ -89,8 +90,9 @@ class IDispatchImpl
                         VARIANT* result,
                         EXCEPINFO* exception_info,
                         UINT* arg_error_index) override {
-    if (FAILED(hr_load_typelib_))
+    if (FAILED(hr_load_typelib_)) {
       return hr_load_typelib_;
+    }
 
     HRESULT hr = type_info_->Invoke(Microsoft::WRL::ComPtr<T>(this).Get(),
                                     dispatch_id, flags, dispatch_parameters,
@@ -104,8 +106,9 @@ class IDispatchImpl
   // Loads the typelib and typeinfo for interface `T`.
   HRESULT InitializeTypeInfo() {
     base::FilePath typelib_path;
-    if (!base::PathService::Get(base::DIR_EXE, &typelib_path))
+    if (!base::PathService::Get(base::DIR_EXE, &typelib_path)) {
       return E_UNEXPECTED;
+    }
 
     typelib_path = typelib_path.Append(GetExecutableRelativePath())
                        .Append(GetComTypeLibResourceIndex(__uuidof(T)));

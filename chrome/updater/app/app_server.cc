@@ -95,8 +95,9 @@ base::OnceClosure AppServer::ModeCheck() {
   }
 
   if (this_version > active_version || global_prefs->GetSwapping()) {
-    if (!SwapVersions(global_prefs.get()))
+    if (!SwapVersions(global_prefs.get())) {
       return base::BindOnce(&AppServer::Shutdown, this, kErrorFailedToSwap);
+    }
   }
 
   if (IsInternalService()) {
@@ -113,8 +114,9 @@ base::OnceClosure AppServer::ModeCheck() {
 }
 
 void AppServer::Uninitialize() {
-  if (prefs_)
+  if (prefs_) {
     PrefsCommitPendingWrites(prefs_->GetPrefService());
+  }
   if (uninstall_self_) {
     VLOG(1) << "Uninstalling version " << kUpdaterVersion;
     UninstallSelf();
@@ -124,8 +126,9 @@ void AppServer::Uninitialize() {
 }
 
 void AppServer::MaybeUninstall() {
-  if (!prefs_)
+  if (!prefs_) {
     return;
+  }
 
   auto persisted_data = base::MakeRefCounted<PersistedData>(
       updater_scope(), prefs_->GetPrefService());
@@ -161,8 +164,9 @@ void AppServer::FirstTaskRun() {
 bool AppServer::SwapVersions(GlobalPrefs* global_prefs) {
   global_prefs->SetSwapping(true);
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
-  if (!SwapInNewVersion())
+  if (!SwapInNewVersion()) {
     return false;
+  }
   if (!global_prefs->GetMigratedLegacyUpdaters()) {
     if (!MigrateLegacyUpdaters(base::BindRepeating(
             &PersistedData::RegisterApp,

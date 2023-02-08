@@ -11,18 +11,14 @@
 #include <type_traits>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/process/launch.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/win/scoped_com_initializer.h"
-#include "chrome/updater/app/server/win/com_classes.h"
-#include "chrome/updater/app/server/win/com_classes_legacy.h"
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/util/win_util.h"
-#include "chrome/updater/win/win_constants.h"
 
 namespace updater {
 
@@ -59,8 +55,9 @@ HRESULT RunWakeTask() {
 
 int ServiceMain::RunWindowsService(const base::CommandLine* command_line) {
   ServiceMain* service = ServiceMain::GetInstance();
-  if (!service->InitWithCommandLine(command_line))
+  if (!service->InitWithCommandLine(command_line)) {
     return ERROR_BAD_ARGUMENTS;
+  }
 
   int ret = service->Start();
   DCHECK_NE(ret, int{STILL_ACTIVE});
@@ -80,8 +77,9 @@ bool ServiceMain::InitWithCommandLine(const base::CommandLine* command_line) {
   }
 
   // Run interactively if needed.
-  if (command_line->HasSwitch(kConsoleSwitchName))
+  if (command_line->HasSwitch(kConsoleSwitchName)) {
     run_routine_ = &ServiceMain::RunInteractive;
+  }
 
   return true;
 }
@@ -186,8 +184,9 @@ HRESULT ServiceMain::RunCOMServer() {
   }
 
   HRESULT hr = InitializeComSecurity();
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   return AppServerSingletonInstance()->Run();
 }
