@@ -53,8 +53,6 @@ void RenderProcessHostTaskProvider::StartUpdating() {
     }
   }
 
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-                 content::NotificationService::AllBrowserContextsAndSources());
   registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
                  content::NotificationService::AllBrowserContextsAndSources());
   registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
@@ -104,6 +102,11 @@ void RenderProcessHostTaskProvider::DeleteTask(
   tasks_by_rph_id_.erase(itr);
 }
 
+void RenderProcessHostTaskProvider::OnRenderProcessHostCreated(
+    content::RenderProcessHost* host) {
+  CreateTask(host->GetID());
+}
+
 void RenderProcessHostTaskProvider::Observe(
     int type,
     const content::NotificationSource& source,
@@ -112,9 +115,6 @@ void RenderProcessHostTaskProvider::Observe(
       content::Source<content::RenderProcessHost>(source).ptr();
   ChildProcessData data(content::PROCESS_TYPE_RENDERER);
   switch (type) {
-    case content::NOTIFICATION_RENDERER_PROCESS_CREATED:
-      CreateTask(host->GetID());
-      break;
     case content::NOTIFICATION_RENDERER_PROCESS_CLOSED:
     case content::NOTIFICATION_RENDERER_PROCESS_TERMINATED:
       DeleteTask(host->GetID());
