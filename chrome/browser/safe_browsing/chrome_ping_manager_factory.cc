@@ -16,7 +16,6 @@
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 
 namespace safe_browsing {
@@ -63,8 +62,7 @@ bool ChromePingManagerFactory::ShouldFetchAccessTokenForReport(
   PrefService* prefs = profile->GetPrefs();
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  return base::FeatureList::IsEnabled(kSafeBrowsingCsbrrWithToken) &&
-         IsEnhancedProtectionEnabled(*prefs) && identity_manager &&
+  return IsEnhancedProtectionEnabled(*prefs) && identity_manager &&
          safe_browsing::SyncUtils::IsPrimaryAccountSignedIn(identity_manager);
 }
 

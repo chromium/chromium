@@ -178,10 +178,6 @@ BASE_FEATURE(kSafeBrowsingCsbrrNewDownloadTrigger,
              "SafeBrowsingCsbrrNewDownloadTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSafeBrowsingCsbrrWithToken,
-             "SafeBrowsingCsbrrWithToken",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSafeBrowsingDisableConsumerCsdForEnterprise,
              "SafeBrowsingDisableConsumerCsdForEnterprise",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -272,7 +268,6 @@ constexpr struct {
     {&kRealTimeUrlFilteringForEnterprise, true},
     {&kRealTimeUrlLookupForEnterpriseAllowlistBypass, true},
     {&kSafeBrowsingCsbrrNewDownloadTrigger, true},
-    {&kSafeBrowsingCsbrrWithToken, true},
     {&kSafeBrowsingDisableConsumerCsdForEnterprise, true},
     {&kSafeBrowsingEnterpriseCsd, true},
     {&kSafeBrowsingLookupMechanismExperiment, true},

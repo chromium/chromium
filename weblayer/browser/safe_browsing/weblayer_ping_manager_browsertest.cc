@@ -33,9 +33,7 @@ class WeblayerPingManagerTest : public WebLayerBrowserTest {
  public:
   WeblayerPingManagerTest() {
     feature_list_.InitWithFeatures(
-        {safe_browsing::kSafeBrowsingRemoveCookiesInAuthRequests,
-         safe_browsing::kSafeBrowsingCsbrrWithToken},
-        {});
+        {safe_browsing::kSafeBrowsingRemoveCookiesInAuthRequests}, {});
   }
 
  protected:
@@ -45,7 +43,6 @@ class WeblayerPingManagerTest : public WebLayerBrowserTest {
                                   bool expect_cookies_removed);
 
   base::test::ScopedFeatureList feature_list_;
-  bool is_csbrr_token_feature_enabled_ = true;
   bool is_remove_cookies_feature_enabled_ = true;
 
  private:
@@ -58,20 +55,8 @@ class RemoveCookiesFeatureDisabledWeblayerPingManagerTest
   RemoveCookiesFeatureDisabledWeblayerPingManagerTest() {
     feature_list_.Reset();
     feature_list_.InitWithFeatures(
-        {safe_browsing::kSafeBrowsingCsbrrWithToken},
         {safe_browsing::kSafeBrowsingRemoveCookiesInAuthRequests});
     is_remove_cookies_feature_enabled_ = false;
-  }
-};
-class CsbrrTokenFeatureDisabledWeblayerPingManagerTest
-    : public WeblayerPingManagerTest {
- public:
-  CsbrrTokenFeatureDisabledWeblayerPingManagerTest() {
-    feature_list_.Reset();
-    feature_list_.InitWithFeatures(
-        {safe_browsing::kSafeBrowsingRemoveCookiesInAuthRequests},
-        {safe_browsing::kSafeBrowsingCsbrrWithToken});
-    is_csbrr_token_feature_enabled_ = false;
   }
 };
 class IncognitoModeWeblayerPingManagerTest : public WeblayerPingManagerTest {
@@ -196,18 +181,6 @@ IN_PROC_BROWSER_TEST_F(WeblayerPingManagerTest,
                        ReportThreatDetailsWithoutAccessToken_NotSignedIn) {
   RunReportThreatDetailsTest(/*is_enhanced_protection=*/true,
                              /*is_signed_in=*/false,
-                             /*expect_access_token=*/false,
-                             /*expect_cookies_removed=*/false);
-}
-// TODO(crbug.com/1296615): remove test case,
-// CsbrrTokenFeatureDisabledWeblayerPingManagerTest class, and
-// is_csbrr_token_feature_enabled_ property when deprecating
-// kSafeBrowsingCsbrrWithToken feature
-IN_PROC_BROWSER_TEST_F(
-    CsbrrTokenFeatureDisabledWeblayerPingManagerTest,
-    ReportThreatDetailsWithoutAccessToken_CsbrrTokenFeatureDisabled) {
-  RunReportThreatDetailsTest(/*is_enhanced_protection=*/true,
-                             /*is_signed_in=*/true,
                              /*expect_access_token=*/false,
                              /*expect_cookies_removed=*/false);
 }

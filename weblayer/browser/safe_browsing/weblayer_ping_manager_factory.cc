@@ -8,7 +8,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/browser_process.h"
@@ -64,9 +63,7 @@ bool WebLayerPingManagerFactory::ShouldFetchAccessTokenForReport(
     content::BrowserContext* context) const {
   PrefService* pref_service =
       static_cast<BrowserContextImpl*>(context)->pref_service();
-  return base::FeatureList::IsEnabled(
-             safe_browsing::kSafeBrowsingCsbrrWithToken) &&
-         safe_browsing::IsEnhancedProtectionEnabled(*pref_service) &&
+  return safe_browsing::IsEnhancedProtectionEnabled(*pref_service) &&
          // TODO(crbug.com/1171215): Change this to production mechanism for
          // enabling Gaia-keyed client reports once that mechanism is
          // determined.

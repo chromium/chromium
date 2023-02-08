@@ -43,7 +43,6 @@ class ChromePingManagerTest : public testing::Test {
   void TearDown() override;
   void RunReportThreatDetailsTest(bool is_enhanced_protection,
                                   bool is_signed_in,
-                                  bool is_csbrr_token_feature_enabled,
                                   bool is_remove_cookies_feature_enabled,
                                   bool expect_access_token,
                                   bool expect_cookies_removed);
@@ -52,8 +51,7 @@ class ChromePingManagerTest : public testing::Test {
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
  private:
-  void SetUpFeatureList(bool should_enable_csbrr_with_token,
-                        bool should_enable_remove_cookies);
+  void SetUpFeatureList(bool should_enable_remove_cookies);
   raw_ptr<TestingProfile> SetUpProfile(bool is_enhanced_protection,
                                        bool is_signed_in);
   TestSafeBrowsingTokenFetcher* SetUpTokenFetcher(PingManager* ping_manager);
@@ -87,15 +85,9 @@ void ChromePingManagerTest::TearDown() {
 }
 
 void ChromePingManagerTest::SetUpFeatureList(
-    bool should_enable_csbrr_with_token,
     bool should_enable_remove_cookies) {
   std::vector<base::test::FeatureRef> enabled_features = {};
   std::vector<base::test::FeatureRef> disabled_features = {};
-  if (should_enable_csbrr_with_token) {
-    enabled_features.push_back(kSafeBrowsingCsbrrWithToken);
-  } else {
-    disabled_features.push_back(kSafeBrowsingCsbrrWithToken);
-  }
   if (should_enable_remove_cookies) {
     enabled_features.push_back(kSafeBrowsingRemoveCookiesInAuthRequests);
   } else {
@@ -133,14 +125,12 @@ TestSafeBrowsingTokenFetcher* ChromePingManagerTest::SetUpTokenFetcher(
 void ChromePingManagerTest::RunReportThreatDetailsTest(
     bool is_enhanced_protection,
     bool is_signed_in,
-    bool is_csbrr_token_feature_enabled,
     bool is_remove_cookies_feature_enabled,
     bool expect_access_token,
     bool expect_cookies_removed) {
   base::RunLoop csbrr_logged_run_loop;
   base::HistogramTester histogram_tester;
-  SetUpFeatureList(is_csbrr_token_feature_enabled,
-                   is_remove_cookies_feature_enabled);
+  SetUpFeatureList(is_remove_cookies_feature_enabled);
   raw_ptr<TestingProfile> profile =
       SetUpProfile(is_enhanced_protection, is_signed_in);
   auto* ping_manager = ChromePingManagerFactory::GetForBrowserContext(profile);
@@ -201,7 +191,6 @@ void ChromePingManagerTest::RunReportThreatDetailsTest(
 TEST_F(ChromePingManagerTest, ReportThreatDetailsWithAccessToken) {
   RunReportThreatDetailsTest(/*is_enhanced_protection=*/true,
                              /*is_signed_in=*/true,
-                             /*is_csbrr_token_feature_enabled=*/true,
                              /*is_remove_cookies_feature_enabled=*/true,
                              /*expect_access_token=*/true,
                              /*expect_cookies_removed=*/true);
@@ -210,7 +199,6 @@ TEST_F(ChromePingManagerTest,
        ReportThreatDetailsWithAccessToken_RemoveCookiesFeatureDisabled) {
   RunReportThreatDetailsTest(/*is_enhanced_protection=*/true,
                              /*is_signed_in=*/true,
-                             /*is_csbrr_token_feature_enabled=*/true,
                              /*is_remove_cookies_feature_enabled=*/false,
                              /*expect_access_token=*/true,
                              /*expect_cookies_removed=*/false);
@@ -219,7 +207,6 @@ TEST_F(ChromePingManagerTest,
        ReportThreatDetailsWithoutAccessToken_NotSignedIn) {
   RunReportThreatDetailsTest(/*is_enhanced_protection=*/true,
                              /*is_signed_in=*/false,
-                             /*is_csbrr_token_feature_enabled=*/true,
                              /*is_remove_cookies_feature_enabled=*/true,
                              /*expect_access_token=*/false,
                              /*expect_cookies_removed=*/false);
@@ -228,7 +215,6 @@ TEST_F(ChromePingManagerTest,
        ReportThreatDetailsWithoutAccessToken_NotEnhancedProtection) {
   RunReportThreatDetailsTest(/*is_enhanced_protection=*/false,
                              /*is_signed_in=*/true,
-                             /*is_csbrr_token_feature_enabled=*/true,
                              /*is_remove_cookies_feature_enabled=*/true,
                              /*expect_access_token=*/false,
                              /*expect_cookies_removed=*/false);
@@ -237,17 +223,6 @@ TEST_F(ChromePingManagerTest, ReportThreatDetailsWithoutAccessToken_Incognito) {
   raw_ptr<TestingProfile> profile = TestingProfile::Builder().BuildIncognito(
       profile_manager_->CreateTestingProfile("testing_profile"));
   EXPECT_EQ(ChromePingManagerFactory::GetForBrowserContext(profile), nullptr);
-}
-// TODO(crbug.com/1296615): remove test case when deprecating
-// kSafeBrowsingCsbrrWithToken feature
-TEST_F(ChromePingManagerTest,
-       ReportThreatDetailsWithoutAccessToken_CsbrrTokenFeatureDisabled) {
-  RunReportThreatDetailsTest(/*is_enhanced_protection=*/true,
-                             /*is_signed_in=*/true,
-                             /*is_csbrr_token_feature_enabled=*/false,
-                             /*is_remove_cookies_feature_enabled=*/true,
-                             /*expect_access_token=*/false,
-                             /*expect_cookies_removed=*/false);
 }
 
 TEST_F(ChromePingManagerTest, ReportSafeBrowsingHit) {

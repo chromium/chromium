@@ -177,10 +177,6 @@ BASE_DECLARE_FEATURE(kRealTimeUrlLookupForEnterpriseAllowlistBypass);
 // new triggers
 BASE_DECLARE_FEATURE(kSafeBrowsingCsbrrNewDownloadTrigger);
 
-// Controls whether Client Safe Browsing Reports are sent with a GAIA-tied token
-// for Enhanced Safe Browsing users
-BASE_DECLARE_FEATURE(kSafeBrowsingCsbrrWithToken);
-
 // Controls whether we are disabling consumer download checks for users using
 // the enterprise download checks.
 BASE_DECLARE_FEATURE(kSafeBrowsingDisableConsumerCsdForEnterprise);
