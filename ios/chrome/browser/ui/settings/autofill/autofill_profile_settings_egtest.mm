@@ -6,8 +6,10 @@
 
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
+#import "ios/chrome/browser/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -109,6 +111,18 @@ id<GREYMatcher> NavigationBarEditButton() {
   [super tearDown];
 }
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+
+  if ([self isRunningTest:@selector(testConfirmationShownOnDeletion)] ||
+      [self isRunningTest:@selector(testConfirmationShownOnSwipeToDelete)]) {
+    config.features_enabled.push_back(
+        autofill::features::kAutofillAccountProfilesUnionView);
+  }
+
+  return config;
+}
+
 // Helper to open the settings page for Autofill profiles.
 - (void)openAutofillProfilesSettings {
   [ChromeEarlGreyUI openSettingsMenu];
@@ -132,6 +146,22 @@ id<GREYMatcher> NavigationBarEditButton() {
       performAction:grey_tap()];
   // Wait for UI components to finish loading.
   [ChromeEarlGreyUI waitForAppToIdle];
+}
+
+// Helper to open the settings page for the Autofill profile card list in edit
+// mode.
+- (void)openProfileListInEditMode {
+  [self openAutofillProfilesSettings];
+
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      performAction:grey_tap()];
+}
+
+// Returns the delete button on the deletion confirmation action sheet.
+- (id<GREYMatcher>)confirmDeleteAddressButton {
+  return grey_allOf(grey_accessibilityLabel(@"Test Delete Address"),
+                    grey_accessibilityTrait(UIAccessibilityTraitButton),
+                    grey_userInteractionEnabled(), nil);
 }
 
 // Test that the page for viewing Autofill profile details is as expected.
@@ -237,12 +267,7 @@ id<GREYMatcher> NavigationBarEditButton() {
 // profiles switch is disabled.
 - (void)testListViewEditMode {
   [AutofillAppInterface saveExampleProfile];
-
-  [self openAutofillProfilesSettings];
-
-  // Switch on edit mode.
-  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-      performAction:grey_tap()];
+  [self openProfileListInEditMode];
 
   // Check the Autofill profile switch is disabled.
   [[EarlGrey
@@ -283,6 +308,85 @@ id<GREYMatcher> NavigationBarEditButton() {
       assertWithMatcher:grey_notNil()];
 
   [self exitSettingsMenu];
+}
+
+// Checks that the autofill profile is deleted when the deletion is initiated.
+- (void)testDeletionOfAddressProfile {
+  [AutofillAppInterface saveExampleProfile];
+  [self openProfileListInEditMode];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(
+                                   [AutofillAppInterface exampleProfileName])]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          SettingsBottomToolbarDeleteButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          SettingsBottomToolbarDeleteButton()]
+      assertWithMatcher:grey_nil()];
+  // If the done button in the nav bar is enabled it is no longer in edit
+  // mode.
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Checks that the confirmation action sheet is shown when an autofill profile
+// is deleted and the profile is deleted when the confirmation is accepted.
+- (void)testConfirmationShownOnDeletion {
+  [AutofillAppInterface saveExampleProfile];
+  [self openProfileListInEditMode];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(
+                                   [AutofillAppInterface exampleProfileName])]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          SettingsBottomToolbarDeleteButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:[self confirmDeleteAddressButton]]
+      performAction:grey_tap()];
+  WaitForActivityOverlayToDisappear();
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          SettingsBottomToolbarDeleteButton()]
+      assertWithMatcher:grey_nil()];
+  // If the done button in the nav bar is enabled it is no longer in edit
+  // mode.
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Checks that the confirmation action sheet is shown when an autofill profile
+// is swiped to be deleted.
+- (void)testConfirmationShownOnSwipeToDelete {
+  [AutofillAppInterface saveExampleProfile];
+  [self openAutofillProfilesSettings];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(
+                                   [AutofillAppInterface exampleProfileName])]
+      performAction:chrome_test_util::SwipeToShowDeleteButton()];
+
+  // There are multiple delete buttons but only one enabled.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   ButtonWithAccessibilityLabel(@"Delete"),
+                                   grey_not(grey_accessibilityTrait(
+                                       UIAccessibilityTraitNotEnabled)),
+                                   nil)] performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:[self confirmDeleteAddressButton]]
+      performAction:grey_tap()];
+  WaitForActivityOverlayToDisappear();
+
+  // Check the profile has been deleted.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(
+                                   [AutofillAppInterface exampleProfileName])]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end

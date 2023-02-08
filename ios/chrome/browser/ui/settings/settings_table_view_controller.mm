@@ -1593,8 +1593,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       break;
     case SettingsItemTypeAutofillProfile:
       base::RecordAction(base::UserMetricsAction("AutofillAddressesViewed"));
-      controller = [[AutofillProfileTableViewController alloc]
-          initWithBrowserState:_browserState];
+      controller =
+          [[AutofillProfileTableViewController alloc] initWithBrowser:_browser];
       break;
     case SettingsItemTypePriceNotifications:
       DCHECK(IsPriceNotificationsEnabled());

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#import "ios/chrome/browser/ui/settings/autofill/cells/autofill_address_profile_source.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_multi_detail_text_item.h"
 
 // Item for autofill profile (address).
@@ -14,6 +15,9 @@
 
 // The GUID used by the PersonalDataManager to identify profiles.
 @property(nonatomic, assign) std::string GUID;
+
+// Denotes whether the profile is local, syncable or account profile.
+@property(nonatomic, assign) AutofillAddressProfileSource autofillProfileSource;
 
 @end
 

@@ -296,8 +296,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                        delegate {
   DCHECK(browser);
   AutofillProfileTableViewController* controller =
-      [[AutofillProfileTableViewController alloc]
-          initWithBrowserState:browser->GetBrowserState()];
+      [[AutofillProfileTableViewController alloc] initWithBrowser:browser];
   controller.dispatcher = [delegate handlerForSettings];
 
   SettingsNavigationController* nc = [[SettingsNavigationController alloc]
@@ -801,8 +800,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 - (void)showProfileSettingsFromViewController:
     (UIViewController*)baseViewController {
   AutofillProfileTableViewController* controller =
-      [[AutofillProfileTableViewController alloc]
-          initWithBrowserState:self.browser->GetBrowserState()];
+      [[AutofillProfileTableViewController alloc] initWithBrowser:self.browser];
   controller.dispatcher = [self.settingsNavigationDelegate handlerForSettings];
   [self pushViewController:controller animated:YES];
 }
