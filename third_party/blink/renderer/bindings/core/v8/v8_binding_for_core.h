@@ -265,8 +265,9 @@ inline uint64_t ToUInt64(v8::Isolate* isolate,
 // NaNs and +/-Infinity should be 0, otherwise modulo 2^64.
 // Step 8 - 12 of https://webidl.spec.whatwg.org/#abstract-opdef-converttoint
 inline uint64_t DoubleToInteger(double d) {
-  if (std::isnan(d) || std::isinf(d))
+  if (!std::isfinite(d)) {
     return 0;
+  }
   constexpr uint64_t kMaxULL = std::numeric_limits<uint64_t>::max();
 
   // -2^{64} < fmod_value < 2^{64}.

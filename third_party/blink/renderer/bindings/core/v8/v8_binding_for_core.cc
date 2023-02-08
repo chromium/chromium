@@ -113,7 +113,7 @@ static double EnforceRange(double x,
                            double maximum,
                            const char* type_name,
                            ExceptionState& exception_state) {
-  if (std::isnan(x) || std::isinf(x)) {
+  if (!std::isfinite(x)) {
     exception_state.ThrowTypeError(
         "Value is" + String(std::isinf(x) ? " infinite and" : "") +
         " not of type '" + String(type_name) + "'.");
