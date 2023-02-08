@@ -1168,7 +1168,8 @@ bool CSSSelectorParser::ConsumeSimpleSelector(CSSParserTokenRange& range) {
     ok = ConsumeAttribute(range);
   } else if (token.GetType() == kColonToken) {
     ok = ConsumePseudo(range);
-  } else if (token.GetType() == kDelimiterToken && token.Delimiter() == '&') {
+  } else if (token.GetType() == kDelimiterToken && token.Delimiter() == '&' &&
+             RuntimeEnabledFeatures::CSSNestingEnabled()) {
     ok = ConsumeNestingParent(range);
   } else {
     return false;
