@@ -367,6 +367,9 @@ void RecordTabGridCloseTabsCount(int count) {
     didChangePinnedStateForWebState:(web::WebState*)webState
                             atIndex:(int)index {
   DCHECK_EQ(_webStateList, webStateList);
+  if (webStateList->IsBatchInProgress()) {
+    return;
+  }
 
   if (IsPinnedTabsEnabled() && webStateList->IsWebStatePinnedAt(index)) {
     [self.consumer removeItemWithID:webState->GetStableIdentifier()

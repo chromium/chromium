@@ -76,7 +76,7 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
 
 - (void)disconnect {
   if (_webStateList) {
-    _allWebStateObservationForwarder.reset();
+    [self removeWebStateObservations];
     _webStateList->RemoveObserver(_webStateListObserver.get());
     _webStateListObserver = nullptr;
     _webStateList = nullptr;
@@ -87,7 +87,7 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
 
 - (void)setWebStateList:(WebStateList*)webStateList {
   if (_webStateList) {
-    _allWebStateObservationForwarder.reset();
+    [self removeWebStateObservations];
     _webStateList->RemoveObserver(_webStateListObserver.get());
   }
 
@@ -99,11 +99,9 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
     _webStateList->AddObserver(_webStateListObserver.get());
 
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
-    // Observe all webStates of this `_webStateList`.
-    _allWebStateObservationForwarder =
-        std::make_unique<AllWebStateObservationForwarder>(
-            _webStateList, _webStateObserver.get());
+    [self addWebStateObservations];
   }
+
   [self populateConsumerItems];
 }
 
@@ -112,6 +110,11 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
 - (void)webStateList:(WebStateList*)webStateList
     didDetachWebState:(web::WebState*)webState
               atIndex:(int)atIndex {
+  DCHECK_EQ(_webStateList, webStateList);
+  if (webStateList->IsBatchInProgress()) {
+    return;
+  }
+
   [self populateConsumerItems];
 }
 
@@ -119,6 +122,11 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
     didInsertWebState:(web::WebState*)webState
               atIndex:(int)index
            activating:(BOOL)activating {
+  DCHECK_EQ(_webStateList, webStateList);
+  if (webStateList->IsBatchInProgress()) {
+    return;
+  }
+
   [self populateConsumerItems];
 }
 
@@ -138,6 +146,19 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
   }
 
   [self.consumer selectItemWithID:newWebState->GetStableIdentifier()];
+}
+
+- (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
+  DCHECK_EQ(_webStateList, webStateList);
+
+  [self removeWebStateObservations];
+}
+
+- (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
+  DCHECK_EQ(_webStateList, webStateList);
+
+  [self addWebStateObservations];
+  [self populateConsumerItems];
 }
 
 #pragma mark - TabFaviconDataSource
@@ -204,6 +225,18 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
 }
 
 #pragma mark - Private
+
+// Adds an observation to every WebState of the current WebSateList.
+- (void)addWebStateObservations {
+  _allWebStateObservationForwarder =
+      std::make_unique<AllWebStateObservationForwarder>(
+          _webStateList, _webStateObserver.get());
+}
+
+// Removes an observation from every WebState of the current WebSateList.
+- (void)removeWebStateObservations {
+  _allWebStateObservationForwarder.reset();
+}
 
 // Calls `-populateItems:selectedItemID:` on the consumer.
 - (void)populateConsumerItems {
