@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/events/ozone/keyboard_hook_ozone.h"
-
+#include <memory>
 #include <utility>
 
-#include "base/functional/callback.h"
-#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
+#include "ui/events/keyboard_hook.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -17,30 +15,44 @@
 
 namespace ui {
 
-KeyboardHookOzone::KeyboardHookOzone(
-    PlatformKeyboardHookTypes type,
-    KeyEventCallback callback,
-    absl::optional<base::flat_set<DomCode>> dom_codes,
-    gfx::AcceleratedWidget widget) {
-  platform_keyboard_hook_ =
-      ui::OzonePlatform::GetInstance()->CreateKeyboardHook(
-          type, std::move(callback), std::move(dom_codes), widget);
-}
+namespace {
 
-KeyboardHookOzone::~KeyboardHookOzone() = default;
+// Ozone-specific implementation of the ui::KeyboardHook interface.
+// Wraps the object provided by the current Ozone platform.
+class KeyboardHookOzone final : public KeyboardHook {
+ public:
+  explicit KeyboardHookOzone(
+      std::unique_ptr<PlatformKeyboardHook> platform_hook)
+      : platform_hook_(std::move(platform_hook)) {}
 
-bool KeyboardHookOzone::IsKeyLocked(DomCode dom_code) const {
-  return platform_keyboard_hook_->IsKeyLocked(dom_code);
-}
+  KeyboardHookOzone(const KeyboardHookOzone&) = delete;
+  KeyboardHookOzone& operator=(const KeyboardHookOzone&) = delete;
+
+  ~KeyboardHookOzone() final = default;
+
+  // KeyboardHook:
+  bool IsKeyLocked(DomCode dom_code) const final {
+    return platform_hook_->IsKeyLocked(dom_code);
+  }
+
+ private:
+  // The platform implementation.
+  std::unique_ptr<PlatformKeyboardHook> platform_hook_;
+};
+
+}  // namespace
 
 // static
 std::unique_ptr<KeyboardHook> KeyboardHook::CreateModifierKeyboardHook(
     absl::optional<base::flat_set<DomCode>> dom_codes,
     gfx::AcceleratedWidget accelerated_widget,
     KeyEventCallback callback) {
-  return std::make_unique<KeyboardHookOzone>(
-      PlatformKeyboardHookTypes::kModifier, std::move(callback),
-      std::move(dom_codes), accelerated_widget);
+  if (auto platform_hook = OzonePlatform::GetInstance()->CreateKeyboardHook(
+          PlatformKeyboardHookTypes::kModifier, std::move(callback),
+          std::move(dom_codes), accelerated_widget)) {
+    return std::make_unique<KeyboardHookOzone>(std::move(platform_hook));
+  }
+  return nullptr;
 }
 
 // static
