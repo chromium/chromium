@@ -341,8 +341,6 @@ export class OptionsPage {
         const sel = node.options[selIndex];
         SettingsManager.set('brailleTable', sel.id);
         SettingsManager.set(node.id, sel.id);
-        BackgroundBridge.BrailleBackground.refreshBrailleTable(
-            SettingsManager.getString('brailleTable'));
       };
     };
 
@@ -376,8 +374,6 @@ export class OptionsPage {
         tableTypeButton.textContent =
             Msgs.getMsg('options_braille_table_type_8');
       }
-      BackgroundBridge.BrailleBackground.refreshBrailleTable(
-          SettingsManager.getString('brailleTable'));
     };
     updateTableType(false);
 

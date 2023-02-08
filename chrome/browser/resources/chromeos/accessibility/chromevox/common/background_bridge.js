@@ -29,19 +29,6 @@ BackgroundBridge.Braille = {
         BridgeConstants.Braille.TARGET,
         BridgeConstants.Braille.Action.BACK_TRANSLATE, cells);
   },
-};
-
-BackgroundBridge.BrailleBackground = {
-  /**
-   * @param {string} brailleTable The table for this translator to use.
-   * @return {!Promise<boolean>}
-   */
-  async refreshBrailleTable(brailleTable) {
-    return BridgeHelper.sendMessage(
-        BridgeConstants.BrailleBackground.TARGET,
-        BridgeConstants.BrailleBackground.Action.REFRESH_BRAILLE_TABLE,
-        brailleTable);
-  },
 
   /**
    * @param {!string} text The text to write in Braille.
@@ -49,8 +36,8 @@ BackgroundBridge.BrailleBackground = {
    */
   async write(text) {
     return BridgeHelper.sendMessage(
-        BridgeConstants.BrailleBackground.TARGET,
-        BridgeConstants.BrailleBackground.Action.WRITE, text);
+        BridgeConstants.Braille.TARGET, BridgeConstants.Braille.Action.WRITE,
+        text);
   },
 };
 

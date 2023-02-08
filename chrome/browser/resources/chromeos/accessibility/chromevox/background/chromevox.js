@@ -42,7 +42,6 @@ BridgeHelper.registerHandler(
     });
 
 BridgeHelper.registerHandler(
-    BridgeConstants.BrailleBackground.TARGET,
-    BridgeConstants.BrailleBackground.Action.WRITE,
+    BridgeConstants.Braille.TARGET, BridgeConstants.Braille.Action.WRITE,
     text =>
         ChromeVox.braille.write(new NavBraille({text: new Spannable(text)})));

@@ -287,7 +287,7 @@ export class LearnMode {
         LearnMode.shouldFlushSpeech_ ? QueueMode.CATEGORY_FLUSH :
                                        QueueMode.QUEUE,
         new TtsSpeechProperties({endCallback: opt_outputCallback}));
-    BackgroundBridge.BrailleBackground.write(text);
+    BackgroundBridge.Braille.write(text);
     LearnMode.shouldFlushSpeech_ = false;
     if (opt_outputCallback) {
       opt_outputCallback();

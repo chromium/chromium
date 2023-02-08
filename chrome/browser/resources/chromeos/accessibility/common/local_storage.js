@@ -11,7 +11,7 @@ export class LocalStorage {
   constructor(onInit) {
     /** @private {?Object} */
     this.values_ = null;
-    /** @private {!Object<string, Function>} */
+    /** @private {!Object<string, !Array<!Function>>} */
     this.keyCallbacks_ = {};
 
     chrome.storage.local.get(
@@ -42,7 +42,12 @@ export class LocalStorage {
    * @param {Function} callback
    */
   static addListenerForKey(key, callback) {
-    LocalStorage.instance.keyCallbacks_[key] = callback;
+    if (!LocalStorage.instance.keyCallbacks_[key]) {
+      LocalStorage.instance.keyCallbacks_[key] = [];
+    }
+    if (callback) {
+      LocalStorage.instance.keyCallbacks_[key].push(callback);
+    }
   }
 
   /**
@@ -158,7 +163,8 @@ export class LocalStorage {
     for (const key in updates) {
       this.values_[key] = updates[key].newValue;
       if (this.keyCallbacks_[key]) {
-        this.keyCallbacks_[key](updates[key].newValue);
+        this.keyCallbacks_[key].forEach(
+            callback => callback(updates[key].newValue));
       }
     }
   }

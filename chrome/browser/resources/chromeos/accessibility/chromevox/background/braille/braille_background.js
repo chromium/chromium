@@ -7,8 +7,6 @@
  */
 import {BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
-import {BridgeConstants} from '../../common/bridge_constants.js';
-import {BridgeHelper} from '../../common/bridge_helper.js';
 import {LogType} from '../../common/log_types.js';
 import {SettingsManager} from '../../common/settings_manager.js';
 import {ChromeVoxState} from '../chromevox_state.js';
@@ -19,9 +17,6 @@ import {BrailleInputHandler} from './braille_input_handler.js';
 import {BrailleInterface} from './braille_interface.js';
 import {BrailleKeyEventRewriter} from './braille_key_event_rewriter.js';
 import {BrailleTranslatorManager} from './braille_translator_manager.js';
-
-const Action = BridgeConstants.BrailleBackground.Action;
-const TARGET = BridgeConstants.BrailleBackground.TARGET;
 
 /** @implements {BrailleInterface} */
 export class BrailleBackground {
@@ -64,8 +59,8 @@ export class BrailleBackground {
   static init() {
     BrailleBackground.instance = new BrailleBackground();
 
-    BridgeHelper.registerHandler(
-        TARGET, Action.REFRESH_BRAILLE_TABLE,
+    SettingsManager.addListenerForKey(
+        'brailleTable',
         brailleTable =>
             BrailleBackground.instance.getTranslatorManager().refresh(
                 brailleTable));
