@@ -173,6 +173,7 @@ class CORE_EXPORT HTMLSelectMenuElement final
   Member<HTMLSlotElement> button_slot_;
   Member<HTMLSlotElement> listbox_slot_;
   Member<HTMLSlotElement> marker_slot_;
+  Member<HTMLSlotElement> selected_value_slot_;
   Member<HTMLOptionElement> selected_option_;
   Member<HTMLOptionElement> selected_option_when_listbox_opened_;
   bool queued_check_for_missing_parts_{false};

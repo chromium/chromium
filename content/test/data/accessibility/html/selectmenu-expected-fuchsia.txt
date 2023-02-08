@@ -4,9 +4,10 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN focusable actions='{DEFAULT}' value='Option 1'
-++++++++++++UNKNOWN actions='{DEFAULT}'
-++++++++++++++STATIC_TEXT label='Option 1' actions='{DEFAULT}'
-++++++++++++++++UNKNOWN label='Option 1'
+++++++++++++UNKNOWN hidden
+++++++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++++++STATIC_TEXT label='Option 1' actions='{DEFAULT}'
+++++++++++++++++++UNKNOWN label='Option 1'
 ++++++++++++UNKNOWN hidden
 ++++++++++++++UNKNOWN hidden
 ++++++++UNKNOWN hidden
