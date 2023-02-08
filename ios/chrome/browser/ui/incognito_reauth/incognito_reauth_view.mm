@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_util.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view_label.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -56,8 +57,14 @@ const CGFloat kVerticalContentPadding = 70.0f;
     blurBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
     AddSameConstraints(self, blurBackgroundView);
 
-    UIImage* incognitoLogo = [UIImage imageNamed:@"incognito_logo_reauth"];
+    UIImage* incognitoLogo;
+    if (UseSymbols()) {
+      incognitoLogo = CustomSymbolWithPointSize(kIncognitoSymbol, 28);
+    } else {
+      incognitoLogo = [UIImage imageNamed:@"incognito_logo_reauth"];
+    }
     _logoView = [[UIImageView alloc] initWithImage:incognitoLogo];
+    _logoView.tintColor = UIColor.whiteColor;
     _logoView.translatesAutoresizingMaskIntoConstraints = NO;
     [blurBackgroundView.contentView addSubview:_logoView];
     AddSameCenterXConstraint(_logoView, blurBackgroundView);
