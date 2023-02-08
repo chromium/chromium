@@ -1,0 +1,32 @@
+<link rel="help" href="https://crbug.com/1403599">
+<style>
+#foo {
+  -webkit-box-reflect: right 1px;
+  border-inline-start-style: dashed;
+  content: url();
+  transition-duration: 6s;
+  height: 1;
+}
+</style>
+<script>
+  function runTest(){
+    document.elementFromPoint(0, 0);
+
+    let node = foo.removeChild(bar);
+    target.appendChild(node);
+
+    document.fgColor = "1";
+  }
+</script>
+<body onload="runTest();")>
+  <div style="columns: 1px;">
+    <span id="target">
+      <ul style="float: left;">
+        <div id="foo">
+          <div id="bar">
+          </div>
+        </div>
+      </ul>
+    </span>
+  </div>
+</body>

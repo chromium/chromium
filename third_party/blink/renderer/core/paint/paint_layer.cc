@@ -2105,8 +2105,17 @@ void PaintLayer::UpdateFilterReferenceBox() {
   PhysicalRect result = LocalBoundingBox();
   ExpandRectForSelfPaintingDescendants(result);
   gfx::RectF reference_box(result);
-  if (!ResourceInfo() || ResourceInfo()->FilterReferenceBox() != reference_box)
-    GetLayoutObject().SetNeedsPaintPropertyUpdate();
+  if (!ResourceInfo() ||
+      ResourceInfo()->FilterReferenceBox() != reference_box) {
+    if (GetLayoutObject().GetDocument().Lifecycle().GetState() ==
+        DocumentLifecycle::kInPrePaint) {
+      GetLayoutObject()
+          .GetMutableForPainting()
+          .SetOnlyThisNeedsPaintPropertyUpdate();
+    } else {
+      GetLayoutObject().SetNeedsPaintPropertyUpdate();
+    }
+  }
   EnsureResourceInfo().SetFilterReferenceBox(reference_box);
 }
 
