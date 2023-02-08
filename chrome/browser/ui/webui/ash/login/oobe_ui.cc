@@ -233,18 +233,18 @@ void AddDebuggerResources(content::WebUIDataSource* source) {
     base::SysInfo::CrashIfChromeOSNonTestImage();
   }
 
-  source->AddResourcePath(kDebuggerMJSPath, enabled ?
-                                            IDR_OOBE_DEBUGGER_JS :
-                                            IDR_OOBE_DEBUGGER_STUB_JS);
+  source->AddResourcePath(kDebuggerMJSPath,
+                          enabled ? IDR_OOBE_CONDITIONAL_DEBUG_DEBUG_JS
+                                  : IDR_OOBE_CONDITIONAL_DEBUG_NO_DEBUG_JS);
 }
 
 void AddTestAPIResources(content::WebUIDataSource* source) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   const bool enabled = command_line->HasSwitch(switches::kEnableOobeTestAPI);
 
-  source->AddResourcePath(kTestAPIJsMPath, enabled ?
-                                           IDR_OOBE_TEST_API_JS :
-                                           IDR_OOBE_TEST_API_STUB_JS);
+  source->AddResourcePath(
+      kTestAPIJsMPath, enabled ? IDR_OOBE_CONDITIONAL_TEST_API_TEST_API_JS
+                               : IDR_OOBE_CONDITIONAL_TEST_API_NO_TEST_API_JS);
 }
 
 // Creates a WebUIDataSource for chrome://oobe
@@ -604,10 +604,11 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source) {
   if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
     source->AddResourcePath(
         kOobeCustomVarsCssJs,
-        IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_JS);
+        IDR_OOBE_CONDITIONAL_COMPONENTS_OOBE_VARS_OOBE_CUSTOM_VARS_REMORA_CSS_JS);
   } else {
-    source->AddResourcePath(kOobeCustomVarsCssJs,
-                            IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_JS);
+    source->AddResourcePath(
+        kOobeCustomVarsCssJs,
+        IDR_OOBE_CONDITIONAL_COMPONENTS_OOBE_VARS_OOBE_CUSTOM_VARS_CSS_JS);
   }
 
   source->OverrideContentSecurityPolicy(

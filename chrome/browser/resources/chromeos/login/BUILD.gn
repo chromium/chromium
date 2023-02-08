@@ -27,17 +27,33 @@ oobe_preprocessed_folder = "oobe_preprocessed"
 # for convenience.
 # -----------------------------------------------------------------------------
 grit("conditional_resources") {
+  defines = chrome_grit_defines
+
   # Needed since some of the files are generated during build time.
   enable_input_discovery_for_gn_analyze = false
 
-  source = "oobe_conditional_resources.grd"
+  source = "$target_gen_dir/oobe_conditional_resources.grd"
   outputs = [
     "grit/oobe_conditional_resources.h",
+    "grit/oobe_conditional_resources_map.h",
+    "grit/oobe_conditional_resources_map.cc",
     "oobe_conditional_resources.pak",
   ]
 
-  deps = [ ":preprocess_conditional" ]
+  deps = [ ":build_oobe_conditional_grd" ]
   output_dir = "$root_gen_dir/chrome"
+}
+
+generate_grd("build_oobe_conditional_grd") {
+  grd_prefix = "oobe_conditional"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  deps = [ ":preprocess_conditional" ]
+  manifest_files = [ "$target_gen_dir/$conditional_files_manifest" ]
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = [
+    "debug/no_debug.js",
+    "test_api/no_test_api.js",
+  ]
 }
 
 # Files that are served conditionally
