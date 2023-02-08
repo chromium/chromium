@@ -4,7 +4,7 @@
 
 module attribution_internals.mojom;
 
-import "components/attribution_reporting/registration.mojom";
+import "services/network/public/mojom/attribution.mojom";
 import "components/attribution_reporting/source_registration_error.mojom";
 import "components/attribution_reporting/source_type.mojom";
 import "content/browser/attribution_reporting/attribution_reporting.mojom";
@@ -159,7 +159,7 @@ struct WebUITrigger {
   // simply displayed in the UI, never inspected.
   string registration_json;
   TriggerDebugKey? cleared_debug_key;
-  attribution_reporting.mojom.TriggerAttestation? attestation;
+  network.mojom.TriggerAttestation? attestation;
 
   enum Status {
     // Shared statuses:

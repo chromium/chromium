@@ -23,7 +23,6 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
-#include "components/attribution_reporting/trigger_attestation.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -49,6 +48,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/base/net_errors.h"
 #include "net/base/schemeful_site.h"
+#include "services/network/public/cpp/trigger_attestation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -993,8 +993,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   const auto create_trigger =
-      [](absl::optional<attribution_reporting::TriggerAttestation>
-             attestation) {
+      [](absl::optional<network::TriggerAttestation> attestation) {
         return AttributionTrigger(
             /*reporting_origin=*/*SuitableOrigin::Deserialize("https://r.test"),
             attribution_reporting::TriggerRegistration(
@@ -1091,12 +1090,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                          AttributionTrigger::EventLevelResult::kSuccess,
                          AttributionTrigger::AggregatableResult::kSuccess);
 
-  notify_trigger_handled(
-      create_trigger(attribution_reporting::TriggerAttestation::Create(
-          "abc", "a2ab30b9-d664-4dfc-a9db-85f9729b9a30")),
-      AttributionTrigger::EventLevelResult::kSuccess,
-      AttributionTrigger::AggregatableResult::kSuccess,
-      /*cleared_debug_key=*/123);
+  notify_trigger_handled(create_trigger(network::TriggerAttestation::Create(
+                             "abc", "a2ab30b9-d664-4dfc-a9db-85f9729b9a30")),
+                         AttributionTrigger::EventLevelResult::kSuccess,
+                         AttributionTrigger::AggregatableResult::kSuccess,
+                         /*cleared_debug_key=*/123);
 
   // TODO(apaseltiner): Add tests for other statuses.
 

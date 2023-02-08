@@ -31,7 +31,6 @@
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
-#include "components/attribution_reporting/trigger_attestation.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
@@ -74,12 +73,15 @@ namespace url {
 class Origin;
 }  // namespace url
 
+namespace network {
+class TriggerAttestation;
+}  // namespace network
+
 namespace content {
 
 class AttributionDataHostManager;
 class AttributionObserver;
 class AttributionTrigger;
-class TriggerAttestation;
 
 enum class RateLimitResult : int;
 
@@ -160,8 +162,7 @@ class MockDataHost : public blink::mojom::AttributionDataHost {
   void TriggerDataAvailable(
       attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::TriggerRegistration,
-      absl::optional<attribution_reporting::TriggerAttestation> attestation)
-      override;
+      absl::optional<network::TriggerAttestation> attestation) override;
 
   size_t min_source_data_count_ = 0;
   std::vector<attribution_reporting::SourceRegistration> source_data_;
@@ -558,7 +559,7 @@ class TriggerBuilder {
       ::aggregation_service::mojom::AggregationCoordinator);
 
   TriggerBuilder& SetAttestation(
-      absl::optional<attribution_reporting::TriggerAttestation> attestation);
+      absl::optional<network::TriggerAttestation> attestation);
 
   AttributionTrigger Build(bool generate_event_trigger_data = true) const;
 
@@ -579,7 +580,7 @@ class TriggerBuilder {
   ::aggregation_service::mojom::AggregationCoordinator
       aggregation_coordinator_ =
           ::aggregation_service::mojom::AggregationCoordinator::kDefault;
-  absl::optional<attribution_reporting::TriggerAttestation> attestation_;
+  absl::optional<network::TriggerAttestation> attestation_;
 };
 
 // Helper class to construct an `AttributionInfo` for tests using default data.
@@ -1025,8 +1026,7 @@ struct AttributionTriggerMatcherConfig {
       registration = ::testing::_;
   ::testing::Matcher<const attribution_reporting::SuitableOrigin&>
       destination_origin = ::testing::_;
-  ::testing::Matcher<
-      const absl::optional<attribution_reporting::TriggerAttestation>&>
+  ::testing::Matcher<const absl::optional<network::TriggerAttestation>&>
       attestation = ::testing::_;
 
   ::testing::Matcher<bool> is_within_fenced_frame = ::testing::_;

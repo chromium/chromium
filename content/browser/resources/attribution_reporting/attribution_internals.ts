@@ -8,10 +8,10 @@ import './attribution_internals_table.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
+import {TriggerAttestation} from './attribution.mojom-webui.js';
 import {FailedSourceRegistration, Handler, HandlerInterface, ObserverInterface, ObserverReceiver, ReportID, WebUIDebugReport, WebUIReport, WebUISource, WebUISource_Attributability, WebUISource_DebugReporting, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
 import {ReportType} from './attribution_reporting.mojom-webui.js';
-import {TriggerAttestation} from './registration.mojom-webui.js';
 import {SourceRegistrationError} from './source_registration_error.mojom-webui.js';
 import {SourceType} from './source_type.mojom-webui.js';
 import {Column, TableModel} from './table_model.js';

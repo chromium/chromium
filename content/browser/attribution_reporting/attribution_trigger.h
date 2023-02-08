@@ -6,9 +6,9 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_TRIGGER_H_
 
 #include "components/attribution_reporting/suitable_origin.h"
-#include "components/attribution_reporting/trigger_attestation.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/common/content_export.h"
+#include "services/network/public/cpp/trigger_attestation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -67,12 +67,11 @@ class CONTENT_EXPORT AttributionTrigger {
     kMaxValue = kReportWindowPassed,
   };
 
-  AttributionTrigger(
-      attribution_reporting::SuitableOrigin reporting_origin,
-      attribution_reporting::TriggerRegistration registration,
-      attribution_reporting::SuitableOrigin destination_origin,
-      absl::optional<attribution_reporting::TriggerAttestation> attestation,
-      bool is_within_fenced_frame);
+  AttributionTrigger(attribution_reporting::SuitableOrigin reporting_origin,
+                     attribution_reporting::TriggerRegistration registration,
+                     attribution_reporting::SuitableOrigin destination_origin,
+                     absl::optional<network::TriggerAttestation> attestation,
+                     bool is_within_fenced_frame);
 
   AttributionTrigger(const AttributionTrigger&);
   AttributionTrigger& operator=(const AttributionTrigger&);
@@ -98,8 +97,7 @@ class CONTENT_EXPORT AttributionTrigger {
 
   bool is_within_fenced_frame() const { return is_within_fenced_frame_; }
 
-  const absl::optional<attribution_reporting::TriggerAttestation>& attestation()
-      const {
+  const absl::optional<network::TriggerAttestation>& attestation() const {
     return attestation_;
   }
 
@@ -112,7 +110,7 @@ class CONTENT_EXPORT AttributionTrigger {
   attribution_reporting::SuitableOrigin destination_origin_;
 
   // Optional token attesting to the veracity of the trigger.
-  absl::optional<attribution_reporting::TriggerAttestation> attestation_;
+  absl::optional<network::TriggerAttestation> attestation_;
 
   // Whether the trigger is registered within a fenced frame tree.
   bool is_within_fenced_frame_;

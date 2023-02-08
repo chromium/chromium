@@ -29,7 +29,6 @@
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
-#include "components/attribution_reporting/trigger_attestation.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
@@ -42,6 +41,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/net_errors.h"
 #include "net/base/schemeful_site.h"
+#include "services/network/public/cpp/trigger_attestation.h"
+#include "services/network/public/cpp/trigger_attestation_test_utils.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -123,7 +124,7 @@ void MockDataHost::SourceDataAvailable(
 void MockDataHost::TriggerDataAvailable(
     attribution_reporting::SuitableOrigin reporting_origin,
     attribution_reporting::TriggerRegistration data,
-    absl::optional<attribution_reporting::TriggerAttestation> attestation) {
+    absl::optional<network::TriggerAttestation> attestation) {
   trigger_data_.push_back(std::move(data));
   if (trigger_data_.size() < min_trigger_data_count_) {
     return;
@@ -725,7 +726,7 @@ TriggerBuilder& TriggerBuilder::SetAggregationCoordinator(
 }
 
 TriggerBuilder& TriggerBuilder::SetAttestation(
-    absl::optional<attribution_reporting::TriggerAttestation> attestation) {
+    absl::optional<network::TriggerAttestation> attestation) {
   attestation_ = std::move(attestation);
   return *this;
 }

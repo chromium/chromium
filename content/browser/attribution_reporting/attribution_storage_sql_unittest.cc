@@ -24,13 +24,13 @@
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/suitable_origin.h"
-#include "components/attribution_reporting/trigger_attestation.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "services/network/public/cpp/trigger_attestation.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -335,7 +335,7 @@ TEST_F(AttributionStorageSqlTest, StoreAndRetrieveReportWithAttestation) {
                               .Build();
   storage()->StoreSource(source);
 
-  auto trigger_attestation = attribution_reporting::TriggerAttestation::Create(
+  auto trigger_attestation = network::TriggerAttestation::Create(
       /*token=*/"attestation-token", /*aggregatable_report_id=*/
       "55865da3-fb0e-4b71-965e-64fc4bf0a323");
   AttributionTrigger trigger = DefaultAggregatableTriggerBuilder()

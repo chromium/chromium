@@ -15,7 +15,6 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
-#include "components/attribution_reporting/trigger_attestation.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -118,19 +117,6 @@ bool operator==(const SuitableOrigin& a, const SuitableOrigin& b) {
 
 std::ostream& operator<<(std::ostream& out, const SuitableOrigin& origin) {
   return out << *origin;
-}
-
-bool operator==(const TriggerAttestation& a, const TriggerAttestation& b) {
-  auto tie = [](const TriggerAttestation& t) {
-    return std::make_tuple(t.token(), t.aggregatable_report_id());
-  };
-  return tie(a) == tie(b);
-}
-
-std::ostream& operator<<(std::ostream& out,
-                         const TriggerAttestation& attestation) {
-  return out << "{token=" << attestation.token() << ",aggregatable_report_id="
-             << attestation.aggregatable_report_id() << "}";
 }
 
 }  // namespace attribution_reporting

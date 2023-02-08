@@ -535,6 +535,7 @@ static_library("test_support") {
     # public testing method.
     "//services/network:network_service",
     "//services/network:test_support",
+    "//services/network/public/cpp:test_support",
     "//services/network/public/mojom",
     "//services/proxy_resolver:lib",
     "//services/service_manager/public/cpp",

@@ -20,7 +20,6 @@ class AggregationKeys;
 class FilterData;
 class Filters;
 class SuitableOrigin;
-class TriggerAttestation;
 
 struct EventTriggerData;
 struct SourceRegistration;
@@ -61,10 +60,6 @@ std::ostream& operator<<(std::ostream&, const TriggerRegistration&);
 bool operator==(const SuitableOrigin&, const SuitableOrigin&);
 
 std::ostream& operator<<(std::ostream&, const SuitableOrigin&);
-
-bool operator==(const TriggerAttestation&, const TriggerAttestation&);
-
-std::ostream& operator<<(std::ostream&, const TriggerAttestation&);
 
 template <typename T, size_t kMaxSize>
 bool operator==(const BoundedList<T, kMaxSize>& a,

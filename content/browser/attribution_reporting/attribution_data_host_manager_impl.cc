@@ -21,7 +21,6 @@
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
-#include "components/attribution_reporting/trigger_attestation.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
@@ -33,6 +32,7 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/cpp/trigger_attestation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
@@ -491,7 +491,8 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 void AttributionDataHostManagerImpl::TriggerDataAvailable(
     attribution_reporting::SuitableOrigin reporting_origin,
     attribution_reporting::TriggerRegistration data,
-    absl::optional<attribution_reporting::TriggerAttestation> attestation) {
+    // TODO(crbug.com/1401347): Propagate `attestation` to storage.
+    absl::optional<network::TriggerAttestation> attestation) {
   // This is validated by the Mojo typemapping.
   DCHECK(reporting_origin.IsValid());
 

@@ -325,6 +325,41 @@ mojom("mojom_proxy_config") {
   blink_cpp_typemaps = shared_cpp_typemaps
 }
 
+mojom("mojom_attribution") {
+  generate_java = true
+
+  webui_module_path = "/"
+
+  sources = [ "attribution.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+
+  shared_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.TriggerAttestation"
+          cpp = "::network::TriggerAttestation"
+          move_only = true
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/attribution_mojom_traits.h" ]
+      traits_deps =
+          [ "//services/network/public/cpp:trigger_attestation_traits" ]
+    },
+  ]
+
+  cpp_typemaps = shared_typemaps
+  blink_cpp_typemaps = shared_typemaps
+}
+
 # These .mojom files are put in their own target to avoid a circular dependency,
 # which comes from the fact that the typemap for url_loader.mojom
 # (ResourceRequest) depends on them.
@@ -378,6 +413,7 @@ mojom("url_loader_base") {
 
   public_deps = [
     ":cookies_mojom",
+    ":mojom_attribution",
     ":mojom_ip_address",
     ":mojom_network_param",
     ":mojom_proxy_config",

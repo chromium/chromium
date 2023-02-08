@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "components/attribution_reporting/registration.mojom";
+import "services/network/public/mojom/attribution.mojom";
 
 // Browser-process interface responsible for processing attribution
 // configurations registered by the renderer. These configurations may be sent
@@ -19,5 +20,5 @@ interface AttributionDataHost {
   // attributionsrc request.
   TriggerDataAvailable(attribution_reporting.mojom.SuitableOrigin reporting_origin,
                        attribution_reporting.mojom.TriggerRegistration data,
-                       attribution_reporting.mojom.TriggerAttestation? attestation);
+                       network.mojom.TriggerAttestation? attestation);
 };
