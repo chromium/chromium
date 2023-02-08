@@ -326,7 +326,9 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     assertEquals('test-topic-1', currentTopics.items![0].topic!.displayString);
 
     // Check for blocked topics.
-    page.shadowRoot!.querySelector<HTMLElement>('#blockedTopicsRow')!.click();
+    const blockedTopicsRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#blockedTopicsRow');
+    blockedTopicsRow!.click();
     await flushTasks();
     assertEquals(
         'Settings.PrivacySandbox.Topics.BlockedTopicsOpened',
@@ -365,6 +367,10 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
         0, currentTopicsSection.querySelector('dom-repeat')!.items!.length);
     assertTrue(isVisible(
         currentTopicsSection.querySelector('#currentTopicsDescriptionEmpty')));
+
+    // Check that the focus is not lost after blocking the last item.
+    await waitAfterNextRender(page);
+    assertEquals(blockedTopicsRow, page.shadowRoot!.activeElement);
 
     // Assert the topic was moved to blocked topics section.
     blockedTopics = blockedTopicsList.querySelector('dom-repeat')!;
@@ -405,6 +411,10 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     assertEquals(
         loadTimeData.getString('topicsPageBlockedTopicsDescriptionEmpty'),
         blockedTopicsDescription.innerText);
+
+    // Check that the focus is not lost after allowing the last item.
+    await waitAfterNextRender(page);
+    assertEquals(blockedTopicsRow, page.shadowRoot!.activeElement);
   });
 
   test('topicsManaged', async function() {
@@ -703,7 +713,9 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     assertFalse(isVisible(currentSitesSection.querySelector('#seeAllSites')));
 
     // Check for blocked sites.
-    page.shadowRoot!.querySelector<HTMLElement>('#blockedSitesRow')!.click();
+    const blockedSitesRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#blockedSitesRow');
+    blockedSitesRow!.click();
     await flushTasks();
     assertEquals(
         'Settings.PrivacySandbox.Fledge.BlockedSitesOpened',
@@ -741,6 +753,10 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
         0, currentSitesSection.querySelector('dom-repeat')!.items!.length);
     assertTrue(isVisible(
         currentSitesSection.querySelector('#currentSitesDescriptionEmpty')));
+
+    // Check that the focus is not lost after blocking the last item.
+    await waitAfterNextRender(page);
+    assertEquals(blockedSitesRow, page.shadowRoot!.activeElement);
 
     // Assert the site was moved to blocked sites section.
     blockedSites = blockedSitesList.querySelector('dom-repeat')!;
@@ -781,6 +797,10 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     assertEquals(
         loadTimeData.getString('fledgePageBlockedSitesDescriptionEmpty'),
         blockedSitesDescription.innerText);
+
+    // Check that the focus is not lost after allowing the last item.
+    await waitAfterNextRender(page);
+    assertEquals(blockedSitesRow, page.shadowRoot!.activeElement);
   });
 
   test('fledgeManaged', async function() {

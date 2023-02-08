@@ -248,6 +248,15 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
     this.metricsBrowserProxy_.recordAction(
         interest.removed ? 'Settings.PrivacySandbox.Fledge.SiteAdded' :
                            'Settings.PrivacySandbox.Fledge.SiteRemoved');
+
+    // After allowing or blocking the last item, the focus is lost after the
+    // item is removed. Set the focus to the #blockedSitesRow element.
+    afterNextRender(this, async () => {
+      if (!this.shadowRoot!.activeElement) {
+        this.shadowRoot!.querySelector<HTMLElement>('#blockedSitesRow')
+            ?.focus();
+      }
+    });
   }
 
   private onSeeAllSitesExpanded_() {

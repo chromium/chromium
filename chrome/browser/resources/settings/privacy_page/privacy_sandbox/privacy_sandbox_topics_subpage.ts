@@ -206,6 +206,15 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     this.metricsBrowserProxy_.recordAction(
         interest.removed ? 'Settings.PrivacySandbox.Topics.TopicAdded' :
                            'Settings.PrivacySandbox.Topics.TopicRemoved');
+
+    // After allowing or blocking the last item, the focus is lost after the
+    // item is removed. Set the focus to the #blockedTopicsRow element.
+    afterNextRender(this, async () => {
+      if (!this.shadowRoot!.activeElement) {
+        this.shadowRoot!.querySelector<HTMLElement>('#blockedTopicsRow')
+            ?.focus();
+      }
+    });
   }
 
   private onBlockedTopicsExpanded_() {
