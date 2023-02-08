@@ -125,7 +125,8 @@ const char kHistogramFromGWSCumulativeLayoutShiftMainFrame[] =
     "MainFrame";
 
 const char kHistogramFromGWSMaxCumulativeShiftScoreSessionWindow[] =
-    "PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms"
+    "PageLoad.Clients.FromGoogleSearch.LayoutInstability."
+    "MaxCumulativeShiftScore.SessionWindow.Gap1000ms"
     ".Max5000ms2";
 
 const char kHistogramFromGWSFromSidePanelFirstInputDelay[] =
