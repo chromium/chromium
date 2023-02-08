@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "sql/database.h"
@@ -536,6 +537,9 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
     start_timestamp = base::ThreadTicks::Now();
   }
 
+  static_assert(AttributionStorageSql::kDeprecatedVersionNumber + 1 == 35,
+                "Remove migration(s) below.");
+
   bool ok = MaybeMigrate(db, meta_table, 35, &To36) &&
             MaybeMigrate(db, meta_table, 36, &To37) &&
             MaybeMigrate(db, meta_table, 37, &To38) &&
@@ -550,6 +554,9 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
   if (!ok) {
     return false;
   }
+
+  static_assert(AttributionStorageSql::kCurrentVersionNumber == 46,
+                "Add migration(s) above.");
 
   if (base::ThreadTicks::IsSupported()) {
     base::UmaHistogramMediumTimes("Conversions.Storage.MigrationTime",

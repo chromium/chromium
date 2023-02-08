@@ -66,22 +66,6 @@
 
 namespace content {
 
-// Version number of the database.
-// TODO: remove the active_unattributed_sources_by_site_reporting_origin index
-// during the next DB migration.
-const int AttributionStorageSql::kCurrentVersionNumber = 46;
-
-// Earliest version which can use a |kCurrentVersionNumber| database
-// without failing.
-const int AttributionStorageSql::kCompatibleVersionNumber = 46;
-
-// Latest version of the database that cannot be upgraded to
-// |kCurrentVersionNumber| without razing the database.
-//
-// Note that all versions >=15 were introduced during the transitional state of
-// the Attribution Reporting API and can be removed when done.
-const int AttributionStorageSql::kDeprecatedVersionNumber = 34;
-
 namespace {
 
 using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
