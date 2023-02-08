@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
+#include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_auction.h"
@@ -37,6 +38,7 @@
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -106,7 +108,9 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
       private_aggregation_requests_reserved_(
           std::move(private_aggregation_requests_reserved)),
       private_aggregation_requests_non_reserved_(
-          std::move(private_aggregation_requests_non_reserved)) {
+          std::move(private_aggregation_requests_non_reserved)),
+      fenced_frame_reporter_(
+          FencedFrameReporter::CreateForFledge(url_loader_factory_)) {
   DCHECK(interest_group_manager_);
   DCHECK(auction_worklet_manager_);
   DCHECK(url_loader_factory_);
@@ -122,7 +126,15 @@ void InterestGroupAuctionReporter::Start(base::OnceClosure callback) {
 
   DCHECK(!callback_);
 
+  // If there's no component seller, set the component seller mapping as empty,
+  // so it's available as soon as possible.
+  if (!component_seller_winning_bid_info_) {
+    fenced_frame_reporter_->OnUrlMappingReady(
+        blink::FencedFrame::ReportingDestination::kComponentSeller,
+        /*reporting_url_map=*/{});
+  }
   callback_ = std::move(callback);
+
   RequestSellerWorklet(&top_level_seller_winning_bid_info_,
                        /*top_seller_signals=*/absl::nullopt);
 }
@@ -262,30 +274,29 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
     }
   }
 
-  if (!seller_ad_beacon_map.empty()) {
-    bool has_bad_beacon_map = false;
-    for (const auto& element : seller_ad_beacon_map) {
-      if (!IsEventLevelReportingUrlValid(element.second)) {
-        mojo::ReportBadMessage(base::StrCat(
-            {"Invalid seller beacon URL for '", element.first, "'"}));
-        // No need to skip rest of work on failure - all fields are validated
-        // and consumed independently, and it's not worth the complexity to make
-        // sure everything is dropped when a field is invalid.
-        has_bad_beacon_map = true;
-        break;
-      }
+  // This will be cleared if any beacons are invalid.
+  base::flat_map<std::string, GURL> validated_seller_ad_beacon_map =
+      seller_ad_beacon_map;
+  for (const auto& element : seller_ad_beacon_map) {
+    if (!IsEventLevelReportingUrlValid(element.second)) {
+      mojo::ReportBadMessage(base::StrCat(
+          {"Invalid seller beacon URL for '", element.first, "'"}));
+      // Drop the entire beacon map if part of it is invalid. No need to treat
+      // the rest of the data received from the worklet as invalid - all fields
+      // are validated and consumed independently, and it's not worth the
+      // complexity to make sure everything is dropped when a field is invalid.
+      validated_seller_ad_beacon_map.clear();
+      break;
     }
-    if (!has_bad_beacon_map) {
-      if (seller_info == &top_level_seller_winning_bid_info_) {
-        ad_beacon_map_
-            .metadata[blink::FencedFrame::ReportingDestination::kSeller] =
-            seller_ad_beacon_map;
-      } else {
-        ad_beacon_map_.metadata
-            [blink::FencedFrame::ReportingDestination::kComponentSeller] =
-            seller_ad_beacon_map;
-      }
-    }
+  }
+  if (seller_info == &top_level_seller_winning_bid_info_) {
+    fenced_frame_reporter_->OnUrlMappingReady(
+        blink::FencedFrame::ReportingDestination::kSeller,
+        std::move(validated_seller_ad_beacon_map));
+  } else {
+    fenced_frame_reporter_->OnUrlMappingReady(
+        blink::FencedFrame::ReportingDestination::kComponentSeller,
+        std::move(validated_seller_ad_beacon_map));
   }
 
   if (seller_report_url) {
@@ -479,25 +490,24 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
     }
   }
 
-  if (!bidder_ad_beacon_map.empty()) {
-    bool has_bad_beacon_map = false;
-    for (const auto& element : bidder_ad_beacon_map) {
-      if (!IsEventLevelReportingUrlValid(element.second)) {
-        mojo::ReportBadMessage(base::StrCat(
-            {"Invalid bidder beacon URL for '", element.first, "'"}));
-        has_bad_beacon_map = true;
-        break;
-        // No need to skip rest of work on failure - all fields are validated
-        // and consumed independently, and it's not worth the complexity to make
-        // sure everything is dropped when a field is invalid.
-      }
-    }
-    if (!has_bad_beacon_map) {
-      ad_beacon_map_
-          .metadata[blink::FencedFrame::ReportingDestination::kBuyer] =
-          bidder_ad_beacon_map;
+  // This will be cleared if any beacons are invalid.
+  base::flat_map<std::string, GURL> validated_bidder_ad_beacon_map =
+      bidder_ad_beacon_map;
+  for (const auto& element : bidder_ad_beacon_map) {
+    if (!IsEventLevelReportingUrlValid(element.second)) {
+      mojo::ReportBadMessage(base::StrCat(
+          {"Invalid bidder beacon URL for '", element.first, "'"}));
+      // Drop the entire beacon map if part of it is invalid. No need to treat
+      // the rest of the data received from the worklet as invalid - all fields
+      // are validated and consumed independently, and it's not worth the
+      // complexity to make sure everything is dropped when a field is invalid.
+      validated_bidder_ad_beacon_map.clear();
+      break;
     }
   }
+  fenced_frame_reporter_->OnUrlMappingReady(
+      blink::FencedFrame::ReportingDestination::kBuyer,
+      std::move(validated_bidder_ad_beacon_map));
 
   if (bidder_report_url) {
     if (!IsEventLevelReportingUrlValid(*bidder_report_url)) {

@@ -267,4 +267,17 @@ void FencedFrameReporter::UpdateAutomaticBeaconData(
   automatic_beacon_destination_ = destination;
 }
 
+base::flat_map<blink::FencedFrame::ReportingDestination,
+               FencedFrameReporter::ReportingUrlMap>
+FencedFrameReporter::GetAdBeaconMapForTesting() {
+  base::flat_map<blink::FencedFrame::ReportingDestination, ReportingUrlMap> out;
+  for (const auto& reporting_metadata : reporting_metadata_) {
+    if (reporting_metadata.second.reporting_url_map) {
+      out.emplace(reporting_metadata.first,
+                  *reporting_metadata.second.reporting_url_map);
+    }
+  }
+  return out;
+}
+
 }  // namespace content

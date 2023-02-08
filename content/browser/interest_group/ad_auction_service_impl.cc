@@ -628,14 +628,12 @@ void AdAuctionServiceImpl::OnAuctionComplete(
       render_frame_host()
           .GetStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
-  scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
-      FencedFrameReporter::CreateForFledge(url_loader_factory);
 
   blink::FencedFrame::RedactedFencedFrameConfig config =
       fenced_frame_urls_map.AssignFencedFrameURLAndInterestGroupInfo(
           urn_uuid, *render_url, std::move(ad_auction_data),
           reporter->OnNavigateToWinningAdCallback(), ad_component_urls,
-          fenced_frame_reporter);
+          reporter->fenced_frame_reporter());
   std::move(callback).Run(/*manually_aborted=*/false, std::move(config));
 
   // Start the InterestGroupAuctionReporter. It will run reporting scripts, but
@@ -646,8 +644,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   reporters_.emplace_front(std::move(reporter));
   reporters_.front()->Start(
       base::BindOnce(&AdAuctionServiceImpl::OnReporterComplete,
-                     base::Unretained(this), reporters_.begin(),
-                     std::move(urn_uuid), std::move(fenced_frame_reporter)));
+                     base::Unretained(this), reporters_.begin()));
   if (auction_result_metrics) {
     auction_result_metrics->ReportAuctionResult(
         AdAuctionResultMetrics::AuctionResult::kSucceeded);
@@ -655,9 +652,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
 }
 
 void AdAuctionServiceImpl::OnReporterComplete(
-    ReporterList::iterator reporter_it,
-    GURL urn_uuid,
-    scoped_refptr<FencedFrameReporter> fenced_frame_reporter) {
+    ReporterList::iterator reporter_it) {
   // Forward debug information to devtools.
   //
   // TODO(https://crbug.com/1394777): Ideally this will share code with the
@@ -669,7 +664,6 @@ void AdAuctionServiceImpl::OnReporterComplete(
         base::StrCat({"Worklet error: ", error}));
   }
 
-  auto ad_beacon_map = reporter->TakeAdBeaconMap();
   auto private_aggregation_requests_reserved =
       reporter->TakeReservedPrivateAggregationRequests();
   // TODO(crbug.com/1410340): Log non-reserved private aggregation requests as
@@ -690,16 +684,6 @@ void AdAuctionServiceImpl::OnReporterComplete(
   SendPrivateAggregationRequests(
       private_aggregation_manager_, main_frame_origin_,
       std::move(private_aggregation_requests_reserved));
-
-  // Pass reporting map to the FencedFrameReporter.
-  // TODO(mmenke): move this into InterestGroupReporter.
-  for (auto destination :
-       {blink::FencedFrame::ReportingDestination::kBuyer,
-        blink::FencedFrame::ReportingDestination::kSeller,
-        blink::FencedFrame::ReportingDestination::kComponentSeller}) {
-    fenced_frame_reporter->OnUrlMappingReady(
-        destination, std::move(ad_beacon_map.metadata[destination]));
-  }
 }
 
 void AdAuctionServiceImpl::MaybeLogPrivateAggregationFeature(

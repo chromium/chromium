@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
@@ -31,6 +32,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/interest_group/test_interest_group_builder.h"
@@ -383,6 +385,20 @@ class InterestGroupAuctionReporterTest
       GURL("https://component.seller.report.test/component-seller-report");
   const GURL kBidderReportUrl =
       GURL("https://bidder.report.test/bidder=report");
+
+  // These are used in ad beacon tests. Not used by default.
+  const FencedFrameReporter::ReportingUrlMap kSellerBeaconMap = {
+      {"click", GURL("https://seller.click.test/")},
+      {"clock", GURL("https://seller.clock.test/")},
+  };
+  const FencedFrameReporter::ReportingUrlMap kComponentSellerBeaconMap = {
+      {"click", GURL("https://component.seller.click.test/")},
+  };
+  const FencedFrameReporter::ReportingUrlMap kBuyerBeaconMap = {
+      {"click", GURL("https://buyer.click.test/")},
+      {"clack", GURL("https://buyer.clack.test/")},
+      {"cluck", GURL("https://buyer.cluck.test/")},
+  };
 
   // SharedURLLoaderFactory used for reports. Reports are short-circuited by the
   // TestInterestGroupManagerImpl before they make it over the network, so this
@@ -746,6 +762,226 @@ TEST_F(InterestGroupAuctionReporterTest, SingleSellerBadBidderReportUrl) {
   interest_group_manager_impl_->ExpectReports({});
   EXPECT_EQ("Invalid bidder report URL", TakeBadMessage());
 
+  WaitForCompletion();
+}
+
+TEST_F(InterestGroupAuctionReporterTest, SingleSellerReportBeaconMap) {
+  SetUpAndStartSingleSellerAuction();
+  // The component seller list should be empty from the start, for a single
+  // seller auction.
+  EXPECT_THAT(interest_group_auction_reporter_->fenced_frame_reporter()
+                  ->GetAdBeaconMapForTesting(),
+              testing::UnorderedElementsAre(testing::Pair(
+                  blink::FencedFrame::ReportingDestination::kComponentSeller,
+                  testing::UnorderedElementsAre())));
+
+  WaitForReportResultAndRunCallback(
+      kSellerScriptUrl, /*report_url=*/absl::nullopt, kSellerBeaconMap);
+  EXPECT_THAT(
+      interest_group_auction_reporter_->fenced_frame_reporter()
+          ->GetAdBeaconMapForTesting(),
+      testing::UnorderedElementsAre(
+          testing::Pair(blink::FencedFrame::ReportingDestination::kSeller,
+                        testing::UnorderedElementsAreArray(kSellerBeaconMap)),
+          testing::Pair(
+              blink::FencedFrame::ReportingDestination::kComponentSeller,
+              testing::UnorderedElementsAre())));
+
+  WaitForReportWinAndRunCallback(/*report_url=*/absl::nullopt, kBuyerBeaconMap);
+  EXPECT_THAT(
+      interest_group_auction_reporter_->fenced_frame_reporter()
+          ->GetAdBeaconMapForTesting(),
+      testing::UnorderedElementsAre(
+          testing::Pair(blink::FencedFrame::ReportingDestination::kSeller,
+                        testing::UnorderedElementsAreArray(kSellerBeaconMap)),
+          testing::Pair(
+              blink::FencedFrame::ReportingDestination::kComponentSeller,
+              testing::UnorderedElementsAre()),
+          testing::Pair(blink::FencedFrame::ReportingDestination::kBuyer,
+                        testing::UnorderedElementsAreArray(kBuyerBeaconMap))));
+
+  // Invoking the callback has no effect on per-destination reporting maps.
+  // Fenced frames navigated to the winning ad use them to trigger reports, so
+  // no need to hold them back until a fenced frame is navigated to the winning
+  // ad.
+  interest_group_auction_reporter_->OnNavigateToWinningAdCallback().Run();
+
+  WaitForCompletion();
+  EXPECT_THAT(
+      interest_group_auction_reporter_->fenced_frame_reporter()
+          ->GetAdBeaconMapForTesting(),
+      testing::UnorderedElementsAre(
+          testing::Pair(blink::FencedFrame::ReportingDestination::kSeller,
+                        testing::UnorderedElementsAreArray(kSellerBeaconMap)),
+          testing::Pair(
+              blink::FencedFrame::ReportingDestination::kComponentSeller,
+              testing::UnorderedElementsAre()),
+          testing::Pair(blink::FencedFrame::ReportingDestination::kBuyer,
+                        testing::UnorderedElementsAreArray(kBuyerBeaconMap))));
+}
+
+TEST_F(InterestGroupAuctionReporterTest, ComponentAuctionReportBeaconMap) {
+  SetUpAndStartComponentAuction();
+  EXPECT_THAT(interest_group_auction_reporter_->fenced_frame_reporter()
+                  ->GetAdBeaconMapForTesting(),
+              testing::UnorderedElementsAre());
+
+  WaitForReportResultAndRunCallback(
+      kSellerScriptUrl, /*report_url=*/absl::nullopt, kSellerBeaconMap);
+  EXPECT_THAT(interest_group_auction_reporter_->fenced_frame_reporter()
+                  ->GetAdBeaconMapForTesting(),
+              testing::UnorderedElementsAre(testing::Pair(
+                  blink::FencedFrame::ReportingDestination::kSeller,
+                  testing::UnorderedElementsAreArray(kSellerBeaconMap))));
+
+  WaitForReportResultAndRunCallback(kComponentSellerScriptUrl,
+                                    /*report_url=*/absl::nullopt,
+                                    kComponentSellerBeaconMap);
+  EXPECT_THAT(
+      interest_group_auction_reporter_->fenced_frame_reporter()
+          ->GetAdBeaconMapForTesting(),
+      testing::UnorderedElementsAre(
+          testing::Pair(blink::FencedFrame::ReportingDestination::kSeller,
+                        testing::UnorderedElementsAreArray(kSellerBeaconMap)),
+          testing::Pair(
+              blink::FencedFrame::ReportingDestination::kComponentSeller,
+              testing::UnorderedElementsAreArray(kComponentSellerBeaconMap))));
+
+  WaitForReportWinAndRunCallback(/*report_url=*/absl::nullopt, kBuyerBeaconMap);
+  EXPECT_THAT(
+      interest_group_auction_reporter_->fenced_frame_reporter()
+          ->GetAdBeaconMapForTesting(),
+      testing::UnorderedElementsAre(
+          testing::Pair(blink::FencedFrame::ReportingDestination::kSeller,
+                        testing::UnorderedElementsAreArray(kSellerBeaconMap)),
+          testing::Pair(
+              blink::FencedFrame::ReportingDestination::kComponentSeller,
+              testing::UnorderedElementsAreArray(kComponentSellerBeaconMap)),
+          testing::Pair(blink::FencedFrame::ReportingDestination::kBuyer,
+                        testing::UnorderedElementsAreArray(kBuyerBeaconMap))));
+
+  // Invoking the callback has no effect on per-destination reporting maps.
+  // Fenced frames navigated to the winning ad use them to trigger reports, so
+  // no need to hold them back until a fenced frame is navigated to the winning
+  // ad.
+  interest_group_auction_reporter_->OnNavigateToWinningAdCallback().Run();
+
+  WaitForCompletion();
+  EXPECT_THAT(
+      interest_group_auction_reporter_->fenced_frame_reporter()
+          ->GetAdBeaconMapForTesting(),
+      testing::UnorderedElementsAre(
+          testing::Pair(blink::FencedFrame::ReportingDestination::kSeller,
+                        testing::UnorderedElementsAreArray(kSellerBeaconMap)),
+          testing::Pair(
+              blink::FencedFrame::ReportingDestination::kComponentSeller,
+              testing::UnorderedElementsAreArray(kComponentSellerBeaconMap)),
+          testing::Pair(blink::FencedFrame::ReportingDestination::kBuyer,
+                        testing::UnorderedElementsAreArray(kBuyerBeaconMap))));
+}
+
+// Test case where a bad report URL is received over Mojo from the seller
+// worklet. Bad report URLs should be rejected in the Mojo process, so this
+// results in reporting a bad Mojo message, though the reporting phase is
+// allowed to continue.
+TEST_F(InterestGroupAuctionReporterTest,
+       ComponentAuctionReportBeaconMapBadSellerUrl) {
+  SetUpAndStartComponentAuction();
+  EXPECT_THAT(interest_group_auction_reporter_->fenced_frame_reporter()
+                  ->GetAdBeaconMapForTesting(),
+              testing::UnorderedElementsAre());
+
+  WaitForReportResultAndRunCallback(
+      kSellerScriptUrl, /*report_url=*/absl::nullopt,
+      /*ad_beacon_map=*/
+      {{"click", GURL("https://seller.click.test/")},
+       {"clock", GURL("http://http.not.allowed.test/")}});
+  EXPECT_EQ("Invalid seller beacon URL for 'clock'", TakeBadMessage());
+  EXPECT_THAT(interest_group_auction_reporter_->fenced_frame_reporter()
+                  ->GetAdBeaconMapForTesting(),
+              testing::UnorderedElementsAre(testing::Pair(
+                  blink::FencedFrame::ReportingDestination::kSeller,
+                  testing::UnorderedElementsAre())));
+
+  WaitForReportResultAndRunCallback(kComponentSellerScriptUrl,
+                                    /*report_url=*/absl::nullopt,
+                                    kComponentSellerBeaconMap);
+  EXPECT_THAT(
+      interest_group_auction_reporter_->fenced_frame_reporter()
+          ->GetAdBeaconMapForTesting(),
+      testing::UnorderedElementsAre(
+          testing::Pair(blink::FencedFrame::ReportingDestination::kSeller,
+                        testing::UnorderedElementsAre()),
+          testing::Pair(
+              blink::FencedFrame::ReportingDestination::kComponentSeller,
+              testing::UnorderedElementsAreArray(kComponentSellerBeaconMap))));
+
+  WaitForReportWinAndRunCallback(/*report_url=*/absl::nullopt, kBuyerBeaconMap);
+  EXPECT_THAT(
+      interest_group_auction_reporter_->fenced_frame_reporter()
+          ->GetAdBeaconMapForTesting(),
+      testing::UnorderedElementsAre(
+          testing::Pair(blink::FencedFrame::ReportingDestination::kSeller,
+                        testing::UnorderedElementsAre()),
+          testing::Pair(
+              blink::FencedFrame::ReportingDestination::kComponentSeller,
+              testing::UnorderedElementsAreArray(kComponentSellerBeaconMap)),
+          testing::Pair(blink::FencedFrame::ReportingDestination::kBuyer,
+                        testing::UnorderedElementsAreArray(kBuyerBeaconMap))));
+
+  interest_group_auction_reporter_->OnNavigateToWinningAdCallback().Run();
+  WaitForCompletion();
+}
+
+// Test case where a bad report URL is received over Mojo from the bidder
+// worklet. Bad report URLs should be rejected in the Mojo process, so this
+// results in reporting a bad Mojo message, though the reporting phase is
+// allowed to continue.
+TEST_F(InterestGroupAuctionReporterTest,
+       ComponentAuctionReportBeaconMapBadBidderUrl) {
+  SetUpAndStartComponentAuction();
+  EXPECT_THAT(interest_group_auction_reporter_->fenced_frame_reporter()
+                  ->GetAdBeaconMapForTesting(),
+              testing::UnorderedElementsAre());
+
+  WaitForReportResultAndRunCallback(
+      kSellerScriptUrl, /*report_url=*/absl::nullopt, kSellerBeaconMap);
+  EXPECT_THAT(interest_group_auction_reporter_->fenced_frame_reporter()
+                  ->GetAdBeaconMapForTesting(),
+              testing::UnorderedElementsAre(testing::Pair(
+                  blink::FencedFrame::ReportingDestination::kSeller,
+                  testing::UnorderedElementsAreArray(kSellerBeaconMap))));
+
+  WaitForReportResultAndRunCallback(kComponentSellerScriptUrl,
+                                    /*report_url=*/absl::nullopt,
+                                    kComponentSellerBeaconMap);
+  EXPECT_THAT(
+      interest_group_auction_reporter_->fenced_frame_reporter()
+          ->GetAdBeaconMapForTesting(),
+      testing::UnorderedElementsAre(
+          testing::Pair(blink::FencedFrame::ReportingDestination::kSeller,
+                        testing::UnorderedElementsAreArray(kSellerBeaconMap)),
+          testing::Pair(
+              blink::FencedFrame::ReportingDestination::kComponentSeller,
+              testing::UnorderedElementsAreArray(kComponentSellerBeaconMap))));
+
+  WaitForReportWinAndRunCallback(
+      /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{
+          {"click", GURL()}, {"clack", GURL("http://buyer.clack.test/")}});
+  EXPECT_EQ("Invalid bidder beacon URL for 'clack'", TakeBadMessage());
+  EXPECT_THAT(
+      interest_group_auction_reporter_->fenced_frame_reporter()
+          ->GetAdBeaconMapForTesting(),
+      testing::UnorderedElementsAre(
+          testing::Pair(blink::FencedFrame::ReportingDestination::kSeller,
+                        testing::UnorderedElementsAreArray(kSellerBeaconMap)),
+          testing::Pair(
+              blink::FencedFrame::ReportingDestination::kComponentSeller,
+              testing::UnorderedElementsAreArray(kComponentSellerBeaconMap)),
+          testing::Pair(blink::FencedFrame::ReportingDestination::kBuyer,
+                        testing::UnorderedElementsAre())));
+
+  interest_group_auction_reporter_->OnNavigateToWinningAdCallback().Run();
   WaitForCompletion();
 }
 

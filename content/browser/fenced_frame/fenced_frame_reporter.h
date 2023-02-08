@@ -102,6 +102,13 @@ class CONTENT_EXPORT FencedFrameReporter
       const std::string& event_data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destination);
 
+  // Returns a copy of the internal reporting metadata, so it can be validated
+  // in tests. Only includes maps for which maps have been received - i.e., if
+  // wait for OnUrlMappingReady() to be invoked for a reporting destination, it
+  // is not included in the returned map.
+  base::flat_map<blink::FencedFrame::ReportingDestination, ReportingUrlMap>
+  GetAdBeaconMapForTesting();
+
  private:
   friend class base::RefCounted<FencedFrameReporter>;
   friend class FencedFrameURLMappingTestPeer;
