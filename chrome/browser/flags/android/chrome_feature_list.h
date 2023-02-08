@@ -143,6 +143,7 @@ BASE_DECLARE_FEATURE(kFeedPositionAndroid);
 BASE_DECLARE_FEATURE(kSafeModeForCachedFlags);
 BASE_DECLARE_FEATURE(kSearchResumptionModuleAndroid);
 BASE_DECLARE_FEATURE(kShouldIgnoreIntentSkipInternalCheck);
+BASE_DECLARE_FEATURE(kShareSheetMigrationAndroid);
 BASE_DECLARE_FEATURE(kSpecialLocaleWrapper);
 BASE_DECLARE_FEATURE(kSpecialUserDecision);
 BASE_DECLARE_FEATURE(kSplitCompositorTask);

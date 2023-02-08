@@ -4466,6 +4466,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kInfobarScrollOptimizationName,
      flag_descriptions::kInfobarScrollOptimizationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kInfobarScrollOptimization)},
+    {"share-sheet-migration-android",
+     flag_descriptions::kShareSheetMigrationAndroidName,
+     flag_descriptions::kShareSheetMigrationAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kShareSheetMigrationAndroid)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
     {"disallow-doc-written-script-loads",
      flag_descriptions::kDisallowDocWrittenScriptsUiName,

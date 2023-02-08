@@ -3979,6 +3979,10 @@ const char kSetMarketUrlForTestingDescription[] =
     "When enabled, sets the market URL for use in testing the update menu "
     "item.";
 
+const char kShareSheetMigrationAndroidName[] = "Share sheet refactor Android";
+const char kShareSheetMigrationAndroidDescription[] =
+    "When enabled, use the Android OS share sheet.";
+
 const char kSiteIsolationForPasswordSitesName[] =
     "Site Isolation For Password Sites";
 const char kSiteIsolationForPasswordSitesDescription[] =

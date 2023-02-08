@@ -2277,6 +2277,9 @@ extern const char kSendTabToSelfV2Description[];
 extern const char kSetMarketUrlForTestingName[];
 extern const char kSetMarketUrlForTestingDescription[];
 
+extern const char kShareSheetMigrationAndroidName[];
+extern const char kShareSheetMigrationAndroidDescription[];
+
 extern const char kSiteIsolationForPasswordSitesName[];
 extern const char kSiteIsolationForPasswordSitesDescription[];
 

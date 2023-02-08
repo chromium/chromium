@@ -57977,6 +57977,7 @@ from previous Chrome versions.
   <int value="-2007377632" label="DiscoverFeedMultiColumn:enabled"/>
   <int value="-2006505465"
       label="AutofillRemoveCardExpirationAndTypeTitles:disabled"/>
+  <int value="-2005716090" label="ShareSheetMigrationAndroid:disabled"/>
   <int value="-2005089558" label="BackgroundVideoTrackOptimization:disabled"/>
   <int value="-2004882388" label="AutofillPruneSuggestions:enabled"/>
   <int value="-2004862295" label="FedCmUserInfo:disabled"/>
@@ -63736,6 +63737,7 @@ from previous Chrome versions.
   <int value="1266525177"
       label="AutofillUpstreamUseGooglePayOnAndroidBranding:disabled"/>
   <int value="1266886673" label="delay-reload-stop-button-change"/>
+  <int value="1267585140" label="ShareSheetMigrationAndroid:enabled"/>
   <int value="1268470658" label="disable-android-password-link"/>
   <int value="1268678442" label="KerberosSettingsSection:disabled"/>
   <int value="1269216922" label="MediaAppPhotosIntegrationVideo:enabled"/>

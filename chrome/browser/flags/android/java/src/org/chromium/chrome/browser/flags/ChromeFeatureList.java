@@ -465,6 +465,7 @@ public abstract class ChromeFeatureList {
     public static final String SEARCH_RESUMPTION_MODULE_ANDROID = "SearchResumptionModuleAndroid";
     public static final String SHOULD_IGNORE_INTENT_SKIP_INTERNAL_CHECK =
             "ShouldIgnoreIntentSkipInternalCheck";
+    public static final String SHARE_SHEET_MIGRATION_ANDROID = "ShareSheetMigrationAndroid";
     public static final String SEND_TAB_TO_SELF_SIGNIN_PROMO = "SendTabToSelfSigninPromo";
     public static final String SEND_TAB_TO_SELF_V2 = "SendTabToSelfV2";
     public static final String SHARED_HIGHLIGHTING_AMP = "SharedHighlightingAmp";
