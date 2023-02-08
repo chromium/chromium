@@ -120,6 +120,9 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorSupportedOptions {
   bool supports_hmac_secret = false;
   // If true, indicates that the authenticator supports the DPK extension.
   bool supports_device_public_key = false;
+  // If true, indicates that the authenticator supports the PRF extension. This
+  // will be preferred to the hmac-secret extension if supported.
+  bool supports_prf = false;
   // max_cred_blob_length is the longest credBlob value that this authenticator
   // can store. A value of `nullopt` indicates no support for credBlob.
   absl::optional<uint16_t> max_cred_blob_length;

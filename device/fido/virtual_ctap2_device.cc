@@ -159,7 +159,8 @@ std::vector<uint8_t> ConstructMakeCredentialResponse(
     AuthenticatorData authenticator_data,
     bool enterprise_attestation_requested,
     absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key,
-    const absl::optional<std::vector<uint8_t>>& dpk_signature) {
+    const absl::optional<std::vector<uint8_t>>& dpk_signature,
+    bool prf_enabled) {
   std::unique_ptr<OpaqueAttestationStatement> attestation_statement;
   if (!signature.empty()) {
     cbor::Value::MapValue attestation_map;
@@ -189,6 +190,7 @@ std::vector<uint8_t> ConstructMakeCredentialResponse(
       large_blob_key.has_value();
   make_credential_response.device_public_key_signature =
       std::move(dpk_signature);
+  make_credential_response.prf_enabled = prf_enabled;
   return AsCTAPStyleCBORBytes(make_credential_response);
 }
 
@@ -445,11 +447,34 @@ std::vector<uint8_t> EncodeGetAssertionResponse(
   if (response.large_blob_key) {
     response_map.emplace(7, cbor::Value(*response.large_blob_key));
   }
+
+  cbor::Value::MapValue unsigned_extension_outputs;
   if (response.device_public_key_signature) {
-    cbor::Value::MapValue unsigned_extension_outputs;
     unsigned_extension_outputs.emplace(
         kExtensionDevicePublicKey,
         cbor::Value(*response.device_public_key_signature));
+  }
+  if (response.hmac_secret) {
+    // This is actually the output of the PRF extension because the hmac-secret
+    // output is carried in the authenticator data.
+    const std::vector<uint8_t>& outputs = *response.hmac_secret;
+    cbor::Value::MapValue prf_results;
+    if (outputs.size() == 32) {
+      prf_results.emplace(kExtensionPRFFirst, std::move(outputs));
+    } else {
+      CHECK_EQ(outputs.size(), 64u);
+      prf_results.emplace(kExtensionPRFFirst,
+                          std::vector<uint8_t>(&outputs[0], &outputs[32]));
+      prf_results.emplace(
+          kExtensionPRFSecond,
+          std::vector<uint8_t>(outputs.begin() + 32, outputs.end()));
+    }
+
+    cbor::Value::MapValue prf;
+    prf.emplace(kExtensionPRFResults, std::move(prf_results));
+    unsigned_extension_outputs.emplace(kExtensionPRF, std::move(prf));
+  }
+  if (!unsigned_extension_outputs.empty()) {
     response_map.emplace(8, cbor::Value(std::move(unsigned_extension_outputs)));
   }
 
@@ -475,6 +500,29 @@ bool CheckCredentialListForExtraKeys(
   }
 
   return true;
+}
+
+std::vector<uint8_t> EvaluateHMAC(
+    base::span<const uint8_t> hmac_key,
+    const std::array<uint8_t, 32>& hmac_salt1,
+    const absl::optional<std::array<uint8_t, 32>>& hmac_salt2) {
+  uint8_t hmac_result[SHA256_DIGEST_LENGTH];
+  unsigned hmac_out_length;
+  HMAC(EVP_sha256(), hmac_key.data(), hmac_key.size(), hmac_salt1.data(),
+       hmac_salt1.size(), hmac_result, &hmac_out_length);
+  CHECK_EQ(hmac_out_length, sizeof(hmac_result));
+
+  std::vector<uint8_t> outputs;
+  outputs.insert(outputs.end(), std::begin(hmac_result), std::end(hmac_result));
+
+  if (hmac_salt2) {
+    HMAC(EVP_sha256(), hmac_key.data(), hmac_key.size(), hmac_salt2->data(),
+         hmac_salt2->size(), hmac_result, &hmac_out_length);
+    CHECK_EQ(hmac_out_length, sizeof(hmac_result));
+    outputs.insert(outputs.end(), std::begin(hmac_result),
+                   std::end(hmac_result));
+  }
+  return outputs;
 }
 
 }  // namespace
@@ -621,6 +669,12 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
 
   if (config.hmac_secret_support) {
     extensions.emplace_back(device::kExtensionHmacSecret);
+  }
+
+  if (config.prf_support) {
+    DCHECK(!config.hmac_secret_support);
+    DCHECK(config.internal_account_chooser);
+    extensions.emplace_back(device::kExtensionPRF);
   }
 
   if (config.cred_blob_support) {
@@ -1230,6 +1284,9 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
                            cbor::Value(true));
   }
 
+  const bool prf_enabled = request.prf;
+  CHECK(!prf_enabled || config_.prf_support);
+
   CredProtect cred_protect = config_.default_cred_protect;
   if (request.cred_protect) {
     cred_protect = *request.cred_protect;
@@ -1380,7 +1437,7 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
 
   *response = ConstructMakeCredentialResponse(
       std::move(attestation_cert), sig, std::move(authenticator_data),
-      enterprise_attestation_requested, large_blob_key, dpk_sig);
+      enterprise_attestation_requested, large_blob_key, dpk_sig, prf_enabled);
   RegistrationData registration(std::move(private_key), rp_id_hash,
                                 /*counter=*/1);
 
@@ -1413,7 +1470,7 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
   registration.protection = cred_protect;
   registration.device_key = std::move(device_key);
 
-  if (request.hmac_secret) {
+  if (request.hmac_secret || prf_enabled) {
     registration.hmac_key.emplace();
     RAND_bytes(registration.hmac_key->first.data(),
                registration.hmac_key->first.size());
@@ -1655,24 +1712,8 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
           hmac_keys = *registration.second->hmac_key;
       const std::array<uint8_t, 32>& hmac_key =
           user_verified ? hmac_keys.second : hmac_keys.first;
-
-      unsigned hmac_out_length;
-      uint8_t hmac_result[SHA256_DIGEST_LENGTH];
-      std::vector<uint8_t> outputs;
-
-      HMAC(EVP_sha256(), hmac_key.data(), hmac_key.size(), hmac_salt1->data(),
-           hmac_salt1->size(), hmac_result, &hmac_out_length);
-      DCHECK_EQ(hmac_out_length, sizeof(hmac_result));
-      outputs.insert(outputs.end(), &hmac_result[0],
-                     &hmac_result[sizeof(hmac_result)]);
-
-      if (hmac_salt2) {
-        HMAC(EVP_sha256(), hmac_key.data(), hmac_key.size(), hmac_salt2->data(),
-             hmac_salt2->size(), hmac_result, &hmac_out_length);
-        DCHECK_EQ(hmac_out_length, sizeof(hmac_result));
-        outputs.insert(outputs.end(), &hmac_result[0],
-                       &hmac_result[sizeof(hmac_result)]);
-      }
+      const std::vector<uint8_t> outputs =
+          EvaluateHMAC(hmac_key, *hmac_salt1, hmac_salt2);
 
       std::vector<uint8_t> encrypted_outputs =
           pin::ProtocolVersion(*request.pin_protocol)
@@ -1772,6 +1813,27 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
       }
       if (registration.second->large_blob_key) {
         assertion.large_blob_key = *registration.second->large_blob_key;
+      }
+    }
+
+    if (!request.prf_inputs.empty() && user_verified &&
+        registration.second->hmac_key) {
+      DCHECK(!request.hmac_secret);
+      const PRFInput* selected_input = nullptr;
+      for (const auto& input : request.prf_inputs) {
+        if (!input.credential_id) {
+          selected_input = &input;
+        } else if (std::equal(
+                       input.credential_id->begin(), input.credential_id->end(),
+                       registration.first.begin(), registration.first.end())) {
+          selected_input = &input;
+        }
+      }
+
+      if (selected_input) {
+        assertion.hmac_secret =
+            EvaluateHMAC(registration.second->hmac_key->second,
+                         selected_input->salt1, selected_input->salt2);
       }
     }
 

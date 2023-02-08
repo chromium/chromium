@@ -1045,8 +1045,10 @@ void AuthenticatorCommonImpl::GetAssertion(
 
     bool is_first = true;
     absl::optional<std::vector<uint8_t>> last_id;
+    // TODO(agl): should match the credential IDs from the allow list, which
+    // will also limit the size to the size of the allow list.
     for (const auto& prf_input_from_renderer : options->prf_inputs) {
-      device::CtapGetAssertionOptions::PRFInput prf_input;
+      device::PRFInput prf_input;
 
       // This statement enforces invariants that should be established by the
       // renderer.
@@ -1761,7 +1763,7 @@ AuthenticatorCommonImpl::CreateMakeCredentialResponse(
         device::kExtensionDevicePublicKey);
   }
 
-  bool did_create_hmac_secret = false;
+  bool did_create_hmac_secret = response_data.prf_enabled;
   bool did_store_cred_blob = false;
   absl::optional<std::vector<uint8_t>> device_public_key_authenticator_output;
   const absl::optional<cbor::Value>& maybe_extensions =
@@ -1770,11 +1772,14 @@ AuthenticatorCommonImpl::CreateMakeCredentialResponse(
     DCHECK(maybe_extensions->is_map());
     const cbor::Value::MapValue& extensions = maybe_extensions->GetMap();
 
-    const auto hmac_secret_it =
-        extensions.find(cbor::Value(device::kExtensionHmacSecret));
-    if (hmac_secret_it != extensions.end() &&
-        hmac_secret_it->second.is_bool() && hmac_secret_it->second.GetBool()) {
-      did_create_hmac_secret = true;
+    if (!did_create_hmac_secret) {
+      const auto hmac_secret_it =
+          extensions.find(cbor::Value(device::kExtensionHmacSecret));
+      if (hmac_secret_it != extensions.end() &&
+          hmac_secret_it->second.is_bool() &&
+          hmac_secret_it->second.GetBool()) {
+        did_create_hmac_secret = true;
+      }
     }
 
     const auto cred_blob_it =

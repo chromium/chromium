@@ -77,6 +77,10 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
   // asserted to CTAP2 authenticators.
   bool hmac_secret = false;
 
+  // prf indicates that the "prf" extension should be asserted to request that
+  // the authenticator associate a PRF with the credential.
+  bool prf = false;
+
   // large_blob_key indicates whether a large blob key should be associated to
   // the new credential through the "largeBlobKey" extension.
   bool large_blob_key = false;

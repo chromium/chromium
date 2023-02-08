@@ -126,10 +126,17 @@ std::vector<uint8_t> AsCTAPStyleCBORBytes(
     // requests.
     map.emplace(5, cbor::Value(std::array<uint8_t, kLargeBlobKeyLength>()));
   }
+  cbor::Value::MapValue unsigned_extension_outputs;
   if (response.device_public_key_signature.has_value()) {
-    cbor::Value::MapValue unsigned_extension_outputs;
     unsigned_extension_outputs.emplace(kExtensionDevicePublicKey,
                                        *response.device_public_key_signature);
+  }
+  if (response.prf_enabled) {
+    cbor::Value::MapValue prf;
+    prf.emplace(kExtensionPRFEnabled, true);
+    unsigned_extension_outputs.emplace(kExtensionPRF, std::move(prf));
+  }
+  if (!unsigned_extension_outputs.empty()) {
     map.emplace(6, std::move(unsigned_extension_outputs));
   }
   auto encoded_bytes = cbor::Writer::Write(cbor::Value(std::move(map)));

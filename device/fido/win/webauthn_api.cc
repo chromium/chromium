@@ -43,7 +43,7 @@ std::string HresultToHex(HRESULT hr) {
 // HMAC salt values, using `salts_storage` to own the returned pointer.
 WEBAUTHN_HMAC_SECRET_SALT* FillHMACSalts(
     std::vector<WEBAUTHN_HMAC_SECRET_SALT>* salts_storage,
-    const CtapGetAssertionOptions::PRFInput& input) {
+    const PRFInput& input) {
   const WEBAUTHN_HMAC_SECRET_SALT salts{
       base::checked_cast<DWORD>(input.salt1.size()),
       const_cast<PBYTE>(input.salt1.data()),
@@ -62,7 +62,7 @@ WEBAUTHN_HMAC_SECRET_SALT_VALUES* FillHMACSaltValues(
     WEBAUTHN_HMAC_SECRET_SALT_VALUES* values_storage,
     std::vector<WEBAUTHN_HMAC_SECRET_SALT>* salts_storage,
     std::vector<WEBAUTHN_CRED_WITH_HMAC_SECRET_SALT>* cred_salts_storage,
-    const std::vector<CtapGetAssertionOptions::PRFInput>& inputs) {
+    const std::vector<PRFInput>& inputs) {
   if (inputs.empty()) {
     return nullptr;
   }

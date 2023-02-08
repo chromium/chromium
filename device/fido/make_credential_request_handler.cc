@@ -1016,8 +1016,10 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
     request->cred_protect_enforce = options_.cred_protect_request->second;
   }
 
-  if (request->hmac_secret && !auth_options.supports_hmac_secret) {
-    request->hmac_secret = false;
+  if (request->hmac_secret) {
+    request->prf = auth_options.supports_prf;
+    request->hmac_secret =
+        !auth_options.supports_prf && auth_options.supports_hmac_secret;
   }
 
   if (request->large_blob_key && !auth_options.supports_large_blobs) {

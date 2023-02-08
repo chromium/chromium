@@ -130,6 +130,18 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
           return absl::nullopt;
         }
         response.device_public_key_signature = map_it.second.GetBytestring();
+      } else if (map_it.first.GetString() == kExtensionPRF) {
+        if (!map_it.second.is_map()) {
+          return absl::nullopt;
+        }
+        const cbor::Value::MapValue& prf = map_it.second.GetMap();
+        const auto enabled_it = prf.find(cbor::Value(kExtensionPRFEnabled));
+        if (enabled_it != prf.end()) {
+          if (!enabled_it->second.is_bool()) {
+            return absl::nullopt;
+          }
+          response.prf_enabled = enabled_it->second.GetBool();
+        }
       }
     }
   }
@@ -222,11 +234,47 @@ absl::optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
       if (!map_it.first.is_string()) {
         return absl::nullopt;
       }
-      if (map_it.first.GetString() == kExtensionDevicePublicKey) {
+      const std::string& extension_name = map_it.first.GetString();
+      if (extension_name == kExtensionDevicePublicKey) {
         if (!map_it.second.is_bytestring()) {
           return absl::nullopt;
         }
         response.device_public_key_signature = map_it.second.GetBytestring();
+      } else if (extension_name == kExtensionPRF) {
+        if (!map_it.second.is_map()) {
+          return absl::nullopt;
+        }
+        const cbor::Value::MapValue& prf = map_it.second.GetMap();
+        auto results_it = prf.find(cbor::Value(kExtensionPRFResults));
+        if (results_it != prf.end()) {
+          if (!results_it->second.is_map()) {
+            return absl::nullopt;
+          }
+          const cbor::Value::MapValue& results = results_it->second.GetMap();
+          auto first = results.find(cbor::Value(kExtensionPRFFirst));
+          if (first == results.end() || !first->second.is_bytestring()) {
+            return absl::nullopt;
+          }
+          std::vector<uint8_t> output = first->second.GetBytestring();
+          if (output.size() != kExtensionPRFOutputSize) {
+            return absl::nullopt;
+          }
+
+          auto second = results.find(cbor::Value(kExtensionPRFSecond));
+          if (second != results.end()) {
+            if (!second->second.is_bytestring()) {
+              return absl::nullopt;
+            }
+            const std::vector<uint8_t>& second_bytes =
+                second->second.GetBytestring();
+            if (second_bytes.size() != kExtensionPRFOutputSize) {
+              return absl::nullopt;
+            }
+            output.insert(output.end(), second_bytes.begin(),
+                          second_bytes.end());
+          }
+          response.hmac_secret = std::move(output);
+        }
       }
     }
   }
@@ -338,6 +386,8 @@ absl::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
         options.supports_hmac_secret = true;
       } else if (extension_str == kExtensionDevicePublicKey) {
         options.supports_device_public_key = true;
+      } else if (extension_str == kExtensionPRF) {
+        options.supports_prf = true;
       }
       extensions.push_back(extension_str);
     }

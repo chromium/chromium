@@ -168,6 +168,11 @@ absl::optional<CtapMakeCredentialRequest> CtapMakeCredentialRequest::Parse(
           return absl::nullopt;
         }
         request.hmac_secret = extension.second.GetBool();
+      } else if (extension_name == kExtensionPRF) {
+        if (!extension.second.is_map()) {
+          return absl::nullopt;
+        }
+        request.prf = true;
       } else if (extension_name == kExtensionLargeBlobKey) {
         if (!extension.second.is_bool() || !extension.second.GetBool()) {
           return absl::nullopt;
@@ -291,6 +296,10 @@ AsCTAPRequestValuePair(const CtapMakeCredentialRequest& request) {
 
   if (request.hmac_secret) {
     extensions[cbor::Value(kExtensionHmacSecret)] = cbor::Value(true);
+  }
+
+  if (request.prf) {
+    extensions.emplace(kExtensionPRF, cbor::Value::MapValue());
   }
 
   if (request.large_blob_key) {

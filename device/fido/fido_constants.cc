@@ -76,6 +76,14 @@ const char kExtensionLargeBlobKey[] = "largeBlobKey";
 const char kExtensionCredBlob[] = "credBlob";
 const char kExtensionMinPINLength[] = "minPinLength";
 const char kExtensionDevicePublicKey[] = "devicePubKey";
+const char kExtensionPRF[] = "prf";
+
+const char kExtensionPRFEnabled[] = "enabled";
+const char kExtensionPRFEval[] = "eval";
+const char kExtensionPRFEvalByCredential[] = "evalByCredential";
+const char kExtensionPRFFirst[] = "first";
+const char kExtensionPRFResults[] = "results";
+const char kExtensionPRFSecond[] = "second";
 
 const char kDevicePublicKeyAttestationKey[] = "attestation";
 const char kDevicePublicKeyAttestationFormatsKey[] = "attestationFormats";

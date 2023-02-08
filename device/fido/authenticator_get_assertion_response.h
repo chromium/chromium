@@ -48,7 +48,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse {
   absl::optional<PublicKeyCredentialUserEntity> user_entity;
   absl::optional<uint8_t> num_credentials;
 
-  // hmac_secret contains the output of the hmac_secret extension.
+  // hmac-secret contains the output of the hmac-secret or prf extension. The
+  // values have already been decrypted.
   absl::optional<std::vector<uint8_t>> hmac_secret;
 
   // hmac_secret_not_evaluated will be true in cases where the

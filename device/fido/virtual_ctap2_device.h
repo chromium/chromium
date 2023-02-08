@@ -71,6 +71,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     uint8_t bio_enrollment_samples_required = 4;
     bool cred_protect_support = false;
     bool hmac_secret_support = false;
+    bool prf_support = false;
     bool large_blob_support = false;
     // Support for setting a min PIN length and forcing pin change.
     bool min_pin_length_support = false;
