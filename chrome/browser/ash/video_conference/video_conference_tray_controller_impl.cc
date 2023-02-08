@@ -35,9 +35,20 @@ void VideoConferenceTrayControllerImpl::SetCameraMuted(bool muted) {
   // Change user pref to let Privacy Hub enable/disable the camera.
   auto* pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
-  if (!pref_service)
+  if (!pref_service) {
     return;
+  }
   pref_service->SetBoolean(prefs::kUserCameraAllowed, !muted);
+}
+
+bool VideoConferenceTrayControllerImpl::GetCameraMuted() {
+  if (!features::IsCrosPrivacyHubEnabled()) {
+    return camera_muted_by_software_switch();
+  }
+
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  return pref_service && !pref_service->GetBoolean(prefs::kUserCameraAllowed);
 }
 
 void VideoConferenceTrayControllerImpl::SetMicrophoneMuted(bool muted) {
@@ -50,9 +61,21 @@ void VideoConferenceTrayControllerImpl::SetMicrophoneMuted(bool muted) {
   // Change user pref to let Privacy Hub enable/disable the microphone.
   auto* pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
-  if (!pref_service)
+  if (!pref_service) {
     return;
+  }
   pref_service->SetBoolean(prefs::kUserMicrophoneAllowed, !muted);
+}
+
+bool VideoConferenceTrayControllerImpl::GetMicrophoneMuted() {
+  if (!features::IsCrosPrivacyHubEnabled()) {
+    return CrasAudioHandler::Get()->IsInputMuted();
+  }
+
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  return pref_service &&
+         !pref_service->GetBoolean(prefs::kUserMicrophoneAllowed);
 }
 
 void VideoConferenceTrayControllerImpl::GetMediaApps(

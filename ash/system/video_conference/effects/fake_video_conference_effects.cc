@@ -46,8 +46,10 @@ SimpleToggleEffect::SimpleToggleEffect(
 }
 
 absl::optional<int> SimpleToggleEffect::GetEffectState(int effect_id) {
-  // Fake effects are always "off."
-  return VcHostedEffect::kOff;
+  // Subclass `SimpleToggleEffect` if a specific integer or enum value (other
+  // than 0) needs to be returned. Returning `absl::nullopt` is taken as "no
+  // value could be obtained" and treated as an error condition.
+  return 0;
 }
 
 void SimpleToggleEffect::OnEffectControlActivated(absl::optional<int> effect_id,

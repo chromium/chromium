@@ -39,6 +39,8 @@ class ASH_EXPORT FakeVideoConferenceTrayController
   // VideoConferenceTrayController:
   void SetCameraMuted(bool muted) override;
   void SetMicrophoneMuted(bool muted) override;
+  bool GetCameraMuted() override;
+  bool GetMicrophoneMuted() override;
   void GetMediaApps(base::OnceCallback<void(MediaApps)> ui_callback) override;
   void ReturnToApp(const base::UnguessableToken& id) override;
   void HandleDeviceUsedWhileDisabled(

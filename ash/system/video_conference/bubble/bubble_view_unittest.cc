@@ -16,12 +16,86 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/effects/fake_video_conference_effects.h"
+#include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
+#include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 
 namespace ash::video_conference {
+
+namespace {
+
+constexpr int kSquareCinnamonCerealViewId = 1235;
+constexpr int kSnackNationForeverViewId = 1236;
+
+// A fake `kToggle` effect.
+class SquareCinnamonCereal : public VcEffectsDelegate {
+ public:
+  explicit SquareCinnamonCereal(
+      VcHostedEffect::ResourceDependencyFlags dependency_flags) {
+    auto effect = std::make_unique<VcHostedEffect>(
+        VcEffectType::kToggle,
+        base::BindRepeating(&SquareCinnamonCereal::GetEffectState,
+                            base::Unretained(this),
+                            /*effect_id=*/VcEffectState::kUnusedId));
+    auto state = std::make_unique<VcEffectState>(
+        &ash::kPrivacyIndicatorsCameraIcon, u"Square Cinnamon Cereal",
+        IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
+        base::BindRepeating(&SquareCinnamonCereal::OnEffectControlActivated,
+                            base::Unretained(this),
+                            /*effect_id=*/VcEffectState::kUnusedId,
+                            /*value=*/absl::nullopt));
+    effect->AddState(std::move(state));
+    effect->set_container_id(kSquareCinnamonCerealViewId);
+    effect->set_dependency_flags(dependency_flags);
+    AddEffect(std::move(effect));
+  }
+  SquareCinnamonCereal(const SquareCinnamonCereal&) = delete;
+  SquareCinnamonCereal& operator=(const SquareCinnamonCereal&) = delete;
+  ~SquareCinnamonCereal() override = default;
+
+  // VcEffectsDelegate:
+  absl::optional<int> GetEffectState(int effect_id) override { return 0; }
+  void OnEffectControlActivated(absl::optional<int> effect_id,
+                                absl::optional<int> state) override {}
+};
+
+// A fake `kSetValue` effect.
+class SnackNationForever : public VcEffectsDelegate {
+ public:
+  explicit SnackNationForever(
+      VcHostedEffect::ResourceDependencyFlags dependency_flags) {
+    auto effect = std::make_unique<VcHostedEffect>(
+        VcEffectType::kSetValue,
+        base::BindRepeating(&SnackNationForever::GetEffectState,
+                            base::Unretained(this),
+                            /*effect_id=*/VcEffectState::kUnusedId));
+    auto state = std::make_unique<VcEffectState>(
+        &ash::kPrivacyIndicatorsCameraIcon, u"Snack Nation",
+        IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
+        base::BindRepeating(&SnackNationForever::OnEffectControlActivated,
+                            base::Unretained(this),
+                            /*effect_id=*/VcEffectState::kUnusedId,
+                            /*value=*/0),
+        /*state=*/0);
+    effect->AddState(std::move(state));
+    effect->set_container_id(kSnackNationForeverViewId);
+    effect->set_dependency_flags(dependency_flags);
+    AddEffect(std::move(effect));
+  }
+  SnackNationForever(const SnackNationForever&) = delete;
+  SnackNationForever& operator=(const SnackNationForever&) = delete;
+  ~SnackNationForever() override = default;
+
+  // VcEffectsDelegate:
+  absl::optional<int> GetEffectState(int effect_id) override { return 0; }
+  void OnEffectControlActivated(absl::optional<int> effect_id,
+                                absl::optional<int> state) override {}
+};
+
+}  // namespace
 
 class BubbleViewTest : public AshTestBase {
  public:
@@ -41,7 +115,7 @@ class BubbleViewTest : public AshTestBase {
     CrasAudioHandler::InitializeForTesting();
 
     // Instantiates a fake controller (the real one is created in
-    // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
+    // `ChromeBrowserMainExtraPartsAsh::PreProfileInit()` which is not called in
     // ash unit tests).
     controller_ = std::make_unique<FakeVideoConferenceTrayController>();
 
@@ -334,6 +408,170 @@ TEST_F(BubbleViewTest, InvalidEffectState) {
   // Click to open the bubble, a single set-value effect view is NOT present.
   LeftClickOn(toggle_bubble_button());
   EXPECT_FALSE(single_set_value_effect_view());
+}
+
+// The four `bool` params are as follows, if 'true':
+//    0 - The test effects depend on the camera being enabled.
+//    1 - The test effects depend on the microphone being enabled.
+//    2 - The camera is enabled.
+//    3 - The microphone is enabled.
+class ResourceDependencyTest
+    : public AshTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
+ public:
+  ResourceDependencyTest() = default;
+  ResourceDependencyTest(const ResourceDependencyTest&) = delete;
+  ResourceDependencyTest& operator=(const ResourceDependencyTest&) = delete;
+  ~ResourceDependencyTest() override = default;
+
+  // AshTestBase:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kVideoConference);
+
+    // Here we have to create the global instance of `CrasAudioHandler` before
+    // `FakeVideoConferenceTrayController`, so we do it here and not do it in
+    // `AshTestBase`.
+    CrasAudioClient::InitializeFake();
+    CrasAudioHandler::InitializeForTesting();
+
+    // Instantiates a fake controller (the real one is created in
+    // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
+    // ash unit tests).
+    controller_ = std::make_unique<FakeVideoConferenceTrayController>();
+
+    set_create_global_cras_audio_handler(false);
+    AshTestBase::SetUp();
+
+    // Make the video conference tray visible for testing.
+    video_conference_tray()->SetVisiblePreferred(true);
+
+    // The test is executed with each possible combination of these.
+    has_camera_dependency_ = std::get<0>(GetParam());
+    has_microphone_dependency_ = std::get<1>(GetParam());
+    camera_enabled_ = std::get<2>(GetParam());
+    microphone_enabled_ = std::get<3>(GetParam());
+  }
+
+  void TearDown() override {
+    AshTestBase::TearDown();
+    toggle_effect_.reset();
+    set_value_effect_.reset();
+    controller_.reset();
+    CrasAudioHandler::Shutdown();
+    CrasAudioClient::Shutdown();
+  }
+
+  void CreateTestEffects(
+      VcHostedEffect::ResourceDependencyFlags dependency_flags) {
+    toggle_effect_ = std::make_unique<SquareCinnamonCereal>(dependency_flags);
+    controller()->effects_manager().RegisterDelegate(toggle_effect_.get());
+    set_value_effect_ = std::make_unique<SnackNationForever>(dependency_flags);
+    controller()->effects_manager().RegisterDelegate(set_value_effect_.get());
+  }
+
+  VideoConferenceTray* video_conference_tray() {
+    return StatusAreaWidgetTestHelper::GetStatusAreaWidget()
+        ->video_conference_tray();
+  }
+
+  IconButton* toggle_bubble_button() {
+    return video_conference_tray()->toggle_bubble_button_;
+  }
+
+  views::View* bubble_view() {
+    return video_conference_tray()->GetBubbleView();
+  }
+
+  FakeVideoConferenceTrayController* controller() { return controller_.get(); }
+
+  views::View* effects_view() {
+    return bubble_view()->GetViewByID(
+        video_conference::BubbleViewID::kToggleEffectsView);
+  }
+
+  SquareCinnamonCereal* toggle_effect() { return toggle_effect_.get(); }
+
+  SnackNationForever* set_value_effect() { return set_value_effect_.get(); }
+
+  views::View* toggle_effect_container_view() {
+    return bubble_view()->GetViewByID(kSquareCinnamonCerealViewId);
+  }
+
+  views::View* set_value_effect_container_view() {
+    return bubble_view()->GetViewByID(kSnackNationForeverViewId);
+  }
+
+  bool has_camera_dependency() const { return has_camera_dependency_; }
+  bool has_microphone_dependency() const { return has_microphone_dependency_; }
+  bool camera_enabled() const { return camera_enabled_; }
+  bool microphone_enabled() const { return microphone_enabled_; }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<FakeVideoConferenceTrayController> controller_;
+  std::unique_ptr<SquareCinnamonCereal> toggle_effect_;
+  std::unique_ptr<SnackNationForever> set_value_effect_;
+
+  bool has_camera_dependency_ = false;
+  bool has_microphone_dependency_ = false;
+  bool camera_enabled_ = false;
+  bool microphone_enabled_ = false;
+};
+
+INSTANTIATE_TEST_SUITE_P(BubbleViewResourceDependency,
+                         ResourceDependencyTest,
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
+
+TEST_P(ResourceDependencyTest, ResourceDependency) {
+  // Initialize with no dependencies.
+  VcHostedEffect::ResourceDependencyFlags flags =
+      VcHostedEffect::ResourceDependency::kNone;
+
+  // Set camera dependency.
+  if (has_camera_dependency()) {
+    flags |= VcHostedEffect::ResourceDependency::kCamera;
+  }
+
+  // Set microphone dependency.
+  if (has_microphone_dependency()) {
+    flags |= VcHostedEffect::ResourceDependency::kMicrophone;
+  }
+
+  // Instantiate/register the fake effects.
+  CreateTestEffects(flags);
+
+  // Camera is enabled.
+  controller()->SetCameraMuted(!camera_enabled());
+
+  // Microphone is enabled.
+  controller()->SetMicrophoneMuted(!microphone_enabled());
+
+  // Click to open the bubble, bubble is present/visible.
+  LeftClickOn(toggle_bubble_button());
+  EXPECT_TRUE(bubble_view());
+  EXPECT_TRUE(bubble_view()->GetVisible());
+
+  // Effect container view is present/visible if its dependencies are
+  // satisfied. A dependency on a resource is considered "satfisfied" if (1)
+  // there is no dependency on the resource or (2) there is a dependency on the
+  // resource and the resource is enabled.
+  const bool camera_satisfied =
+      !has_camera_dependency() || (has_camera_dependency() && camera_enabled());
+  const bool microphone_satisfied =
+      !has_microphone_dependency() ||
+      (has_microphone_dependency() && microphone_enabled());
+  if (camera_satisfied && microphone_satisfied) {
+    EXPECT_TRUE(toggle_effect_container_view());
+    EXPECT_TRUE(toggle_effect_container_view()->GetVisible());
+    EXPECT_TRUE(set_value_effect_container_view());
+    EXPECT_TRUE(set_value_effect_container_view()->GetVisible());
+  } else {
+    EXPECT_FALSE(toggle_effect_container_view());
+    EXPECT_FALSE(set_value_effect_container_view());
+  }
 }
 
 }  // namespace ash::video_conference

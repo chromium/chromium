@@ -51,7 +51,8 @@ class ButtonContainer : public views::Button {
                   bool toggle_state,
                   const std::u16string& label_text,
                   const int accessible_name_id,
-                  const int preferred_width)
+                  const int preferred_width,
+                  absl::optional<int> container_id = absl::nullopt)
       : callback_(callback), toggled_(toggle_state) {
     SetCallback(base::BindRepeating(&ButtonContainer::OnButtonClicked,
                                     weak_ptr_factory_.GetWeakPtr()));
@@ -83,6 +84,12 @@ class ButtonContainer : public views::Button {
 
     SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
     UpdateColorsAndBackground();
+
+    // Assign the ID, if present, to the outermost container view. Only used in
+    // tests.
+    if (container_id.has_value()) {
+      SetID(container_id.value());
+    }
   }
 
   ButtonContainer(const ButtonContainer&) = delete;
@@ -181,7 +188,8 @@ ToggleEffectsView::ToggleEffectsView(VideoConferenceTrayController* controller,
       const VcEffectState* state = tile->GetState(/*index=*/0);
       row_view->AddChildView(std::make_unique<ButtonContainer>(
           state->button_callback(), state->icon(), toggle_state,
-          state->label_text(), state->accessible_name_id(), button_width));
+          state->label_text(), state->accessible_name_id(), button_width,
+          tile->container_id()));
     }
 
     // Add the row as a child, now that it's fully populated,

@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_VIDEO_CONFERENCE_EFFECTS_VIDEO_CONFERENCE_TRAY_EFFECTS_MANAGER_TYPES_H_
 #define ASH_SYSTEM_VIDEO_CONFERENCE_EFFECTS_VIDEO_CONFERENCE_TRAY_EFFECTS_MANAGER_TYPES_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -93,12 +94,17 @@ enum class VcEffectType {
 // effect.
 class ASH_EXPORT VcHostedEffect {
  public:
-  // The concept of "value" is not meaningful for `kToggle` effects, which
-  // deal in a "state".
-  enum ToggleState {
-    kOff = 0,
-    kOn = 1,
+  // Each of these denotes a resource dependency for an effect e.g.
+  // `kMicrophone` is a dependency of mic noise cancellation. An effect can have
+  // more than one dependency, which is why these are bitfields.
+  enum ResourceDependency {
+    kNone = 0,
+    kCamera = 1 << 0,
+    kMicrophone = 1 << 1,
   };
+
+  // All of a `VcHostedEffect`'s resource dependencies.
+  using ResourceDependencyFlags = int32_t;
 
   // Callback for obtaining the current state of the effect. The callback must
   // have the effect ID bound as an argument.
@@ -106,6 +112,7 @@ class ASH_EXPORT VcHostedEffect {
       base::RepeatingCallback<absl::optional<int>(void)>;
 
   // `type` is the type of value adjustment allowed.
+  // `get_state_callback` is invoked to obtain the current state of the effect.
   explicit VcHostedEffect(VcEffectType type,
                           GetEffectStateCallback get_state_callback);
 
@@ -124,20 +131,34 @@ class ASH_EXPORT VcHostedEffect {
   const VcEffectState* GetState(int index) const;
 
   VcEffectType type() const { return type_; }
-  void set_id(int id) { id_ = id; }
+
   const GetEffectStateCallback& get_state_callback() const {
     return get_state_callback_;
   }
+
+  void set_id(int id) { id_ = id; }
   int id() const { return id_; }
+
   void set_label_text(const std::u16string label_text) {
     label_text_ = label_text;
   }
   const std::u16string& label_text() const { return label_text_; }
 
+  void set_dependency_flags(ResourceDependencyFlags dependency_flags) {
+    dependency_flags_ = dependency_flags;
+  }
+  ResourceDependencyFlags dependency_flags() const { return dependency_flags_; }
+
+  absl::optional<int> container_id() const { return container_id_; }
+  void set_container_id(absl::optional<int> id) { container_id_ = id; }
+
  private:
-  // Unique ID of the effect, set to `kDefaultId` in the absence of a
-  // user-supplied ID.
+  // The type of value adjustment of this effect,
   VcEffectType type_;
+
+  // The set of resources needed in order for the effect's controls to be
+  // presented to the user.
+  ResourceDependencyFlags dependency_flags_ = ResourceDependency::kNone;
 
   // Callback supplied by the parent `VcEffectsDelegate`, for obtaining the
   // state of the effect.
@@ -154,6 +175,11 @@ class ASH_EXPORT VcHostedEffect {
   // `VcEffectState`s are constructed by `VcEffectsDelegate` subclasses (that
   // own the effects), and owned by the `VcHostedEffect` itself.
   std::vector<std::unique_ptr<VcEffectState>> states_;
+
+  // Optional ID assigned to the outermost container view for this effect's
+  // toggle control. For testing only, this facilitates easy lookup of the
+  // outermost container that houses the UI controls for this effect.
+  absl::optional<int> container_id_;
 };
 
 }  // namespace ash

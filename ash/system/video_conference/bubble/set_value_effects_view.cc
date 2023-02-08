@@ -52,6 +52,11 @@ class ValueButtonContainer : public views::View {
       label_container->SetFlexForView(spacer_view, 1);
     }
 
+    // If a container ID has been provided then assign it, otherwise assign the
+    // default ID.
+    SetID(effect->container_id().value_or(
+        BubbleViewID::kSingleSetValueEffectView));
+
     // `effect` is expected to provide the current state of the effect, and
     // a `current_state` with no value means it couldn't be obtained.
     absl::optional<int> current_state = effect->get_state_callback().Run();
@@ -68,6 +73,8 @@ class ValueButtonContainer : public views::View {
       auto* slider_button =
           tab_slider->AddButton(std::make_unique<IconLabelSliderButton>(
               state->button_callback(), state->icon(), state->label_text()));
+
+      DCHECK(state->state().has_value());
       slider_button->SetSelected(state->state().value() == current_state);
 
       // See comments above `kSetValueButton*` in `BubbleViewID` for details

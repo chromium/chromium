@@ -32,6 +32,7 @@ namespace ash {
 namespace video_conference {
 class BubbleViewTest;
 class ReturnToAppPanelTest;
+class ResourceDependencyTest;
 }  // namespace video_conference
 
 class Shelf;
@@ -116,6 +117,7 @@ class ASH_EXPORT VideoConferenceTray
  private:
   friend class video_conference::BubbleViewTest;
   friend class video_conference::ReturnToAppPanelTest;
+  friend class video_conference::ResourceDependencyTest;
   friend class VideoConferenceTrayTest;
 
   // Callback function for `toggle_bubble_button_`.

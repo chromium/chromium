@@ -52,6 +52,14 @@ void FakeVideoConferenceTrayController::SetMicrophoneMuted(bool muted) {
                      CrasAudioHandler::InputMuteChangeMethod::kKeyboardButton);
 }
 
+bool FakeVideoConferenceTrayController::GetCameraMuted() {
+  return camera_muted();
+}
+
+bool FakeVideoConferenceTrayController::GetMicrophoneMuted() {
+  return microphone_muted();
+}
+
 void FakeVideoConferenceTrayController::GetMediaApps(
     base::OnceCallback<void(MediaApps)> ui_callback) {
   MediaApps apps;

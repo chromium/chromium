@@ -73,8 +73,14 @@ class ASH_EXPORT VideoConferenceTrayController
   // Sets the state for camera mute. Virtual for testing/mocking.
   virtual void SetCameraMuted(bool muted) = 0;
 
+  // Gets the state for camera mute. Virtual for testing/mocking.
+  virtual bool GetCameraMuted() = 0;
+
   // Sets the state for microphone mute. Virtual for testing/mocking.
   virtual void SetMicrophoneMuted(bool muted) = 0;
+
+  // Gets the state for microphone mute. Virtual for testing/mocking.
+  virtual bool GetMicrophoneMuted() = 0;
 
   // Returns asynchronously a vector of media apps that will be displayed in the
   // "Return to app" panel of the bubble. Virtual for testing/mocking.
@@ -109,10 +115,19 @@ class ASH_EXPORT VideoConferenceTrayController
     return effects_manager_;
   }
 
+  bool camera_muted_by_software_switch() const {
+    return camera_muted_by_software_switch_;
+  }
+
  private:
   // This keeps track the current VC media state. The state is being updated by
   // `UpdateWithMediaState()`, calling from `VideoConferenceManagerAsh`.
   VideoConferenceMediaState state_;
+
+  // This keeps track of the current Camera Software Privacy Switch state.
+  // Updated via `OnCameraSWPrivacySwitchStateChanged()` Fetching this would
+  // otherwise take an asynchronous call to `media::CameraHalDispatcherImpl`.
+  bool camera_muted_by_software_switch_ = false;
 
   // Used by the views to construct and lay out effects in the bubble.
   VideoConferenceTrayEffectsManager effects_manager_;
