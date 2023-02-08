@@ -9313,6 +9313,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(extensions_features::kWebviewTagMPArchBehavior)},
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+    {"autofill-enable-page-load-metadata-integration",
+     flag_descriptions::kAutofillEnablePageLoadMetadataIntegrationName,
+     flag_descriptions::kAutofillEnablePageLoadMetadataIntegrationDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnablePageLoadMetadataIntegration)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

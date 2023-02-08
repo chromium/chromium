@@ -508,6 +508,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "autofill-enable-page-load-metadata-integration",
+    "owners": [ "vinnypersky@google.com"],
+    "expiry_milestone": 123
+  },
+  {
     "name": "autofill-enable-ranking-formula-address-profiles",
     "owners": [ "alexandertekle@google.com", "koerber@google.com" ],
     "expiry_milestone": 120

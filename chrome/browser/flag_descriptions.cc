@@ -394,6 +394,14 @@ const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =
     "When enabled, offers will be displayed in the keyboard accessory when "
     "available.";
 
+const char kAutofillEnablePageLoadMetadataIntegrationName[] =
+    "Enable Autofill Page Load Metadata integration";
+const char kAutofillEnablePageLoadMetadataIntegrationDescription[] =
+    "When enabled, client side filtering functionality will be triggered for "
+    "certain autofill use-cases, for example filtering displaying virtual card "
+    "suggestions on websites where the merchant has opted-out of virtual "
+    "cards.";
+
 const char kAutofillEnableRankingFormulaAddressProfilesName[] =
     "Enable new Autofill suggestion ranking formula for profiles";
 const char kAutofillEnableRankingFormulaAddressProfilesDescription[] =
