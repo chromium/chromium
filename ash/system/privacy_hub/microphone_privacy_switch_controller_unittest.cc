@@ -55,17 +55,28 @@ class FakeSensorDisabledNotificationDelegate
       apps_accessing_microphone_.insert(apps_accessing_microphone_.begin(),
                                         app_name.value());
     }
+    ++active_input_stream_count_;
+    SetActiveInputStreamsCount();
   }
 
   void CloseAppAccessingMicrophone(const std::u16string& app_name) {
     auto it = std::find(apps_accessing_microphone_.begin(),
                         apps_accessing_microphone_.end(), app_name);
-    if (it != apps_accessing_microphone_.end()) {
-      apps_accessing_microphone_.erase(it);
-    }
+    ASSERT_NE(apps_accessing_microphone_.end(), it);
+    apps_accessing_microphone_.erase(it);
+
+    ASSERT_GT(active_input_stream_count_, 0);
+    --active_input_stream_count_;
+    SetActiveInputStreamsCount();
   }
 
  private:
+  void SetActiveInputStreamsCount() {
+    FakeCrasAudioClient::Get()->SetActiveInputStreamsWithPermission(
+        {{"CRAS_CLIENT_TYPE_CHROME", active_input_stream_count_}});
+  }
+
+  int active_input_stream_count_ = 0;
   std::vector<std::u16string> apps_accessing_microphone_;
 };
 
@@ -165,11 +176,6 @@ class PrivacyHubMicrophoneControllerTest : public AshTestBase {
         false, CrasAudioHandler::InputMuteChangeMethod::kOther);
   }
 
-  void SetNumberOfActiveInputStreams(int number_of_active_input_streams) {
-    FakeCrasAudioClient::Get()->SetActiveInputStreamsWithPermission(
-        {{"CRAS_CLIENT_TYPE_CHROME", number_of_active_input_streams}});
-  }
-
   void WaitUntilNotificationRemoved() {
     task_environment()->FastForwardBy(PrivacyHubNotification::kMinShowTime);
   }
@@ -253,24 +259,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest, SimpleMuteUnMute) {
   EXPECT_FALSE(GetNotification());
 }
 
-TEST_F(PrivacyHubMicrophoneControllerTest, LaunchAppNotUsingMicrophone) {
-  // No notification initially.
-  EXPECT_FALSE(GetNotification());
-
-  // No notification when we unmute.
-  UnMuteMicrophone();
-  EXPECT_FALSE(GetNotification());
-
-  // Launch an app that's not using the mic, should be no notification.
-  LaunchApp(absl::nullopt);
-  SetNumberOfActiveInputStreams(0);
-  EXPECT_FALSE(GetNotification());
-
-  // Mute the mic, still no notification because no app is using the mic.
-  MuteMicrophone();
-  EXPECT_FALSE(GetNotification());
-}
-
 TEST_F(PrivacyHubMicrophoneControllerTest, LaunchAppUsingMicrophone) {
   // No notification initially.
   EXPECT_FALSE(GetNotification());
@@ -286,7 +274,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest, LaunchAppUsingMicrophone) {
   // Launch an app that's using the mic. The microphone mute notification should
   // show as a popup.
   LaunchApp(u"junior");
-  SetNumberOfActiveInputStreams(1);
   EXPECT_TRUE(GetNotification());
   EXPECT_TRUE(GetPopupNotification());
   // Notification should not be pinned.
@@ -306,7 +293,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
   // Launch an app that's using the mic, no notification because the microphone
   // is not muted.
   LaunchApp(u"junior");
-  SetNumberOfActiveInputStreams(1);
   EXPECT_FALSE(GetNotification());
 
   // Mute the mic, a notification should be shown and also popup.
@@ -320,7 +306,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
   // Launch an app while microphone is muted.
   MuteMicrophone();
   LaunchApp(u"junior");
-  SetNumberOfActiveInputStreams(1);
 
   ASSERT_TRUE(GetNotification());
   ASSERT_TRUE(GetPopupNotification());
@@ -331,7 +316,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
 
   // Add an app, and verify the notification popup gets shown.
   LaunchApp(u"rose");
-  SetNumberOfActiveInputStreams(2);
 
   EXPECT_TRUE(GetNotification());
   EXPECT_TRUE(GetPopupNotification());
@@ -342,7 +326,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest, RemovingStreamDoesNotShowPopup) {
   MuteMicrophone();
   LaunchApp(u"junior");
   LaunchApp(u"rose");
-  SetNumberOfActiveInputStreams(2);
 
   ASSERT_TRUE(GetNotification());
   ASSERT_TRUE(GetPopupNotification());
@@ -351,16 +334,15 @@ TEST_F(PrivacyHubMicrophoneControllerTest, RemovingStreamDoesNotShowPopup) {
   MarkPopupAsShown();
   ASSERT_FALSE(GetPopupNotification());
 
-  // Remove an active stream, and verify that the notification popup is not
+  // Close an active app, and verify that the notification popup is not
   // reshown.
-  SetNumberOfActiveInputStreams(1);
+  CloseApp(u"rose");
 
   EXPECT_TRUE(GetNotification());
   EXPECT_FALSE(GetPopupNotification());
 
-  // The notification should be removed if all input streams are removed.
-  LaunchApp(absl::nullopt);
-  SetNumberOfActiveInputStreams(0);
+  // The notification should be removed if all apps are closed.
+  CloseApp(u"junior");
   WaitUntilNotificationRemoved();
 
   EXPECT_FALSE(GetNotification());
@@ -369,7 +351,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest, RemovingStreamDoesNotShowPopup) {
 TEST_F(PrivacyHubMicrophoneControllerTest, SwMuteNotificationActionButton) {
   MuteMicrophone();
   LaunchApp(u"junior");
-  SetNumberOfActiveInputStreams(1);
 
   // The mute notification should have an action button.
   message_center::Notification* notification = GetNotification();
@@ -396,7 +377,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest, SwMuteNotificationActionButton) {
 TEST_F(PrivacyHubMicrophoneControllerTest, SwMuteNotificationActionBody) {
   MuteMicrophone();
   LaunchApp(u"junior");
-  SetNumberOfActiveInputStreams(1);
 
   // The mute notification should have an action button.
   message_center::Notification* notification = GetNotification();
@@ -425,7 +405,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest, HwMuteNotificationActionButton) {
   SetMicrophoneMuteSwitchState(/*muted=*/true);
 
   LaunchApp(u"junior");
-  SetNumberOfActiveInputStreams(1);
 
   // The mute notification should have a "Learn more" button.
   message_center::Notification* notification = GetNotification();
@@ -447,7 +426,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest, HwMuteNotificationActionButton) {
 TEST_F(PrivacyHubMicrophoneControllerTest, HwMuteNotificationActionBody) {
   SetMicrophoneMuteSwitchState(/*muted=*/true);
   LaunchApp(u"junior");
-  SetNumberOfActiveInputStreams(1);
 
   message_center::Notification* notification = GetNotification();
   ASSERT_TRUE(notification);
@@ -465,7 +443,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
   // Mute microphone, and activate an audio input stream.
   MuteMicrophone();
   LaunchApp(u"junior");
-  SetNumberOfActiveInputStreams(1);
 
   // The mute notification should have an action button.
   message_center::Notification* notification = GetNotification();
@@ -496,7 +473,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
   MuteMicrophone();
 
   LaunchApp(u"junior");
-  SetNumberOfActiveInputStreams(1);
 
   // Verify the notification popup is shown.
   ASSERT_TRUE(GetNotification());
@@ -518,12 +494,11 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
        RemovingAllInputStreamsWhileHwSwitchToggled) {
   SetMicrophoneMuteSwitchState(/*muted=*/true);
   LaunchApp(u"junior");
-  SetNumberOfActiveInputStreams(2);
 
   EXPECT_TRUE(GetNotification());
   EXPECT_TRUE(GetPopupNotification());
 
-  SetNumberOfActiveInputStreams(0);
+  CloseApp(u"junior");
   WaitUntilNotificationRemoved();
 
   EXPECT_FALSE(GetNotification());
@@ -533,7 +508,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
        ToggleMicrophoneMuteSwitchWhileInputStreamActive) {
   // Launch an app using microphone, and toggle mute switch.
   LaunchApp(u"junior");
-  SetNumberOfActiveInputStreams(1);
   SetMicrophoneMuteSwitchState(/*muted=*/true);
 
   // Notification should be shown and also popup.
@@ -542,7 +516,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
 
   // Add another audio input stream, and verify the notification popup shows.
   LaunchApp(u"junior1");
-  SetNumberOfActiveInputStreams(2);
 
   EXPECT_TRUE(GetNotification());
   EXPECT_TRUE(GetPopupNotification());
@@ -550,7 +523,7 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
   // Mark notification as read, and then remove an audio input stream.
   MarkPopupAsShown();
   ASSERT_FALSE(GetPopupNotification());
-  SetNumberOfActiveInputStreams(1);
+  CloseApp(u"junior1");
 
   // Verify that notification popup is not reshown.
   EXPECT_TRUE(GetNotification());
@@ -558,7 +531,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
 
   // Adding another stream shows a popup again.
   LaunchApp(u"rose");
-  SetNumberOfActiveInputStreams(2);
 
   EXPECT_TRUE(GetNotification());
   EXPECT_TRUE(GetPopupNotification());
@@ -572,14 +544,9 @@ TEST_F(PrivacyHubMicrophoneControllerTest, NotificationText) {
   MuteMicrophone();
   EXPECT_FALSE(GetNotification());
 
-  // Launch an app that's not using the mic, should be no notification.
-  LaunchApp(absl::nullopt);
-  EXPECT_FALSE(GetNotification());
-
   // Launch an app that's using the mic, but the name of the app can not be
   // determined.
   LaunchApp(absl::nullopt);
-  SetNumberOfActiveInputStreams(1);
   EXPECT_TRUE(GetNotification());
   EXPECT_TRUE(GetPopupNotification());
   EXPECT_EQ(l10n_util::GetStringUTF16(
@@ -592,7 +559,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest, NotificationText) {
 
   // Launch an app that's using the mic, the name of the app can be determined.
   LaunchApp(u"app1");
-  SetNumberOfActiveInputStreams(2);
   EXPECT_TRUE(GetNotification());
   EXPECT_TRUE(GetPopupNotification());
   // The notification body should contain name of the app.
@@ -604,7 +570,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest, NotificationText) {
   // Launch another app that's using the mic, the name of the app can be
   // determined.
   LaunchApp(u"app2");
-  SetNumberOfActiveInputStreams(3);
   EXPECT_TRUE(GetNotification());
   EXPECT_TRUE(GetPopupNotification());
   // The notification body should contain the two available app names in the
@@ -617,7 +582,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest, NotificationText) {
   // Launch yet another app that's using the mic, the name of the app can be
   // determined.
   LaunchApp(u"app3");
-  SetNumberOfActiveInputStreams(4);
   EXPECT_TRUE(GetNotification());
   EXPECT_TRUE(GetPopupNotification());
   // As more that two apps are attempting to use the microphone, we fall back to
@@ -651,7 +615,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest, NotificationUpdatedWhenAppClosed) {
   // with the application name in the notification body.
   const std::u16string app1 = u"app1";
   LaunchApp(app1);
-  SetNumberOfActiveInputStreams(1);
   message_center::Notification* notification_ptr = GetNotification();
   ASSERT_TRUE(notification_ptr);
   EXPECT_EQ(
@@ -664,7 +627,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest, NotificationUpdatedWhenAppClosed) {
   // notification body.
   const std::u16string app2 = u"app2";
   LaunchApp(app2);
-  SetNumberOfActiveInputStreams(2);
   notification_ptr = GetNotification();
   ASSERT_TRUE(notification_ptr);
   EXPECT_EQ(l10n_util::GetStringFUTF16(
@@ -675,7 +637,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest, NotificationUpdatedWhenAppClosed) {
   // Close one of the applications. The notification message should be updated
   // to only contain the name of the other application.
   CloseApp(app1);
-  SetNumberOfActiveInputStreams(1);
   notification_ptr = GetNotification();
   ASSERT_TRUE(notification_ptr);
   EXPECT_EQ(
@@ -689,7 +650,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest, NotificationUpdatedWhenAppClosed) {
 
   // Launch the closed app (app1) again.
   LaunchApp(app1);
-  SetNumberOfActiveInputStreams(2);
   notification_ptr = GetNotification();
   ASSERT_TRUE(notification_ptr);
   EXPECT_EQ(l10n_util::GetStringFUTF16(
@@ -700,7 +660,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest, NotificationUpdatedWhenAppClosed) {
   // Closing one of the applications should remove the name of that application
   // from the hw switch notification message.
   CloseApp(app2);
-  SetNumberOfActiveInputStreams(1);
   notification_ptr = GetNotification();
   ASSERT_TRUE(notification_ptr);
   EXPECT_EQ(
