@@ -29,9 +29,33 @@
 namespace ui {
 namespace {
 
+enum class NativePixmapSupportType {
+  // Importing native pixmaps not supported.
+  kNone,
+
+  // Native pixmaps are imported directly into EGL using the
+  // EGL_EXT_image_dma_buf_import extension.
+  kDMABuf,
+
+  // Native pixmaps are first imported as X11 pixmaps using DRI3 and then into
+  // EGL. Using pixmap imports is currently not supported.
+  kX11Pixmap,
+};
+
+NativePixmapSupportType GetNativePixmapSupportType() {
+  if (gl::GLSurfaceEGL::GetGLDisplayEGL()
+          ->ext->b_EGL_EXT_image_dma_buf_import) {
+    return NativePixmapSupportType::kDMABuf;
+  } else if (NativePixmapEGLX11Binding::CanImportNativeGLXPixmap()) {
+    return NativePixmapSupportType::kX11Pixmap;
+  } else {
+    return NativePixmapSupportType::kNone;
+  }
+}
+
 class GLOzoneEGLX11 : public GLOzoneEGL {
  public:
-  GLOzoneEGLX11() = default;
+  GLOzoneEGLX11() : support_type_(GetNativePixmapSupportType()) {}
 
   GLOzoneEGLX11(const GLOzoneEGLX11&) = delete;
   GLOzoneEGLX11& operator=(const GLOzoneEGLX11&) = delete;
@@ -46,8 +70,9 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
   }
 
   bool CanImportNativePixmap() override {
-    return gl::GLSurfaceEGL::GetGLDisplayEGL()
-        ->ext->b_EGL_EXT_image_dma_buf_import;
+    // TODO(crbug.com/1236697): enable X11Pixmap support when the Vaapi
+    // pipeline supports it.
+    return support_type_ == NativePixmapSupportType::kDMABuf;
   }
 
   std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
@@ -58,9 +83,19 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
       const gfx::ColorSpace& color_space,
       GLenum target,
       GLuint texture_id) override {
-    return NativePixmapEGLBinding::Create(pixmap, plane_format, plane,
-                                          plane_size, color_space, target,
-                                          texture_id);
+    switch (support_type_) {
+      case NativePixmapSupportType::kDMABuf: {
+        return NativePixmapEGLBinding::Create(pixmap, plane_format, plane,
+                                              plane_size, color_space, target,
+                                              texture_id);
+      }
+      case NativePixmapSupportType::kX11Pixmap: {
+        return NativePixmapEGLX11Binding::Create(
+            pixmap, plane_format, plane_size, target, texture_id);
+      }
+      default:
+        return nullptr;
+    }
   }
 
   scoped_refptr<gl::GLSurface> CreateViewGLSurface(
@@ -115,6 +150,7 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
   }
 
  private:
+  const NativePixmapSupportType support_type_;
   bool is_swiftshader_ = false;
 };
 
