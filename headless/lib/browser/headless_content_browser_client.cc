@@ -284,6 +284,21 @@ bool HeadlessContentBrowserClient::ShouldEnableStrictSiteIsolation() {
   return false;
 }
 
+bool HeadlessContentBrowserClient::IsSharedStorageAllowed(
+    content::BrowserContext* browser_context,
+    content::RenderFrameHost* rfh,
+    const url::Origin& top_frame_origin,
+    const url::Origin& accessing_origin) {
+  return true;
+}
+
+bool HeadlessContentBrowserClient::IsSharedStorageSelectURLAllowed(
+    content::BrowserContext* browser_context,
+    const url::Origin& top_frame_origin,
+    const url::Origin& accessing_origin) {
+  return true;
+}
+
 void HeadlessContentBrowserClient::ConfigureNetworkContextParams(
     content::BrowserContext* context,
     bool in_memory,
