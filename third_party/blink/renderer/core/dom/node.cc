@@ -1042,11 +1042,6 @@ void Node::SetComputedStyle(scoped_refptr<const ComputedStyle> computed_style) {
   // We don't set computed style for text nodes.
   DCHECK(IsElementNode());
 
-  if (auto* element = DynamicTo<Element>(this)) {
-    ViewTransitionSupplement::From(GetDocument())
-        ->UpdateViewTransitionNames(*element, computed_style.get());
-  }
-
   // Already pointing to a non empty NodeData so just set the pointer
   // to the new LayoutObject.
   if (!data_->IsSharedEmptyData()) {

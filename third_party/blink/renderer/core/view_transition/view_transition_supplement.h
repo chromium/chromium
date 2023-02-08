@@ -51,14 +51,6 @@ class CORE_EXPORT ViewTransitionSupplement
 
   ViewTransition* GetActiveTransition();
 
-  // Tracks the set of elements with a valid |view-transition-name|.
-  void UpdateViewTransitionNames(const Element& element,
-                                 const ComputedStyle* style);
-  const HeapHashSet<Member<const Element>>& ElementsWithViewTransitionName()
-      const {
-    return elements_with_view_transition_name_;
-  }
-
   explicit ViewTransitionSupplement(Document&);
   ~ViewTransitionSupplement() override;
 
@@ -91,8 +83,6 @@ class CORE_EXPORT ViewTransitionSupplement
   Member<ViewTransition> transition_;
 
   VectorOf<std::unique_ptr<ViewTransitionRequest>> pending_requests_;
-
-  HeapHashSet<Member<const Element>> elements_with_view_transition_name_;
 
   mojom::ViewTransitionSameOriginOptIn same_origin_opt_in_ =
       mojom::ViewTransitionSameOriginOptIn::kDisabled;

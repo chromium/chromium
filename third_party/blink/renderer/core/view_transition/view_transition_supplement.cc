@@ -185,15 +185,6 @@ ViewTransition* ViewTransitionSupplement::GetActiveTransition() {
   return transition_;
 }
 
-void ViewTransitionSupplement::UpdateViewTransitionNames(
-    const Element& element,
-    const ComputedStyle* style) {
-  if (style && style->ViewTransitionName())
-    elements_with_view_transition_name_.insert(&element);
-  else
-    elements_with_view_transition_name_.erase(&element);
-}
-
 ViewTransitionSupplement::ViewTransitionSupplement(Document& document)
     : Supplement<Document>(document) {}
 
@@ -201,7 +192,6 @@ ViewTransitionSupplement::~ViewTransitionSupplement() = default;
 
 void ViewTransitionSupplement::Trace(Visitor* visitor) const {
   visitor->Trace(transition_);
-  visitor->Trace(elements_with_view_transition_name_);
 
   Supplement<Document>::Trace(visitor);
 }
