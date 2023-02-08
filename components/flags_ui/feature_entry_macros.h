@@ -45,6 +45,8 @@
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// The platform feature name may need to satisfy prefix requirement if
+// ENABLE_BANNED_BASE_FEATURE_PREFIX enabled.
 #define PLATFORM_FEATURE_NAME_TYPE(name)                 \
   flags_ui::FeatureEntry::PLATFORM_FEATURE_NAME_VALUE, { \
     .platform_feature_name = { name, {}, nullptr }       \

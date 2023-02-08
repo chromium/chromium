@@ -258,6 +258,14 @@ bool FeatureEntry::IsValid() const {
         LOG(ERROR) << "no feature name is set";
         return false;
       }
+#if BUILDFLAG(ENABLE_BANNED_BASE_FEATURE_PREFIX)
+      if (!base::StartsWith(platform_feature_name.name,
+                            BUILDFLAG(BANNED_BASE_FEATURE_PREFIX))) {
+        LOG(ERROR) << "missing required feature name prefix, please check "
+                      "BANNED_BASE_FEATURE_PREFIX";
+        return false;
+      }
+#endif  // BUILDFLAG(ENABLED_BANNED_BASE_FEATURE_PREFIX)
       return true;
     case FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE:
       if (!platform_feature_name.name) {
@@ -272,6 +280,14 @@ bool FeatureEntry::IsValid() const {
         LOG(ERROR) << "feature_trial_name is null";
         return false;
       }
+#if BUILDFLAG(ENABLE_BANNED_BASE_FEATURE_PREFIX)
+      if (!base::StartsWith(platform_feature_name.name,
+                            BUILDFLAG(BANNED_BASE_FEATURE_PREFIX))) {
+        LOG(ERROR) << "missing required feature name prefix, please check "
+                      "BANNED_BASE_FEATURE_PREFIX";
+        return false;
+      }
+#endif  // BUILDFLAG(ENABLED_BANNED_BASE_FEATURE_PREFIX)
       return true;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
