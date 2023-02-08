@@ -72,17 +72,17 @@ std::string GetSegmentationKey(std::vector<std::unique_ptr<Config>>* configs,
   return std::string();
 }
 
-std::map<SegmentId, absl::optional<proto::SegmentInfo>> GetPreferedSegmentInfo(
+// Returns a list of preferred segment info for each segment ID in the list.
+std::map<SegmentId, proto::SegmentInfo> GetPreferredSegmentInfo(
     DefaultModelManager::SegmentInfoList&& segment_list) {
-  std::map<SegmentId, absl::optional<proto::SegmentInfo>> result;
-  for (const auto& segment_wrapper : segment_list) {
-    absl::optional<proto::SegmentInfo>& segment_info_optional =
-        result[segment_wrapper->segment_info.segment_id()];
-    if (segment_wrapper->segment_source ==
-        DefaultModelManager::SegmentSource::DATABASE) {
-      segment_info_optional = std::move(segment_wrapper->segment_info);
-    } else if (!segment_info_optional.has_value()) {
-      segment_info_optional = std::move(segment_wrapper->segment_info);
+  std::map<SegmentId, proto::SegmentInfo> result;
+  for (auto& segment_wrapper : segment_list) {
+    SegmentId segment = segment_wrapper->segment_info.segment_id();
+    auto it = result.find(segment_wrapper->segment_info.segment_id());
+    if (it == result.end() ||
+        segment_wrapper->segment_source ==
+            DefaultModelManager::SegmentSource::DATABASE) {
+      result[segment] = std::move(segment_wrapper->segment_info);
     }
   }
 
@@ -136,11 +136,11 @@ void TrainingDataCollectorImpl::OnServiceInitialized() {
 void TrainingDataCollectorImpl::OnGetSegmentsInfoList(
     DefaultModelManager::SegmentInfoList segments) {
   histogram_signal_handler_->AddObserver(this);
-  std::map<SegmentId, absl::optional<proto::SegmentInfo>> segment_list =
-      GetPreferedSegmentInfo(std::move(segments));
+  std::map<SegmentId, proto::SegmentInfo> segment_list =
+      GetPreferredSegmentInfo(std::move(segments));
 
   for (const auto& segment : segment_list) {
-    const proto::SegmentInfo& segment_info = segment.second.value();
+    const proto::SegmentInfo& segment_info = segment.second;
 
     // Skip the segment if it is not in allowed list.
     if (!SegmentationUkmHelper::GetInstance()->CanUploadTensors(segment_info)) {
@@ -236,9 +236,7 @@ void TrainingDataCollectorImpl::OnHistogramUpdatedReportForSegmentInfo(
 bool TrainingDataCollectorImpl::CanReportTrainingData(
     const proto::SegmentInfo& segment_info,
     bool include_output) {
-  if (!segment_info.has_model_version() ||
-      !segment_info.has_model_update_time_s() ||
-      segment_info.model_update_time_s() == 0) {
+  if (!segment_info.has_model_version()) {
     RecordTrainingDataCollectionEvent(
         segment_info.segment_id(),
         stats::TrainingDataCollectionEvent::kModelInfoMissing);
@@ -262,21 +260,25 @@ bool TrainingDataCollectorImpl::CanReportTrainingData(
     return false;
   }
 
-  base::TimeDelta min_signal_collection_length =
-      model_metadata.min_signal_collection_length() *
-      metadata_utils::GetTimeUnit(model_metadata);
-  base::Time model_update_time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::Seconds(segment_info.model_update_time_s()));
+  // TODO(ssid): The default models do not set the model update time. Fix this
+  // once default model info is stored in database.
+  if (segment_info.has_model_update_time_s()) {
+    base::TimeDelta min_signal_collection_length =
+        model_metadata.min_signal_collection_length() *
+        metadata_utils::GetTimeUnit(model_metadata);
+    base::Time model_update_time = base::Time::FromDeltaSinceWindowsEpoch(
+        base::Seconds(segment_info.model_update_time_s()));
 
-  // Data must be collected for enough time after a new model is downloaded.
-  // It's recommended to get the A/B testing experiment fully ramped up before
-  // deploying a new model. Or the data collected might be partially based on
-  // old behavior of Chrome.
-  if (model_update_time + min_signal_collection_length >= clock_->Now()) {
-    RecordTrainingDataCollectionEvent(
-        segment_info.segment_id(),
-        stats::TrainingDataCollectionEvent::kNotEnoughCollectionTime);
-    return false;
+    // Data must be collected for enough time after a new model is downloaded.
+    // It's recommended to get the A/B testing experiment fully ramped up before
+    // deploying a new model. Or the data collected might be partially based on
+    // old behavior of Chrome.
+    if (model_update_time + min_signal_collection_length >= clock_->Now()) {
+      RecordTrainingDataCollectionEvent(
+          segment_info.segment_id(),
+          stats::TrainingDataCollectionEvent::kNotEnoughCollectionTime);
+      return false;
+    }
   }
 
   // Each input must be collected for enough time.
@@ -383,15 +385,16 @@ void TrainingDataCollectorImpl::OnGetSegmentInfoAtDecisionTime(
     DecisionType type,
     scoped_refptr<InputContext> input_context,
     DefaultModelManager::SegmentInfoList segment_list) {
-  absl::optional<proto::SegmentInfo> segment_info_optional =
-      std::move(GetPreferedSegmentInfo(std::move(segment_list))[segment_id]);
+  auto preferred_segment_info =
+      GetPreferredSegmentInfo(std::move(segment_list));
+  auto it = preferred_segment_info.find(segment_id);
 
   // If no segment info list has been found.
-  if (!segment_info_optional) {
+  if (it == preferred_segment_info.end()) {
     return;
   }
 
-  const proto::SegmentInfo& segment_info = segment_info_optional.value();
+  const proto::SegmentInfo& segment_info = it->second;
 
   if (!CanReportTrainingData(segment_info, /*include_outputs*/ false))
     return;
