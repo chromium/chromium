@@ -1046,7 +1046,10 @@ export class FileGrid extends Grid {
    */
   setGenericThumbnail_(box, entry, opt_mimeType) {
     if (entry.isDirectory) {
-      box.setAttribute('generic-thumbnail', 'folder');
+      // There is no space to show the thumbnail so don't adde one for Jelly.
+      if (!util.isJellyEnabled()) {
+        box.setAttribute('generic-thumbnail', 'folder');
+      }
     } else {
       box.classList.toggle('no-thumbnail', true);
       const locationInfo = this.volumeManager_.getLocationInfo(entry);
