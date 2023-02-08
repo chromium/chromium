@@ -496,8 +496,7 @@ bool ShapeRectsFromList(const base::Value::List& list,
 std::string PaintFilterToString(const sk_sp<cc::PaintFilter>& filter) {
   // TODO(zmo): Expand to readable fields. Such recorded data becomes invalid
   // when we update any data structure.
-  std::vector<uint8_t> buffer(cc::PaintOpWriter::HeaderBytes() +
-                              cc::PaintFilter::GetFilterSize(filter.get()));
+  std::vector<uint8_t> buffer(cc::PaintOpWriter::SerializedSize(filter.get()));
   // No need to populate the SerializeOptions here since the security
   // constraints explicitly disable serializing images using the transfer cache
   // and serialization of PaintRecords.

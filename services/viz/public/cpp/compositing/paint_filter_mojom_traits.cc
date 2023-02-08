@@ -4,6 +4,8 @@
 
 #include "services/viz/public/cpp/compositing/paint_filter_mojom_traits.h"
 
+#include <utility>
+
 #include "cc/paint/paint_filter.h"
 
 namespace mojo {
@@ -13,8 +15,7 @@ absl::optional<std::vector<uint8_t>>
 StructTraits<viz::mojom::PaintFilterDataView, sk_sp<cc::PaintFilter>>::data(
     const sk_sp<cc::PaintFilter>& filter) {
   std::vector<uint8_t> memory;
-  memory.resize(cc::PaintOpWriter::HeaderBytes() +
-                cc::PaintFilter::GetFilterSize(filter.get()));
+  memory.resize(cc::PaintOpWriter::SerializedSize(filter.get()));
   // No need to populate the SerializeOptions here since the security
   // constraints explicitly disable serializing images using the transfer cache
   // and serialization of PaintRecords.

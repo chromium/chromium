@@ -4,10 +4,12 @@
 
 #include "cc/paint/paint_shader.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/paint_image_builder.h"
@@ -219,26 +221,35 @@ sk_sp<PaintShader> PaintShader::MakePaintRecord(
 
 // static
 size_t PaintShader::GetSerializedSize(const PaintShader* shader) {
-  size_t bool_size = sizeof(bool);
-  if (!shader)
-    return bool_size;
+  if (!shader) {
+    return PaintOpWriter::SerializedSize<bool>();
+  }
 
-  return bool_size + sizeof(shader->shader_type_) + sizeof(shader->flags_) +
-         sizeof(shader->end_radius_) + sizeof(shader->start_radius_) +
-         sizeof(shader->tx_) + sizeof(shader->ty_) +
-         sizeof(shader->fallback_color_) + sizeof(shader->scaling_behavior_) +
-         bool_size + sizeof(*shader->local_matrix_) + sizeof(shader->center_) +
-         sizeof(shader->tile_) + sizeof(shader->start_point_) +
-         sizeof(shader->end_point_) + sizeof(shader->start_degrees_) +
-         sizeof(shader->end_degrees_) +
-         PaintOpWriter::GetImageSize(shader->image_) +
-         PaintOpWriter::GetImageSize(shader->image_) + bool_size +
-         sizeof(shader->id_) +
-         PaintOpWriter::GetRecordSize(shader->paint_record()) +
-         sizeof(shader->colors_.size()) +
-         shader->colors_.size() * sizeof(SkColor4f) +
-         sizeof(shader->positions_.size()) +
-         shader->positions_.size() * sizeof(SkScalar);
+  return (base::CheckedNumeric<size_t>(PaintOpWriter::SerializedSize<bool>()) +
+          PaintOpWriter::SerializedSize(shader->shader_type_) +
+          PaintOpWriter::SerializedSize(shader->flags_) +
+          PaintOpWriter::SerializedSize(shader->end_radius_) +
+          PaintOpWriter::SerializedSize(shader->start_radius_) +
+          PaintOpWriter::SerializedSize(shader->tx_) +
+          PaintOpWriter::SerializedSize(shader->ty_) +
+          PaintOpWriter::SerializedSize(shader->fallback_color_) +
+          PaintOpWriter::SerializedSize(shader->scaling_behavior_) +
+          PaintOpWriter::SerializedSize(shader->local_matrix_) +
+          PaintOpWriter::SerializedSize(shader->center_) +
+          PaintOpWriter::SerializedSize(shader->tile_) +
+          PaintOpWriter::SerializedSize(shader->start_point_) +
+          PaintOpWriter::SerializedSize(shader->end_point_) +
+          PaintOpWriter::SerializedSize(shader->start_degrees_) +
+          PaintOpWriter::SerializedSize(shader->end_degrees_) +
+          PaintOpWriter::SerializedSize(shader->gradient_interpolation_) +
+          PaintOpWriter::SerializedSize(shader->image_) +
+          PaintOpWriter::SerializedSize(shader->id_) +
+          PaintOpWriter::SerializedSize(shader->record_) +
+          PaintOpWriter::SerializedSizeOfElements(shader->colors_.data(),
+                                                  shader->colors_.size()) +
+          PaintOpWriter::SerializedSizeOfElements(shader->positions_.data(),
+                                                  shader->positions_.size()))
+      .ValueOrDie();
 }
 
 PaintShader::PaintShader(Type type) : shader_type_(type) {}

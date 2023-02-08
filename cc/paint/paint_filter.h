@@ -77,10 +77,6 @@ class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
 
   static std::string TypeToString(Type type);
 
-  // Returns the size required to serialize the |filter|. Note that |filter| can
-  // be nullptr.
-  static size_t GetFilterSize(const PaintFilter* filter);
-
   Type type() const { return type_; }
   SkIRect filter_bounds(const SkIRect& src,
                         const SkMatrix& ctm,

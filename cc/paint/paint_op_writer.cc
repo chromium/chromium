@@ -57,79 +57,91 @@ void WriteHeader(void* memory, uint8_t type, size_t serialized_size) {
 }  // namespace
 
 // static
-size_t PaintOpWriter::GetFlattenableSize(const SkFlattenable* flattenable) {
-  // The first bit is always written to indicate the serialized size of the
-  // flattenable, or zero if it doesn't exist.
-  size_t total_size = sizeof(uint64_t) + sizeof(uint64_t) /* alignment */;
-  if (!flattenable)
-    return total_size;
-
-  // There is no method to know the serialized size of a flattenable without
-  // serializing it.
-  sk_sp<SkData> data = flattenable->serialize();
-  total_size += data->isEmpty() ? 0u : data->size();
-  return total_size;
-}
-
-// static
-size_t PaintOpWriter::GetImageSize(const PaintImage& image) {
+size_t PaintOpWriter::SerializedSize(const PaintImage& image) {
   // Image Serialization type.
-  size_t image_size = sizeof(PaintOp::SerializedImageType);
+  base::CheckedNumeric<size_t> image_size =
+      SerializedSize<PaintOp::SerializedImageType>();
   if (image) {
     auto info = SkImageInfo::Make(image.width(), image.height(),
                                   kN32_SkColorType, kPremul_SkAlphaType);
-    image_size += sizeof(info.colorType());
-    image_size += sizeof(info.width());
-    image_size += sizeof(info.height());
-    image_size += sizeof(uint64_t) + sizeof(uint64_t) /* alignment */;
-    image_size += info.computeMinByteSize();
+    image_size += SerializedSize(info.colorType());
+    image_size += SerializedSize(info.width());
+    image_size += SerializedSize(info.height());
+    image_size += SerializedSizeOfBytes(info.computeMinByteSize());
   }
-  return image_size;
+  return image_size.ValueOrDie();
 }
 
 // static
-size_t PaintOpWriter::GetRecordSize(const PaintRecord* record) {
-  // Zero size indicates no record.
+size_t PaintOpWriter::SerializedSize(const SkFlattenable* flattenable) {
+  // There is no method to know the serialized size of a flattenable without
+  // serializing it.
+  return SerializedSizeOfBytes(flattenable ? flattenable->serialize()->size()
+                                           : 0u);
+}
+
+// static
+size_t PaintOpWriter::SerializedSize(const SkColorSpace* color_space) {
+  return SerializedSizeOfBytes(color_space ? color_space->writeToMemory(nullptr)
+                                           : 0u);
+}
+
+// static
+size_t PaintOpWriter::SerializedSize(const PaintRecord& record) {
   // TODO(khushalsagar): Querying the size of a PaintRecord is not supported.
   // This works only for security constrained serialization which ignores
-  // records.
-  return sizeof(uint64_t);
+  // records and writes only a size_t(0).
+  return SerializedSize<size_t>();
+}
+
+// static
+size_t PaintOpWriter::SerializedSize(const PaintFilter* filter) {
+  if (!filter) {
+    return SerializedSize(PaintFilter::Type::kNullFilter);
+  }
+  return filter->SerializedSize();
 }
 
 PaintOpWriter::PaintOpWriter(void* memory,
                              size_t size,
                              const PaintOp::SerializeOptions& options,
                              bool enable_security_constraints)
-    : memory_(static_cast<char*>(memory) + HeaderBytes()),
-      size_(base::bits::AlignDown(size, Alignment())),
-      remaining_bytes_(size_ - HeaderBytes()),
+    : memory_(static_cast<char*>(memory)),
+      size_(base::bits::AlignDown(size, kDefaultAlignment)),
+      remaining_bytes_(size_),
       options_(options),
       enable_security_constraints_(enable_security_constraints) {
-  // Leave space for header of type/skip.
-  DCHECK_GE(size, HeaderBytes());
-  DCHECK_EQ(memory_.get(), base::bits::AlignUp(memory_.get(), Alignment()));
+  AssertAlignment(memory, BufferAlignment());
 }
 
 PaintOpWriter::~PaintOpWriter() = default;
 
-size_t PaintOpWriter::Finish(uint8_t type) {
+void PaintOpWriter::ReserveOpHeader() {
+  // Pretend we have written the header to leave a space for the header.
+  DCHECK_GE(size_, kHeaderBytes);
+  DidWrite(kHeaderBytes);
+}
+
+size_t PaintOpWriter::FinishOp(uint8_t type) {
   if (!valid_) {
     return 0u;
   }
 
   size_t written = size();
-  DCHECK_GE(written, HeaderBytes());
+  DCHECK_GE(written, kHeaderBytes);
 
-  size_t aligned_written =
-      base::bits::AlignUp(written, PaintOpBuffer::kPaintOpAlign);
-  if (aligned_written > kMaxSerializedSize ||
-      aligned_written - written > remaining_bytes_) {
+  size_t aligned_written = base::bits::AlignUp(written, BufferAlignment());
+  size_t padding = aligned_written - written;
+  if (aligned_written > kMaxSerializedSize || padding > remaining_bytes_) {
     valid_ = false;
     return 0u;
   }
 
   // Write type and skip into the header bytes.
   WriteHeader(memory_.get() - written, type, aligned_written);
+
+  memory_ += padding;
+  remaining_bytes_ -= padding;
   return aligned_written;
 }
 
@@ -143,8 +155,9 @@ template <typename T>
 void PaintOpWriter::WriteSimple(const T& val) {
   static_assert(std::is_trivially_copyable_v<T>);
 
-  DCHECK_EQ(memory_.get(), base::bits::AlignUp(memory_.get(), Alignment()));
-  static constexpr size_t size = base::bits::AlignUp(sizeof(T), Alignment());
+  AssertFieldAlignment();
+  static constexpr size_t size =
+      base::bits::AlignUp(sizeof(T), kDefaultAlignment);
   EnsureBytes(size);
   if (!valid_)
     return;
@@ -153,19 +166,21 @@ void PaintOpWriter::WriteSimple(const T& val) {
 
   memory_ += size;
   remaining_bytes_ -= size;
+  AssertFieldAlignment();
 }
+
 void PaintOpWriter::WriteFlattenable(const SkFlattenable* val) {
   if (!val) {
     WriteSize(static_cast<size_t>(0u));
     return;
   }
 
-  uint64_t* size_memory = WriteSize(0u);
+  size_t* size_memory = WriteSize(0u);
   if (!valid_)
     return;
 
   size_t bytes_written = val->serialize(
-      memory_, base::bits::AlignDown(remaining_bytes_, Alignment()));
+      memory_, base::bits::AlignDown(remaining_bytes_, kDefaultAlignment));
   if (bytes_written == 0u) {
     valid_ = false;
     return;
@@ -174,10 +189,9 @@ void PaintOpWriter::WriteFlattenable(const SkFlattenable* val) {
   DidWrite(bytes_written);
 }
 
-uint64_t* PaintOpWriter::WriteSize(size_t size) {
-  AlignMemory(8);
-  uint64_t* memory = reinterpret_cast<uint64_t*>(memory_.get());
-  WriteSimple<uint64_t>(size);
+size_t* PaintOpWriter::WriteSize(size_t size) {
+  size_t* memory = reinterpret_cast<size_t*>(memory_.get());
+  WriteSimple(size);
   return memory;
 }
 
@@ -242,7 +256,7 @@ void PaintOpWriter::Write(const SkPath& path, UsePaintCache use_paint_cache) {
   } else {
     Write(static_cast<uint32_t>(PaintCacheEntryState::kInlinedDoNotCache));
   }
-  uint64_t* bytes_to_skip = WriteSize(0u);
+  size_t* bytes_to_skip = WriteSize(0u);
   if (!valid_)
     return;
 
@@ -284,7 +298,7 @@ void PaintOpWriter::Write(const DrawImage& draw_image,
   const PaintImage& paint_image = draw_image.paint_image();
 
   // Empty image.
-  if (!draw_image.paint_image()) {
+  if (!paint_image) {
     Write(static_cast<uint8_t>(PaintOp::SerializedImageType::kNoImage));
     return;
   }
@@ -296,13 +310,19 @@ void PaintOpWriter::Write(const DrawImage& draw_image,
   // Security constrained serialization inlines the image bitmap.
   if (enable_security_constraints_) {
     SkBitmap bm;
-    if (!draw_image.paint_image().GetSwSkImage()->asLegacyBitmap(&bm)) {
+    if (!paint_image.GetSwSkImage()->asLegacyBitmap(&bm)) {
       Write(static_cast<uint8_t>(PaintOp::SerializedImageType::kNoImage));
       return;
     }
 
     Write(static_cast<uint8_t>(PaintOp::SerializedImageType::kImageData));
     const auto& pixmap = bm.pixmap();
+    // Pixmaps requiring alignments larger than kDefaultAlignment [1] are not
+    // supported because the buffer is only guaranteed to align to
+    // kDefaultAlignment when enable_security_constraits_ is true.
+    // [1] See https://crbug.com/1300188 and https://crrev.com/c/3485859.
+    DCHECK_LE(static_cast<size_t>(SkColorTypeBytesPerPixel(pixmap.colorType())),
+              kDefaultAlignment);
     Write(pixmap.colorType());
     Write(pixmap.width());
     Write(pixmap.height());
@@ -329,7 +349,7 @@ void PaintOpWriter::Write(scoped_refptr<SkottieWrapper> skottie) {
   uint32_t id = skottie->id();
   Write(id);
 
-  uint64_t* bytes_to_skip = WriteSize(0u);
+  size_t* bytes_to_skip = WriteSize(0u);
   if (!valid_)
     return;
 
@@ -337,7 +357,7 @@ void PaintOpWriter::Write(scoped_refptr<SkottieWrapper> skottie) {
       options_->transfer_cache->LockEntry(TransferCacheEntryType::kSkottie, id);
 
   // Add a cache entry for the skottie animation.
-  uint64_t bytes_written = 0u;
+  size_t bytes_written = 0u;
   if (!locked) {
     bytes_written = options_->transfer_cache->CreateEntry(
         ClientSkottieTransferCacheEntry(skottie), memory_);
@@ -432,8 +452,8 @@ void PaintOpWriter::Write(const sk_sp<GrSlug>& slug) {
   if (!valid_)
     return;
 
-  AssertAlignment(Alignment());
-  uint64_t* size_memory = WriteSize(0u);
+  AssertFieldAlignment();
+  size_t* size_memory = WriteSize(0u);
   if (!valid_)
     return;
 
@@ -442,7 +462,7 @@ void PaintOpWriter::Write(const sk_sp<GrSlug>& slug) {
     // TODO(penghuang): should we use a unique id to avoid sending the same
     // slug?
     bytes_written = slug->serialize(
-        memory_, base::bits::AlignDown(remaining_bytes_, Alignment()));
+        memory_, base::bits::AlignDown(remaining_bytes_, kDefaultAlignment));
     if (bytes_written == 0u) {
       valid_ = false;
       return;
@@ -599,30 +619,28 @@ void PaintOpWriter::Write(SkYUVAInfo::Subsampling subsampling) {
 }
 
 void PaintOpWriter::WriteData(size_t bytes, const void* input) {
-  DCHECK_EQ(memory_.get(),
-            base::bits::AlignUp(memory_.get(), PaintOpWriter::Alignment()));
-  if (bytes == 0)
+  AssertFieldAlignment();
+
+  if (bytes == 0) {
     return;
+  }
 
   EnsureBytes(bytes);
 
-  if (!valid_)
+  if (!valid_) {
     return;
+  }
 
   memcpy(memory_, input, bytes);
   DidWrite(bytes);
 }
 
 void PaintOpWriter::AlignMemory(size_t alignment) {
-  // Due to the math below, alignment must be a power of two.
-  DCHECK_GT(alignment, 0u);
-  DCHECK_EQ(alignment & (alignment - 1), 0u);
+  DCHECK_GE(alignment, kDefaultAlignment);
+  DCHECK_LE(alignment, BufferAlignment());
+  // base::bits::AlignUp() below will check if alignment is a power of two.
 
   uintptr_t memory = reinterpret_cast<uintptr_t>(memory_.get());
-  // The following is equivalent to:
-  //   padding = (alignment - memory % alignment) % alignment;
-  // because alignment is a power of two. This doesn't use modulo operator
-  // however, since it can be slow.
   size_t padding = base::bits::AlignUp(memory, alignment) - memory;
   EnsureBytes(padding);
   if (!valid_)
@@ -647,7 +665,7 @@ void PaintOpWriter::Write(const PaintFilter* filter, const SkM44& current_ctm) {
   if (!valid_)
     return;
 
-  AssertAlignment(Alignment());
+  AssertFieldAlignment();
   switch (filter->type()) {
     case PaintFilter::Type::kNullFilter:
       NOTREACHED();
@@ -950,17 +968,10 @@ void PaintOpWriter::Write(const LightingSpotPaintFilter& filter,
 void PaintOpWriter::Write(const PaintRecord& record,
                           const gfx::Rect& playback_rect,
                           const gfx::SizeF& post_scale) {
-  AlignMemory(PaintOpBuffer::kPaintOpAlign);
-
   // We need to record how many bytes we will serialize, but we don't know this
-  // information until we do the serialization. So, skip the amount needed
-  // before writing.
-  size_t size_offset = sizeof(uint64_t);
-  EnsureBytes(size_offset);
-  if (!valid_)
-    return;
-
-  uint64_t* size_memory = WriteSize(0u);
+  // information until we do the serialization. So, write 0 as the size first,
+  // and amend it after writing.
+  size_t* size_memory = WriteSize(0u);
   if (!valid_)
     return;
 
@@ -968,6 +979,8 @@ void PaintOpWriter::Write(const PaintRecord& record,
     // We don't serialize PaintRecords when security constraints are enabled.
     return;
   }
+
+  AlignMemory(BufferAlignment());
 
   // Nested records are used for picture shaders and filters. These are always
   // converted to a fixed scale mode (hence |post_scale|), which means they are
@@ -1009,8 +1022,8 @@ void PaintOpWriter::Write(const SkRegion& region) {
 }
 
 inline void PaintOpWriter::DidWrite(size_t bytes_written) {
-  // All data are aligned with PaintOpWriter::Alignment() at least.
-  size_t aligned_bytes = base::bits::AlignUp(bytes_written, Alignment());
+  // All data are aligned with kDefaultAlignment at least.
+  size_t aligned_bytes = base::bits::AlignUp(bytes_written, kDefaultAlignment);
   memory_ += aligned_bytes;
   DCHECK_LE(aligned_bytes, remaining_bytes_);
   remaining_bytes_ -= aligned_bytes;

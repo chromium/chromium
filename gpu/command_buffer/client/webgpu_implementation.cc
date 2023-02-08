@@ -128,11 +128,10 @@ gpu::ContextResult WebGPUImplementation::Initialize(
 
   std::unique_ptr<TransferBuffer> transfer_buffer =
       std::make_unique<TransferBuffer>(helper_);
-  if (!transfer_buffer->Initialize(limits.start_transfer_buffer_size,
-                                   /* start offset */ 0,
-                                   limits.min_transfer_buffer_size,
-                                   limits.max_transfer_buffer_size,
-                                   /* alignment */ 8)) {
+  if (!transfer_buffer->Initialize(
+          limits.start_transfer_buffer_size,
+          /* start offset */ 0, limits.min_transfer_buffer_size,
+          limits.max_transfer_buffer_size, kAlignment)) {
     return gpu::ContextResult::kFatalFailure;
   }
 

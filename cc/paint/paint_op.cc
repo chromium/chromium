@@ -491,7 +491,6 @@ void DrawImageOp::Serialize(PaintOpWriter& writer,
   writer.Write(
       CreateDrawImage(image, flags_to_serialize, sampling, current_ctm),
       &serialized_scale_adjustment);
-  writer.AssertAlignment(alignof(SkScalar));
   writer.Write(serialized_scale_adjustment.width());
   writer.Write(serialized_scale_adjustment.height());
 
@@ -513,7 +512,6 @@ void DrawImageRectOp::Serialize(PaintOpWriter& writer,
   SkSize serialized_scale_adjustment = SkSize::Make(1.f, 1.f);
   writer.Write(CreateDrawImage(image, flags_to_serialize, sampling, matrix),
                &serialized_scale_adjustment);
-  writer.AssertAlignment(alignof(SkScalar));
   writer.Write(serialized_scale_adjustment.width());
   writer.Write(serialized_scale_adjustment.height());
 
@@ -536,7 +534,6 @@ void DrawLineOp::Serialize(PaintOpWriter& writer,
                            const SkM44& current_ctm,
                            const SkM44& original_ctm) const {
   writer.Write(*flags_to_serialize, current_ctm);
-  writer.AssertAlignment(alignof(SkScalar));
   writer.Write(x0);
   writer.Write(y0);
   writer.Write(x1);
@@ -804,7 +801,6 @@ PaintOp* DrawImageOp::Deserialize(PaintOpReader& reader, void* output) {
   reader.Read(&op->flags);
 
   reader.Read(&op->image);
-  reader.AssertAlignment(alignof(SkScalar));
   reader.Read(&op->scale_adjustment.fWidth);
   reader.Read(&op->scale_adjustment.fHeight);
 
@@ -820,7 +816,6 @@ PaintOp* DrawImageRectOp::Deserialize(PaintOpReader& reader, void* output) {
   reader.Read(&op->flags);
 
   reader.Read(&op->image);
-  reader.AssertAlignment(alignof(SkScalar));
   reader.Read(&op->scale_adjustment.fWidth);
   reader.Read(&op->scale_adjustment.fHeight);
 
@@ -842,7 +837,6 @@ PaintOp* DrawIRectOp::Deserialize(PaintOpReader& reader, void* output) {
 PaintOp* DrawLineOp::Deserialize(PaintOpReader& reader, void* output) {
   DrawLineOp* op = new (output) DrawLineOp;
   reader.Read(&op->flags);
-  reader.AssertAlignment(alignof(SkScalar));
   reader.Read(&op->x0);
   reader.Read(&op->y0);
   reader.Read(&op->x1);
@@ -1660,17 +1654,15 @@ size_t PaintOp::Serialize(void* memory,
                           const SkM44& current_ctm,
                           const SkM44& original_ctm) const {
   // Need at least enough room for the header.
-  if (size < PaintOpWriter::HeaderBytes()) {
+  if (size < PaintOpWriter::kHeaderBytes) {
     return 0u;
   }
 
-  DCHECK_EQ(0u,
-            reinterpret_cast<uintptr_t>(memory) % PaintOpBuffer::kPaintOpAlign);
-
   PaintOpWriter writer(memory, size, options);
+  writer.ReserveOpHeader();
   g_serialize_functions[type](*this, writer, flags_to_serialize, current_ctm,
                               original_ctm);
-  return writer.Finish(type);
+  return writer.FinishOp(type);
 }
 
 PaintOp* PaintOp::Deserialize(const volatile void* input,
@@ -1679,15 +1671,13 @@ PaintOp* PaintOp::Deserialize(const volatile void* input,
                               size_t output_size,
                               size_t* read_bytes,
                               const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(LargestPaintOp));
+  DCHECK_GE(output_size, kLargestPaintOpAlignedSize);
 
   uint8_t type;
-  if (!PaintOpReader::ReadAndValidateOpHeader(input, input_size, &type,
-                                              read_bytes)) {
+  PaintOpReader reader(input, input_size, options);
+  if (!reader.ReadAndValidateOpHeader(&type, read_bytes)) {
     return nullptr;
   }
-
-  PaintOpReader reader(input, *read_bytes, options);
   return g_deserialize_functions[type](reader, output, output_size);
 }
 
@@ -1698,12 +1688,11 @@ PaintOp* PaintOp::DeserializeIntoPaintOpBuffer(
     size_t* read_bytes,
     const DeserializeOptions& options) {
   uint8_t type;
-  if (!PaintOpReader::ReadAndValidateOpHeader(input, input_size, &type,
-                                              read_bytes)) {
+  PaintOpReader reader(input, input_size, options);
+  if (!reader.ReadAndValidateOpHeader(&type, read_bytes)) {
     return nullptr;
   }
 
-  PaintOpReader reader(input, *read_bytes, options);
   uint16_t op_aligned_size = g_type_to_aligned_size[type];
   if (auto* op = g_deserialize_functions[type](
           reader, buffer->AllocatePaintOp(op_aligned_size), op_aligned_size)) {

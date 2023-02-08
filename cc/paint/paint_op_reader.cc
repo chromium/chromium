@@ -54,6 +54,18 @@ bool IsValidPaintShaderScalingBehavior(PaintShader::ScalingBehavior behavior) {
 
 }  // namespace
 
+PaintOpReader::PaintOpReader(const volatile void* memory,
+                             size_t size,
+                             const PaintOp::DeserializeOptions& options,
+                             bool enable_security_constraints)
+    : memory_(static_cast<const volatile char*>(memory)),
+      remaining_bytes_(
+          base::bits::AlignDown(size, PaintOpWriter::kDefaultAlignment)),
+      options_(options),
+      enable_security_constraints_(enable_security_constraints) {
+  PaintOpWriter::AssertAlignment(memory, BufferAlignment());
+}
+
 // static
 void PaintOpReader::FixupMatrixPostSerialization(SkMatrix* matrix) {
   // Can't trust malicious clients to provide the correct derived matrix type.
@@ -64,25 +76,24 @@ void PaintOpReader::FixupMatrixPostSerialization(SkMatrix* matrix) {
     matrix->dirtyMatrixTypeCache();
 }
 
-// static
-bool PaintOpReader::ReadAndValidateOpHeader(const volatile void* input,
-                                            size_t input_size,
-                                            uint8_t* type,
-                                            size_t* bytes_to_read) {
-  static_assert(PaintOpWriter::HeaderBytes() == sizeof(uint32_t));
-  if (input_size < PaintOpWriter::HeaderBytes()) {
+bool PaintOpReader::ReadAndValidateOpHeader(uint8_t* type,
+                                            size_t* serialized_size) {
+  static_assert(PaintOpWriter::kHeaderBytes == sizeof(uint32_t));
+  uint32_t header;
+  Read(&header);
+  if (!valid_) {
     return false;
   }
-  uint32_t header = reinterpret_cast<const volatile uint32_t*>(input)[0];
   *type = static_cast<uint8_t>(header & 0xFF);
-  *bytes_to_read = header >> 8;
+  *serialized_size = header >> 8;
 
-  if (input_size < *bytes_to_read) {
+  size_t remaining_op_bytes = *serialized_size - PaintOpWriter::kHeaderBytes;
+  if (remaining_bytes_ < remaining_op_bytes) {
     return false;
   }
-  // For now we require serialized PaintOps are aligned to kPaintOpAlign.
-  // TODO(wangxianzhu): Revisit the requirement.
-  if (*bytes_to_read % PaintOpBuffer::kPaintOpAlign != 0) {
+  remaining_bytes_ = remaining_op_bytes;
+
+  if (*serialized_size % BufferAlignment() != 0) {
     return false;
   }
   if (*type > static_cast<uint8_t>(PaintOpType::LastPaintOpType)) {
@@ -95,10 +106,10 @@ template <typename T>
 void PaintOpReader::ReadSimple(T* val) {
   static_assert(std::is_trivially_copyable_v<T>);
 
-  DCHECK_EQ(memory_, base::bits::AlignUp(memory_, PaintOpWriter::Alignment()));
+  AssertFieldAlignment();
   // Align everything to 4 bytes, as the writer does.
   static constexpr size_t size =
-      base::bits::AlignUp(sizeof(T), PaintOpWriter::Alignment());
+      base::bits::AlignUp(sizeof(T), PaintOpWriter::kDefaultAlignment);
 
   if (remaining_bytes_ < size)
     SetInvalid(DeserializationError::kInsufficientRemainingBytes_ReadSimple);
@@ -114,6 +125,7 @@ void PaintOpReader::ReadSimple(T* val) {
 
   memory_ += size;
   remaining_bytes_ -= size;
+  AssertFieldAlignment();
 }
 
 uint8_t* PaintOpReader::CopyScratchSpace(size_t bytes) {
@@ -153,7 +165,7 @@ void PaintOpReader::ReadFlattenable(
 }
 
 void PaintOpReader::ReadData(size_t bytes, void* data) {
-  DCHECK_EQ(memory_, base::bits::AlignUp(memory_, PaintOpWriter::Alignment()));
+  AssertFieldAlignment();
   if (bytes == 0)
     return;
 
@@ -167,20 +179,14 @@ void PaintOpReader::ReadData(size_t bytes, void* data) {
 }
 
 void PaintOpReader::ReadSize(size_t* size) {
-  AlignMemory(8);
-  if (!valid_)
-    return;
-  uint64_t size64 = 0;
-  ReadSimple(&size64);
-  *size = size64;
+  ReadSimple(size);
 }
 
 void PaintOpReader::Read(SkScalar* data) {
   ReadSimple(data);
 }
 
-    void
-    PaintOpReader::Read(uint8_t* data) {
+void PaintOpReader::Read(uint8_t* data) {
   ReadSimple(data);
 }
 
@@ -319,6 +325,13 @@ void PaintOpReader::Read(PaintImage* image) {
       case PaintOp::SerializedImageType::kImageData: {
         SkColorType color_type;
         Read(&color_type);
+        // Color types requiring alignment larger than kDefaultAlignment is not
+        // supported.
+        if (static_cast<size_t>(SkColorTypeBytesPerPixel(color_type)) >
+            PaintOpWriter::kDefaultAlignment) {
+          SetInvalid(DeserializationError::kReadImageFailure);
+          return;
+        }
         uint32_t width;
         Read(&width);
         uint32_t height;
@@ -477,7 +490,7 @@ void PaintOpReader::Read(sk_sp<SkColorSpace>* color_space) {
 }
 
 void PaintOpReader::Read(sk_sp<GrSlug>* slug) {
-  AssertAlignment(PaintOpWriter::Alignment());
+  AssertFieldAlignment();
 
   size_t data_bytes = 0u;
   ReadSize(&data_bytes);
@@ -737,6 +750,10 @@ void PaintOpReader::Read(scoped_refptr<SkottieWrapper>* skottie) {
 }
 
 void PaintOpReader::AlignMemory(size_t alignment) {
+  DCHECK_GE(alignment, PaintOpWriter::kDefaultAlignment);
+  DCHECK_LE(alignment, BufferAlignment());
+  // base::bits::AlignUp() below will check if alignment is a power of two.
+
   size_t padding = base::bits::AlignUp(memory_, alignment) - memory_;
   if (padding > remaining_bytes_)
     SetInvalid(DeserializationError::kInsufficientRemainingBytes_AlignMemory);
@@ -794,7 +811,7 @@ void PaintOpReader::Read(sk_sp<PaintFilter>* filter) {
     crop_rect.emplace(rect);
   }
 
-  AssertAlignment(PaintOpWriter::Alignment());
+  AssertFieldAlignment();
   switch (type) {
     case PaintFilter::Type::kNullFilter:
       NOTREACHED();
@@ -1381,7 +1398,7 @@ void PaintOpReader::ReadLightingSpotPaintFilter(
 size_t PaintOpReader::Read(absl::optional<PaintRecord>* record) {
   size_t size_bytes = 0;
   ReadSize(&size_bytes);
-  AlignMemory(PaintOpBuffer::kPaintOpAlign);
+
   if (enable_security_constraints_) {
     // Validate that the record was not serialized if security constraints are
     // enabled.
@@ -1392,6 +1409,8 @@ size_t PaintOpReader::Read(absl::optional<PaintRecord>* record) {
     *record = PaintRecord();
     return 0;
   }
+
+  AlignMemory(BufferAlignment());
 
   if (size_bytes > remaining_bytes_)
     SetInvalid(
@@ -1429,9 +1448,9 @@ void PaintOpReader::Read(SkRegion* region) {
 }
 
 inline void PaintOpReader::DidRead(size_t bytes_read) {
-  // All data are aligned with PaintOpWriter::Alignment() at least.
+  // All data are aligned with PaintOpWriter::kDefaultAlignment at least.
   size_t aligned_bytes =
-      base::bits::AlignUp(bytes_read, PaintOpWriter::Alignment());
+      base::bits::AlignUp(bytes_read, PaintOpWriter::kDefaultAlignment);
   memory_ += aligned_bytes;
   DCHECK_LE(aligned_bytes, remaining_bytes_);
   remaining_bytes_ -= aligned_bytes;

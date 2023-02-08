@@ -2820,17 +2820,17 @@ void RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
     return;
   }
 
-  alignas(
-      cc::PaintOpBuffer::kPaintOpAlign) char data[sizeof(cc::LargestPaintOp)];
+  alignas(cc::PaintOpBuffer::kPaintOpAlign) char
+      data[cc::kLargestPaintOpAlignedSize];
 
   size_t paint_buffer_size = raster_shm_size;
   gl::ScopedProgressReporter report_progress(
       shared_context_state_->progress_reporter());
   while (paint_buffer_size > 0) {
     size_t skip = 0;
-    cc::PaintOp* deserialized_op = cc::PaintOp::Deserialize(
-        paint_buffer_memory, paint_buffer_size, &data[0],
-        sizeof(cc::LargestPaintOp), &skip, options);
+    cc::PaintOp* deserialized_op =
+        cc::PaintOp::Deserialize(paint_buffer_memory, paint_buffer_size, data,
+                                 std::size(data), &skip, options);
     if (!deserialized_op) {
       LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glRasterCHROMIUM",
                          "RasterCHROMIUM: serialization failure");

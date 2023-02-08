@@ -1034,6 +1034,12 @@ using LargestPaintOp =
                               DrawImageRectOp,
                               DrawDRRectOp>::type;
 
+// When allocating a buffer for deserialization of a single PaintOp, the buffer
+// should be aligned as PaintOpBuffer::kPaintOpAlign, and the size should be
+// kLargestPaintOpAlignedSize instead of sizeof(LargestPaintOp).
+inline constexpr size_t kLargestPaintOpAlignedSize =
+    PaintOpBuffer::ComputeOpAlignedSize<LargestPaintOp>();
+
 }  // namespace cc
 
 #endif  // CC_PAINT_PAINT_OP_H_

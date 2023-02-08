@@ -136,22 +136,13 @@ const PaintFilter::CropRect* PaintFilter::GetCropRect() const {
   return base::OptionalToPtr(crop_rect_);
 }
 
-size_t PaintFilter::GetFilterSize(const PaintFilter* filter) {
-  // A null type is used to indicate no filter.
-  if (!filter)
-    return sizeof(uint32_t);
-  return filter->SerializedSize() + PaintOpWriter::Alignment();
-}
-
 size_t PaintFilter::BaseSerializedSize() const {
   size_t total_size = 0u;
-  // Filter type.
-  total_size += sizeof(uint32_t);
+  total_size += PaintOpWriter::SerializedSize(type_);
   // Bool to indicate whether crop exists.
-  total_size += sizeof(uint32_t);
+  total_size += PaintOpWriter::SerializedSize<bool>();
   if (crop_rect_) {
-    // CropRect.
-    total_size += sizeof(*crop_rect_);
+    total_size += PaintOpWriter::SerializedSize(*crop_rect_);
   }
   return total_size;
 }
@@ -240,8 +231,9 @@ ColorFilterPaintFilter::~ColorFilterPaintFilter() = default;
 size_t ColorFilterPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size = 0u;
   total_size += BaseSerializedSize();
-  total_size += PaintOpWriter::GetFlattenableSize(color_filter_.get());
-  total_size += GetFilterSize(input_.get());
+  total_size += PaintOpWriter::SerializedSize(
+      static_cast<const SkFlattenable*>(color_filter_.get()));
+  total_size += PaintOpWriter::SerializedSize(input_.get());
   return total_size.ValueOrDefault(0u);
 }
 
@@ -279,9 +271,10 @@ BlurPaintFilter::~BlurPaintFilter() = default;
 
 size_t BlurPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size =
-      BaseSerializedSize() + sizeof(sigma_x_) + sizeof(sigma_y_) +
-      sizeof(tile_mode_);
-  total_size += GetFilterSize(input_.get());
+      BaseSerializedSize() + PaintOpWriter::SerializedSize(sigma_x_) +
+      PaintOpWriter::SerializedSize(sigma_y_) +
+      PaintOpWriter::SerializedSize(tile_mode_);
+  total_size += PaintOpWriter::SerializedSize(input_.get());
   return total_size.ValueOrDefault(0u);
 }
 
@@ -331,9 +324,13 @@ DropShadowPaintFilter::~DropShadowPaintFilter() = default;
 
 size_t DropShadowPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size =
-      BaseSerializedSize() + sizeof(dx_) + sizeof(dy_) + sizeof(sigma_x_) +
-      sizeof(sigma_y_) + sizeof(color_) + sizeof(shadow_mode_);
-  total_size += GetFilterSize(input_.get());
+      BaseSerializedSize() + PaintOpWriter::SerializedSize(dx_) +
+      PaintOpWriter::SerializedSize(dy_) +
+      PaintOpWriter::SerializedSize(sigma_x_) +
+      PaintOpWriter::SerializedSize(sigma_y_) +
+      PaintOpWriter::SerializedSize(color_) +
+      PaintOpWriter::SerializedSize(shadow_mode_);
+  total_size += PaintOpWriter::SerializedSize(input_.get());
   return total_size.ValueOrDefault(0u);
 }
 
@@ -368,8 +365,9 @@ MagnifierPaintFilter::~MagnifierPaintFilter() = default;
 
 size_t MagnifierPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size =
-      BaseSerializedSize() + sizeof(src_rect_) + sizeof(inset_);
-  total_size += GetFilterSize(input_.get());
+      BaseSerializedSize() + PaintOpWriter::SerializedSize(src_rect_) +
+      PaintOpWriter::SerializedSize(inset_);
+  total_size += PaintOpWriter::SerializedSize(input_.get());
   return total_size.ValueOrDefault(0u);
 }
 
@@ -400,8 +398,8 @@ ComposePaintFilter::~ComposePaintFilter() = default;
 
 size_t ComposePaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size = BaseSerializedSize();
-  total_size += GetFilterSize(outer_.get());
-  total_size += GetFilterSize(inner_.get());
+  total_size += PaintOpWriter::SerializedSize(outer_.get());
+  total_size += PaintOpWriter::SerializedSize(inner_.get());
   return total_size.ValueOrDefault(0u);
 }
 
@@ -436,10 +434,11 @@ AlphaThresholdPaintFilter::~AlphaThresholdPaintFilter() = default;
 size_t AlphaThresholdPaintFilter::SerializedSize() const {
   size_t region_size = region_.writeToMemory(nullptr);
   base::CheckedNumeric<size_t> total_size;
-  total_size = BaseSerializedSize() + sizeof(uint64_t) +
-               base::bits::AlignUp(region_size, PaintOpWriter::Alignment()) +
-               sizeof(inner_min_) + sizeof(outer_max_);
-  total_size += GetFilterSize(input_.get());
+  total_size = BaseSerializedSize() +
+               PaintOpWriter::SerializedSizeOfBytes(region_size) +
+               PaintOpWriter::SerializedSize(inner_min_) +
+               PaintOpWriter::SerializedSize(outer_max_);
+  total_size += PaintOpWriter::SerializedSize(input_.get());
   return total_size.ValueOrDefault(0u);
 }
 
@@ -477,9 +476,9 @@ XfermodePaintFilter::~XfermodePaintFilter() = default;
 
 size_t XfermodePaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size =
-      BaseSerializedSize() + sizeof(blend_mode_);
-  total_size += GetFilterSize(background_.get());
-  total_size += GetFilterSize(foreground_.get());
+      BaseSerializedSize() + PaintOpWriter::SerializedSize(blend_mode_);
+  total_size += PaintOpWriter::SerializedSize(background_.get());
+  total_size += PaintOpWriter::SerializedSize(foreground_.get());
   return total_size.ValueOrDefault(0u);
 }
 
@@ -525,10 +524,12 @@ ArithmeticPaintFilter::~ArithmeticPaintFilter() = default;
 
 size_t ArithmeticPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size =
-      BaseSerializedSize() + sizeof(k1_) + sizeof(k2_) + sizeof(k3_) +
-      sizeof(k4_) + sizeof(enforce_pm_color_);
-  total_size += GetFilterSize(background_.get());
-  total_size += GetFilterSize(foreground_.get());
+      BaseSerializedSize() + PaintOpWriter::SerializedSize(k1_) +
+      PaintOpWriter::SerializedSize(k2_) + PaintOpWriter::SerializedSize(k3_) +
+      PaintOpWriter::SerializedSize(k4_) +
+      PaintOpWriter::SerializedSize(enforce_pm_color_);
+  total_size += PaintOpWriter::SerializedSize(background_.get());
+  total_size += PaintOpWriter::SerializedSize(foreground_.get());
   return total_size.ValueOrDefault(0u);
 }
 
@@ -582,10 +583,16 @@ MatrixConvolutionPaintFilter::~MatrixConvolutionPaintFilter() = default;
 
 size_t MatrixConvolutionPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size =
-      BaseSerializedSize() + sizeof(kernel_size_) + sizeof(size_t) +
-      kernel_->size() * sizeof(SkScalar) + sizeof(gain_) + sizeof(bias_) +
-      sizeof(kernel_offset_) + sizeof(tile_mode_) + sizeof(convolve_alpha_);
-  total_size += GetFilterSize(input_.get());
+      BaseSerializedSize() + PaintOpWriter::SerializedSize(kernel_size_) +
+      PaintOpWriter::SerializedSize<size_t>() +
+      PaintOpWriter::SerializedSizeOfElements(kernel_->data(),
+                                              kernel_->size()) +
+      PaintOpWriter::SerializedSize(gain_) +
+      PaintOpWriter::SerializedSize(bias_) +
+      PaintOpWriter::SerializedSize(kernel_offset_) +
+      PaintOpWriter::SerializedSize(tile_mode_) +
+      PaintOpWriter::SerializedSize(convolve_alpha_);
+  total_size += PaintOpWriter::SerializedSize(input_.get());
   return total_size.ValueOrDefault(0u);
 }
 
@@ -631,11 +638,12 @@ DisplacementMapEffectPaintFilter::DisplacementMapEffectPaintFilter(
 DisplacementMapEffectPaintFilter::~DisplacementMapEffectPaintFilter() = default;
 
 size_t DisplacementMapEffectPaintFilter::SerializedSize() const {
-  base::CheckedNumeric<size_t> total_size = BaseSerializedSize() +
-                                            sizeof(channel_x_) +
-                                            sizeof(channel_y_) + sizeof(scale_);
-  total_size += GetFilterSize(displacement_.get());
-  total_size += GetFilterSize(color_.get());
+  base::CheckedNumeric<size_t> total_size =
+      BaseSerializedSize() + PaintOpWriter::SerializedSize(channel_x_) +
+      PaintOpWriter::SerializedSize(channel_y_) +
+      PaintOpWriter::SerializedSize(scale_);
+  total_size += PaintOpWriter::SerializedSize(displacement_.get());
+  total_size += PaintOpWriter::SerializedSize(color_.get());
   return total_size.ValueOrDefault(0u);
 }
 
@@ -674,9 +682,10 @@ ImagePaintFilter::~ImagePaintFilter() = default;
 
 size_t ImagePaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size =
-      BaseSerializedSize() + sizeof(src_rect_) + sizeof(dst_rect_) +
-      sizeof(filter_quality_);
-  total_size += PaintOpWriter::GetImageSize(image_);
+      BaseSerializedSize() + PaintOpWriter::SerializedSize(src_rect_) +
+      PaintOpWriter::SerializedSize(dst_rect_) +
+      PaintOpWriter::SerializedSize(filter_quality_);
+  total_size += PaintOpWriter::SerializedSize(image_);
   return total_size.ValueOrDefault(0u);
 }
 
@@ -795,9 +804,10 @@ sk_sp<RecordPaintFilter> RecordPaintFilter::CreateScaledPaintRecord(
 
 size_t RecordPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size =
-      BaseSerializedSize() + sizeof(record_bounds_) + sizeof(raster_scale_) +
-      sizeof(scaling_behavior_) + sizeof(bool);
-  total_size += PaintOpWriter::GetRecordSize(&record_);
+      BaseSerializedSize() + PaintOpWriter::SerializedSize(record_bounds_) +
+      PaintOpWriter::SerializedSize(raster_scale_) +
+      PaintOpWriter::SerializedSize(scaling_behavior_);
+  total_size += PaintOpWriter::SerializedSize(record_);
   return total_size.ValueOrDefault(0u);
 }
 
@@ -842,11 +852,11 @@ MergePaintFilter::MergePaintFilter(const sk_sp<PaintFilter>* const filters,
 MergePaintFilter::~MergePaintFilter() = default;
 
 size_t MergePaintFilter::SerializedSize() const {
-  base::CheckedNumeric<size_t> total_size = 0u;
-  for (size_t i = 0; i < input_count(); ++i)
-    total_size += GetFilterSize(input_at(i));
-  total_size += BaseSerializedSize();
-  total_size += sizeof(input_count());
+  base::CheckedNumeric<size_t> total_size = BaseSerializedSize();
+  total_size += PaintOpWriter::SerializedSize(input_count());
+  for (size_t i = 0; i < input_count(); ++i) {
+    total_size += PaintOpWriter::SerializedSize(input_at(i));
+  }
   return total_size.ValueOrDefault(0u);
 }
 
@@ -889,9 +899,10 @@ MorphologyPaintFilter::~MorphologyPaintFilter() = default;
 
 size_t MorphologyPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size =
-      BaseSerializedSize() + sizeof(morph_type_) + sizeof(radius_x_) +
-      sizeof(radius_y_);
-  total_size += GetFilterSize(input_.get());
+      BaseSerializedSize() + PaintOpWriter::SerializedSize(morph_type_) +
+      PaintOpWriter::SerializedSize(radius_x_) +
+      PaintOpWriter::SerializedSize(radius_y_);
+  total_size += PaintOpWriter::SerializedSize(input_.get());
   return total_size.ValueOrDefault(0u);
 }
 
@@ -924,9 +935,10 @@ OffsetPaintFilter::OffsetPaintFilter(SkScalar dx,
 OffsetPaintFilter::~OffsetPaintFilter() = default;
 
 size_t OffsetPaintFilter::SerializedSize() const {
-  base::CheckedNumeric<size_t> total_size =
-      BaseSerializedSize() + sizeof(dx_) + sizeof(dy_);
-  total_size += GetFilterSize(input_.get());
+  base::CheckedNumeric<size_t> total_size = BaseSerializedSize() +
+                                            PaintOpWriter::SerializedSize(dx_) +
+                                            PaintOpWriter::SerializedSize(dy_);
+  total_size += PaintOpWriter::SerializedSize(input_.get());
   return total_size.ValueOrDefault(0u);
 }
 
@@ -956,8 +968,9 @@ TilePaintFilter::~TilePaintFilter() = default;
 
 size_t TilePaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size =
-      BaseSerializedSize() + sizeof(src_) + sizeof(dst_);
-  total_size += GetFilterSize(input_.get());
+      BaseSerializedSize() + PaintOpWriter::SerializedSize(src_) +
+      PaintOpWriter::SerializedSize(dst_);
+  total_size += PaintOpWriter::SerializedSize(input_.get());
   return total_size.ValueOrDefault(0u);
 }
 
@@ -1006,9 +1019,13 @@ TurbulencePaintFilter::TurbulencePaintFilter(TurbulenceType turbulence_type,
 TurbulencePaintFilter::~TurbulencePaintFilter() = default;
 
 size_t TurbulencePaintFilter::SerializedSize() const {
-  return BaseSerializedSize() + sizeof(turbulence_type_) +
-         sizeof(base_frequency_x_) + sizeof(base_frequency_y_) +
-         sizeof(num_octaves_) + sizeof(seed_) + sizeof(tile_size_);
+  return BaseSerializedSize() +
+         PaintOpWriter::SerializedSize(turbulence_type_) +
+         PaintOpWriter::SerializedSize(base_frequency_x_) +
+         PaintOpWriter::SerializedSize(base_frequency_y_) +
+         PaintOpWriter::SerializedSize(num_octaves_) +
+         PaintOpWriter::SerializedSize(seed_) +
+         PaintOpWriter::SerializedSize(tile_size_);
 }
 
 sk_sp<PaintFilter> TurbulencePaintFilter::SnapshotWithImagesInternal(
@@ -1057,9 +1074,10 @@ ShaderPaintFilter::~ShaderPaintFilter() = default;
 size_t ShaderPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size = BaseSerializedSize();
   total_size += PaintShader::GetSerializedSize(shader_.get());
-  total_size += sizeof(alpha_);
-  total_size += sizeof(filter_quality_);  // filter quality
-  total_size += sizeof(dither_);
+  total_size += PaintOpWriter::SerializedSize(alpha_);
+  total_size +=
+      PaintOpWriter::SerializedSize(filter_quality_);  // filter quality
+  total_size += PaintOpWriter::SerializedSize(dither_);
   return total_size.ValueOrDefault(0u);
 }
 
@@ -1110,8 +1128,9 @@ MatrixPaintFilter::~MatrixPaintFilter() = default;
 
 size_t MatrixPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size =
-      BaseSerializedSize() + sizeof(matrix_) + sizeof(filter_quality_);
-  total_size += GetFilterSize(input_.get());
+      BaseSerializedSize() + PaintOpWriter::SerializedSize(matrix_) +
+      PaintOpWriter::SerializedSize(filter_quality_);
+  total_size += PaintOpWriter::SerializedSize(input_.get());
   return total_size.ValueOrDefault(0u);
 }
 
@@ -1163,10 +1182,13 @@ LightingDistantPaintFilter::~LightingDistantPaintFilter() = default;
 
 size_t LightingDistantPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size =
-      BaseSerializedSize() + sizeof(lighting_type_) + sizeof(direction_) +
-      sizeof(light_color_) + sizeof(surface_scale_) + sizeof(kconstant_) +
-      sizeof(shininess_);
-  total_size += GetFilterSize(input_.get());
+      BaseSerializedSize() + PaintOpWriter::SerializedSize(lighting_type_) +
+      PaintOpWriter::SerializedSize(direction_) +
+      PaintOpWriter::SerializedSize(light_color_) +
+      PaintOpWriter::SerializedSize(surface_scale_) +
+      PaintOpWriter::SerializedSize(kconstant_) +
+      PaintOpWriter::SerializedSize(shininess_);
+  total_size += PaintOpWriter::SerializedSize(input_.get());
   return total_size.ValueOrDefault(0u);
 }
 
@@ -1222,10 +1244,13 @@ LightingPointPaintFilter::~LightingPointPaintFilter() = default;
 
 size_t LightingPointPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size =
-      BaseSerializedSize() + sizeof(lighting_type_) + sizeof(location_) +
-      sizeof(light_color_) + sizeof(surface_scale_) + sizeof(kconstant_) +
-      sizeof(shininess_);
-  total_size += GetFilterSize(input_.get());
+      BaseSerializedSize() + PaintOpWriter::SerializedSize(lighting_type_) +
+      PaintOpWriter::SerializedSize(location_) +
+      PaintOpWriter::SerializedSize(light_color_) +
+      PaintOpWriter::SerializedSize(surface_scale_) +
+      PaintOpWriter::SerializedSize(kconstant_) +
+      PaintOpWriter::SerializedSize(shininess_);
+  total_size += PaintOpWriter::SerializedSize(input_.get());
   return total_size.ValueOrDefault(0u);
 }
 
@@ -1289,11 +1314,16 @@ LightingSpotPaintFilter::~LightingSpotPaintFilter() = default;
 
 size_t LightingSpotPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size =
-      BaseSerializedSize() + sizeof(lighting_type_) + sizeof(location_) +
-      sizeof(target_) + sizeof(specular_exponent_) + sizeof(cutoff_angle_) +
-      sizeof(light_color_) + sizeof(surface_scale_) + sizeof(kconstant_) +
-      sizeof(shininess_);
-  total_size += GetFilterSize(input_.get());
+      BaseSerializedSize() + PaintOpWriter::SerializedSize(lighting_type_) +
+      PaintOpWriter::SerializedSize(location_) +
+      PaintOpWriter::SerializedSize(target_) +
+      PaintOpWriter::SerializedSize(specular_exponent_) +
+      PaintOpWriter::SerializedSize(cutoff_angle_) +
+      PaintOpWriter::SerializedSize(light_color_) +
+      PaintOpWriter::SerializedSize(surface_scale_) +
+      PaintOpWriter::SerializedSize(kconstant_) +
+      PaintOpWriter::SerializedSize(shininess_);
+  total_size += PaintOpWriter::SerializedSize(input_.get());
   return total_size.ValueOrDefault(0u);
 }
 
