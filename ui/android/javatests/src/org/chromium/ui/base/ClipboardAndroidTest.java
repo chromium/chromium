@@ -24,6 +24,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -71,6 +72,7 @@ public class ClipboardAndroidTest extends BlankUiTestActivityTestCase {
      */
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1413839")
     public void internalClipboardInvalidation() throws TimeoutException {
         // Write to the clipboard in native and ensure that is propagated to the platform clipboard.
         final String originalText = "foo";
