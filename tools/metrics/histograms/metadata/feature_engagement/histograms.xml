@@ -156,6 +156,12 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_IncognitoWindow" summary="incognito window"/>
   <variant name="IPH_InstanceSwitcher" summary="instance switcher"/>
   <variant name="IPH_IntentChip" summary="opening a webpage in an app"/>
+  <variant name="IPH_iOSDefaultBrowserBadgeEligibility"
+      summary="default browser badge promo eligibility tracking"/>
+  <variant name="IPH_iOSDefaultBrowserOverflowMenuBadge"
+      summary="default browser badge promo on the overflow menu"/>
+  <variant name="IPH_iOSDefaultBrowserSettingsBadge"
+      summary="default browser badge promo on the settings menu row"/>
   <variant name="IPH_KeyboardAccessoryAddressFilling"
       summary="address autofill suggestions"/>
   <variant name="IPH_KeyboardAccessoryPasswordFilling"
