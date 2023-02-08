@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_WIZARD_CONTEXT_H_
 
 #include <memory>
+#include <string>
 
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -124,6 +125,12 @@ class WizardContext {
   // TermsOfServiceScreen should be shown on login this will be set to
   // ash::OOBE_SCREEN_UNKNOWN.
   OobeScreenId screen_after_managed_tos;
+
+  // This ID maps onto the instance_id used in
+  // ash::multidevice::RemoteDevice. If a user connects their phone during Quick
+  // Start, Quick Start saves this ID. After Quick Start, the multidevice screen
+  // will show UI enhancements if this quick_start_phone_instance_id is present.
+  std::string quick_start_phone_instance_id;
 
   // If this is a first login after update from CloudReady to a new version.
   // During such an update show users license agreement and data collection
