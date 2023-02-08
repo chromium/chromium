@@ -375,6 +375,7 @@ source_set("connections_implementation_mediums_webrtc") {
   public_deps = [
     ":connections_implementation_mediums_utils",
     ":connections_implementation_mediums_webrtc_data_types",
+    ":connections_local_credential_proto",
     ":connections_types",
     ":platform_base",
     ":platform_public_comm",
@@ -517,6 +518,7 @@ source_set("platform_base_error_code_recorder") {
     "src/internal/platform/error_code_recorder.h",
   ]
   public_deps = [
+    ":connections_local_credential_proto",
     ":connections_enums_proto",
     ":error_code_enums_proto",
     ":platform_base_logging",
@@ -661,6 +663,7 @@ source_set("platform_public_types") {
     "src/internal/platform/system_clock.h",
   ]
   public_deps = [
+    ":connections_local_credential_proto",
     ":platform_api_platform",
     ":platform_api_types",
     ":platform_base",
@@ -777,7 +780,7 @@ source_set("presence_types") {
   ]
   public_deps = [
     ":connections_credential_proto",
-    ":connections_device_metadata_proto",
+    ":connections_metadata_proto",
     ":platform_base",
     ":platform_base_connection_info",
     ":platform_public_logging",
@@ -818,7 +821,10 @@ source_set("presence_internal") {
     "src/presence/implementation/service_controller_impl.h",
   ]
   public_deps = [
+    ":connections_credential_proto",
     ":connections_enums_proto",
+    ":connections_metadata_proto",
+    ":connections_local_credential_proto",
     ":platform_base",
     ":platform_base_uuid",
     ":platform_public_comm",
@@ -906,13 +912,19 @@ proto_library("connections_credential_proto") {
   proto_in_dir = "src"
   sources = [ "${proto_in_dir}/internal/proto/credential.proto" ]
   proto_out_dir = "third_party/nearby"
-  proto_deps = [ ":connections_device_metadata_proto" ]
-  link_deps = [ ":connections_device_metadata_proto" ]
 }
 
-proto_library("connections_device_metadata_proto") {
+proto_library("connections_local_credential_proto") {
   proto_in_dir = "src"
-  sources = [ "${proto_in_dir}/internal/proto/device_metadata.proto" ]
+  sources = [ "${proto_in_dir}/internal/proto/local_credential.proto" ]
+  proto_out_dir = "third_party/nearby"
+  proto_deps = [ ":connections_credential_proto" ]
+  link_deps = [ ":connections_credential_proto" ]
+}
+
+proto_library("connections_metadata_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/internal/proto/metadata.proto" ]
   proto_out_dir = "third_party/nearby"
 }
 
