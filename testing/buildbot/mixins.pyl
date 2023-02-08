@@ -702,6 +702,15 @@
       ]
     },
   },
+  # TODO(crbug.com/901197): Remove this mixin and all uses once LIFO rolls
+  # out more widely.
+  'lifo-test-pool': {
+    'swarming': {
+      'dimensions': {
+        'pool': 'chromium.tests.lifo',
+      },
+    },
+  },
   'limited_capacity_bot': {
     # Some FYI bot configurations have a limited number of bots in the swarming
     # pool. Increase the default expiration time from 1 hour to 6 hours to
