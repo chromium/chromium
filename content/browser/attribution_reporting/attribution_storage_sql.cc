@@ -191,10 +191,7 @@ std::string SerializeFilterData(
 
   for (const auto& [filter, values] : filter_data.filter_values()) {
     proto::AttributionFilterValues filter_values_msg;
-    filter_values_msg.mutable_values()->Reserve(values.size());
-    for (std::string value : values) {
-      filter_values_msg.mutable_values()->Add(std::move(value));
-    }
+    filter_values_msg.mutable_values()->Add(values.begin(), values.end());
     (*msg.mutable_filter_values())[filter] = std::move(filter_values_msg);
   }
 
