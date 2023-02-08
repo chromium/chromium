@@ -33,11 +33,11 @@ TEST_F(StyleBuilderTest, WritingModeChangeDirtiesFont) {
 
   for (const CSSProperty* property : properties) {
     for (const CSSValue* value : values) {
-      auto parent_style =
-          GetDocument().GetStyleResolver().CreateComputedStyle();
+      const auto& parent_style =
+          GetDocument().GetStyleResolver().InitialStyle();
       StyleResolverState state(GetDocument(), *GetDocument().body(),
                                nullptr /* StyleRecalcContext */,
-                               StyleRequest(parent_style.get()));
+                               StyleRequest(&parent_style));
       state.SetStyle(GetDocument().GetStyleResolver().InitialStyle());
 
       // This test assumes that initial 'writing-mode' is not 'vertical-lr'.
@@ -66,11 +66,11 @@ TEST_F(StyleBuilderTest, TextOrientationChangeDirtiesFont) {
 
   for (const CSSProperty* property : properties) {
     for (const CSSValue* value : values) {
-      auto parent_style =
-          GetDocument().GetStyleResolver().CreateComputedStyle();
+      const auto& parent_style =
+          GetDocument().GetStyleResolver().InitialStyle();
       StyleResolverState state(GetDocument(), *GetDocument().body(),
                                nullptr /* StyleRecalcContext */,
-                               StyleRequest(parent_style.get()));
+                               StyleRequest(&parent_style));
       state.SetStyle(GetDocument().GetStyleResolver().InitialStyle());
 
       // This test assumes that initial 'text-orientation' is not 'upright'.
@@ -86,10 +86,10 @@ TEST_F(StyleBuilderTest, TextOrientationChangeDirtiesFont) {
 }
 
 TEST_F(StyleBuilderTest, HasExplicitInheritance) {
-  auto parent_style = GetDocument().GetStyleResolver().CreateComputedStyle();
+  const auto& parent_style = GetDocument().GetStyleResolver().InitialStyle();
   StyleResolverState state(GetDocument(), *GetDocument().body(),
                            nullptr /* StyleRecalcContext */,
-                           StyleRequest(parent_style.get()));
+                           StyleRequest(&parent_style));
   state.SetStyle(GetDocument().GetStyleResolver().InitialStyle());
   EXPECT_FALSE(state.StyleBuilder().HasExplicitInheritance());
 
@@ -121,17 +121,17 @@ TEST_F(StyleBuilderTest, GridTemplateAreasApplyOrder) {
   ASSERT_TRUE(grid_template_columns_value);
   ASSERT_TRUE(grid_template_rows_value);
 
-  scoped_refptr<ComputedStyle> parent_style =
-      GetDocument().GetStyleResolver().CreateComputedStyle();
+  const ComputedStyle& parent_style =
+      GetDocument().GetStyleResolver().InitialStyle();
   StyleResolverState state(GetDocument(), *GetDocument().body(),
                            nullptr /* StyleRecalcContext */,
-                           StyleRequest(parent_style.get()));
+                           StyleRequest(&parent_style));
 
   scoped_refptr<ComputedStyle> style1;
   scoped_refptr<ComputedStyle> style2;
 
   // grid-template-areas applied first.
-  state.SetStyle(*parent_style);
+  state.SetStyle(parent_style);
   StyleBuilder::ApplyProperty(grid_template_areas, state,
                               *grid_template_areas_value);
   StyleBuilder::ApplyProperty(grid_template_columns, state,
@@ -141,7 +141,7 @@ TEST_F(StyleBuilderTest, GridTemplateAreasApplyOrder) {
   style1 = state.TakeStyle();
 
   // grid-template-areas applied last.
-  state.SetStyle(*parent_style);
+  state.SetStyle(parent_style);
   StyleBuilder::ApplyProperty(grid_template_columns, state,
                               *grid_template_columns_value);
   StyleBuilder::ApplyProperty(grid_template_rows, state,

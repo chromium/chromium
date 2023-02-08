@@ -1735,8 +1735,7 @@ TEST_P(AnimationAnimationTestCompositing,
       scroll_timeline, exception_state);
 
   model->SnapshotAllCompositorKeyframesIfNecessary(
-      *element, *GetDocument().GetStyleResolver().CreateComputedStyle(),
-      nullptr);
+      *element, GetDocument().GetStyleResolver().InitialStyle(), nullptr);
 
   UpdateAllLifecyclePhasesForTest();
   scroll_animation->play();
@@ -1803,8 +1802,7 @@ TEST_P(AnimationAnimationTestCompositing,
       Animation::Create(keyframe_effect, scroll_timeline, exception_state);
 
   model->SnapshotAllCompositorKeyframesIfNecessary(
-      *element, *GetDocument().GetStyleResolver().CreateComputedStyle(),
-      nullptr);
+      *element, GetDocument().GetStyleResolver().InitialStyle(), nullptr);
 
   UpdateAllLifecyclePhasesForTest();
   const double TEST_START_PERCENT = 10;
@@ -1932,8 +1930,7 @@ TEST_P(AnimationAnimationTestCompositing,
   Animation* scroll_animation =
       Animation::Create(keyframe_effect, scroll_timeline, exception_state);
   model->SnapshotAllCompositorKeyframesIfNecessary(
-      *element, *GetDocument().GetStyleResolver().CreateComputedStyle(),
-      nullptr);
+      *element, GetDocument().GetStyleResolver().InitialStyle(), nullptr);
   UpdateAllLifecyclePhasesForTest();
 
   scroll_animation->play();
@@ -2295,8 +2292,7 @@ TEST_P(AnimationAnimationTestCompositing,
       scroll_timeline, exception_state);
 
   model->SnapshotAllCompositorKeyframesIfNecessary(
-      *element, *GetDocument().GetStyleResolver().CreateComputedStyle(),
-      nullptr);
+      *element, GetDocument().GetStyleResolver().InitialStyle(), nullptr);
 
   UpdateAllLifecyclePhasesForTest();
   scroll_animation->play();

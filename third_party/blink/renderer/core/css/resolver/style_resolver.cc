@@ -1674,11 +1674,6 @@ const ComputedStyle& StyleResolver::InitialStyle() const {
   return *initial_style_;
 }
 
-scoped_refptr<ComputedStyle> StyleResolver::CreateComputedStyle() const {
-  DCHECK(initial_style_);
-  return ComputedStyle::Clone(*initial_style_);
-}
-
 ComputedStyleBuilder StyleResolver::CreateComputedStyleBuilder() const {
   DCHECK(initial_style_);
   return ComputedStyleBuilder(*initial_style_);

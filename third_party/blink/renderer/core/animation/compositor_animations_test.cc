@@ -988,9 +988,9 @@ TEST_P(AnimationCompositorAnimationsTest,
   auto* keyframe_effect1 =
       MakeGarbageCollected<KeyframeEffect>(element_, animation_effect, timing);
   Animation* animation = timeline_->Play(keyframe_effect1);
-  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
+  const auto& style = GetDocument().GetStyleResolver().InitialStyle();
   animation_effect->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(),
-                                                              *style, nullptr);
+                                                              style, nullptr);
 
   // Now we can check that we are set up correctly.
   EXPECT_EQ(CheckCanStartEffectOnCompositor(timing, *element_.Get(), animation,
@@ -1143,7 +1143,7 @@ TEST_P(AnimationCompositorAnimationsTest, CheckCanStartForceReduceMotion) {
 
 TEST_P(AnimationCompositorAnimationsTest,
        CanStartElementOnCompositorEffectInvalid) {
-  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
+  const auto& style = GetDocument().GetStyleResolver().InitialStyle();
 
   // Check that we notice the value is not animatable correctly.
   const CSSProperty& target_property1(GetCSSPropertyOutlineStyle());
@@ -1156,7 +1156,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       MakeGarbageCollected<KeyframeEffect>(element_.Get(), effect1, timing_);
 
   Animation* animation1 = timeline_->Play(keyframe_effect1);
-  effect1->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), *style,
+  effect1->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), style,
                                                      nullptr);
 
   const auto& keyframes1 =
@@ -1179,7 +1179,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       MakeGarbageCollected<KeyframeEffect>(inline_.Get(), effect2, timing_);
 
   Animation* animation2 = timeline_->Play(keyframe_effect2);
-  effect2->SnapshotAllCompositorKeyframesIfNecessary(*inline_.Get(), *style,
+  effect2->SnapshotAllCompositorKeyframesIfNecessary(*inline_.Get(), style,
                                                      nullptr);
 
   const auto& keyframes2 =
@@ -1205,7 +1205,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       MakeGarbageCollected<KeyframeEffect>(element_.Get(), effect3, timing_);
 
   Animation* animation3 = timeline_->Play(keyframe_effect3);
-  effect3->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), *style,
+  effect3->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), style,
                                                      nullptr);
 
   const auto& keyframes3 =
@@ -1229,8 +1229,8 @@ TEST_P(AnimationCompositorAnimationsTest,
       MakeGarbageCollected<KeyframeEffect>(element_.Get(), effect1, timing_);
 
   Animation* animation1 = timeline_->Play(keyframe_effect1);
-  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
-  effect1->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), *style,
+  const auto& style = GetDocument().GetStyleResolver().InitialStyle();
+  effect1->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), style,
                                                      nullptr);
 
   // Now we can check that we are set up correctly.
@@ -1247,7 +1247,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       MakeGarbageCollected<KeyframeEffect>(element_.Get(), effect2, timing_);
 
   Animation* animation2 = timeline_->Play(keyframe_effect2);
-  effect2->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), *style,
+  effect2->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), style,
                                                      nullptr);
   EXPECT_TRUE(CheckCanStartEffectOnCompositor(timing_, *element_.Get(),
                                               animation2, *effect2) &
@@ -1261,7 +1261,7 @@ TEST_P(AnimationCompositorAnimationsTest,
 
 TEST_P(AnimationCompositorAnimationsTest,
        CanStartElementOnCompositorEffectTransform) {
-  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
+  const auto& style = GetDocument().GetStyleResolver().InitialStyle();
 
   StringKeyframeEffectModel* effect1 = CreateKeyframeEffectModel(
       CreateReplaceOpKeyframe(CSSPropertyID::kTransform, "none", 0),
@@ -1271,7 +1271,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       MakeGarbageCollected<KeyframeEffect>(element_.Get(), effect1, timing_);
 
   Animation* animation1 = timeline_->Play(keyframe_effect1);
-  effect1->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), *style,
+  effect1->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), style,
                                                      nullptr);
 
   // Check if our layout object is not TransformApplicable
@@ -1283,7 +1283,7 @@ TEST_P(AnimationCompositorAnimationsTest,
 
 TEST_P(AnimationCompositorAnimationsTest,
        CheckCanStartEffectOnCompositorUnsupportedCSSProperties) {
-  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
+  const auto& style = GetDocument().GetStyleResolver().InitialStyle();
 
   StringKeyframeEffectModel* effect1 = CreateKeyframeEffectModel(
       CreateReplaceOpKeyframe(CSSPropertyID::kOpacity, "0", 0),
@@ -1293,7 +1293,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       MakeGarbageCollected<KeyframeEffect>(element_.Get(), effect1, timing_);
 
   Animation* animation1 = timeline_->Play(keyframe_effect1);
-  effect1->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), *style,
+  effect1->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), style,
                                                      nullptr);
 
   // Make sure supported properties do not register a failure
@@ -1311,7 +1311,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       MakeGarbageCollected<KeyframeEffect>(element_.Get(), effect2, timing_);
 
   Animation* animation2 = timeline_->Play(keyframe_effect2);
-  effect1->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), *style,
+  effect1->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), style,
                                                      nullptr);
 
   // Make sure unsupported properties are reported
@@ -1343,7 +1343,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       MakeGarbageCollected<KeyframeEffect>(element_.Get(), effect3, timing_);
 
   Animation* animation3 = timeline_->Play(keyframe_effect3);
-  effect1->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), *style,
+  effect1->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), style,
                                                      nullptr);
 
   // Make sure only the unsupported properties are reported
@@ -2002,9 +2002,9 @@ TEST_P(AnimationCompositorAnimationsTest,
   auto* keyframe_effect1 = MakeGarbageCollected<KeyframeEffect>(
       element_.Get(), animation_effect1, timing);
   Animation* animation1 = timeline_->Play(keyframe_effect1);
-  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
+  const auto& style = GetDocument().GetStyleResolver().InitialStyle();
   animation_effect1->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(),
-                                                               *style, nullptr);
+                                                               style, nullptr);
   EXPECT_EQ(CheckCanStartEffectOnCompositor(timing, *element_.Get(), animation1,
                                             *animation_effect1),
             CompositorAnimations::kNoFailure);
@@ -2014,7 +2014,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       element_.Get(), animation_effect2, timing);
   Animation* animation2 = timeline_->Play(keyframe_effect2);
   animation_effect2->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(),
-                                                               *style, nullptr);
+                                                               style, nullptr);
   EXPECT_TRUE(CheckCanStartEffectOnCompositor(timing, *element_.Get(),
                                               animation2, *animation_effect2) &
               CompositorAnimations::kTargetHasIncompatibleAnimations);
@@ -2551,8 +2551,7 @@ TEST_P(AnimationCompositorAnimationsTest, Fragmented) {
 
 TEST_P(AnimationCompositorAnimationsTest,
        CancelIncompatibleTransformCompositorAnimation) {
-  scoped_refptr<ComputedStyle> style =
-      GetDocument().GetStyleResolver().CreateComputedStyle();
+  const auto& style = GetDocument().GetStyleResolver().InitialStyle();
 
   // The first animation for transform is ok to run on the compositor.
   StringKeyframeEffectModel* effect1 = CreateKeyframeEffectModel(
@@ -2561,7 +2560,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   auto* keyframe_effect1 =
       MakeGarbageCollected<KeyframeEffect>(element_.Get(), effect1, timing_);
   Animation* animation1 = timeline_->Play(keyframe_effect1);
-  effect1->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), *style,
+  effect1->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), style,
                                                      nullptr);
   EXPECT_EQ(CheckCanStartEffectOnCompositor(timing_, *element_.Get(),
                                             animation1, *effect1),
@@ -2577,7 +2576,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   KeyframeEffect* keyframe_effect2 =
       MakeGarbageCollected<KeyframeEffect>(element_.Get(), effect2, timing_);
   Animation* animation2 = timeline_->Play(keyframe_effect2);
-  effect2->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), *style,
+  effect2->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), style,
                                                      nullptr);
   EXPECT_EQ(CheckCanStartEffectOnCompositor(timing_, *element_.Get(),
                                             animation2, *effect2),
@@ -2594,7 +2593,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   KeyframeEffect* keyframe_effect3 =
       MakeGarbageCollected<KeyframeEffect>(element_.Get(), effect3, timing_);
   Animation* animation3 = timeline_->Play(keyframe_effect3);
-  effect3->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), *style,
+  effect3->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), style,
                                                      nullptr);
   EXPECT_EQ(CheckCanStartEffectOnCompositor(timing_, *element_.Get(),
                                             animation3, *effect3),

@@ -25,7 +25,7 @@ class TestInlineTextBox : public InlineTextBox {
   static TestInlineTextBox* Create(Document& document, const String& string) {
     Text* node = document.createTextNode(string);
     LayoutText* text = MakeGarbageCollected<LayoutText>(node, string.Impl());
-    text->SetStyle(document.GetStyleResolver().CreateComputedStyle());
+    text->SetStyle(&document.GetStyleResolver().InitialStyle());
     return MakeGarbageCollected<TestInlineTextBox>(LineLayoutItem(text));
   }
 

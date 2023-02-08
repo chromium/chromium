@@ -804,12 +804,12 @@ TEST_F(LayoutObjectTest, VisualRect) {
   };
 
   MockLayoutObject* mock_object = MakeGarbageCollected<MockLayoutObject>();
-  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
-  mock_object->SetStyle(style.get());
+  const auto& style = GetDocument().GetStyleResolver().InitialStyle();
+  mock_object->SetStyle(&style);
   EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object->LocalVisualRect());
   EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object->LocalVisualRect());
 
-  ComputedStyleBuilder builder(*style);
+  ComputedStyleBuilder builder(style);
   builder.SetVisibility(EVisibility::kHidden);
   mock_object->SetStyle(builder.TakeStyle(),
                         LayoutObject::ApplyStyleChanges::kNo);

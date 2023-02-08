@@ -46,14 +46,14 @@ class FontBuilderAdditiveTest : public FontBuilderTest,
                                 public testing::TestWithParam<FunctionPair> {};
 
 TEST_F(FontBuilderInitTest, InitialFontSizeNotScaled) {
-  scoped_refptr<const ComputedStyle> parent_style =
-      GetDocument().GetStyleResolver().CreateComputedStyle();
+  const ComputedStyle& parent_style =
+      GetDocument().GetStyleResolver().InitialStyle();
   ComputedStyleBuilder style_builder =
       GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
 
   FontBuilder font_builder(&GetDocument());
   font_builder.SetSize(FontBuilder::InitialSize());
-  font_builder.CreateFont(style_builder, parent_style.get());
+  font_builder.CreateFont(style_builder, &parent_style);
 
   EXPECT_EQ(16.0f, style_builder.GetFontDescription().ComputedSize());
 }
