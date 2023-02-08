@@ -404,6 +404,8 @@ public abstract class ChromeFeatureList {
             "PageInfoAboutThisSiteImprovedBottomSheet";
     public static final String PAINT_PREVIEW_DEMO = "PaintPreviewDemo";
     public static final String PAINT_PREVIEW_SHOW_ON_STARTUP = "PaintPreviewShowOnStartup";
+    public static final String PARTNER_HOMEPAGE_INITIAL_LOAD_IMPROVEMENT =
+            "PartnerHomepageInitialLoadImprovement";
     public static final String PASSWORD_DOMAIN_CAPABILITIES_FETCHING =
             "PasswordDomainCapabilitiesFetching";
     public static final String PASSWORD_EDIT_DIALOG_WITH_DETAILS = "PasswordEditDialogWithDetails";
@@ -628,6 +630,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sOptimizationGuidePushNotifications =
             new CachedFlag(OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, false);
     public static final CachedFlag sPaintPreviewDemo = new CachedFlag(PAINT_PREVIEW_DEMO, false);
+    public static final CachedFlag sPartnerHomepageInitialLoadImprovement =
+            new CachedFlag(PARTNER_HOMEPAGE_INITIAL_LOAD_IMPROVEMENT, true);
     public static final CachedFlag sPrefetchNotificationSchedulingIntegration =
             new CachedFlag(PREFETCH_NOTIFICATION_SCHEDULING_INTEGRATION, false);
     public static final CachedFlag sQueryTiles = new CachedFlag(QUERY_TILES, false);
