@@ -15,7 +15,7 @@ mojom("mojom") {
       types = [
         {
           mojom = "ash.eche_app.mojom.ScreenBacklightState"
-          cpp = "ash::ScreenBacklightState"
+          cpp = "::ash::ScreenBacklightState"
         },
       ]
       traits_headers = [ "//ash/webui/eche_app_ui/mojom/types_mojom_traits.h" ]

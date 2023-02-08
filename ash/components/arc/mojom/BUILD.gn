@@ -293,15 +293,15 @@ mojom("media") {
       types = [
         {
           mojom = "arc.mojom.ColorPlaneLayout"
-          cpp = "media::ColorPlaneLayout"
+          cpp = "::media::ColorPlaneLayout"
         },
         {
           mojom = "arc.mojom.Size"
-          cpp = "gfx::Size"
+          cpp = "::gfx::Size"
         },
         {
           mojom = "arc.mojom.VideoCodecProfile"
-          cpp = "media::VideoCodecProfile"
+          cpp = "::media::VideoCodecProfile"
         },
 
         {
@@ -309,22 +309,22 @@ mojom("media") {
 
           # media::VideoFrameLayout doesn't have default constructor, so we
           # cannot convert directly.
-          cpp = "std::unique_ptr<media::VideoFrameLayout>"
+          cpp = "::std::unique_ptr<::media::VideoFrameLayout>"
           move_only = true
           nullable_is_same_type = true
         },
         {
           mojom = "arc.mojom.VideoFramePlane"
-          cpp = "arc::VideoFramePlane"
+          cpp = "::arc::VideoFramePlane"
           move_only = true
         },
         {
           mojom = "arc.mojom.VideoPixelFormat"
-          cpp = "media::VideoPixelFormat"
+          cpp = "::media::VideoPixelFormat"
         },
         {
           mojom = "arc.mojom.DecoderStatus"
-          cpp = "media::DecoderStatus"
+          cpp = "::media::DecoderStatus"
         },
       ]
       traits_headers = [ "video_accelerator_mojom_traits.h" ]

@@ -23,23 +23,23 @@ mojom("mojom") {
       types = [
         {
           mojom = "ash.device_sync.mojom.ConnectivityStatus"
-          cpp = "cryptauthv2::ConnectivityStatus"
+          cpp = "::cryptauthv2::ConnectivityStatus"
         },
         {
           mojom = "ash.device_sync.mojom.FeatureStatusChange"
-          cpp = "ash::device_sync::FeatureStatusChange"
+          cpp = "::ash::device_sync::FeatureStatusChange"
         },
         {
           mojom = "ash.device_sync.mojom.CryptAuthService"
-          cpp = "cryptauthv2::TargetService"
+          cpp = "::cryptauthv2::TargetService"
         },
         {
           mojom = "ash.device_sync.mojom.GroupPrivateKeyStatus"
-          cpp = "ash::device_sync::GroupPrivateKeyStatus"
+          cpp = "::ash::device_sync::GroupPrivateKeyStatus"
         },
         {
           mojom = "ash.device_sync.mojom.BetterTogetherMetadataStatus"
-          cpp = "ash::device_sync::BetterTogetherMetadataStatus"
+          cpp = "::ash::device_sync::BetterTogetherMetadataStatus"
         },
       ]
       traits_headers = [ "device_sync_mojom_traits.h" ]

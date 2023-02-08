@@ -20,7 +20,7 @@ mojom("mojom") {
       types = [
         {
           mojom = "ash.color_internals.mojom.WallpaperCalculatedColors"
-          cpp = "ash::WallpaperCalculatedColors"
+          cpp = "::ash::WallpaperCalculatedColors"
         },
       ]
       traits_headers = [ "color_internals_mojom_traits.h" ]

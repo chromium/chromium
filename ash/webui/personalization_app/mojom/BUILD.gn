@@ -23,62 +23,62 @@ mojom("mojom") {
       types = [
         {
           mojom = "ash.personalization_app.mojom.WallpaperLayout"
-          cpp = "ash::WallpaperLayout"
+          cpp = "::ash::WallpaperLayout"
         },
         {
           mojom = "ash.personalization_app.mojom.WallpaperType"
-          cpp = "ash::WallpaperType"
+          cpp = "::ash::WallpaperType"
         },
         {
           mojom = "ash.personalization_app.mojom.WallpaperCollection"
-          cpp = "backdrop::Collection"
+          cpp = "::backdrop::Collection"
         },
         {
           mojom = "ash.personalization_app.mojom.WallpaperImage"
-          cpp = "backdrop::Image"
+          cpp = "::backdrop::Image"
         },
         {
           mojom = "ash.personalization_app.mojom.OnlineImageType"
-          cpp = "backdrop::Image::ImageType"
+          cpp = "::backdrop::Image::ImageType"
         },
         {
           mojom = "ash.personalization_app.mojom.UserInfo"
-          cpp = "ash::personalization_app::UserDisplayInfo"
+          cpp = "::ash::personalization_app::UserDisplayInfo"
           move_only = true
         },
         {
           mojom = "ash.personalization_app.mojom.DeprecatedSourceInfo"
-          cpp = "ash::default_user_image::DeprecatedSourceInfo"
+          cpp = "::ash::default_user_image::DeprecatedSourceInfo"
           move_only = true
         },
         {
           mojom = "ash.personalization_app.mojom.DefaultUserImage"
-          cpp = "ash::default_user_image::DefaultUserImage"
+          cpp = "::ash::default_user_image::DefaultUserImage"
           move_only = true
         },
         {
           mojom = "ash.personalization_app.mojom.AnimationTheme"
-          cpp = "ash::AmbientAnimationTheme"
+          cpp = "::ash::AmbientAnimationTheme"
         },
         {
           mojom = "ash.personalization_app.mojom.TopicSource"
-          cpp = "ash::AmbientModeTopicSource"
+          cpp = "::ash::AmbientModeTopicSource"
         },
         {
           mojom = "ash.personalization_app.mojom.TemperatureUnit"
-          cpp = "ash::AmbientModeTemperatureUnit"
+          cpp = "::ash::AmbientModeTemperatureUnit"
         },
         {
           mojom = "ash.personalization_app.mojom.AmbientUiVisibility"
-          cpp = "ash::AmbientUiVisibility"
+          cpp = "::ash::AmbientUiVisibility"
         },
         {
           mojom = "ash.personalization_app.mojom.ColorScheme"
-          cpp = "ash::ColorScheme"
+          cpp = "::ash::ColorScheme"
         },
         {
           mojom = "ash.personalization_app.mojom.SampleColorScheme"
-          cpp = "ash::SampleColorScheme"
+          cpp = "::ash::SampleColorScheme"
         },
       ]
       traits_headers = [ "personalization_app_mojom_traits.h" ]
