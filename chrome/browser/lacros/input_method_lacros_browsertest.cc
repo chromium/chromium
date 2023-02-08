@@ -140,34 +140,53 @@ bool SetInputFieldText(content::WebContents* web_content,
   return ExecJs(web_content, script);
 }
 
-mojom::KeyEventPtr CreateKeyPressEvent(uint32_t dom_key, ui::DomCode dom_code) {
-  return mojom::KeyEvent::New(
-      mojom::KeyEventType::kKeyPress,
-      static_cast<int>(ui::DomKey::FromCharacter(dom_key)),
-      static_cast<int>(dom_code),
-      static_cast<int>(ui::KeyboardCode::VKEY_UNKNOWN));
+mojom::KeyEventPtr CreateKeyPressEvent(ui::DomKey dom_key,
+                                       ui::DomCode dom_code) {
+  return mojom::KeyEvent::New(mojom::KeyEventType::kKeyPress,
+                              static_cast<int>(dom_key),
+                              static_cast<int>(dom_code),
+                              static_cast<int>(ui::KeyboardCode::VKEY_UNKNOWN));
 }
 
-mojom::KeyEventPtr CreateKeyReleaseEvent(uint32_t dom_key,
+mojom::KeyEventPtr CreateKeyReleaseEvent(ui::DomKey dom_key,
                                          ui::DomCode dom_code) {
-  return mojom::KeyEvent::New(
-      mojom::KeyEventType::kKeyRelease,
-      static_cast<int>(ui::DomKey::FromCharacter(dom_key)),
-      static_cast<int>(dom_code),
-      static_cast<int>(ui::KeyboardCode::VKEY_UNKNOWN));
+  return mojom::KeyEvent::New(mojom::KeyEventType::kKeyRelease,
+                              static_cast<int>(dom_key),
+                              static_cast<int>(dom_code),
+                              static_cast<int>(ui::KeyboardCode::VKEY_UNKNOWN));
 }
 
-// Send the key event to the input method. The input method will not handle the
-// given key event.
+std::vector<mojom::KeyEventPtr> CreateKeyPressAndReleaseEvents(
+    ui::DomKey dom_key,
+    ui::DomCode dom_code) {
+  std::vector<mojom::KeyEventPtr> key_events;
+  key_events.push_back(CreateKeyPressEvent(dom_key, dom_code));
+  key_events.push_back(CreateKeyReleaseEvent(dom_key, dom_code));
+  return key_events;
+}
+
+// Sends the key events to the input method. The input method will not handle
+// the given key events.
+void SendKeyEventsSync(
+    InputMethodTestInterfaceAsyncWaiter& input_method_async_waiter,
+    std::vector<mojom::KeyEventPtr> key_events) {
+  uint64_t key_event_id;
+  for (mojom::KeyEventPtr& key_event : key_events) {
+    input_method_async_waiter.SendKeyEvent(std::move(key_event), &key_event_id);
+    input_method_async_waiter.KeyEventHandled(key_event_id, false);
+  }
+}
+
+// Convenient version of `SendKeyEventsSync` for a single key event.
 void SendKeyEventSync(
     InputMethodTestInterfaceAsyncWaiter& input_method_async_waiter,
     mojom::KeyEventPtr key_event) {
-  uint64_t key_event_id;
-  input_method_async_waiter.SendKeyEvent(std::move(key_event), &key_event_id);
-  input_method_async_waiter.KeyEventHandled(key_event_id, false);
+  std::vector<mojom::KeyEventPtr> key_events;
+  key_events.push_back(std::move(key_event));
+  SendKeyEventsSync(input_method_async_waiter, std::move(key_events));
 }
 
-// Send the key event to the input method. The input method will handle the
+// Sends the key event to the input method. The input method will handle the
 // given key event by running `callback`.
 void SendKeyEventAsync(
     InputMethodTestInterfaceAsyncWaiter& input_method_async_waiter,
@@ -418,18 +437,15 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
       input_method.get());
   input_method_async_waiter.WaitForFocus();
 
-  SendKeyEventSync(input_method_async_waiter,
-                   CreateKeyPressEvent('a', ui::DomCode::US_A));
-  SendKeyEventSync(input_method_async_waiter,
-                   CreateKeyReleaseEvent('a', ui::DomCode::US_A));
-  SendKeyEventSync(input_method_async_waiter,
-                   CreateKeyPressEvent('b', ui::DomCode::US_B));
-  SendKeyEventSync(input_method_async_waiter,
-                   CreateKeyReleaseEvent('b', ui::DomCode::US_B));
-  SendKeyEventSync(input_method_async_waiter,
-                   CreateKeyPressEvent('c', ui::DomCode::US_C));
-  SendKeyEventSync(input_method_async_waiter,
-                   CreateKeyReleaseEvent('c', ui::DomCode::US_C));
+  SendKeyEventsSync(input_method_async_waiter,
+                    CreateKeyPressAndReleaseEvents(
+                        ui::DomKey::FromCharacter('a'), ui::DomCode::US_A));
+  SendKeyEventsSync(input_method_async_waiter,
+                    CreateKeyPressAndReleaseEvents(
+                        ui::DomKey::FromCharacter('b'), ui::DomCode::US_B));
+  SendKeyEventsSync(input_method_async_waiter,
+                    CreateKeyPressAndReleaseEvents(
+                        ui::DomKey::FromCharacter('c'), ui::DomCode::US_C));
 
   EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
                                          "abc", gfx::Range(3)));
@@ -452,24 +468,21 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
       input_method.get());
   input_method_async_waiter.WaitForFocus();
 
-  SendKeyEventSync(input_method_async_waiter,
-                   CreateKeyPressEvent('\b', ui::DomCode::BACKSPACE));
-  SendKeyEventSync(input_method_async_waiter,
-                   CreateKeyReleaseEvent('\b', ui::DomCode::BACKSPACE));
+  SendKeyEventsSync(input_method_async_waiter,
+                    CreateKeyPressAndReleaseEvents(ui::DomKey::BACKSPACE,
+                                                   ui::DomCode::BACKSPACE));
   EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
                                          "helo", gfx::Range(2)));
 
-  SendKeyEventSync(input_method_async_waiter,
-                   CreateKeyPressEvent('\b', ui::DomCode::BACKSPACE));
-  SendKeyEventSync(input_method_async_waiter,
-                   CreateKeyReleaseEvent('\b', ui::DomCode::BACKSPACE));
+  SendKeyEventsSync(input_method_async_waiter,
+                    CreateKeyPressAndReleaseEvents(ui::DomKey::BACKSPACE,
+                                                   ui::DomCode::BACKSPACE));
   EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
                                          "hlo", gfx::Range(1)));
 
-  SendKeyEventSync(input_method_async_waiter,
-                   CreateKeyPressEvent('\b', ui::DomCode::BACKSPACE));
-  SendKeyEventSync(input_method_async_waiter,
-                   CreateKeyReleaseEvent('\b', ui::DomCode::BACKSPACE));
+  SendKeyEventsSync(input_method_async_waiter,
+                    CreateKeyPressAndReleaseEvents(ui::DomKey::BACKSPACE,
+                                                   ui::DomCode::BACKSPACE));
   EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
                                          "lo", gfx::Range(0)));
 }
@@ -492,14 +505,16 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
   input_method_async_waiter.WaitForFocus();
 
   SendKeyEventAsync(
-      input_method_async_waiter, CreateKeyPressEvent('g', ui::DomCode::US_A),
+      input_method_async_waiter,
+      CreateKeyPressEvent(ui::DomKey::FromCharacter('g'), ui::DomCode::US_G),
       base::BindOnce(
           [](InputMethodTestInterfaceAsyncWaiter& input_method_async_waiter) {
             input_method_async_waiter.SetComposition("ㅎ", 1);
             return true;
           }));
-  SendKeyEventSync(input_method_async_waiter,
-                   CreateKeyReleaseEvent('g', ui::DomCode::US_A));
+  SendKeyEventSync(
+      input_method_async_waiter,
+      CreateKeyReleaseEvent(ui::DomKey::FromCharacter('g'), ui::DomCode::US_G));
 
   EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
                                          "ㅎ", gfx::Range(1)));
