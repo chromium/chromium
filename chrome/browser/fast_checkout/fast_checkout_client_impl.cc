@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
+#include <cmath>
 
 #include "base/containers/flat_set.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
@@ -127,7 +128,7 @@ void FastCheckoutClientImpl::Stop(bool allow_further_runs) {
   selected_autofill_profile_.reset();
   selected_credit_card_.reset();
   timeout_timer_.AbandonAndStop();
-  origin_ = url::Origin();
+  credit_card_form_global_id_ = absl::nullopt;
   // Reset UI related state.
   fast_checkout_controller_.reset();
   // Reset personal data manager observation.
@@ -252,7 +253,8 @@ void FastCheckoutClientImpl::TryToFillForms() {
     return;
   }
   SetFormFillingStates();
-  for (const auto& [_, form] : autofill_manager_->form_structures()) {
+  for (const auto& [form_global_id, form] :
+       autofill_manager_->form_structures()) {
     if (ShouldFillForm(*form, autofill::FormType::kAddressForm)) {
       autofill::AutofillField* field =
           GetFieldToFill(form->fields(), /*is_credit_card_form=*/false);
@@ -268,13 +270,16 @@ void FastCheckoutClientImpl::TryToFillForms() {
     if (ShouldFillForm(*form, autofill::FormType::kCreditCardForm)) {
       autofill::AutofillField* field =
           GetFieldToFill(form->fields(), /*is_credit_card_form=*/true);
-      if (field) {
-        form_filling_states_[std::make_pair(
-            form->form_signature(), autofill::FormType::kCreditCardForm)] =
-            FillingState::kFilling;
-        // TODO(crbug.com/1334642): Add CVC popup.
-        autofill_manager_->FillCreditCardForm(form->ToFormData(), *field,
-                                              *selected_credit_card_, u"");
+      if (field && !credit_card_form_global_id_.has_value()) {
+        autofill::CreditCardCvcAuthenticator* cvc_authenticator =
+            autofill_client_->GetCvcAuthenticator();
+        DCHECK(cvc_authenticator);
+        credit_card_form_global_id_ = form_global_id;
+        cvc_authenticator->GetFullCardRequest()->GetFullCard(
+            *selected_credit_card_,
+            autofill::AutofillClient::UnmaskCardReason::kAutofill,
+            weak_ptr_factory_.GetWeakPtr(),
+            cvc_authenticator->GetAsFullCardRequestUIDelegate());
       }
     }
   }
@@ -298,6 +303,48 @@ void FastCheckoutClientImpl::SetFormFillingStates() {
         form_filling_states_[form_id] = FillingState::kNotFilled;
       }
     }
+  }
+}
+
+void FastCheckoutClientImpl::OnFullCardRequestSucceeded(
+    const autofill::payments::FullCardRequest& full_card_request,
+    const autofill::CreditCard& card,
+    const std::u16string& cvc) {
+  if (!IsFilling() || !credit_card_form_global_id_.has_value()) {
+    return;
+  }
+  if (!autofill_manager_->form_structures().contains(
+          credit_card_form_global_id_.value())) {
+    credit_card_form_global_id_ = absl::nullopt;
+    return;
+  }
+  const std::unique_ptr<autofill::FormStructure>& form =
+      autofill_manager_->form_structures().at(
+          credit_card_form_global_id_.value());
+  if (autofill::AutofillField* field =
+          GetFieldToFill(form->fields(), /*is_credit_card_form=*/true)) {
+    form_filling_states_[std::make_pair(form->form_signature(),
+                                        autofill::FormType::kCreditCardForm)] =
+        FillingState::kFilling;
+    autofill_manager_->FillCreditCardForm(form->ToFormData(), *field, card,
+                                          cvc);
+  }
+  credit_card_form_global_id_ = absl::nullopt;
+}
+
+void FastCheckoutClientImpl::OnFullCardRequestFailed(
+    autofill::CreditCard::RecordType card_type,
+    autofill::payments::FullCardRequest::FailureType failure_type) {
+  if (!IsFilling() || !credit_card_form_global_id_.has_value()) {
+    return;
+  }
+  if (failure_type ==
+      autofill::payments::FullCardRequest::FailureType::PROMPT_CLOSED) {
+    OnRunComplete(FastCheckoutRunOutcome::kCvcPopupClosed,
+                  /*allow_further_runs=*/false);
+  } else {
+    OnRunComplete(FastCheckoutRunOutcome::kCvcPopupError,
+                  /*allow_further_runs=*/false);
   }
 }
 

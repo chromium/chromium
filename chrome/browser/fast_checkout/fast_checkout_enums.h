@@ -51,7 +51,12 @@ enum class FastCheckoutRunOutcome {
   kInvalidPersonalData = 7,
   // Autofill manager got destroyed.
   kAutofillManagerDestroyed = 8,
-  kMaxValue = kAutofillManagerDestroyed
+  // The CVC popup was closed before all forms were filled.
+  kCvcPopupClosed = 9,
+  // An error occurred while requesting the full card before all forms were
+  // filled.
+  kCvcPopupError = 10,
+  kMaxValue = kCvcPopupError
 };
 
 // Represents the state of the bottomsheet.

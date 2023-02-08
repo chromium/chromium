@@ -13,6 +13,7 @@
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper.h"
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller_impl.h"
+#include "components/autofill/core/browser/payments/full_card_request.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -27,7 +28,8 @@ class FastCheckoutClientImpl
       public FastCheckoutClient,
       public FastCheckoutControllerImpl::Delegate,
       public autofill::PersonalDataManagerObserver,
-      public autofill::AutofillManager::Observer {
+      public autofill::AutofillManager::Observer,
+      public autofill::payments::FullCardRequest::ResultDelegate {
  public:
   ~FastCheckoutClientImpl() override;
 
@@ -59,6 +61,15 @@ class FastCheckoutClientImpl
   void OnAutofillManagerDestroyed() override;
   // Is called on navigation and resets its internal state.
   void OnAutofillManagerReset() override;
+
+  // autofill::payments::FullCardRequest::ResultDelegate:
+  void OnFullCardRequestSucceeded(
+      const autofill::payments::FullCardRequest& full_card_request,
+      const autofill::CreditCard& card,
+      const std::u16string& cvc) override;
+  void OnFullCardRequestFailed(
+      autofill::CreditCard::RecordType card_type,
+      autofill::payments::FullCardRequest::FailureType failure_type) override;
 
   // Filling state of a form during a run.
   enum class FillingState {
@@ -207,6 +218,10 @@ class FastCheckoutClientImpl
   // The current state of the bottomsheet.
   FastCheckoutUIState fast_checkout_ui_state_ =
       FastCheckoutUIState::kNotShownYet;
+
+  // Identifier of the credit card form to be filled once the CVC popup is
+  // fulfilled.
+  absl::optional<autofill::FormGlobalId> credit_card_form_global_id_;
 
   base::ScopedObservation<autofill::PersonalDataManager,
                           autofill::PersonalDataManagerObserver>
