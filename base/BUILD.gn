@@ -28,6 +28,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/dcheck_always_on.gni")
+import("//build/config/features.gni")
 import("//build/config/ios/config.gni")
 import("//build/config/logging.gni")
 import("//build/config/nacl/config.gni")
@@ -1345,7 +1346,6 @@ component("base") {
       "profiler/suspendable_thread_delegate_mac.h",
       "strings/sys_string_conversions_mac.mm",
       "synchronization/waitable_event_mac.cc",
-      "synchronization/waitable_event_watcher_mac.cc",
       "threading/platform_thread_mac.mm",
     ]
   }
@@ -1389,6 +1389,10 @@ component("base") {
         "profiler/suspendable_thread_delegate_mac.h",
       ]
     }
+  }
+
+  if (is_apple && use_blink) {
+    sources += [ "synchronization/waitable_event_watcher_mac.cc" ]
   }
 
   if (is_android) {
