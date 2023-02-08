@@ -275,20 +275,11 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->RunWakeActive(exit_code);
   }
 
-// TODO(crbug.com/1396103): remove this `#if` once mojo interface changes are
-// done in separate CL.
-#if BUILDFLAG(IS_WIN)
   void Update(const std::string& app_id,
               const std::string& install_data_index,
               bool do_update_check_only) {
     test_commands_->Update(app_id, install_data_index, do_update_check_only);
   }
-#else   // BUILDFLAG(IS_WIN)
-  void Update(const std::string& app_id,
-              const std::string& install_data_index) {
-    test_commands_->Update(app_id, install_data_index);
-  }
-#endif  // BUILDFLAG(IS_WIN)
 
   void UpdateAll() { test_commands_->UpdateAll(); }
 
@@ -566,9 +557,6 @@ TEST_F(IntegrationTest, ReportsActive) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-// TODO(crbug.com/1396103): remove this `#if` once mojo interface changes are
-// done in separate CL.
-#if BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTest, CheckForUpdate) {
   ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install());
@@ -581,7 +569,6 @@ TEST_F(IntegrationTest, CheckForUpdate) {
 
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
-#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(IntegrationTest, UpdateApp) {
   ScopedServer test_server(test_commands_);
@@ -598,15 +585,8 @@ TEST_F(IntegrationTest, UpdateApp) {
   const std::string kInstallDataIndex("test_install_data_index");
   ASSERT_NO_FATAL_FAILURE(
       ExpectUpdateSequence(&test_server, kAppId, kInstallDataIndex, v1, v2));
-
-// TODO(crbug.com/1396103): remove this `#if` once mojo interface changes are
-// done in separate CL.
-#if BUILDFLAG(IS_WIN)
   ASSERT_NO_FATAL_FAILURE(Update(kAppId, kInstallDataIndex,
                                  /*do_update_check_only=*/false));
-#else   // BUILDFLAG(IS_WIN)
-  ASSERT_NO_FATAL_FAILURE(Update(kAppId, kInstallDataIndex));
-#endif  // BUILDFLAG(IS_WIN)
 
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v2));

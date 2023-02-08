@@ -291,6 +291,7 @@ void UpdateServiceProxy::Update(
     const std::string& install_data_index,
     Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
+    bool do_update_check_only,
     StateChangeCallback state_update,
     Callback callback) {
   VLOG(1) << __func__;
@@ -303,6 +304,7 @@ void UpdateServiceProxy::Update(
                   static_cast<mojom::UpdateService::Priority>(priority),
                   static_cast<mojom::UpdateService::PolicySameVersionUpdate>(
                       policy_same_version_update),
+                  do_update_check_only,
                   std::move(state_change_observer_callback));
 }
 

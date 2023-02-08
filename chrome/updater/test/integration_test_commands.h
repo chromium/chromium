@@ -77,16 +77,9 @@ class IntegrationTestCommands
   virtual void RunWakeAll() const = 0;
   virtual void RunWakeActive(int exit_code) const = 0;
 
-// TODO(crbug.com/1396103): remove this `#if` once mojo interface changes are
-// done in separate CL.
-#if BUILDFLAG(IS_WIN)
   virtual void Update(const std::string& app_id,
                       const std::string& install_data_index,
                       bool do_update_check_only) const = 0;
-#else   // BUILDFLAG(IS_WIN)
-  virtual void Update(const std::string& app_id,
-                      const std::string& install_data_index) const = 0;
-#endif  // BUILDFLAG(IS_WIN)
 
   virtual void UpdateAll() const = 0;
   virtual void DeleteUpdaterDirectory() const = 0;

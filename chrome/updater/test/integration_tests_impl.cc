@@ -372,9 +372,6 @@ void RunWakeActive(UpdaterScope scope, int expected_exit_code) {
   RunUpdaterWithSwitch(active_version, scope, kWakeSwitch, expected_exit_code);
 }
 
-// TODO(crbug.com/1396103): remove this `#if` once mojo interface changes are
-// done in separate CL.
-#if BUILDFLAG(IS_WIN)
 void Update(UpdaterScope scope,
             const std::string& app_id,
             const std::string& install_data_index,
@@ -389,21 +386,6 @@ void Update(UpdaterScope scope,
           [&loop](UpdateService::Result result_unused) { loop.Quit(); }));
   loop.Run();
 }
-#else   // BUILDFLAG(IS_WIN)
-
-void Update(UpdaterScope scope,
-            const std::string& app_id,
-            const std::string& install_data_index) {
-  scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(scope);
-  base::RunLoop loop;
-  update_service->Update(
-      app_id, install_data_index, UpdateService::Priority::kForeground,
-      UpdateService::PolicySameVersionUpdate::kNotAllowed, base::DoNothing(),
-      base::BindLambdaForTesting(
-          [&loop](UpdateService::Result result_unused) { loop.Quit(); }));
-  loop.Run();
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 void UpdateAll(UpdaterScope scope) {
   scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(scope);
@@ -707,11 +689,7 @@ void CallServiceUpdate(UpdaterScope updater_scope,
   service_proxy->Update(
       app_id, install_data_index, UpdateService::Priority::kForeground,
       policy_same_version_update,
-// TODO(crbug.com/1396103): remove this `#if` once mojo interface changes are
-// done in separate CL.
-#if BUILDFLAG(IS_WIN)
       /*do_update_check_only=*/false,
-#endif  // BUILDFLAG(IS_WIN)
       base::BindLambdaForTesting([](const UpdateService::UpdateState&) {}),
       base::BindLambdaForTesting([&](UpdateService::Result result) {
         EXPECT_EQ(result, UpdateService::Result::kSuccess);

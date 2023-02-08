@@ -44,6 +44,7 @@ class UpdateServiceStub : public mojom::UpdateService {
               const std::string& install_data_index,
               UpdateService::Priority priority,
               UpdateService::PolicySameVersionUpdate policy_same_version_update,
+              bool do_update_check_only,
               UpdateCallback callback) override;
   void Install(mojom::RegistrationRequestPtr registration,
                const std::string& client_install_data,

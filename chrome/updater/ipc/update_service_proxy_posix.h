@@ -63,6 +63,7 @@ class UpdateServiceProxy : public UpdateService {
               const std::string& install_data_index,
               Priority priority,
               PolicySameVersionUpdate policy_same_version_update,
+              bool do_update_check_only,
               StateChangeCallback state_update,
               Callback callback) override;
   void Install(const RegistrationRequest& registration,

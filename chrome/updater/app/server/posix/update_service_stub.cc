@@ -128,10 +128,12 @@ class UpdateServiceStubUntrusted : public mojom::UpdateService {
               const std::string& install_data_index,
               UpdateService::Priority priority,
               UpdateService::PolicySameVersionUpdate policy_same_version_update,
+              bool do_update_check_only,
               UpdateCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     impl_->Update(app_id, install_data_index, priority,
-                  policy_same_version_update, std::move(callback));
+                  policy_same_version_update, do_update_check_only,
+                  std::move(callback));
   }
 
   // The rest of updater::mojom::UpdateService is rejected.
@@ -294,6 +296,7 @@ void UpdateServiceStub::Update(
     const std::string& install_data_index,
     UpdateService::Priority priority,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
+    bool do_update_check_only,
     UpdateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
@@ -306,7 +309,7 @@ void UpdateServiceStub::Update(
                 static_cast<updater::UpdateService::Priority>(priority),
                 static_cast<updater::UpdateService::PolicySameVersionUpdate>(
                     policy_same_version_update),
-                state_change_callback,
+                do_update_check_only, state_change_callback,
                 std::move(on_complete_callback).Then(task_end_listener_));
 }
 

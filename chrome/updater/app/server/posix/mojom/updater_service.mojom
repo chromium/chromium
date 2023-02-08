@@ -247,7 +247,10 @@ import "mojo/public/mojom/base/file_path.mojom";
     Priority priority,
 
     //  Whether a same-version update is allowed.
-    PolicySameVersionUpdate policy_same_version_update) =>
+    PolicySameVersionUpdate policy_same_version_update,
+
+    // Only checks for updates if `do_update_check_only` is `true`.
+    [MinVersion=1] bool do_update_check_only) =>
     (pending_receiver<StateChangeObserver> observer);
 
   // Registers and installs an application from the network.
