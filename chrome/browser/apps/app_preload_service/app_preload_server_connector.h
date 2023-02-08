@@ -16,6 +16,10 @@
 
 class GURL;
 
+namespace base {
+class TimeTicks;
+}  // namespace base
+
 namespace network {
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
@@ -56,6 +60,7 @@ class AppPreloadServerConnector {
  private:
   void OnGetAppsForFirstLoginResponse(
       std::unique_ptr<network::SimpleURLLoader> loader,
+      base::TimeTicks request_start_time,
       GetInitialAppsCallback callback,
       std::unique_ptr<std::string> response_body);
 

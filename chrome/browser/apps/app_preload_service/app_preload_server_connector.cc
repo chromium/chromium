@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_preload_service/almanac_api_util.h"
 #include "chrome/browser/apps/app_preload_service/device_info_manager.h"
@@ -30,8 +31,11 @@ constexpr char kAppPreloadAlmanacEndpoint[] =
 // Maximum accepted size of an APS Response. 1MB.
 constexpr int kMaxResponseSizeInBytes = 1024 * 1024;
 
-constexpr char kAppPreloadServiceServerErrorHistogramName[] =
+constexpr char kServerErrorHistogramName[] =
     "AppPreloadService.ServerResponseCodes";
+
+constexpr char kServerRoundTripTimeForFirstLogin[] =
+    "AppPreloadService.ServerRoundTripTimeForFirstLogin";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("app_preload_service", R"(
@@ -136,11 +140,12 @@ void AppPreloadServerConnector::GetAppsForFirstLogin(
   loader_ptr->AttachStringForUpload(
       BuildGetAppsForFirstLoginRequestBody(device_info),
       "application/x-protobuf");
+
   loader_ptr->DownloadToString(
       url_loader_factory.get(),
       base::BindOnce(&AppPreloadServerConnector::OnGetAppsForFirstLoginResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(loader),
-                     std::move(callback)),
+                     base::TimeTicks::Now(), std::move(callback)),
       kMaxResponseSizeInBytes);
 }
 
@@ -151,6 +156,7 @@ GURL AppPreloadServerConnector::GetServerUrl() {
 
 void AppPreloadServerConnector::OnGetAppsForFirstLoginResponse(
     std::unique_ptr<network::SimpleURLLoader> loader,
+    base::TimeTicks request_start_time,
     GetInitialAppsCallback callback,
     std::unique_ptr<std::string> response_body) {
   int response_code = 0;
@@ -161,7 +167,7 @@ void AppPreloadServerConnector::OnGetAppsForFirstLoginResponse(
   const int net_error = loader->NetError();
 
   // If there is no response code, there was a net error.
-  base::UmaHistogramSparse(kAppPreloadServiceServerErrorHistogramName,
+  base::UmaHistogramSparse(kServerErrorHistogramName,
                            response_code > 0 ? response_code : net_error);
 
   // HTTP error codes in the 500-599 range represent server errors.
@@ -172,6 +178,9 @@ void AppPreloadServerConnector::OnGetAppsForFirstLoginResponse(
     std::move(callback).Run(absl::nullopt);
     return;
   }
+
+  base::UmaHistogramTimes(kServerRoundTripTimeForFirstLogin,
+                          base::TimeTicks::Now() - request_start_time);
 
   proto::AppProvisioningListAppsResponse response;
 

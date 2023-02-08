@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_preload_service/device_info_manager.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
@@ -25,6 +26,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace {
+
+constexpr char kServerRoundTripHistogram[] =
+    "AppPreloadService.ServerRoundTripTimeForFirstLogin";
+
+}  // namespace
+
 namespace apps {
 
 class AppPreloadServerConnectorTest : public testing::Test {
@@ -37,8 +45,8 @@ class AppPreloadServerConnectorTest : public testing::Test {
  protected:
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-
   AppPreloadServerConnector server_connector_;
+  base::HistogramTester histograms_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -107,6 +115,8 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginSuccessfulResponse) {
   EXPECT_TRUE(apps.has_value());
   EXPECT_EQ(apps->size(), 1u);
   EXPECT_EQ(apps.value()[0].GetName(), "Peanut Types");
+
+  histograms_.ExpectTotalCount(kServerRoundTripHistogram, 1);
 }
 
 TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginServerError) {
@@ -119,6 +129,8 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginServerError) {
   server_connector_.GetAppsForFirstLogin(
       DeviceInfo(), test_shared_loader_factory_, result.GetCallback());
   EXPECT_FALSE(result.Get().has_value());
+
+  histograms_.ExpectTotalCount(kServerRoundTripHistogram, 0);
 }
 
 TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginNetworkError) {
@@ -132,6 +144,8 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginNetworkError) {
   server_connector_.GetAppsForFirstLogin(
       DeviceInfo(), test_shared_loader_factory_, result.GetCallback());
   EXPECT_FALSE(result.Get().has_value());
+
+  histograms_.ExpectTotalCount(kServerRoundTripHistogram, 0);
 }
 
 }  // namespace apps
