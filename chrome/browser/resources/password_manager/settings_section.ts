@@ -66,6 +66,8 @@ export class SettingsSectionElement extends I18nMixin
   private setBlockedSitesListListener_: BlockedSitesListChangedListener|null =
       null;
 
+  private addShortcutDescription_: string;
+
   override connectedCallback() {
     super.connectedCallback();
     this.setBlockedSitesListListener_ = blockedSites => {
@@ -76,6 +78,9 @@ export class SettingsSectionElement extends I18nMixin
         blockedSites => this.blockedSites_ = blockedSites);
     PasswordManagerImpl.getInstance().addBlockedSitesListChangedListener(
         this.setBlockedSitesListListener_);
+
+    this.addShortcutDescription_ =
+        this.i18n('addShortcutDescription', this.i18n('localPasswordManager'));
   }
 
   override disconnectedCallback() {
@@ -115,6 +120,10 @@ export class SettingsSectionElement extends I18nMixin
     PasswordManagerImpl.getInstance().switchBiometricAuthBeforeFillingState();
   }
   // </if>
+
+  private getShortcutBannerDescription_(): string {
+    return this.addShortcutDescription_;
+  }
 }
 
 declare global {

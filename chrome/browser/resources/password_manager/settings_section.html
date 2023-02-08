@@ -64,7 +64,7 @@
   <template is="dom-if" if="[[!isPasswordManagerShortcutInstalled_]]" restamp>
     <cr-link-row id="addShortcutBanner" class="cr-row settings-cr-link-row"
         on-click="onAddShortcutClick_" label="$i18n{addShortcut}"
-        sub-label="$i18n{addShortcutDescription}" hide-icon>
+        sub-label="[[getShortcutBannerDescription_()]]" hide-icon>
     </cr-link-row>
   </template>
 </div>
