@@ -13,3 +13,12 @@ proto_library("crd_event_proto") {
   sources = [ "synced/crd_event.proto" ]
   deps = [ ":session_affiliated_user" ]
 }
+
+proto_library("log_upload_event_proto") {
+  proto_in_dir = "//"
+
+  sources = [ "synced/log_upload_event.proto" ]
+
+  import_dirs = [ "//components/reporting/proto/synced" ]
+  deps = [ "//components/reporting/proto:upload_tracker_proto" ]
+}

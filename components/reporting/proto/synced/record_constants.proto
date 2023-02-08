@@ -96,6 +96,10 @@ enum Destination {
   // the network.
   CROS_SECURITY_NETWORK = 26;
 
+  // |LOG_UPLOAD| is for events to initiate and track uploading file to GCS.
+  // The file is expected to be a zipped set of logs prepared by Support Tool.
+  LOG_UPLOAD = 27;
+
   reserved 8;
 }
 

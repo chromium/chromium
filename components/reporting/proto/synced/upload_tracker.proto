@@ -1,0 +1,59 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package reporting;
+
+import "components/reporting/proto/synced/status.proto";
+
+// Message populated by the caller when posting the log upload request
+// initially and sent to the server as part of `Record`.
+message UploadSettings {
+  // Path to the log on a device, e.g. “/var/cache/L.zip”
+  optional string origin_path = 1;  // required
+
+  // Number of remaining retries. Must be non-negative, 0 means last retry.
+  // Upon retryable error, decremented by ERP for the next attempt.
+  optional int32 retry_count = 2 [default = 3];
+
+  // Upload parameters, depending on the actual protocol
+  // (e.g., REST API URL, GCS bucket assigned for the log to be uploaded to).
+  // This field is implementation-dependent; having it generic allows to choose
+  // the actual upload protocol and/or unit test the whole process.
+  optional string upload_parameters = 3;  // required
+}
+
+// Message populated by ERP, used for upload progress tracking and sent to the
+// server as part of `Record`.
+message UploadTracker {
+  // Completion status error (matches .reporting.StatusProto).
+  // Skipped in case of success or work in progress, error status (code and
+  // error message) for any failure.
+  optional StatusProto status = 1;
+
+  // Total size of the `origin_path` file to upload.
+  optional int64 total = 2;  // required
+
+  // Current offset that upload process has reached. As long as
+  // `uploaded` < `total`, the upload is in progress, and the event can be
+  // ignored on the server side (or can be used by UX to visualize progress -
+  // slide to `uploaded` / `total` * 100%). Receiving event with
+  // `uploaded` = `total` indicates to the server that the upload is done, and
+  // `file_path` field can be used to access it.
+  optional int64 uploaded = 3;  // required, once the upload has started.
+
+  // Upload session token that allows the upload to proceed with the next chunk
+  // of data, starting from `uploaded` offset in `origin_path` file and to
+  // finalize the upload at the end (after that, this field should be cleared).
+  // This field is implementation-dependent; having it generic allows to choose
+  // the actual upload protocol and/or unit test the whole process.
+  optional string session_token = 4;  // required, while upload is in progress.
+
+  // URL and optionally other parameters to access the uploaded file from the
+  // server side. Populated once the upload has been finalized successfully.
+  optional string access_parameters = 5;  // required upon successful upload.
+}

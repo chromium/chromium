@@ -18,9 +18,6 @@ message Record {
   // expecting a proto - the proto will be MessageLite::SerializeToString(), and
   // will be DeserializedFromString() in the destination handler, prior to being
   // forwarded.
-  //
-  // Current expected formats (destination : type):
-  // Destination::UPLOAD_EVENTS : UploadEventsRequest
   optional bytes data = 1;
 
   // The destination associated with this request as set with the
@@ -28,7 +25,7 @@ message Record {
   optional Destination destination = 2;
 
   // The DMToken associated with this request as set with the
-  // ReportQueueConfiuguration (required).
+  // ReportQueueConfiuguration (required, if this is user token).
   optional string dm_token = 3;
 
   // When the record was submitted to ReportQueue::Enqueue.
@@ -37,7 +34,14 @@ message Record {
   optional int64 timestamp_us = 4;
 
   // Reserved space specified by ReportQueueConfiguration (unless it is 0).
+  // Note that this field is cleared while enqueuing the event.
   optional int64 reserved_space = 5;
+
+  // Record is tracking progress of some external activity;
+  // its unencrypted copy needs to be attached to the EncryptedRecord
+  // for uploader to be able to re-enqueue it.
+  // Note that this field is cleared while enqueuing the event.
+  optional bool needs_local_unencrypted_copy = 6;
 }
 
 // A Record with it's digest and the digest of the previous record.
@@ -129,6 +133,13 @@ message EncryptedRecord {
   optional SequenceInformation sequencing_information = 5 [deprecated = true];
 
   optional ERPHealthData erp_health_data = 6;
+
+  // In special cases (e.g. `LOG_UPLOAD` events) this field is an unencrypted
+  // copy of original `Record`. It is only attached to `EncryptedRecord` in
+  // Storage and is eliminated by ERP uploader before sending the records to the
+  // server. Using `record_copy` the uploader is able to post a new event for
+  // the same `Destination` and modify upload tracking part of it.
+  optional Record record_copy = 7;
 }
 
 // Tracking information for what compression is used.

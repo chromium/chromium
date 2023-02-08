@@ -1,0 +1,24 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Events to initiate and track uploading file to GCS using LogUploadTracker.
+// The file is expected to be a zipped set of logs prepared by Support Tool.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package ash.reporting;
+
+import "components/reporting/proto/synced/upload_tracker.proto";
+
+message LogUploadEvent {
+  // Upload parameters to initiate and track the upload are attached when the
+  // event is posted.
+  optional .reporting.UploadSettings upload_settings = 1;
+  optional .reporting.UploadTracker upload_tracker = 2;
+
+  // Additional fields provided by the caller can be added here (e.g. command
+  // ID).
+}

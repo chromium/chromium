@@ -41,7 +41,7 @@ proto_library("interface_proto") {
   proto_deps = [
     ":record_constants",
     ":record_proto",
-    "//components/reporting/proto:status_proto",
+    ":status_proto",
   ]
 }
 
@@ -55,7 +55,7 @@ proto_library("health_proto") {
 
   deps = [
     ":record_constants",
-    "//components/reporting/proto:status_proto",
+    ":status_proto",
   ]
 }
 
@@ -77,9 +77,18 @@ proto_library("metric_data_proto") {
 }
 
 proto_library("status_proto") {
+  proto_in_dir = "//"
+
   # Generate JS so it can be used by chrome extensions
   generate_javascript = true
 
-  proto_in_dir = "//"
   sources = [ "synced/status.proto" ]
+}
+
+proto_library("upload_tracker_proto") {
+  proto_in_dir = "//"
+
+  sources = [ "synced/upload_tracker.proto" ]
+
+  deps = [ ":status_proto" ]
 }
