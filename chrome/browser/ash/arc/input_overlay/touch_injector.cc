@@ -189,7 +189,7 @@ TouchInjector::~TouchInjector() {
 void TouchInjector::ParseActions(const base::Value& root) {
   DCHECK(actions_.empty());
   if (enable_mouse_lock_)
-    ParseMouseLock(root);
+    ParseMouseLock(root.GetDict());
 
   auto parsed_actions = ParseJsonToActions(this, root);
   if (!parsed_actions.empty()) {
@@ -504,8 +504,8 @@ void TouchInjector::SendExtraEvent(
   }
 }
 
-void TouchInjector::ParseMouseLock(const base::Value& value) {
-  auto* mouse_lock = value.FindKey(kMouseLock);
+void TouchInjector::ParseMouseLock(const base::Value::Dict& dict) {
+  auto* mouse_lock = dict.Find(kMouseLock);
   if (!mouse_lock) {
     mouse_lock_ = std::make_unique<KeyCommand>(
         kDefaultMouseLockCode, /*modifier=*/0,

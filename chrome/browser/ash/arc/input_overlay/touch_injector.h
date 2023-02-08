@@ -197,7 +197,7 @@ class TouchInjector : public ui::EventRewriter {
   //   "key": "KeyA",
   //   "modifier": [""]
   // }
-  void ParseMouseLock(const base::Value& value);
+  void ParseMouseLock(const base::Value::Dict& dict);
 
   void FlipMouseLockFlag();
   // Check if the event located on menu entry. |press_required| tells whether or
