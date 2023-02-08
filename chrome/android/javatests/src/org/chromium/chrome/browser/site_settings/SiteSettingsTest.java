@@ -146,9 +146,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for everything under Settings > Site Settings.
- */
+/** Tests for everything under Settings > Site Settings. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1", "ignore-certificate-errors"})
@@ -294,9 +292,7 @@ public class SiteSettingsTest {
         });
     }
 
-    /**
-     * Sets Allow Location Enabled to be true and make sure it is set correctly.
-     */
+    /** Sets Allow Location Enabled to be true and make sure it is set correctly. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
@@ -319,9 +315,7 @@ public class SiteSettingsTest {
                 "/chrome/test/data/geolocation/geolocation_on_load.html", "", 0, false, true);
     }
 
-    /**
-     * Sets Allow Location Enabled to be false and make sure it is set correctly.
-     */
+    /** Sets Allow Location Enabled to be false and make sure it is set correctly. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
@@ -386,15 +380,12 @@ public class SiteSettingsTest {
                 return WebsitePreferenceBridge.isCategoryEnabled(
                         getBrowserContextHandle(), ContentSettingsType.COOKIES);
             }
-
         });
     }
 
     private enum ToggleButtonState { EnabledUnchecked, EnabledChecked, Disabled }
 
-    /**
-     * Checks if the button representing the given state matches the managed expectation.
-     */
+    /** Checks if the button representing the given state matches the managed expectation. */
     private void checkFourStateCookieToggleButtonState(final SettingsActivity settingsActivity,
             final CookieSettingsState state, final ToggleButtonState toggleState) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -490,9 +481,8 @@ public class SiteSettingsTest {
     }
 
     /**
-     * Tests that the Preferences designated by keys in |expectedKeys|, and only
-     * these preferences, will be shown for the category specified by |type|. The
-     * order of Preferences matters.
+     * Tests that the Preferences designated by keys in |expectedKeys|, and only these preferences,
+     * will be shown for the category specified by |type|. The order of Preferences matters.
      */
     private void checkPreferencesForCategory(
             final @SiteSettingsCategory.Type int type, String[] expectedKeys) {
@@ -536,9 +526,7 @@ public class SiteSettingsTest {
         checkPreferencesForCategory(type, enabledExpectedKeys);
     }
 
-    /**
-     * Allows cookies to be set and ensures that they are.
-     */
+    /** Allows cookies to be set and ensures that they are. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
@@ -564,9 +552,7 @@ public class SiteSettingsTest {
                 "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
     }
 
-    /**
-     * Clicks on cookies radio buttons and verify the right FPS subpage is launched.
-     */
+    /** Clicks on cookies radio buttons and verify the right FPS subpage is launched. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
@@ -618,9 +604,7 @@ public class SiteSettingsTest {
         });
     }
 
-    /**
-     * Blocks cookies from being set and ensures that no cookies can be set.
-     */
+    /** Blocks cookies from being set and ensures that no cookies can be set. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
@@ -644,9 +628,7 @@ public class SiteSettingsTest {
         Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
     }
 
-    /**
-     * Blocks specific sites from setting cookies and ensures that no cookies can be set.
-     */
+    /** Blocks specific sites from setting cookies and ensures that no cookies can be set. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
@@ -683,9 +665,7 @@ public class SiteSettingsTest {
         Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
     }
 
-    /**
-     * Blocks specific sites from setting cookies and ensures that no cookies can be set.
-     */
+    /** Blocks specific sites from setting cookies and ensures that no cookies can be set. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
@@ -719,9 +699,7 @@ public class SiteSettingsTest {
         Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
     }
 
-    /**
-     * Set a cookie and check that it is removed when a site is cleared.
-     */
+    /** Set a cookie and check that it is removed when a site is cleared. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
@@ -786,9 +764,7 @@ public class SiteSettingsTest {
                 "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
     }
 
-    /**
-     * Set cookies for domains and check that they are removed when a site is cleared.
-     */
+    /** Set cookies for domains and check that they are removed when a site is cleared. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
@@ -857,11 +833,11 @@ public class SiteSettingsTest {
     }
 
     /**
-     * Set the cookie content setting to allow through policy, disable incognito
-     * mode and ensure the correct radio buttons are enabled. This test is executed with experiment
-     * {@link SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID} either enabled or
-     * disabled, and the only expected difference in both cases is the UI that shows the disclaimer
-     * that the preference is managed.
+     * Set the cookie content setting to allow through policy, disable incognito mode and ensure the
+     * correct radio buttons are enabled. This test is executed with experiment {@link
+     * SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID} either enabled or disabled,
+     * and the only expected difference in both cases is the UI that shows the disclaimer that the
+     * preference is managed.
      */
     @Test
     @SmallTest
@@ -1217,9 +1193,7 @@ public class SiteSettingsTest {
         settingsActivity.finish();
     }
 
-    /**
-     * Sets Allow Popups Enabled to be false and make sure it is set correctly.
-     */
+    /** Sets Allow Popups Enabled to be false and make sure it is set correctly. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
@@ -1236,9 +1210,7 @@ public class SiteSettingsTest {
         Assert.assertEquals(1, getTabCount());
     }
 
-    /**
-     * Sets Allow Popups Enabled to be true and make sure it is set correctly.
-     */
+    /** Sets Allow Popups Enabled to be true and make sure it is set correctly. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
@@ -1255,9 +1227,7 @@ public class SiteSettingsTest {
         Assert.assertEquals(2, getTabCount());
     }
 
-    /**
-     * Test that showing the Site Settings menu doesn't crash (crbug.com/610576).
-     */
+    /** Test that showing the Site Settings menu doesn't crash (crbug.com/610576). */
     @Test
     @SmallTest
     @Feature({"Preferences"})
@@ -1266,9 +1236,7 @@ public class SiteSettingsTest {
         settingsActivity.finish();
     }
 
-    /**
-     * Test that showing the Site Settings menu contains only the "Cookies" row.
-     */
+    /** Test that showing the Site Settings menu contains only the "Cookies" row. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
@@ -1300,9 +1268,8 @@ public class SiteSettingsTest {
     }
 
     /**
-     * Tests that only expected Preferences are shown for a category. This
-     * santiy checks the number of categories only. Each category has its own
-     * individual test below.
+     * Tests that only expected Preferences are shown for a category. This santiy checks the number
+     * of categories only. Each category has its own individual test below.
      */
     @Test
     @SmallTest
@@ -1638,7 +1605,8 @@ public class SiteSettingsTest {
         testExpectedPreferences(
                 SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, BINARY_TOGGLE, BINARY_TOGGLE);
         Assert.assertTrue(
-                "SharedPreference USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY should be updated.",
+                "SharedPreference USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY should be"
+                        + " updated.",
                 ContextUtils.getAppSharedPreferences().contains(
                         SingleCategorySettingsConstants
                                 .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY));
@@ -1652,7 +1620,8 @@ public class SiteSettingsTest {
         testExpectedPreferences(SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
                 BINARY_TOGGLE_WITH_EXCEPTION, BINARY_TOGGLE_WITH_EXCEPTION);
         Assert.assertTrue(
-                "SharedPreference USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY should be updated.",
+                "SharedPreference USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY should be"
+                        + " updated.",
                 ContextUtils.getAppSharedPreferences().contains(
                         SingleCategorySettingsConstants
                                 .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY));
@@ -1706,9 +1675,7 @@ public class SiteSettingsTest {
                 SiteSettingsCategory.Type.VIRTUAL_REALITY, BINARY_TOGGLE, BINARY_TOGGLE);
     }
 
-    /**
-     * Tests system NFC support in Preferences.
-     */
+    /** Tests system NFC support in Preferences. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
@@ -1720,8 +1687,8 @@ public class SiteSettingsTest {
     }
 
     /**
-     * Tests that {@link SingleWebsiteSettings#resetSite} doesn't crash
-     * (see e.g. the crash on host names in issue 600232).
+     * Tests that {@link SingleWebsiteSettings#resetSite} doesn't crash (see e.g. the crash on host
+     * names in issue 600232).
      */
     @Test
     @SmallTest
@@ -1733,6 +1700,7 @@ public class SiteSettingsTest {
 
     /**
      * Sets Allow Camera Enabled to be false and make sure it is set correctly.
+     *
      * @throws Exception
      */
     @Test
@@ -2303,8 +2271,8 @@ public class SiteSettingsTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @DisableIf.Build(message = "https://crbug.com/1269556",
-        sdk_is_greater_than = Build.VERSION_CODES.P)
+    @DisableIf.
+    Build(message = "https://crbug.com/1269556", sdk_is_greater_than = Build.VERSION_CODES.P)
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1234530
     public void testProtectedContentAllowThenBlock() throws Exception {
         initializeUpdateWaiter(true /* expectGranted */);
@@ -2435,10 +2403,22 @@ public class SiteSettingsTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
     @Feature({"RenderTest"})
-    public void testRenderLocationPage() throws Exception {
+    public void testRenderLocationPage_EnableHighlightManagedPrefDisclaimerAndroid()
+            throws Exception {
         renderCategoryPage(
                 SiteSettingsCategory.Type.DEVICE_LOCATION, "site_settings_location_page");
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    @Feature({"RenderTest"})
+    public void testRenderLocationPage_DisableHighlightManagedPrefDisclaimerAndroid()
+            throws Exception {
+        renderCategoryPage(SiteSettingsCategory.Type.DEVICE_LOCATION,
+                "site_settings_location_page_DisableHighlightManagedPrefDisclaimerAndroid");
     }
 
     @Test
@@ -2449,7 +2429,7 @@ public class SiteSettingsTest {
                 SiteSettingsCategory.Type.PROTECTED_MEDIA, "site_settings_protected_media_page");
     }
 
-    /** Test case for checking that settings with binary toggles are disabled by policy.*/
+    /** Test case for checking that settings with binary toggles are disabled by policy. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
@@ -2480,8 +2460,8 @@ public class SiteSettingsTest {
     }
 
     /**
-     * Allows third party cookies for a website, and tests that the UI shows a managed preference
-     * in the allowed group. Checks that it shows the toast when the preference is clicked.
+     * Allows third party cookies for a website, and tests that the UI shows a managed preference in
+     * the allowed group. Checks that it shows the toast when the preference is clicked.
      */
     @Test
     @SmallTest
@@ -2506,8 +2486,8 @@ public class SiteSettingsTest {
     }
 
     /**
-     * Blocks third party cookies for a website, and tests that the UI shows a managed preference
-     * in the blocked group. Checks that it shows toast when the preference is clicked.
+     * Blocks third party cookies for a website, and tests that the UI shows a managed preference in
+     * the blocked group. Checks that it shows toast when the preference is clicked.
      */
     @Test
     @SmallTest
@@ -2622,7 +2602,7 @@ public class SiteSettingsTest {
         }
     }
 
-    /** Test case for site settings with a global toggle.  */
+    /** Test case for site settings with a global toggle. */
     static class TwoStatePermissionTestCase extends PermissionTestCase {
         TwoStatePermissionTestCase(
                 String testName, int siteSettingsType, int contentSettingsType, boolean enabled) {

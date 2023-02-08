@@ -45,8 +45,10 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.components.policy.test.annotations.Policies;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.browser_ui.settings.SettingsFeatureList;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -55,9 +57,7 @@ import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 
-/**
- * Tests {@link AdMeasurementFragmentV4}
- */
+/** Tests {@link AdMeasurementFragmentV4} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -124,12 +124,26 @@ public final class AdMeasurementFragmentV4Test {
 
     @Test
     @SmallTest
+    @EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
     @Feature({"RenderTest"})
-    public void testRenderAdMeasurement() throws IOException {
+    public void testRenderAdMeasurement_EnableHighlightManagedPrefDisclaimerAndroid()
+            throws IOException {
         setAdMeasurementPrefEnabled(true);
         startAdMeasuremenSettings();
         mRenderTestRule.render(getRootView(R.string.settings_ad_measurement_page_toggle_sub_label),
                 "ad_measurement_page_toggle_on");
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    @Feature({"RenderTest"})
+    public void testRenderAdMeasurement_DisableHighlightManagedPrefDisclaimerAndroid()
+            throws IOException {
+        setAdMeasurementPrefEnabled(true);
+        startAdMeasuremenSettings();
+        mRenderTestRule.render(getRootView(R.string.settings_ad_measurement_page_toggle_sub_label),
+                "ad_measurement_page_toggle_on_DisableHighlightManagedPrefDisclaimerAndroid");
     }
 
     @Test

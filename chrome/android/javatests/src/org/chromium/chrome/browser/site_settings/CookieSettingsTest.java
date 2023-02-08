@@ -10,14 +10,22 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
 
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
 import android.os.Bundle;
 import android.view.View;
+
 import androidx.test.filters.SmallTest;
-import java.io.IOException;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -27,7 +35,9 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.browser_ui.settings.SettingsFeatureList;
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference;
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference.CookieSettingsState;
 import org.chromium.components.browser_ui.site_settings.R;
@@ -36,14 +46,10 @@ import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
-/**
- * Render tests for the Cookie page and subpages under Settings > Site Settings > Cookies.
- */
+import java.io.IOException;
+
+/** Render tests for the Cookie page and subpages under Settings > Site Settings > Cookies. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -82,16 +88,34 @@ public class CookieSettingsTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI,
+            SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID})
+    public void
+    testRenderCookieFPSSubpage_EnableHighlightManagedPrefDisclaimerAndroid() throws IOException {
+        showCookieFPSSubpage();
+        mRenderTestRule.render(
+                getRootView(R.string.website_settings_category_cookie_block_third_party_subtitle),
+                "settings_cookie_fps_subpage");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
-    public void testRenderCookieFPSSubpage() throws IOException {
+    @DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    public void testRenderCookieFPSSubpage_DisableHighlightManagedPrefDisclaimerAndroid()
+            throws IOException {
+        showCookieFPSSubpage();
+        mRenderTestRule.render(
+                getRootView(R.string.website_settings_category_cookie_block_third_party_subtitle),
+                "settings_cookie_fps_subpage_DisableHighlightManagedPrefDisclaimerAndroid");
+    }
+
+    private void showCookieFPSSubpage() {
         onView(withId(R.id.block_third_party_with_aux)).perform(click());
         onView(allOf(withId(R.id.expand_arrow),
                        isDescendantOfA(withId(R.id.block_third_party_with_aux))))
                 .perform(click());
-
-        mRenderTestRule.render(
-                getRootView(R.string.website_settings_category_cookie_block_third_party_subtitle),
-                "settings_cookie_fps_subpage");
     }
 
     private void setCookiesEnabled(final SettingsActivity settingsActivity, final boolean enabled) {

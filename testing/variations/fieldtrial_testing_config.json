@@ -5690,6 +5690,27 @@
             ]
         }
     ],
+    "HighlightManagedPrefDisclaimerAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HighlightManagedPrefDisclaimerAndroid"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "HighlightManagedPrefDisclaimerAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "HoldbackRemoveMobileViewportDoubleTap": [
         {
             "platforms": [

@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -47,6 +48,7 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.browser_ui.settings.SettingsFeatureList;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -55,6 +57,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 /** Tests {@link AccountManagementFragment}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class AccountManagementFragmentTest {
     private static final String CHILD_ACCOUNT_NAME =
             AccountManagerTestRule.generateChildEmail("account@gmail.com");
@@ -90,6 +93,7 @@ public class AccountManagementFragmentTest {
     @Feature("RenderTest")
     @DisableFeatures({ChromeFeatureList.ADD_EDU_ACCOUNT_FROM_ACCOUNT_SETTINGS_FOR_SUPERVISED_USERS,
             ChromeFeatureList.HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL})
+    @EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
     public void
     testAccountManagementFragmentView() throws Exception {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
@@ -102,8 +106,10 @@ public class AccountManagementFragmentTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.ADD_EDU_ACCOUNT_FROM_ACCOUNT_SETTINGS_FOR_SUPERVISED_USERS})
-    public void testAccountManagementFragmentViewWithAddEduAccountEnabled() throws Exception {
+    @EnableFeatures({ChromeFeatureList.ADD_EDU_ACCOUNT_FROM_ACCOUNT_SETTINGS_FOR_SUPERVISED_USERS,
+            SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID})
+    public void
+    testAccountManagementFragmentViewWithAddEduAccountEnabled() throws Exception {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         mSettingsActivityTestRule.startSettingsActivity();
         View view = mSettingsActivityTestRule.getFragment().getView();
@@ -115,9 +121,10 @@ public class AccountManagementFragmentTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL})
-    public void testAccountManagementFragmentViewWithHideNonDisplayableAccountEmailEnabled()
-            throws Exception {
+    @EnableFeatures({ChromeFeatureList.HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL,
+            SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID})
+    public void
+    testAccountManagementFragmentViewWithHideNonDisplayableAccountEmailEnabled() throws Exception {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         mSettingsActivityTestRule.startSettingsActivity();
         View view = mSettingsActivityTestRule.getFragment().getView();
@@ -128,6 +135,7 @@ public class AccountManagementFragmentTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
     @Feature("RenderTest")
     public void testSignedInAccountShownOnTop() throws Exception {
         mSigninTestRule.addAccount("testSecondary@gmail.com");
@@ -213,9 +221,10 @@ public class AccountManagementFragmentTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.ADD_EDU_ACCOUNT_FROM_ACCOUNT_SETTINGS_FOR_SUPERVISED_USERS})
-    public void testAccountManagementViewForChildAccountWithAddEduAccountEnabled()
-            throws Exception {
+    @EnableFeatures({ChromeFeatureList.ADD_EDU_ACCOUNT_FROM_ACCOUNT_SETTINGS_FOR_SUPERVISED_USERS,
+            SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID})
+    public void
+    testAccountManagementViewForChildAccountWithAddEduAccountEnabled() throws Exception {
         mSigninTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
         final Profile profile = TestThreadUtils.runOnUiThreadBlockingNoException(
                 Profile::getLastUsedRegularProfile);
@@ -259,7 +268,8 @@ public class AccountManagementFragmentTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.ADD_EDU_ACCOUNT_FROM_ACCOUNT_SETTINGS_FOR_SUPERVISED_USERS})
+    @EnableFeatures({ChromeFeatureList.ADD_EDU_ACCOUNT_FROM_ACCOUNT_SETTINGS_FOR_SUPERVISED_USERS,
+            SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID})
     public void
     testAccountManagementViewForChildAccountWithSecondaryEduAccountAndAddEduAccountEnabled()
             throws Exception {

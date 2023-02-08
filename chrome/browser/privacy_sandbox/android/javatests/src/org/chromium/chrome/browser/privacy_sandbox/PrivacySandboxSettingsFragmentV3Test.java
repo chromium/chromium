@@ -60,6 +60,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.settings.SettingsFeatureList;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -69,9 +70,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-/**
- * Tests {@link PrivacySandboxSettingsFragment}.
- */
+/** Tests {@link PrivacySandboxSettingsFragment}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -156,10 +155,23 @@ public final class PrivacySandboxSettingsFragmentV3Test {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    public void testRenderMainPage() throws IOException {
+    @Features.EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    public void testRenderMainPage_EnableHighlightManagedPrefDisclaimerAndroid()
+            throws IOException {
         openPrivacySandboxSettings();
         mRenderTestRule.render(
                 getRootView(R.string.privacy_sandbox_trials_title), "privacy_sandbox_main_view");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @Features.DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    public void testRenderMainPage_DisableHighlightManagedPrefDisclaimerAndroid()
+            throws IOException {
+        openPrivacySandboxSettings();
+        mRenderTestRule.render(getRootView(R.string.privacy_sandbox_trials_title),
+                "privacy_sandbox_main_view_DisableHighlightManagedPrefDisclaimerAndroid");
     }
 
     @Test
