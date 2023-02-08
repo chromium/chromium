@@ -540,15 +540,12 @@ NSInteger kFeedSymbolPointSize = 17;
                        constant:-kButtonHorizontalMargin],
     [self.menuButton.centerYAnchor
         constraintEqualToAnchor:self.container.centerYAnchor],
+    // Set menu button size.
+    [self.menuButton.heightAnchor constraintEqualToConstant:kButtonSize],
+    [self.menuButton.widthAnchor constraintEqualToConstant:kButtonSize],
   ]];
 
   if ([self.feedControlDelegate isFollowingFeedAvailable]) {
-    [self.feedHeaderConstraints addObjectsFromArray:@[
-      // Set menu button size.
-      [self.menuButton.heightAnchor constraintEqualToConstant:kButtonSize],
-      [self.menuButton.widthAnchor constraintEqualToConstant:kButtonSize],
-    ]];
-
     // Anchor views based on the feed being visible or hidden.
     if ([self.feedControlDelegate shouldFeedBeVisible]) {
       [self anchorSegmentedControlAndDot];
