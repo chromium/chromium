@@ -40,8 +40,9 @@ BruschettaService::VmRegistration::~VmRegistration() = default;
 
 BruschettaService::BruschettaService(Profile* profile) : profile_(profile) {
   // Don't set up anything if the bruschetta flag isn't enabled.
-  if (!BruschettaFeatures::Get()->IsEnabled())
+  if (!BruschettaFeatures::Get()->IsEnabled()) {
     return;
+  }
 
   vm_observer_.Observe(ash::ConciergeClient::Get());
 
@@ -58,22 +59,27 @@ BruschettaService::BruschettaService(Profile* profile) : profile_(profile) {
   // Register all bruschetta instances that have already been installed.
   for (auto& guest_id :
        guest_os::GetContainers(profile, guest_os::VmType::BRUSCHETTA)) {
+    // Migration: VMs that aren't associated with a config get associated with
+    // the default config.
+    if (!GetContainerPrefValue(profile, guest_id,
+                               guest_os::prefs::kBruschettaConfigId)) {
+      guest_os::UpdateContainerPref(profile, guest_id,
+                                    guest_os::prefs::kBruschettaConfigId,
+                                    base::Value(kBruschettaPolicyId));
+    }
+
     RegisterWithTerminal(std::move(guest_id));
     registered_guests = true;
     bruschetta_installed = true;
   }
 
   // Migrate VMs installed during the alpha. These will have been set up by hand
-  // using vmc so chrome doesn't know about this, but we know what the VM name
+  // using vmc so chrome doesn't know about them, but we know what the VM name
   // should be, so register it here if nothing has been registered from prefs
-  // and the migration flag is turned on. Note that we do not call
-  // `RegisterInPrefs` because these VMs are currently outside of enterprise
-  // policy.
+  // and the migration flag is turned on.
   if (!registered_guests &&
       base::FeatureList::IsEnabled(ash::features::kBruschettaAlphaMigrate)) {
-    auto guest_id = GetBruschettaAlphaId();
-    guest_os::AddContainerToPrefs(profile_, guest_id, {});
-    RegisterWithTerminal(std::move(guest_id));
+    RegisterInPrefs(GetBruschettaAlphaId(), kBruschettaPolicyId);
     bruschetta_installed = true;
   }
 
@@ -93,17 +99,13 @@ BruschettaService* BruschettaService::GetForProfile(Profile* profile) {
 }
 
 void BruschettaService::OnPolicyChanged() {
-  for (auto& guest_id :
+  for (auto guest_id :
        guest_os::GetContainers(profile_, guest_os::VmType::BRUSCHETTA)) {
-    const base::Value* config_id_value = GetContainerPrefValue(
-        profile_, guest_id, guest_os::prefs::kBruschettaConfigId);
-    if (!config_id_value) {
-      // Alpha VM, ignore policy
-      AllowLaunch(std::move(guest_id));
-      continue;
-    }
+    const std::string& config_id =
+        GetContainerPrefValue(profile_, guest_id,
+                              guest_os::prefs::kBruschettaConfigId)
+            ->GetString();
 
-    const std::string& config_id = config_id_value->GetString();
     absl::optional<const base::Value::Dict*> config_opt =
         GetRunnableConfig(profile_, config_id);
     if (!config_opt.has_value()) {

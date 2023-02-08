@@ -9,15 +9,14 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
-#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
@@ -147,22 +146,19 @@ void BruschettaLauncher::StartVm(
     return;
   }
 
-  const base::Value* config_id_value =
+  const std::string config_id =
       GetContainerPrefValue(profile_, MakeBruschettaId(vm_name_),
-                            guest_os::prefs::kBruschettaConfigId);
+                            guest_os::prefs::kBruschettaConfigId)
+          ->GetString();
   RunningVmPolicy launch_policy;
-  if (!config_id_value) {
-    launch_policy = GetLaunchPolicyForConfig(profile_, "").value();
+  auto opt = GetLaunchPolicyForConfig(profile_, config_id);
+  if (!opt.has_value()) {
+    // Policy prohibits starting the VM, so don't.
+    LOG(ERROR) << "Starting VM prohibited by policy";
+    Finish(BruschettaResult::kForbiddenByPolicy);
+    return;
   } else {
-    auto opt = GetLaunchPolicyForConfig(profile_, config_id_value->GetString());
-    if (!opt.has_value()) {
-      // Policy prohibits starting the VM, so don't.
-      LOG(ERROR) << "Starting VM prohibited by policy";
-      Finish(BruschettaResult::kForbiddenByPolicy);
-      return;
-    } else {
-      launch_policy = *opt;
-    }
+    launch_policy = *opt;
   }
 
   std::string user_hash =

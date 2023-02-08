@@ -26,6 +26,7 @@
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,9 +61,11 @@ class BruschettaLauncherTest : public testing::Test,
     response.set_status(vm_tools::concierge::VmStatus::VM_STATUS_RUNNING);
     FakeConciergeClient()->set_start_vm_response(std::move(response));
 
-    guest_os::GuestId id{guest_os::VmType::UNKNOWN, kTestVmName, "penguin"};
+    guest_os::GuestId id{guest_os::VmType::BRUSCHETTA, kTestVmName, "penguin"};
     guest_os::GuestOsSessionTracker::GetForProfile(&profile_)
         ->AddGuestForTesting(id, guest_os::GuestInfo(id, 30, {}, {}, {}, {}));
+
+    SetupPrefs();
   }
 
   void TearDown() override {}
@@ -89,7 +92,7 @@ class BruschettaLauncherTest : public testing::Test,
     return base::WriteFile(bios_path_, "") && base::WriteFile(pflash_path_, "");
   }
 
-  void SetVtpmStatus(bool enabled) {
+  void SetupPrefs() {
     BruschettaService::GetForProfile(&profile_)->RegisterInPrefs(
         MakeBruschettaId(kTestVmName), kTestVmConfig);
 
@@ -99,7 +102,7 @@ class BruschettaLauncherTest : public testing::Test,
                static_cast<int>(prefs::PolicyEnabledState::RUN_ALLOWED));
 
     base::Value::Dict vtpm;
-    vtpm.Set(prefs::kPolicyVTPMEnabledKey, enabled);
+    vtpm.Set(prefs::kPolicyVTPMEnabledKey, true);
     vtpm.Set(prefs::kPolicyVTPMUpdateActionKey,
              static_cast<int>(
                  prefs::PolicyUpdateAction::FORCE_SHUTDOWN_IF_MORE_RESTRICTED));
@@ -109,6 +112,16 @@ class BruschettaLauncherTest : public testing::Test,
     pref.Set(kTestVmConfig, std::move(config));
     profile_.GetPrefs()->SetDict(prefs::kBruschettaVMConfiguration,
                                  std::move(pref));
+  }
+
+  void SetVtpmStatus(bool enabled) {
+    ScopedDictPrefUpdate updater(profile_.GetPrefs(),
+                                 prefs::kBruschettaVMConfiguration);
+
+    updater.Get()
+        .FindDict(kTestVmConfig)
+        ->FindDict(prefs::kPolicyVTPMKey)
+        ->Set(prefs::kPolicyVTPMEnabledKey, enabled);
   }
 
   content::BrowserTaskEnvironment task_environment_{
@@ -265,10 +278,8 @@ TEST_F(BruschettaLauncherTest, LaunchTimeout) {
 TEST_F(BruschettaLauncherTest, LaunchBlockedByPolicy) {
   BruschettaResult result;
 
-  // Give the VM a config, which will be implicitly BLOCKED because it doesn't
-  // exist.
-  BruschettaService::GetForProfile(&profile_)->RegisterInPrefs(
-      MakeBruschettaId(kTestVmName), kTestVmConfig);
+  // Clear the enterprise policy, which implicitly blocks VMs from running.
+  profile_.GetPrefs()->ClearPref(prefs::kBruschettaVMConfiguration);
 
   launcher_->EnsureRunning(StoreResultThenQuitRunLoop(&result));
   run_loop_.Run();

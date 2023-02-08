@@ -96,12 +96,6 @@ bool IsInstalled(Profile* profile, const guest_os::GuestId& guest_id) {
 absl::optional<RunningVmPolicy> GetLaunchPolicyForConfig(
     Profile* profile,
     std::string config_id) {
-  if (config_id.empty()) {
-    // Alpha VM, always allow access to the vTPM.
-    RunningVmPolicy ret = {.vtpm_enabled = true};
-    return ret;
-  }
-
   auto config_option = GetRunnableConfig(profile, config_id);
   if (!config_option.has_value()) {
     return absl::nullopt;
