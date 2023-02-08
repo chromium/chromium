@@ -26,7 +26,7 @@ const wchar_t kUrlForwarderRegisteredAppName[] = L"Chromoting URL Forwarder";
 const wchar_t kRegisteredApplicationsKeyName[] =
     L"SOFTWARE\\RegisteredApplications";
 
-#endif  // defined (OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 bool IsRemoteOpenUrlSupported() {
 #if BUILDFLAG(IS_LINUX)

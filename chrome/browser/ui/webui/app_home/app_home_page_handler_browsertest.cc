@@ -36,7 +36,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/base_paths_win.h"
 #include "base/test/scoped_path_override.h"
-#endif  // BUILDFLAG(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 using web_app::AppId;
 using GetAppsCallback =

@@ -13,7 +13,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "remoting/base/host_settings_win.h"
-#endif  // defined (OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
 

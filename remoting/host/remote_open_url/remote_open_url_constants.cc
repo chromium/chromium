@@ -20,6 +20,6 @@ const wchar_t kUrlForwarderProgId[] = L"ChromotingUrlForwarder";
 
 const wchar_t kUndecidedProgId[] = L"Undecided";
 
-#endif  // defined (OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace remoting

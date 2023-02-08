@@ -19,7 +19,7 @@ extern const wchar_t kUrlForwarderProgId[];
 // The ProgID for undecided default browser, which launches OpenWith.exe.
 extern const wchar_t kUndecidedProgId[];
 
-#endif  // defined (OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace remoting
 

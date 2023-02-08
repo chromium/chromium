@@ -32,6 +32,6 @@ void UnegisterUninstallationViaOsSettingsWithOs(const AppId& app_id,
   // OS.
 }
 
-#endif  //  !defined (OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
 }  // namespace web_app

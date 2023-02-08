@@ -146,6 +146,6 @@ TEST_F(RecoveryImprovedActionHandlerTest, HandleSuccess) {
     runloop.Run();
   }
 }
-#endif  //  OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace component_updater

@@ -199,7 +199,7 @@ void InterfaceFactoryImpl::CreateMediaFoundationRenderer(
 
   AddRenderer(std::move(renderer), std::move(receiver));
 }
-#endif  // defined (OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void InterfaceFactoryImpl::CreateCdm(const CdmConfig& cdm_config,
                                      CreateCdmCallback callback) {
