@@ -530,12 +530,10 @@ bool AngleVulkanImageBacking::InitializePassthroughTexture() {
   }
 
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture;
-  GLTextureImageBackingHelper::MakeTextureAndSetParameters(
-      GL_TEXTURE_2D, /*service_id=*/0,
+  GLuint texture = GLTextureImageBackingHelper::MakeTextureAndSetParameters(
+      GL_TEXTURE_2D,
       /*framebuffer_attachment_angle=*/true, &passthrough_texture, nullptr);
   passthrough_texture->SetEstimatedSize(GetEstimatedSize());
-
-  GLuint texture = passthrough_texture->service_id();
 
   gl::GLApi* api = gl::g_current_gl_context;
   ScopedRestoreTexture scoped_restore(api, GL_TEXTURE_2D);

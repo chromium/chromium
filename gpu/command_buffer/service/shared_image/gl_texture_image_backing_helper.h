@@ -90,13 +90,12 @@ class GPU_GLES2_EXPORT GLTextureImageBackingHelper {
     GLuint old_binding_ = 0;
   };
 
-  // Helper function to create a GL texture.
-  static void MakeTextureAndSetParameters(
+  // Creates a new GL texture and returns GL texture ID.
+  static GLuint MakeTextureAndSetParameters(
       GLenum target,
-      GLuint service_id,
       bool framebuffer_attachment_angle,
       scoped_refptr<gles2::TexturePassthrough>* passthrough_texture,
-      gles2::Texture** texture);
+      raw_ptr<gles2::Texture>* texture);
 
   // Create a Dawn backing. This will use |backing|'s ProduceGLTexture or
   // ProduceGLTexturePassthrough method, and populate the dawn backing via

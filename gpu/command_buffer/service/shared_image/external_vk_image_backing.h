@@ -81,10 +81,6 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
     return promise_texture_;
   }
   VulkanImage* image() const { return image_.get(); }
-  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
-      const {
-    return texture_passthrough_;
-  }
   viz::VulkanContextProvider* context_provider() const {
     return context_state()->vk_context_provider();
   }
@@ -173,8 +169,12 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       MemoryTypeTracker* tracker) override;
 
  private:
-  // Returns texture_service_id for ProduceGLTexture and GLTexturePassthrough.
-  GLuint ProduceGLTextureInternal();
+  // Makes GL context current if not already. Will return false if MakeCurrent()
+  // failed.
+  bool MakeGLContextCurrent();
+
+  // Allocates GL texture and returns true if successful.
+  bool ProduceGLTextureInternal(bool is_passthrough);
 
   using WriteBufferCallback = base::OnceCallback<void(void* buffer)>;
   // TODO(penghuang): Remove it when GrContext::updateBackendTexture() supports

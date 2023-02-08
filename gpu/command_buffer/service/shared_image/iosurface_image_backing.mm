@@ -624,8 +624,7 @@ IOSurfaceImageBacking::RetainGLTexture() {
     // Allocate the GL texture.
     scoped_refptr<gles2::TexturePassthrough> gl_texture;
     GLTextureImageBackingHelper::MakeTextureAndSetParameters(
-        gl_target_, /*service_id=*/0, framebuffer_attachment_angle_,
-        &gl_texture, nullptr);
+        gl_target_, framebuffer_attachment_angle_, &gl_texture, nullptr);
     // Set the IOSurface to be initially unbound from the GL texture.
     gl_texture->SetEstimatedSize(GetEstimatedSize());
     gl_texture->set_bind_pending();

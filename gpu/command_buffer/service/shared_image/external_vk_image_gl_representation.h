@@ -55,8 +55,7 @@ class ExternalVkImageGLRepresentation : public GLTextureImageRepresentation {
   ExternalVkImageGLRepresentation(SharedImageManager* manager,
                                   SharedImageBacking* backing,
                                   MemoryTypeTracker* tracker,
-                                  gles2::Texture* texture,
-                                  GLuint texture_service_id);
+                                  gles2::Texture* texture);
 
   ExternalVkImageGLRepresentation(const ExternalVkImageGLRepresentation&) =
       delete;
@@ -78,10 +77,11 @@ class ExternalVkImageGLRepresentation : public GLTextureImageRepresentation {
 class ExternalVkImageGLPassthroughRepresentation
     : public GLTexturePassthroughImageRepresentation {
  public:
-  ExternalVkImageGLPassthroughRepresentation(SharedImageManager* manager,
-                                             SharedImageBacking* backing,
-                                             MemoryTypeTracker* tracker,
-                                             GLuint texture_service_id);
+  ExternalVkImageGLPassthroughRepresentation(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<gles2::TexturePassthrough> texture);
 
   ExternalVkImageGLPassthroughRepresentation(
       const ExternalVkImageGLPassthroughRepresentation&) = delete;
@@ -97,6 +97,7 @@ class ExternalVkImageGLPassthroughRepresentation
   void EndAccess() override;
 
  private:
+  scoped_refptr<gles2::TexturePassthrough> texture_;
   ExternalVkImageGLRepresentationShared representation_shared_;
 };
 

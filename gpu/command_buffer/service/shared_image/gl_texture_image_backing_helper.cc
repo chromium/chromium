@@ -220,26 +220,24 @@ GLTextureImageBackingHelper::ProduceDawnCommon(
 }
 
 // static
-void GLTextureImageBackingHelper::MakeTextureAndSetParameters(
+GLuint GLTextureImageBackingHelper::MakeTextureAndSetParameters(
     GLenum target,
-    GLuint service_id,
     bool framebuffer_attachment_angle,
     scoped_refptr<gles2::TexturePassthrough>* passthrough_texture,
-    gles2::Texture** texture) {
-  if (!service_id) {
-    gl::GLApi* api = gl::g_current_gl_context;
-    ScopedRestoreTexture scoped_restore(api, target);
+    raw_ptr<gles2::Texture>* texture) {
+  gl::GLApi* api = gl::g_current_gl_context;
+  ScopedRestoreTexture scoped_restore(api, target);
 
-    api->glGenTexturesFn(1, &service_id);
-    api->glBindTextureFn(target, service_id);
-    api->glTexParameteriFn(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    api->glTexParameteriFn(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    api->glTexParameteriFn(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    api->glTexParameteriFn(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    if (framebuffer_attachment_angle) {
-      api->glTexParameteriFn(target, GL_TEXTURE_USAGE_ANGLE,
-                             GL_FRAMEBUFFER_ATTACHMENT_ANGLE);
-    }
+  GLuint service_id = 0;
+  api->glGenTexturesFn(1, &service_id);
+  api->glBindTextureFn(target, service_id);
+  api->glTexParameteriFn(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  api->glTexParameteriFn(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  api->glTexParameteriFn(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  api->glTexParameteriFn(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  if (framebuffer_attachment_angle) {
+    api->glTexParameteriFn(target, GL_TEXTURE_USAGE_ANGLE,
+                           GL_FRAMEBUFFER_ATTACHMENT_ANGLE);
   }
   if (passthrough_texture) {
     *passthrough_texture =
@@ -248,6 +246,7 @@ void GLTextureImageBackingHelper::MakeTextureAndSetParameters(
   if (texture) {
     *texture = gles2::CreateGLES2TextureWithLightRef(service_id, target);
   }
+  return service_id;
 }
 
 }  // namespace gpu

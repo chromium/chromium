@@ -99,7 +99,7 @@ void GLTextureHolder::Initialize(
   format_desc_.storage_internal_format = format_info.storage_internal_format;
 
   GLTextureImageBackingHelper::MakeTextureAndSetParameters(
-      format_desc_.target, /*service_id=*/0, framebuffer_attachment_angle,
+      format_desc_.target, framebuffer_attachment_angle,
       is_passthrough_ ? &passthrough_texture_ : nullptr,
       is_passthrough_ ? nullptr : &texture_);
 
