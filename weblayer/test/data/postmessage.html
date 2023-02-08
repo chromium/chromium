@@ -1,0 +1,16 @@
+<html>
+
+<head><title>Page</title></head>
+<body>
+  <h1>post message test page</h1>
+</body>
+
+<script>
+  let numMessages = 0;
+  window.addEventListener('message', e => {
+    numMessages++;
+    document.title = `postMessage: ${numMessages}`;
+    e.ports[0].postMessage(`message: ${e.data}, source: ${e.origin}`);
+  });
+</script>
+</html>

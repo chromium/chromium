@@ -13,7 +13,9 @@ import androidx.concurrent.futures.CallbackToFutureAdapter;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.chromium.base.ObserverList;
 import org.chromium.webengine.interfaces.ExceptionType;
+import org.chromium.webengine.interfaces.IPostMessageCallback;
 import org.chromium.webengine.interfaces.IStringCallback;
 import org.chromium.webengine.interfaces.ITabParams;
 import org.chromium.webengine.interfaces.ITabProxy;
@@ -31,6 +33,9 @@ public class Tab {
     private TabObserverDelegate mTabObserverDelegate;
     private String mGuid;
     private Uri mUri;
+    private ObserverList<MessageEventListenerProxy> mMessageEventListenerProxies =
+            new ObserverList<>();
+    private boolean mPostMessageReady;
 
     Tab(@NonNull ITabParams tabParams) {
         assert tabParams.tabProxy != null;
@@ -197,6 +202,133 @@ public class Tab {
      */
     public boolean unregisterTabObserver(@NonNull TabObserver tabObserver) {
         return mTabObserverDelegate.unregisterObserver(tabObserver);
+    }
+
+    private class MessageEventListenerProxy {
+        private MessageEventListener mListener;
+        private List<String> mAllowedOrigins;
+
+        private MessageEventListenerProxy(
+                MessageEventListener listener, List<String> allowedOrigins) {
+            mListener = listener;
+            mAllowedOrigins = allowedOrigins;
+        }
+
+        private MessageEventListener getListener() {
+            return mListener;
+        }
+
+        private List<String> getAllowedOrigins() {
+            return mAllowedOrigins;
+        }
+
+        private void onPostMessage(String message, String origin) {
+            if (!mAllowedOrigins.contains("*") && !mAllowedOrigins.contains(origin)) {
+                return;
+            }
+            mListener.onMessage(Tab.this, message);
+        }
+    }
+
+    /**
+     * Add an event listener for post messages from the web content.
+     * @param listener Receives the message events posted for the web content.
+     * @param allowedOrigins The list of origins to accept messages from. "*" will match all
+     *         origins.
+     */
+    public void addMessageEventListener(
+            @NonNull MessageEventListener listener, @NonNull List<String> allowedOrigins) {
+        if (mTabProxy == null) {
+            throw new IllegalStateException("WebSandbox has been destroyed");
+        }
+
+        // TODO(crbug.com/1408811): Validate the list of origins.
+
+        MessageEventListenerProxy proxy = new MessageEventListenerProxy(listener, allowedOrigins);
+        mMessageEventListenerProxies.addObserver(proxy);
+
+        if (mPostMessageReady) {
+            // We already created a message event listener in the sandbox. However we need to update
+            // the list of allowedOrigins in the sandbox. This is done so that a message (with a
+            // valid listener on this end) is sent over IPC once.
+            try {
+                mTabProxy.addMessageEventListener(proxy.getAllowedOrigins());
+            } catch (RemoteException e) {
+                throw new IllegalStateException("Failed to communicate with WebSandbox");
+            }
+            return;
+        }
+
+        IPostMessageCallback callback = new IPostMessageCallback.Stub() {
+            @Override
+            public void onPostMessage(String message, String origin) {
+                for (MessageEventListenerProxy p : mMessageEventListenerProxies) {
+                    p.onPostMessage(message, origin);
+                }
+            }
+        };
+
+        try {
+            mTabProxy.createMessageEventListener(callback, proxy.getAllowedOrigins());
+            mPostMessageReady = true;
+        } catch (RemoteException e) {
+            throw new IllegalStateException("Failed to communicate with WebSandbox");
+        }
+    }
+
+    /**
+     * Removes the event listener.
+     */
+    public void removeMessageEventListener(@NonNull MessageEventListener listener) {
+        MessageEventListenerProxy targetProxy = null;
+        for (MessageEventListenerProxy proxy : mMessageEventListenerProxies) {
+            if (proxy.getListener().equals(listener)) {
+                targetProxy = proxy;
+                break;
+            }
+        }
+        if (targetProxy == null) {
+            return;
+        }
+
+        mMessageEventListenerProxies.removeObserver(targetProxy);
+        try {
+            mTabProxy.removeMessageEventListener(targetProxy.getAllowedOrigins());
+        } catch (RemoteException e) {
+            throw new IllegalStateException("Failed to communicate with WebSandbox");
+        }
+    }
+
+    /**
+     * Sends a post message to the web content. The targetOrigin must also be specified to ensure
+     * the right receiver gets the message.
+     *
+     * To receive the message in the web page, you need to add a "message" event listener to the
+     * window object.
+     *
+     * <pre class="prettyprint">
+     * // Web page (in JavaScript):
+     * window.addEventListener('message', e => {
+     *   // |e.data| contains the payload.
+     *   // |e.origin| contains the host app id, in the format of app://<package_name>.
+     *   console.log('Received message', e.data, 'from', e.origin);
+     *   // |e.ports[0]| can be used to communicate back with the host app.
+     *   e.ports[0].postMessage('Received ' + e.data);
+     * });
+     * </pre>
+     *
+     * @param message The message to be sent to the web page.
+     * @param targetOrigin The origin of the page that should receive the message. If '*' is
+     * provided, the message will be accepted by a page of any origin.
+     */
+    public void postMessage(@NonNull String message, @NonNull String targetOrigin) {
+        if (mTabProxy == null) {
+            throw new IllegalStateException("WebSandbox has been destroyed");
+        }
+        try {
+            mTabProxy.postMessage(message, targetOrigin);
+        } catch (RemoteException e) {
+        }
     }
 
     @Override

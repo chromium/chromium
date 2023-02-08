@@ -524,6 +524,14 @@ class Tab {
         }
     }
 
+    void postMessage(String message, String targetOrigin) {
+        try {
+            mImpl.postMessage(message, targetOrigin);
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
     /**
      * Adds a WebMessageCallback and injects a JavaScript object into each frame that the
      * WebMessageCallback will listen on.
@@ -1005,6 +1013,12 @@ class Tab {
             for (TabCallback callback : mCallbacks) {
                 callback.onVerticalOverscroll(accumulatedOverscrollY);
             }
+        }
+
+        @Override
+        public void onPostMessage(String message, String origin) {
+            StrictModeWorkaround.apply();
+            mTabProxy.onPostMessage(message, origin);
         }
     }
 

@@ -51,6 +51,9 @@ import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.MessagePayload;
+import org.chromium.content_public.browser.MessagePort;
+import org.chromium.content_public.browser.MessagePort.MessageCallback;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -111,6 +114,7 @@ public final class TabImpl extends ITab.Stub {
     private TabViewAndroidDelegate mViewAndroidDelegate;
     private GoogleAccountsCallbackProxy mGoogleAccountsCallbackProxy;
     private ExternalIntentInIncognitoCallbackProxy mExternalIntentInIncognitoCallbackProxy;
+    private MessagePort[] mChannel;
     // BrowserImpl this TabImpl is in.
     @NonNull
     private BrowserImpl mBrowser;
@@ -975,6 +979,31 @@ public final class TabImpl extends ITab.Stub {
     private void handleCloseFromWebContents() throws RemoteException {
         if (getBrowser() == null) return;
         getBrowser().destroyTab(this);
+    }
+
+    private String getAppOrigin() {
+        // TODO(rayankans): Consider exposing the embedder app's fingerprints as well.
+        return "app://" + mBrowser.getContext().getPackageName();
+    }
+
+    @Override
+    public void postMessage(String message, String targetOrigin) {
+        StrictModeWorkaround.apply();
+        mChannel = mWebContents.createMessageChannel();
+        mChannel[0].setMessageCallback(new MessageCallback() {
+            @Override
+            public void onMessage(MessagePayload messagePayload, MessagePort[] sentPorts) {
+                try {
+                    // TODO(rayankans): Convert the byte buffer to a string as well.
+                    mClient.onPostMessage(messagePayload.getAsString(),
+                            mWebContents.getVisibleUrl().getOrigin().getSpec());
+                } catch (RemoteException e) {
+                }
+            }
+        }, null);
+        // TODO(rayankans): Work out channel lifetime so the web content can hold on to the port.
+        mWebContents.postMessageToMainFrame(new MessagePayload(message), getAppOrigin(),
+                targetOrigin, new MessagePort[] {mChannel[1]});
     }
 
     @Override

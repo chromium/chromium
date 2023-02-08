@@ -88,4 +88,6 @@ interface ITab {
   void setExternalIntentInIncognitoCallbackClient(IExternalIntentInIncognitoCallbackClient client) = 33;
 
   String getUri() = 34;
+
+  void postMessage(in String message, in String targetOrigin) = 35;
 }

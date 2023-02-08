@@ -192,6 +192,7 @@ android_aidl("webengine_aidl") {
     "org/chromium/webengine/interfaces/ICookieManagerDelegate.aidl",
     "org/chromium/webengine/interfaces/INavigationObserverDelegate.aidl",
     "org/chromium/webengine/interfaces/INavigationParams.aidl",
+    "org/chromium/webengine/interfaces/IPostMessageCallback.aidl",
     "org/chromium/webengine/interfaces/IStringCallback.aidl",
     "org/chromium/webengine/interfaces/ITabCallback.aidl",
     "org/chromium/webengine/interfaces/ITabListObserverDelegate.aidl",
@@ -226,6 +227,7 @@ android_library("webengine_java") {
   sources = [
     "org/chromium/webengine/CookieManager.java",
     "org/chromium/webengine/ExceptionHelper.java",
+    "org/chromium/webengine/MessageEventListener.java",
     "org/chromium/webengine/Navigation.java",
     "org/chromium/webengine/NavigationObserver.java",
     "org/chromium/webengine/NavigationObserverDelegate.java",

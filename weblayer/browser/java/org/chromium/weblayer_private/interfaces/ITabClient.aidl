@@ -50,4 +50,7 @@ interface ITabClient {
 
   // Added in M101.
   void onVerticalOverscroll(float accumulatedOverscrollY) = 14;
+
+  // Added in M111.
+  void onPostMessage(in String message, in String origin) = 15;
 }

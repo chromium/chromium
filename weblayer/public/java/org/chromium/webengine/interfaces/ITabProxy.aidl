@@ -4,6 +4,7 @@
 
 package org.chromium.webengine.interfaces;
 
+import org.chromium.webengine.interfaces.IPostMessageCallback;
 import org.chromium.webengine.interfaces.IStringCallback;
 import org.chromium.webengine.interfaces.IWebMessageCallback;
 
@@ -19,4 +20,10 @@ oneway interface ITabProxy {
   void unregisterWebMessageCallback(in String jsObjectName) = 5;
 
   void setTabObserverDelegate(ITabObserverDelegate tabObserverDelegate) = 6;
+
+  // PostMessage:
+  void postMessage(in String message, in String targetOrigin) = 7;
+  void createMessageEventListener(in IPostMessageCallback callback, in List<String> allowedOrigins) = 8;
+  void addMessageEventListener(in List<String> allowedOrigins) = 9;
+  void removeMessageEventListener(in List<String> allowedOrigins) = 10;
 }

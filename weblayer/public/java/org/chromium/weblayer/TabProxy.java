@@ -9,11 +9,13 @@ import android.os.Looper;
 import android.os.RemoteException;
 
 import org.chromium.webengine.interfaces.ExceptionType;
+import org.chromium.webengine.interfaces.IPostMessageCallback;
 import org.chromium.webengine.interfaces.IStringCallback;
 import org.chromium.webengine.interfaces.ITabObserverDelegate;
 import org.chromium.webengine.interfaces.ITabProxy;
 import org.chromium.webengine.interfaces.IWebMessageCallback;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,6 +32,13 @@ class TabProxy extends ITabProxy.Stub {
     private WebFragmentTabDelegate mTabObserverDelegate = new WebFragmentTabDelegate();
     private WebFragmentNavigationDelegate mNavigationObserverDelegate =
             new WebFragmentNavigationDelegate();
+
+    // Only use one callback for all the message event listeners. This is to avoid sending the same
+    // message over multiple times. The message can then be proxied to all valid listeners.
+    private IPostMessageCallback mMessageEventListenerCallback;
+
+    // The union of origins allowed by all the listeners. It may contain duplicates.
+    private ArrayList<String> mAllowedOriginsForPostMessage = new ArrayList<>();
 
     TabProxy(Tab tab) {
         mTabId = tab.getId();
@@ -149,5 +158,50 @@ class TabProxy extends ITabProxy.Stub {
     @Override
     public void setTabObserverDelegate(ITabObserverDelegate tabObserverDelegate) {
         mTabObserverDelegate.setObserver(tabObserverDelegate);
+    }
+
+    @Override
+    public void postMessage(String message, String targetOrigin) {
+        mHandler.post(() -> { getTab().postMessage(message, targetOrigin); });
+    }
+
+    @Override
+    public void createMessageEventListener(
+            IPostMessageCallback callback, List<String> allowedOrigins) {
+        assert mMessageEventListenerCallback == null;
+        mMessageEventListenerCallback = callback;
+        mAllowedOriginsForPostMessage.addAll(allowedOrigins);
+    }
+
+    @Override
+    public void addMessageEventListener(List<String> allowedOrigins) {
+        mAllowedOriginsForPostMessage.addAll(allowedOrigins);
+    }
+
+    @Override
+    public void removeMessageEventListener(List<String> allowedOrigins) {
+        for (String origin : allowedOrigins) {
+            // Remove one instance of |origin|. Other listeners may have registered with the same
+            // |origin| and needs to be left in |mAllowedOriginsForPostMessage|.
+            boolean didRemove = mAllowedOriginsForPostMessage.remove(origin);
+            assert didRemove;
+        }
+    }
+
+    void onPostMessage(String message, String origin) {
+        if (mMessageEventListenerCallback == null) {
+            return;
+        }
+
+        if (!mAllowedOriginsForPostMessage.contains("*")
+                && !mAllowedOriginsForPostMessage.contains(origin)) {
+            // No listener was attached to receive this message. Drop it.
+            return;
+        }
+
+        try {
+            mMessageEventListenerCallback.onPostMessage(message, origin);
+        } catch (RemoteException e) {
+        }
     }
 }

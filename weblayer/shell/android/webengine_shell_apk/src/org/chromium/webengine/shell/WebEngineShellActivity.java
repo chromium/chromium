@@ -174,6 +174,11 @@ public class WebEngineShellActivity extends AppCompatActivity {
         mTabManager.registerTabListObserver(
                 new DefaultObservers.DefaultTabListObserver(progressBar, urlBar, mTabManager));
 
+        activeTab.addMessageEventListener((Tab source, String message) -> {
+            Log.w(TAG, "Received post message from web content: " + message);
+        }, Arrays.asList("*"));
+        activeTab.postMessage("Hello!", "*");
+
         ListenableFuture<Void> setCookieFuture =
                 cookieManager.setCookie("https://sadchonks.com", "foo=bar123");
         Futures.addCallback(setCookieFuture, new FutureCallback<Void>() {
