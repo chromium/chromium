@@ -16,6 +16,25 @@ using sandbox::syscall_broker::MakeBrokerCommandSet;
 
 namespace screen_ai {
 
+namespace {
+
+NO_SANITIZE("cfi-icall")
+void CallPresandboxInitFunction(void* presandbox_init_function) {
+  // TODO(crbug.com/1278249): Replace this with DCHECK after library is updated
+  // to 112.0. OCR function will not work without presandbox init but main
+  // content extraction does not require it.
+  if (!presandbox_init_function) {
+    VLOG(0) << "Screen AI library is outdated. Current version does not "
+               "support OCR.";
+    return;
+  }
+
+  typedef void (*PresandboxInitFn)();
+  (*reinterpret_cast<PresandboxInitFn>(presandbox_init_function))();
+}
+
+}  // namespace
+
 bool ScreenAIPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
   base::FilePath library_path = screen_ai::GetLatestComponentBinaryPath();
   if (library_path.empty()) {
@@ -31,6 +50,7 @@ bool ScreenAIPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
       library_path.clear();
     } else {
       VLOG(2) << "Screen AI library loaded pre-sandboxing:" << library_path;
+      CallPresandboxInitFunction(dlsym(screen_ai_library, "PresandboxInit"));
     }
   }
 
