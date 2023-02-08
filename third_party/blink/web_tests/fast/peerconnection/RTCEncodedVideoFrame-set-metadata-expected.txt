@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS setMetadata() does not allow changed properties without special flags
+FAIL setMetadata() allows changes when AllowRTCEncodedVideoFrameSetMetadataAllFields is enabled promise_test: Unhandled rejection with value: object "InvalidModificationError: Failed to execute 'setMetadata' on 'RTCEncodedVideoFrame': Invalid modification of RTCEncodedVideoFrameMetadata."
+Harness: the test ran to completion.
+

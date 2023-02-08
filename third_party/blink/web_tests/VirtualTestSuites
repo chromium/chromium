@@ -1771,5 +1771,14 @@
     ],
     "args": ["--disable-blink-features=DateInputInlineBlock"],
     "expires": "Jun 1, 2023"
+  },
+  {
+    "prefix": "allow-rtc-encoded-video-frame-set-metadata-all-fields",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "fast/peerconnection/RTCEncodedVideoFrame-set-metadata.html"
+    ],
+    "args": ["--enable-features=AllowRTCEncodedVideoFrameSetMetadataAllFields"],
+    "expires": "Jul 1, 2023"
   }
 ]

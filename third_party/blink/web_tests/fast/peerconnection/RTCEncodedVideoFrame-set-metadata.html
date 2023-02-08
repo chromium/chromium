@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<title>Test RTCEncodedVideoFrame.setMetadata in a loopback RTCPeerConnection</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/RTCPeerConnection-helper.js"></script>
+<script>
+"use strict";
+
+async function setupLoopbackWithCodecAndGetReader(t, codec) {
+  const caller = new RTCPeerConnection({encodedInsertableStreams:true});
+  t.add_cleanup(() => caller.close());
+  const callee = new RTCPeerConnection();
+  t.add_cleanup(() => callee.close());
+
+  const stream = await navigator.mediaDevices.getUserMedia({video:true});
+  const videoTrack = stream.getVideoTracks()[0];
+  t.add_cleanup(() => videoTrack.stop());
+
+  const transceiver = caller.addTransceiver(videoTrack);
+  const codecCapability =
+      RTCRtpSender.getCapabilities('video').codecs.find(capability => {
+        return capability.mimeType.includes(codec);
+      });
+  assert_not_equals(codecCapability, undefined);
+  transceiver.setCodecPreferences([codecCapability]);
+
+  const senderStreams = transceiver.sender.createEncodedStreams();
+  exchangeIceCandidates(caller, callee);
+  await exchangeOfferAnswer(caller, callee);
+  return senderStreams.readable.getReader();
+}
+
+promise_test(async t => {
+  const senderReader = await setupLoopbackWithCodecAndGetReader(t, 'VP8');
+  const result = await senderReader.read();
+  const field_values = {
+    'contributingSources':[13],
+    'decodeTargetIndications':['required'],
+    'dependencies':[1],
+    'frameId':2,
+    'frameType':'delta',
+    'height':600,
+    'isLastFrameInPicture':false,
+    'payloadType':17,
+    'simulcastIdx':3,
+    'spatialIndex':4,
+    'synchronizationSource':17,
+    'temporalIndex':5,
+    'width':800
+  }
+  for (const field in field_values) {
+    const metadata = result.value.getMetadata();
+    const clone = result.value.clone();
+    metadata[field] = field_values[field];
+    assert_throws_dom('InvalidModificationError', () => clone.setMetadata(metadata), "For field \"" + field + "\",");
+  }
+  const codec_specific_field_values_vp8 = {
+    'beginningOfPartition':true,
+    'keyIdx':-2,
+    'layerSync':true,
+    'nonReference':true,
+    'partitionId':1,
+    'pictureId':17,
+    'temporalIdx':127,
+    'tl0PicIdx':-3
+  }
+  for (const field in codec_specific_field_values_vp8) {
+    const metadata = result.value.getMetadata();
+    const clone = result.value.clone();
+    metadata.codecSpecifics[field] = codec_specific_field_values_vp8[field];
+    assert_throws_dom('InvalidModificationError', () => clone.setMetadata(metadata), "For field \"codecSpecifics." + field + "\",");
+  }
+}, "setMetadata() does not allow changed properties without special flags");
+
+promise_test(async t => {
+  const senderReader = await setupLoopbackWithCodecAndGetReader(t, 'VP8');
+  const result = await senderReader.read();
+  const field_values = {
+    'contributingSources':[13],
+    'decodeTargetIndications':['required'],
+    'dependencies':[1],
+    'frameId':2,
+    'frameType':'delta',
+    'height':600,
+    'isLastFrameInPicture':false,
+    'simulcastIdx':3,
+    'spatialIndex':4,
+    'temporalIndex':5,
+    'width':800
+    // TODO(https://crbug.com/webrtc/14709): Support setting payloadType
+    // TODO(https://crbug.com/webrtc/14709): Support setting synchronizationSource
+  }
+  const codec_specific_field_values_vp8 = {
+    'beginningOfPartition':true,
+    'keyIdx':-2,
+    'layerSync':true,
+    'nonReference':true,
+    'partitionId':1,
+    'pictureId':17,
+    'temporalIdx':127,
+    'tl0PicIdx':-3
+  }
+  const metadata = result.value.getMetadata();
+  const clone = result.value.clone();
+  for (const field in field_values) {
+    metadata[field] = field_values[field];
+  }
+  for (const field in codec_specific_field_values_vp8) {
+    metadata.codecSpecifics[field] = codec_specific_field_values_vp8[field];
+  }
+  clone.setMetadata(metadata);
+  const cloneMetadata = clone.getMetadata();
+  for (const field in field_values) {
+    if(Array.isArray(field_values[field])) {
+      assert_array_equals(cloneMetadata[field], field_values[field], field);
+    } else {
+      assert_equals(cloneMetadata[field], field_values[field], field);
+    }
+  }
+  for (const field in codec_specific_field_values_vp8) {
+    assert_equals(cloneMetadata.codecSpecifics[field], codec_specific_field_values_vp8[field], field);
+  }
+}, "setMetadata() allows changes when AllowRTCEncodedVideoFrameSetMetadataAllFields is enabled");
+
+</script>

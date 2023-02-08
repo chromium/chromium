@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_codec_specifics_vp_8.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_decode_target_indication.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_metadata.h"
@@ -18,6 +19,11 @@
 namespace blink {
 
 namespace {
+
+// Allow all fields to be set when calling RTCEncodedVideoFrame.setMetadata.
+BASE_FEATURE(kAllowRTCEncodedVideoFrameSetMetadataAllFields,
+             "AllowRTCEncodedVideoFrameSetMetadataAllFields",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 V8RTCDecodeTargetIndication
 V8RTCDecodeTargetIndicationFromDecodeTargetIndication(
@@ -112,6 +118,84 @@ webrtc::VideoFrameType VideoFrameTypeFromRTCEncodedVideoFrameType(
     NOTREACHED();
     return webrtc::VideoFrameType::kEmptyFrame;
   }
+}
+
+bool IsAllowedCodecSpecificsVP8Change(
+    const RTCCodecSpecificsVP8* original_vp8_specifics,
+    const RTCCodecSpecificsVP8* vp8_specifics) {
+  return vp8_specifics->beginningOfPartition() ==
+             original_vp8_specifics->beginningOfPartition() &&
+         vp8_specifics->keyIdx() == original_vp8_specifics->keyIdx() &&
+         vp8_specifics->layerSync() == original_vp8_specifics->layerSync() &&
+         vp8_specifics->nonReference() ==
+             original_vp8_specifics->nonReference() &&
+         vp8_specifics->partitionId() ==
+             original_vp8_specifics->partitionId() &&
+         vp8_specifics->pictureId() == original_vp8_specifics->pictureId() &&
+         vp8_specifics->temporalIdx() ==
+             original_vp8_specifics->temporalIdx() &&
+         vp8_specifics->tl0PicIdx() == original_vp8_specifics->tl0PicIdx();
+}
+
+void SetCodecSpecificsVP8(webrtc::VideoFrameMetadata& webrtc_metadata,
+                          const RTCEncodedVideoFrameMetadata* original_metadata,
+                          const RTCEncodedVideoFrameMetadata* metadata,
+                          ExceptionState& exception_state) {
+  RTCCodecSpecificsVP8* vp8_specifics = metadata->codecSpecifics();
+  if (!vp8_specifics->hasNonReference() || !vp8_specifics->hasPictureId() ||
+      !vp8_specifics->hasTl0PicIdx() || !vp8_specifics->hasTemporalIdx() ||
+      !vp8_specifics->hasLayerSync() || !vp8_specifics->hasKeyIdx() ||
+      !vp8_specifics->hasPartitionId() ||
+      !vp8_specifics->hasBeginningOfPartition()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidModificationError,
+        "Member(s) missing in RTCCodecSpecificsVP8.");
+    return;
+  }
+  RTCCodecSpecificsVP8* original_vp8_specifics =
+      original_metadata->codecSpecifics();
+  if (!IsAllowedCodecSpecificsVP8Change(original_vp8_specifics,
+                                        vp8_specifics) &&
+      !base::FeatureList::IsEnabled(
+          kAllowRTCEncodedVideoFrameSetMetadataAllFields)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidModificationError,
+        "Invalid modification of RTCEncodedVideoFrameMetadata.");
+    return;
+  }
+  webrtc::RTPVideoHeaderVP8 webrtc_vp8_specifics;
+  webrtc_vp8_specifics.nonReference = vp8_specifics->nonReference();
+  webrtc_vp8_specifics.pictureId = vp8_specifics->pictureId();
+  webrtc_vp8_specifics.tl0PicIdx = vp8_specifics->tl0PicIdx();
+  webrtc_vp8_specifics.temporalIdx = vp8_specifics->temporalIdx();
+  webrtc_vp8_specifics.layerSync = vp8_specifics->layerSync();
+  webrtc_vp8_specifics.keyIdx = vp8_specifics->keyIdx();
+  webrtc_vp8_specifics.partitionId = vp8_specifics->partitionId();
+  webrtc_vp8_specifics.beginningOfPartition =
+      vp8_specifics->beginningOfPartition();
+  webrtc_metadata.SetRTPVideoHeaderCodecSpecifics(webrtc_vp8_specifics);
+}
+
+bool IsAllowedSetMetadataChange(
+    const RTCEncodedVideoFrameMetadata* original_metadata,
+    const RTCEncodedVideoFrameMetadata* metadata) {
+  return metadata->contributingSources() ==
+             original_metadata->contributingSources() &&
+         metadata->frameId() == original_metadata->frameId() &&
+         metadata->height() == original_metadata->height() &&
+         metadata->isLastFrameInPicture() ==
+             original_metadata->isLastFrameInPicture() &&
+         metadata->payloadType() == original_metadata->payloadType() &&
+         metadata->simulcastIdx() == original_metadata->simulcastIdx() &&
+         metadata->spatialIndex() == original_metadata->spatialIndex() &&
+         metadata->synchronizationSource() ==
+             original_metadata->synchronizationSource() &&
+         metadata->temporalIndex() == original_metadata->temporalIndex() &&
+         metadata->frameType() == original_metadata->frameType() &&
+         metadata->width() == original_metadata->width() &&
+         metadata->dependencies() == original_metadata->dependencies() &&
+         metadata->decodeTargetIndications() ==
+             original_metadata->decodeTargetIndications();
 }
 
 }  // namespace
@@ -231,8 +315,33 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
         "Member(s) missing in RTCEncodedVideoFrameMetadata.");
     return;
   }
+  RTCEncodedVideoFrameMetadata* original_metadata = getMetadata();
+  if (!original_metadata) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidModificationError,
+        "Internal error when calling setMetadata.");
+    return;
+  }
+  if (!IsAllowedSetMetadataChange(original_metadata, metadata) &&
+      !base::FeatureList::IsEnabled(
+          kAllowRTCEncodedVideoFrameSetMetadataAllFields)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidModificationError,
+        "Invalid modification of RTCEncodedVideoFrameMetadata.");
+    return;
+  }
+
+  const auto* original_webrtc_metadata = delegate_->GetMetadata();
+  if (!original_metadata) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidModificationError,
+        "Internal error when calling setMetadata.");
+    return;
+  }
+  // Initialize the new metadata from original_metadata to account for fields
+  // not part of RTCEncodedVideoFrameMetadata.
+  webrtc::VideoFrameMetadata webrtc_metadata = *original_webrtc_metadata;
   // TODO(https://crbug.com/webrtc/14709): Also set RTP related metadata.
-  webrtc::VideoFrameMetadata webrtc_metadata;
   webrtc_metadata.SetFrameId(metadata->frameId());
   webrtc_metadata.SetFrameDependencies(metadata->dependencies());
   webrtc_metadata.SetWidth(metadata->width());
@@ -257,27 +366,11 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
   webrtc_metadata.SetCodec(codec);
   switch (codec) {
     case webrtc::VideoCodecType::kVideoCodecVP8: {
-      RTCCodecSpecificsVP8* vp8_specifics = metadata->codecSpecifics();
-      if (!vp8_specifics->hasNonReference() || !vp8_specifics->hasPictureId() ||
-          !vp8_specifics->hasTl0PicIdx() || !vp8_specifics->hasTemporalIdx() ||
-          !vp8_specifics->hasLayerSync() || !vp8_specifics->hasKeyIdx() ||
-          !vp8_specifics->hasPartitionId() ||
-          !vp8_specifics->hasBeginningOfPartition()) {
-        exception_state.ThrowDOMException(
-            DOMExceptionCode::kInvalidModificationError,
-            "Member(s) missing in RTCCodecSpecificsVP8.");
+      SetCodecSpecificsVP8(webrtc_metadata, original_metadata, metadata,
+                           exception_state);
+      if (exception_state.HadException()) {
+        return;
       }
-      webrtc::RTPVideoHeaderVP8 webrtc_vp8_specifics;
-      webrtc_vp8_specifics.nonReference = vp8_specifics->nonReference();
-      webrtc_vp8_specifics.pictureId = vp8_specifics->pictureId();
-      webrtc_vp8_specifics.tl0PicIdx = vp8_specifics->tl0PicIdx();
-      webrtc_vp8_specifics.temporalIdx = vp8_specifics->temporalIdx();
-      webrtc_vp8_specifics.layerSync = vp8_specifics->layerSync();
-      webrtc_vp8_specifics.keyIdx = vp8_specifics->keyIdx();
-      webrtc_vp8_specifics.partitionId = vp8_specifics->partitionId();
-      webrtc_vp8_specifics.beginningOfPartition =
-          vp8_specifics->beginningOfPartition();
-      webrtc_metadata.SetRTPVideoHeaderCodecSpecifics(webrtc_vp8_specifics);
       break;
     }
     default:
