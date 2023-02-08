@@ -1456,7 +1456,7 @@ TEST_F(HistoryBackendDBTest, CheckLastCompatibleVersion) {
       // Manually set last compatible version to one higher
       // than current version.
       sql::MetaTable meta;
-      meta.Init(&db, 1, 1);
+      ASSERT_TRUE(meta.Init(&db, 1, 1));
       meta.SetCompatibleVersionNumber(HistoryDatabase::GetCurrentVersion() + 1);
     }
   }
@@ -1475,7 +1475,7 @@ TEST_F(HistoryBackendDBTest, CheckLastCompatibleVersion) {
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
     {
       sql::MetaTable meta;
-      meta.Init(&db, 1, 1);
+      ASSERT_TRUE(meta.Init(&db, 1, 1));
       // Current browser version must be already higher than 28.
       ASSERT_LT(28, HistoryDatabase::GetCurrentVersion());
       // Expect that version in DB remains the same.
