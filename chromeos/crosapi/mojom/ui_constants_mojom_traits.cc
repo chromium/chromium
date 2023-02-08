@@ -37,7 +37,7 @@ bool EnumTraits<crosapi::mojom::ResourceScaleFactor, ui::ResourceScaleFactor>::
       *output = ui::ResourceScaleFactor::k100Percent;
       return true;
     case crosapi::mojom::ResourceScaleFactor::k200Percent:
-      *output = ui::ResourceScaleFactor::k100Percent;
+      *output = ui::ResourceScaleFactor::k200Percent;
       return true;
     case crosapi::mojom::ResourceScaleFactor::k300Percent:
       *output = ui::ResourceScaleFactor::k300Percent;
