@@ -56,8 +56,8 @@ std::atomic<bool> g_use_thread_priority_lowest{false};
 std::atomic<bool> g_above_normal_compositing_browser{false};
 
 // These values are sometimes returned by ::GetThreadPriority().
-constexpr int kWinNormalPriority1 = 5;
-constexpr int kWinNormalPriority2 = 6;
+constexpr int kWinDisplayPriority1 = 5;
+constexpr int kWinDisplayPriority2 = 6;
 
 // The information on how to set the thread name comes from
 // a MSDN article: http://msdn2.microsoft.com/en-us/library/xcb2z8hs.aspx
@@ -544,10 +544,10 @@ ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
       return ThreadPriorityForTest::kUtility;
     case THREAD_PRIORITY_NORMAL:
       return ThreadPriorityForTest::kNormal;
-    case kWinNormalPriority1:
+    case kWinDisplayPriority1:
       [[fallthrough]];
-    case kWinNormalPriority2:
-      return ThreadPriorityForTest::kNormal;
+    case kWinDisplayPriority2:
+      return ThreadPriorityForTest::kDisplay;
     case THREAD_PRIORITY_ABOVE_NORMAL:
     case THREAD_PRIORITY_HIGHEST:
       return ThreadPriorityForTest::kDisplay;
