@@ -1019,6 +1019,9 @@ BASE_FEATURE(kGesturePropertiesDBusService,
 // native screen capture tool.
 BASE_FEATURE(kGifRecording, "GifRecording", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the displaying of animated gifs in ash.
+BASE_FEATURE(kGifRendering, "GifRendering", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables a Files banner about Google One offer.
 BASE_FEATURE(kGoogleOneOfferFilesBanner,
              "GoogleOneOfferFilesBanner",
@@ -2572,6 +2575,10 @@ bool IsGalleryAppPdfEditNotificationEnabled() {
 
 bool IsGifRecordingEnabled() {
   return base::FeatureList::IsEnabled(kGifRecording);
+}
+
+bool IsGifRenderingEnabled() {
+  return base::FeatureList::IsEnabled(kGifRendering);
 }
 
 bool AreGlanceablesEnabled() {
