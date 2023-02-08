@@ -6,11 +6,11 @@
 
 #include <algorithm>
 
-#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/public/features.h"
 #include "media/base/media_util.h"
+#include "third_party/openscreen/src/platform/base/span.h"
 
 namespace cast_streaming {
 
@@ -135,7 +135,7 @@ void StreamConsumer::MaybeSendNextFrame() {
   // Write to temporary storage in case we need to drop this frame.
   pending_buffer_offset_ = 0;
   encoded_frame = receiver_->ConsumeNextFrame(
-      base::span<uint8_t>(pending_buffer_, buffer_size));
+      openscreen::ByteBuffer(&pending_buffer_[0], buffer_size));
 
   // If the frame occurs before the id we want to flush until, drop it and try
   // again.

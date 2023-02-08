@@ -11,7 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/public/config_conversions.h"
 #include "components/cast_streaming/test/cast_message_port_sender_impl.h"
-#include "third_party/openscreen/src/platform/base/byte_view.h"
+#include "third_party/openscreen/src/platform/base/span.h"
 
 namespace cast_streaming {
 

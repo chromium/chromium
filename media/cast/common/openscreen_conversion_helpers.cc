@@ -4,7 +4,7 @@
 
 #include "media/cast/common/openscreen_conversion_helpers.h"
 
-#include "third_party/openscreen/src/platform/base/byte_view.h"
+#include "third_party/openscreen/src/platform/base/span.h"
 
 namespace media::cast {
 
