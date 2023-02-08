@@ -317,8 +317,8 @@ These mac specializations are required due to launching from platform shortcut a
 | WMLC | install_or_shortcut(FileHandler) | launch_file_expect_dialog(FileHandler, MultipleFooFiles, Allow, AskAgain) | check_pwa_window_created(FileHandler, One) | check_files_loaded_in_site(FileHandler, MultipleFooFiles) |
 | WMLC | install_or_shortcut(FileHandler) | launch_file_expect_dialog(FileHandler, OneBarFile, Allow, AskAgain) |
 | WMLC | install_or_shortcut(FileHandler) | launch_file_expect_dialog(FileHandler, OneBarFile, Allow, AskAgain) | check_pwa_window_created(FileHandler, One) | check_files_loaded_in_site(FileHandler, OneBarFile) |
-| #WMLC | install_or_shortcut(FileHandler) | launch_file_expect_dialog(FileHandler, MultipleBarFiles, Allow, AskAgain) |
-| #WMLC | install_or_shortcut(FileHandler) | launch_file_expect_dialog(FileHandler, MultipleBarFiles, Allow, AskAgain) | check_pwa_window_created(FileHandler, Two) | check_files_loaded_in_site(FileHandler, MultipleBarFiles) |
+| WMLC | install_or_shortcut(FileHandler) | launch_file_expect_dialog(FileHandler, MultipleBarFiles, Allow, AskAgain) |
+| WMLC | install_or_shortcut(FileHandler) | launch_file_expect_dialog(FileHandler, MultipleBarFiles, Allow, AskAgain) | check_pwa_window_created(FileHandler, Two) | check_files_loaded_in_site(FileHandler, MultipleBarFiles) |
 | # Dialog options |
 | WMLC | install_or_shortcut(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, Remember) | launch_file_expect_no_dialog(FileHandler, OneFooFile) | check_pwa_window_created(FileHandler, One) |
 | WMLC | install_or_shortcut(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, AskAgain) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, AskAgain) |
