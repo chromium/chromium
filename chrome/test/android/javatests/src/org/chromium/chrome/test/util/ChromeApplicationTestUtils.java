@@ -39,7 +39,7 @@ public class ChromeApplicationTestUtils {
     // Increase the default timeout, as it can take a long time for Android to
     // fully stop/start Chrome.
     private static final long CHROME_STOP_START_TIMEOUT_MS =
-            Math.max(10000L, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
+            Math.max(20000L, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
 
     private static PowerManager.WakeLock sWakeLock;
 

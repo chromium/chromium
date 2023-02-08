@@ -320,7 +320,6 @@ public class StartSurfaceBackButtonTest {
     @Feature({"StartSurface"})
     // clang-format off
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
-    @DisabledTest(message = "https://crbug.com/1246457")
     @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
     public void testSwipeBackOnStartSurfaceHomePage() throws ExecutionException {
         // clang-format on
