@@ -2726,12 +2726,22 @@
     'modifications': {
       'android-11-x86-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11_12.media_unittests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter',
         ],
       },
       'android-12-x64-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11_12.media_unittests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter',
+        ],
+      },
+      'android-12l-x64-dbg-tests': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter',
+        ],
+      },
+      'android-13-x64-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter',
         ],
       },
       'android-pie-arm64-rel': {
