@@ -672,10 +672,13 @@ bool BrowserAccessibilityManagerWin::
 // static
 UiaRaiseActiveTextPositionChangedEventFunction
 BrowserAccessibilityManagerWin::GetUiaActiveTextPositionChangedEventFunction() {
-  // This API is only supported from Win8.1 onwards. On older platforms (such as
-  // Windows 7), we will return nullptr for the querying result for the address
-  // of the method "UiaRaiseActiveTextPositionChangedEvent" in
-  // uiautomationcore.dll.
+  // MSDN
+  // (https://learn.microsoft.com/en-us/windows/win32/api/uiautomationcoreapi/nf-uiautomationcoreapi-uiaraiseactivetextpositionchangedevent)
+  // claims this API is fully supported from Win8.1 ownwards, but older
+  // versions of this dll on Win10 (e.g., Windows-10-15063 aka. version 1703)
+  // don't seem to have the API, which makes chrome.dll fail to load, if
+  // ::UiaRaiseActiveTextPositionChangedEvent is called directly. On these older
+  // versions of Win10, we will return nullptr.
   return reinterpret_cast<UiaRaiseActiveTextPositionChangedEventFunction>(
       ::GetProcAddress(::GetModuleHandle(L"uiautomationcore.dll"),
                        "UiaRaiseActiveTextPositionChangedEvent"));
