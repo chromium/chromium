@@ -64,9 +64,6 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   input->allow_uninstall = true;
   input->handles_intents = true;
 
-  input->shortcuts.push_back(
-      std::make_unique<apps::Shortcut>("test_id", "test_name", /*position*/ 1));
-
   input->is_platform_app = true;
 
   apps::AppPtr output;
@@ -125,8 +122,6 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
 
   EXPECT_TRUE(output->allow_uninstall.value());
   EXPECT_TRUE(output->handles_intents.value());
-
-  EXPECT_TRUE(output->shortcuts.empty());
 
   EXPECT_TRUE(output->is_platform_app.value());
 }

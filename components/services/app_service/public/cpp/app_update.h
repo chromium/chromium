@@ -168,9 +168,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   absl::optional<apps::RunOnOsLogin> RunOnOsLogin() const;
   bool RunOnOsLoginChanged() const;
 
-  apps::Shortcuts Shortcuts() const;
-  bool ShortcutsChanged() const;
-
   const ::AccountId& AccountId() const;
 
   absl::optional<uint64_t> AppSizeInBytes() const;

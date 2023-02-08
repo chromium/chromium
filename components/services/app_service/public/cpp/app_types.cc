@@ -99,8 +99,6 @@ AppPtr App::Clone() const {
                                               run_on_os_login->is_managed);
   }
 
-  app->shortcuts = CloneShortcuts(shortcuts);
-
   app->app_size_in_bytes = app_size_in_bytes;
   app->data_size_in_bytes = data_size_in_bytes;
 

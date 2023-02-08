@@ -214,14 +214,6 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   // Whether the app runs on os login in a new window or not.
   absl::optional<RunOnOsLogin> run_on_os_login;
 
-  // Shortcuts help users perform specific actions easily.
-  // This vector must be treated atomically, if there is a shortcut
-  // change, the publisher must send through the entire list of shortcuts.
-  // Should contain no duplicate IDs.
-  // If empty during updates, Subscriber can assume no changes.
-  // There is no guarantee that this is sorted by any criteria.
-  Shortcuts shortcuts;
-
   // Storage space size for app and associated data.
   absl::optional<uint64_t> app_size_in_bytes;
   absl::optional<uint64_t> data_size_in_bytes;

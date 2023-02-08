@@ -126,9 +126,6 @@ class AppUpdateTest : public testing::Test {
   absl::optional<RunOnOsLogin> expect_run_on_os_login_;
   bool expect_run_on_os_login_changed_;
 
-  Shortcuts expect_shortcuts_;
-  bool expect_shortcuts_changed_;
-
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
 
   absl::optional<uint64_t> expect_app_size_in_bytes_;
@@ -167,7 +164,6 @@ class AppUpdateTest : public testing::Test {
     expect_resize_locked_changed_ = false;
     expect_window_mode_changed_ = false;
     expect_run_on_os_login_changed_ = false;
-    expect_shortcuts_changed_ = false;
     expect_app_size_in_bytes_changed_ = false;
     expect_data_size_in_bytes_changed_ = false;
   }
@@ -263,9 +259,6 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_run_on_os_login_, u.RunOnOsLogin());
     EXPECT_EQ(expect_run_on_os_login_changed_, u.RunOnOsLoginChanged());
 
-    EXPECT_TRUE(IsEqual(expect_shortcuts_, u.Shortcuts()));
-    EXPECT_EQ(expect_shortcuts_changed_, u.ShortcutsChanged());
-
     EXPECT_EQ(account_id_, u.AccountId());
 
     EXPECT_EQ(expect_app_size_in_bytes_, u.AppSizeInBytes());
@@ -312,7 +305,6 @@ class AppUpdateTest : public testing::Test {
     expect_run_on_os_login_ = absl::nullopt;
     expect_app_size_in_bytes_ = absl::nullopt;
     expect_data_size_in_bytes_ = absl::nullopt;
-    expect_shortcuts_.clear();
     ExpectNoChange();
     CheckExpects(u);
 
@@ -1041,44 +1033,6 @@ class AppUpdateTest : public testing::Test {
       AppUpdate::Merge(state, delta);
       EXPECT_EQ(expect_run_on_os_login_.value(),
                 state->run_on_os_login.value());
-      ExpectNoChange();
-      CheckExpects(u);
-    }
-
-    // Shortcuts tests.
-    if (state) {
-      auto s0 = std::make_unique<Shortcut>("1", "Launch");
-      auto s1 = std::make_unique<Shortcut>("2", "Notes", 2);
-
-      state->shortcuts.push_back(s0->Clone());
-      state->shortcuts.push_back(s1->Clone());
-
-      expect_shortcuts_.push_back(s0->Clone());
-      expect_shortcuts_.push_back(s1->Clone());
-
-      expect_shortcuts_changed_ = false;
-      CheckExpects(u);
-    }
-
-    if (delta) {
-      expect_shortcuts_.clear();
-
-      auto s0 = std::make_unique<Shortcut>("1", "Launch browser");
-      auto s1 = std::make_unique<Shortcut>("2", "Notes", 3);
-
-      delta->shortcuts.push_back(s0->Clone());
-      delta->shortcuts.push_back(s1->Clone());
-
-      expect_shortcuts_.push_back(s0->Clone());
-      expect_shortcuts_.push_back(s1->Clone());
-
-      expect_shortcuts_changed_ = true;
-      CheckExpects(u);
-    }
-
-    if (state) {
-      apps::AppUpdate::Merge(state, delta);
-      EXPECT_TRUE(IsEqual(expect_shortcuts_, state->shortcuts));
       ExpectNoChange();
       CheckExpects(u);
     }
