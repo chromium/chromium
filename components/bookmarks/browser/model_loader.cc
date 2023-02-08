@@ -48,16 +48,18 @@ void LoadBookmarks(const base::FilePath& path,
     // all bookmarks if some titles have invalid utf.
     JSONFileValueDeserializer deserializer(
         path, base::JSON_REPLACE_INVALID_CHARACTERS);
-    std::unique_ptr<base::Value> root =
+    std::unique_ptr<base::Value> root_value =
         deserializer.Deserialize(nullptr, nullptr);
 
-    if (root) {
+    if (!root_value) {
+      // The bookmark file exists but was not deserialized.
+    } else if (const auto* root_dict = root_value->GetIfDict()) {
       // Building the index can take a while, so we do it on the background
       // thread.
       int64_t max_node_id = 0;
       std::string sync_metadata_str;
       BookmarkCodec codec;
-      codec.Decode(*root, details->bb_node(), details->other_folder_node(),
+      codec.Decode(*root_dict, details->bb_node(), details->other_folder_node(),
                    details->mobile_folder_node(), &max_node_id,
                    &sync_metadata_str);
       details->set_sync_metadata_str(std::move(sync_metadata_str));

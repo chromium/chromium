@@ -154,16 +154,14 @@ class BookmarkFaviconFetcher : public base::SupportsUserData::Data {
 // Class responsible for the actual writing. Takes ownership of favicons_map.
 class Writer : public base::RefCountedThreadSafe<Writer> {
  public:
-  Writer(base::Value bookmarks,
+  Writer(base::Value::Dict bookmarks,
          const base::FilePath& path,
          BookmarkFaviconFetcher::URLFaviconMap* favicons_map,
          BookmarksExportObserver* observer)
       : bookmarks_(std::move(bookmarks)),
         path_(path),
         favicons_map_(favicons_map),
-        observer_(observer) {
-    DCHECK(bookmarks_.is_dict());
-  }
+        observer_(observer) {}
 
   Writer(const Writer&) = delete;
   Writer& operator=(const Writer&) = delete;
@@ -180,8 +178,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
       return;
     }
 
-    base::Value::Dict* roots =
-        bookmarks_.GetDict().FindDict(BookmarkCodec::kRootsKey);
+    base::Value::Dict* roots = bookmarks_.FindDict(BookmarkCodec::kRootsKey);
     DCHECK(roots);
 
     base::Value::Dict* root_folder_value =
@@ -418,7 +415,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
 
   // The BookmarkModel as a base::Value. This value was generated from the
   // BookmarkCodec.
-  base::Value bookmarks_;
+  base::Value::Dict bookmarks_;
 
   // Path we're writing to.
   base::FilePath path_;
