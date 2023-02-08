@@ -818,6 +818,9 @@ class PdfAccessibilityTreeBuilder {
                                    button.control_count);
       button_node->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
                                    button.control_index + 1);
+      button_node->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kCheck);
+    } else {
+      button_node->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kPress);
     }
 
     button_node->relative_bounds.bounds = button.bounds;
@@ -836,6 +839,9 @@ class PdfAccessibilityTreeBuilder {
     listbox_option_node->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
                                           choice_field_option.is_selected);
     listbox_option_node->AddState(ax::mojom::State::kFocusable);
+    listbox_option_node->SetDefaultActionVerb(
+        ax::mojom::DefaultActionVerb::kSelect);
+
     return listbox_option_node;
   }
 
@@ -902,6 +908,11 @@ class PdfAccessibilityTreeBuilder {
 
     combobox_input_node->AddState(ax::mojom::State::kFocusable);
     combobox_input_node->relative_bounds.bounds = choice_field.bounds;
+    if (input_role == ax::mojom::Role::kComboBoxMenuButton) {
+      combobox_input_node->SetDefaultActionVerb(
+          ax::mojom::DefaultActionVerb::kOpen);
+    }
+
     return combobox_input_node;
   }
 
