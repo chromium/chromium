@@ -489,6 +489,7 @@ const base::TimeDelta kToobarSlideInAnimationDuration = base::Milliseconds(500);
               handler:^(UIAction* uiAction) {
                 base::RecordAction(
                     base::UserMetricsAction("MobileMenuToolbarMenuTriggered"));
+                TriggerHapticFeedbackForImpact(UIImpactFeedbackStyleHeavy);
                 weakButton.menu =
                     [weakSelf.menuProvider menuForButtonOfType:buttonType];
               }];
