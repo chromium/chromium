@@ -122,13 +122,6 @@ struct OverflowMenuDestinationButton: ButtonStyle {
     return -Dimensions.iconWidth + (Dimensions.newLabelBadgeWidth - 10)
   }
 
-  var newLabelString: String {
-    if let newString = L10NUtils.string(forMessageId: IDS_IOS_TOOLS_MENU_CELL_NEW_FEATURE_BADGE) {
-      return String(newString.prefix(1))
-    }
-    return ""
-  }
-
   /// Build the image to be displayed, based on the configuration of the item.
   /// TODO(crbug.com/1315544): Remove this once only the symbols are present.
   @ViewBuilder
@@ -152,7 +145,9 @@ struct OverflowMenuDestinationButton: ButtonStyle {
             .frame(width: Dimensions.newLabelBadgeWidth, height: Dimensions.newLabelBadgeWidth)
             .offset(x: newBadgeOffsetX, y: newBadgeOffsetY)
             .overlay {
-              if !newLabelString.isEmpty {
+              if let newLabelString = L10NUtils.string(
+                forMessageId: IDS_IOS_NEW_LABEL_FEATURE_BADGE)
+              {
                 Text(newLabelString)
                   .font(.system(size: 10, weight: .bold, design: .rounded))
                   .offset(x: newBadgeOffsetX, y: newBadgeOffsetY)
