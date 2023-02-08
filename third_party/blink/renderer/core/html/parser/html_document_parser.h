@@ -43,7 +43,6 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_options.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_reentry_permit.h"
 #include "third_party/blink/renderer/core/html/parser/html_preload_scanner.h"
-#include "third_party/blink/renderer/core/html/parser/html_token_producer.h"
 #include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
 #include "third_party/blink/renderer/core/html/parser/html_tree_builder.h"
 #include "third_party/blink/renderer/core/html/parser/parser_synchronization_policy.h"
@@ -112,9 +111,9 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   // Exposed so that tests can check that the parser's exited in a good state.
   bool HasPendingWorkScheduledForTesting() const;
 
-  bool DidPumpTokenizerForTesting() const { return did_pump_tokenizer_; }
+  HTMLTokenizer& tokenizer() { return tokenizer_; }
 
-  HTMLTokenProducer* TokenProducerForTesting() { return token_producer_.get(); }
+  bool DidPumpTokenizerForTesting() const { return did_pump_tokenizer_; }
 
   unsigned GetChunkCountForTesting() const;
 
@@ -132,11 +131,6 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   static void FlushPreloadScannerThreadForTesting();
 
  protected:
-  HTMLDocumentParser(HTMLDocument&,
-                     ParserSynchronizationPolicy,
-                     ParserPrefetchPolicy prefetch_policy,
-                     bool can_use_background_token_producer);
-
   void insert(const String&) final;
   void Append(const String&) override;
   void Finish() final;
@@ -144,10 +138,6 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   HTMLTreeBuilder* TreeBuilder() const { return tree_builder_.Get(); }
 
   void ForcePlaintextForTextDocument();
-
-  void SetTokenizerState(HTMLTokenizer::State state) {
-    token_producer_->SetTokenizerState(state);
-  }
 
  private:
   HTMLDocumentParser(Document&,
@@ -253,10 +243,6 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
     return !pending_preload_data_.empty();
   }
 
-  void CreateTokenProducer(
-      bool can_use_background_token_producer = true,
-      HTMLTokenizer::State initial_state = HTMLTokenizer::kDataState);
-
   // Returns true if the data should be processed (tokenizer pumped) now. If
   // this returns false, SchedulePumpTokenizer() should be called. This is
   // called when data is available.
@@ -266,8 +252,8 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   const HTMLParserOptions options_;
   Member<HTMLParserReentryPermit> reentry_permit_ =
       MakeGarbageCollected<HTMLParserReentryPermit>();
+  HTMLTokenizer tokenizer_;
 
-  std::unique_ptr<HTMLTokenProducer> token_producer_;
   Member<HTMLParserScriptRunner> script_runner_;
   Member<HTMLTreeBuilder> tree_builder_;
 

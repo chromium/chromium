@@ -44,7 +44,6 @@ class DocumentFragment;
 class Element;
 class HTMLDocument;
 class HTMLDocumentParser;
-class HTMLTokenProducer;
 
 class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
  public:
@@ -56,15 +55,13 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
                   Document&,
                   ParserContentPolicy,
                   const HTMLParserOptions&,
-                  bool include_shadow_roots,
-                  HTMLTokenProducer* token_producer);
+                  bool include_shadow_roots);
   HTMLTreeBuilder(HTMLDocumentParser*,
                   DocumentFragment*,
                   Element* context_element,
                   ParserContentPolicy,
                   const HTMLParserOptions&,
-                  bool include_shadow_roots,
-                  HTMLTokenProducer* token_producer);
+                  bool include_shadow_roots);
   HTMLTreeBuilder(const HTMLTreeBuilder&) = delete;
   HTMLTreeBuilder& operator=(const HTMLTreeBuilder&) = delete;
   ~HTMLTreeBuilder();
@@ -270,10 +267,6 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
   TextPosition script_to_process_start_position_;
 
   HTMLParserOptions options_;
-
-  // This is owned by HTMLDocumentParser, kept as a member as needed quite
-  // frequently.
-  HTMLTokenProducer* token_producer_;
 };
 
 }  // namespace blink

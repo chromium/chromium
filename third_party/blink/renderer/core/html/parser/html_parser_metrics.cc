@@ -14,8 +14,7 @@ HTMLParserMetrics::HTMLParserMetrics(int64_t source_id,
     : source_id_(source_id), recorder_(recorder) {}
 
 void HTMLParserMetrics::AddChunk(base::TimeDelta elapsed_time,
-                                 unsigned tokens_parsed,
-                                 base::TimeDelta time_in_next_token) {
+                                 unsigned tokens_parsed) {
   DCHECK(base::TimeTicks::IsHighResolution());
 
   ++chunk_count_;
@@ -31,8 +30,6 @@ void HTMLParserMetrics::AddChunk(base::TimeDelta elapsed_time,
     min_tokens_parsed_ = tokens_parsed;
   if (tokens_parsed > max_tokens_parsed_)
     max_tokens_parsed_ = tokens_parsed;
-
-  accumulated_time_in_next_token_ += time_in_next_token;
 }
 
 void HTMLParserMetrics::AddYieldInterval(base::TimeDelta elapsed_time) {
@@ -62,9 +59,6 @@ void HTMLParserMetrics::ReportUMAs() {
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Blink.HTMLParsing.ParsingTimeTotal4", accumulated_parsing_time_,
       base::Microseconds(1), base::Seconds(100), 1000);
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Blink.HTMLParsing.NextTokenTimeTotal4", accumulated_time_in_next_token_,
-      base::Microseconds(1), base::Seconds(10), 1000);
   UMA_HISTOGRAM_COUNTS_1M("Blink.HTMLParsing.TokensParsedMax4",
                           max_tokens_parsed_);
   UMA_HISTOGRAM_COUNTS_10000("Blink.HTMLParsing.TokensParsedMin4",

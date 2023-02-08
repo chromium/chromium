@@ -1529,13 +1529,6 @@ BASE_FEATURE(kClipboardUnsanitizedContent,
              "ClipboardUnsanitizedContent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kThreadedHtmlTokenizer,
-             "ThreadedHtmlTokenizer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kThreadedHtmlTokenizerTokenMaxCount{
-    &kThreadedHtmlTokenizer, "max-count", 2048};
-
 BASE_FEATURE(kWebRtcEncoderAsyncEncode,
              "WebRtcEncoderAsyncEncode",
              base::FEATURE_DISABLED_BY_DEFAULT);

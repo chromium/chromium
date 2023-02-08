@@ -37,11 +37,8 @@
 #include "third_party/blink/renderer/core/html/parser/input_stream_preprocessor.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-
-struct HTMLTokenizerSnapshot;
 
 class CORE_EXPORT HTMLTokenizer {
   USING_FAST_MALLOC(HTMLTokenizer);
@@ -133,9 +130,6 @@ class CORE_EXPORT HTMLTokenizer {
     kCDATASectionEndState,
   };
 
-  void GetSnapshot(HTMLTokenizerSnapshot& snapshot) const;
-  void RestoreSnapshot(const HTMLTokenizerSnapshot& snapshot);
-
   // This function returns true if it emits a token. Otherwise, callers
   // must provide the same (in progress) token on the next call (unless
   // they call reset() first).
@@ -224,8 +218,6 @@ class CORE_EXPORT HTMLTokenizer {
   }
 
  private:
-  friend class HTMLTokenizerTest;
-
   bool NextTokenImpl(SegmentedString&);
   inline bool ProcessEntity(SegmentedString&);
 
@@ -326,19 +318,6 @@ class CORE_EXPORT HTMLTokenizer {
 #if DCHECK_IS_ON()
   bool token_should_be_in_uninitialized_state_ = true;
 #endif
-};
-
-// Snapshot of the tokenizers state. Used by HTMLTokenProducer when it switches
-// from producing tokens in the background thread to the main thread.
-struct CORE_EXPORT HTMLTokenizerSnapshot {
-  USING_FAST_MALLOC(HTMLTokenizerSnapshot);
-
- public:
-  HTMLTokenizer::State state;
-  String appropriate_end_tag_name;
-  String buffered_end_tag_name;
-  // NOTE: This does not include `force_null_character_replacement` and
-  // `should_allow_cdata` as they are never changed in the background tokenizer.
 };
 
 }  // namespace blink

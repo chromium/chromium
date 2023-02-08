@@ -107,26 +107,6 @@ TEST(LiteralBufferTest, Is8BitMove) {
   EXPECT_FALSE(buf2.Is8Bit());
 }
 
-TEST(LiteralBufferTest, UCharAppendSpan) {
-  UCharLiteralBuffer<16> buf;
-  String string8("abc");
-  buf.Append(string8);
-  EXPECT_EQ(string8, buf.AsString());
-
-  String string16 = u"\x01D6";
-  ASSERT_FALSE(string16.Is8Bit());
-  buf.clear();
-  buf.Append(string16);
-  EXPECT_EQ(string16, buf.AsString());
-}
-
-TEST(LiteralBufferTest, LCharAppendSpan) {
-  LCharLiteralBuffer<16> buf;
-  String string8("abc");
-  buf.Append(string8.Span8());
-  EXPECT_EQ(string8, buf.AsString());
-}
-
 TEST(LiteralBufferTest, AsString) {
   LCharLiteralBuffer<16> buf;
   buf.AddChar('x');

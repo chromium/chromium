@@ -67,18 +67,6 @@ class LiteralBufferBase {
     *end_++ = val;
   }
 
-  template <typename OtherT>
-  void AppendSpan(const base::span<OtherT>& val) {
-    static_assert(sizeof(T) >= sizeof(OtherT),
-                  "T is not big enough to contain OtherT");
-    size_t count = val.size();
-    size_t new_size = size() + count;
-    if (capacity() < new_size)
-      Grow(new_size);
-    std::copy_n(val.data(), count, end_);
-    end_ += count;
-  }
-
   template <typename OtherT, wtf_size_t kOtherSize>
   void AppendLiteralImpl(const LiteralBufferBase<OtherT, kOtherSize>& val) {
     static_assert(sizeof(T) >= sizeof(OtherT),
@@ -205,8 +193,6 @@ class LCharLiteralBuffer : public LiteralBufferBase<LChar, kInlineSize> {
 
   ALWAYS_INLINE void AddChar(LChar val) { this->AddCharImpl(val); }
 
-  void Append(const base::span<const LChar>& span) { this->AppendSpan(span); }
-
   String AsString() const { return String(this->data(), this->size()); }
 };
 
@@ -260,17 +246,6 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
   template <wtf_size_t kOtherSize>
   void AppendLiteral(const LCharLiteralBuffer<kOtherSize>& val) {
     this->AppendLiteralImpl(val);
-  }
-
-  void Append(const String& string) {
-    if (string.empty())
-      return;
-    if (string.Is8Bit()) {
-      this->AppendSpan(string.Span8());
-    } else {
-      this->AppendSpan(string.Span16());
-      is_8bit_ &= string.ContainsOnlyLatin1OrEmpty();
-    }
   }
 
   String AsString() const {

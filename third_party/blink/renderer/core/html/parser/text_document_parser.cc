@@ -32,10 +32,7 @@ namespace blink {
 
 TextDocumentParser::TextDocumentParser(HTMLDocument& document,
                                        ParserSynchronizationPolicy sync_policy)
-    : HTMLDocumentParser(document,
-                         sync_policy,
-                         kDisallowPrefetching,
-                         /* can_use_background_token_producer= */ false),
+    : HTMLDocumentParser(document, sync_policy, kDisallowPrefetching),
       have_inserted_fake_pre_element_(false) {}
 
 TextDocumentParser::~TextDocumentParser() = default;

@@ -215,20 +215,6 @@ bool HTMLTokenizer::FlushEmitAndResumeInDataState(SegmentedString& source) {
   return true;
 }
 
-void HTMLTokenizer::GetSnapshot(HTMLTokenizerSnapshot& snapshot) const {
-  snapshot.state = state_;
-  snapshot.appropriate_end_tag_name = appropriate_end_tag_name_.AsString();
-  snapshot.buffered_end_tag_name = buffered_end_tag_name_.AsString();
-}
-
-void HTMLTokenizer::RestoreSnapshot(const HTMLTokenizerSnapshot& snapshot) {
-  state_ = snapshot.state;
-  appropriate_end_tag_name_.clear();
-  appropriate_end_tag_name_.Append(snapshot.appropriate_end_tag_name);
-  buffered_end_tag_name_.clear();
-  buffered_end_tag_name_.Append(snapshot.buffered_end_tag_name.Span8());
-}
-
 HTMLToken* HTMLTokenizer::NextToken(SegmentedString& source) {
 #if DCHECK_IS_ON()
   DCHECK(!token_should_be_in_uninitialized_state_ || token_.IsUninitialized());

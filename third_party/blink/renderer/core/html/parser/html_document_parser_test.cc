@@ -11,7 +11,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
-#include "third_party/blink/renderer/core/html/parser/html_token_producer.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder_builder.h"
 #include "third_party/blink/renderer/core/loader/no_state_prefetch_client.h"
@@ -378,63 +377,6 @@ TEST_F(HTMLDocumentParserProcessImmediatelyTest, FirstChunkDelayedChildFrame) {
   // Cancel any pending work to make sure that RuntimeFeatures DCHECKs do not
   // fire.
   static_cast<DocumentParser*>(parser)->StopParsing();
-}
-
-class HTMLDocumentParserWithThreadedTokenizerTest : public SimTest {
- protected:
-  HTMLDocumentParserWithThreadedTokenizerTest()
-      : original_force_synchronous_parsing_for_testing_(
-            Document::ForceSynchronousParsingForTesting()) {
-    Document::SetForceSynchronousParsingForTesting(false);
-  }
-  ~HTMLDocumentParserWithThreadedTokenizerTest() override {
-    // Finish the pending tasks which may require the runtime enabled flags,
-    // before restoring the flags.
-    base::RunLoop().RunUntilIdle();
-    Document::SetForceSynchronousParsingForTesting(
-        original_force_synchronous_parsing_for_testing_);
-  }
-
-  void SetUp() override {
-    SimTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(features::kThreadedHtmlTokenizer);
-    GetDocument().SetURL(KURL("https://example.test"));
-  }
-
- private:
-  const bool original_force_synchronous_parsing_for_testing_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(HTMLDocumentParserWithThreadedTokenizerTest,
-       LoadedUrlUsesBackgroundTokenizer) {
-  SimRequest main_resource("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-  ASSERT_TRUE(GetDocument().Parser());
-  auto* token_producer =
-      static_cast<HTMLDocumentParser*>(GetDocument().Parser())
-          ->TokenProducerForTesting();
-  // For normal loading the background tokenizer should be used (with the
-  // feature enabled).
-  EXPECT_TRUE(token_producer->IsUsingBackgroundProducer());
-  main_resource.Complete("<head>");
-  test::RunPendingTasks();
-}
-
-TEST_F(HTMLDocumentParserWithThreadedTokenizerTest,
-       EmptyDocumentDoesNotUseBackgroundTokenizer) {
-  ScopedNullExecutionContext execution_context;
-  DocumentInit init =
-      DocumentInit::Create()
-          .ForInitialEmptyDocument(true)
-          .WithExecutionContext(&execution_context.GetExecutionContext())
-          .WithAgent(*execution_context.GetExecutionContext().GetAgent());
-  HTMLDocument* empty_doc = MakeGarbageCollected<HTMLDocument>(init);
-  ASSERT_TRUE(empty_doc->IsInitialEmptyDocument());
-  HTMLDocumentParser* parser = MakeGarbageCollected<HTMLDocumentParser>(
-      *empty_doc, kAllowDeferredParsing);
-  // Empty documents should not use the background tokenizer.
-  EXPECT_FALSE(parser->TokenProducerForTesting()->IsUsingBackgroundProducer());
 }
 
 }  // namespace blink
