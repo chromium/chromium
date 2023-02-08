@@ -1486,6 +1486,12 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
       return;
     }
 
+    // Prepare a copy of the original record, if `upload_settings` is present.
+    if (record_.needs_local_unencrypted_copy()) {
+      record_copy_ = record_;
+      record_.clear_needs_local_unencrypted_copy();
+    }
+
     // If `record_` requires to uphold reserved space, check whether disk space
     // is sufficient. Note that this is only an approximate check, since other
     // writes that have no reservation specified will not observe it anyway.
@@ -1658,16 +1664,22 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
       Response(encrypted_record_result.status());
       return;
     }
+    auto encrypted_record = std::move(encrypted_record_result.ValueOrDie());
 
     // Add compression information to the encrypted record if it exists.
     if (compression_information.has_value()) {
-      *encrypted_record_result.ValueOrDie().mutable_compression_information() =
+      *encrypted_record.mutable_compression_information() =
           compression_information.value();
+    }
+
+    // Add original Record copy, if required.
+    if (record_copy_.has_value()) {
+      *encrypted_record.mutable_record_copy() = std::move(record_copy_.value());
     }
 
     // Proceed and serialize record.
     SerializeEncryptedRecord(std::move(compression_information),
-                             std::move(encrypted_record_result.ValueOrDie()));
+                             std::move(encrypted_record));
   }
 
   void SerializeEncryptedRecord(
@@ -1875,6 +1887,9 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
   // Atomic counter of insufficien memory retry attempts.
   // Accessed in serialized methods only.
   size_t remaining_attempts_ = 16u;
+
+  // Copy of the original record, if required.
+  absl::optional<Record> record_copy_;
 
   // Position in the `storage_queue_`->`write_contexts_queue_`.
   // We use it in order to detect whether the context is in the queue

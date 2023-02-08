@@ -173,6 +173,15 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
 
   UploadEncryptedReportingRequestBuilder request_builder{need_encryption_key_};
   for (auto record : records_) {
+    if (record.has_record_copy()) {
+      // TODO(b/264399295): Check for duplication, initiate upload, post update
+      // event if succeeded. In case of permanent error, finalize the event with
+      // error status and continue. In case of any transient failure, break and
+      // keep the event in Storage for the next attempt.
+
+      // Upon success, remove the copy for actual upload.
+      record.clear_record_copy();
+    }
     request_builder.AddRecord(std::move(record), scoped_reservation_);
   }
 

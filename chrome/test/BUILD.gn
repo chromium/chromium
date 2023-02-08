@@ -4302,6 +4302,7 @@ if (!is_android) {
         "//chrome/browser/metrics/structured",
         "//chrome/browser/nearby_sharing/common",
         "//chrome/browser/policy:onc",
+        "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
         "//chrome/browser/resources/chromeos/accessibility:browser_tests",
         "//chrome/browser/ui:ash_test_support",
         "//chrome/browser/ui/ash/holding_space:browser_tests",
