@@ -293,7 +293,8 @@ class ASH_EXPORT WallpaperControllerImpl
   void ShowOneShotWallpaper(const gfx::ImageSkia& image) override;
   void ShowAlwaysOnTopWallpaper(const base::FilePath& image_path) override;
   void RemoveAlwaysOnTopWallpaper() override;
-  void RemoveUserWallpaper(const AccountId& account_id) override;
+  void RemoveUserWallpaper(const AccountId& account_id,
+                           base::OnceClosure on_removed) override;
   void RemovePolicyWallpaper(const AccountId& account_id) override;
   void SetAnimationDuration(base::TimeDelta animation_duration) override;
   void OpenWallpaperPickerIfAllowed() override;
@@ -424,10 +425,12 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Implementation of |RemoveUserWallpaper|, which deletes |account_id|'s
   // custom wallpapers and directories.
-  void RemoveUserWallpaperImpl(const AccountId& account_id);
+  void RemoveUserWallpaperImpl(const AccountId& account_id,
+                               base::OnceClosure on_removed);
 
   void RemoveUserWallpaperImplWithFilesId(
       const AccountId& account_id,
+      base::OnceClosure on_removed,
       const std::string& wallpaper_files_id);
 
   // Implementation of |SetDefaultWallpaper|. Sets wallpaper to default if

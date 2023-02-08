@@ -1152,7 +1152,7 @@ void WallpaperControllerImpl::SetDefaultWallpaper(
 
   update_wallpaper_timer_.Stop();
 
-  RemoveUserWallpaper(account_id);
+  RemoveUserWallpaper(account_id, /*on_removed=*/base::DoNothing());
   if (!SetDefaultWallpaperInfo(account_id, base::Time::Now())) {
     LOG(ERROR) << "Initializing user wallpaper info fails. This should never "
                   "happen except in tests.";
@@ -1476,11 +1476,13 @@ void WallpaperControllerImpl::RemoveAlwaysOnTopWallpaper() {
   ReloadWallpaper(/*clear_cache=*/false);
 }
 
-void WallpaperControllerImpl::RemoveUserWallpaper(const AccountId& account_id) {
+void WallpaperControllerImpl::RemoveUserWallpaper(
+    const AccountId& account_id,
+    base::OnceClosure on_removed) {
   if (base::Contains(wallpaper_cache_map_, account_id))
     wallpaper_cache_map_.erase(account_id);
   pref_manager_->RemoveUserWallpaperInfo(account_id);
-  RemoveUserWallpaperImpl(account_id);
+  RemoveUserWallpaperImpl(account_id, std::move(on_removed));
 }
 
 void WallpaperControllerImpl::RemovePolicyWallpaper(
@@ -1898,13 +1900,14 @@ int WallpaperControllerImpl::GetWallpaperContainerId(bool locked) {
 }
 
 void WallpaperControllerImpl::RemoveUserWallpaperImpl(
-    const AccountId& account_id) {
+    const AccountId& account_id,
+    base::OnceClosure on_removed) {
   if (wallpaper_controller_client_) {
     wallpaper_controller_client_->GetFilesId(
         account_id,
         base::BindOnce(
             &WallpaperControllerImpl::RemoveUserWallpaperImplWithFilesId,
-            weak_factory_.GetWeakPtr(), account_id));
+            weak_factory_.GetWeakPtr(), account_id, std::move(on_removed)));
   } else {
     LOG(ERROR) << "Failed to remove wallpaper. wallpaper_controller_client_ no "
                   "longer exists.";
@@ -1913,6 +1916,7 @@ void WallpaperControllerImpl::RemoveUserWallpaperImpl(
 
 void WallpaperControllerImpl::RemoveUserWallpaperImplWithFilesId(
     const AccountId& account_id,
+    base::OnceClosure on_removed,
     const std::string& wallpaper_files_id) {
   if (wallpaper_files_id.empty())
     return;
@@ -1931,11 +1935,12 @@ void WallpaperControllerImpl::RemoveUserWallpaperImplWithFilesId(
   wallpaper_path = GetCustomWallpaperDir(kOriginalWallpaperSubDir);
   files_to_remove.push_back(wallpaper_path.Append(wallpaper_files_id));
 
-  base::ThreadPool::PostTask(
+  base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&DeleteWallpaperInList, std::move(files_to_remove)));
+      base::BindOnce(&DeleteWallpaperInList, std::move(files_to_remove)),
+      std::move(on_removed));
 }
 
 void WallpaperControllerImpl::SetDefaultWallpaperImpl(

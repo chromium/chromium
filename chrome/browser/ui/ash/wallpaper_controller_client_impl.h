@@ -120,7 +120,8 @@ class WallpaperControllerClientImpl
   void ShowSigninWallpaper();
   void ShowAlwaysOnTopWallpaper(const base::FilePath& image_path);
   void RemoveAlwaysOnTopWallpaper();
-  void RemoveUserWallpaper(const AccountId& account_id);
+  void RemoveUserWallpaper(const AccountId& account_id,
+                           base::OnceClosure on_removed);
   void RemovePolicyWallpaper(const AccountId& account_id);
   void SetAnimationDuration(const base::TimeDelta& animation_duration);
   void OpenWallpaperPickerIfAllowed();

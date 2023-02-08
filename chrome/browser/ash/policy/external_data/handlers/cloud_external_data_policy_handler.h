@@ -21,7 +21,8 @@ class CloudExternalDataPolicyHandler
   CloudExternalDataPolicyHandler& operator=(
       const CloudExternalDataPolicyHandler&) = delete;
 
-  virtual void RemoveForAccountId(const AccountId& account_id) = 0;
+  virtual void RemoveForAccountId(const AccountId& account_id,
+                                  base::OnceClosure on_removed) = 0;
 
   static AccountId GetAccountId(const std::string& user_id);
 };

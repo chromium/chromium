@@ -2136,7 +2136,7 @@ TEST_F(WallpaperControllerTest, VerifyWallpaperCache) {
   EXPECT_TRUE(controller_->GetPathFromCache(kAccountId1, &path));
 
   // Verify |RemoveUserWallpaper| clears wallpaper cache.
-  controller_->RemoveUserWallpaper(kAccountId1);
+  controller_->RemoveUserWallpaper(kAccountId1, base::DoNothing());
   EXPECT_FALSE(
       controller_->GetWallpaperFromCache(kAccountId1, &cached_wallpaper));
   EXPECT_FALSE(controller_->GetPathFromCache(kAccountId1, &path));
@@ -2425,7 +2425,7 @@ TEST_F(WallpaperControllerTest, RemoveUserWithCustomWallpaper) {
   EXPECT_TRUE(base::PathExists(small_wallpaper_path_2));
 
   // Simulate the removal of |kUser2|.
-  controller_->RemoveUserWallpaper(kAccountId2);
+  controller_->RemoveUserWallpaper(kAccountId2, base::DoNothing());
   // Wait until all files under the user's custom wallpaper directory are
   // removed.
   WaitUntilCustomWallpapersDeleted(kAccountId2);
@@ -2452,10 +2452,28 @@ TEST_F(WallpaperControllerTest, RemoveUserWithDefaultWallpaper) {
                                    base::DoNothing());
 
   // Simulate the removal of |kUser2|.
-  controller_->RemoveUserWallpaper(kAccountId2);
+  controller_->RemoveUserWallpaper(kAccountId2,
+                                   /*on_removed=*/base::DoNothing());
 
   // Verify that the other user's wallpaper is not affected.
   EXPECT_TRUE(base::PathExists(small_wallpaper_path_1));
+}
+
+// Tests that when a user who has a default wallpaper is removed from the
+// device, the `on_remove` callback is called.
+TEST_F(WallpaperControllerTest, RemoveUserWallpaperOnRemoveCallbackCalled) {
+  SimulateUserLogin(kAccountId1);
+  controller_->SetDefaultWallpaper(kAccountId1, /*show_wallpaper=*/true,
+                                   /*callback=*/base::DoNothing());
+
+  base::test::TestFuture<void> remove_was_called;
+
+  // Simulate the removal of |kUser1|.
+  controller_->RemoveUserWallpaper(kAccountId1,
+                                   remove_was_called.GetCallback());
+
+  // Assert that the `on_remove` callback is called
+  ASSERT_TRUE(remove_was_called.Wait());
 }
 
 TEST_F(WallpaperControllerTest, IsActiveUserWallpaperControlledByPolicy) {

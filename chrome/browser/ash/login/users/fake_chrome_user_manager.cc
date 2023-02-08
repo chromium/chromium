@@ -291,7 +291,7 @@ void FakeChromeUserManager::RemoveUserFromList(const AccountId& account_id) {
       WallpaperControllerClientImpl::Get();
   // `wallpaper_client` could be nullptr in tests.
   if (wallpaper_client)
-    wallpaper_client->RemoveUserWallpaper(account_id);
+    wallpaper_client->RemoveUserWallpaper(account_id, base::DoNothing());
   ProfileHelper::Get()->RemoveUserFromListForTesting(account_id);
 
   const user_manager::UserList::iterator it =

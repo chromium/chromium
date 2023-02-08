@@ -42,7 +42,8 @@ class PrintServersExternalDataHandler : public CloudExternalDataPolicyHandler {
                              const std::string& user_id,
                              std::unique_ptr<std::string> data,
                              const base::FilePath& file_path) override;
-  void RemoveForAccountId(const AccountId& account_id) override;
+  void RemoveForAccountId(const AccountId& account_id,
+                          base::OnceClosure on_removed) override;
 
  private:
   CloudExternalDataPolicyObserver print_servers_observer_;

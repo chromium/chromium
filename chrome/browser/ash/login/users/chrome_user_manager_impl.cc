@@ -16,6 +16,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/session/session_controller.h"
+#include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
@@ -916,10 +917,27 @@ void ChromeUserManagerImpl::NotifyOnLogin() {
 
 void ChromeUserManagerImpl::RemoveNonCryptohomeData(
     const AccountId& account_id) {
-  // Wallpaper removal depends on user preference, so it must happen before
-  // `known_user::RemovePrefs`. See https://crbug.com/778077.
-  for (auto& handler : cloud_external_data_policy_handlers_)
-    handler->RemoveForAccountId(account_id);
+  // Wallpaper removal can be async if system salt is not yet received (see
+  // `WallpaperControllerClientImpl::GetFilesId`), and depends on user
+  // preference, so it must happen before `known_user::RemovePrefs`.
+  // See https://crbug.com/778077. Here we use a latch to ensure that
+  // `known_user::RemovePrefs` does indeed get invoked after wallpaper and other
+  // external data that might be associated with `account_id` are removed (in
+  // case those removal operations are async).
+  remove_non_cryptohome_data_barrier_ = base::BarrierClosure(
+      cloud_external_data_policy_handlers_.size(),
+      base::BindOnce(&ChromeUserManagerImpl::
+                         RemoveNonCryptohomeDataPostExternalDataRemoval,
+                     weak_factory_.GetWeakPtr(), account_id));
+
+  for (auto& handler : cloud_external_data_policy_handlers_) {
+    handler->RemoveForAccountId(account_id,
+                                remove_non_cryptohome_data_barrier_);
+  }
+}
+
+void ChromeUserManagerImpl::RemoveNonCryptohomeDataPostExternalDataRemoval(
+    const AccountId& account_id) {
   // TODO(tbarzic): Forward data removal request to HammerDeviceHandler,
   // instead of removing the prefs value here.
   if (GetLocalState()->FindPreference(prefs::kDetachableBaseDevices)) {

@@ -256,7 +256,8 @@ class ASH_PUBLIC_EXPORT WallpaperController {
 
   // Removes all of the user's saved wallpapers and related info.
   // |account_id|: The user's account id.
-  virtual void RemoveUserWallpaper(const AccountId& account_id) = 0;
+  virtual void RemoveUserWallpaper(const AccountId& account_id,
+                                   base::OnceClosure on_removed) = 0;
 
   // Removes all of the user's saved wallpapers and related info if the
   // wallpaper was set by |SetPolicyWallpaper|. In addition, sets the user's

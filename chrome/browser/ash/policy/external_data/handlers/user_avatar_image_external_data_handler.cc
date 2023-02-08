@@ -56,10 +56,13 @@ void UserAvatarImageExternalDataHandler::OnExternalDataFetched(
 }
 
 void UserAvatarImageExternalDataHandler::RemoveForAccountId(
-    const AccountId& account_id) {
+    const AccountId& account_id,
+    base::OnceClosure on_removed) {
   ash::ChromeUserManager::Get()
       ->GetUserImageManager(account_id)
       ->DeleteUserImage();
+
+  std::move(on_removed).Run();
 }
 
 }  // namespace policy

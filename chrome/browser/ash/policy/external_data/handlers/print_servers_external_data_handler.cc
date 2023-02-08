@@ -57,8 +57,10 @@ void PrintServersExternalDataHandler::OnExternalDataFetched(
 }
 
 void PrintServersExternalDataHandler::RemoveForAccountId(
-    const AccountId& account_id) {
+    const AccountId& account_id,
+    base::OnceClosure on_removed) {
   ash::PrintServersProviderFactory::Get()->RemoveForAccountId(account_id);
+  std::move(on_removed).Run();
 }
 
 }  // namespace policy

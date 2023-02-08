@@ -215,7 +215,9 @@ void TestWallpaperController::RemoveAlwaysOnTopWallpaper() {
   ++remove_always_on_top_wallpaper_count_;
 }
 
-void TestWallpaperController::RemoveUserWallpaper(const AccountId& account_id) {
+void TestWallpaperController::RemoveUserWallpaper(
+    const AccountId& account_id,
+    base::OnceClosure on_removed) {
   ++remove_user_wallpaper_count_;
 }
 

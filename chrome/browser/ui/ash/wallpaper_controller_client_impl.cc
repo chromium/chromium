@@ -354,11 +354,14 @@ void WallpaperControllerClientImpl::RemoveAlwaysOnTopWallpaper() {
 }
 
 void WallpaperControllerClientImpl::RemoveUserWallpaper(
-    const AccountId& account_id) {
-  if (!IsKnownUser(account_id))
+    const AccountId& account_id,
+    base::OnceClosure on_removed) {
+  if (!IsKnownUser(account_id)) {
+    std::move(on_removed).Run();
     return;
+  }
 
-  wallpaper_controller_->RemoveUserWallpaper(account_id);
+  wallpaper_controller_->RemoveUserWallpaper(account_id, std::move(on_removed));
 }
 
 void WallpaperControllerClientImpl::RemovePolicyWallpaper(

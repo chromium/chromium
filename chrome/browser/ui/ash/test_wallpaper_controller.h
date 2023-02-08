@@ -140,7 +140,8 @@ class TestWallpaperController : public ash::WallpaperController {
   void ShowOneShotWallpaper(const gfx::ImageSkia& image) override;
   void ShowAlwaysOnTopWallpaper(const base::FilePath& image_path) override;
   void RemoveAlwaysOnTopWallpaper() override;
-  void RemoveUserWallpaper(const AccountId& account_id) override;
+  void RemoveUserWallpaper(const AccountId& account_id,
+                           base::OnceClosure on_removed) override;
   void RemovePolicyWallpaper(const AccountId& account_id) override;
   void SetAnimationDuration(base::TimeDelta animation_duration) override;
   void OpenWallpaperPickerIfAllowed() override;
