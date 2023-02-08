@@ -6,6 +6,7 @@
 
 #import "base/feature_list.h"
 #import "components/favicon/core/large_icon_service.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/history/core/browser/top_sites.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/omnibox/browser/autocomplete_result.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/history/top_sites_factory.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -101,8 +103,10 @@
                faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
                                  self.browser->GetBrowserState())
       autocompleteController:self.autocompleteController
-
-                    delegate:_popupView.get()];
+                    delegate:_popupView.get()
+                     tracker:feature_engagement::TrackerFactory::
+                                 GetForBrowserState(
+                                     self.browser->GetBrowserState())];
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
   self.mediator.dispatcher =

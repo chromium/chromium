@@ -204,7 +204,8 @@
 // simply called in something more generic like `start`.
 - (void)recordDefaultBrowserPromoShown {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  LogToFETDefaultBrowserPromoShown(browserState);
+  LogToFETDefaultBrowserPromoShown(
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState));
 }
 
 @end

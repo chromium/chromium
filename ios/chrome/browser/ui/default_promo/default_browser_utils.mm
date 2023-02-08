@@ -7,12 +7,12 @@
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/field_trial_params.h"
+#import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 
@@ -345,14 +345,26 @@ void LogRemindMeLaterPromoActionInteraction() {
                              [NSDate date]);
 }
 
-void LogToFETDefaultBrowserPromoShown(ChromeBrowserState* browserState) {
-  // OTR browsers are ignored because they can sometimes cause a nullptr tracker
-  // to be returned from the tracker factory.
-  if (!browserState || browserState->IsOffTheRecord()) {
+void LogToFETDefaultBrowserPromoShown(feature_engagement::Tracker* tracker) {
+  // OTR browsers can sometimes pass a null tracker, check for that here.
+  if (!tracker) {
     return;
   }
-  feature_engagement::TrackerFactory::GetForBrowserState(browserState)
-      ->NotifyEvent(feature_engagement::events::kDefaultBrowserPromoShown);
+  tracker->NotifyEvent(feature_engagement::events::kDefaultBrowserPromoShown);
+}
+
+void LogToFETUserPastedURLIntoOmnibox(feature_engagement::Tracker* tracker) {
+  base::RecordAction(
+      base::UserMetricsAction("Mobile.Omnibox.iOS.PastedValidURL"));
+
+  // OTR browsers can sometimes pass a null tracker, check for that here.
+  if (!tracker) {
+    return;
+  }
+
+  if (HasRecentValidURLPastesAndRecordsCurrentPaste()) {
+    tracker->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
+  }
 }
 
 bool ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo() {

@@ -11,6 +11,8 @@ source_set("default_browser") {
   deps = [
     ":default_browser_ui",
     "//base",
+    "//components/feature_engagement/public",
+    "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",

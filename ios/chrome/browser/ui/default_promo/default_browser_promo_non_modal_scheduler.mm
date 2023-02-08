@@ -43,6 +43,10 @@ const int kPromoShownTimesLimit = 3;
 constexpr base::TimeDelta kPromoTimeout = base::Seconds(45);
 
 bool PromoCanBeDisplayed() {
+  if (IsInBlueDotExperiment()) {
+    return false;
+  }
+
   if (IsChromeLikelyDefaultBrowser())
     return false;
 

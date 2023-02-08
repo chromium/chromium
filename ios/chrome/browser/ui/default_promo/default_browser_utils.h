@@ -9,8 +9,6 @@
 
 #import "base/feature_list.h"
 
-class ChromeBrowserState;
-
 namespace feature_engagement {
 class Tracker;
 }
@@ -54,7 +52,11 @@ void LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoType type);
 void LogRemindMeLaterPromoActionInteraction();
 
 // Logs to the FET that a default browser promo has been shown.
-void LogToFETDefaultBrowserPromoShown(ChromeBrowserState* browserState);
+void LogToFETDefaultBrowserPromoShown(feature_engagement::Tracker* tracker);
+
+// Logs to the FET that the user has pasted a URL into the omnibox if certain
+// conditions are met.
+void LogToFETUserPastedURLIntoOmnibox(feature_engagement::Tracker* tracker);
 
 // Returns true if the user has tapped on the "Remind Me Later" button and the
 // delay time threshold has been met.

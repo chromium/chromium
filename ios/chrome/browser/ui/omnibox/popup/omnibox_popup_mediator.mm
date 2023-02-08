@@ -12,6 +12,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
@@ -29,6 +30,7 @@
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_match_formatter.h"
@@ -60,6 +62,8 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
 @interface OmniboxPopupMediator () <PedalSectionExtractorDelegate>
 
+// FET reference.
+@property(nonatomic, assign) feature_engagement::Tracker* tracker;
 /// Extracts pedals from AutocompleSuggestions.
 @property(nonatomic, strong) PedalSectionExtractor* pedalSectionExtractor;
 /// List of suggestions without the pedal group. Used to debouce pedals.
@@ -94,7 +98,8 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
                         imageFetcher
                   faviconLoader:(FaviconLoader*)faviconLoader
          autocompleteController:(AutocompleteController*)autocompleteController
-                       delegate:(OmniboxPopupMediatorDelegate*)delegate {
+                       delegate:(OmniboxPopupMediatorDelegate*)delegate
+                        tracker:(feature_engagement::Tracker*)tracker {
   self = [super init];
   if (self) {
     DCHECK(delegate);
@@ -107,6 +112,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     _pedalSectionExtractor.delegate = self;
     _preselectedGroupIndex = 0;
     _autocompleteController = autocompleteController;
+    _tracker = tracker;
   }
   return self;
 }
@@ -207,6 +213,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     // Don't log pastes in incognito.
     if (!self.incognito && match.type == AutocompleteMatchType::CLIPBOARD_URL) {
       [self.promoScheduler logUserPastedInOmnibox];
+      LogToFETUserPastedURLIntoOmnibox(self.tracker);
     }
     if (!self.incognito &&
         match.type == AutocompleteMatchType::TILE_NAVSUGGEST) {
