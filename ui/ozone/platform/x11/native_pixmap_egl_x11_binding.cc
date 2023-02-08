@@ -201,12 +201,6 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLX11Binding::Create(
   return binding;
 }
 
-// static
-bool NativePixmapEGLX11Binding::CanImportNativeGLXPixmap() {
-  auto* conn = x11::Connection::Get();
-  return conn->dri3().present() && conn->glx().present();
-}
-
 bool NativePixmapEGLX11Binding::BindTexture(GLenum target, GLuint texture_id) {
   gl::ScopedTextureBinder binder(base::strict_cast<unsigned int>(target),
                                  base::strict_cast<unsigned int>(texture_id));
