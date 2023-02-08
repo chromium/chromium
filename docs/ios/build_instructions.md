@@ -265,7 +265,7 @@ $ autoninja -C out/Debug-iphonesimulator content_shell
 ```
 
 To run on a live device you will need to set the
-`com.apple.developer.kernel.extended-virtual-addressing` entitlement. 
+`com.apple.developer.kernel.extended-virtual-addressing` entitlement.
 
 ## Running apps from the command line
 
