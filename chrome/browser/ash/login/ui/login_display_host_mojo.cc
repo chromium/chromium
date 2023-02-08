@@ -12,6 +12,8 @@
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/system/model/enterprise_domain_model.h"
+#include "ash/system/model/system_tray_model.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -418,7 +420,13 @@ void LoginDisplayHostMojo::HideOobeDialog(bool saml_page_closed) {
   const bool no_users = GetExistingUserController() &&
                         !GetExistingUserController()->IsSigninInProgress() &&
                         !has_user_pods_;
-  if (no_users && !saml_page_closed) {
+
+  const bool kiosk_license_mode =
+      Shell::Get()
+          ->system_tray_model()
+          ->enterprise_domain()
+          ->management_device_mode() == ManagementDeviceMode::kKioskSku;
+  if (no_users && !saml_page_closed && !kiosk_license_mode) {
     return;
   }
 
@@ -430,7 +438,7 @@ void LoginDisplayHostMojo::HideOobeDialog(bool saml_page_closed) {
   // timeout or ESC button) and there are no user pods and the user isn't using
   // ChromeVox - let the user go back to login flow with any action. Otherwise
   // the user can go back to login by pressing the arrow button.
-  if (saml_page_closed && !has_user_pods_ &&
+  if (saml_page_closed && !has_user_pods_ && !kiosk_license_mode &&
       !scoped_activity_observation_.IsObserving() &&
       !AccessibilityManager::Get()->IsSpokenFeedbackEnabled()) {
     scoped_activity_observation_.Observe(ui::UserActivityDetector::Get());
