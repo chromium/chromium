@@ -50,7 +50,7 @@ class HistorySyncMetadataDatabaseTest : public testing::Test {
   void SetUp() override {
     EXPECT_TRUE(db_.OpenInMemory());
     metadata_db_.Init();
-    meta_table_.Init(&db_, 1, 1);
+    ASSERT_TRUE(meta_table_.Init(&db_, 1, 1));
   }
   void TearDown() override { db_.Close(); }
 

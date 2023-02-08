@@ -253,7 +253,8 @@ class HistorySyncBridgeTest : public testing::Test {
   void SetUp() override {
     EXPECT_TRUE(db_.OpenInMemory());
     metadata_db_.Init();
-    meta_table_.Init(&db_, /*version=*/1, /*compatible_version=*/1);
+    ASSERT_TRUE(
+        meta_table_.Init(&db_, /*version=*/1, /*compatible_version=*/1));
 
     // Creating the bridge triggers loading of the metadata, which is
     // synchronous.

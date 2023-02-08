@@ -54,7 +54,7 @@ class TypedURLSyncMetadataDatabaseTest : public testing::Test {
     // Initialize the tables for this test.
     sync_metadata_db_.Init();
 
-    meta_table_.Init(&db_, 1, 1);
+    ASSERT_TRUE(meta_table_.Init(&db_, 1, 1));
   }
   void TearDown() override { db_.Close(); }
 
