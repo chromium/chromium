@@ -5,7 +5,6 @@
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
 
 #include "base/containers/flat_set.h"
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_enums.h"
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper_impl.h"
@@ -19,6 +18,7 @@
 
 namespace {
 constexpr base::TimeDelta kSleepBetweenTriggerReparseCalls = base::Seconds(1);
+constexpr base::TimeDelta kTimeout = base::Minutes(30);
 
 constexpr auto kSupportedFormTypes = base::MakeFixedFlatSet<autofill::FormType>(
     {autofill::FormType::kAddressForm, autofill::FormType::kCreditCardForm});
@@ -60,12 +60,7 @@ FastCheckoutClientImpl::FastCheckoutClientImpl(
           fetcher_,
           personal_data_helper_.get())) {}
 
-FastCheckoutClientImpl::~FastCheckoutClientImpl() {
-  if (is_running_) {
-    base::UmaHistogramEnumeration(kUmaKeyFastCheckoutRunOutcome,
-                                  FastCheckoutRunOutcome::kIncompleteRun);
-  }
-}
+FastCheckoutClientImpl::~FastCheckoutClientImpl() = default;
 
 bool FastCheckoutClientImpl::TryToStart(
     const GURL& url,
@@ -113,10 +108,10 @@ void FastCheckoutClientImpl::SetShouldSuppressKeyboard(bool suppress) {
   }
 }
 
-void FastCheckoutClientImpl::OnRunComplete() {
-  // TODO(crbug.com/1334642): Handle result (e.g. report metrics).
-  OnHidden();
-  Stop(/*allow_further_runs=*/false);
+void FastCheckoutClientImpl::OnRunComplete(FastCheckoutRunOutcome run_outcome,
+                                           bool allow_further_runs) {
+  // TODO(crbug.com/1334642): Report `run_outcome`.
+  Stop(allow_further_runs);
 }
 
 void FastCheckoutClientImpl::Stop(bool allow_further_runs) {
@@ -131,9 +126,10 @@ void FastCheckoutClientImpl::Stop(bool allow_further_runs) {
   form_signatures_to_fill_.clear();
   selected_autofill_profile_.reset();
   selected_credit_card_.reset();
+  timeout_timer_.AbandonAndStop();
+  origin_ = url::Origin();
   // Reset UI related state.
   fast_checkout_controller_.reset();
-  fast_checkout_ui_state_ = FastCheckoutUIState::kNotShownYet;
   // Reset personal data manager observation.
   personal_data_manager_observation_.Reset();
   // Reset `autofill_manager_` and related objects.
@@ -143,6 +139,8 @@ void FastCheckoutClientImpl::Stop(bool allow_further_runs) {
 
   if (!allow_further_runs && IsShowing()) {
     fast_checkout_ui_state_ = FastCheckoutUIState::kWasShown;
+  } else {
+    fast_checkout_ui_state_ = FastCheckoutUIState::kNotShownYet;
   }
 }
 
@@ -170,6 +168,11 @@ void FastCheckoutClientImpl::OnOptionsSelected(
   OnHidden();
   selected_autofill_profile_ = std::move(selected_profile);
   selected_credit_card_ = std::move(selected_credit_card);
+  timeout_timer_.Start(FROM_HERE, kTimeout,
+                       base::BindOnce(&FastCheckoutClientImpl::OnRunComplete,
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      FastCheckoutRunOutcome::kTimeout,
+                                      /*allow_further_runs=*/true));
   TryToFillForms();
   autofill_manager_->TriggerReparseInAllFrames(
       base::BindOnce(&FastCheckoutClientImpl::OnTriggerReparseFinished,
@@ -186,7 +189,8 @@ void FastCheckoutClientImpl::SetFormsToFill() {
 }
 
 void FastCheckoutClientImpl::OnDismiss() {
-  Stop(/*allow_further_runs=*/false);
+  OnRunComplete(FastCheckoutRunOutcome::kBottomsheetDismissed,
+                /*allow_further_runs=*/false);
 }
 
 void FastCheckoutClientImpl::OnPersonalDataChanged() {
@@ -195,7 +199,8 @@ void FastCheckoutClientImpl::OnPersonalDataChanged() {
   }
 
   if (!trigger_validator_->HasValidPersonalData()) {
-    Stop(/*allow_further_runs=*/false);
+    OnRunComplete(FastCheckoutRunOutcome::kInvalidPersonalData,
+                  /*allow_further_runs=*/false);
   } else {
     ShowFastCheckoutUI();
   }
@@ -302,7 +307,7 @@ void FastCheckoutClientImpl::OnAfterDidFillAutofillFormData() {
   }
   UpdateFillingStates();
   if (AllFormsAreFilled()) {
-    Stop(/*allow_further_runs=*/true);
+    OnRunComplete(FastCheckoutRunOutcome::kSuccess);
   }
 }
 
@@ -335,12 +340,20 @@ void FastCheckoutClientImpl::UpdateFillingStates() {
 }
 
 void FastCheckoutClientImpl::OnAutofillManagerDestroyed() {
-  Stop(/*allow_further_runs=*/false);
+  if (IsRunning()) {
+    if (GetWebContents().IsBeingDestroyed()) {
+      OnRunComplete(FastCheckoutRunOutcome::kTabClosed);
+    } else {
+      OnRunComplete(FastCheckoutRunOutcome::kAutofillManagerDestroyed);
+    }
+    return;
+  }
+  Stop(/*allow_further_runs=*/true);
 }
 
 void FastCheckoutClientImpl::OnAutofillManagerReset() {
   if (IsShowing()) {
-    Stop(/*allow_further_runs=*/true);
+    OnRunComplete(FastCheckoutRunOutcome::kNavigationWhileBottomsheetWasShown);
   }
 }
 
@@ -360,6 +373,19 @@ bool FastCheckoutClientImpl::ShouldFillForm(
   return form_filling_states_.at(
              std::make_pair(form.form_signature(), expected_form_type)) ==
          FillingState::kNotFilled;
+}
+
+void FastCheckoutClientImpl::OnNavigation(const GURL& url,
+                                          bool is_cart_or_checkout_url) {
+  if (!IsRunning()) {
+    fast_checkout_ui_state_ = FastCheckoutUIState::kNotShownYet;
+    return;
+  }
+  if (url::Origin::Create(url) != origin_) {
+    OnRunComplete(FastCheckoutRunOutcome::kOriginChange);
+  } else if (!is_cart_or_checkout_url) {
+    OnRunComplete(FastCheckoutRunOutcome::kNonCheckoutPage);
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(FastCheckoutClientImpl);

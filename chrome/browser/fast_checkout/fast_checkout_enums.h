@@ -31,22 +31,27 @@ enum class FastCheckoutTriggerOutcome {
   kMaxValue = kFailureNoValidAutofillProfile
 };
 
-// Enum defining possible outcomes of a Fast Checkout run. Must be kept in sync
-// with enums.xml.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// TODO(crbug.com/1334642): remove references to scripts and adjust to new
-// implementation.
+// Enum defining possible outcomes of a Fast Checkout run.
 enum class FastCheckoutRunOutcome {
-  // Script did not run because the user has declined onboarding.
-  kOnboardingDeclined = 0,
-  // The script run did not complete or never started.
-  kIncompleteRun = 1,
-  // Script run failed.
-  kFail = 2,
-  // Script ran successfully.
-  kSuccess = 3,
-  kMaxValue = kSuccess
+  // Run was successful, i.e. all forms were filled.
+  kSuccess = 0,
+  // The bottomsheet was dismissed. No forms were filled.
+  kBottomsheetDismissed = 1,
+  // Run timed out before all forms could have been filled.
+  kTimeout = 2,
+  // Run ended because the tab was closed before all forms were filled.
+  kTabClosed = 3,
+  // Origin-changing navigation occurred before all forms were filled.
+  kOriginChange = 4,
+  // Navigation to a non-checkout page occurred before all forms were filled.
+  kNonCheckoutPage = 5,
+  // Navigation occurred while bottomsheet was shown.
+  kNavigationWhileBottomsheetWasShown = 6,
+  // Personal data has become invalid while bottomsheet was shown.
+  kInvalidPersonalData = 7,
+  // Autofill manager got destroyed.
+  kAutofillManagerDestroyed = 8,
+  kMaxValue = kAutofillManagerDestroyed
 };
 
 // Represents the state of the bottomsheet.

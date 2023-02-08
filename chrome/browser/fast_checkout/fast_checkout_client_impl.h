@@ -22,9 +22,6 @@ namespace autofill {
 class LogManager;
 }
 
-constexpr char kUmaKeyFastCheckoutRunOutcome[] =
-    "Autofill.FastCheckout.RunOutcome";
-
 class FastCheckoutClientImpl
     : public content::WebContentsUserData<FastCheckoutClientImpl>,
       public FastCheckoutClient,
@@ -46,6 +43,7 @@ class FastCheckoutClientImpl
   void Stop(bool allow_further_runs) override;
   bool IsRunning() const override;
   bool IsShowing() const override;
+  void OnNavigation(const GURL& url, bool is_cart_or_checkout_url) override;
 
   // FastCheckoutControllerImpl::Delegate:
   void OnOptionsSelected(
@@ -104,8 +102,9 @@ class FastCheckoutClientImpl
   // the Delegate that the surface is now hidden.
   void OnHidden();
 
-  // Registers when a run is complete. Used in callbacks.
-  void OnRunComplete();
+  // Registers when a run is complete.
+  void OnRunComplete(FastCheckoutRunOutcome run_outcome,
+                     bool allow_further_runs = true);
 
   // Displays the bottom sheet UI. If the underlying autofill data is updated,
   // the method is called again to refresh the information displayed in the UI.
@@ -159,6 +158,9 @@ class FastCheckoutClientImpl
   // necessary e.g. for the case when a form has been cached when it was not
   // visible to the user and became visible in the meantime.
   base::OneShotTimer reparse_timer_;
+
+  // Stops the run after timeout.
+  base::OneShotTimer timeout_timer_;
 
   // The `ChromeAutofillClient` instance attached to the same `WebContents`.
   raw_ptr<autofill::AutofillClient> autofill_client_ = nullptr;

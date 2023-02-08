@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "chrome/browser/fast_checkout/mock_fast_checkout_capabilities_fetcher.h"
+#include "chrome/browser/fast_checkout/mock_fast_checkout_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/android/android_browser_test.h"
@@ -21,7 +22,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 using testing::_;
 using testing::Eq;
@@ -62,10 +62,21 @@ class FastCheckoutTabHelperBrowserTest : public PlatformBrowserTest {
     embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&CreateFakeResponse));
     ASSERT_TRUE(embedded_test_server()->Start());
+
+    auto mock_fast_checkout_client =
+        std::make_unique<MockFastCheckoutClient>(GetActiveWebContents());
+    mock_fast_checkout_client_ = mock_fast_checkout_client.get();
+    GetActiveWebContents()->SetUserData(
+        content::WebContentsUserData<FastCheckoutClientImpl>::UserDataKey(),
+        std::move(mock_fast_checkout_client));
   }
 
  protected:
   MockFastCheckoutCapabilitiesFetcher* fetcher() { return fetcher_; }
+
+  MockFastCheckoutClient* fast_checkout_client() {
+    return mock_fast_checkout_client_;
+  }
 
   content::WebContents* GetActiveWebContents() {
     return chrome_test_utils::GetActiveWebContents(this);
@@ -80,6 +91,7 @@ class FastCheckoutTabHelperBrowserTest : public PlatformBrowserTest {
 
  private:
   raw_ptr<MockFastCheckoutCapabilitiesFetcher> fetcher_ = nullptr;
+  raw_ptr<MockFastCheckoutClient> mock_fast_checkout_client_;
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -87,6 +99,7 @@ IN_PROC_BROWSER_TEST_F(
     DidStartNavigation_NoShoppingURL_NoFetchCapabilitiesCall) {
   // No availability request was started or the `StrickMock` would have failed.
   GURL no_shopping_url("http://www.example.com/empty.html");
+  EXPECT_CALL(*fast_checkout_client(), OnNavigation);
   NavigateToUrl(no_shopping_url);
 }
 
@@ -95,6 +108,7 @@ IN_PROC_BROWSER_TEST_F(
     DidStartNavigation_CheckoutURL_MakesFetchCapabilitiesCall) {
   GURL shopping_url("http://www.example2.co.uk/checkout.html");
   EXPECT_CALL(*fetcher(), FetchCapabilities);
+  EXPECT_CALL(*fast_checkout_client(), OnNavigation);
   NavigateToUrl(shopping_url);
 }
 
@@ -103,5 +117,6 @@ IN_PROC_BROWSER_TEST_F(
     DidStartNavigation_CartShoppingURL_MakesFetchCapabilitiesCall) {
   GURL shopping_cart_url("http://www.example2.co.uk/cart.html");
   EXPECT_CALL(*fetcher(), FetchCapabilities);
+  EXPECT_CALL(*fast_checkout_client(), OnNavigation);
   NavigateToUrl(shopping_cart_url);
 }

@@ -32,6 +32,8 @@ class FastCheckoutTabHelper
   explicit FastCheckoutTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<FastCheckoutTabHelper>;
 
+  void FetchCapabilities(const GURL& url);
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

@@ -46,6 +46,9 @@ class FastCheckoutClient {
   // Returns true if the bottomsheet is currently showing to the user.
   virtual bool IsShowing() const = 0;
 
+  // Notifies the `FastCheckoutClient` when a navigation happened.
+  virtual void OnNavigation(const GURL& url, bool is_cart_or_checkout_url) = 0;
+
  protected:
   FastCheckoutClient() = default;
   virtual ~FastCheckoutClient() = default;
