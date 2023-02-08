@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -169,10 +170,14 @@ class BrowserCoordinatorTest : public PlatformTest {
     UrlLoadParams urlLoadParams = UrlLoadParams::InCurrentTab(url);
     urlLoadingBrowserAgent->Load(urlLoadParams);
 
-    // Force the DidStopLoading callback.
+    // Force the WebStateObserver callbacks that simulate a page load.
     web::WebStateObserver* ntpHelper =
         (web::WebStateObserver*)NewTabPageTabHelper::FromWebState(web_state);
-    ntpHelper->DidStopLoading(web_state);
+    web::FakeNavigationContext context;
+    context.SetUrl(url);
+    context.SetIsSameDocument(false);
+    ntpHelper->DidStartNavigation(web_state, &context);
+    ntpHelper->PageLoaded(web_state, web::PageLoadCompletionStatus::SUCCESS);
   }
 
   IOSChromeScopedTestingLocalState local_state_;

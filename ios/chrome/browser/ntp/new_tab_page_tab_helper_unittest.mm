@@ -123,7 +123,7 @@ TEST_F(NewTabPageTabHelperTest, TestToggleToAndFromNTP) {
   web::FakeNavigationContext context;
   context.SetUrl(url);
   fake_navigation_manager_->SetLastCommittedItem(pending_item_.get());
-  fake_web_state_.OnNavigationFinished(&context);
+  fake_web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
   EXPECT_TRUE(tab_helper()->IsActive());
 
   GURL not_ntp_url(kTestURL);
@@ -131,16 +131,17 @@ TEST_F(NewTabPageTabHelperTest, TestToggleToAndFromNTP) {
   context.SetUrl(not_ntp_url);
   pending_item_->SetURL(not_ntp_url);
   fake_web_state_.OnNavigationStarted(&context);
+  fake_web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
   EXPECT_FALSE(tab_helper()->IsActive());
   fake_navigation_manager_->SetLastCommittedItem(pending_item_.get());
-  fake_web_state_.OnNavigationFinished(&context);
+  fake_web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
   EXPECT_FALSE(tab_helper()->IsActive());
 
   context.SetUrl(url);
   pending_item_->SetURL(url);
   fake_web_state_.SetCurrentURL(url);
   fake_navigation_manager_->SetLastCommittedItem(pending_item_.get());
-  fake_web_state_.OnNavigationFinished(&context);
+  fake_web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
   EXPECT_TRUE(tab_helper()->IsActive());
 
   context.SetUrl(not_ntp_url);
@@ -172,6 +173,5 @@ TEST_F(NewTabPageTabHelperTest, TestMismatchedPendingItem) {
   fake_web_state_.SetCurrentURL(not_ntp_url);
   fake_navigation_manager_->SetLastCommittedItem(pending_item_.get());
   fake_web_state_.OnNavigationFinished(&context);
-  EXPECT_FALSE(tab_helper()->IsActive());
   EXPECT_EQ(GURL(kTestURL), pending_item_->GetVirtualURL());
 }

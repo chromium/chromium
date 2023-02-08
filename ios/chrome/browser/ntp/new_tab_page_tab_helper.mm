@@ -152,32 +152,27 @@ void NewTabPageTabHelper::DidFinishNavigation(
   }
 
   UpdateItem(web_state_->GetNavigationManager()->GetLastCommittedItem());
-  SetActive(IsNTPURL(web_state->GetLastCommittedURL()));
 }
 
-void NewTabPageTabHelper::DidStartLoading(web::WebState* web_state) {
-  // This is needed to avoid flashing the NTP when loading error pages.
-  if (!IsNTPURL(web_state->GetVisibleURL())) {
-    SetActive(false);
-  }
-}
-
-void NewTabPageTabHelper::DidStopLoading(web::WebState* web_state) {
-  if (IsNTPURL(web_state->GetVisibleURL())) {
-    SetActive(true);
+void NewTabPageTabHelper::PageLoaded(
+    web::WebState* web_state,
+    web::PageLoadCompletionStatus load_completion_status) {
+  if (load_completion_status == web::PageLoadCompletionStatus::SUCCESS) {
+    if (IsNTPURL(web_state->GetVisibleURL())) {
+      SetActive(true);
+    }
   }
 }
 
 #pragma mark - Private
 
 void NewTabPageTabHelper::SetActive(bool active) {
-  bool was_active = active_;
+  if (active_ == active) {
+    return;
+  }
   active_ = active;
 
-  // Tell `delegate_` to show or hide the NTP, if necessary.
-  if (active_ != was_active) {
-    [delegate_ newTabPageHelperDidChangeVisibility:this forWebState:web_state_];
-  }
+  [delegate_ newTabPageHelperDidChangeVisibility:this forWebState:web_state_];
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(NewTabPageTabHelper)
