@@ -85,7 +85,9 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
     std::vector<GURL> debug_loss_report_urls,
     base::flat_set<std::string> k_anon_keys_to_join,
     std::map<url::Origin, PrivateAggregationRequests>
-        private_aggregation_requests)
+        private_aggregation_requests_reserved,
+    std::map<std::string, PrivateAggregationRequests>
+        private_aggregation_requests_non_reserved)
     : interest_group_manager_(interest_group_manager),
       auction_worklet_manager_(auction_worklet_manager),
       auction_config_(std::move(auction_config)),
@@ -101,7 +103,10 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
       debug_win_report_urls_(std::move(debug_win_report_urls)),
       debug_loss_report_urls_(std::move(debug_loss_report_urls)),
       k_anon_keys_to_join_(std::move(k_anon_keys_to_join)),
-      private_aggregation_requests_(std::move(private_aggregation_requests)) {
+      private_aggregation_requests_reserved_(
+          std::move(private_aggregation_requests_reserved)),
+      private_aggregation_requests_non_reserved_(
+          std::move(private_aggregation_requests_non_reserved)) {
   DCHECK(interest_group_manager_);
   DCHECK(auction_worklet_manager_);
   DCHECK(url_loader_factory_);
@@ -242,14 +247,18 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
     // "reserved.loss" reports not being reported. Bid reject reason is not
     // meaningful thus not supported in reportResult(), so it is set to
     // absl::nullopt.
-    auction_worklet::mojom::PrivateAggregationRequestPtr converted_request =
+    absl::optional<PrivateAggregationRequestWithEventType> converted_request =
         FillInPrivateAggregationRequest(std::move(request), seller_info->bid,
                                         seller_info->highest_scoring_other_bid,
                                         /*reject_reason=*/absl::nullopt,
                                         /*is_winner=*/true);
-    if (converted_request) {
-      private_aggregation_requests_[seller].emplace_back(
-          std::move(converted_request));
+
+    // Only private aggregation requests with reserved event types are kept for
+    // seller.
+    if (converted_request.has_value() &&
+        !converted_request.value().event_type.has_value()) {
+      private_aggregation_requests_reserved_[seller].emplace_back(
+          std::move(converted_request.value().request));
     }
   }
 
@@ -448,14 +457,25 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
     // results in "reserved.loss" reports not being reported. Bid reject reason
     // is not meaningful thus not supported in reportWin(), so it is set to
     // absl::nullopt.
-    auction_worklet::mojom::PrivateAggregationRequestPtr converted_request =
+    absl::optional<PrivateAggregationRequestWithEventType> converted_request =
         FillInPrivateAggregationRequest(
             std::move(request), winning_bid_info_.bid,
             /*highest_scoring_other_bid=*/seller_info.highest_scoring_other_bid,
             /*reject_reason=*/absl::nullopt, /*is_winner=*/true);
-    if (converted_request) {
-      private_aggregation_requests_[bidder].emplace_back(
-          std::move(converted_request));
+
+    if (converted_request.has_value()) {
+      PrivateAggregationRequestWithEventType converted_request_value =
+          std::move(converted_request.value());
+      const absl::optional<std::string>& event_type =
+          converted_request_value.event_type;
+      if (event_type.has_value()) {
+        // The request has a non-reserved event type.
+        private_aggregation_requests_non_reserved_[event_type.value()]
+            .emplace_back(std::move(converted_request_value.request));
+      } else {
+        private_aggregation_requests_reserved_[bidder].emplace_back(
+            std::move(converted_request_value.request));
+      }
     }
   }
 

@@ -119,6 +119,8 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
                                  const url::Origin& origin) const;
 
   // Deletes `auction`.
+  // TODO(crbug.com/1410340): Handle non reserved private aggregation requests,
+  // which are currently ignored.
   void OnAuctionComplete(
       RunAdAuctionCallback callback,
       GURL urn_uuid,
@@ -130,7 +132,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       std::map<
           url::Origin,
           std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
-          private_aggregation_requests,
+          private_aggregation_requests_reserved,
       std::vector<std::string> errors,
       std::unique_ptr<InterestGroupAuctionReporter> reporter);
 

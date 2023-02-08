@@ -189,6 +189,8 @@ class InterestGroupAuctionReporterTest
         std::move(debug_win_report_urls_), std::move(debug_loss_report_urls_),
         k_anon_keys_to_join_,
         std::map<url::Origin,
+                 InterestGroupAuctionReporter::PrivateAggregationRequests>(),
+        std::map<std::string,
                  InterestGroupAuctionReporter::PrivateAggregationRequests>());
     interest_group_auction_reporter_->Start(
         base::BindOnce(&InterestGroupAuctionReporterTest::OnCompleteCallback,

@@ -170,7 +170,7 @@ absl::optional<int32_t> CalculateValue(
 // Returns nullptr if `contribution`'s bucket cannot be calculated to a valid
 // uint128 number, or `contribution`'s value cannot be calculated to a valid
 // integer.
-auction_worklet::mojom::AggregatableReportContributionPtr
+content::mojom::AggregatableReportHistogramContributionPtr
 CalculateContributionBucketAndValue(
     auction_worklet::mojom::AggregatableReportForEventContributionPtr
         contribution,
@@ -217,15 +217,29 @@ CalculateContributionBucketAndValue(
     value = value_opt.value();
   }
 
-  return auction_worklet::mojom::AggregatableReportContribution::
-      NewHistogramContribution(
-          content::mojom::AggregatableReportHistogramContribution::New(bucket,
-                                                                       value));
+  return content::mojom::AggregatableReportHistogramContribution::New(bucket,
+                                                                      value);
 }
 
 }  // namespace
 
-auction_worklet::mojom::PrivateAggregationRequestPtr
+PrivateAggregationRequestWithEventType::PrivateAggregationRequestWithEventType(
+    auction_worklet::mojom::PrivateAggregationRequestPtr request,
+    absl::optional<std::string> event_type)
+    : request(std::move(request)), event_type(event_type) {}
+
+PrivateAggregationRequestWithEventType::PrivateAggregationRequestWithEventType(
+    PrivateAggregationRequestWithEventType&&) = default;
+
+bool PrivateAggregationRequestWithEventType::operator==(
+    const PrivateAggregationRequestWithEventType& rhs) const {
+  return request == rhs.request && event_type == rhs.event_type;
+}
+
+PrivateAggregationRequestWithEventType::
+    ~PrivateAggregationRequestWithEventType() = default;
+
+absl::optional<PrivateAggregationRequestWithEventType>
 FillInPrivateAggregationRequest(
     auction_worklet::mojom::PrivateAggregationRequestPtr request,
     double winning_bid,
@@ -237,7 +251,9 @@ FillInPrivateAggregationRequest(
     // TODO(crbug.com/1410534): Report a bad mojom message when contribution's
     // value is negative. The worklet code should prevent that, but the worklet
     // process may be compromised.
-    return request;
+    PrivateAggregationRequestWithEventType request_with_event_type(
+        std::move(request), /*event_type=*/absl::nullopt);
+    return request_with_event_type;
   }
 
   auction_worklet::mojom::AggregatableReportContributionPtr contribution =
@@ -248,9 +264,9 @@ FillInPrivateAggregationRequest(
   DCHECK(contribution->is_for_event_contribution());
   const std::string event_type =
       contribution->get_for_event_contribution()->event_type;
+  absl::optional<std::string> final_event_type = absl::nullopt;
   if (!base::StartsWith(event_type, "reserved.")) {
-    // TODO(crbug.com/1410340): Supports requests with non-reserved event types.
-    return nullptr;
+    final_event_type = event_type;
   }
 
   // Rejects invalid reserved event type. The worklet code should prevent this,
@@ -260,25 +276,34 @@ FillInPrivateAggregationRequest(
   // Note that the data received here has no effect on the result of the
   // auction, so just reject the data and continue with the auction to keep
   // the code simple.
-  if (event_type != kReservedWin && event_type != kReservedLoss &&
-      event_type != kReservedAlways) {
-    return nullptr;
+  if (!final_event_type.has_value() &&
+      (event_type != kReservedWin && event_type != kReservedLoss &&
+       event_type != kReservedAlways)) {
+    return absl::nullopt;
   }
 
+  // Private aggregation requests of non reserved event types are not kept for
+  // losing bidders.
   if ((is_winner && event_type == kReservedLoss) ||
-      (!is_winner && event_type == kReservedWin)) {
-    return nullptr;
+      (!is_winner &&
+       (event_type == kReservedWin || final_event_type.has_value()))) {
+    return absl::nullopt;
   }
-  auction_worklet::mojom::AggregatableReportContributionPtr
+  content::mojom::AggregatableReportHistogramContributionPtr
       calculated_contribution = CalculateContributionBucketAndValue(
           std::move(contribution->get_for_event_contribution()), winning_bid,
           highest_scoring_other_bid, reject_reason);
   if (!calculated_contribution) {
-    return nullptr;
+    return absl::nullopt;
   }
-  return auction_worklet::mojom::PrivateAggregationRequest::New(
-      std::move(calculated_contribution), request->aggregation_mode,
-      std::move(request->debug_mode_details));
+
+  PrivateAggregationRequestWithEventType request_with_event_type(
+      auction_worklet::mojom::PrivateAggregationRequest::New(
+          auction_worklet::mojom::AggregatableReportContribution::
+              NewHistogramContribution(std::move(calculated_contribution)),
+          request->aggregation_mode, std::move(request->debug_mode_details)),
+      final_event_type);
+  return request_with_event_type;
 }
 
 }  // namespace content

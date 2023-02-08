@@ -561,7 +561,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     std::vector<GURL> ad_component_urls,
     std::map<url::Origin,
              std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
-        private_aggregation_requests,
+        private_aggregation_requests_reserved,
     std::vector<std::string> errors,
     std::unique_ptr<InterestGroupAuctionReporter> reporter) {
   // Remove `auction` from `auctions_` but tmeporarily keep it alive - on
@@ -585,11 +585,13 @@ void AdAuctionServiceImpl::OnAuctionComplete(
 
   if (!render_url) {
     DCHECK(!reporter);
-    MaybeLogPrivateAggregationFeature(private_aggregation_requests);
+    // Private aggregation requests of non-reserved event types don't need to be
+    // handled if the auction failed since they can't be triggered.
+    MaybeLogPrivateAggregationFeature(private_aggregation_requests_reserved);
     if (!manually_aborted) {
-      SendPrivateAggregationRequests(private_aggregation_manager_,
-                                     main_frame_origin_,
-                                     std::move(private_aggregation_requests));
+      SendPrivateAggregationRequests(
+          private_aggregation_manager_, main_frame_origin_,
+          std::move(private_aggregation_requests_reserved));
     }
 
     std::move(callback).Run(manually_aborted, /*config=*/absl::nullopt);
@@ -608,7 +610,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
 
   DCHECK(reporter);
   // `reporter` has any aggregation requests generated in this case.
-  DCHECK(private_aggregation_requests.empty());
+  DCHECK(private_aggregation_requests_reserved.empty());
   // Should always be present with a render_url.
   DCHECK(winning_group_key);
   DCHECK(blink::IsValidFencedFrameURL(*render_url));
@@ -668,9 +670,11 @@ void AdAuctionServiceImpl::OnReporterComplete(
   }
 
   auto ad_beacon_map = reporter->TakeAdBeaconMap();
-  auto private_aggregation_requests =
-      reporter->TakePrivateAggregationRequests();
-  MaybeLogPrivateAggregationFeature(private_aggregation_requests);
+  auto private_aggregation_requests_reserved =
+      reporter->TakeReservedPrivateAggregationRequests();
+  // TODO(crbug.com/1410340): Log non-reserved private aggregation requests as
+  // well.
+  MaybeLogPrivateAggregationFeature(private_aggregation_requests_reserved);
 
   reporters_.erase(reporter_it);
 
@@ -683,9 +687,9 @@ void AdAuctionServiceImpl::OnReporterComplete(
   // navigates a fenced frame, interest groups should still be updated. We
   // should run the InterestGroupAuctionReporter as well, but that's potentially
   // another issue).
-  SendPrivateAggregationRequests(private_aggregation_manager_,
-                                 main_frame_origin_,
-                                 std::move(private_aggregation_requests));
+  SendPrivateAggregationRequests(
+      private_aggregation_manager_, main_frame_origin_,
+      std::move(private_aggregation_requests_reserved));
 
   // Pass reporting map to the FencedFrameReporter.
   // TODO(mmenke): move this into InterestGroupReporter.

@@ -147,7 +147,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       std::vector<GURL> debug_loss_report_urls,
       base::flat_set<std::string> k_anon_keys_to_join,
       std::map<url::Origin, PrivateAggregationRequests>
-          private_aggregation_requests);
+          private_aggregation_requests_reserved,
+      std::map<std::string, PrivateAggregationRequests>
+          private_aggregation_requests_non_reserved);
 
   ~InterestGroupAuctionReporter();
 
@@ -180,8 +182,13 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // that created it).
   const std::vector<std::string>& errors() const { return errors_; }
   std::map<url::Origin, PrivateAggregationRequests>
-  TakePrivateAggregationRequests() {
-    return std::move(private_aggregation_requests_);
+  TakeReservedPrivateAggregationRequests() {
+    return std::move(private_aggregation_requests_reserved_);
+  }
+
+  std::map<std::string, PrivateAggregationRequests>
+  TakeNonReservedPrivateAggregationRequests() {
+    return std::move(private_aggregation_requests_non_reserved_);
   }
 
   // Retrieves the ad beacon map. May only be called once, since it takes
@@ -311,7 +318,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // been flushed. Keyed by the origin of the script that issued the request
   // (i.e. the reporting origin).
   std::map<url::Origin, PrivateAggregationRequests>
-      private_aggregation_requests_;
+      private_aggregation_requests_reserved_;
+  std::map<std::string, PrivateAggregationRequests>
+      private_aggregation_requests_non_reserved_;
 
   // Ad Beacon URL mapping generated from reportResult() or reportWin() from
   // this auction and its components. Destination is relative to this auction.

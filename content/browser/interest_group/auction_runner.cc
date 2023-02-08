@@ -211,11 +211,13 @@ void AuctionRunner::FailAuction(
 
   UpdateInterestGroupsPostAuction();
 
+  // When the auction fails, private aggregation requests of non-reserved event
+  // types cannot be triggered anyway, so no need to pass it along.
   std::move(callback_).Run(this, manually_aborted,
                            /*winning_group_key=*/absl::nullopt,
                            /*render_url=*/absl::nullopt,
                            /*ad_component_urls=*/{},
-                           auction_.TakePrivateAggregationRequests(),
+                           auction_.TakeReservedPrivateAggregationRequests(),
                            auction_.TakeErrors(),
                            /*reporter=*/nullptr);
 }

@@ -63,8 +63,14 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // `report_urls` Reporting URLs returned by seller worklet reportResult()
   //  methods and the winning bidder's reportWin() methods, if any.
   //
-  // `private_aggregation_requests` Requests made to the Private Aggregation
-  //  API. Keyed by reporting origin of the associated requests.
+  // `private_aggregation_requests_reserved` Requests made to the Private
+  //  Aggregation API, either sendHistogram(), or reportContributionForEvent()
+  //  with reserved event type. Keyed by reporting origin of the associated
+  //  requests.
+  //
+  // `private_aggregation_requests_non_reserved` Requests made to the Private
+  //  Aggregation API reportContributionForEvent() with non-reserved event type
+  //  like "click". Keyed by event type of the associated requests.
   //
   // `errors` are various error messages to be used for debugging. These are too
   //  sensitive for the renderers to see.
@@ -85,7 +91,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       absl::optional<GURL> render_url,
       std::vector<GURL> ad_component_urls,
       std::map<url::Origin, PrivateAggregationRequests>
-          private_aggregation_requests,
+          private_aggregation_requests_reserved,
       std::vector<std::string> errors,
       std::unique_ptr<InterestGroupAuctionReporter>
           interest_group_auction_reporter)>;

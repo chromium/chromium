@@ -538,29 +538,40 @@ class InterestGroupAuction::BuyerHelper
   // is one. If it's not a BidState managed by `this`, it has no effect.
   //
   // `signals` are the PostAuctionSignals from the auction `this` was a part of.
-  std::map<url::Origin, PrivateAggregationRequests>
-  TakePrivateAggregationRequests(const BidState* winner,
-                                 const PostAuctionSignals& signals) {
-    std::map<url::Origin, PrivateAggregationRequests>
-        private_aggregation_requests;
+  void TakePrivateAggregationRequests(
+      const BidState* winner,
+      const PostAuctionSignals& signals,
+      std::map<url::Origin, PrivateAggregationRequests>&
+          private_aggregation_requests_reserved,
+      std::map<std::string, PrivateAggregationRequests>&
+          private_aggregation_requests_non_reserved) {
     for (std::unique_ptr<BidState>& state : bid_states_) {
       bool is_winner = state.get() == winner;
       for (auto& [origin, requests] : state->private_aggregation_requests) {
         for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
              requests) {
-          auction_worklet::mojom::PrivateAggregationRequestPtr
+          absl::optional<PrivateAggregationRequestWithEventType>
               converted_request = FillInPrivateAggregationRequest(
                   std::move(request), signals.winning_bid,
                   signals.highest_scoring_other_bid, state->reject_reason,
                   is_winner);
-          if (converted_request) {
-            private_aggregation_requests[origin].emplace_back(
-                std::move(converted_request));
+          if (converted_request.has_value()) {
+            PrivateAggregationRequestWithEventType converted_request_value =
+                std::move(converted_request.value());
+            const absl::optional<std::string>& event_type =
+                converted_request_value.event_type;
+            if (event_type.has_value()) {
+              // The request has a non-reserved event type.
+              private_aggregation_requests_non_reserved[event_type.value()]
+                  .emplace_back(std::move(converted_request_value.request));
+            } else {
+              private_aggregation_requests_reserved[origin].emplace_back(
+                  std::move(converted_request_value.request));
+            }
           }
         }
       }
     }
-    return private_aggregation_requests;
   }
 
   void NotifyConfigPromisesResolved() {
@@ -1476,7 +1487,8 @@ InterestGroupAuction::CreateReporter(
       std::move(component_seller_winning_bid_info),
       std::move(interest_groups_that_bid), std::move(debug_win_report_urls),
       std::move(debug_loss_report_urls), GetKAnonKeysToJoin(),
-      TakePrivateAggregationRequests());
+      TakeReservedPrivateAggregationRequests(),
+      TakeNonReservedPrivateAggregationRequests());
 }
 
 void InterestGroupAuction::NotifyConfigPromisesResolved() {
@@ -1735,12 +1747,24 @@ void InterestGroupAuction::
                                       debug_loss_report_urls);
 
     std::map<url::Origin, PrivateAggregationRequests>
-        private_aggregation_requests =
-            buyer_helper->TakePrivateAggregationRequests(winner, signals);
+        private_aggregation_requests_reserved;
+    std::map<std::string, PrivateAggregationRequests>
+        private_aggregation_requests_non_reserved;
+    buyer_helper->TakePrivateAggregationRequests(
+        winner, signals, private_aggregation_requests_reserved,
+        private_aggregation_requests_non_reserved);
 
-    for (auto& [origin, requests] : private_aggregation_requests) {
+    for (auto& [origin, requests] : private_aggregation_requests_reserved) {
       PrivateAggregationRequests& destination_vector =
-          private_aggregation_requests_[origin];
+          private_aggregation_requests_reserved_[origin];
+      destination_vector.insert(destination_vector.end(),
+                                std::move_iterator(requests.begin()),
+                                std::move_iterator(requests.end()));
+    }
+    for (auto& [event_type, requests] :
+         private_aggregation_requests_non_reserved) {
+      PrivateAggregationRequests& destination_vector =
+          private_aggregation_requests_non_reserved_[event_type];
       destination_vector.insert(destination_vector.end(),
                                 std::move_iterator(requests.begin()),
                                 std::move_iterator(requests.end()));
@@ -1756,20 +1780,38 @@ void InterestGroupAuction::
 }
 
 std::map<url::Origin, InterestGroupAuction::PrivateAggregationRequests>
-InterestGroupAuction::TakePrivateAggregationRequests() {
+InterestGroupAuction::TakeReservedPrivateAggregationRequests() {
   for (auto& component_auction_info : component_auctions_) {
     std::map<url::Origin, PrivateAggregationRequests> requests_map =
-        component_auction_info.second->TakePrivateAggregationRequests();
+        component_auction_info.second->TakeReservedPrivateAggregationRequests();
     for (auto& [origin, requests] : requests_map) {
       DCHECK(!requests.empty());
       PrivateAggregationRequests& destination_vector =
-          private_aggregation_requests_[origin];
+          private_aggregation_requests_reserved_[origin];
       destination_vector.insert(destination_vector.end(),
                                 std::move_iterator(requests.begin()),
                                 std::move_iterator(requests.end()));
     }
   }
-  return std::move(private_aggregation_requests_);
+  return std::move(private_aggregation_requests_reserved_);
+}
+
+std::map<std::string, InterestGroupAuction::PrivateAggregationRequests>
+InterestGroupAuction::TakeNonReservedPrivateAggregationRequests() {
+  for (auto& component_auction_info : component_auctions_) {
+    std::map<std::string, PrivateAggregationRequests> requests_map =
+        component_auction_info.second
+            ->TakeNonReservedPrivateAggregationRequests();
+    for (auto& [event_type, requests] : requests_map) {
+      DCHECK(!requests.empty());
+      PrivateAggregationRequests& destination_vector =
+          private_aggregation_requests_non_reserved_[event_type];
+      destination_vector.insert(destination_vector.end(),
+                                std::move_iterator(requests.begin()),
+                                std::move_iterator(requests.end()));
+    }
+  }
+  return std::move(private_aggregation_requests_non_reserved_);
 }
 
 std::vector<std::string> InterestGroupAuction::TakeErrors() {
@@ -2344,9 +2386,18 @@ void InterestGroupAuction::OnScoreAdComplete(
       DCHECK(config_);
       PrivateAggregationRequests& pa_requests_for_seller =
           bid->bid_state->private_aggregation_requests[config_->seller];
-      pa_requests_for_seller.insert(pa_requests_for_seller.end(),
-                                    std::move_iterator(pa_requests.begin()),
-                                    std::move_iterator(pa_requests.end()));
+      for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
+           pa_requests) {
+        // A for-event private aggregation request with non-reserved event type
+        // from scoreAd() should be ignored and not reported.
+        if (request->contribution->is_for_event_contribution() &&
+            !base::StartsWith(
+                request->contribution->get_for_event_contribution()->event_type,
+                "reserved.")) {
+          continue;
+        }
+        pa_requests_for_seller.emplace_back(std::move(request));
+      }
     }
 
     // Use separate fields for component and top-level seller reports, so both
