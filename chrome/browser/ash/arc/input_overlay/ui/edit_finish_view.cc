@@ -14,6 +14,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
@@ -24,19 +25,21 @@ namespace arc::input_overlay {
 
 namespace {
 // About the whole view.
-constexpr int kViewHeight = 184;
+constexpr int kViewHeight = 144;
 constexpr int kSideMargin = 24;
 constexpr int kViewMargin = 8;
 constexpr int kViewCornerRadius = 16;
 constexpr int kViewBackgroundColor = SkColorSetA(SK_ColorBLACK, 0xCC /*80%*/);
 constexpr int kParentPadding = 16;
+constexpr int kBackgroundBlur = 10;
 // Space between children.
 constexpr int kSpaceRow = 4;
 // Alpha view features.
 constexpr int kSpaceRowAlpha = 8;
+constexpr int kViewHeightAlpha = 184;
 
 // About button.
-constexpr int kButtonHeight = 56;
+constexpr int kButtonHeight = 40;
 constexpr int kButtonSideInset = 24;
 constexpr int kButtonCornerRadius = 12;
 constexpr SkColor kButtonTextColor = gfx::kGoogleGrey200;
@@ -48,6 +51,7 @@ constexpr int kFontSize = 13;
 constexpr int kButtonCornerRadiusAlpha = 16;
 constexpr int kFontSizeAlpha = 16;
 constexpr int kButtonSideInsetAlpha = 20;
+constexpr int kButtonHeightAlpha = 56;
 // This color is same as the background color of input_mapping_view in kEdit
 // mode and is used for buttons to decide what ink drop color should be. If the
 // dark background color is set, then it will show the light ink drop color.
@@ -91,7 +95,8 @@ class EditFinishView::ChildButton : public views::LabelButton {
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
         0, AllowReposition() ? kButtonSideInset : kButtonSideInsetAlpha)));
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
-    SetMinSize(gfx::Size(0, kButtonHeight));
+    SetMinSize(gfx::Size(
+        /*width=*/0, AllowReposition() ? kButtonHeight : kButtonHeightAlpha));
     SetBackground(views::CreateRoundedRectBackground(
         background_color,
         AllowReposition() ? kButtonCornerRadius : kButtonCornerRadiusAlpha));
@@ -164,11 +169,21 @@ void EditFinishView::Init(const gfx::Size& parent_size) {
   DCHECK(display_overlay_controller_);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      AllowReposition()
-          ? gfx::Insets().set_left(kViewMargin).set_right(kViewMargin)
-          : gfx::Insets(),
+      AllowReposition() ? gfx::Insets().TLBR(kViewMargin, kViewMargin,
+                                             kViewMargin, kViewMargin)
+                        : gfx::Insets(),
       AllowReposition() ? kSpaceRow : kSpaceRowAlpha));
-  SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
+  SetBackground(AllowReposition()
+                    ? views::CreateRoundedRectBackground(kViewBackgroundColor,
+                                                         kViewCornerRadius)
+                    : views::CreateSolidBackground(SK_ColorTRANSPARENT));
+
+  if (AllowReposition()) {
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(kBackgroundBlur);
+    layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kViewCornerRadius));
+  }
 
   auto on_mouse_pressed_callback = base::BindRepeating(
       &EditFinishView::OnMousePressed, base::Unretained(this));
@@ -199,15 +214,11 @@ void EditFinishView::Init(const gfx::Size& parent_size) {
       on_mouse_released_callback));
 
   const int width = CalculateWidth();
-  SetSize(gfx::Size(AllowReposition() ? width + 2 * kViewMargin : width,
-                    kViewHeight));
-  SetPosition(
-      gfx::Point(std::max(0, parent_size.width() - width - kSideMargin),
-                 std::max(0, parent_size.height() / 3 - kViewHeight / 2)));
-  if (AllowReposition()) {
-    SetBackground(views::CreateRoundedRectBackground(kViewBackgroundColor,
-                                                     kViewCornerRadius));
-  }
+  const int height = AllowReposition() ? kViewHeight : kViewHeightAlpha;
+  SetSize(
+      gfx::Size(AllowReposition() ? width + 2 * kViewMargin : width, height));
+  SetPosition(gfx::Point(std::max(0, parent_size.width() - width - kSideMargin),
+                         std::max(0, parent_size.height() / 3 - height / 2)));
 }
 
 int EditFinishView::CalculateWidth() {
