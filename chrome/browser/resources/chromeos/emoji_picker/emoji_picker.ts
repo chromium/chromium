@@ -263,10 +263,16 @@ export class EmojiPicker extends PolymerElement {
                 )
             .then(values => values[0]);  // Map to the fetched data only.
 
-    this.updateStyles({
-      '--emoji-size': constants.EMOJI_ICON_SIZE_PX,
-      '--emoji-spacing': constants.EMOJI_SPACING_PX,
-    });
+    if (this.gifSupport) {
+      this.updateStyles({
+        '--emoji-group-button-size': constants.V2_5_EMOJI_GROUP_SIZE_PX,
+        '--emoji-picker-side-padding':
+            constants.V2_5_EMOJI_PICKER_SIDE_PADDING_PX,
+        '--emoji-spacing': constants.V2_5_EMOJI_SPACING_PX,
+        '--emoji-group-spacing': constants.V2_5_EMOJI_GROUP_SPACING_PX,
+        '--visual-content-width': constants.V2_5_VISUAL_CONTENT_WIDTH_PX,
+      });
+    }
 
     // Update UI and relevant features based on the initial data.
     this.updateCategoryData(
