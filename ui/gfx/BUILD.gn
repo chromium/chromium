@@ -459,19 +459,8 @@ component("color_space") {
     "//base",
     "//skia",
   ]
-  if (is_mac) {
-    sources += [
-      "hdr_metadata_mac.h",
-      "hdr_metadata_mac.mm",
-      "mac/display_icc_profiles.cc",
-      "mac/display_icc_profiles.h",
-    ]
-    frameworks = [
-      "CoreFoundation.framework",
-      "CoreGraphics.framework",
-    ]
-  }
-  if (use_blink && is_ios) {
+
+  if (is_apple && use_blink) {
     sources += [
       "hdr_metadata_mac.h",
       "hdr_metadata_mac.mm",
@@ -480,6 +469,12 @@ component("color_space") {
       "CoreFoundation.framework",
       "CoreGraphics.framework",
     ]
+    if (is_mac) {
+      sources += [
+        "mac/display_icc_profiles.cc",
+        "mac/display_icc_profiles.h",
+      ]
+    }
   }
   defines = [ "COLOR_SPACE_IMPLEMENTATION" ]
 }
