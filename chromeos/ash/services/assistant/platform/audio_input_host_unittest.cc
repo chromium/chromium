@@ -53,16 +53,6 @@ class AudioInputControllerMock : public MojomAudioInputController {
   mojo::Receiver<MojomAudioInputController> receiver_{this};
 };
 
-class ScopedCrasAudioHandler {
- public:
-  ScopedCrasAudioHandler() { CrasAudioHandler::InitializeForTesting(); }
-  ScopedCrasAudioHandler(const ScopedCrasAudioHandler&) = delete;
-  ScopedCrasAudioHandler& operator=(const ScopedCrasAudioHandler&) = delete;
-  ~ScopedCrasAudioHandler() { CrasAudioHandler::Shutdown(); }
-
-  CrasAudioHandler* Get() { return CrasAudioHandler::Get(); }
-};
-
 class AssistantAudioInputHostTest : public testing::Test {
  public:
   AssistantAudioInputHostTest() {
@@ -98,7 +88,7 @@ class AssistantAudioInputHostTest : public testing::Test {
   void CreateNewAudioInputHost() {
     audio_input_host_ = std::make_unique<AudioInputHostImpl>(
         audio_input_controller_.BindNewPipeAndPassRemote(),
-        cras_audio_handler_.Get(), chromeos::FakePowerManagerClient::Get(),
+        &cras_audio_handler_.Get(), chromeos::FakePowerManagerClient::Get(),
         "default-locale");
 
     FlushPendingMojomCalls();
@@ -144,7 +134,7 @@ class AssistantAudioInputHostTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  ScopedCrasAudioHandler cras_audio_handler_;
+  ScopedCrasAudioHandlerForTesting cras_audio_handler_;
   NiceMock<AudioInputControllerMock> audio_input_controller_;
   std::unique_ptr<AudioInputHostImpl> audio_input_host_;
 };

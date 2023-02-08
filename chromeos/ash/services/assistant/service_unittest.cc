@@ -72,8 +72,6 @@ class AssistantServiceTest : public testing::Test {
   ~AssistantServiceTest() override = default;
 
   void SetUp() override {
-    CrasAudioHandler::InitializeForTesting();
-
     chromeos::PowerManagerClient::InitializeFake();
     chromeos::FakePowerManagerClient::Get()->SetTabletMode(
         chromeos::PowerManagerClient::TabletMode::OFF, base::TimeTicks());
@@ -160,6 +158,7 @@ class AssistantServiceTest : public testing::Test {
 
   std::unique_ptr<Service> service_;
 
+  ScopedCrasAudioHandlerForTesting cras_audio_handler_;
   FullyInitializedAssistantState assistant_state_;
   signin::IdentityTestEnvironment identity_test_env_;
   ScopedFakeAssistantBrowserDelegate fake_delegate_{&assistant_state_};

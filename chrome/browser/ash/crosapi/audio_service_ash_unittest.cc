@@ -6,7 +6,6 @@
 
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
-#include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

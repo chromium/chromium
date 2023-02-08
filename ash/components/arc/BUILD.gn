@@ -452,6 +452,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos",
+    "//chromeos/ash/components/audio",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/arc",
     "//chromeos/ash/components/dbus/concierge",

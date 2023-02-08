@@ -23,6 +23,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler_stub.h"
+#include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "chromeos/ash/components/dbus/audio/floss_media_client.h"
 #include "device/bluetooth/floss/floss_features.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -133,9 +135,8 @@ void CrasAudioHandler::Initialize(
 
 // static
 void CrasAudioHandler::InitializeForTesting() {
-  // Make sure CrasAudioClient has been initialized.
-  if (!CrasAudioClient::Get())
-    CrasAudioClient::InitializeFake();
+  CHECK(CrasAudioClient::Get()) << "CrasAudioClient must be initialized.";
+
   // Make sure FlossMediaClient has been initialized.
   // TODO(b/228608730): Remove this after Floss bypasses CRAS to receive media
   // information directly from the provider.
@@ -1977,7 +1978,7 @@ void CrasAudioHandler::HandleGetNumActiveOutputStreams(
     return;
   }
 
-  DCHECK(*new_output_streams_count >= 0);
+  DCHECK_GE(*new_output_streams_count, 0);
   if (*new_output_streams_count > 0 && num_active_output_streams_ == 0) {
     for (auto& observer : observers_)
       observer.OnOutputStarted();
@@ -2325,6 +2326,12 @@ void CrasAudioHandler::HandleGetSystemAgcSupported(
 }
 
 ScopedCrasAudioHandlerForTesting::ScopedCrasAudioHandlerForTesting() {
+  CHECK(!CrasAudioClient::Get())
+      << "ScopedCrasAudioHandlerForTesting expects that there is no "
+         "CrasAudioClient running at its constructor.";
+
+  fake_cras_audio_client_ = std::make_unique<FakeCrasAudioClient>();
+
   CrasAudioHandler::InitializeForTesting();
 }
 

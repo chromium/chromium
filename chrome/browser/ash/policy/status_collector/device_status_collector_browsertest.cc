@@ -896,7 +896,6 @@ class DeviceStatusCollectorTest : public testing::Test {
     // Use FakeUpdateEngineClient.
     update_engine_client_ = ash::UpdateEngineClient::InitializeFakeForTest();
 
-    ash::CrasAudioHandler::InitializeForTesting();
     ash::UserDataAuthClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
     ash::AttestationClient::InitializeFake();
@@ -1221,6 +1220,8 @@ class DeviceStatusCollectorTest : public testing::Test {
   apps::ScopedOmitBuiltInAppsForTesting scoped_omit_built_in_apps_for_testing_;
   apps::ScopedOmitPluginVmAppsForTesting
       scoped_omit_plugin_vm_apps_for_testing_;
+
+  ash::ScopedCrasAudioHandlerForTesting cras_audio_handler_;
 
   // This property is required to instantiate the session manager, a singleton
   // which is used by the device status collector.

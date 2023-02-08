@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/audio/audio_pref_observer.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "chromeos/ash/components/dbus/audio/volume_state.h"
 #include "media/base/video_facing.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -837,11 +838,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   base::WeakPtrFactory<CrasAudioHandler> weak_ptr_factory_{this};
 };
 
-// Helper class that will initialize the |CrasAudioHandler| for testing in its
+// Helper class that will initialize the `CrasAudioHandler` for testing in its
 // constructor, and clean things up in its destructor.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
     ScopedCrasAudioHandlerForTesting {
  public:
+  // `ScopedCrasAudioHandlerForTesting` expects that there is no audio client
+  // running. This class starts and shuts down an audio client automatically at
+  // its constructor and destructor.
   ScopedCrasAudioHandlerForTesting();
   ScopedCrasAudioHandlerForTesting(const ScopedCrasAudioHandlerForTesting&) =
       delete;
@@ -850,6 +854,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   ~ScopedCrasAudioHandlerForTesting();
 
   CrasAudioHandler& Get();
+
+ private:
+  std::unique_ptr<FakeCrasAudioClient> fake_cras_audio_client_;
 };
 
 }  // namespace ash
