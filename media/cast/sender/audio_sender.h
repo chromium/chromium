@@ -95,6 +95,11 @@ class AudioSender final : public FrameSender::Client {
   // The number of audio samples enqueued in |audio_encoder_|.
   int samples_in_encoder_ = 0;
 
+  // Used to calculate the percentage of lost frames. We currently report this
+  // metric as the number of frames dropped in the entire session.
+  int number_of_frames_inserted_ = 0;
+  int number_of_frames_dropped_ = 0;
+
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<AudioSender> weak_factory_{this};
 };

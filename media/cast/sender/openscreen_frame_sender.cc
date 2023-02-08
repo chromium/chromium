@@ -23,10 +23,31 @@
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
 namespace media::cast {
+namespace {
 
 // The additional number of frames that can be in-flight when input exceeds the
 // maximum frame rate.
 static constexpr int kMaxFrameBurst = 5;
+
+using EnqueueFrameResult = openscreen::cast::Sender::EnqueueFrameResult;
+CastStreamingFrameDropReason ToFrameDropReason(EnqueueFrameResult result) {
+  switch (result) {
+    case EnqueueFrameResult::OK:
+      return CastStreamingFrameDropReason::kNotDropped;
+
+    case EnqueueFrameResult::PAYLOAD_TOO_LARGE:
+      return CastStreamingFrameDropReason::kPayloadTooLarge;
+
+    case EnqueueFrameResult::REACHED_ID_SPAN_LIMIT:
+      return CastStreamingFrameDropReason::kReachedIdSpanLimit;
+
+    case EnqueueFrameResult::MAX_DURATION_IN_FLIGHT:
+      return CastStreamingFrameDropReason::
+          kInFlightDurationTooHighAfterEncoding;
+  }
+}
+
+}  // namespace
 
 std::unique_ptr<FrameSender> FrameSender::Create(
     scoped_refptr<CastEnvironment> cast_environment,
@@ -182,7 +203,7 @@ base::TimeDelta OpenscreenFrameSender::GetAllowedInFlightMediaDuration() const {
   return ToTimeDelta(sender_->GetMaxInFlightMediaDuration());
 }
 
-bool OpenscreenFrameSender::EnqueueFrame(
+CastStreamingFrameDropReason OpenscreenFrameSender::EnqueueFrame(
     std::unique_ptr<SenderEncodedFrame> encoded_frame) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
 
@@ -257,8 +278,7 @@ bool OpenscreenFrameSender::EnqueueFrame(
   openscreen_frame.referenced_frame_id =
       frame_id_map_[encoded_frame->referenced_frame_id];
   const auto result = sender_->EnqueueFrame(std::move(openscreen_frame));
-
-  return result == openscreen::cast::Sender::EnqueueFrameResult::OK;
+  return ToFrameDropReason(result);
 }
 
 void OpenscreenFrameSender::OnReceivedCastFeedback(
@@ -270,15 +290,14 @@ void OpenscreenFrameSender::OnReceivedPli() {
   OnPictureLost();
 }
 
-bool OpenscreenFrameSender::ShouldDropNextFrame(
+CastStreamingFrameDropReason OpenscreenFrameSender::ShouldDropNextFrame(
     base::TimeDelta frame_duration) const {
   // Check that accepting the next frame won't cause more frames to become
   // in-flight than the system's design limit.
   const int count_frames_in_flight =
       GetUnacknowledgedFrameCount() + client_->GetNumberOfFramesInEncoder();
   if (count_frames_in_flight >= kMaxUnackedFrames) {
-    VLOG_WITH_SSRC(1) << "Dropping: Too many frames would be in-flight.";
-    return true;
+    return CastStreamingFrameDropReason::kTooManyFramesInFlight;
   }
 
   // Check that accepting the next frame won't exceed the configured maximum
@@ -287,8 +306,7 @@ bool OpenscreenFrameSender::ShouldDropNextFrame(
   const double max_frames_in_flight =
       max_frame_rate_ * duration_in_flight.InSecondsF();
   if (count_frames_in_flight >= max_frames_in_flight + kMaxFrameBurst) {
-    VLOG_WITH_SSRC(1) << "Dropping: Burst threshold would be exceeded.";
-    return true;
+    return CastStreamingFrameDropReason::kBurstThresholdExceeded;
   }
 
   // Check that accepting the next frame won't exceed the allowed in-flight
@@ -312,12 +330,11 @@ bool OpenscreenFrameSender::ShouldDropNextFrame(
     }
   }
   if (duration_would_be_in_flight > allowed_in_flight) {
-    VLOG_WITH_SSRC(1) << "Dropping: In-flight duration would be too high.";
-    return true;
+    return CastStreamingFrameDropReason::kInFlightDurationTooHigh;
   }
 
   // Next frame is accepted.
-  return false;
+  return CastStreamingFrameDropReason::kNotDropped;
 }
 
 }  // namespace media::cast

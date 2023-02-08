@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
+#include "media/cast/constants.h"
 #include "media/cast/net/cast_transport.h"
 #include "media/cast/net/rtcp/rtcp_defines.h"
 #include "media/cast/sender/congestion_control.h"
@@ -91,19 +92,20 @@ class FrameSender {
   // indication event.
   virtual bool NeedsKeyFrame() const = 0;
 
-  // Called by the encoder with the next encoded frame to send. Returns true
-  // if successfully enqueued.
-  virtual bool EnqueueFrame(
+  // Called by the encoder with the next encoded frame to send. Returns
+  // kNotDropped if successfully enqueued.
+  virtual CastStreamingFrameDropReason EnqueueFrame(
       std::unique_ptr<SenderEncodedFrame> encoded_frame) = 0;
 
-  // Returns true if too many frames would be in-flight by encoding and sending
-  // the next frame having the given |frame_duration|.
+  // Returns the reason the frame should be dropped, or kNotDropped if it should
+  // not be dropped.
   //
   // Callers are recommended to compute the frame duration based on the
   // difference between the next and last frames' reference times, or the period
   // between frames of the configured max frame rate if the reference times are
   // unavailable.
-  virtual bool ShouldDropNextFrame(base::TimeDelta frame_duration) const = 0;
+  virtual CastStreamingFrameDropReason ShouldDropNextFrame(
+      base::TimeDelta frame_duration) const = 0;
 
   // Returns the RTP timestamp on the frame associated with |frame_id|.
   // In practice this should be implemented as a ring buffer using the lower

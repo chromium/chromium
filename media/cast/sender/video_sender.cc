@@ -12,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/media_switches.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
@@ -54,6 +55,17 @@ constexpr base::TimeDelta kMinKeyFrameRequestInterval = base::Milliseconds(500);
 
 // This is the minimum amount of frames between issuing key frame requests.
 constexpr int kMinKeyFrameRequestFrameInterval = 6;
+
+// UMA histogram name for video bitrate setting.
+constexpr char kHistogramBitrate[] = "CastStreaming.Sender.Video.Bitrate";
+
+// UMA histogram for the percentage of dropped video frames.
+constexpr char kHistogramDroppedFrames[] =
+    "CastStreaming.Sender.Video.PercentDroppedFrames";
+
+// UMA histogram for recording when a frame is dropped.
+constexpr char kHistogramFrameDropped[] =
+    "CastStreaming.Sender.Video.FrameDropped";
 
 // Extract capture begin/end timestamps from |video_frame|'s metadata and log
 // it.
@@ -159,7 +171,12 @@ VideoSender::VideoSender(
   }
 }
 
-VideoSender::~VideoSender() = default;
+VideoSender::~VideoSender() {
+  // Record the number of frames dropped during this session.
+  base::UmaHistogramPercentage(kHistogramDroppedFrames,
+                               (number_of_frames_dropped_ * 100) /
+                                   std::max(1, number_of_frames_inserted_));
+}
 
 void VideoSender::InsertRawVideoFrame(
     scoped_refptr<media::VideoFrame> video_frame,
@@ -233,7 +250,10 @@ void VideoSender::InsertRawVideoFrame(
           ? reference_time - last_enqueued_frame_reference_time_
           : base::Seconds(1.0 / frame_sender_->MaxFrameRate());
 
-  if (frame_sender_->ShouldDropNextFrame(duration_added_by_next_frame)) {
+  number_of_frames_inserted_++;
+  const CastStreamingFrameDropReason reason =
+      frame_sender_->ShouldDropNextFrame(duration_added_by_next_frame);
+  if (reason != CastStreamingFrameDropReason::kNotDropped) {
     base::TimeDelta new_target_delay =
         std::min(frame_sender_->CurrentRoundTripTime() * kRoundTripsNeeded +
                      base::Milliseconds(kConstantTimeMs),
@@ -262,10 +282,11 @@ void VideoSender::InsertRawVideoFrame(
     // drop every subsequent frame for the rest of the session.
     video_encoder_->EmitFrames();
 
-    TRACE_EVENT_INSTANT2("cast.stream", "Video Frame Drop",
-                         TRACE_EVENT_SCOPE_THREAD,
-                         "rtp_timestamp", rtp_timestamp.lower_32_bits(),
-                         "reason", "too much in flight");
+    number_of_frames_dropped_++;
+    base::UmaHistogramEnumeration(kHistogramFrameDropped, reason);
+    TRACE_EVENT_INSTANT2("cast.stream", "Video Frame Drop (raw frame)",
+                         TRACE_EVENT_SCOPE_THREAD, "duration",
+                         duration_added_by_next_frame, "reason", reason);
     return;
   }
 
@@ -280,6 +301,14 @@ void VideoSender::InsertRawVideoFrame(
   if (bitrate != last_bitrate_) {
     video_encoder_->SetBitRate(bitrate);
     last_bitrate_ = bitrate;
+  }
+
+  // Report the bitrate every 500 frames.
+  constexpr int kSampleInterval = 500;
+  frames_since_bitrate_reported_ =
+      ++frames_since_bitrate_reported_ % kSampleInterval;
+  if (frames_since_bitrate_reported_ == 0) {
+    base::UmaHistogramMemoryKB(kHistogramBitrate, bitrate / 1000);
   }
 
   TRACE_COUNTER_ID1("cast.stream", "Video Target Bitrate", this, bitrate);
@@ -377,17 +406,19 @@ void VideoSender::OnEncodedVideoFrame(
   }
 
   const RtpTimeTicks rtp_timestamp = encoded_frame->rtp_timestamp;
-  if (!frame_sender_->EnqueueFrame(std::move(encoded_frame))) {
+  const CastStreamingFrameDropReason reason =
+      frame_sender_->EnqueueFrame(std::move(encoded_frame));
+  if (reason != CastStreamingFrameDropReason::kNotDropped) {
     // Since we have dropped an already encoded frame, which is much worse than
     // dropping a raw frame above, we need to flush the encoder and emit a new
     // keyframe.
     video_encoder_->EmitFrames();
     video_encoder_->GenerateKeyFrame();
 
+    base::UmaHistogramEnumeration(kHistogramFrameDropped, reason);
     TRACE_EVENT_INSTANT2("cast.stream", "Video Frame Drop (already encoded)",
                          TRACE_EVENT_SCOPE_THREAD, "rtp_timestamp",
-                         rtp_timestamp.lower_32_bits(), "reason",
-                         "openscreen sender did not accept the frame");
+                         rtp_timestamp.lower_32_bits(), "reason", reason);
   }
 }
 

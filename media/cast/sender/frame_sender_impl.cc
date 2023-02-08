@@ -304,7 +304,7 @@ base::TimeDelta FrameSenderImpl::GetAllowedInFlightMediaDuration() const {
   return target_playout_delay_ + (current_round_trip_time_ / 2);
 }
 
-bool FrameSenderImpl::EnqueueFrame(
+CastStreamingFrameDropReason FrameSenderImpl::EnqueueFrame(
     std::unique_ptr<SenderEncodedFrame> encoded_frame) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
 
@@ -401,7 +401,7 @@ bool FrameSenderImpl::EnqueueFrame(
       "cast.stream", name, TRACE_ID_WITH_SCOPE(name, frame_id.lower_32_bits()),
       "rtp_timestamp", encoded_frame->rtp_timestamp.lower_32_bits());
   transport_sender_->InsertFrame(config_.sender_ssrc, *encoded_frame);
-  return true;
+  return CastStreamingFrameDropReason::kNotDropped;
 }
 
 void FrameSenderImpl::OnReceivedCastFeedback(
@@ -507,15 +507,14 @@ void FrameSenderImpl::OnReceivedPli() {
   picture_lost_at_receiver_ = true;
 }
 
-bool FrameSenderImpl::ShouldDropNextFrame(
+CastStreamingFrameDropReason FrameSenderImpl::ShouldDropNextFrame(
     base::TimeDelta frame_duration) const {
   // Check that accepting the next frame won't cause more frames to become
   // in-flight than the system's design limit.
   const int count_frames_in_flight =
       GetUnacknowledgedFrameCount() + client_->GetNumberOfFramesInEncoder();
   if (count_frames_in_flight >= kMaxUnackedFrames) {
-    VLOG(1) << SENDER_SSRC << "Dropping: Too many frames would be in-flight.";
-    return true;
+    return CastStreamingFrameDropReason::kTooManyFramesInFlight;
   }
 
   // Check that accepting the next frame won't exceed the configured maximum
@@ -524,8 +523,7 @@ bool FrameSenderImpl::ShouldDropNextFrame(
   const double max_frames_in_flight =
       max_frame_rate_ * duration_in_flight.InSecondsF();
   if (count_frames_in_flight >= max_frames_in_flight + kMaxFrameBurst) {
-    VLOG(1) << SENDER_SSRC << "Dropping: Burst threshold would be exceeded.";
-    return true;
+    return CastStreamingFrameDropReason::kBurstThresholdExceeded;
   }
 
   // Check that accepting the next frame won't exceed the allowed in-flight
@@ -545,12 +543,11 @@ bool FrameSenderImpl::ShouldDropNextFrame(
         << " usec for next frame --> " << percent << "% of allowed in-flight.";
   }
   if (duration_would_be_in_flight > allowed_in_flight) {
-    VLOG(1) << SENDER_SSRC << "Dropping: In-flight duration would be too high.";
-    return true;
+    return CastStreamingFrameDropReason::kInFlightDurationTooHigh;
   }
 
   // Next frame is accepted.
-  return false;
+  return CastStreamingFrameDropReason::kNotDropped;
 }
 
 }  // namespace media::cast

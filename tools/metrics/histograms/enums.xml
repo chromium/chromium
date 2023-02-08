@@ -14393,6 +14393,16 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="SignatureVerificationFailed"/>
 </enum>
 
+<enum name="CastStreamingFrameDropReason">
+  <int value="0" label="Frame was not dropped"/>
+  <int value="1" label="Too many frames in flight"/>
+  <int value="2" label="Burst threshold exceeded"/>
+  <int value="3" label="In flight duration too high"/>
+  <int value="4" label="Payload too large"/>
+  <int value="5" label="Reached Frame ID span limit"/>
+  <int value="6" label="In flight duration too high (after encoding)"/>
+</enum>
+
 <enum name="CatSixtyFour">
   <int value="0" label="Saber-Toothed Cat (&lt;10.6), 32-bit (?)"/>
   <int value="1" label="Saber-Toothed Cat (&lt;10.6), 64-bit (?)"/>

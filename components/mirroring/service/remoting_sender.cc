@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -26,6 +27,21 @@
 using Dependency = openscreen::cast::EncodedFrame::Dependency;
 
 namespace mirroring {
+namespace {
+
+// UMA histograms for recording the percentage of dropped frames.
+constexpr char kHistogramDroppedAudioFrames[] =
+    "CastStreaming.Sender.Remoting.Audio.PercentDroppedFrames";
+constexpr char kHistogramDroppedVideoFrames[] =
+    "CastStreaming.Sender.Remoting.Video.PercentDroppedFrames";
+
+// UMA histograms for recording when a frame is dropped.
+constexpr char kHistogramAudioFrameDropped[] =
+    "CastStreaming.Sender.Remoting.Audio.FrameDropped";
+constexpr char kHistogramVideoFrameDropped[] =
+    "CastStreaming.Sender.Remoting.Video.FrameDropped";
+
+}  // namespace
 
 RemotingSender::RemotingSender(
     scoped_refptr<media::cast::CastEnvironment> cast_environment,
@@ -75,6 +91,8 @@ RemotingSender::RemotingSender(
       error_callback_(std::move(error_callback)),
       data_pipe_reader_(new media::MojoDataPipeReader(std::move(pipe))),
       stream_sender_(this, std::move(stream_sender)),
+      is_audio_(config.rtp_payload_type <=
+                media::cast::RtpPayloadType::REMOTE_AUDIO),
       rtp_timebase_(config.rtp_timebase),
       input_queue_discards_remaining_(0),
       is_reading_(false),
@@ -87,7 +105,13 @@ RemotingSender::RemotingSender(
       &RemotingSender::OnRemotingDataStreamError, base::Unretained(this)));
 }
 
-RemotingSender::~RemotingSender() {}
+RemotingSender::~RemotingSender() {
+  // Record the number of frames dropped during this session.
+  base::UmaHistogramPercentage(
+      is_audio_ ? kHistogramDroppedAudioFrames : kHistogramDroppedVideoFrames,
+      (number_of_frames_dropped_ * 100) /
+          std::max(1, number_of_frames_inserted_));
+}
 
 void RemotingSender::SendFrame(uint32_t frame_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -212,14 +236,22 @@ void RemotingSender::TrySendFrame() {
   remoting_frame->rtp_timestamp = rtp_timestamp;
   remoting_frame->data.swap(next_frame_data_);
 
-  if (frame_sender_->EnqueueFrame(std::move(remoting_frame))) {
+  number_of_frames_inserted_++;
+  const media::cast::CastStreamingFrameDropReason reason =
+      frame_sender_->EnqueueFrame(std::move(remoting_frame));
+  if (reason == media::cast::CastStreamingFrameDropReason::kNotDropped) {
     // Only increment if we successfully enqueued.
     next_frame_id_++;
   } else {
-    TRACE_EVENT_INSTANT2("cast.stream", "Remoting Frame Drop",
-                         TRACE_EVENT_SCOPE_THREAD, "rtp_timestamp",
-                         rtp_timestamp.lower_32_bits(), "reason",
-                         "openscreen sender did not accept the frame");
+    number_of_frames_dropped_++;
+    base::UmaHistogramEnumeration(
+        is_audio_ ? kHistogramAudioFrameDropped : kHistogramVideoFrameDropped,
+        reason);
+    TRACE_EVENT_INSTANT2(
+        "cast.stream",
+        is_audio_ ? "Remoting Audio Frame Drop" : "Remoting Video Frame Drop",
+        TRACE_EVENT_SCOPE_THREAD, "rtp_timestamp",
+        rtp_timestamp.lower_32_bits(), "reason", reason);
   }
   OnInputTaskComplete();
 }

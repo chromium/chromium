@@ -131,6 +131,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RemotingSender final
   // this RemotingSender consumes from |pipe_|.
   mojo::Receiver<media::mojom::RemotingDataStreamSender> stream_sender_;
 
+  // Whether this is an audio sender (true) or a video sender (false).
+  const bool is_audio_;
+
   // The RTP timebase for this sender, set from the FrameSenderConfig.
   int rtp_timebase_;
 
@@ -142,19 +145,24 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RemotingSender final
   // indicates the number of operations where data should be discarded (due to
   // CancelInFlightData()).
   base::queue<base::RepeatingClosure> input_queue_;
-  size_t input_queue_discards_remaining_;
+  size_t input_queue_discards_remaining_ = 0;
 
   // Indicates whether the |data_pipe_reader_| is processing a reading request.
-  bool is_reading_;
+  bool is_reading_ = false;
 
   // Set to true if the first frame has not yet been sent, or if a
   // CancelInFlightData() operation just completed. This causes TrySendFrame()
   // to mark the next frame as the start of a new sequence.
-  bool flow_restart_pending_;
+  bool flow_restart_pending_ = true;
 
   // The next frame's ID. Before any frames are sent, this will be the ID of
   // the first frame.
   media::cast::FrameId next_frame_id_ = media::cast::FrameId::first();
+
+  // Used to calculate the percentage of lost frames. We currently report this
+  // metric as the number of frames dropped in the entire session.
+  int number_of_frames_inserted_ = 0;
+  int number_of_frames_dropped_ = 0;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<RemotingSender> weak_factory_{this};

@@ -69,6 +69,31 @@ enum OperationalStatus {
   STATUS_CODEC_RUNTIME_ERROR,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CastStreamingFrameDropReason {
+  // The frame was not dropped.
+  kNotDropped = 0,
+
+  // Reported by the FrameSender implementation.
+  kTooManyFramesInFlight = 1,
+  kBurstThresholdExceeded = 2,
+  kInFlightDurationTooHigh = 3,
+
+  // Reported by openscreen::Sender as the EnqueueFrameResult.
+  // Payload is too large, typically meaning several dozen megabytes or more.
+  kPayloadTooLarge = 4,
+  // Surpassed the max number of FrameIds in flight.
+  kReachedIdSpanLimit = 5,
+  // Too large of a media duration in flight. Dropping the frame before encoding
+  // (kInFlightDurationTooHigh) is strongly preferred, but in some rare cases
+  // we may drop the frame after encoding instead.
+  kInFlightDurationTooHighAfterEncoding = 6,
+
+  // Should stay updated as the maximum enum value above.
+  kMaxValue = kInFlightDurationTooHighAfterEncoding
+};
+
 }  // namespace cast
 }  // namespace media
 

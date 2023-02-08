@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/media_switches.h"
@@ -20,6 +21,17 @@
 #include "third_party/openscreen/src/cast/streaming/sender.h"
 
 namespace media::cast {
+namespace {
+
+// UMA histogram for the percentage of dropped audio frames.
+constexpr char kHistogramDroppedFrames[] =
+    "CastStreaming.Sender.Audio.PercentDroppedFrames";
+
+// UMA histogram for recording when a frame is dropped.
+constexpr char kHistogramFrameDropped[] =
+    "CastStreaming.Sender.Audio.FrameDropped";
+
+}  // namespace
 
 AudioSender::AudioSender(scoped_refptr<CastEnvironment> cast_environment,
                          const FrameSenderConfig& audio_config,
@@ -77,7 +89,12 @@ AudioSender::AudioSender(scoped_refptr<CastEnvironment> cast_environment,
                                  audio_encoder_->GetSamplesPerFrame());
 }
 
-AudioSender::~AudioSender() = default;
+AudioSender::~AudioSender() {
+  // Record the number of frames dropped during this session.
+  base::UmaHistogramPercentage(kHistogramDroppedFrames,
+                               (number_of_frames_dropped_ * 100) /
+                                   std::max(1, number_of_frames_inserted_));
+}
 
 void AudioSender::InsertAudio(std::unique_ptr<AudioBus> audio_bus,
                               const base::TimeTicks& recorded_time) {
@@ -88,10 +105,19 @@ void AudioSender::InsertAudio(std::unique_ptr<AudioBus> audio_bus,
     return;
   }
 
+  number_of_frames_inserted_++;
   const base::TimeDelta next_frame_duration =
       ToTimeDelta(RtpTimeDelta::FromTicks(audio_bus->frames()), rtp_timebase_);
-  if (frame_sender_->ShouldDropNextFrame(next_frame_duration))
+  const CastStreamingFrameDropReason reason =
+      frame_sender_->ShouldDropNextFrame(next_frame_duration);
+  if (reason != CastStreamingFrameDropReason::kNotDropped) {
+    number_of_frames_dropped_++;
+    base::UmaHistogramEnumeration(kHistogramFrameDropped, reason);
+    TRACE_EVENT_INSTANT2("cast.stream", "Audio Frame Drop (raw frame)",
+                         TRACE_EVENT_SCOPE_THREAD, "duration",
+                         next_frame_duration, "reason", reason);
     return;
+  }
 
   samples_in_encoder_ += audio_bus->frames();
 
@@ -135,11 +161,14 @@ void AudioSender::OnEncodedAudioFrame(
   DCHECK_GE(samples_in_encoder_, 0);
 
   const RtpTimeTicks rtp_timestamp = encoded_frame->rtp_timestamp;
-  if (!frame_sender_->EnqueueFrame(std::move(encoded_frame))) {
+  const CastStreamingFrameDropReason reason =
+      frame_sender_->EnqueueFrame(std::move(encoded_frame));
+  if (reason != CastStreamingFrameDropReason::kNotDropped) {
+    number_of_frames_dropped_++;
+    base::UmaHistogramEnumeration(kHistogramFrameDropped, reason);
     TRACE_EVENT_INSTANT2("cast.stream", "Audio Frame Drop (already encoded)",
                          TRACE_EVENT_SCOPE_THREAD, "rtp_timestamp",
-                         rtp_timestamp.lower_32_bits(), "reason",
-                         "openscreen sender did not accept the frame");
+                         rtp_timestamp.lower_32_bits(), "reason", reason);
   }
 }
 

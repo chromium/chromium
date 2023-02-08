@@ -22,6 +22,13 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="CastStreamingSender">
+  <variant name="Audio"/>
+  <variant name="Remoting.Audio"/>
+  <variant name="Remoting.Video"/>
+  <variant name="Video"/>
+</variants>
+
 <variants name="DbOperation">
   <variant name="Clear" summary="Remove all keys from the DB"/>
   <variant name="Initialize" summary="Initialize the DB."/>
@@ -87,6 +94,38 @@ chromium-metrics-reviews@google.com.
   <variant name="VP8"/>
   <variant name="VP9"/>
 </variants>
+
+<histogram name="CastStreaming.Sender.Video.Bitrate" units="kbps"
+    expires_after="2024-02-06">
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <summary>
+    Records the currently set video bit rate during a Cast Streaming mirroring
+    session. This metric is subsampled every 500 frames.
+  </summary>
+</histogram>
+
+<histogram name="CastStreaming.Sender.{CastStreamingSender}.FrameDropped"
+    enum="CastStreamingFrameDropReason" expires_after="2024-02-06">
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <summary>
+    Records the reason when an frame is dropped during a Cast Streaming session.
+  </summary>
+  <token key="CastStreamingSender" variants="CastStreamingSender"/>
+</histogram>
+
+<histogram
+    name="CastStreaming.Sender.{CastStreamingSender}.PercentDroppedFrames"
+    units="%" expires_after="2024-02-06">
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <summary>
+    Records the total percentage of frames dropped for a given Cast Streaming
+    session.
+  </summary>
+  <token key="CastStreamingSender" variants="CastStreamingSender"/>
+</histogram>
 
 <histogram name="Media.AImageReaderGLOwner.AcquireImageResult"
     enum="MediaStatus" expires_after="2023-07-02">
