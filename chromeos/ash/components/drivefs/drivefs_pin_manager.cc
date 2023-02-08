@@ -629,13 +629,6 @@ void PinManager::Complete(const Stage stage) {
   progress_.stage = stage;
   switch (stage) {
     case Stage::kSuccess:
-      LOG_IF(ERROR, progress_.failed_files > 0)
-          << "Failed to pin " << progress_.failed_files << " files";
-      VLOG(1) << "Pinned " << progress_.pinned_files << " files and downloaded "
-              << HumanReadableSize(progress_.pinned_bytes) << " in "
-              << timer_.Elapsed().InMilliseconds() << " ms";
-      VLOG(2) << "Useful events: " << progress_.useful_events;
-      VLOG(2) << "Duplicated events: " << progress_.duplicated_events;
       VLOG(1) << "Finished with success";
       break;
 
@@ -745,6 +738,17 @@ void PinManager::PinSomeFiles() {
           << "%: synced " << HumanReadableSize(progress_.pinned_bytes)
           << " and " << progress_.pinned_files << " files, syncing "
           << progress_.syncing_files << " files";
+
+  if (files_to_track_.empty() && !progress_.emptied_queue) {
+    progress_.emptied_queue = true;
+    LOG_IF(ERROR, progress_.failed_files > 0)
+        << "Failed to pin " << progress_.failed_files << " files";
+    VLOG(1) << "Pinned " << progress_.pinned_files << " files and "
+            << HumanReadableSize(progress_.pinned_bytes) << " in "
+            << timer_.Elapsed().InMilliseconds() << " ms";
+    VLOG(2) << "Useful events: " << progress_.useful_events;
+    VLOG(2) << "Duplicated events: " << progress_.duplicated_events;
+  }
 }
 
 void PinManager::OnFilePinned(const Id id,

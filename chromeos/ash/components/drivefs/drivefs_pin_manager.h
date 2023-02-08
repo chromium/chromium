@@ -111,6 +111,9 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
   // Stage of the setup process.
   Stage stage = Stage::kNotStarted;
 
+  // Has the PinManager ever emptied its set of tracking items?
+  bool emptied_queue = false;
+
   Progress();
   Progress(const Progress&);
   Progress& operator=(const Progress&);
