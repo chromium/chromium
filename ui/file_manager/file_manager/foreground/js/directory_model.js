@@ -146,7 +146,7 @@ export class DirectoryModel extends EventTarget {
 
     // When something changed the current directory status to STARTED, Here we
     // initiate the actual change and will update to SUCCESS at the end.
-    if (state.currentDirectory.status == PropStatus.STARTED) {
+    if (state.currentDirectory?.status === PropStatus.STARTED) {
       newURL = /** @type {string} */ (newURL);
       const entry =
           state.allEntries[newURL] ? state.allEntries[newURL].entry : null;

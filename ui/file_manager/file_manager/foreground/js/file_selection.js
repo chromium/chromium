@@ -183,12 +183,6 @@ export class FileSelectionHandler extends EventTarget {
      */
     this.selectionUpdateTimer_ = 0;
 
-    /**
-     * requestAnimationFrame used to debounce the calls to update the Store.
-     * @private {?number}
-     */
-    this.updateStoreRaf_ = null;
-
     /** @private {!Store} */
     this.store_ = getStore();
 
@@ -245,9 +239,7 @@ export class FileSelectionHandler extends EventTarget {
       updateDelay = 1;
     }
 
-    if (!this.updateStoreRaf_) {
-      this.updateStoreRaf_ = requestAnimationFrame(() => this.updateStore_());
-    }
+    this.updateStore_();
 
     const selection = this.selection;
     this.selectionUpdateTimer_ = setTimeout(() => {
@@ -287,7 +279,6 @@ export class FileSelectionHandler extends EventTarget {
    * @private
    */
   updateStore_() {
-    this.updateStoreRaf_ = null;
     const entries = this.selection.entries;
     this.store_.dispatch(updateSelection({
       selectedKeys: entries.map(e => e.toURL()),

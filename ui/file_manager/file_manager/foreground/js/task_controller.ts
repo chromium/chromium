@@ -110,7 +110,6 @@ export class TaskController {
     const keys = newState.currentDirectory?.selection.keys;
     const tasks = newState.currentDirectory?.selection.fileTasks;
     if (keys !== this.selectionKeys_) {
-      // Selection change is throttled by requestAnimationFrame().
       this.selectionKeys_ = keys;
       this.selectionFilesData_ = getFilesData(newState, keys ?? []);
       // Kickoff the async/ActionsProducer to fetch the tasks for the new
@@ -484,7 +483,7 @@ export class TaskController {
 
   async getFileTasks(): Promise<FileTasks> {
     if (util.isFilesAppExperimental()) {
-      this.getFileTasksStore_();
+      return this.getFileTasksStore_();
     }
     const selection = this.selectionHandler_.selection;
     if (this.tasks_ &&
@@ -510,9 +509,12 @@ export class TaskController {
         this.store_,
         (st: State) => st.currentDirectory?.selection.fileTasks.status ===
             PropStatus.SUCCESS);
-    // After the state has been updated it's guaranteed that the
-    // onStateChanged() has run this.tasks_ is updated.
-    return this.tasks_!;
+    const entries = this.selectionFilesData_.map(fd => fd.entry) as Entry[];
+    this.tasks_ = Promise.resolve(FileTasks.fromStoreTasks(
+        this.selectionTasks_!, this.volumeManager_, this.metadataModel_,
+        this.directoryModel_, this.ui_, this.fileTransferController_!, entries,
+        this.taskHistory_, this.progressCenter_, this));
+    return this.tasks_;
   }
 
   /**
