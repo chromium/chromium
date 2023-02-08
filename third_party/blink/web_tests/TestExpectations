@@ -693,14 +693,6 @@ crbug.com/1370460 [ Mac ] external/wpt/svg/text/reftests/xml-lang-attribute.svg 
 # that should be investigated (see crbug.com/780700)
 crbug.com/492187 external/wpt/css/CSS2/backgrounds/background-intrinsic-004.xht [ Failure ]
 crbug.com/492187 external/wpt/css/CSS2/backgrounds/background-intrinsic-006.xht [ Failure ]
-crbug.com/767352 external/wpt/css/css-backgrounds/border-image-space-001.html [ Failure ]
-crbug.com/767352 external/wpt/css/css-backgrounds/border-image-width-005.xht [ Failure ]
-crbug.com/767352 external/wpt/css/css-backgrounds/border-image-width-006.xht [ Failure ]
-crbug.com/767352 external/wpt/css/css-backgrounds/border-image-width-007.xht [ Failure ]
-crbug.com/767352 external/wpt/css/css-backgrounds/border-image-width-008.html [ Failure ]
-crbug.com/767352 external/wpt/css/css-backgrounds/border-image-width-009.html [ Failure ]
-crbug.com/1268426 external/wpt/css/css-backgrounds/border-image-width-should-extend-to-padding.html [ Failure ]
-crbug.com/1268426 virtual/threaded/external/wpt/css/css-backgrounds/border-image-width-should-extend-to-padding.html [ Failure ]
 
 # Minor bleed on left/top side of the edge pieces (computed spacing is 16px / 3).
 crbug.com/1175040 external/wpt/css/css-backgrounds/border-image-repeat-space-10.html [ Failure ]

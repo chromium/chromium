@@ -1568,11 +1568,7 @@ bool ComputedStyle::TextShadowDataEquivalent(const ComputedStyle& other) const {
 }
 
 bool ComputedStyle::CanRenderBorderImage() const {
-  if (!HasBorderDecoration()) {
-    return false;
-  }
-
-  StyleImage* border_image = BorderImage().GetImage();
+  const StyleImage* border_image = BorderImage().GetImage();
   return border_image && border_image->CanRender() && border_image->IsLoaded();
 }
 

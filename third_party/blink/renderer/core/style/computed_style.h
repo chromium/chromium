@@ -1338,14 +1338,13 @@ class ComputedStyle : public ComputedStyleBase,
     return PhysicalBorderStyleToLogical().Start();
   }
 
-  bool HasBorderFill() const {
-    return BorderImage().HasImage() && BorderImage().Fill();
-  }
   bool HasBorder() const {
     return BorderLeftWidth() || BorderRightWidth() || BorderTopWidth() ||
            BorderBottomWidth();
   }
-  bool HasBorderDecoration() const { return HasBorder() || HasBorderFill(); }
+  bool HasBorderDecoration() const {
+    return HasBorder() || BorderImage().HasImage();
+  }
   bool HasBorderRadius() const {
     if (!BorderTopLeftRadius().Width().IsZero()) {
       return true;
