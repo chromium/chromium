@@ -65,21 +65,24 @@ void ArcPaymentAppBridge::IsPaymentImplemented(
   mojom::PaymentAppInstance* payment_app = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->payment_app(), IsPaymentImplemented);
   if (!payment_app) {
-    std::move(callback).Run(mojom::IsPaymentImplementedResult::NewError(
-        kUnableToConnectErrorMessage));
+    std::move(callback).Run(
+        chromeos::payments::mojom::IsPaymentImplementedResult::NewError(
+            kUnableToConnectErrorMessage));
     return;
   }
 
   payment_app->IsPaymentImplemented(package_name, std::move(callback));
 }
 
-void ArcPaymentAppBridge::IsReadyToPay(mojom::PaymentParametersPtr parameters,
-                                       IsReadyToPayCallback callback) {
+void ArcPaymentAppBridge::IsReadyToPay(
+    chromeos::payments::mojom::PaymentParametersPtr parameters,
+    IsReadyToPayCallback callback) {
   mojom::PaymentAppInstance* payment_app = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->payment_app(), IsReadyToPay);
   if (!payment_app) {
     std::move(callback).Run(
-        mojom::IsReadyToPayResult::NewError(kUnableToConnectErrorMessage));
+        chromeos::payments::mojom::IsReadyToPayResult::NewError(
+            kUnableToConnectErrorMessage));
     return;
   }
 
@@ -87,13 +90,14 @@ void ArcPaymentAppBridge::IsReadyToPay(mojom::PaymentParametersPtr parameters,
 }
 
 void ArcPaymentAppBridge::InvokePaymentApp(
-    mojom::PaymentParametersPtr parameters,
+    chromeos::payments::mojom::PaymentParametersPtr parameters,
     InvokePaymentAppCallback callback) {
   mojom::PaymentAppInstance* payment_app = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->payment_app(), InvokePaymentApp);
   if (!payment_app) {
     std::move(callback).Run(
-        mojom::InvokePaymentAppResult::NewError(kUnableToConnectErrorMessage));
+        chromeos::payments::mojom::InvokePaymentAppResult::NewError(
+            kUnableToConnectErrorMessage));
     return;
   }
 

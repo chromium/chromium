@@ -12,6 +12,7 @@
 #include "ash/components/arc/pay/arc_payment_app_bridge.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/test_browser_context.h"
+#include "chromeos/components/payments/mojom/payment_app_types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -39,10 +40,10 @@ class ArcPaymentAppBridgeTestSupport {
         void(const std::string& package_name,
              ArcPaymentAppBridge::IsPaymentImplementedCallback callback));
     MOCK_METHOD2(IsReadyToPay,
-                 void(mojom::PaymentParametersPtr,
+                 void(chromeos::payments::mojom::PaymentParametersPtr,
                       ArcPaymentAppBridge::IsReadyToPayCallback));
     MOCK_METHOD2(InvokePaymentApp,
-                 void(mojom::PaymentParametersPtr,
+                 void(chromeos::payments::mojom::PaymentParametersPtr,
                       ArcPaymentAppBridge::InvokePaymentAppCallback));
     MOCK_METHOD2(AbortPaymentApp,
                  void(const std::string&,

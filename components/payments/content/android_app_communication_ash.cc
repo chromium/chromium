@@ -10,6 +10,7 @@
 #include "ash/components/arc/pay/arc_payment_app_bridge.h"
 #include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"
 #include "base/functional/callback_helpers.h"
+#include "chromeos/components/payments/mojom/payment_app_types.mojom.h"
 #include "components/payments/core/android_app_description.h"
 #include "components/payments/core/chrome_os_error_strings.h"
 #include "components/payments/core/method_strings.h"
@@ -26,7 +27,7 @@ static constexpr char kEmptyDictionaryJson[] = "{}";
 void OnIsImplemented(
     const std::string& twa_package_name,
     AndroidAppCommunication::GetAppDescriptionsCallback callback,
-    arc::mojom::IsPaymentImplementedResultPtr response) {
+    chromeos::payments::mojom::IsPaymentImplementedResultPtr response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!twa_package_name.empty());
 
@@ -79,7 +80,7 @@ void OnIsImplemented(
 }
 
 void OnIsReadyToPay(AndroidAppCommunication::IsReadyToPayCallback callback,
-                    arc::mojom::IsReadyToPayResultPtr response) {
+                    chromeos::payments::mojom::IsReadyToPayResultPtr response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (response.is_null()) {
     std::move(callback).Run(errors::kEmptyResponse, /*is_ready_to_pay=*/false);
@@ -104,7 +105,7 @@ void OnIsReadyToPay(AndroidAppCommunication::IsReadyToPayCallback callback,
 void OnPaymentAppResponse(
     AndroidAppCommunication::InvokePaymentAppCallback callback,
     base::ScopedClosureRunner overlay_state,
-    arc::mojom::InvokePaymentAppResultPtr response) {
+    chromeos::payments::mojom::InvokePaymentAppResultPtr response) {
   // Dismiss and prevent any further overlays
   overlay_state.RunAndReset();
 
@@ -143,7 +144,7 @@ void OnPaymentAppResponse(
       response->get_valid()->stringified_details);
 }
 
-arc::mojom::PaymentParametersPtr CreatePaymentParameters(
+chromeos::payments::mojom::PaymentParametersPtr CreatePaymentParameters(
     const std::string& package_name,
     const std::string& activity_or_service_name,
     const std::map<std::string, std::set<std::string>>& stringified_method_data,
@@ -165,7 +166,7 @@ arc::mojom::PaymentParametersPtr CreatePaymentParameters(
     return nullptr;
   }
 
-  auto parameters = arc::mojom::PaymentParameters::New();
+  auto parameters = chromeos::payments::mojom::PaymentParameters::New();
   parameters->stringified_method_data =
       supported_method_iterator->second.empty()
           ? kEmptyDictionaryJson

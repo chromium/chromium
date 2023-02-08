@@ -76,6 +76,7 @@ mojom("mojom") {
     "//ash/components/arc/mojom:media",
     "//ash/components/arc/mojom:notifications",
     "//ash/components/arc/mojom:oemcrypto",
+    "//chromeos/components/payments/mojom",
     "//chromeos/components/sensors/mojom:mojom",
     "//components/digital_goods/mojom",
     "//components/payments/mojom:mojom",

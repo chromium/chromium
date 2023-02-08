@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/mojom/payment_app.mojom.h"
 #include "base/functional/callback_forward.h"
+#include "chromeos/components/payments/mojom/payment_app_types.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -22,12 +23,12 @@ class ArcBridgeService;
 // Invokes the TWA payment app.
 class ArcPaymentAppBridge : public KeyedService {
  public:
-  using IsPaymentImplementedCallback =
-      base::OnceCallback<void(mojom::IsPaymentImplementedResultPtr)>;
-  using IsReadyToPayCallback =
-      base::OnceCallback<void(mojom::IsReadyToPayResultPtr)>;
-  using InvokePaymentAppCallback =
-      base::OnceCallback<void(mojom::InvokePaymentAppResultPtr)>;
+  using IsPaymentImplementedCallback = base::OnceCallback<void(
+      chromeos::payments::mojom::IsPaymentImplementedResultPtr)>;
+  using IsReadyToPayCallback = base::OnceCallback<void(
+      chromeos::payments::mojom::IsReadyToPayResultPtr)>;
+  using InvokePaymentAppCallback = base::OnceCallback<void(
+      chromeos::payments::mojom::InvokePaymentAppResultPtr)>;
   using AbortPaymentAppCallback = base::OnceCallback<void(bool)>;
 
   // Returns the instance owned by the given BrowserContext, or nullptr if the
@@ -54,12 +55,13 @@ class ArcPaymentAppBridge : public KeyedService {
 
   // Queries the TWA payment app whether it is able to perform a payment. Should
   // not be invoked when off the record, e.g., incognito mode or guest mode.
-  void IsReadyToPay(mojom::PaymentParametersPtr parameters,
+  void IsReadyToPay(chromeos::payments::mojom::PaymentParametersPtr parameters,
                     IsReadyToPayCallback callback);
 
   // Invokes the TWA payment app flow.
-  void InvokePaymentApp(mojom::PaymentParametersPtr parameters,
-                        InvokePaymentAppCallback callback);
+  void InvokePaymentApp(
+      chromeos::payments::mojom::PaymentParametersPtr parameters,
+      InvokePaymentAppCallback callback);
 
   // Aborts an existing TWA payment app flow.
   void AbortPaymentApp(const std::string& request_token,
