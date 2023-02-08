@@ -709,7 +709,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       waitForMatcher:grey_accessibilityID(kFakeAuthActivityViewIdentifier)];
   // Close the SSO view controller.
   id<GREYMatcher> matcher =
-      grey_allOf(chrome_test_util::ButtonWithAccessibilityLabel(@"Cancel"),
+      grey_allOf(grey_accessibilityID(kFakeAuthCancelButtonIdentifier),
                  grey_sufficientlyVisible(), nil);
   [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
   // Make sure the SSO view controller is fully removed before ending the test.

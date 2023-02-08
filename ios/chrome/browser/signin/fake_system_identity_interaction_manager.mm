@@ -21,7 +21,10 @@ id<SystemIdentity> gFakeSystemIdentityInteractionManagerIdentity = nil;
 
 }  // namespace
 
-@interface FakeAuthActivityViewController : UIViewController
+@interface FakeAuthActivityViewController : UIViewController {
+  __weak FakeSystemIdentityInteractionManager* _manager;
+  UIButton* _cancelButton;
+}
 
 - (instancetype)initWithManager:(FakeSystemIdentityInteractionManager*)manager
     NS_DESIGNATED_INITIALIZER;
@@ -33,28 +36,13 @@ id<SystemIdentity> gFakeSystemIdentityInteractionManagerIdentity = nil;
 
 @end
 
-@implementation FakeAuthActivityViewController {
-  __weak FakeSystemIdentityInteractionManager* _manager;
-  UIButton* _cancelButton;
-  UIButton* _signInButton;
-}
+@implementation FakeAuthActivityViewController
 
 - (instancetype)initWithManager:(FakeSystemIdentityInteractionManager*)manager {
   if ((self = [super initWithNibName:nil bundle:nil])) {
     _manager = manager;
   }
   return self;
-}
-
-#pragma mark - NSObject
-
-- (void)dealloc {
-  [_signInButton removeTarget:self
-                       action:@selector(didTapSignIn:)
-             forControlEvents:UIControlEventTouchUpInside];
-  [_cancelButton removeTarget:self
-                       action:@selector(didTapCancel:)
-             forControlEvents:UIControlEventTouchUpInside];
 }
 
 #pragma mark - UIViewController
@@ -67,20 +55,9 @@ id<SystemIdentity> gFakeSystemIdentityInteractionManagerIdentity = nil;
   mainView.backgroundColor = [UIColor magentaColor];
   mainView.accessibilityIdentifier = kFakeAuthActivityViewIdentifier;
 
-  // TODO(crbug.com/1400696): Since those buttons have no accessibility
-  // identitifer, EarlGrey probably can't interact with them. So they
-  // likely are not useful (unless EarlGrey select them by their title).
-  //
-  // Investigate whether they can be removed or whether they should be
-  // given accessibility identifier to allow EarlGrey to interact with
-  // them.
-  _signInButton = [self addButtonWithTitle:@"Sign in"
-                                    action:@selector(didTapSignIn:)
-                    accessibilitIdentifier:nil];
-
   _cancelButton = [self addButtonWithTitle:@"Cancel"
                                     action:@selector(didTapCancel:)
-                    accessibilitIdentifier:@"cancel"];
+                    accessibilitIdentifier:kFakeAuthCancelButtonIdentifier];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -90,10 +67,7 @@ id<SystemIdentity> gFakeSystemIdentityInteractionManagerIdentity = nil;
   const CGFloat midX = CGRectGetMidX(bounds);
   const CGFloat midY = CGRectGetMidY(bounds);
 
-  [self sizeButtonToFitWithCenter:CGPointMake(midX, midY - 50)
-                           button:_signInButton];
-  [self sizeButtonToFitWithCenter:CGPointMake(midX, midY + 50)
-                           button:_cancelButton];
+  [self sizeButtonToFitWithCenter:CGPointMake(midX, midY) button:_cancelButton];
 }
 
 #pragma mark - Private methods
@@ -114,10 +88,6 @@ id<SystemIdentity> gFakeSystemIdentityInteractionManagerIdentity = nil;
 - (void)sizeButtonToFitWithCenter:(CGPoint)center button:(UIButton*)button {
   [button setCenter:center];
   [button sizeToFit];
-}
-
-- (void)didTapSignIn:(id)sender {
-  [_manager simulateDidTapAddAccount];
 }
 
 - (void)didTapCancel:(id)sender {

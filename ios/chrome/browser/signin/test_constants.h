@@ -9,5 +9,8 @@
 
 // Accessibility identifier for FakeAuthActivityViewController.
 extern NSString* const kFakeAuthActivityViewIdentifier;
+// Accessibility identifier for the cancel button in
+// FakeAuthActivityViewController.
+extern NSString* const kFakeAuthCancelButtonIdentifier;
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_TEST_CONSTANTS_H_

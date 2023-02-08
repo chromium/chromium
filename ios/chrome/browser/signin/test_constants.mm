@@ -10,3 +10,5 @@
 
 NSString* const kFakeAuthActivityViewIdentifier =
     @"FakeAuthActivityViewIdentifier";
+NSString* const kFakeAuthCancelButtonIdentifier =
+    @"FakeAuthCancelButtonIdentifier";
