@@ -558,8 +558,12 @@ if (is_android) {
   declare_args() {
     # The bundle identifier. Overriding this will affect the provisioning profile
     # used, and hence will affect the app's capabilities.
-    ios_content_shell_bundle_identifier =
-        "$ios_app_bundle_id_prefix.ios-content-shell"
+    if (ios_use_shared_bundle_id_for_test_apps) {
+      ios_content_shell_bundle_identifier = shared_bundle_id_for_test_apps
+    } else {
+      ios_content_shell_bundle_identifier =
+          "$ios_app_bundle_id_prefix.ios-content-shell"
+    }
 
     # Path to an entitlements file used in ios_content_shell. Can be overridden
     # to provide an alternative.
