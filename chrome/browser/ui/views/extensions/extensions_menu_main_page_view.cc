@@ -27,6 +27,8 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
@@ -134,6 +136,10 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
     : browser_(browser),
       navigation_handler_(navigation_handler),
       toolbar_model_(ToolbarActionsModel::Get(browser_->profile())) {
+  // This is set so that the extensions menu doesn't fall outside the monitor in
+  // a maximized window in 1024x768. See https://crbug.com/1096630.
+  // TODO(crbug.com/1413883): Consider making the height dynamic.
+  constexpr int kMaxExtensionButtonsHeightDp = 448;
   views::FlexSpecification stretch_specification =
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded,
@@ -193,13 +199,26 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                           base::BindRepeating(
                               &ExtensionsMenuNavigationHandler::CloseBubble,
                               base::Unretained(navigation_handler_))))),
-          // Request access section.
-          views::Builder<RequestsAccessSection>(
-              std::make_unique<RequestsAccessSection>()),
-          // Menu items section.
-          views::Builder<views::BoxLayoutView>()
-              .CopyAddressTo(&menu_items_)
-              .SetOrientation(views::BoxLayout::Orientation::kVertical))
+          // Contents.
+          views::Builder<views::Separator>(),
+          views::Builder<views::ScrollView>()
+              .ClipHeightTo(0, kMaxExtensionButtonsHeightDp)
+              .SetDrawOverflowIndicator(false)
+              .SetHorizontalScrollBarMode(
+                  views::ScrollView::ScrollBarMode::kDisabled)
+              .SetContents(
+                  views::Builder<views::BoxLayoutView>()
+                      .SetOrientation(views::BoxLayout::Orientation::kVertical)
+                      .AddChildren(
+                          // Request access section.
+                          views::Builder<RequestsAccessSection>(
+                              std::make_unique<RequestsAccessSection>()),
+                          // Menu items section.
+                          views::Builder<views::BoxLayoutView>()
+                              .CopyAddressTo(&menu_items_)
+                              .SetOrientation(
+                                  views::BoxLayout::Orientation::kVertical))))
+
       .BuildChildren();
 
   // Update toggle button text after it's build, as it depends on its state.
