@@ -1246,6 +1246,7 @@ chromium-metrics-reviews@google.com.
     <variant name="SETMainThreadAnimation"
         summary="main thread animations during a view transition"/>
     <variant name="TouchScroll" summary="touch scrolling"/>
+    <variant name="Video" summary="video playback"/>
     <variant name="WheelScroll" summary="wheel scrolling"/>
   </token>
 </histogram>
