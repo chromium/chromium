@@ -3293,7 +3293,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3315,7 +3314,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3337,7 +3335,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3359,7 +3356,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3382,7 +3378,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3404,7 +3399,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3426,7 +3420,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3448,7 +3441,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3471,7 +3463,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3494,7 +3485,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3516,7 +3506,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3538,7 +3527,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3560,7 +3548,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3582,7 +3569,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3604,7 +3590,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3626,7 +3611,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3649,7 +3633,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3671,7 +3654,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3693,7 +3675,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3716,7 +3697,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3741,7 +3721,6 @@
           "--test-arg=--disable-gpu",
           "--test-arg=--headless",
           "--test-arg=--ozone-platform=headless",
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3764,7 +3743,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3787,7 +3765,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3809,7 +3786,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3831,7 +3807,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3853,7 +3828,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3875,7 +3849,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3897,7 +3870,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3919,7 +3891,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3941,7 +3912,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3964,7 +3934,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -3986,7 +3955,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4008,7 +3976,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4031,7 +3998,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4053,7 +4019,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4076,7 +4041,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4098,7 +4062,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4120,7 +4083,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4142,7 +4104,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4165,7 +4126,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4187,7 +4147,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4209,7 +4168,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4231,7 +4189,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4254,7 +4211,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4277,7 +4233,6 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4301,7 +4256,6 @@
       {
         "args": [
           "--test-arg=--ozone-platform=headless",
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4323,7 +4277,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4345,7 +4298,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4367,7 +4319,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4390,7 +4341,6 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.services_unittests.filter",
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4413,7 +4363,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4435,7 +4384,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4457,7 +4405,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4479,7 +4426,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4501,7 +4447,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4524,7 +4469,6 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.ui_base_unittests.filter",
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4546,7 +4490,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4568,7 +4511,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4591,7 +4533,6 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter",
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4614,7 +4555,6 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter",
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4637,7 +4577,6 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter",
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4659,7 +4598,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4683,7 +4621,6 @@
       {
         "args": [
           "--test-arg=--vmodule=test_navigation_listener=1",
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4705,7 +4642,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4727,7 +4663,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4749,7 +4684,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4771,7 +4705,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4793,7 +4726,6 @@
       },
       {
         "args": [
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
@@ -4818,7 +4750,6 @@
       {
         "args": [
           "bin/run_angle_unittests",
-          "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
           "--logs-dir=${ISOLATED_OUTDIR}/logs"
         ],

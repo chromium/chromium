@@ -550,7 +550,6 @@
   'fuchsia-code-coverage': {
     '$mixin_append': {
       'args': [
-        '--code-coverage',
         '--code-coverage-dir=${ISOLATED_OUTDIR}'
       ],
     },

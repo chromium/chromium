@@ -38,11 +38,11 @@ def _copy_custom_output_file(test_runner: FfxTestRunner, file: str,
 
 
 def _copy_coverage_files(test_runner: FfxTestRunner, dest: str) -> None:
-    """Copy debug data file from the device to the host."""
+    """Copy debug data file from the device to the host if it exists."""
 
     coverage_dir = test_runner.get_debug_data_directory()
     if not coverage_dir:
-        logging.error(
+        logging.info(
             'Failed to parse coverage data directory from test summary '
             'output files. Not copying coverage files from the device.')
         return
@@ -76,13 +76,13 @@ class ExecutableTestRunner(TestRunner):
             test_args: List[str],
             test_name: str,
             target_id: Optional[str],
-            code_coverage_dir: Optional[str],
+            code_coverage_dir: str,
             logs_dir: Optional[str] = None) -> None:
         super().__init__(out_dir, test_args, [test_name], target_id)
         if not self._test_args:
             self._test_args = []
         self._test_name = test_name
-        self._code_coverage_dir = code_coverage_dir
+        self._code_coverage_dir = os.path.basename(code_coverage_dir)
         self._custom_artifact_directory = None
         self._isolated_script_test_output = None
         self._isolated_script_test_perf_output = None
@@ -192,9 +192,7 @@ class ExecutableTestRunner(TestRunner):
                 test_runner,
                 os.path.basename(self._isolated_script_test_perf_output),
                 self._isolated_script_test_perf_output)
-        if self._code_coverage_dir:
-            _copy_coverage_files(test_runner,
-                                 os.path.basename(self._code_coverage_dir))
+        _copy_coverage_files(test_runner, self._code_coverage_dir)
 
     def run_test(self) -> subprocess.Popen:
         test_args = self._get_args()
@@ -226,8 +224,6 @@ def create_executable_test_runner(runner_args: argparse.Namespace,
                                   test_args: List[str]):
     """Helper for creating an ExecutableTestRunner."""
 
-    if not runner_args.code_coverage:
-        runner_args.code_coverage_dir = None
     return ExecutableTestRunner(runner_args.out_dir, test_args,
                                 runner_args.test_type, runner_args.target_id,
                                 runner_args.code_coverage_dir,
@@ -238,15 +234,12 @@ def register_executable_test_args(parser: argparse.ArgumentParser) -> None:
     """Register common arguments for ExecutableTestRunner."""
 
     test_args = parser.add_argument_group('test', 'arguments for test running')
-    test_args.add_argument('--code-coverage',
-                           default=False,
-                           action='store_true',
-                           help='Gather code coverage information.')
     test_args.add_argument('--code-coverage-dir',
                            default=os.getcwd(),
                            help='Directory to place code coverage '
-                           'information. Only relevant when --code-coverage '
-                           'is set to true. Defaults to current directory.')
+                           'information. Only relevant when the target was '
+                           'built with |fuchsia_code_coverage| set to true. '
+                           'Defaults to current directory.')
     test_args.add_argument('--test-name',
                            dest='test_type',
                            help='Name of the test package (e.g. '
