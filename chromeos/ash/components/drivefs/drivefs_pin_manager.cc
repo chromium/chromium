@@ -304,7 +304,7 @@ bool PinManager::CanPin(const mojom::FileMetadata& md, const Path& path) {
   const auto id = PinManager::Id(md.stable_id);
 
   if (md.shortcut_details) {
-    VLOG(1) << "Skipped " << id << " " << Quote(path) << ": Shortcut to "
+    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Shortcut to "
             << Id(md.shortcut_details->target_stable_id);
     return false;
   }
@@ -327,7 +327,7 @@ bool PinManager::CanPin(const mojom::FileMetadata& md, const Path& path) {
   // TODO(b/266037569): Setting root in the query made to DriveFS is currently
   // unsupported.
   if (!Path("/root").IsParent(path)) {
-    VLOG(1) << "Skipped " << id << " " << Quote(path) << ": Not in my drive";
+    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Not in my drive";
     return false;
   }
 
@@ -391,6 +391,8 @@ bool PinManager::Add(const mojom::FileMetadata& md, const Path& path) {
   VLOG(3) << "Considering " << id << " " << Quote(path) << " " << Quote(md);
 
   if (!CanPin(md, path)) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    progress_.skipped_files++;
     return false;
   }
 
@@ -666,6 +668,7 @@ void PinManager::StartPinning() {
 
   VLOG(1) << "Free space: " << HumanReadableSize(progress_.free_space);
   VLOG(1) << "Required space: " << HumanReadableSize(progress_.required_space);
+  VLOG(1) << "Skipped: " << progress_.skipped_files << " files";
   VLOG(1) << "To pin: " << files_to_pin_.size() << " files, "
           << HumanReadableSize(progress_.bytes_to_pin);
   VLOG(1) << "To track: " << files_to_track_.size() << " files";
