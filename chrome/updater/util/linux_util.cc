@@ -32,9 +32,9 @@ base::FilePath GetExecutableRelativePath() {
 }
 
 absl::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
+  base::FilePath path;
   switch (scope) {
     case UpdaterScope::kUser:
-      base::FilePath path;
       if (base::PathService::Get(base::DIR_HOME, &path)) {
         return path.Append(kUserRelativeDataPath)
             .Append(GetUpdaterFolderName());
