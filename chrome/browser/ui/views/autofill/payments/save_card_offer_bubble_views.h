@@ -54,10 +54,6 @@ class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
   std::unique_ptr<views::View> CreateRequestExpirationDateView();
   std::unique_ptr<views::View> CreateUploadExplanationView();
 
-  // Method to check if the save card ui experiment is enabled where one of the
-  // 3 experimental save card bubble UI treatments are shown.
-  bool IsSaveCardUiExperimentEnabled();
-
   void LinkClicked(const GURL& url);
 
   raw_ptr<views::Textfield> cardholder_name_textfield_ = nullptr;

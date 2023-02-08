@@ -39,9 +39,6 @@ BASE_DECLARE_FEATURE(kAutofillParseIBANFields);
 BASE_DECLARE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields);
 BASE_DECLARE_FEATURE(kAutofillRemoveCardExpirationAndTypeTitles);
 BASE_DECLARE_FEATURE(kAutofillSaveCardInfobarEditSupport);
-BASE_DECLARE_FEATURE(kAutofillSaveCardUiExperiment);
-extern const base::FeatureParam<int>
-    kAutofillSaveCardUiExperimentSelectorInNumber;
 BASE_DECLARE_FEATURE(kAutofillShowUnmaskedCachedCardInManualFillingView);
 BASE_DECLARE_FEATURE(kAutofillSuggestServerCardInsteadOfLocalCard);
 BASE_DECLARE_FEATURE(kAutofillUpstream);

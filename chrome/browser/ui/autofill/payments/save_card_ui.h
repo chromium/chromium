@@ -31,18 +31,6 @@ enum class BubbleType {
   INACTIVE
 };
 
-// The type of experiment running for the save card ui.
-enum SaveCardUiExperiment {
-  // Show the text for default/current image.
-  DEFAULT = 0,
-
-  // Show the text for faster and protected image.
-  FASTER_AND_PROTECTED = 1,
-
-  // Show the text for encrypted and secure image.
-  ENCRYPTED_AND_SECURE = 2
-};
-
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_SAVE_CARD_UI_H_

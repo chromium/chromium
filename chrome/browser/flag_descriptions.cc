@@ -534,18 +534,6 @@ const char kAutofillSaveAndFillVPADescription[] =
     "it will offer to save it. If saved, it will be offered for filling in "
     "fields which expect a VPA.";
 
-const char kAutofillSaveCardUiExperimentName[] =
-    "Enable different UI variants for the upload credit card save bubble";
-const char kAutofillSaveCardUiExperimentDescription[] =
-    "When enabled, it will trigger slightly different UI variants along with "
-    "notification texts, when the upload credit card save bubble is shown.";
-const char kAutofillSaveCardUiExperimentCurrentWithUserAvatarAndEmail[] =
-    "Current with Avatar and Email";
-const char kAutofillSaveCardUiExperimentEncryptedAndSecure[] =
-    "Encrypted and Secure";
-const char kAutofillSaveCardUiExperimentFasterAndProtected[] =
-    "Faster and Protected";
-
 const char kAutofillShowManualFallbackInContextMenuName[] =
     "Show Autofill options in Context Menu";
 const char kAutofillShowManualFallbackInContextMenuDescription[] =
