@@ -73,6 +73,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -80,6 +81,7 @@ import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Render tests for sync consent fragment.
@@ -90,6 +92,15 @@ public class SyncConsentFragmentTest {
     private static final int RENDER_REVISION = 1;
     private static final String RENDER_DESCRIPTION = "Change button style";
     private static final String NEW_ACCOUNT_NAME = "new.account@gmail.com";
+    // TODO(https://crbug.com/1414078): Use ALL_SELECTABLE_TYPES defined in {@link SyncServiceImpl}
+    // here.
+    private static final Set<Integer> ALL_CLANK_SYNCABLE_DATA_TYPES = Set.of(
+            UserSelectableType.AUTOFILL, UserSelectableType.BOOKMARKS, UserSelectableType.PASSWORDS,
+            UserSelectableType.PREFERENCES, UserSelectableType.TABS, UserSelectableType.HISTORY,
+            UserSelectableType.READING_LIST);
+    private static final Set<Integer> HISTORY_SYNC_DATA_TYPES =
+            Set.of(UserSelectableType.HISTORY, UserSelectableType.TABS);
+
     /**
      * This class is used to test {@link SyncConsentFirstRunFragment}.
      */
@@ -507,7 +518,7 @@ public class SyncConsentFragmentTest {
                 });
         onView(withText(accountInfo.getEmail())).check(matches(isDisplayed()));
         onView(withId(R.id.signin_details_description)).perform(ViewUtils.clickOnClickableSpan(0));
-        // Wait for sign in process to finish.
+        // Wait for sync opt-in process to finish.
         CriteriaHelper.pollUiThread(() -> {
             return IdentityServicesProvider.get()
                     .getSigninManager(Profile.getLastUsedRegularProfile())
@@ -517,6 +528,8 @@ public class SyncConsentFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertTrue(SyncService.get().isSyncRequested());
             assertFalse(SyncService.get().isFirstSetupComplete());
+            assertEquals(ALL_CLANK_SYNCABLE_DATA_TYPES, SyncService.get().getSelectedTypes());
+            assertTrue(SyncService.get().hasKeepEverythingSynced());
         });
         // Close the SettingsActivity.
         onView(withId(R.id.cancel_button)).perform(click());
@@ -536,7 +549,7 @@ public class SyncConsentFragmentTest {
                 });
         onView(withId(R.id.sync_consent_details_description))
                 .perform(ViewUtils.clickOnClickableSpan(0));
-        // Wait for sign in process to finish.
+        // Wait for sync opt-in process to finish.
         CriteriaHelper.pollUiThread(() -> {
             return IdentityServicesProvider.get()
                     .getSigninManager(Profile.getLastUsedRegularProfile())
@@ -546,6 +559,8 @@ public class SyncConsentFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertTrue(SyncService.get().isSyncRequested());
             assertFalse(SyncService.get().isFirstSetupComplete());
+            assertEquals(HISTORY_SYNC_DATA_TYPES, SyncService.get().getSelectedTypes());
+            assertFalse(SyncService.get().hasKeepEverythingSynced());
         });
         // Close the SettingsActivity.
         onView(withId(R.id.cancel_button)).perform(click());
@@ -644,6 +659,10 @@ public class SyncConsentFragmentTest {
         onView(withId(R.id.positive_button)).check(matches(withText(R.string.signin_add_account)));
         onView(withId(R.id.negative_button)).check(matches(withText(R.string.cancel)));
         settingsHistogram.assertExpected();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            assertEquals(ALL_CLANK_SYNCABLE_DATA_TYPES, SyncService.get().getSelectedTypes());
+            assertTrue(SyncService.get().hasKeepEverythingSynced());
+        });
     }
 
     @Test
@@ -725,6 +744,33 @@ public class SyncConsentFragmentTest {
                 mHistogramTestRule.getHistogramValueCount(
                         "Signin.AddAccountState", State.SUCCEEDED));
         assertEquals(3, mHistogramTestRule.getHistogramTotalCount("Signin.AddAccountState"));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
+    public void testTangibleSyncConsentFragmentOnlyEnablesSpecificDataTypes() {
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
+                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
+                            mChromeActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS,
+                            accountInfo.getEmail());
+                });
+        onView(withId(R.id.positive_button)).perform(click());
+        // Wait for sync opt-in process to finish.
+        CriteriaHelper.pollUiThread(() -> {
+            return IdentityServicesProvider.get()
+                    .getSigninManager(Profile.getLastUsedRegularProfile())
+                    .getIdentityManager()
+                    .hasPrimaryAccount(ConsentLevel.SYNC);
+        });
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            assertEquals(HISTORY_SYNC_DATA_TYPES, SyncService.get().getSelectedTypes());
+            assertFalse(SyncService.get().hasKeepEverythingSynced());
+        });
     }
 
     @Test

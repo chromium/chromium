@@ -50,6 +50,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -59,6 +60,7 @@ import org.chromium.ui.text.SpanApplier;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Contains the common logic of fragments used to sign in and enable sync.
@@ -266,6 +268,11 @@ public abstract class SyncConsentFragmentBase
                         public void onSignInComplete() {
                             UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
                                     Profile.getLastUsedRegularProfile(), true);
+                            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TANGIBLE_SYNC)) {
+                                SyncService.get().setSelectedTypes(false,
+                                        Set.of(UserSelectableType.HISTORY,
+                                                UserSelectableType.TABS));
+                            }
                             if (!settingsClicked) {
                                 SyncService.get().setFirstSetupComplete(
                                         SyncFirstSetupCompleteSource.BASIC_FLOW);
