@@ -54,9 +54,11 @@ class WaylandSubsurface : public base::LinkNode<WaylandSubsurface> {
   // Assigns wl_subsurface role to the wl_surface so it is visible when a
   // wl_buffer is attached.
   void Show();
-  // Remove wl_subsurface role to make this invisible.
+  // Remove this from the stack to make this invisible.
   void Hide();
   bool IsVisible() const;
+  // Reset the subsurface objects.
+  void ResetSubsurface();
 
  private:
   // Helper of Show(). It does the role-assigning to wl_surface.
@@ -72,6 +74,7 @@ class WaylandSubsurface : public base::LinkNode<WaylandSubsurface> {
   // |parent_| refers to the WaylandWindow whose wl_surface is the parent to
   // this subsurface.
   const raw_ptr<WaylandWindow, DanglingUntriaged> parent_;
+  bool visible_ = false;
 };
 
 }  // namespace ui

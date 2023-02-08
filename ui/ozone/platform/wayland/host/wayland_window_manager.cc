@@ -228,6 +228,14 @@ void WaylandWindowManager::RemoveSubsurface(gfx::AcceleratedWidget widget,
     observer.OnSubsurfaceRemoved(window, subsurface);
 }
 
+void WaylandWindowManager::RecycleSubsurface(
+    std::unique_ptr<WaylandSubsurface> subsurface) {
+  // Reset the root window when the corresponding subsurface is invalid,
+  // preventing it from receiving events.
+  subsurface->wayland_surface()->UnsetRootWindow();
+  subsurface_recycle_cache_ = std::move(subsurface);
+}
+
 gfx::AcceleratedWidget WaylandWindowManager::AllocateAcceleratedWidget() {
   return ++last_accelerated_widget_;
 }

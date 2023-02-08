@@ -84,6 +84,7 @@ class WaylandSurface {
   // the underlying wl_surface must be kept alive with no root window associated
   // (e.g: window/tab dragging sessions).
   void UnsetRootWindow();
+  void SetRootWindow(WaylandWindow* window);
 
   // Attaches the given wl_buffer to the underlying wl_surface at (0, 0).
   // Returns true if wl_surface.attach will be called in ApplyPendingStates().

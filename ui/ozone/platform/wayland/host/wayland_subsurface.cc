@@ -56,27 +56,48 @@ gfx::AcceleratedWidget WaylandSubsurface::GetWidget() const {
 }
 
 void WaylandSubsurface::Show() {
-  if (!subsurface_)
-    CreateSubsurface();
+  if (visible_) {
+    return;
+  }
+
+  if (subsurface_) {
+    ResetSubsurface();
+  }
+
+  CreateSubsurface();
+  visible_ = true;
 }
 
 void WaylandSubsurface::Hide() {
-  if (!subsurface_)
+  if (!IsVisible() || !subsurface_) {
     return;
+  }
 
   // Remove it from the stack.
   RemoveFromList();
+  visible_ = false;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, subsurfaces need to be reset when hide to avoid glitches
+  // (crbug.com/1408073). On Linux, however, we need to keep the subsurfaces to
+  // make sure the window closing animation works well (crbug.com/1324548).
+  ResetSubsurface();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+}
+
+void WaylandSubsurface::ResetSubsurface() {
   augmented_subsurface_.reset();
   subsurface_.reset();
+  wayland_surface_.UnsetRootWindow();
 }
 
 bool WaylandSubsurface::IsVisible() const {
-  return !!subsurface_;
+  return visible_;
 }
 
 void WaylandSubsurface::CreateSubsurface() {
   DCHECK(parent_);
+  wayland_surface_.SetRootWindow(parent_);
 
   wl_subcompositor* subcompositor = connection_->subcompositor();
   DCHECK(subcompositor);
