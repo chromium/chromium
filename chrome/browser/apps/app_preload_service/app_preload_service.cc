@@ -12,7 +12,10 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
 #include "chrome/browser/apps/app_preload_service/device_info_manager.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
@@ -42,6 +45,11 @@ namespace {
 static constexpr char kFirstLoginFlowStartedKey[] = "first_login_flow_started";
 static constexpr char kFirstLoginFlowCompletedKey[] =
     "first_login_flow_completed";
+
+static constexpr char kFirstLoginFlowHistogramSuccessName[] =
+    "AppPreloadService.FirstLoginFlowTime.Success";
+static constexpr char kFirstLoginFlowHistogramFailureName[] =
+    "AppPreloadService.FirstLoginFlowTime.Failure";
 
 }  // namespace
 
@@ -84,6 +92,8 @@ void AppPreloadService::StartFirstLoginFlowForTesting(
 }
 
 void AppPreloadService::StartFirstLoginFlow() {
+  auto start_time = base::TimeTicks::Now();
+
   // Preloads currently run for new users only. The "completed" pref is only set
   // when preloads finish successfully, so preloads will be retried if they have
   // been "started" but never "completed".
@@ -101,22 +111,24 @@ void AppPreloadService::StartFirstLoginFlow() {
       base::FeatureList::IsEnabled(kAppPreloadServiceForceRun)) {
     device_info_manager_->GetDeviceInfo(
         base::BindOnce(&AppPreloadService::StartAppInstallationForFirstLogin,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(), start_time));
   }
 }
 
 void AppPreloadService::StartAppInstallationForFirstLogin(
+    base::TimeTicks start_time,
     DeviceInfo device_info) {
   server_connector_->GetAppsForFirstLogin(
       device_info, profile_->GetURLLoaderFactory(),
       base::BindOnce(&AppPreloadService::OnGetAppsForFirstLoginCompleted,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), start_time));
 }
 
 void AppPreloadService::OnGetAppsForFirstLoginCompleted(
+    base::TimeTicks start_time,
     absl::optional<std::vector<PreloadAppDefinition>> apps) {
   if (!apps.has_value()) {
-    OnFirstLoginFlowComplete(/*success=*/false);
+    OnFirstLoginFlowComplete(/*success=*/false, start_time);
     return;
   }
 
@@ -130,7 +142,7 @@ void AppPreloadService::OnGetAppsForFirstLoginCompleted(
   const auto install_barrier_callback_ = base::BarrierCallback<bool>(
       apps.value().size(),
       base::BindOnce(&AppPreloadService::OnAllAppInstallationFinished,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), start_time));
 
   for (const PreloadAppDefinition& app : apps.value()) {
     web_app_installer_->InstallApp(app, install_barrier_callback_);
@@ -138,16 +150,22 @@ void AppPreloadService::OnGetAppsForFirstLoginCompleted(
 }
 
 void AppPreloadService::OnAllAppInstallationFinished(
+    base::TimeTicks start_time,
     const std::vector<bool>& results) {
   OnFirstLoginFlowComplete(
-      base::ranges::all_of(results, [](bool b) { return b; }));
+      base::ranges::all_of(results, [](bool b) { return b; }), start_time);
 }
 
-void AppPreloadService::OnFirstLoginFlowComplete(bool success) {
+void AppPreloadService::OnFirstLoginFlowComplete(bool success,
+                                                 base::TimeTicks start_time) {
   if (success) {
     ScopedDictPrefUpdate(profile_->GetPrefs(), prefs::kApsStateManager)
         ->Set(kFirstLoginFlowCompletedKey, true);
   }
+
+  base::UmaHistogramMediumTimes(success ? kFirstLoginFlowHistogramSuccessName
+                                        : kFirstLoginFlowHistogramFailureName,
+                                base::TimeTicks::Now() - start_time);
 
   if (installation_complete_callback_) {
     std::move(installation_complete_callback_).Run(success);

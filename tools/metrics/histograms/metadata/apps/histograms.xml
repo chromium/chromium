@@ -187,6 +187,23 @@ chromium-metrics-reviews@google.com.
   <summary>The ways the user opens up the App Management interface.</summary>
 </histogram>
 
+<histogram name="AppPreloadService.FirstLoginFlowTime.{Status}" units="ms"
+    expires_after="2023-08-01">
+  <owner>jshikaram@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    The time it takes for the first login flow of the App Preload service to
+    complete with the final status of {Status}.
+
+    This metric is recorded when the user logs in for the first time on a device
+    and the App Preload service kicks off the first login flow.
+  </summary>
+  <token key="Status">
+    <variant name="Failure" summary="First login flow completed in failure"/>
+    <variant name="Success" summary="First login flow completed successfully"/>
+  </token>
+</histogram>
+
 <histogram name="AppPreloadService.ServerResponseCodes"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-08-01">
   <owner>jshikaram@chromium.org</owner>

@@ -18,6 +18,10 @@
 
 class Profile;
 
+namespace base {
+class TimeTicks;
+}  // namespace base
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
@@ -66,15 +70,18 @@ class AppPreloadService : public KeyedService {
   // service, processes the list and installs the app list. This call should
   // only be used the first time a profile is created on the device as this call
   // installs a set of default and OEM apps.
-  void StartAppInstallationForFirstLogin(DeviceInfo device_info);
+  void StartAppInstallationForFirstLogin(base::TimeTicks start_time,
+                                         DeviceInfo device_info);
   // Processes the list of apps retrieved by the server connector.
   void OnGetAppsForFirstLoginCompleted(
+      base::TimeTicks start_time,
       absl::optional<std::vector<PreloadAppDefinition>> apps);
-  void OnAllAppInstallationFinished(const std::vector<bool>& results);
+  void OnAllAppInstallationFinished(base::TimeTicks start_time,
+                                    const std::vector<bool>& results);
   // Called when the installation flow started by
   // `StartAppInstallationForFirstLogin` is complete, with `success` indicating
   // whether the overall flow was successful.
-  void OnFirstLoginFlowComplete(bool success);
+  void OnFirstLoginFlowComplete(bool success, base::TimeTicks start_time);
 
   bool ShouldInstallApp(const PreloadAppDefinition& app);
 

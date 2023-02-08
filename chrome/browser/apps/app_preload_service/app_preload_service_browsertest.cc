@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
@@ -30,7 +31,12 @@ namespace apps {
 
 namespace {
 constexpr char kDefaultManifestUrl[] = "/manifest.json";
-}
+
+static constexpr char kFirstLoginFlowHistogramSuccessName[] =
+    "AppPreloadService.FirstLoginFlowTime.Success";
+static constexpr char kFirstLoginFlowHistogramFailureName[] =
+    "AppPreloadService.FirstLoginFlowTime.Failure";
+}  // namespace
 
 class AppPreloadServiceBrowserTest : public InProcessBrowserTest {
  public:
@@ -123,6 +129,7 @@ class AppPreloadServiceBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, OemWebAppInstall) {
+  base::HistogramTester histograms;
   proto::AppProvisioningListAppsResponse response;
   auto* app = response.add_apps_to_install();
   app->set_name("Example App");
@@ -159,6 +166,9 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, OemWebAppInstall) {
         EXPECT_EQ(update.PublisherId(), "https://www.example.com/index.html");
       });
   ASSERT_TRUE(found);
+
+  histograms.ExpectTotalCount(kFirstLoginFlowHistogramSuccessName, 1);
+  histograms.ExpectTotalCount(kFirstLoginFlowHistogramFailureName, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, IgnoreDefaultAppInstall) {
@@ -303,6 +313,7 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, InstallMultipleOemApps) {
 // Verifies that failed installations are retried on the next login flow, and
 // already installed apps are ignored.
 IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, RetryFailedApps) {
+  base::HistogramTester histograms;
   constexpr char kOriginalManifestUrl1[] = "https://www.foo.com/manifest.json";
   constexpr char kOriginalManifestUrl2[] = "https://www.bar.com/manifest.json";
 
@@ -350,6 +361,9 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, RetryFailedApps) {
   service->StartFirstLoginFlowForTesting(result.GetCallback());
   ASSERT_FALSE(result.Get());
 
+  histograms.ExpectTotalCount(kFirstLoginFlowHistogramSuccessName, 0);
+  histograms.ExpectTotalCount(kFirstLoginFlowHistogramFailureName, 1);
+
   // bar.json should be retried, and will now succeed. foo.json is skipped
   // (ignoring the error it would give), and so the whole flow is successful.
   SetManifestResponse("/manifest/foo.json", "");
@@ -369,6 +383,9 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, RetryFailedApps) {
       web_app::GenerateAppId(absl::nullopt, GURL("https://www.bar.com/"));
   found = app_registry_cache().ForOneApp(app_id2, [](const AppUpdate&) {});
   ASSERT_TRUE(found);
+
+  histograms.ExpectTotalCount(kFirstLoginFlowHistogramSuccessName, 1);
+  histograms.ExpectTotalCount(kFirstLoginFlowHistogramFailureName, 1);
 }
 
 }  // namespace apps
