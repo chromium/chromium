@@ -8,11 +8,13 @@
 
 #include <memory>
 
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/at_exit.h"
 #include "base/base_paths.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/debug/asan_service.h"
 #include "base/debug/debugger.h"
 #include "base/debug/profiler.h"
 #include "base/debug/stack_trace.h"
@@ -83,6 +85,10 @@
 
 #include "base/debug/handle_hooks_win.h"
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(USE_PARTITION_ALLOC)
+#include "base/allocator/partition_alloc_support.h"
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
 namespace base {
 
@@ -169,6 +175,17 @@ class FeatureListScopedToEachTest : public testing::EmptyTestEventListener {
       new_command_line.AppendSwitchNative(iter.first, iter.second);
 
     *CommandLine::ForCurrentProcess() = new_command_line;
+
+    // TODO(https://crbug.com/1400059): Enable dangling pointer detector.
+    // TODO(https://crbug.com/1400058): Enable BackupRefPtr in unittests on
+    // Windows and Android too.
+    // TODO(https://crbug.com/1413674): Enable PartitionAlloc in unittests with
+    // ASAN.
+#if BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_WIN) && \
+    !BUILDFLAG(IS_ANDROID) && !defined(ADDRESS_SANITIZER)
+    allocator::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit(
+        "", /*configure_dangling_pointer_detector=*/false);
+#endif
   }
 
   void OnTestEnd(const testing::TestInfo& test_info) override {
@@ -571,6 +588,22 @@ void TestSuite::SuppressErrorDialogs() {
 
 void TestSuite::Initialize() {
   DCHECK(!is_initialized_);
+
+  // The AsanService causes ASAN errors to emit additional information. It is
+  // helpful on its own. It is also required by ASAN BackupRefPtr when
+  // reconfiguring PartitionAlloc below.
+#if defined(ADDRESS_SANITIZER)
+  base::debug::AsanService::GetInstance()->Initialize();
+#endif
+
+  // TODO(https://crbug.com/1400058): Enable BackupRefPtr in unittests on
+  // Windows and Android too. Same for ASAN.
+  // TODO(https://crbug.com/1413674): Enable PartitionAlloc in unittests with
+  // ASAN.
+#if BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_WIN) && \
+    !BUILDFLAG(IS_ANDROID) && !defined(ADDRESS_SANITIZER)
+  allocator::PartitionAllocSupport::Get()->ReconfigureForTests();
+#endif  // BUILDFLAG(IS_WIN)
 
   test::ScopedRunLoopTimeout::SetAddGTestFailureOnTimeout();
 
