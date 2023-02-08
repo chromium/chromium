@@ -53,6 +53,9 @@ class Buffer : public base::SupportsWeakPtr<Buffer> {
     release_callback_ = release_callback;
   }
 
+  // The client does not need release_callback_ to notify buffer usage.
+  void SkipLegacyRelease();
+
   // Returns if this buffer's contents are vertically inverted.
   bool y_invert() const { return y_invert_; }
 
@@ -211,6 +214,8 @@ class Buffer : public base::SupportsWeakPtr<Buffer> {
   // Even if we send explicit synchronization release information, Wayland
   // protocol requires us to send regular buffer release events.
   base::flat_map<uint64_t, BufferRelease> buffer_releases_;
+
+  bool legacy_release_skippable_ = false;
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
   ProtectedBufferState protected_buffer_state_ = ProtectedBufferState::UNKNOWN;

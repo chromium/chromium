@@ -457,9 +457,10 @@ bool Buffer::ProduceTransferableResource(
 
   const bool request_release_fence =
       !per_commit_explicit_release_callback.is_null();
-  if (per_commit_explicit_release_callback)
+  if (per_commit_explicit_release_callback) {
     pending_explicit_releases_.emplace(
         next_commit_id_, std::move(per_commit_explicit_release_callback));
+  }
 
   resource->id = resource_manager->AllocateResourceId();
   resource->format = viz::SharedImageFormat::SinglePlane(viz::RGBA_8888);
@@ -566,8 +567,12 @@ bool Buffer::ProduceTransferableResource(
   return true;
 }
 
+void Buffer::SkipLegacyRelease() {
+  legacy_release_skippable_ = true;
+}
+
 void Buffer::OnAttach() {
-  DLOG_IF(WARNING, attach_count_)
+  DLOG_IF(WARNING, attach_count_ && !legacy_release_skippable_)
       << "Reattaching a buffer that is already attached to another surface.";
   TRACE_EVENT2("exo", "Buffer::OnAttach", "buffer_id",
                static_cast<const void*>(gfx_buffer()), "count", attach_count_);
@@ -614,8 +619,9 @@ void Buffer::Release() {
   TRACE_EVENT_ASYNC_END0("exo", kBufferInUse, gpu_memory_buffer_.get());
 
   // Run release callback to notify the client that buffer has been released.
-  if (!release_callback_.is_null())
+  if (!release_callback_.is_null() && !legacy_release_skippable_) {
     release_callback_.Run();
+  }
 }
 
 void Buffer::ReleaseTexture(std::unique_ptr<Texture> texture,
@@ -662,7 +668,11 @@ void Buffer::MaybeRunPerCommitRelease(
 
   // We are still required to send these wl_buffer.release events even if
   // the client supports explicit synchronization.
-  if (release_fence.is_null()) {
+  if (!buffer_release_callback) {
+    return;
+  }
+
+  if (release_fence.is_null() || legacy_release_skippable_) {
     std::move(buffer_release_callback).Run();
   } else {
     // Watching the release fence's fd results in a context switch to the I/O
@@ -716,9 +726,10 @@ bool SolidColorBuffer::ProduceTransferableResource(
     gfx::ColorSpace color_space,
     ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
     PerCommitExplicitReleaseCallback per_commit_explicit_release_callback) {
-  if (per_commit_explicit_release_callback)
+  if (per_commit_explicit_release_callback) {
     std::move(per_commit_explicit_release_callback)
         .Run(/*release_fence=*/gfx::GpuFenceHandle());
+  }
   return false;
 }
 

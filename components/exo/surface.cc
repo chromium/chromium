@@ -1302,6 +1302,10 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
     if (!buffer_color_space.IsValid()) {
       buffer_color_space = gfx::ColorSpace::CreateSRGB();
     }
+    if (legacy_buffer_release_skippable_ &&
+        state_.per_commit_explicit_release_callback_) {
+      state_.buffer->buffer()->SkipLegacyRelease();
+    }
     if (state_.buffer->buffer()->ProduceTransferableResource(
             resource_manager, std::move(state_.acquire_fence),
             state_.basic_state.only_visible_on_secure_output,

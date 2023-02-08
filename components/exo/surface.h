@@ -107,6 +107,10 @@ class Surface final : public ui::PropertyHandler {
     leave_enter_callback_ = callback;
   }
 
+  void set_legacy_buffer_release_skippable(bool skippable) {
+    legacy_buffer_release_skippable_ = skippable;
+  }
+
   // Called when the display the surface is on has changed.
   // Returns true if successful, and false if it fails.
   bool UpdateDisplay(int64_t old_id, int64_t new_id);
@@ -659,6 +663,7 @@ class Surface final : public ui::PropertyHandler {
   LeaveEnterCallback leave_enter_callback_;
 
   bool keyboard_shortcuts_inhibited_ = false;
+  bool legacy_buffer_release_skippable_ = false;
 };
 
 class ScopedSurface {

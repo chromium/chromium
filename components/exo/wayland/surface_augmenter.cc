@@ -39,6 +39,7 @@ class AugmentedSurface : public SurfaceObserver {
   explicit AugmentedSurface(Surface* surface) : surface_(surface) {
     surface_->AddSurfaceObserver(this);
     surface_->SetProperty(kSurfaceHasAugmentedSurfaceKey, true);
+    surface_->set_legacy_buffer_release_skippable(true);
   }
   AugmentedSurface(const AugmentedSurface&) = delete;
   AugmentedSurface& operator=(const AugmentedSurface&) = delete;
