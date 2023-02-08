@@ -105,6 +105,9 @@ enum TextStyle {
   // surrounding STYLE_SECONDARY text.
   STYLE_EMPHASIZED_SECONDARY,
 
+  // Style for invalid text. Can be either primary or solid red color.
+  STYLE_INVALID,
+
   // The style used for links. Usually a solid shade of blue.
   STYLE_LINK,
 

@@ -2441,7 +2441,7 @@ void Textfield::UpdateBorder() {
       extra_insets_.right() + provider->GetDistanceMetric(
                                   DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING)));
   if (invalid_) {
-    border->SetColorId(ui::kColorAlertHighSeverity);
+    border->SetColorId(ui::kColorTextfieldInvalidOutline);
   }
   border->SetCornerRadius(GetCornerRadius());
   View::SetBorder(std::move(border));
@@ -2509,8 +2509,13 @@ void Textfield::UpdateCursorViewPosition() {
 }
 
 int Textfield::GetTextStyle() const {
-  return (GetReadOnly() || !GetEnabled()) ? style::STYLE_DISABLED
-                                          : style::STYLE_PRIMARY;
+  if (GetReadOnly() || !GetEnabled()) {
+    return style::STYLE_DISABLED;
+  } else if (GetInvalid()) {
+    return style::STYLE_INVALID;
+  } else {
+    return style::STYLE_PRIMARY;
+  }
 }
 
 void Textfield::PaintTextAndCursor(gfx::Canvas* canvas) {
