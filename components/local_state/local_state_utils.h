@@ -17,7 +17,7 @@ namespace internal {
 // Removes elements from |prefs| where the key does not match any of the
 // prefixes in |valid_prefixes|.
 void FilterPrefs(const std::vector<std::string>& valid_prefixes,
-                 base::Value& prefs);
+                 base::Value::Dict& prefs);
 
 }  // namespace internal
 

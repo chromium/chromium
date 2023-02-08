@@ -235,19 +235,20 @@ void PrefService::IteratePreferenceValues(
     callback.Run(it.first, *GetPreferenceValue(it.first));
 }
 
-base::Value PrefService::GetPreferenceValues(
+base::Value::Dict PrefService::GetPreferenceValues(
     IncludeDefaults include_defaults) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::Value out(base::Value::Type::DICT);
+  base::Value::Dict out;
   for (const auto& it : *pref_registry_) {
     if (include_defaults == INCLUDE_DEFAULTS) {
-      out.SetPath(it.first, GetPreferenceValue(it.first)->Clone());
+      out.SetByDottedPath(it.first, GetPreferenceValue(it.first)->Clone());
     } else {
       const Preference* pref = FindPreference(it.first);
-      if (pref->IsDefaultValue())
+      if (pref->IsDefaultValue()) {
         continue;
-      out.SetPath(it.first, pref->GetValue()->Clone());
+      }
+      out.SetByDottedPath(it.first, pref->GetValue()->Clone());
     }
   }
   return out;

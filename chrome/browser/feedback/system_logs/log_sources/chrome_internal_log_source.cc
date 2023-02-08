@@ -522,11 +522,11 @@ void ChromeInternalLogSource::PopulateLocalStateSettings(
     SystemLogsResponse* response) {
   // Extract the "settings" entry in the local state and serialize back to
   // a string.
-  base::Value local_state =
+  base::Value::Dict local_state =
       g_browser_process->local_state()->GetPreferenceValues(
           PrefService::EXCLUDE_DEFAULTS);
-  const base::Value* local_state_settings =
-      local_state.FindDictKey(kSettingsKey);
+  const base::Value::Dict* local_state_settings =
+      local_state.FindDict(kSettingsKey);
   if (!local_state_settings) {
     VLOG(1) << "Failed to extract the settings entry from Local State.";
     return;

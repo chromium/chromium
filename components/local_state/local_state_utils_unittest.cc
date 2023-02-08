@@ -17,17 +17,19 @@ TEST(LocalStateUtilsTest, FilterPrefs) {
   all_pref_paths.insert(all_pref_paths.end(), valid_pref_paths.begin(),
                         valid_pref_paths.end());
 
-  base::Value prefs(base::Value::Type::DICT);
-  for (const std::string& path : all_pref_paths)
-    prefs.SetStringPath(path, path + "_value");
+  base::Value::Dict prefs;
+  for (const std::string& path : all_pref_paths) {
+    prefs.SetByDottedPath(path, path + "_value");
+  }
 
   internal::FilterPrefs(prefixes, prefs);
 
-  for (const std::string& invalid_path : invalid_pref_paths)
-    EXPECT_FALSE(prefs.FindStringPath(invalid_path));
+  for (const std::string& invalid_path : invalid_pref_paths) {
+    EXPECT_FALSE(prefs.FindByDottedPath(invalid_path));
+  }
 
   for (const std::string& valid_path : valid_pref_paths) {
-    const std::string* result = prefs.FindStringPath(valid_path);
+    const std::string* result = prefs.FindStringByDottedPath(valid_path);
     ASSERT_TRUE(result);
     EXPECT_EQ(valid_path + "_value", *result);
   }

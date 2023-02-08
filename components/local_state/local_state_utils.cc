@@ -26,8 +26,9 @@ namespace {
 bool HasValidPrefix(const std::string& pref_name,
                     const std::vector<std::string> valid_prefixes) {
   for (const std::string& prefix : valid_prefixes) {
-    if (base::StartsWith(pref_name, prefix, base::CompareCase::SENSITIVE))
+    if (base::StartsWith(pref_name, prefix, base::CompareCase::SENSITIVE)) {
       return true;
+    }
   }
   return false;
 }
@@ -37,14 +38,15 @@ bool HasValidPrefix(const std::string& pref_name,
 namespace internal {
 
 void FilterPrefs(const std::vector<std::string>& valid_prefixes,
-                 base::Value& prefs) {
+                 base::Value::Dict& prefs) {
   std::vector<std::string> prefs_to_remove;
-  for (auto it : prefs.DictItems()) {
-    if (!HasValidPrefix(it.first, valid_prefixes))
+  for (auto it : prefs) {
+    if (!HasValidPrefix(it.first, valid_prefixes)) {
       prefs_to_remove.push_back(it.first);
+    }
   }
   for (const std::string& pref_to_remove : prefs_to_remove) {
-    bool successfully_removed = prefs.RemovePath(pref_to_remove);
+    bool successfully_removed = prefs.RemoveByDottedPath(pref_to_remove);
     DCHECK(successfully_removed);
   }
 }
@@ -52,14 +54,14 @@ void FilterPrefs(const std::vector<std::string>& valid_prefixes,
 }  // namespace internal
 
 bool GetPrefsAsJson(PrefService* pref_service, std::string* json_string) {
-  base::Value local_state_values =
+  base::Value::Dict local_state_values =
       pref_service->GetPreferenceValues(PrefService::EXCLUDE_DEFAULTS);
   if (ENABLE_FILTERING) {
     // Filter out the prefs to only include variations and UMA related fields,
     // which don't contain PII.
-    std::vector<std::string> allowlisted_prefixes = {"variations",
-                                                     "user_experience_metrics"};
-    internal::FilterPrefs(allowlisted_prefixes, local_state_values);
+    std::vector<std::string> allowed_prefixes = {"variations",
+                                                 "user_experience_metrics"};
+    internal::FilterPrefs(allowed_prefixes, local_state_values);
   }
 
   JSONStringValueSerializer serializer(json_string);
