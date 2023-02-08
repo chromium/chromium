@@ -69,17 +69,15 @@ if (toolchain_has_rust) {
   stdlib_files -= removed_rust_stdlib_libs
   stdlib_files += added_rust_stdlib_libs
 
-  if (!use_unverified_rust_toolchain) {
-    # rlib files which are distributed alongside Rust's prebuilt stdlib, but we
-    # don't need to pass to the C++ linker because they're used for specialized
-    # purposes.
-    skip_stdlib_files = [
-      "profiler_builtins",
-      "rustc_std_workspace_alloc",
-      "rustc_std_workspace_core",
-      "rustc_std_workspace_std",
-    ]
-  }
+  # rlib files which are distributed alongside Rust's prebuilt stdlib, but we
+  # don't need to pass to the C++ linker because they're used for specialized
+  # purposes.
+  skip_stdlib_files = [
+    "profiler_builtins",
+    "rustc_std_workspace_alloc",
+    "rustc_std_workspace_core",
+    "rustc_std_workspace_std",
+  ]
 
   action("find_stdlib") {
     # Collect prebuilt Rust libraries from toolchain package and copy to a known
