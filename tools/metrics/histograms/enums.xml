@@ -42130,6 +42130,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4457"
       label="ServiceWorkerBypassFetchHandlerForMainResourceByOriginTrial"/>
   <int value="4458" label="V8RegExpUnicodeSetIncompatibilitiesWithUnicodeMode"/>
+  <int value="4459" label="FedCmAutoReauthn"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
