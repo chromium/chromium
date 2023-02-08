@@ -3433,6 +3433,10 @@ test("base_unittests") {
     "//testing/buildbot/filters:base_unittests_filters",
   ]
 
+  if (is_android && enable_chrome_android_internal) {
+    data_deps += [ "//clank/build/bot/filters:base_unittests_filters" ]
+  }
+
   if (toolchain_has_rust) {
     deps += [ "//build/rust:cxx_cppdeps" ]
   }
