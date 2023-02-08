@@ -2183,6 +2183,8 @@
         },
       },
       'mac-code-coverage': {
+        'os_type': 'mac',
+        'browser_config': 'release',
         'mixins': [
           'isolate_profile_data',
           'mac_12_x64',
@@ -2190,7 +2192,7 @@
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests',
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts_code_coverage',
-          # TODO(crbug.com/1399354): Enable gpu_dawn_webgpu_cts
+          'gpu_telemetry_tests': 'gpu_dawn_webgpu_cts',
         },
       },
       'win10-code-coverage': {
