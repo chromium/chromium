@@ -123,10 +123,6 @@
       },
     },
 
-    'android_modern_smoke_tests': {
-      'chrome_modern_public_bundle_smoke_test': {},
-    },
-
     'android_monochrome_smoke_tests': {
       'monochrome_public_bundle_smoke_test': {},
       'monochrome_public_smoke_test': {},
@@ -1396,7 +1392,6 @@
 
     'chromium_swarm_android_gtests': {
       'base_unittests': {},
-      'chrome_modern_public_bundle_smoke_test': {},
     },
 
     'chromium_swarm_desktop_gtests': {
@@ -5644,7 +5639,6 @@
     ],
 
     'android_marshmallow_gtests': [
-      'android_modern_smoke_tests',
       'android_smoke_tests',
       'android_specific_chromium_gtests',  # Already includes gl_gtests.
       'chromium_gtests',
@@ -5685,7 +5679,6 @@
     ],
 
     'android_pie_coverage_instrumentation_tests': [
-      'android_modern_smoke_tests',
       'android_smoke_tests',
       'android_specific_coverage_java_tests',
       'chrome_public_tests',

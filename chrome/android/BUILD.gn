@@ -2417,13 +2417,6 @@ if (current_toolchain == default_toolchain) {
     enable_multidex = is_java_debug
   }
 
-  chrome_public_apk_or_module_tmpl("chrome_modern_public_base_bundle_module") {
-    target_type = "android_app_bundle_module"
-    is_base_module = true
-    add_view_trace_events = true
-    bundle_target = ":chrome_modern_public_bundle"
-  }
-
   android_library("monochrome_java") {
     deps = [
       ":base_module_java",
@@ -3017,18 +3010,6 @@ if (current_toolchain == default_toolchain) {
     "--disable-fre",
   ]
 
-  instrumentation_test_runner("chrome_modern_public_bundle_smoke_test") {
-    apk_under_test = ":chrome_modern_public_bundle_apks"
-    android_test_apk = ":chrome_bundle_smoke_test_apk"
-    never_incremental = true
-    modules = [ "test_dummy" ]
-    if (!is_java_debug) {
-      proguard_mapping_path =
-          "$root_build_dir/apks/ChromeModernPublic.aab.mapping"
-    }
-    extra_args = _bundle_smoke_test_extra_args
-  }
-
   instrumentation_test_runner("monochrome_public_bundle_smoke_test") {
     if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
       apk_under_test = "//chrome/android:monochrome_64_public_bundle_apks"
@@ -3132,33 +3113,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/test/chromedriver:chromedriver_server($host_toolchain)",
       "//third_party/blink/tools:wpt_tests_android_isolate",
     ]
-  }
-
-  chrome_bundle("chrome_modern_public_bundle") {
-    base_module_target = ":chrome_modern_public_base_bundle_module"
-    bundle_name = "ChromeModernPublic"
-    compress_shared_libraries = true
-    if (android_64bit_target_cpu) {
-      is_64_bit_browser = true
-    }
-    add_view_trace_events = true
-    manifest_package = chrome_public_manifest_package
-    min_sdk_version = default_min_sdk_version
-    module_descs = chrome_modern_module_descs
-  }
-
-  if (is_official_build) {
-    # Used for binary size monitoring.
-    create_app_bundle_minimal_apks("chrome_modern_public_minimal_apks") {
-      deps = [ ":chrome_modern_public_bundle" ]
-      bundle_path = "$root_build_dir/apks/ChromeModernPublic.aab"
-    }
-
-    android_resource_sizes_test(
-        "resource_sizes_chrome_modern_public_minimal_apks") {
-      file_path = "$root_build_dir/apks/ChromeModernPublic.minimal.apks"
-      data_deps = [ ":chrome_modern_public_minimal_apks" ]
-    }
   }
 
   template("monochrome_or_trichrome_public_bundle_tmpl") {

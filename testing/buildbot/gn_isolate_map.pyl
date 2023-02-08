@@ -446,10 +446,6 @@
     "label": "//chrome/android:chrome_junit_tests",
     "type": "generated_script",
   },
-  "chrome_modern_public_bundle_smoke_test": {
-    "label": "//chrome/android:chrome_modern_public_bundle_smoke_test",
-    "type": "console_test_launcher",
-  },
   "chrome_nocompile_tests": {
     "label": "//chrome/android:chrome_nocompile_tests",
     "type": "additional_compile_target",
@@ -1505,10 +1501,6 @@
   "remoting_unittests": {
     "label": "//remoting:remoting_unittests",
     "type": "console_test_launcher",
-  },
-  "resource_sizes_chrome_modern_public_minimal_apks": {
-    "label": "//chrome/android:resource_sizes_chrome_modern_public_minimal_apks",
-    "type": "generated_script",
   },
   "resource_sizes_chromecast": {
     "label": "//chromecast:resource_sizes_chromecast",

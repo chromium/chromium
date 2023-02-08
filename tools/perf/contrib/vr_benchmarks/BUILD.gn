@@ -33,7 +33,7 @@ group("vr_perf_tests_base") {
       "//third_party/gvr-android-sdk/test-apks/vr_keyboard/vr_keyboard_current.apk",
     ]
 
-    data_deps += [ "//chrome/android:chrome_modern_public_bundle" ]
+    data_deps += [ "//chrome/android:monochrome_public_bundle" ]
   }
 
   if (is_win) {

@@ -72,7 +72,7 @@ _GN_ARGS = [
 ]
 
 _TARGETS = {
-    'bundle': 'chrome_modern_public_bundle',
+    'bundle': 'monochrome_public_bundle',
     'apk': 'chrome_public_apk',
 }
 
