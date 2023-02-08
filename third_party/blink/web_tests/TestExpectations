@@ -6376,6 +6376,7 @@ crbug.com/1410530 [ Mac10.15 ] external/wpt/performance-timeline/tentative/inclu
 crbug.com/1410530 [ Mac11-arm64 ] external/wpt/performance-timeline/tentative/include-frames-originA-B-A.html [ Failure ]
 crbug.com/1411486 [ Mac ] external/wpt/storage-access-api/storage-access-permission.sub.https.window.html [ Failure ]
 crbug.com/1229708 [ Debug Linux ] fast/events/pointerevents/pointer-event-in-slop-region.html [ Failure ]
+crbug.com/1412477 [ Mac ] editing/spelling/cold_mode_no_leak_detached_node.html [ Failure ]
 
 # Sheriff 2022-10-07
 crbug.com/1372556 [ Linux ] external/wpt/css/css-text/text-transform/text-transform-capitalize-* [ Failure Pass ]
