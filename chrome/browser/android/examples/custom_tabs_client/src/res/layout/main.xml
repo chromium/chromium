@@ -478,5 +478,12 @@
             android:layout_height="wrap_content"
             android:checked = "true"
             android:text="@string/background_interact_text" />
+
+        <CheckBox
+            android:id="@+id/side_sheet_max_button_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "true"
+            android:text="@string/side_sheet_max_button_text" />
     </LinearLayout>
 </ScrollView>

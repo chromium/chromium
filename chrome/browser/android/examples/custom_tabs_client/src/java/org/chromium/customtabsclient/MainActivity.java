@@ -81,6 +81,7 @@ public class MainActivity
     private static final String SHARED_PREF_THEME = "Theme";
     private static final String SHARED_PREF_URL_HIDING = "UrlHiding";
     private static final String SHARED_PREF_FORCE_ENGAGEMENT_SIGNALS = "ForceEngagementSignals";
+    private static final String SHARED_PREF_SIDE_SHEET_MAX_BUTTON = "SideSheetMaxButton";
     private static final int CLOSE_ICON_X = 0;
     private static final int CLOSE_ICON_BACK = 1;
     private static final int CLOSE_ICON_CHECK = 2;
@@ -88,6 +89,11 @@ public class MainActivity
     private static final int CHECKED = 1;
     private static final int ACTIVITY_HEIGHT_FIXED = 2;
     private static final int BACKGROUND_INTERACT_OFF_VALUE = 2;
+
+    /** Extra that enables the maximization button on the side sheet Custom Tab toolbar. */
+    public static final String EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION =
+            "androix.browser.customtabs.extra.EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION";
+
     /**
      * Minimal height the bottom sheet CCT should show is half of the display height.
      */
@@ -123,6 +129,7 @@ public class MainActivity
     private CheckBox mUrlHidingCheckbox;
     private CheckBox mBackgroundInteractCheckbox;
     private CheckBox mForceEngagementSignalsCheckbox;
+    private CheckBox mSideSheetMaxButtonCheckbox;
     private TextView mPcctBreakpointLabel;
     private SeekBar mPcctBreakpointSlider;
     private TextView mPcctInitialHeightLabel;
@@ -409,6 +416,9 @@ public class MainActivity
         mForceEngagementSignalsCheckbox = findViewById(R.id.force_engagement_signals_checkbox);
         mForceEngagementSignalsCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_FORCE_ENGAGEMENT_SIGNALS, CHECKED) == CHECKED);
+        mSideSheetMaxButtonCheckbox = findViewById(R.id.side_sheet_max_button_checkbox);
+        mSideSheetMaxButtonCheckbox.setChecked(
+                mSharedPref.getInt(SHARED_PREF_SIDE_SHEET_MAX_BUTTON, CHECKED) == CHECKED);
     }
 
     private void initializeCctSpinner() {
@@ -699,6 +709,10 @@ public class MainActivity
                 customTabsIntent.intent.putExtra(
                         "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_BREAKPOINT_DP",
                         pcctBreakpointDp);
+                if (mSideSheetMaxButtonCheckbox.isChecked()) {
+                    customTabsIntent.intent.putExtra(
+                            EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION, true);
+                }
                 if (!mPcctHeightResizableCheckbox.isChecked()) {
                     customTabsIntent.intent.putExtra(
                             "androidx.browser.customtabs.extra.ACTIVITY_HEIGHT_RESIZE_BEHAVIOR",
@@ -745,6 +759,8 @@ public class MainActivity
             editor.putInt(SHARED_PREF_CLOSE_POSITION, closeButtonPosition);
             editor.putInt(SHARED_PREF_HEIGHT_RESIZABLE,
                     mPcctHeightResizableCheckbox.isChecked() ? CHECKED : UNCHECKED);
+            editor.putInt(SHARED_PREF_SIDE_SHEET_MAX_BUTTON,
+                    mSideSheetMaxButtonCheckbox.isChecked() ? CHECKED : UNCHECKED);
             editor.apply();
         }
     }
