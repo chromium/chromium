@@ -9320,6 +9320,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnablePageLoadMetadataIntegration)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"system-live-caption", flag_descriptions::kSystemLiveCaptionName,
+     flag_descriptions::kSystemLiveCaptionDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kSystemLiveCaption)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

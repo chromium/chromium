@@ -60315,6 +60315,7 @@ from previous Chrome versions.
   <int value="-704232562" label="UseMonitorColorSpace:enabled"/>
   <int value="-703851482" label="AudioPeripheralVolumeGranularity:enabled"/>
   <int value="-703552662" label="PrefetchAndroidFonts:disabled"/>
+  <int value="-703519655" label="SystemLiveCaption:enabled"/>
   <int value="-702477233" label="ContentFullscreen:enabled"/>
   <int value="-700762821" label="RequestDesktopSiteForTablets:disabled"/>
   <int value="-700388124" label="OmniboxPedalsAndroidBatch1:enabled"/>
@@ -61224,6 +61225,7 @@ from previous Chrome versions.
   <int value="-170986053" label="EnableManualFallbacksFilling:enabled"/>
   <int value="-170809452" label="QueryTilesOnStart:enabled"/>
   <int value="-169745744" label="SyncPseudoUSSPreferences:enabled"/>
+  <int value="-168306701" label="SystemLiveCaption:disabled"/>
   <int value="-167744090" label="EnableHomeLauncher:enabled"/>
   <int value="-167420098" label="WebBluetoothNewPermissionsBackend:enabled"/>
   <int value="-165756594" label="enable-touch-feedback"/>

@@ -6629,6 +6629,15 @@
     "expiry_milestone": -1
   },
   {
+    "name": "system-live-caption",
+    "owners": [
+      "martis",
+      "amoylan",
+      "abigailbklein"
+    ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "tab-grid-recency-sort",
     "owners": [ "gambard", "bling-flags@google.com" ],
     "expiry_milestone": 120
