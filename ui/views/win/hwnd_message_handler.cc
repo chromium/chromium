@@ -278,8 +278,7 @@ gfx::ResizeEdge GetWindowResizeEdge(UINT param) {
     case WMSZ_BOTTOMRIGHT:
       return gfx::ResizeEdge::kBottomRight;
     default:
-      NOTREACHED();
-      return gfx::ResizeEdge::kBottomRight;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -3437,12 +3436,12 @@ LRESULT HWNDMessageHandler::HandlePointerEventTypePenClient(UINT message,
   // window, so use the weak ptr to check if destruction occurred or not.
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   if (event) {
-    if (event->IsTouchEvent())
+    if (event->IsTouchEvent()) {
       delegate_->HandleTouchEvent(event->AsTouchEvent());
-    else if (event->IsMouseEvent())
+    } else {
+      CHECK(event->IsMouseEvent());
       delegate_->HandleMouseEvent(event->AsMouseEvent());
-    else
-      NOTREACHED();
+    }
 
     last_touch_or_pen_message_time_ = ::GetMessageTime();
     is_pen_active_in_client_area_ = true;

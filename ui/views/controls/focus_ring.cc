@@ -274,11 +274,8 @@ SkRRect FocusRing::GetRingRoundRect() const {
     return SkRRect::MakeOval(gfx::RectFToSkRect(rect));
   }
 
-  if (path.isRRect(&rbounds))
-    return RingRectFromPathRect(rbounds);
-
-  NOTREACHED();
-  return SkRRect();
+  CHECK(path.isRRect(&rbounds));
+  return RingRectFromPathRect(rbounds);
 }
 
 void FocusRing::GetAccessibleNodeData(ui::AXNodeData* node_data) {

@@ -536,15 +536,14 @@ void NativeWidgetMac::StackAbove(gfx::NativeView native_view) {
     return;
   }
 
-  if (ns_window_host_->application_host() == sibling_host->application_host()) {
-    // Check if |native_view|'s NativeWidgetMacNSWindowHost corresponds to the
-    // same process as |this|.
-    GetNSWindowMojo()->StackAbove(sibling_host->bridged_native_widget_id());
-    return;
-  }
-
-  NOTREACHED() << "|native_view|'s NativeWidgetMacNSWindowHost isn't same "
-                  "process |this|";
+  CHECK_EQ(ns_window_host_->application_host(),
+           sibling_host->application_host())
+      << "|native_view|'s NativeWidgetMacNSWindowHost isn't same "
+         "process |this|";
+  // Check if |native_view|'s NativeWidgetMacNSWindowHost corresponds to the
+  // same process as |this|.
+  GetNSWindowMojo()->StackAbove(sibling_host->bridged_native_widget_id());
+  return;
 }
 
 void NativeWidgetMac::StackAtTop() {
@@ -603,8 +602,7 @@ void NativeWidgetMac::Show(ui::WindowShowState show_state,
       NOTIMPLEMENTED();
       break;
     case ui::SHOW_STATE_END:
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
   }
   auto window_state = WindowVisibilityState::kShowAndActivateWindow;
   if (show_state == ui::SHOW_STATE_INACTIVE) {
@@ -1126,11 +1124,8 @@ void NativeWidgetPrivate::ReparentNativeView(gfx::NativeView child,
                                              gfx::NativeView new_parent) {
   DCHECK_NE(child, new_parent);
   DCHECK([new_parent.GetNativeNSView() window]);
-  if (!new_parent ||
-      [child.GetNativeNSView() superview] == new_parent.GetNativeNSView()) {
-    NOTREACHED();
-    return;
-  }
+  CHECK(new_parent);
+  CHECK_NE([child.GetNativeNSView() superview], new_parent.GetNativeNSView());
 
   NativeWidgetMacNSWindowHost* child_window_host =
       NativeWidgetMacNSWindowHost::GetFromNativeView(child);

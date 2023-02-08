@@ -114,7 +114,7 @@ void CalculateWindowStylesFromInitParams(
       *style |= WS_POPUP;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
 }
 

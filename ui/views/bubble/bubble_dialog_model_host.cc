@@ -567,8 +567,7 @@ void BubbleDialogModelHost::OnFieldAdded(ui::DialogModelField* field) {
   switch (field->type(GetPassKey())) {
     case ui::DialogModelField::kButton:
       // TODO(pbos): Add support for buttons that are part of content area.
-      NOTREACHED();
-      return;
+      NOTREACHED_NORETURN();
     case ui::DialogModelField::kParagraph:
       AddOrUpdateParagraph(field->AsParagraph(GetPassKey()));
       break;
@@ -906,8 +905,7 @@ BubbleDialogModelHost::FindDialogModelHostField(View* view) {
     if (info.field_view == view)
       return info;
   }
-  NOTREACHED();
-  return {};
+  NOTREACHED_NORETURN();
 }
 
 View* BubbleDialogModelHost::GetTargetView(

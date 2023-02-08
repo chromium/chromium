@@ -153,23 +153,15 @@ MenuItemView* MenuModelAdapter::AppendMenuItem(MenuItemView* menu,
 void MenuModelAdapter::ExecuteCommand(int id) {
   ui::MenuModel* model = menu_model_;
   size_t index = 0;
-  if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index)) {
-    model->ActivatedAt(index);
-    return;
-  }
-
-  NOTREACHED();
+  CHECK(ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index));
+  model->ActivatedAt(index);
 }
 
 void MenuModelAdapter::ExecuteCommand(int id, int mouse_event_flags) {
   ui::MenuModel* model = menu_model_;
   size_t index = 0;
-  if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index)) {
-    model->ActivatedAt(index, mouse_event_flags);
-    return;
-  }
-
-  NOTREACHED();
+  CHECK(ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index));
+  model->ActivatedAt(index, mouse_event_flags);
 }
 
 bool MenuModelAdapter::IsTriggerableEvent(MenuItemView* source,
@@ -183,21 +175,15 @@ bool MenuModelAdapter::GetAccelerator(int id,
                                       ui::Accelerator* accelerator) const {
   ui::MenuModel* model = menu_model_;
   size_t index = 0;
-  if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index))
-    return model->GetAcceleratorAt(index, accelerator);
-
-  NOTREACHED();
-  return false;
+  CHECK(ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index));
+  return model->GetAcceleratorAt(index, accelerator);
 }
 
 std::u16string MenuModelAdapter::GetLabel(int id) const {
   ui::MenuModel* model = menu_model_;
   size_t index = 0;
-  if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index))
-    return model->GetLabelAt(index);
-
-  NOTREACHED();
-  return std::u16string();
+  CHECK(ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index));
+  return model->GetLabelAt(index);
 }
 
 const gfx::FontList* MenuModelAdapter::GetLabelFontList(int id) const {
@@ -216,55 +202,38 @@ const gfx::FontList* MenuModelAdapter::GetLabelFontList(int id) const {
 bool MenuModelAdapter::IsCommandEnabled(int id) const {
   ui::MenuModel* model = menu_model_;
   size_t index = 0;
-  if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index))
-    return model->IsEnabledAt(index);
-
-  NOTREACHED();
-  return false;
+  CHECK(ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index));
+  return model->IsEnabledAt(index);
 }
 
 bool MenuModelAdapter::IsCommandVisible(int id) const {
   ui::MenuModel* model = menu_model_;
   size_t index = 0;
-  if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index))
-    return model->IsVisibleAt(index);
-
-  NOTREACHED();
-  return false;
+  CHECK(ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index));
+  return model->IsVisibleAt(index);
 }
 
 bool MenuModelAdapter::IsItemChecked(int id) const {
   ui::MenuModel* model = menu_model_;
   size_t index = 0;
-  if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index))
-    return model->IsItemCheckedAt(index);
-
-  NOTREACHED();
-  return false;
+  CHECK(ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index));
+  return model->IsItemCheckedAt(index);
 }
 
 void MenuModelAdapter::WillShowMenu(MenuItemView* menu) {
   // Look up the menu model for this menu.
   const std::map<MenuItemView*, ui::MenuModel*>::const_iterator map_iterator =
       menu_map_.find(menu);
-  if (map_iterator != menu_map_.end()) {
-    map_iterator->second->MenuWillShow();
-    return;
-  }
-
-  NOTREACHED();
+  CHECK(map_iterator != menu_map_.end());
+  map_iterator->second->MenuWillShow();
 }
 
 void MenuModelAdapter::WillHideMenu(MenuItemView* menu) {
   // Look up the menu model for this menu.
   const std::map<MenuItemView*, ui::MenuModel*>::const_iterator map_iterator =
       menu_map_.find(menu);
-  if (map_iterator != menu_map_.end()) {
-    map_iterator->second->MenuWillClose();
-    return;
-  }
-
-  NOTREACHED();
+  CHECK(map_iterator != menu_map_.end());
+  map_iterator->second->MenuWillClose();
 }
 
 void MenuModelAdapter::OnMenuClosed(MenuItemView* menu) {

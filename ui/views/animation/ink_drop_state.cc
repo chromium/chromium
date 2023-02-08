@@ -28,9 +28,7 @@ std::string ToString(InkDropState state) {
     case InkDropState::DEACTIVATED:
       return std::string("DEACTIVATED");
   }
-  NOTREACHED()
-      << "Should never be reached but is necessary for some compilers.";
-  return std::string("UNKNOWN");
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace views

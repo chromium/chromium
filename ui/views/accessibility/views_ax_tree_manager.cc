@@ -130,12 +130,13 @@ void ViewsAXTreeManager::SerializeTreeUpdates() {
       continue;
 
     ui::AXTreeUpdate update;
+    // TODO(pbos): Consider rewriting this as a CHECK now that this is fatally
+    // aborting.
     if (!tree_serializer_.SerializeChanges(wrapper, &update)) {
       std::string error;
       ui::AXTreeSourceChecker<AXAuraObjWrapper*> checker(&tree_source_);
       checker.CheckAndGetErrorString(&error);
-      NOTREACHED() << error << '\n' << update.ToString();
-      return;
+      NOTREACHED_NORETURN() << error << '\n' << update.ToString();
     }
 
     updates.push_back(update);
@@ -150,10 +151,7 @@ void ViewsAXTreeManager::UnserializeTreeUpdates(
     return;
 
   for (const ui::AXTreeUpdate& update : updates) {
-    if (!ax_tree_->Unserialize(update)) {
-      NOTREACHED() << ax_tree_->error();
-      return;
-    }
+    CHECK(ax_tree_->Unserialize(update)) << ax_tree_->error();
   }
 
   // Unserializing the updates into our AXTree should have prompted our

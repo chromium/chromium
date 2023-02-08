@@ -296,14 +296,12 @@ class DesktopWindowTreeHostPlatformImplTest
                                      const gfx::Point& click_location,
                                      int flags) {
     int flag = 0;
-    if (flags & ui::EF_LEFT_MOUSE_BUTTON)
+    if (flags & ui::EF_LEFT_MOUSE_BUTTON) {
       flag = ui::EF_LEFT_MOUSE_BUTTON;
-    else if (flags & ui::EF_RIGHT_MOUSE_BUTTON)
-      flag = ui::EF_RIGHT_MOUSE_BUTTON;
-
-    if (!flag) {
-      NOTREACHED()
+    } else {
+      CHECK(flags & ui::EF_RIGHT_MOUSE_BUTTON)
           << "Other mouse clicks are not supported yet. Add the new one.";
+      flag = ui::EF_RIGHT_MOUSE_BUTTON;
     }
     return new ui::MouseEvent(event_type, click_location, click_location,
                               base::TimeTicks::Now(), flags, flag);

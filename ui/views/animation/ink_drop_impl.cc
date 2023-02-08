@@ -528,9 +528,7 @@ InkDropImpl::HighlightStateFactory::CreateStartState() {
       return std::make_unique<ShowHighlightOnRippleHiddenState>(
           this, base::TimeDelta());
   }
-  // Required for some compilers.
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 std::unique_ptr<InkDropImpl::HighlightState>
@@ -548,8 +546,7 @@ InkDropImpl::HighlightStateFactory::CreateHiddenState(
           this, animation_duration);
   }
   // Required for some compilers.
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 std::unique_ptr<InkDropImpl::HighlightState>
@@ -567,8 +564,7 @@ InkDropImpl::HighlightStateFactory::CreateVisibleState(
           this, animation_duration);
   }
   // Required for some compilers.
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 InkDropImpl::InkDropImpl(InkDropHost* ink_drop_host,

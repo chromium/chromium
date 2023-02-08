@@ -130,12 +130,10 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveFromParentView() {
   if (parent_view_)
     return parent_view_->RemoveVirtualChildView(this);
 
-  if (virtual_parent_view_)
-    return virtual_parent_view_->RemoveChildView(this);
-
   // This virtual view hasn't been added to a parent view yet.
-  NOTREACHED() << "Cannot remove from parent view if there is no parent.";
-  return {};
+  CHECK(virtual_parent_view_)
+      << "Cannot remove from parent view if there is no parent.";
+  return virtual_parent_view_->RemoveChildView(this);
 }
 
 std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
@@ -296,14 +294,12 @@ gfx::NativeViewAccessible AXVirtualView::ChildAtIndex(size_t index) {
     }
   }
 
-  NOTREACHED() << "|index| should be less than the child count.";
-  return nullptr;
+  NOTREACHED_NORETURN() << "|index| should be less than the child count.";
 }
 
 #if !BUILDFLAG(IS_MAC)
 gfx::NativeViewAccessible AXVirtualView::GetNSWindow() {
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 #endif
 

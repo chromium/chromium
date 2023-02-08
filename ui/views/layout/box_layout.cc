@@ -198,8 +198,7 @@ void BoxLayout::Layout(View* host) {
           size = total_main_axis_size;
           break;
         default:
-          NOTREACHED();
-          break;
+          NOTREACHED_NORETURN();
       }
     }
     gfx::Rect new_child_area(child_area);

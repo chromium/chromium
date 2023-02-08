@@ -70,7 +70,7 @@ bool SelectionController::OnMousePressed(
         SelectAll();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_NORETURN();
     }
   }
 

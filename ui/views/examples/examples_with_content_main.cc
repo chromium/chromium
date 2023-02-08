@@ -52,7 +52,7 @@ void ShowContentExampleWindow(ui::ViewsContentClient* views_content_client,
   // sandbox::InitLibcUrandomOverrides(). See http://crbug.com/374712.
   if (!browser_context) {
     browser_context->SaveSessionState();
-    NOTREACHED();
+    NOTREACHED_NORETURN();
   }
 }
 

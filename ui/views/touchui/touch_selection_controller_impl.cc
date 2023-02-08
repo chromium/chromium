@@ -111,8 +111,8 @@ gfx::Image* GetHandleImage(gfx::SelectionBound::Type bound_type) {
     case gfx::SelectionBound::RIGHT:
       return GetRightHandleImage();
     default:
-      NOTREACHED() << "Invalid touch handle bound type: " << bound_type;
-      return nullptr;
+      NOTREACHED_NORETURN()
+          << "Invalid touch handle bound type: " << bound_type;
   }
 }
 
@@ -141,8 +141,7 @@ gfx::Rect GetSelectionWidgetBounds(const gfx::SelectionBound& bound) {
       widget_left = bound.edge_start_rounded().x() - widget_width / 2;
       break;
     default:
-      NOTREACHED() << "Undefined bound type.";
-      break;
+      NOTREACHED_NORETURN() << "Undefined bound type.";
   }
   return gfx::Rect(widget_left, bound.edge_start_rounded().y(), widget_width,
                    widget_height);

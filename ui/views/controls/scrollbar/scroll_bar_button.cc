@@ -83,8 +83,7 @@ ui::NativeTheme::Part ScrollBarButton::GetNativeThemePart() const {
       return ui::NativeTheme::kScrollbarRightArrow;
   }
 
-  NOTREACHED();
-  return ui::NativeTheme::kScrollbarUpArrow;
+  NOTREACHED_NORETURN();
 }
 
 ui::NativeTheme::State ScrollBarButton::GetNativeThemeState() const {
@@ -101,8 +100,7 @@ ui::NativeTheme::State ScrollBarButton::GetNativeThemeState() const {
       break;
   }
 
-  NOTREACHED();
-  return ui::NativeTheme::kNormal;
+  NOTREACHED_NORETURN();
 }
 
 void ScrollBarButton::RepeaterNotifyClick() {

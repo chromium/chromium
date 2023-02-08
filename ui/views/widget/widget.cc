@@ -1926,15 +1926,13 @@ FocusSearch* Widget::GetFocusSearch() {
 FocusTraversable* Widget::GetFocusTraversableParent() {
   // We are a proxy to the root view, so we should be bypassed when traversing
   // up and as a result this should not be called.
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 View* Widget::GetFocusTraversableParentView() {
   // We are a proxy to the root view, so we should be bypassed when traversing
   // up and as a result this should not be called.
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

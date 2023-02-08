@@ -105,7 +105,7 @@ void MenuClosureAnimationMac::AnimationEnded(const gfx::Animation* animation) {
 
 void MenuClosureAnimationMac::AnimationCanceled(
     const gfx::Animation* animation) {
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace views

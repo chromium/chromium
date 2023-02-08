@@ -1532,7 +1532,7 @@ void View::OnMouseEvent(ui::MouseEvent* event) {
 void View::OnScrollEvent(ui::ScrollEvent* event) {}
 
 void View::OnTouchEvent(ui::TouchEvent* event) {
-  NOTREACHED() << "Views should not receive touch events.";
+  NOTREACHED_NORETURN() << "Views should not receive touch events.";
 }
 
 void View::OnGestureEvent(ui::GestureEvent* event) {}
@@ -1616,16 +1616,10 @@ void View::AddAccelerator(const ui::Accelerator& accelerator) {
 }
 
 void View::RemoveAccelerator(const ui::Accelerator& accelerator) {
-  if (!accelerators_) {
-    NOTREACHED() << "Removing non-existing accelerator";
-    return;
-  }
+  CHECK(accelerators_) << "Removing non-existent accelerator";
 
   auto i(base::ranges::find(*accelerators_, accelerator));
-  if (i == accelerators_->end()) {
-    NOTREACHED() << "Removing non-existing accelerator";
-    return;
-  }
+  CHECK(i != accelerators_->end()) << "Removing non-existent accelerator";
 
   auto index = static_cast<size_t>(i - accelerators_->begin());
   accelerators_->erase(i);
@@ -3204,13 +3198,7 @@ void View::RegisterPendingAccelerators() {
   }
 
   accelerator_focus_manager_ = GetFocusManager();
-  if (!accelerator_focus_manager_) {
-    // Some crash reports seem to show that we may get cases where we have no
-    // focus manager (see bug #1291225).  This should never be the case, just
-    // making sure we don't crash.
-    NOTREACHED();
-    return;
-  }
+  CHECK(accelerator_focus_manager_);
   for (std::vector<ui::Accelerator>::const_iterator i =
            accelerators_->begin() +
            static_cast<ptrdiff_t>(registered_accelerator_count_);

@@ -78,8 +78,7 @@ class TestComboboxModel : public ui::ComboboxModel {
       if (separators_.find(index) == separators_.end())
         return index;
     }
-    NOTREACHED();
-    return 0;
+    NOTREACHED_NORETURN();
   }
 
   void SetSeparators(const std::set<size_t>& separators) {

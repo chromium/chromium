@@ -94,7 +94,7 @@ void DesktopNativeCursorManager::SetMouseEventsEnabled(
 
 void DesktopNativeCursorManager::InitCursorSizeObserver(
     wm::NativeCursorManagerDelegate* delegate) {
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace views

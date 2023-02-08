@@ -17,9 +17,7 @@ std::string ToString(InkDropAnimationEndedReason reason) {
     case InkDropAnimationEndedReason::PRE_EMPTED:
       return "PRE_EMPTED";
   }
-  NOTREACHED()
-      << "Should never be reached but is necessary for some compilers.";
-  return std::string();
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace views

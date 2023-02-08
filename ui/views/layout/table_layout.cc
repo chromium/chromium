@@ -144,7 +144,7 @@ void CalculateLocationAndSize(int pref_size,
         *location = *location + available_size - *size;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_NORETURN();
     }
   }
 }
@@ -449,11 +449,9 @@ void TableLayout::SetViewStates() const {
         break;
       col = 0;
     }
-    if (row == rows_.size()) {
-      NOTREACHED() << "There're not enough cells for layout. Did you forget to "
-                      "call AddRows()?";
-      break;
-    }
+    CHECK_LT(row, rows_.size())
+        << "There're not enough cells for layout. Did you forget to "
+           "call AddRows()?";
 
     // Construct a ViewState for this `child`.
     const gfx::Size* span = child->GetProperty(kTableColAndRowSpanKey);

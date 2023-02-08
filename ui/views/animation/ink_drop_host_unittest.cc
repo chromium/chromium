@@ -286,8 +286,7 @@ class BasicTestViewWithInkDrop : public View {
  public:
   BasicTestViewWithInkDrop() {
     InkDrop::Install(this, std::make_unique<InkDropHost>(this));
-    // Call SetBaseColor to avoid hitting a NOTREACHED() for fetching an
-    // undefined color.
+    // Call SetBaseColor to avoid fetching an undefined color.
     InkDrop::Get(this)->SetBaseColor(gfx::kPlaceholderColor);
   }
   BasicTestViewWithInkDrop(const BasicTestViewWithInkDrop&) = delete;

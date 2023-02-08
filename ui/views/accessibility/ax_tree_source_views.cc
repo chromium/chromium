@@ -35,10 +35,7 @@ void AXTreeSourceViews::HandleAccessibleAction(const ui::AXActionData& action) {
   // In Views, we only support setting the selection within a single node,
   // not across multiple nodes like on the web.
   if (action.action == ax::mojom::Action::kSetSelection) {
-    if (action.anchor_node_id != action.focus_node_id) {
-      NOTREACHED();
-      return;
-    }
+    CHECK_EQ(action.anchor_node_id, action.focus_node_id);
     id = action.anchor_node_id;
   }
 

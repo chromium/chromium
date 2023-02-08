@@ -1770,8 +1770,7 @@ bool Textfield::IsTextEditCommandEnabled(ui::TextEditCommand command) const {
     case ui::TextEditCommand::INVALID_COMMAND:
       return false;
   }
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 void Textfield::SetTextEditCommandForNextKeyEvent(ui::TextEditCommand command) {
@@ -2135,8 +2134,7 @@ Textfield::EditCommandResult Textfield::DoExecuteTextEditCommand(
     case ui::TextEditCommand::SET_MARK:
     case ui::TextEditCommand::UNSELECT:
     case ui::TextEditCommand::INVALID_COMMAND:
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
   }
 
   return {changed, cursor_changed};

@@ -125,9 +125,9 @@ gfx::Size WidgetTest::GetNativeWidgetMinimumContentSize(Widget* widget) {
 // of lacros-chrome is complete.
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return widget->GetNativeWindow()->delegate()->GetMinimumSize();
+#else
+  NOTREACHED_NORETURN();
 #endif
-  NOTREACHED();
-  return gfx::Size();
 }
 
 // static

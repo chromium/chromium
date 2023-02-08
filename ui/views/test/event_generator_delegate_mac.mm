@@ -114,8 +114,7 @@ NSEventType EventTypeToNative(ui::EventType ui_event_type,
     case ui::ET_SCROLL_FLING_START:
       return NSEventTypeSwipe;
     default:
-      NOTREACHED();
-      return NSEventTypeApplicationDefined;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -183,15 +182,13 @@ void EmulateSendEvent(NSWindow* window, NSEvent* event) {
       // for the generator to handle entered/exited separately. It's the
       // responsibility of views::internal::RootView to convert the moved events
       // into entered and exited events for the individual views.
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
     case NSEventTypeSwipe:
       // NSEventTypeSwipe events can't be generated using public interfaces on
       // NSEvent, so this will need to be handled at a higher level.
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
     default:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -479,7 +476,7 @@ void EventGeneratorDelegateMac::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void EventGeneratorDelegateMac::OnTouchEvent(ui::TouchEvent* event) {
-  NOTREACHED() << "Touchscreen events not supported on Chrome Mac.";
+  NOTREACHED_NORETURN() << "Touchscreen events not supported on Chrome Mac.";
 }
 
 void EventGeneratorDelegateMac::OnScrollEvent(ui::ScrollEvent* event) {

@@ -84,7 +84,7 @@ void SlideOutController::OnGestureEvent(ui::GestureEvent* event) {
         gesture_amount_ = swipe_control_width_;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_NORETURN();
     }
     delegate_->OnSlideStarted();
   } else if (event->type() == ui::ET_GESTURE_SCROLL_UPDATE) {

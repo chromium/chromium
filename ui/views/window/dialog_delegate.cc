@@ -135,13 +135,10 @@ std::u16string DialogDelegate::GetDialogButtonLabel(
 
   if (button == ui::DIALOG_BUTTON_OK)
     return l10n_util::GetStringUTF16(IDS_APP_OK);
-  if (button == ui::DIALOG_BUTTON_CANCEL) {
-    if (GetDialogButtons() & ui::DIALOG_BUTTON_OK)
-      return l10n_util::GetStringUTF16(IDS_APP_CANCEL);
-    return l10n_util::GetStringUTF16(IDS_APP_CLOSE);
-  }
-  NOTREACHED();
-  return std::u16string();
+  CHECK_EQ(button, ui::DIALOG_BUTTON_CANCEL);
+  return GetDialogButtons() & ui::DIALOG_BUTTON_OK
+             ? l10n_util::GetStringUTF16(IDS_APP_CANCEL)
+             : l10n_util::GetStringUTF16(IDS_APP_CLOSE);
 }
 
 bool DialogDelegate::IsDialogButtonEnabled(ui::DialogButton button) const {
@@ -180,11 +177,8 @@ View* DialogDelegate::GetInitiallyFocusedView() {
   if (default_button == ui::DIALOG_BUTTON_NONE)
     return nullptr;
 
-  if ((default_button & GetDialogButtons()) == 0) {
-    // The default button is a button we don't have.
-    NOTREACHED();
-    return nullptr;
-  }
+  // The default button should be a button we have.
+  CHECK(default_button & GetDialogButtons());
 
   if (default_button & ui::DIALOG_BUTTON_OK)
     return dcv->ok_button();

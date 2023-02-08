@@ -500,8 +500,7 @@ ProposedLayout AnimatingLayoutManager::CalculateProposedLayout(
     const SizeBounds& size_bounds) const {
   // This class directly overrides Layout() so GetProposedLayout() and
   // CalculateProposedLayout() are not called.
-  NOTREACHED();
-  return ProposedLayout();
+  NOTREACHED_NORETURN();
 }
 
 void AnimatingLayoutManager::OnInstalled(View* host) {
@@ -757,8 +756,7 @@ void AnimatingLayoutManager::UpdateCurrentLayout(double percent) {
           child_layout.visible = false;
           break;
         case LayoutFadeType::kContinuingFade:
-          NOTREACHED();
-          continue;
+          NOTREACHED_NORETURN();
       }
     } else if (default_fade_mode_ == FadeInOutMode::kHide) {
       child_layout.child_view = fade_info.child_view;
@@ -770,8 +768,7 @@ void AnimatingLayoutManager::UpdateCurrentLayout(double percent) {
 
       switch (default_fade_mode_) {
         case FadeInOutMode::kHide:
-          NOTREACHED();
-          break;
+          NOTREACHED_NORETURN();
         case FadeInOutMode::kScaleFromMinimum:
           child_layout = CalculateScaleFade(fade_info, scale_percent,
                                             /* scale_from_zero */ false);
@@ -1007,8 +1004,7 @@ ChildLayout AnimatingLayoutManager::CalculateScaleFade(
         new_bounds.set_origin_main(trailing_reference_point - new_size);
         break;
       case LayoutFadeType::kContinuingFade:
-        NOTREACHED();
-        break;
+        NOTREACHED_NORETURN();
     }
     new_bounds.set_size_main(new_size);
     child_layout.bounds = Denormalize(orientation(), new_bounds);
@@ -1043,8 +1039,7 @@ ChildLayout AnimatingLayoutManager::CalculateSlideFade(
       fully_faded_layout = &target_layout_;
       break;
     case LayoutFadeType::kContinuingFade:
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
   }
 
   if (slide_from_leading) {

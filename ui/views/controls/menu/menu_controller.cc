@@ -1846,11 +1846,8 @@ bool MenuController::ShowSiblingMenu(SubmenuView* source,
 
   delegate_->SiblingMenuCreated(alt_menu);
 
-  if (!button) {
-    // If the delegate returns a menu, they must also return a button.
-    NOTREACHED();
-    return false;
-  }
+  // If the delegate returns a menu, they must also return a button.
+  CHECK(button);
 
   // There is a sibling menu, update the button state, hide the current menu
   // and show the new one.

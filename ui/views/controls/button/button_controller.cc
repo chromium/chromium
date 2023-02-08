@@ -100,8 +100,7 @@ bool ButtonController::OnKeyPressed(const ui::KeyEvent& event) {
       return false;
   }
 
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 bool ButtonController::OnKeyReleased(const ui::KeyEvent& event) {

@@ -497,8 +497,7 @@ std::string UiConfigToString(const testing::TestParamInfo<UiConfig>& info) {
     case UiConfig::kRtlWithLayers:
       return "RTL_LAYERS";
   }
-  NOTREACHED();
-  return std::string();
+  NOTREACHED_NORETURN();
 }
 
 // Verifies the viewport is sized to fit the available space.

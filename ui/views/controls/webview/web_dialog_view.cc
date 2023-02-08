@@ -230,8 +230,7 @@ std::unique_ptr<NonClientFrameView> WebDialogView::CreateNonClientFrameView(
     case WebDialogDelegate::FrameKind::kDialog:
       return DialogDelegate::CreateDialogFrameView(widget);
     default:
-      NOTREACHED() << "Unknown frame kind type enum specified.";
-      return std::unique_ptr<NonClientFrameView>{};
+      NOTREACHED_NORETURN() << "Unknown frame kind type enum specified.";
   }
 }
 

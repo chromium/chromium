@@ -99,9 +99,7 @@ class WidgetActivationWaiterWayland final : public WidgetObserver {
  private:
   // WidgetObserver:
   void OnWidgetDestroyed(Widget* widget) override {
-    widget_observation_.Reset();
-    run_loop_.Quit();
-    NOTREACHED() << "Widget destroyed before observation.";
+    NOTREACHED_NORETURN() << "Widget destroyed before observation.";
   }
   void OnWidgetActivationChanged(Widget* widget, bool active) override {
     if (!active) {
@@ -209,8 +207,7 @@ class DropdownItemSelector {
           LOG(ERROR) << "Unable to select dropdown menu item.";
           break;
         case ui::test::ActionResult::kNotAttempted:
-          NOTREACHED();
-          break;
+          NOTREACHED_NORETURN();
         case ui::test::ActionResult::kKnownIncompatible:
           LOG(WARNING)
               << "Select dropdown item not available on this platform with "

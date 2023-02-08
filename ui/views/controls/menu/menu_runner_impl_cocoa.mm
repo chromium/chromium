@@ -218,8 +218,9 @@ void MenuRunnerImplCocoa::RunMenuAt(
 
     ui::ElementTrackerMac::GetInstance()->NotifyMenuDoneShowing(menu);
 
-  } else if (run_types & MenuRunner::COMBOBOX) {
-    NSMenuItem* checked_item = FirstCheckedItem(menu_controller_);
+  } else {
+    CHECK(run_types & MenuRunner::COMBOBOX);
+    NSMenuItem* const checked_item = FirstCheckedItem(menu_controller_);
     base::scoped_nsobject<NSView> anchor_view(CreateMenuAnchorView(
         window, bounds, checked_item, menu.size.width, anchor));
     [menu setMinimumWidth:bounds.width() + kNativeCheckmarkWidth];
@@ -228,8 +229,6 @@ void MenuRunnerImplCocoa::RunMenuAt(
                             inView:anchor_view];
 
     [anchor_view removeFromSuperview];
-  } else {
-    NOTREACHED();
   }
 
   closing_event_time_ = ui::EventTimeForNow();

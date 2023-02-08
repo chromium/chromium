@@ -17,10 +17,8 @@ UnhandledKeyboardEventHandler::~UnhandledKeyboardEventHandler() = default;
 bool UnhandledKeyboardEventHandler::HandleKeyboardEvent(
     const content::NativeWebKeyboardEvent& event,
     FocusManager* focus_manager) {
-  if (!focus_manager) {
-    NOTREACHED();
-    return false;
-  }
+  CHECK(focus_manager);
+
   // Previous calls to TranslateMessage can generate Char events as well as
   // RawKeyDown events, even if the latter triggered an accelerator.  In these
   // cases, we discard the Char events.

@@ -294,7 +294,7 @@ void AnimationSequenceBlock::TerminateBlock() {
             duration);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_NORETURN();
     }
     element->set_tween_type(pair.second.tween_type_);
     owner_->AddLayerAnimationElement(PassKey(), pair.first, start_, duration,

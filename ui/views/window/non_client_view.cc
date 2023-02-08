@@ -52,25 +52,26 @@ int NonClientFrameView::GetHTComponentForFrame(const gfx::Point& point,
 
   int component;
   if (point_in_top) {
-    if (point_in_left)
+    if (point_in_left) {
       component = HTTOPLEFT;
-    else if (point_in_right)
+    } else if (point_in_right) {
       component = HTTOPRIGHT;
-    else
+    } else {
       component = HTTOP;
+    }
   } else if (point_in_bottom) {
-    if (point_in_left)
+    if (point_in_left) {
       component = HTBOTTOMLEFT;
-    else if (point_in_right)
+    } else if (point_in_right) {
       component = HTBOTTOMRIGHT;
-    else
+    } else {
       component = HTBOTTOM;
+    }
   } else if (point_in_left) {
     component = HTLEFT;
-  } else if (point_in_right) {
-    component = HTRIGHT;
   } else {
-    NOTREACHED();
+    CHECK(point_in_right);
+    component = HTRIGHT;
   }
 
   // If the window can't be resized, there are no resize boundaries, just

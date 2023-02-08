@@ -151,7 +151,7 @@ Button::ButtonState Button::GetButtonStateFrom(ui::NativeTheme::State state) {
     case ui::NativeTheme::kPressed:
       return Button::STATE_PRESSED;
     case ui::NativeTheme::kNumStates:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
   return Button::STATE_NORMAL;
 }

@@ -105,8 +105,7 @@ ui::PlatformWindowType GetPlatformWindowType(
     default:
       return ui::PlatformWindowType::kPopup;
   }
-  NOTREACHED();
-  return ui::PlatformWindowType::kPopup;
+  NOTREACHED_NORETURN();
 }
 
 ui::PlatformWindowShadowType GetPlatformWindowShadowType(
@@ -119,8 +118,7 @@ ui::PlatformWindowShadowType GetPlatformWindowShadowType(
     case Widget::InitParams::ShadowType::kDrop:
       return ui::PlatformWindowShadowType::kDrop;
   }
-  NOTREACHED();
-  return ui::PlatformWindowShadowType::kNone;
+  NOTREACHED_NORETURN();
 }
 
 ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
@@ -473,8 +471,7 @@ void DesktopWindowTreeHostPlatform::StackAtTop() {
 
 bool DesktopWindowTreeHostPlatform::IsStackedAbove(aura::Window* window) {
   // TODO(https://crbug.com/1363218) Implement Window layer check
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 void DesktopWindowTreeHostPlatform::CenterWindow(const gfx::Size& size) {
@@ -956,13 +953,14 @@ gfx::PointF DesktopWindowTreeHostPlatform::ConvertScreenPointToLocalDIP(
     const gfx::Point& screen_in_pixels) const {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // lacros should not use this.
-  NOTREACHED();
-#endif
+  NOTREACHED_NORETURN();
+#else
   // TODO(crbug.com/1318279): DIP should use gfx::PointF. Fix this as
   // a part of cleanup work(crbug.com/1318279).
   gfx::Point local_dip(screen_in_pixels);
   ConvertScreenInPixelsToDIP(&local_dip);
   return gfx::PointF(local_dip);
+#endif
 }
 
 void DesktopWindowTreeHostPlatform::OnWorkspaceChanged() {
