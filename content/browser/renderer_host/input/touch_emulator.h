@@ -104,11 +104,8 @@ class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
   void OnGestureEvent(const ui::GestureEventData& gesture) override;
   bool RequiresDoubleTapGestureEvents() const override;
 
-  // Returns cursor size in DIP.
-  gfx::SizeF InitCursorFromResource(ui::Cursor* cursor,
-                                    float scale,
-                                    int resource_id);
-  bool InitCursors(float device_scale_factor, bool force);
+  ui::Cursor InitCursorFromResource(int resource_id);
+  void InitCursors();
   void ResetState();
   void UpdateCursor();
   bool UpdateShiftPressed(bool shift_pressed);
@@ -147,13 +144,13 @@ class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
   Mode mode_;
   bool double_tap_enabled_;
 
-  bool use_2x_cursors_;
   // While emulation is on, default cursor is touch. Pressing shift changes
   // cursor to the pinch one.
-  ui::Cursor pointer_cursor_;
   ui::Cursor touch_cursor_;
   ui::Cursor pinch_cursor_;
   gfx::SizeF cursor_size_;
+
+  float cursor_scale_factor_ = 0;
 
   // These are used to drop extra mouse move events coming too quickly, so
   // we don't handle too much touches in gesture provider.

@@ -251,6 +251,8 @@ class TouchEmulatorTest : public testing::Test,
 
   void DisableSynchronousTouchAck() { ack_touches_synchronously_ = false; }
 
+  const ui::Cursor& GetCursor() { return cursor_; }
+
   float GetCursorScaleFactor() { return cursor_.image_scale_factor(); }
 
  private:
@@ -595,9 +597,9 @@ TEST_F(TouchEmulatorTest, CursorScaleFactor) {
   emulator()->SetDeviceScaleFactor(1.33f);
   EXPECT_EQ(1.0f, GetCursorScaleFactor());
   emulator()->Disable();
-  EXPECT_EQ(1.0f, GetCursorScaleFactor());
+  EXPECT_EQ(ui::mojom::CursorType::kPointer, GetCursor().type());
   emulator()->SetDeviceScaleFactor(3.0f);
-  EXPECT_EQ(1.0f, GetCursorScaleFactor());
+  EXPECT_EQ(ui::mojom::CursorType::kPointer, GetCursor().type());
   emulator()->Enable(TouchEmulator::Mode::kEmulatingTouchFromMouse,
                      ui::GestureProviderConfigType::GENERIC_MOBILE);
   EXPECT_EQ(2.0f, GetCursorScaleFactor());
