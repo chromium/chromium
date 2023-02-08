@@ -412,6 +412,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Geen gekompromitteerde wagwoorde nie}=1{1 gekompromitteerde wagwoord}other{{NUM_COMPROMISED} gekompromitteerde wagwoorde}}</translation>
 <translation id="1380028686461971526">Koppel outomaties aan netwerk</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" />-spraak word vir verwerking na Google toe gestuur</translation>
+<translation id="1383381142702995121">Bestuur hierdie uitbreiding</translation>
 <translation id="1383597849754832576">Kan nie spraaklêers aflaai nie Probeer later weer.</translation>
 <translation id="1383861834909034572">Sal oopmaak wanneer dit voltooi is</translation>
 <translation id="1383876407941801731">Soek</translation>
@@ -4243,6 +4244,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4807098396393229769">Naam op kaart</translation>
 <translation id="4808667324955055115">Opspringers geblokkeer:</translation>
 <translation id="4809079943450490359">Instruksies deur jou toesteladministrateur:</translation>
+<translation id="4809447465126035330">Vee uit</translation>
 <translation id="480990236307250886">Maak die tuisblad oop</translation>
 <translation id="4809927044794281115">Ligtema</translation>
 <translation id="4811212958317149293">Skakelaartoegangsleutelbord se outomatiese skandering</translation>
@@ -5045,6 +5047,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5556459405103347317">Herlaai</translation>
 <translation id="5558129378926964177">Zoem in</translation>
 <translation id="5558247502209241936">Aktiveer oopmaak van app in venster</translation>
+<translation id="5559311991468302423">Vee adres uit</translation>
 <translation id="55601339223879446">Verstel die grense van jou werkskerm binne die skerm</translation>
 <translation id="5561162485081632007">Bespeur en waarsku jou oor gevaarlike gevalle wanneer hulle plaasvind</translation>
 <translation id="5562781907504170924">Hierdie oortjie is aan 'n Bluetooth-toestel gekoppel.</translation>
@@ -6437,6 +6440,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6839916869147598086">Aanmelding het verander</translation>
 <translation id="6840155290835956714">Vra voordat gestuur word</translation>
 <translation id="6840184929775541289">Is nie 'n sertifikaatoutoriteit nie</translation>
+<translation id="6840214587087739194">Adres is uitgevee</translation>
 <translation id="6841143363521180029">Geënkripteer</translation>
 <translation id="6841186874966388268">Foute</translation>
 <translation id="6842136130964845393">Verifieer dis jy om seker te maak dat jy altyd toegang tot jou gestoorde wagwoorde het</translation>
@@ -8280,6 +8284,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8525306231823319788">Volskerm</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Voeg tale by</translation>
+<translation id="8528479410903501741">Stoor IBAN</translation>
 <translation id="8528962588711550376">Meld tans aan.</translation>
 <translation id="8529925957403338845">Kitsverbinding kon nie koppel nie</translation>
 <translation id="8531701051932785007">Verbeterde Veiligblaai is af</translation>

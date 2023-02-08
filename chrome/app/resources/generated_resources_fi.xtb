@@ -221,6 +221,7 @@
 <translation id="1192706927100816598">{0,plural, =1{Sinut kirjataan automaattisesti ulos # sekunnin päästä.
 <ph name="DOMAIN" /> ei salli älykortin poistamista.}other{Sinut kirjataan automaattisesti ulos # sekunnin päästä.
 <ph name="DOMAIN" /> ei salli älykortin poistamista.}}</translation>
+<translation id="119330003005586565">Luetut sivut</translation>
 <translation id="1193927020065025187">Tämä sivusto saattaa yrittää huijata sinua sallimaan häiritseviä ilmoituksia</translation>
 <translation id="1195210374336998651">Siirry sovellusasetuksiin</translation>
 <translation id="1195447618553298278">Tuntematon virhe.</translation>
@@ -411,6 +412,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Ei vaarantuneita salasanoja}=1{1 vaarantunut salasana}other{{NUM_COMPROMISED} vaarantunutta salasanaa}}</translation>
 <translation id="1380028686461971526">Yhdistä verkkoon automaattisesti</translation>
 <translation id="1381567580865186407">Puhe (<ph name="LANGUAGE" />) lähetetään Googlelle käsiteltäväksi</translation>
+<translation id="1383381142702995121">Ylläpidä tätä laajennusta</translation>
 <translation id="1383597849754832576">Puhetiedostoja ei voi ladata. Yritä myöhemmin uudelleen.</translation>
 <translation id="1383861834909034572">Avautuu, kun valmis</translation>
 <translation id="1383876407941801731">Haku</translation>
@@ -4238,6 +4240,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4807098396393229769">Kortissa oleva nimi</translation>
 <translation id="4808667324955055115">Ponnahdusikkunat estetty:</translation>
 <translation id="4809079943450490359">Ohjeet laitteen järjestelmänvalvojalta</translation>
+<translation id="4809447465126035330">Poista</translation>
 <translation id="480990236307250886">Avaa oma etusivu</translation>
 <translation id="4809927044794281115">Vaalea teema</translation>
 <translation id="4811212958317149293">Kytkimen käyttö: näppäimistön automaattinen skannaus</translation>
@@ -5040,6 +5043,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5556459405103347317">Lataa uudelleen</translation>
 <translation id="5558129378926964177">&amp;Lähennä</translation>
 <translation id="5558247502209241936">Ota käyttöön sovelluksen avaaminen ikkunassa</translation>
+<translation id="5559311991468302423">Osoitteen poistaminen</translation>
 <translation id="55601339223879446">Säädä työpöydän rajoja näytön sisällä</translation>
 <translation id="5561162485081632007">Havaitsee vaaralliset tapahtumat ja varoittaa niistä etukäteen</translation>
 <translation id="5562781907504170924">Tämä välilehti on yhdistetty Bluetooth-laitteeseen.</translation>
@@ -5529,6 +5533,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6007240208646052708">Puhehaku ei ole käytettävissä kielelläsi.</translation>
 <translation id="6010651352520077187">Kun tämä on päällä, Google Kääntäjä tarjoaa sivustojen kääntämistä haluamallesi kielelle. Se voi myös kääntää sivustoja automaattisesti.</translation>
 <translation id="6011193465932186973">Sormenjälki</translation>
+<translation id="6011308810877101166">Paranna hakuehdotuksia</translation>
 <translation id="6011908034087870826">Lähetetään linkki: <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">Tekstitä audio ja videot</translation>
 <translation id="6014293228235665243">Lukematta</translation>
@@ -5846,6 +5851,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="630292539633944562">Henkilötietoehdotukset</translation>
 <translation id="6305607932814307878">Yleinen käytäntö:</translation>
 <translation id="6305909198255586420">Asenna käyttäen ensisijaista profiilia</translation>
+<translation id="630750887748244481">Vanhempasi on laittanut Chromen sivustojen, sovellusten ja laajennusten käyttöluvat pois päältä. Laajennuksen lisääminen ei ole sallittua.</translation>
 <translation id="6307990684951724544">Järjestelmä on varattu</translation>
 <translation id="6308493641021088955">Kirjautumisen tarjoaa <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Tallenna lin&amp;kki nimellä...</translation>
@@ -6429,6 +6435,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6839916869147598086">Kirjautuminen on muuttunut</translation>
 <translation id="6840155290835956714">Kysy ennen lähettämistä</translation>
 <translation id="6840184929775541289">Ei ole varmenteen myöntäjä</translation>
+<translation id="6840214587087739194">Osoite poistettiin</translation>
 <translation id="6841143363521180029">Salattu</translation>
 <translation id="6841186874966388268">Virheet</translation>
 <translation id="6842136130964845393">Todenna henkilöllisyytesi varmistaaksesi, että sinulla on aina pääsy tallennettuihin salasanoihisi</translation>
@@ -7986,6 +7993,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" /> muodostaa laiteparia</translation>
 <translation id="8251578425305135684">Pikkukuva poistettu.</translation>
 <translation id="825238165904109940">Näytä aina täydet URL-osoitteet</translation>
+<translation id="8252538334423261825">Laajennusta ei voi lisätä</translation>
 <translation id="8252569384384439529">Ladataan…</translation>
 <translation id="8253198102038551905">Tarkastele verkon ominaisuuksia klikkaamalla +</translation>
 <translation id="8255212965098517578">Viimeisimmät kuvat, ilmoitukset ja sovellukset</translation>
@@ -8271,6 +8279,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8525306231823319788">Koko näyttö</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Lisää kieliä</translation>
+<translation id="8528479410903501741">Tallenna IBAN</translation>
 <translation id="8528962588711550376">Kirjaudutaan.</translation>
 <translation id="8529925957403338845">Yhteyden pikajakaminen epäonnistui</translation>
 <translation id="8531701051932785007">Parannettu selaussuoja on pois päältä</translation>
@@ -8386,6 +8395,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8639635302972078117">Lähetä käyttö- ja diagnostiikkadataa. Laite lähettää tällä hetkellä diagnostiikkadataa sekä laitteen ja sovellusten käyttödataa automaattisesti Googlelle. Dataa ei käytetä lapsesi henkilöllisyyden selvittämiseen – sen avulla parannetaan esimerkiksi järjestelmän ja sovellusten vakautta. Kootusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, kuten Android-kehittäjille. Jos muun verkko- ja sovellustoiminnan asetus on lapsella päällä, tätä dataa voidaan tallentaa hänen Google-tililleen.</translation>
 <translation id="8642900771896232685">2 sekuntia</translation>
 <translation id="8642947597466641025">Suurenna tekstiä</translation>
+<translation id="8643403533759285912">Poista ryhmä</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> voi olla vaarallinen. Lähetetäänkö se Googlen Lisäsuojaukseen tarkistettavaksi?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Ei evästeitä}=1{1 eväste on estetty}other{# evästettä on estetty}}</translation>
 <translation id="864423554496711319">Tilillesi tallennetut laitteet</translation>
@@ -8859,6 +8869,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="90528604757378587">Taustatoimintaa ja joitakin visuaalisia tehosteita, esim. sujuvaa vierittämistä, saatetaan rajoittaa.</translation>
 <translation id="9053563360605707198">Tulosta molemmille puolille</translation>
 <translation id="9055636786322918818">Pakota RC4-salaus. Tämä valinta lisää riskejä, koska RC4-salaustekniikat ovat suojaamattomia.</translation>
+<translation id="9056788090206401048">Bluetoothin on oltava päällä, jotta voit käyttää avainkoodia eri laitteella. Voit muuttaa tätä valintaa asetuksista milloin tahansa.</translation>
 <translation id="9056810968620647706">Yhtään osumaa ei löytynyt.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> haluaa pääsyn seuraavaan sisältöön:</translation>
 <translation id="9057354806206861646">Päivitysaikataulu</translation>

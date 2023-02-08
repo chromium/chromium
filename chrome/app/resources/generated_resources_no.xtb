@@ -221,6 +221,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1192706927100816598">{0,plural, =1{Du blir logget av automatisk om # sekund.
 <ph name="DOMAIN" /> krever at smartkortet blir stående i.}other{Du blir logget av automatisk om # sekunder.
 <ph name="DOMAIN" /> krever at smartkortet blir stående i.}}</translation>
+<translation id="119330003005586565">Sider du har lest</translation>
 <translation id="1193927020065025187">Det kan hende at dette nettstedet prøver å lure deg til å tillate påtrengende varsler</translation>
 <translation id="1195210374336998651">Gå til appinnstillinger</translation>
 <translation id="1195447618553298278">Ukjent feil.</translation>
@@ -4116,7 +4117,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (standard)</translation>
 <translation id="4684427112815847243">Synkroniser alt</translation>
 <translation id="4687613760714619596">Ukjent enhet (<ph name="DEVICE_ID" />)</translation>
-<translation id="4687718960473379118">Foreslåtte annonser for nettsted</translation>
+<translation id="4687718960473379118">Annonser foreslått av nettstedet</translation>
 <translation id="4688036121858134881">Lokal logg-ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> stiller denne enheten inn på en tidligere versjon (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="4689235506267737042">Velg demoinnstillingene dine</translation>
@@ -5526,6 +5527,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6007240208646052708">Talesøk er ikke tilgjengelig på språket ditt.</translation>
 <translation id="6010651352520077187">Når dette er slått på, tilbyr Google Oversetter å oversette nettsteder til språket du foretrekker. Den kan også oversette nettsteder automatisk.</translation>
 <translation id="6011193465932186973">Fingeravtrykk</translation>
+<translation id="6011308810877101166">Gjør søkeforslagene bedre</translation>
 <translation id="6011908034087870826">Sender link til <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">Få teksting av lyd og video</translation>
 <translation id="6014293228235665243">Ulest</translation>
@@ -5843,6 +5845,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="630292539633944562">Forslag til personopplysninger</translation>
 <translation id="6305607932814307878">Globale retningslinjer:</translation>
 <translation id="6305909198255586420">Installer via primærprofilen din</translation>
+<translation id="630750887748244481">Din forelder har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chrome. Det er ikke tillatt å legge til denne utvidelsen.</translation>
 <translation id="6307990684951724544">Systemet er opptatt</translation>
 <translation id="6308493641021088955">Påloggingen leveres av <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Lagre lin&amp;ken som…</translation>
@@ -7985,6 +7988,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8251509999076836464">Kobler til ‏<ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniatyrbilde fjernet.</translation>
 <translation id="825238165904109940">Vis alltid fullstendige nettadresser</translation>
+<translation id="8252538334423261825">Kan ikke legge til utvidelsen</translation>
 <translation id="8252569384384439529">Laster opp …</translation>
 <translation id="8253198102038551905">Klikk på «+» for å gå til nettverksegenskaper</translation>
 <translation id="8255212965098517578">Nylige bilder, varsler og apper</translation>

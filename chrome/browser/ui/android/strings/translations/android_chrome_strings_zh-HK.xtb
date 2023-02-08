@@ -922,6 +922,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="6000203700195075278">重新追蹤</translation>
 <translation id="6002122790816966947">您的裝置</translation>
 <translation id="6005538289190791541">建議的密碼</translation>
+<translation id="6011308810877101166">改善搜尋建議</translation>
 <translation id="6039379616847168523">跳至下一個分頁</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="604124094241169006">自動</translation>
@@ -1452,6 +1453,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="8746155870861185046">分享突顯項目</translation>
 <translation id="8748850008226585750">內容已隱藏</translation>
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
+<translation id="8765470054473112089">在網址列或搜尋框中輸入內容時，Chrome 會將輸入的內容傳送至預設搜尋引擎，以便取得更切合需求的建議。此功能不會在無痕模式下啟用。</translation>
 <translation id="8766529642647037772">要建立類似的突顯連結嗎？</translation>
 <translation id="8773160212632396039">正在處理要求</translation>
 <translation id="8788265440806329501">導覽記錄閂咗</translation>

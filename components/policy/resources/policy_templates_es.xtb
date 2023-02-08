@@ -938,6 +938,7 @@ Esta política no tendrá efecto si la opción de conservar los datos de navegac
 <translation id="1883274744253492031">Habilitar la actualización automática de contenido mixto</translation>
 <translation id="1885782360784839335">Permitir que se muestre contenido promocional que ocupe toda la pestaña</translation>
 <translation id="1888871729456797026">El token de registro de la política de nube en ordenadores</translation>
+<translation id="1890850749633603276">Restaurar el comportamiento permisivo de <ph name="WEBVIEW_TAG_NAME" /> en las aplicaciones de Chrome</translation>
 <translation id="1893271062894546361">Si se habilita esta política, la UI de controles de reproducción multimedia estará disponible para las sesiones de <ph name="PRODUCT_NAME" /> iniciadas por otros dispositivos en la red local.
 
       Si esta política no se establece para los usuarios de empresa o se inhabilita, la UI de controles de reproducción multimedia no estará disponible para las sesiones de <ph name="PRODUCT_NAME" /> iniciadas por otros dispositivos en la red local.
@@ -3876,6 +3877,7 @@ Se prevé que esta política se quite en la versión 113 de <ph name="PRODUCT_NA
       Nota: Esta opción anula la política <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" /> (si está presente).</translation>
 <translation id="4658380868451934335">Habilitar el dictado en la pantalla de inicio de sesión</translation>
 <translation id="4660356908994631271">Mostrar el botón de Google Lens en el cuadro de búsqueda de la página Nueva pestaña</translation>
+<translation id="4661885151480410620">Los cambios de comportamiento pueden aplicarse en función del proceso de lanzamiento de funciones.</translation>
 <translation id="4661889655253181651">La configuración de contenido permite especificar la gestión de un tipo específico de contenido (por ejemplo, cookies, imágenes o JavaScript).</translation>
 <translation id="4663509616441994711">Inhabilita la fusión de políticas basadas en la nube a nivel de usuario.</translation>
 <translation id="4663588423815449593">Forzar a <ph name="PEPPER_NAME" /> a usar el decodificador de vídeo antiguo.</translation>
@@ -5298,6 +5300,7 @@ El tiempo de espera de inactividad para que se inicie el salvapantallas y el int
       4: bloquea archivos maliciosos marcados por el servidor de Navegación segura, pero no bloquea los tipos de archivos peligrosos. Recomendado.
 
       Nota: Estas restricciones se aplican a las descargas activadas desde el contenido de las páginas web o mediante la opción Descargar enlace del menú. No se aplican a la opción de descargar de la página que se esté mostrando ni a la opción de guardar como PDF de las opciones de impresión. Consulta más información sobre Navegación segura en https://developers.google.com/safe-browsing.</translation>
+<translation id="6118226055960302400">Restaura el comportamiento permisivo.</translation>
 <translation id="6119207979839638596">Esta política se retiró en la versión M75 después de que la política de la versión máxima de TLS se retirase de <ph name="PRODUCT_NAME" />.
 
       Si no se define esta política, <ph name="PRODUCT_NAME" /> usará la versión máxima predeterminada.
@@ -6638,6 +6641,34 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       En <ph name="MAC_OS_NAME" />, esta política no tendrá efecto si se asigna el valor False a la política <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />.</translation>
 <translation id="7278854311116092134">Nombres de hosts de mensajería nativa que se deben excluir de la lista de bloqueados</translation>
+<translation id="7287869314269886809"><ph name="WEBVIEW_TAG_NAME" /> permite un comportamiento en las aplicaciones de Chrome
+que se está eliminando de
+<ph name="PRODUCT_NAME" />.
+
+El comportamiento anterior mostraba una página intersticial si un elemento
+<ph name="WEBVIEW_TAG_NAME" /> trataba de acceder a una página
+con un certificado SSL no válido. Este intersticial ofrece al usuario la opción
+de continuar de forma no segura. El nuevo comportamiento muestra una página de error sin la opción
+de continuar de forma no segura.
+
+El comportamiento anterior también permite el evento
+<ph name="NEWWINDOW_EVENT_NAME" />
+de <ph name="WEBVIEW_TAG_NAME" />
+(https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow)
+para vincular la ventana nueva a un elemento <ph name="WEBVIEW_TAG_NAME" />
+en una ventana de aplicación independiente del elemento
+<ph name="WEBVIEW_TAG_NAME" /> de origen. Con el nuevo comportamiento, se
+seguirá permitiendo esta vinculación, pero se invalidará la referencia a la ventana devuelta
+desde la llamada a <ph name="WINDOW_OPEN_NAME" /> en el elemento
+<ph name="WEBVIEW_TAG_NAME" /> de origen.
+
+Si esta política se habilita, se usará el comportamiento anterior.
+Si esta política se inhabilita o no se define, el cambio de comportamiento se aplicará cuando se implemente durante el proceso
+de lanzamiento de <ph name="PRODUCT_NAME" />.
+
+Esta política es una solución temporal en caso de que las empresas
+experimenten errores debido a estos cambios. Esta política se eliminará
+en una versión futura.</translation>
 <translation id="7291084543582732020">Si habilitas esta opción, los usuarios podrán utilizar Smart Lock siempre que se cumplan los requisitos establecidos para la función.
 
       Si inhabilitas esta opción, los usuarios no podrán utilizar Smart Lock.

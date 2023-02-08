@@ -627,6 +627,7 @@
 <translation id="1567387640189251553">თქვენ მიერ პაროლის უკანასკნელად შეყვანის შემდეგ მოწყობილობასთან დაკავშირდა განსხვავებული კლავიატურა. ეს შეიძლება იყოს თქვენ მიერ აკრეფილი ტექსტის მოპარვის მცდელობა.</translation>
 <translation id="156793199942386351">„<ph name="CURRENTKEY" />“-ის მიერ უკვე სრულდება „<ph name="ACTION" />“. <ph name="RESPONSE" /> რომ შესრულდეს, დააჭირეთ ნებისმიერ კლავიშს.</translation>
 <translation id="1567993339577891801">JavaScript კონსოლი</translation>
+<translation id="1569466257325986920">შემდეგში, როცა თქვენი Google ანგარიშის პაროლი შეიცვლება, თქვენი ადგილობრივი მონაცემები ავტომატურად აღდგება თქვენს Google ანგარიშში შესვლის შემდეგ</translation>
 <translation id="1570604804919108255">შეტყობინებების დადუმების მოხსნა</translation>
 <translation id="1571304935088121812">მომხმარებლის სახელის კოპირება</translation>
 <translation id="1571738973904005196">ჩანართის ნახვა: <ph name="TAB_ORIGIN" /></translation>
@@ -885,6 +886,7 @@
 <translation id="1781979858217752599">ფანჯრის აუდიოს გაზიარება</translation>
 <translation id="1782101999402987960">განახლებები დაბლოკილია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="1782196717298160133">თქვენი ტელეფონის ძებნა</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 ჩანიშვნა}other{# ჩანიშვნა}}</translation>
 <translation id="1784707308176068866">ფონურ რეჟიმში გაშვება შესაბამისი მშობლიური აპლიკაციის მოთხოვნის საფუძველზე</translation>
 <translation id="1784849162047402014">მოწყობილობის დისკზე ხელმისაწვდომი მეხსიერება არასაკმარისია</translation>
 <translation id="1787350673646245458">მომხმარებლის სურათი</translation>
@@ -1676,6 +1678,7 @@
 <translation id="2467755475704469005">მოწყობილობა აღმოჩენილი არ არის. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">სენსორული პანელით გადაადგილების აჩქარება</translation>
 <translation id="2468205691404969808">იყენებს ქუქი-ჩანაწერებს თქვენთვის სასურველი პარამეტრების დასამახსოვრებლად, მაშინაც კი, როცა ამ გვერდებს არ სტუმრობთ</translation>
+<translation id="2468247643665097563">მიმდევრობა</translation>
 <translation id="2468402215065996499">ტამაგოჩი</translation>
 <translation id="2468470085922875120">თქვენი პაროლები რთულად გამოსაცნობი ჩანს</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> — 1 ჩანართი}other{<ph name="GROUP_TITLE" /> — # ჩანართი}}</translation>
@@ -4110,7 +4113,7 @@
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (ნაგულისხმევი)</translation>
 <translation id="4684427112815847243">ყველაფრის სინქრონიზაცია</translation>
 <translation id="4687613760714619596">უცნობი მოწყობილობა (<ph name="DEVICE_ID" />)</translation>
-<translation id="4687718960473379118">საიტების მიერ შემოთავაზებული რეკლამა</translation>
+<translation id="4687718960473379118">საიტების მიერ შემოთავაზებული რეკლამები</translation>
 <translation id="4688036121858134881">ადგილობრივი ჟურნალის ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> აბრუნებს ამ მოწყობილობას წინა ვერსიაზე (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="4689235506267737042">აირჩიეთ დემო რეჟიმის პარამეტრები</translation>
@@ -5947,6 +5950,7 @@
 <translation id="6410668567036790476">საძიებო სისტემის დამატება</translation>
 <translation id="641469293210305670">განახლებებისა და აპების ინსტალაცია</translation>
 <translation id="6414878884710400018">სისტემის პარამეტრების გახსნა</translation>
+<translation id="6415816101512323589">გსურთ, ჩართოთ ადგილობრივი მონაცემების აღდგენა თქვენი მონაცემების დასაცავად?</translation>
 <translation id="6415900369006735853">დაუკავშირდით ინტერნეტს თქვენი ტელეფონის მეშვეობით</translation>
 <translation id="6416743254476733475">დაშვება ან დაბლოკვა თქვენს კომპიუტერზე.</translation>
 <translation id="6417265370957905582">Google ასისტენტი</translation>

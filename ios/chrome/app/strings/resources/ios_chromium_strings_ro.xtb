@@ -93,6 +93,7 @@
 <translation id="7045244423563602563">Personalizează Chromium</translation>
 <translation id="7099326575020694068">Chromium nu poate folosi camera foto în modul Vizualizare împărțită</translation>
 <translation id="7118091470949186573">Acum poți folosi Chromium oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>
+<translation id="7165402419892018581">Alege Chromium pentru completarea automată</translation>
 <translation id="7175400662502680481">Parola a fost expusă în urma încălcării securității datelor. Managerul de parole îți recomandă să schimbi parola acum.</translation>
 <translation id="7208566199746267865">Folosind Chromium, economisești timp, deoarece te conectează la conturi și pe web. Poți să adaugi sau să elimini conturi din Setări.</translation>
 <translation id="725427773388857052">Chromium te protejează împotriva încălcării securității datelor, a site-urilor nesigure și nu numai.</translation>
@@ -107,6 +108,7 @@
 <translation id="7746854981345936341">Sfat pentru Chromium: unele butoane se află acum în partea de jos a ecranului, cum ar fi Înapoi, Înainte și Caută.</translation>
 <translation id="7763454117143368771">Folosește Chromium ca browser prestabilit ca să te protejezi de site-uri periculoase și să păstrezi parolele în siguranță</translation>
 <translation id="7812317783196516890">Te-ai conectat și datele tale se sincronizează cu un cont gestionat de <ph name="DOMAIN" />, în care administratorul acestuia poate acum să seteze politici privind utilizatorii specifice contului, care pot să modifice comportamentul browserului Chromium.</translation>
+<translation id="7859018312476869945">Când introduci text în bara de adrese sau în caseta de căutare, Chromium trimite ceea ce introduci la motorul de căutare prestabilit, pentru a primi sugestii mai bune. Această opțiune este dezactivată în modul incognito.</translation>
 <translation id="786327964234957808">Comuți contul pentru sincronizare de la <ph name="USER_EMAIL1" /> la <ph name="USER_EMAIL2" />. Datele Chromium existente sunt gestionate de <ph name="DOMAIN" />. Astfel, datele vor fi șterse de pe acest dispozitiv, dar vor rămâne în <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Începe să folosești scanerul din Chromium</translation>
 <translation id="7928628054454574139">Deschide Chromium când atingi linkuri în alte aplicații</translation>
@@ -116,6 +118,7 @@
 <translation id="8073677936375100957">Ștergi datele tale Chromium de pe dispozitiv?</translation>
 <translation id="8240981428553046115">Chromium nu a putut căuta actualizări. Încearcă din nou mai târziu.</translation>
 <translation id="8409374867500149834">Ai cea mai puternică securitate Chromium împotriva site-urilor dăunătoare</translation>
+<translation id="8460301378281140593">Din setările iPhone-ului, deschide Opțiuni pentru parolă și selectează Chromium</translation>
 <translation id="858114650497379505">Poți folosi parolele salvate în Managerul de parole în alte aplicații de pe iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="8603022514504485810">Managerul de parole Google nu a putut verifica toate parolele. Încearcă din nou mâine sau <ph name="BEGIN_LINK" />verifică parolele din Contul Google<ph name="END_LINK" />.</translation>

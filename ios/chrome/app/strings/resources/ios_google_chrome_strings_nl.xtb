@@ -22,6 +22,7 @@
 <translation id="2347208864470321755">Als deze functie aanstaat, biedt Chrome aan pagina's die zijn geschreven in andere talen te vertalen met Google Translate. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome bevat functies die je helpen je internetgegevens te beheren en te bepalen hoe snel je webpagina's kunt laden.
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
+<translation id="2444854139071078915">Gebruik Chrome voor automatisch invullen om je opgeslagen wachtwoorden makkelijk te gebruiken in je andere apps</translation>
 <translation id="2561231791489583059">Gebruik Chrome als je standaardbrowser voor bescherming tegen gevaarlijke sites en om je wachtwoorden te beveiligen</translation>
 <translation id="2574249610672786438">Log in op al je apparaten om je tabbladen te bekijken vanaf elk apparaat waarop je Chrome gebruikt</translation>
 <translation id="2576431527583832481">Chrome is nu nog beter! Er is een nieuwe versie beschikbaar.</translation>
@@ -89,6 +90,7 @@
 <translation id="6709398533399187136">Je wachtwoord is gelekt bij een gegevenslek. Google Wachtwoordmanager raadt je aan dit wachtwoord nu te wijzigen.</translation>
 <translation id="6822673484890854830">Chrome kan niet alle wachtwoorden checken. Probeer het later opnieuw.</translation>
 <translation id="6964931465519938134">Je kunt Chrome nu gebruiken als je op links in berichten, documenten en andere apps tikt.</translation>
+<translation id="6975725306479268850">Chrome kiezen voor automatisch invullen</translation>
 <translation id="701356708427365932">Maak kennis met het nieuwe Chrome-menu</translation>
 <translation id="7059914902409643750">Chrome personaliseren</translation>
 <translation id="7124339256045485976">Houd Chrome up-to-date</translation>
@@ -109,6 +111,7 @@
 <translation id="7754633291442704733">Je organisatie <ph name="DOMAIN" /> heeft toegang tot je Chrome-gegevens, bookmarks, geschiedenis, wachtwoorden en andere instellingen die je in dit account opslaat. Als je uitlogt, worden je gegevens van dit apparaat gewist.  De gegevens blijven wel opgeslagen in je beheerde Google-account en zijn nog steeds beschikbaar voor je organisatie. Je organisatie kan ook specifiek voor dat account gebruikersbeleid instellen waarmee het gedrag van Chrome kan worden gewijzigd.</translation>
 <translation id="7780154209050837198">Log in bij Chrome met je Google-account om het maximale uit Chrome te halen.</translation>
 <translation id="7855730255114109580">Google Chrome is up-to-date</translation>
+<translation id="7939179037291298976">Ga naar de instellingen van je iPhone, open Wachtwoordopties en selecteer Chrome</translation>
 <translation id="8022947259858476807">Gebruik standaard Chrome om links te openen, te zoeken via widgets en om wachtwoorden in andere apps automatisch in te vullen</translation>
 <translation id="81358522153858150">Chrome ondersteunt nu gebruikersbeleid voor je beheerde account</translation>
 <translation id="8160472928944011082">Chrome kan niet updaten</translation>
@@ -124,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Google Wachtwoordmanager kan niet alle wachtwoorden checken. Probeer het morgen opnieuw of <ph name="BEGIN_LINK" />check de wachtwoorden in je Google-account<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Blijf veilig met Google Chrome</translation>
+<translation id="8765470054473112089">Als je in de adresbalk of het zoekvak typt, stuurt Chrome wat je typt naar je standaard zoekmachine om betere suggesties te krijgen. Dit staat uit in de incognitomodus.</translation>
 <translation id="8772179140489533211">Toont prompts om in te loggen bij Chrome.</translation>
 <translation id="8788269841521769222">Je hoeft dit wachtwoord niet te onthouden. Het wordt opgeslagen in Google Wachtwoordmanager voor <ph name="EMAIL" />.</translation>
 <translation id="8857676124663337448">Google Wachtwoordmanager kan niet alle wachtwoorden checken. Probeer het morgen opnieuw.</translation>

@@ -8374,6 +8374,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8639635302972078117">Kullanım ve teşhis verilerini gönder. Bu cihaz şu anda teşhis, cihaz ve uygulama kullanımı verilerini otomatik olarak Google'a gönderiyor. Bu veriler, çocuğunuzun kimliğini tespit etmek için kullanılmaz; sistem ve uygulama kararlılığı ile diğer özellikleri iyileştirmeye yardımcı olur. Bazı birleştirilmiş veriler, Google uygulamalarına ve iş ortaklarına da (ör. Android geliştiricileri) yardımcı olur. Çocuğunuz için ek Web ve Uygulama Etkinliği açıksa bu veriler çocuğunuzun Google Hesabına kaydedilebilir.</translation>
 <translation id="8642900771896232685">2 saniye</translation>
 <translation id="8642947597466641025">Metni Büyüt</translation>
+<translation id="8643403533759285912">Grubu Sil</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> tehlikeli olabilir. Dosya taranmak üzere Google Gelişmiş Koruma'ya gönderilsin mi?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Çerez yok}=1{1 çerez engellendi}other{# çerez engellendi}}</translation>
 <translation id="864423554496711319">Hesabınıza kaydedilen cihazlar</translation>
@@ -8847,6 +8848,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="90528604757378587">Arka plan etkinliği ve yumuşak kaydırma gibi bazı görsel efektler sınırlı olabilir.</translation>
 <translation id="9053563360605707198">Her iki yüze yazdır</translation>
 <translation id="9055636786322918818">RC4 şifrelemesini uygula. RC4 şifreleri güvenli olmadığından bu seçeneğin kullanılması, riskinizi artırır.</translation>
+<translation id="9056788090206401048">Şifre anahtarınızı farklı bir cihazda kullanabilmeniz için Bluetooth'un açık olması gerekir. Bunu istediğiniz zaman ayarlardan yönetebilirsiniz.</translation>
 <translation id="9056810968620647706">Eşleştirme bulunamadı.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> aşağıdaki içeriğe erişmek istiyor:</translation>
 <translation id="9057354806206861646">Programı güncelle</translation>

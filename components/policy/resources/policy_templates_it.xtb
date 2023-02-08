@@ -1443,6 +1443,16 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
       Se il criterio viene impostato su Disattivato, questa funzionalità non è disponibile.</translation>
 <translation id="2342066287156668839">Attiva la quota permanente.</translation>
 <translation id="2345547870894930157">Attiva DNS over HTTPS senza fallback non sicuro</translation>
+<translation id="234856189825555040">Questo criterio consente di stabilire se i plug-in <ph name="PEPPER_NAME" /> possono usare il nuovo decodificatore per comunicare con i decodificatori hardware anziché il decodificatore video precedente.
+
+La migrazione interessa solo i dettagli di implementazione interni e non deve modificare alcun comportamento. Tuttavia, questo criterio può essere utilizzato nel caso in cui eventuali applicazioni PPAPI non funzionino come previsto.
+
+Se il criterio non viene configurato o se viene impostato su Enabled, il browser deciderà quale implementazione usare.
+Se il criterio viene impostato su Disabled, il browser utilizzerà la vecchia implementazione fino alla scadenza di questo criterio.
+
+Se devi usare il criterio, invia una segnalazione di bug su crbug.com spiegando il tuo caso d'uso e aggiungendo in copia per conoscenza {andrescj, blundell, pmolinalopez, vasilyt}@chromium.org. Il criterio sarà valido fino alla versione 114 di <ph name="PRODUCT_NAME" />, dopodiché la vecchia implementazione verrà rimossa.
+
+NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai processi del renderer appena avviati mentre il browser è in esecuzione.</translation>
 <translation id="2349117476121456297">Se il criterio è impostato su True, i tasti della fila superiore della tastiera riprodurranno i comandi dei tasti funzione. Per ripristinare il comportamento dei tasti multimediali, è necessario premere il tasto per la ricerca.
 
       Se il criterio è impostato su False o non è impostato, la tastiera riprodurrà i comandi dei tasti multimediali per impostazione predefinita. Per ripristinare il comportamento dei tasti funzione, è necessario premere il tasto per la ricerca.</translation>
@@ -6139,6 +6149,16 @@ Il criterio verrà rimosso da <ph name="PRODUCT_NAME" /> in futuro.</translation
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, non viene inviata alcuna informazione relativa all'utilizzo.</translation>
 <translation id="6823711520976094072">La mancata configurazione o l'impostazione del criterio su valori inferiori a 1 MB implica l'utilizzo da parte di <ph name="PRODUCT_OS_NAME" /> della dimensione predefinita, corrispondente a 256 MiB, per le estensioni e le app di memorizzazione nella cache per l'installazione da parte di più utenti di un singolo dispositivo. In questo modo, non è necessario scaricare nuovamente tutte le app o estensioni per ogni utente.</translation>
+<translation id="6829632070341067746">Questo criterio consente di controllare il recente refactoring delle API Graphics3D nel plug-in PPAPI.
+
+La migrazione interessa solo i dettagli di implementazione interni e non deve modificare alcun comportamento. Tuttavia, questo criterio può essere utilizzato nel caso in cui eventuali applicazioni PPAPI non funzionino come previsto.
+
+Se il criterio non viene configurato o se viene impostato su Enabled, il browser deciderà quale implementazione usare.
+Se il criterio viene impostato su Disabled, il browser utilizzerà la vecchia implementazione fino alla scadenza del criterio.
+
+Se devi usare il criterio, invia una segnalazione di bug su crbug.com spiegando il tuo caso d'uso e aggiungendo in copia per conoscenza {blundell, vasilyt}@chromium.org. Il criterio sarà valido fino alla versione 114 di <ph name="PRODUCT_NAME" />, dopodiché la vecchia implementazione verrà rimossa.
+
+NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai processi del renderer appena avviati mentre il browser è in esecuzione.</translation>
 <translation id="6833023569065717572">Se il criterio viene impostato su Vero, nella schermata di accesso del dispositivo viene usato il formato dell'orologio di 24 ore.
 
       Se il criterio viene impostato su Falso, nella schermata di accesso del dispositivo viene usato il formato dell'orologio di 12 ore.
@@ -6432,6 +6452,14 @@ Se il criterio viene impostato su Disabled o se non viene configurato, verrà ap
 <translation id="7081784525008938771">Se il criterio viene impostato su Attivato o se non viene configurato, l'utente non viene considerato inattivo durante la riproduzione di video. In questo modo non viene raggiunto il ritardo di inattività, oscuramento dello schermo, spegnimento dello schermo e blocco dello schermo e non vengono compiute le azioni corrispondenti.
 
       Se il criterio viene impostato su Disattivato, il sistema può considerare gli utenti inattivi nonostante l'attività video.</translation>
+<translation id="7084631508902923941">Le estensioni che si connettono a una di queste origini rimarranno in esecuzione purché la porta sia collegata.
+
+Se il criterio non viene configurato, verranno usati i valori predefiniti. Di seguito sono riportate le origini delle app che offrono SDK che è noto non offrono la possibilità di ristabilire una connessione chiusa con uno stato precedente:
+- Smart Card Connector
+- Citrix Receiver (stabile, beta, backup)
+- VMware Horizon (stabile, beta)
+
+Se il criterio viene impostato, l'elenco dei valori predefiniti viene esteso con i nuovi valori configurati. Sia le voci predefinite sia quelle indicate dal criterio concederanno l'eccezione alle estensioni che si connettono, purché la porta sia collegata.</translation>
 <translation id="7086720321892395256">Consente di controllare i criteri relativi agli utenti e ai dispositivi per la funzionalità Schermata sulla privacy.</translation>
 <translation id="7090500018761495290">Riattiva l'API Event.path fino alla versione M115.</translation>
 <translation id="7090668780328470271">Se il criterio viene configurato, puoi elencare i pattern URL che specificano i siti che non possono chiedere agli utenti l'autorizzazione di accesso a un dispositivo USB.
@@ -7045,6 +7073,14 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di disattivazione dello schermo (se impostato) e al ritardo di inattività.</translation>
 <translation id="7680437377926096177">Impedisci la visualizzazione della finestra di dialogo di disconnessione nell'ultima finestra chiusa.</translation>
+<translation id="7682459947751785310">Questo criterio può essere usato temporaneamente per forzare l'attivazione del supporto dell'API PPB_VideoDecoder(Dev).
+
+Se il criterio non viene configurato o se viene impostato su Disabled, il browser deciderà se l'API è supportata o meno.
+Se il criterio viene impostato su Enabled, l'API sarà supportata.
+
+Questo criterio può essere usato qualora la nostra procedura in corso di eliminazione del supporto di questa API presenti problemi. Se devi usare il criterio, invia una segnalazione di bug su crbug.com spiegando il tuo caso d'uso e aggiungendo in copia per conoscenza {blundell, vasilyt}@chromium.org. Il criterio sarà valido fino alla versione 114 di <ph name="PRODUCT_NAME" />, dopodiché il supporto di questa API dovrebbe essere eliminato senza condizioni.
+
+NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai processi del renderer appena avviati mentre il browser è in esecuzione.</translation>
 <translation id="7683777542468165012">Aggiornamento dinamico delle norme</translation>
 <translation id="7687943045976362719">Se questa norma viene impostata, i tipi di contenuto specificati vengono gestiti da <ph name="PRODUCT_FRAME_NAME" />.
 
@@ -7137,6 +7173,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se questo criterio viene disattivato o se non viene configurato, potrebbe non essere consentita l'esecuzione delle app di Chrome, in base allo stato del ritiro graduale.
       In ogni caso, continueranno a essere consentite le app di Chrome con installazione forzata in base al criterio.</translation>
 <translation id="7774768074957326919">Utilizza le impostazioni proxy di sistema</translation>
+<translation id="7776848995687565978">Configura un elenco di origini che concedono una durata estesa in background alle estensioni che si connettono.</translation>
 <translation id="777734450201217641">Consente di attivare le scorciatoie delle funzioni di accessibilità nella schermata di accesso.
 
           Se questo criterio viene impostato su true, le scorciatoie delle funzioni di accessibilità saranno sempre attive nella schermata di accesso.
@@ -8563,6 +8600,28 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
       Le possibilità effettive di eseguire il rollback potrebbero dipendere anche dal modello di dispositivo e dalle patch di vulnerabilità critiche.</translation>
 <translation id="9123464369663964441">Consenti agli utenti di aggiungere eccezioni per consentire contenuti misti</translation>
 <translation id="9124770007620653639">Non inviare mai a Google dati relativi all'attendibilità dei domini</translation>
+<translation id="9126491667911789829">La configurazione di questo criterio consente di specificare un elenco di app web installate automaticamente, senza interazione dell'utente, e che non possono essere disinstallate o disattivate dagli utenti.
+
+      Ogni voce del criterio è un oggetto con un componente obbligatorio:
+      <ph name="URL_LABEL" /> (l'URL dell'app web da installare)
+
+      e 6 componenti facoltativi:
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (indica la modalità di apertura dell'app web, che per impostazione predefinita è una nuova scheda)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (True se vuoi creare collegamenti sul desktop <ph name="LINUX_OS_NAME" /> e <ph name="MS_WIN_NAME" />).
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" /> (a partire dalla versione 90 di <ph name="PRODUCT_NAME" />, consente di sostituire il nome dell'app se non si tratta di un'app web progressiva [PWA] o il nome dell'app installata temporaneamente se si tratta di un'app web progressiva, ma è necessaria l'autenticazione per poter completare l'installazione. Se vengono impostati entrambi i valori <ph name="CUSTOM_NAME_LABEL" /> e <ph name="FALLBACK_APP_NAME_LABEL" />, il secondo verrà ignorato).
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" /> (a partire dalla versione 99 di <ph name="PRODUCT_OS_NAME" /> e dalla versione 112 su tutti gli altri sistemi operativi desktop, consente di sostituire definitivamente il nome dell'app per tutte le app web e le app web progressive).
+
+      - <ph name="CUSTOM_ICON_LABEL" /> (a partire dalla versione 99 di <ph name="PRODUCT_OS_NAME" /> e dalla versione 112 su tutti gli altri sistemi operativi desktop, consente di sostituire l'icona delle app installate. Le icone devono essere quadrate, avere dimensioni massime pari a 1 MB ed essere in uno dei seguenti formati: jpeg, png, gif, webp, ico.
+      Il valore hash deve essere l'hash SHA256 del file dell'icona).
+
+      - <ph name="INSTALL_AS_SHORTCUT_LABEL" /> (a partire dalla versione 107 di <ph name="PRODUCT_NAME" />). Se il criterio viene attivato, l'<ph name="URL_LABEL" /> specificato verrà installato come scorciatoia, come se l'azione fosse stata compiuta tramite l'opzione "Crea scorciatoia…" nella GUI del browser desktop.
+      Tieni presente che se viene installato come scorciatoia, non verrà aggiornato se il file manifest in <ph name="URL_LABEL" /> cambia.
+      Se il criterio viene disattivato o se non viene configurato, l'app web all'<ph name="URL_LABEL" /> specificato verrà installata normalmente.
+
+      Vedi il criterio <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> per bloccare app nella barra delle app di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9129169595075460149">Se il criterio viene impostato su Attivato, la funzionalità SafeSearch in Ricerca Google è sempre attiva e gli utenti non possono modificare questa impostazione.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, la funzionalità SafeSearch in Ricerca Google non viene applicata.</translation>

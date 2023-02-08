@@ -22,6 +22,7 @@
 <translation id="2347208864470321755">啟用此功能後，Chrome 會使用「Google 翻譯」來翻譯其他語言的頁面。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome 擁有多項功能，助您管理互聯網的資料及網頁載入速度。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="2444854139071078915">如要在其他應用程式中輕鬆取得已儲存的密碼，請使用 Chrome 的自動填入功能</translation>
 <translation id="2561231791489583059">使用 Chrome 作為預設瀏覽器可保護您免受危險網站威脅，同時確保密碼安全</translation>
 <translation id="2574249610672786438">如要在任何使用 Chrome 的裝置上查看分頁，請在所有裝置上登入</translation>
 <translation id="2576431527583832481">Chrome 現在更進一步！歡迎您升級使用新版本。</translation>
@@ -89,6 +90,7 @@
 <translation id="6709398533399187136">您的密碼因資料外洩而被洩露。Google 密碼管理工具建議您立即變更密碼。</translation>
 <translation id="6822673484890854830">Chrome 無法檢查所有密碼。請稍後再試。</translation>
 <translation id="6964931465519938134">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chrome。</translation>
+<translation id="6975725306479268850">選擇使用 Chrome 的自動填入功能</translation>
 <translation id="701356708427365932">瞭解新的 Chrome 選單</translation>
 <translation id="7059914902409643750">自訂屬於您的 Chrome</translation>
 <translation id="7124339256045485976">取得 Chrome 最新更新</translation>
@@ -109,6 +111,7 @@
 <translation id="7754633291442704733">您的機構 <ph name="DOMAIN" /> 將可存取您儲存在此帳戶中的 Chrome 資料、書籤、記錄、密碼和其他設定。登出帳戶後，系統會清除此裝置中的資料。不過，您的資料仍會儲存在受管 Google 帳戶中，並可供機構使用。您的機構亦可為該帳戶設定特定使用者政策，以變更 Chrome 的行為。</translation>
 <translation id="7780154209050837198">如要充分運用 Chrome 的所有功能，請透過 Google 帳戶登入 Chrome。</translation>
 <translation id="7855730255114109580">Google Chrome 已是最新版本</translation>
+<translation id="7939179037291298976">從 iPhone 的「設定」開啟「密碼選項」，然後選取「Chrome」</translation>
 <translation id="8022947259858476807">預設使用 Chrome 來開啟連結、從小工具搜尋，以及在其他應用程式中自動填入密碼</translation>
 <translation id="81358522153858150">Chrome 現在支援受管帳戶的使用者政策</translation>
 <translation id="8160472928944011082">Chrome 無法更新</translation>
@@ -124,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">「Google 密碼管理工具」無法檢查所有密碼。請明天再試，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
 <translation id="8736550665979974340">讓 Google Chrome 確保您的安全</translation>
+<translation id="8765470054473112089">在網址列或搜尋框中輸入內容時，Chrome 會將輸入的內容傳送至預設搜尋引擎，以便取得更切合需求的建議。此功能不會在無痕模式下啟用。</translation>
 <translation id="8772179140489533211">顯示登入 Chrome 的指示。</translation>
 <translation id="8788269841521769222">您不需記住此密碼。密碼將會儲存至 <ph name="EMAIL" /> 的「Google 密碼管理工具」</translation>
 <translation id="8857676124663337448">「Google 密碼管理工具」無法檢查所有密碼。請明天再試。</translation>

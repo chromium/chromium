@@ -89,6 +89,7 @@
 <translation id="6709398533399187136">Dein Passwort wurde durch eine Datenpanne preisgegeben. Der Google Passwortmanager empfiehlt, dieses Passwort jetzt zu ändern.</translation>
 <translation id="6822673484890854830">Chrome konnte nicht alle Passwörter prüfen. Versuche es später noch einmal.</translation>
 <translation id="6964931465519938134">Du kannst jetzt Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
+<translation id="6975725306479268850">Chrome für Autofill auswählen</translation>
 <translation id="701356708427365932">Das neue Chrome-Menü</translation>
 <translation id="7059914902409643750">Chrome personalisieren</translation>
 <translation id="7124339256045485976">Chrome auf dem neuesten Stand halten</translation>
@@ -109,6 +110,7 @@
 <translation id="7754633291442704733">Deine Organisation <ph name="DOMAIN" /> hat Zugriff auf deine Daten, Lesezeichen, Passwörter und deinen Verlauf in Chrome sowie auf andere Einstellungen, die du in diesem Konto speicherst. Wenn du dich abmeldest, werden deine Daten von diesem Gerät gelöscht.  Die Daten bleiben jedoch in deinem verwalteten Google-Konto gespeichert und können von deiner Organisation abgerufen werden. Deine Organisation kann auch spezifische Nutzerrichtlinien für dieses Konto festlegen, die das Verhalten von Chrome verändern können.</translation>
 <translation id="7780154209050837198">Wenn du Chrome optimal nutzen möchtest, meldest du dich mit deinem Google-Konto in Chrome an.</translation>
 <translation id="7855730255114109580">Google Chrome ist auf dem neuesten Stand.</translation>
+<translation id="7939179037291298976">Rufe in den Einstellungen deines iPhones den Punkt „Passwortoptionen“ auf und wähle „Chromium“ aus</translation>
 <translation id="8022947259858476807">Standardmäßig Chrome verwenden, um Links zu öffnen, über Widgets zu suchen und Passwörter in anderen Apps automatisch ausfüllen zu lassen</translation>
 <translation id="81358522153858150">Chrome unterstützt jetzt Nutzerrichtlinien für dein verwaltetes Konto</translation>
 <translation id="8160472928944011082">Update nicht möglich</translation>
@@ -124,6 +126,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Der Google Passwortmanager konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Sicherer surfen mit Google Chrome</translation>
+<translation id="8765470054473112089">Wenn du etwas in die Adressleiste oder das Suchfeld eingibst, sendet Chrome deine Eingabe an deine Standardsuchmaschine, damit du bessere Vorschläge erhältst. Im Inkognitomodus ist diese Funktion deaktiviert.</translation>
 <translation id="8772179140489533211">Aufforderungen für die Anmeldung in Chrome werden angezeigt.</translation>
 <translation id="8788269841521769222">Du musst dir dieses Passwort nicht merken. Es wird im Google Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="8857676124663337448">Der Google Passwortmanager konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal.</translation>

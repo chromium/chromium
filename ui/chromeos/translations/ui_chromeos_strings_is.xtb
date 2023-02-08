@@ -408,6 +408,7 @@
 <translation id="4462159676511157176">Þjónar með sérsniðnu heiti</translation>
 <translation id="4465725236958772856">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, stjórnað af kerfisstjóra, tengjast</translation>
 <translation id="4470564870223067757">Hangul 2 sett</translation>
+<translation id="4474142134969976028">Engar niðurstöður fundust</translation>
 <translation id="4477002475007461989">Rúmenska</translation>
 <translation id="4477219268485577442">Búlgarskt hljóðritunarlyklaborð</translation>
 <translation id="4508265954913339219">Virkjun mistókst</translation>
@@ -812,6 +813,7 @@
 <translation id="7655441028674523381">Greiður aðgangur að Google myndum</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7663224033570512922">Hindí</translation>
+<translation id="7665680517722058469">Prófaðu aðra leit</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> atriði færð í ruslið</translation>
 <translation id="7693909743393669729">Þegar drif er forsniðið eyðast öll gögn af því, og öll núverandi svæði þess, þ.m.t. svæði sem hugsanlega eru ekki sýnileg, eru fjarlægð. Ekki er hægt að afturkalla þessa aðgerð.</translation>
 <translation id="7695430100978772476">Ekki tókst að forsníða <ph name="DRIVE_NAME" /></translation>
@@ -968,6 +970,7 @@
 <translation id="8866284467018526531">Arabíska umritun</translation>
 <translation id="8873014196523807561">Til að endurheimta atriðin skaltu draga þau yfir í nýja möppu. Upprunalegum möppum fyrir sum þessara atriða hefur verið eytt.</translation>
 <translation id="8874184842967597500">Ekki tengt</translation>
+<translation id="8876368061475701452">Í biðröð</translation>
 <translation id="8900820606136623064">Ungverskt</translation>
 <translation id="8903931173357132290">Útskrifaður nemandi</translation>
 <translation id="8912078710089354287">Hundur sem dillar skottinu</translation>

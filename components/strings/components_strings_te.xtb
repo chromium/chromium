@@ -526,6 +526,7 @@
 <translation id="2202627062836089804">మీ కార్డ్ వెనుక వైపు</translation>
 <translation id="22081806969704220">ట్రే 3</translation>
 <translation id="2210794033760923560">రిపోర్ట్‌ను అప్‌లోడ్ చేయండి</translation>
+<translation id="2212579473415663542">ఈ అడ్రస్ మీ Google ఖాతా (<ph name="ACCOUNT" />)లో సేవ్ చేయబడింది. మీరు ఈ అడ్రస్‌ను ఏ పరికరంలోని Google ప్రోడక్ట్‌లలో అయినా ఉపయోగించవచ్చు.</translation>
 <translation id="2212735316055980242">విధానం కనుగొనబడలేదు</translation>
 <translation id="2213606439339815911">నమోదులను పొందుతోంది...</translation>
 <translation id="2213612003795704869">పేజీ ప్రింట్ చేయబడింది</translation>
@@ -1974,6 +1975,7 @@
 <translation id="5866898949289125849">మీరు డెవలపర్ సాధనాల పేజీని వీక్షిస్తున్నారు</translation>
 <translation id="5869405914158311789">ఈ సైట్‌ను చేరుకోలేకపోయాము</translation>
 <translation id="5869522115854928033">సేవ్  చేసిన పాస్‌వర్డ్‌లు</translation>
+<translation id="5872692522325383488">IBAN సేవ్ చేయబడింది</translation>
 <translation id="5873013647450402046">ఇది మీరేనని మీ బ్యాంక్ నిర్ధారించుకోవాలనుకుంటోంది.</translation>
 <translation id="5877831137320480913">అందం &amp; ఆరోగ్యం</translation>
 <translation id="5884465125445718607">ఎన్వలప్ చైనీస్ #6</translation>
@@ -2143,6 +2145,7 @@
 <translation id="6300452962057769623">{0,plural, =0{మీ పరికరం ఇప్పుడు రీస్టార్ట్ అవుతుంది}=1{మీ పరికరం 1 సెకనులో రీస్టార్ట్ అవుతుంది}other{మీ పరికరం # సెకన్లలో రీస్టార్ట్ అవుతుంది}}</translation>
 <translation id="6301104306974789820">ధర ట్రాకింగ్ నోటిఫికేషన్‌లను పొందండి</translation>
 <translation id="6305205051461490394"><ph name="URL" />ని చేరుకోలేకపోయాము.</translation>
+<translation id="6306713302480826305">ఈ అడ్రస్ దీని నుండి, అలాగే సైన్ ఇన్ చేసిన మీ ఇతర పరికరాల నుండి తొలగించబడుతుంది</translation>
 <translation id="6311165245110979290">వర్చువల్ కార్డ్ అందుబాటులో ఉంది</translation>
 <translation id="6312113039770857350">వెబ్‌పేజీ అందుబాటులో లేదు</translation>
 <translation id="6316226860534107313">స్కూటర్‌లు &amp; మోపెడ్‌లు</translation>
@@ -3034,6 +3037,7 @@
 <translation id="8473863474539038330">అడ్రస్‌లు, మరికొన్ని వివరాలు</translation>
 <translation id="8474910779563686872">డెవలపర్ వివరాలను చూపు</translation>
 <translation id="8479754468255770962">ఎడమవైపు దిగువ భాగంలో స్టేపుల్</translation>
+<translation id="8483229036294884935">ఈ అడ్రస్ మీ Google ఖాతా, <ph name="ACCOUNT" /> నుండి తొలగించబడుతుంది</translation>
 <translation id="8483780878231876732">మీ Google ఖాతా నుండి కార్డ్‌లను ఉపయోగించేందుకు, Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="8488350697529856933">వీటికి వర్తిస్తుంది</translation>
 <translation id="8490137692873530638">స్టాకర్ 10</translation>

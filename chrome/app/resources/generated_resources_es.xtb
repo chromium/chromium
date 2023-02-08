@@ -8375,6 +8375,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8639635302972078117">Envía datos de uso y diagnóstico. Este dispositivo envía automáticamente a Google datos de diagnóstico, del dispositivo y del uso de las aplicaciones. Los datos no se usarán para identificar a tu hijo, sino para aumentar la estabilidad de las aplicaciones y del sistema, y realizar otras mejoras. Parte de los datos agregados también ayudarán a las aplicaciones y a los partners de Google, como los desarrolladores de Android. Si la opción Actividad en la Web y en Aplicaciones Adicional está activada, es posible que estos datos se guarden en la cuenta de Google de tu hijo.</translation>
 <translation id="8642900771896232685">2 segundos</translation>
 <translation id="8642947597466641025">Ampliar el tamaño del texto</translation>
+<translation id="8643403533759285912">Eliminar grupo</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> podría ser peligroso. ¿Quieres enviarlo a Protección Avanzada de Google para que lo analice?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{No hay cookies}=1{1 cookie bloqueada}other{# cookies bloqueadas}}</translation>
 <translation id="864423554496711319">Dispositivos guardados en tu cuenta</translation>
@@ -8848,6 +8849,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="90528604757378587">Es posible que la actividad en segundo plano y algunos efectos visuales, como el desplazamiento suave, estén limitados.</translation>
 <translation id="9053563360605707198">Imprimir en ambas caras</translation>
 <translation id="9055636786322918818">Fuerza el cifrado RC4. Esta opción aumenta el riesgo, ya que los algoritmos de cifrado de RC4 no son seguros.</translation>
+<translation id="9056788090206401048">El Bluetooth debe estar activado para que puedas usar tu llave de acceso en otro dispositivo. Puedes gestionar esta opción en los ajustes cuando quieras.</translation>
 <translation id="9056810968620647706">No se ha encontrado ningún resultado coincidente.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> quiere acceder al siguiente contenido:</translation>
 <translation id="9057354806206861646">Ciclo de vida de actualizaciones</translation>

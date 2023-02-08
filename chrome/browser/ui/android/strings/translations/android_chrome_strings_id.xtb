@@ -404,7 +404,7 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="316694332262407393">Chrome sudah berjalan di sini.</translation>
 <translation id="3167258285411721858">Anda dapat meminta situs seluler untuk <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3187472288455401631">Ad measurement</translation>
+<translation id="3187472288455401631">Pengukuran iklan</translation>
 <translation id="3207960819495026254">Diberi bookmark</translation>
 <translation id="3208584281581115441">Periksa sekarang</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> dihapus</translation>
@@ -922,6 +922,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="6000203700195075278">Ikuti kembali</translation>
 <translation id="6002122790816966947">Perangkat Anda</translation>
 <translation id="6005538289190791541">Sandi yang disarankan</translation>
+<translation id="6011308810877101166">Tingkatkan saran penelusuran</translation>
 <translation id="6039379616847168523">Beralih ke tab berikutnya</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="604124094241169006">Otomatis</translation>
@@ -1452,6 +1453,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="8746155870861185046">Bagikan sorotan</translation>
 <translation id="8748850008226585750">Konten tersembunyi</translation>
 <translation id="8756969031206844760">Perbarui sandi?</translation>
+<translation id="8765470054473112089">Saat Anda mengetik di kolom URL atau kotak penelusuran, Chrome akan mengirimkan hal yang Anda ketik ke mesin telusur default untuk mendapatkan saran yang lebih baik. Fitur ini nonaktif dalam mode Samaran.</translation>
 <translation id="8766529642647037772">Buat link yang ditandai seperti ini?</translation>
 <translation id="8773160212632396039">Memproses permintaan</translation>
 <translation id="8788265440806329501">Histori navigasi tertutup</translation>

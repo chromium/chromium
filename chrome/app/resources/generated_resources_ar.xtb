@@ -414,6 +414,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{ما مِن كلمات مرور محتمَل تعرّضها للاختراق.}=1{كلمة مرور واحدة محتمَل تعرّضها للاختراق}two{كلمتا مرور ({NUM_COMPROMISED}) محتمَل تعرّضهما للاختراق}few{{NUM_COMPROMISED} كلمات مرور محتمَل تعرّضها للاختراق}many{{NUM_COMPROMISED} كلمة مرور محتمَل تعرّضها للاختراق}other{{NUM_COMPROMISED} كلمة مرور محتمَل تعرّضها للاختراق}}</translation>
 <translation id="1380028686461971526">الاتصال التلقائي بالشبكة</translation>
 <translation id="1381567580865186407">‏سيتم إرسال ملفات التعرّف على الكلام باللغة <ph name="LANGUAGE" /> إلى Google لمعالجتها.</translation>
+<translation id="1383381142702995121">إدارة هذه الإضافة</translation>
 <translation id="1383597849754832576">يتعذّر تنزيل ملفات ميزة "النسخ النصي التلقائي". يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="1383861834909034572">فتح الملفّ عند انتهاء التحميل.</translation>
 <translation id="1383876407941801731">البحث</translation>
@@ -3971,7 +3972,7 @@
 <translation id="4563210852471260509">لغة الإدخال الأولية هي الصينية</translation>
 <translation id="4563382028841851106">الإزالة من الحساب</translation>
 <translation id="4563880231729913339">إصبع 3</translation>
-<translation id="4564245002465020751">إنهاء عملية الإعداد على هاتفك</translation>
+<translation id="4564245002465020751">إكمال عملية ضبط الإعدادات على هاتفك</translation>
 <translation id="4565377596337484307">إخفاء كلمة المرور</translation>
 <translation id="4565917129334815774">تخزين سجلّات النظام</translation>
 <translation id="4566170377336116390">‏إذا أردت التبديل بعد إتمام التسجيل، عليك إعادة ضبط جهازك على الإعدادات الأصلية (Powerwash).</translation>
@@ -4231,6 +4232,7 @@
 <translation id="4807098396393229769">الاسم كما على البطاقة</translation>
 <translation id="4808667324955055115">تمّ حظر النوافذ المنبثقة:</translation>
 <translation id="4809079943450490359">تعليمات من مشرف الجهاز:</translation>
+<translation id="4809447465126035330">حذف</translation>
 <translation id="480990236307250886">فتح الصفحة الرئيسية</translation>
 <translation id="4809927044794281115">المظهر الفاتح</translation>
 <translation id="4811212958317149293">المسح التلقائي في لوحة المفاتيح ضمن ميزة "الوصول عبر مفتاح التحويل"</translation>
@@ -5033,6 +5035,7 @@
 <translation id="5556459405103347317">إعادة التحميل</translation>
 <translation id="5558129378926964177">ت&amp;كبير</translation>
 <translation id="5558247502209241936">تفعيل خيار "فتح التطبيق في نافذة"</translation>
+<translation id="5559311991468302423">حذف العنوان</translation>
 <translation id="55601339223879446">ضبط الحدود لسطح المكتب ضمن الشاشة</translation>
 <translation id="5561162485081632007">اكتشاف الأحداث الخطيرة عند حدوثها والتحذير منها</translation>
 <translation id="5562781907504170924">علامة التبويب هذه متصلة بجهاز بلوتوث.</translation>
@@ -6432,6 +6435,7 @@
 <translation id="6839916869147598086">تم تغيير تسجيل الدخول</translation>
 <translation id="6840155290835956714">السؤال قبل الإرسال</translation>
 <translation id="6840184929775541289">ليس مرجعًا مصدقًا</translation>
+<translation id="6840214587087739194">تم حذف العنوان.</translation>
 <translation id="6841143363521180029">هذا الملف مشفّر.</translation>
 <translation id="6841186874966388268">أخطاء</translation>
 <translation id="6842136130964845393">لضمان إمكانية الوصول دائمًا إلى كلمات المرور المحفوظة، عليك إثبات هويتك.</translation>
@@ -8278,6 +8282,7 @@
 <translation id="8525306231823319788">ملء الشاشة</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">إضافة اللغات</translation>
+<translation id="8528479410903501741">‏حفظ رقم الحساب بصيغة IBAN</translation>
 <translation id="8528962588711550376">جارٍ تسجيل الدخول.</translation>
 <translation id="8529925957403338845">فشل اتصال التوصيل الفوري</translation>
 <translation id="8531701051932785007">ميزة "الحماية المُحسَّنة للتصفّح الآمن" غير مفعَّلة</translation>

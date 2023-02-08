@@ -92,6 +92,7 @@
 <translation id="7045244423563602563">Lagaðu Chromium að þínum þörfum</translation>
 <translation id="7099326575020694068">Chromium getur ekki notað myndavélina á tvískiptum skjá</translation>
 <translation id="7118091470949186573">Núna getur þú notað Chromium hvenær sem þú ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>
+<translation id="7165402419892018581">Velja Chromium fyrir sjálfvirka útfyllingu</translation>
 <translation id="7175400662502680481">Aðgangsorðið þitt var afhjúpað vegna öryggisbrots. Aðgangsorðastjórnun mælir með að þú breytir því núna.</translation>
 <translation id="7208566199746267865">Chromium sparar þér tíma með því að færa reikningana þína yfir á vefinn. Þú getur bætt við reikningum eða fjarlægt þá í stillingum.</translation>
 <translation id="725427773388857052">Chromium getur veitt þér vernd gegn öryggisbrotum, hættulegum vefsvæðum og fleira.</translation>
@@ -106,6 +107,7 @@
 <translation id="7746854981345936341">Ábending um Chromium. Sumir hnappar, eins og Til baka, Áfram og Leita, eru nú neðst á skjánum.</translation>
 <translation id="7763454117143368771">Notaðu Chromium sem sjálfgefinn vafra til að njóta verndar gegn hættulegum vefsvæðum og tryggja öryggi aðgangsorðanna þinna</translation>
 <translation id="7812317783196516890">Þú ert innskráð(ur) og samstillir gögnin þín við reikning í umsjón <ph name="DOMAIN" />. Viðkomandi kerfisstjóri getur nú stillt notendareglur sem eru sértækar fyrir viðkomandi reikning og geta breytt virkni Chromium.</translation>
+<translation id="7859018312476869945">Þegar þú skrifar í veffangastiku eða leitarreit sendir Chromium það sem þú skrifar á sjálfgefna leitarvél til að fá betri tillögur. Slökkt er á þessu í huliðsstillingu.</translation>
 <translation id="786327964234957808">Þú ert að skipta um samstillingarreikning úr <ph name="USER_EMAIL1" /> yfir í <ph name="USER_EMAIL2" />. Chromium gögnin þín sem eru þegar til staðar eru í umsjón <ph name="DOMAIN" />. Þetta mun eyða gögnum af þessu tæki, en þau verða enn til staðar á <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Byrjaðu að nota Chromium skanna</translation>
 <translation id="7928628054454574139">Opna Chromium hvenær sem þú ýtir á tengil í öðrum forritum</translation>
@@ -115,6 +117,7 @@
 <translation id="8073677936375100957">Viltu hreinsa Chromium gögnin þín úr þessu tæki?</translation>
 <translation id="8240981428553046115">Chromium gat ekki leitað að uppfærslum. Reyndu aftur síðar.</translation>
 <translation id="8409374867500149834">Þú ert með öflugustu öryggisráðstafanir Chromium gegn skaðlegum vefsvæðum</translation>
+<translation id="8460301378281140593">Í stillingum iPhone skaltu opna „Password Options“ og velja „Chromium“</translation>
 <translation id="858114650497379505">Þú getur notað aðgangsorðin sem þú vistaðir í aðgangsorðastjórnun í öðrum forritum í iPhone.</translation>
 <translation id="8586442755830160949">Höfundarréttur <ph name="YEAR" /> höfundar Chromium. Allur réttur áskilinn.</translation>
 <translation id="8603022514504485810">Google-aðgangsorðastjórnun gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun eða <ph name="BEGIN_LINK" />athugaðu aðgangsorð á Google-reikningnum þínum.<ph name="END_LINK" /></translation>

@@ -219,6 +219,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1192706927100816598">{0,plural, =1{Over # seconde word je automatisch uitgelogd.
 <ph name="DOMAIN" /> vereist dat je smartcard geplaatst blijft.}other{Over # seconden word je automatisch uitgelogd.
 <ph name="DOMAIN" /> vereist dat je smartcard geplaatst blijft.}}</translation>
+<translation id="119330003005586565">Pagina's die je hebt gelezen</translation>
 <translation id="1193927020065025187">Deze site probeert je mogelijk zover te krijgen dat je opdringerige meldingen toestaat</translation>
 <translation id="1195210374336998651">Ga naar app-instellingen</translation>
 <translation id="1195447618553298278">Onbekende fout</translation>
@@ -409,6 +410,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Geen gehackte wachtwoorden}=1{1 gehackt wachtwoord}other{{NUM_COMPROMISED} gehackte wachtwoorden}}</translation>
 <translation id="1380028686461971526">Automatisch verbinding maken met netwerk</translation>
 <translation id="1381567580865186407">Spraak in het <ph name="LANGUAGE" /> wordt voor verwerking naar Google gestuurd</translation>
+<translation id="1383381142702995121">Deze extensie beheren</translation>
 <translation id="1383597849754832576">Kan spraakbestanden niet downloaden. Probeer het later opnieuw.</translation>
 <translation id="1383861834909034572">Openen wanneer voltooid</translation>
 <translation id="1383876407941801731">Zoeken</translation>
@@ -4224,6 +4226,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4807098396393229769">Naam op pas</translation>
 <translation id="4808667324955055115">Pop-ups geblokkeerd:</translation>
 <translation id="4809079943450490359">Instructies van de beheerder van je apparaat:</translation>
+<translation id="4809447465126035330">Verwijderen</translation>
 <translation id="480990236307250886">Open de homepage</translation>
 <translation id="4809927044794281115">Licht thema</translation>
 <translation id="4811212958317149293">Automatische scan van toetsenbord voor Toegang via schakelaar</translation>
@@ -5026,6 +5029,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5556459405103347317">Opnieuw laden</translation>
 <translation id="5558129378926964177">&amp;Inzoomen</translation>
 <translation id="5558247502209241936">App openen in venster aanzetten</translation>
+<translation id="5559311991468302423">Adres verwijderen</translation>
 <translation id="55601339223879446">De grenzen van je bureaublad aanpassen binnen de weergave</translation>
 <translation id="5561162485081632007">Detecteert en waarschuwt je over gevaarlijke gebeurtenissen als deze plaatsvinden</translation>
 <translation id="5562781907504170924">Dit tabblad is gekoppeld aan een Bluetooth-apparaat.</translation>
@@ -5512,6 +5516,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6007240208646052708">Gesproken zoekopdracht is niet beschikbaar in jouw taal.</translation>
 <translation id="6010651352520077187">Als dit aanstaat, biedt Google Translate aan om sites te vertalen naar je voorkeurstaal. De functie kan ook automatisch sites vertalen.</translation>
 <translation id="6011193465932186973">Vingerafdruk</translation>
+<translation id="6011308810877101166">Zoeksuggesties verbeteren</translation>
 <translation id="6011908034087870826">Er wordt een link gestuurd naar <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">Bekijk een ondertiteling voor je audio en video</translation>
 <translation id="6014293228235665243">Ongelezen</translation>
@@ -5828,6 +5833,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="630292539633944562">Suggesties voor persoonlijke informatie</translation>
 <translation id="6305607932814307878">Algemeen beleid:</translation>
 <translation id="6305909198255586420">Installeer dit met je primaire profiel</translation>
+<translation id="630750887748244481">Je ouder heeft 'Rechten voor sites, apps en extensies' uitgezet voor Chrome. Deze extensie mag niet worden toegevoegd.</translation>
 <translation id="6307990684951724544">Systeem is bezet</translation>
 <translation id="6308493641021088955">Inloggen mogelijk gemaakt door <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Lin&amp;k opslaan als...</translation>
@@ -6411,6 +6417,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6839916869147598086">Inloggegevens zijn gewijzigd</translation>
 <translation id="6840155290835956714">Vragen vóór verzenden</translation>
 <translation id="6840184929775541289">Is geen certificeringsinstantie</translation>
+<translation id="6840214587087739194">Adres verwijderd</translation>
 <translation id="6841143363521180029">Versleuteld</translation>
 <translation id="6841186874966388268">Fouten</translation>
 <translation id="6842136130964845393">Bevestig dat jij het bent zodat je altijd toegang hebt tot je opgeslagen wachtwoorden</translation>
@@ -7966,6 +7973,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8251509999076836464">Koppelen met <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniatuur verwijderd.</translation>
 <translation id="825238165904109940">Altijd volledige URL's tonen</translation>
+<translation id="8252538334423261825">Kan extensie niet toevoegen</translation>
 <translation id="8252569384384439529">Uploaden...</translation>
 <translation id="8253198102038551905">Kik op '+' om netwerkeigenschappen op te halen</translation>
 <translation id="8255212965098517578">Recente foto's, meldingen en apps</translation>
@@ -8251,6 +8259,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8525306231823319788">Volledig scherm</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Talen toevoegen</translation>
+<translation id="8528479410903501741">IBAN opslaan</translation>
 <translation id="8528962588711550376">Inloggen.</translation>
 <translation id="8529925957403338845">Verbinding via instant-tethering mislukt</translation>
 <translation id="8531701051932785007">Uitgebreide versie van Safe Browsing staat uit</translation>
@@ -8366,6 +8375,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8639635302972078117">Stuur gebruiks- en diagnostische gegevens. Dit apparaat stuurt momenteel automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens worden niet gebruikt om je kind te identificeren en kunnen helpen om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet voor je kind, kunnen deze gegevens worden opgeslagen in het Google-account van je kind.</translation>
 <translation id="8642900771896232685">2 seconden</translation>
 <translation id="8642947597466641025">De tekst groter maken</translation>
+<translation id="8643403533759285912">Groep verwijderen</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> is misschien gevaarlijk. Wil je het bestand naar 'Geavanceerde beveiliging' van Google sturen zodat het kan worden gescand?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Geen cookies}=1{1 cookie wordt geblokkeerd}other{# cookies worden geblokkeerd}}</translation>
 <translation id="864423554496711319">Apparaten opgeslagen in je account</translation>
@@ -8840,6 +8850,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="90528604757378587">Achtergrondactiviteit en sommige visuele effecten, zoals vloeiend scrollen, kunnen beperkt zijn.</translation>
 <translation id="9053563360605707198">Dubbelzijdig afdrukken</translation>
 <translation id="9055636786322918818">RC4-versleuteling afdwingen. Als je deze optie gebruikt, loop je meer risico, aangezien RC4-codering onbeveiligd is.</translation>
+<translation id="9056788090206401048">Bluetooth moet aanstaan om je toegangssleutel op een ander apparaat te gebruiken. Je kunt dit altijd wijzigen via Instellingen.</translation>
 <translation id="9056810968620647706">Geen overeenkomsten gevonden.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> wil toegang tot de volgende content:</translation>
 <translation id="9057354806206861646">Updateplanning</translation>

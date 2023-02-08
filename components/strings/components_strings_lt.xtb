@@ -540,6 +540,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2241693394036365668">Atsisiųstas failas</translation>
 <translation id="2246264294482514010">10 x 12 col.</translation>
 <translation id="2246480341630108201">Vienas iš tėvų dar nepateikė patvirtinimo</translation>
+<translation id="2247789808226901522">Kortelės galiojimo laikas baigėsi</translation>
 <translation id="2248949050832152960">Naudoti „WebAuthn“</translation>
 <translation id="2250931979407627383">Kraštų sukabinimas kairėje</translation>
 <translation id="225207911366869382">Pagal šią politiką ši vertė nepatvirtinta.</translation>
@@ -823,7 +824,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="301521992641321250">Automatiškai užblokuota</translation>
 <translation id="3016780570757425217">Žinoti jūsų vietovę</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, paspauskite tabuliavimo klavišą, tada „Enter“, kad pašalintumėte pasiūlymą.</translation>
-<translation id="3023165109041533893">Svetainių siūlomi skelbimai padeda apsaugoti jūsų naršymo istoriją bei tapatybę ir suteikia svetainėms galimybę rodyti jums aktualius skelbimus. Atsižvelgiant į jūsų veiklą, jums naršant toliau svetainė, kurioje lankėtės, gali siūlyti susijusius skelbimus. Galite peržiūrėti šių svetainių sąrašą ir užblokuoti nepageidaujamas svetaines nustatymuose.</translation>
+<translation id="3023165109041533893">Svetainių siūlomi skelbimai padeda apsaugoti jūsų naršymo istoriją bei tapatybę, leisdami svetainėms rodyti jums aktualius skelbimus. Atsižvelgiant į jūsų veiklą, jums naršant toliau svetainė, kurioje lankėtės, gali siūlyti susijusius skelbimus. Galite peržiūrėti šių svetainių sąrašą ir užblokuoti nepageidaujamas svetaines nustatymuose.</translation>
 <translation id="3024663005179499861">Netinkamas politikos tipas</translation>
 <translation id="3029752078111257850">Pasaulio naujienos</translation>
 <translation id="3037177537145227281">Kaina stebima</translation>
@@ -835,7 +836,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="306573536155379004">Žaidimas prasidėjo.</translation>
 <translation id="3068991664510324412">Kompiuteriniai ir vaizdo žaidimai</translation>
 <translation id="3080254622891793721">Grafiniai elementai</translation>
-<translation id="3081538120861307764">Siekiant įvertinti skelbimo našumą, skirtingose svetainėse bendrinami tam tikrų tipų duomenys, pvz., paros laikas, kada skelbimas buvo jums rodomas.</translation>
+<translation id="3081538120861307764">Siekiant įvertinti skelbimo našumą, svetainėse bendrinami ribotų tipų duomenys, pvz., paros laikas, kada skelbimas buvo jums rodomas.</translation>
 <translation id="3082007635241601060">Leiskite „Google“, kai yra galimybė, pasinaudojus jūsų kortelėmis rasti suasmenintų nuolaidų</translation>
 <translation id="3086579638707268289">Jūsų veikla žiniatinklyje stebima</translation>
 <translation id="3087734570205094154">Apačia</translation>
@@ -1079,6 +1080,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3646643500201740985">Skelbimo našumo vertinimas</translation>
 <translation id="3647286794400715637">Kiekviename URL eilutės įraše turi būti nuo vieno iki dviejų URL.</translation>
 <translation id="3650584904733503804">Tikrinimas sėkmingas</translation>
+<translation id="3650594806107685466">Kad padėtumėte apsaugoti kortelę, įveskite kortelės saugos kodą (CVC), pateiktą <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3653033846669030038">Pramogų parkai</translation>
 <translation id="3655241534245626312">Eiti į leidimo nustatymus</translation>
 <translation id="3655670868607891010">Jei tai rodoma dažnai, išbandykite <ph name="HELP_LINK" />.</translation>
@@ -2219,7 +2221,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="646793340882508547">Nuotykių žaidimai</translation>
 <translation id="6468485451923838994">Šriftai</translation>
 <translation id="647261751007945333">Įrenginio politika</translation>
-<translation id="6475672344094591109">Svetainės, kuriose lankotės, gali prašyti „Chrome“ pateikti informacijos, padedančios įvertinti skelbimų našumą. „Chrome“ saugo jūsų privatumą apribodama informaciją, kurią svetainės gali bendrinti tarpusavyje.</translation>
+<translation id="6475672344094591109">Svetainės, kuriose lankotės, gali prašyti „Chrome“ informacijos, kad galėtų lengviau įvertinti savo skelbimų našumą. „Chrome“ užtikrina jūsų privatumą ribodama svetainių bendrinamą informaciją.</translation>
 <translation id="6476284679642588870">Tvarkyti mokėjimo metodus</translation>
 <translation id="6486200200930923183">Dokumentiniai filmai</translation>
 <translation id="6489534406876378309">Pradėti įkelti strigtis</translation>
@@ -2323,7 +2325,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6786145470008421571">6 x 9 col. vokas</translation>
 <translation id="67862343314499040">Violetinė</translation>
 <translation id="6786747875388722282">Plėtiniai</translation>
-<translation id="6787094689637422836">Pristatome naujas privatumo funkcijas, kurios suteikia daugiau galimybių pasirinkti jums rodomų skelbimų temas.</translation>
+<translation id="6787094689637422836">Pristatome naujas privatumo funkcijas, suteikiančias daugiau norimų matyti skelbimų pasirinkimo galimybių.</translation>
 <translation id="678982761784843853">Apsaugoto turinio ID</translation>
 <translation id="6790428901817661496">Žaisti</translation>
 <translation id="679355240208270552">Nepaisoma, nes numatytoji paieška neįgalinta pagal politiką.</translation>
@@ -2459,6 +2461,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="7112327784801341716">Nematote dabartinės informacijos? Kreipkitės į savo banką, kad ji būtų atnaujinta.</translation>
 <translation id="7118618213916969306">Ieškoti iškarpinės URL, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Uždarykite kitus skirtukus ir programas</translation>
+<translation id="7124354851782353862">Įveskite kortelės saugos kodą (CVC)</translation>
 <translation id="7129355289156517987">Kai uždarote visus „Chromium“ inkognito skirtukus, iš šio įrenginio išvaloma jūsų veikia toliau nurodytuose skirtukuose.
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Naršymo veikla<ph name="END_LIST_ITEM" />
@@ -2785,6 +2788,7 @@ Papildoma išsami informacija:
 <translation id="7844689747373518809">{COUNT,plural, =0{Nėra}=1{1 programa („<ph name="EXAMPLE_APP_1" />“)}=2{2 programos („<ph name="EXAMPLE_APP_1" />“, „<ph name="EXAMPLE_APP_2" />“)}one{# programa („<ph name="EXAMPLE_APP_1" />“, „<ph name="EXAMPLE_APP_2" />“ <ph name="AND_MORE" />)}few{# programos („<ph name="EXAMPLE_APP_1" />“, „<ph name="EXAMPLE_APP_2" />“ <ph name="AND_MORE" />)}many{# programos („<ph name="EXAMPLE_APP_1" />“, „<ph name="EXAMPLE_APP_2" />“ <ph name="AND_MORE" />)}other{# programų („<ph name="EXAMPLE_APP_1" />“, „<ph name="EXAMPLE_APP_2" />“ <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">Vėliau svetainė, kurioje lankotės, gali paprašyti „Chrome“ jūsų temų, kad galėtų suasmeninti jums rodomus skelbimus. „Chrome“ bendrina iki trijų temų, išsaugodama jūsų naršymo istoriją ir tapatybę.</translation>
+<translation id="7860345425589240791">Įveskite naują galiojimo laiko pabaigos datą ir kortelės saugos kodą (CVC), pateiktą <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Išeiti iš svetainės?</translation>
 <translation id="7865448901209910068">Geriausias greitis</translation>
 <translation id="7871445724586827387">Pakeiskite „Google“ paskyros slaptažodį</translation>

@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Inggris (AS) dengan keyboard Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Host</translation>
 <translation id="1521655867290435174">Google Spreadsheet</translation>
+<translation id="1521795806314479294">Menyiapkan <ph name="FILE_NAME" /> ...</translation>
 <translation id="1538729222189715449">Membuka file Linux...</translation>
 <translation id="1547964879613821194">Inggris Kanada</translation>
 <translation id="1556189134700913550">Terapkan untuk semua</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Membuat file zip <ph name="NUMBER_OF_ITEMS" /> item...</translation>
 <translation id="1722687688096767818">Menambahkan Profil ...</translation>
 <translation id="1726100011689679555">Nama server</translation>
+<translation id="1727562178154619254">Siap disinkronkan</translation>
 <translation id="1729953886957086472">Jerman (Jerman)</translation>
 <translation id="1730235522912993863">Cangjie China</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> item disalin.</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">Server nama khusus</translation>
 <translation id="4465725236958772856">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Dikelola oleh Administrator Anda, Sambungkan</translation>
 <translation id="4470564870223067757">2 Himpunan Hangul</translation>
+<translation id="4474142134969976028">Tidak ada hasil yang cocok</translation>
 <translation id="4477002475007461989">Rumania</translation>
 <translation id="4477219268485577442">Fonetik Bulgaria</translation>
 <translation id="4508265954913339219">Aktivasi gagal</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">Gunakan nama yang terdiri dari <ph name="MAX_LENGTH" /> karakter atau kurang</translation>
 <translation id="4973970068702235170">Gagal membuat file zip, error: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Jepang</translation>
+<translation id="4987699874727873250">Inggris (India)</translation>
 <translation id="4988205478593450158">Yakin ingin menghapus "<ph name="FILE_NAME" />"?</translation>
 <translation id="498902553138568924">Kupu-kupu merah</translation>
 <translation id="4992066212339426712">Bunyikan</translation>
@@ -509,6 +513,7 @@
        Menghapus perangkat Anda saat digunakan dapat menyebabkan hilangnya data.  Tunggu hingga operasi berakhir, lalu keluarkan perangkat menggunakan aplikasi File.</translation>
 <translation id="5163869187418756376">Gagal berbagi. Periksa sambungan Anda dan coba lagi nanti.</translation>
 <translation id="516592729076796170">Programmer Dvorak AS</translation>
+<translation id="5167102019886320507">Menyiapkan <ph name="NUMBER_OF_ITEMS" /> item ...</translation>
 <translation id="5177526793333269655">Tampilan thumbnail</translation>
 <translation id="5181896909298187506">Tidak ada file terbaru</translation>
 <translation id="5194713942430106590">Klik untuk mengurutkan kolom dari atas ke bawah.</translation>
@@ -813,6 +818,7 @@
 <translation id="7655441028674523381">Akses Google Foto dengan mudah</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7665680517722058469">Coba penelusuran lain</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> item dipindahkan ke sampah</translation>
 <translation id="7693909743393669729">Memformat drive akan menghapus semua data yang tersimpan di dalamnya dan menghapus semua partisi yang ada, termasuk partisi yang mungkin tidak terlihat. Tindakan ini tidak dapat diurungkan.</translation>
 <translation id="7695430100978772476">Tidak dapat memformat <ph name="DRIVE_NAME" /></translation>

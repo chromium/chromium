@@ -59,7 +59,7 @@
 <translation id="1499943022354839699">engleski (SAD) s Dvorak tastaturom</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host računar</translation>
 <translation id="1521655867290435174">Google Tabele</translation>
-<translation id="1521795806314479294">Priprema <ph name="FILE_NAME" />...</translation>
+<translation id="1521795806314479294">Pripremanje fajla <ph name="FILE_NAME" />…</translation>
 <translation id="1538729222189715449">Otvaranje Linux fajlova...</translation>
 <translation id="1547964879613821194">Kanadska engleska</translation>
 <translation id="1556189134700913550">Primijeni na sve</translation>
@@ -84,7 +84,7 @@
 <translation id="1722487484194605434">Izrađivanje zip arhive sljedećeg broja stavki: <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="1722687688096767818">Dodavanje profila...</translation>
 <translation id="1726100011689679555">Postavite naziv servera</translation>
-<translation id="1727562178154619254">Spremno za sinkronizaciju</translation>
+<translation id="1727562178154619254">Spremno za sinhronizaciju</translation>
 <translation id="1729953886957086472">njemački (Njemačka)</translation>
 <translation id="1730235522912993863">kineski cangjie</translation>
 <translation id="1731889557567069540">Broj kopiranih stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -513,7 +513,7 @@
    Ako uklonite uređaj tokom njegovog korištenja, moguće je da će doći do gubljenja podataka.  Sačekajte da se radnja završi, a zatim isključite uređaj pomoću aplikacije Files.</translation>
 <translation id="5163869187418756376">Dijeljenje nije uspjelo. Provjerite vezu i pokušajte ponovo kasnije.</translation>
 <translation id="516592729076796170">SAD programer Dvorak</translation>
-<translation id="5167102019886320507">Priprema sljedećeg broja stavki: <ph name="NUMBER_OF_ITEMS" />...</translation>
+<translation id="5167102019886320507">Pripremanje stavki (njih <ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="5177526793333269655">Prikaz sličice</translation>
 <translation id="5181896909298187506">Nema nedavnih fajlova</translation>
 <translation id="5194713942430106590">Kliknite da poredate kolonu uzlaznim poretkom.</translation>
@@ -818,7 +818,7 @@
 <translation id="7655441028674523381">S lakoćom pristupite Google Fotografijama</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7663224033570512922">hindi</translation>
-<translation id="7665680517722058469">Pokušajte s nekim drugim pretraživanjem</translation>
+<translation id="7665680517722058469">Pretražite nešto drugo</translation>
 <translation id="7689532716264131859">Stavke su premještene u otpad (ukupno <ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="7693909743393669729">Formatiranjem diska ćete izbrisati sve podatke koje ste na njega pohranili, a također ćete ukloniti sve postojeće particije, uključujući particije koje možda nisu vidljive. Ovu radnju nije moguće opozvati.</translation>
 <translation id="7695430100978772476">Formatiranje diska <ph name="DRIVE_NAME" /> nije uspjelo</translation>

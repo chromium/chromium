@@ -1176,7 +1176,7 @@
 <translation id="2048554637254265991">コンテナ マネージャーの起動中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="2048653237708779538">操作できません</translation>
 <translation id="204914487372604757">ショートカットを作成</translation>
-<translation id="2050339315714019657">縦</translation>
+<translation id="2050339315714019657">縦向き</translation>
 <translation id="2051555741181591333">アクセス ポイントを自動的に無効にする</translation>
 <translation id="2052572566310583903">他のデバイスにインストール済み</translation>
 <translation id="2053105195397337973">Google では、サイトが広告のスパムと不正行為を防止できるようにしながら、トラッキングを制限する方法を模索しています。</translation>
@@ -8353,6 +8353,7 @@
 <translation id="8639635302972078117">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。</translation>
 <translation id="8642900771896232685">2秒</translation>
 <translation id="8642947597466641025">テキストを拡大する</translation>
+<translation id="8643403533759285912">グループを削除</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> は危害を及ぼす可能性があります。Google の高度な保護機能に送信してスキャンしますか？</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Cookie なし}=1{1 件の Cookie がブロックされています}other{# 件の Cookie がブロックされています}}</translation>
 <translation id="864423554496711319">アカウントに保存されているデバイス</translation>
@@ -8826,6 +8827,7 @@
 <translation id="90528604757378587">バックグラウンド アクティビティや一部の視覚効果（スムーズ スクロールなど）が制限されることがあります。</translation>
 <translation id="9053563360605707198">両面に印刷する</translation>
 <translation id="9055636786322918818">RC4 暗号化を適用します。なお RC4 暗号は安全でないため、このオプションを使用するとリスクが高まります。</translation>
+<translation id="9056788090206401048">別のデバイスでパスキーを使用するには、Bluetooth をオンにする必要があります。これは設定でいつでも管理できます。</translation>
 <translation id="9056810968620647706">一致する項目が見つかりません。</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> さんが次のコンテンツへのアクセスをリクエストしています:</translation>
 <translation id="9057354806206861646">更新スケジュール</translation>

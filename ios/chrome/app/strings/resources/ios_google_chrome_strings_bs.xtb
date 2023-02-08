@@ -22,7 +22,7 @@
 <translation id="2347208864470321755">Kada je ova funkcija uključena, Chrome će za stranice koje su napisane na drugim jezicima ponuditi prijevod pomoću Google Prevodioca. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome sadržava funkcije koje vam pomažu prilikom upravljanja internetskim podacima i brzinom učitavanja web lokacija.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
-<translation id="2444854139071078915">Da biste jednostavno dohvatili spremljene zaporke u drugim aplikacijama, upotrebljavajte Chrome za Automatsko popunjavanje</translation>
+<translation id="2444854139071078915">Da lako dobijete sačuvane lozinke u drugim aplikacijama, koristite Chrome za automatsko popunjavanje</translation>
 <translation id="2561231791489583059">Koristite Chrome kao zadani preglednik da se zaštitite od opasnih web lokacija i da zaštitite lozinke</translation>
 <translation id="2574249610672786438">Da vidite kartice s bilo kojeg uređaja na kojem koristite Chrome, prijavite se na svim uređajima</translation>
 <translation id="2576431527583832481">Chrome je upravo postao bolji! Dostupna je nova verzija.</translation>
@@ -90,7 +90,7 @@
 <translation id="6709398533399187136">Vaša lozinka je bila izložena prilikom narušavanja podataka. Googleov Upravitelj lozinki preporučuje da je odmah promijenite.</translation>
 <translation id="6822673484890854830">Chrome nije mogao provjeriti sve lozinke. Pokušajte ponovo kasnije.</translation>
 <translation id="6964931465519938134">Sada možete koristiti Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
-<translation id="6975725306479268850">Odabir Chromea za automatsko popunjavanje</translation>
+<translation id="6975725306479268850">Odaberite Chrome za automatsko popunjavanje</translation>
 <translation id="701356708427365932">Upoznajte novi Chrome meni</translation>
 <translation id="7059914902409643750">Prilagodite Chrome sebi</translation>
 <translation id="7124339256045485976">Redovno ažurirajte Chrome</translation>
@@ -111,7 +111,7 @@
 <translation id="7754633291442704733">Vaša organizacija <ph name="DOMAIN" /> će imati pristup podacima Chromea, oznakama, historiji, lozinkama i drugim postavkama koje pohranjujete na ovom računu Kada se odjavite, vaši podaci će biti obrisani s ovog uređaja.  Međutim, vaši podaci će ostati pohranjeni na vašem upravljanom Google računu i bit će dostupni vašoj organizaciji. Vaša organizacija također može postaviti pravila za korisnike koja su specifična za taj račun koja mogu promijeniti ponašanje Chromea.</translation>
 <translation id="7780154209050837198">Da iskoristite sve prednosti Chromea, prijavite se na Chrome pomoću Google računa.</translation>
 <translation id="7855730255114109580">Google Chrome je ažuriran</translation>
-<translation id="7939179037291298976">U postavkama iPhonea otvorite Opcije zaporke, a zatim odaberite Chrome</translation>
+<translation id="7939179037291298976">U postavkama iPhone uređaja otvorite Opcije lozinke i odaberite Chrome</translation>
 <translation id="8022947259858476807">Koristite Chrome prema zadanim postavkama da otvarate linkove, pretražujete iz vidžeta i automatski popunjavate lozinke u drugim aplikacijama</translation>
 <translation id="81358522153858150">Chrome sada podržava korisnička pravila za vaš upravljani račun</translation>
 <translation id="8160472928944011082">Nije moguće ažurirati Chrome</translation>
@@ -127,7 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Google upravitelj lozinki nije uspio provjeriti sve lozinke. Pokušajte ponovo sutra ili <ph name="BEGIN_LINK" />provjerite lozinke na Google računu.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Ostanite sigurni uz Google Chrome</translation>
-<translation id="8765470054473112089">Kad upisujete u adresnu traku ili okvir za pretraživanje, ono što upisujete Chrome šalje vašoj zadanoj tražilici kako bi vam pružio bolje prijedloge. To je isključeno u anonimnom načinu.</translation>
+<translation id="8765470054473112089">Kad pišete u traci za adresu ili u okviru za pretraživanje, Chrome šalje ono što upišete zadanom pretraživaču radi dobijanja boljih prijedloga. Ovo je isključeno u anonimnom načinu rada.</translation>
 <translation id="8772179140489533211">Prikazuje upite za prijavu pomoću Chromea.</translation>
 <translation id="8788269841521769222">Nećete morati zapamtiti ovu lozinku. Sačuvat će se u Googleovom Upravitelju lozinki za račun <ph name="EMAIL" /></translation>
 <translation id="8857676124663337448">Google upravitelj lozinki nije uspio provjeriti sve lozinke. Pokušajte ponovo sutra.</translation>

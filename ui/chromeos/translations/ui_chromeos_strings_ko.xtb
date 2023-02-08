@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">영어(미국, 드보락 키보드)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - 호스트</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
+<translation id="1521795806314479294"><ph name="FILE_NAME" /> 준비 중…</translation>
 <translation id="1538729222189715449">Linux 파일을 여는 중...</translation>
 <translation id="1547964879613821194">영어(캐나다)</translation>
 <translation id="1556189134700913550">모두 적용</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">항목 <ph name="NUMBER_OF_ITEMS" />개 압축 중...</translation>
 <translation id="1722687688096767818">프로필 추가 중...</translation>
 <translation id="1726100011689679555">네임서버</translation>
+<translation id="1727562178154619254">동기화 준비됨</translation>
 <translation id="1729953886957086472">독일어(독일)</translation>
 <translation id="1730235522912993863">중국어(창힐수입법)</translation>
 <translation id="1731889557567069540">항목 <ph name="NUMBER_OF_ITEMS" />개를 복사했습니다.</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">사용자 지정 네임서버</translation>
 <translation id="4465725236958772856">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, 관리자가 관리함, 연결</translation>
 <translation id="4470564870223067757">한글 두벌식</translation>
+<translation id="4474142134969976028">일치하는 결과가 없습니다.</translation>
 <translation id="4477002475007461989">루마니아어</translation>
 <translation id="4477219268485577442">불가리아어 표음</translation>
 <translation id="4508265954913339219">활성화 실패</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">이름은 <ph name="MAX_LENGTH" />자 이하여야 합니다</translation>
 <translation id="4973970068702235170">압축에 실패했습니다. 예상치 못한 오류: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">일본어</translation>
+<translation id="4987699874727873250">영어(인도)</translation>
 <translation id="4988205478593450158">'<ph name="FILE_NAME" />'을(를) 삭제하시겠습니까?</translation>
 <translation id="498902553138568924">붉은 나비</translation>
 <translation id="4992066212339426712">음소거 해제</translation>
@@ -509,6 +513,7 @@
    사용 중인 기기를 분리하면 데이터가 삭제될 수 있습니다. 작업이 끝날 때까지 기다린 다음 파일 앱을 사용하여 기기를 꺼내세요.</translation>
 <translation id="5163869187418756376">공유하지 못했습니다. 인터넷 연결을 확인하고 나중에 다시 시도해 주세요.</translation>
 <translation id="516592729076796170">미국 프로그래머 드보락</translation>
+<translation id="5167102019886320507">항목 <ph name="NUMBER_OF_ITEMS" />개 준비 중…</translation>
 <translation id="5177526793333269655">미리보기 이미지 보기</translation>
 <translation id="5181896909298187506">최근 파일 없음</translation>
 <translation id="5194713942430106590">열을 오름차순으로 정렬하려면 클릭하세요.</translation>
@@ -813,6 +818,7 @@
 <translation id="7655441028674523381">Google 포토에 쉽게 액세스하세요</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7663224033570512922">힌디어</translation>
+<translation id="7665680517722058469">다른 검색어를 사용해 보세요.</translation>
 <translation id="7689532716264131859">항목 <ph name="NUMBER_OF_ITEMS" />개를 휴지통으로 이동함</translation>
 <translation id="7693909743393669729">드라이브를 포맷하면 저장된 모든 데이터가 삭제되고 숨김 상태에 있는 파티션을 포함 기존 파티션이 모두 삭제됩니다. 이 작업은 되돌릴 수 없습니다.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" />을(를) 포맷할 수 없습니다.</translation>

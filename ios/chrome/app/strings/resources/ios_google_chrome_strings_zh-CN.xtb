@@ -22,6 +22,7 @@
 <translation id="2347208864470321755">启用此功能后，Chrome 将使用 Google 翻译对其他语言的网页进行翻译。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome 的某些功能可帮助您管理您的互联网数据和网页加载速度。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="2444854139071078915">若要在其他应用中轻松获取您已保存的密码，请使用 Chrome 的自动填充功能</translation>
 <translation id="2561231791489583059">使用 Chrome 作为默认浏览器不仅可让您免受危险网站的侵害，还可保护您的密码</translation>
 <translation id="2574249610672786438">要查看您在其他设备上用 Chrome 打开的标签页，请在所有设备上登录</translation>
 <translation id="2576431527583832481">Chrome 浏览器刚刚经过了改进！新版本已推出。</translation>
@@ -89,6 +90,7 @@
 <translation id="6709398533399187136">您的密码遭遇了数据泄露。Google 密码管理器建议您立即更改此密码。</translation>
 <translation id="6822673484890854830">Chrome 无法检查所有密码。请稍后再试。</translation>
 <translation id="6964931465519938134">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
+<translation id="6975725306479268850">选择使用 Chrome 的自动填充功能</translation>
 <translation id="701356708427365932">了解新 Chrome 菜单</translation>
 <translation id="7059914902409643750">定制您的专属 Chrome</translation>
 <translation id="7124339256045485976">让 Chrome 保持最新状态</translation>
@@ -109,6 +111,7 @@
 <translation id="7754633291442704733">贵组织 (<ph name="DOMAIN" />) 将能够访问您在此帐号中存储的 Chrome 数据、书签、历史记录、密码和其他设置。当您退出帐号时，系统将从这部设备上清除您的数据。不过，您的数据仍会存储在您名下受管理的 Google 帐号中，且可供贵组织访问。贵组织也可专门针对上述帐号设置用户规范，这可能会改变 Chrome 的行为。</translation>
 <translation id="7780154209050837198">若要充分利用 Chrome，请使用您的 Google 帐号登录 Chrome。</translation>
 <translation id="7855730255114109580">Google Chrome 已是最新版本</translation>
+<translation id="7939179037291298976">在 iPhone 的“设置”中，打开“密码选项”，然后选择“Chrome”</translation>
 <translation id="8022947259858476807">默认使用 Chrome 来打开链接、在微件中执行搜索以及在其他应用中自动填充密码</translation>
 <translation id="81358522153858150">Chrome 现在支持为您的受管理帐号设置用户规范</translation>
 <translation id="8160472928944011082">Chrome 无法更新</translation>
@@ -124,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Google 密码管理工具无法检查所有密码。请明天再试，或者<ph name="BEGIN_LINK" />检查您的 Google 帐号中的密码<ph name="END_LINK" />。</translation>
 <translation id="8736550665979974340">Google Chrome 可确保您始终处于保护之下</translation>
+<translation id="8765470054473112089">当您在地址栏或搜索框中输入内容时，Chrome 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>
 <translation id="8772179140489533211">显示意在引导用户登录 Chrome 的提示。</translation>
 <translation id="8788269841521769222">您不需要记住此密码。系统会将它保存到 <ph name="EMAIL" /> 的 Google 密码管理器中</translation>
 <translation id="8857676124663337448">Google 密码管理工具无法检查所有密码。请明天再试。</translation>

@@ -922,6 +922,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="6000203700195075278">Seuraa uudelleen</translation>
 <translation id="6002122790816966947">Omat laitteet</translation>
 <translation id="6005538289190791541">Salasanaehdotus</translation>
+<translation id="6011308810877101166">Paranna hakuehdotuksia</translation>
 <translation id="6039379616847168523">Siirry seuraavalle välilehdelle</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="604124094241169006">Automaattinen</translation>
@@ -1452,6 +1453,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8746155870861185046">Jaa kohta</translation>
 <translation id="8748850008226585750">Sisältö piilotettu</translation>
 <translation id="8756969031206844760">Päivitetäänkö salasana?</translation>
+<translation id="8765470054473112089">Kun kirjoitat osoitepalkkiin tai hakukenttään, Chrome lähettää kirjoittamasi tekstin oletushakukoneellesi, niin saat parempia ehdotuksia. Tämä on poissa päältä incognito-tilassa.</translation>
 <translation id="8766529642647037772">Luodaanko tällainen korostettu linkki?</translation>
 <translation id="8773160212632396039">Pyyntöä käsitellään</translation>
 <translation id="8788265440806329501">Navigointihistoria suljettu</translation>

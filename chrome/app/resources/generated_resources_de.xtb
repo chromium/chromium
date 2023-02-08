@@ -219,6 +219,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1192706927100816598">{0,plural, =1{Du wirst automatisch in # Sekunde abgemeldet.
 <ph name="DOMAIN" /> erfordert, dass deine Smartcard eingesteckt ist.}other{Du wirst automatisch in # Sekunden abgemeldet.
 <ph name="DOMAIN" /> erfordert, dass deine Smartcard eingesteckt ist.}}</translation>
+<translation id="119330003005586565">Seiten, die du gelesen hast</translation>
 <translation id="1193927020065025187">Diese Website verleitet dich möglicherweise dazu, aufdringliche Benachrichtigungen zuzulassen</translation>
 <translation id="1195210374336998651">App-Einstellungen öffnen</translation>
 <translation id="1195447618553298278">Unbekannter Fehler.</translation>
@@ -2464,7 +2465,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3183944777708523606">Monitoranordnung</translation>
 <translation id="3184536091884214176">CUPS-Drucker einrichten oder verwalten. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Diese App ist blockiert}other{Einige Apps sind blockiert}}</translation>
-<translation id="3187472288455401631">Anzeigenanalyse</translation>
+<translation id="3187472288455401631">Analyse von Werbung</translation>
 <translation id="3188257591659621405">Meine Dateien</translation>
 <translation id="3188465121994729530">Gleitender Durchschnitt</translation>
 <translation id="3189187154924005138">Großer Cursor</translation>
@@ -5511,6 +5512,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6007240208646052708">Die Sprachsuche ist nicht in deiner Sprache verfügbar.</translation>
 <translation id="6010651352520077187">Wenn diese Option aktiviert ist, bietet Google Übersetzer an, Websites in deine bevorzugte Sprache zu übersetzen. Außerdem können Websites automatisch übersetzt werden.</translation>
 <translation id="6011193465932186973">Fingerabdruck</translation>
+<translation id="6011308810877101166">Suchvorschläge verbessern</translation>
 <translation id="6011908034087870826">Link wird an <ph name="DEVICE_NAME" /> gesendet</translation>
 <translation id="6013027779243312217">Untertitel für Audioinhalte und Videos</translation>
 <translation id="6014293228235665243">Ungelesen</translation>
@@ -5828,6 +5830,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="630292539633944562">Vorschläge zu personenbezogenen Daten</translation>
 <translation id="6305607932814307878">Globale Richtlinien:</translation>
 <translation id="6305909198255586420">Bitte installiere Steam über dein primäres Profil</translation>
+<translation id="630750887748244481">Dein Elternteil hat „Berechtigungen für Websites, Apps und Erweiterungen“ für Chrome deaktiviert. Deshalb kann diese Erweiterung nicht hinzugefügt werden.</translation>
 <translation id="6307990684951724544">System ausgelastet</translation>
 <translation id="6308493641021088955">Anmeldung zur Verfügung gestellt von <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">&amp;Link speichern unter...</translation>
@@ -7969,6 +7972,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8251509999076836464">Wird mit „<ph name="DEVICE_NAME" />“ gekoppelt</translation>
 <translation id="8251578425305135684">Miniaturansicht wurde entfernt.</translation>
 <translation id="825238165904109940">Immer vollständige URLs anzeigen</translation>
+<translation id="8252538334423261825">Erweiterung kann nicht hinzugefügt werden</translation>
 <translation id="8252569384384439529">Wird hochgeladen…</translation>
 <translation id="8253198102038551905">Auf "+" klicken, um die Netzwerkeigenschaften anzuzeigen</translation>
 <translation id="8255212965098517578">Letzte Fotos, Benachrichtigungen und Apps</translation>
@@ -8369,6 +8373,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8639635302972078117">Du hast die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Dieses Gerät sendet momentan automatisch Diagnose- und Gerätedaten sowie App-Nutzungsdaten an Google. Dein Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Wenn die Einstellung „Zusätzliche Web- &amp; App-Aktivitäten“ für dein Kind aktiviert ist, werden diese Daten möglicherweise in seinem Google-Konto gespeichert.</translation>
 <translation id="8642900771896232685">2 Sekunden</translation>
 <translation id="8642947597466641025">Schriftgrad vergrößern</translation>
+<translation id="8643403533759285912">Gruppe löschen</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> könnte schädlich sein. Soll sie zum Scannen an das erweiterte Sicherheitsprogramm von Google gesendet werden?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Keine Cookies}=1{1 Cookie ist blockiert}other{# Cookies sind blockiert}}</translation>
 <translation id="864423554496711319">In deinem Konto gespeicherte Geräte</translation>
@@ -8842,6 +8847,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="90528604757378587">Hintergrundaktivitäten und einige visuelle Effekte wie flüssiges Scrollen können eingeschränkt sein.</translation>
 <translation id="9053563360605707198">Beidseitig drucken</translation>
 <translation id="9055636786322918818">RC4-Verschlüsselung durchsetzen. Mit dieser Option ist ein höheres Risiko verbunden, da RC4-Verschlüsselungen nicht sicher sind.</translation>
+<translation id="9056788090206401048">Damit sich dein Passkey auf einem anderen Gerät verwenden lässt, muss Bluetooth aktiviert sein. Du kannst dies jederzeit in den Einstellungen verwalten.</translation>
 <translation id="9056810968620647706">Keine Übereinstimmungen gefunden.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> möchte auf die folgenden Inhalte zugreifen:</translation>
 <translation id="9057354806206861646">Aktualisierungszeitplan</translation>

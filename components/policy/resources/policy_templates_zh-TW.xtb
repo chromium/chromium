@@ -3189,6 +3189,11 @@
 <translation id="3994043824457743421">在新分頁顯示中間版位公告</translation>
 <translation id="399433537808390819">不要讓使用者使用整合桌面模式</translation>
 <translation id="3995880046827722248">資訊清單 v2 已停用</translation>
+<translation id="3996118331995847766">如果將 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> 設為啟用，可以透過 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> 設定進階充電模式。從 <ph name="CHARGE_START_TIME_FIELD_NAME" /> 到 <ph name="CHARGE_END_TIME_FIELD_NAME" />，裝置電池只允許充飽一次，在剩餘期間內，電池會保持在較低的充電狀態。<ph name="CHARGE_START_TIME_FIELD_NAME" /> 的值必須小於 <ph name="CHARGE_END_TIME_FIELD_NAME" />。
+
+      如果不設定這項政策，系統會將進階充電模式保持關閉。
+
+      在 <ph name="CHARGE_START_TIME_FIELD_NAME" /> 和 <ph name="CHARGE_END_TIME_FIELD_NAME" /> 的 <ph name="MINUTE_FIELD_NAME" /> 欄位中，有效值為 0、15、30、45。</translation>
 <translation id="3996325823532867220">系統不再支援這項政策，但特定平台可能支援相關政策 <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />。
 
       如果啟用這項設定，<ph name="PRODUCT_NAME" /> 將使用內建的憑證驗證器執行伺服器憑證驗證作業。
@@ -3369,6 +3374,19 @@
           設好這項政策後，使用者即無法變更或覆寫設定。
 
           如果不設定這項政策，系統會在初次顯示登入畫面時停用插入點醒目顯示，但使用者隨時可以啟用。</translation>
+<translation id="4182348537826882258">如果設定 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 政策，系統會禁止載入遭禁止網址的網頁。管理員可以指定要封鎖的網址模式清單。如果未設定，瀏覽器就不會封鎖任何網址。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 中最多可定義 1000 個例外網址。瞭解如何格式化網址模式 (https://support.google.com/chrome/a?p=url_blocklist_filter_format)。
+
+注意：這項政策不會套用至含有動態載入資料的網頁內 JavaScript 網址。如果封鎖 example.com/abc，example.com 仍可使用 XMLHTTPRequest 載入內容。此外，這項政策也不會阻止網頁使用 JavaScript History API 將網址列顯示的網址更新為已封鎖的網址。
+
+從 <ph name="PRODUCT_NAME" /> 73 版開始，你可以封鎖 javascript://* 網址，但這麼做只會影響在網址列輸入的 JavaScript，或是像書籤小程式這類項目。
+
+自 <ph name="PRODUCT_NAME" /> 92 版起，系統在無頭模式下也會支援這項政策。
+
+      注意：封鎖內部 chrome://* 和 chrome-untrusted://* 網址可導致非預期的錯誤，使用者也可能會在某些情況下突破內部網址封鎖。在不封鎖特定內部網址的情況下，看看是否可以使用其他更合適的政策。例如：
+
+- 不封鎖 chrome://settings/certificates，改用 <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />。
+
+- 不封鎖 chrome-untrusted://crosh，改用 <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />。</translation>
 <translation id="4183229833636799228"><ph name="FLASH_PLUGIN_NAME" /> 預設設定</translation>
 <translation id="4185868802416355029">允許受管理的擴充功能使用 Enterprise Hardware Platform API</translation>
 <translation id="4186244263855283575">允許自訂重新啟動裝置的時間表。如果設為 True，裝置會根據時間表重新啟動。如要取消任何排定的重新啟動作業，你必須先移除這項政策。
@@ -3464,6 +3482,13 @@
 
       如果受管理的裝置上有多個使用者帳戶，只有當這項政策啟用時，系統才會顯示通知。</translation>
 <translation id="4303167373847512281">允許使用開發人員模式</translation>
+<translation id="4307116964468610577">這項政策每天只會將電池充飽一次，藉此延長系統電池的使用壽命。在當天剩餘時間內，即使系統已接上電源，電池仍會保持在較低的充電狀態。
+
+      如果已設定 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />，將 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> 設為啟用可在支援的裝置上讓進階充電模式電源管理政策保持啟用。這個模式會在非工作時間採用標準充電演算法和其他技術，讓使用者盡可能延長電池壽命。系統在工作時間會使用快速充電模式，加快充電的速度。請設定開始時間和持續期間，指定每天最常使用系統的時間。
+
+      如果將這項政策設為停用或不設定，系統會將進階充電模式保持關閉。
+
+      使用者無法變更這項設定。</translation>
 <translation id="4309091698378414920">啟用插入點醒目顯示功能</translation>
 <translation id="4311195029067684288">Full</translation>
 <translation id="4311662690937656540">強制在登入畫面和螢幕鎖定畫面執行線上登入</translation>
@@ -4774,6 +4799,7 @@
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="5620392548325769024">這會啟用歡迎頁面，並在作業系統升級後第一次啟動瀏覽器時顯示。</translation>
 <translation id="5621503441067774084">在登入畫面上啟用游標醒目顯示功能</translation>
+<translation id="5622590774455244290">Android 應用程式可能會主動選擇接受這份清單，無法以強制方式執行這項操作。</translation>
 <translation id="5622924058222112599">啟用預設的 CECPQ2 推出程序</translation>
 <translation id="5623304306796942802">有多個憑證相符時，顯示提示訊息</translation>
 <translation id="5625771176514429288">系統會允許 Chrome 應用程式在這些平台上執行。</translation>

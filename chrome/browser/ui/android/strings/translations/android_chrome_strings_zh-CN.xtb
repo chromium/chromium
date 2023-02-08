@@ -922,6 +922,7 @@
 <translation id="6000203700195075278">重新关注</translation>
 <translation id="6002122790816966947">您的设备</translation>
 <translation id="6005538289190791541">建议的密码</translation>
+<translation id="6011308810877101166">改进搜索建议</translation>
 <translation id="6039379616847168523">跳转到下一个标签页</translation>
 <translation id="6040143037577758943">关闭</translation>
 <translation id="604124094241169006">自动</translation>
@@ -1452,6 +1453,7 @@
 <translation id="8746155870861185046">分享突出显示的内容</translation>
 <translation id="8748850008226585750">内容已隐藏</translation>
 <translation id="8756969031206844760">要更新密码吗？</translation>
+<translation id="8765470054473112089">当您在地址栏或搜索框中输入内容时，Chrome 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>
 <translation id="8766529642647037772">创建一个像这样指向突出显示的文本的链接？</translation>
 <translation id="8773160212632396039">正在处理请求</translation>
 <translation id="8788265440806329501">导航历史记录已关闭</translation>

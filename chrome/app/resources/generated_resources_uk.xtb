@@ -414,6 +414,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Немає зламаних паролів}=1{1 зламаний пароль}one{{NUM_COMPROMISED} зламаний пароль}few{{NUM_COMPROMISED} зламані паролі}many{{NUM_COMPROMISED} зламаних паролів}other{{NUM_COMPROMISED} зламаного пароля}}</translation>
 <translation id="1380028686461971526">Автопідключення до мережі</translation>
 <translation id="1381567580865186407">Мовлення (<ph name="LANGUAGE" />) надсилається для обробки на сервери Google</translation>
+<translation id="1383381142702995121">Керувати цим розширенням</translation>
 <translation id="1383597849754832576">Не вдалося завантажити файли живих субтитрів. Повторіть спробу пізніше.</translation>
 <translation id="1383861834909034572">Відкривати, коли завершено</translation>
 <translation id="1383876407941801731">Пошук</translation>
@@ -4245,6 +4246,7 @@
 <translation id="4807098396393229769">Ім'я на картці</translation>
 <translation id="4808667324955055115">Спливаючі вікна заблоковано:</translation>
 <translation id="4809079943450490359">Вказівки адміністратора вашого пристрою:</translation>
+<translation id="4809447465126035330">Видалити</translation>
 <translation id="480990236307250886">Перейти на головну сторінку</translation>
 <translation id="4809927044794281115">Світла тема</translation>
 <translation id="4811212958317149293">Автосканування клавіатури в режимі кнопкового доступу</translation>
@@ -5047,6 +5049,7 @@
 <translation id="5556459405103347317">Перезавантажити</translation>
 <translation id="5558129378926964177">Збільшити &amp;масштаб</translation>
 <translation id="5558247502209241936">Дозволити відкривати додаток у вікні</translation>
+<translation id="5559311991468302423">Видалити адресу</translation>
 <translation id="55601339223879446">Налаштуйте межі робочого столу на дисплеї</translation>
 <translation id="5561162485081632007">Виявляє небезпечні події та повідомляє про них</translation>
 <translation id="5562781907504170924">Цю вкладку під’єднано до пристрою Bluetooth.</translation>
@@ -6439,6 +6442,7 @@
 <translation id="6839916869147598086">Спосіб входу в обліковий запис змінено</translation>
 <translation id="6840155290835956714">Запитувати, перш ніж надсилати</translation>
 <translation id="6840184929775541289">Не є Центром сертифікації</translation>
+<translation id="6840214587087739194">Адресу видалено</translation>
 <translation id="6841143363521180029">Зашифровано</translation>
 <translation id="6841186874966388268">Помилки</translation>
 <translation id="6842136130964845393">Щоб не втратити доступ до своїх збережених паролів, підтвердьте свою особу</translation>
@@ -8282,6 +8286,7 @@
 <translation id="8525306231823319788">На весь екран</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Додати мови</translation>
+<translation id="8528479410903501741">Зберегти номер IBAN</translation>
 <translation id="8528962588711550376">Виконується вхід.</translation>
 <translation id="8529925957403338845">Не вдалося під’єднатися в миттєвому режимі модема</translation>
 <translation id="8531701051932785007">Безпечний перегляд із розширеним захистом вимкнено</translation>

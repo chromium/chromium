@@ -524,6 +524,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2202627062836089804">kaardi tagaküljel</translation>
 <translation id="22081806969704220">Salv 3</translation>
 <translation id="2210794033760923560">Laadi aruanne üles</translation>
+<translation id="2212579473415663542">See aadress salvestatakse teie Google'i kontole (<ph name="ACCOUNT" />). Saate aadressi kasutada Google'i teenustes mis tahes seadmes.</translation>
 <translation id="2212735316055980242">Reeglit ei leitud</translation>
 <translation id="2213606439339815911">Kirjete toomine ...</translation>
 <translation id="2213612003795704869">Leht prinditakse</translation>
@@ -1972,6 +1973,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5866898949289125849">Vaatate arendaja tööriistade lehte</translation>
 <translation id="5869405914158311789">Selle saidiga ei saa ühendust</translation>
 <translation id="5869522115854928033">Salvestatud paroolid</translation>
+<translation id="5872692522325383488">IBAN salvestati</translation>
 <translation id="5873013647450402046">Teie pank soovib teie isikut kinnitada.</translation>
 <translation id="5877831137320480913">Ilu ja fitness</translation>
 <translation id="5884465125445718607">Ümbrik Hiina nr 6</translation>
@@ -2141,6 +2143,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6300452962057769623">{0,plural, =0{Teie seade taaskäivitub kohe}=1{Teie seade taaskäivitub 1 sekundi pärast}other{Teie seade taaskäivitub # sekundi pärast}}</translation>
 <translation id="6301104306974789820">Hankige hinna jälgimise teavitusi</translation>
 <translation id="6305205051461490394">URL-iga <ph name="URL" /> ei saa ühendust.</translation>
+<translation id="6306713302480826305">See aadress kustutatakse sellest ja muudest seadmetest, kus olete sisse logitud</translation>
 <translation id="6311165245110979290">Virtuaalkaart on saadaval</translation>
 <translation id="6312113039770857350">Veebileht ei ole saadaval</translation>
 <translation id="6316226860534107313">Motorollerid ja mopeedid</translation>
@@ -3032,6 +3035,7 @@ Lisateave:
 <translation id="8473863474539038330">Aadressid ja muu</translation>
 <translation id="8474910779563686872">Kuva arendaja üksikasjad</translation>
 <translation id="8479754468255770962">Kirjaklamber vasakul all</translation>
+<translation id="8483229036294884935">See aadress kustutatakse teie Google'i kontolt <ph name="ACCOUNT" /></translation>
 <translation id="8483780878231876732">Google'i konto kaartide kasutamiseks logige sisse Chrome'i</translation>
 <translation id="8488350697529856933">Kehtib:</translation>
 <translation id="8490137692873530638">Virnastaja 10</translation>

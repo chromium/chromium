@@ -346,7 +346,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1736420071277903564">Computer</translation>
 <translation id="1740951997222943430">Enter a valid expiry month</translation>
 <translation id="1741613555002899862">Must be specified and a valid string when DnsOverHttpsMode is <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Chrome notes topics of interest as you browse. Topic labels are predefined and include things like Arts and Entertainment, Shopping and Sports. Later, a site that you visit can ask Chrome for a few of your topics (but not your browsing history) to personalise the ads that you see.</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Chrome notes topics of interest as you browse. Topic labels are predefined and include things like Arts and entertainment, Shopping and Sports. Later, a site that you visit can ask Chrome for a few of your topics (but not your browsing history) to personalise the ads that you see.</translation>
 <translation id="1745880797583122200">Your browser is managed</translation>
 <translation id="1746113442205726301">Image Y shift</translation>
 <translation id="1746531169546376413">0 degrees</translation>
@@ -540,6 +540,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2241693394036365668">File is downloaded</translation>
 <translation id="2246264294482514010">10 in x 12 in</translation>
 <translation id="2246480341630108201">Your parent hasn't said it's OK yet</translation>
+<translation id="2247789808226901522">Card expired</translation>
 <translation id="2248949050832152960">Use WebAuthn</translation>
 <translation id="2250931979407627383">Edge stitch left</translation>
 <translation id="225207911366869382">This value is deprecated for this policy.</translation>
@@ -1078,6 +1079,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3646643500201740985">Measuring how well an ad performs</translation>
 <translation id="3647286794400715637">Each URL string entry must contain between 1 and 2 URLs.</translation>
 <translation id="3650584904733503804">Validation successful</translation>
+<translation id="3650594806107685466">To help keep your card secure, enter the CVC on the <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3653033846669030038">Theme parks</translation>
 <translation id="3655241534245626312">Go to permission settings</translation>
 <translation id="3655670868607891010">If you're seeing this frequently, try these <ph name="HELP_LINK" />.</translation>
@@ -2458,6 +2460,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7112327784801341716">Not seeing your current info? Contact your bank to update it.</translation>
 <translation id="7118618213916969306">Search for clipboard URL, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Close other tabs or programmes</translation>
+<translation id="7124354851782353862">Enter your CVC</translation>
 <translation id="7129355289156517987">When you close all Chromium Incognito tabs, your activity in those tabs is cleared from this device:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Browsing activity<ph name="END_LIST_ITEM" />
@@ -2784,6 +2787,7 @@ Additional details:
 <translation id="7844689747373518809">{COUNT,plural, =0{None}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Later, a site that you visit can ask Chrome for your topics to personalise the ads that you see. Chrome shares up to three topics while protecting your browsing history and identity.</translation>
+<translation id="7860345425589240791">Enter your new expiry date and CVC on the <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Leave site?</translation>
 <translation id="7865448901209910068">Best speed</translation>
 <translation id="7871445724586827387">Change your Google Account password</translation>

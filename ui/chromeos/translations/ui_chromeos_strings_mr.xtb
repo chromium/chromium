@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">ड्वोझॅक कीबोर्डसह इंग्रजी (यूएस)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - होस्ट</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
+<translation id="1521795806314479294"><ph name="FILE_NAME" /> तयार करत आहे...</translation>
 <translation id="1538729222189715449">Linux फाइल सुरू करत आहे...</translation>
 <translation id="1547964879613821194">कॅनेडियन इंग्रजी</translation>
 <translation id="1556189134700913550">सर्वांवर लागू करा</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> आयटम झिप करत आहे...</translation>
 <translation id="1722687688096767818">प्रोफाइल जोडत आहे…</translation>
 <translation id="1726100011689679555">नाव सर्व्हर</translation>
+<translation id="1727562178154619254">सिंक करण्यासाठी तयार आहे</translation>
 <translation id="1729953886957086472">जर्मन (जर्मनी)</translation>
 <translation id="1730235522912993863">चीनी कँगजी</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> आयटम कॉपी केले.</translation>
@@ -479,6 +481,7 @@
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> किंवा त्यापेक्षा कमी वर्णांचे नाव वापरा</translation>
 <translation id="4973970068702235170">झिप करता आले नाही, अनपेक्षित एरर: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">जपानी</translation>
+<translation id="4987699874727873250">इंग्रजी (भारत)</translation>
 <translation id="4988205478593450158">तुम्हाला "<ph name="FILE_NAME" />" नक्की हटवायची आहे का?</translation>
 <translation id="498902553138568924">लाल फुलपाखरू</translation>
 <translation id="4992066212339426712">अनम्यूट करा</translation>
@@ -509,6 +512,7 @@
  तुमचे डिव्हाइस वापरात असताना तो काढण्यामुळे डेटा गमावू शकतो. कृपया ऑपरेशन पूर्ण होईपर्यंत प्रतीक्षा करा, नंतर फाइल अ‍ॅप वापरून डिव्हाइस बाहेर काढून टाका.</translation>
 <translation id="5163869187418756376">सामायिकरण अयशस्वी. तुमचे कनेक्शन तपासा आणि नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="516592729076796170">यूएस प्रोग्रामर द्वोराक</translation>
+<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> आयटम तयार करत आहे...</translation>
 <translation id="5177526793333269655">थंबनेल व्ह्यू</translation>
 <translation id="5181896909298187506">अलीकडील कोणत्याही फाइल नाहीत</translation>
 <translation id="5194713942430106590">स्तंभाची चढत्या क्रमाने क्रमवारी लावण्यासाठी क्लिक करा.</translation>
@@ -969,6 +973,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8866284467018526531">अरबी लिप्यंतरण</translation>
 <translation id="8873014196523807561">हे आयटम रिस्टोअर करण्यासाठी, ते नवीन फोल्डरमध्ये ड्रॅग करा. यापैकी काही आयटमची मूळ फोल्डर ही हटवली गेली आहेत.</translation>
 <translation id="8874184842967597500">कनेक्ट नाही</translation>
+<translation id="8876368061475701452">क्यूमध्ये आहे</translation>
 <translation id="8900820606136623064">हंगेरियन</translation>
 <translation id="8903931173357132290">पदवीधर</translation>
 <translation id="8912078710089354287">शेपुट हलवत असलेला कुत्रा</translation>

@@ -630,6 +630,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1567387640189251553">Một bàn phím khác đã được kết nối kể từ lần gần đây nhất bạn nhập mật khẩu của mình. Bàn phím này có thể đang cố gắng đánh cắp thao tác nhấn phím của bạn.</translation>
 <translation id="156793199942386351">Phím "<ph name="CURRENTKEY" />" đã được gán cho thao tác "<ph name="ACTION" />". Hãy nhấn phím bất kỳ để <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Bảng điều khiển JavaScript</translation>
+<translation id="1569466257325986920">Lần tới khi bạn thay đổi mật khẩu Tài khoản Google, dữ liệu cục bộ của bạn sẽ tự động được khôi phục sau khi bạn đăng nhập vào Tài khoản Google</translation>
 <translation id="1570604804919108255">Hiển thị thông báo</translation>
 <translation id="1571304935088121812">Sao chép tên người dùng</translation>
 <translation id="1571738973904005196">Xem thẻ: <ph name="TAB_ORIGIN" /></translation>
@@ -896,6 +897,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1781979858217752599">Chia sẻ âm thanh trên cửa sổ</translation>
 <translation id="1782101999402987960">Quản trị viên của bạn đã chặn các bản cập nhật</translation>
 <translation id="1782196717298160133">Tìm điện thoại của bạn</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 ghi chú}other{# ghi chú}}</translation>
 <translation id="1784707308176068866">Chạy trong nền khi một ứng dụng gốc hợp tác yêu cầu</translation>
 <translation id="1784849162047402014">Thiết bị sắp hết dung lượng đĩa</translation>
 <translation id="1787350673646245458">Hình ảnh của người dùng</translation>
@@ -1691,6 +1693,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2467755475704469005">Không phát hiện thấy thiết bị nào. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Tăng tốc độ cuộn trên bàn di chuột</translation>
 <translation id="2468205691404969808">Sử dụng cookie để ghi nhớ tùy chọn của bạn, ngay cả khi bạn không truy cập vào các trang đó</translation>
+<translation id="2468247643665097563">Thứ tự</translation>
 <translation id="2468402215065996499">Máy nuôi thú ảo</translation>
 <translation id="2468470085922875120">Bạn đang sử dụng các mật khẩu khá khó đoán</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 thẻ}other{<ph name="GROUP_TITLE" /> – # thẻ}}</translation>
@@ -5963,6 +5966,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6410668567036790476">Thêm công cụ tìm kiếm</translation>
 <translation id="641469293210305670">Cài đặt bản cập nhật và ứng dụng</translation>
 <translation id="6414878884710400018">Mở Tùy chọn hệ thống</translation>
+<translation id="6415816101512323589">Bật tính năng khôi phục dữ liệu cục bộ để bảo vệ dữ liệu của bạn?</translation>
 <translation id="6415900369006735853">Kết nối Internet qua điện thoại</translation>
 <translation id="6416743254476733475">Hãy cho phép hoặc chặn trên máy tính của bạn.</translation>
 <translation id="6417265370957905582">Trợ lý Google</translation>

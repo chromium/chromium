@@ -22,6 +22,7 @@
 <translation id="2347208864470321755">Kui see funktsioon on sisse lülitatud, pakub Chrome võimalust tõlkida teistes keeltes kirjutatud lehti Google'i tõlke abil. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome'il on funktsioone, mis aitavad teil hallata oma internetiandmeid ja seda, kui kiiresti saate veebilehti laadida.
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
+<translation id="2444854139071078915">Selleks et muudes rakendustes hõlpsasti oma salvestatud paroolidele juurde pääseda, kasutage funktsiooni Chrome automaattäite jaoks</translation>
 <translation id="2561231791489583059">Kasutage Chrome'i vaikebrauserina, et ohtlike saitide eest kaitstud olla ja oma paroole turvalisena hoida</translation>
 <translation id="2574249610672786438">Selleks et näha vahelehti kõikjalt, kus Chrome'i kasutate, logige kõigisse oma seadmetesse sisse</translation>
 <translation id="2576431527583832481">Chrome muutus just veelgi paremaks! Saadaval on uus versioon.</translation>
@@ -89,6 +90,7 @@
 <translation id="6709398533399187136">Teie parool oli andmetega seotud rikkumise käigus avalikustatud. Google'i paroolihaldur soovitab teil kohe seda parooli muuta.</translation>
 <translation id="6822673484890854830">Chrome'il ei õnnestunud kõiki paroole kontrollida. Proovige hiljem uuesti.</translation>
 <translation id="6964931465519938134">Nüüd saate kasutada Chrome'i iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
+<translation id="6975725306479268850">Valige automaattäite jaoks Chrome</translation>
 <translation id="701356708427365932">Tutvuge Chrome'i uue menüüga</translation>
 <translation id="7059914902409643750">Isikupärastage Chrome'i</translation>
 <translation id="7124339256045485976">Hoidke Chrome ajakohasena</translation>
@@ -109,6 +111,7 @@
 <translation id="7754633291442704733">Teie organisatsioon <ph name="DOMAIN" /> saab juurdepääsu teie Chrome'i andmetele, järjehoidjatele, ajaloole, paroolidele ja muudele seadetele, mille sellele kontole salvestate. Kui välja logite, kustutatakse teie andmed sellest seadmest.  Teie andmed jäävad teie hallatud Google'i kontole siiski alles ja need on teie organisatsiooni jaoks saadaval. Teie organisatsioon saab määrata ka konto kasutajareegleid, millega saab Chrome'i käitumist muuta.</translation>
 <translation id="7780154209050837198">Chrome'i kasutamiseks parimal moel logige Chrome'i sisse oma Google'i kontoga.</translation>
 <translation id="7855730255114109580">Google Chrome on ajakohane</translation>
+<translation id="7939179037291298976">Avage oma iPhone'i seadetes valik „Password Options” ja tehke valik „Chrome“.</translation>
 <translation id="8022947259858476807">Kasutage linkide avamiseks, vidinatest otsimiseks ja muudes rakendustes paroolide automaatselt täitmiseks vaikimisi Chrome'i</translation>
 <translation id="81358522153858150">Chrome toetab nüüd hallatud konto puhul kasutajareegleid</translation>
 <translation id="8160472928944011082">Chrome'i ei saa värskendada</translation>
@@ -124,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Google'i paroolihalduril ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti või <ph name="BEGIN_LINK" />kontrollige oma Google'i kontol paroole<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Turvalisus Google Chrome'iga</translation>
+<translation id="8765470054473112089">Kui sisestate teksti aadressiribale või otsingukasti, saadab Chrome teie sisestatud teksti teie vaikeotsingumootorisse, et saada paremaid soovitusi. See on inkognito režiimis välja lülitatud.</translation>
 <translation id="8772179140489533211">Kuvatakse viibad Chrome'i sisselogimiseks.</translation>
 <translation id="8788269841521769222">Te ei pea seda parooli meelde jätma. See salvestatakse konto <ph name="EMAIL" /> Google'i paroolihaldurisse.</translation>
 <translation id="8857676124663337448">Google'i paroolihalduril ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti.</translation>

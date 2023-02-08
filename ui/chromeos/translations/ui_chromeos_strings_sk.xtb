@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Anglická (US) klávesnica s rozložením Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – hostiteľ</translation>
 <translation id="1521655867290435174">Tabuľky Google</translation>
+<translation id="1521795806314479294">Pripravuje sa súbor <ph name="FILE_NAME" />…</translation>
 <translation id="1538729222189715449">Otvárajú sa súbory Linux…</translation>
 <translation id="1547964879613821194">Kanadská anglická klávesnica</translation>
 <translation id="1556189134700913550">Použiť pre všetky položky</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Prebieha komprimovanie <ph name="NUMBER_OF_ITEMS" /> položiek…</translation>
 <translation id="1722687688096767818">Pridáva sa profil…</translation>
 <translation id="1726100011689679555">Menné servery</translation>
+<translation id="1727562178154619254">Pripravené na synchronizáciu</translation>
 <translation id="1729953886957086472">Nemecká (Nemecko) klávesnica</translation>
 <translation id="1730235522912993863">Čínska klávesnica Cangjie</translation>
 <translation id="1731889557567069540">Počet skopírovaných položiek: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -480,6 +482,7 @@
 <translation id="4973523518332075481">Použite názov s maximálne <ph name="MAX_LENGTH" /> znakmi</translation>
 <translation id="4973970068702235170">Komprimovanie zlyhalo, neočakávaná chyba: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japonská klávesnica</translation>
+<translation id="4987699874727873250">angličtina (India)</translation>
 <translation id="4988205478593450158">Naozaj chcete odstrániť súbor <ph name="FILE_NAME" />?</translation>
 <translation id="498902553138568924">Červený motýľ</translation>
 <translation id="4992066212339426712">Zapnúť zvuk</translation>
@@ -510,6 +513,7 @@
        Odpojením zariadenia počas používania môžete spôsobiť stratu údajov. Počkajte na dokončenie operácie a následne zariadenie vysuňte pomocou aplikácie Súbory.</translation>
 <translation id="5163869187418756376">Zdieľanie zlyhalo. Skontrolujte pripojenie a skúste to neskôr.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
+<translation id="5167102019886320507">Pripravujú sa položky (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="5177526793333269655">Zobrazenie miniatúr</translation>
 <translation id="5181896909298187506">Žiadne nedávne súbory</translation>
 <translation id="5194713942430106590">Kliknutím zoradíte stĺpec vo vzostupnom poradí.</translation>

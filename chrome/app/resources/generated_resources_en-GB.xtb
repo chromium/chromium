@@ -630,6 +630,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1567387640189251553">A different keyboard has been connected since you last entered your password. It may be attempting to steal your keystrokes.</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' is already assigned to the '<ph name="ACTION" />' action. Press any key to <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript Console</translation>
+<translation id="1569466257325986920">The next time that your Google Account password changes, your local data will be recovered automatically after you sign in to your Google Account</translation>
 <translation id="1570604804919108255">Unmute notifications</translation>
 <translation id="1571304935088121812">Copy username</translation>
 <translation id="1571738973904005196">View tab: <ph name="TAB_ORIGIN" /></translation>
@@ -896,6 +897,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1781979858217752599">Share window audio</translation>
 <translation id="1782101999402987960">Updates are blocked by your administrator</translation>
 <translation id="1782196717298160133">Finding your phone</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 note}other{# notes}}</translation>
 <translation id="1784707308176068866">Run in the background when requested by a cooperating native application</translation>
 <translation id="1784849162047402014">Device is low on disk space</translation>
 <translation id="1787350673646245458">User image</translation>
@@ -1691,6 +1693,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2467755475704469005">No device detected. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Touchpad scroll acceleration</translation>
 <translation id="2468205691404969808">Uses cookies to remember your preferences, even if you don’t visit those pages</translation>
+<translation id="2468247643665097563">Order</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470085922875120">You’re using passwords that look hard to guess</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 tab}other{<ph name="GROUP_TITLE" /> – # tabs}}</translation>
@@ -5963,6 +5966,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6410668567036790476">Add search engine</translation>
 <translation id="641469293210305670">Install updates and apps</translation>
 <translation id="6414878884710400018">Open system preferences</translation>
+<translation id="6415816101512323589">Turn on local data recovery to protect your data?</translation>
 <translation id="6415900369006735853">Connect to the Internet through your phone</translation>
 <translation id="6416743254476733475">Allow or block on your computer.</translation>
 <translation id="6417265370957905582">Google Assistant</translation>

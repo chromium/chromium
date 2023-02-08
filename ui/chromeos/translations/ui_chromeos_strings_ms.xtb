@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Inggeris (AS) dengan papan kekunci Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Hos</translation>
 <translation id="1521655867290435174">Helaian Google</translation>
+<translation id="1521795806314479294">Menyediakan <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">Membuka fail Linux...</translation>
 <translation id="1547964879613821194">Bahasa Inggeris Kanada</translation>
 <translation id="1556189134700913550">Gunakan pada semua</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Mengezip <ph name="NUMBER_OF_ITEMS" /> item...</translation>
 <translation id="1722687688096767818">Menambah Profil...</translation>
 <translation id="1726100011689679555">Pelayan nama</translation>
+<translation id="1727562178154619254">Sedia untuk disegerakkan</translation>
 <translation id="1729953886957086472">Jerman (Jerman)</translation>
 <translation id="1730235522912993863">Cangjie Cina</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> item disalin.</translation>
@@ -479,6 +481,7 @@
 <translation id="4973523518332075481">Gunakan nama yang mengandungi tidak lebih daripada <ph name="MAX_LENGTH" /> aksara</translation>
 <translation id="4973970068702235170">Gagal mengezip, ralat tidak dijangka: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Jepun</translation>
+<translation id="4987699874727873250">Bahasa Inggeris (India)</translation>
 <translation id="4988205478593450158">Adakah anda pasti anda mahu memadamkan "<ph name="FILE_NAME" />"?</translation>
 <translation id="498902553138568924">Rama-rama merah</translation>
 <translation id="4992066212339426712">Nyahredam</translation>
@@ -509,6 +512,7 @@
    Mengalih keluar peranti anda semasa sedang digunakan boleh menyebabkan kehilangan data. Sila tunggu sehingga operasi telah selesai, kemudian lentingkan peranti menggunakan apl Fail.</translation>
 <translation id="5163869187418756376">Perkongsian gagal. Periksa sambungan anda dan cuba lagi nanti.</translation>
 <translation id="516592729076796170">Dvorak Pengatur Cara AS</translation>
+<translation id="5167102019886320507">Menyediakan <ph name="NUMBER_OF_ITEMS" /> item...</translation>
 <translation id="5177526793333269655">Paparan lakaran kenit</translation>
 <translation id="5181896909298187506">Tiada fail baru-baru ini</translation>
 <translation id="5194713942430106590">Klik untuk mengisih lajur dalam tertib menaik.</translation>
@@ -969,6 +973,7 @@
 <translation id="8866284467018526531">Alih Huruf Arab</translation>
 <translation id="8873014196523807561">Untuk memulihkan item ini, seret item ke folder baharu. Folder asal untuk beberapa item ini telah dipadamkan.</translation>
 <translation id="8874184842967597500">Tidak bersambung</translation>
+<translation id="8876368061475701452">Dibaris Gilir</translation>
 <translation id="8900820606136623064">Bahasa Hungary</translation>
 <translation id="8903931173357132290">Graduan</translation>
 <translation id="8912078710089354287">Anjing menggoyang-goyangkan ekor</translation>

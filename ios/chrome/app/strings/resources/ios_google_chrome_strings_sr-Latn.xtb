@@ -90,6 +90,7 @@
 <translation id="6709398533399187136">Vaša lozinka je otkrivena pri upadu u podatke. Google menadžer lozinki preporučuje da je odmah promenite.</translation>
 <translation id="6822673484890854830">Chrome nije uspeo da proveri sve lozinke. Probajte ponovo kasnije.</translation>
 <translation id="6964931465519938134">Sada možete da koristite Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
+<translation id="6975725306479268850">Izaberite Chrome za automatsko popunjavanje</translation>
 <translation id="701356708427365932">Upoznajte novi Chrome meni</translation>
 <translation id="7059914902409643750">Prilagodite Chrome sebi</translation>
 <translation id="7124339256045485976">Redovno ažuriraju Chrome</translation>
@@ -110,6 +111,7 @@
 <translation id="7754633291442704733">Organizacija <ph name="DOMAIN" /> će imati pristup Chrome podacima, obeleživačima, istoriji, lozinkama i drugim podešavanjima koja čuvate na ovom nalogu. Kada se odjavite, podaci će se obrisati sa ovog uređaja.  Međutim, podaci će se i dalje čuvati na Google nalogu kojim se upravlja i biće dostupni vašoj organizaciji. Organizacija može da podešava posebne smernice za korisnike za taj nalog koje mogu da promene ponašanje Chrome-a.</translation>
 <translation id="7780154209050837198">Da biste koristili Chrome na najbolji način, prijavite se na Chrome pomoću Google naloga.</translation>
 <translation id="7855730255114109580">Google Chrome je aktuelan</translation>
+<translation id="7939179037291298976">U podešavanjima iPhone-a otvorite „Password Options“ (Opcije za lozinke) i izaberite „Chrome“</translation>
 <translation id="8022947259858476807">Podrazumevano koristite Chrome da biste otvarali linkove, pretraživali iz vidžeta i automatski popunjavali lozinke u drugim aplikacijama</translation>
 <translation id="81358522153858150">Chrome sada podržava smernice za korisnika za upravljani nalog</translation>
 <translation id="8160472928944011082">Chrome ne može da se ažurira</translation>
@@ -125,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Google menadžer lozinki nije uspeo da proveri sve lozinke. Probajte ponovo sutra ili <ph name="BEGIN_LINK" />proverite lozinke na Google nalogu.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Ostanite bezbedni uz Google Chrome</translation>
+<translation id="8765470054473112089">Kada kucate u traci za adresu ili u okviru za pretragu, Chrome šalje tekst koji unosite podrazumevanom pretraživaču da biste dobijali bolje predloge. Ovo je isključeno u režimu bez arhiviranja.</translation>
 <translation id="8772179140489533211">Prikazuje upite za prijavljivanje u Chrome.</translation>
 <translation id="8788269841521769222">Ne morate da zapamtite ovu lozinku. Čuva se u Google menadžeru lozinki za <ph name="EMAIL" /></translation>
 <translation id="8857676124663337448">Google menadžer lozinki nije uspeo da proveri sve lozinke. Probajte ponovo sutra.</translation>

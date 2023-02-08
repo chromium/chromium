@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Engels (VS) met Dvorak-toetsenbord</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" />: host</translation>
 <translation id="1521655867290435174">Google Spreadsheets</translation>
+<translation id="1521795806314479294"><ph name="FILE_NAME" /> voorbereiden...</translation>
 <translation id="1538729222189715449">Linux-bestanden openen…</translation>
 <translation id="1547964879613821194">Canadees Engels</translation>
 <translation id="1556189134700913550">Op alles toepassen</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> items inpakken...</translation>
 <translation id="1722687688096767818">Profiel toevoegen...</translation>
 <translation id="1726100011689679555">Naamservers</translation>
+<translation id="1727562178154619254">Klaar om te synchroniseren</translation>
 <translation id="1729953886957086472">Duits (Duitsland)</translation>
 <translation id="1730235522912993863">Chinees (Cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> items gekopieerd.</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">Aangepaste naamservers</translation>
 <translation id="4465725236958772856">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, beheerd door je beheerder, verbinden</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
+<translation id="4474142134969976028">Geen overeenkomende resultaten</translation>
 <translation id="4477002475007461989">Roemeens</translation>
 <translation id="4477219268485577442">Bulgaars fonetisch</translation>
 <translation id="4508265954913339219">Activering mislukt</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">Gebruik een naam die maximaal <ph name="MAX_LENGTH" /> tekens bevat</translation>
 <translation id="4973970068702235170">Inpakken mislukt. Onverwachte fout: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japans</translation>
+<translation id="4987699874727873250">Engels (India)</translation>
 <translation id="4988205478593450158">Weet je zeker dat je '<ph name="FILE_NAME" />' wilt verwijderen?</translation>
 <translation id="498902553138568924">Rode vlinder</translation>
 <translation id="4992066212339426712">Geluid aanzetten</translation>
@@ -510,6 +514,7 @@
        Als je je apparaat verwijdert terwijl het wordt gebruikt, raak je mogelijk gegevens kwijt. Wacht totdat de bewerking is voltooid en werp het apparaat vervolgens uit via de app Bestanden.</translation>
 <translation id="5163869187418756376">Delen mislukt. Controleer de verbinding en probeer het later opnieuw.</translation>
 <translation id="516592729076796170">Amerikaans Programmer Dvorak</translation>
+<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> items voorbereiden...</translation>
 <translation id="5177526793333269655">Miniatuurweergave</translation>
 <translation id="5181896909298187506">Geen recente bestanden</translation>
 <translation id="5194713942430106590">Klik om de kolom in oplopende volgorde te sorteren.</translation>
@@ -814,6 +819,7 @@
 <translation id="7655441028674523381">Krijg makkelijk toegang tot Google Foto's</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7665680517722058469">Probeer een andere zoekopdracht</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> items naar de prullenbak verplaatst</translation>
 <translation id="7693909743393669729">Tijdens het formatteren van een schijf worden alle opgeslagen gegevens en alle bestaande partities verwijderd, inclusief partities die mogelijk niet zichtbaar zijn. Deze actie kan niet ongedaan worden gemaakt.</translation>
 <translation id="7695430100978772476">Formatteren van <ph name="DRIVE_NAME" /> is mislukt</translation>
@@ -970,6 +976,7 @@
 <translation id="8866284467018526531">Arabisch (transliteratie)</translation>
 <translation id="8873014196523807561">Als je deze items wilt herstellen, sleep je ze naar een nieuwe map. De oorspronkelijke mappen voor sommige van deze items zijn verwijderd.</translation>
 <translation id="8874184842967597500">Niet verbonden</translation>
+<translation id="8876368061475701452">In wachtrij</translation>
 <translation id="8900820606136623064">Hongaars</translation>
 <translation id="8903931173357132290">Afgestudeerde</translation>
 <translation id="8912078710089354287">Hond die kwispelt</translation>

@@ -222,6 +222,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <ph name="DOMAIN" /> krefst þess að snjallkortið sé haft í.}one{Þú verður skráð(ur) út sjálfkrafa eftir # sekúndu.
 <ph name="DOMAIN" /> krefst þess að snjallkortið sé haft í.}other{Þú verður skráð(ur) út sjálfkrafa eftir # sekúndur.
 <ph name="DOMAIN" /> krefst þess að snjallkortið sé haft í.}}</translation>
+<translation id="119330003005586565">Síður sem þú hefur lesið</translation>
 <translation id="1193927020065025187">Þetta vefsvæði gæti verið að reyna að plata þig til að leyfa ágengar tilkynningar</translation>
 <translation id="1195210374336998651">Opna forritastillingar</translation>
 <translation id="1195447618553298278">Óþekkt villa.</translation>
@@ -5534,6 +5535,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6007240208646052708">Raddleit er ekki í boði á þínu tungumáli.</translation>
 <translation id="6010651352520077187">Google Translate mun bjóðast til að þýða vefsvæði yfir á þitt kjörtungumál ef kveikt er á því. Það getur einnig þýtt vefsvæði sjálfkrafa.</translation>
 <translation id="6011193465932186973">Fingrafar</translation>
+<translation id="6011308810877101166">Bæta leitartillögur</translation>
 <translation id="6011908034087870826">Sendir tengil í <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">Fáðu skjátexta fyrir hljóð- og myndefni</translation>
 <translation id="6014293228235665243">Ólesið</translation>
@@ -5851,6 +5853,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="630292539633944562">Tillögur að persónuupplýsingum</translation>
 <translation id="6305607932814307878">Altæk regla:</translation>
 <translation id="6305909198255586420">Settu upp með aðalprófílnum þínum</translation>
+<translation id="630750887748244481">Foreldri þitt hefur slökkt á „Heimildum fyrir vefsvæði, forrit og viðbætur" fyrir Chrome. Óheimilt er að bæta þessari viðbót við.</translation>
 <translation id="6307990684951724544">Kerfi upptekið</translation>
 <translation id="6308493641021088955">Innskráning veitt af <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Vista tengil sem...</translation>
@@ -7993,6 +7996,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8251509999076836464">Parar við <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Smámynd fjarlægð.</translation>
 <translation id="825238165904109940">Sýna alltaf vefslóðir í fullri lengd</translation>
+<translation id="8252538334423261825">Ekki er hægt að bæta viðbót við</translation>
 <translation id="8252569384384439529">Hleður inn...</translation>
 <translation id="8253198102038551905">Smelltu á „+“ til að fá upp neteiginleika</translation>
 <translation id="8255212965098517578">Nýlegar myndir, tilkynningar og forrit</translation>
@@ -8393,6 +8397,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8639635302972078117">Senda notkunar- og greiningargögn. Þetta tæki sendir núna sjálfkrafa greiningargögn, tækisgögn og upplýsingar um forritanotkun til Google. Þetta verður ekki notað til að bera kennsl á barnið þitt og mun stuðla að stöðugleika kerfa og forrita og öðrum endurbótum. Sum uppsöfnuð gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android. Ef kveikt er á ítarlegri vef- og forritavirkni fyrir barnið geta þessi gögn verið vistuð á Google reikningi barnsins.</translation>
 <translation id="8642900771896232685">2 sekúndur</translation>
 <translation id="8642947597466641025">Stækka texta</translation>
+<translation id="8643403533759285912">Eyða hópi</translation>
 <translation id="8643443571868262066">Skráin <ph name="FILE_NAME" /> gæti verið hættuleg. Viltu senda hana í skönnun Ítarlegrar verndar hjá Google?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Engin fótspor}=1{1 fótspor útilokað}one{# fótspor útilokað}other{# fótspor útilokuð}}</translation>
 <translation id="864423554496711319">Tæki sem eru vistuð á þínum reikningi</translation>
@@ -8867,6 +8872,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="90528604757378587">Bakgrunnsvirkni og tiltekin myndáhrif eru hugsanlega takmörkuð, s.s. mjúkfletting.</translation>
 <translation id="9053563360605707198">Prenta á báðum hliðum</translation>
 <translation id="9055636786322918818">Þvinga RC4-dulkóðun. Þessi valkostur felur í sér meiri áhættu, þar sem RC4-dulmálslyklar eru óöruggir.</translation>
+<translation id="9056788090206401048">Kveikja þarf á Bluetooth til að nota aðgangslykil í öðru tæki. Þú getur stjórnað þessu í stillingunum.</translation>
 <translation id="9056810968620647706">Engar samsvaranir fundust.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> vill fá aðgang að eftirfarandi efni:</translation>
 <translation id="9057354806206861646">Uppfæra áætlun</translation>

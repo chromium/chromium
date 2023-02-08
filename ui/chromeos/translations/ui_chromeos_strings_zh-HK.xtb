@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">英文 (美國)，Dvorak 鍵盤</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - 主機</translation>
 <translation id="1521655867290435174">Google 試算表</translation>
+<translation id="1521795806314479294">正在準備「<ph name="FILE_NAME" />」…</translation>
 <translation id="1538729222189715449">正在開啟 Linux 檔案…</translation>
 <translation id="1547964879613821194">加拿大英語</translation>
 <translation id="1556189134700913550">全部套用</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">正在壓縮 <ph name="NUMBER_OF_ITEMS" /> 個項目…</translation>
 <translation id="1722687688096767818">正在新增設定檔…</translation>
 <translation id="1726100011689679555">名稱伺服器</translation>
+<translation id="1727562178154619254">準備好同步</translation>
 <translation id="1729953886957086472">德文 (德國)</translation>
 <translation id="1730235522912993863">中文 (倉頡)</translation>
 <translation id="1731889557567069540">已複製 <ph name="NUMBER_OF_ITEMS" /> 個項目。</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">自訂名稱伺服器</translation>
 <translation id="4465725236958772856">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，由管理員管理，連接</translation>
 <translation id="4470564870223067757">韓文 2 Set</translation>
+<translation id="4474142134969976028">找不到相符的結果</translation>
 <translation id="4477002475007461989">羅馬尼亞文</translation>
 <translation id="4477219268485577442">保加利亞文拼音</translation>
 <translation id="4508265954913339219">啟用失敗</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">請使用不多於 <ph name="MAX_LENGTH" /> 個字元的名稱</translation>
 <translation id="4973970068702235170">壓縮失敗，發生未預期的錯誤：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">日文</translation>
+<translation id="4987699874727873250">英文 (印度)</translation>
 <translation id="4988205478593450158">確定要刪除「<ph name="FILE_NAME" />」嗎？</translation>
 <translation id="498902553138568924">紅蝴蝶</translation>
 <translation id="4992066212339426712">取消靜音</translation>
@@ -509,6 +513,7 @@
    您的裝置仍在運作中，現在移除裝置可能會導致數據遺失。請耐心等候操作結束，再使用「檔案」應用程式退出裝置。</translation>
 <translation id="5163869187418756376">共用失敗。請檢查連線狀態，然後再試一次。</translation>
 <translation id="516592729076796170">Programmer Dvorak 美式</translation>
+<translation id="5167102019886320507">正在準備 <ph name="NUMBER_OF_ITEMS" /> 個項目…</translation>
 <translation id="5177526793333269655">縮圖檢視</translation>
 <translation id="5181896909298187506">最近沒有任何檔案</translation>
 <translation id="5194713942430106590">按一下即可遞增排序欄位。</translation>
@@ -813,6 +818,7 @@
 <translation id="7655441028674523381">輕鬆存取「Google 相片」</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7663224033570512922">印度文</translation>
+<translation id="7665680517722058469">嘗試搜尋其他字詞</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> 個項目已移至垃圾桶</translation>
 <translation id="7693909743393669729">將硬碟格式化會清除其中儲存的所有資料，並移除所有的現有分割區，包括隱藏的分割區。此操作無法復原。</translation>
 <translation id="7695430100978772476">無法格式化「<ph name="DRIVE_NAME" />」</translation>

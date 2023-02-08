@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Angielski (USA) z klawiaturą Dvoraka</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
 <translation id="1521655867290435174">Arkusze Google</translation>
+<translation id="1521795806314479294">Przygotowuję plik <ph name="FILE_NAME" />…</translation>
 <translation id="1538729222189715449">Otwieram pliki Linuksa…</translation>
 <translation id="1547964879613821194">kanadyjski angielski</translation>
 <translation id="1556189134700913550">Zastosuj do wszystkich</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Pakuję elementy (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="1722687688096767818">Dodawanie profilu…</translation>
 <translation id="1726100011689679555">Serwery nazw</translation>
+<translation id="1727562178154619254">Gotowe do synchronizacji</translation>
 <translation id="1729953886957086472">Niemiecki (Niemcy)</translation>
 <translation id="1730235522912993863">Chiński cangjie</translation>
 <translation id="1731889557567069540">Liczba skopiowanych elementów: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">Własne serwery nazw</translation>
 <translation id="4465725236958772856">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, zarządzana przez administratora, połącz</translation>
 <translation id="4470564870223067757">zestaw Hangul 2</translation>
+<translation id="4474142134969976028">Brak pasujących wyników</translation>
 <translation id="4477002475007461989">Rumuński</translation>
 <translation id="4477219268485577442">bułgarska klawiatura fonetyczna</translation>
 <translation id="4508265954913339219">Aktywacja nie powiodła się</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">Użyj nazwy, której długość nie przekracza <ph name="MAX_LENGTH" /> znaków</translation>
 <translation id="4973970068702235170">Pakowanie nie powiodło się z powodu nieoczekiwanego błędu: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japoński</translation>
+<translation id="4987699874727873250">Angielski (Indie)</translation>
 <translation id="4988205478593450158">Czy na pewno chcesz usunąć plik „<ph name="FILE_NAME" />”?</translation>
 <translation id="498902553138568924">Czerwony motyl</translation>
 <translation id="4992066212339426712">Wyłącz wyciszenie</translation>
@@ -509,6 +513,7 @@
        Jeśli to zrobisz w trakcie pracy, możesz spowodować utratę danych. Poczekaj na zakończenie operacji, a następnie odłącz urządzenie, używając aplikacji Pliki.</translation>
 <translation id="5163869187418756376">Niepowodzenie udostępniania. Sprawdź połączenie i spróbuj ponownie później.</translation>
 <translation id="516592729076796170">Amerykańska dewelopera (Dvorak)</translation>
+<translation id="5167102019886320507">Przygotowuję elementy (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="5177526793333269655">Widok miniatur</translation>
 <translation id="5181896909298187506">Brak nowych plików</translation>
 <translation id="5194713942430106590">Kliknij, by posortować kolumnę w kolejności rosnącej.</translation>
@@ -813,6 +818,7 @@
 <translation id="7655441028674523381">Szybki dostęp do Zdjęć Google</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7665680517722058469">Spróbuj wyszukać coś innego</translation>
 <translation id="7689532716264131859">Elementy (<ph name="NUMBER_OF_ITEMS" />) zostały przeniesione do kosza</translation>
 <translation id="7693909743393669729">Sformatowanie dysku spowoduje usunięcie wszystkich zapisanych na nim danych i wszystkich znajdujących się na nim partycji, w tym partycji niewidocznych. Tej czynności nie będzie można cofnąć.</translation>
 <translation id="7695430100978772476">Nie udało się sformatować: <ph name="DRIVE_NAME" /></translation>

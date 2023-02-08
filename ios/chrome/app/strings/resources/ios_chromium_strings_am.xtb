@@ -62,6 +62,7 @@
 <translation id="4985291216379576555">ከመስመር ውጭ፣ Chromium ዝማኔዎች ካሉ መፈተሽ አልቻለም</translation>
 <translation id="4996471330284142407">ከመቼውም ጊዜ በበለጠ ቀላል፣ ደህንነቱ በተጠበቀ እና ፈጣን በሆነ Chromium አማካኝነት ተጨማሪ ነገሮችን ያከናውኑ።</translation>
 <translation id="4999538639245140991">በ<ph name="SIGNOUT_MANAGED_DOMAIN" /> ከሚተዳደር መለያ ዘግተው እየወጡ ስለሆነ የእርስዎ Chromium ውሂብ ከዚህ መሣሪያ ላይ ይሰረዛል። የእርስዎ ውሂብ በGoogle መለያዎ ውስጥ ይቆያል።</translation>
+<translation id="5048795749726991615">በሌሎች መተግበሪያዎችዎ ውስጥ የተቀመጡ የይለፍ ቃላትዎን በቀላሉ ለማግኘት Chromium ለራስ-ሙላን ይጠቀሙ።</translation>
 <translation id="5171868502429358653">Chromium ውስጥ ይግቡ</translation>
 <translation id="5224391634244552924">ምንም የተቀመጡ የይለፍ ቃላት የሉም። እርስዎ የይለፍ ቃላትዎን ሲያስቀምጧቸው Chromium መፈተሽ ይችላል።</translation>
 <translation id="5308226104666789935">Chromium ዝማኔዎች ካሉ መፈተሽ አልቻለም</translation>
@@ -91,6 +92,7 @@
 <translation id="7045244423563602563">Chromiumን የራስዎ ያድርጉት</translation>
 <translation id="7099326575020694068">Chromium ካሜራዎን በተከፈለ እይታ ሁነታ ላይ መጠቀም አይችልም</translation>
 <translation id="7118091470949186573">አገናኞችን በመልእክቶች፣ በሰነዶች እና በሌሎች መተግበሪያዎች ውስጥ መታ በሚያደርጉበት ጊዜ ሁሉ Chromiumን አሁን መጠቀም ይችላሉ።</translation>
+<translation id="7165402419892018581">ለራስ-ሙላ Chromiumን ይምረጡ</translation>
 <translation id="7175400662502680481">የይለፍ ቃልዎ በውሂብ ጥሰት ውስጥ ተጋልጧል። የይለፍ ቃል አስተዳዳሪ አሁን እንዲቀይሩት ይመክራል።</translation>
 <translation id="7208566199746267865">Chromium የእርስዎን መለያዎች ወደ ድር በማምጣት ጊዜ ይቆጥብልዎታል። ቅንብሮች ውስጥ መለያዎችን ማከል ወይም ማስወገድ ይችላሉ።</translation>
 <translation id="725427773388857052">Chromium እርስዎን ከውሂብ ጥሰቶች፣ ደህንነታቸው ካልተጠበቁ ድር ጣቢያዎች እና ከተጨማሪ ነገሮች ለመጠበቅ ሊያግዘዎት ይችላል።</translation>
@@ -105,6 +107,7 @@
 <translation id="7746854981345936341">የChromium ጠቃሚ ምክር። አሁን እንደ ተመለስ፣ ወደፊት እና ፍለጋ ያሉ አንዳንድ አዝራሮች አሁን በማያ ገጽዎ አናት ላይ ነው ያሉት።</translation>
 <translation id="7763454117143368771">ከአደገኛ ጣቢያዎች እንዲጠበቁ እና የይለፍ ቃላትዎን ደህንነት ለመጠበቅ Chromiumን እንደ ነባሪ አሳሽዎ ይጠቀሙ</translation>
 <translation id="7812317783196516890">እርስዎ አስተዳዳሪው አሁን የChromium ባህሪን ሊቀይር የሚችሉ መለያውን የሚመለከቱ የተጠቃሚ መመሪያዎችን ማቀናበር ወደሚችሉበት በ<ph name="DOMAIN" /> የሚተዳደር መለያ ገብተዋል እና ውሂብዎን ከእሱ ጋር እያሰመሩት ነው።</translation>
+<translation id="7859018312476869945">የአድራሻ አሞሌ ወይም የፍለጋ ሳጥን ውስጥ ሲተይቡ የተሻሉ ጥቆማዎችን ለማግኘት Chromium የሚተይቡትን ለእርስዎ ነባሪ የፍለጋ ፕሮግራም ይልካል። ይህ ማንነት የማያሳውቅ ውስጥ ጠፍቷል።</translation>
 <translation id="786327964234957808">የስምረት መለያዎችን ከ<ph name="USER_EMAIL1" /> ወደ <ph name="USER_EMAIL2" /> እየቀየሩ ነው። ነባሩ የChromium ውሂብዎ በ<ph name="DOMAIN" /> ነው የሚተዳደረው። ይሄ ውሂብዎን ከዚህ መሣሪያዎ ይሰርዘዋል፣ ነገር ግን ውሂብዎ በ<ph name="USER_EMAIL1" /> ውስጥ እንዳለ ይቀራል።</translation>
 <translation id="7890287942691234100">የChromium ቃኚውን መጠቀም ይጀምሩ</translation>
 <translation id="7928628054454574139">በሌሎች መተግበሪያዎች ውስጥ ያሉ አገናኞችን በማንኛውም ጊዜ መታ ሲያደርጉ Chromiumን ይክፈቱ</translation>
@@ -114,6 +117,7 @@
 <translation id="8073677936375100957">የChromium ውሂብዎ ከዚህ መሣሪያ ላይ ይጽዳ?</translation>
 <translation id="8240981428553046115">Chromium ዝማኔዎች ካሉ መፈተሽ አልቻለም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="8409374867500149834">ከጎጂ ድር ጣቢያዎች የሚከላከል የChromium በጣም ጠንካራ ጥበቃ አለዎት</translation>
+<translation id="8460301378281140593">ከእርስዎ iPhone ቅንብሮች «የይለፍ ቃል አማራጮች»ን ይክፈቱ እና «Chromium»ን ይምረጡ</translation>
 <translation id="858114650497379505">በእርስዎ iPhone ላይ ባሉ ሌሎች መተግበሪያዎች ውስጥ ወደ የይለፍ ቃል አስተዳዳሪ ያስቀመጧቸውን የይለፍ ቃላት መጠቀም ይችላሉ።</translation>
 <translation id="8586442755830160949">የቅጂ መብት <ph name="YEAR" /> የChromium ደራሲያን። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
 <translation id="8603022514504485810">Google የይለፍ ቃል አስተዳዳሪ ሁሉንም የይለፍ ቃላት መፈተሽ አልቻለም። ነገ እንደገና ይሞክሩ ወይም <ph name="BEGIN_LINK" />በGoogle መለያዎ ውስጥ የይለፍ ቃላትን ይፈትሹ።<ph name="END_LINK" /></translation>

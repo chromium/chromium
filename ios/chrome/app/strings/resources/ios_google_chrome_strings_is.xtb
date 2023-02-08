@@ -89,6 +89,7 @@
 <translation id="6709398533399187136">Aðgangsorðið þitt var afhjúpað vegna öryggisbrots. Aðgangsorðastjórnun Google mælir með að þú breytir því núna.</translation>
 <translation id="6822673484890854830">Chrome gat ekki athugað öll aðgangsorð. Reyndu aftur síðar.</translation>
 <translation id="6964931465519938134">Núna geturðu notað Chrome hvenær sem þú ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>
+<translation id="6975725306479268850">Velja Chrome fyrir sjálfvirka útfyllingu</translation>
 <translation id="701356708427365932">Kynntu þér nýju Chrome valmyndina</translation>
 <translation id="7059914902409643750">Lagaðu Chrome að þínum þörfum</translation>
 <translation id="7124339256045485976">Haltu Chrome uppfærðu</translation>
@@ -109,6 +110,7 @@
 <translation id="7754633291442704733"><ph name="DOMAIN" /> fyrirtækisins þíns fær aðgang að Chrome gögnunum þínum, bókamerkjum, ferli, aðgangsorðum og öðrum stillingum sem þú geymir á þessum reikningi. Þegar þú skráir þig út verður gögnunum þínum eytt úr þessu tæki.  Hins vegar verða gögnin þín geymd á stýrða Google reikningnum þínum og verða aðgengileg fyrirtækinu þínu. Fyrirtækið þitt getur líka stillt notendareglur sem eru sértækar fyrir reikninginn þinn og geta breytt virkni Chrome.</translation>
 <translation id="7780154209050837198">Skráðu þig inn á Chrome með Google reikningnum þínum svo að Chrome nýtist þér sem best.</translation>
 <translation id="7855730255114109580">Google Chrome er uppfært</translation>
+<translation id="7939179037291298976">Í stillingum iPhone skaltu opna „Password Options“ og velja „Chrome“</translation>
 <translation id="8022947259858476807">Notaðu Chrome sem sjálfgefinn valkost til að opna tengla, leita í græjum og til sjálfvirkrar útfyllingar aðgangsorða í öðrum forritum</translation>
 <translation id="81358522153858150">Chrome styður nú notendareglur fyrir stýrða reikninginn þinn</translation>
 <translation id="8160472928944011082">Ekki er hægt að uppfæra Chrome</translation>
@@ -124,6 +126,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Google-aðgangsorðastjórnun gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun eða <ph name="BEGIN_LINK" />athugaðu aðgangsorð á Google-reikningnum þínum.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Öryggi með Google Chrome</translation>
+<translation id="8765470054473112089">Þegar þú skrifar í veffangastiku eða leitarreit sendir Chrome það sem þú skrifar á sjálfgefna leitarvél til að fá betri tillögur. Slökkt er á þessu í huliðsstillingu.</translation>
 <translation id="8772179140489533211">Sýna innskráningartilkynningar í Chrome.</translation>
 <translation id="8788269841521769222">Þú þarft ekki að muna þetta aðgangsorð. Það verður vistað í aðgangsorðastjórnun Google fyrir <ph name="EMAIL" /></translation>
 <translation id="8857676124663337448">Google-aðgangsorðastjórnun gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun.</translation>

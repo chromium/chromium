@@ -221,6 +221,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <ph name="DOMAIN" /> zahteva da pametna kartica ostane umetnuta.}few{Automatski ćete biti odjavljeni za # sekunde.
 <ph name="DOMAIN" /> zahteva da pametna kartica ostane umetnuta.}other{Automatski ćete biti odjavljeni za # sekundi.
 <ph name="DOMAIN" /> zahteva da pametna kartica ostane umetnuta.}}</translation>
+<translation id="119330003005586565">Pročitane stranice</translation>
 <translation id="1193927020065025187">Ovaj sajt možda pokušava da vas prevari da dozvolite ometajuća obaveštenja</translation>
 <translation id="1195210374336998651">Otvori podešavanja aplikacije</translation>
 <translation id="1195447618553298278">Nepoznata greška.</translation>
@@ -5519,6 +5520,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6007240208646052708">Glasovna pretraga na vašem jeziku nije dostupna.</translation>
 <translation id="6010651352520077187">Kada je uključeno, Google prevodilac će nuditi da prevede sajtove na željeni jezik. Može i automatski da prevodi sajtove.</translation>
 <translation id="6011193465932186973">Digitalni otisak</translation>
+<translation id="6011308810877101166">Poboljšajte predloge za pretragu</translation>
 <translation id="6011908034087870826">Link se šalje na <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">Preuzmite titl za audio i video</translation>
 <translation id="6014293228235665243">Nepročitano</translation>
@@ -5836,6 +5838,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="630292539633944562">Predlozi za lične podatke</translation>
 <translation id="6305607932814307878">Globalne smernice:</translation>
 <translation id="6305909198255586420">Instalirajte pomoću primarnog profila</translation>
+<translation id="630750887748244481">Roditelj je isključio „Dozvole za sajtove, aplikacije i dodatke“ za Chrome. Dodavanje ovog dodatka nije dozvoljeno.</translation>
 <translation id="6307990684951724544">Sistem je zauzet</translation>
 <translation id="6308493641021088955">Prijavljivanje omogućava <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Sačuvaj li&amp;nk kao...</translation>
@@ -7982,6 +7985,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8251509999076836464">Uparivanje sa uređajem <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Sličica je uklonjena.</translation>
 <translation id="825238165904109940">Uvek prikazuj URL-ove u celosti</translation>
+<translation id="8252538334423261825">Dodavanje dodatka nije uspelo</translation>
 <translation id="8252569384384439529">Otprema se...</translation>
 <translation id="8253198102038551905">Kliknite na „+“ da biste videli svojstva mreže</translation>
 <translation id="8255212965098517578">Nedavne slike, obaveštenja i aplikacije</translation>

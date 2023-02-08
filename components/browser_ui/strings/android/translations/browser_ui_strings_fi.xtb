@@ -357,6 +357,7 @@
 <translation id="7791543448312431591">Lisää</translation>
 <translation id="780301667611848630">Ei kiitos</translation>
 <translation id="7804248752222191302">Sivusto käyttää kameraasi</translation>
+<translation id="7807060072011926525">Googlen tarjoama</translation>
 <translation id="7835852323729233924">Toistetaan mediaa</translation>
 <translation id="783819812427904514">Poista videon mykistys</translation>
 <translation id="7846076177841592234">Peru valinta</translation>
@@ -406,7 +407,7 @@
 <translation id="8514955299594277296">Älä salli sivustojen tallentaa dataa laitteellesi (ei suositella)</translation>
 <translation id="851751545965956758">Estä sivustoja yhdistämästä laitteisiin</translation>
 <translation id="8525306231823319788">Koko näyttö</translation>
-<translation id="8541410041357371550">Tämä sivusto saa mainosten aiheet Chromesta, jotta voit nähdä osuvampia mainoksia</translation>
+<translation id="8541410041357371550">Tämä sivusto saa mainosaiheet Chromesta, jotta voit nähdä osuvampia mainoksia</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Evästeet sallittu <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-sivustolla}other{Evästeet sallittu <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-sivustolla}}</translation>
 <translation id="857943718398505171">Sallittu (suositus)</translation>
 <translation id="8609465669617005112">Siirrä ylös</translation>

@@ -922,6 +922,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="6000203700195075278">Újrakövetés</translation>
 <translation id="6002122790816966947">Saját eszközök</translation>
 <translation id="6005538289190791541">Javasolt jelszó</translation>
+<translation id="6011308810877101166">Keresési javaslatok javítása</translation>
 <translation id="6039379616847168523">Ugrás a következő lapra</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="604124094241169006">Automatikus</translation>
@@ -1452,6 +1453,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8746155870861185046">Kiemelés megosztása</translation>
 <translation id="8748850008226585750">Tartalom elrejtve</translation>
 <translation id="8756969031206844760">Szeretné frissíteni a jelszót?</translation>
+<translation id="8765470054473112089">Amikor Ön beír valamit a címsávba vagy a keresőmezőbe, a Chrome a beírt szöveget elküldi az alapértelmezett keresőmotornak, hogy jobb javaslatokat biztosítson. Inkognitóban ki van kapcsolva ez a funkció.</translation>
 <translation id="8766529642647037772">Szeretne létrehozni egy ehhez hasonló kiemelt linket?</translation>
 <translation id="8773160212632396039">Kérés feldolgozása folyamatban van</translation>
 <translation id="8788265440806329501">Bezárta a navigációs előzményeket</translation>

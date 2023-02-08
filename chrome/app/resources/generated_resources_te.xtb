@@ -412,6 +412,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{చోరీకి గురైన పాస్‌వర్డ్‌లు ఏవీ లేవు}=1{1 చోరీకి గురైన పాస్‌వర్డ్}other{{NUM_COMPROMISED} చోరీకి గురైన పాస్‌వర్డ్‌లు}}</translation>
 <translation id="1380028686461971526">నెట్‌వర్క్‌కు ఆటోమేటిక్‌గా కనెక్ట్ చేయడం</translation>
 <translation id="1381567580865186407">ప్రాసెసింగ్ కోసం <ph name="LANGUAGE" /> స్పీచ్ Googleకు పంపబడింది</translation>
+<translation id="1383381142702995121">ఈ ఎక్స్‌టెన్షన్‌ను మేనేజ్ చేయండి</translation>
 <translation id="1383597849754832576">స్పీచ్ ఫైళ్లను డౌన్‌లోడ్ చేయడం సాధ్యం కాదు. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="1383861834909034572">పూర్తి అయిన తర్వాత తెరవబడుతుంది</translation>
 <translation id="1383876407941801731">సెర్చ్</translation>
@@ -4241,6 +4242,7 @@
 <translation id="4807098396393229769">కార్డ్‌పై పేరు</translation>
 <translation id="4808667324955055115">పాప్-అప్‌లు బ్లాక్ చేయబడ్డాయి:</translation>
 <translation id="4809079943450490359">మీ పరికర అడ్మినిస్ట్రేట‌ర్ నుండి సూచనలు:</translation>
+<translation id="4809447465126035330">తొలగించండి</translation>
 <translation id="480990236307250886">హోమ్ పేజీని తెరువు</translation>
 <translation id="4809927044794281115">లేత రంగు రూపం</translation>
 <translation id="4811212958317149293">స్విచ్ యాక్సెస్ కీబోర్డ్ ఆటో స్కాన్</translation>
@@ -5043,6 +5045,7 @@
 <translation id="5556459405103347317">మళ్లీ లోడ్ చేయి</translation>
 <translation id="5558129378926964177">దగ్గరికి జూమ్ చేయి</translation>
 <translation id="5558247502209241936">విండోలో తెరుచుకునేలా యాప్‌ను ఎనేబుల్ చేయండి</translation>
+<translation id="5559311991468302423">అడ్రస్‌ను తొలగించండి</translation>
 <translation id="55601339223879446">డిస్‌ప్లేలో మీ డెస్క్‌టాప్ సరిహద్దులను సర్దుబాటు చేయండి</translation>
 <translation id="5561162485081632007">ప్రమాదకరమైన సంఘటనలు జరిగినప్పుడు గుర్తించి, మిమ్మల్ని హెచ్చరిస్తుంది</translation>
 <translation id="5562781907504170924">ఈ ట్యాబ్ బ్లూటూత్ పరికరానికి కనెక్ట్ చేయబడింది.</translation>
@@ -6434,6 +6437,7 @@
 <translation id="6839916869147598086">సైన్-ఇన్ మార్చబడింది</translation>
 <translation id="6840155290835956714">పంపే ముందు అడగాలి</translation>
 <translation id="6840184929775541289">ప్రమాణపత్రం అధికారం కాదు</translation>
+<translation id="6840214587087739194">అడ్రస్ తొలగించబడింది</translation>
 <translation id="6841143363521180029">ఎన్‌క్రిప్ట్ చేయబడింది</translation>
 <translation id="6841186874966388268">లోపాలు</translation>
 <translation id="6842136130964845393">మీరు మీ సేవ్ చేయబడిన పాస్‌వర్డ్‌లను ఎల్లప్పుడూ యాక్సెస్ చేయగలరని నిర్ధారించుకోవడానికి, అది మీరేనని వెరిఫై చేయండి</translation>
@@ -8274,6 +8278,7 @@
 <translation id="8525306231823319788">ఫుల్-స్క్రీన్‌</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">భాషలను జోడించండి</translation>
+<translation id="8528479410903501741">IBANని సేవ్ చేయండి</translation>
 <translation id="8528962588711550376">సైన్ ఇన్ అవుతోంది.</translation>
 <translation id="8529925957403338845">తక్షణ టెథెరింగ్ కనెక్షన్ విఫలమైంది</translation>
 <translation id="8531701051932785007">మెరుగైన సురక్షిత బ్రౌజింగ్ ఆఫ్ చేయబడింది</translation>

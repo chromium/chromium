@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Anglès (EUA) amb teclat Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Amfitrió</translation>
 <translation id="1521655867290435174">Fulls de càlcul de Google</translation>
+<translation id="1521795806314479294">S'està preparant <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">S'estan obrint els fitxers de Linux...</translation>
 <translation id="1547964879613821194">Anglès canadenc</translation>
 <translation id="1556189134700913550">Aplica-ho a tot</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">S'estan comprimint <ph name="NUMBER_OF_ITEMS" /> elements...</translation>
 <translation id="1722687688096767818">S'està afegint el perfil...</translation>
 <translation id="1726100011689679555">Servidors de noms</translation>
+<translation id="1727562178154619254">A punt per sincronitzar</translation>
 <translation id="1729953886957086472">Alemany (Alemanya)</translation>
 <translation id="1730235522912993863">Xinès (cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elements copiats.</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">Servidors de noms personalitzats</translation>
 <translation id="4465725236958772856">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, gestionada per l'administrador, connecta</translation>
 <translation id="4470564870223067757">Configuració 2 de hangul</translation>
+<translation id="4474142134969976028">No hi ha cap resultat coincident</translation>
 <translation id="4477002475007461989">Romanès</translation>
 <translation id="4477219268485577442">Fonètic búlgar</translation>
 <translation id="4508265954913339219">S'ha produït un error en l'activació.</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">Utilitza un nom que tingui <ph name="MAX_LENGTH" /> caràcters com a màxim</translation>
 <translation id="4973970068702235170">S'ha produït un error en la compressió; error inesperat: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japonès</translation>
+<translation id="4987699874727873250">Anglès (Índia)</translation>
 <translation id="4988205478593450158">Estàs segur que vols suprimir "<ph name="FILE_NAME" />"?</translation>
 <translation id="498902553138568924">Papallona vermella</translation>
 <translation id="4992066212339426712">Deixa de silenciar</translation>
@@ -509,6 +513,7 @@
        Si retireu el dispositiu mentre encara s'està utilitzant, es poden perdre dades. Espereu fins que hagi acabat l'operació i, a continuació, expulseu el dispositiu amb l'aplicació Fitxers.</translation>
 <translation id="5163869187418756376">S'ha produït un error en compartir. Comproveu la connexió i torneu-ho a provar més tard.</translation>
 <translation id="516592729076796170">Dvorak nord-americà per a programadors</translation>
+<translation id="5167102019886320507">S'estan preparant <ph name="NUMBER_OF_ITEMS" /> elements...</translation>
 <translation id="5177526793333269655">Visualització de miniatures</translation>
 <translation id="5181896909298187506">No hi ha cap fitxer recent</translation>
 <translation id="5194713942430106590">Fes clic per veure les dades de la columna en ordre ascendent.</translation>
@@ -813,6 +818,7 @@
 <translation id="7655441028674523381">Accedeix fàcilment a Google Fotos</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7665680517722058469">Prova una altra cerca</translation>
 <translation id="7689532716264131859">S'han mogut <ph name="NUMBER_OF_ITEMS" /> elements a la paperera</translation>
 <translation id="7693909743393669729">En formatar una unitat, se n'esborren totes les dades que s'hi hagin emmagatzemat i se'n suprimeixen totes les particions existents, incloses algunes que potser no es veuen. Aquesta acció no es pot desfer.</translation>
 <translation id="7695430100978772476">No s'ha pogut formatar <ph name="DRIVE_NAME" /></translation>

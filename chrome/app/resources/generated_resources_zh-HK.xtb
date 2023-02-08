@@ -221,6 +221,7 @@
 <translation id="1192706927100816598">{0,plural, =1{您將在 # 秒後自動登出。
 <ph name="DOMAIN" /> 需要您繼續插入智能卡。}other{您將在 # 秒後自動登出。
 <ph name="DOMAIN" /> 需要您繼續插入智能卡。}}</translation>
+<translation id="119330003005586565">您看過的網頁</translation>
 <translation id="1193927020065025187">此網站可能會試圖誘騙您允許滋擾性通知</translation>
 <translation id="1195210374336998651">前往應用程式設定</translation>
 <translation id="1195447618553298278">未知的錯誤。</translation>
@@ -411,6 +412,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{沒有密碼被盜用}=1{1 個密碼被盜用}other{{NUM_COMPROMISED} 個密碼被盜用}}</translation>
 <translation id="1380028686461971526">自動連線至網絡</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" />語音將會傳送至 Google 進行處理</translation>
+<translation id="1383381142702995121">管理此擴充程式</translation>
 <translation id="1383597849754832576">無法下載即時字幕檔案，請稍後再試。</translation>
 <translation id="1383861834909034572">完成後開啟</translation>
 <translation id="1383876407941801731">搜尋</translation>
@@ -4242,6 +4244,7 @@
 <translation id="4807098396393229769">信用卡持有人姓名</translation>
 <translation id="4808667324955055115">已封鎖彈出式視窗：</translation>
 <translation id="4809079943450490359">來自裝置管理員的指示：</translation>
+<translation id="4809447465126035330">刪除</translation>
 <translation id="480990236307250886">開啟首頁</translation>
 <translation id="4809927044794281115">淺色主題背景</translation>
 <translation id="4811212958317149293">「按鈕控制」鍵盤自動掃瞄</translation>
@@ -5044,6 +5047,7 @@
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5558129378926964177">放大(&amp;I)</translation>
 <translation id="5558247502209241936">可以喺視窗入面啟動應用程式</translation>
+<translation id="5559311991468302423">刪除地址</translation>
 <translation id="55601339223879446">調整顯示屏內的桌面邊界</translation>
 <translation id="5561162485081632007">偵測並在危險事件發生時發出警告</translation>
 <translation id="5562781907504170924">這個分頁已連線至藍牙裝置。</translation>
@@ -5530,6 +5534,7 @@
 <translation id="6007240208646052708">無法使用您的語言執行語音搜尋。</translation>
 <translation id="6010651352520077187">開啟後，「Google 翻譯」會顯示語言選項，並根據您的偏好語言翻譯網站內容。此外，這項服務亦可自動翻譯網站內容。</translation>
 <translation id="6011193465932186973">指紋</translation>
+<translation id="6011308810877101166">改善搜尋建議</translation>
 <translation id="6011908034087870826">傳送緊連結去 <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">取得音訊和影片的字幕</translation>
 <translation id="6014293228235665243">未讀</translation>
@@ -5848,6 +5853,7 @@
 <translation id="630292539633944562">個人資料建議</translation>
 <translation id="6305607932814307878">通用政策：</translation>
 <translation id="6305909198255586420">請使用主要設定檔安裝</translation>
+<translation id="630750887748244481">您的家長已停用 Chrome 的「網站、應用程式和擴充程式權限」設定，系統不允許加入此擴充程式。</translation>
 <translation id="6307990684951724544">系統忙碌中</translation>
 <translation id="6308493641021088955">登入資料由<ph name="EXTENSION_NAME" />提供</translation>
 <translation id="6308937455967653460">另存連結為(&amp;K)…</translation>
@@ -6431,6 +6437,7 @@
 <translation id="6839916869147598086">登入方式已變更</translation>
 <translation id="6840155290835956714">傳送前先詢問</translation>
 <translation id="6840184929775541289">不是憑證授權單位</translation>
+<translation id="6840214587087739194">刪除咗地址</translation>
 <translation id="6841143363521180029">已加密</translation>
 <translation id="6841186874966388268">錯誤</translation>
 <translation id="6842136130964845393">為確保您可隨時存取已儲存的密碼，請驗證您的身分</translation>
@@ -7989,6 +7996,7 @@
 <translation id="8251509999076836464">配對緊 <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">已移除縮圖。</translation>
 <translation id="825238165904109940">一律顯示完整網址</translation>
+<translation id="8252538334423261825">無法新增擴充程式</translation>
 <translation id="8252569384384439529">正在上載…</translation>
 <translation id="8253198102038551905">按一下 [+] 以取得網絡屬性</translation>
 <translation id="8255212965098517578">最近的相片、通知和應用程式</translation>
@@ -8274,6 +8282,7 @@
 <translation id="8525306231823319788">全螢幕</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">新增語言</translation>
+<translation id="8528479410903501741">儲存 IBAN</translation>
 <translation id="8528962588711550376">正在登入。</translation>
 <translation id="8529925957403338845">即時網絡共享連線失敗</translation>
 <translation id="8531701051932785007">「強化安全瀏覽」功能已關閉</translation>

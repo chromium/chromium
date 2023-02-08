@@ -582,7 +582,7 @@
 <translation id="4162867837470729563">فهرست گزینه‌های هم‌رسانی به‌صورت کامل باز شده است.</translation>
 <translation id="4170011742729630528">این سرویس در دسترس نیست؛ بعداً دوباره امتحان کنید.</translation>
 <translation id="4177222230309051052">دریافت همه نشانک‌ها</translation>
-<translation id="4177501066905053472">موضوعات آگهی</translation>
+<translation id="4177501066905053472">موضوع‌های آگهی</translation>
 <translation id="4181841719683918333">زبان‌ها</translation>
 <translation id="4195643157523330669">باز کردن در برگهٔ جدید</translation>
 <translation id="4196597275619698563">ایجاد کارت</translation>
@@ -635,7 +635,7 @@
 <translation id="4504667196171871375">‏ازطریق Wi-Fi و داده تلفن همراه</translation>
 <translation id="4508528996305412043">منوی کارت فید باز شد</translation>
 <translation id="4508642716788467538">زبانتان را انتخاب کنید</translation>
-<translation id="4509501256689523862">درحین مرور، شخصی شدن یا نشدن آگهی‌هایی که می‌بینید به موارد زیر بستگی دارد»: این تنظیم، <ph name="BEGIN_LINK_1" />موضوعات آگهی<ph name="END_LINK_1" />، <ph name="BEGIN_LINK_2" />تنظیمات کوکی<ph name="END_LINK_2" /> شما، و اینکه آیا سایتی که مشاهده می‌کنید آگهی‌ها را شخصی‌سازی می‌کند یا نه</translation>
+<translation id="4509501256689523862">درحین مرور، شخصی شدن یا نشدن آگهی‌هایی که می‌بینید به موارد زیر بستگی دارد»: این تنظیم، <ph name="BEGIN_LINK_1" />موضوع‌های آگهی<ph name="END_LINK_1" />، <ph name="BEGIN_LINK_2" />تنظیمات کوکی<ph name="END_LINK_2" /> شما، و اینکه آیا سایتی که مشاهده می‌کنید آگهی‌ها را شخصی‌سازی می‌کند یا نه</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{۱ روز قبل}one{#  روز قبل}other{#  روز قبل}}</translation>
 <translation id="451872707440238414">جستجوی نشانک‌های شما</translation>
 <translation id="4521489764227272523">‏داده‌های انتخاب‌‌شده از Chrome و دستگاه‌های همگام‌سازی‌شده شما حذف شدند.
@@ -922,6 +922,7 @@
 <translation id="6000203700195075278">دنبال کردن مجدد</translation>
 <translation id="6002122790816966947">دستگاه‌های شما</translation>
 <translation id="6005538289190791541">گذرواژه پیشنهادی</translation>
+<translation id="6011308810877101166">بهبود پیشنهادهای جستجو</translation>
 <translation id="6039379616847168523">رفتن به برگه بعدی</translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="604124094241169006">خودکار</translation>
@@ -1452,6 +1453,7 @@
 <translation id="8746155870861185046">هم‌رسانی مورد برجسته</translation>
 <translation id="8748850008226585750">محتوا پنهان است</translation>
 <translation id="8756969031206844760">گذرواژه به‌روزرسانی شود؟</translation>
+<translation id="8765470054473112089">‏وقتی در نوار نشانی یا چارگوش جستجو تایپ می‌کنید، Chrome آنچه تایپ می‌کنید را به موتور جستجوی پیش‌فرض شما ارسال می‌کند تا پیشنهادهای بهتری دریافت کند. این ویژگی در «حالت ناشناس» خاموش است.</translation>
 <translation id="8766529642647037772">پیوند برجسته‌ای مثل این ایجاد می‌کنید؟</translation>
 <translation id="8773160212632396039">درحال پردازش درخواست</translation>
 <translation id="8788265440806329501">سابقه «پیمایش» بسته است</translation>

@@ -922,6 +922,7 @@
 <translation id="6000203700195075278">다시 팔로우</translation>
 <translation id="6002122790816966947">내 기기</translation>
 <translation id="6005538289190791541">추천 비밀번호</translation>
+<translation id="6011308810877101166">추천 검색어 개선</translation>
 <translation id="6039379616847168523">다음 탭으로 이동</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="604124094241169006">자동</translation>
@@ -1452,6 +1453,7 @@
 <translation id="8746155870861185046">강조표시한 텍스트 공유</translation>
 <translation id="8748850008226585750">숨겨진 콘텐츠</translation>
 <translation id="8756969031206844760">비밀번호를 업데이트하시겠습니까?</translation>
+<translation id="8765470054473112089">주소 표시줄이나 검색창에 검색어를 입력하면 Chrome은 더 나은 추천을 위해 사용자가 입력한 내용을 기본 검색엔진에 전송합니다. 시크릿 모드에서는 이 기능이 사용 중지되어 있습니다.</translation>
 <translation id="8766529642647037772">다음과 같은 강조표시된 링크를 만들까요?</translation>
 <translation id="8773160212632396039">요청 처리 중입니다.</translation>
 <translation id="8788265440806329501">탐색 기록 닫힘</translation>

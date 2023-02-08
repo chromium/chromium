@@ -2465,7 +2465,7 @@
 <translation id="3183944777708523606">મૉનિટરની ગોઠવણી</translation>
 <translation id="3184536091884214176">CUPS પ્રિન્ટર સેટઅપ કરો અથવા મેનેજ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{આ ઍપને બ્લૉક કરવામાં આવી છે}one{આ ઍપને બ્લૉક કરવામાં આવી છે}other{કેટલીક ઍપને બ્લૉક કરવામાં આવી છે}}</translation>
-<translation id="3187472288455401631">Ad measurement</translation>
+<translation id="3187472288455401631">જાહેરાતના પરફોર્મન્સનું માપન</translation>
 <translation id="3188257591659621405">મારી ફાઇલો</translation>
 <translation id="3188465121994729530">ચલ સરેરાશ</translation>
 <translation id="3189187154924005138">મોટું કર્સર</translation>
@@ -4106,7 +4106,7 @@
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (ડિફૉલ્ટ)</translation>
 <translation id="4684427112815847243">દરેક વસ્તુ સમન્વયિત કરો</translation>
 <translation id="4687613760714619596">અજાણ્યું ડિવાઇસ (<ph name="DEVICE_ID" />)</translation>
-<translation id="4687718960473379118">સાઇટ દ્વારા સૂચવવામાં આવેલી જાહેરાતો</translation>
+<translation id="4687718960473379118">સાઇટ દ્વારા સૂચવેલી જાહેરાતો</translation>
 <translation id="4688036121858134881">સ્થાનિક લૉગ ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> આ ડિવાઇસને અગાઉના વર્ઝન પર મૂકી રહ્યું છે (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="4689235506267737042">તમારી ડેમો પસંદગીઓને પસંદ કરો</translation>
@@ -8371,6 +8371,7 @@ USB ડિવાઇસ</translation>
 <translation id="8639635302972078117">વપરાશ અને નિદાનનો ડેટા મોકલો. આ ડિવાઇસ હાલમાં Googleને નિદાન, ડિવાઇસ અને ઍપ વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલી રહ્યું છે. આનો ઉપયોગ તમારા બાળકને ઓળખવા માટે થશે નહીં અને સિસ્ટમ અને ઍપની સ્થિરતા અને અન્ય સુધારણાઓમાં સહાય કરશે. એકત્ર કરેલો કેટલોક ડેટા Google ઍપ અને ભાગીદારો, જેમ કે Android ડેવલપરને પણ સહાય કરશે. જો તમારા બાળક માટે વધારાનું વેબ અને ઍપ પ્રવૃત્તિ સેટિંગ ચાલુ હોય, તો આ ડેટા તેમના Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે.</translation>
 <translation id="8642900771896232685">2 સેકન્ડ</translation>
 <translation id="8642947597466641025">ટેક્સ્ટ મોટો કરો</translation>
+<translation id="8643403533759285912">ગ્રૂપ ડિલીટ કરો</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> જોખમકારક હોઈ શકે છે. તપાસ કરવા માટે Googleની વિગતવાર સુરક્ષાને મોકલીએ?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{કોઈ કુકી નથી}=1{1 કુકી બ્લૉક કરવામાં આવી છે}one{# કુકી બ્લૉક કરવામાં આવી છે}other{# કુકી બ્લૉક કરવામાં આવી છે}}</translation>
 <translation id="864423554496711319">તમારા એકાઉન્ટમાં સાચવવામાં આવેલા ડિવાઇસ</translation>
@@ -8845,6 +8846,7 @@ USB ડિવાઇસ</translation>
 <translation id="90528604757378587">સ્મૂધ સ્ક્રોલિંગ જેવી બૅકગ્રાઉન્ડમાં થતી પ્રવૃત્તિ અને અમુક વિઝ્યુઅલ ઇફેક્ટ મર્યાદિત હોઈ શકે છે.</translation>
 <translation id="9053563360605707198">બન્ને બાજુએ પ્રિન્ટ કરો</translation>
 <translation id="9055636786322918818">RC4 એન્ક્રિપ્શન લાગુ કરો. આનાથી વિકલ્પનો ઉપયોગ કરવાનું તમારું જોખમ વધે છે, કારણ કે RC4 સાઇફર અસુરક્ષિત હોય છે.</translation>
+<translation id="9056788090206401048">કોઈ અન્ય ડિવાઇસ પર તમારી પાસકીનો ઉપયોગ કરવા માટે, બ્લૂટૂથ ચાલુ હોવું આવશ્યક છે. તમે હંમેશાં સેટિંગમાં જઈને આમાં ફેરફાર કરી શકો છો.</translation>
 <translation id="9056810968620647706">કોઈ મેળ મળ્યાં નથી.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> નીચેનું કન્ટેન્ટ ઍક્સેસ કરવા માગે છે:</translation>
 <translation id="9057354806206861646">શેડ્યૂલ અપડેટ કરો</translation>

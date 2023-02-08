@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - مضيف</translation>
 <translation id="1521655867290435174">‏جداول بيانات Google</translation>
+<translation id="1521795806314479294">جارٍ تحضير <ph name="FILE_NAME" />…</translation>
 <translation id="1538729222189715449">‏جارٍ فتح ملفات نظام التشغيل Linux...</translation>
 <translation id="1547964879613821194">الإنجليزية الكندية</translation>
 <translation id="1556189134700913550">تطبيق على الكل</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">جارٍ ضغط <ph name="NUMBER_OF_ITEMS" /> من العناصر...</translation>
 <translation id="1722687688096767818">جارٍ إضافة الملف الشخصي...</translation>
 <translation id="1726100011689679555">خوادم الأسماء</translation>
+<translation id="1727562178154619254">الملف جاهز للمزامنة.</translation>
 <translation id="1729953886957086472">الألمانية (ألمانيا)</translation>
 <translation id="1730235522912993863">‏الصينية باستخدام لوحة مفاتيح Cangjie</translation>
 <translation id="1731889557567069540">تم نسخ <ph name="NUMBER_OF_ITEMS" /> عنصر.</translation>
@@ -480,6 +482,7 @@
 <translation id="4973523518332075481">يرجى استخدام اسم يحتوي على <ph name="MAX_LENGTH" /> حرف أو أقل</translation>
 <translation id="4973970068702235170">تعذَّر الضغط، خطأ غير متوقع: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">اليابانية</translation>
+<translation id="4987699874727873250">الإنجليزية (الهند)</translation>
 <translation id="4988205478593450158">هل تريد بالتأكيد حذف "<ph name="FILE_NAME" />"؟</translation>
 <translation id="498902553138568924">فراشة حمراء</translation>
 <translation id="4992066212339426712">إعادة الصوت</translation>
@@ -510,6 +513,7 @@
    قد تؤدي إزالة جهازك أثناء وجوده قيد الاستخدام إلى فقدان البيانات.  يُرجى الانتظار حتى انتهاء العملية، ثم إخراج الجهاز باستخدام تطبيق الملفات.</translation>
 <translation id="5163869187418756376">تعذّرت المشاركة. تحقق من اتصالك وأعد المحاولة لاحقًا.</translation>
 <translation id="516592729076796170">‏لوحة مفاتيح المطور الأمريكية Dvorak</translation>
+<translation id="5167102019886320507">جارٍ تحضير <ph name="NUMBER_OF_ITEMS" /> ملف…</translation>
 <translation id="5177526793333269655">عرض الصور المصغرة</translation>
 <translation id="5181896909298187506">ما مِن ملفات حديثة.</translation>
 <translation id="5194713942430106590">انقر لترتيب محتوى العمود ترتيبًا تصاعديًا.</translation>

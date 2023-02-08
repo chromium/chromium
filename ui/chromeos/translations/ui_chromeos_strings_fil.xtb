@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">English (US) na may Dvorak keyboard</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Host</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
+<translation id="1521795806314479294">Inihahanda ang <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">Binubuksan ang mga Linux file...</translation>
 <translation id="1547964879613821194">Canadian English</translation>
 <translation id="1556189134700913550">Ilapat sa lahat</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Zini-zip ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
 <translation id="1722687688096767818">Idinaragdag ang Profile...</translation>
 <translation id="1726100011689679555">Mga name server</translation>
+<translation id="1727562178154619254">Handa nang mag-sync</translation>
 <translation id="1729953886957086472">German (Germany)</translation>
 <translation id="1730235522912993863">Chinese Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> (na) item ang nakopya.</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">Custom na mga server ng pangalan</translation>
 <translation id="4465725236958772856">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Pinapamahalaan ng iyong Administrator, Kumonekta</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
+<translation id="4474142134969976028">Walang tumutugmang resulta</translation>
 <translation id="4477002475007461989">Romanian</translation>
 <translation id="4477219268485577442">Bulgarian phonetic</translation>
 <translation id="4508265954913339219">Nabigo ang pag-activate</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">Gumamit ng pangalang may <ph name="MAX_LENGTH" /> (na) character o mas kaunti</translation>
 <translation id="4973970068702235170">Hindi na-zip, nagkaroon ng hindi inaasahang error: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japanese</translation>
+<translation id="4987699874727873250">English (India)</translation>
 <translation id="4988205478593450158">Sigurado ka bang gusto mong i-delete ang "<ph name="FILE_NAME" />"?</translation>
 <translation id="498902553138568924">Pulang paru-paro</translation>
 <translation id="4992066212339426712">I-unmute</translation>
@@ -509,6 +513,7 @@
    Maaaring magsanhi ng pagkawala ng data ang pag-aalis sa iyong device habang ginagamit ito.  Mangyaring maghintay hanggang matapos ang operasyon, pagkatapos ay i-eject ang device gamit ang Files app.</translation>
 <translation id="5163869187418756376">Nabigo ang pagbabahagi. Suriin ang iyong koneksyon at subukan ulit sa ibang pagkakataon.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
+<translation id="5167102019886320507">Inihahanda ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
 <translation id="5177526793333269655">View na thumbnail</translation>
 <translation id="5181896909298187506">Walang kamakailang file</translation>
 <translation id="5194713942430106590">I-click para pagbukud-bukurin ang column sa pataas na pagkakasunud-sunod.</translation>
@@ -813,6 +818,7 @@
 <translation id="7655441028674523381">Madaling i-access ang Google Photos</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7665680517722058469">Sumubok ng ibang paghahanap</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> (na) item ang inilipat sa trash</translation>
 <translation id="7693909743393669729">Kapag nag-format ng drive, mabubura ang lahat ng data na naka-store dito at maaalis ang lahat ng kasalukuyang partition, kasama ang mga partition na posibleng hindi nakikita. Hindi maa-undo ang pagkilos na ito.</translation>
 <translation id="7695430100978772476">Hindi ma-format ang <ph name="DRIVE_NAME" /></translation>

@@ -415,6 +415,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Nid oes unrhyw gyfrineiriau sydd wedi'u darganfod}=1{1 cyfrinair sydd wedi'i ddarganfod}two{{NUM_COMPROMISED} gyfrinair sydd wedi'u darganfod}few{{NUM_COMPROMISED} chyfrinair sydd wedi'u darganfod}many{{NUM_COMPROMISED} chyfrinair sydd wedi'u darganfod}other{{NUM_COMPROMISED} cyfrinair sydd wedi'u darganfod}}</translation>
 <translation id="1380028686461971526">Awtogysylltu â'r rhwydwaith</translation>
 <translation id="1381567580865186407">Anfonir lleferydd <ph name="LANGUAGE" /> at Google i'w brosesu</translation>
+<translation id="1383381142702995121">Rheoli'r estyniad hwn</translation>
 <translation id="1383597849754832576">Methu â lawrlwytho ffeiliau lleferydd. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="1383861834909034572">Yn agor pan fydd wedi'i gwblhau</translation>
 <translation id="1383876407941801731">Chwilio</translation>
@@ -4245,6 +4246,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4807098396393229769">Enw ar y cerdyn</translation>
 <translation id="4808667324955055115">Ffenestri naid sydd wedi'u rhwystro:</translation>
 <translation id="4809079943450490359">Cyfarwyddiadau gan weinyddwr eich dyfais:</translation>
+<translation id="4809447465126035330">Dileu</translation>
 <translation id="480990236307250886">Agor y dudalen hafan</translation>
 <translation id="4809927044794281115">Thema olau</translation>
 <translation id="4811212958317149293">Newid awtosganio bysellfwrdd mynediad</translation>
@@ -5047,6 +5049,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5556459405103347317">Ail-lwytho</translation>
 <translation id="5558129378926964177">Chwyddo&amp;</translation>
 <translation id="5558247502209241936">Galluogi agor ap mewn ffenestr</translation>
+<translation id="5559311991468302423">Dileu cyfeiriad</translation>
 <translation id="55601339223879446">Addasu ffiniau eich bwrdd gwaith o fewn y sgrîn</translation>
 <translation id="5561162485081632007">Yn canfod ac yn eich rhybuddio am ddigwyddiadau peryglus pan fyddant yn digwydd</translation>
 <translation id="5562781907504170924">Mae'r tab hwn wedi'i gysylltu â Dyfais Bluetooth.</translation>
@@ -6444,6 +6447,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6839916869147598086">Mae mewngofnodi wedi newid</translation>
 <translation id="6840155290835956714">Gofyn cyn anfon</translation>
 <translation id="6840184929775541289">Nid yw'n Awdurdod Ardystio</translation>
+<translation id="6840214587087739194">Cyfeiriad wedi'i ddileu</translation>
 <translation id="6841143363521180029">Wedi'i hamgryptio</translation>
 <translation id="6841186874966388268">Gwallau</translation>
 <translation id="6842136130964845393">I wneud yn siŵr eich bod bob amser yn gallu cael mynediad at eich cyfrineiriau, cadarnhewch mai chi sydd yno</translation>
@@ -8286,6 +8290,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8525306231823319788">Sgrîn lawn</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Ychwanegu ieithoedd</translation>
+<translation id="8528479410903501741">Cadw IBAN</translation>
 <translation id="8528962588711550376">Wrthi'n mewngofnodi.</translation>
 <translation id="8529925957403338845">Gwnaeth Rhannu Cysylltiad Sydyn fethu</translation>
 <translation id="8531701051932785007">Mae Gwell Pori'n Ddiogel wedi'i ddiffodd</translation>

@@ -22,6 +22,7 @@
 <translation id="2347208864470321755">Quan la funció està activada, Chrome ofereix la traducció de les pàgines escrites en altres idiomes mitjançant el Traductor de Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome té funcions que t'ajuden a gestionar les teves dades d'Internet i la rapidesa amb què pots carregar pàgines web.
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
+<translation id="2444854139071078915">Per obtenir fàcilment les contrasenyes desades en altres aplicacions, utilitza Chrome per a Emplenament automàtic</translation>
 <translation id="2561231791489583059">Utilitza Chrome com a navegador predeterminat per protegir-te de llocs web perillosos i mantenir les teves contrasenyes segures</translation>
 <translation id="2574249610672786438">Per veure les pestanyes des de tots els llocs on facis servir Chrome, inicia la sessió en tots els dispositius</translation>
 <translation id="2576431527583832481">Chrome ara és millor. Hi ha una versió nova disponible.</translation>
@@ -89,6 +90,7 @@
 <translation id="6709398533399187136">La teva contrasenya ha quedat exposada en una violació de les dades. El gestor de contrasenyes de Google recomana que la canviïs ara.</translation>
 <translation id="6822673484890854830">Chrome no ha pogut comprovar totes les contrasenyes. Torna-ho a provar més tard.</translation>
 <translation id="6964931465519938134">Ara pots utilitzar Chrome cada vegada que toquis enllaços en missatges, documents i altres aplicacions.</translation>
+<translation id="6975725306479268850">Tria Chrome a Emplenament automàtic</translation>
 <translation id="701356708427365932">Familiaritza't amb el nou menú de Chrome</translation>
 <translation id="7059914902409643750">Personalitza Chrome</translation>
 <translation id="7124339256045485976">Mantén Chrome actualitzat</translation>
@@ -109,6 +111,7 @@
 <translation id="7754633291442704733">La teva organització (<ph name="DOMAIN" />) tindrà accés a les teves dades, les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració de Chrome que emmagatzemis en aquest compte. Quan tanquis la sessió, les teves dades s'esborraran d'aquest dispositiu,  però continuaran emmagatzemades al teu Compte de Google gestionat i estaran disponibles per a la teva organització. L'organització també pot definir polítiques dels usuaris específiques del compte que poden canviar el comportament de Chrome.</translation>
 <translation id="7780154209050837198">Per treure el màxim profit de Chrome, inicia-hi la sessió amb el teu Compte de Google.</translation>
 <translation id="7855730255114109580">Google Chrome està actualitzat</translation>
+<translation id="7939179037291298976">A la configuració de l'iPhone, obre Opcions de contrasenya i selecciona Chrome</translation>
 <translation id="8022947259858476807">Utilitza Chrome de manera predeterminada per obrir enllaços, cercar des de widgets i emplenar automàticament contrasenyes en altres aplicacions</translation>
 <translation id="81358522153858150">Chrome ara admet polítiques dels usuaris per al compte gestionat</translation>
 <translation id="8160472928944011082">Chrome no es pot actualitzar</translation>
@@ -124,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">El gestor de contrasenyes de Google no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Protegeix-te amb Google Chrome</translation>
+<translation id="8765470054473112089">Quan escrius a la barra d'adreces o al quadre de cerca, Chrome envia el que escrius al teu motor de cerca predeterminat per obtenir millors suggeriments. Aquesta opció està desactivada en el mode d'incògnit.</translation>
 <translation id="8772179140489533211">Mostra sol·licituds per iniciar la sessió a Chrome.</translation>
 <translation id="8788269841521769222">No caldrà que recordis aquesta contrasenya. Es desarà al gestor de contrasenyes de Google per a <ph name="EMAIL" /></translation>
 <translation id="8857676124663337448">El gestor de contrasenyes de Google no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà.</translation>

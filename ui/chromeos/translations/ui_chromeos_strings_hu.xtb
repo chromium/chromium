@@ -408,6 +408,7 @@
 <translation id="4462159676511157176">Egyéni névszerverek</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, a rendszergazdája kezeli, csatlakozás</translation>
 <translation id="4470564870223067757">Hangul 2 készlet</translation>
+<translation id="4474142134969976028">Nincs egyezés</translation>
 <translation id="4477002475007461989">román</translation>
 <translation id="4477219268485577442">bolgár fonetikus</translation>
 <translation id="4508265954913339219">Aktiválás sikertelen</translation>
@@ -813,6 +814,7 @@
 <translation id="7655441028674523381">Egyszerűen hozzáférhet a Google Fotókhoz</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7663224033570512922">hindi</translation>
+<translation id="7665680517722058469">Próbálkozzon másik kereséssel</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> elem áthelyezve a kukába</translation>
 <translation id="7693909743393669729">A meghajtó formázásával minden rajta tárolt adat, és ezzel együtt az összes meglévő partíció is törlődik (többek között az esetlegesen nem láthatók is). A művelet nem vonható vissza.</translation>
 <translation id="7695430100978772476">Nem sikerült a(z) <ph name="DRIVE_NAME" /> formázása</translation>

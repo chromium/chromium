@@ -627,6 +627,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1567387640189251553">Od minulého zadání hesla byla připojena jiná klávesnice. Je možné, že se pokouší odcizit vaše stisknutí kláves.</translation>
 <translation id="156793199942386351">Klávesa <ph name="CURRENTKEY" /> je už přiřazena k akci <ph name="ACTION" />. Pokud chcete <ph name="RESPONSE" />, stiskněte libovolnou klávesu.</translation>
 <translation id="1567993339577891801">Konzole JavaScriptu</translation>
+<translation id="1569466257325986920">Při příští změně hesla k vašemu účtu Google budou vaše místní data automaticky obnovena, jakmile se přihlásíte k účtu Google.</translation>
 <translation id="1570604804919108255">Zapnout zvuk oznámení</translation>
 <translation id="1571304935088121812">Kopírovat uživatelské jméno</translation>
 <translation id="1571738973904005196">Zobrazit kartu: <ph name="TAB_ORIGIN" /></translation>
@@ -885,6 +886,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1781979858217752599">Sdílet zvuk v okně</translation>
 <translation id="1782101999402987960">Administrátor blokuje aktualizace</translation>
 <translation id="1782196717298160133">Nalezení telefonu</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 poznámka}few{# poznámky}many{# poznámky}other{# poznámek}}</translation>
 <translation id="1784707308176068866">Spustit na pozadí, když o to požádá spolupracující nativní aplikace</translation>
 <translation id="1784849162047402014">V zařízení dochází místo na disku</translation>
 <translation id="1787350673646245458">Obrázek uživatele</translation>
@@ -1676,6 +1678,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2467755475704469005">Nebylo zjištěno žádné zařízení. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Zrychlení posouvání touchpadem</translation>
 <translation id="2468205691404969808">Používá soubory cookie k uložení vašeho nastavení i v případě, že stránky nenavštívíte</translation>
+<translation id="2468247643665097563">Řazení</translation>
 <translation id="2468402215065996499">Tamagoči</translation>
 <translation id="2468470085922875120">Používáte hesla, která není snadné uhodnout</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 karta}few{<ph name="GROUP_TITLE" /> – # karty}many{<ph name="GROUP_TITLE" /> – # karty}other{<ph name="GROUP_TITLE" /> – # karet}}</translation>
@@ -5939,6 +5942,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6410668567036790476">Přidat vyhledávač</translation>
 <translation id="641469293210305670">Instalace aktualizací a aplikací</translation>
 <translation id="6414878884710400018">Otevřít předvolby systému</translation>
+<translation id="6415816101512323589">Zapnout obnovení místních dat za účelem ochrany dat?</translation>
 <translation id="6415900369006735853">Připojit se k internetu přes telefon</translation>
 <translation id="6416743254476733475">Je třeba je v počítači povolit nebo zablokovat.</translation>
 <translation id="6417265370957905582">Asistent Google</translation>

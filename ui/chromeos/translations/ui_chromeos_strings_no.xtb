@@ -410,6 +410,7 @@
 <translation id="4462159676511157176">Egendefinerte navnetjenere</translation>
 <translation id="4465725236958772856">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – administreres av administratoren din – koble til</translation>
 <translation id="4470564870223067757">Hangul 2-sett</translation>
+<translation id="4474142134969976028">Ingen treff</translation>
 <translation id="4477002475007461989">Rumensk</translation>
 <translation id="4477219268485577442">Bulgarsk fonetisk</translation>
 <translation id="4508265954913339219">Aktiveringen mislyktes</translation>
@@ -817,6 +818,7 @@
 <translation id="7655441028674523381">Enkel tilgang til Google Foto</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7665680517722058469">Prøv et annet søk</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> elementer er lagt i papirkurven</translation>
 <translation id="7693909743393669729">Når du formaterer stasjoner, slettes alle data som er lagret på dem, og alle eksisterende partisjoner fjernes, inkludert partisjoner som kanskje ikke er synlige. Denne handlingen kan ikke angres.</translation>
 <translation id="7695430100978772476">Kunne ikke formatere <ph name="DRIVE_NAME" /></translation>

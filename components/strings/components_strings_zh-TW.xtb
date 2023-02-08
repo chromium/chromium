@@ -524,6 +524,7 @@
 <translation id="2202627062836089804">卡片背面</translation>
 <translation id="22081806969704220">紙匣 3</translation>
 <translation id="2210794033760923560">上傳報告</translation>
+<translation id="2212579473415663542">這個地址會儲存在 Google 帳戶 (<ph name="ACCOUNT" />) 中。不論使用任何裝置，都能在各項 Google 產品中使用地址資料。</translation>
 <translation id="2212735316055980242">找不到政策</translation>
 <translation id="2213606439339815911">正在擷取項目...</translation>
 <translation id="2213612003795704869">已列印頁面</translation>
@@ -1971,6 +1972,7 @@
 <translation id="5866898949289125849">目前查看的是開發人員工具頁面</translation>
 <translation id="5869405914158311789">無法連上這個網站</translation>
 <translation id="5869522115854928033">已儲存的密碼</translation>
+<translation id="5872692522325383488">已儲存 IBAN</translation>
 <translation id="5873013647450402046">銀行希望確認你的身分。</translation>
 <translation id="5877831137320480913">美容與健身</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
@@ -2140,6 +2142,7 @@
 <translation id="6300452962057769623">{0,plural, =0{裝置會立即重新啟動}=1{裝置將於 1 秒後重新啟動}other{裝置將於 # 秒後重新啟動}}</translation>
 <translation id="6301104306974789820">接收價格追蹤通知</translation>
 <translation id="6305205051461490394">無法連上 <ph name="URL" />。</translation>
+<translation id="6306713302480826305">這個地址將從這部裝置和其他已登入的裝置中刪除</translation>
 <translation id="6311165245110979290">可使用虛擬卡片</translation>
 <translation id="6312113039770857350">網頁無法使用</translation>
 <translation id="6316226860534107313">機車與電動自行車</translation>
@@ -2626,7 +2629,7 @@
 <translation id="7507075214339298899">Envelope #9</translation>
 <translation id="7508255263130623398">傳回的政策裝置 ID 沒有任何內容，或是與目前的裝置 ID 不符</translation>
 <translation id="7508870219247277067">酪梨綠</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />網站使用這些資料的方式：<ph name="END_BOLD" />網站可以將你喜歡的內容相關資訊儲存在 Chrome 中。舉例來說，如果你造訪了一個馬拉松訓練相關網站，該網站可能會判定你對慢跑鞋感興趣，並在你之後造訪其他網站時，根據第一個網站的建議向你顯示慢跑鞋的廣告。</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />網站使用這些資料的方式：<ph name="END_BOLD" />網站可透過 Chrome  儲存與你喜愛事物相關的資訊。舉例來說，如果你造訪了一個馬拉松訓練相關網站，該網站可能會判定你對慢跑鞋感興趣，並在你之後造訪其他網站時，根據第一個網站的建議向你顯示慢跑鞋的廣告。</translation>
 <translation id="7510269639068718544">貓</translation>
 <translation id="7511955381719512146">目前使用的 Wi-Fi 網路可能會要求您造訪 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
 <translation id="7512685745044087310">這項政策無法設為「是」及強制使用，因此已改為建議使用。</translation>
@@ -3031,6 +3034,7 @@
 <translation id="8473863474539038330">地址和其他資訊</translation>
 <translation id="8474910779563686872">顯示開發人員詳細資料</translation>
 <translation id="8479754468255770962">釘裝 (左下方)</translation>
+<translation id="8483229036294884935">這個地址將從 Google 帳戶 (<ph name="ACCOUNT" />) 中刪除</translation>
 <translation id="8483780878231876732">如要使用您的 Google 帳戶中的信用卡，請登入 Chrome</translation>
 <translation id="8488350697529856933">適用對象</translation>
 <translation id="8490137692873530638">堆疊出紙器 10</translation>

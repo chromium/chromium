@@ -22,6 +22,7 @@
 <translation id="2347208864470321755">Saat fitur ini diaktifkan, Chrome akan menawarkan untuk menerjemahkan halaman yang ditulis dalam bahasa lain menggunakan Google Terjemahan. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome memiliki berbagai fitur yang dapat membantu Anda mengelola data internet dan seberapa cepat Anda dapat memuat halaman web.
 <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="2444854139071078915">Untuk mendapatkan sandi tersimpan dengan mudah di aplikasi lain, gunakan Chrome untuk Isi Otomatis</translation>
 <translation id="2561231791489583059">Gunakan Chrome sebagai browser default agar Anda tetap terlindungi dari situs berbahaya &amp; sandi Anda tetap aman</translation>
 <translation id="2574249610672786438">Untuk melihat tab Chrome Anda dari perangkat lain, login ke semua perangkat Anda</translation>
 <translation id="2576431527583832481">Chrome jadi semakin baik! Versi baru telah tersedia.</translation>
@@ -89,6 +90,7 @@
 <translation id="6709398533399187136">Sandi Anda terekspos dalam pelanggaran data. Pengelola Sandi Google merekomendasikan untuk mengubahnya sekarang.</translation>
 <translation id="6822673484890854830">Chrome tidak dapat memeriksa semua sandi. Coba lagi nanti.</translation>
 <translation id="6964931465519938134">Anda sekarang dapat menggunakan Chrome kapan saja dengan mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>
+<translation id="6975725306479268850">Pilih Chrome untuk Isi Otomatis</translation>
 <translation id="701356708427365932">Pelajari menu Chrome yang baru</translation>
 <translation id="7059914902409643750">Sesuaikan Chrome dengan Selera Anda</translation>
 <translation id="7124339256045485976">Pastikan Chrome selalu terupdate</translation>
@@ -109,6 +111,7 @@
 <translation id="7754633291442704733">Organisasi Anda <ph name="DOMAIN" /> akan memiliki akses ke data, bookmark, histori, sandi, dan setelan Chrome lainnya yang Anda simpan di akun ini. Jika logout, data Anda akan dihapus dari perangkat ini.  Namun, data akan tetap disimpan di Akun Google terkelola Anda dan tersedia untuk organisasi Anda. Organisasi juga dapat menetapkan kebijakan pengguna khusus untuk akun tersebut yang dapat mengubah perilaku Chrome.</translation>
 <translation id="7780154209050837198">Untuk mengoptimalkan Chrome, login ke Chrome dengan Akun Google Anda.</translation>
 <translation id="7855730255114109580">Ini adalah Google Chrome versi terbaru</translation>
+<translation id="7939179037291298976">Dari Setelan iPhone, buka "Password Options", lalu pilih "Chrome"</translation>
 <translation id="8022947259858476807">Gunakan Chrome secara default untuk membuka link, menelusuri dari widget, dan mengisi otomatis sandi di aplikasi lainnya</translation>
 <translation id="81358522153858150">Chrome kini mendukung kebijakan pengguna untuk akun terkelola Anda</translation>
 <translation id="8160472928944011082">Chrome tidak dapat diupdate</translation>
@@ -124,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Pengelola Sandi Google tidak dapat memeriksa semua sandi. Coba lagi besok atau <ph name="BEGIN_LINK" />periksa sandi di Akun Google Anda<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Tetap Aman dengan Google Chrome</translation>
+<translation id="8765470054473112089">Saat Anda mengetik di kolom URL atau kotak penelusuran, Chrome akan mengirimkan hal yang Anda ketik ke mesin telusur default untuk mendapatkan saran yang lebih baik. Fitur ini nonaktif dalam mode Samaran.</translation>
 <translation id="8772179140489533211">Menampilkan perintah untuk login ke Chrome.</translation>
 <translation id="8788269841521769222">Anda tidak perlu mengingat sandi ini. Sandi akan disimpan ke Pengelola Sandi Google untuk <ph name="EMAIL" /></translation>
 <translation id="8857676124663337448">Pengelola Sandi Google tidak dapat memeriksa semua sandi. Coba lagi besok.</translation>

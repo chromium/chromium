@@ -8372,6 +8372,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8639635302972078117">Envía datos de uso y diagnóstico. De forma automática, este dispositivo está enviando a Google datos de diagnóstico y sobre el uso del dispositivo y las apps. Esta información no se usará para identificar a tu hijo y ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. Si habilitaste la Actividad de web y de aplicaciones adicional en la Cuenta de Google de tu hijo, es posible que se almacenen estos datos en esa cuenta.</translation>
 <translation id="8642900771896232685">2 segundos</translation>
 <translation id="8642947597466641025">Aumentar el tamaño del texto</translation>
+<translation id="8643403533759285912">Borrar grupo</translation>
 <translation id="8643443571868262066">Es posible que el archivo <ph name="FILE_NAME" /> sea peligroso. ¿Quieres enviarlo al Programa de protección avanzada de Google para que lo analicemos?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{No hay cookies}=1{Se bloqueó 1 cookie}other{Se bloquearon # cookies}}</translation>
 <translation id="864423554496711319">Dispositivos guardados en tu cuenta</translation>
@@ -8845,6 +8846,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="90528604757378587">Es posible que se limiten la actividad en segundo plano y algunos efectos visuales, como el desplazamiento suave.</translation>
 <translation id="9053563360605707198">Imprimir de ambos lados</translation>
 <translation id="9055636786322918818">Aplica la encriptación RC4. Esta opción es riesgosa, ya que los cifrados RC4 son inseguros.</translation>
+<translation id="9056788090206401048">La conexión Bluetooth debe estar activada para usar tu llave de acceso en otro dispositivo. Puedes administrar esta opción en cualquier momento en Configuración.</translation>
 <translation id="9056810968620647706">No se encontraron coincidencias.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> desea acceder al siguiente contenido:</translation>
 <translation id="9057354806206861646">Cronograma de actualizaciones</translation>

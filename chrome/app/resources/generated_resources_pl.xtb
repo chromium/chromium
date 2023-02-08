@@ -221,6 +221,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieździe.}many{Za # sekund nastąpi automatyczne wylogowanie.
 Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieździe.}other{Za # sekundy nastąpi automatyczne wylogowanie.
 Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieździe.}}</translation>
+<translation id="119330003005586565">Przeczytane strony</translation>
 <translation id="1193927020065025187">Ta strona może próbować przekonać Cię do zaakceptowania uciążliwych powiadomień.</translation>
 <translation id="1195210374336998651">Otwórz ustawienia aplikacji</translation>
 <translation id="1195447618553298278">Nieznany błąd.</translation>
@@ -411,6 +412,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Brak przejętych haseł}=1{1 przejęte hasło}few{{NUM_COMPROMISED} przejęte hasła}many{{NUM_COMPROMISED} przejętych haseł}other{{NUM_COMPROMISED} przejętego hasła}}</translation>
 <translation id="1380028686461971526">Automatycznie łącz z siecią</translation>
 <translation id="1381567580865186407">Mowa w języku: <ph name="LANGUAGE" /> jest wysyłana do Google w celu przetworzenia</translation>
+<translation id="1383381142702995121">Zarządzaj tym rozszerzeniem</translation>
 <translation id="1383597849754832576">Nie udało się pobrać plików z mową. Spróbuj później.</translation>
 <translation id="1383861834909034572">Otwieranie po ukończeniu</translation>
 <translation id="1383876407941801731">Szukaj</translation>
@@ -4213,6 +4215,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4807098396393229769">Imię i nazwisko na karcie</translation>
 <translation id="4808667324955055115">Zablokowane wyskakujące okienka:</translation>
 <translation id="4809079943450490359">Instrukcje od administratora urządzenia:</translation>
+<translation id="4809447465126035330">Usuń</translation>
 <translation id="480990236307250886">Otwórz stronę główną</translation>
 <translation id="4809927044794281115">Jasny motyw</translation>
 <translation id="4811212958317149293">Automatyczne skanowanie klawiatury Switch Access</translation>
@@ -5014,6 +5017,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5556459405103347317">Odśwież</translation>
 <translation id="5558129378926964177">Po&amp;większ</translation>
 <translation id="5558247502209241936">Włącz otwieranie aplikacji w oknie</translation>
+<translation id="5559311991468302423">Usuń adres</translation>
 <translation id="55601339223879446">Przesuń krawędzie pulpitu na ekranie</translation>
 <translation id="5561162485081632007">Wykrywa niebezpieczne zdarzenia i natychmiast Cię o nich ostrzega</translation>
 <translation id="5562781907504170924">Ta karta jest połączona z urządzeniem Bluetooth.</translation>
@@ -5503,6 +5507,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6007240208646052708">Wyszukiwanie głosowe jest niedostępne w Twoim języku.</translation>
 <translation id="6010651352520077187">Gdy ta funkcja jest włączona, Tłumacz Google będzie proponował tłumaczenie stron na preferowany przez Ciebie język. Może też tłumaczyć strony automatycznie.</translation>
 <translation id="6011193465932186973">Odcisk palca</translation>
+<translation id="6011308810877101166">Ulepszanie sugestii wyszukiwania</translation>
 <translation id="6011908034087870826">Wysyłam link na urządzenie <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">Odtwarzaj dźwięk i wideo z napisami</translation>
 <translation id="6014293228235665243">Nieprzeczytane</translation>
@@ -5820,6 +5825,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="630292539633944562">Dane osobowe wyświetlane w podpowiedziach</translation>
 <translation id="6305607932814307878">Zasady globalne:</translation>
 <translation id="6305909198255586420">Zainstaluj aplikację z poziomu profilu głównego</translation>
+<translation id="630750887748244481">Rodzic wyłączył „Uprawnienia stron, aplikacji i rozszerzeń” dla Chrome. Dodanie tego rozszerzenia jest niedozwolone.</translation>
 <translation id="6307990684951724544">System zajęty</translation>
 <translation id="6308493641021088955">Dostawca usługi logowania: <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Zapisz link ja&amp;ko...</translation>
@@ -6407,6 +6413,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6839916869147598086">Logowanie wygląda teraz inaczej</translation>
 <translation id="6840155290835956714">Pytaj przed wysłaniem</translation>
 <translation id="6840184929775541289">Nie jest urzędem certyfikacji</translation>
+<translation id="6840214587087739194">Adres został usunięty</translation>
 <translation id="6841143363521180029">Zaszyfrowany</translation>
 <translation id="6841186874966388268">Błędy</translation>
 <translation id="6842136130964845393">Aby zapewnić sobie stały dostęp do zapisanych haseł, potwierdź swoją tożsamość</translation>
@@ -7963,6 +7970,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8251509999076836464">Paruję z urządzeniem <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Usunięto miniaturę.</translation>
 <translation id="825238165904109940">Zawsze pokazuj całe adresy URL</translation>
+<translation id="8252538334423261825">Nie można dodać rozszerzenia</translation>
 <translation id="8252569384384439529">Przesyłam…</translation>
 <translation id="8253198102038551905">Kliknij „+”, by zobaczyć właściwości sieci</translation>
 <translation id="8255212965098517578">Ostatnie zdjęcia, powiadomienia i aplikacje</translation>
@@ -8248,6 +8256,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8525306231823319788">Pełny ekran</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Dodaj języki</translation>
+<translation id="8528479410903501741">Zapisz numer IBAN</translation>
 <translation id="8528962588711550376">Loguję.</translation>
 <translation id="8529925957403338845">Nie udało się nawiązać błyskawicznego połączenia w tetheringu</translation>
 <translation id="8531701051932785007">Ulepszone Bezpieczne przeglądanie jest wyłączone</translation>

@@ -633,6 +633,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1567387640189251553">Po to, kai paskutinį kartą įvedėte slaptažodį, buvo prijungta kita klaviatūra. Gali būti bandoma pavogti jūsų klavišų paspaudimus.</translation>
 <translation id="156793199942386351">Klavišas „<ph name="CURRENTKEY" />“ jau priskirtas veiksmui „<ph name="ACTION" />“. Paspauskite bet kurį klavišą, kad atliktumėte veiksmą „<ph name="RESPONSE" />“.</translation>
 <translation id="1567993339577891801">„JavaScript“ pultas</translation>
+<translation id="1569466257325986920">Kai kitą kartą bus pakeistas „Google“ paskyros slaptažodis, vietiniai duomenys bus automatiškai atkurti, kai prisijungsite prie „Google“ paskyros</translation>
 <translation id="1570604804919108255">Įjungti pranešimų garsą</translation>
 <translation id="1571304935088121812">Kopijuoti naudotojo vardą</translation>
 <translation id="1571738973904005196">Peržiūrėti skirtuką: <ph name="TAB_ORIGIN" /></translation>
@@ -899,6 +900,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1781979858217752599">Bendrinti lango garso įrašą</translation>
 <translation id="1782101999402987960">Naujinius užblokavo administratorius</translation>
 <translation id="1782196717298160133">Telefono paieška</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{Vienas užrašas}one{# užrašas}few{# užrašai}many{# užrašo}other{# užrašų}}</translation>
 <translation id="1784707308176068866">Paleisti fone, kai to prašo bendradarbiaujanti savoji programa</translation>
 <translation id="1784849162047402014">Mažai laisvos vietos įrenginio diske</translation>
 <translation id="1787350673646245458">Naudotojo vaizdas</translation>
@@ -1694,6 +1696,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2467755475704469005">Neaptikta jokių įrenginių. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Slinkimo jutikline dalimi spartinimas</translation>
 <translation id="2468205691404969808">Naudoja slapukus, kad primintų jums apie nuostatas, net jei nesilankote tuose puslapiuose</translation>
+<translation id="2468247643665097563">Rikiuoti</translation>
 <translation id="2468402215065996499">Tamagočis</translation>
 <translation id="2468470085922875120">Naudojate slaptažodžius, kuriuos turėtų būti sunku atspėti</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{„<ph name="GROUP_TITLE" />“ – vienas skirtukas}one{„<ph name="GROUP_TITLE" />“ – # skirtukas}few{„<ph name="GROUP_TITLE" />“ – # skirtukai}many{„<ph name="GROUP_TITLE" />“ – # skirtuko}other{„<ph name="GROUP_TITLE" />“ – # skirtukų}}</translation>
@@ -5967,6 +5970,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6410668567036790476">Paieškos variklio pridėjimas</translation>
 <translation id="641469293210305670">Naujinių ir programų diegimas</translation>
 <translation id="6414878884710400018">Atidaryti sistemos nuostatas</translation>
+<translation id="6415816101512323589">Įjungti vietinių duomenų atkūrimą, kad būtų apsaugoti duomenys?</translation>
 <translation id="6415900369006735853">Prisijunkite prie interneto per telefoną</translation>
 <translation id="6416743254476733475">Leiskite arba užblokuokite savo kompiuteryje.</translation>
 <translation id="6417265370957905582">„Google“ padėjėjas</translation>

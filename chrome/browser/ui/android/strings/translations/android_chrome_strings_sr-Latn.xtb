@@ -922,6 +922,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="6000203700195075278">Ponovo prati</translation>
 <translation id="6002122790816966947">Uređaji</translation>
 <translation id="6005538289190791541">Predložena lozinka</translation>
+<translation id="6011308810877101166">Poboljšajte predloge za pretragu</translation>
 <translation id="6039379616847168523">Prelazak na sledeću karticu</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="604124094241169006">Automatski</translation>
@@ -1452,6 +1453,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8746155870861185046">Deli isticanje</translation>
 <translation id="8748850008226585750">Sadržaj je sakriven</translation>
 <translation id="8756969031206844760">Želite li da ažurirate lozinku?</translation>
+<translation id="8765470054473112089">Kada kucate u traci za adresu ili u okviru za pretragu, Chrome šalje tekst koji unosite podrazumevanom pretraživaču da biste dobijali bolje predloge. Ovo je isključeno u režimu bez arhiviranja.</translation>
 <translation id="8766529642647037772">Želite li da napravite istaknuti link poput ovog?</translation>
 <translation id="8773160212632396039">Zahtev se obrađuje</translation>
 <translation id="8788265440806329501">Istorija navigacije je zatvorena</translation>

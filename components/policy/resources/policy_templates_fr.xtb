@@ -940,6 +940,7 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
 <translation id="1883274744253492031">Activer la mise à niveau automatique du contenu mixte</translation>
 <translation id="1885782360784839335">Activer l'affichage de contenus promotionnels en mode Plein onglet</translation>
 <translation id="1888871729456797026">Jeton d'enregistrement des règles relatives au cloud sur ordinateur</translation>
+<translation id="1890850749633603276">Restaurer le comportement <ph name="WEBVIEW_TAG_NAME" /> permissif des applications Chrome</translation>
 <translation id="1893271062894546361">Lorsque cette règle est activée, l'UI des commandes de lecture multimédia est disponible pour les sessions <ph name="PRODUCT_NAME" /> lancées par d'autres appareils sur le réseau local.
 
       Si cette règle n'est pas configurée pour les utilisateurs de la version Enterprise ou si elle est désactivée, l'UI des commandes de lecture multimédia n'est pas disponible pour les sessions <ph name="PRODUCT_NAME" /> lancées par d'autres appareils sur le réseau local.
@@ -3866,6 +3867,7 @@ Il est prévu que cette règle soit supprimée dans la version 113 de <ph name=
       Remarque : Ce paramètre ignore la règle "<ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />", le cas échéant.</translation>
 <translation id="4658380868451934335">Activer la dictée sur l'écran de connexion</translation>
 <translation id="4660356908994631271">Afficher le bouton Google Lens dans le champ de recherche de la page "Nouvel onglet".</translation>
+<translation id="4661885151480410620">Les changements de comportement peuvent prendre effet en fonction du processus de lancement des fonctionnalités.</translation>
 <translation id="4661889655253181651">L'option "Paramètres de contenu" permet d'indiquer la manière dont le contenu d'un type spécifique (par exemple, cookies, images ou JavaScript) est géré.</translation>
 <translation id="4663509616441994711">Désactiver la fusion de règles cloud utilisateurs.</translation>
 <translation id="4663588423815449593">Forcer <ph name="PEPPER_NAME" /> à utiliser l'ancien décodeur vidéo.</translation>
@@ -5286,6 +5288,7 @@ Vous pouvez modifier le délai d'inactivité avant l'affichage de l'économiseur
       4 : blocage des fichiers malveillants identifiés par le serveur de navigation sécurisée ; les types de fichiers dangereux ne sont pas bloqués. Recommandé.
 
       Remarque : Ces restrictions s'appliquent aux téléchargements déclenchés à partir du contenu d'une page Web et de l'option de menu "Télécharger le lien". Elles ne s'appliquent pas au téléchargement de la page actuellement affichée ni à l'enregistrement au format PDF depuis les options d'impression. Pour en savoir plus sur la navigation sécurisée, consultez la page https://developers.google.com/safe-browsing.</translation>
+<translation id="6118226055960302400">Restaurer le comportement permissif.</translation>
 <translation id="6119207979839638596">Cette règle a été supprimée dans la version M75, après que la règle concernant la version maximale de TLS a été supprimée de <ph name="PRODUCT_NAME" />.
 
       Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise la version maximale par défaut.
@@ -6607,6 +6610,16 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
 
       Sous <ph name="MAC_OS_NAME" />, cette règle n'a aucun effet si la règle <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> est définie sur "False".</translation>
 <translation id="7278854311116092134">Noms des hôtes de messagerie native à exclure de la liste de blocage</translation>
+<translation id="7287869314269886809">Le <ph name="WEBVIEW_TAG_NAME" /> des applications Chrome autorise un comportement qui est en cours de suppression dans <ph name="PRODUCT_NAME" />.
+
+Le comportement précédent affichait une page interstitielle si un <ph name="WEBVIEW_TAG_NAME" /> accédait à une page dont le certificat SSL n'était pas valide. Cet interstitiel donne à l'utilisateur l'option de poursuivre de manière non sécurisée. Le nouveau comportement affiche une page d'erreur sans cette option.
+
+Le comportement précédent permet également à l'événement <ph name="WEBVIEW_TAG_NAME" /> <ph name="NEWWINDOW_EVENT_NAME" /> (https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow) d'associer la nouvelle fenêtre à un élément <ph name="WEBVIEW_TAG_NAME" /> dans une fenêtre d'appli distincte du <ph name="WEBVIEW_TAG_NAME" /> d'origine. Avec le nouveau comportement, cette association est toujours autorisée, mais la référence de fenêtre renvoyée par l'appel à <ph name="WINDOW_OPEN_NAME" /> dans le <ph name="WEBVIEW_TAG_NAME" /> d'origine n'est pas valide.
+
+Si cette règle est activée, le comportement précédent est utilisé.
+Si elle est désactivée ou qu'elle n'est pas configurée, le changement de comportement prend effet au fur et à mesure de son déploiement lors du processus de lancement de <ph name="PRODUCT_NAME" />.
+
+Cette règle constitue une solution temporaire au cas où des entreprises rencontreraient des problèmes dus à ces modifications. Cette règle sera supprimée dans une prochaine version.</translation>
 <translation id="7291084543582732020">Si vous activez ce paramètre, les utilisateurs peuvent utiliser Smart Lock si les conditions requises pour cette fonctionnalité sont réunies.
 
       Si vous désactivez ce paramètre, les utilisateurs ne peuvent pas utiliser Smart Lock.

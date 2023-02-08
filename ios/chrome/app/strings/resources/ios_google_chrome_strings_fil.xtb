@@ -22,6 +22,7 @@
 <translation id="2347208864470321755">Kapag naka-on ang tampok na ito, mag-aalok ang Chrome na magsalin ng mga pahina na nakasulat sa ibang mga wika gamit ang Google Translate. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">May mga feature ang Chrome na nakakatulong sa iyong pamahalaan ang data mo sa internet at kung gaano ka kabilis nakakapag-load ng mga webpage.
 <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
+<translation id="2444854139071078915">Para madaling makuha ang iyong mga naka-save na password sa iba mo pang app, gamitin ang Chrome para sa AutoFill</translation>
 <translation id="2561231791489583059">Gamitin ang Chrome bilang iyong default na browser para manatiling protektado laban sa mga mapanganib na site at mapanatiling ligtas ang mga password mo</translation>
 <translation id="2574249610672786438">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chrome, mag-sign in sa lahat ng device mo</translation>
 <translation id="2576431527583832481">Naging mas mahusay na ang Chrome! Available na ang bagong bersyon.</translation>
@@ -89,6 +90,7 @@
 <translation id="6709398533399187136">Na-expose ang password mo sa isang paglabag sa data. Inirerekomenda ng Google Password Manager na palitan na ito ngayon.</translation>
 <translation id="6822673484890854830">Hindi masuri ng Chrome ang lahat ng password. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="6964931465519938134">Magagamit mo na ngayon ang Chrome sa tuwing magta-tap ka sa mga link sa mga mensahe, dokumento, at iba pang app.</translation>
+<translation id="6975725306479268850">Piliin ang Chrome para sa AutoFill</translation>
 <translation id="701356708427365932">Alamin ang bagong menu ng Chrome</translation>
 <translation id="7059914902409643750">Gawing Iyo ang Chrome</translation>
 <translation id="7124339256045485976">Panatilihing up to date ang Chrome</translation>
@@ -109,6 +111,7 @@
 <translation id="7754633291442704733">Magkakaroon ng access ang <ph name="DOMAIN" /> ng iyong organisasyon sa data, mga bookmark, history, mga password, at iba mo pang setting sa Chrome na iso-store mo sa account na ito. Kapag nag-sign out ka, maki-clear ang iyong data sa device na ito.  Gayunpaman, mananatiling naka-store ang iyong data sa pinapamahalaang Google Account mo at magiging available ito sa iyong organisasyon. Puwede ring magtakda ang iyong organisasyon ng mga patakaran ng user na partikular sa account na iyon na puwedeng makabago sa gawi ng Chrome.</translation>
 <translation id="7780154209050837198">Para masulit ang Chrome, mag-sign in sa Chrome gamit ang iyong Google Account.</translation>
 <translation id="7855730255114109580">Napapanahon ang Google Chrome</translation>
+<translation id="7939179037291298976">Mula sa Settings ng iyong iPhone, buksan ang "Password Options" at piliin ang "Chrome"</translation>
 <translation id="8022947259858476807">Gamitin ang Chrome bilang default para magbukas ng mga link, maghanap mula sa mga widget, at mag-autofill ng mga password sa iba pang app</translation>
 <translation id="81358522153858150">Suportado na ngayon ng Chrome ang mga patakaran ng user para sa iyong pinamamahalaang account</translation>
 <translation id="8160472928944011082">Hindi makapag-update ang Chrome</translation>
@@ -124,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Hindi masuri ng Google Password Manager ang lahat ng password. Subukan ulit bukas o <ph name="BEGIN_LINK" />suriin ang mga password sa iyong Google Account.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Manatiling Ligtas sa Google Chrome</translation>
+<translation id="8765470054473112089">Kapag nag-type ka sa address bar o sa box para sa paghahanap, ipapadala ng Chrome kung ano ang tina-type mo sa iyong default na search engine para makakuha ng mas magagandang suhestyon. Naka-off ito sa Incognito.</translation>
 <translation id="8772179140489533211">Nagpapakita ng mga prompt na mag-sign in sa Chrome.</translation>
 <translation id="8788269841521769222">Hindi mo kailangang tandaan ang password na ito. Mase-save ito sa Google Password Manager para sa <ph name="EMAIL" /></translation>
 <translation id="8857676124663337448">Hindi masuri ng Google Password Manager ang lahat ng password. Subukan ulit bukas.</translation>

@@ -412,6 +412,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Žiadne odhalené heslá}=1{1 odhalené heslo}few{{NUM_COMPROMISED} odhalené heslá}many{{NUM_COMPROMISED} compromised passwords}other{{NUM_COMPROMISED} odhalených hesiel}}</translation>
 <translation id="1380028686461971526">Automaticky pripojiť k sieti</translation>
 <translation id="1381567580865186407">Reč v jazyku <ph name="LANGUAGE" /> sa odosiela na spracovanie Googlu</translation>
+<translation id="1383381142702995121">Spravovať toto rozšírenie</translation>
 <translation id="1383597849754832576">Súbory s balíkmi reči sa nedajú stiahnuť. Skúste to neskôr.</translation>
 <translation id="1383861834909034572">Otvoriť po prebratí</translation>
 <translation id="1383876407941801731">Vyhľadávanie</translation>
@@ -2470,7 +2471,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3183944777708523606">Usporiadanie monitora</translation>
 <translation id="3184536091884214176">Nastaviť alebo spravovať tlačiarne CUPS. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Táto aplikácia je blokovaná}few{Niektoré aplikácie sú blokované}many{Niektoré aplikácie sú blokované}other{Niektoré aplikácie sú blokované}}</translation>
-<translation id="3187472288455401631">Meranie reklám</translation>
+<translation id="3187472288455401631">Meranie reklamy</translation>
 <translation id="3188257591659621405">Moje súbory</translation>
 <translation id="3188465121994729530">Kĺzavý priemer</translation>
 <translation id="3189187154924005138">Veľký kurzor</translation>
@@ -4229,6 +4230,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4807098396393229769">Meno na karte</translation>
 <translation id="4808667324955055115">Boli zablokované kontextové okná:</translation>
 <translation id="4809079943450490359">Pokyny od správcu vášho zariadenia:</translation>
+<translation id="4809447465126035330">Odstrániť</translation>
 <translation id="480990236307250886">Otvoriť domovskú stránku</translation>
 <translation id="4809927044794281115">Svetlý motív</translation>
 <translation id="4811212958317149293">Automatické prehľadanie klávesnice na ovládanie prepínačmi</translation>
@@ -5031,6 +5033,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5556459405103347317">Znova načítať</translation>
 <translation id="5558129378926964177">Priblíž&amp;iť</translation>
 <translation id="5558247502209241936">Povoliť otvárať aplikáciu v okne</translation>
+<translation id="5559311991468302423">Odstrániť adresu</translation>
 <translation id="55601339223879446">Úprava ohraničenia pracovnej plochy obrazovky</translation>
 <translation id="5561162485081632007">Zisťuje nebezpečné udalosti a upozorní vás, keď k nim dôjde</translation>
 <translation id="5562781907504170924">Táto karta je prepojená so zariadením Bluetooth.</translation>
@@ -6426,6 +6429,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6839916869147598086">Prihlásenie sa zmenilo</translation>
 <translation id="6840155290835956714">Spýtať sa pred odoslaním</translation>
 <translation id="6840184929775541289">Nie je certifikačnou autoritou</translation>
+<translation id="6840214587087739194">Adresa bola odstránená</translation>
 <translation id="6841143363521180029">Šifrovaný</translation>
 <translation id="6841186874966388268">Chyby</translation>
 <translation id="6842136130964845393">Ak chcete mať neustály prístup k svojim uloženým heslám, overte svoju totožnosť</translation>
@@ -8270,6 +8274,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8525306231823319788">Celá obrazovka</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Pridať jazyky</translation>
+<translation id="8528479410903501741">Uložiť číslo IBAN</translation>
 <translation id="8528962588711550376">Prebieha prihlásenie.</translation>
 <translation id="8529925957403338845">Pripojenie pomocou dynamického tetheringu zlyhalo</translation>
 <translation id="8531701051932785007">Zlepšené bezpečné prehliadanie je vypnuté</translation>

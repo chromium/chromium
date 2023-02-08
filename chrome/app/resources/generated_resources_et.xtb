@@ -221,6 +221,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1192706927100816598">{0,plural, =1{Teid logitakse # sekundi pärast automaatselt välja.
 <ph name="DOMAIN" /> nõuab, et teie kiipkaart oleks pidevalt sisestatud.}other{Teid logitakse # sekundi pärast automaatselt välja.
 <ph name="DOMAIN" /> nõuab, et teie kiipkaart oleks pidevalt sisestatud.}}</translation>
+<translation id="119330003005586565">Teie loetud lehed</translation>
 <translation id="1193927020065025187">See sait võib üritada meelitada teid lubama sekkuvaid märguandeid</translation>
 <translation id="1195210374336998651">Rakenduse seadete avamine</translation>
 <translation id="1195447618553298278">Tundmatu viga.</translation>
@@ -411,6 +412,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Ükski parool ei ole ohus}=1{1 parool on ohus}other{{NUM_COMPROMISED} parooli on ohus}}</translation>
 <translation id="1380028686461971526">Võrguta automaatselt ühendamine</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> keeles olev kõne saadetakse töötlemiseks Google'ile</translation>
+<translation id="1383381142702995121">Hallake seda laiendust</translation>
 <translation id="1383597849754832576">Kõnefaile ei saa alla laadida. Proovige hiljem uuesti.</translation>
 <translation id="1383861834909034572">Avaneb pärast lõpetamist</translation>
 <translation id="1383876407941801731">Otsi</translation>
@@ -4232,6 +4234,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4807098396393229769">Kaardil olev nimi</translation>
 <translation id="4808667324955055115">Hüpikaknad on blokeeritud</translation>
 <translation id="4809079943450490359">Juhised seadme administraatorilt:</translation>
+<translation id="4809447465126035330">Kustuta</translation>
 <translation id="480990236307250886">Ava avaleht</translation>
 <translation id="4809927044794281115">Hele teema</translation>
 <translation id="4811212958317149293">Lülitiga juurdepääsu klaviatuuri automaatne skannimine</translation>
@@ -5034,6 +5037,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5556459405103347317">Laadi uuesti</translation>
 <translation id="5558129378926964177">Suum&amp;i</translation>
 <translation id="5558247502209241936">Luba rakenduse avamine aknas</translation>
+<translation id="5559311991468302423">Kustuta aadress</translation>
 <translation id="55601339223879446">Töölaua piiride reguleerimine ekraani ulatuses</translation>
 <translation id="5561162485081632007">Tuvastab ohtlikke sündmusi ja hoiatab teid enne, kui need juhtuvad</translation>
 <translation id="5562781907504170924">See vaheleht on ühendatud Bluetoothi seadmega.</translation>
@@ -5523,6 +5527,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6007240208646052708">Häälotsing pole teie keeles saadaval.</translation>
 <translation id="6010651352520077187">Kui see on sisse lülitatud, pakub Google'i tõlge saitide tõlkimist teie eelistatud keelde. See saab saite ka automaatselt tõlkida.</translation>
 <translation id="6011193465932186973">Sõrmejälg</translation>
+<translation id="6011308810877101166">Otsingusoovituste täiustamine</translation>
 <translation id="6011908034087870826">Link saadetakse seadmesse <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">Hankige oma helile ja videole subtiitrid</translation>
 <translation id="6014293228235665243">Lugemata</translation>
@@ -5840,6 +5845,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="630292539633944562">Isiklike andmete soovitused</translation>
 <translation id="6305607932814307878">Üldised eeskirjad:</translation>
 <translation id="6305909198255586420">Kasutage installimiseks oma peamist profiili</translation>
+<translation id="630750887748244481">Sinu vanem lülitas Chrome'i puhul valiku „Saitide, rakenduste ja laienduste load” välja. Selle laienduse lisamine pole lubatud.</translation>
 <translation id="6307990684951724544">Süsteem on hõivatud</translation>
 <translation id="6308493641021088955">Sisselogimise funktsiooni pakub <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Salvesta lin&amp;k nimega...</translation>
@@ -6423,6 +6429,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6839916869147598086">Sisselogimine on muutunud</translation>
 <translation id="6840155290835956714">Küsi enne saatmist</translation>
 <translation id="6840184929775541289">Ei ole sertifitseerimisorgan</translation>
+<translation id="6840214587087739194">Aadress kustutati</translation>
 <translation id="6841143363521180029">Krüpteeritud</translation>
 <translation id="6841186874966388268">Vead</translation>
 <translation id="6842136130964845393">Selleks, et saaksite alati oma salvesatud paroolidele juurde pääseda, kinnitage oma isik</translation>
@@ -7981,6 +7988,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8251509999076836464">Sidumine seadmega <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Pisipilt eemaldatud.</translation>
 <translation id="825238165904109940">Kuva alati täielikud URL-id</translation>
+<translation id="8252538334423261825">Laiendust ei saa lisada</translation>
 <translation id="8252569384384439529">Üleslaadimine …</translation>
 <translation id="8253198102038551905">Võrguatribuutide hankimiseks klõpsake märgil „+”</translation>
 <translation id="8255212965098517578">Hiljutised fotod, märguanded ja rakendused</translation>
@@ -8266,6 +8274,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8525306231823319788">Täisekraan</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Keelte lisamine</translation>
+<translation id="8528479410903501741">IBAN-i salvestamine</translation>
 <translation id="8528962588711550376">Sisselogimine.</translation>
 <translation id="8529925957403338845">Automaatse jagamise ühendamine ebaõnnestus</translation>
 <translation id="8531701051932785007">Täiustatud ohutu sirvimine on välja lülitatud</translation>

@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">englanti (Yhdysvallat), Dvorak-näppäimistö</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – isäntä</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
+<translation id="1521795806314479294">Valmistellaan: <ph name="FILE_NAME" />…</translation>
 <translation id="1538729222189715449">Avataan Linux-tiedostoja…</translation>
 <translation id="1547964879613821194">englanti (Kanada)</translation>
 <translation id="1556189134700913550">Käytä kaikkiin</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Pakataan <ph name="NUMBER_OF_ITEMS" /> kohdetta…</translation>
 <translation id="1722687688096767818">Lisätään profiilia…</translation>
 <translation id="1726100011689679555">Nimipalvelimet</translation>
+<translation id="1727562178154619254">Valmis synkronoimaan</translation>
 <translation id="1729953886957086472">saksa (Saksa)</translation>
 <translation id="1730235522912993863">kiina (cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> kohdetta kopioitu</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">Omat nimipalvelimet</translation>
 <translation id="4465725236958772856">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, järjestelmänvalvojan hallinnoima, yhdistä</translation>
 <translation id="4470564870223067757">Hangul 2-set</translation>
+<translation id="4474142134969976028">Ei tuloksia</translation>
 <translation id="4477002475007461989">romania</translation>
 <translation id="4477219268485577442">bulgaria, foneettinen</translation>
 <translation id="4508265954913339219">Aktivointi epäonnistui</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">Käytä nimeä, jonka pituus on enintään <ph name="MAX_LENGTH" /> merkkiä.</translation>
 <translation id="4973970068702235170">Pakkaus epäonnistui odottamattoman virheen vuoksi: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">japani</translation>
+<translation id="4987699874727873250">englanti (Intia)</translation>
 <translation id="4988205478593450158">Haluatko varmasti poistaa tiedoston <ph name="FILE_NAME" />?</translation>
 <translation id="498902553138568924">Punainen perhonen</translation>
 <translation id="4992066212339426712">Poista mykistys</translation>
@@ -509,6 +513,7 @@
        Jos irrotat laitteen sen ollessa käytössä, voit menettää tietoja. Odota, kunnes toiminto on suoritettu, ja poista laite sitten käytöstä Tiedostot-sovelluksen kautta.</translation>
 <translation id="5163869187418756376">Jakaminen epäonnistui. Tarkista internetyhteytesi ja yritä myöhemmin uudelleen.</translation>
 <translation id="516592729076796170">US, Dvorak ohjelmoijille</translation>
+<translation id="5167102019886320507">Valmistellaan <ph name="NUMBER_OF_ITEMS" /> kohdetta…</translation>
 <translation id="5177526793333269655">Pikkukuvanäkymä</translation>
 <translation id="5181896909298187506">Ei viimeaikaisia tiedostoja</translation>
 <translation id="5194713942430106590">Klikkaa, jos haluat lajitella nousevaan järjestykseen.</translation>
@@ -813,6 +818,7 @@
 <translation id="7655441028674523381">Avaa Google Kuvat helposti</translation>
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7663224033570512922">hindi</translation>
+<translation id="7665680517722058469">Kokeile toista hakua</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> kohdetta siirretty roskakoriin</translation>
 <translation id="7693909743393669729">Aseman alustaminen poistaa kaiken sille tallennetun datan sekä kaikki osiot, myös näkymättömät sellaiset. Tätä toimintoa ei voi kumota.</translation>
 <translation id="7695430100978772476">Ei voitu alustaa: <ph name="DRIVE_NAME" /></translation>
@@ -969,6 +975,7 @@
 <translation id="8866284467018526531">translitteroitu arabia</translation>
 <translation id="8873014196523807561">Voit palauttaa kohteet vetämällä ne uuteen kansioon. Joidenkin kohteiden alkuperäiset kansiot on poistettu.</translation>
 <translation id="8874184842967597500">Ei yhdistetty</translation>
+<translation id="8876368061475701452">Jonossa</translation>
 <translation id="8900820606136623064">unkari</translation>
 <translation id="8903931173357132290">Valmistunut</translation>
 <translation id="8912078710089354287">Häntää heiluttava koira</translation>

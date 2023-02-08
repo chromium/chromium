@@ -90,6 +90,7 @@
 <translation id="6709398533399187136">Passordet ditt har vært avdekket i et databrudd. Google Passordlagring anbefaler at du endrer det nå.</translation>
 <translation id="6822673484890854830">Chrome kunne ikke sjekke alle passordene. Prøv på nytt senere.</translation>
 <translation id="6964931465519938134">Nå kan du bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
+<translation id="6975725306479268850">Velg Chrome for autofyll</translation>
 <translation id="701356708427365932">Bli kjent med den nye Chrome-menyen</translation>
 <translation id="7059914902409643750">Gi Chrome et personlig preg</translation>
 <translation id="7124339256045485976">Hold Chrome oppdatert</translation>
@@ -110,6 +111,7 @@
 <translation id="7754633291442704733">Organisasjonen din, <ph name="DOMAIN" />, får tilgang til data, bokmerker, logg, passord og andre innstillinger for Chrome som du lagrer i denne kontoen. Når du logger av, slettes dataene dine fra denne enheten.  Dataene forblir imidlertid lagret i den administrerte Google-kontoen og er tilgjengelige for organisasjonen din. Organisasjonen din kan også angi spesifikke brukerinnstillinger for den aktuelle kontoen. Disse kan endre virkemåten til Chrome.</translation>
 <translation id="7780154209050837198">For å få mest mulig ut av Chrome, logg på Chrome med Google-kontoen din.</translation>
 <translation id="7855730255114109580">Google Chrome er oppdatert</translation>
+<translation id="7939179037291298976">I iPhone-innstillingene åpner du «Passordalternativer» og velger «Chromium»</translation>
 <translation id="8022947259858476807">Bruk Chrome som standard til å åpne linker, søke i moduler og fylle ut passord i andre apper automatisk</translation>
 <translation id="81358522153858150">Chrome støtter nå brukerinnstillinger for den administrerte kontoen din</translation>
 <translation id="8160472928944011082">Kan ikke oppdatere Chrome</translation>
@@ -125,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Google Passordlagring kunne ikke sjekke alle passordene. Prøv på nytt i morgen, eller <ph name="BEGIN_LINK" />sjekk passordene i Google-kontoen din<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Hold deg trygg med Google Chrome</translation>
+<translation id="8765470054473112089">Når du skriver i adressefeltet eller søkefeltet, sender Chrome det du skriver til standardsøkemotoren din, for å gi deg bedre forslag. Dette er av i Inkognito.</translation>
 <translation id="8772179140489533211">Viser vinduer som ber deg logge på Chrome.</translation>
 <translation id="8788269841521769222">Du trenger ikke å huske dette passordet. Det blir lagret i Google Passordlagring for <ph name="EMAIL" /></translation>
 <translation id="8857676124663337448">Google Passordlagring kunne ikke sjekke alle passordene. Prøv på nytt i morgen.</translation>

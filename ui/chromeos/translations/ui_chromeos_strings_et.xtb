@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">inglise (USA), Dvoraki klaviatuuriga</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
 <translation id="1521655867290435174">Google'i arvutustabelid</translation>
+<translation id="1521795806314479294">Faili <ph name="FILE_NAME" /> ettevalmistamine …</translation>
 <translation id="1538729222189715449">Linuxi failide avamine …</translation>
 <translation id="1547964879613821194">Kanada inglise</translation>
 <translation id="1556189134700913550">Rakenda kõigil</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> üksuse pakkimine …</translation>
 <translation id="1722687688096767818">Profiili lisamine …</translation>
 <translation id="1726100011689679555">Nimeserverid</translation>
+<translation id="1727562178154619254">Sünkroonimiseks valmis</translation>
 <translation id="1729953886957086472">saksa (Saksamaa)</translation>
 <translation id="1730235522912993863">hiina, cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> üksust on kopeeritud.</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">Kohandatud nimeserverid</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, võrku haldab teie administraator, ühenda</translation>
 <translation id="4470564870223067757">Hanguli 2. seade</translation>
+<translation id="4474142134969976028">Sobivaid tulemusi pole</translation>
 <translation id="4477002475007461989">rumeenia</translation>
 <translation id="4477219268485577442">Bulgaaria foneetiline</translation>
 <translation id="4508265954913339219">Aktiveerimine nurjus</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">Kasutage nime, milles on kuni <ph name="MAX_LENGTH" /> tähemärki</translation>
 <translation id="4973970068702235170">Pakkumine nurjus, ootamatu viga: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">jaapani</translation>
+<translation id="4987699874727873250">inglise (India)</translation>
 <translation id="4988205478593450158">Kas soovite kindlasti faili <ph name="FILE_NAME" /> kustutada?</translation>
 <translation id="498902553138568924">Punane liblikas</translation>
 <translation id="4992066212339426712">Tühista vaigistus</translation>
@@ -509,6 +513,7 @@
        Kasutuses oleva seadme eemaldamisel võivad andmed kaduma minna. Oodake, kuni toiming on lõpetatud, seejärel väljutage seade rakendusega Failid.</translation>
 <translation id="5163869187418756376">Jagamine ebaõnnestus. Kontrollige ühendust ja proovige uuesti.</translation>
 <translation id="516592729076796170">USA programmeerija Dvorak</translation>
+<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> üksuse ettevalmistamine …</translation>
 <translation id="5177526793333269655">Pisipildi kuva</translation>
 <translation id="5181896909298187506">Hiljutisi faile pole</translation>
 <translation id="5194713942430106590">Klõpsake, et veerg kasvavas järjestuses sortida.</translation>
@@ -813,6 +818,7 @@
 <translation id="7655441028674523381">Lihtne juurdepääs rakendusele Google Photos</translation>
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7663224033570512922">hindi</translation>
+<translation id="7665680517722058469">Proovige muud otsingut</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> üksust teisaldati prügikasti</translation>
 <translation id="7693909743393669729">Ketta vormindamisel kustutatakse kõik sellel olevad andmed ja eemaldatakse kõik olemasolevad partitsioonid (sh nähtamatud partitsioonid). Seda toimingut ei saa tagasi võtta.</translation>
 <translation id="7695430100978772476">Ei saanud ketast <ph name="DRIVE_NAME" /> vormindada</translation>

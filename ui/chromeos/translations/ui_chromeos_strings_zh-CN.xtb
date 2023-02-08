@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">英语（美国）Dvorak 键盘</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - 主机</translation>
 <translation id="1521655867290435174">Google 表格</translation>
+<translation id="1521795806314479294">正在准备“<ph name="FILE_NAME" />”…</translation>
 <translation id="1538729222189715449">正在打开 Linux 文件…</translation>
 <translation id="1547964879613821194">加拿大英语</translation>
 <translation id="1556189134700913550">全部应用</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">正在压缩 <ph name="NUMBER_OF_ITEMS" /> 项内容…</translation>
 <translation id="1722687688096767818">正在添加配置文件…</translation>
 <translation id="1726100011689679555">域名服务器</translation>
+<translation id="1727562178154619254">可以开始同步了</translation>
 <translation id="1729953886957086472">德语（德国）</translation>
 <translation id="1730235522912993863">中文仓颉</translation>
 <translation id="1731889557567069540">已复制 <ph name="NUMBER_OF_ITEMS" /> 项。</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">自定义域名服务器</translation>
 <translation id="4465725236958772856">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，由您的管理员管理，连接</translation>
 <translation id="4470564870223067757">韩语(2 Set)</translation>
+<translation id="4474142134969976028">没有符合条件的结果</translation>
 <translation id="4477002475007461989">罗马尼亚语</translation>
 <translation id="4477219268485577442">保加利亚语（注音）</translation>
 <translation id="4508265954913339219">激活失败</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">所用名称的长度不得超过 <ph name="MAX_LENGTH" /> 个字符</translation>
 <translation id="4973970068702235170">压缩失败，出现了意外的错误：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">日语</translation>
+<translation id="4987699874727873250">英语（印度）</translation>
 <translation id="4988205478593450158">确定要删除“<ph name="FILE_NAME" />”吗？</translation>
 <translation id="498902553138568924">红蝴蝶</translation>
 <translation id="4992066212339426712">取消静音</translation>
@@ -509,6 +513,7 @@
    取出使用中的设备可能会导致数据丢失。请等待操作完成，然后使用“文件”菜单弹出设备。</translation>
 <translation id="5163869187418756376">共享失败。请检查连接是否正常，然后重试。</translation>
 <translation id="516592729076796170">美式 Programmer Dvorak 键盘</translation>
+<translation id="5167102019886320507">正在准备 <ph name="NUMBER_OF_ITEMS" /> 项内容…</translation>
 <translation id="5177526793333269655">缩略图视图</translation>
 <translation id="5181896909298187506">没有任何近期文件</translation>
 <translation id="5194713942430106590">点击即可按升序对此列排序。</translation>
@@ -808,6 +813,7 @@
 <translation id="7655441028674523381">轻松访问 Google 相册</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7663224033570512922">印地语</translation>
+<translation id="7665680517722058469">请尝试换个字词进行搜索</translation>
 <translation id="7689532716264131859">已将 <ph name="NUMBER_OF_ITEMS" /> 项内容移至回收站</translation>
 <translation id="7693909743393669729">将 U 盘格式化会清空其中存储的所有数据，并会移除所有现有分区（包括未必可见的分区）。此操作无法撤消。</translation>
 <translation id="7695430100978772476">无法将“<ph name="DRIVE_NAME" />”格式化</translation>
@@ -964,6 +970,7 @@
 <translation id="8866284467018526531">阿拉伯语音译</translation>
 <translation id="8873014196523807561">若要恢复这些内容，请将其拖至新文件夹。其中部分内容的原始文件夹已被删除。</translation>
 <translation id="8874184842967597500">未连接</translation>
+<translation id="8876368061475701452">已加入队列</translation>
 <translation id="8900820606136623064">匈牙利语</translation>
 <translation id="8903931173357132290">毕业</translation>
 <translation id="8912078710089354287">一只狗在摇尾巴</translation>

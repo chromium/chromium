@@ -627,6 +627,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1567387640189251553">Foi ligado um teclado diferente desde a última vez que introduziu a palavra-passe. É possível que esteja a tentar roubar os seus toques de teclas.</translation>
 <translation id="156793199942386351">A tecla "<ph name="CURRENTKEY" />" já está atribuída à ação "<ph name="ACTION" />". Prima qualquer tecla para <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Consola de JavaScript</translation>
+<translation id="1569466257325986920">Da próxima vez que a palavra-passe da sua Conta Google for alterada, os dados locais vão ser recuperados automaticamente depois de iniciar sessão na sua Conta Google</translation>
 <translation id="1570604804919108255">Reativar o som das notificações</translation>
 <translation id="1571304935088121812">Copiar nome de utilizador</translation>
 <translation id="1571738973904005196">Ver o separador: <ph name="TAB_ORIGIN" /></translation>
@@ -885,6 +886,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1781979858217752599">Partilhar áudio da janela</translation>
 <translation id="1782101999402987960">As atualizações estão bloqueadas pelo seu administrador</translation>
 <translation id="1782196717298160133">A localizar o seu telemóvel</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 nota}other{# notas}}</translation>
 <translation id="1784707308176068866">Execução em segundo plano quando solicitado por uma app nativa cooperante</translation>
 <translation id="1784849162047402014">O dispositivo tem pouco espaço em disco</translation>
 <translation id="1787350673646245458">Imagem do utilizador</translation>
@@ -1676,6 +1678,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2467755475704469005">Nenhum dispositivo detetado. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Aceleração da deslocação do touchpad</translation>
 <translation id="2468205691404969808">Utiliza cookies para memorizar as suas preferências, mesmo que não visite essas páginas.</translation>
+<translation id="2468247643665097563">Ordenar</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470085922875120">Está a usar palavras-passe que parecem ser difíceis de adivinhar</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 separador}other{<ph name="GROUP_TITLE" /> - # separadores}}</translation>
@@ -4111,7 +4114,7 @@ Pretende pará-lo?</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (predefinição)</translation>
 <translation id="4684427112815847243">Sincronizar tudo</translation>
 <translation id="4687613760714619596">Dispositivo desconhecido (<ph name="DEVICE_ID" />)</translation>
-<translation id="4687718960473379118">Anúncios sugeridos pelo site</translation>
+<translation id="4687718960473379118">Anúncios sugeridos por sites</translation>
 <translation id="4688036121858134881">ID do registo local: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> está a colocar este dispositivo numa versão anterior (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="4689235506267737042">Escolher as preferências de demonstração</translation>
@@ -5949,6 +5952,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6410668567036790476">Adicionar motor de pesquisa</translation>
 <translation id="641469293210305670">Instale atualizações e apps</translation>
 <translation id="6414878884710400018">Abra as preferências do sistema</translation>
+<translation id="6415816101512323589">Ativar a recuperação dos dados locais para proteger os seus dados?</translation>
 <translation id="6415900369006735853">Ligue-se à Internet através do seu telemóvel</translation>
 <translation id="6416743254476733475">Permita ou bloqueie no seu computador.</translation>
 <translation id="6417265370957905582">Assistente Google</translation>

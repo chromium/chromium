@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Engelsk (USA) med Dvorak-tastatur</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
+<translation id="1521795806314479294"><ph name="FILE_NAME" /> forberedes...</translation>
 <translation id="1538729222189715449">Åbner Linux-filer...</translation>
 <translation id="1547964879613821194">Canadisk (engelsk)</translation>
 <translation id="1556189134700913550">Anvend på alle</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Komprimerer <ph name="NUMBER_OF_ITEMS" /> elementer...</translation>
 <translation id="1722687688096767818">Tilføjer profilen...</translation>
 <translation id="1726100011689679555">Navneservere</translation>
+<translation id="1727562178154619254">Klar til synkronisering</translation>
 <translation id="1729953886957086472">Tysk (Tyskland)</translation>
 <translation id="1730235522912993863">Kinesisk cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementer blev kopieret.</translation>
@@ -479,6 +481,7 @@
 <translation id="4973523518332075481">Brug et navn med højst <ph name="MAX_LENGTH" /> tegn</translation>
 <translation id="4973970068702235170">Komprimering mislykkedes. Der opstod en uventet fejl: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japansk</translation>
+<translation id="4987699874727873250">Engelsk (Indien)</translation>
 <translation id="4988205478593450158">Er du sikker på, at du vil slette "<ph name="FILE_NAME" />"?</translation>
 <translation id="498902553138568924">Rød sommerfugl</translation>
 <translation id="4992066212339426712">Slå lyden til</translation>
@@ -509,6 +512,7 @@
    Hvis du fjerner din enhed, mens den er i brug, kan det medføre datatab. Vent, indtil handlingen er fuldført, og fjern derefter enheden ved hjælp af appen Filer.</translation>
 <translation id="5163869187418756376">Deling mislykkedes. Kontrollér din forbindelse, og prøv igen senere.</translation>
 <translation id="516592729076796170">Amerikansk (Programmer Dvorak) tastatur</translation>
+<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> elementer forberedes...</translation>
 <translation id="5177526793333269655">Miniaturevisning</translation>
 <translation id="5181896909298187506">Du har ikke åbnet nogen filer for nylig</translation>
 <translation id="5194713942430106590">Klik for at sortere kolonnen i stigende rækkefølge.</translation>
@@ -969,6 +973,7 @@
 <translation id="8866284467018526531">Arabisk translitteration</translation>
 <translation id="8873014196523807561">Hvis du vil gendanne disse elementer, skal du trække dem til en ny mappe. De oprindelige mapper for nogle af disse elementer er blevet slettet.</translation>
 <translation id="8874184842967597500">Ikke forbundet</translation>
+<translation id="8876368061475701452">I kø</translation>
 <translation id="8900820606136623064">Ungarsk</translation>
 <translation id="8903931173357132290">Dimittend</translation>
 <translation id="8912078710089354287">Hund, der logrer med halen</translation>

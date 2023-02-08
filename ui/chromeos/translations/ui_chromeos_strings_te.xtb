@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">డ్వోరక్ కీబోర్డ్‌తో ఇంగ్లీష్ (US)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - హోస్ట్</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
+<translation id="1521795806314479294"><ph name="FILE_NAME" />‌ను సిద్ధం చేస్తున్నారు...</translation>
 <translation id="1538729222189715449">Linux ఫైళ్లను తెరుస్తోంది...</translation>
 <translation id="1547964879613821194">కెనడియన్ ఆంగ్లం</translation>
 <translation id="1556189134700913550">అన్నింటికీ వర్తింపజేయి</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> అంశాలను జిప్ చేస్తోంది...</translation>
 <translation id="1722687688096767818">ప్రొఫైల్‌ను జోడిస్తోంది...</translation>
 <translation id="1726100011689679555">పేరు సర్వర్‌లు</translation>
+<translation id="1727562178154619254">సింక్ చేయడానికి సిద్ధంగా ఉంది</translation>
 <translation id="1729953886957086472">జర్మన్ (జర్మనీ)</translation>
 <translation id="1730235522912993863">చైనీస్ కాంగ్జీ</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ఐటమ్‌లు కాపీ చేయబడ్డాయి.</translation>
@@ -480,6 +482,7 @@
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> లేదా అంతకంటే తక్కువ అక్షరాలు ఉన్న పేరుని ఉపయోగించండి</translation>
 <translation id="4973970068702235170">జిప్ చేయడం విఫలమైంది, అనుకోని ఎర్రర్: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">జపనీస్</translation>
+<translation id="4987699874727873250">ఇంగ్లీష్ (భారతదేశం)</translation>
 <translation id="4988205478593450158">మీరు ఖచ్చితంగా "<ph name="FILE_NAME" />"ని తొలగించాలనుకుంటున్నారా?</translation>
 <translation id="498902553138568924">ఎర్రటి సీతాకోకచిలుక</translation>
 <translation id="4992066212339426712">అన్‌మ్యూట్ చేయి</translation>
@@ -510,6 +513,7 @@
        మీ పరికరం వినియోగంలో ఉన్నప్పుడు తీసివేస్తే డేటా నష్టం కలగవచ్చు. దయచేసి చర్య పూర్తయ్యే వరకు వేచి ఉండి ఆపై 'ఫైళ్లు' యాప్‌ను ఉపయోగించి పరికరాన్ని తీసివేయండి.</translation>
 <translation id="5163869187418756376">షేర్ చేయడం విఫలమైంది. మీ కనెక్షన్‌ను చెక్ చేసి, తర్వాత మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="516592729076796170">US ప్రోగ్రామర్ డ్వోరక్</translation>
+<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లను సిద్ధం చేస్తున్నారు...</translation>
 <translation id="5177526793333269655">సూక్ష్మచిత్ర వీక్షణ</translation>
 <translation id="5181896909298187506">ఇటీవలి ఫైల్స్ ఏవీ లేవు</translation>
 <translation id="5194713942430106590">నిలువు వరుసను ఆరోహణ క్రమంలో వర్గీకరించడానికి క్లిక్ చేయండి.</translation>

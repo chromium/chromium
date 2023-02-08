@@ -90,6 +90,7 @@
 <translation id="6709398533399187136">Parola a fost expusă în urma încălcării securității datelor. Managerul de parole Google îți recomandă să schimbi parola acum.</translation>
 <translation id="6822673484890854830">Chrome nu a putut verifica toate parolele. Încearcă din nou mai târziu.</translation>
 <translation id="6964931465519938134">Acum poți folosi Chrome oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>
+<translation id="6975725306479268850">Alege Chrome pentru completarea automată</translation>
 <translation id="701356708427365932">Familiarizează-te cu noul meniu Chrome</translation>
 <translation id="7059914902409643750">Personalizează Chrome</translation>
 <translation id="7124339256045485976">Menține browserul Chrome actualizat</translation>
@@ -110,6 +111,7 @@
 <translation id="7754633291442704733">Organizația ta <ph name="DOMAIN" /> va avea acces la datele Chrome, marcajele, istoricul, parolele și alte setări pe care le stochezi în acest cont. Când te deconectezi, datele vor fi șterse de pe acest dispozitiv.  Însă vor rămâne stocate în Contul Google administrat și vor fi disponibile pentru organizația ta. În plus, organizația ta poate să seteze politici privind utilizatorii specifice contului, care pot să modifice comportamentul browserului Chrome.</translation>
 <translation id="7780154209050837198">Pentru a profita din plin de Chrome, conectează-te la Chrome folosind Contul Google.</translation>
 <translation id="7855730255114109580">Google Chrome este actualizat</translation>
+<translation id="7939179037291298976">Din setările iPhone-ului, deschide Opțiuni pentru parolă și selectează Chrome</translation>
 <translation id="8022947259858476807">Folosește Chrome în mod prestabilit ca să deschizi linkuri, să cauți din widgeturi și să completezi automat parolele în alte aplicații</translation>
 <translation id="81358522153858150">Chrome acceptă acum politicile privind utilizatorii pentru contul tău gestionat</translation>
 <translation id="8160472928944011082">Chrome nu se poate actualiza</translation>
@@ -125,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Managerul de parole Google nu a putut verifica toate parolele. Încearcă din nou mâine sau <ph name="BEGIN_LINK" />verifică parolele din Contul Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Protejează-te cu Google Chrome</translation>
+<translation id="8765470054473112089">Când introduci text în bara de adrese sau în caseta de căutare, Chrome trimite ceea ce introduci la motorul de căutare prestabilit, pentru a primi sugestii mai bune. Această opțiune este dezactivată în modul incognito.</translation>
 <translation id="8772179140489533211">Afișează solicitări pentru conectarea la Chrome.</translation>
 <translation id="8788269841521769222">Nu va trebui să reții această parolă. Ea se va salva în Managerul de parole Google pentru <ph name="EMAIL" /></translation>
 <translation id="8857676124663337448">Managerul de parole Google nu a putut verifica toate parolele. Încearcă din nou mâine.</translation>

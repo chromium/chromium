@@ -628,6 +628,7 @@
 <translation id="1567387640189251553">חוברה מקלדת אחרת מאז שהזנת את הסיסמה בפעם האחרונה. ייתכן שהיא מנסה לתעד את ההקשות שלך.</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' כבר מוקצה לפעולה '<ph name="ACTION" />'. יש להקיש על מקש כלשהו כדי <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">‏קונסולת JavaScript</translation>
+<translation id="1569466257325986920">‏בשינוי הבא של הסיסמה לחשבון Google, הנתונים המקומיים ישוחזרו באופן אוטומטי אחרי הכניסה לחשבון Google</translation>
 <translation id="1570604804919108255">ביטול ההשתקה של ההתראות</translation>
 <translation id="1571304935088121812">העתקת שם משתמש</translation>
 <translation id="1571738973904005196">הצגת הכרטיסייה: <ph name="TAB_ORIGIN" /></translation>
@@ -894,6 +895,7 @@
 <translation id="1781979858217752599">שיתוף האודיו מהחלון</translation>
 <translation id="1782101999402987960">העדכונים חסומים על ידי מנהל המערכת</translation>
 <translation id="1782196717298160133">מתבצע חיפוש של הטלפון שלך</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{הערה אחת}one{# הערות}two{# הערות}other{# הערות}}</translation>
 <translation id="1784707308176068866">הפעלה ברקע כשהדבר מתבקש על-ידי אפליקציה מקורית הפועלת בשיתוף פעולה</translation>
 <translation id="1784849162047402014">חסר מקום אחסון בדיסק של המכשיר</translation>
 <translation id="1787350673646245458">תמונת המשתמש</translation>
@@ -1689,6 +1691,7 @@
 <translation id="2467755475704469005">לא זוהה מכשיר. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">האצת גלילה בלוח מגע</translation>
 <translation id="2468205691404969808">‏שימוש בקובצי cookie כדי לשמור את ההעדפות שלך, גם אם לא נכנסת אל הדפים האלה</translation>
+<translation id="2468247643665097563">סדר</translation>
 <translation id="2468402215065996499">טמגוצ'י</translation>
 <translation id="2468470085922875120">נעשה שימוש בסיסמאות שקשה לנחש</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – כרטיסייה אחת}one{<ph name="GROUP_TITLE" /> – # כרטיסיות}two{<ph name="GROUP_TITLE" /> – # כרטיסיות}other{<ph name="GROUP_TITLE" /> – # כרטיסיות}}</translation>
@@ -2483,7 +2486,7 @@
 <translation id="3183944777708523606">פריסת צגים</translation>
 <translation id="3184536091884214176">‏הגדרה או ניהול של מדפסות CUPS. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{האפליקציה הזו חסומה}one{חלק מהאפליקציות חסומות}two{חלק מהאפליקציות חסומות}other{חלק מהאפליקציות חסומות}}</translation>
-<translation id="3187472288455401631">מדידת מודעות</translation>
+<translation id="3187472288455401631">מדידת המודעות</translation>
 <translation id="3188257591659621405">הקבצים שלי</translation>
 <translation id="3188465121994729530">ממוצע נע</translation>
 <translation id="3189187154924005138">סמן גדול</translation>
@@ -4125,7 +4128,7 @@
 <translation id="4683947955326903992">‏‎<ph name="PERCENTAGE" />%‎ (ברירת מחדל)</translation>
 <translation id="4684427112815847243">סנכרון הכל</translation>
 <translation id="4687613760714619596">מכשיר לא ידוע (<ph name="DEVICE_ID" />)</translation>
-<translation id="4687718960473379118">הצעות למודעות מאתרים</translation>
+<translation id="4687718960473379118">מודעות שאתרים מציעים</translation>
 <translation id="4688036121858134881">מזהה יומן מקומי: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761">המכשיר הזה מועבר לגרסה קודמת (<ph name="PROGRESS_PERCENT" />) על ידי <ph name="MANAGER" /></translation>
 <translation id="4689235506267737042">בחירת העדפות ההדגמה</translation>
@@ -5960,6 +5963,7 @@
 <translation id="6410668567036790476">הוספת מנוע חיפוש</translation>
 <translation id="641469293210305670">התקנת עדכונים ואפליקציות</translation>
 <translation id="6414878884710400018">פתיחת התפריט 'העדפות מערכת'</translation>
+<translation id="6415816101512323589">להפעיל את שחזור הנתונים המקומיים כדי להגן על הנתונים שלך?</translation>
 <translation id="6415900369006735853">חיבור לאינטרנט דרך הטלפון</translation>
 <translation id="6416743254476733475">צריך להתיר או לחסום במחשב.</translation>
 <translation id="6417265370957905582">Google Assistant</translation>

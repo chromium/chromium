@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມ Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ໂຮສ</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
+<translation id="1521795806314479294">ກຳລັງກະກຽມ <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">ກຳລັງເປີດໄຟລ໌ Linux...</translation>
 <translation id="1547964879613821194">ພາ​ສາ​ອັງ​ກິດກາ​ນາ​ດາ​</translation>
 <translation id="1556189134700913550">ໃຊ້ກັບ​ທັງ​ຫມົດ</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">ກຳລັງຊິບ <ph name="NUMBER_OF_ITEMS" /> ລາຍການ...</translation>
 <translation id="1722687688096767818">ກຳລັງເພີ່ມໂປຣໄຟລ໌...</translation>
 <translation id="1726100011689679555">ຕັ້ງຊື່ເຊີບເວີ</translation>
+<translation id="1727562178154619254">ພ້ອມທີ່ຈະຊິ້ງແລ້ວ</translation>
 <translation id="1729953886957086472">ພາສາເຢຍລະມັນ (ເຢຍລະມັນ)</translation>
 <translation id="1730235522912993863">ພາສາຈີນ (Cangjie)</translation>
 <translation id="1731889557567069540">ສຳເນົາ <ph name="NUMBER_OF_ITEMS" /> ລາຍການແລ້ວ.</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">ເຊີບເວີຊື່ກໍານົດເອງ</translation>
 <translation id="4465725236958772856">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ, ເຊື່ອມຕໍ່</translation>
 <translation id="4470564870223067757">ຮາງກຸລ 2 ຊຸດ</translation>
+<translation id="4474142134969976028">ບໍ່ພົບຜົນການຊອກຫາທີ່ກົງກັນ</translation>
 <translation id="4477002475007461989">ໂຣມານຽນ</translation>
 <translation id="4477219268485577442">ການອອກສຽງພາສາບຸນ​ກາ​ຣີ</translation>
 <translation id="4508265954913339219">ການເປີດໃຊ້ງານບໍ່ສໍາເລັດ</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">ໃຊ້ຊື່ທີ່ມີຕົວອັກສອນ <ph name="MAX_LENGTH" /> ຕົວລົງມາ</translation>
 <translation id="4973970068702235170">ການຊິບບໍ່ສຳເລັດ, ເກີດຄວາມຜິດພາດທີ່ບໍ່ຄາດຄິດ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">ພາສາຍີ່ປຸ່ນ</translation>
+<translation id="4987699874727873250">ອັງກິດ (ອິນເດຍ)</translation>
 <translation id="4988205478593450158">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການລຶບ "<ph name="FILE_NAME" />"?</translation>
 <translation id="498902553138568924">ແມງກະເບື້ອສີແດງ</translation>
 <translation id="4992066212339426712">ເປີດສຽງ</translation>
@@ -509,6 +513,7 @@
    ການເອົາອຸປະກອນຂອງທ່ານອອກໃນຂະນະທີ່ມັນໃຊ້ງານຢູ່ ອາດຈະເຮັດໃຫ້ຂໍ້ມູນເສຍໄດ້.  ກະລຸນາລໍຖ້າຈົນກ່ວາຈົບການດໍາເນີນງານ, ຈາກນັ້ນດີດອຸປະກອນອອກດ້ວຍການໃຊ້ແອັບໄຟລ໌.</translation>
 <translation id="5163869187418756376">ການແຊຣ໌ລົ້ມເຫຼວ.ກວດເບິ່ງການເຊື່ອມຕໍ່ຂອງທ່ານ ແລະລອງໃໝ່ອີກພາຍຫຼັງ.</translation>
 <translation id="516592729076796170">Dvorak ຜູ້​ຂຽນ​ໂປ​ຣ​ແກ​ຣມ​ສະ​ຫະ​ລັດ</translation>
+<translation id="5167102019886320507">ກຳລັງກະກຽມ <ph name="NUMBER_OF_ITEMS" /> ລາຍການ...</translation>
 <translation id="5177526793333269655">ມຸມມອງຮູບນ້ອຍ</translation>
 <translation id="5181896909298187506">ບໍ່ມີໄຟລ໌ຫຼ້າສຸດ</translation>
 <translation id="5194713942430106590">ຄລິກເພື່ອຮຽງລຳດັບຖັນແຕ່ນ້ອຍຫາໃຫຍ່.</translation>
@@ -812,6 +817,7 @@
 <translation id="7655441028674523381">ເຂົ້າເຖິງ Google ຮູບພາບໄດ້ຢ່າງງ່າຍດາຍ</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7663224033570512922">ພາສາຮິນດິ</translation>
+<translation id="7665680517722058469">ລອງຊອກຫາອັນໃໝ່</translation>
 <translation id="7689532716264131859">ຍ້າຍ <ph name="NUMBER_OF_ITEMS" /> ລາຍການໄປໃສ່ຖັງຂີ້ເຫຍື້ອແລ້ວ</translation>
 <translation id="7693909743393669729">ການຟໍແມັດໄດຣຈະລຶບຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໃນມັນ ແລະ ລຶບຫ້ອງຂໍ້ມູນທີ່ມີຢູ່ທັງໝົດ, ຮວມທັງຫ້ອງຂໍ້ມູນທີ່ອາດຈະເບິ່ງບໍ່ເຫັນ. ຄຳສັ່ງນີ້ບໍ່ສາມາດຍົກເລີກໄດ້.</translation>
 <translation id="7695430100978772476">ບໍ່ສາມາດຟໍແມັດ <ph name="DRIVE_NAME" /> ໄດ້</translation>

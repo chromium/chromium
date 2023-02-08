@@ -524,6 +524,7 @@
 <translation id="2202627062836089804">የካርድዎ በስተጀርባ</translation>
 <translation id="22081806969704220">መሳቢያ 3</translation>
 <translation id="2210794033760923560">ሪፖርት ስቀል</translation>
+<translation id="2212579473415663542">ይህ አድራሻ የተቀመጠው በGoogle መለያዎ (<ph name="ACCOUNT" />) ውስጥ ነው። አድራሻን በመላው Google ምርቶች ላይ በማንኛውም መሣሪያ ላይ መጠቀም ይችላሉ።</translation>
 <translation id="2212735316055980242">መመሪያ አልተገኘም</translation>
 <translation id="2213606439339815911">ግቤቶችን በማምጣት ላይ...</translation>
 <translation id="2213612003795704869">ገጽ ታትሟል</translation>
@@ -1971,6 +1972,7 @@
 <translation id="5866898949289125849">እርስዎ የገንቢ መሣሪያዎች ገጽ እየተመለከቱ ነው</translation>
 <translation id="5869405914158311789">ይህ ጣቢያ ሊደረስበት አይችልም</translation>
 <translation id="5869522115854928033">የተቀመጡ የይለፍ ቃሎች</translation>
+<translation id="5872692522325383488">አይቢኤኤን ተቀምጧል</translation>
 <translation id="5873013647450402046">ባንክዎ እርስዎ መሆንዎን ማረጋገጥ ይፈልጋል።</translation>
 <translation id="5877831137320480913">ውበት እና አካል ብቃት</translation>
 <translation id="5884465125445718607">#6 የቻይና ፖስታ</translation>
@@ -2140,6 +2142,7 @@
 <translation id="6300452962057769623">{0,plural, =0{መሣሪያዎ አሁን ዳግም ይነሳል}=1{መሣሪያዎ በ1 ሰከንድ ውስጥ ዳግም ይነሳል}one{መሣሪያዎ በ# ሰከንዶች ውስጥ ዳግም ይነሳል}other{መሣሪያዎ በ# ሰከንዶች ውስጥ ዳግም ይነሳል}}</translation>
 <translation id="6301104306974789820">የዋጋ ክትትል ማሳወቂያዎችን ያግኙ</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ሊደረስበት አይችልም።</translation>
+<translation id="6306713302480826305">ይህ አድራሻ ከዚህ እና ከሌሎች በመለያ የገቡባቸው መሣሪያዎች ይሰረዛል</translation>
 <translation id="6311165245110979290">ምናባዊ ካርድ አለ</translation>
 <translation id="6312113039770857350">ድረ-ገጽ አይገኝም</translation>
 <translation id="6316226860534107313">ስኩተሮች እና ሞፔዶች</translation>
@@ -3031,6 +3034,7 @@
 <translation id="8473863474539038330">አድራሻዎች እና ተጨማሪ</translation>
 <translation id="8474910779563686872">የገንቢ ዝርዝሮችን አሳይ</translation>
 <translation id="8479754468255770962">ከታች ግራ በኩል ስቴፕለር ምታ</translation>
+<translation id="8483229036294884935">ይህ አድራሻ ከእርስዎ Google መለያ <ph name="ACCOUNT" /> ይሰረዛል</translation>
 <translation id="8483780878231876732">ከእርስዎ የGoogle መለያ ካርዶችን ለመጠቀም ወደ Chrome በመለያ ይግቡ</translation>
 <translation id="8488350697529856933">የሚመለከተው ለ</translation>
 <translation id="8490137692873530638">ቁልል 10</translation>

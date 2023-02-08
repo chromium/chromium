@@ -943,6 +943,7 @@ Kurumsal profil ayrımının katı bir şekilde zorunlu tutulması ya da ilgili 
 <translation id="1883274744253492031">Karma içerik otomatik yükseltmesini etkinleştir</translation>
 <translation id="1885782360784839335">Tap sekme tanıtım içeriğini göstermeyi etkinleştir</translation>
 <translation id="1888871729456797026">Masaüstünde bulut politikasının kayıt jetonu</translation>
+<translation id="1890850749633603276">Daha az kısıtlayıcı Chrome Uygulamaları <ph name="WEBVIEW_TAG_NAME" /> davranışını geri yükle</translation>
 <translation id="1893271062894546361">Bu politika etkinleştirildiğinde medya oynatma kontrolleri kullanıcı arayüzü, yerel ağdaki diğer cihazlar tarafından başlatılan <ph name="PRODUCT_NAME" /> oturumları için kullanılabilir.
 
       Bu politika kurumsal kullanıcılar için ayarlanmadığında veya devre dışı bırakıldığında medya oynatma kontrolleri kullanıcı arayüzü, yerel ağdaki diğer cihazlar tarafından başlatılan <ph name="PRODUCT_NAME" /> oturumları için kullanılamaz.
@@ -3869,6 +3870,7 @@ Platform tarafından sağlanan sertifika doğrulayıcıyı ve kökleri kullanma 
       Not: Politika ayarlanırsa <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" /> politikasını geçersiz kılar.</translation>
 <translation id="4658380868451934335">Giriş ekranında dikteyi etkinleştir</translation>
 <translation id="4660356908994631271">Yeni sekme sayfasındaki arama kutusunda Google Lens düğmesini göster.</translation>
+<translation id="4661885151480410620">Davranış değişiklikleri, özellik kullanıma sunma sürecine bağlı olarak geçerli olabilir.</translation>
 <translation id="4661889655253181651">İçerik ayarları belirli türdeki içeriklerin (ör. Çerezler, Resimler veya JavaScript) nasıl işleneceğini belirlemenize izin verir.</translation>
 <translation id="4663509616441994711">Kullanıcı düzeyinde bulut politikalarını birleştirmeyi devre dışı bırakın.</translation>
 <translation id="4663588423815449593"><ph name="PEPPER_NAME" /> eklentisini, eski video kod çözücüyü kullanmaya zorla.</translation>
@@ -5296,6 +5298,7 @@ Ekran koruyucuyu başlatmak için gereken boşta kalma zaman aşımı ve bir res
       4: Güvenli Tarama sunucusu tarafından işaretlenen kötü amaçlı dosyaları engeller, tehlikeli dosya türlerini engellemez. Önerilen.
 
       Not: Bu kısıtlamalar hem web sayfası içeriğinden hem de Bağlantıyı indir... menü seçeneğinden tetiklenen indirmeler için geçerlidir. Görüntülenmekte olan sayfayı indirme ya da yazdırma seçeneklerinden PDF olarak kaydetme için geçerli değildir. Güvenli tarama hakkında daha fazla bilgi edinin (https://developers.google.com/safe-browsing).</translation>
+<translation id="6118226055960302400">Daha az kısıtlayıcı davranışı geri yükle.</translation>
 <translation id="6119207979839638596">Bu politika, <ph name="PRODUCT_NAME" /> ürünündeki maksimum TLS sürümü politikası kaldırıldıktan sonra M75 sürümünden kaldırılmıştır.
 
       Bu politika yapılandırılmazsa <ph name="PRODUCT_NAME" />, varsayılan maksimum sürümü kullanır.
@@ -6637,6 +6640,19 @@ olarak bu tür istekleri engelleme davranışı geçerli olur.</translation>
 
       <ph name="MAC_OS_NAME" /> üzerinde <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> politikası Yanlış değerine ayarlanırsa bu politikanın etkisi olmaz.</translation>
 <translation id="7278854311116092134">Engellenenler listesinden muaf tutulacak yerel mesajlaşma ana makinelerinin adları</translation>
+<translation id="7287869314269886809">Chrome Uygulamaları <ph name="WEBVIEW_TAG_NAME" />, <ph name="PRODUCT_NAME" /> ürününden kaldırılma sürecinde olan davranışlara izin verir.
+
+Önceki davranışta <ph name="WEBVIEW_TAG_NAME" />, geçersiz SSL sertifikasına sahip bir sayfaya gidiyorsa ara sayfa gösteriliyordu. Bu ara sayfa, kullanıcıya güvenli olmayan bir
+şekilde devam etme seçeneği sunmaktadır. Yeni davranış, güvenli olmayan şekilde devam etme seçeneğinin
+sunulmadığı bir hata sayfası gösterir.
+
+Önceki davranış ayrıca <ph name="WEBVIEW_TAG_NAME" /> <ph name="NEWWINDOW_EVENT_NAME" /> etkinliğinin
+(https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow), yeni pencereyi <ph name="WEBVIEW_TAG_NAME" /> kaynağından ayrı bir uygulama penceresindeki <ph name="WEBVIEW_TAG_NAME" /> öğesine eklemesine de izin verir. Yeni davranışla birlikte bu ekleme işlemine yine izin verilir, ancak <ph name="WEBVIEW_TAG_NAME" /> kaynağındaki <ph name="WINDOW_OPEN_NAME" /> çağrısından dolayı döndürülen pencere referansı geçersiz kılınır.
+
+Politika etkinleştirilirse önceki davranış kullanılır.
+Politika devre dışı bırakılırsa veya ayarlanmazsa davranış değişikliği, <ph name="PRODUCT_NAME" /> sürümüyle kullanıma sunulduğunda geçerli olur.
+
+Bu politika, kuruluşların bu değişikliklerden dolayı kesinti yaşaması ihtimaline karşı geçici bir çözümdür. Bu politika gelecekteki bir sürümde kaldırılacaktır.</translation>
 <translation id="7291084543582732020">Bu ayarı etkinleştirirseniz, Smart Lock ile ilgili koşullar karşılandığında kullanıcıların bu özelliği kullanmalarına izin verilir.
 
       Bu ayarı devre dışı bırakırsanız, kullanıcıların Smart Lock özelliğini kullanmalarına izin verilmez.

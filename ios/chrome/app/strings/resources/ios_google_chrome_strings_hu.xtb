@@ -89,6 +89,7 @@
 <translation id="6709398533399187136">Jelszava adatvédelmi incidens során nyilvánosságra került. A Google Jelszókezelő a jelszó haladéktalan módosítását javasolja.</translation>
 <translation id="6822673484890854830">A Chrome nem tudta ellenőrizni az összes jelszót. Próbálja újra később.</translation>
 <translation id="6964931465519938134">Mostantól bármikor használhatja a Chrome-ot, amikor üzenetekben, dokumentumokban és más alkalmazásokban lévő linkekre koppint.</translation>
+<translation id="6975725306479268850">A Chrome kiválasztása az automatikus kitöltéshez</translation>
 <translation id="701356708427365932">Ismerje meg az új Chromium-menüt</translation>
 <translation id="7059914902409643750">Tegye személyessé a Chrome-ot</translation>
 <translation id="7124339256045485976">Chrome böngészője legyen mindig naprakész</translation>
@@ -109,6 +110,7 @@
 <translation id="7754633291442704733">Szervezete (<ph name="DOMAIN" />) hozzáfér majd az Ön Chrome-adataihoz, -könyvjelzőihez, -előzményeihez, -jelszavaihoz és az ebben a fiókban tárolt egyéb beállításaihoz. Kijelentkezéskor az adatai törlődnek erről az eszközről.  Az adatok azonban továbbra is megmaradnak a felügyelt Google-fiókban, és hozzáférhetők lesznek szervezete számára. Szervezete felhasználói házirendeket is beállíthat erre a fiókra vonatkozóan, amelyek módosíthatják a Chrome viselkedését.</translation>
 <translation id="7780154209050837198">Annak érdekében, hogy a legtöbbet hozhassa ki a Chrome-ból, jelentkezzen be Google-fiókjával a Chrome-ba.</translation>
 <translation id="7855730255114109580">A Google Chrome naprakész</translation>
+<translation id="7939179037291298976">Az iPhone beállításai között nyissa meg a „Jelszóbeállítások” menüt, majd válassza a „Chrome” lehetőséget.</translation>
 <translation id="8022947259858476807">A Chrome-ot alapértelmezett böngészőként használva linkek nyithatók meg, modulokban lehet keresni, és jelszavak tölthetők be automatikusan az egyéb alkalmazásokban</translation>
 <translation id="81358522153858150">A Chrome mostantól támogatja a felhasználói házirendeket az Ön felügyelt fiókjánál</translation>
 <translation id="8160472928944011082">Nem lehet frissíteni a Chrome-ot</translation>
@@ -124,6 +126,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">A Google Jelszókezelő nem tudta ellenőrizni az összes jelszót. Próbálja újra holnap, vagy <ph name="BEGIN_LINK" />ellenőrizze jelszavait a Google-fiókjában<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Gondoskodjon biztonságáról a Google Chrome-mal</translation>
+<translation id="8765470054473112089">Amikor Ön beír valamit a címsávba vagy a keresőmezőbe, a Chrome a beírt szöveget elküldi az alapértelmezett keresőmotornak, hogy jobb javaslatokat biztosítson. Inkognitóban ki van kapcsolva ez a funkció.</translation>
 <translation id="8772179140489533211">Értesítéseket jelenít meg a Chrome-ba való bejelentkezéshez</translation>
 <translation id="8788269841521769222">Nem kell emlékeznie erre a jelszóra. Elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Google Jelszókezelőbe.</translation>
 <translation id="8857676124663337448">A Google Jelszókezelő nem tudta ellenőrizni az összes jelszót. Próbálja újra holnap.</translation>

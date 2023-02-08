@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Dvorak klaviaturası ilə İngilis dili (ABŞ)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Host</translation>
 <translation id="1521655867290435174">Google Cədvəl</translation>
+<translation id="1521795806314479294"><ph name="FILE_NAME" /> hazırlanır...</translation>
 <translation id="1538729222189715449">Linux faylları açılır...</translation>
 <translation id="1547964879613821194">Kanada İngiliscəsi</translation>
 <translation id="1556189134700913550">Hamısına tətbiq edin</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> element sıxılır...</translation>
 <translation id="1722687688096767818">Profil əlavə edilir...</translation>
 <translation id="1726100011689679555">Ad serverləri</translation>
+<translation id="1727562178154619254">Sinxronizasiyaya hazırdır</translation>
 <translation id="1729953886957086472">Alman (Almaniya)</translation>
 <translation id="1730235522912993863">Çin dili (Cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> element kopyalanıb.</translation>
@@ -480,6 +482,7 @@
 <translation id="4973523518332075481">Maksimum <ph name="MAX_LENGTH" /> və ya daha az simvoldan ibarət olan addan istifadə edin</translation>
 <translation id="4973970068702235170">Sıxmaq alınmadı, gözlənilməz xəta baş verdi: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Yapon</translation>
+<translation id="4987699874727873250">İngilis (Hindistan)</translation>
 <translation id="4988205478593450158">"<ph name="FILE_NAME" />" faylını silmək istədyinizə əminsiniz?</translation>
 <translation id="498902553138568924">Qırmızı kəpənək</translation>
 <translation id="4992066212339426712">Səssiz rejimdən çıxın</translation>
@@ -510,6 +513,7 @@
    İstifadə olunan zaman cihazın kənarlaşdırılması data itkisinə səbəb ola bilər. Əməliyyatın tamamlanmasını gözləyin, sonra Fayllar tətbiqi işlədərək cihazı kənarlaşdırın.</translation>
 <translation id="5163869187418756376">Paylaşma alınmadı. Bağlantını yoxlayın və yenidən cəhd edin.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
+<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> element hazırlanır...</translation>
 <translation id="5177526793333269655">Eskiz görünüşü</translation>
 <translation id="5181896909298187506">Son fayllar yoxdur</translation>
 <translation id="5194713942430106590">Sütunu azalan sıra ilə çeşidləmək üçün klikləyin.</translation>

@@ -1454,6 +1454,26 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
       Se a política for definida como "Desativada", esse recurso não estará disponível.</translation>
 <translation id="2342066287156668839">Ativar cota persistente.</translation>
 <translation id="2345547870894930157">Ativar DNS sobre HTTPS sem substituto inseguro</translation>
+<translation id="234856189825555040">Esta política controla se os plug-ins do <ph name="PEPPER_NAME" /> podem
+usar o novo decodificador para se comunicar com os de hardware, em vez do decodificador
+de vídeo legado.
+
+A migração afeta apenas os detalhes de implementação internos e não pode
+mudar nenhum comportamento. No entanto, ela pode ser usada caso algum app PPAPI
+não funcione como esperado.
+
+Quando a política é ativada ou deixada sem definição, o navegador decide qual
+implementação é usada.
+Quando a política é desativada, o navegador usa a implementação antiga
+até que a política expire.
+
+Se você precisar usar a política, registre um bug em crbug.com explicando seu
+caso de uso e envie uma cópia para {andrescj, blundell, pmolinalopez, vasilyt}@chromium.org. A
+política está programada para ser oferecida até o <ph name="PRODUCT_NAME" /> 114. Após essa versão,
+a implementação antiga será removida.
+
+OBSERVAÇÃO: somente processos de renderizador recém-iniciados vão refletir as mudanças nesta
+política enquanto o navegador estiver em execução.</translation>
 <translation id="2349117476121456297">Se esta política for definida como verdadeira, a primeira linha de teclas do teclado funcionará como comandos de teclas de função. Pressionar a tecla de pesquisa faz com que elas voltem a funcionar como teclas de mídia.
 
       Se esta política for definida como falsa, as teclas funcionarão como comandos de teclas de mídia por padrão. Pressionar a tecla de pesquisa faz com que elas funcionem como teclas de função.</translation>
@@ -6210,6 +6230,24 @@ Esta política pode ser removida de <ph name="PRODUCT_NAME" /> no futuro.</trans
 
       Se a política for definida como "Desativada" ou deixada sem definição, as informações de uso não serão enviadas.</translation>
 <translation id="6823711520976094072">Definir como menos de 1 MB ou deixar sem definição significa que o <ph name="PRODUCT_OS_NAME" /> usará o tamanho padrão de 256 MB no cache de apps e extensões para instalações feitas por vários usuários em um mesmo dispositivo, evitando a necessidade de um novo download para cada usuário.</translation>
+<translation id="6829632070341067746">Esta política controla a refatoração recente das APIs Graphics3D no plug-in PPAPI.
+
+A migração afeta apenas os detalhes de implementação internos e não pode
+mudar nenhum comportamento. No entanto, ela pode ser usada caso algum app PPAPI
+não funcione como esperado.
+
+Quando a política for ativada ou deixada sem definição, o navegador vai decidir qual
+implementação será usada.
+Quando a política for desativada, o navegador vai usar a implementação antiga
+até que a política expire.
+
+Se você precisar usar a política, registre um bug em crbug.com explicando seu
+caso de uso e envie uma cópia para {blundell, vasilyt}@chromium.org. A política está programada para
+ser oferecida até o <ph name="PRODUCT_NAME" /> 114. Após essa versão,
+a implementação antiga será removida.
+
+OBSERVAÇÃO: somente processos de renderizador recém-iniciados vão refletir as mudanças nesta
+política enquanto o navegador estiver em execução.</translation>
 <translation id="6833023569065717572">Se a política for definida como verdadeira, a tela de login do dispositivo terá um relógio no formato de 24 horas.
 
       Se a política for definida como falsa, a tela de login do dispositivo terá um relógio no formato de 12 horas.
@@ -6504,6 +6542,14 @@ bloqueio dessas solicitações será aplicado.</translation>
 <translation id="7081784525008938771">Se a política for definida como "Ativada" ou não for definida, o usuário não será considerado inativo quando o dispositivo estiver reproduzindo vídeo. Isso impede que os intervalos de inatividade e de escurecimento, desligamento e bloqueio da tela sejam atingidos e que as ações correspondentes sejam realizadas.
 
       Se a política for definida como "Desativada", o sistema poderá considerar os usuários inativos, independentemente da atividade de vídeo.</translation>
+<translation id="7084631508902923941">As extensões que se conectam a uma dessas origens vão continuar em execução enquanto a porta estiver conectada.
+
+Se a política for deixada sem definição, os valores padrão dela serão usados. Estas são origens de apps que oferecem SDKs que não dão a possibilidade de reiniciar uma conexão fechada para um estado anterior:
+- Smart Card Connector
+- Citrix Receiver (estável, Beta, backup)
+- VMware Horizon (estável, Beta)
+
+Se definida, a lista de valores padrão será estendida com os valores recém-configurados. As entradas padrão e as fornecidas pela política vão conceder a exceção às extensões de conexão, desde que a porta esteja conectada.</translation>
 <translation id="7086720321892395256">Controla as políticas do usuário e do dispositivo para o recurso de tela de privacidade.</translation>
 <translation id="7090500018761495290">Reativar a API Event.path até a versão M115.</translation>
 <translation id="7090668780328470271">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites não podem pedir que o usuário conceda permissão de acesso ao dispositivo USB.
@@ -7137,6 +7183,22 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
 
           O valor da política precisa ser especificado em milissegundos. Os valores são ajustados para serem menores ou iguais ao intervalo de desligamento da tela (se definido) e ao intervalo de inatividade.</translation>
 <translation id="7680437377926096177">Suprimir a caixa de diálogo para saída na última janela fechada.</translation>
+<translation id="7682459947751785310">Esta política pode ser usada temporariamente para ativar o suporte à
+API PPB_VideoDecoder(Dev).
+
+Quando a política é deixada sem definição ou é desativada, o navegador decide se
+há suporte para a API.
+Quando a política é ativada, há suporte.
+
+Esta política pode ser usada caso nossa eliminação contínua do suporte a essa API
+exponha problemas. Se você precisar usar a política, registre um bug em crbug.com
+explicando seu caso de uso e envie uma cópia para {blundell, vasilyt}@chromium.org. A política está
+programada para ser transmitida até
+o <ph name="PRODUCT_NAME" /> 114. Depois dessa versão, o suporte para a API será eliminado
+sem restrições.
+
+OBSERVAÇÃO: somente processos de renderizador recém-iniciados vão refletir as mudanças nesta
+política enquanto o navegador estiver em execução.</translation>
 <translation id="7683777542468165012">Atualização de política dinâmica</translation>
 <translation id="7687943045976362719">Se esta política for definida, os tipos de conteúdo especificados serão processados pelo <ph name="PRODUCT_FRAME_NAME" />.
 
@@ -7230,6 +7292,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
       Se esta política for desativada ou deixada sem definição, é possível que a execução de apps do Chrome seja bloqueada, dependendo do status da descontinuação.
       Nos dois casos, a execução dos apps do Chrome que forem instalados à força por políticas ainda vai ser permitida.</translation>
 <translation id="7774768074957326919">Usar configurações de proxy do sistema</translation>
+<translation id="7776848995687565978">Configure uma lista de origens que concede ciclo de vida em segundo plano estendido às extensões de conexão.</translation>
 <translation id="777734450201217641">Ative atalhos de recursos de acessibilidade na tela de login.
 
           Se esta política for definida como verdadeira, os atalhos de recursos de acessibilidade sempre estarão ativados na tela de login.
@@ -8673,6 +8736,52 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
       As possibilidades de reversão reais também podem depender dos patches de vulnerabilidade críticos e do modelo.</translation>
 <translation id="9123464369663964441">Permitir que os usuários adicionem exceções para liberar conteúdo misto</translation>
 <translation id="9124770007620653639">Nunca enviar dados de confiabilidade do domínio para o Google</translation>
+<translation id="9126491667911789829">A definição da política especifica uma lista de apps da Web com instalação silenciosa (sem interação do usuário) e que não podem ser desinstalados nem desativados.
+
+      Cada item da lista da política é um objeto com um elemento obrigatório:
+      <ph name="URL_LABEL" />, que é o URL do app da Web que vai ser instalado.
+
+      Além de seis elementos opcionais:
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />,
+      para a maneira como o app da Web é aberto (o padrão é uma nova guia).
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />,
+      com valor "verdadeiro" se você quiser criar atalhos na área de trabalho do <ph name="LINUX_OS_NAME" /> e do
+      <ph name="MS_WIN_NAME" />.
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (da versão 90 em diante do <ph name="PRODUCT_NAME" />)
+      permite substituir o nome do app se ele não for um
+      Progressive Web App (PWA) ou o nome do app instalado
+      temporariamente se ele for um PWA, mas a autenticação for exigida antes de
+      concluir a instalação. Se um
+      <ph name="CUSTOM_NAME_LABEL" /> e um
+      <ph name="FALLBACK_APP_NAME_LABEL" /> forem fornecidos,
+      o segundo vai ser ignorado.
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (da versão 99 em diante do <ph name="PRODUCT_OS_NAME" />
+      e da versão 112 em todos os outros sistemas operacionais de computador) permite substituir
+      permanentemente os nomes de todos os apps da Web e PWAs.
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (da versão 99 em diante do <ph name="PRODUCT_OS_NAME" />
+      e da versão 112 em todos os outros sistemas operacionais de computador) permite
+      substituir o ícone dos apps instalados. Os ícones precisam ser quadrados,
+      ter no máximo 1 MB e estar em um destes formatos: jpeg, png, gif, webp, ico.
+      O valor de hash precisa ser o hash SHA256 do arquivo de ícone.
+
+      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
+      (da versão 107 em diante
+      do <ph name="PRODUCT_NAME" />). Se ativado, o <ph name="URL_LABEL" />
+      fornecido vai ser instalado como um atalho, como se fosse feito pela opção "Criar atalho…"
+      na GUI do navegador para computador.
+      Observe que, quando instalado como um atalho, ele não será atualizado se o
+      manifesto no <ph name="URL_LABEL" /> mudar.
+      Se desativado ou não configurado, o app da Web no
+      <ph name="URL_LABEL" /> especificado vai ser instalado normalmente.
+
+      Consulte a política <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> para fixar apps na estante do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9129169595075460149">Se a política for definida como "Ativada", o SafeSearch estará sempre ativo na Pesquisa Google e os usuários não poderão mudar essa configuração.
 
       Se a política for definida como "Desativada" ou não for definida, o SafeSearch não será obrigatório na Pesquisa Google.</translation>

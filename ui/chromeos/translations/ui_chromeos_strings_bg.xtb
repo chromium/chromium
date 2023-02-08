@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Английски (САЩ) с клавиатура „Дворак“</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Хост</translation>
 <translation id="1521655867290435174">Google Таблици</translation>
+<translation id="1521795806314479294"><ph name="FILE_NAME" /> се подготвя…</translation>
 <translation id="1538729222189715449">Файловете за Linux се отварят...</translation>
 <translation id="1547964879613821194">Канадска (английски) клавиатура</translation>
 <translation id="1556189134700913550">Прилагане за всички</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> елемента се компресират...</translation>
 <translation id="1722687688096767818">Потребителският профил се добавя...</translation>
 <translation id="1726100011689679555">Сървъри за имена</translation>
+<translation id="1727562178154619254">Готово за синхронизиране</translation>
 <translation id="1729953886957086472">Немски (Германия)</translation>
 <translation id="1730235522912993863">Китайски (цандзие)</translation>
 <translation id="1731889557567069540">Копирахте <ph name="NUMBER_OF_ITEMS" /> елемента.</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">Специално зададени сървъри за имена</translation>
 <translation id="4465725236958772856">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, управлява се от администратора ви, свързване</translation>
 <translation id="4470564870223067757">Хангъл, 2 набора</translation>
+<translation id="4474142134969976028">Няма съответстващи резултати</translation>
 <translation id="4477002475007461989">Румънски</translation>
 <translation id="4477219268485577442">Българска фонетична клавиатура</translation>
 <translation id="4508265954913339219">Активирането не бе успешно</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">Използвайте име с дължина най-много <ph name="MAX_LENGTH" /> знака</translation>
 <translation id="4973970068702235170">Компресирането не бе успешно. Възникна неочаквана грешка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Японски</translation>
+<translation id="4987699874727873250">английски (Индия)</translation>
 <translation id="4988205478593450158">Наистина ли искате да изтриете „<ph name="FILE_NAME" />“?</translation>
 <translation id="498902553138568924">Червена пеперуда</translation>
 <translation id="4992066212339426712">Включване на звука</translation>
@@ -509,6 +513,7 @@
    Премахването на устройството, докато се използва, може да доведе до загуба на данни. Моля, изчакайте завършването на операцията, след което го извадете посредством приложението Файлове.</translation>
 <translation id="5163869187418756376">Споделянето не бе успешно. Проверете връзката си и опитайте отново по-късно.</translation>
 <translation id="516592729076796170">Американска (Дворак) клавиатура за програмисти</translation>
+<translation id="5167102019886320507">Подготвят се <ph name="NUMBER_OF_ITEMS" /> елемента…</translation>
 <translation id="5177526793333269655">Изглед с миниизображения</translation>
 <translation id="5181896909298187506">Няма скорошни файлове</translation>
 <translation id="5194713942430106590">Кликнете, за да сортирате колоната във възходящ ред.</translation>
@@ -813,6 +818,7 @@
 <translation id="7655441028674523381">Лесен достъп до Google Снимки</translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7663224033570512922">Хинди</translation>
+<translation id="7665680517722058469">Опитайте с друго търсене</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> елемента бяха преместени в кошчето</translation>
 <translation id="7693909743393669729">При форматирането на устройство ще бъдат изтрити всички съхранявани на него данни и всички негови дялове, включително тези, които не са видими. Това действие не може да бъде отменено.</translation>
 <translation id="7695430100978772476">Устройството „<ph name="DRIVE_NAME" />“ не бе форматирано</translation>
@@ -969,6 +975,7 @@
 <translation id="8866284467018526531">Арабски (транслитерация)</translation>
 <translation id="8873014196523807561">За да възстановите тези елементи, преместете ги с плъзгане в нова папка. Първоначалните папки на някои от тях са изтрити.</translation>
 <translation id="8874184842967597500">Няма връзка</translation>
+<translation id="8876368061475701452">На опашката</translation>
 <translation id="8900820606136623064">унгарски</translation>
 <translation id="8903931173357132290">Абитуриент</translation>
 <translation id="8912078710089354287">Куче, което маха с опашка</translation>

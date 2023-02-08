@@ -412,6 +412,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Δεν υπάρχουν παραβιασμένοι κωδικοί πρόσβασης}=1{1 παραβιασμένος κωδικός πρόσβασης}other{{NUM_COMPROMISED} παραβιασμένοι κωδικοί πρόσβασης}}</translation>
 <translation id="1380028686461971526">Αυτόματη σύνδεση στο δίκτυο</translation>
 <translation id="1381567580865186407">Η ομιλία στα <ph name="LANGUAGE" /> αποστέλλεται στην Google για επεξεργασία</translation>
+<translation id="1383381142702995121">Διαχείριση αυτής της επέκτασης</translation>
 <translation id="1383597849754832576">Δεν είναι δυνατή η λήψη αρχείων ομιλίας. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="1383861834909034572">Άνοιγμα κατά την ολοκλήρωση</translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
@@ -4243,6 +4244,7 @@
 <translation id="4807098396393229769">Όνομα στην κάρτα</translation>
 <translation id="4808667324955055115">Αναδυόμενα παράθυρα που αποκλείστηκαν:</translation>
 <translation id="4809079943450490359">Οδηγίες από τον διαχειριστή της συσκευής σας:</translation>
+<translation id="4809447465126035330">Διαγραφή</translation>
 <translation id="480990236307250886">Άνοιγμα της αρχικής σελίδας</translation>
 <translation id="4809927044794281115">Φωτεινό θέμα</translation>
 <translation id="4811212958317149293">Αυτόματη σάρωση πληκτρολογίου πρόσβασης με διακόπτη</translation>
@@ -5045,6 +5047,7 @@
 <translation id="5556459405103347317">Επαναφόρτωση</translation>
 <translation id="5558129378926964177">Μεγέθυνση</translation>
 <translation id="5558247502209241936">Ενεργοποίηση του ανοίγματος εφαρμογής σε παράθυρο</translation>
+<translation id="5559311991468302423">Διαγραφή διεύθυνσης</translation>
 <translation id="55601339223879446">Προσαρμογή των ορίων της επιφάνειας εργασίας εντός της οθόνης</translation>
 <translation id="5561162485081632007">Εντοπίζει και σας προειδοποιεί για επικίνδυνα συμβάντα, όταν αυτά εμφανίζονται.</translation>
 <translation id="5562781907504170924">Αυτή η καρτέλα είναι συνδεδεμένη σε μια συσκευή Bluetooth.</translation>
@@ -6437,6 +6440,7 @@
 <translation id="6839916869147598086">Η σύνδεση έχει αλλάξει</translation>
 <translation id="6840155290835956714">Ερώτηση πριν από την αποστολή</translation>
 <translation id="6840184929775541289">Δεν είναι Αρχή πιστοποίησης</translation>
+<translation id="6840214587087739194">Η διεύθυνση διαγράφηκε</translation>
 <translation id="6841143363521180029">Κρυπτογραφημένο</translation>
 <translation id="6841186874966388268">Σφάλματα</translation>
 <translation id="6842136130964845393">Για να βεβαιωθείτε ότι έχετε πάντα πρόσβαση στους αποθηκευμένους κωδικούς πρόσβασής σας, επαληθεύστε την ταυτότητά σας.</translation>
@@ -8281,6 +8285,7 @@
 <translation id="8525306231823319788">Πλήρης οθόνη</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Προσθήκη γλωσσών</translation>
+<translation id="8528479410903501741">Αποθήκευση IBAN</translation>
 <translation id="8528962588711550376">Γίνεται σύνδεση.</translation>
 <translation id="8529925957403338845">Αποτυχία άμεσης σύνδεσης</translation>
 <translation id="8531701051932785007">Η Βελτιωμένη Ασφαλής περιήγηση είναι ανενεργή</translation>

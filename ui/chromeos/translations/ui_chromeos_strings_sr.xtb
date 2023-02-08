@@ -410,6 +410,7 @@
 <translation id="4462159676511157176">Прилагођени сервери назива</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, управља администратор, повежи</translation>
 <translation id="4470564870223067757">Хангул, 2 реда</translation>
+<translation id="4474142134969976028">Нема подударних резултата</translation>
 <translation id="4477002475007461989">румунски</translation>
 <translation id="4477219268485577442">бугарска фонетска</translation>
 <translation id="4508265954913339219">Активација није успела</translation>
@@ -817,6 +818,7 @@
 <translation id="7655441028674523381">Лако приступајте Google сликама</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7663224033570512922">хинди</translation>
+<translation id="7665680517722058469">Пробајте са неким другим термином за претрагу</translation>
 <translation id="7689532716264131859">Ставке (<ph name="NUMBER_OF_ITEMS" />) су премештене у отпад</translation>
 <translation id="7693909743393669729">Ако форматирате диск, избрисаћете све податке који се на њему чувају и уклонити све постојеће партиције, укључујући и оне које можда нису видљиве. Ова радња не може да се опозове.</translation>
 <translation id="7695430100978772476">Форматирање меморијског уређаја <ph name="DRIVE_NAME" /> није успело</translation>

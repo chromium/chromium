@@ -22,6 +22,7 @@
 <translation id="2347208864470321755">Kun tämä ominaisuus on käytössä, Chrome tarjoaa vierailla kielillä kirjoitettujen sivujen käännöksiä Google-kääntäjän kautta. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome sisältää ominaisuuksia, joiden avulla voit hallita datansiirtoa ja verkkosivujen latausnopeutta.
 <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
+<translation id="2444854139071078915">Löydät muiden sovellusten tallennetut salasanat helposti käyttämällä Chromea automaattiseen täyttöön</translation>
 <translation id="2561231791489583059">Käytä Chromea oletusselaimena, niin pysyt turvassa vaarallisilta sivustoilta ja pidät salasanasi turvassa</translation>
 <translation id="2574249610672786438">Kirjaudu sisään kaikilla laitteillasi, jotta voit nähdä Chrome-välilehtesi missä tahansa</translation>
 <translation id="2576431527583832481">Chromesta tuli juuri entistä parempi! Uusi versio on saatavilla.</translation>
@@ -89,6 +90,7 @@
 <translation id="6709398533399187136">Salasanasi vaarantui tietosuojaloukkauksessa. Googlen Salasanojen ylläpito suosittelee, että vaihdat sen heti.</translation>
 <translation id="6822673484890854830">Chrome ei voinut tarkistaa kaikkia salasanoja. Yritä myöhemmin uudelleen.</translation>
 <translation id="6964931465519938134">Voit nyt käyttää Chromea aina, kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa.</translation>
+<translation id="6975725306479268850">Chromen valinta automaattiseen täyttöön</translation>
 <translation id="701356708427365932">Tutustu uuteen Chrome-valikkoon</translation>
 <translation id="7059914902409643750">Tee Chromesta näköisesi</translation>
 <translation id="7124339256045485976">Pidä Chrome ajan tasalla</translation>
@@ -109,6 +111,7 @@
 <translation id="7754633291442704733">Organisaatiosi <ph name="DOMAIN" /> saa pääsyn Chrome-dataasi, kirjanmerkkeihisi, historiaasi, salasanoihisi ja muihin asetuksiisi, jotka olet tallentanut tälle tilille. Kun kirjaudut ulos, datasi tyhjennetään tältä laitteelta.  Data säilyy kuitenkin hallinnoidulla Google-tililläsi ja on organisaation saatavilla. Organisaatiosi voi myös asettaa tilikohtaisia käyttäjäkäytäntöjä, jotka voivat muuttaa Chromen toimintaa.</translation>
 <translation id="7780154209050837198">Kirjaudu sisään Chromeen Google-tililläsi, jotta saat parhaan hyödyn Chromesta.</translation>
 <translation id="7855730255114109580">Google Chrome on ajan tasalla</translation>
+<translation id="7939179037291298976">Avaa iPhonen asetuksista Salasanavalinnat ja valitse Chrome.</translation>
 <translation id="8022947259858476807">Käytä Chromea oletuksena ja avaa linkkejä, hae widgeteistä ja täytä salasanoja automaattisesti muissa sovelluksissa</translation>
 <translation id="81358522153858150">Chrome tukee nyt hallinnoidun tilin käyttäjäkäytäntöjä</translation>
 <translation id="8160472928944011082">Chromea ei voi päivittää</translation>
@@ -124,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Google Salasanat ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna tai <ph name="BEGIN_LINK" />tarkista salasanat Google-tililtä<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Pysy turvassa Google Chromen avulla</translation>
+<translation id="8765470054473112089">Kun kirjoitat osoitepalkkiin tai hakukenttään, Chrome lähettää kirjoittamasi tekstin oletushakukoneellesi, niin saat parempia ehdotuksia. Tämä on poissa päältä incognito-tilassa.</translation>
 <translation id="8772179140489533211">Näytä kehotteet kirjautua Chromeen.</translation>
 <translation id="8788269841521769222">Sinun ei tarvitse muistaa tätä salasanaa. Se tallennetaan Googlen Salasanojen ylläpitoon sähköpostiosoitteella <ph name="EMAIL" /></translation>
 <translation id="8857676124663337448">Google Salasanat ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna.</translation>
