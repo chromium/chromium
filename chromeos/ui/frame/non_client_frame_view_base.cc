@@ -79,6 +79,10 @@ NonClientFrameViewBase::NonClientFrameViewBase(views::Widget* frame)
 
 NonClientFrameViewBase::~NonClientFrameViewBase() = default;
 
+HeaderView* NonClientFrameViewBase::GetHeaderView() {
+  return header_view_;
+}
+
 int NonClientFrameViewBase::NonClientTopBorderHeight() const {
   // The frame should not occupy the window area when it's in fullscreen,
   // not visible, disabled, in immersive mode or in tablet mode.
@@ -205,6 +209,11 @@ bool NonClientFrameViewBase::DoesIntersectRect(const views::View* target,
   gfx::Rect rect_in_client_view_coords =
       gfx::ToEnclosingRect(rect_in_client_view_coords_f);
   return frame_->client_view()->HitTestRect(rect_in_client_view_coords);
+}
+
+void NonClientFrameViewBase::PaintAsActiveChanged() {
+  header_view_->GetFrameHeader()->SetPaintAsActive(ShouldPaintAsActive());
+  frame_->non_client_view()->Layout();
 }
 
 }  // namespace chromeos

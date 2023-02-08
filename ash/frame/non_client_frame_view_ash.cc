@@ -205,10 +205,6 @@ void NonClientFrameViewAsh::SetCaptionButtonModel(
   header_view_->UpdateCaptionButtons();
 }
 
-chromeos::HeaderView* NonClientFrameViewAsh::GetHeaderView() {
-  return header_view_;
-}
-
 gfx::Rect NonClientFrameViewAsh::GetClientBoundsForWindowBounds(
     const gfx::Rect& window_bounds) const {
   gfx::Rect client_bounds(window_bounds);
@@ -307,11 +303,6 @@ void NonClientFrameViewAsh::AddedToWidget() {
 chromeos::FrameCaptionButtonContainerView*
 NonClientFrameViewAsh::GetFrameCaptionButtonContainerViewForTest() {
   return header_view_->caption_button_container();
-}
-
-void NonClientFrameViewAsh::PaintAsActiveChanged() {
-  header_view_->GetFrameHeader()->SetPaintAsActive(ShouldPaintAsActive());
-  frame_->non_client_view()->Layout();
 }
 
 void NonClientFrameViewAsh::UpdateDefaultFrameColors() {

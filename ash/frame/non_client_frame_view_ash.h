@@ -71,9 +71,6 @@ class ASH_EXPORT NonClientFrameViewAsh
   // will have some transparency added when the frame is drawn.
   void SetFrameColors(SkColor active_frame_color, SkColor inactive_frame_color);
 
-  // Get the view of the header.
-  chromeos::HeaderView* GetHeaderView();
-
   // Calculate the client bounds for given window bounds.
   gfx::Rect GetClientBoundsForWindowBounds(
       const gfx::Rect& window_bounds) const;
@@ -123,9 +120,6 @@ class ASH_EXPORT NonClientFrameViewAsh
   chromeos::FrameCaptionButtonContainerView*
   GetFrameCaptionButtonContainerViewForTest();
 
-  // Called when |frame_|'s "paint as active" state has changed.
-  void PaintAsActiveChanged();
-
   // Updates the windows default frame colors if necessary.
   void UpdateDefaultFrameColors() override;
 
@@ -135,11 +129,6 @@ class ASH_EXPORT NonClientFrameViewAsh
   std::unique_ptr<NonClientFrameViewAshImmersiveHelper> immersive_helper_;
 
   std::unique_ptr<FrameContextMenuController> frame_context_menu_controller_;
-
-  base::CallbackListSubscription paint_as_active_subscription_ =
-      frame_->RegisterPaintAsActiveChangedCallback(
-          base::BindRepeating(&NonClientFrameViewAsh::PaintAsActiveChanged,
-                              base::Unretained(this)));
 
   base::RepeatingCallback<void()> toggle_resize_lock_menu_callback_;
 
