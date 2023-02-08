@@ -95,7 +95,8 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
                crosapi::mojom::OpenUrlParamsPtr params,
                OpenUrlCallback callback) override {}
   void RestoreTab(RestoreTabCallback callback) override {}
-  void HandleTabScrubbing(float x_offset) override {}
+  void HandleTabScrubbing(float x_offset, bool is_fling_scroll_event) override {
+  }
   void GetFeedbackData(GetFeedbackDataCallback callback) override {}
   void GetHistograms(GetHistogramsCallback callback) override {}
   void GetActiveTabUrl(GetActiveTabUrlCallback callback) override {}

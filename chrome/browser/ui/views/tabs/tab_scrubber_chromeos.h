@@ -53,7 +53,9 @@ class TabScrubberChromeOS : public ui::EventHandler,
   void SetEnabled(bool enabled);
 
   // Synthesize an ScrollEvent given a x offset (in DIPs).
-  void SynthesizedScrollEvent(float x_offset);
+  // `is_fling_scroll_event` is set to true when the scroll event should be
+  // fling scroll event.
+  void SynthesizedScrollEvent(float x_offset, bool is_fling_scroll_event);
 
  private:
   friend class TabScrubberChromeOSTest;

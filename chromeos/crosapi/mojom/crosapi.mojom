@@ -134,7 +134,7 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 103
+// Next version: 104
 // Next method id: 107
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
@@ -1543,9 +1543,16 @@ interface BrowserService {
   // Signals Lacros that a multi-finger horizontal swipe has occurred in Ash.
   // The browser usually responds by switching tabs
   //
-  // |x_offset| is in DIP coordinates.
+  // `x_offset` is in DIP coordinates.
+  // `is_fling_scroll_event` is set to true if the event which triggers
+  // HandleTabScrubbing is fling scroll event.
+  //
+  // TODO(crbug.com/1277946): This should be handled on wayland, not crosapi.
+  // Deprecate this API when wayland become capable of handling the tab
+  // scrubbing.
   [MinVersion=15]
-  HandleTabScrubbing@13(float x_offset);
+  HandleTabScrubbing@13(float x_offset,
+                        [MinVersion=103] bool is_fling_scroll_event);
 
   // Returns the browser's feedback data used for generating feedback report in
   // a dictionary object, each entry representing a log entry in the feedback

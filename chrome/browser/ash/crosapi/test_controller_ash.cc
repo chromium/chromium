@@ -497,7 +497,7 @@ void TestControllerAsh::CloseAllBrowserWindows(
 void TestControllerAsh::TriggerTabScrubbing(
     float x_offset,
     TriggerTabScrubbingCallback callback) {
-  crosapi::BrowserManager::Get()->HandleTabScrubbing(x_offset);
+  crosapi::BrowserManager::Get()->HandleTabScrubbing(x_offset, false);
 
   // Return whether tab scrubbing logic has started or not in Ash.
   //

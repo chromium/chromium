@@ -685,8 +685,10 @@ void BrowserManager::RestoreTab() {
   PerformOrEnqueue(BrowserAction::RestoreTab());
 }
 
-void BrowserManager::HandleTabScrubbing(float x_offset) {
-  PerformOrEnqueue(BrowserAction::HandleTabScrubbing(x_offset));
+void BrowserManager::HandleTabScrubbing(float x_offset,
+                                        bool is_fling_scroll_event) {
+  PerformOrEnqueue(
+      BrowserAction::HandleTabScrubbing(x_offset, is_fling_scroll_event));
 }
 
 void BrowserManager::CreateBrowserWithRestoredData(

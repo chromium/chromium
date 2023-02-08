@@ -351,8 +351,10 @@ void BrowserServiceLacros::RestoreTab(RestoreTabCallback callback) {
       /*can_trigger_fre=*/true);
 }
 
-void BrowserServiceLacros::HandleTabScrubbing(float x_offset) {
-  TabScrubberChromeOS::GetInstance()->SynthesizedScrollEvent(x_offset);
+void BrowserServiceLacros::HandleTabScrubbing(float x_offset,
+                                              bool is_fling_scroll_event) {
+  TabScrubberChromeOS::GetInstance()->SynthesizedScrollEvent(
+      x_offset, is_fling_scroll_event);
 }
 
 void BrowserServiceLacros::GetFeedbackData(GetFeedbackDataCallback callback) {

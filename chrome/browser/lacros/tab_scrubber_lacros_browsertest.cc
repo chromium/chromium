@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberBrowserTest, DISABLED_Smoke) {
   //
   // NOTE: In case it is possible to make the BrowserManager to call this
   // out in Lacros, the code below can be simplified.
-  TabScrubberChromeOS::GetInstance()->SynthesizedScrollEvent(x_offset);
+  TabScrubberChromeOS::GetInstance()->SynthesizedScrollEvent(x_offset, false);
   ASSERT_TRUE(TabScrubberChromeOS::GetInstance()->IsActivationPending());
 
   // Wait 200ms, which is the default delay on tab_scribber_chromeos.cc.

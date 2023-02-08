@@ -208,7 +208,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Triggers tab switching in Lacros via horizontal 3-finger swipes.
   //
   // |x_offset| is in DIP coordinates.
-  void HandleTabScrubbing(float x_offset);
+  void HandleTabScrubbing(float x_offset, bool is_fling_scroll_event);
 
   // Create a browser with the restored data containing `urls`,
   // `bounds`,`tab_group_infos`, `show_state`, `active_tab_index`,

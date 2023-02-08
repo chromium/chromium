@@ -56,7 +56,9 @@ class BrowserAction {
   static std::unique_ptr<BrowserAction> OpenForFullRestore(
       bool skip_crash_restore);
   static std::unique_ptr<BrowserAction> RestoreTab();
-  static std::unique_ptr<BrowserAction> HandleTabScrubbing(float x_offset);
+  static std::unique_ptr<BrowserAction> HandleTabScrubbing(
+      float x_offset,
+      bool is_fling_scroll_event);
   static std::unique_ptr<BrowserAction> CreateBrowserWithRestoredData(
       const std::vector<GURL>& urls,
       const gfx::Rect& bounds,
