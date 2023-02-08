@@ -947,16 +947,9 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
       WriteDataToDisk();
       return;
     case TrustedVaultRegistrationStatus::kAccessTokenFetchingFailure:
+    case TrustedVaultRegistrationStatus::kNetworkError:
       // Request wasn't sent to the server, so there is no need for throttling.
       return;
-    case TrustedVaultRegistrationStatus::kNetworkError:
-      if (base::FeatureList::IsEnabled(
-              kSyncTrustedVaultBypassThrottlingForNetworkErrors)) {
-        // Request wasn't sent to the server, so there is no need for
-        // throttling.
-        return;
-      }
-      [[fallthrough]];
     case TrustedVaultRegistrationStatus::kOtherError:
       RecordFailedConnectionRequestForThrottling();
       return;
@@ -1065,16 +1058,9 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
       RecordFailedConnectionRequestForThrottling();
       break;
     case TrustedVaultDownloadKeysStatus::kAccessTokenFetchingFailure:
+    case TrustedVaultDownloadKeysStatus::kNetworkError:
       // Request wasn't sent to the server, so there is no need for throttling.
       break;
-    case TrustedVaultDownloadKeysStatus::kNetworkError:
-      if (base::FeatureList::IsEnabled(
-              kSyncTrustedVaultBypassThrottlingForNetworkErrors)) {
-        // Request wasn't sent to the server, so there is no need for
-        // throttling.
-        break;
-      }
-      [[fallthrough]];
     case TrustedVaultDownloadKeysStatus::kOtherError:
       RecordFailedConnectionRequestForThrottling();
       break;
