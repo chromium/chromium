@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 
@@ -16,6 +17,10 @@ absl::optional<const base::Value::Dict*> GetConfigWithEnabledLevel(
     const Profile* profile,
     const std::string& config_id,
     prefs::PolicyEnabledState enabled_level) {
+  if (!virtual_machines::AreVirtualMachinesAllowedByPolicy()) {
+    return absl::nullopt;
+  }
+
   const auto* config_ptr = profile->GetPrefs()
                                ->GetDict(prefs::kBruschettaVMConfiguration)
                                .FindDict(config_id);

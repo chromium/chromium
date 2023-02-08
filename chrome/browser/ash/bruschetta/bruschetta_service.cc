@@ -23,7 +23,10 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
+#include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace bruschetta {
@@ -52,6 +55,12 @@ BruschettaService::BruschettaService(Profile* profile) : profile_(profile) {
       base::BindRepeating(&BruschettaService::OnPolicyChanged,
                           // Safety: `pref_observer_` owns this callback and is
                           // destroyed before `this`.
+                          base::Unretained(this)));
+  cros_settings_observer_ = ash::CrosSettings::Get()->AddSettingsObserver(
+      ash::kVirtualMachinesAllowed,
+      base::BindRepeating(&BruschettaService::OnPolicyChanged,
+                          // Safety: This callback will be unregistered when
+                          // `cros_settings_observer_` is destroyed.
                           base::Unretained(this)));
 
   bool registered_guests = false;

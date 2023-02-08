@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_SERVICE_H_
 #define CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_SERVICE_H_
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -90,6 +91,7 @@ class BruschettaService : public KeyedService,
   base::flat_map<std::string, RunningVmPolicy> running_vms_;
 
   PrefChangeRegistrar pref_observer_;
+  base::CallbackListSubscription cros_settings_observer_;
   base::ScopedObservation<ash::ConciergeClient,
                           ash::ConciergeClient::VmObserver>
       vm_observer_{this};
