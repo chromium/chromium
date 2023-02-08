@@ -657,6 +657,9 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
             i++;
         }
 
+        String maniefstId =
+                TextUtils.isEmpty(info.manifestId()) ? info.manifestStartUrl() : info.manifestId();
+
         String[][] shortcuts = new String[info.shortcutItems().size()][];
         byte[][] shortcutIconData = new byte[info.shortcutItems().size()][];
         for (int j = 0; j < info.shortcutItems().size(); j++) {
@@ -690,14 +693,14 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         }
 
         WebApkUpdateManagerJni.get().storeWebApkUpdateRequestToFile(updateRequestPath,
-                info.manifestStartUrl(), info.scopeUrl(), info.name(), info.shortName(),
-                info.manifestId(), info.appKey(), primaryIconUrl, primaryIconData,
-                info.isIconAdaptive(), splashIconUrl, splashIconData, info.isSplashIconMaskable(),
-                iconUrls, iconHashes, info.displayMode(), info.orientation(), info.toolbarColor(),
-                info.backgroundColor(), shareTargetAction, shareTargetParamTitle,
-                shareTargetParamText, shareTargetIsMethodPost, shareTargetIsEncTypeMultipart,
-                shareTargetParamFileNames, shareTargetParamAccepts, shortcuts, shortcutIconData,
-                info.manifestUrl(), info.webApkPackageName(), versionCode, isManifestStale,
+                info.manifestStartUrl(), info.scopeUrl(), info.name(), info.shortName(), maniefstId,
+                info.appKey(), primaryIconUrl, primaryIconData, info.isIconAdaptive(),
+                splashIconUrl, splashIconData, info.isSplashIconMaskable(), iconUrls, iconHashes,
+                info.displayMode(), info.orientation(), info.toolbarColor(), info.backgroundColor(),
+                shareTargetAction, shareTargetParamTitle, shareTargetParamText,
+                shareTargetIsMethodPost, shareTargetIsEncTypeMultipart, shareTargetParamFileNames,
+                shareTargetParamAccepts, shortcuts, shortcutIconData, info.manifestUrl(),
+                info.webApkPackageName(), versionCode, isManifestStale,
                 isAppIdentityUpdateSupported, updateReasonsArray, callback);
     }
 

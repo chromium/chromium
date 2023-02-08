@@ -798,4 +798,24 @@ public class WebApkUpdateManagerTest {
                 mTestServer, mTab, WEBAPK_MANIFEST_URL);
         Assert.assertFalse(checkUpdateNeeded(creationData, /* acceptDialogIfAppears= */ false));
     }
+
+    @Test
+    @MediumTest
+    @Feature({"WebApk"})
+    public void testEmptyUniqueIdStaleManifestUpdate() throws Exception {
+        CreationData creationData = defaultCreationData();
+        creationData.manifestId = null;
+        // Set a small shellVersion to force a stale manifest update.
+        creationData.shellVersion = -1;
+
+        mActivityTestRule.loadUrl(mTestServer.getURL("/"));
+
+        waitForUpdate(creationData);
+        assertUpdateReasonsEqual(WebApkUpdateReason.OLD_SHELL_APK);
+
+        assertNotNull(mUpdateRequestPath);
+        WebApkProto.WebApk proto = parseRequestProto(mUpdateRequestPath);
+        assertEquals(proto.getAppKey(), mTestServer.getURL(WEBAPK_MANIFEST_URL));
+        assertEquals(proto.getManifest().getId(), mTestServer.getURL(WEBAPK_START_URL));
+    }
 }
