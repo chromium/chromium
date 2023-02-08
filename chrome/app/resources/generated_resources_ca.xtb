@@ -4659,7 +4659,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5280426389926346830">Vols crear una drecera?</translation>
 <translation id="5281013262333731149">S'obre a <ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">Per baixar i utilitzar les aplicacions d'Android, primer has d'instal·lar aquesta actualització obligatòria. Mentre el dispositiu <ph name="DEVICE_TYPE" /> s'estigui actualitzant, no el podràs fer servir. Un cop finalitzada la instal·lació, <ph name="DEVICE_TYPE" /> es reiniciarà.</translation>
-<translation id="5282733140964383898">Si s'activa l'opció No segueixis, s'inclourà una sol·licitud amb el teu trànsit de navegació. Els efectes depenen de si un lloc web respon o no a la sol·licitud, així com de la manera en què s'interpreta la sol·licitud. Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud mostrant-te anuncis que no estiguin basats en altres llocs web que hagis visitat. Molts llocs web continuaran recopilant i utilitzant les teves dades de navegació (per exemple, per millorar la seguretat, per proporcionar contingut, serveis, anuncis i recomanacions als seus llocs web o per generar estadístiques d'informes).<ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
+<translation id="5282733140964383898">Si s'activa l'opció No rastregis, s'inclourà una sol·licitud amb el teu trànsit de navegació. Els efectes depenen de si un lloc web respon o no a la sol·licitud, així com de la manera en què s'interpreta la sol·licitud. Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud mostrant-te anuncis que no estiguin basats en altres llocs web que hagis visitat. Molts llocs web continuaran recopilant i utilitzant les teves dades de navegació (per exemple, per millorar la seguretat, per proporcionar contingut, serveis, anuncis i recomanacions als seus llocs web o per generar estadístiques d'informes).<ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="5283677936944177147">El sistema no ha pogut determinar el model ni el número de sèrie del dispositiu.</translation>
 <translation id="5284445933715251131">Continua la baixada</translation>
 <translation id="5285635972691565180">Pantalla <ph name="DISPLAY_ID" /></translation>
@@ -4680,7 +4680,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5297082477358294722">S'ha desat la contrasenya. Consulta i gestiona les contrasenyes desades al <ph name="SAVED_PASSWORDS_STORE" />.</translation>
 <translation id="5297946558563358707">Quan una altra persona miri la teva pantalla, mostra la icona de l'ull de privadesa a la part inferior dreta de la pantalla</translation>
 <translation id="5298219193514155779">Tema creat per</translation>
-<translation id="5299109548848736476">No segueixis</translation>
+<translation id="5299109548848736476">No rastregis</translation>
 <translation id="5299558715747014286">Veure i gestionar els teus grups de pestanyes</translation>
 <translation id="5300287940468717207">Vols restablir els permisos del lloc web?</translation>
 <translation id="5300426565656326054">Personalització d'anuncis basada en el navegador</translation>

@@ -2227,7 +2227,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="296026337010986570">Pronto! Software perigoso removido. Para reativar as extensões, visite &lt;a href="chrome://extensions"&gt;Extensões&lt;/a&gt;.</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (extensão fornecida)</translation>
 <translation id="2961210776189273067">Título</translation>
-<translation id="2961695502793809356">Clique para avançar, mantenha pressionado para ver o histórico</translation>
+<translation id="2961695502793809356">Clique para avançar, pressione para ver o histórico</translation>
 <translation id="2963151496262057773">Este plug-in não responde: <ph name="PLUGIN_NAME" />. Quer interrompê-lo?</translation>
 <translation id="2964193600955408481">Desativar Wi-Fi</translation>
 <translation id="2964245677645334031">Visibilidade do Compartilhar por proximidade</translation>
@@ -4779,7 +4779,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5372632722660566343">Continuar sem uma conta</translation>
 <translation id="5375318608039113175">Para usar o "Compartilhar por proximidade" com esses contatos, adicione a eles o endereço de e-mail vinculado à Conta do Google de cada um.</translation>
 <translation id="5376094717770783089">Pedidos de acesso</translation>
-<translation id="5376169624176189338">Clique para voltar, mantenha pressionado para ver o histórico</translation>
+<translation id="5376169624176189338">Clique para voltar, pressione para ver o histórico</translation>
 <translation id="5376931455988532197">Arquivo muito grande</translation>
 <translation id="5379140238605961210">Continuar bloqueando o acesso ao microfone</translation>
 <translation id="5380424552031517043">Filtro removido: <ph name="PERMISSION" /></translation>
@@ -5072,7 +5072,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5636996382092289526">Para usar <ph name="NETWORK_ID" />, talvez seja necessário primeiro <ph name="LINK_START" />visitar a página de login da rede<ph name="LINK_END" />, que abrirá automaticamente em alguns segundos. Se isso não acontecer, significa que a rede não pode ser usada.</translation>
 <translation id="5637476008227280525">Ativar dados móveis</translation>
 <translation id="5638309510554459422">Encontre extensões e temas na <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
-<translation id="5639549361331209298">Recarrega esta página; mantenha pressionado para ver mais opções</translation>
+<translation id="5639549361331209298">Recarrega esta página; pressione para ver mais opções</translation>
 <translation id="5640133431808313291">Gerenciar chaves de segurança</translation>
 <translation id="5641608986289282154">Começar a usar o <ph name="DEVICE_OS" /></translation>
 <translation id="5641648607875312660">Editor de imagem da captura de tela</translation>

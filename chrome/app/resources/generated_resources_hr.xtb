@@ -2441,7 +2441,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3183944777708523606">Raspored na monitoru</translation>
 <translation id="3184536091884214176">Postavljanje CUPS pisača ili upravljanje njima. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ta je aplikacija blokirana}one{Neke su aplikacije blokirane}few{Neke su aplikacije blokirane}other{Neke su aplikacije blokirane}}</translation>
-<translation id="3187472288455401631">Mjerenje oglasa</translation>
+<translation id="3187472288455401631">Mjerenje izvedbe oglasa</translation>
 <translation id="3188257591659621405">Moje datoteke</translation>
 <translation id="3188465121994729530">Klizni prosjek</translation>
 <translation id="3189187154924005138">Veliki pokazivač</translation>

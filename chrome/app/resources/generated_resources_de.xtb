@@ -2435,7 +2435,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3183944777708523606">Monitoranordnung</translation>
 <translation id="3184536091884214176">CUPS-Drucker einrichten oder verwalten. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Diese App ist blockiert}other{Einige Apps sind blockiert}}</translation>
-<translation id="3187472288455401631">Anzeigenanalyse</translation>
+<translation id="3187472288455401631">Analyse von Werbung</translation>
 <translation id="3188257591659621405">Meine Dateien</translation>
 <translation id="3188465121994729530">Gleitender Durchschnitt</translation>
 <translation id="3189187154924005138">Großer Cursor</translation>
