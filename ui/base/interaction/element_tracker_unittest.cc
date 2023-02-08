@@ -29,6 +29,11 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType1);
 const ElementContext kElementContext1(1);
 const ElementContext kElementContext2(2);
 
+struct EventTestStruct {
+  DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType2);
+};
+DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(EventTestStruct, kCustomEventType2);
+
 }  // namespace
 
 TEST(TrackedElementTest, IsATest) {
@@ -453,6 +458,20 @@ TEST(ElementTrackerTest, AddCustomEventCallback) {
       callback, Run(e1.get()),
       ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
           e1.get(), kCustomEventType1));
+}
+
+TEST(ElementTrackerTest, AddClassCustomEventCallback) {
+  UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback);
+  auto subscription =
+      ElementTracker::GetElementTracker()->AddCustomEventCallback(
+          EventTestStruct::kCustomEventType2, kElementContext1, callback.Get());
+  test::TestElementPtr e1 = std::make_unique<test::TestElement>(
+      kElementIdentifier1, kElementContext1);
+  e1->Show();
+  EXPECT_CALL_IN_SCOPE(
+      callback, Run(e1.get()),
+      ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+          e1.get(), EventTestStruct::kCustomEventType2));
 }
 
 TEST(ElementTrackerTest, MultipleCustomEventCallbacks) {

@@ -270,6 +270,14 @@ class COMPONENT_EXPORT(UI_BASE) SafeElementReference {
 #define DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(EventName) \
   DEFINE_ELEMENT_IDENTIFIER_VALUE(EventName)
 
+// Macros for declaring custom class element event type. Put the DECLARE call in
+// your .h file in your class declaration, and the DEFINE in the corresponding
+// .cc file.
+#define DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(EventName) \
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(EventName)
+#define DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(ClassName, EventName) \
+  DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ClassName, EventName)
+
 // This produces a unique, mangled name that can safely be used in tests
 // without having to worry about global name collisions. For production code,
 // use DECLARE/DEFINE above instead.
