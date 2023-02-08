@@ -636,6 +636,38 @@ class HistogramXmlTest(unittest.TestCase):
         etree_util.ParseXMLString(input_xml))
     self.assertMultiLineEqual(result.strip(), expected_xml)
 
+  def testIndividualTagParsing_improvement(self):
+    """Tests that <improvement> has the right format and can be parsed."""
+
+    improvement_tag_good = '<improvement direction="HIGHER_IS_BETTER"/>'
+    improvement_tag_bad = ' <improvement>HIGHER_IS_BETTER</improvement>'
+    config = """
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Histogram.With.ImprovementTag" expires_after="M100">
+  <owner>owner1@chromium.org</owner>
+  {improvement_tag}
+  <summary>The improvement tag says higher value is good!</summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>"""
+
+    config_good = config.format(improvement_tag=improvement_tag_good)
+    config_bad = config.format(improvement_tag=improvement_tag_bad)
+
+    result = histogram_configuration_model.PrettifyTree(
+        etree_util.ParseXMLString(config_good))
+    self.assertMultiLineEqual(result.strip(), config_good.strip())
+
+    with self.assertRaisesRegex(ValueError,
+                                'direction "" does not match regex'):
+      histogram_configuration_model.PrettifyTree(
+          etree_util.ParseXMLString(config_bad))
+
 
 if __name__ == '__main__':
   unittest.main()

@@ -69,6 +69,8 @@ import logging
 import re
 import xml.dom.minidom
 
+import histogram_configuration_model
+
 BASIC_EMAIL_REGEXP = r'^[\w\-\+\%\.]+\@[\w\-\+\%\.]+$'
 
 OWNER_PLACEHOLDER = (
@@ -375,6 +377,39 @@ def _ExtractOwners(node):
   return owners, has_owner
 
 
+def _ExtractImprovementDirection(histogram_node):
+  """Extracts improvement direction from the given histogram element, if any.
+
+  Args:
+    histogram_node: A DOM Element corresponding to a histogram.
+
+  Returns:
+    A tuple, where the first element is the improvement direction, if any;
+    the second element is an error message if the given direction is invalid.
+  """
+  direction = None
+  error = None
+  improvement_nodes = histogram_node.getElementsByTagName('improvement')
+  if not improvement_nodes:
+    return None, None
+  if len(improvement_nodes) > 1:
+    histogram_name = histogram_node.getAttribute('name')
+    error = f'Histogram "{histogram_name}" has multiple <improvement> tags.'
+    return None, error
+
+  improvement_node = improvement_nodes[0]
+  direction = improvement_node.getAttribute('direction')
+  if (direction not in
+      histogram_configuration_model.IMPROVEMENT_DIRECTION_VALID_VALUES):
+    histogram_name = histogram_node.getAttribute('name')
+    error = (
+        f'Histogram "{histogram_name}" has an invalid direction "{direction}" '
+        f'in its <improvement> tag.')
+    return None, error
+
+  return direction, None
+
+
 def _ExtractComponents(histogram):
   """Extracts component information from the given histogram element.
 
@@ -582,6 +617,15 @@ def _ExtractHistogramsFromXmlTree(tree, enums):
     owners, has_owner = _ExtractOwners(histogram)
     if owners:
       histogram_entry['owners'] = owners
+
+    # Find the <improvement> tag, if any.
+    improvement_direction, improvement_error = _ExtractImprovementDirection(
+        histogram)
+    if improvement_direction:
+      histogram_entry['improvement'] = improvement_direction
+    if improvement_error:
+      logging.error(improvement_error)
+      have_errors = True
 
     # Find <component> tag.
     components = _ExtractComponents(histogram)

@@ -81,6 +81,26 @@ _ENUMS_TYPE = models.ObjectNodeType(
     ])
 
 # The following types are used for histograms.xml.
+IMPROVEMENT_DIRECTION_VALID_VALUES = (
+    IMPROVEMENT_DIRECTION_HIGHER_IS_BETTER := 'HIGHER_IS_BETTER',
+    IMPROVEMENT_DIRECTION_LOWER_IS_BETTER := 'LOWER_IS_BETTER',
+    IMPROVEMENT_DIRECTION_NEITHER_IS_BETTER := 'NEITHER_IS_BETTER',
+)
+
+_IMPROVEMENT_TYPE = models.ObjectNodeType(
+    'improvement',
+    attributes=[
+        (
+            'direction',
+            str,
+            r'^(' + '|'.join(IMPROVEMENT_DIRECTION_VALID_VALUES) + ')$',
+        ),
+    ],
+    required_attributes=['direction'],
+    text_attribute=False,
+    single_line=True,
+)
+
 _VARIANT_TYPE = models.ObjectNodeType(
     'variant',
     attributes=[
@@ -145,6 +165,7 @@ _HISTOGRAM_TYPE = models.ObjectNodeType(
         (_OBSOLETE_TYPE.tag, _KEEP_ORDER),
         (_OWNER_TYPE.tag, _KEEP_ORDER),
         (_COMPONENT_TYPE.tag, _KEEP_ORDER),
+        (_IMPROVEMENT_TYPE.tag, _KEEP_ORDER),
         (_SUMMARY_TYPE.tag, _KEEP_ORDER),
         (_TOKEN_TYPE.tag, _KEEP_ORDER),
     ],
@@ -158,6 +179,9 @@ _HISTOGRAM_TYPE = models.ObjectNodeType(
         models.ChildType(_COMPONENT_TYPE.tag, _COMPONENT_TYPE, multiple=True),
         models.ChildType(_SUMMARY_TYPE.tag, _SUMMARY_TYPE, multiple=False),
         models.ChildType(_TOKEN_TYPE.tag, _TOKEN_TYPE, multiple=True),
+        models.ChildType(_IMPROVEMENT_TYPE.tag,
+                         _IMPROVEMENT_TYPE,
+                         multiple=False),
     ])
 
 _HISTOGRAMS_TYPE = models.ObjectNodeType(

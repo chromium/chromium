@@ -8,6 +8,7 @@ import unittest
 import xml.dom.minidom
 
 import extract_histograms
+import histogram_configuration_model
 
 TEST_SUFFIX_OBSOLETION_XML_CONTENT = """
 <histogram-configuration>
@@ -937,6 +938,46 @@ class ExtractHistogramsTest(unittest.TestCase):
     self.assertFalse(had_errors)
     self.assertIn('Test.First.Found', histograms_dict)
     self.assertIn('Test.Last.Found', histograms_dict)
+
+  def testExtractImprovementDirection(self):
+    histogram_name = 'Histogram.With.InterpretationTag'
+    config = """
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="{histogram_name}" expires_after="M100" units="units">
+  <owner>owner@chromium.org</owner>
+  {improvement_tag}
+  <summary>The improvement tag says a higher value is good!</summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>"""
+
+    improvement_tag_good = '<improvement direction="HIGHER_IS_BETTER"/>'
+    improvement_tag_bad = '<improvement>HIGHER_IS_BETTER</improvement>'
+
+    config_good = config.format(histogram_name=histogram_name,
+                                improvement_tag=improvement_tag_good)
+    config_bad = config.format(histogram_name=histogram_name,
+                               improvement_tag=improvement_tag_bad)
+
+    histograms_dict, had_errors = extract_histograms.ExtractHistogramsFromDom(
+        xml.dom.minidom.parseString(config_good))
+    self.assertFalse(had_errors)
+    self.assertIn(histogram_name, histograms_dict)
+    self.assertIn('improvement', histograms_dict[histogram_name])
+    self.assertEqual(
+        histogram_configuration_model.IMPROVEMENT_DIRECTION_HIGHER_IS_BETTER,
+        histograms_dict[histogram_name]['improvement'])
+
+    histograms_dict, had_errors = extract_histograms.ExtractHistogramsFromDom(
+        xml.dom.minidom.parseString(config_bad))
+    self.assertTrue(had_errors)
+    self.assertNotIn('improvement', histograms_dict[histogram_name])
+
 
 if __name__ == "__main__":
   logging.basicConfig(level=logging.ERROR + 1)
