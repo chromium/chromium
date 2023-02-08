@@ -10,6 +10,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_selections.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 class Profile;
 class ProfileKeyedServiceFactory;
 class ProfileManager;
@@ -53,6 +57,23 @@ class ScopedProfileSelectionsForFactoryTesting {
  private:
   raw_ptr<ProfileKeyedServiceFactory> factory_;
   ProfileSelections old_selections_;
+};
+
+// A testing wrapper to simulate a logged-in managed guest session.
+// These sessions are only available for ChromeOS in Ash and Lacros modes.
+class ScopedTestManagedGuestSession {
+ public:
+  ScopedTestManagedGuestSession();
+  ~ScopedTestManagedGuestSession();
+
+  ScopedTestManagedGuestSession(const ScopedTestManagedGuestSession&) = delete;
+  ScopedTestManagedGuestSession& operator=(
+      const ScopedTestManagedGuestSession&) = delete;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+ private:
+  crosapi::mojom::BrowserInitParamsPtr init_params_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 }  // namespace profiles::testing

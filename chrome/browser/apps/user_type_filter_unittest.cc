@@ -11,6 +11,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/test/browser_task_environment.h"
@@ -101,6 +102,18 @@ TEST_F(UserTypeFilterTest, ManagedUser) {
   EXPECT_TRUE(Match(
       profile, CreateJsonWithFilter({kUserTypeUnmanaged, kUserTypeManaged})));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(UserTypeFilterTest, ManagedGuestUser) {
+  profiles::testing::ScopedTestManagedGuestSession test_managed_guest_session;
+  const auto profile = CreateProfile();
+  profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+  EXPECT_FALSE(Match(profile, CreateJsonWithFilter({kUserTypeManaged})));
+  EXPECT_TRUE(Match(profile, CreateJsonWithFilter({kUserTypeManagedGuest})));
+  EXPECT_TRUE(Match(profile, CreateJsonWithFilter(
+                                 {kUserTypeUnmanaged, kUserTypeManagedGuest})));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(UserTypeFilterTest, UnmanagedUser) {
   EXPECT_TRUE(

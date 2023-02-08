@@ -17,11 +17,12 @@ extern const char kKeyUserType[];
 extern const char kUserTypeChild[];
 extern const char kUserTypeGuest[];
 extern const char kUserTypeManaged[];
+extern const char kUserTypeManagedGuest[];
 extern const char kUserTypeUnmanaged[];
 
 // Returns user type based on |profile|. Must be called on UI thread. List of
 // possible values are |kUserTypeChild|, |kUserTypeGuest|, |kUserTypeManaged|,
-// |kUserTypeSupervised| and |kUserTypeUnmanaged|.
+// |kUserTypeManagedGuest|, |kUserTypeSupervised| and |kUserTypeUnmanaged|.
 std::string DetermineUserType(Profile* profile);
 
 // This filter is used to verify that profile's user type |user_type| matches

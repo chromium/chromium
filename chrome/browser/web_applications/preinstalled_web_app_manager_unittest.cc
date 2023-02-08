@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
@@ -551,6 +552,13 @@ TEST_P(PreinstalledWebAppManagerTest, ManagedUser) {
   const auto profile = CreateProfileAndLogin();
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
   VerifySetOfApps(profile.get(), {GURL(kAppAllUrl), GURL(kAppManagedUrl)});
+}
+
+TEST_P(PreinstalledWebAppManagerTest, ManagedGuestUser) {
+  profiles::testing::ScopedTestManagedGuestSession test_managed_guest_session;
+  const auto profile = CreateProfileAndLogin();
+  profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+  VerifySetOfApps(profile.get(), {});
 }
 
 TEST_P(PreinstalledWebAppManagerTest, ChildUser) {
