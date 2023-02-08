@@ -304,62 +304,32 @@ class PolicyGenerationTest(unittest.TestCase):
     self.assertEqual(expected_output.strip(), actual_output.strip())
 
   def testWriteCloudPolicyProtobuf(self):
-    is_full_runtime_values = [False, True]
     output_path = 'mock_cloud_policy_proto'
 
-    for is_full_runtime in is_full_runtime_values:
-      with patch('codecs.open', mock_open()) as mocked_file:
-        with codecs.open(output_path, 'w', encoding='utf-8') as f:
-          generate_policy_source._WriteCloudPolicyProtobuf(
-              self.policies,
-              self.policy_atomic_groups,
-              self.target_platform,
-              f,
-              self.risk_tags,
-              is_full_runtime=is_full_runtime)
+    with patch('codecs.open', mock_open()) as mocked_file:
+      with codecs.open(output_path, 'w', encoding='utf-8') as f:
+        generate_policy_source._WriteCloudPolicyProtobuf(
+            self.policies, self.policy_atomic_groups, self.target_platform, f,
+            self.risk_tags)
 
-      full_runtime_comment = '//' if is_full_runtime else ''
-      full_runtime_suffix = '_full_runtime' if is_full_runtime else ''
+    mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
 
-      with self.subTest(is_full_runtime=is_full_runtime):
-        mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
-
-        expected_formatted = test_data.EXPECTED_CLOUD_POLICY_PROTOBUF % {
-            "full_runtime_comment": full_runtime_comment,
-            "full_runtime_suffix": full_runtime_suffix,
-        }
-
-        self._assertCallsEqual(expected_formatted,
-                               mocked_file().write.call_args_list)
+    self._assertCallsEqual(test_data.EXPECTED_CLOUD_POLICY_PROTOBUF,
+                           mocked_file().write.call_args_list)
 
   def testWriteChromeSettingsProtobuf(self):
-    is_full_runtime_values = [False, True]
     output_path = 'mock_chrome_settings_proto'
 
-    for is_full_runtime in is_full_runtime_values:
-      with patch('codecs.open', mock_open()) as mocked_file:
-        with codecs.open(output_path, 'w', encoding='utf-8') as f:
-          generate_policy_source._WriteChromeSettingsProtobuf(
-              self.policies,
-              self.policy_atomic_groups,
-              self.target_platform,
-              f,
-              self.risk_tags,
-              is_full_runtime=is_full_runtime)
+    with patch('codecs.open', mock_open()) as mocked_file:
+      with codecs.open(output_path, 'w', encoding='utf-8') as f:
+        generate_policy_source._WriteChromeSettingsProtobuf(
+            self.policies, self.policy_atomic_groups, self.target_platform, f,
+            self.risk_tags)
 
-      full_runtime_comment = '//' if is_full_runtime else ''
-      full_runtime_suffix = '_full_runtime' if is_full_runtime else ''
+      mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
 
-      with self.subTest(is_full_runtime=is_full_runtime):
-        mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
-
-        expected_formatted = test_data.EXPECTED_CHROME_SETTINGS_PROTOBUF % {
-            "full_runtime_comment": full_runtime_comment,
-            "full_runtime_suffix": full_runtime_suffix,
-        }
-
-        self._assertCallsEqual(expected_formatted,
-                               mocked_file().write.call_args_list)
+      self._assertCallsEqual(test_data.EXPECTED_CHROME_SETTINGS_PROTOBUF,
+                             mocked_file().write.call_args_list)
 
   def testWritePolicyProto(self):
     output_path = 'mock_write_policy_proto'

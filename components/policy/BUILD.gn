@@ -72,29 +72,9 @@ config("component_implementation") {
 # and compiled.
 cloud_policy_proto_path = "$target_gen_dir/proto/cloud_policy.proto"
 
-# This file is used by chrome/browser/privacy/traffic_annotation.proto as it
-# needs a version without LITE_RUNTIME optimization.
-cloud_policy_full_runtime_proto_path =
-    "$target_gen_dir/proto/cloud_policy_full_runtime.proto"
-
-# This protobuf contains the common definitions of the shared messages
-# between user and device policies
-policy_common_definitions_proto_abspath =
-    "//components/policy/proto/policy_common_definitions.proto"
-
-# This file is used by chrome/browser/privacy/traffic_annotation.proto as it
-# needs a version without LITE_RUNTIME optimization.
-policy_common_definitions_full_runtime_proto_path =
-    "$target_gen_dir/proto/policy_common_definitions_full_runtime.proto"
-
 # This is the "full" protobuf, which defines one protobuf message per
 # policy. It is also the format currently used by the server.
 chrome_settings_proto_path = "$target_gen_dir/proto/chrome_settings.proto"
-
-# This file is used by chrome/browser/privacy/traffic_annotation.proto as it
-# needs a version without LITE_RUNTIME optimization.
-chrome_settings_full_runtime_proto_path =
-    "$target_gen_dir/proto/chrome_settings_full_runtime.proto"
 
 constants_header_path = "$target_gen_dir/policy_constants.h"
 constants_source_path = "$target_gen_dir/policy_constants.cc"
@@ -147,43 +127,6 @@ action("policy_code_generate") {
     "--app-restrictions-definition=" +
         rebase_path(app_restrictions_path, root_build_dir),
     "--risk-tag-header=" + rebase_path(risk_tag_header_path, root_build_dir),
-  ]
-}
-
-action("full_runtime_code_generate") {
-  script = "tools/generate_policy_source.py"
-  chrome_version_abspath = "//chrome/VERSION"
-  chrome_version_path = rebase_path(chrome_version_abspath, root_build_dir)
-
-  deps = [ ":generate_policy_templates" ]
-  inputs = [
-    chrome_version_abspath,
-    policy_templates_generated_json_path,
-  ]
-  outputs = [
-    cloud_policy_full_runtime_proto_path,
-    chrome_settings_full_runtime_proto_path,
-    policy_common_definitions_full_runtime_proto_path,
-  ]
-
-  args = [
-    # Input information
-    "--chrome-version-file=" + chrome_version_path,
-    "--target-platform=" + target_os,
-    "--policy-templates-file=" +
-        rebase_path(policy_templates_generated_json_path, root_build_dir),
-    "--target-platform=" + target_os,
-
-    # Output files to be generated
-    "--cloud-policy-full-runtime-protobuf=" +
-        rebase_path(cloud_policy_full_runtime_proto_path, root_build_dir),
-    "--chrome-settings-full-runtime-protobuf=" +
-        rebase_path(chrome_settings_full_runtime_proto_path, root_build_dir),
-    "--policy-common-definitions-protobuf=" +
-        rebase_path(policy_common_definitions_proto_abspath, root_build_dir),
-    "--policy-common-definitions-full-runtime-protobuf=" +
-        rebase_path(policy_common_definitions_full_runtime_proto_path,
-                    root_build_dir),
   ]
 }
 
@@ -385,7 +328,6 @@ static_library("generated") {
   defines = [ "POLICY_COMPONENT_IMPLEMENTATION" ]
   public_deps = [
     ":cloud_policy_proto_generated_compile",
-    ":full_runtime_code_generate",
     ":policy_code_generate",
     "//base",
     "//components/policy/core/common:common_constants",
