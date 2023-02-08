@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.SyncService.SyncStateChangedListener;
-import org.chromium.chrome.browser.ui.signin.TangibleSyncCoordinator;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -34,7 +33,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.ViewUtils;
-import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
 /**
  * A preference that displays "Sign in to Chrome" when the user is not sign in, and displays
@@ -163,18 +161,9 @@ public class SignInPreference
         setFragment(null);
         setIcon(AppCompatResources.getDrawable(getContext(), R.drawable.logo_avatar_anonymous));
         setViewEnabled(true);
-        setOnPreferenceClickListener(pref -> {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TANGIBLE_SYNC)) {
-                TangibleSyncCoordinator.start(getContext(),
-                        ((ModalDialogManagerHolder) getContext()).getModalDialogManager(),
-                        SyncConsentActivityLauncherImpl.get(),
-                        SigninAccessPoint.SETTINGS_SYNC_OFF_ROW);
-                return true;
-            } else {
-                return SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
-                        getContext(), SigninAccessPoint.SETTINGS_SYNC_OFF_ROW);
-            }
-        });
+        setOnPreferenceClickListener(pref
+                -> SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
+                        getContext(), SigninAccessPoint.SETTINGS_SYNC_OFF_ROW));
 
         if (!mWasGenericSigninPromoDisplayed) {
             RecordUserAction.record("Signin_Impression_FromSettings");

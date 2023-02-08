@@ -58,7 +58,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/signin/SyncConsentFragmentBase.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SyncConsentView.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SyncPromoController.java",
-    "java/src/org/chromium/chrome/browser/ui/signin/TangibleSyncCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetMediator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetProperties.java",
@@ -209,7 +208,6 @@ android_library("unit_device_javatests") {
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmSyncDataStateMachineDelegateTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SignOutDialogRenderTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SignOutDialogTest.java",
-    "java/src/org/chromium/chrome/browser/ui/signin/TangibleSyncCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerDialogTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fre/FreUMADialogTest.java",
   ]
