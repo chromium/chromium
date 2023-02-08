@@ -93,10 +93,6 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest,
 }
 
 IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, HeaderWithoutIcon) {
-  // TODO(crbug.com/1385136): Handle missing/empty icons in minimal header UX.
-  if (minimal_header_ux_enabled_)
-    return;
-
   std::string method_name;
   InstallPaymentAppWithoutIcon("a.com", "/payment_handler_sw.js", &method_name);
 

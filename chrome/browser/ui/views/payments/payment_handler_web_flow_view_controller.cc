@@ -321,13 +321,17 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
 
   // Icon column.
   const SkBitmap* icon_bitmap = state()->selected_app()->icon_bitmap();
-  // TODO(crbug.com/1385136): Handle missing/empty/rectangular icons.
-  DCHECK(icon_bitmap && !icon_bitmap->drawsNothing());
-  layout->AddColumn(
-      views::LayoutAlignment::kStart, views::LayoutAlignment::kCenter,
-      views::TableLayout::kFixedSize, views::TableLayout::ColumnSize::kFixed,
-      /*fixed_width=*/32,
-      /*min_width=*/0);
+  const bool has_icon = icon_bitmap && !icon_bitmap->drawsNothing();
+  constexpr int kHeaderIconWidth = 32;
+  if (has_icon) {
+    layout->AddColumn(views::LayoutAlignment::kStart,
+                      views::LayoutAlignment::kCenter,
+                      views::TableLayout::kFixedSize,
+                      views::TableLayout::ColumnSize::kFixed, kHeaderIconWidth,
+                      /*min_width=*/0);
+  } else {
+    layout->AddPaddingColumn(views::TableLayout::kFixedSize, kHeaderIconWidth);
+  }
 
   // Origin column.
   layout->AddColumn(
@@ -350,19 +354,22 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
   //
   // We should set image size in density independent pixels here, since
   // views::ImageView objects are rastered at the device scale factor.
-  views::ImageView* app_icon_view = container->AddChildView(CreateAppIconView(
-      /*icon_resource_id=*/0, icon_bitmap,
-      // TODO(crbug.com/1385136): Determine correct text (used for both tooltip
-      // and screen reader).
-      /*tooltip_text=*/GetPaymentHandlerDialogTitle(web_contents())));
-  app_icon_view->SetID(static_cast<int>(DialogViewID::PAYMENT_APP_HEADER_ICON));
-  float adjusted_width =
-      base::checked_cast<float>(icon_bitmap->width()) *
-      (IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight /
-       icon_bitmap->height());
-  app_icon_view->SetImageSize(gfx::Size(
-      adjusted_width,
-      IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight));
+  if (has_icon) {
+    views::ImageView* app_icon_view = container->AddChildView(CreateAppIconView(
+        /*icon_resource_id=*/0, icon_bitmap,
+        // TODO(crbug.com/1414090): Determine correct text (used for both
+        // tooltip and screen reader).
+        /*tooltip_text=*/GetPaymentHandlerDialogTitle(web_contents())));
+    app_icon_view->SetID(
+        static_cast<int>(DialogViewID::PAYMENT_APP_HEADER_ICON));
+    float adjusted_width =
+        base::checked_cast<float>(icon_bitmap->width()) *
+        (IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight /
+         icon_bitmap->height());
+    app_icon_view->SetImageSize(gfx::Size(
+        adjusted_width,
+        IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight));
+  }
 
   // Add the origin label.
   const url::Origin origin =
