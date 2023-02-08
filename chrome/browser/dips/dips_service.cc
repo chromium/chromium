@@ -386,6 +386,13 @@ void DIPSService::DeleteDIPSEligibleState(
     return;
   }
 
+  for (const auto& site : sites_to_clear) {
+    const ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForDipsSite(
+        base::PassKey<DIPSService>(), site);
+    ukm::builders::DIPS_Deletion(source_id).SetDetected(true).Record(
+        ukm::UkmRecorder::Get());
+  }
+
   if (ShouldBlockThirdPartyCookies() && dips::kDeletionEnabled.Get()) {
     if (IsShuttingDown()) {
       return;

@@ -25,6 +25,7 @@
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -44,6 +45,9 @@ using content::CookieAccessDetails;
 using content::NavigationHandle;
 using content::RenderFrameHost;
 using content::WebContents;
+using testing::Optional;
+using testing::Pair;
+
 using testing::Optional;
 using testing::Pair;
 
@@ -161,6 +165,7 @@ class DIPSTabHelperBrowserTest : public PlatformBrowserTest,
     host_resolver()->AddRule("a.test", "127.0.0.1");
     host_resolver()->AddRule("b.test", "127.0.0.1");
     host_resolver()->AddRule("c.test", "127.0.0.1");
+    host_resolver()->AddRule("d.test", "127.0.0.1");
     DIPSWebContentsObserver::FromWebContents(GetActiveWebContents())
         ->SetClockForTesting(&test_clock_);
     DIPSService* dips_service = DIPSServiceFactory::GetForBrowserContext(
@@ -871,4 +876,85 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
     // loop iteration.)
     ASSERT_FALSE(GetDIPSState(GURL("http://b.test")).has_value());
   }
+}
+
+IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
+                       UserClearedSitesAreNotReportedToUKM) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  content::WebContents* web_contents = GetActiveWebContents();
+  DIPSService* dips_service = DIPSServiceFactory::GetForBrowserContext(
+      web_contents->GetBrowserContext());
+  // A time more than an hour ago.
+  base::Time old_bounce_time = base::Time::Now() - base::Hours(2);
+  // A time within the past hour.
+  base::Time recent_bounce_time = base::Time::Now() - base::Minutes(10);
+
+  SetDIPSTime(old_bounce_time);
+  // Make b.test statefully bounce to c.test.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("a.test", "/title1.html")));
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(
+      web_contents,
+      embedded_test_server()->GetURL(
+          "b.test", "/cross-site-with-cookie/c.test/title1.html"),
+      embedded_test_server()->GetURL("c.test", "/title1.html")));
+  // End the chain so the bounce is recorded.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("a.test", "/title1.html")));
+
+  SetDIPSTime(recent_bounce_time);
+  // Make c.test statefully bounce to d.test.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("a.test", "/title1.html")));
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(
+      web_contents,
+      embedded_test_server()->GetURL(
+          "c.test", "/cross-site-with-cookie/d.test/title1.html"),
+      embedded_test_server()->GetURL("d.test", "/title1.html")));
+  EndRedirectChain();
+
+  // Verify the bounces were recorded. b.test:
+  absl::optional<StateValue> state = GetDIPSState(GURL("http://b.test"));
+  ASSERT_TRUE(state.has_value());
+  ASSERT_THAT(state->stateful_bounce_times,
+              Optional(Pair(old_bounce_time, old_bounce_time)));
+  ASSERT_EQ(state->user_interaction_times, absl::nullopt);
+  // c.test:
+  state = GetDIPSState(GURL("http://c.test"));
+  ASSERT_TRUE(state.has_value());
+  ASSERT_THAT(state->stateful_bounce_times,
+              Optional(Pair(recent_bounce_time, recent_bounce_time)));
+  ASSERT_EQ(state->user_interaction_times, absl::nullopt);
+
+  // Remove browsing data for the past hour. This should include c.test but not
+  // b.test.
+  base::RunLoop run_loop;
+  browsing_data_important_sites_util::Remove(
+      chrome_browsing_data_remover::DATA_TYPE_HISTORY |
+          chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
+      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+      browsing_data::TimePeriod::LAST_HOUR,
+      content::BrowsingDataFilterBuilder::Create(
+          content::BrowsingDataFilterBuilder::Mode::kPreserve),
+      web_contents->GetBrowserContext()->GetBrowsingDataRemover(),
+      base::IgnoreArgs<uint64_t>(run_loop.QuitClosure()));
+  run_loop.Run();
+
+  // Verify only the DIPS record for c.test was deleted.
+  ASSERT_TRUE(GetDIPSState(GURL("http://b.test")).has_value());
+  ASSERT_FALSE(GetDIPSState(GURL("http://c.test")).has_value());
+
+  // Trigger the DIPS timer which will delete tracker data.
+  SetDIPSTime(recent_bounce_time + dips::kGracePeriod.Get() +
+              base::Milliseconds(1));
+  dips_service->OnTimerFiredForTesting();
+  dips_service->storage()->FlushPostedTasksForTesting();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that both DIPS records are now gone.
+  ASSERT_FALSE(GetDIPSState(GURL("http://b.test")).has_value());
+  ASSERT_FALSE(GetDIPSState(GURL("http://c.test")).has_value());
+
+  // Only b.test was reported to UKM.
+  EXPECT_THAT(ukm_recorder, EntryUrlsAre("DIPS.Deletion", {"http://b.test/"}));
 }

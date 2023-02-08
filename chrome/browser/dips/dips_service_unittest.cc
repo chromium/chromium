@@ -5,6 +5,7 @@
 #include "chrome/browser/dips/dips_service.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_state.h"
+#include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/test/base/testing_profile.h"
@@ -22,8 +24,10 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_browsing_data_remover_delegate.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Enables or disables a base::Feature.
@@ -180,6 +184,7 @@ class DIPSServiceStateRemovalTest : public testing::Test {
 // removed from the DIPS db since 'delegate_' doesn't actually carryout the
 // removal task.
 TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_Enabled) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       dips::kFeature, {{"delete", "true"}, {"triggering_action", "bounce"}});
@@ -224,9 +229,13 @@ TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_Enabled) {
   // Because this test fixture uses a MockBrowsingDataRemoverDelegate the DIPS
   // entry should not actually be removed. However, in practice it would be.
   EXPECT_TRUE(GetDIPSState(url).has_value());
+
+  EXPECT_THAT(ukm_recorder,
+              EntryUrlsAre("DIPS.Deletion", {"http://example.com/"}));
 }
 
 TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_Disabled) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       dips::kFeature, {{"delete", "false"}, {"triggering_action", "bounce"}});
@@ -261,10 +270,14 @@ TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_Disabled) {
   // is false.
   delegate_.VerifyAndClearExpectations();
   EXPECT_FALSE(GetDIPSState(url).has_value());
+
+  EXPECT_THAT(ukm_recorder,
+              EntryUrlsAre("DIPS.Deletion", {"http://example.com/"}));
 }
 
 TEST_F(DIPSServiceStateRemovalTest,
        BrowsingDataDeletion_Respects3PCExceptions) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       dips::kFeature, {{"delete", "true"}, {"triggering_action", "bounce"}});
@@ -356,6 +369,13 @@ TEST_F(DIPSServiceStateRemovalTest,
   // deletion.
   EXPECT_FALSE(GetDIPSState(excepted_3p_url).has_value());
   EXPECT_FALSE(GetDIPSState(excepted_1p_url).has_value());
+
+  // All 3 sites should be reported to UKM. It doesn't matter whether the URL
+  // was excepted or not.
+  EXPECT_THAT(ukm_recorder,
+              EntryUrlsAre("DIPS.Deletion", {"http://excepted-as-3p.com/",
+                                             "http://excepted-as-1p.com/",
+                                             "http://not-excepted.com/"}));
 }
 
 // A test class that verifies DIPSService state deletion metrics collection

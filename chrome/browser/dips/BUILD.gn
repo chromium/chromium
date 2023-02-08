@@ -12,6 +12,8 @@ source_set("test_utils") {
   deps = [
     "//base",
     "//chrome/browser",
+    "//components/ukm:test_support",
+    "//services/metrics/public/cpp:metrics_cpp",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

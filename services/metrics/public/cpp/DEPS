@@ -1,3 +1,4 @@
 include_rules = [
+  "+net/base",
   "+third_party/metrics_proto",
 ]
