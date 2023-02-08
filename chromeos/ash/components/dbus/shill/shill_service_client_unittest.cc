@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_client_unittest_base.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
@@ -15,6 +16,7 @@
 #include "dbus/object_path.h"
 #include "dbus/values_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using testing::_;
@@ -100,15 +102,18 @@ TEST_F(ShillServiceClientTest, GetProperties) {
   writer.CloseContainer(&array_writer);
 
   // Set expectations.
-  base::Value value(base::Value::Type::DICT);
-  value.GetDict().Set(shill::kSignalStrengthProperty, kValue);
+  base::Value::Dict expected_value;
+  expected_value.Set(shill::kSignalStrengthProperty, kValue);
   PrepareForMethodCall(shill::kGetPropertiesFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
+  base::test::TestFuture<absl::optional<base::Value>> get_properties_result;
   client_->GetProperties(dbus::ObjectPath(kExampleServicePath),
-                         base::BindOnce(&ExpectValueResult, &value));
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+                         get_properties_result.GetCallback());
+  absl::optional<base::Value> result = get_properties_result.Take();
+  EXPECT_TRUE(result.has_value());
+  const base::Value::Dict& result_value = result.value().GetDict();
+  EXPECT_EQ(expected_value, result_value);
 }
 
 TEST_F(ShillServiceClientTest, SetProperty) {
@@ -123,16 +128,16 @@ TEST_F(ShillServiceClientTest, SetProperty) {
                                            shill::kPassphraseProperty, &value),
                        response.get());
   // Call method.
-  base::MockCallback<base::OnceClosure> mock_closure;
-  base::MockCallback<ShillServiceClient::ErrorCallback> mock_error_callback;
-  client_->SetProperty(dbus::ObjectPath(kExampleServicePath),
-                       shill::kPassphraseProperty, value, mock_closure.Get(),
-                       mock_error_callback.Get());
-  EXPECT_CALL(mock_closure, Run()).Times(1);
-  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
-
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<void> set_property_result;
+  base::test::TestFuture<std::string, std::string> error_result;
+  client_->SetProperty(
+      dbus::ObjectPath(kExampleServicePath), shill::kPassphraseProperty, value,
+      set_property_result.GetCallback(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  EXPECT_TRUE(set_property_result.Wait());
+  // The SetProperty() error callback should not be invoked after the successful
+  // compilation.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 TEST_F(ShillServiceClientTest, SetProperties) {
@@ -149,15 +154,16 @@ TEST_F(ShillServiceClientTest, SetProperties) {
       response.get());
 
   // Call method.
-  base::MockCallback<base::OnceClosure> mock_closure;
-  base::MockCallback<ShillServiceClient::ErrorCallback> mock_error_callback;
-  client_->SetProperties(dbus::ObjectPath(kExampleServicePath), arg,
-                         mock_closure.Get(), mock_error_callback.Get());
-  EXPECT_CALL(mock_closure, Run()).Times(1);
-  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
-
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<void> set_property_result;
+  base::test::TestFuture<std::string, std::string> error_result;
+  client_->SetProperties(
+      dbus::ObjectPath(kExampleServicePath), arg,
+      set_property_result.GetCallback(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  EXPECT_TRUE(set_property_result.Wait());
+  // The SetProperties() error callback should not be invoked after the
+  // properties result is received successfully.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 TEST_F(ShillServiceClientTest, ClearProperty) {
@@ -170,16 +176,16 @@ TEST_F(ShillServiceClientTest, ClearProperty) {
       base::BindRepeating(&ExpectStringArgument, shill::kPassphraseProperty),
       response.get());
   // Call method.
-  base::MockCallback<base::OnceClosure> mock_closure;
-  base::MockCallback<ShillServiceClient::ErrorCallback> mock_error_callback;
-  client_->ClearProperty(dbus::ObjectPath(kExampleServicePath),
-                         shill::kPassphraseProperty, mock_closure.Get(),
-                         mock_error_callback.Get());
-  EXPECT_CALL(mock_closure, Run()).Times(1);
-  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
-
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<void> clear_property_result;
+  base::test::TestFuture<std::string, std::string> error_result;
+  client_->ClearProperty(
+      dbus::ObjectPath(kExampleServicePath), shill::kPassphraseProperty,
+      clear_property_result.GetCallback(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  EXPECT_TRUE(clear_property_result.Wait());
+  // The ClearProperty() error callback should not be invoked after the
+  // successful result is received.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 TEST_F(ShillServiceClientTest, ClearProperties) {
@@ -200,6 +206,10 @@ TEST_F(ShillServiceClientTest, ClearProperties) {
                        base::BindRepeating(&ExpectArrayOfStringsArgument, keys),
                        response.get());
   // Call method.
+  // We can't use `base::test::TestFuture` for non-copyable objects and
+  // base::Value::List is non-copyable. So this test will keep using
+  // base::RunLoop unlike other tests in this suite until TestFuture can support
+  // it.
   base::MockCallback<ShillServiceClient::ListValueCallback>
       mock_list_value_callback;
   base::MockCallback<ShillServiceClient::ErrorCallback> mock_error_callback;
@@ -218,17 +228,18 @@ TEST_F(ShillServiceClientTest, Connect) {
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
 
   // Set expectations.
-  base::MockCallback<base::OnceClosure> mock_closure;
-  base::MockCallback<ShillServiceClient::ErrorCallback> mock_error_callback;
+  base::test::TestFuture<void> connect_result;
+  base::test::TestFuture<std::string, std::string> error_result;
   PrepareForMethodCall(shill::kConnectFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
-  EXPECT_CALL(mock_closure, Run()).Times(1);
   // Call method.
-  client_->Connect(dbus::ObjectPath(kExampleServicePath), mock_closure.Get(),
-                   mock_error_callback.Get());
-
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+  client_->Connect(
+      dbus::ObjectPath(kExampleServicePath), connect_result.GetCallback(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  EXPECT_TRUE(connect_result.Wait());
+  // The Remove() error callback should not be invoked after the successful
+  // connection result.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 TEST_F(ShillServiceClientTest, Disconnect) {
@@ -239,15 +250,15 @@ TEST_F(ShillServiceClientTest, Disconnect) {
   PrepareForMethodCall(shill::kDisconnectFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
-  base::MockCallback<base::OnceClosure> mock_closure;
-  base::MockCallback<ShillServiceClient::ErrorCallback> mock_error_callback;
-  client_->Disconnect(dbus::ObjectPath(kExampleServicePath), mock_closure.Get(),
-                      mock_error_callback.Get());
-  EXPECT_CALL(mock_closure, Run()).Times(1);
-  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
-
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<void> disconnect_result;
+  base::test::TestFuture<std::string, std::string> error_result;
+  client_->Disconnect(
+      dbus::ObjectPath(kExampleServicePath), disconnect_result.GetCallback(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  EXPECT_TRUE(disconnect_result.Wait());
+  // The Disconnect() error callback should not be invoked after the successful
+  // disconnect call.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 TEST_F(ShillServiceClientTest, Remove) {
@@ -258,15 +269,15 @@ TEST_F(ShillServiceClientTest, Remove) {
   PrepareForMethodCall(shill::kRemoveServiceFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
-  base::MockCallback<base::OnceClosure> mock_closure;
-  base::MockCallback<ShillServiceClient::ErrorCallback> mock_error_callback;
-  client_->Remove(dbus::ObjectPath(kExampleServicePath), mock_closure.Get(),
-                  mock_error_callback.Get());
-  EXPECT_CALL(mock_closure, Run()).Times(1);
-  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
-
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<void> remove_result;
+  base::test::TestFuture<std::string, std::string> error_result;
+  client_->Remove(
+      dbus::ObjectPath(kExampleServicePath), remove_result.GetCallback(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  EXPECT_TRUE(remove_result.Wait());
+  // The Remove() error callback should not be invoked after the successful
+  // compilation.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 TEST_F(ShillServiceClientTest, GetWiFiPassphrase) {
@@ -281,15 +292,16 @@ TEST_F(ShillServiceClientTest, GetWiFiPassphrase) {
   PrepareForMethodCall(shill::kGetWiFiPassphraseFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
-  base::MockCallback<base::OnceCallback<void(const std::string&)>> mock_closure;
-  base::MockCallback<ShillServiceClient::ErrorCallback> mock_error_callback;
-  client_->GetWiFiPassphrase(dbus::ObjectPath(kExampleServicePath),
-                             mock_closure.Get(), mock_error_callback.Get());
-  EXPECT_CALL(mock_closure, Run(kPassphrase)).Times(1);
-  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
-
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<std::string> get_passphrase_result;
+  base::test::TestFuture<std::string, std::string> error_result;
+  client_->GetWiFiPassphrase(
+      dbus::ObjectPath(kExampleServicePath),
+      get_passphrase_result.GetCallback<const std::string&>(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  EXPECT_EQ(get_passphrase_result.Get(), kPassphrase);
+  // The GetWifiPassphrase() error callback should not be invoked after the
+  // passphrase is received successfully.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 TEST_F(ShillServiceClientTest, GetEapPassphrase) {
@@ -304,15 +316,16 @@ TEST_F(ShillServiceClientTest, GetEapPassphrase) {
   PrepareForMethodCall(shill::kGetEapPassphraseFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
-  base::MockCallback<base::OnceCallback<void(const std::string&)>> mock_closure;
-  base::MockCallback<ShillServiceClient::ErrorCallback> mock_error_callback;
-  client_->GetEapPassphrase(dbus::ObjectPath(kExampleServicePath),
-                            mock_closure.Get(), mock_error_callback.Get());
-  EXPECT_CALL(mock_closure, Run(kPassphrase)).Times(1);
-  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
-
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<std::string> get_passphrase_result;
+  base::test::TestFuture<std::string, std::string> error_result;
+  client_->GetEapPassphrase(
+      dbus::ObjectPath(kExampleServicePath),
+      get_passphrase_result.GetCallback<const std::string&>(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  EXPECT_EQ(get_passphrase_result.Get(), kPassphrase);
+  // The GetEapPassphrase() error callback should not be invoked after the
+  // passphrase is received successfully.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 TEST_F(ShillServiceClientTest, RequestPortalDetection) {
@@ -321,15 +334,10 @@ TEST_F(ShillServiceClientTest, RequestPortalDetection) {
   PrepareForMethodCall(shill::kRequestPortalDetectionFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
-  base::RunLoop run_loop;
+  base::test::TestFuture<bool> request_detection_result;
   client_->RequestPortalDetection(dbus::ObjectPath(kExampleServicePath),
-                                  base::BindLambdaForTesting([&](bool success) {
-                                    EXPECT_TRUE(success);
-                                    run_loop.QuitClosure();
-                                  }));
-
-  // Run the message loop.
-  run_loop.RunUntilIdle();
+                                  request_detection_result.GetCallback());
+  EXPECT_TRUE(request_detection_result.Get());
 }
 
 TEST_F(ShillServiceClientTest, RequestTrafficCounters) {
@@ -358,19 +366,13 @@ TEST_F(ShillServiceClientTest, RequestTrafficCounters) {
                        base::BindRepeating(&ExpectNoArgument), response.get());
 
   // Call method.
-  base::RunLoop run_loop;
-  client_->RequestTrafficCounters(
-      dbus::ObjectPath(kExampleServicePath),
-      base::BindOnce(
-          [](const base::Value::List* expected_traffic_counters,
-             base::OnceClosure quit_closure,
-             absl::optional<base::Value> actual_traffic_counters) {
-            ASSERT_TRUE(actual_traffic_counters);
-            EXPECT_EQ(*expected_traffic_counters, *actual_traffic_counters);
-            std::move(quit_closure).Run();
-          },
-          &traffic_counters, run_loop.QuitClosure()));
-  run_loop.Run();
+  base::test::TestFuture<absl::optional<base::Value>> request_result;
+  client_->RequestTrafficCounters(dbus::ObjectPath(kExampleServicePath),
+                                  request_result.GetCallback());
+  absl::optional<base::Value> result = request_result.Take();
+  EXPECT_TRUE(result);
+  const base::Value::List& result_list = result.value().GetList();
+  EXPECT_EQ(result_list, traffic_counters);
 }
 
 TEST_F(ShillServiceClientTest, ResetTrafficCounters) {
@@ -381,33 +383,34 @@ TEST_F(ShillServiceClientTest, ResetTrafficCounters) {
   PrepareForMethodCall(shill::kResetTrafficCountersFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
-  base::MockCallback<base::OnceClosure> mock_closure;
-  base::MockCallback<ShillServiceClient::ErrorCallback> mock_error_callback;
-  client_->ResetTrafficCounters(dbus::ObjectPath(kExampleServicePath),
-                                mock_closure.Get(), mock_error_callback.Get());
-  EXPECT_CALL(mock_closure, Run()).Times(1);
-  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
-
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<void> reset_result;
+  base::test::TestFuture<std::string, std::string> error_result;
+  client_->ResetTrafficCounters(
+      dbus::ObjectPath(kExampleServicePath), reset_result.GetCallback(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  EXPECT_TRUE(reset_result.Wait());
+  // The ResetTrafficCounters() error callback should not be invoked after
+  // successful completion.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 TEST_F(ShillServiceClientTest, InvalidServicePath) {
   // Create response.
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
 
-  // Expect the callback to not run and the error callback to run once.
-  base::MockCallback<base::OnceClosure> mock_closure;
-  base::MockCallback<ShillServiceClient::ErrorCallback> mock_error_callback;
+  base::test::TestFuture<void> connect_result;
+  base::test::TestFuture<std::string, std::string> error_result;
   PrepareForMethodCall(shill::kConnectFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
-  EXPECT_CALL(mock_closure, Run()).Times(0);
-  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(1);
 
   // Call method.
-  client_->Connect(dbus::ObjectPath("/invalid/path"), mock_closure.Get(),
-                   mock_error_callback.Get());
-  base::RunLoop().RunUntilIdle();
+  client_->Connect(
+      dbus::ObjectPath("/invalid/path"), connect_result.GetCallback(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  // Error will be received after calling the method with invalid path.
+  EXPECT_TRUE(error_result.Wait());
+  // Connect result callback should not be invoked after an error is received.
+  EXPECT_FALSE(connect_result.IsReady());
 }
 
 }  // namespace ash

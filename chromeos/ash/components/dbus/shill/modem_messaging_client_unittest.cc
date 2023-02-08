@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
@@ -187,15 +188,11 @@ TEST_F(ModemMessagingClientTest, Delete) {
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
   response_ = response.get();
   // Call Delete.
-  bool success = false;
+  base::test::TestFuture<bool> delete_result_future;
   client_->Delete(kServiceName, dbus::ObjectPath(kObjectPath), kSmsPath,
-                  base::BindOnce([](bool* success_out,
-                                    bool success) { *success_out = true; },
-                                 &success));
+                  delete_result_future.GetCallback());
 
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(success);
+  EXPECT_TRUE(delete_result_future.Get());
 }
 
 TEST_F(ModemMessagingClientTest, List) {
@@ -213,19 +210,15 @@ TEST_F(ModemMessagingClientTest, List) {
   response_ = response.get();
 
   // Call List.
-  absl::optional<std::vector<dbus::ObjectPath>> result;
-  client_->List(
-      kServiceName, dbus::ObjectPath(kObjectPath),
-      base::BindOnce(
-          [](absl::optional<std::vector<dbus::ObjectPath>>* result_out,
-             absl::optional<std::vector<dbus::ObjectPath>> result) {
-            *result_out = std::move(result);
-          },
-          &result));
+  base::test::TestFuture<absl::optional<std::vector<dbus::ObjectPath>>>
+      list_result_future;
+  client_->List(kServiceName, dbus::ObjectPath(kObjectPath),
+                list_result_future.GetCallback());
 
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(kExpectedResult, result);
+  absl::optional<std::vector<dbus::ObjectPath>> result =
+      list_result_future.Take();
+  EXPECT_TRUE(result);
+  EXPECT_EQ(kExpectedResult, result.value());
 }
 
 }  // namespace ash

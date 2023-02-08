@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_client_unittest_base.h"
 #include "chromeos/ash/components/dbus/shill/shill_ipconfig_client.h"
@@ -106,18 +107,23 @@ TEST_F(ShillIPConfigClientTest, GetProperties) {
   writer.CloseContainer(&array_writer);
 
   // Create the expected value.
-  base::Value::Dict value;
-  value.Set(shill::kAddressProperty, kAddress);
-  value.Set(shill::kMtuProperty, kMtu);
+  base::Value::Dict expected_value;
+  expected_value.Set(shill::kAddressProperty, kAddress);
+  expected_value.Set(shill::kMtuProperty, kMtu);
 
   // Set expectations.
   PrepareForMethodCall(shill::kGetPropertiesFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
-  // Call method.
+
+  base::test::TestFuture<absl::optional<base::Value::Dict>>
+      get_properties_result;
+  // Call GetProperties.
   client_->GetProperties(dbus::ObjectPath(kExampleIPConfigPath),
-                         base::BindOnce(&ExpectValueDictionaryResult, &value));
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+                         get_properties_result.GetCallback());
+  absl::optional<base::Value::Dict> result = get_properties_result.Take();
+  EXPECT_TRUE(result.has_value());
+  const base::Value::Dict& result_value = result.value();
+  EXPECT_EQ(expected_value, result_value);
 }
 
 TEST_F(ShillIPConfigClientTest, SetProperty) {
@@ -132,12 +138,12 @@ TEST_F(ShillIPConfigClientTest, SetProperty) {
                        base::BindRepeating(&ExpectStringAndValueArguments,
                                            shill::kAddressProperty, &value),
                        response.get());
-  // Call method.
+  // Call SetProperty.
+  base::test::TestFuture<bool> set_property_result;
   client_->SetProperty(dbus::ObjectPath(kExampleIPConfigPath),
                        shill::kAddressProperty, value,
-                       base::BindOnce(&ExpectNoResultValue));
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+                       set_property_result.GetCallback());
+  EXPECT_TRUE(set_property_result.Get());
 }
 
 TEST_F(ShillIPConfigClientTest, ClearProperty) {
@@ -149,12 +155,12 @@ TEST_F(ShillIPConfigClientTest, ClearProperty) {
       shill::kClearPropertyFunction,
       base::BindRepeating(&ExpectStringArgument, shill::kAddressProperty),
       response.get());
-  // Call method.
+  // Call ClearProperty.
+  base::test::TestFuture<bool> clear_property_result;
   client_->ClearProperty(dbus::ObjectPath(kExampleIPConfigPath),
                          shill::kAddressProperty,
-                         base::BindOnce(&ExpectNoResultValue));
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+                         clear_property_result.GetCallback());
+  EXPECT_TRUE(clear_property_result.Get());
 }
 
 TEST_F(ShillIPConfigClientTest, Remove) {
@@ -164,12 +170,12 @@ TEST_F(ShillIPConfigClientTest, Remove) {
   // Set expectations.
   PrepareForMethodCall(shill::kRemoveConfigFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
-  // Call method.
-  client_->Remove(dbus::ObjectPath(kExampleIPConfigPath),
-                  base::BindOnce(&ExpectNoResultValue));
 
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<bool> remove_result;
+  // Call Remove.
+  client_->Remove(dbus::ObjectPath(kExampleIPConfigPath),
+                  remove_result.GetCallback());
+  EXPECT_TRUE(remove_result.Get());
 }
 
 }  // namespace ash

@@ -141,37 +141,6 @@ class ShillClientUnittestBase : public testing::Test {
   // Creates a dictionary with example Service properties.
   static base::Value::Dict CreateExampleServiceProperties();
 
-  // Expects the call status to be SUCCESS.
-  static void ExpectNoResultValue(bool result);
-
-  static void ExpectObjectPathResultWithoutStatus(
-      const dbus::ObjectPath& expected_result,
-      const dbus::ObjectPath& result);
-
-  static void ExpectBoolResultWithoutStatus(bool expected_result, bool result);
-
-  static void ExpectStringResultWithoutStatus(
-      const std::string& expected_result,
-      const std::string& result);
-
-  // Checks the result and expects the call status to be SUCCESS.
-  static void ExpectValueResult(const base::Value* expected_result,
-                                absl::optional<base::Value> result);
-
-  // Checks the result and expects the call status to be SUCCESS.
-  static void ExpectValueDictionaryResult(
-      const base::Value::Dict* expected_result,
-      absl::optional<base::Value::Dict> result);
-
-  // Expects the |expected_result| to match the |result|.
-  static void ExpectValueResultWithoutStatus(const base::Value* expected_result,
-                                             base::Value result);
-
-  // Expects the |expected_result| to match the |result|.
-  static void ExpectValueDictionaryResultWithoutStatus(
-      const base::Value::Dict* expected_result,
-      base::Value::Dict result);
-
   // A message loop to emulate asynchronous behavior.
   base::test::SingleThreadTaskEnvironment task_environment_;
   // The mock bus.

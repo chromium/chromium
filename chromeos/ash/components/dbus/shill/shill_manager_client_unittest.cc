@@ -5,19 +5,21 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_client_unittest_base.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/values_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using testing::_;
@@ -115,15 +117,21 @@ TEST_F(ShillManagerClientTest, GetProperties) {
   writer.CloseContainer(&array_writer);
 
   // Create the expected value.
-  base::Value::Dict value;
-  value.Set(shill::kArpGatewayProperty, true);
+  base::Value::Dict expected_value;
+  expected_value.Set(shill::kArpGatewayProperty, true);
   // Set expectations.
   PrepareForMethodCall(shill::kGetPropertiesFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
+
+  // Prepare result callback to get the properties.
+  base::test::TestFuture<absl::optional<base::Value::Dict>>
+      get_properties_result;
   // Call method.
-  client_->GetProperties(base::BindOnce(&ExpectValueDictionaryResult, &value));
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+  client_->GetProperties(get_properties_result.GetCallback());
+  absl::optional<base::Value::Dict> result = get_properties_result.Take();
+  EXPECT_TRUE(result.has_value());
+  const base::Value::Dict& result_value = result.value();
+  EXPECT_EQ(expected_value, result_value);
 }
 
 TEST_F(ShillManagerClientTest, GetNetworksForGeolocation) {
@@ -164,12 +172,16 @@ TEST_F(ShillManagerClientTest, GetNetworksForGeolocation) {
   // Set expectations.
   PrepareForMethodCall(shill::kGetNetworksForGeolocation,
                        base::BindRepeating(&ExpectNoArgument), response.get());
-  // Call method.
-  client_->GetNetworksForGeolocation(
-      base::BindOnce(&ExpectValueDictionaryResult, &type_dict));
 
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+  // Prepare result callback to get the networks dictionary.
+  base::test::TestFuture<absl::optional<base::Value::Dict>> get_networks_result;
+  // Call method.
+  client_->GetNetworksForGeolocation(get_networks_result.GetCallback());
+  // Check if result is as expected.
+  absl::optional<base::Value::Dict> result = get_networks_result.Take();
+  EXPECT_TRUE(result.has_value());
+  const base::Value::Dict& result_value = result.value();
+  EXPECT_EQ(type_dict, result_value);
 }
 
 TEST_F(ShillManagerClientTest, SetProperty) {
@@ -182,15 +194,17 @@ TEST_F(ShillManagerClientTest, SetProperty) {
       base::BindRepeating(ExpectStringAndValueArguments,
                           shill::kCheckPortalListProperty, &value),
       response.get());
+  // Prepare callbacks for properties result and error.
+  base::test::TestFuture<void> set_property_result;
+  base::test::TestFuture<std::string, std::string> error_result;
   // Call method.
-  base::RunLoop run_loop;
-  base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
-  client_->SetProperty(shill::kCheckPortalListProperty, value,
-                       run_loop.QuitClosure(), mock_error_callback.Get());
-  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
-
-  // Run the message loop.
-  run_loop.RunUntilIdle();
+  client_->SetProperty(
+      shill::kCheckPortalListProperty, value, set_property_result.GetCallback(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  EXPECT_TRUE(set_property_result.Wait());
+  // The SetProperty() error callback should not be invoked after successful
+  // completion.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 TEST_F(ShillManagerClientTest, RequestScan) {
@@ -201,15 +215,17 @@ TEST_F(ShillManagerClientTest, RequestScan) {
       shill::kRequestScanFunction,
       base::BindRepeating(&ExpectStringArgument, shill::kTypeWifi),
       response.get());
+  // Prepare callbacks for scan result and error.
+  base::test::TestFuture<void> scan_result;
+  base::test::TestFuture<std::string, std::string> error_result;
   // Call method.
-  base::RunLoop run_loop;
-  base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
-  client_->RequestScan(shill::kTypeWifi, run_loop.QuitClosure(),
-                       mock_error_callback.Get());
-  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
-
-  // Run the message loop.
-  run_loop.RunUntilIdle();
+  client_->RequestScan(
+      shill::kTypeWifi, scan_result.GetCallback(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  EXPECT_TRUE(scan_result.Wait());
+  // The RequestScan() error callback should not be invoked after successful
+  // completion and scan result has been received.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 TEST_F(ShillManagerClientTest, EnableTechnology) {
@@ -220,15 +236,17 @@ TEST_F(ShillManagerClientTest, EnableTechnology) {
       shill::kEnableTechnologyFunction,
       base::BindRepeating(&ExpectStringArgument, shill::kTypeWifi),
       response.get());
+  // Prepare callbacks for successful enable technology call or error.
+  base::test::TestFuture<void> enable_technology_result;
+  base::test::TestFuture<std::string, std::string> error_result;
   // Call method.
-  base::RunLoop run_loop;
-  base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
-  client_->EnableTechnology(shill::kTypeWifi, run_loop.QuitClosure(),
-                            mock_error_callback.Get());
-  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
-
-  // Run the message loop.
-  run_loop.RunUntilIdle();
+  client_->EnableTechnology(
+      shill::kTypeWifi, enable_technology_result.GetCallback(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  EXPECT_TRUE(enable_technology_result.Wait());
+  // The EnableTechnology() error callback should not be invoked after result
+  // has arrived on successful completion.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 TEST_F(ShillManagerClientTest, NetworkThrottling) {
@@ -242,16 +260,20 @@ TEST_F(ShillManagerClientTest, NetworkThrottling) {
                        base::BindRepeating(&ExpectThrottlingArguments, enabled,
                                            upload_rate, download_rate),
                        response.get());
+  // Prepare callbacks for successful set network throttling status call and
+  // error.
+  base::test::TestFuture<void> set_network_throttling_status_result;
+  base::test::TestFuture<std::string, std::string> error_result;
   // Call method.
-  base::RunLoop run_loop;
-  base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
-  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
-
   client_->SetNetworkThrottlingStatus(
       ShillManagerClient::NetworkThrottlingStatus{enabled, upload_rate,
                                                   download_rate},
-      run_loop.QuitClosure(), mock_error_callback.Get());
-  run_loop.RunUntilIdle();
+      set_network_throttling_status_result.GetCallback(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  EXPECT_TRUE(set_network_throttling_status_result.Wait());
+  // The SetNetworkThrottlingStatus() error callback should not be invoked after
+  // successful completion.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 TEST_F(ShillManagerClientTest, DisableTechnology) {
@@ -263,15 +285,15 @@ TEST_F(ShillManagerClientTest, DisableTechnology) {
       base::BindRepeating(&ExpectStringArgument, shill::kTypeWifi),
       response.get());
   // Call method.
-  base::MockCallback<base::OnceClosure> mock_closure;
-  base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
-  client_->DisableTechnology(shill::kTypeWifi, mock_closure.Get(),
-                             mock_error_callback.Get());
-  EXPECT_CALL(mock_closure, Run()).Times(1);
-  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
-
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<void> disable_technology_result;
+  base::test::TestFuture<std::string, std::string> error_result;
+  client_->DisableTechnology(
+      shill::kTypeWifi, disable_technology_result.GetCallback(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  EXPECT_TRUE(disable_technology_result.Wait());
+  // The DisableTechnology() error callback should not be invoked after the
+  // disable technology result has been received successfully.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 TEST_F(ShillManagerClientTest, ConfigureService) {
@@ -290,14 +312,16 @@ TEST_F(ShillManagerClientTest, ConfigureService) {
       base::BindRepeating(&ExpectValueDictionaryArgument, &arg, string_valued),
       response.get());
   // Call method.
-  base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
+  base::test::TestFuture<dbus::ObjectPath> configure_service_result;
+  base::test::TestFuture<std::string, std::string> error_result;
   client_->ConfigureService(
-      arg, base::BindOnce(&ExpectObjectPathResultWithoutStatus, object_path),
-      mock_error_callback.Get());
-  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
-
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+      arg, configure_service_result.GetCallback<const dbus::ObjectPath&>(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  const dbus::ObjectPath& result = configure_service_result.Get();
+  EXPECT_EQ(result, object_path);
+  // The ConfigureService() error callback should not be invoked after
+  // successful completion and object path result has been received.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 TEST_F(ShillManagerClientTest, GetService) {
@@ -316,14 +340,16 @@ TEST_F(ShillManagerClientTest, GetService) {
       base::BindRepeating(&ExpectValueDictionaryArgument, &arg, string_valued),
       response.get());
   // Call method.
-  base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
+  base::test::TestFuture<dbus::ObjectPath> get_service_result;
+  base::test::TestFuture<std::string, std::string> error_result;
   client_->GetService(
-      arg, base::BindOnce(&ExpectObjectPathResultWithoutStatus, object_path),
-      mock_error_callback.Get());
-  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
-
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+      arg, get_service_result.GetCallback<const dbus::ObjectPath&>(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  const dbus::ObjectPath& result = get_service_result.Get();
+  EXPECT_EQ(result, object_path);
+  // The GetService() error callback should not be invoked after successful
+  // completion and object path result has been received.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 TEST_F(ShillManagerClientTest, SetTetheringEnabled) {
@@ -339,19 +365,17 @@ TEST_F(ShillManagerClientTest, SetTetheringEnabled) {
                        base::BindRepeating(&ExpectBoolArgument, true),
                        response.get());
   // Call method.
-  base::RunLoop run_loop;
-  base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
-  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
+  base::test::TestFuture<std::string> set_tethering_enabled_result;
+  base::test::TestFuture<std::string, std::string> error_result;
   client_->SetTetheringEnabled(
       /*enabled=*/true,
-      base::BindLambdaForTesting([&](const std::string& enabled_result) {
-        EXPECT_EQ(kEnabledResult, enabled_result);
-        run_loop.QuitClosure();
-      }),
-      mock_error_callback.Get());
-
-  // Run the message loop.
-  run_loop.RunUntilIdle();
+      set_tethering_enabled_result.GetCallback<const std::string&>(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  const std::string& enabled_result = set_tethering_enabled_result.Get();
+  EXPECT_EQ(kEnabledResult, enabled_result);
+  // The SetTetheringEnabled() error callback should not be invoked after
+  // successful completion.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 TEST_F(ShillManagerClientTest, CheckTetheringReadiness) {
@@ -366,18 +390,16 @@ TEST_F(ShillManagerClientTest, CheckTetheringReadiness) {
   PrepareForMethodCall(shill::kCheckTetheringReadinessFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
-  base::RunLoop run_loop;
-  base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
-  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
+  base::test::TestFuture<std::string> check_tethering_result;
+  base::test::TestFuture<std::string, std::string> error_result;
   client_->CheckTetheringReadiness(
-      base::BindLambdaForTesting([&](const std::string& readiness_status) {
-        EXPECT_EQ(kReadinessResult, readiness_status);
-        run_loop.QuitClosure();
-      }),
-      mock_error_callback.Get());
-
-  // Run the message loop.
-  run_loop.RunUntilIdle();
+      check_tethering_result.GetCallback<const std::string&>(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  const std::string& readiness_status = check_tethering_result.Get();
+  EXPECT_EQ(kReadinessResult, readiness_status);
+  // The CheckTetheringReadiness() error callback should not be invoked after
+  // successful completion.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 }  // namespace ash

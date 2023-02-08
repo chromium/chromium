@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "chromeos/ash/components/dbus/shill/shill_client_unittest_base.h"
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_driver_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_observer.h"
@@ -54,8 +55,6 @@ class ShillThirdPartyVpnDriverClientTest : public ShillClientUnittestBase {
     ShillClientUnittestBase::TearDown();
   }
 
-  MOCK_METHOD0(MockSuccess, void());
-  MOCK_METHOD1(MockSuccessWithWarning, void(const std::string& warning));
   static void Failure(const std::string& error_name,
                       const std::string& error_message) {
     ADD_FAILURE() << error_name << ": " << error_message;
@@ -106,17 +105,14 @@ TEST_F(ShillThirdPartyVpnDriverClientTest, PlatformSignal) {
       base::BindRepeating(&ExpectUint32Argument, connection_state),
       response.get());
 
-  EXPECT_CALL(*this, MockSuccess()).Times(0);
-  client_->UpdateConnectionState(
-      kExampleIPConfigPath, connection_state,
-      base::BindOnce(&ShillThirdPartyVpnDriverClientTest::MockSuccess,
-                     base::Unretained(this)),
-      base::BindOnce(&Failure));
+  base::test::TestFuture<void> update_connection_result;
+  client_->UpdateConnectionState(kExampleIPConfigPath, connection_state,
+                                 update_connection_result.GetCallback(),
+                                 base::BindOnce(&Failure));
 
   client_->RemoveShillThirdPartyVpnObserver(kExampleIPConfigPath);
+  EXPECT_TRUE(update_connection_result.Wait());
   testing::Mock::VerifyAndClearExpectations(this);
-
-  EXPECT_CALL(*this, MockSuccess()).Times(1);
 
   // Check after removing the observer that there is no further signals.
   EXPECT_CALL(observer, OnPlatformMessage(connected_state)).Times(0);
@@ -132,49 +128,44 @@ TEST_F(ShillThirdPartyVpnDriverClientTest, PlatformSignal) {
 }
 
 TEST_F(ShillThirdPartyVpnDriverClientTest, SetParameters) {
+  const char kResponse[] = "deadbeef";
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
   dbus::MessageWriter writer(response.get());
-  writer.AppendString(std::string("deadbeef"));
+  writer.AppendString(kResponse);
 
   base::Value::Dict parameters;
   const std::string kAddress("1.1.1.1");
   parameters.Set(shill::kAddressParameterThirdPartyVpn, kAddress);
-
-  EXPECT_CALL(*this, MockSuccessWithWarning(std::string("deadbeef"))).Times(1);
 
   PrepareForMethodCall(
       shill::kSetParametersFunction,
       base::BindRepeating(&ExpectValueDictionaryArgument, &parameters, true),
       response.get());
 
+  base::test::TestFuture<std::string> set_parameters_result;
   client_->SetParameters(
       kExampleIPConfigPath, parameters,
-      base::BindOnce(
-          &ShillThirdPartyVpnDriverClientTest::MockSuccessWithWarning,
-          base::Unretained(this)),
+      set_parameters_result.GetCallback<const std::string&>(),
       base::BindOnce(&Failure));
 
-  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(set_parameters_result.Get(), kResponse);
 }
 
 TEST_F(ShillThirdPartyVpnDriverClientTest, UpdateConnectionState) {
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
   uint32_t connection_state = 2;
 
-  EXPECT_CALL(*this, MockSuccess()).Times(1);
-
   PrepareForMethodCall(
       shill::kUpdateConnectionStateFunction,
       base::BindRepeating(&ExpectUint32Argument, connection_state),
       response.get());
 
-  client_->UpdateConnectionState(
-      kExampleIPConfigPath, connection_state,
-      base::BindOnce(&ShillThirdPartyVpnDriverClientTest::MockSuccess,
-                     base::Unretained(this)),
-      base::BindOnce(&Failure));
+  base::test::TestFuture<void> update_connection_state_result;
+  client_->UpdateConnectionState(kExampleIPConfigPath, connection_state,
+                                 update_connection_state_result.GetCallback(),
+                                 base::BindOnce(&Failure));
 
-  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(update_connection_state_result.Wait());
 }
 
 TEST_F(ShillThirdPartyVpnDriverClientTest, SendPacket) {
@@ -183,21 +174,18 @@ TEST_F(ShillThirdPartyVpnDriverClientTest, SendPacket) {
   const size_t kPacketSize = 5;
   const std::vector<char> data(kPacketSize, 0);
 
-  EXPECT_CALL(*this, MockSuccess()).Times(1);
-
   PrepareForMethodCall(
       shill::kSendPacketFunction,
       base::BindRepeating(&ExpectArrayOfBytesArgument,
                           std::string(data.begin(), data.end())),
       response.get());
 
-  client_->SendPacket(
-      kExampleIPConfigPath, data,
-      base::BindOnce(&ShillThirdPartyVpnDriverClientTest::MockSuccess,
-                     base::Unretained(this)),
-      base::BindOnce(&Failure));
+  base::test::TestFuture<void> send_packet_result;
+  client_->SendPacket(kExampleIPConfigPath, data,
+                      send_packet_result.GetCallback(),
+                      base::BindOnce(&Failure));
 
-  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(send_packet_result.Wait());
 }
 
 }  // namespace ash

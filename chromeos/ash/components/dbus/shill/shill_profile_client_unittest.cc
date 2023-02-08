@@ -7,7 +7,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_client_unittest_base.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
@@ -112,21 +112,23 @@ TEST_F(ShillProfileClientTest, GetProperties) {
   // Create the expected value.
   base::Value::List entries;
   entries.Append(kExampleEntryPath);
-  base::Value value(base::Value::Type::DICT);
-  value.GetDict().Set(shill::kEntriesProperty, std::move(entries));
+  base::Value::Dict expected_value;
+  expected_value.Set(shill::kEntriesProperty, std::move(entries));
   // Set expectations.
   PrepareForMethodCall(shill::kGetPropertiesFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
-  base::MockCallback<ShillProfileClient::ErrorCallback> error_callback;
+  base::test::TestFuture<base::Value> get_properties_result;
+  base::test::TestFuture<std::string, std::string> error_result;
   client_->GetProperties(
       dbus::ObjectPath(kDefaultProfilePath),
-      base::BindOnce(&ExpectValueResultWithoutStatus, &value),
-      error_callback.Get());
-  EXPECT_CALL(error_callback, Run(_, _)).Times(0);
-
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+      get_properties_result.GetCallback(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  const base::Value::Dict& result_value = get_properties_result.Get().GetDict();
+  EXPECT_EQ(expected_value, result_value);
+  // The GetProperties() error callback should not be invoked after properties
+  // result has been received successfully.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 TEST_F(ShillProfileClientTest, GetEntry) {
@@ -143,45 +145,47 @@ TEST_F(ShillProfileClientTest, GetEntry) {
   writer.CloseContainer(&array_writer);
 
   // Create the expected value.
-  base::Value value(base::Value::Type::DICT);
-  value.GetDict().Set(shill::kTypeProperty, shill::kTypeWifi);
+  base::Value::Dict expected_value;
+  expected_value.Set(shill::kTypeProperty, base::Value(shill::kTypeWifi));
   // Set expectations.
   PrepareForMethodCall(
       shill::kGetEntryFunction,
       base::BindRepeating(&ExpectStringArgument, kExampleEntryPath),
       response.get());
   // Call method.
-  base::MockCallback<ShillProfileClient::ErrorCallback> error_callback;
-  client_->GetEntry(dbus::ObjectPath(kDefaultProfilePath), kExampleEntryPath,
-                    base::BindOnce(&ExpectValueResultWithoutStatus, &value),
-                    error_callback.Get());
-  EXPECT_CALL(error_callback, Run(_, _)).Times(0);
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<base::Value> get_entry_result;
+  base::test::TestFuture<std::string, std::string> error_result;
+  client_->GetEntry(
+      dbus::ObjectPath(kDefaultProfilePath), kExampleEntryPath,
+      get_entry_result.GetCallback(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  const base::Value::Dict& result_value = get_entry_result.Get().GetDict();
+  EXPECT_EQ(expected_value, result_value);
+  // The GetEntry() error callback should not be invoked after the entry result
+  // has been received successfully.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 TEST_F(ShillProfileClientTest, DeleteEntry) {
   // Create response.
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
 
-  // Create the expected value.
-  base::Value value(base::Value::Type::DICT);
-  value.GetDict().Set(shill::kArpGatewayProperty, true);
   // Set expectations.
   PrepareForMethodCall(
       shill::kDeleteEntryFunction,
       base::BindRepeating(&ExpectStringArgument, kExampleEntryPath),
       response.get());
   // Call method.
-  base::MockCallback<base::OnceClosure> mock_closure;
-  base::MockCallback<ShillProfileClient::ErrorCallback> mock_error_callback;
-  client_->DeleteEntry(dbus::ObjectPath(kDefaultProfilePath), kExampleEntryPath,
-                       mock_closure.Get(), mock_error_callback.Get());
-  EXPECT_CALL(mock_closure, Run()).Times(1);
-  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
-
-  // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<void> delete_entry_result;
+  base::test::TestFuture<std::string, std::string> error_result;
+  client_->DeleteEntry(
+      dbus::ObjectPath(kDefaultProfilePath), kExampleEntryPath,
+      delete_entry_result.GetCallback(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  EXPECT_TRUE(delete_entry_result.Wait());
+  // The DeleteEntry() error callback should not be invoked after successful
+  // completion.
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 }  // namespace ash
