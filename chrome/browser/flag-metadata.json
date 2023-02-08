@@ -503,12 +503,12 @@
     "expiry_milestone": 112
   },
   {
-    "name": "autofill-enable-ranking-formula",
+    "name": "autofill-enable-ranking-formula-address-profiles",
     "owners": [ "alexandertekle@google.com", "koerber@google.com" ],
     "expiry_milestone": 120
   },
   {
-    "name": "autofill-enable-ranking-formula-address-profiles",
+    "name": "autofill-enable-ranking-formula-credit-cards",
     "owners": [ "alexandertekle@google.com", "koerber@google.com" ],
     "expiry_milestone": 120
   },

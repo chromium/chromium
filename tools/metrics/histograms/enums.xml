@@ -58080,6 +58080,8 @@ from previous Chrome versions.
   <int value="-1823193038" label="QuietNotificationPrompts:disabled"/>
   <int value="-1823073826" label="TabGroupsSave:disabled"/>
   <int value="-1822825246" label="DragFromShelfToHomeOrOverview:enabled"/>
+  <int value="-1821491797"
+      label="AutofillEnableRankingFormulaCreditCards:enabled"/>
   <int value="-1821058653" label="enable-delay-agnostic-aec"/>
   <int value="-1819497481" label="TouchTextEditingRedesign:disabled"/>
   <int value="-1818947212" label="OutOfBlinkCors:disabled"/>
@@ -62454,7 +62456,6 @@ from previous Chrome versions.
   <int value="689117929" label="EarlyEstablishGpuChannel:disabled"/>
   <int value="689489984" label="disable-zero-suggest"/>
   <int value="689577480" label="vr-shell-experimental-rendering"/>
-  <int value="689626645" label="AutofillEnableRankingFormula:enabled"/>
   <int value="689903349" label="TreatBootstrapAsDefault:disabled"/>
   <int value="690185633" label="NonValidatingReloadOnNormalReload:disabled"/>
   <int value="691020108" label="NTPCondensedTileLayout:disabled"/>
@@ -62587,7 +62588,6 @@ from previous Chrome versions.
   <int value="752939691" label="disable-tab-for-desktop-share"/>
   <int value="756897997" label="PaintHoldingCrossOrigin:disabled"/>
   <int value="757645375" label="AndroidDarkSearch:disabled"/>
-  <int value="758623816" label="AutofillEnableRankingFormula:disabled"/>
   <int value="759296601" label="DiscountConsentV2:disabled"/>
   <int value="760542355" label="ServiceWorkerScriptFullCodeCache:enabled"/>
   <int value="761770770"
@@ -64509,6 +64509,8 @@ from previous Chrome versions.
   <int value="1870973833" label="AssistantEnableStereoAudioInput:enabled"/>
   <int value="1871938175" label="FontSrcLocalMatching:disabled"/>
   <int value="1872185826" label="LocationHardReload:enabled"/>
+  <int value="1872897574"
+      label="AutofillEnableRankingFormulaCreditCards:disabled"/>
   <int value="1873688130"
       label="ExperimentalAccessibilityDictationMoreCommands:disabled"/>
   <int value="1874050287" label="UploadOfficeToCloud:enabled"/>

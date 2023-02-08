@@ -390,17 +390,17 @@ const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =
     "When enabled, offers will be displayed in the keyboard accessory when "
     "available.";
 
-const char kAutofillEnableRankingFormulaName[] =
-    "Enable new Autofill suggestion ranking formula";
-const char kAutofillEnableRankingFormulaDescription[] =
-    "When enabled, Autofill will use a new ranking formula to rank Autofill "
-    "data model suggestions such as credit cards or profiles.";
-
 const char kAutofillEnableRankingFormulaAddressProfilesName[] =
     "Enable new Autofill suggestion ranking formula for profiles";
 const char kAutofillEnableRankingFormulaAddressProfilesDescription[] =
     "When enabled, Autofill will use a new ranking formula to rank Autofill "
     "profile suggestions.";
+
+const char kAutofillEnableRankingFormulaCreditCardsName[] =
+    "Enable new Autofill suggestion ranking formula for credit cards";
+const char kAutofillEnableRankingFormulaCreditCardsDescription[] =
+    "When enabled, Autofill will use a new ranking formula to rank Autofill "
+    "credit card suggestions.";
 
 const char kAutofillEnableRemadeDownstreamMetricsName[] =
     "Enable remade Autofill Downstream metrics logging";

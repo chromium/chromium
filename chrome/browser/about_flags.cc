@@ -8722,17 +8722,19 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kPasswordEditDialogWithDetails)},
 #endif  // BUILDFLAG(IS_ANDROID)
-    {"autofill-enable-ranking-formula",
-     flag_descriptions::kAutofillEnableRankingFormulaName,
-     flag_descriptions::kAutofillEnableRankingFormulaDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableRankingFormula)},
-
     {"autofill-enable-ranking-formula-address-profiles",
      flag_descriptions::kAutofillEnableRankingFormulaAddressProfilesName,
      flag_descriptions::kAutofillEnableRankingFormulaAddressProfilesDescription,
      kOsAll,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableRankingFormulaAddressProfiles)},
+
+    {"autofill-enable-ranking-formula-credit-cards",
+     flag_descriptions::kAutofillEnableRankingFormulaCreditCardsName,
+     flag_descriptions::kAutofillEnableRankingFormulaCreditCardsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableRankingFormulaCreditCards)},
 
     {"autofill-enable-virtual-card-fido-enrollment",
      flag_descriptions::kAutofillEnableVirtualCardFidoEnrollmentName,

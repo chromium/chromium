@@ -41,14 +41,14 @@ extern const char kAutofillEnableNewCardUnmaskPromptViewName[];
 extern const char kAutofillEnableNewCardUnmaskPromptViewDescription[];
 
 // Title and description for the flag to control the new autofill suggestion
-// ranking formula.
-extern const char kAutofillEnableRankingFormulaName[];
-extern const char kAutofillEnableRankingFormulaDescription[];
-
-// Title and description for the flag to control the new autofill suggestion
 // ranking formula for address profiles.
 extern const char kAutofillEnableRankingFormulaAddressProfilesName[];
 extern const char kAutofillEnableRankingFormulaAddressProfilesDescription[];
+
+// Title and description for the flag to control the new autofill suggestion
+// ranking formula for credit cards.
+extern const char kAutofillEnableRankingFormulaCreditCardsName[];
+extern const char kAutofillEnableRankingFormulaCreditCardsDescription[];
 
 // Title and description for the flag that controls whether the remade Autofill
 // Downstream metrics are enabled.

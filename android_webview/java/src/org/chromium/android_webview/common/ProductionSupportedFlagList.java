@@ -160,8 +160,6 @@ public final class ProductionSupportedFlagList {
                             + "classifications."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_DEPENDENT_LOCALITY_PARSING,
                     "Enables parsing dependent locality fields (e.g. Bairros in Brazil)."),
-            Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_RANKING_FORMULA,
-                    "Enables new autofill suggestion ranking formula"),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENFORCE_DELAYS_IN_STRIKE_DATABASE,
                     "Enforce delay between offering Autofill opportunities in the "
                             + "strike database."),
