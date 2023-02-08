@@ -105,6 +105,10 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
   if (!match) {
     return;
   }
+  auto* manager = web::AnnotationsTextManager::FromWebState(web_state_);
+  if (manager) {
+    manager->RemoveHighlight();
+  }
 
   if (match.resultType == NSTextCheckingTypePhoneNumber) {
     NSString* phone_number =
