@@ -61,6 +61,12 @@ class AutofillCountry {
   bool IsAddressFieldSettingAccessible(
       ::i18n::addressinput::AddressField address_field) const;
 
+  // Returns true if the given `address_field` is considered required.
+  // Not to be confused with libaddressinput's requirements, it has its
+  // own set of required fields.
+  bool IsAddressFieldRequired(
+      ::i18n::addressinput::AddressField address_field) const;
+
   // Returns the likely country code for |locale|, or "US" as a fallback if no
   // mapping from the locale is available.
   static const std::string CountryCodeForLocale(const std::string& locale);

@@ -9,6 +9,7 @@
 
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/autofill_country.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui_component.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/localization.h"
 
@@ -17,12 +18,30 @@ namespace autofill {
 class AutofillProfile;
 class PersonalDataManager;
 
+// Extended addressinput struct for storing Autofill specific data.
+struct ExtendedAddressUiComponent
+    : public ::i18n::addressinput::AddressUiComponent {
+  bool is_required = false;
+
+  ExtendedAddressUiComponent(const ::i18n::addressinput::AddressUiComponent&&,
+                             bool);
+  explicit ExtendedAddressUiComponent(
+      const ::i18n::addressinput::AddressUiComponent&&);
+};
+
+// Creates extended ui components from libaddressinput ones with respect to
+// the |country| provided.
+std::vector<ExtendedAddressUiComponent> ConvertAddressUiComponents(
+    const std::vector<::i18n::addressinput::AddressUiComponent>&
+        addressinput_components,
+    const AutofillCountry& country);
+
 // Extend `components` using Autofill's address format extensions. These are
 // used make fields beyond libaddressinput's format available in Autofill's
 // settings UI and import dialogs.
 void ExtendAddressComponents(
-    std::vector<::i18n::addressinput::AddressUiComponent>& components,
-    const std::string& country_code,
+    std::vector<ExtendedAddressUiComponent>& components,
+    const AutofillCountry& country,
     const ::i18n::addressinput::Localization& localization,
     bool include_literals);
 
@@ -38,8 +57,7 @@ void GetAddressComponents(
     const std::string& country_code,
     const std::string& ui_language_code,
     bool include_literals,
-    std::vector<std::vector<::i18n::addressinput::AddressUiComponent>>*
-        address_components,
+    std::vector<std::vector<ExtendedAddressUiComponent>>* address_components,
     std::string* components_language_code);
 
 // Returns the address stored in `profile` when UI BCP 47 language code is

@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_metadata.h"
 #if defined(ANDROID)
 #include "base/android/build_info.h"
@@ -19,6 +20,7 @@
 
 using autofill::CountryDataMap;
 using base::ASCIIToUTF16;
+using ::i18n::addressinput::AddressField;
 
 namespace autofill {
 
@@ -69,13 +71,19 @@ TEST(AutofillCountryTest, CountryCodeForLocale) {
 // Test the address requirement methods for the US.
 TEST(AutofillCountryTest, UsaAddressRequirements) {
   // The US requires a zip, state, city and line1 entry.
-  AutofillCountry us_autofill_country("US", "en_US");
+  AutofillCountry country("US", "en_US");
 
-  EXPECT_FALSE(us_autofill_country.requires_zip_or_state());
-  EXPECT_TRUE(us_autofill_country.requires_zip());
-  EXPECT_TRUE(us_autofill_country.requires_state());
-  EXPECT_TRUE(us_autofill_country.requires_city());
-  EXPECT_TRUE(us_autofill_country.requires_line1());
+  EXPECT_FALSE(country.requires_zip_or_state());
+  EXPECT_TRUE(country.requires_zip());
+  EXPECT_TRUE(country.requires_state());
+  EXPECT_TRUE(country.requires_city());
+  EXPECT_TRUE(country.requires_line1());
+
+  // The same expectations via libaddressinput AddressField.
+  EXPECT_TRUE(country.IsAddressFieldRequired(AddressField::POSTAL_CODE));
+  EXPECT_TRUE(country.IsAddressFieldRequired(AddressField::ADMIN_AREA));
+  EXPECT_TRUE(country.IsAddressFieldRequired(AddressField::LOCALITY));
+  EXPECT_TRUE(country.IsAddressFieldRequired(AddressField::STREET_ADDRESS));
 }
 
 // Test that unknown country codes have US requirements.
@@ -98,28 +106,40 @@ TEST(AutofillCountryTest, UnknownAddressRequirements) {
 // Test the address requirement method for Brazil.
 TEST(AutofillCountryTest, BrAddressRequirements) {
   // Brazil only requires a zip entry.
-  AutofillCountry brazil_autofill_country("BR", "en_US");
+  AutofillCountry country("BR", "en_US");
 
-  EXPECT_FALSE(brazil_autofill_country.requires_zip_or_state());
-  EXPECT_TRUE(brazil_autofill_country.requires_zip());
-  EXPECT_TRUE(brazil_autofill_country.requires_state());
-  EXPECT_TRUE(brazil_autofill_country.requires_city());
-  EXPECT_TRUE(brazil_autofill_country.requires_line1());
+  EXPECT_FALSE(country.requires_zip_or_state());
+  EXPECT_TRUE(country.requires_zip());
+  EXPECT_TRUE(country.requires_state());
+  EXPECT_TRUE(country.requires_city());
+  EXPECT_TRUE(country.requires_line1());
+
+  // The same expectations via libaddressinput AddressField.
+  EXPECT_TRUE(country.IsAddressFieldRequired(AddressField::POSTAL_CODE));
+  EXPECT_TRUE(country.IsAddressFieldRequired(AddressField::ADMIN_AREA));
+  EXPECT_TRUE(country.IsAddressFieldRequired(AddressField::LOCALITY));
+  EXPECT_TRUE(country.IsAddressFieldRequired(AddressField::STREET_ADDRESS));
 }
 
 // Test the address requirement method for Turkey.
 TEST(AutofillCountryTest, TrAddressRequirements) {
   // Brazil only requires a zip entry.
-  AutofillCountry turkey_autofill_country("TR", "en_US");
+  AutofillCountry country("TR", "en_US");
 
   // Although ZIP codes are existing in Turkey, they are commonly used.
-  EXPECT_FALSE(turkey_autofill_country.requires_zip());
+  EXPECT_FALSE(country.requires_zip());
   // In Turkey, a district is the largest level of the address hierarchy and
   // mapped to the Autofill state.
-  EXPECT_TRUE(turkey_autofill_country.requires_state());
+  EXPECT_TRUE(country.requires_state());
   // And the province as the second largest level is mapped to city.
-  EXPECT_TRUE(turkey_autofill_country.requires_city());
-  EXPECT_TRUE(turkey_autofill_country.requires_line1());
+  EXPECT_TRUE(country.requires_city());
+  EXPECT_TRUE(country.requires_line1());
+
+  // The same expectations via libaddressinput AddressField.
+  EXPECT_FALSE(country.IsAddressFieldRequired(AddressField::POSTAL_CODE));
+  EXPECT_TRUE(country.IsAddressFieldRequired(AddressField::ADMIN_AREA));
+  EXPECT_TRUE(country.IsAddressFieldRequired(AddressField::LOCALITY));
+  EXPECT_TRUE(country.IsAddressFieldRequired(AddressField::STREET_ADDRESS));
 }
 
 // Test mapping all country codes to country names.

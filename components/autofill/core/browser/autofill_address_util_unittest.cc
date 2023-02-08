@@ -42,7 +42,7 @@ class AddressFormattingTest : public ::testing::Test {
 // some countries consist of lines with literals only, which, in case
 // |include_literals| is false, appear empty and should be skipped.
 TEST_F(AddressFormattingTest, GetAddressComponentsSkipsEmptyLines) {
-  std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> lines;
+  std::vector<std::vector<ExtendedAddressUiComponent>> lines;
   std::string components_language_code;
   // For Åland Islands the last line contains "ÅLAND" and should be skipped.
   autofill::GetAddressComponents("AX", GetLocale(), /*include_literals=*/false,
@@ -55,7 +55,7 @@ TEST_F(AddressFormattingTest, GetAddressComponentsSkipsEmptyLines) {
 // Tests that address field extensions are applied to `GetAddressComponents()`,
 // by checking that Great Britain's address format is extended by a state field.
 TEST_F(AddressFormattingTest, GetAddressComponentsWithExtensions) {
-  std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> lines;
+  std::vector<std::vector<ExtendedAddressUiComponent>> lines;
   std::string components_language_code;
   autofill::GetAddressComponents("GB", GetLocale(), /*include_literals=*/false,
                                  &lines, &components_language_code);

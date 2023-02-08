@@ -132,16 +132,16 @@ std::unique_ptr<views::View> CreateStreetAddressView(
                                   HtmlFieldMode::kNone);
   const std::u16string& country_code = profile.GetInfo(kCountryCode, locale);
 
-  std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> components;
+  std::vector<std::vector<autofill::ExtendedAddressUiComponent>> components;
   autofill::GetAddressComponents(base::UTF16ToUTF8(country_code), locale,
                                  /*include_literals=*/true, &components,
                                  nullptr);
 
-  for (const std::vector<::i18n::addressinput::AddressUiComponent>& line :
+  for (const std::vector<autofill::ExtendedAddressUiComponent>& line :
        components) {
     std::unique_ptr<views::View> line_view = CreateAddressLineView();
     std::vector<std::u16string> components_str;
-    for (const ::i18n::addressinput::AddressUiComponent& component : line) {
+    for (const autofill::ExtendedAddressUiComponent& component : line) {
       // AddressUiComponent can represent an address field such as City, or a
       // formatting literal such as "," or "-". If the literal field is empty,
       // then it represents a field, otherwise, it is a literal.

@@ -56,7 +56,7 @@ void AddressEditorController::UpdateEditorFields() {
   if (chosen_country_index_ < countries_.size())
     chosen_country_code = countries_[chosen_country_index_].first;
 
-  std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> components;
+  std::vector<std::vector<autofill::ExtendedAddressUiComponent>> components;
   autofill::GetAddressComponents(chosen_country_code, locale_,
                                  /*include_literals=*/false, &components,
                                  &language_code_);
@@ -68,9 +68,9 @@ void AddressEditorController::UpdateEditorFields() {
       l10n_util::GetStringUTF16(IDS_LIBADDRESSINPUT_COUNTRY_OR_REGION_LABEL),
       EditorField::LengthHint::HINT_LONG, EditorField::ControlType::COMBOBOX);
 
-  for (const std::vector<::i18n::addressinput::AddressUiComponent>& line :
+  for (const std::vector<autofill::ExtendedAddressUiComponent>& line :
        components) {
-    for (const ::i18n::addressinput::AddressUiComponent& component : line) {
+    for (const autofill::ExtendedAddressUiComponent& component : line) {
       EditorField::LengthHint length_hint =
           component.length_hint ==
                   i18n::addressinput::AddressUiComponent::HINT_LONG
