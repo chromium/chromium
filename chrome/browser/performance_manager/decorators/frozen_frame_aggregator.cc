@@ -161,27 +161,27 @@ void FrozenFrameAggregator::OnPageNodeAdded(const PageNode* page_node) {
   FrozenDataImpl::GetOrCreate(page_impl);
 }
 
-base::Value FrozenFrameAggregator::DescribePageNodeData(
+base::Value::Dict FrozenFrameAggregator::DescribePageNodeData(
     const PageNode* node) const {
   FrozenDataImpl* data = FrozenDataImpl::Get(PageNodeImpl::FromNode(node));
   if (data == nullptr)
-    return base::Value();
+    return base::Value::Dict();
 
-  base::Value ret(base::Value::Type::DICT);
-  ret.SetIntKey("current_frame_count", data->current_frame_count);
-  ret.SetIntKey("frozen_frame_count", data->frozen_frame_count);
+  base::Value::Dict ret;
+  ret.Set("current_frame_count", static_cast<int>(data->current_frame_count));
+  ret.Set("frozen_frame_count", static_cast<int>(data->frozen_frame_count));
   return ret;
 }
 
-base::Value FrozenFrameAggregator::DescribeProcessNodeData(
+base::Value::Dict FrozenFrameAggregator::DescribeProcessNodeData(
     const ProcessNode* node) const {
   FrozenDataImpl* data = FrozenDataImpl::Get(ProcessNodeImpl::FromNode(node));
   if (data == nullptr)
-    return base::Value();
+    return base::Value::Dict();
 
-  base::Value ret(base::Value::Type::DICT);
-  ret.SetIntKey("current_frame_count", data->current_frame_count);
-  ret.SetIntKey("frozen_frame_count", data->frozen_frame_count);
+  base::Value::Dict ret;
+  ret.Set("current_frame_count", static_cast<int>(data->current_frame_count));
+  ret.Set("frozen_frame_count", static_cast<int>(data->frozen_frame_count));
   return ret;
 }
 

@@ -147,15 +147,15 @@ void ProcessPriorityAggregator::OnTakenFromGraph(Graph* graph) {
   graph->RemoveGraphObserver(this);
 }
 
-base::Value ProcessPriorityAggregator::DescribeProcessNodeData(
+base::Value::Dict ProcessPriorityAggregator::DescribeProcessNodeData(
     const ProcessNode* node) const {
   DataImpl* data = DataImpl::Get(ProcessNodeImpl::FromNode(node));
   if (data == nullptr)
-    return base::Value();
+    return base::Value::Dict();
 
-  base::Value ret(base::Value::Type::DICT);
-  ret.SetIntKey("user_visible_count", data->user_visible_count_);
-  ret.SetIntKey("user_blocking_count", data->user_blocking_count_);
+  base::Value::Dict ret;
+  ret.Set("user_visible_count", static_cast<int>(data->user_visible_count_));
+  ret.Set("user_blocking_count", static_cast<int>(data->user_blocking_count_));
   return ret;
 }
 

@@ -147,7 +147,7 @@ class PageDiscardingHelper : public GraphOwned,
                                   const GURL& url) const;
 
   // NodeDataDescriber implementation:
-  base::Value DescribePageNodeData(const PageNode* node) const override;
+  base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
 
   // Called after each discard attempt. |success| will indicate whether or not
   // the attempt has been successful. |post_discard_cb| will be called once

@@ -44,7 +44,8 @@ class ProcessPriorityAggregator
   void OnTakenFromGraph(Graph* graph) override;
 
   // NodeDataDescriber implementation:
-  base::Value DescribeProcessNodeData(const ProcessNode* node) const override;
+  base::Value::Dict DescribeProcessNodeData(
+      const ProcessNode* node) const override;
 
   // ProcessNodeObserver implementation:
   void OnProcessNodeAdded(const ProcessNode* process_node) override;

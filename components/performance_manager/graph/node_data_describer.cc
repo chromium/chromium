@@ -6,29 +6,29 @@
 
 namespace performance_manager {
 
-base::Value NodeDataDescriberDefaultImpl::DescribeFrameNodeData(
+base::Value::Dict NodeDataDescriberDefaultImpl::DescribeFrameNodeData(
     const FrameNode* node) const {
-  return base::Value();
+  return base::Value::Dict();
 }
 
-base::Value NodeDataDescriberDefaultImpl::DescribePageNodeData(
+base::Value::Dict NodeDataDescriberDefaultImpl::DescribePageNodeData(
     const PageNode* node) const {
-  return base::Value();
+  return base::Value::Dict();
 }
 
-base::Value NodeDataDescriberDefaultImpl::DescribeProcessNodeData(
+base::Value::Dict NodeDataDescriberDefaultImpl::DescribeProcessNodeData(
     const ProcessNode* node) const {
-  return base::Value();
+  return base::Value::Dict();
 }
 
-base::Value NodeDataDescriberDefaultImpl::DescribeSystemNodeData(
+base::Value::Dict NodeDataDescriberDefaultImpl::DescribeSystemNodeData(
     const SystemNode* node) const {
-  return base::Value();
+  return base::Value::Dict();
 }
 
-base::Value NodeDataDescriberDefaultImpl::DescribeWorkerNodeData(
+base::Value::Dict NodeDataDescriberDefaultImpl::DescribeWorkerNodeData(
     const WorkerNode* node) const {
-  return base::Value();
+  return base::Value::Dict();
 }
 
 }  // namespace performance_manager

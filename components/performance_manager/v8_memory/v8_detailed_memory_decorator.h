@@ -53,8 +53,9 @@ class V8DetailedMemoryDecorator
   void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) override;
 
   // NodeDataDescriber overrides.
-  base::Value DescribeFrameNodeData(const FrameNode* node) const override;
-  base::Value DescribeProcessNodeData(const ProcessNode* node) const override;
+  base::Value::Dict DescribeFrameNodeData(const FrameNode* node) const override;
+  base::Value::Dict DescribeProcessNodeData(
+      const ProcessNode* node) const override;
 
   // Returns the next measurement request that should be scheduled.
   const V8DetailedMemoryRequest* GetNextRequest() const;

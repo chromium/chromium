@@ -205,57 +205,59 @@ class TestNodeDataDescriber : public NodeDataDescriber {
  public:
   explicit TestNodeDataDescriber(base::StringPiece name) : name_(name) {}
 
-  base::Value DescribeFrameNodeData(const FrameNode* node) const override {
-    base::Value::List list;
-    list.Append(name_);
-    list.Append("FrameNode");
-    return base::Value(std::move(list));
+  base::Value::Dict DescribeFrameNodeData(
+      const FrameNode* node) const override {
+    base::Value::Dict dict;
+    dict.Set("name", name_);
+    dict.Set("type", "FrameNode");
+    return dict;
   }
 
-  base::Value DescribePageNodeData(const PageNode* node) const override {
-    base::Value::List list;
-    list.Append(name_);
-    list.Append("PageNode");
-    return base::Value(std::move(list));
+  base::Value::Dict DescribePageNodeData(const PageNode* node) const override {
+    base::Value::Dict dict;
+    dict.Set("name", name_);
+    dict.Set("type", "PageNode");
+    return dict;
   }
 
-  base::Value DescribeProcessNodeData(const ProcessNode* node) const override {
-    base::Value::List list;
-    list.Append(name_);
-    list.Append("ProcessNode");
-    return base::Value(std::move(list));
+  base::Value::Dict DescribeProcessNodeData(
+      const ProcessNode* node) const override {
+    base::Value::Dict dict;
+    dict.Set("name", name_);
+    dict.Set("type", "ProcessNode");
+    return dict;
   }
 
-  base::Value DescribeSystemNodeData(const SystemNode* node) const override {
-    base::Value::List list;
-    list.Append(name_);
-    list.Append("SystemNode");
-    return base::Value(std::move(list));
+  base::Value::Dict DescribeSystemNodeData(
+      const SystemNode* node) const override {
+    base::Value::Dict dict;
+    dict.Set("name", name_);
+    dict.Set("type", "SystemNode");
+    return dict;
   }
 
-  base::Value DescribeWorkerNodeData(const WorkerNode* node) const override {
-    base::Value::List list;
-    list.Append(name_);
-    list.Append("WorkerNode");
-    return base::Value(std::move(list));
+  base::Value::Dict DescribeWorkerNodeData(
+      const WorkerNode* node) const override {
+    base::Value::Dict dict;
+    dict.Set("name", name_);
+    dict.Set("type", "WorkerNode");
+    return dict;
   }
 
  private:
   const std::string name_;
 };
 
-void AssertDictValueContainsListKey(const base::Value& descr,
+void AssertDictValueContainsListKey(const base::Value::Dict& descr,
                                     const char* key,
-                                    const char* s1,
-                                    const char* s2) {
-  ASSERT_TRUE(descr.is_dict());
-  const base::Value* v = descr.FindListKey(key);
-  ASSERT_NE(nullptr, v);
+                                    const std::string s1,
+                                    const std::string s2) {
+  const base::Value::Dict* dict = descr.FindDict(key);
+  ASSERT_NE(nullptr, dict);
 
-  const auto& list = v->GetList();
-  ASSERT_EQ(2u, list.size());
-  ASSERT_EQ(list[0], base::Value(s1));
-  ASSERT_EQ(list[1], base::Value(s2));
+  ASSERT_EQ(2u, dict->size());
+  ASSERT_EQ(*(dict->FindString("name")), s1);
+  ASSERT_EQ(*(dict->FindString("type")), s2);
 }
 
 }  // namespace
@@ -265,8 +267,8 @@ TEST_F(GraphImplTest, NodeDataDescribers) {
   NodeDataDescriberRegistry* registry = graph()->GetNodeDataDescriberRegistry();
 
   // No describers->no description.
-  base::Value descr = registry->DescribeNodeData(mock_graph.frame.get());
-  EXPECT_EQ(0u, descr.DictSize());
+  base::Value::Dict descr = registry->DescribeNodeData(mock_graph.frame.get());
+  EXPECT_EQ(0u, descr.size());
 
   // Test that the default impl does nothing.
   NodeDataDescriberDefaultImpl default_impl;
@@ -278,25 +280,25 @@ TEST_F(GraphImplTest, NodeDataDescribers) {
 
   descr = registry->DescribeNodeData(mock_graph.frame.get());
   AssertDictValueContainsListKey(descr, "d1", "d1", "FrameNode");
-  EXPECT_EQ(1u, descr.DictSize());
+  EXPECT_EQ(1u, descr.size());
 
   descr = registry->DescribeNodeData(mock_graph.page.get());
   AssertDictValueContainsListKey(descr, "d1", "d1", "PageNode");
-  EXPECT_EQ(1u, descr.DictSize());
+  EXPECT_EQ(1u, descr.size());
 
   descr = registry->DescribeNodeData(mock_graph.process.get());
   AssertDictValueContainsListKey(descr, "d1", "d1", "ProcessNode");
-  EXPECT_EQ(1u, descr.DictSize());
+  EXPECT_EQ(1u, descr.size());
 
   descr = registry->DescribeNodeData(graph()->GetSystemNode());
   AssertDictValueContainsListKey(descr, "d1", "d1", "SystemNode");
-  EXPECT_EQ(1u, descr.DictSize());
+  EXPECT_EQ(1u, descr.size());
 
   auto worker = CreateNode<WorkerNodeImpl>(WorkerNode::WorkerType::kDedicated,
                                            mock_graph.process.get());
   descr = registry->DescribeNodeData(worker.get());
   AssertDictValueContainsListKey(descr, "d1", "d1", "WorkerNode");
-  EXPECT_EQ(1u, descr.DictSize());
+  EXPECT_EQ(1u, descr.size());
 
   // Unregister the default impl now that it's been verified to say nothing
   // about all node types.
@@ -307,7 +309,7 @@ TEST_F(GraphImplTest, NodeDataDescribers) {
   registry->RegisterDescriber(&d2, "d2");
 
   descr = registry->DescribeNodeData(mock_graph.frame.get());
-  EXPECT_EQ(2u, descr.DictSize());
+  EXPECT_EQ(2u, descr.size());
   AssertDictValueContainsListKey(descr, "d1", "d1", "FrameNode");
   AssertDictValueContainsListKey(descr, "d2", "d2", "FrameNode");
 
@@ -316,7 +318,7 @@ TEST_F(GraphImplTest, NodeDataDescribers) {
 
   // No describers after unregistration->no description.
   descr = registry->DescribeNodeData(mock_graph.frame.get());
-  EXPECT_EQ(0u, descr.DictSize());
+  EXPECT_EQ(0u, descr.size());
 }
 
 TEST_F(GraphImplTest, OpenersAndEmbeddersClearedOnTeardown) {

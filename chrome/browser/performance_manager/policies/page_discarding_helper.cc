@@ -400,14 +400,14 @@ bool PageDiscardingHelper::IsPageOptedOutOfDiscarding(
   return !it->second->MatchURL(url).empty();
 }
 
-base::Value PageDiscardingHelper::DescribePageNodeData(
+base::Value::Dict PageDiscardingHelper::DescribePageNodeData(
     const PageNode* node) const {
   auto* data = DiscardAttemptMarker::Get(PageNodeImpl::FromNode(node));
   if (data == nullptr)
-    return base::Value();
+    return base::Value::Dict();
 
-  base::Value ret(base::Value::Type::DICT);
-  ret.SetKey("has_discard_attempt_marker", base::Value("true"));
+  base::Value::Dict ret;
+  ret.Set("has_discard_attempt_marker", base::Value("true"));
 
   return ret;
 }

@@ -65,7 +65,7 @@ class NodeDataDescriberRegistryImpl : public NodeDataDescriberRegistry {
   void RegisterDescriber(const NodeDataDescriber* describer,
                          base::StringPiece name) override;
   void UnregisterDescriber(const NodeDataDescriber* describer) override;
-  base::Value DescribeNodeData(const Node* node) const override;
+  base::Value::Dict DescribeNodeData(const Node* node) const override;
 
   size_t size() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -74,8 +74,8 @@ class NodeDataDescriberRegistryImpl : public NodeDataDescriberRegistry {
 
  private:
   template <typename NodeType, typename NodeImplType>
-  base::Value DescribeNodeImpl(
-      base::Value (NodeDataDescriber::*DescribeFn)(const NodeType*) const,
+  base::Value::Dict DescribeNodeImpl(
+      base::Value::Dict (NodeDataDescriber::*DescribeFn)(const NodeType*) const,
       const NodeImplType* node) const VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   base::flat_map<const NodeDataDescriber*, std::string> describers_
@@ -84,16 +84,16 @@ class NodeDataDescriberRegistryImpl : public NodeDataDescriberRegistry {
 };
 
 template <typename NodeType, typename NodeImplType>
-base::Value NodeDataDescriberRegistryImpl::DescribeNodeImpl(
-    base::Value (NodeDataDescriber::*Describe)(const NodeType*) const,
+base::Value::Dict NodeDataDescriberRegistryImpl::DescribeNodeImpl(
+    base::Value::Dict (NodeDataDescriber::*Describe)(const NodeType*) const,
     const NodeImplType* node) const {
-  base::Value result(base::Value::Type::DICT);
+  base::Value::Dict result;
 
   for (const auto& name_and_describer : describers_) {
-    base::Value description = (name_and_describer.first->*Describe)(node);
-    if (!description.is_none()) {
-      DCHECK_EQ(nullptr, result.FindDictKey(name_and_describer.second));
-      result.SetKey(name_and_describer.second, std::move(description));
+    base::Value::Dict description = (name_and_describer.first->*Describe)(node);
+    if (!description.empty()) {
+      DCHECK_EQ(nullptr, result.FindDict(name_and_describer.second));
+      result.Set(name_and_describer.second, std::move(description));
     }
   }
 
@@ -126,14 +126,14 @@ void NodeDataDescriberRegistryImpl::UnregisterDescriber(
   DCHECK_EQ(1u, erased);
 }
 
-base::Value NodeDataDescriberRegistryImpl::DescribeNodeData(
+base::Value::Dict NodeDataDescriberRegistryImpl::DescribeNodeData(
     const Node* node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const NodeBase* node_base = NodeBase::FromNode(node);
   switch (node_base->type()) {
     case NodeTypeEnum::kInvalidType:
       NOTREACHED();
-      return base::Value();
+      return base::Value::Dict();
     case NodeTypeEnum::kFrame:
       return DescribeNodeImpl(&NodeDataDescriber::DescribeFrameNodeData,
                               FrameNodeImpl::FromNodeBase(node_base));

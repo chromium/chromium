@@ -218,9 +218,10 @@ class V8ContextTracker final
 
   // Implementation of NodeDataDescriber. We have things to say about
   // execution contexts (frames and workers), as well as processes.
-  base::Value DescribeFrameNodeData(const FrameNode* node) const final;
-  base::Value DescribeProcessNodeData(const ProcessNode* node) const final;
-  base::Value DescribeWorkerNodeData(const WorkerNode* node) const final;
+  base::Value::Dict DescribeFrameNodeData(const FrameNode* node) const final;
+  base::Value::Dict DescribeProcessNodeData(
+      const ProcessNode* node) const final;
+  base::Value::Dict DescribeWorkerNodeData(const WorkerNode* node) const final;
 
   // Implementation of ProcessNode::ObserverDefaultImpl.
   void OnBeforeProcessNodeRemoved(const ProcessNode* node) final;

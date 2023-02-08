@@ -25,7 +25,8 @@ class PageNodeImplDescriber : public GraphOwned,
   void OnTakenFromGraph(Graph* graph) override;
 
   // NodeDataDescriber implementation:
-  base::Value DescribePageNodeData(const PageNode* page_node) const override;
+  base::Value::Dict DescribePageNodeData(
+      const PageNode* page_node) const override;
 };
 
 }  // namespace performance_manager

@@ -52,7 +52,7 @@ void FrameNodeImplDescriber::OnTakenFromGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
 }
 
-base::Value FrameNodeImplDescriber::DescribeFrameNodeData(
+base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
     const FrameNode* node) const {
   const FrameNodeImpl* impl = FrameNodeImpl::FromNode(node);
 
@@ -86,7 +86,7 @@ base::Value FrameNodeImplDescriber::DescribeFrameNodeData(
           ViewportIntersectionToString(impl->viewport_intersection_.value()));
   ret.Set("visibility", FrameNodeVisibilityToString(impl->visibility_.value()));
 
-  return base::Value(std::move(ret));
+  return ret;
 }
 
 }  // namespace performance_manager

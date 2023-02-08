@@ -34,7 +34,7 @@
 namespace {
 
 // Best effort convert |value| to a string.
-std::string ToJSON(const base::Value& value) {
+std::string ToJSON(const base::Value::Dict& value) {
   std::string result;
   JSONStringValueSerializer serializer(&result);
   if (serializer.Serialize(value))

@@ -28,7 +28,7 @@ class NodeDataDescriberRegistry {
 
   // Invoke all registered describers for |node| and return a dictionary from
   // their name to their description - if any.
-  virtual base::Value DescribeNodeData(const Node* node) const = 0;
+  virtual base::Value::Dict DescribeNodeData(const Node* node) const = 0;
 };
 
 }  // namespace performance_manager

@@ -132,7 +132,7 @@ void ProcessNodeImplDescriber::OnTakenFromGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
 }
 
-base::Value ProcessNodeImplDescriber::DescribeProcessNodeData(
+base::Value::Dict ProcessNodeImplDescriber::DescribeProcessNodeData(
     const ProcessNode* node) const {
   const ProcessNodeImpl* impl = ProcessNodeImpl::FromNode(node);
 
@@ -191,7 +191,7 @@ base::Value ProcessNodeImplDescriber::DescribeProcessNodeData(
                 .value());
   }
 
-  return base::Value(std::move(ret));
+  return ret;
 }
 
 }  // namespace performance_manager

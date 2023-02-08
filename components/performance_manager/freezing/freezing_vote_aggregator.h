@@ -60,7 +60,7 @@ class FreezingVoteAggregator final
   void UnregisterNodeDataDescriber(Graph* graph);
 
   // NodeDataDescriber implementation:
-  base::Value DescribePageNodeData(const PageNode* node) const override;
+  base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
 
  private:
   friend class performance_manager::FreezingVoteDecorator;

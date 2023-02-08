@@ -365,11 +365,11 @@ void PageLiveStateDecorator::OnTakenFromGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
 }
 
-base::Value PageLiveStateDecorator::DescribePageNodeData(
+base::Value::Dict PageLiveStateDecorator::DescribePageNodeData(
     const PageNode* node) const {
   auto* data = Data::FromPageNode(node);
   if (!data)
-    return base::Value();
+    return base::Value::Dict();
 
   base::Value::Dict ret;
   ret.Set("IsConnectedToUSBDevice", data->IsConnectedToUSBDevice());
@@ -383,7 +383,7 @@ base::Value PageLiveStateDecorator::DescribePageNodeData(
   ret.Set("WasDiscarded", data->WasDiscarded());
   ret.Set("IsActiveTab", data->IsActiveTab());
 
-  return base::Value(std::move(ret));
+  return ret;
 }
 
 void PageLiveStateDecorator::OnMainFrameUrlChanged(const PageNode* page_node) {

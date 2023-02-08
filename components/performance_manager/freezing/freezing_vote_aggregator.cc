@@ -116,15 +116,15 @@ void FreezingVoteAggregator::UnregisterNodeDataDescriber(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
 }
 
-base::Value FreezingVoteAggregator::DescribePageNodeData(
+base::Value::Dict FreezingVoteAggregator::DescribePageNodeData(
     const PageNode* node) const {
   auto votes_for_page = vote_data_map_.find(node);
   if (votes_for_page == vote_data_map_.end())
-    return base::Value();
+    return base::Value::Dict();
 
   base::Value::Dict ret;
   votes_for_page->second.DescribeVotes(ret);
-  return base::Value(std::move(ret));
+  return ret;
 }
 
 FreezingVoteAggregator::FreezingVoteData::FreezingVoteData() = default;

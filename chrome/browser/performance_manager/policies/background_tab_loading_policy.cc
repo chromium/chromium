@@ -292,28 +292,27 @@ struct BackgroundTabLoadingPolicy::ScoredTabComparator {
   }
 };
 
-base::Value BackgroundTabLoadingPolicy::DescribePageNodeData(
+base::Value::Dict BackgroundTabLoadingPolicy::DescribePageNodeData(
     const PageNode* node) const {
-  base::Value dict(base::Value::Type::DICT);
+  base::Value::Dict dict;
   if (base::Contains(page_nodes_load_initiated_, node)) {
     // Transient state between InitiateLoad() and OnLoadingStateChanged(),
     // shouldn't be sticking around for long.
-    dict.SetBoolKey("page_load_initiated", true);
+    dict.Set("page_load_initiated", true);
   }
   if (base::Contains(page_nodes_loading_, node)) {
-    dict.SetBoolKey("page_loading", true);
+    dict.Set("page_loading", true);
   }
-  return !dict.DictEmpty() ? std::move(dict) : base::Value();
+  return !dict.empty() ? std::move(dict) : base::Value::Dict();
 }
 
-base::Value BackgroundTabLoadingPolicy::DescribeSystemNodeData(
+base::Value::Dict BackgroundTabLoadingPolicy::DescribeSystemNodeData(
     const SystemNode* node) const {
-  base::Value dict(base::Value::Type::DICT);
-  dict.SetIntKey("max_simultaneous_tab_loads",
-                 base::saturated_cast<int>(max_simultaneous_tab_loads_));
-  dict.SetIntKey("tab_loads_started",
-                 base::saturated_cast<int>(tab_loads_started_));
-  dict.SetIntKey("tabs_scored", base::saturated_cast<int>(tabs_scored_));
+  base::Value::Dict dict;
+  dict.Set("max_simultaneous_tab_loads",
+           base::saturated_cast<int>(max_simultaneous_tab_loads_));
+  dict.Set("tab_loads_started", base::saturated_cast<int>(tab_loads_started_));
+  dict.Set("tabs_scored", base::saturated_cast<int>(tabs_scored_));
   return dict;
 }
 

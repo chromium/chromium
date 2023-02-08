@@ -101,16 +101,16 @@ bool WorkingSetTrimmerPolicy::TrimWorkingSet(const ProcessNode* process_node) {
   return false;
 }
 
-base::Value WorkingSetTrimmerPolicy::DescribeProcessNodeData(
+base::Value::Dict WorkingSetTrimmerPolicy::DescribeProcessNodeData(
     const ProcessNode* node) const {
   auto* data = WorkingSetTrimData::Get(ProcessNodeImpl::FromNode(node));
   if (data == nullptr)
-    return base::Value();
+    return base::Value::Dict();
 
-  base::Value ret(base::Value::Type::DICT);
+  base::Value::Dict ret;
   auto last_trim_age = base::TimeTicks::Now() - data->last_trim_;
 
-  ret.SetKey(
+  ret.Set(
       "last_trim",
       base::Value(base::StrCat(
           {base::NumberToString(last_trim_age.InSeconds()), " seconds ago"})));

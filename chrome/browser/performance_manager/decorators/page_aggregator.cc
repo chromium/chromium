@@ -243,18 +243,19 @@ void PageAggregator::OnTakenFromGraph(Graph* graph) {
   graph->RemoveFrameNodeObserver(this);
 }
 
-base::Value PageAggregator::DescribePageNodeData(const PageNode* node) const {
+base::Value::Dict PageAggregator::DescribePageNodeData(
+    const PageNode* node) const {
   Data* data = Data::Get(PageNodeImpl::FromNode(node));
   if (data == nullptr)
-    return base::Value();
+    return base::Value::Dict();
 
-  base::Value ret(base::Value::Type::DICT);
-  ret.SetIntKey("num_frames_holding_web_lock",
-                data->num_frames_holding_web_lock_);
-  ret.SetIntKey("num_frames_holding_indexeddb_lock",
-                data->num_frames_holding_web_lock_);
-  ret.SetIntKey("num_current_frames_with_form_interaction",
-                data->num_current_frames_with_form_interaction_);
+  base::Value::Dict ret;
+  ret.Set("num_frames_holding_web_lock",
+          static_cast<int>(data->num_frames_holding_web_lock_));
+  ret.Set("num_frames_holding_indexeddb_lock",
+          static_cast<int>(data->num_frames_holding_web_lock_));
+  ret.Set("num_current_frames_with_form_interaction",
+          static_cast<int>(data->num_current_frames_with_form_interaction_));
   return ret;
 }
 

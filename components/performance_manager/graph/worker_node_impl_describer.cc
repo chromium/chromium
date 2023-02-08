@@ -36,11 +36,11 @@ void WorkerNodeImplDescriber::OnTakenFromGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
 }
 
-base::Value WorkerNodeImplDescriber::DescribeWorkerNodeData(
+base::Value::Dict WorkerNodeImplDescriber::DescribeWorkerNodeData(
     const WorkerNode* node) const {
   const WorkerNodeImpl* impl = WorkerNodeImpl::FromNode(node);
   if (!impl)
-    return base::Value();
+    return base::Value::Dict();
 
   base::Value::Dict ret;
   ret.Set("browser_context_id", impl->browser_context_id());
@@ -49,7 +49,7 @@ base::Value WorkerNodeImplDescriber::DescribeWorkerNodeData(
   ret.Set("worker_type", WorkerTypeToString(impl->worker_type()));
   ret.Set("priority", PriorityAndReasonToValue(impl->priority_and_reason()));
 
-  return base::Value(std::move(ret));
+  return ret;
 }
 
 }  // namespace performance_manager

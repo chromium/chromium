@@ -407,7 +407,7 @@ void V8ContextTracker::OnTakenFromGraph(Graph* graph) {
   graph->RemoveGraphObserver(this);
 }
 
-base::Value V8ContextTracker::DescribeFrameNodeData(
+base::Value::Dict V8ContextTracker::DescribeFrameNodeData(
     const FrameNode* node) const {
   DCHECK_ON_GRAPH_SEQUENCE(node->GetGraph());
 
@@ -419,10 +419,10 @@ base::Value V8ContextTracker::DescribeFrameNodeData(
 
   base::Value::Dict dict;
   dict.Set("v8_context_count", static_cast<int>(v8_context_count));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value V8ContextTracker::DescribeProcessNodeData(
+base::Value::Dict V8ContextTracker::DescribeProcessNodeData(
     const ProcessNode* node) const {
   DCHECK_ON_GRAPH_SEQUENCE(node->GetGraph());
 
@@ -447,10 +447,10 @@ base::Value V8ContextTracker::DescribeProcessNodeData(
            static_cast<int>(execution_context_count));
   dict.Set("destroyed_execution_context_count",
            static_cast<int>(destroyed_execution_context_count));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value V8ContextTracker::DescribeWorkerNodeData(
+base::Value::Dict V8ContextTracker::DescribeWorkerNodeData(
     const WorkerNode* node) const {
   DCHECK_ON_GRAPH_SEQUENCE(node->GetGraph());
   size_t v8_context_count = 0;
@@ -461,7 +461,7 @@ base::Value V8ContextTracker::DescribeWorkerNodeData(
 
   base::Value::Dict dict;
   dict.Set("v8_context_count", static_cast<int>(v8_context_count));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 void V8ContextTracker::OnBeforeProcessNodeRemoved(const ProcessNode* node) {

@@ -107,7 +107,7 @@ class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
   void OnTakenFromGraph(Graph* graph) override;
 
   // NodeDataDescriber implementation:
-  base::Value DescribePageNodeData(const PageNode* node) const override;
+  base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
 
   // PageNode::ObserverDefaultImpl implementation:
   void OnMainFrameUrlChanged(const PageNode* page_node) override;

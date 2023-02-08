@@ -39,7 +39,7 @@ void PageNodeImplDescriber::OnTakenFromGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
 }
 
-base::Value PageNodeImplDescriber::DescribePageNodeData(
+base::Value::Dict PageNodeImplDescriber::DescribePageNodeData(
     const PageNode* page_node) const {
   const PageNodeImpl* page_node_impl = PageNodeImpl::FromNode(page_node);
   DCHECK_CALLED_ON_VALID_SEQUENCE(page_node_impl->sequence_checker_);
@@ -86,7 +86,7 @@ base::Value PageNodeImplDescriber::DescribePageNodeData(
   result.Set("freezing_vote",
              FreezingVoteToString(page_node_impl->freezing_vote()));
 
-  return base::Value(std::move(result));
+  return result;
 }
 
 }  // namespace performance_manager

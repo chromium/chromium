@@ -26,7 +26,8 @@ class WorkerNodeImplDescriber : public GraphOwnedDefaultImpl,
   void OnTakenFromGraph(Graph* graph) override;
 
   // NodeDataDescriber implementation:
-  base::Value DescribeWorkerNodeData(const WorkerNode* node) const override;
+  base::Value::Dict DescribeWorkerNodeData(
+      const WorkerNode* node) const override;
 };
 
 }  // namespace performance_manager
