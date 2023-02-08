@@ -49,7 +49,9 @@ public class CustomTabsFeatureUsage {
             CustomTabsFeature.EXTRA_INTENT_FEATURE_OVERRIDES,
             CustomTabsFeature.CTF_PARTIAL_SIDE_SHEET,
             CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP,
-            CustomTabsFeature.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, CustomTabsFeature.COUNT})
+            CustomTabsFeature.EXTRA_INITIAL_ACTIVITY_WIDTH_PX,
+            CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION,
+            CustomTabsFeature.COUNT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface CustomTabsFeature {
         /** Special enum for the start of a session. */
@@ -100,9 +102,10 @@ public class CustomTabsFeatureUsage {
         int CTF_PARTIAL_SIDE_SHEET = 44;
         int EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP = 45;
         int EXTRA_INITIAL_ACTIVITY_WIDTH_PX = 46;
+        int EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION = 47;
 
         /** Total count of entries. */
-        int COUNT = 47;
+        int COUNT = 48;
     }
 
     // Whether flag-enabled or not.

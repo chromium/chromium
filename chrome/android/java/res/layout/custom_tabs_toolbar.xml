@@ -73,6 +73,16 @@ found in the LICENSE file.
                 style="@style/TextAppearance.TextSmall.Primary" />
         </view>
     </FrameLayout>
+    <ViewStub
+        android:id="@+id/maximize_button_stub"
+        android:inflatedId="@+id/custom_tabs_sidepanel_maximize"
+        android:layout_width="@dimen/location_bar_icon_width"
+        android:layout_height="wrap_content"
+        android:layout="@layout/custom_tabs_sidepanel_maximize"
+        android:layout_gravity="center_vertical|end"
+        android:gravity="center_vertical"
+        android:visibility="gone"
+        app:tint="@color/default_icon_color_tint_list" />
     <LinearLayout
         android:id="@+id/action_buttons"
         android:layout_width="wrap_content"

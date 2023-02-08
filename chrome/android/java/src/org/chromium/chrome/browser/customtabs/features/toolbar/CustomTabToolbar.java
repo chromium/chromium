@@ -32,6 +32,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -90,6 +91,7 @@ import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
@@ -160,6 +162,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private HandleStrategy mHandleStrategy;
     private @CloseButtonPosition int mCloseButtonPosition;
 
+    /** Callback used to notify the maximize button on side sheet PCCT click event. */
+    public interface MaximizeButtonCallback {
+        /**
+         * @return {@code true} if the PCCT gets maximized. {@code false} if restored.
+         */
+        boolean onClick();
+    }
+
     /**
      * Constructor for getting this class inflated from an xml layout file.
      */
@@ -219,6 +229,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         // Add the view at the beginning of the child list.
         mCustomActionButtons.addView(button, 0);
+
+        updateMaximizeButtonPosition();
     }
 
     @Override
@@ -227,6 +239,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 mCustomActionButtons.getChildCount() - 1 - index);
         assert button != null;
         updateCustomActionButtonVisuals(button, drawable, description);
+        updateMaximizeButtonPosition();
     }
 
     /**
@@ -252,6 +265,63 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 ephemeralTabCoordinatorSupplier, actionModeCallback);
         mBrowserControlsVisibilityDelegate = controlsVisibilityDelegate;
         return mLocationBar;
+    }
+
+    /**
+     * Create maximize button for side sheet CCT.
+     * @param onMaximizeClicked Callback to invoke when maximize button gets clicked.
+     */
+    public void createSideSheetMaximizeButton(MaximizeButtonCallback callback) {
+        if (!ChromeFeatureList.sCctResizableSideSheet.isEnabled()) return;
+        var maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
+        boolean buttonExists = maximizeButton != null;
+        if (buttonExists) {
+            maximizeButton.setVisibility(View.VISIBLE);
+        } else {
+            ViewStub maximizeButtonStub = findViewById(R.id.maximize_button_stub);
+            maximizeButtonStub.inflate();
+            maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
+            setMaximizeButtonDrawable(R.drawable.ic_fullscreen_enter);
+        }
+        maximizeButton.setOnClickListener((v) -> {
+            boolean maximized = callback.onClick();
+            setMaximizeButtonDrawable(
+                    maximized ? R.drawable.ic_fullscreen_exit : R.drawable.ic_fullscreen_enter);
+        });
+    }
+
+    private void setMaximizeButtonDrawable(@DrawableRes int drawableId) {
+        var maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
+        var d = UiUtils.getTintedDrawable(getContext(), drawableId, mTint);
+        updateCustomActionButtonVisuals(maximizeButton, d, null);
+        maximizeButton.setImageDrawable(d);
+    }
+
+    /**
+     * Remove maximize button from side sheet CCT toolbar.
+     */
+    public void removeSideSheetMaximizeButton() {
+        if (!ChromeFeatureList.sCctResizableSideSheet.isEnabled()) return;
+        var maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
+        maximizeButton.setOnClickListener(null);
+        maximizeButton.setVisibility(View.GONE);
+    }
+
+    private void updateMaximizeButtonPosition() {
+        ImageButton maximizeButton =
+                (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
+        if (maximizeButton != null) {
+            FrameLayout.LayoutParams lp =
+                    (FrameLayout.LayoutParams) maximizeButton.getLayoutParams();
+            View buttonAtEnd =
+                    mCloseButtonPosition == CLOSE_BUTTON_POSITION_END ? mCloseButton : mMenuButton;
+            int margin = buttonAtEnd.getVisibility() == View.GONE
+                    ? 0
+                    : getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+            if (mCustomActionButtons != null) margin += mCustomActionButtons.getWidth();
+            lp.setMarginEnd(margin);
+            maximizeButton.setLayoutParams(lp);
+        }
     }
 
     private void updateCustomActionButtonVisuals(
@@ -362,6 +432,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         for (int i = 0; i < numCustomActionButtons; i++) {
             updateButtonTint((ImageButton) mCustomActionButtons.getChildAt(i));
         }
+        ImageButton maximizeButton =
+                (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
+        if (maximizeButton != null) updateButtonTint(maximizeButton);
         updateButtonTint(mLocationBar.getSecurityButton());
     }
 
@@ -586,6 +659,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         maybeSwapCloseAndMenuButtons();
         updateToolbarLayoutMargin();
         maybeAdjustButtonSpacingForCloseButtonPosition();
+
+        updateMaximizeButtonPosition();
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
@@ -641,6 +716,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 (ViewGroup.MarginLayoutParams) mCustomActionButtons.getLayoutParams();
         p.setMarginEnd(0);
         mCustomActionButtons.setLayoutParams(p);
+        updateMaximizeButtonPosition();
     }
 
     @Override

@@ -128,7 +128,7 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
     public PartialCustomTabHeightStrategy(Activity activity, @Px int initialHeight,
             boolean isFixedHeight, OnResizedCallback onResizedCallback,
             ActivityLifecycleDispatcher lifecycleDispatcher, FullscreenManager fullscreenManager,
-            boolean isTablet, boolean interactWithBackground,
+            boolean isTablet, boolean interactWithBackground, boolean startMaximized,
             PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
         super(activity, onResizedCallback, fullscreenManager, isTablet, interactWithBackground,
                 handleStrategyFactory);
@@ -136,6 +136,7 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
         int animTime = mActivity.getResources().getInteger(android.R.integer.config_mediumAnimTime);
         mTabAnimator = new TabAnimator(this, animTime, this::onMoveEnd);
         lifecycleDispatcher.register(this);
+        if (startMaximized) mStatus = HeightStatus.TOP;
 
         mSpinnerFadeoutAnimatorListener = new AnimatorListener() {
             @Override
@@ -678,6 +679,11 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
 
     private @Px int getFullyExpandedY() {
         return mStatusbarHeight;
+    }
+
+    @Override
+    protected boolean isMaximized() {
+        return mStatus == HeightStatus.TOP;
     }
 
     @VisibleForTesting

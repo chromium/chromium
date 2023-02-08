@@ -24168,6 +24168,8 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="44" label="Partial width custom tab CTF_PARTIAL_SIDE_SHEET"/>
   <int value="45" label="Break point EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP"/>
   <int value="46" label="Initial width EXTRA_INITIAL_ACTIVITY_WIDTH_PX"/>
+  <int value="47"
+      label="Maximize button EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION"/>
 </enum>
 
 <enum name="CustomTabsParallelRequestStatusOnStart">

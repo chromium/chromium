@@ -84,7 +84,7 @@ public class PartialCustomTabHeightStrategyTest {
         PartialCustomTabHeightStrategy pcct = new PartialCustomTabHeightStrategy(
                 mPCCTTestRule.mActivity, 500, false, mPCCTTestRule.mOnResizedCallback,
                 mPCCTTestRule.mActivityLifecycleDispatcher, mPCCTTestRule.mFullscreenManager, false,
-                false, mPCCTTestRule.mHandleStrategyFactory);
+                false, /*startMaximized=*/false, mPCCTTestRule.mHandleStrategyFactory);
         pcct.setMockViewForTesting(mPCCTTestRule.mNavbar, mPCCTTestRule.mSpinnerView,
                 mPCCTTestRule.mSpinner, mPCCTTestRule.mToolbarView,
                 mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mHandleStrategyFactory);
@@ -99,7 +99,7 @@ public class PartialCustomTabHeightStrategyTest {
         PartialCustomTabHeightStrategy pcct = new PartialCustomTabHeightStrategy(
                 mPCCTTestRule.mActivity, heightPx, isFixedHeight, mPCCTTestRule.mOnResizedCallback,
                 mPCCTTestRule.mActivityLifecycleDispatcher, mPCCTTestRule.mFullscreenManager, false,
-                true, mPCCTTestRule.mHandleStrategyFactory);
+                true, /*startMaxmized=*/false, mPCCTTestRule.mHandleStrategyFactory);
         pcct.setMockViewForTesting(mPCCTTestRule.mNavbar, mPCCTTestRule.mSpinnerView,
                 mPCCTTestRule.mSpinner, mPCCTTestRule.mToolbarView,
                 mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mHandleStrategyFactory);

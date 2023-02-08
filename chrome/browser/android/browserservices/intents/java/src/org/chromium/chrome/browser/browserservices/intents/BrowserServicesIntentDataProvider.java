@@ -545,4 +545,11 @@ public abstract class BrowserServicesIntentDataProvider {
      * background application
      */
     public boolean canInteractWithBackground() { return false; }
+
+    /**
+     * Return false since by default side panel does not show maximize button.
+     */
+    public boolean showSideSheetMaximizeButton() {
+        return false;
+    }
 }

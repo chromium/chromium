@@ -112,7 +112,7 @@ public class PartialCustomTabTestRule implements TestRule {
     @Mock
     CircularProgressDrawable mSpinner;
     @Mock
-    View mToolbarView;
+    CustomTabToolbar mToolbarView;
     @Mock
     View mToolbarCoordinator;
     @Mock
@@ -121,8 +121,6 @@ public class PartialCustomTabTestRule implements TestRule {
     View mDragHandlebar;
     @Mock
     GradientDrawable mDragBarBackground;
-    @Mock
-    CustomTabToolbar mCustomTabToolbar;
     @Mock
     ColorDrawable mColorDrawable;
     @Mock
@@ -178,8 +176,6 @@ public class PartialCustomTabTestRule implements TestRule {
         when(mToolbarView.getBackground()).thenReturn(mColorDrawable);
         when(mToolbarView.getLayoutParams()).thenReturn(mLayoutParams);
         when(mColorDrawable.getColor()).thenReturn(2);
-        when(mCustomTabToolbar.getLayoutParams()).thenReturn(mLayoutParams);
-        when(mCustomTabToolbar.getBackground()).thenReturn(mColorDrawable);
         when(mDragBar.getBackground()).thenReturn(mDragBarBackground);
         when(mHandleStrategyFactory.create(anyInt(), any(Context.class), any(BooleanSupplier.class),
                      any(Supplier.class),

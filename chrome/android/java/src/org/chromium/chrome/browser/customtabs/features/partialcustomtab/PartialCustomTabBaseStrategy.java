@@ -186,6 +186,8 @@ public abstract class PartialCustomTabBaseStrategy
 
     protected abstract boolean shouldHaveNoShadowOffset();
 
+    protected abstract boolean isMaximized();
+
     protected boolean canInteractWithBackground() {
         return mInteractWithBackground;
     }
@@ -282,12 +284,13 @@ public abstract class PartialCustomTabBaseStrategy
     }
 
     @VisibleForTesting
-    void setMockViewForTesting(View toolbar, View toolbarCoordinator) {
+    void setMockViewForTesting(ViewGroup coordinatorLayout, View toolbar, View toolbarCoordinator) {
         mPositionUpdater = this::updatePosition;
         mToolbarView = toolbar;
         mToolbarCoordinator = toolbarCoordinator;
 
         onPostInflationStartup();
+        mCoordinatorLayout = coordinatorLayout;
     }
 
     @VisibleForTesting

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
+import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_END;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -26,6 +28,8 @@ import android.os.Looper;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import org.junit.After;
@@ -360,6 +364,29 @@ public class CustomTabToolbarUnitTest {
         assertEquals("The url bar should be visible.", View.VISIBLE, mUrlBar.getVisibility());
         assertEquals("The url bar should show about:blank",
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL, mUrlBar.getText().toString());
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
+    public void testMaximizeButton() {
+        mToolbar.createSideSheetMaximizeButton(() -> true);
+        var maximizeButton =
+                (ImageButton) mToolbar.findViewById(R.id.custom_tabs_sidepanel_maximize);
+        assertEquals(
+                "Maximize button should be visible", View.VISIBLE, maximizeButton.getVisibility());
+
+        // Check margin from the right end.
+        var lp = (FrameLayout.LayoutParams) maximizeButton.getLayoutParams();
+        assertEquals(0, lp.rightMargin);
+        mToolbar.setCloseButtonPosition(CLOSE_BUTTON_POSITION_END);
+        mToolbar.onMenuButtonDisabled();
+        int closeButtonWidth =
+                mToolbar.getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+        assertEquals("Maximize button should be next to close button.", closeButtonWidth,
+                lp.rightMargin);
+
+        mToolbar.removeSideSheetMaximizeButton();
+        assertEquals("Maximize button should be hidden", View.GONE, maximizeButton.getVisibility());
     }
 
     private void assertUrlAndTitleVisible(boolean titleVisible, boolean urlVisible) {

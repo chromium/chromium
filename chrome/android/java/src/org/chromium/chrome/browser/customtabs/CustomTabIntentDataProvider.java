@@ -241,6 +241,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public static final String EXTRA_ENABLE_BACKGROUND_INTERACTION =
             "androix.browser.customtabs.extra.ENABLE_BACKGROUND_INTERACTION";
 
+    /** Extra that enables the maximization button on the side sheet Custom Tab toolbar. */
+    public static final String EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION =
+            "androix.browser.customtabs.extra.EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION";
+
     /**
      * Extra that, if set in combination with
      * {@link CustomTabsIntent#EXTRA_INITIAL_ACTIVITY_HEIGHT_PX}, defines the resize behavior of
@@ -889,6 +893,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (isUsingDynamicFeatures) {
             featureUsage.log(CustomTabsFeature.EXTRA_INTENT_FEATURE_OVERRIDES);
         }
+        if (showSideSheetMaximizeButton()) {
+            featureUsage.log(CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION);
+        }
     }
 
     @Override
@@ -1241,4 +1248,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public boolean canInteractWithBackground() { return mInteractWithBackground; }
+
+    @Override
+    public boolean showSideSheetMaximizeButton() {
+        return IntentUtils.safeGetBooleanExtra(
+                mIntent, EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION, false);
+    }
 }
