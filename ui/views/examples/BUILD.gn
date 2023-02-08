@@ -17,6 +17,8 @@ component("views_examples_lib") {
     "animation_example.h",
     "ax_example.cc",
     "ax_example.h",
+    "badge_example.cc",
+    "badge_example.h",
     "box_layout_example.cc",
     "box_layout_example.h",
     "bubble_example.cc",

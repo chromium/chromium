@@ -24,7 +24,6 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_model.h"
@@ -41,7 +40,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/strings/grit/ui_strings.h"
+#include "ui/views/badge_painter.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_config.h"
@@ -49,7 +48,6 @@
 #include "ui/views/controls/menu/menu_image_util.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/menu_separator.h"
-#include "ui/views/controls/menu/new_badge.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/style/typography.h"
@@ -339,7 +337,7 @@ std::u16string MenuItemView::GetAccessibleNameForMenuItem(
 
   if (is_new_feature) {
     accessible_name.push_back(' ');
-    accessible_name.append(NewBadge::GetNewBadgeAccessibleDescription());
+    accessible_name.append(GetNewBadgeAccessibleDescription());
   }
 
   return accessible_name;
@@ -830,6 +828,10 @@ bool MenuItemView::IsTraversableByKeyboard() const {
   return GetVisible() && (ignore_enabled || GetEnabled());
 }
 
+std::u16string MenuItemView::GetNewBadgeAccessibleDescription() {
+  return l10n_util::GetStringUTF16(IDS_NEW_BADGE_SCREEN_READER_MESSAGE);
+}
+
 MenuItemView::MenuItemView(MenuItemView* parent,
                            int command,
                            MenuItemView::Type type)
@@ -1053,11 +1055,11 @@ void MenuItemView::OnPaintImpl(gfx::Canvas* canvas, PaintMode mode) {
   PaintMinorIconAndText(canvas, colors.minor_fg_color);
 
   if (ShouldShowNewBadge()) {
-    NewBadge::DrawNewBadge(canvas, this,
-                           label_start +
-                               gfx::GetStringWidth(title(), font_list) +
-                               NewBadge::kNewBadgeHorizontalMargin,
-                           top_margin, font_list);
+    BadgePainter::PaintBadge(canvas, this,
+                             label_start +
+                                 gfx::GetStringWidth(title(), font_list) +
+                                 BadgePainter::kBadgeHorizontalMargin,
+                             top_margin, new_badge_text_, font_list);
   }
 }
 
@@ -1340,8 +1342,8 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
 
   if (ShouldShowNewBadge())
     dimensions.minor_text_width +=
-        NewBadge::GetNewBadgeSize(font_list).width() +
-        2 * NewBadge::kNewBadgeHorizontalMargin;
+        views::BadgePainter::GetBadgeSize(new_badge_text_, font_list).width() +
+        2 * BadgePainter::kBadgeHorizontalMargin;
 
   // Determine the height to use.
   int label_text_height = secondary_title().empty() ? font_list.GetHeight()

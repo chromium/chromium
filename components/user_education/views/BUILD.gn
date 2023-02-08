@@ -36,6 +36,7 @@ source_set("views") {
     "//ui/base",
     "//ui/color",
     "//ui/gfx",
+    "//ui/strings:ui_strings",
     "//ui/views",
   ]
 }

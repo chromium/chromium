@@ -7,8 +7,10 @@
 
 #include <memory>
 
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/strings/grit/ui_strings.h"
+#include "ui/views/badge_painter.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/menu/new_badge.h"
 #include "ui/views/style/typography.h"
 
 namespace views {
@@ -60,6 +62,10 @@ class NewBadgeLabel : public views::Label {
   void SetBadgePlacement(BadgePlacement badge_placement);
   BadgePlacement GetBadgePlacement() const { return badge_placement_; }
 
+  // Gets the accessible description of the badge, which can be added to
+  // tooltip/screen reader text.
+  std::u16string GetAccessibleDescription() const;
+
   // Label:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size CalculatePreferredSize() const override;
@@ -83,6 +89,8 @@ class NewBadgeLabel : public views::Label {
   // display the new badge.
   void UpdatePaddingForNewBadge();
 
+  gfx::Size GetNewBadgeSize() const;
+
   // Specifies the placement of the "New" badge when the label is wider than its
   // preferred size.
   BadgePlacement badge_placement_ = BadgePlacement::kImmediatelyAfterText;
@@ -91,6 +99,9 @@ class NewBadgeLabel : public views::Label {
   // "New" badge. When set to true, the space will be allocated, and
   // kInternalPaddingKey will be set so that layouts know this space is empty.
   bool pad_after_new_badge_ = true;
+
+  const std::u16string new_badge_text_ =
+      l10n_util::GetStringUTF16(IDS_NEW_BADGE);
 };
 
 }  // namespace user_education

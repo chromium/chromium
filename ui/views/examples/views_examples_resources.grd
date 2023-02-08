@@ -14,6 +14,35 @@
         Abort Animation
       </message>
 
+      <!-- badge example -->
+      <message translateable="false" name="IDS_BADGE_SELECT_LABEL">
+        Badge
+      </message>
+
+      <message translateable="false" name="IDS_BADGE_MENU_ITEM_1">
+        Cut
+      </message>
+
+      <message translateable="false" name="IDS_BADGE_MENU_ITEM_2">
+        Copy
+      </message>
+
+      <message translateable="false" name="IDS_BADGE_MENU_ITEM_3">
+        Magic Command
+      </message>
+
+      <message translateable="false" name="IDS_BADGE_MENU_BUTTON">
+        Show a Menu
+      </message>
+
+      <message translateable="false" name="IDS_BADGE_LINK_TEXT">
+        Fancy Feature
+      </message>
+
+      <message translateable="false" name="IDS_BADGE_BADGE_TEXT">
+        Try this out!
+      </message>
+
       <!-- button example -->
       <message translateable="false" name="IDS_BUTTON_IMAGE_BUTTON_AX_LABEL">
         Close Button

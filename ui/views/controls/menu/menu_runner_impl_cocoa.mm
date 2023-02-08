@@ -28,7 +28,6 @@
 #include "ui/views/controls/menu/menu_config.h"
 #import "ui/views/controls/menu/menu_controller_cocoa_delegate_impl.h"
 #include "ui/views/controls/menu/menu_runner_impl_adapter.h"
-#include "ui/views/controls/menu/new_badge.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
