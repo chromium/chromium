@@ -1859,8 +1859,10 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream,
     if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
         MayContainNestedRules(lazy_state_->SheetText(), block_start_offset,
                               block_length)) {
-      CSSTokenizer tokenizer(lazy_state_->SheetText(), block_start_offset + 1);
+      CSSTokenizer tokenizer(lazy_state_->SheetText(), block_start_offset);
       CSSParserTokenStream block_stream(tokenizer);
+      CSSParserTokenStream::BlockGuard sub_guard(
+          block_stream);  // Consume the {, and open the block stack.
       return ConsumeStyleRuleContents(selector_vector, block_stream);
     }
 
