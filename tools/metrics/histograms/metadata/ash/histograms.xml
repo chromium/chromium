@@ -4506,7 +4506,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.Menu.SelectedMenuItemIndex" units="Index"
-    expires_after="2023-02-01">
+    expires_after="2024-02-08">
   <owner>anasalazar@chromium.org</owner>
   <owner>mmourgos@google.com</owner>
   <summary>
