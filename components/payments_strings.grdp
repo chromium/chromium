@@ -588,6 +588,9 @@
   <message name="IDS_PAYMENT_HANDLER_SHEET_CLOSED" desc="Accessibility string read when the payment-handler bottom sheet is closed." formatter_data="android_java">
     Payment handler sheet is closed
   </message>
+  <message name="IDS_PAYMENT_HANDLER_ICON" desc="The alt text for the payment handler icon. Used for accessibility.">
+    Payment handler icon
+  </message>
 
   <!-- Secure Payment Confirmation strings -->
   <if expr="not is_win and not is_macosx">

@@ -357,9 +357,7 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
   if (has_icon) {
     views::ImageView* app_icon_view = container->AddChildView(CreateAppIconView(
         /*icon_resource_id=*/0, icon_bitmap,
-        // TODO(crbug.com/1414090): Determine correct text (used for both
-        // tooltip and screen reader).
-        /*tooltip_text=*/GetPaymentHandlerDialogTitle(web_contents())));
+        /*tooltip_text=*/l10n_util::GetStringUTF16(IDS_PAYMENT_HANDLER_ICON)));
     app_icon_view->SetID(
         static_cast<int>(DialogViewID::PAYMENT_APP_HEADER_ICON));
     float adjusted_width =
