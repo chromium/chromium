@@ -292,15 +292,6 @@ void UpdateServiceImpl::RegisterApp(const RegistrationRequest& request,
   if (request.app_id != kUpdaterAppId) {
     persisted_data_->SetHadApps();
   }
-  base::Version current_version =
-      persisted_data_->GetProductVersion(request.app_id);
-  if (current_version.IsValid() &&
-      current_version.CompareTo(request.version) == 1) {
-    main_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), kRegistrationAlreadyRegistered));
-    return;
-  }
   persisted_data_->RegisterApp(request);
   std::move(callback).Run(kRegistrationSuccess);
 }
