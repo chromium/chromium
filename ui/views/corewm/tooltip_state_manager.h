@@ -86,7 +86,8 @@ class VIEWS_EXPORT TooltipStateManager {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Called when tooltip is shown/hidden on server.
   // Only used by Lacros.
-  void OnTooltipShownOnServer(const std::u16string& text,
+  void OnTooltipShownOnServer(aura::Window* window,
+                              const std::u16string& text,
                               const gfx::Rect& bounds);
   void OnTooltipHiddenOnServer();
 #endif

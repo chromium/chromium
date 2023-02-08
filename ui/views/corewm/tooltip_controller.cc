@@ -375,9 +375,10 @@ void TooltipController::SetShowTooltipDelay(aura::Window* target,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-void TooltipController::OnTooltipShownOnServer(const std::u16string& text,
+void TooltipController::OnTooltipShownOnServer(aura::Window* window,
+                                               const std::u16string& text,
                                                const gfx::Rect& bounds) {
-  state_manager_->OnTooltipShownOnServer(text, bounds);
+  state_manager_->OnTooltipShownOnServer(window, text, bounds);
 }
 
 void TooltipController::OnTooltipHiddenOnServer() {

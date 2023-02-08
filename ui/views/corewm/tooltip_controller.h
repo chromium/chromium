@@ -111,7 +111,8 @@ class VIEWS_EXPORT TooltipController
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Called when tooltip is shown/hidden on server.
   // This is only used for Lacros whose tooltip is handled on server-side.
-  void OnTooltipShownOnServer(const std::u16string& text,
+  void OnTooltipShownOnServer(aura::Window* window,
+                              const std::u16string& text,
                               const gfx::Rect& bounds);
   void OnTooltipHiddenOnServer();
 #endif  // BUILDFLA(IS_CHROMEOS_LACROS)

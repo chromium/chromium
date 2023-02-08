@@ -108,8 +108,11 @@ void TooltipStateManager::UpdatePositionIfNeeded(const gfx::Point& position,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-void TooltipStateManager::OnTooltipShownOnServer(const std::u16string& text,
+void TooltipStateManager::OnTooltipShownOnServer(aura::Window* window,
+                                                 const std::u16string& text,
                                                  const gfx::Rect& bounds) {
+  tooltip_id_ = wm::GetTooltipId(window);
+  tooltip_parent_window_ = window;
   tooltip_->OnTooltipShownOnServer(text, bounds);
 }
 

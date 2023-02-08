@@ -122,7 +122,8 @@ void DesktopWindowTreeHostLacros::OnTooltipShownOnServer(
     const std::u16string& text,
     const gfx::Rect& bounds) {
   if (tooltip_controller()) {
-    tooltip_controller()->OnTooltipShownOnServer(text, bounds);
+    tooltip_controller()->OnTooltipShownOnServer(GetContentWindow(), text,
+                                                 bounds);
   }
 }
 
