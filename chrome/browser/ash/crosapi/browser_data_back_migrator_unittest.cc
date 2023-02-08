@@ -14,6 +14,8 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/leveldatabase/env_chromium.h"
+#include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace ash {
 
@@ -31,6 +33,20 @@ constexpr size_t kLacrosDataSize = sizeof(kLacrosDataContent);
 // NOTE: we use a sequence of characters that can't be an actual AppId here,
 // so we can be sure that it won't be included in `kExtensionsAshOnly`.
 constexpr char kLacrosOnlyExtensionId[] = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+
+const char* kBothExtensionId =
+    browser_data_migrator_util::kExtensionsBothChromes[0];
+const char* kAshOnlyExtensionId =
+    browser_data_migrator_util::kExtensionsAshOnly[0];
+
+// Key prefixes in LocalStorage's LevelDB.
+constexpr char kMetaPrefix[] = "META:chrome-extension://";
+constexpr char kKeyPrefix[] = "_chrome-extension://";
+
+constexpr char kAshLevelDBValue[] = "ash-value";
+constexpr char kLacrosLevelDBValue[] = "lacros-value";
+constexpr char kAshLevelDBMeta[] = "ash-meta";
+constexpr char kLacrosLevelDBMeta[] = "lacros-meta";
 
 enum class FilesSetup {
   kAshOnly = 0,
@@ -77,17 +93,13 @@ void SetUpExtensions(const base::FilePath& ash_profile_dir,
                          kLacrosDataSize);
 
   // Generate data for an Ash-only extension.
-  std::string ash_only_extension_id =
-      browser_data_migrator_util::kExtensionsAshOnly[0];
-  CreateDirectoryAndFile(ash_extensions_path.Append(ash_only_extension_id),
+  CreateDirectoryAndFile(ash_extensions_path.Append(kAshOnlyExtensionId),
                          kAshDataFilePath, kAshDataContent, kAshDataSize);
 
   // Generate data for an extension existing in both Chromes.
-  std::string both_extension_id =
-      browser_data_migrator_util::kExtensionsBothChromes[0];
-  CreateDirectoryAndFile(ash_extensions_path.Append(both_extension_id),
+  CreateDirectoryAndFile(ash_extensions_path.Append(kBothExtensionId),
                          kAshDataFilePath, kAshDataContent, kAshDataSize);
-  CreateDirectoryAndFile(lacros_extensions_path.Append(both_extension_id),
+  CreateDirectoryAndFile(lacros_extensions_path.Append(kBothExtensionId),
                          kLacrosDataFilePath, kLacrosDataContent,
                          kLacrosDataSize);
 }
@@ -131,12 +143,9 @@ void SetUpIndexedDB(const base::FilePath& ash_profile_dir,
 
   // Create IndexedDB files for the Ash-only extension.
   if (setup != FilesSetup::kLacrosOnly) {
-    const char* ash_only_extension_id =
-        browser_data_migrator_util::kExtensionsAshOnly[0];
-
     const auto& [ash_only_blob_path, ash_only_leveldb_path] =
         browser_data_migrator_util::GetIndexedDBPaths(ash_profile_dir,
-                                                      ash_only_extension_id);
+                                                      kAshOnlyExtensionId);
     CreateDirectoryAndFile(ash_only_blob_path, kAshDataFilePath,
                            kAshDataContent, kAshDataSize);
     CreateDirectoryAndFile(ash_only_leveldb_path, kAshDataFilePath,
@@ -144,13 +153,10 @@ void SetUpIndexedDB(const base::FilePath& ash_profile_dir,
   }
 
   // Create IndexedDB files for the extension existing in both Chromes.
-  const char* both_extension_id =
-      browser_data_migrator_util::kExtensionsBothChromes[0];
-
   if (setup != FilesSetup::kAshOnly) {
     const auto& [lacros_blob_path, lacros_leveldb_path] =
         browser_data_migrator_util::GetIndexedDBPaths(lacros_profile_dir,
-                                                      both_extension_id);
+                                                      kBothExtensionId);
 
     CreateDirectoryAndFile(lacros_blob_path, kLacrosDataFilePath,
                            kLacrosDataContent, kLacrosDataSize);
@@ -161,7 +167,7 @@ void SetUpIndexedDB(const base::FilePath& ash_profile_dir,
   if (setup != FilesSetup::kLacrosOnly) {
     const auto& [ash_blob_path, ash_leveldb_path] =
         browser_data_migrator_util::GetIndexedDBPaths(ash_profile_dir,
-                                                      both_extension_id);
+                                                      kBothExtensionId);
     CreateDirectoryAndFile(ash_blob_path, kAshDataFilePath, kAshDataContent,
                            kAshDataSize);
     CreateDirectoryAndFile(ash_leveldb_path, kAshDataFilePath, kAshDataContent,
@@ -169,8 +175,66 @@ void SetUpIndexedDB(const base::FilePath& ash_profile_dir,
   }
 }
 
+void GenerateLevelDB(const base::FilePath& path,
+                     std::map<std::string, std::string> values) {
+  // Open a new LevelDB database.
+  leveldb_env::Options options;
+  options.create_if_missing = true;
+  std::unique_ptr<leveldb::DB> db;
+  leveldb::Status status = leveldb_env::OpenDB(options, path.value(), &db);
+  ASSERT_TRUE(status.ok());
+
+  // Write all options in a batch.
+  leveldb::WriteBatch batch;
+  for (const auto& [key, value] : values) {
+    batch.Put(key, value);
+  }
+
+  leveldb::WriteOptions write_options;
+  write_options.sync = true;
+  status = db->Write(write_options, &batch);
+  ASSERT_TRUE(status.ok());
+}
+
+// Return all the key-value pairs in a LevelDB.
+std::map<std::string, std::string> ReadLevelDB(const base::FilePath& path) {
+  leveldb_env::Options options;
+  options.create_if_missing = false;
+
+  std::unique_ptr<leveldb::DB> db;
+  leveldb::Status status = leveldb_env::OpenDB(options, path.value(), &db);
+  EXPECT_TRUE(status.ok());
+
+  std::map<std::string, std::string> db_map;
+  std::unique_ptr<leveldb::Iterator> it(
+      db->NewIterator(leveldb::ReadOptions()));
+  for (it->SeekToFirst(); it->Valid(); it->Next()) {
+    db_map.emplace(it->key().ToString(), it->value().ToString());
+  }
+
+  return db_map;
+}
+
 class BrowserDataBackMigratorTest : public testing::Test {
  public:
+  BrowserDataBackMigratorTest() {
+    using std::string_literals::operator""s;
+
+    kAshOnlyMetaKey = kMetaPrefix + std::string(kAshOnlyExtensionId);
+    kAshOnlyValueKey =
+        kKeyPrefix + std::string(kAshOnlyExtensionId) + "\x00key"s;
+    kLacrosOnlyMetaKey = kMetaPrefix + std::string(kLacrosOnlyExtensionId);
+    kLacrosOnlyValueKey =
+        kKeyPrefix + std::string(kLacrosOnlyExtensionId) + "\x00key"s;
+    kBothChromesMetaKey = kMetaPrefix + std::string(kBothExtensionId);
+    kBothChromesValueKey =
+        kKeyPrefix + std::string(kBothExtensionId) + "\x00key"s;
+
+    kAshOnlyStateStoreKey = std::string(kAshOnlyExtensionId) + ".key";
+    kLacrosOnlyStateStoreKey = std::string(kLacrosOnlyExtensionId) + ".key";
+    kBothChromesStateStoreKey = std::string(kBothExtensionId) + ".key";
+  }
+
   void SetUp() override {
     // Setup `user_data_dir_` as below.
     // This corresponds to the directory structure under /home/chronos/user.
@@ -187,7 +251,6 @@ class BrowserDataBackMigratorTest : public testing::Test {
     //     |- Cookies
     //     |- Bookmarks
     //     |- Downloads/data
-
     ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
 
     ash_profile_dir_ = user_data_dir_.GetPath().Append("user");
@@ -202,10 +265,106 @@ class BrowserDataBackMigratorTest : public testing::Test {
 
   void TearDown() override { EXPECT_TRUE(user_data_dir_.Delete()); }
 
+  void CreateTemporaryDirectory() {
+    // During backward migration, `tmp_profile_dir_` is created in
+    // `MergeSplitItems`, but we don't want to call that in tests so we generate
+    // it ourselves.
+    ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir_));
+  }
+
+  void SetupLocalStorageLevelDBFiles(const base::FilePath& ash_profile_dir,
+                                     const base::FilePath& lacros_profile_dir,
+                                     FilesSetup setup) {
+    // The LevelDB test data should have the following structure for full setup,
+    // with all the leaves representing LevelDB databases.
+    // |- user
+    //     |- Local Storage
+    //         |- leveldb
+    //     |- lacros
+    //         |- Default
+    //             |- Local Storage
+    //                 |- leveldb
+
+    if (setup != FilesSetup::kLacrosOnly) {
+      // Generate Ash Local Storage leveldb.
+      base::FilePath ash_local_storage_leveldb_path =
+          ash_profile_dir
+              .Append(browser_data_migrator_util::kLocalStorageFilePath)
+              .Append(browser_data_migrator_util::kLocalStorageLeveldbName);
+      std::map<std::string, std::string> ash_values;
+      ash_values["VERSION"] = "1";
+      ash_values[kAshOnlyMetaKey] = kAshLevelDBMeta;
+      ash_values[kAshOnlyValueKey] = kAshLevelDBValue;
+      ash_values[kBothChromesMetaKey] = kAshLevelDBMeta;
+      ash_values[kBothChromesValueKey] = kAshLevelDBValue;
+      GenerateLevelDB(ash_local_storage_leveldb_path, ash_values);
+    }
+
+    if (setup != FilesSetup::kAshOnly) {
+      // Generate Lacros Local Storage leveldb.
+      base::FilePath lacros_local_storage_leveldb_path =
+          lacros_profile_dir
+              .Append(browser_data_migrator_util::kLocalStorageFilePath)
+              .Append(browser_data_migrator_util::kLocalStorageLeveldbName);
+      std::map<std::string, std::string> lacros_values;
+      lacros_values["VERSION"] = "1";
+      lacros_values[kLacrosOnlyMetaKey] = kLacrosLevelDBMeta;
+      lacros_values[kLacrosOnlyValueKey] = kLacrosLevelDBValue;
+      lacros_values[kBothChromesMetaKey] = kLacrosLevelDBMeta;
+      lacros_values[kBothChromesValueKey] = kLacrosLevelDBValue;
+      GenerateLevelDB(lacros_local_storage_leveldb_path, lacros_values);
+    }
+  }
+
+  void SetupStateStoreLevelDBFiles(const base::FilePath& ash_profile_dir,
+                                   const base::FilePath& lacros_profile_dir,
+                                   FilesSetup setup) {
+    // The LevelDB test data should have the following structure for full setup,
+    // with all the leaves representing LevelDB databases.
+    // |- user
+    //     |- Extension Rules
+    //     |- Extension Scripts
+    //     |- Extension State
+    //     |- lacros
+    //         |- Default
+    //             |- Extension Rules
+    //             |- Extension Scripts
+    //             |- Extension State
+
+    for (const char* path : browser_data_migrator_util::kStateStorePaths) {
+      if (setup != FilesSetup::kLacrosOnly) {
+        base::FilePath ash_path = ash_profile_dir.Append(path);
+        std::map<std::string, std::string> ash_values;
+        ash_values[kAshOnlyStateStoreKey] = kAshLevelDBValue;
+        ash_values[kBothChromesStateStoreKey] = kAshLevelDBValue;
+        GenerateLevelDB(ash_path, ash_values);
+      }
+
+      if (setup != FilesSetup::kAshOnly) {
+        base::FilePath lacros_path = lacros_profile_dir.Append(path);
+        std::map<std::string, std::string> lacros_values;
+        lacros_values[kLacrosOnlyStateStoreKey] = kLacrosLevelDBValue;
+        lacros_values[kBothChromesStateStoreKey] = kLacrosLevelDBValue;
+        GenerateLevelDB(lacros_path, lacros_values);
+      }
+    }
+  }
+
   base::ScopedTempDir user_data_dir_;
   base::FilePath ash_profile_dir_;
   base::FilePath lacros_profile_dir_;
   base::FilePath tmp_profile_dir_;
+
+  std::string kAshOnlyMetaKey;
+  std::string kAshOnlyValueKey;
+  std::string kLacrosOnlyMetaKey;
+  std::string kLacrosOnlyValueKey;
+  std::string kBothChromesMetaKey;
+  std::string kBothChromesValueKey;
+
+  std::string kAshOnlyStateStoreKey;
+  std::string kLacrosOnlyStateStoreKey;
+  std::string kBothChromesStateStoreKey;
 };
 
 class BrowserDataBackMigratorFilesSetupTest
@@ -266,21 +425,16 @@ TEST_F(BrowserDataBackMigratorTest, MergeCommonExtensionsDataFiles) {
                            .Append(kLacrosDataFilePath)));
 
   // The Ash-only extension data does not exist.
-  std::string ash_only_extension_id =
-      browser_data_migrator_util::kExtensionsAshOnly[0];
-  ASSERT_FALSE(
-      base::PathExists(tmp_extensions_path.Append(ash_only_extension_id)
-                           .Append(kAshDataFilePath)));
+  ASSERT_FALSE(base::PathExists(tmp_extensions_path.Append(kAshOnlyExtensionId)
+                                    .Append(kAshDataFilePath)));
 
-  std::string both_extension_id =
-      browser_data_migrator_util::kExtensionsBothChromes[0];
   // The Ash version of the both-Chromes extension does not exist.
   ASSERT_FALSE(base::PathExists(
-      tmp_extensions_path.Append(both_extension_id).Append(kAshDataFilePath)));
+      tmp_extensions_path.Append(kBothExtensionId).Append(kAshDataFilePath)));
 
   // The Lacros version of the both-Chromes extension exists.
   base::FilePath lacros_tmp_file_path =
-      tmp_extensions_path.Append(both_extension_id).Append(kLacrosDataFilePath);
+      tmp_extensions_path.Append(kBothExtensionId).Append(kLacrosDataFilePath);
   ASSERT_TRUE(base::PathExists(lacros_tmp_file_path));
 
   // The contents of the file in the temporary directory are the same as the
@@ -334,6 +488,115 @@ TEST_P(BrowserDataBackMigratorFilesSetupTest, MergeCommonIndexedDB) {
     // The Lacros version has been moved to Ash.
     ASSERT_TRUE(base::PathExists(ash_blob_path.Append(kLacrosDataFilePath)));
     ASSERT_TRUE(base::PathExists(ash_leveldb_path.Append(kLacrosDataFilePath)));
+  }
+}
+
+TEST_P(BrowserDataBackMigratorFilesSetupTest, MergeLocalStorageLevelDB) {
+  auto files_setup = GetParam();
+  SetupLocalStorageLevelDBFiles(ash_profile_dir_, lacros_profile_dir_,
+                                files_setup);
+  CreateTemporaryDirectory();
+
+  base::FilePath ash_local_storage = ash_profile_dir_.Append(
+      browser_data_migrator_util::kLocalStorageFilePath);
+  base::FilePath lacros_local_storage = lacros_profile_dir_.Append(
+      browser_data_migrator_util::kLocalStorageFilePath);
+  base::FilePath tmp_local_storage = tmp_profile_dir_.Append(
+      browser_data_migrator_util::kLocalStorageFilePath);
+
+  if (files_setup != FilesSetup::kAshOnly) {
+    // If the Lacros LevelDB version exists, use it as basis and then overwrite
+    // some of its contents with the Ash LevelDB version, if it exists. We
+    // expect both copy and merge steps to succeed.
+    ASSERT_FALSE(base::PathExists(tmp_local_storage));
+    ASSERT_TRUE(BrowserDataBackMigrator::CopyLevelDBBase(lacros_local_storage,
+                                                         tmp_local_storage));
+    ASSERT_TRUE(base::PathExists(tmp_local_storage));
+    ASSERT_TRUE(BrowserDataBackMigrator::MergeLevelDB(
+        ash_local_storage.Append(
+            browser_data_migrator_util::kLocalStorageLeveldbName),
+        tmp_local_storage.Append(
+            browser_data_migrator_util::kLocalStorageLeveldbName),
+        browser_data_migrator_util::LevelDBType::kLocalStorage));
+
+    // Check the contents of the LevelDB database. It should always contain the
+    // data for Lacros-only extensions and extensions in both Chromes.
+    auto db_map = ReadLevelDB(tmp_local_storage.Append(
+        browser_data_migrator_util::kLocalStorageLeveldbName));
+
+    EXPECT_EQ("1", db_map["VERSION"]);
+
+    EXPECT_EQ(kLacrosLevelDBMeta, db_map[kLacrosOnlyMetaKey]);
+    EXPECT_EQ(kLacrosLevelDBValue, db_map[kLacrosOnlyValueKey]);
+
+    // If LevelDB exists in Ash, then its extension data should be present too.
+    if (files_setup == FilesSetup::kBothChromes) {
+      EXPECT_EQ(7u, db_map.size());
+
+      EXPECT_EQ(kAshLevelDBMeta, db_map[kBothChromesMetaKey]);
+      EXPECT_EQ(kAshLevelDBValue, db_map[kBothChromesValueKey]);
+
+      EXPECT_EQ(kAshLevelDBMeta, db_map[kAshOnlyMetaKey]);
+      EXPECT_EQ(kAshLevelDBValue, db_map[kAshOnlyValueKey]);
+    } else {
+      EXPECT_EQ(5u, db_map.size());
+
+      EXPECT_EQ(kLacrosLevelDBMeta, db_map[kBothChromesMetaKey]);
+      EXPECT_EQ(kLacrosLevelDBValue, db_map[kBothChromesValueKey]);
+    }
+  } else {
+    // For FilesSetup::kAshOnly, there is no Lacros LevelDB to be used as a
+    // basis for merge. Therefore both the copy and the merge step fail.
+    ASSERT_FALSE(BrowserDataBackMigrator::CopyLevelDBBase(lacros_local_storage,
+                                                          tmp_local_storage));
+    ASSERT_FALSE(BrowserDataBackMigrator::MergeLevelDB(
+        ash_local_storage.Append(
+            browser_data_migrator_util::kLocalStorageLeveldbName),
+        tmp_local_storage.Append(
+            browser_data_migrator_util::kLocalStorageLeveldbName),
+        browser_data_migrator_util::LevelDBType::kLocalStorage));
+  }
+}
+
+TEST_P(BrowserDataBackMigratorFilesSetupTest, MergeStateStoreLevelDB) {
+  auto files_setup = GetParam();
+  SetupStateStoreLevelDBFiles(ash_profile_dir_, lacros_profile_dir_,
+                              files_setup);
+  CreateTemporaryDirectory();
+
+  for (const char* path : browser_data_migrator_util::kStateStorePaths) {
+    base::FilePath ash_path = ash_profile_dir_.Append(path);
+    base::FilePath lacros_path = lacros_profile_dir_.Append(path);
+    base::FilePath tmp_path = tmp_profile_dir_.Append(path);
+
+    if (files_setup != FilesSetup::kAshOnly) {
+      ASSERT_FALSE(base::PathExists(tmp_path));
+      ASSERT_TRUE(
+          BrowserDataBackMigrator::CopyLevelDBBase(lacros_path, tmp_path));
+      ASSERT_TRUE(base::PathExists(tmp_path));
+      ASSERT_TRUE(BrowserDataBackMigrator::MergeLevelDB(
+          ash_path, tmp_path,
+          browser_data_migrator_util::LevelDBType::kStateStore));
+
+      auto db_map = ReadLevelDB(tmp_path);
+
+      EXPECT_EQ(kLacrosLevelDBValue, db_map[kLacrosOnlyStateStoreKey]);
+
+      if (files_setup == FilesSetup::kBothChromes) {
+        EXPECT_EQ(3u, db_map.size());
+        EXPECT_EQ(kAshLevelDBValue, db_map[kBothChromesStateStoreKey]);
+        EXPECT_EQ(kAshLevelDBValue, db_map[kAshOnlyStateStoreKey]);
+      } else {
+        EXPECT_EQ(2u, db_map.size());
+        EXPECT_EQ(kLacrosLevelDBValue, db_map[kBothChromesStateStoreKey]);
+      }
+    } else {
+      ASSERT_FALSE(
+          BrowserDataBackMigrator::CopyLevelDBBase(lacros_path, tmp_path));
+      ASSERT_FALSE(BrowserDataBackMigrator::MergeLevelDB(
+          ash_path, tmp_path,
+          browser_data_migrator_util::LevelDBType::kStateStore));
+    }
   }
 }
 

@@ -89,6 +89,10 @@ class BrowserDataBackMigrator {
                            MergeCommonExtensionsDataFiles);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorFilesSetupTest,
                            MergeCommonIndexedDB);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorFilesSetupTest,
+                           MergeLocalStorageLevelDB);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorFilesSetupTest,
+                           MergeStateStoreLevelDB);
 
   // A list of all the possible results of migration, including success and all
   // failure types in each step of the migration.
