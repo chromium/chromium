@@ -47,6 +47,8 @@ class EnrollmentScreenView
     virtual void OnDeviceAttributeProvided(const std::string& asset_id,
                                            const std::string& location) = 0;
     virtual void OnIdentifierEntered(const std::string& email) = 0;
+    virtual void OnFirstShow() = 0;
+    virtual void OnFrameLoadingCompleted() = 0;
   };
 
   inline constexpr static StaticOobeScreenId kScreenId{"enterprise-enrollment",
@@ -91,6 +93,9 @@ class EnrollmentScreenView
 
   // Shows the signin screen.
   virtual void ShowSigninScreen() = 0;
+
+  // Reloads the signin screen.
+  virtual void ReloadSigninScreen() = 0;
 
   // Shows error related to user account eligibility.
   virtual void ShowUserError(const std::string& email) = 0;

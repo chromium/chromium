@@ -12,15 +12,18 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
+#include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/active_directory/active_directory_join_delegate.h"
 #include "chrome/browser/ash/policy/enrollment/account_status_check_fetcher.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
+#include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -34,6 +37,7 @@ class ElapsedTimer;
 
 namespace ash {
 
+class ErrorScreen;
 class ScreenManager;
 
 namespace test {
@@ -46,7 +50,8 @@ class EnrollmentScreen
     : public BaseScreen,
       public EnterpriseEnrollmentHelper::EnrollmentStatusConsumer,
       public EnrollmentScreenView::Controller,
-      public policy::ActiveDirectoryJoinDelegate {
+      public policy::ActiveDirectoryJoinDelegate,
+      public NetworkStateInformer::NetworkStateInformerObserver {
  public:
   enum class Result {
     COMPLETED,
@@ -62,6 +67,7 @@ class EnrollmentScreen
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
   using TpmStatusCallback = chromeos::TpmManagerClient::TakeOwnershipCallback;
   EnrollmentScreen(base::WeakPtr<EnrollmentScreenView> view,
+                   ErrorScreen* error_screen,
                    const ScreenExitCallback& exit_callback);
 
   EnrollmentScreen(const EnrollmentScreen&) = delete;
@@ -89,6 +95,8 @@ class EnrollmentScreen
   void OnDeviceAttributeProvided(const std::string& asset_id,
                                  const std::string& location) override;
   void OnIdentifierEntered(const std::string& email) override;
+  void OnFirstShow() override;
+  void OnFrameLoadingCompleted() override;
 
   // Shows skip enrollment dialogue confiromation for license packaged devices.
   void ShowSkipEnrollmentDialogue();
@@ -111,6 +119,9 @@ class EnrollmentScreen
 
   // Used for testing.
   EnrollmentScreenView* GetView() { return view_.get(); }
+
+  // NetworkStateInformer::NetworkStateInformerObserver
+  void UpdateState(NetworkError::ErrorReason reason) override;
 
   void set_exit_callback_for_testing(const ScreenExitCallback& callback) {
     exit_callback_ = callback;
@@ -239,12 +250,24 @@ class EnrollmentScreen
   // Hands Off flow or Chromad Migration.
   bool IsAutomaticEnrollmentFlow();
 
+  // Returns true if current visible screen is the error screen over
+  // enrollment sign-in page.
+  bool IsEnrollmentScreenHiddenByError();
+
+  void UpdateStateInternal(NetworkError::ErrorReason reason, bool force_update);
+  void SetupAndShowOfflineMessage(NetworkStateInformer::State state,
+                                  NetworkError::ErrorReason reason);
+  void HideOfflineMessage(NetworkStateInformer::State state,
+                          NetworkError::ErrorReason reason);
+
   base::WeakPtr<EnrollmentScreenView> view_;
+  ErrorScreen* error_screen_ = nullptr;
   ScreenExitCallback exit_callback_;
   absl::optional<TpmStatusCallback> tpm_ownership_callback_for_testing_;
   policy::EnrollmentConfig config_;
   policy::EnrollmentConfig enrollment_config_;
   policy::LicenseType license_type_to_use_ = policy::LicenseType::kEnterprise;
+  ErrorScreensHistogramHelper histogram_helper_;
 
   // 'Current' and 'Next' authentication mechanisms to be used.
   Auth current_auth_ = AUTH_OAUTH;
@@ -267,6 +290,14 @@ class EnrollmentScreen
 
   // Whether the ongoing flow belongs to an enterprise rollback.
   bool is_rollback_flow_ = false;
+
+  // Network state informer used to keep signin screen up.
+  scoped_refptr<NetworkStateInformer> network_state_informer_;
+
+  // Used to control observation of network errors on enrollment screen
+  // depending on whenever signin screen is shown.
+  base::ScopedObservation<NetworkStateInformer, NetworkStateInformerObserver>
+      scoped_network_observation_{this};
 
   std::string enrolling_user_domain_;
   std::unique_ptr<base::ElapsedTimer> elapsed_timer_;

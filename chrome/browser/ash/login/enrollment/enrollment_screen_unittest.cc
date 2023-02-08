@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper_mock.h"
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_screen.h"
+#include "chrome/browser/ash/login/screens/mock_error_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
@@ -22,6 +23,8 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/portal_detector/mock_network_portal_detector.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
@@ -74,7 +77,7 @@ class EnrollmentScreenUnitTest : public testing::Test {
   // Creates the EnrollmentScreen and sets required parameters.
   void SetUpEnrollmentScreen(const policy::EnrollmentConfig& config) {
     enrollment_screen_ = std::make_unique<EnrollmentScreen>(
-        mock_view_.AsWeakPtr(),
+        mock_view_.AsWeakPtr(), mock_error_screen_.get(),
         base::BindRepeating(&EnrollmentScreenUnitTest::HandleScreenExit,
                             base::Unretained(this)));
 
@@ -94,16 +97,41 @@ class EnrollmentScreenUnitTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetLocalState(&pref_service_);
     system::StatisticsProvider::SetTestProvider(&statistics_provider_);
     policy::EnrollmentRequisitionManager::Initialize();
+
+    // Initialize network-related objects which are needed for the
+    // `enrollment_screen_`.
+    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
+    network_handler_test_helper_->AddDefaultProfiles();
+    // Will be deleted in `network_portal_detector::Shutdown()`.
+    MockNetworkPortalDetector* mock_network_portal_detector =
+        new MockNetworkPortalDetector();
+    network_portal_detector::SetNetworkPortalDetector(
+        mock_network_portal_detector);
+    mock_error_screen_ =
+        std::make_unique<MockErrorScreen>(mock_error_view_.AsWeakPtr());
+
+    EXPECT_CALL(*mock_network_portal_detector, IsEnabled())
+        .Times(AnyNumber())
+        .WillRepeatedly(testing::Return(false));
   }
 
   void TearDown() override {
     TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
+    enrollment_screen_.reset();
+    mock_error_screen_.reset();
+    network_portal_detector::Shutdown();
+    network_handler_test_helper_.reset();
   }
 
  protected:
   // Objects required by the EnrollmentScreen that can be re-used.
   MockEnrollmentScreenView mock_view_;
+
+  MockErrorScreenView mock_error_view_;
+  std::unique_ptr<MockErrorScreen> mock_error_screen_;
+  // Initializes NetworkHandler and required DBus clients.
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
 
   // Closure passed to EnterpriseEnrollmentHelper::SetupEnrollmentHelperMock
   // which creates the EnterpriseEnrollmentHelperMock object that will

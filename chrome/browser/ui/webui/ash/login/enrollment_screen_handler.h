@@ -9,20 +9,16 @@
 #include <string>
 #include <vector>
 
-#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
-#include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "net/cookies/canonical_cookie.h"
 
 namespace ash {
 
 class CookieWaiter;
-class ErrorScreensHistogramHelper;
 class HelpAppLauncher;
 
 // Possible error states of the Active Directory screen. Must be in the same
@@ -51,16 +47,12 @@ enum class ActiveDirectoryDomainJoinType {
 
 // WebUIMessageHandler implementation which handles events occurring on the
 // page, such as the user pressing the signin button.
-class EnrollmentScreenHandler
-    : public BaseScreenHandler,
-      public EnrollmentScreenView,
-      public NetworkStateInformer::NetworkStateInformerObserver {
+class EnrollmentScreenHandler : public BaseScreenHandler,
+                                public EnrollmentScreenView {
  public:
   using TView = EnrollmentScreenView;
 
-  EnrollmentScreenHandler(
-      const scoped_refptr<NetworkStateInformer>& network_state_informer,
-      ErrorScreen* error_screen);
+  EnrollmentScreenHandler();
 
   EnrollmentScreenHandler(const EnrollmentScreenHandler&) = delete;
   EnrollmentScreenHandler& operator=(const EnrollmentScreenHandler&) = delete;
@@ -81,6 +73,7 @@ class EnrollmentScreenHandler
   void Show() override;
   void Hide() override;
   void ShowSigninScreen() override;
+  void ReloadSigninScreen() override;
   void ShowSkipConfirmationDialog() override;
   void ShowUserError(const std::string& email) override;
   void ShowEnrollmentDuringTrialNotAllowedError() override;
@@ -104,9 +97,6 @@ class EnrollmentScreenHandler
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void GetAdditionalParameters(base::Value::Dict* parameters) override;
-
-  // Implements NetworkStateInformer::NetworkStateInformerObserver
-  void UpdateState(NetworkError::ErrorReason reason) override;
 
   void ContinueAuthenticationWhenCookiesAvailable(const std::string& user,
                                                   int license_type);
@@ -134,11 +124,6 @@ class EnrollmentScreenHandler
   void HandleDeviceAttributesProvided(const std::string& asset_id,
                                       const std::string& location);
   void HandleOnLearnMore();
-  void UpdateStateInternal(NetworkError::ErrorReason reason, bool force_update);
-  void SetupAndShowOfflineMessage(NetworkStateInformer::State state,
-                                  NetworkError::ErrorReason reason);
-  void HideOfflineMessage(NetworkStateInformer::State state,
-                          NetworkError::ErrorReason reason);
 
   // Shows a given enrollment step.
   void ShowStep(const char* step);
@@ -177,10 +162,6 @@ class EnrollmentScreenHandler
   // Returns true if current visible screen is the enrollment sign-in page.
   bool IsOnEnrollmentScreen();
 
-  // Returns true if current visible screen is the error screen over
-  // enrollment sign-in page.
-  bool IsEnrollmentScreenHiddenByError();
-
   // Called after configuration seed was unlocked.
   void OnAdConfigurationUnlocked(std::string unlocked_data);
 
@@ -210,19 +191,7 @@ class EnrollmentScreenHandler
   // renderer processes will be destroyed and can no longer be talked to.
   bool shutdown_ = false;
 
-  // Network state informer used to keep signin screen up.
-  scoped_refptr<NetworkStateInformer> network_state_informer_;
-
-  // Used to control observation of network errors on enrollment screen
-  // depending on whenever signin screen is shown.
-  base::ScopedObservation<NetworkStateInformer, NetworkStateInformerObserver>
-      scoped_network_observation_{this};
-
-  ErrorScreen* error_screen_ = nullptr;
-
   std::string signin_partition_name_;
-
-  std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
 
   // Help application used for help dialogs.
   scoped_refptr<HelpAppLauncher> help_app_;

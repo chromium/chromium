@@ -16,10 +16,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
-#include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -32,11 +30,8 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/login/cookie_waiter.h"
-#include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/components/network/network_state.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/login/localized_values_builder.h"
 #include "components/policy/core/browser/cloud/message_util.h"
 #include "content/public/browser/storage_partition.h"
@@ -98,29 +93,6 @@ std::string EnrollmentModeToUIMode(policy::EnrollmentConfig::Mode mode) {
 
   NOTREACHED() << "Bad enrollment mode " << mode;
   return kEnrollmentModeUIManual;
-}
-
-// Returns network name by service path.
-std::string GetNetworkName(const std::string& service_path) {
-  const NetworkState* network =
-      NetworkHandler::Get()->network_state_handler()->GetNetworkState(
-          service_path);
-  if (!network)
-    return std::string();
-  return network->name();
-}
-
-bool IsBehindCaptivePortal(NetworkStateInformer::State state,
-                           NetworkError::ErrorReason reason) {
-  return state == NetworkStateInformer::CAPTIVE_PORTAL ||
-         reason == NetworkError::ERROR_REASON_PORTAL_DETECTED;
-}
-
-bool IsProxyError(NetworkStateInformer::State state,
-                  NetworkError::ErrorReason reason) {
-  return state == NetworkStateInformer::PROXY_AUTH_REQUIRED ||
-         reason == NetworkError::ERROR_REASON_PROXY_AUTH_CANCELLED ||
-         reason == NetworkError::ERROR_REASON_PROXY_CONNECTION_FAILED;
 }
 
 constexpr struct {
@@ -227,21 +199,10 @@ bool ShouldSpecifyLicenseType(const policy::EnrollmentConfig& config) {
 
 // EnrollmentScreenHandler, public ------------------------------
 
-EnrollmentScreenHandler::EnrollmentScreenHandler(
-    const scoped_refptr<NetworkStateInformer>& network_state_informer,
-    ErrorScreen* error_screen)
-    : BaseScreenHandler(kScreenId),
-      network_state_informer_(network_state_informer),
-      error_screen_(error_screen),
-      histogram_helper_(new ErrorScreensHistogramHelper(
-          ErrorScreensHistogramHelper::ErrorParentScreen::kEnrollment)) {
-  DCHECK(network_state_informer_.get());
-  DCHECK(error_screen_);
-}
+EnrollmentScreenHandler::EnrollmentScreenHandler()
+    : BaseScreenHandler(kScreenId) {}
 
-EnrollmentScreenHandler::~EnrollmentScreenHandler() {
-  scoped_network_observation_.Reset();
-}
+EnrollmentScreenHandler::~EnrollmentScreenHandler() = default;
 
 // EnrollmentScreenHandler, WebUIMessageHandler implementation --
 
@@ -289,13 +250,14 @@ void EnrollmentScreenHandler::Show() {
 
 void EnrollmentScreenHandler::Hide() {
   show_on_init_ = false;
-  scoped_network_observation_.Reset();
 }
 
 void EnrollmentScreenHandler::ShowSigninScreen() {
-  if (!scoped_network_observation_.IsObserving())
-    scoped_network_observation_.Observe(network_state_informer_.get());
   ShowStep(kEnrollmentStepSignin);
+}
+
+void EnrollmentScreenHandler::ReloadSigninScreen() {
+  CallExternalAPI("doReload");
 }
 
 void EnrollmentScreenHandler::ShowUserError(const std::string& email) {
@@ -324,7 +286,6 @@ void EnrollmentScreenHandler::ShowActiveDirectoryScreen(
     const std::string& machine_name,
     const std::string& username,
     authpolicy::ErrorType error) {
-  scoped_network_observation_.Reset();
   if (active_directory_join_type_ == ActiveDirectoryDomainJoinType::COUNT) {
     active_directory_join_type_ =
         ActiveDirectoryDomainJoinType::WITHOUT_CONFIGURATION;
@@ -786,11 +747,6 @@ bool EnrollmentScreenHandler::IsOnEnrollmentScreen() {
   return (GetCurrentScreen() == kScreenId);
 }
 
-bool EnrollmentScreenHandler::IsEnrollmentScreenHiddenByError() {
-  return (GetCurrentScreen() == ErrorScreenView::kScreenId &&
-          error_screen_->GetParentScreen() == kScreenId);
-}
-
 void EnrollmentScreenHandler::OnAdConfigurationUnlocked(
     std::string unlocked_data) {
   if (unlocked_data.empty()) {
@@ -822,99 +778,8 @@ void EnrollmentScreenHandler::OnAdConfigurationUnlocked(
   CallExternalAPI("setAdJoinConfiguration", std::move(*options));
 }
 
-void EnrollmentScreenHandler::UpdateState(NetworkError::ErrorReason reason) {
-  UpdateStateInternal(reason, false);
-}
-
 void EnrollmentScreenHandler::ShowSkipConfirmationDialog() {
   CallExternalAPI("showSkipConfirmationDialog");
-}
-
-// TODO(rsorokin): This function is mostly copied from SigninScreenHandler and
-// should be refactored in the future.
-void EnrollmentScreenHandler::UpdateStateInternal(
-    NetworkError::ErrorReason reason,
-    bool force_update) {
-  if (!force_update && !IsOnEnrollmentScreen() &&
-      !IsEnrollmentScreenHiddenByError()) {
-    return;
-  }
-
-  if (!force_update && !scoped_network_observation_.IsObserving())
-    return;
-
-  NetworkStateInformer::State state = network_state_informer_->state();
-  const bool is_online = (state == NetworkStateInformer::ONLINE);
-  const bool is_behind_captive_portal =
-      (state == NetworkStateInformer::CAPTIVE_PORTAL);
-  const bool is_frame_error = reason == NetworkError::ERROR_REASON_FRAME_ERROR;
-
-  LOG(WARNING) << "EnrollmentScreenHandler::UpdateState(): "
-               << "state=" << state << ", "
-               << "reason=" << NetworkError::ErrorReasonString(reason);
-
-  if (is_online || !is_behind_captive_portal)
-    error_screen_->HideCaptivePortal();
-
-  if (is_frame_error) {
-    LOG(WARNING) << "Retry page load";
-    // TODO(rsorokin): Too many consecutive reloads.
-    CallExternalAPI("doReload");
-  }
-
-  if (!is_online || is_frame_error)
-    SetupAndShowOfflineMessage(state, reason);
-  else
-    HideOfflineMessage(state, reason);
-}
-
-void EnrollmentScreenHandler::SetupAndShowOfflineMessage(
-    NetworkStateInformer::State state,
-    NetworkError::ErrorReason reason) {
-  const std::string network_path = network_state_informer_->network_path();
-  const bool is_behind_captive_portal = IsBehindCaptivePortal(state, reason);
-  const bool is_proxy_error = IsProxyError(state, reason);
-  const bool is_frame_error = reason == NetworkError::ERROR_REASON_FRAME_ERROR;
-
-  if (is_proxy_error) {
-    error_screen_->SetErrorState(NetworkError::ERROR_STATE_PROXY,
-                                 std::string());
-  } else if (is_behind_captive_portal) {
-    // Do not bother a user with obsessive captive portal showing. This
-    // check makes captive portal being shown only once: either when error
-    // screen is shown for the first time or when switching from another
-    // error screen (offline, proxy).
-    if (IsOnEnrollmentScreen() ||
-        (error_screen_->GetErrorState() != NetworkError::ERROR_STATE_PORTAL)) {
-      error_screen_->FixCaptivePortal();
-    }
-    const std::string network_name = GetNetworkName(network_path);
-    error_screen_->SetErrorState(NetworkError::ERROR_STATE_PORTAL,
-                                 network_name);
-  } else if (is_frame_error) {
-    error_screen_->SetErrorState(NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT,
-                                 std::string());
-  } else {
-    error_screen_->SetErrorState(NetworkError::ERROR_STATE_OFFLINE,
-                                 std::string());
-  }
-
-  if (GetCurrentScreen() != ErrorScreenView::kScreenId) {
-    error_screen_->SetUIState(NetworkError::UI_STATE_SIGNIN);
-    error_screen_->SetParentScreen(kScreenId);
-    error_screen_->SetHideCallback(base::BindOnce(
-        &EnrollmentScreenHandler::DoShow, weak_ptr_factory_.GetWeakPtr()));
-    error_screen_->Show(nullptr);
-    histogram_helper_->OnErrorShow(error_screen_->GetErrorState());
-  }
-}
-
-void EnrollmentScreenHandler::HideOfflineMessage(
-    NetworkStateInformer::State state,
-    NetworkError::ErrorReason reason) {
-  if (IsEnrollmentScreenHiddenByError())
-    error_screen_->Hide();
-  histogram_helper_->OnErrorHide();
 }
 
 // EnrollmentScreenHandler, private -----------------------------
@@ -954,7 +819,6 @@ void EnrollmentScreenHandler::HandleCompleteLogin(const std::string& user,
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "HandleCompleteLogin";
-  scoped_network_observation_.Reset();
 
   // When the network service is enabled, the webRequest API doesn't expose
   // cookie headers. So manually fetch the cookies for the GAIA URL from the
@@ -1078,10 +942,7 @@ void EnrollmentScreenHandler::HandleRetry() {
 }
 
 void EnrollmentScreenHandler::HandleFrameLoadingCompleted() {
-  if (network_state_informer_->state() != NetworkStateInformer::ONLINE)
-    return;
-
-  UpdateState(NetworkError::ERROR_REASON_UPDATE);
+  controller_->OnFrameLoadingCompleted();
 }
 
 void EnrollmentScreenHandler::HandleDeviceAttributesProvided(
@@ -1159,9 +1020,8 @@ void EnrollmentScreenHandler::DoShowWithData(base::Value::Dict screen_data) {
   ShowInWebUI(std::move(screen_data));
   if (first_show_) {
     first_show_ = false;
-    UpdateStateInternal(NetworkError::ERROR_REASON_UPDATE, true);
+    controller_->OnFirstShow();
   }
-  histogram_helper_->OnScreenShow();
 }
 
 base::Value::Dict

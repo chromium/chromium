@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/login/enrollment/enrollment_uma.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/userdataauth/install_attributes_util.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
@@ -98,6 +100,11 @@ std::string GetEnterpriseDomainManager() {
   return connector->GetEnterpriseDomainManager();
 }
 
+bool IsOnEnrollmentScreen() {
+  return LoginDisplayHost::default_host()->GetOobeUI()->current_screen() ==
+         EnrollmentScreenView::kScreenId;
+}
+
 constexpr char kUserActionCancelTPMCheck[] = "cancel-tpm-check";
 constexpr char kUserActionSkipDialogConfirmation[] = "skip-confirmation";
 
@@ -133,10 +140,14 @@ EnrollmentScreen* EnrollmentScreen::Get(ScreenManager* manager) {
 }
 
 EnrollmentScreen::EnrollmentScreen(base::WeakPtr<EnrollmentScreenView> view,
+                                   ErrorScreen* error_screen,
                                    const ScreenExitCallback& exit_callback)
     : BaseScreen(EnrollmentScreenView::kScreenId, OobeScreenPriority::DEFAULT),
       view_(std::move(view)),
-      exit_callback_(exit_callback) {
+      error_screen_(error_screen),
+      exit_callback_(exit_callback),
+      histogram_helper_(
+          ErrorScreensHistogramHelper::ErrorParentScreen::kEnrollment) {
   retry_policy_.num_errors_to_ignore = 0;
   retry_policy_.initial_delay_ms = kInitialDelayMS;
   retry_policy_.multiply_factor = kMultiplyFactor;
@@ -149,9 +160,13 @@ EnrollmentScreen::EnrollmentScreen(base::WeakPtr<EnrollmentScreenView> view,
   ad_migration_utils::CheckChromadMigrationOobeFlow(
       base::BindOnce(&EnrollmentScreen::UpdateChromadMigrationOobeFlow,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  network_state_informer_ = base::MakeRefCounted<NetworkStateInformer>();
+  network_state_informer_->Init();
 }
 
 EnrollmentScreen::~EnrollmentScreen() {
+  scoped_network_observation_.Reset();
   DCHECK(!enrollment_helper_ || g_browser_process->IsShuttingDown() ||
          browser_shutdown::IsTryingToQuit() ||
          DBusThreadManager::Get()->IsUsingFakes());
@@ -307,6 +322,10 @@ void EnrollmentScreen::ShowImpl() {
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "Show enrollment screen";
+  histogram_helper_.OnScreenShow();
+  if (!scoped_network_observation_.IsObserving()) {
+    scoped_network_observation_.Observe(network_state_informer_.get());
+  }
   is_rollback_flow_ = IsRollbackFlow(*context());
   if (view_)
     view_->SetEnrollmentController(this);
@@ -431,6 +450,7 @@ void EnrollmentScreen::ShowInteractiveScreen() {
 }
 
 void EnrollmentScreen::HideImpl() {
+  scoped_network_observation_.Reset();
   if (view_)
     view_->Hide();
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -455,6 +475,7 @@ void EnrollmentScreen::OnLoginDone(const std::string& user,
                                    int license_type,
                                    const std::string& auth_code) {
   LOG_IF(ERROR, auth_code.empty()) << "Auth code is empty.";
+  scoped_network_observation_.Reset();
   elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
   enrolling_user_domain_ = gaia::ExtractDomainName(user);
   license_type_to_use_ = static_cast<policy::LicenseType>(license_type);
@@ -621,6 +642,17 @@ void EnrollmentScreen::OnIdentifierEntered(const std::string& email) {
   status_checker_->Fetch(std::move(callback));
 }
 
+void EnrollmentScreen::OnFirstShow() {
+  UpdateStateInternal(NetworkError::ERROR_REASON_UPDATE, true);
+}
+
+void EnrollmentScreen::OnFrameLoadingCompleted() {
+  if (network_state_informer_->state() != NetworkStateInformer::ONLINE) {
+    return;
+  }
+  UpdateState(NetworkError::ERROR_REASON_UPDATE);
+}
+
 void EnrollmentScreen::OnAccountStatusFetched(
     const std::string& email,
     bool result,
@@ -784,6 +816,7 @@ void EnrollmentScreen::JoinDomain(
   authpolicy_login_helper_->set_dm_token(dm_token);
   on_joined_callback_ = std::move(on_joined_callback);
   if (view_) {
+    scoped_network_observation_.Reset();
     view_->ShowActiveDirectoryScreen(
         domain_join_config, std::string() /* machine_name */,
         std::string() /* username */, authpolicy::ERROR_NONE);
@@ -813,6 +846,7 @@ void EnrollmentScreen::OnActiveDirectoryJoined(
   }
   LOG(ERROR) << "Active directory join error: " << error;
   if (view_) {
+    scoped_network_observation_.Reset();
     view_->ShowActiveDirectoryScreen(std::string() /* domain_join_config */,
                                      machine_name, username, error);
   }
@@ -838,6 +872,108 @@ void EnrollmentScreen::UpdateChromadMigrationOobeFlow(bool exists) {
 bool EnrollmentScreen::IsAutomaticEnrollmentFlow() {
   return is_chromad_migration_oobe_flow_ ||
          WizardController::IsZeroTouchHandsOffOobeFlow() || is_rollback_flow_;
+}
+
+bool EnrollmentScreen::IsEnrollmentScreenHiddenByError() {
+  return (LoginDisplayHost::default_host()->GetOobeUI()->current_screen() ==
+              ErrorScreenView::kScreenId &&
+          error_screen_->GetParentScreen() == EnrollmentScreenView::kScreenId);
+}
+
+void EnrollmentScreen::UpdateState(NetworkError::ErrorReason reason) {
+  UpdateStateInternal(reason, false);
+}
+
+// TODO(rsorokin): This function is mostly copied from SigninScreenHandler and
+// should be refactored in the future.
+void EnrollmentScreen::UpdateStateInternal(NetworkError::ErrorReason reason,
+                                           bool force_update) {
+  if (!force_update && !IsOnEnrollmentScreen() &&
+      !IsEnrollmentScreenHiddenByError()) {
+    return;
+  }
+
+  if (!force_update && !scoped_network_observation_.IsObserving()) {
+    return;
+  }
+
+  NetworkStateInformer::State state = network_state_informer_->state();
+  const bool is_online = (state == NetworkStateInformer::ONLINE);
+  const bool is_behind_captive_portal =
+      (state == NetworkStateInformer::CAPTIVE_PORTAL);
+  const bool is_frame_error = reason == NetworkError::ERROR_REASON_FRAME_ERROR;
+
+  LOG(WARNING) << "EnrollmentScreen::UpdateStateInternal(): "
+               << "state=" << state << ", "
+               << "reason=" << NetworkError::ErrorReasonString(reason);
+
+  if (is_online || !is_behind_captive_portal) {
+    error_screen_->HideCaptivePortal();
+  }
+
+  if (is_frame_error) {
+    LOG(WARNING) << "Retry page load";
+    // TODO(rsorokin): Too many consecutive reloads.
+    view_->ReloadSigninScreen();
+  }
+
+  if (!is_online || is_frame_error) {
+    SetupAndShowOfflineMessage(state, reason);
+  } else {
+    HideOfflineMessage(state, reason);
+  }
+}
+
+void EnrollmentScreen::SetupAndShowOfflineMessage(
+    NetworkStateInformer::State state,
+    NetworkError::ErrorReason reason) {
+  const std::string network_path = network_state_informer_->network_path();
+  const bool is_behind_captive_portal =
+      NetworkStateInformer::IsBehindCaptivePortal(state, reason);
+  const bool is_proxy_error = NetworkStateInformer::IsProxyError(state, reason);
+  const bool is_frame_error = reason == NetworkError::ERROR_REASON_FRAME_ERROR;
+
+  if (is_proxy_error) {
+    error_screen_->SetErrorState(NetworkError::ERROR_STATE_PROXY,
+                                 std::string());
+  } else if (is_behind_captive_portal) {
+    // Do not bother a user with obsessive captive portal showing. This
+    // check makes captive portal being shown only once: either when error
+    // screen is shown for the first time or when switching from another
+    // error screen (offline, proxy).
+    if (IsOnEnrollmentScreen() ||
+        (error_screen_->GetErrorState() != NetworkError::ERROR_STATE_PORTAL)) {
+      error_screen_->FixCaptivePortal();
+    }
+    const std::string network_name =
+        NetworkStateInformer::GetNetworkName(network_path);
+    error_screen_->SetErrorState(NetworkError::ERROR_STATE_PORTAL,
+                                 network_name);
+  } else if (is_frame_error) {
+    error_screen_->SetErrorState(NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT,
+                                 std::string());
+  } else {
+    error_screen_->SetErrorState(NetworkError::ERROR_STATE_OFFLINE,
+                                 std::string());
+  }
+
+  if (LoginDisplayHost::default_host()->GetOobeUI()->current_screen() !=
+      ErrorScreenView::kScreenId) {
+    error_screen_->SetUIState(NetworkError::UI_STATE_SIGNIN);
+    error_screen_->SetParentScreen(EnrollmentScreenView::kScreenId);
+    error_screen_->SetHideCallback(
+        base::BindOnce(&EnrollmentScreenView::Show, view_));
+    error_screen_->Show(nullptr);
+    histogram_helper_.OnErrorShow(error_screen_->GetErrorState());
+  }
+}
+
+void EnrollmentScreen::HideOfflineMessage(NetworkStateInformer::State state,
+                                          NetworkError::ErrorReason reason) {
+  if (IsEnrollmentScreenHiddenByError()) {
+    error_screen_->Hide();
+  }
+  histogram_helper_.OnErrorHide();
 }
 
 }  // namespace ash

@@ -17,6 +17,7 @@ namespace ash {
 class MockEnrollmentScreen : public EnrollmentScreen {
  public:
   MockEnrollmentScreen(base::WeakPtr<EnrollmentScreenView> view,
+                       ErrorScreen* error_screen,
                        const ScreenExitCallback& exit_callback);
   ~MockEnrollmentScreen() override;
 
@@ -45,6 +46,7 @@ class MockEnrollmentScreenView : public EnrollmentScreenView {
   MOCK_METHOD(void, MockBind, (EnrollmentScreen * screen));
   MOCK_METHOD(void, MockUnbind, ());
   MOCK_METHOD(void, ShowSigninScreen, ());
+  MOCK_METHOD(void, ReloadSigninScreen, ());
   MOCK_METHOD(void, ShowUserError, (const std::string& email));
   MOCK_METHOD(void, ShowEnrollmentDuringTrialNotAllowedError, ());
   MOCK_METHOD(void, ShowSkipConfirmationDialog, ());

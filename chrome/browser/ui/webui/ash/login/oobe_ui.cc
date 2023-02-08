@@ -374,8 +374,7 @@ void OobeUI::ConfigureOobeDisplay() {
       std::make_unique<ErrorScreen>(GetView<ErrorScreenHandler>()->AsWeakPtr());
   ErrorScreen* error_screen = error_screen_.get();
 
-  AddScreenHandler(std::make_unique<EnrollmentScreenHandler>(
-      network_state_informer_, error_screen));
+  AddScreenHandler(std::make_unique<EnrollmentScreenHandler>());
 
   AddScreenHandler(std::make_unique<LocaleSwitchScreenHandler>(core_handler_));
 

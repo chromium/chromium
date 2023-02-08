@@ -609,6 +609,7 @@ WizardController::CreateScreens() {
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<EnrollmentScreen>(
       oobe_ui->GetView<EnrollmentScreenHandler>()->AsWeakPtr(),
+      oobe_ui->GetErrorScreen(),
       base::BindRepeating(&WizardController::OnEnrollmentScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<ResetScreen>(
