@@ -1935,7 +1935,8 @@ TEST(FormParserTest, SSN_and_OTP) {
       password_manager::features::kNewRegexForOtpFields);
   for (const char16_t* field_name :
        {u"SocialSecurityNumber", u"OneTimePassword", u"SMS-token", u"otp-code",
-        u"input_SMS", u"second.factor"}) {
+        u"input_SMS", u"second.factor", u"2FA", u"Sms{Otp}",
+        u"login$$verif_vcode"}) {
     CheckTestData({
         {
             .description_for_logging = "Field name matches the SSN/OTP pattern,"
