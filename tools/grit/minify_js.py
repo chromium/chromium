@@ -3,7 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-
 import os
 import sys
 import tempfile
@@ -15,8 +14,9 @@ sys.path.insert(0, os.path.join(_SRC_PATH, 'third_party', 'node'))
 import node
 import node_modules
 
+
 def Minify(source):
-  # Open two temporary files, so that uglify can read the input from one and
+  # Open two temporary files, so that terser can read the input from one and
   # write its output to the other.
   with tempfile.NamedTemporaryFile(mode="w+", suffix='.js') as infile, \
        tempfile.NamedTemporaryFile(mode="r+", suffix='.js') as outfile:

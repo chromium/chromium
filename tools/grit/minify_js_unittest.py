@@ -5,7 +5,7 @@
 
 import unittest
 
-import minify_with_uglify
+import minify_js
 
 
 class MinifyWithUglifyTest(unittest.TestCase):
@@ -13,7 +13,7 @@ class MinifyWithUglifyTest(unittest.TestCase):
     source = """
             var foo = 0;
         """
-    minimized = minify_with_uglify.Minify(source)
+    minimized = minify_js.Minify(source)
     self.assertEqual(minimized, "var foo=0;")
 
   def test_complex(self):
@@ -25,6 +25,6 @@ class MinifyWithUglifyTest(unittest.TestCase):
             };
             var qux = foo.bar + foo.baz;
         """
-    minimized = minify_with_uglify.Minify(source)
+    minimized = minify_js.Minify(source)
     self.assertEqual(minimized,
-                      "var foo={bar:0,baz:5};var qux=foo.bar+foo.baz;")
+                     "var foo={bar:0,baz:5};var qux=foo.bar+foo.baz;")

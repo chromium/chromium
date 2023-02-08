@@ -94,7 +94,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/gcc_toolchain.gni")
 import("//tools/grit/grit_args.gni")
 _strip_resource_files = is_android && is_official_build
-_js_minifier = "//tools/grit/minify_with_uglify.py"
+_js_minifier = "//tools/grit/minify_js.py"
 _css_minifier = "//tools/grit/minimize_css.py"
 
 grit_resource_id_target = "//tools/gritsettings:default_resource_ids"
