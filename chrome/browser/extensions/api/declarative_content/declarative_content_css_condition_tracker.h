@@ -15,8 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace base {
@@ -62,7 +61,7 @@ class DeclarativeContentCssPredicate : public ContentPredicate {
 // context, and querying for the matching CSS selectors for a context.
 class DeclarativeContentCssConditionTracker
     : public ContentPredicateEvaluator,
-      public content::NotificationObserver {
+      public content::RenderProcessHostCreationObserver {
  public:
   explicit DeclarativeContentCssConditionTracker(Delegate* delegate);
 
@@ -131,10 +130,8 @@ class DeclarativeContentCssConditionTracker
     std::unordered_set<std::string> matching_css_selectors_;
   };
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // content::RenderProcessHostCreationObserver implementation.
+  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
 
   // Informs renderer processes of a new set of watched CSS selectors.
   void UpdateRenderersWatchedCssSelectors(
@@ -166,9 +163,6 @@ class DeclarativeContentCssConditionTracker
   // Maps WebContents to the tracker for that WebContents state.
   std::map<content::WebContents*, std::unique_ptr<PerWebContentsTracker>>
       per_web_contents_tracker_;
-
-  // Manages our notification registrations.
-  content::NotificationRegistrar registrar_;
 };
 
 }  // namespace extensions
