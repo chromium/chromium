@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
@@ -25,6 +26,7 @@
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "components/sync_preferences/syncable_prefs_database.h"
 
 namespace sync_preferences {
 
@@ -430,6 +432,11 @@ bool PrefModelAssociator::IsPrefSyncedForTesting(
 
 void PrefModelAssociator::RegisterPref(const std::string& name) {
   DCHECK(!base::Contains(registered_preferences_, name));
+  DCHECK(
+      !base::FeatureList::IsEnabled(syncer::kSyncEnforcePreferencesAllowlist) ||
+      client_->GetSyncablePrefsDatabase().IsPreferenceSyncable(name))
+      << "Preference " << name
+      << " has not been added to syncable prefs allowlist";
   registered_preferences_.insert(name);
 }
 
@@ -437,6 +444,11 @@ void PrefModelAssociator::RegisterPrefWithLegacyModelType(
     const std::string& name) {
   DCHECK(!base::Contains(legacy_model_type_preferences_, name));
   DCHECK(!base::Contains(registered_preferences_, name));
+  DCHECK(
+      !base::FeatureList::IsEnabled(syncer::kSyncEnforcePreferencesAllowlist) ||
+      client_->GetSyncablePrefsDatabase().IsPreferenceSyncable(name))
+      << "Preference " << name
+      << " has not been added to syncable prefs allowlist";
   legacy_model_type_preferences_.insert(name);
 }
 

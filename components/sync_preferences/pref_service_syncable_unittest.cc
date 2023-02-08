@@ -30,6 +30,7 @@
 #include "components/sync_preferences/pref_model_associator.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
+#include "components/sync_preferences/syncable_prefs_database.h"
 #include "components/sync_preferences/synced_pref_observer.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -353,6 +354,13 @@ TEST_F(PrefServiceSyncableTest, ModelAssociationWithDataTypeMismatch) {
   EXPECT_THAT(prefs_.GetString(kStringPrefName), Eq(kExampleUrl0));
 }
 
+class TestSyncablePrefsDatabase : public SyncablePrefsDatabase {
+ public:
+  bool IsPreferenceSyncable(const std::string& pref_name) const override {
+    return true;
+  }
+};
+
 class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
  public:
   TestPrefModelAssociatorClient() = default;
@@ -383,6 +391,12 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
   void SetIsDictPref(bool is_dict_pref) { is_dict_pref_ = is_dict_pref; }
 
  private:
+  const SyncablePrefsDatabase& GetSyncablePrefsDatabase() const override {
+    return syncable_prefs_database_;
+  }
+
+  TestSyncablePrefsDatabase syncable_prefs_database_;
+
   bool is_dict_pref_ = true;
 };
 

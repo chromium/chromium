@@ -178,6 +178,10 @@ inline constexpr base::FeatureParam<base::TimeDelta>
                                    "sync_load_models_timeout_duration",
                                    base::Seconds(30)};
 
+// Enable check to ensure only preferences in the allowlist are registered as
+// syncable.
+BASE_DECLARE_FEATURE(kSyncEnforcePreferencesAllowlist);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

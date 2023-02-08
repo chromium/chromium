@@ -11,6 +11,8 @@
 
 namespace sync_preferences {
 
+class SyncablePrefsDatabase;
+
 // This class allows the embedder to configure the PrefModelAssociator to
 // have a different behaviour when receiving preference synchronisations
 // events from the server.
@@ -38,6 +40,12 @@ class PrefModelAssociatorClient {
       const std::string& pref_name,
       const base::Value& local_value,
       const base::Value& server_value) const = 0;
+
+  // Returns a pointer to the instance of SyncablePrefsDatabase. This should
+  // define the list of syncable preferences.
+  // TODO(crbug.com/1401271): Mark this method as pure virtual once
+  // platform-specific implementations are complete.
+  virtual const SyncablePrefsDatabase& GetSyncablePrefsDatabase() const;
 
  protected:
   PrefModelAssociatorClient() {}

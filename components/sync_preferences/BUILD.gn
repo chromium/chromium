@@ -9,12 +9,14 @@ static_library("sync_preferences") {
   sources = [
     "pref_model_associator.cc",
     "pref_model_associator.h",
+    "pref_model_associator_client.cc",
     "pref_model_associator_client.h",
     "pref_service_syncable.cc",
     "pref_service_syncable.h",
     "pref_service_syncable_factory.cc",
     "pref_service_syncable_factory.h",
     "pref_service_syncable_observer.h",
+    "syncable_prefs_database.h",
     "synced_pref_observer.h",
   ]
 
