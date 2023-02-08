@@ -7375,6 +7375,8 @@ bool ChromeContentBrowserClient::OpenExternally(
   // instead, which will load them in an app window.
   bool should_open_in_ash_app =
       from_webui && !crosapi::browser_util::IsAshWebBrowserEnabled() &&
+      // Terminal's tabs must remain in the Terminal SWA.
+      !url.SchemeIs(content::kChromeUIUntrustedScheme) &&
       ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url) &&
       !ash::GetCapturingSystemAppForURL(profile, url);
   if (should_open_in_ash_app) {
