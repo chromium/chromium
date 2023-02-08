@@ -58,6 +58,13 @@ export class CrTextareaElement extends PolymerElement {
         observer: 'onDisabledChanged_',
       },
 
+      /** Whether the text area is required. */
+      required: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
       /** Maximum length (in characters) of the text area. */
       maxlength: {
         type: Number,
@@ -140,6 +147,7 @@ export class CrTextareaElement extends PolymerElement {
   override autofocus: boolean;
   disabled: boolean;
   readonly: boolean;
+  required: boolean;
   rows: number;
   label: string;
   value: string;

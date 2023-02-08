@@ -32,6 +32,7 @@
     white-space: var(--cr-input-error-white-space);
   }
 
+  :host([invalid]) #label,
   :host([invalid]) #footerContainer {
     color: var(--cr-input-error-color);
   }
@@ -87,7 +88,8 @@
       value="{{value::input}}" aria-label$="[[label]]"
       on-focus="onInputFocusChange_" on-blur="onInputFocusChange_"
       on-change="onInputChange_" disabled="[[disabled]]"
-      maxlength$="[[maxlength]]" readonly$="[[readonly]]"></textarea>
+      maxlength$="[[maxlength]]" readonly$="[[readonly]]"
+      required$="[[required]]"></textarea>
   <div id="underline"></div>
 </div>
 <div id="footerContainer" class="cr-row">
