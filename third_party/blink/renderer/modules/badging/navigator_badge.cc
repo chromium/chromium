@@ -103,7 +103,9 @@ ScriptPromise NavigatorBadge::SetAppBadgeHelper(
     return ScriptPromise();
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+  // TODO(crbug.com/1413916): The service is implemented in Chrome, so it may
+  // not be provided in other embedders. Ensure that case is handled properly.
   From(script_state).badge_service()->SetBadge(std::move(badge_value));
 #endif
   return ScriptPromise::CastUndefined(script_state);
@@ -120,7 +122,9 @@ ScriptPromise NavigatorBadge::ClearAppBadgeHelper(
     return ScriptPromise();
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+  // TODO(crbug.com/1413916): The service is implemented in Chrome, so it may
+  // not be provided in other embedders. Ensure that case is handled properly.
   From(script_state).badge_service()->ClearBadge();
 #endif
   return ScriptPromise::CastUndefined(script_state);
