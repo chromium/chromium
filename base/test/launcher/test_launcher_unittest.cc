@@ -1313,10 +1313,10 @@ TEST(TestLauncherTools, GetTestOutputSnippetTest) {
             "[  SKIPPED ] TestCase.ThirdTest (0 ms)\n");
 }
 
-void CheckTruncatationPreservesMessage(std::string message) {
+MATCHER(CheckTruncationPreservesMessage, "") {
   // Ensure the inserted message matches the expected pattern.
   constexpr char kExpected[] = R"(FATAL.*message\n)";
-  ASSERT_THAT(message, ::testing::ContainsRegex(kExpected));
+  EXPECT_THAT(arg, ::testing::ContainsRegex(kExpected));
 
   const std::string snippet =
       base::StrCat({"[ RUN      ] SampleTestSuite.SampleTestName\n"
@@ -1326,7 +1326,7 @@ void CheckTruncatationPreservesMessage(std::string message) {
                     "Padding log message added for testing purposes\n"
                     "Padding log message added for testing purposes\n"
                     "Padding log message added for testing purposes\n",
-                    message,
+                    arg,
                     "Padding log message added for testing purposes\n"
                     "Padding log message added for testing purposes\n"
                     "Padding log message added for testing purposes\n"
@@ -1335,24 +1335,16 @@ void CheckTruncatationPreservesMessage(std::string message) {
                     "Padding log message added for testing purposes\n"});
 
   // Strip the stack trace off the end of message.
-  size_t line_end_pos = message.find("\n");
-  std::string first_line = message.substr(0, line_end_pos + 1);
+  size_t line_end_pos = arg.find("\n");
+  std::string first_line = arg.substr(0, line_end_pos + 1);
 
   const std::string result = TruncateSnippetFocused(snippet, 300);
   EXPECT_TRUE(result.find(first_line) > 0);
   EXPECT_EQ(result.length(), 300UL);
+  return true;
 }
 
 void MatchesFatalMessagesTest() {
-  // Use a static because only captureless lambdas can be converted to a
-  // function pointer for SetLogMessageHandler().
-  static base::NoDestructor<std::string> log_string;
-  logging::SetLogMessageHandler([](int severity, const char* file, int line,
-                                   size_t start,
-                                   const std::string& str) -> bool {
-    *log_string = str;
-    return true;
-  });
   // Different Chrome test suites have different settings for their logs.
   // E.g. unit tests may not show the process ID (as they are single process),
   // whereas browser tests usually do (as they are multi-process). This
@@ -1364,27 +1356,27 @@ void MatchesFatalMessagesTest() {
     // Process ID, Thread ID, Timestamp and Tickcount.
     logging::SetLogItems(true, true, true, true);
     logging::SetLogPrefix(nullptr);
-    LOG(FATAL) << "message";
-    CheckTruncatationPreservesMessage(*log_string);
+    EXPECT_DEATH_IF_SUPPORTED(LOG(FATAL) << "message",
+                              CheckTruncationPreservesMessage());
   }
   {
     logging::SetLogItems(false, false, false, false);
     logging::SetLogPrefix(nullptr);
-    LOG(FATAL) << "message";
-    CheckTruncatationPreservesMessage(*log_string);
+    EXPECT_DEATH_IF_SUPPORTED(LOG(FATAL) << "message",
+                              CheckTruncationPreservesMessage());
   }
   {
     // Process ID, Thread ID, Timestamp and Tickcount.
     logging::SetLogItems(true, true, true, true);
-    logging::SetLogPrefix("my_log_prefix");
-    LOG(FATAL) << "message";
-    CheckTruncatationPreservesMessage(*log_string);
+    logging::SetLogPrefix("mylogprefix");
+    EXPECT_DEATH_IF_SUPPORTED(LOG(FATAL) << "message",
+                              CheckTruncationPreservesMessage());
   }
   {
     logging::SetLogItems(false, false, false, false);
-    logging::SetLogPrefix("my_log_prefix");
-    LOG(FATAL) << "message";
-    CheckTruncatationPreservesMessage(*log_string);
+    logging::SetLogPrefix("mylogprefix");
+    EXPECT_DEATH_IF_SUPPORTED(LOG(FATAL) << "message",
+                              CheckTruncationPreservesMessage());
   }
 }
 
