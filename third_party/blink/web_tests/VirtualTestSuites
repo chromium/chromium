@@ -896,13 +896,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "top-level-storage-access-api",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [ "external/wpt/top-level-storage-access-api" ],
-    "args": [ "--enable-features=StorageAccessAPI,StorageAccessAPIForOriginExtension" ],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "web-bluetooth-new-permissions-backend",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/bluetooth", "external/wpt/bluetooth"],
