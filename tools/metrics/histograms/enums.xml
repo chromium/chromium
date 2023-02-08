@@ -100529,6 +100529,7 @@ would be helpful to identify which type is being sent.
   <int value="5" label="Empty fields in the form"/>
   <int value="6" label="More than two fields in the form"/>
   <int value="7" label="2-field form (username+password)"/>
+  <int value="8" label="Password field not found"/>
 </enum>
 
 <enum name="TouchToFill.UserAction">

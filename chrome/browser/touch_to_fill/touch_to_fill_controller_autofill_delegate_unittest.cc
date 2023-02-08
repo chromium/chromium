@@ -699,12 +699,16 @@ TEST_P(TouchToFillControllerAutofillTestWithSubmissionReadinessVariationTest,
        SubmissionReadiness) {
   SubmissionReadinessState submission_readiness = GetParam();
 
-  UiCredential credentials[] = {
-      MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
+  const UiCredential credential =
+      MakeUiCredential({.username = "alice", .password = "p4ssw0rd"});
+  const UiCredential credentials[] = {credential};
 
-  // If there is no field after the password, then submit the form.
+  // If there is no field after the password and both username and password
+  // fields are there, then submit the form.
   bool submission_expected =
-      submission_readiness > SubmissionReadinessState::kFieldAfterPasswordField;
+      submission_readiness == SubmissionReadinessState::kEmptyFields ||
+      submission_readiness == SubmissionReadinessState::kMoreThanTwoFields ||
+      submission_readiness == SubmissionReadinessState::kTwoFields;
   EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            ElementsAreArray(std::vector<PasskeyCredential>()),
@@ -712,8 +716,13 @@ TEST_P(TouchToFillControllerAutofillTestWithSubmissionReadinessVariationTest,
   touch_to_fill_controller().Show(
       credentials, {}, MakeTouchToFillControllerDelegate(submission_readiness));
 
-  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(true)));
-  touch_to_fill_controller().OnDismiss();
+  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
+  EXPECT_CALL(driver(),
+              FillSuggestion(credential.username(), credential.password()));
+  EXPECT_CALL(driver(), TriggerFormSubmission())
+      .Times(submission_expected ? 1 : 0);
+
+  touch_to_fill_controller().OnCredentialSelected(credential);
 }
 
 TEST_P(TouchToFillControllerAutofillTestWithSubmissionReadinessVariationTest,
@@ -758,4 +767,5 @@ INSTANTIATE_TEST_SUITE_P(
                     SubmissionReadinessState::kFieldAfterPasswordField,
                     SubmissionReadinessState::kEmptyFields,
                     SubmissionReadinessState::kMoreThanTwoFields,
-                    SubmissionReadinessState::kTwoFields));
+                    SubmissionReadinessState::kTwoFields,
+                    SubmissionReadinessState::kNoPasswordField));
