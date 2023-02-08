@@ -5,15 +5,7 @@
 import "oaidl.idl";
 import "ocidl.idl";
 
-// Backward-compatible, Omaha public interfaces.
-
-// The following are copied from omaha3_idl.idl:
-//   enum CurrentState.
-//   interface ICurrentState.
-//   interface IGoogleUpdate3Web.
-//   interface IAppBundleWeb.
-//   interface IAppWeb.
-//   coclass GoogleUpdate3WebUserClass.
+// Backward-compatible, Omaha public interfaces copied from omaha3_idl.idl.
 
 // The normal install flow proceeds from STATE_INIT through
 // STATE_INSTALL_COMPLETE in order, skipping states that are not relevant.
@@ -49,6 +41,26 @@ enum AppCommandStatus {
   COMMAND_STATUS_ERROR = 3,
   // The command has completed execution.
   COMMAND_STATUS_COMPLETE = 4,
+};
+
+[
+  object,
+  dual,
+  uuid(PLACEHOLDER-GUID-AA10D17D-7A09-48AC-B1E4-F124937E3D26),
+  helpstring("IAppVersionWeb Interface"),
+  pointer_default(unique)
+]
+interface IAppVersionWeb : IDispatch {
+  [propget] HRESULT version([out, retval] BSTR*);
+
+  // Returns the count of the Packages in the AppVersion.
+  [propget] HRESULT packageCount([out, retval] long* count);
+
+  // TODO(omaha3): Implement this after a security review.
+  // Returns an IDispatch of the Package in the AppVersion at the specified
+  // 0-based index.
+  [propget] HRESULT packageWeb([in] long index,
+                               [out, retval] IDispatch** package);
 };
 
 [
@@ -559,6 +571,7 @@ library UpdaterLegacyLib {
     [default] interface IUnknown;
   }
 
+  interface IAppVersionWeb;
   interface ICurrentState;
   interface IGoogleUpdate3Web;
   interface IAppBundleWeb;

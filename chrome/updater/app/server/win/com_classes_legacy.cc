@@ -108,6 +108,43 @@ std::string GetStringFromValue(const std::vector<std::string>& value) {
 
 namespace updater {
 
+// Implements `IAppVersionWeb`.
+class AppVersionWebImpl : public IDispatchImpl<IAppVersionWeb> {
+ public:
+  AppVersionWebImpl() = default;
+  AppVersionWebImpl(const AppVersionWebImpl&) = delete;
+  AppVersionWebImpl& operator=(const AppVersionWebImpl&) = delete;
+
+  HRESULT RuntimeClassInitialize(const std::wstring& version) {
+    version_ = version;
+
+    return S_OK;
+  }
+
+  // Overrides for IAppVersionWeb.
+  IFACEMETHODIMP get_version(BSTR* version) override {
+    DCHECK(version);
+
+    *version = base::win::ScopedBstr(version_).Release();
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_packageCount(long* count) override {
+    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
+    return E_NOTIMPL;
+  }
+
+  IFACEMETHODIMP get_packageWeb(long index, IDispatch** package) override {
+    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
+    return E_NOTIMPL;
+  }
+
+ private:
+  ~AppVersionWebImpl() override = default;
+
+  std::wstring version_;
+};
+
 // Implements `ICurrentState`. Initialized with a snapshot of the current state
 // of the install.
 class CurrentStateImpl : public IDispatchImpl<ICurrentState> {
@@ -359,18 +396,67 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
   // Overrides for IAppWeb.
   IFACEMETHODIMP get_appId(BSTR* app_id) override {
-    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-    return E_NOTIMPL;
+    DCHECK(app_id);
+
+    *app_id = base::win::ScopedBstr(base::ASCIIToWide(app_id_)).Release();
+    return S_OK;
   }
 
   IFACEMETHODIMP get_currentVersionWeb(IDispatch** current) override {
-    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-    return E_NOTIMPL;
+    // Holds the result of the IPC to retrieve the current version.
+    struct CurrentVersionResult
+        : public base::RefCountedThreadSafe<CurrentVersionResult> {
+      absl::optional<base::Version> current_version;
+      base::WaitableEvent completion_event;
+
+     private:
+      friend class base::RefCountedThreadSafe<CurrentVersionResult>;
+      virtual ~CurrentVersionResult() = default;
+    };
+
+    auto result = base::MakeRefCounted<CurrentVersionResult>();
+    AppServerSingletonInstance()->main_task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](const std::string app_id,
+               scoped_refptr<CurrentVersionResult> result) {
+              const base::ScopedClosureRunner signal_event(base::BindOnce(
+                  [](scoped_refptr<CurrentVersionResult> result) {
+                    result->completion_event.Signal();
+                  },
+                  result));
+
+              const base::Version current_version =
+                  base::MakeRefCounted<const PersistedData>(
+                      GetUpdaterScope(),
+                      AppServerSingletonInstance()->prefs()->GetPrefService())
+                      ->GetProductVersion(app_id);
+              if (!current_version.IsValid()) {
+                return;
+              }
+
+              result->current_version = current_version;
+            },
+            app_id_, result));
+
+    if (!result->completion_event.TimedWait(base::Seconds(60)) ||
+        !result->current_version.has_value()) {
+      return E_FAIL;
+    }
+
+    return Microsoft::WRL::MakeAndInitialize<AppVersionWebImpl>(
+        current, base::ASCIIToWide(result->current_version->GetString()));
   }
 
   IFACEMETHODIMP get_nextVersionWeb(IDispatch** next) override {
-    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-    return E_NOTIMPL;
+    base::AutoLock lock{lock_};
+
+    if (!state_update_ || !state_update_->next_version.IsValid()) {
+      return E_FAIL;
+    }
+
+    return Microsoft::WRL::MakeAndInitialize<AppVersionWebImpl>(
+        next, base::ASCIIToWide(state_update_->next_version.GetString()));
   }
 
   IFACEMETHODIMP get_command(BSTR command_id, IDispatch** command) override {
