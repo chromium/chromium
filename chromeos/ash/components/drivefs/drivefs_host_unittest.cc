@@ -189,13 +189,12 @@ class TestingDriveFsHostDelegate : public DriveFsHost::Delegate,
 
   bool IsVerboseLoggingEnabled() override { return verbose_logging_enabled_; }
 
-  drivefs::mojom::DriveFsDelegate::ExtensionConnectionStatus ConnectToExtension(
+  drivefs::mojom::ExtensionConnectionStatus ConnectToExtension(
       drivefs::mojom::ExtensionConnectionParamsPtr params,
       mojo::PendingReceiver<drivefs::mojom::NativeMessagingPort> port,
       mojo::PendingRemote<drivefs::mojom::NativeMessagingHost> host) override {
     extension_params_ = std::move(params);
-    return drivefs::mojom::DriveFsDelegate::ExtensionConnectionStatus::
-        kExtensionNotFound;
+    return drivefs::mojom::ExtensionConnectionStatus::kExtensionNotFound;
   }
 
   const std::string GetMachineRootID() override { return ""; }
@@ -907,11 +906,10 @@ TEST_F(DriveFsHostTest, ConnectToExtension) {
       drivefs::mojom::ExtensionConnectionParams::New("foo"),
       remote.BindNewPipeAndPassReceiver(), std::move(host_remote),
       base::BindLambdaForTesting(
-          [&](drivefs::mojom::DriveFsDelegate::ExtensionConnectionStatus
-                  status) {
-            EXPECT_EQ(drivefs::mojom::DriveFsDelegate::
-                          ExtensionConnectionStatus::kExtensionNotFound,
-                      status);
+          [&](drivefs::mojom::ExtensionConnectionStatus status) {
+            EXPECT_EQ(
+                drivefs::mojom::ExtensionConnectionStatus::kExtensionNotFound,
+                status);
             run_loop.Quit();
           }));
   run_loop.Run();

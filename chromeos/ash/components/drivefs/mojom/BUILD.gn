@@ -13,7 +13,10 @@ mojom_component("mojom") {
     "fake_drivefs_launcher.mojom",
   ]
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//chromeos/components/drivefs/mojom",
+    "//mojo/public/mojom/base",
+  ]
 
   output_prefix = "drivefs_mojom"
   macro_prefix = "DRIVEFS_MOJOM"

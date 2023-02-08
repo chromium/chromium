@@ -29,12 +29,12 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/drive/drivefs_native_message_host.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/drivefs/drivefs_native_message_host.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/drive/drive_notification_manager_factory.h"
@@ -610,7 +610,7 @@ class DriveIntegrationService::DriveFsHolder
         prefs::kDriveFsEnableVerboseLogging);
   }
 
-  drivefs::mojom::DriveFsDelegate::ExtensionConnectionStatus ConnectToExtension(
+  drivefs::mojom::ExtensionConnectionStatus ConnectToExtension(
       drivefs::mojom::ExtensionConnectionParamsPtr params,
       mojo::PendingReceiver<drivefs::mojom::NativeMessagingPort> port,
       mojo::PendingRemote<drivefs::mojom::NativeMessagingHost> host) override {

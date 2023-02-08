@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/drive/drivefs_native_message_host.h"
+#include "chrome/browser/chromeos/drivefs/drivefs_native_message_host.h"
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
-#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -28,7 +25,7 @@ using testing::InvokeWithoutArgs;
 
 class MockClient : public extensions::NativeMessageHost::Client {
  public:
-  MockClient() {}
+  MockClient() = default;
 
   MockClient(const MockClient&) = delete;
   MockClient& operator=(const MockClient&) = delete;
@@ -45,7 +42,6 @@ class MockClient : public extensions::NativeMessageHost::Client {
 
 class DriveFsNativeMessageHostTest
     : public testing::Test,
-      public drivefs::mojom::DriveFsInterceptorForTesting,
       public drivefs::mojom::NativeMessagingHost {
  public:
   DriveFsNativeMessageHostTest() = default;
@@ -54,15 +50,10 @@ class DriveFsNativeMessageHostTest
   DriveFsNativeMessageHostTest& operator=(const DriveFsNativeMessageHostTest&) =
       delete;
 
-  DriveFs* GetForwardingInterface() override {
-    NOTREACHED();
-    return nullptr;
-  }
-
   void CreateNativeHostSession(
       drivefs::mojom::ExtensionConnectionParamsPtr params,
       mojo::PendingReceiver<drivefs::mojom::NativeMessagingHost> session,
-      mojo::PendingRemote<drivefs::mojom::NativeMessagingPort> port) override {
+      mojo::PendingRemote<drivefs::mojom::NativeMessagingPort> port) {
     params_ = std::move(params);
     extension_port_.Bind(std::move(port));
     receiver_.Bind(std::move(session));
@@ -86,7 +77,7 @@ TEST_F(DriveFsNativeMessageHostTest, DriveFsInitiatedMessaging) {
   base::RunLoop run_loop;
 
   std::unique_ptr<extensions::NativeMessageHost> host =
-      CreateDriveFsInitiatedNativeMessageHost(
+      CreateDriveFsInitiatedNativeMessageHostInternal(
           extension_port_.BindNewPipeAndPassReceiver(),
           receiver_.BindNewPipeAndPassRemote());
   MockClient client;
@@ -107,7 +98,9 @@ TEST_F(DriveFsNativeMessageHostTest, ExtensionInitiatedMessaging) {
   base::RunLoop run_loop;
 
   std::unique_ptr<extensions::NativeMessageHost> host =
-      CreateDriveFsNativeMessageHostForTesting(this);
+      CreateDriveFsNativeMessageHost(
+          base::BindOnce(&DriveFsNativeMessageHostTest::CreateNativeHostSession,
+                         base::Unretained(this)));
   MockClient client;
   host->Start(&client);
   EXPECT_CALL(*this, HandleMessageFromExtension("foo"))
@@ -121,7 +114,7 @@ TEST_F(DriveFsNativeMessageHostTest, ExtensionInitiatedMessaging) {
 
 TEST_F(DriveFsNativeMessageHostTest, NativeHostSendsMessageBeforeStart) {
   std::unique_ptr<extensions::NativeMessageHost> host =
-      CreateDriveFsInitiatedNativeMessageHost(
+      CreateDriveFsInitiatedNativeMessageHostInternal(
           extension_port_.BindNewPipeAndPassReceiver(),
           receiver_.BindNewPipeAndPassRemote());
   MockClient client;
@@ -145,7 +138,7 @@ TEST_F(DriveFsNativeMessageHostTest, Error) {
   base::RunLoop run_loop;
 
   std::unique_ptr<extensions::NativeMessageHost> host =
-      CreateDriveFsInitiatedNativeMessageHost(
+      CreateDriveFsInitiatedNativeMessageHostInternal(
           extension_port_.BindNewPipeAndPassReceiver(),
           receiver_.BindNewPipeAndPassRemote());
   MockClient client;

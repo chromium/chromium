@@ -1,0 +1,40 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module drivefs.mojom;
+
+[Stable, Extensible]
+enum ExtensionConnectionStatus {
+  kSuccess,
+  kExtensionNotFound,
+  kFeatureNotEnabled,
+  [Default] kUnknownError,
+};
+
+// Implemented in the browser and used from DriveFS.
+// Roughly corresponds to a native messaging port to the extension and allows
+// sending messages from the DriveFS process to the extension.
+[Stable]
+interface NativeMessagingPort {
+  // Send a native |message| to the extension. |message| is an
+  // opaque string in an extension-specific format.
+  PostMessageToExtension@0(string message);
+};
+
+// Implemented in DriveFS and used from the browser.
+// Roughly corresponds to a native messaging host instance and allows
+// processing of requests from the extension by the DriveFS process.
+// It's up to the extension and the host to agree to message ordering.
+[Stable]
+interface NativeMessagingHost {
+  // Process |message| from the extension. |message| is an
+  // opaque string in an extension-specific format.
+  HandleMessageFromExtension@0(string message);
+};
+
+// Configuration of the connection between extension and DriveFS.
+[Stable]
+struct ExtensionConnectionParams {
+  string extension_id@0;
+};

@@ -1046,6 +1046,7 @@ static_library("extensions") {
       ]
     }
     deps += [
+      "//chrome/browser/chromeos/drivefs:native_message_host_origins",
       "//chrome/browser/chromeos/extensions:constants",
 
       # TODO(crbug.com/1340540): Find an appropriate spot for vpn_provider.

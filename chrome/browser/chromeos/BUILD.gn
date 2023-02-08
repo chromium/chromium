@@ -495,6 +495,7 @@ source_set("unit_tests") {
     "//url",
 
     # Unit tests from subdirectories.
+    "//chrome/browser/chromeos/drivefs:unit_tests",
     "//chrome/browser/chromeos/extensions/telemetry:unit_tests",
     "//chrome/browser/chromeos/launcher_search:unit_tests",
   ]

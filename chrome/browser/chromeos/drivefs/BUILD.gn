@@ -1,0 +1,43 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+source_set("native_message_host_origins") {
+  deps = [ "//base" ]
+  sources = [
+    "drivefs_native_message_host_origins.cc",
+    "drivefs_native_message_host_origins.h",
+  ]
+}
+
+source_set("drivefs") {
+  deps = [
+    "//base",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/components/drivefs/mojom",
+    "//components/drive",
+    "//extensions/browser/api/messaging",
+    "//extensions/browser/api/messaging:native_messaging",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings",
+  ]
+  public_deps = [ ":native_message_host_origins" ]
+  sources = [
+    "drivefs_native_message_host.cc",
+    "drivefs_native_message_host.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":drivefs",
+    "//base/test:test_support",
+    "//extensions/browser/api/messaging:native_messaging",
+    "//mojo/public/cpp/bindings",
+  ]
+  sources = [ "drivefs_native_message_host_unittest.cc" ]
+}
