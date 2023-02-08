@@ -616,6 +616,8 @@ void PinManager::OnSearchResultForSizeCalculation(
     Add(*item->metadata, item->path);
   }
 
+  VLOG(1) << "Skipped " << progress_.skipped_files << " files, Tracking "
+          << files_to_track_.size() << " files";
   NotifyProgress();
   DCHECK(search_query_);
   search_query_->GetNextPage(base::BindOnce(
