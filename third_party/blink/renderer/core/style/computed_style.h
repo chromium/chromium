@@ -578,40 +578,25 @@ class ComputedStyle : public ComputedStyleBase,
     return BorderImage().Outset();
   }
 
+  static LayoutUnit BorderWidth(EBorderStyle style, LayoutUnit width) {
+    if (style == EBorderStyle::kNone || style == EBorderStyle::kHidden) {
+      return LayoutUnit();
+    }
+    return width;
+  }
+
   // Border width properties.
   LayoutUnit BorderTopWidth() const {
-    if (BorderTopStyle() == EBorderStyle::kNone ||
-        BorderTopStyle() == EBorderStyle::kHidden) {
-      return LayoutUnit(0);
-    }
-    return BorderTopWidthInternal();
+    return BorderWidth(BorderTopStyle(), BorderTopWidthInternal());
   }
-
-  // border-bottom-width
   LayoutUnit BorderBottomWidth() const {
-    if (BorderBottomStyle() == EBorderStyle::kNone ||
-        BorderBottomStyle() == EBorderStyle::kHidden) {
-      return LayoutUnit(0);
-    }
-    return BorderBottomWidthInternal();
+    return BorderWidth(BorderBottomStyle(), BorderBottomWidthInternal());
   }
-
-  // border-left-width
   LayoutUnit BorderLeftWidth() const {
-    if (BorderLeftStyle() == EBorderStyle::kNone ||
-        BorderLeftStyle() == EBorderStyle::kHidden) {
-      return LayoutUnit(0);
-    }
-    return BorderLeftWidthInternal();
+    return BorderWidth(BorderLeftStyle(), BorderLeftWidthInternal());
   }
-
-  // border-right-width
   LayoutUnit BorderRightWidth() const {
-    if (BorderRightStyle() == EBorderStyle::kNone ||
-        BorderRightStyle() == EBorderStyle::kHidden) {
-      return LayoutUnit(0);
-    }
-    return BorderRightWidthInternal();
+    return BorderWidth(BorderRightStyle(), BorderRightWidthInternal());
   }
 
   // box-shadow (aka -webkit-box-shadow)
@@ -2775,9 +2760,6 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   ComputedStyleBuilder& operator=(const ComputedStyleBuilder&) = delete;
   ComputedStyleBuilder& operator=(ComputedStyleBuilder&&) = default;
 
-  // TODO(crbug.com/1377295): Eventually remove these functions.
-  const ComputedStyle* InternalStyle() const { return style_.get(); }
-
   scoped_refptr<ComputedStyle> TakeStyle() { return std::move(style_); }
 
   // NOTE: Prefer `TakeStyle()` if possible.
@@ -2863,6 +2845,24 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     return BackgroundInternal().AnyLayerHasUrlImage();
   }
   void ClearBackgroundImage();
+
+  // border-*-width
+  LayoutUnit BorderTopWidth() const {
+    return ComputedStyle::BorderWidth(BorderTopStyle(),
+                                      BorderTopWidthInternal());
+  }
+  LayoutUnit BorderBottomWidth() const {
+    return ComputedStyle::BorderWidth(BorderBottomStyle(),
+                                      BorderBottomWidthInternal());
+  }
+  LayoutUnit BorderLeftWidth() const {
+    return ComputedStyle::BorderWidth(BorderLeftStyle(),
+                                      BorderLeftWidthInternal());
+  }
+  LayoutUnit BorderRightWidth() const {
+    return ComputedStyle::BorderWidth(BorderRightStyle(),
+                                      BorderRightWidthInternal());
+  }
 
   // border-image-*
   void SetBorderImageOutset(const BorderImageLengthBox& outset) {

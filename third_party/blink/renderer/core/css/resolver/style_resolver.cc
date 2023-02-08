@@ -343,11 +343,10 @@ void UseCountLegacyOverlapping(Document& document,
   if (a.BorderImage() != b.BorderImage()) {
     document.CountUse(WebFeature::kCSSLegacyBorderImage);
   }
-  const ComputedStyle& b_style = *b.InternalStyle();
-  if ((a.BorderTopWidth() != b_style.BorderTopWidth()) ||
-      (a.BorderRightWidth() != b_style.BorderRightWidth()) ||
-      (a.BorderBottomWidth() != b_style.BorderBottomWidth()) ||
-      (a.BorderLeftWidth() != b_style.BorderLeftWidth())) {
+  if ((a.BorderTopWidth() != b.BorderTopWidth()) ||
+      (a.BorderRightWidth() != b.BorderRightWidth()) ||
+      (a.BorderBottomWidth() != b.BorderBottomWidth()) ||
+      (a.BorderLeftWidth() != b.BorderLeftWidth())) {
     document.CountUse(WebFeature::kCSSLegacyBorderImageWidth);
   }
 }
