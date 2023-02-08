@@ -218,16 +218,16 @@ class DrawFrame {
     const transformMatrix = context.getTransform();
     context.resetTransform();
 
-    context.fillStyle = 'black';
-    context.font = "16px Courier bold";
+    context.font = "16px 'Courier bold', monospace";
 
-    const frameNumberPosX = 3;
-    const frameNumberPosY = 15;
-    this.drawText(context,
-                  this.num_,
-                  frameNumberPosX,
-                  frameNumberPosY,
-                  transformMatrix);
+    // Draw the frame number
+    {
+      context.textBaseline = "bottom";
+      context.fillStyle = "black";
+      var newTextPos = transformMatrix.transformPoint(new DOMPoint(0, 0));
+      context.fillText(this.num_, newTextPos.x, newTextPos.y);
+    }
+
 
     for (const text of this.drawTexts_) {
       // If thread not enabled, then skip text calls from this thread.
@@ -264,6 +264,35 @@ class DrawFrame {
   drawText(context, text, posX, posY, transformMatrix) {
     // TODO: Set the text alignment based on the transform.
     var newTextPos = transformMatrix.transformPoint(new DOMPoint(posX, posY));
+
+    // Make the origin of text the top-left, similar to rectangles.
+    context.textBaseline = "top";
+
+    // Fill a background rectangle behind the text with the current fill color.
+    const measure = context.measureText(text);
+    context.fillRect(
+      newTextPos.x,
+      newTextPos.y,
+      measure.width,
+      measure.actualBoundingBoxDescent - measure.actualBoundingBoxAscent
+    );
+
+    function perceptualBrightness(hexColor) {
+      const r = parseInt(hexColor.substr(1, 2), 16) / 255;
+      const g = parseInt(hexColor.substr(3, 2), 16) / 255;
+      const b = parseInt(hexColor.substr(5, 2), 16) / 255;
+      return Math.sqrt(
+        0.299 * Math.pow(r, 2) + 0.587 * Math.pow(g, 2) + 0.114 * Math.pow(b, 2)
+      );
+    }
+
+    // Attempt to make the text contrast better against the background.
+    if (perceptualBrightness(context.fillStyle) > 0.65) {
+      context.fillStyle = "black";
+    } else {
+      context.fillStyle = "white";
+    }
+
     context.fillText(text, newTextPos.x, newTextPos.y);
   }
 
