@@ -26,8 +26,6 @@ namespace viz {
 class VIZ_SERVICE_EXPORT OverlayProcessorWin
     : public OverlayProcessorInterface {
  public:
-  using CandidateList = std::vector<DCLayerOverlayCandidate>;
-
   OverlayProcessorWin(
       OutputSurface* output_surface,
       std::unique_ptr<DCLayerOverlayProcessor> dc_layer_overlay_processor);
@@ -65,7 +63,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
       OutputSurfaceOverlayPlane* output_surface_plane,
-      CandidateList* overlay_candidates,
+      OverlayCandidateList* overlay_candidates,
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) override;
 

@@ -26,6 +26,7 @@
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
+#include "ui/gfx/video_types.h"
 
 namespace gfx {
 class Rect;
@@ -130,6 +131,13 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   ResourceId resource_id = kInvalidResourceId;
   // Mailbox from resource_id. It is used by SkiaRenderer.
   gpu::Mailbox mailbox;
+
+#if BUILDFLAG(IS_WIN)
+  gfx::ProtectedVideoType protected_video_type =
+      gfx::ProtectedVideoType::kClear;
+
+  bool is_video_fullscreen_letterboxing = false;
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   // For candidates from TextureDrawQuads with is_stream_video set to true, this

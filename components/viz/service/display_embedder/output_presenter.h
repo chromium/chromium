@@ -130,12 +130,8 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane& plane,
       Image* image,
       bool is_submitted) = 0;
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_OZONE)
-  using OverlayPlaneCandidate = OverlayCandidate;
-#elif BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   using OverlayPlaneCandidate = CALayerOverlay;
-#elif BUILDFLAG(IS_WIN)
-  using OverlayPlaneCandidate = DCLayerOverlayCandidate;
 #else
   // Default.
   using OverlayPlaneCandidate = OverlayCandidate;

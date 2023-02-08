@@ -2662,11 +2662,8 @@ void SkiaRenderer::ScheduleOverlays() {
   DCHECK(output_surface_->capabilities().supports_surfaceless);
 #endif
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
-  // CrOS and Android SurfaceControl use this code path. Android classic has
-  // switched over to OverlayProcessor.
-  // TODO(weiliangc): Remove this when CrOS and Android SurfaceControl switch
-  // to OverlayProcessor as well.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+  // CrOS, Android SurfaceControl, and Windows use this code path.
   for (auto& overlay : current_frame()->overlay_list) {
     if (overlay.is_root_render_pass) {
       continue;
@@ -2682,26 +2679,6 @@ void SkiaRenderer::ScheduleOverlays() {
 
     overlay.mailbox = lock.mailbox();
     DCHECK(!overlay.mailbox.IsZero());
-  }
-#elif BUILDFLAG(IS_WIN)
-  for (auto& dc_layer_overlay : current_frame()->overlay_list) {
-    ResourceId resource_id = dc_layer_overlay.resource_id;
-    if (resource_id == kInvalidResourceId) {
-      continue;
-    }
-
-    // Resources will be unlocked after the next SwapBuffers() is completed.
-    locks.emplace_back(resource_provider(), resource_id);
-    auto& lock = locks.back();
-
-    // Sync tokens ensure the texture to be overlaid is available before
-    // scheduling it for display.
-    if (lock.sync_token().HasData()) {
-      sync_tokens.push_back(lock.sync_token());
-    }
-
-    dc_layer_overlay.mailbox = lock.mailbox();
-    DCHECK(!dc_layer_overlay.mailbox.IsZero());
   }
 #elif BUILDFLAG(IS_APPLE)
   for (CALayerOverlay& ca_layer_overlay : current_frame()->overlay_list) {
@@ -2767,12 +2744,12 @@ void SkiaRenderer::ScheduleOverlays() {
     overlay.mailbox = lock.mailbox();
     DCHECK(!overlay.mailbox.IsZero());
   }
-#else   // BUILDFLAG(IS_ANDROID)
+#else
   // For platforms that don't support overlays, the
   // current_frame()->overlay_list should be empty, and this code should not be
   // reached.
   NOTREACHED();
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif
 
   DCHECK(!current_gpu_commands_completed_fence_->was_set());
   DCHECK(!current_release_fence_->was_set());

@@ -12,6 +12,7 @@
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/display/aggregated_frame.h"
+#include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -23,54 +24,6 @@
 namespace viz {
 struct DebugRendererSettings;
 class DisplayResourceProvider;
-
-// TODO(weiliangc): Eventually fold this into OverlayProcessorWin and
-// OverlayCandidate class.
-// Holds all information necessary to construct a direct composition overlay
-// from a DrawQuad.
-class VIZ_SERVICE_EXPORT DCLayerOverlayCandidate {
- public:
-  DCLayerOverlayCandidate();
-  DCLayerOverlayCandidate(const DCLayerOverlayCandidate& other);
-  DCLayerOverlayCandidate& operator=(const DCLayerOverlayCandidate& other);
-  ~DCLayerOverlayCandidate();
-
-  // Resource id for a single NV12 image or a swap chain image. See
-  // DCLayerOverlayImage for details.
-  ResourceId resource_id = kInvalidResourceId;
-
-  // Mailbox corresponding to |resource_id|. This is populated in SkiaRenderer
-  // for accessing the textures on the GPU thread.
-  gpu::Mailbox mailbox;
-
-  // Stacking order relative to backbuffer which has z-order 0.
-  int z_order = 1;
-
-  // What part of the content to display in pixels.
-  gfx::Rect content_rect;
-
-  // Bounds of the overlay in pre-transform space.
-  gfx::Rect quad_rect;
-
-  // 2D flattened transform that maps |quad_rect| to root target space,
-  // after applying the |quad_rect.origin()| as an offset.
-  gfx::Transform transform;
-
-  // If |clip_rect| is present, then clip to it in root target space.
-  absl::optional<gfx::Rect> clip_rect;
-
-  // This is the color-space the texture should be displayed as. If invalid,
-  // then the default for the texture should be used. For YUV textures, that's
-  // normally BT.709.
-  gfx::ColorSpace color_space;
-
-  gfx::ProtectedVideoType protected_video_type =
-      gfx::ProtectedVideoType::kClear;
-
-  gfx::HDRMetadata hdr_metadata;
-
-  bool is_video_fullscreen_letterboxing = false;
-};
 
 class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
     : public gl::DirectCompositionOverlayCapsObserver {
@@ -97,7 +50,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
                        AggregatedRenderPass* render_pass,
                        gfx::Rect* damage_rect,
                        SurfaceDamageRectList surface_damage_rect_list,
-                       std::vector<DCLayerOverlayCandidate>* dc_layer_overlays,
+                       OverlayCandidateList* dc_layer_overlays,
                        bool is_video_capture_enabled,
                        bool is_page_fullscreen_mode);
   void ClearOverlayState();
@@ -121,17 +74,16 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
 
   // UpdateDCLayerOverlays() adds the quad at |it| to the overlay list
   // |dc_layer_overlays|.
-  void UpdateDCLayerOverlays(
-      const gfx::RectF& display_rect,
-      AggregatedRenderPass* render_pass,
-      const QuadList::Iterator& it,
-      const gfx::Rect& quad_rectangle_in_root_space,
-      bool is_overlay,
-      QuadList::Iterator* new_it,
-      size_t* new_index,
-      gfx::Rect* damage_rect,
-      std::vector<DCLayerOverlayCandidate>* dc_layer_overlays,
-      bool is_page_fullscreen_mode);
+  void UpdateDCLayerOverlays(const gfx::RectF& display_rect,
+                             AggregatedRenderPass* render_pass,
+                             const QuadList::Iterator& it,
+                             const gfx::Rect& quad_rectangle_in_root_space,
+                             bool is_overlay,
+                             QuadList::Iterator* new_it,
+                             size_t* new_index,
+                             gfx::Rect* damage_rect,
+                             OverlayCandidateList* dc_layer_overlays,
+                             bool is_page_fullscreen_mode);
 
   // Returns an iterator to the element after |it|.
   QuadList::Iterator ProcessForOverlay(const gfx::RectF& display_rect,
@@ -143,18 +95,17 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
                           const QuadList::Iterator& it,
                           size_t processed_overlay_count,
                           gfx::Rect* damage_rect,
-                          DCLayerOverlayCandidate* dc_layer);
+                          OverlayCandidate* dc_layer);
 
   void UpdateRootDamageRect(const gfx::RectF& display_rect,
                             gfx::Rect* damage_rect);
 
   void RemoveOverlayDamageRect(const QuadList::Iterator& it);
 
-  void InsertDebugBorderDrawQuad(
-      const std::vector<DCLayerOverlayCandidate>* dc_layer_overlays,
-      AggregatedRenderPass* render_pass,
-      const gfx::RectF& display_rect,
-      gfx::Rect* damage_rect);
+  void InsertDebugBorderDrawQuad(const OverlayCandidateList* dc_layer_overlays,
+                                 AggregatedRenderPass* render_pass,
+                                 const gfx::RectF& display_rect,
+                                 gfx::Rect* damage_rect);
   bool IsPreviousFrameUnderlayRect(const gfx::Rect& quad_rectangle,
                                    size_t index);
 

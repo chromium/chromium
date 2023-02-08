@@ -35,6 +35,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gl/dc_layer_overlay_params.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -214,15 +215,22 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
 
     auto params = std::make_unique<gl::DCLayerOverlayParams>();
     params->overlay_image = std::move(overlay_image);
-    params->z_order = dc_layer.z_order;
-    params->content_rect = dc_layer.content_rect;
-    params->quad_rect = dc_layer.quad_rect;
-    DCHECK(dc_layer.transform.IsFlat());
-    params->transform = dc_layer.transform;
+    params->z_order = dc_layer.plane_z_order;
+
+    // SwapChainPresenter uses the size of the overlay's resource in pixels to
+    // calculate its swap chain size. `uv_rect` maps the portion of
+    // `resource_size_in_pixels` that will be displayed.
+    params->content_rect = gfx::ToNearestRect(gfx::ScaleRect(
+        dc_layer.uv_rect, dc_layer.resource_size_in_pixels.width(),
+        dc_layer.resource_size_in_pixels.height()));
+
+    params->quad_rect = gfx::ToEnclosingRect(dc_layer.display_rect);
+    DCHECK(absl::holds_alternative<gfx::Transform>(dc_layer.transform));
+    params->transform = absl::get<gfx::Transform>(dc_layer.transform);
     params->clip_rect = dc_layer.clip_rect;
     params->protected_video_type = dc_layer.protected_video_type;
     params->color_space = dc_layer.color_space;
-    params->hdr_metadata = dc_layer.hdr_metadata;
+    params->hdr_metadata = dc_layer.hdr_metadata.value_or(gfx::HDRMetadata());
     params->is_video_fullscreen_letterboxing =
         dc_layer.is_video_fullscreen_letterboxing;
 

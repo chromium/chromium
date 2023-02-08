@@ -312,8 +312,8 @@ void OutputPresenterGL::ScheduleOverlayPlane(
     ScopedOverlayAccess* access,
     std::unique_ptr<gfx::GpuFence> acquire_fence) {
   // Note that |overlay_plane_candidate| has different types on different
-  // platforms. On Android and Ozone it is an OverlayCandidate, on Windows it is
-  // a DCLayerOverlayCandidate, and on macOS it is a CALayeroverlay.
+  // platforms. On Android, Ozone, and Windows, it is an OverlayCandidate and on
+  // macOS it is a CALayeroverlay.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_OZONE)
 #if BUILDFLAG(IS_OZONE)
   // TODO(crbug.com/1366808): Add ScopedOverlayAccess::GetOverlayImage() that
