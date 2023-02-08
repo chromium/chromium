@@ -313,6 +313,12 @@
   E_CPONLY(kColorSidePanelBadgeForegroundUpdated) \
   E_CPONLY(kColorSidePanelContentAreaSeparator) \
   E_CPONLY(kColorSidePanelContentBackground) \
+  E_CPONLY(kColorSidePanelFilterChipBorder) \
+  E_CPONLY(kColorSidePanelFilterChipForeground) \
+  E_CPONLY(kColorSidePanelFilterChipForegroundSelected) \
+  E_CPONLY(kColorSidePanelFilterChipIcon) \
+  E_CPONLY(kColorSidePanelFilterChipIconSelected) \
+  E_CPONLY(kColorSidePanelFilterChipBackgroundSelected) \
   /* Status bubble colors. */ \
   E_CPONLY(kColorStatusBubbleBackgroundFrameActive) \
   E_CPONLY(kColorStatusBubbleBackgroundFrameInactive) \

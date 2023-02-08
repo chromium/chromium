@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/color/material_side_panel_color_mixer.h"
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
@@ -19,4 +20,15 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
   mixer[kColorSidePanelBadgeForeground] = {ui::kColorSysOnSurfaceVariant};
   mixer[kColorSidePanelBadgeForegroundUpdated] = {
       ui::kColorSysOnTertiaryContainer};
+
+  // TODO(crbug.com/1400859): Finalize filter chip colors.
+  mixer[kColorSidePanelFilterChipBorder] = {ui::kColorButtonBackgroundTonal};
+  mixer[kColorSidePanelFilterChipForeground] = {ui::kColorSysOnSurface};
+  mixer[kColorSidePanelFilterChipForegroundSelected] = {
+      ui::kColorSysOnPrimaryContainer};
+  mixer[kColorSidePanelFilterChipIcon] = {ui::kColorSysPrimary};
+  mixer[kColorSidePanelFilterChipIconSelected] = {
+      ui::kColorSysOnPrimaryContainer};
+  mixer[kColorSidePanelFilterChipBackgroundSelected] = {
+      ui::kColorSysPrimaryContainer};
 }
