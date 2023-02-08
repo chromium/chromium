@@ -119,6 +119,7 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
     mojo::Remote<storage::mojom::ServiceWorkerResourceReader> copy_reader,
     mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer,
     int64_t writer_resource_id,
+    ScriptChecksumUpdateOption script_checksum_update_option,
     ResultCallback callback)
     : script_url_(script_url),
       is_main_script_(is_main_script),
@@ -126,6 +127,7 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
       force_bypass_cache_(force_bypass_cache),
       update_via_cache_(update_via_cache),
       time_since_last_check_(time_since_last_check),
+      script_checksum_update_option_(script_checksum_update_option),
       network_watcher_(FROM_HERE,
                        mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                        base::SequencedTaskRunner::GetCurrentDefault()),
@@ -163,10 +165,22 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
     resource_request.load_flags |= net::LOAD_VALIDATE_CACHE;
   }
 
+  ServiceWorkerCacheWriter::ChecksumUpdateTiming checksum_update_timing;
+  switch (script_checksum_update_option_) {
+    case ScriptChecksumUpdateOption::kForceUpdate:
+      checksum_update_timing =
+          ServiceWorkerCacheWriter::ChecksumUpdateTiming::kAlways;
+      break;
+    case ScriptChecksumUpdateOption::kDefault:
+      checksum_update_timing =
+          ServiceWorkerCacheWriter::ChecksumUpdateTiming::kCacheMismatch;
+      break;
+  }
+
   cache_writer_ = ServiceWorkerCacheWriter::CreateForComparison(
       std::move(compare_reader), std::move(copy_reader), std::move(writer),
       writer_resource_id, /*pause_when_not_identical=*/true,
-      ServiceWorkerCacheWriter::ChecksumUpdateTiming::kCacheMismatch);
+      checksum_update_timing);
 
   // Service worker update checking doesn't have a relevant frame and tab, so
   // that `web_contents_getter` returns nullptr and the frame id is set to
@@ -632,7 +646,8 @@ void ServiceWorkerSingleScriptUpdateChecker::Fail(
   Finish(Result::kFailed,
          /*paused_state=*/nullptr,
          std::make_unique<FailureInfo>(status, error_message,
-                                       std::move(network_status)));
+                                       std::move(network_status)),
+         /*sha256_checksum=*/absl::nullopt);
 }
 
 void ServiceWorkerSingleScriptUpdateChecker::Succeed(
@@ -641,20 +656,43 @@ void ServiceWorkerSingleScriptUpdateChecker::Succeed(
   TRACE_EVENT_WITH_FLOW1(
       "ServiceWorker", "ServiceWorkerSingleScriptUpdateChecker::Succeed", this,
       TRACE_EVENT_FLAG_FLOW_IN, "result", ResultToString(result));
-
   DCHECK_NE(result, Result::kFailed);
-  Finish(result, std::move(paused_state), /*failure_info=*/nullptr);
+
+  // Get calculated sha256 checksum when below conditions are both satisfied:
+  // 1: |script_checksum_update_option_| is kForceUpdate.
+  // 2: |result| is kIdentical.
+  //
+  // When the result is kDifferent, |cache_writer_| doesn't scan all the data
+  // and it can be pausing. In this case, the finalized checksum is still not
+  // available here, and that will be handled in
+  // ServiceWorkerUpdatedScriptLoader.
+  absl::optional<std::string> sha256_checksum;
+  if (script_checksum_update_option_ ==
+          ScriptChecksumUpdateOption::kForceUpdate &&
+      result == Result::kIdentical) {
+    DCHECK(cache_writer_);
+    DCHECK_EQ(cache_writer_->checksum_update_timing(),
+              ServiceWorkerCacheWriter::ChecksumUpdateTiming::kAlways);
+    sha256_checksum = cache_writer_->GetSha256Checksum();
+  }
+
+  Finish(result, std::move(paused_state), /*failure_info=*/nullptr,
+         sha256_checksum);
 }
 
 void ServiceWorkerSingleScriptUpdateChecker::Finish(
     Result result,
     std::unique_ptr<PausedState> paused_state,
-    std::unique_ptr<FailureInfo> failure_info) {
+    std::unique_ptr<FailureInfo> failure_info,
+    const absl::optional<std::string>& sha256_checksum) {
   network_watcher_.Cancel();
   if (Result::kDifferent == result) {
     DCHECK(paused_state);
+    // When the result if kDifferent, the checksum will be handled by
+    // ServiceWorkerUpdatedScriptLoader.
     std::move(callback_).Run(script_url_, result, nullptr,
-                             std::move(paused_state));
+                             std::move(paused_state),
+                             /*sha256_checksum=*/absl::nullopt);
     return;
   }
 
@@ -662,7 +700,7 @@ void ServiceWorkerSingleScriptUpdateChecker::Finish(
   network_client_receiver_.reset();
   network_consumer_.reset();
   std::move(callback_).Run(script_url_, result, std::move(failure_info),
-                           nullptr);
+                           nullptr, sha256_checksum);
 }
 
 ServiceWorkerSingleScriptUpdateChecker::PausedState::PausedState(

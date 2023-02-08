@@ -682,6 +682,8 @@ void ServiceWorkerNewScriptLoader::CommitCompleted(
     CHECK_EQ(WriterState::kCompleted, body_writer_state_);
     CHECK(cache_writer_->did_replace());
     bytes_written = cache_writer_->bytes_written();
+    DCHECK_EQ(cache_writer_->checksum_update_timing(),
+              ServiceWorkerCacheWriter::ChecksumUpdateTiming::kCacheMismatch);
     sha256_checksum = cache_writer_->GetSha256Checksum();
   } else {
     // When we fail a main script fetch, we do not have a renderer in which to

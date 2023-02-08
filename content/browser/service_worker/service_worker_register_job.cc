@@ -363,7 +363,10 @@ bool ServiceWorkerRegisterJob::IsUpdateCheckNeeded() const {
 void ServiceWorkerRegisterJob::OnUpdateCheckFinished(
     ServiceWorkerSingleScriptUpdateChecker::Result result,
     std::unique_ptr<ServiceWorkerSingleScriptUpdateChecker::FailureInfo>
-        failure_info) {
+        failure_info,
+    // TODO(crbug.com/1371756) `updated_sha256_script_checksums` will be used in
+    // a follow-up CL.
+    const std::map<GURL, std::string>& updated_sha256_script_checksums) {
   // Update check failed.
   if (result == ServiceWorkerSingleScriptUpdateChecker::Result::kFailed) {
     DCHECK(failure_info);
@@ -622,10 +625,13 @@ void ServiceWorkerRegisterJob::UpdateAndContinue() {
   int64_t script_resource_id =
       version_to_update->script_cache_map()->LookupResourceId(script_url_);
   DCHECK_NE(script_resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
+  const absl::optional<std::string> script_sha256_chekcsum =
+      version_to_update->script_cache_map()->LookupSha256Checksum(script_url_);
 
   update_checker_ = std::make_unique<ServiceWorkerUpdateChecker>(
-      std::move(resources), script_url_, script_resource_id, version_to_update,
-      std::move(loader_factory), force_bypass_cache_, worker_script_type_,
+      std::move(resources), script_url_, script_resource_id,
+      script_sha256_chekcsum, version_to_update, std::move(loader_factory),
+      force_bypass_cache_, worker_script_type_,
       registration()->update_via_cache(), time_since_last_check, context_,
       outside_fetch_client_settings_object_.Clone());
   update_checker_->Start(

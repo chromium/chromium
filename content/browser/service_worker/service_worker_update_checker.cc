@@ -12,6 +12,7 @@
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_single_script_update_checker.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -31,6 +32,7 @@ ServiceWorkerUpdateChecker::ServiceWorkerUpdateChecker(
         scripts_to_compare,
     const GURL& main_script_url,
     int64_t main_script_resource_id,
+    const absl::optional<std::string>& main_script_sha256_checksum,
     scoped_refptr<ServiceWorkerVersion> version_to_update,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     bool force_bypass_cache,
@@ -41,6 +43,7 @@ ServiceWorkerUpdateChecker::ServiceWorkerUpdateChecker(
     blink::mojom::FetchClientSettingsObjectPtr fetch_client_settings_object)
     : main_script_url_(main_script_url),
       main_script_resource_id_(main_script_resource_id),
+      main_script_sha256_checksum_(main_script_sha256_checksum),
       scripts_to_compare_(std::move(scripts_to_compare)),
       version_to_update_(std::move(version_to_update)),
       loader_factory_(std::move(loader_factory)),
@@ -81,12 +84,25 @@ void ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished(
     std::unique_ptr<ServiceWorkerSingleScriptUpdateChecker::FailureInfo>
         failure_info,
     std::unique_ptr<ServiceWorkerSingleScriptUpdateChecker::PausedState>
-        paused_state) {
+        paused_state,
+    const absl::optional<std::string>& sha256_checksum) {
   TRACE_EVENT_WITH_FLOW2(
       "ServiceWorker", "ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished",
       this, TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "script_url",
       script_url.spec(), "result",
       ServiceWorkerSingleScriptUpdateChecker::ResultToString(result));
+
+  // If calculated checksum exists, add it to the set.
+  // |sha256_checksum| will be set only when cached scripts don't have sha256
+  // checksum fields and the update check results in kIdentical.
+  // When the result is kDifferent, the update check process doesn't scan all
+  // the data so the hash update is not completed yet. In this case, the
+  // finalized checksum is still not available here, and that will be handled in
+  // ServiceWorkerUpdatedScriptLoader.
+  if (sha256_checksum &&
+      result == ServiceWorkerSingleScriptUpdateChecker::Result::kIdentical) {
+    updated_sha256_script_checksums_[script_url] = *sha256_checksum;
+  }
 
   bool is_main_script = script_url == main_script_url_;
   // We only cares about the failures on the main script because an imported
@@ -102,7 +118,7 @@ void ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished(
 
     std::move(callback_).Run(
         ServiceWorkerSingleScriptUpdateChecker::Result::kFailed,
-        std::move(failure_info));
+        std::move(failure_info), std::map<GURL, std::string>());
     return;
   }
 
@@ -130,7 +146,7 @@ void ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished(
     // Note that running |callback_| will delete |this|.
     std::move(callback_).Run(
         ServiceWorkerSingleScriptUpdateChecker::Result::kDifferent,
-        nullptr /* failure_info */);
+        nullptr /* failure_info */, std::map<GURL, std::string>());
     return;
   }
 
@@ -144,7 +160,7 @@ void ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished(
     // Running |callback_| will delete |this|.
     std::move(callback_).Run(
         ServiceWorkerSingleScriptUpdateChecker::Result::kIdentical,
-        nullptr /* failure_info */);
+        nullptr /* failure_info */, updated_sha256_script_checksums_);
     return;
   }
 
@@ -162,7 +178,7 @@ void ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished(
       // Running |callback_| will delete |this|.
       std::move(callback_).Run(
           ServiceWorkerSingleScriptUpdateChecker::Result::kIdentical,
-          nullptr /* failure_info */);
+          nullptr /* failure_info */, updated_sha256_script_checksums_);
       return;
     }
   }
@@ -233,6 +249,13 @@ void ServiceWorkerUpdateChecker::OnResourceIdAssignedForOneScriptCheck(
       context_->process_manager()->browser_context(), loader_factory_,
       std::move(compare_reader), std::move(copy_reader), std::move(writer),
       new_resource_id,
+      // If the main script checksum is empty, then calculate each script
+      // checksum even if the check result is kIdentical.
+      main_script_sha256_checksum_
+          ? ServiceWorkerSingleScriptUpdateChecker::ScriptChecksumUpdateOption::
+                kDefault
+          : ServiceWorkerSingleScriptUpdateChecker::ScriptChecksumUpdateOption::
+                kForceUpdate,
       base::BindOnce(&ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished,
                      weak_factory_.GetWeakPtr(), resource_id));
 }

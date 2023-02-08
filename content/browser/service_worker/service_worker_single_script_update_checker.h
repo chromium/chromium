@@ -43,6 +43,22 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
     kDifferent,
   };
 
+  // These values indicate if the update check returns the updated sha256
+  // checksum from |cache_writer_|.
+  //
+  // kDefault: By default, this class doesn't handle the script sha256
+  // checksum. The checksum is updated only when there is a cache mismatch but
+  // this class never checks it.
+  // kForceUpdate: If this value is passed to the ctor of this class,
+  // the checksum is updated even when there is no cache mismatch, and the
+  // updated checksum is passed to the |ResultCallback| param only if the check
+  // result is |kIdentical|. If the result is |kDifferent| or others, the
+  // checksum wouldn't be passed.
+  enum class ScriptChecksumUpdateOption {
+    kDefault,
+    kForceUpdate,
+  };
+
   // This contains detailed error info of update check when it failed.
   struct CONTENT_EXPORT FailureInfo {
     FailureInfo(blink::ServiceWorkerStatusCode status,
@@ -111,10 +127,12 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
   // is transferred to the callback in the PausedState only when the result is
   // Result::kDifferent. Otherwise it's set to nullptr. FailureInfo is set to a
   // valid value if the result is Result::kFailed, otherwise it'll be nullptr.
-  using ResultCallback = base::OnceCallback<void(const GURL&,
-                                                 Result,
-                                                 std::unique_ptr<FailureInfo>,
-                                                 std::unique_ptr<PausedState>)>;
+  using ResultCallback = base::OnceCallback<void(
+      const GURL&,
+      Result,
+      std::unique_ptr<FailureInfo>,
+      std::unique_ptr<PausedState>,
+      const absl::optional<std::string>& sha256_checksum)>;
 
   ServiceWorkerSingleScriptUpdateChecker() = delete;
 
@@ -140,6 +158,7 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
       mojo::Remote<storage::mojom::ServiceWorkerResourceReader> copy_reader,
       mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer,
       int64_t write_resource_id,
+      ScriptChecksumUpdateOption script_checksum_update_option,
       ResultCallback callback);
 
   ServiceWorkerSingleScriptUpdateChecker(
@@ -198,7 +217,8 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
   void Succeed(Result result, std::unique_ptr<PausedState> paused_state);
   void Finish(Result result,
               std::unique_ptr<PausedState> paused_state,
-              std::unique_ptr<FailureInfo> failure_info);
+              std::unique_ptr<FailureInfo> failure_info,
+              const absl::optional<std::string>& sha256_checksum);
 
   const GURL script_url_;
   const bool is_main_script_;
@@ -207,6 +227,8 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
   const blink::mojom::ServiceWorkerUpdateViaCache update_via_cache_;
   const base::TimeDelta time_since_last_check_;
   bool network_accessed_ = false;
+  const ScriptChecksumUpdateOption script_checksum_update_option_ =
+      ScriptChecksumUpdateOption::kDefault;
   scoped_refptr<PolicyContainerHost> policy_container_host_;
 
   // The endpoint called by `network_loader_`. That needs to be alive while

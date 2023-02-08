@@ -32,6 +32,15 @@ int64_t ServiceWorkerScriptCacheMap::LookupResourceId(const GURL& url) {
   return found->second->resource_id;
 }
 
+absl::optional<std::string> ServiceWorkerScriptCacheMap::LookupSha256Checksum(
+    const GURL& url) {
+  ResourceMap::const_iterator found = resource_map_.find(url);
+  if (found == resource_map_.end()) {
+    return absl::nullopt;
+  }
+  return found->second->sha256_checksum;
+}
+
 void ServiceWorkerScriptCacheMap::NotifyStartedCaching(const GURL& url,
                                                        int64_t resource_id) {
   DCHECK_EQ(blink::mojom::kInvalidServiceWorkerResourceId,

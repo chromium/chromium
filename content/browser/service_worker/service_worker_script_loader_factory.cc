@@ -236,6 +236,8 @@ void ServiceWorkerScriptLoaderFactory::OnCopyScriptFinished(
   }
 
   int64_t resource_size = cache_writer_->bytes_written();
+  DCHECK_EQ(cache_writer_->checksum_update_timing(),
+            ServiceWorkerCacheWriter::ChecksumUpdateTiming::kCacheMismatch);
   std::string sha256_checksum = cache_writer_->GetSha256Checksum();
   cache_writer_.reset();
   scoped_refptr<ServiceWorkerVersion> version = worker_host_->version();

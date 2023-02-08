@@ -75,10 +75,16 @@ class CONTENT_EXPORT ServiceWorkerUpdateChecker {
   //    Some script changed, update is needed. |failure_info| is nullptr.
   // 3. ServiceWorkerSingleScriptUpdateChecker::Result::kFailed
   //    The update check failed, detailed error info is in |failure_info|.
+  //
+  // |updated_sha256_script_checksums| contains the pair of updated hash string
+  // and its script url. It's normally empty, except for the case when
+  // |main_script_sha256_checksum_| has a value, and the update check finished
+  // with kIdentical.
   using UpdateStatusCallback = base::OnceCallback<void(
       ServiceWorkerSingleScriptUpdateChecker::Result result,
       std::unique_ptr<ServiceWorkerSingleScriptUpdateChecker::FailureInfo>
-          failure_info)>;
+          failure_info,
+      const std::map<GURL, std::string>& updated_sha256_script_checksums)>;
 
   ServiceWorkerUpdateChecker() = delete;
 
@@ -87,6 +93,7 @@ class CONTENT_EXPORT ServiceWorkerUpdateChecker {
           scripts_to_compare,
       const GURL& main_script_url,
       int64_t main_script_resource_id,
+      const absl::optional<std::string>& main_script_sha256_checksum,
       scoped_refptr<ServiceWorkerVersion> version_to_update,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       bool force_bypass_cache,
@@ -116,7 +123,8 @@ class CONTENT_EXPORT ServiceWorkerUpdateChecker {
       std::unique_ptr<ServiceWorkerSingleScriptUpdateChecker::FailureInfo>
           failure_info,
       std::unique_ptr<ServiceWorkerSingleScriptUpdateChecker::PausedState>
-          paused_state);
+          paused_state,
+      const absl::optional<std::string>& sha256_checksum);
 
   const GURL& updated_script_url() const { return updated_script_url_; }
   bool network_accessed() const { return network_accessed_; }
@@ -132,6 +140,7 @@ class CONTENT_EXPORT ServiceWorkerUpdateChecker {
 
   const GURL main_script_url_;
   const int64_t main_script_resource_id_;
+  const absl::optional<std::string> main_script_sha256_checksum_;
 
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>
       scripts_to_compare_;
@@ -158,6 +167,11 @@ class CONTENT_EXPORT ServiceWorkerUpdateChecker {
 
   // True if any at least one of the scripts is fetched by network.
   bool network_accessed_ = false;
+
+  // Contains the pair of updated hash string and its script url.
+  // This manages newly calculated checksum strings so that we store them on
+  // memory and database.
+  std::map<GURL, std::string> updated_sha256_script_checksums_;
 
   scoped_refptr<PolicyContainerHost> policy_container_host_;
 

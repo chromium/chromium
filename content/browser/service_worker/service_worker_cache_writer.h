@@ -163,6 +163,10 @@ class CONTENT_EXPORT ServiceWorkerCacheWriter {
   // of the checksum. It resets |checksum_| not to be called multiple times.
   std::string GetSha256Checksum();
 
+  ChecksumUpdateTiming checksum_update_timing() const {
+    return checksum_update_timing_;
+  }
+
  private:
   class ReadResponseHeadCallbackAdapter;
   class DataPipeReader;

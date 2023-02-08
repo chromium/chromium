@@ -939,8 +939,7 @@ void ServiceWorkerCacheWriter::AsyncDoLoop(int result) {
 }
 
 std::string ServiceWorkerCacheWriter::GetSha256Checksum() {
-  DCHECK(STATE_DONE == state_ ||
-         checksum_update_timing_ == ChecksumUpdateTiming::kAlways);
+  DCHECK_EQ(STATE_DONE, state_);
   DCHECK(checksum_);
   uint8_t result[crypto::kSHA256Length];
   checksum_->Finish(result, crypto::kSHA256Length);
