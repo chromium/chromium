@@ -24,6 +24,7 @@ extern const char kWebViewSelectiveImageInversionDarkening[];
 extern const char kWebViewFencedFrames[];
 extern const char kWebViewDisableAppRecovery[];
 extern const char kWebViewEnableAppRecovery[];
+extern const char kWebViewEnableTrustTokensComponent[];
 
 }  // namespace switches
 

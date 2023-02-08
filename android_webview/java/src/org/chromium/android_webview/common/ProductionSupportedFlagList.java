@@ -369,6 +369,10 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature("WebViewEnableDnsPrefetchAndPreconnect"),
             Flag.baseFeature(BlinkFeatures.KEYBOARD_FOCUSABLE_SCROLLERS,
                     "When enabled, can focus on a scroller element using the keyboard."),
+            Flag.commandLine(AwSwitches.WEBVIEW_ENABLE_TRUST_TOKENS_COMPONENT,
+                    "Enables downloading TrustTokenKeyCommitmentsComponent by the component"
+                            + " updater downloading service in nonembedded WebView."
+                            + " See https://crbug.com/1170468."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

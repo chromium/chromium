@@ -80,4 +80,10 @@ const char kWebViewDisableAppRecovery[] = "webview-disable-app-recovery";
 // Enables WebView to check for app recovery mitigations.
 const char kWebViewEnableAppRecovery[] = "webview-enable-app-recovery";
 
+// Enables downloading TrustTokenKeyCommitmentsComponent by the component
+// updater downloading service in nonembedded WebView. See
+// https://crbug.com/1170468.
+const char kWebViewEnableTrustTokensComponent[] =
+    "webview-enable-trust-tokens-component";
+
 }  // namespace switches
