@@ -445,6 +445,7 @@ export class TaskController {
 
     if (shouldDisableTasks) {
       this.ui_.taskMenuButton.hidden = true;
+      this.updateContextMenuTaskItems_([]);
       if (window.IN_TEST) {
         this.ui_.taskMenuButton.toggleAttribute('get-tasks-completed', true);
       }
