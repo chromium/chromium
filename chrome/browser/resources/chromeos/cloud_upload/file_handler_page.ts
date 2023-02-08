@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
 import {DialogTask, UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
+import {AccordionTopCardElement, CloudProviderCardElement, CloudProviderType, FileHandlerCardElement, LocalHandlerCardElement} from './file_handler_card.js';
 import {getTemplate} from './file_handler_page.html.js';
 
 /**
- * The FileHandlerPageElement represents the setup page the user sees after
- * choosing Docs/Sheets/Slides or the Office PWA.
+ * The FileHandlerPageElement represents the setup page the user sees to select
+ * the their preferred office file handler: Docs/Sheets/Slides, the Office PWA
+ * or a local task.
  */
 export class FileHandlerPageElement extends HTMLElement {
   /**
@@ -20,6 +21,13 @@ export class FileHandlerPageElement extends HTMLElement {
    * separate buttons for the Drive and Office PWA apps.
    */
   tasks: DialogTask[] = [];
+  /**
+   * References to the HTMLElement used to display the tasks that the user can
+   * select.
+   */
+  cloudProviderCards: CloudProviderCardElement[] = [];
+  localHandlerCards: LocalHandlerCardElement[] = [];
+
   private proxy: CloudUploadBrowserProxy =
       CloudUploadBrowserProxy.getInstance();
 
@@ -28,95 +36,161 @@ export class FileHandlerPageElement extends HTMLElement {
     const shadowRoot = this.attachShadow({mode: 'open'});
 
     shadowRoot.innerHTML = getTemplate();
-    const openButton = shadowRoot.querySelector<HTMLElement>('.action-button');
+    const openButton =
+        shadowRoot.querySelector<CrButtonElement>('.action-button');
     const cancelButton =
-        shadowRoot.querySelector<HTMLElement>('.cancel-button');
+        shadowRoot.querySelector<CrButtonElement>('.cancel-button');
     assert(openButton);
     assert(cancelButton);
 
+    openButton.disabled = true;
     openButton.addEventListener('click', () => this.onOpenButtonClick());
     cancelButton.addEventListener('click', () => this.onCancelButtonClick());
 
     this.initDynamicContent();
   }
 
+  $<T extends HTMLElement>(query: string): T {
+    return this.shadowRoot!.querySelector(query)!;
+  }
+
   // Sets the dynamic content of the page like the file name.
   async initDynamicContent() {
     try {
-      const [dialogArgs, {installed: isOfficePwaInstalled}] =
-          await Promise.all([
-            this.proxy.handler.getDialogArgs(),
-            this.proxy.handler.isOfficeWebAppInstalled(),
-          ]);
+      const dialogArgs = await this.proxy.handler.getDialogArgs();
       assert(dialogArgs.args);
       assert(dialogArgs.args.tasks);
-
-      // Element which marks the start of the section of uninstalled apps.
-      const uninstalledApps = this.$('#available-to-install');
+      // Adjust the dialog's size if there are no local tasks to display.
+      if (dialogArgs.args.tasks.length == 0) {
+        this.style.height = '411px';
+      }
 
       const fileNameElement = this.$<HTMLSpanElement>('#file-name');
       assert(fileNameElement);
       fileNameElement.innerText = dialogArgs.args.fileNames[0] || '';
 
       const {name, icon} = this.getDriveAppInfo(dialogArgs.args.fileNames);
-      const driveAppNameElement = this.$<HTMLSpanElement>('#drive-app-name');
-      assert(driveAppNameElement);
-      driveAppNameElement.innerText = name;
 
-      const driveAppIconElement = this.$<HTMLSpanElement>('#drive-app-icon');
-      assert(driveAppIconElement);
-      driveAppIconElement.classList.add(icon);
+      const driveCard = new CloudProviderCardElement();
+      driveCard.setParameters(
+          CloudProviderType.DRIVE, name,
+          'Requires Google Drive storage &#x2022; Free');
+      driveCard.setIconClass(icon);
+      driveCard.autofocus;
+      driveCard.id = 'drive';
+      this.addCloudProviderCard(driveCard);
 
-      const form = this.$<HTMLSpanElement>('form');
+      const officeCard = new CloudProviderCardElement();
+      officeCard.setParameters(
+          CloudProviderType.ONE_DRIVE, 'Microsoft 365',
+          'Requires Microsoft OneDrive storage &#x2022; ' +
+              'Subscription fees may apply');
+      officeCard.setIconClass('office');
+      officeCard.id = 'onedrive';
+      this.addCloudProviderCard(officeCard);
+
+      const localTasks = dialogArgs.args.tasks;
+      if (localTasks.length == 0) {
+        return;
+      }
+
+      const accordionTopCard = new AccordionTopCardElement();
+      accordionTopCard.id = 'accordion';
+      this.addTopAccordionCard(accordionTopCard);
+
       // For each local file task, create a clickable label.
-      for (const task of dialogArgs.args.tasks) {
+      for (let i = 0; i < localTasks.length; ++i) {
+        const task = localTasks[i]!;
         assert(task);
+        const localHandlerCard = new LocalHandlerCardElement();
+        localHandlerCard.setParameters(task.position, task.title);
+        localHandlerCard.setIconUrl(task.iconUrl);
+        localHandlerCard.id = this.toStringId(task.position);
+        if (i == dialogArgs.args.tasks.length - 1) {
+          // Round bottom for last card.
+          localHandlerCard.$('#card')!.classList.add('round-bottom');
+        }
+        this.addLocalHandlerCard(localHandlerCard);
 
-        const label = document.createElement('label');
-        label.className = 'radio-label';
-
-        const input = document.createElement('input');
-        input.type = 'radio';
-        input.name = 'app-choice';
-        // Expect the position to be positive.
-        assert(task.position >= 0);
-        input.id = this.toStringId(task.position);
-
-        const div = document.createElement('div');
-        div.className = 'icon start';
-        div.setAttribute(
-            'style', 'background-image: url(' + task.iconUrl + ')');
-
-        const span = document.createElement('span');
-        span.innerText = task.title;
-
-        label.append(input);
-        label.append(div);
-        label.append(span);
-        // Put the label in the installed apps section.
-        form!.insertBefore(label, uninstalledApps!);
+        // Set `this.tasks` at end of `initDynamicContent` as an indication of
+        // completion.
+        this.tasks = dialogArgs.args.tasks;
       }
-
-      // Remove the text for the section of uninstalled apps if the Office PWA,
-      // the only uninstalled app, is already installed.
-      // TODO(cassycc): Check if the Office PWA should be in the at the top,
-      // below Drive, in this case.
-      if (isOfficePwaInstalled) {
-        uninstalledApps!.remove();
-      }
-
-      // Set `this.tasks` at end of `initDynamicContent` as an indication of
-      // completion.
-      this.tasks = dialogArgs.args.tasks;
-
     } catch (e) {
       // TODO(b:243095484) Define expected behavior.
-      console.error(`Unable to get dialog arguments . Error: ${e}.`);
+      console.error(
+          `Error while initialising dynamic content from dialog args: ${e}.`);
     }
   }
 
-  $<T extends HTMLElement>(query: string): T {
-    return this.shadowRoot!.querySelector(query)!;
+  addCloudProviderCard(providerCard: CloudProviderCardElement) {
+    this.cloudProviderCards.push(providerCard);
+    this.$<HTMLDivElement>('#content').appendChild(providerCard);
+    providerCard.addEventListener('click', () => this.selectCard(providerCard));
+  }
+
+  addTopAccordionCard(topCard: AccordionTopCardElement) {
+    this.$<HTMLDivElement>('#content').appendChild(topCard);
+    topCard.addEventListener('click', () => {
+      const expanded = topCard.toggleExpandedState();
+      for (const localhandlerCard of this.localHandlerCards) {
+        if (expanded) {
+          localhandlerCard.show();
+        } else {
+          localhandlerCard.hide();
+          // Unselect any selected local handler and update action button.
+          if (localhandlerCard.selected) {
+            localhandlerCard.updateSelection(false);
+            this.$<CrButtonElement>('.action-button').disabled = true;
+          }
+        }
+      }
+      const contentElement = this.$<HTMLDivElement>('#content')!;
+      if (expanded) {
+        window.requestAnimationFrame(() => {
+          // Scroll so that the top of the accordion aligns to where the top of
+          // the scrollable content is without scrolling.
+          contentElement.scrollTop =
+              topCard.offsetTop - contentElement.offsetTop;
+          this.updateContentFade(contentElement);
+        });
+      } else {
+        this.updateContentFade(contentElement);
+      }
+    });
+  }
+
+  addLocalHandlerCard(localHandlerCard: LocalHandlerCardElement) {
+    localHandlerCard.hide();
+    this.localHandlerCards.push(localHandlerCard);
+    this.$<HTMLDivElement>('#content').appendChild(localHandlerCard);
+    localHandlerCard.addEventListener(
+        'click', () => this.selectCard(localHandlerCard));
+  }
+
+  // Initialises the scrollable content styles.
+  connectedCallback(): void {
+    const contentElement = this.$<HTMLElement>('#content')!;
+    window.requestAnimationFrame(() => {
+      this.updateContentFade(contentElement);
+    });
+    contentElement.addEventListener(
+        'scroll', this.updateContentFade.bind(undefined, contentElement),
+        {passive: true});
+  }
+
+  private selectCard(card: FileHandlerCardElement) {
+    assert(card.style.display != 'none', 'Attempting to select a hidden card');
+    for (const providerCard of this.cloudProviderCards) {
+      providerCard.updateSelection(providerCard == card);
+    }
+    for (const localHandlerCard of this.localHandlerCards) {
+      localHandlerCard.updateSelection(localHandlerCard == card);
+    }
+    // Enable action button.
+    if (card?.selected) {
+      this.$<CrButtonElement>('.action-button').disabled = false;
+    }
   }
 
   // Convert a number to a string that can be used as an id for an element. Add
@@ -141,56 +215,59 @@ export class FileHandlerPageElement extends HTMLElement {
     }
   }
 
-  // If the user clicked on the Drive or Office PWA app return the corresponding
-  // `UserAction`. Otherwise return null.
-  private getSelectedCloudProvider() {
-    if (this.$<HTMLInputElement>('#drive')!.checked) {
-      // TODO(petermarshall): Remove the kSetUpGoogleDrive step or use it here.
-      return UserAction.kConfirmOrUploadToGoogleDrive;
-    } else if (this.$<HTMLInputElement>('#onedrive')!.checked) {
-      return UserAction.kSetUpOneDrive;
-    } else {
-      return null;
-    }
-  }
-
-  // Return the (positive) id of the local file task clicked on by the user. If
-  // not found, return -1.
-  private getSelectedLocalTask(): number {
-    for (const task of this.tasks) {
-      if (this.shadowRoot!
-              .querySelector<HTMLInputElement>(
-                  '#' + this.toStringId(task.position))!.checked) {
-        return task.position;
-      }
-    }
-    console.error('Unable to get selected local file task.');
-    return -1;
-  }
-
   // Invoked when the open file button is clicked. If the user previously
   // clicked on the Drive or Office PWA app, trigger the right
   // `respondWithUserActionAndClose` mojo request. If the user previously
   // clicked on a local file task, trigger the right
   // `respondWithLocalTaskAndClose` mojo request.
   private onOpenButtonClick(): void {
-    const userChoice = this.getSelectedCloudProvider();
-    if (userChoice) {
-      this.proxy.handler.respondWithUserActionAndClose(userChoice);
-    } else {
-      // TODO(cassycc): It is possible that the click can happen before
-      // initDynamicContent (as I found in my tests). Should we be enforcing
-      // ordering? Would adding an await solve it?
-      const taskPosition = this.getSelectedLocalTask();
-      if (0 <= taskPosition) {
-        this.proxy.handler.respondWithLocalTaskAndClose(taskPosition);
+    if (this.$<CrButtonElement>('.action-button').disabled) {
+      return;
+    }
+
+    for (const providerCard of this.cloudProviderCards) {
+      if (!providerCard.selected) {
+        continue;
+      }
+      if (providerCard.type === CloudProviderType.DRIVE) {
+        // TODO(petermarshall): Remove kSetUpGoogleDrive step or use it here.
+        this.proxy.handler.respondWithUserActionAndClose(
+            UserAction.kConfirmOrUploadToGoogleDrive);
+        return;
+      } else if (providerCard.type === CloudProviderType.ONE_DRIVE) {
+        this.proxy.handler.respondWithUserActionAndClose(
+            UserAction.kSetUpOneDrive);
+        return;
       }
     }
-  }
+    for (const localHandlerCard of this.localHandlerCards) {
+      if (!localHandlerCard.selected) {
+        continue;
+      }
+      if (localHandlerCard.taskPosition >= 0) {
+        this.proxy.handler.respondWithLocalTaskAndClose(
+            localHandlerCard.taskPosition);
+        return;
+      }
+    }
 
+    assertNotReached('Unable to get selected task.');
+  }
 
   private onCancelButtonClick(): void {
     this.proxy.handler.respondWithUserActionAndClose(UserAction.kCancel);
+  }
+
+  private updateContentFade(contentElement: HTMLElement): void {
+    window.requestAnimationFrame(() => {
+      const atTop = contentElement.scrollTop === 0;
+      const atBottom =
+          Math.abs(
+              contentElement.scrollHeight - contentElement.clientHeight -
+              contentElement.scrollTop) < 1;
+      contentElement.classList.toggle('separator-top', !atTop);
+      contentElement.classList.toggle('fade-bottom', !atBottom);
+    });
   }
 }
 

@@ -594,7 +594,8 @@ const int kDialogWidthForOneDriveSetup = 512;
 const int kDialogHeightForOneDriveSetup = 552;
 
 const int kDialogWidthForFileHandlerDialog = 512;
-const int kDialogHeightForFileHandlerDialog = 338;
+const int kDialogHeightForFileHandlerDialog = 475;
+const int kDialogHeightForFileHandlerDialogNoLocalApp = 411;
 
 const int kDialogWidthForDriveSetup = 512;
 const int kDialogHeightForDriveSetup = 220;
@@ -608,7 +609,9 @@ void CloudUploadDialog::GetDialogSize(gfx::Size* size) const {
     // TODO(cassycc): resize dialog based on number of local file tasks.
     case mojom::DialogPage::kFileHandlerDialog: {
       size->set_width(kDialogWidthForFileHandlerDialog);
-      size->set_height(kDialogHeightForFileHandlerDialog);
+      size->set_height(tasks_.size() == 0
+                           ? kDialogHeightForFileHandlerDialogNoLocalApp
+                           : kDialogHeightForFileHandlerDialog);
       return;
     }
     case mojom::DialogPage::kOneDriveSetup: {

@@ -3,87 +3,61 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    padding: 24px;
+    height: 475px;
     width: 512px;
   }
 
   .title {
     color: var(--cros-text-color-primary);
-    font: var(--cros-display-7-font);
+    font: var(--cros-headline-1-font);
+    padding-block-end: 8px;
+    padding-block-start: 24px;
+    padding-inline: 24px;
   }
 
-  .normal-text {
-    color: var(--cros-text-color-primary);
-    font: var(--cros-body-1-font);
-    margin-block-end: 12px;
-    margin-block-start: 16px;
+  .description {
+    color: var(--cros-text-color-secondary);
+    font: var(--cros-body-2-font);
+    padding-block-end: 18px;
+    padding-inline: 24px;
+  }
+
+  #content {
+    border-top: 1px solid transparent;
+    flex-grow: 1;
+    overflow: scroll;
+    padding-inline: 24px;
+  }
+
+  #content.separator-top {
+    border-top: 1px solid var(--cros-separator-color);
+  }
+
+  #content.fade-bottom::after {
+    background: linear-gradient(transparent 0,
+                                var(--cros-bg-color) 100%);
+    bottom: 88px;  /* button container + padding */
+    content: '';
+    height: 20px;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #content.fade-bottom::after {
+      background: linear-gradient(transparent 0,
+                                  var(--cros-bg-color-elevation-3) 100%);
+    }
   }
 
   #button-container {
     display: flex;
     justify-content: flex-end;
-    margin-top: 8px;
-  }
-
-  input[type='radio'] {
-    opacity: 0;
-    position: absolute;
-  }
-
-  .radio-label {
-    align-items: center;
-    background-color: var(--cros-ripple-color);
-    border-radius: 12px;
-    box-sizing: border-box;
-    color: var(--cros-text-color-primary);
-    cursor: pointer;
-    display: flex;
-    font: var(--cros-body-1-font);
-    height: 54px;
-    margin-block-end: 16px;
-  }
-
-  .radio-label:has(> input[type='radio']) {
-    border: 2px solid transparent;
-  }
-
-  .radio-label:has(> input[type='radio']:checked) {
-    border: 2px solid var(--cros-color-prominent);
-  }
-
-  .icon {
-    background: no-repeat center var(--cros-bg-color-elevation-3);
-    border-radius: 50%;
-    height: 24px;
-    margin-inline-end: 12px;
-    margin-inline-start: 20px;
-    width: 24px;
-  }
-
-  .icon.docs::before,
-  .icon.sheets::before,
-  .icon.slides::before {
-    -webkit-mask: url(icons/docs.svg) center 22px;
-    background-color: var(--cros-icon-color-blue);
-    content: '';
-    height: 22px;
-    position: absolute;
-    width: 24px;
-  }
-
-  .icon.sheets::before {
-    -webkit-mask-image: url(icons/sheets.svg);
-    background-color: var(--cros-icon-color-green);
-  }
-
-  .icon.slides::before {
-    -webkit-mask-image: url(icons/slides.svg);
-    background-color: var(--cros-icon-color-yellow);
-  }
-
-  .icon.office {
-    background-image: url(icons/office.svg);
-    background-size: 20px;
+    padding-block-end: 24px;
+    padding-block-start: 32px;
+    padding-inline: 24px;
   }
 </style>
 
@@ -91,27 +65,11 @@
 <div class="title">
   Choose an application to open “<span id="file-name"></span>”
 </div>
-<form>
-  <div class="normal-text">
-    Apps installed on this device
-  </div>
-
-  <label class="radio-label">
-    <input type="radio" name="app-choice" id="drive" value="drive" checked
-        autofocus>
-    <div class="icon" id="drive-app-icon"></div>
-    <span id="drive-app-name"></span>
-  </label>
-  <div class="normal-text" id="available-to-install">
-    Apps available to install
-  </div>
-
-  <label class="radio-label">
-    <input type="radio" name="app-choice" id="onedrive" value="onedrive">
-    <div class="icon office"></div>
-    Microsoft 365
-  </label>
-</form>
+<div class="description">
+  Choose how you'd like to open files like this. You can always change this
+  later by right-clicking on a file.
+</div>
+<div id="content"></div>
 <div id="button-container">
   <cr-button class="cancel-button">Cancel</cr-button>
   <cr-button class="action-button">Open</cr-button>

@@ -1,0 +1,125 @@
+<style>
+  #card {
+    align-items: center;
+    background-color: var(--cros-textfield-background-color);
+    border: 2px solid transparent;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 16px;
+    user-select: none;
+  }
+
+  #card[checked] {
+    border: 2px solid var(--cros-focus-ring-color);
+  }
+
+  .margin-top {
+    margin-block-start: 8px;
+  }
+
+  .round-top {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+  }
+
+  .round-bottom {
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+  }
+
+  #card.separator-bottom {
+    border-bottom: 1px solid var(--cros-separator-color);
+  }
+
+  #content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    max-width: 344px;
+  }
+
+  #icon {
+    background-size: 32px;
+    border-radius: 50%;
+    box-sizing: border-box;
+    height: 32px;
+    margin-inline-end: 16px;
+    width: 32px;
+  }
+
+  #icon.docs,
+  #icon.sheets,
+  #icon.slides,
+  #icon.office {
+    background: no-repeat center var(--cros-bg-color-elevation-3);
+    background-size: 20px;
+    border: 1px solid var(--cros-separator-color);
+  }
+
+  #icon.docs {
+    background-image: url(../icons/docs.svg);
+  }
+
+  #icon.sheets {
+    background-image: url(../icons/sheets.svg);
+  }
+
+  #icon.slides {
+    background-image: url(../icons/slides.svg);
+  }
+
+  #icon.office {
+    background-image: url(../icons/office.svg);
+  }
+
+  #title {
+    color: var(--cros-text-color-primary);
+    font: var(--cros-body-1-font);
+  }
+
+  #description {
+    color: var(--cros-text-color-secondary);
+    font: var(--cros-body-2-font);
+  }
+
+  #right-icon {
+    -webkit-mask-image: url(../icons/list_check.svg);
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    background: no-repeat center var(--cros-icon-color-selection);
+    border-radius: 50%;
+    box-sizing: border-box;
+    height: 20px;
+    margin-inline-start: 16px;
+    width: 20px;
+  }
+
+  #right-icon.chevron {
+    -webkit-mask-image: url(../icons/chevron.svg);
+    -webkit-mask-size: 90%;
+    background: no-repeat center var(--cros-icon-color-primary);
+  }
+
+  .chevron[expanded] {
+    transform: rotate(180deg);
+  }
+
+  .chevron:not([expanded]) {
+    transform: rotate(0deg);
+  }
+
+  #card:not([checked]) > #right-icon:not(.chevron) {
+    visibility: hidden;
+  }
+</style>
+
+<div id="card">
+  <div id="icon"></div>
+  <div id="content">
+    <div id="title"></div>
+    <div id="description"></div>
+  </div>
+  <div id="right-icon"></div>
+</div>

@@ -6,8 +6,10 @@ import 'chrome://cloud-upload/file_handler_page.js';
 
 import {DialogPage, DialogTask, UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
+import {AccordionTopCardElement} from 'chrome://cloud-upload/file_handler_card.js';
 import {FileHandlerPageElement} from 'chrome://cloud-upload/file_handler_page.js';
-import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {CloudUploadTestBrowserProxy, ProxyOptions} from './cloud_upload_test_browser_proxy.js';
 
@@ -81,8 +83,13 @@ suite('<file-handler-page>', () => {
       tasks: createTasks(numTasks),
     });
 
-    assertEquals(fileHandlerPageApp.tasks.length, numTasks);
+    assertEquals(fileHandlerPageApp.cloudProviderCards.length, 2);
+    assertEquals(fileHandlerPageApp.localHandlerCards.length, numTasks);
+    assertTrue(
+        fileHandlerPageApp.$<CrButtonElement>('.action-button').disabled);
     fileHandlerPageApp.$('#drive').click();
+    assertFalse(
+        fileHandlerPageApp.$<CrButtonElement>('.action-button').disabled);
     fileHandlerPageApp.$('.action-button').click();
     await testProxy.handler.whenCalled('respondWithUserActionAndClose');
     assertEquals(
@@ -109,8 +116,13 @@ suite('<file-handler-page>', () => {
       tasks: createTasks(numTasks),
     });
 
-    assertEquals(fileHandlerPageApp.tasks.length, numTasks);
+    assertEquals(fileHandlerPageApp.cloudProviderCards.length, 2);
+    assertEquals(fileHandlerPageApp.localHandlerCards.length, numTasks);
+    assertTrue(
+        fileHandlerPageApp.$<CrButtonElement>('.action-button').disabled);
     fileHandlerPageApp.$('#drive').click();
+    assertFalse(
+        fileHandlerPageApp.$<CrButtonElement>('.action-button').disabled);
     fileHandlerPageApp.$('.action-button').click();
     await testProxy.handler.whenCalled('respondWithUserActionAndClose');
     assertEquals(
@@ -136,8 +148,13 @@ suite('<file-handler-page>', () => {
       tasks: createTasks(numTasks),
     });
 
-    assertEquals(fileHandlerPageApp.tasks.length, numTasks);
+    assertEquals(fileHandlerPageApp.cloudProviderCards.length, 2);
+    assertEquals(fileHandlerPageApp.localHandlerCards.length, numTasks);
+    assertTrue(
+        fileHandlerPageApp.$<CrButtonElement>('.action-button').disabled);
     fileHandlerPageApp.$('#onedrive').click();
+    assertFalse(
+        fileHandlerPageApp.$<CrButtonElement>('.action-button').disabled);
     fileHandlerPageApp.$('.action-button').click();
     await testProxy.handler.whenCalled('respondWithUserActionAndClose');
     assertEquals(
@@ -164,8 +181,13 @@ suite('<file-handler-page>', () => {
       tasks: createTasks(numTasks),
     });
 
-    assertEquals(fileHandlerPageApp.tasks.length, numTasks);
+    assertEquals(fileHandlerPageApp.cloudProviderCards.length, 2);
+    assertEquals(fileHandlerPageApp.localHandlerCards.length, numTasks);
+    assertTrue(
+        fileHandlerPageApp.$<CrButtonElement>('.action-button').disabled);
     fileHandlerPageApp.$('#onedrive').click();
+    assertFalse(
+        fileHandlerPageApp.$<CrButtonElement>('.action-button').disabled);
     fileHandlerPageApp.$('.action-button').click();
     await testProxy.handler.whenCalled('respondWithUserActionAndClose');
     assertEquals(
@@ -193,9 +215,24 @@ suite('<file-handler-page>', () => {
               dialogPage: DialogPage.kFileHandlerDialog,
               tasks: createTasks(numTasks),
             });
-            assertEquals(fileHandlerPageApp.tasks.length, numTasks);
-            fileHandlerPageApp.$('#id' + taskPosition).click();
-            fileHandlerPageApp.$('.action-button').click();
+            const accordionCard =
+                fileHandlerPageApp.$<AccordionTopCardElement>('#accordion');
+            const localTaskCard = fileHandlerPageApp.$('#id' + taskPosition);
+            const actionButton =
+                fileHandlerPageApp.$<CrButtonElement>('.action-button');
+            assertEquals(fileHandlerPageApp.cloudProviderCards.length, 2);
+            assertEquals(fileHandlerPageApp.localHandlerCards.length, numTasks);
+            // The accordion is initially collapsed and the task card is hidden.
+            assertFalse(accordionCard.expanded);
+            assertEquals(localTaskCard.style.display, 'none');
+            // Expand the accordion first and select the local task.
+            accordionCard.click();
+            assertTrue(accordionCard.expanded);
+            assertNotEquals(localTaskCard.style.display, 'none');
+            assertTrue(actionButton.disabled);
+            localTaskCard.click();
+            assertFalse(actionButton.disabled);
+            actionButton.click();
             await testProxy.handler.whenCalled('respondWithLocalTaskAndClose');
             assertEquals(
                 1,
@@ -224,9 +261,24 @@ suite('<file-handler-page>', () => {
               dialogPage: DialogPage.kFileHandlerDialog,
               tasks: createTasks(numTasks),
             });
-            assertEquals(fileHandlerPageApp.tasks.length, numTasks);
-            fileHandlerPageApp.$('#id' + taskPosition).click();
-            fileHandlerPageApp.$('.action-button').click();
+            const accordionCard =
+                fileHandlerPageApp.$<AccordionTopCardElement>('#accordion');
+            const localTaskCard = fileHandlerPageApp.$('#id' + taskPosition);
+            const actionButton =
+                fileHandlerPageApp.$<CrButtonElement>('.action-button');
+            assertEquals(fileHandlerPageApp.cloudProviderCards.length, 2);
+            assertEquals(fileHandlerPageApp.localHandlerCards.length, numTasks);
+            // The accordion is initially collapsed and the task card is hidden.
+            assertFalse(accordionCard.expanded);
+            assertEquals(localTaskCard.style.display, 'none');
+            // Expand the accordion first and select the local task.
+            accordionCard.click();
+            assertTrue(accordionCard.expanded);
+            assertNotEquals(localTaskCard.style.display, 'none');
+            assertTrue(actionButton.disabled);
+            localTaskCard.click();
+            assertFalse(actionButton.disabled);
+            actionButton.click();
             await testProxy.handler.whenCalled('respondWithLocalTaskAndClose');
             assertEquals(
                 1,
@@ -236,8 +288,8 @@ suite('<file-handler-page>', () => {
                 testProxy.handler.getArgs('respondWithLocalTaskAndClose'));
           }));
 
-  /** Test that the dialog doesn't crash when there are no local tasks.*/
-  test(`No local task`, async () => {
+  /** Test that the accordion doesn't show when there are no local tasks.*/
+  test(`No accordion when no local task`, async () => {
     const numTasks = 0;
     await setUp({
       fileName: 'file.docx',
@@ -247,6 +299,49 @@ suite('<file-handler-page>', () => {
       dialogPage: DialogPage.kFileHandlerDialog,
       tasks: [],
     });
-    assertEquals(fileHandlerPageApp.tasks.length, numTasks);
+    assertEquals(fileHandlerPageApp.cloudProviderCards.length, 2);
+    assertEquals(fileHandlerPageApp.localHandlerCards.length, numTasks);
+    assertFalse(!!fileHandlerPageApp.$('#accordion'));
   });
+
+  /**
+   * Test that any selected local task gets unselected if the accordion gets
+   * collapsed.
+   */
+  test(
+      `Collapsing the accordion unselects any selected local task`,
+      async () => {
+        const numTasks = 1;
+        await setUp({
+          fileName: 'file.docx',
+          officeWebAppInstalled: false,
+          installOfficeWebAppResult: false,
+          odfsMounted: false,
+          dialogPage: DialogPage.kFileHandlerDialog,
+          tasks: createTasks(numTasks),
+        });
+        const accordionCard =
+            fileHandlerPageApp.$<AccordionTopCardElement>('#accordion');
+        const localTaskCard = fileHandlerPageApp.$('#id0');
+        const actionButton =
+            fileHandlerPageApp.$<CrButtonElement>('.action-button');
+        assertEquals(fileHandlerPageApp.cloudProviderCards.length, 2);
+        assertEquals(fileHandlerPageApp.localHandlerCards.length, numTasks);
+        assertTrue(!!accordionCard);
+        // The accordion is initially collapsed and the task card is hidden.
+        assertFalse(accordionCard.expanded);
+        assertEquals(localTaskCard.style.display, 'none');
+        // Expand the accordion first and select the local task.
+        accordionCard.click();
+        assertTrue(accordionCard.expanded);
+        assertNotEquals(localTaskCard.style.display, 'none');
+        assertTrue(actionButton.disabled);
+        localTaskCard.click();
+        assertFalse(actionButton.disabled);
+        // Collapse the accordion.
+        accordionCard.click();
+        assertFalse(accordionCard.expanded);
+        assertEquals(localTaskCard.style.display, 'none');
+        assertTrue(actionButton.disabled);
+      });
 });

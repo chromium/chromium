@@ -9,9 +9,11 @@ build_webui("build") {
 
   static_files = [
     "icons/check.svg",
+    "icons/chevron.svg",
     "icons/docs.svg",
     "icons/download.svg",
     "icons/error.svg",
+    "icons/list_check.svg",
     "icons/office.svg",
     "icons/sheets.svg",
     "icons/slides.svg",
@@ -24,6 +26,7 @@ build_webui("build") {
   web_component_files = [
     "base_setup_page.ts",
     "drive_upload_page.ts",
+    "file_handler_card.ts",
     "file_handler_page.ts",
     "move_confirmation_page.ts",
     "office_pwa_install_page.ts",

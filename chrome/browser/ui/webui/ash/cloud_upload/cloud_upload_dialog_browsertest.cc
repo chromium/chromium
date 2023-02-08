@@ -279,6 +279,12 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OpenFileTaskFromDialog) {
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
       *profile()->GetPrefs(), kPptMimeType, kPptFileExtension, &default_task));
 
+  // Expand local tasks accordion.
+  std::string expand_local_tasks = "%s.$('#accordion').click()";
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      ScriptFillPlaceholder(expand_local_tasks.c_str(), "file-handler-page")));
+
   // Click the selected task.
   std::string rename_task_id =
       "%s.$('#id" + base::NumberToString(selected_task_position) + "').click()";

@@ -26,6 +26,7 @@ ts_library("build_ts") {
   deps = [
     "../..:build_ts",
     "//chrome/browser/resources/chromeos/cloud_upload:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
   ]
 }
 
