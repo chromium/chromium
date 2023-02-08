@@ -284,6 +284,8 @@ generate_grd("build_grdp") {
     "cellular_setup/final_page_success_dark.svg",
     "cellular_setup/default_esim_profile.svg",
     "cellular_setup/default_esim_profile_dark.svg",
+    "cellular_setup/spinner.json",
+    "cellular_setup/spinner_dark.json",
     "multidevice_setup/all_set_1x_dark.svg",
     "multidevice_setup/all_set_1x_light.svg",
     "multidevice_setup/all_set_2x_dark.svg",

@@ -64,6 +64,6 @@ Polymer({
    * @private
    */
   getAnimationUrl_() {
-    return this.isDarkModeActive_ ? 'spinner_dark.json' : 'spinner.json';
+    return this.isDarkModeActive_ ? './spinner_dark.json' : './spinner.json';
   },
 });

@@ -13,7 +13,6 @@
 #include "base/values.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/oobe_conditional_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -111,14 +110,6 @@ const std::vector<const NamedBoolean>& GetBooleanValues() {
   return *named_bools;
 }
 
-const std::vector<const NamedResourceId>& GetResourceIdValues() {
-  static const base::NoDestructor<std::vector<const NamedResourceId>>
-      named_resource_ids(
-          {{"spinner.json", IDR_LOGIN_SPINNER_ANIMATION},
-           {"spinner_dark.json", IDR_LOGIN_SPINNER_DARK_ANIMATION}});
-  return *named_resource_ids;
-}
-
 }  //  namespace
 
 void AddLocalizedStrings(content::WebUIDataSource* html_source) {
@@ -133,16 +124,10 @@ void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {
 void AddNonStringLoadTimeData(content::WebUIDataSource* html_source) {
   for (const auto& entry : GetBooleanValues())
     html_source->AddBoolean(entry.name, entry.value);
-
-  for (const auto& entry : GetResourceIdValues())
-    html_source->AddResourcePath(entry.name, entry.value);
 }
 
 void AddNonStringLoadTimeDataToDict(base::Value::Dict* dict) {
   for (const auto& entry : GetBooleanValues())
-    dict->SetByDottedPath(entry.name, entry.value);
-
-  for (const auto& entry : GetResourceIdValues())
     dict->SetByDottedPath(entry.name, entry.value);
 }
 
