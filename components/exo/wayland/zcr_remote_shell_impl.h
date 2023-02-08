@@ -139,7 +139,7 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   void SendBoundsChanged(wl_resource* resource,
                          int64_t display_id,
                          const gfx::Rect& bounds_in_display,
-                         zcr_remote_surface_v1_bounds_change_reason reason);
+                         uint32_t reason);
 
   void OnRemoteSurfaceStateChanged(wl_resource* resource,
                                    WindowStateType old_state_type,
@@ -152,10 +152,10 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   struct BoundsChangeData {
     int64_t display_id;
     gfx::Rect bounds_in_display;
-    zcr_remote_surface_v1_bounds_change_reason reason;
+    uint32_t reason;
     BoundsChangeData(int64_t display_id,
                      const gfx::Rect& bounds,
-                     zcr_remote_surface_v1_bounds_change_reason reason)
+                     uint32_t reason)
         : display_id(display_id), bounds_in_display(bounds), reason(reason) {}
   };
 
@@ -174,7 +174,7 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   // in v2 this is always false.
   bool use_default_scale_cancellation_;
 
-  bool in_display_update_;
+  bool in_display_update_ = false;
   bool needs_send_display_metrics_ = true;
 
   int layout_mode_ = ZCR_REMOTE_SHELL_V1_LAYOUT_MODE_WINDOWED;
@@ -360,6 +360,8 @@ void remote_surface_set_bounds_in_output(wl_client* client,
 void remote_surface_set_resize_lock_type(wl_client* client,
                                          wl_resource* resource,
                                          uint32_t mode);
+
+void remote_surface_set_float(wl_client* client, wl_resource* resource);
 
 void remote_surface_block_ime(wl_client* client, wl_resource* resource);
 

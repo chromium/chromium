@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -19,7 +20,10 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/wm/features.h"
+#include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
@@ -59,7 +63,8 @@ class TestClientControlledStateDelegate
     requested_bounds_ = bounds;
     if (requested_state != window_state->GetStateType()) {
       DCHECK(requested_state == WindowStateType::kPrimarySnapped ||
-             requested_state == WindowStateType::kSecondarySnapped);
+             requested_state == WindowStateType::kSecondarySnapped ||
+             requested_state == WindowStateType::kFloated);
       old_state_ = window_state->GetStateType();
       new_state_ = requested_state;
     }
@@ -105,6 +110,11 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
     SetCanResize(true);
     GetWidget()->OnSizeConstraintsChanged();
   }
+
+  void EnableFloat() {
+    SetCanResize(true);
+    GetWidget()->OnSizeConstraintsChanged();
+  }
 };
 
 }  // namespace
@@ -120,6 +130,10 @@ class ClientControlledStateTest : public AshTestBase {
   ~ClientControlledStateTest() override = default;
 
   void SetUp() override {
+    // We need to enable the flag before `AshTestBase::SetUp()` to make
+    // FloatController instantiated in Shell.
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::wm::features::kWindowLayoutMenu);
     AshTestBase::SetUp();
 
     widget_delegate_ = new TestWidgetDelegate();
@@ -165,7 +179,36 @@ class ClientControlledStateTest : public AshTestBase {
   TestClientControlledStateDelegate* state_delegate_ = nullptr;
   TestWidgetDelegate* widget_delegate_ = nullptr;  // owned by itself.
   std::unique_ptr<views::Widget> widget_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// This suite runs test cases both in clamshell mode and tablet mode.
+class ClientControlledStateTestClamshellAndTablet
+    : public ClientControlledStateTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ClientControlledStateTestClamshellAndTablet() = default;
+
+  ClientControlledStateTestClamshellAndTablet(
+      const ClientControlledStateTestClamshellAndTablet&) = delete;
+  ClientControlledStateTestClamshellAndTablet& operator=(
+      const ClientControlledStateTestClamshellAndTablet&) = delete;
+
+  ~ClientControlledStateTestClamshellAndTablet() override = default;
+
+  void SetUp() override {
+    ClientControlledStateTest::SetUp();
+    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(InTabletMode());
+  }
+
+ protected:
+  bool InTabletMode() { return GetParam(); }
+};
+
+// The parameter indicates whether the tablet mode is enabled.
+INSTANTIATE_TEST_SUITE_P(All,
+                         ClientControlledStateTestClamshellAndTablet,
+                         testing::Bool());
 
 // Make sure that calling Maximize()/Minimize()/Fullscreen() result in
 // sending the state change request and won't change the state immediately.
@@ -721,6 +764,50 @@ TEST_F(ClientControlledStateTest, ResizeSnappedWindowInTabletMode) {
   const gfx::Point resize_point(display_bounds.width() * 0.33f, 0);
   generator->DragMouseTo(resize_point);
   EXPECT_GT(initial_bounds.width(), delegate()->requested_bounds().width());
+}
+
+TEST_P(ClientControlledStateTestClamshellAndTablet, FloatWindow) {
+  // The AppType must be set to any except `AppType::NON_APP` (default value) to
+  // make it floatable.
+  window()->SetProperty(aura::client::kAppType,
+                        static_cast<int>(AppType::ARC_APP));
+
+  // Float disabled.
+  ASSERT_FALSE(chromeos::wm::CanFloatWindow(window()));
+
+  // The event should be ignored.
+  const WMEvent float_event(WM_EVENT_FLOAT);
+  window_state()->OnWMEvent(&float_event);
+  EXPECT_TRUE(delegate()->requested_bounds().IsEmpty());
+  EXPECT_EQ(WindowStateType::kDefault, delegate()->new_state());
+
+  // Float enabled.
+  widget_delegate()->EnableFloat();
+  ASSERT_TRUE(chromeos::wm::CanFloatWindow(window()));
+
+  // Test float.
+  window_state()->OnWMEvent(&float_event);
+  EXPECT_EQ(
+      InTabletMode()
+          ? FloatController::GetPreferredFloatWindowTabletBounds(window())
+          : FloatController::GetPreferredFloatWindowClamshellBounds(window()),
+      delegate()->requested_bounds());
+  EXPECT_EQ(WindowStateType::kDefault, delegate()->old_state());
+  EXPECT_EQ(WindowStateType::kFloated, delegate()->new_state());
+
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  EXPECT_TRUE(window_state()->IsFloated());
+  EXPECT_EQ(kShellWindowId_FloatContainer, window()->parent()->GetId());
+
+  // Test unfloat.
+  const WMEvent restore_event(WM_EVENT_RESTORE);
+  window_state()->OnWMEvent(&restore_event);
+  EXPECT_EQ(WindowStateType::kFloated, delegate()->old_state());
+  EXPECT_EQ(WindowStateType::kNormal, delegate()->new_state());
+
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  EXPECT_FALSE(window_state()->IsFloated());
+  EXPECT_NE(kShellWindowId_FloatContainer, window()->parent()->GetId());
 }
 
 }  // namespace ash

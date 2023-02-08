@@ -139,6 +139,7 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   class FloatedWindowInfo;
   friend class DefaultState;
   friend class TabletModeWindowState;
+  friend class ClientControlledState;
   friend class WindowFloatTest;
   FRIEND_TEST_ALL_PREFIXES(WindowFloatMetricsTest, FloatWindowCountPerSession);
   FRIEND_TEST_ALL_PREFIXES(WindowFloatMetricsTest,

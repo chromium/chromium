@@ -179,8 +179,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
       int32_t restore_id,
       const std::string& restore_window_id_source);
 
-  // Floats (place on top of other surfaces) or unfloats the shell surface.
-  void SetFloat();
+  // Unfloats the shell surface.
   void UnsetFloat();
 
   // Returns a trace value representing the state of the surface.
@@ -241,6 +240,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void UnsetCanGoBack() override;
   void SetPip() override;
   void UnsetPip() override;
+  void SetFloat() override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
   void MoveToDesk(int desk_index) override;
   void SetVisibleOnAllWorkspaces() override;

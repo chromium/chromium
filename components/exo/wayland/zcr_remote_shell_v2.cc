@@ -60,6 +60,7 @@ const WaylandRemoteShellEventMapping wayland_remote_shell_event_mapping_v2 = {
     1,
     1,
     1,
+    /*has_bounds_change_reason_float=*/true,
 };
 
 const struct zcr_remote_surface_v2_interface remote_surface_implementation_v2 =
@@ -105,6 +106,7 @@ const struct zcr_remote_surface_v2_interface remote_surface_implementation_v2 =
         zcr_remote_shell::remote_surface_unset_resize_lock,
         zcr_remote_shell::remote_surface_set_bounds_in_output,
         zcr_remote_shell::remote_surface_set_resize_lock_type,
+        zcr_remote_shell::remote_surface_set_float,
 };
 
 const struct zcr_notification_surface_v2_interface

@@ -38,7 +38,7 @@
     reset.
   </description>
 
-  <interface name="zcr_remote_shell_v2" version="2">
+  <interface name="zcr_remote_shell_v2" version="3">
     <description summary="remote_shell">
       The global interface that allows clients to turn a wl_surface into a
       "real window" which is remotely managed but can be stacked, activated
@@ -162,7 +162,7 @@
 
   </interface>
 
-  <interface name="zcr_remote_surface_v2" version="2">
+  <interface name="zcr_remote_surface_v2" version="3">
     <description summary="A desktop window">
       An interface that may be implemented by a wl_surface, for
       implementations that provide a desktop-style user interface
@@ -432,6 +432,7 @@
       <entry name="move" value="5" summary="the window bounds is moved due to other WM operations"/>
       <entry name="resize" value="6" summary="the window bounds is reiszed due to other WM operations"/>
       <entry name="pip" value="7" summary="the window bounds is resized or moved for PIP"/>
+      <entry name="float" value="8" summary="the window bounds is resized or moved for float state" since="3"/>
     </enum>
 
     <event name="bounds_changed" since="1">
@@ -827,6 +828,12 @@
   time wl_surface.commit of the corresponding wl_surface is called.
       </description>
       <arg name="type" type="uint" enum="resize_lock_type" summary="resize lock type"/>
+    </request>
+
+    <request name="set_float" since="3">
+      <description summary="set the surface to be floated">
+	Request that surface is floated.
+      </description>
     </request>
   </interface>
 

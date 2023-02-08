@@ -127,6 +127,7 @@ class MockSurfaceDelegate : public SurfaceDelegate {
   MOCK_METHOD(void, UnsetCanGoBack, (), (override));
   MOCK_METHOD(void, SetPip, (), (override));
   MOCK_METHOD(void, UnsetPip, (), (override));
+  MOCK_METHOD(void, SetFloat, (), (override));
   MOCK_METHOD(void,
               SetAspectRatio,
               (const gfx::SizeF& aspect_ratio),

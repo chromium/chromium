@@ -81,6 +81,9 @@ class SurfaceDelegate {
   virtual void SetPip() = 0;
   virtual void UnsetPip() = 0;
 
+  // Called when surface was requested to enter float.
+  virtual void SetFloat() = 0;
+
   // Called when surface was requested to maintain an aspect ratio.
   virtual void SetAspectRatio(const gfx::SizeF& aspect_ratio) = 0;
 

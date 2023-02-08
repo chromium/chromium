@@ -135,6 +135,7 @@ const WaylandRemoteShellEventMapping wayland_remote_shell_event_mapping_v1 = {
     ZCR_REMOTE_SURFACE_V1_CHANGE_ZOOM_LEVEL_SINCE_VERSION,
     ZCR_REMOTE_SHELL_V1_WORKSPACE_INFO_SINCE_VERSION,
     ZCR_REMOTE_SHELL_V1_SET_USE_DEFAULT_DEVICE_SCALE_CANCELLATION_SINCE_VERSION,
+    /*has_bounds_change_reason_float=*/false,
 };
 
 int RemoteSurfaceContainer(uint32_t container) {

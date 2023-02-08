@@ -13,8 +13,12 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_state.h"
+#include "ash/wm/wm_event.h"
 #include "base/functional/bind.h"
 #include "base/posix/unix_domain_socket.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/wm/features.h"
 #include "components/exo/display.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/test/exo_test_base.h"
@@ -58,6 +62,11 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
 
   // test::ExoTestBase:
   void SetUp() override {
+    // We need to enable the flag before `test::ExoTestBase::SetUp()` to make
+    // FloatController instantiated in Shell.
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::wm::features::kWindowLayoutMenu);
+
     test::ExoTestBase::SetUp();
 
     ResetEventRecords();
@@ -88,6 +97,7 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
   void TearDown() override {
     shell_.reset();
     display_.reset();
+    wl_remote_surface_resource_.reset();
 
     test::ExoTestBase::TearDown();
   }
@@ -214,7 +224,9 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
       /*change_zoom_level_since_version=*/0,
       /*send_workspace_info_since_version=*/0,
       /*set_use_default_scale_cancellation_since_version=*/0,
+      /*has_bounds_change_reason_float=*/true,
   };
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 std::vector<RemoteShellEventType>
     WaylandRemoteShellTest::remote_shell_event_sequence_;
@@ -491,6 +503,33 @@ TEST_F(WaylandRemoteShellTest, DesktopFocusState) {
   other_client_window->Show();
   other_client_window->Focus();
   EXPECT_EQ(last_desktop_focus_state(), 3);
+}
+
+// Test that the float procedure works.
+TEST_F(WaylandRemoteShellTest, FloatSurface) {
+  auto shell_surface =
+      exo::test::ShellSurfaceBuilder(
+          {kDefaultWindowLength, kDefaultWindowLength})
+          .SetDelegate(CreateDelegate())
+          .SetGeometry({100, 100, kDefaultWindowLength, kDefaultWindowLength})
+          .BuildClientControlledShellSurface();
+  auto* const surface = shell_surface->root_surface();
+  auto* const window_state =
+      ash::WindowState::Get(shell_surface->GetWidget()->GetNativeWindow());
+  SetImplementation(wl_remote_surface(), /*implementation=*/nullptr,
+                    std::move(shell_surface));
+
+  // Emitting float event
+  const ash::WMEvent float_event(ash::WM_EVENT_FLOAT);
+  window_state->OnWMEvent(&float_event);
+  ASSERT_EQ(1UL, remote_shell_requested_bounds_changes().size());
+  ASSERT_EQ(remote_shell_requested_bounds_changes()[0].reason,
+            ZCR_REMOTE_SURFACE_V2_BOUNDS_CHANGE_REASON_FLOAT);
+
+  // Set float state from clients
+  zcr_remote_shell::remote_surface_set_float(wl_client(), wl_remote_surface());
+  surface->Commit();
+  EXPECT_TRUE(window_state->IsFloated());
 }
 
 }  // namespace wayland

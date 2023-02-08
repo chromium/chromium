@@ -784,7 +784,7 @@ void WaylandRemoteShell::OnRemoteSurfaceBoundsChanged(
     const gfx::Rect& bounds_in_display,
     bool resize,
     int bounds_change) {
-  zcr_remote_surface_v1_bounds_change_reason reason =
+  uint32_t reason =
       ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_RESIZE;
   if (!resize)
     reason = ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_MOVE;
@@ -795,13 +795,17 @@ void WaylandRemoteShell::OnRemoteSurfaceBoundsChanged(
   } else if (bounds_change & ash::WindowResizer::kBoundsChange_Repositions) {
     reason = ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_DRAG_MOVE;
   }
-  // Override the reason only if the window enters snapped mode. If the window
-  // resizes by dragging in snapped mode, we need to keep the original reason.
+  // Override the reason only if the window enters snapped or floated mode. If
+  // the window resizes by dragging in snapped or floated mode, we need to keep
+  // the original reason.
   if (requested_state != current_state) {
     if (requested_state == WindowStateType::kPrimarySnapped) {
       reason = ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_SNAP_TO_LEFT;
     } else if (requested_state == WindowStateType::kSecondarySnapped) {
       reason = ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_SNAP_TO_RIGHT;
+    } else if (requested_state == WindowStateType::kFloated &&
+               event_mapping_.has_bounds_change_reason_float) {
+      reason = ZCR_REMOTE_SURFACE_V2_BOUNDS_CHANGE_REASON_FLOAT;
     }
   }
 
@@ -821,7 +825,7 @@ void WaylandRemoteShell::SendBoundsChanged(
     wl_resource* resource,
     int64_t display_id,
     const gfx::Rect& bounds_in_display,
-    zcr_remote_surface_v1_bounds_change_reason reason) {
+    uint32_t reason) {
   if (event_mapping_.send_bounds_changed)
     event_mapping_.send_bounds_changed(
         resource, static_cast<uint32_t>(display_id >> 32),
@@ -1467,6 +1471,10 @@ void remote_surface_set_resize_lock_type(wl_client* client,
                                          uint32_t type) {
   GetUserDataAs<ClientControlledShellSurface>(resource)->SetResizeLockType(
       static_cast<ash::ArcResizeLockType>(type));
+}
+
+void remote_surface_set_float(wl_client* client, wl_resource* resource) {
+  GetUserDataAs<ClientControlledShellSurface>(resource)->SetFloat();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

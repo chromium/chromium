@@ -806,6 +806,11 @@ void ClientControlledShellSurface::UnsetPip() {
   SetRestored();
 }
 
+void ClientControlledShellSurface::SetFloat() {
+  TRACE_EVENT0("exo", "ClientControlledShellSurface::SetFloat");
+  pending_window_state_ = chromeos::WindowStateType::kFloated;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // aura::WindowObserver overrides:
 
