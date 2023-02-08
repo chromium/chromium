@@ -1115,38 +1115,6 @@ MLOperand* MLGraphBuilder::resample2d(const MLOperand* input,
   return output;
 }
 
-MLOperand* MLGraphBuilder::softmax(const MLOperand* input,
-                                   ExceptionState& exception_state) {
-  // According to WebNN spec:
-  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softmax, The input must be
-  // a 2-D tensor.
-  if (input->Dimensions().size() != 2) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The input must be a 2-D tensor.");
-    return nullptr;
-  }
-  // The input type must be one of the floating point types.
-  if (!IsFloatingPointType(input->Type())) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "The input type must be one of the floating point types.");
-    return nullptr;
-  }
-  auto* softmax = MakeGarbageCollected<MLOperator>(
-      this, MLOperator::OperatorKind::kSoftmax);
-  // The output tensor has the same shape as the input tensor.
-  String error_message;
-  auto* output = MLOperand::ValidateAndCreateOutput(
-      this, input->Type(), input->Dimensions(), softmax, error_message);
-  if (!output) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      error_message);
-    return nullptr;
-  }
-  softmax->Connect({input}, {output});
-  return output;
-}
-
 MLOperand* MLGraphBuilder::sigmoid(const MLOperand* input,
                                    ExceptionState& exception_state) {
   auto* sigmoid = MakeGarbageCollected<MLOperator>(
@@ -1177,6 +1145,38 @@ MLOperator* MLGraphBuilder::sigmoid(ExceptionState& exception_state) {
   // Create the sigmoid operator that would be used as an activation function.
   return MakeGarbageCollected<MLOperator>(this,
                                           MLOperator::OperatorKind::kSigmoid);
+}
+
+MLOperand* MLGraphBuilder::softmax(const MLOperand* input,
+                                   ExceptionState& exception_state) {
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softmax, The input must be
+  // a 2-D tensor.
+  if (input->Dimensions().size() != 2) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The input must be a 2-D tensor.");
+    return nullptr;
+  }
+  // The input type must be one of the floating point types.
+  if (!IsFloatingPointType(input->Type())) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The input type must be one of the floating point types.");
+    return nullptr;
+  }
+  auto* softmax = MakeGarbageCollected<MLOperator>(
+      this, MLOperator::OperatorKind::kSoftmax);
+  // The output tensor has the same shape as the input tensor.
+  String error_message;
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      this, input->Type(), input->Dimensions(), softmax, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
+  softmax->Connect({input}, {output});
+  return output;
 }
 
 ScriptPromise MLGraphBuilder::build(ScriptState* script_state,

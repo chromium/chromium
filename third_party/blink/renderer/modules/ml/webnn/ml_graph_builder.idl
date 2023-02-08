@@ -101,10 +101,10 @@ dictionary MLResample2dOptions {
 
   [RaisesException] MLOperand resample2d(MLOperand input, optional MLResample2dOptions options = {});
 
-  [RaisesException] MLOperand softmax(MLOperand input);
-
   [RaisesException] MLOperand sigmoid(MLOperand input);
   [RaisesException] MLOperator sigmoid();
+
+  [RaisesException] MLOperand softmax(MLOperand input);
 
   [CallWith=ScriptState, RaisesException] Promise<MLGraph> build(MLNamedOperands outputs);
   [RaisesException, Exposed=DedicatedWorker] MLGraph buildSync(MLNamedOperands outputs);
