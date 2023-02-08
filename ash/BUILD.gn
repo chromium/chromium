@@ -1046,6 +1046,8 @@ component("ash") {
     "style/option_button_base.h",
     "style/option_button_group.cc",
     "style/option_button_group.h",
+    "style/pagination_view.cc",
+    "style/pagination_view.h",
     "style/pill_button.cc",
     "style/pill_button.h",
     "style/radio_button.cc",

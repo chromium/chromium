@@ -6215,6 +6215,14 @@ New install
       <message name="IDS_ASH_CURTAIN_DESCRIPTION" desc="Detailed description displayed to inform the user a remote admin has taken control of the ChromeOs device.">
         Your administrator has logged in to look into an issue. You can continue to use the device after the administrator gives the control back to you.
       </message>
-    </messages>
-  </release>
+
+      <!-- pagination view -->
+      <message name="IDS_ASH_PAGINATION_LEFT_ARROW_TOOLTIP" desc="The tooltip text used for pagination left arrow button." >
+        Previous page
+      </message>
+      <message name="IDS_ASH_PAGINATION_RIGHT_ARROW_TOOLTIP" desc="The tooltip text used for pagination right arrow button." >
+        Next page
+      </message>
+     </messages>
+    </release>
 </grit>
