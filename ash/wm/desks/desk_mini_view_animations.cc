@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/cros_next_desk_icon_button.h"
 #include "ash/wm/desks/desk_mini_view.h"
@@ -16,6 +15,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "base/containers/contains.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
@@ -61,7 +61,7 @@ constexpr base::TimeDelta kLabelFadeInDuration = base::Milliseconds(50);
 void InitScopedAnimationSettings(ui::ScopedLayerAnimationSettings* settings,
                                  base::TimeDelta duration) {
   settings->SetTransitionDuration(duration);
-  const gfx::Tween::Type tween_type = features::IsJellyrollEnabled()
+  const gfx::Tween::Type tween_type = chromeos::features::IsJellyrollEnabled()
                                           ? gfx::Tween::ACCEL_20_DECEL_100
                                           : gfx::Tween::ACCEL_20_DECEL_60;
   settings->SetTweenType(tween_type);
@@ -77,7 +77,7 @@ void AnimateView(views::View* view, const gfx::Transform& begin_transform) {
 
   ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
   InitScopedAnimationSettings(&settings,
-                              features::IsJellyrollEnabled()
+                              chromeos::features::IsJellyrollEnabled()
                                   ? kExistingMiniViewsAnimationDurationCrOSNext
                                   : kExistingMiniViewsAnimationDuration);
   layer->SetTransform(kEndTransform);
@@ -144,8 +144,9 @@ void ScaleUpAndFadeInView(views::View* view, int bar_x_center) {
 
   ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
   const base::TimeDelta animation_duration =
-      features::IsJellyrollEnabled() ? kZeroStateAnimationDurationCrOSNext
-                                     : kZeroStateAnimationDuration;
+      chromeos::features::IsJellyrollEnabled()
+          ? kZeroStateAnimationDurationCrOSNext
+          : kZeroStateAnimationDuration;
   InitScopedAnimationSettings(&settings, animation_duration);
   layer->SetTransform(kEndTransform);
   layer->SetOpacity(1.f);
@@ -233,7 +234,7 @@ class DesksBarBoundsAnimation : public ui::ImplicitAnimationObserver {
     if (to_zero_state) {
       target_widget_bounds.set_height(DesksBarView::kZeroStateBarHeight);
 
-      if (features::IsJellyrollEnabled()) {
+      if (chromeos::features::IsJellyrollEnabled()) {
         // When `Jellyroll` is enabled, setting desks bar's bounds to its bounds
         // at zero state directly to layout its contents at the correct position
         // first before the animation. When `Jellyroll` is enabled, we use the
@@ -268,8 +269,9 @@ class DesksBarBoundsAnimation : public ui::ImplicitAnimationObserver {
     ui::ScopedLayerAnimationSettings settings{
         desks_widget->GetLayer()->GetAnimator()};
     const base::TimeDelta animation_duration =
-        features::IsJellyrollEnabled() ? kZeroStateAnimationDurationCrOSNext
-                                       : kZeroStateAnimationDuration;
+        chromeos::features::IsJellyrollEnabled()
+            ? kZeroStateAnimationDurationCrOSNext
+            : kZeroStateAnimationDuration;
     InitScopedAnimationSettings(&settings, animation_duration);
     settings.AddObserver(this);
     desks_widget->SetBounds(target_widget_bounds);
@@ -384,7 +386,7 @@ void PerformNewDeskMiniViewAnimation(
     std::vector<DeskMiniView*> mini_views_left,
     std::vector<DeskMiniView*> mini_views_right,
     int shift_x) {
-  if (features::IsJellyrollEnabled()) {
+  if (chromeos::features::IsJellyrollEnabled()) {
     DCHECK(bar_view->new_desk_button());
   } else {
     DCHECK(bar_view->expanded_state_new_desk_button());
@@ -396,7 +398,7 @@ void PerformNewDeskMiniViewAnimation(
   mini_views_right_begin_transform.Translate(-shift_x, 0);
 
   for (auto* mini_view : new_mini_views) {
-    if (features::IsJellyrollEnabled()) {
+    if (chromeos::features::IsJellyrollEnabled()) {
       if (!mini_view->desk()->is_desk_being_removed()) {
         ScaleUpAndFadeInView(mini_view, mini_view->bounds().CenterPoint().x());
       }
@@ -424,7 +426,7 @@ void PerformNewDeskMiniViewAnimation(
   const auto& button_transform = base::i18n::IsRTL()
                                      ? mini_views_left_begin_transform
                                      : mini_views_right_begin_transform;
-  if (features::IsJellyrollEnabled()) {
+  if (chromeos::features::IsJellyrollEnabled()) {
     AnimateView(bar_view->new_desk_button(), button_transform);
     if (bar_view->new_desk_button_label()->GetVisible()) {
       AnimateView(bar_view->new_desk_button_label(), button_transform);
@@ -464,7 +466,7 @@ void PerformRemoveDeskMiniViewAnimation(
   const auto& button_transform = base::i18n::IsRTL()
                                      ? mini_views_left_begin_transform
                                      : mini_views_right_begin_transform;
-  if (features::IsJellyrollEnabled()) {
+  if (chromeos::features::IsJellyrollEnabled()) {
     AnimateView(bar_view->new_desk_button(), button_transform);
     if (bar_view->new_desk_button_label()->GetVisible()) {
       AnimateView(bar_view->new_desk_button_label(), button_transform);

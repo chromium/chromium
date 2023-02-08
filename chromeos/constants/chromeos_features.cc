@@ -51,6 +51,10 @@ BASE_FEATURE(kDisableQuickAnswersV2Translation,
              "DisableQuickAnswersV2Translation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Jellyroll features. Jellyroll is a feature flag for CrOSNext, which
+// controls all system UI updates and new system components.
+BASE_FEATURE(kJellyroll, "Jellyroll", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables system authentication on Ash for password manager, which uses
 // WebUI instead by default. Cleanup CL: https://crrev.com/c/4055733/2.
 BASE_FEATURE(kPasswordManagerSystemAuthentication,
@@ -81,6 +85,10 @@ bool IsDarkLightModeEnabled() {
 
 bool IsDemoModeSWAEnabled() {
   return base::FeatureList::IsEnabled(kDemoModeSWA);
+}
+
+bool IsJellyrollEnabled() {
+  return base::FeatureList::IsEnabled(kJellyroll);
 }
 
 bool IsPasswordManagerSystemAuthenticationEnabled() {

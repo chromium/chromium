@@ -29,7 +29,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_util.h"
-#include "chromeos/ui/wm/features.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
@@ -126,8 +126,8 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
   views::FocusRing* preview_focus_ring = views::FocusRing::Get(desk_preview_);
   views::InstallRoundRectHighlightPathGenerator(
       desk_preview_, gfx::Insets(kFocusRingHaloInset),
-      features::IsJellyrollEnabled() ? kPreviewFocusRingRadius
-                                     : kPreviewFocusRingRadiusOld);
+      chromeos::features::IsJellyrollEnabled() ? kPreviewFocusRingRadius
+                                               : kPreviewFocusRingRadiusOld);
 
   preview_focus_ring->SetHasFocusPredicate([&](views::View* view) {
     return (owner_bar_->dragged_item_over_bar() &&

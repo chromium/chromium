@@ -38,6 +38,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
@@ -463,7 +464,7 @@ void DragWindowFromShelfController::OnDragStarted(
   // Use the same dim and blur as in overview during dragging. If the feature
   // `kJellyroll` is enabled, there's no wallpaper blur in overview mode, thus
   // we don't need to set it here neither.
-  if (!features::IsJellyrollEnabled()) {
+  if (!chromeos::features::IsJellyrollEnabled()) {
     RootWindowController::ForWindow(window_->GetRootWindow())
         ->wallpaper_widget_controller()
         ->SetWallpaperBlur(wallpaper_constants::kOverviewBlur);
@@ -526,7 +527,7 @@ void DragWindowFromShelfController::OnDragEnded(
   // If in overview, the dim and blur will be cleared after overview ends.
   // If the feature `kJellyroll` is enabled, no need to clear the wallpaper
   // dim and blur since the background is set to clear in overview mode.
-  if (!features::IsJellyrollEnabled() &&
+  if (!chromeos::features::IsJellyrollEnabled() &&
       !overview_controller->InOverviewSession()) {
     RootWindowController::ForWindow(window_->GetRootWindow())
         ->wallpaper_widget_controller()

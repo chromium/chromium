@@ -4,12 +4,12 @@
 
 #include "ash/style/icon_button.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
 #include "ash/utility/haptics_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -403,7 +403,7 @@ void IconButton::UpdateBackground() {
   // is done.
 
   // When the button is toggled, create a background with toggled color.
-  const bool is_jellyroll_enabled = features::IsJellyrollEnabled();
+  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
   if (is_toggled) {
     if (background_toggled_color_id_ || !background_toggled_color_) {
       const ui::ColorId color_id = background_toggled_color_id_.value_or(
@@ -440,7 +440,7 @@ void IconButton::UpdateVectorIcon(bool icon_changed) {
     return;
 
   const int icon_size = icon_size_.value_or(GetIconSizeOnType(type_));
-  const bool is_jellyroll_enabled = features::IsJellyrollEnabled();
+  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
 
   ui::ImageModel new_normal_image_model;
   // When the icon color is defined by a color Id, use the color Id to create an

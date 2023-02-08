@@ -38,6 +38,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -317,7 +318,7 @@ void OverviewWindowDragController::StartNormalDragMode(
 
   // Expand desks bar when normal drag starts and desks bar is in zero state for
   // feature Jellyroll.
-  if (features::IsJellyrollEnabled() &&
+  if (chromeos::features::IsJellyrollEnabled() &&
       overview_grid->desks_bar_view()->IsZeroState()) {
     overview_grid->desks_bar_view()->UpdateNewMiniViews(
         /*initializing_bar_view=*/false, /*expanding_bar_view=*/true);
@@ -635,7 +636,7 @@ void OverviewWindowDragController::ContinueNormalDrag(
   item_->SetBounds(bounds, OVERVIEW_ANIMATION_NONE);
 
   if (features::IsDragWindowToNewDeskEnabled()) {
-    if (features::IsJellyrollEnabled()) {
+    if (chromeos::features::IsJellyrollEnabled()) {
       auto* new_desk_button =
           overview_grid->desks_bar_view()->new_desk_button();
 
@@ -741,7 +742,7 @@ OverviewWindowDragController::CompleteNormalDrag(
     // ended. Thus we need to check whether `overview_session_` is being
     // shutting down or not here before triggering `MaybeShrinkDesksBarView`.
     if (!overview_session_->is_shutting_down()) {
-      if (features::IsJellyrollEnabled()) {
+      if (chromeos::features::IsJellyrollEnabled()) {
         auto* desks_bar_view = current_grid->desks_bar_view();
         desks_bar_view->UpdateDeskIconButtonState(
             desks_bar_view->new_desk_button(),
@@ -788,7 +789,7 @@ OverviewWindowDragController::CompleteNormalDrag(
   } else {
     item_->set_should_restack_on_animation_end(true);
     overview_session_->PositionWindows(/*animate=*/true);
-    if (features::IsJellyrollEnabled()) {
+    if (chromeos::features::IsJellyrollEnabled()) {
       auto* desks_bar_view = current_grid->desks_bar_view();
       desks_bar_view->UpdateDeskIconButtonState(
           desks_bar_view->new_desk_button(),

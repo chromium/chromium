@@ -8,6 +8,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -64,7 +65,7 @@ int GetButtonHeight(PillButton::Type type) {
 absl::optional<ui::ColorId> GetDefaultBackgroundColorId(PillButton::Type type) {
   absl::optional<ui::ColorId> color_id;
 
-  const bool is_jellyroll_enabled = features::IsJellyrollEnabled();
+  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
 
   switch (type & kButtonColorVariant) {
     case PillButton::kDefault:
@@ -106,7 +107,7 @@ absl::optional<ui::ColorId> GetDefaultButtonTextIconColorId(
     PillButton::Type type) {
   absl::optional<ui::ColorId> color_id;
 
-  const bool is_jellyroll_enabled = features::IsJellyrollEnabled();
+  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
 
   switch (type & kButtonColorVariant) {
     case PillButton::kDefault:

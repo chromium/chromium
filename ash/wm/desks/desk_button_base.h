@@ -54,6 +54,8 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
   // may or may not have the background.
   void SetShouldPaintBackground(bool should_paint_background);
 
+  SkColor GetBackgroundColorForTest() { return background_color_; }
+
  protected:
   virtual void UpdateFocusState();
 

@@ -46,6 +46,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -525,7 +526,7 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
 
   // views::LayoutManager:
   void Layout(views::View* host) override {
-    if (features::IsJellyrollEnabled()) {
+    if (chromeos::features::IsJellyrollEnabled()) {
       LayoutInternalCrOSNext(host);
     } else {
       LayoutInternal(host);
@@ -601,7 +602,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
             l10n_util::GetStringUTF16(IDS_GLANCEABLES_UP_NEXT)));
   }
 
-  if (features::IsJellyrollEnabled()) {
+  if (chromeos::features::IsJellyrollEnabled()) {
     default_desk_button_ = scroll_view_contents_->AddChildView(
         std::make_unique<CrOSNextDefaultDeskButton>(this));
     new_desk_button_ = scroll_view_contents_->AddChildView(
@@ -643,7 +644,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
     if (!saved_desk_util::AreDesksTemplatesEnabled())
       button_text_id = IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON_SAVED_FOR_LATER;
 
-    if (features::IsJellyrollEnabled()) {
+    if (chromeos::features::IsJellyrollEnabled()) {
       library_button_ = scroll_view_contents_->AddChildView(
           std::make_unique<CrOSNextDeskIconButton>(
               this, &kDesksTemplatesIcon,
@@ -783,7 +784,7 @@ void DesksBarView::SetDragDetails(const gfx::Point& screen_location,
 
   if (features::IsDragWindowToNewDeskEnabled() &&
       DesksController::Get()->CanCreateDesks()) {
-    if (features::IsJellyrollEnabled()) {
+    if (chromeos::features::IsJellyrollEnabled()) {
       new_desk_button_->UpdateFocusState();
     } else {
       expanded_state_new_desk_button()->UpdateFocusColor();
@@ -987,7 +988,7 @@ bool DesksBarView::IsDraggingDesk() const {
 }
 
 void DesksBarView::OnSavedDeskLibraryHidden() {
-  if (!features::IsJellyrollEnabled() && mini_views_.size() == 1u) {
+  if (!chromeos::features::IsJellyrollEnabled() && mini_views_.size() == 1u) {
     SwitchToZeroState();
   }
 }
@@ -1061,7 +1062,7 @@ void DesksBarView::OnGestureEvent(ui::GestureEvent* event) {
 void DesksBarView::OnDeskAdded(const Desk* desk) {
   DeskNameView::CommitChanges(GetWidget());
 
-  if (features::IsJellyrollEnabled()) {
+  if (chromeos::features::IsJellyrollEnabled()) {
     const bool is_expanding_bar_view =
         new_desk_button_->state() == CrOSNextDeskIconButton::State::kZero;
     UpdateNewMiniViews(/*initializing_bar_view=*/false, is_expanding_bar_view);
@@ -1104,7 +1105,7 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
   highlight_controller->OnViewDestroyingOrDisabling((*iter)->desk_name_view());
   highlight_controller->OnViewDestroyingOrDisabling((*iter)->desk_preview());
 
-  if (features::IsJellyrollEnabled()) {
+  if (chromeos::features::IsJellyrollEnabled()) {
     new_desk_button_->SetEnabled(/*enabled=*/true);
   } else {
     expanded_state_new_desk_button_->SetButtonState(/*enabled=*/true);
@@ -1115,7 +1116,7 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
 
   // If Jellyroll is not enabled, switch to zero state if there will be one desk
   // after removal, unless we are viewing the saved desk library.
-  if (!features::IsJellyrollEnabled() && mini_views_.size() == 2u &&
+  if (!chromeos::features::IsJellyrollEnabled() && mini_views_.size() == 2u &&
       !overview_grid_->IsShowingSavedDeskLibrary()) {
     SwitchToZeroState();
     return;
@@ -1201,7 +1202,7 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
 
   if (expanding_bar_view) {
     UpdateDeskButtonsVisibility();
-    if (features::IsJellyrollEnabled()) {
+    if (chromeos::features::IsJellyrollEnabled()) {
       PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(this);
     } else {
       PerformZeroStateToExpandedStateMiniViewAnimation(this);
@@ -1209,7 +1210,7 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
     return;
   }
 
-  if (features::IsJellyrollEnabled()) {
+  if (chromeos::features::IsJellyrollEnabled()) {
     if (new_desk_button_->state() == CrOSNextDeskIconButton::State::kActive) {
       // Make sure the new desk button is updated to expanded state from the
       // active state. This can happen when dropping the window on the new desk
@@ -1275,7 +1276,7 @@ void DesksBarView::UpdateButtonsForSavedDeskGrid() {
   FindMiniViewForDesk(Shell::Get()->desks_controller()->active_desk())
       ->UpdateFocusColor();
 
-  if (features::IsJellyrollEnabled()) {
+  if (chromeos::features::IsJellyrollEnabled()) {
     library_button_->set_paint_as_active(
         overview_grid_->IsShowingSavedDeskLibrary());
     library_button_->UpdateFocusState();
@@ -1287,7 +1288,7 @@ void DesksBarView::UpdateButtonsForSavedDeskGrid() {
 }
 
 void DesksBarView::UpdateDeskButtonsVisibility() {
-  if (features::IsJellyrollEnabled()) {
+  if (chromeos::features::IsJellyrollEnabled()) {
     UpdateDeskButtonsVisibilityCrOSNext();
     return;
   }
@@ -1314,7 +1315,7 @@ void DesksBarView::UpdateDeskButtonsVisibilityCrOSNext() {
 }
 
 void DesksBarView::UpdateLibraryButtonVisibility() {
-  if (features::IsJellyrollEnabled()) {
+  if (chromeos::features::IsJellyrollEnabled()) {
     UpdateLibraryButtonVisibilityCrOSNext();
     return;
   }
@@ -1408,7 +1409,7 @@ DeskMiniView* DesksBarView::FindMiniViewForDesk(const Desk* desk) const {
 }
 
 void DesksBarView::SwitchToZeroState() {
-  DCHECK(!features::IsJellyrollEnabled());
+  DCHECK(!chromeos::features::IsJellyrollEnabled());
 
   // Hiding the button immediately instead of the ends of the animation while
   // switching from expanded state to zero state.
@@ -1625,7 +1626,7 @@ void DesksBarView::MaybeUpdateCombineDesksTooltips() {
 void DesksBarView::UpdateDeskIconButtonState(
     CrOSNextDeskIconButton* button,
     CrOSNextDeskIconButton::State target_state) {
-  DCHECK(features::IsJellyrollEnabled());
+  DCHECK(chromeos::features::IsJellyrollEnabled());
   DCHECK_NE(target_state, CrOSNextDeskIconButton::State::kZero);
 
   if (button->state() == target_state) {

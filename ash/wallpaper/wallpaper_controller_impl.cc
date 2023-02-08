@@ -57,6 +57,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "net/http/http_request_headers.h"
@@ -801,7 +802,7 @@ bool WallpaperControllerImpl::ShouldApplyShield() const {
   bool needs_shield = false;
 
   if (Shell::Get()->overview_controller()->InOverviewSession()) {
-    needs_shield = !features::IsJellyrollEnabled();
+    needs_shield = !chromeos::features::IsJellyrollEnabled();
   } else if (Shell::Get()->session_controller()->IsUserSessionBlocked()) {
     needs_shield = true;
   } else if (Shell::Get()->tablet_mode_controller()->InTabletMode() &&
@@ -1754,7 +1755,7 @@ void WallpaperControllerImpl::OnOverviewModeStarting() {
   // don't apply the wallpaper shield no matter it's in overview mode or not if
   // the feature `kJellyroll` is enabled. However, in tablet mode, we need to
   // apply the wallpaper shield when it's not in the overview mode.
-  if (features::IsJellyrollEnabled() &&
+  if (chromeos::features::IsJellyrollEnabled() &&
       Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     RepaintWallpaper();
   }
@@ -1762,7 +1763,7 @@ void WallpaperControllerImpl::OnOverviewModeStarting() {
 
 void WallpaperControllerImpl::OnOverviewModeEnded() {
   // Refer to the comment in `OnOverviewModeStarting`.
-  if (features::IsJellyrollEnabled() &&
+  if (chromeos::features::IsJellyrollEnabled() &&
       Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     RepaintWallpaper();
   }

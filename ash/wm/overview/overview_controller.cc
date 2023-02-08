@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/window_properties.h"
@@ -33,6 +32,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
@@ -99,7 +99,7 @@ OverviewController::OverviewController()
   // If the feature `kJellyroll` is enabled, there's no wallpaper blur in
   // overview mode, thus we don't need to create `OverviewWallpaperController`
   // which takes care the the wallpaper blur for overview mode.
-  if (!features::IsJellyrollEnabled()) {
+  if (!chromeos::features::IsJellyrollEnabled()) {
     overview_wallpaper_controller_ =
         std::make_unique<OverviewWallpaperController>();
   }
@@ -445,7 +445,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     // the overview immediately, so delaying blur start until start animations
     // finish looks janky. If the feature `kJellyroll` is enabled, no need to
     // set the wallpaper blur.
-    if (!features::IsJellyrollEnabled()) {
+    if (!chromeos::features::IsJellyrollEnabled()) {
       overview_wallpaper_controller_->Blur(
           /*animate=*/new_type == OverviewEnterExitType::kFadeInEnter);
     }
@@ -516,7 +516,7 @@ void OverviewController::OnStartingAnimationComplete(bool canceled) {
 
   // For kFadeInEnter, wallpaper blur is initiated on transition start,
   // so it doesn't have to be requested again on starting animation end.
-  if (!features::IsJellyrollEnabled() && !canceled &&
+  if (!chromeos::features::IsJellyrollEnabled() && !canceled &&
       overview_session_->enter_exit_overview_type() !=
           OverviewEnterExitType::kFadeInEnter) {
     overview_wallpaper_controller_->Blur(/*animate=*/true);
@@ -545,7 +545,7 @@ void OverviewController::OnEndingAnimationComplete(bool canceled) {
   // the blur. Also resume the activation frame state. No need to unblur the
   // wallpaper if the feature `kJellyroll` is enabled, since it's not blurred
   // on overview started.
-  if (!canceled && !features::IsJellyrollEnabled()) {
+  if (!canceled && !chromeos::features::IsJellyrollEnabled()) {
     overview_wallpaper_controller_->Unblur();
     paint_as_active_lock_.reset();
   }

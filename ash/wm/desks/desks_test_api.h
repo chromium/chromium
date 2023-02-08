@@ -48,7 +48,6 @@ class DesksTestApi {
   static views::ScrollView* GetDesksBarScrollView();
   static const DeskMiniView* GetDesksBarDragView();
   static PersistentDesksBarContextMenu* GetDesksBarContextMenu();
-  static SkColor GetNewDeskButtonBackgroundColor();
   static PersistentDesksBarContextMenu* GetPersistentDesksBarContextMenu();
   static const std::vector<PersistentDesksBarDeskButton*>
   GetPersistentDesksBarDeskButtons();

@@ -1213,9 +1213,6 @@ BASE_FEATURE(kIppClientInfo, "IppClientInfo", base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables Jelly features.
 BASE_FEATURE(kJelly, "Jelly", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Jellyroll features.
-BASE_FEATURE(kJellyroll, "Jellyroll", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables IME button in the floating accessibility menu for the Kiosk session.
 BASE_FEATURE(kKioskEnableImeButton,
              "KioskEnableImeButton",
@@ -2665,10 +2662,6 @@ bool IsIppClientInfoEnabled() {
 
 bool IsJellyEnabled() {
   return base::FeatureList::IsEnabled(kJelly);
-}
-
-bool IsJellyrollEnabled() {
-  return base::FeatureList::IsEnabled(kJellyroll);
 }
 
 bool IsKeyboardBacklightToggleEnabled() {

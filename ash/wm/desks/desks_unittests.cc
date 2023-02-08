@@ -95,6 +95,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/frame/desks/move_to_desks_menu_delegate.h"
 #include "chromeos/ui/frame/desks/move_to_desks_menu_model.h"
 #include "chromeos/ui/wm/desks/chromeos_desks_histogram_enums.h"
@@ -403,9 +404,9 @@ class DesksTest : public AshTestBase,
     }
 
     if (GetParam().enable_jellyroll) {
-      enabled_features.push_back(features::kJellyroll);
+      enabled_features.push_back(chromeos::features::kJellyroll);
     } else {
-      disabled_features.push_back(features::kJellyroll);
+      disabled_features.push_back(chromeos::features::kJellyroll);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
@@ -498,6 +499,14 @@ class DesksTest : public AshTestBase,
 
   void SendKey(ui::KeyboardCode key_code, int flags = ui::EF_NONE) {
     PressAndReleaseKey(key_code, flags);
+  }
+
+  SkColor GetNewDeskButtonBackgroundColor(const DesksBarView* bar_view) {
+    return GetParam().enable_jellyroll
+               ? bar_view->new_desk_button()->background()->get_color()
+               : bar_view->expanded_state_new_desk_button()
+                     ->GetInnerButton()
+                     ->GetBackgroundColorForTest();
   }
 
  private:
@@ -2071,19 +2080,19 @@ TEST_P(DesksTest, NewDeskButtonStateAndColor) {
   // and color.
   auto* color_provider = new_desk_button->GetColorProvider();
   SkColor background_color =
-      features::IsJellyrollEnabled()
+      chromeos::features::IsJellyrollEnabled()
           ? color_provider->GetColor(cros_tokens::kCrosSysPrimary)
           : color_provider->GetColor(kColorAshControlBackgroundColorInactive);
 
   const SkColor disabled_background_color =
       ColorUtil::GetDisabledColor(background_color);
   EXPECT_TRUE(new_desk_button->GetEnabled());
-  EXPECT_EQ(background_color, DesksTestApi::GetNewDeskButtonBackgroundColor());
+  EXPECT_EQ(background_color, GetNewDeskButtonBackgroundColor(desks_bar_view));
 
   auto* event_generator = GetEventGenerator();
   ClickOnView(new_desk_button, event_generator);
   EXPECT_TRUE(new_desk_button->GetEnabled());
-  EXPECT_EQ(background_color, DesksTestApi::GetNewDeskButtonBackgroundColor());
+  EXPECT_EQ(background_color, GetNewDeskButtonBackgroundColor(desks_bar_view));
 
   // Tests that adding desks until we reach the desks limit should change the
   // state and color of the new desk button.
@@ -2096,7 +2105,7 @@ TEST_P(DesksTest, NewDeskButtonStateAndColor) {
   }
   EXPECT_FALSE(new_desk_button->GetEnabled());
   EXPECT_EQ(disabled_background_color,
-            DesksTestApi::GetNewDeskButtonBackgroundColor());
+            GetNewDeskButtonBackgroundColor(desks_bar_view));
 }
 
 // Tests that the fullscreen state in shell is updated when switching between
@@ -5502,7 +5511,8 @@ TEST_P(DesksTest, ContinueScrollBar) {
   // When `Jellyroll` is enabled and the maximum number of desks is 8, the new
   // desk button is smaller, two scrolls will reach the end of the desks bar
   // view, thus we verify the right of the visible scroll view.
-  if (features::IsJellyrollEnabled() && !features::Is16DesksEnabled()) {
+  if (chromeos::features::IsJellyrollEnabled() &&
+      !features::Is16DesksEnabled()) {
     EXPECT_EQ(
         scroll_view->GetVisibleRect().right() - focus_ring_width_and_padding,
         GetExpandedStateNewDeskButton(desks_bar)->bounds().right());
@@ -5537,7 +5547,7 @@ TEST_P(DesksTest, ContinueScrollBar) {
   // library button become smaller, thus when scroll to the left from the right
   // mode, the index of desk mini view on the left is smaller than it when
   // `Jellyroll` is not enabled.
-  if (features::IsJellyrollEnabled()) {
+  if (chromeos::features::IsJellyrollEnabled()) {
     current_index -= (desks_in_one_page + 1);
   } else {
     current_index -= desks_in_one_page;
@@ -6479,7 +6489,8 @@ TEST_P(DesksTest, ScrollBarByDraggedDesk) {
   // When `Jellyroll` is enabled and the maximum number of desks is 8, the new
   // desk button is smaller, two scrolls will reach the end of the desks bar
   // view, thus we verify the right of the visible scroll view.
-  if (features::IsJellyrollEnabled() && !features::Is16DesksEnabled()) {
+  if (chromeos::features::IsJellyrollEnabled() &&
+      !features::Is16DesksEnabled()) {
     EXPECT_EQ(
         scroll_view->GetVisibleRect().right() - focus_ring_width_and_padding,
         GetExpandedStateNewDeskButton(desks_bar)->bounds().right());
@@ -6523,7 +6534,7 @@ TEST_P(DesksTest, ScrollBarByDraggedDesk) {
   // library button become smaller, thus when scroll to the left from the right
   // most, the index of desk mini view on the left is smaller than it when
   // `Jellyroll` is not enabled.
-  if (features::IsJellyrollEnabled()) {
+  if (chromeos::features::IsJellyrollEnabled()) {
     current_index -= (desks_in_one_page + 1);
   } else {
     current_index -= desks_in_one_page;

@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
@@ -35,6 +34,7 @@
 #include "base/containers/flat_set.h"
 #include "base/cxx17_backports.h"
 #include "base/ranges/algorithm.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
@@ -325,7 +325,8 @@ void GetLayersData(aura::Window* window,
 }
 
 gfx::RoundedCornersF GetRoundedCorner() {
-  return features::IsJellyrollEnabled() ? kCornerRadii : kCornerRadiiOld;
+  return chromeos::features::IsJellyrollEnabled() ? kCornerRadii
+                                                  : kCornerRadiiOld;
 }
 
 }  // namespace
@@ -358,7 +359,7 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
   wallpaper_preview_layer->SetIsFastRoundedCorner(true);
   AddChildView(wallpaper_preview_);
 
-  if (!features::IsJellyrollEnabled()) {
+  if (!chromeos::features::IsJellyrollEnabled()) {
     shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
         wallpaper_preview_, kDefaultShadowType);
     shadow_->SetRoundedCornerRadius(kCornerRadius);
