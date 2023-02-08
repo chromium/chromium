@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL GetEntries with filter options. assert_equals: navigationEntries should be 1. expected 1 but got 2
+Harness: the test ran to completion.
+

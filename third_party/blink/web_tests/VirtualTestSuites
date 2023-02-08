@@ -211,7 +211,9 @@
               "inspector-protocol/dom-snapshot",
               "media/stable",
               "webexposed",
-              "compositing/filters"],
+              "compositing/filters",
+              "external/wpt/performance-timeline/tentative/with-filter-options-originA.html"
+            ],
     "exclusive_tests": ["media/stable"],
     "args": ["--stable-release-mode",
              "--disable-auto-wpt-origin-isolation",

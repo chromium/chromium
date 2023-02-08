@@ -325,8 +325,9 @@ PerformanceEntryVector Performance::getEntries() {
 PerformanceEntryVector Performance::getEntries(
     ScriptState* script_state,
     PerformanceEntryFilterOptions* options) {
-  if (!options) {
-    return getEntries();
+  if (!RuntimeEnabledFeatures::CrossFramePerformanceTimelineEnabled() ||
+      !options) {
+    return GetEntriesForCurrentFrame();
   }
 
   PerformanceEntryVector entries;
@@ -339,8 +340,7 @@ PerformanceEntryVector Performance::getEntries(
                                 : g_null_atom;
 
   // Get sorted entry list based on provided input.
-  if (options->getIncludeChildFramesOr(false) &&
-      RuntimeEnabledFeatures::CrossFramePerformanceTimelineEnabled()) {
+  if (options->getIncludeChildFramesOr(false)) {
     entries = GetEntriesWithChildFrames(script_state, entry_type, name);
   } else {
     if (!entry_type) {
