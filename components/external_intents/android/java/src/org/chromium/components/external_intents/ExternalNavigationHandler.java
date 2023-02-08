@@ -78,6 +78,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Logic related to the URL overriding/intercepting functionality.
@@ -1317,20 +1318,29 @@ public class ExternalNavigationHandler {
     @VisibleForTesting
     protected AlertDialog showLeavingIncognitoAlert(final Context context,
             final ExternalNavigationParams params, final Intent intent, final GURL fallbackUrl) {
+        // https://crbug.com/1412842: It seems dialogs sometimes end up with multiple results
+        // chosen.
+        final AtomicBoolean dialogResultChosen = new AtomicBoolean(false);
         return new AlertDialog.Builder(context, R.style.ThemeOverlay_BrowserUI_AlertDialog)
                 .setTitle(R.string.external_app_leave_incognito_warning_title)
                 .setMessage(R.string.external_app_leave_incognito_warning)
                 .setPositiveButton(R.string.external_app_leave_incognito_leave,
                         (DialogInterface dialog, int which) -> {
+                            if (dialogResultChosen.get()) return;
+                            dialogResultChosen.set(true);
                             onUserDecidedWhetherToLaunchIncognitoIntent(
                                     /*shouldLaunch=*/true, params, intent, fallbackUrl);
                         })
                 .setNegativeButton(R.string.external_app_leave_incognito_stay,
                         (DialogInterface dialog, int which) -> {
+                            if (dialogResultChosen.get()) return;
+                            dialogResultChosen.set(true);
                             onUserDecidedWhetherToLaunchIncognitoIntent(
                                     /*shouldLaunch=*/false, params, intent, fallbackUrl);
                         })
                 .setOnCancelListener((DialogInterface dialog) -> {
+                    if (dialogResultChosen.get()) return;
+                    dialogResultChosen.set(true);
                     onUserDecidedWhetherToLaunchIncognitoIntent(
                             /*shouldLaunch=*/false, params, intent, fallbackUrl);
                 })
