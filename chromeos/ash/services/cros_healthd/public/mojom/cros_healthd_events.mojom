@@ -122,6 +122,17 @@ interface CrosHealthdUsbObserver {
   OnRemove@1(UsbEventInfo info);
 };
 
+// Implemented by clients who desire SD Card notifications.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+interface CrosHealthdSdCardObserver {
+  // Fired when the SD Card plug in.
+  OnAdd@0();
+  // Fired when the SD Card plug out.
+  OnRemove@1();
+};
+
 // Thunderbolt event info.
 //
 // NextMinVersion: 1, NextIndex: 1
@@ -246,6 +257,24 @@ struct AudioJackEventInfo {
   State state@0;
 };
 
+// SD Card event info.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct SdCardEventInfo {
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField,
+    // SD Card added.
+    kAdd,
+    // SD Card removed.
+    kRemove,
+  };
+
+  State state@0;
+};
+
 // Implemented by clients who desire events.
 //
 // NextMinVersion: 1, NextIndex: 1
@@ -257,7 +286,7 @@ interface EventObserver {
 
 // Union of event info.
 //
-// NextMinVersion: 2, NextIndex: 8
+// NextMinVersion: 3, NextIndex: 9
 [Stable, Extensible]
 union EventInfo {
   // The default value for forward compatibility. All the unknown type will be
@@ -277,11 +306,13 @@ union EventInfo {
   AudioEventInfo audio_event_info@6;
   // Audio jack event info.
   [MinVersion=1] AudioJackEventInfo audio_jack_event_info@7;
+  // Sd Card event info.
+  [MinVersion=2] SdCardEventInfo sd_card_event_info@8;
 };
 
 // An enumeration of event categories.
 //
-// NextMinVersion: 2, NextIndex: 8
+// NextMinVersion: 3, NextIndex: 9
 [Stable, Extensible]
 enum EventCategoryEnum {
   // This is required for backwards compatibility, should not be used.
@@ -293,4 +324,5 @@ enum EventCategoryEnum {
   kPower = 5,
   kAudio = 6,
   [MinVersion=1] kAudioJack = 7,
+  [MinVersion=2] kSdCard = 8,
 };
