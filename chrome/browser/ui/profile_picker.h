@@ -72,7 +72,14 @@ class ProfilePicker {
     // Opens the first run experience on non-Lacros desktop platforms to let the
     // user sign in, opt in to sync, etc.
     kFirstRun = 11,
-    kMaxValue = kFirstRun,
+    // There was no usable profile on startup (e.g. the profiles were locked by
+    // force signin).
+    kOnStartupNoProfile = 12,
+    // There was no usable profile when starting a new session while Chrome is
+    // already running (e.g. the profiles were locked by force signin).
+    kNewSessionOnExistingProcessNoProfile = 13,
+
+    kMaxValue = kNewSessionOnExistingProcessNoProfile,
   };
 
   class Params final {

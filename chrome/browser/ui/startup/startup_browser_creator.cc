@@ -458,16 +458,6 @@ StartupProfileInfo GetProfilePickerStartupProfileInfo() {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-void ShowProfilePicker(chrome::startup::IsProcessStartup process_startup) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
-      process_startup == chrome::startup::IsProcessStartup::kYes
-          ? ProfilePicker::EntryPoint::kOnStartup
-          : ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
-  return;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
 bool IsSilentLaunchEnabled(const base::CommandLine& command_line,
                            const Profile* profile) {
   // This check should have been done in `ProcessCmdLineImpl()` before calling
@@ -604,7 +594,7 @@ void OpenNewWindowForFirstRun(
   browser_creator.LaunchBrowser(command_line, profile, cur_dir, process_startup,
                                 is_first_run, std::move(launch_mode_recorder));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(ENABLE_DICE_SUPPORT)
 }  // namespace
 
 StartupBrowserCreator::StartupBrowserCreator() = default;
@@ -712,7 +702,14 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
 #endif  // BUILDFLAG(IS_WIN)
 
   if (profile_info.mode == StartupProfileMode::kProfilePicker) {
-    ShowProfilePicker(process_startup);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    NOTREACHED();
+#else
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        process_startup == chrome::startup::IsProcessStartup::kYes
+            ? ProfilePicker::EntryPoint::kOnStartup
+            : ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return;
   }
 
@@ -750,7 +747,15 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
     }
 
     // Show ProfilePicker if `profile` can't be auto opened.
-    ShowProfilePicker(process_startup);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    NOTREACHED();
+#else
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        process_startup == chrome::startup::IsProcessStartup::kYes
+            ? ProfilePicker::EntryPoint::kOnStartupNoProfile
+            : ProfilePicker::EntryPoint::
+                  kNewSessionOnExistingProcessNoProfile));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return;
   }
   ProcessLastOpenedProfiles(command_line, cur_dir, process_startup,
@@ -1336,11 +1341,14 @@ void StartupBrowserCreator::ProcessLastOpenedProfiles(
 // been launched so the observer knows about all profiles to wait before
 // activation this one.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (process_startup == chrome::startup::IsProcessStartup::kYes)
-    ShowProfilePicker(chrome::startup::IsProcessStartup::kYes);
-  else
+  if (process_startup == chrome::startup::IsProcessStartup::kYes) {
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kOnStartup));
+  } else  // NOLINT
 #endif
+  {
     profile_launch_observer.Get().set_profile_to_activate(last_used_profile);
+  }
 }
 
 // static

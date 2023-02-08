@@ -128,6 +128,8 @@ bool IsClassicProfilePickerFlow(const ProfilePicker::Params& params) {
     case ProfilePicker::EntryPoint::kBackgroundModeManager:
     case ProfilePicker::EntryPoint::kProfileIdle:
     case ProfilePicker::EntryPoint::kLacrosSelectAvailableAccount:
+    case ProfilePicker::EntryPoint::kOnStartupNoProfile:
+    case ProfilePicker::EntryPoint::kNewSessionOnExistingProcessNoProfile:
       return true;
     case ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun:
     case ProfilePicker::EntryPoint::kFirstRun:

@@ -45,7 +45,8 @@ const signin_metrics::AccessPoint kAccessPoint =
 GURL GetInitialURL(ProfilePicker::EntryPoint entry_point) {
   GURL base_url = GURL(chrome::kChromeUIProfilePickerUrl);
   switch (entry_point) {
-    case ProfilePicker::EntryPoint::kOnStartup: {
+    case ProfilePicker::EntryPoint::kOnStartup:
+    case ProfilePicker::EntryPoint::kOnStartupNoProfile: {
       GURL::Replacements replacements;
       replacements.SetQueryStr(chrome::kChromeUIProfilePickerStartupQuery);
       return base_url.ReplaceComponents(replacements);
@@ -57,6 +58,7 @@ GURL GetInitialURL(ProfilePicker::EntryPoint entry_point) {
     case ProfilePicker::EntryPoint::kUnableToCreateBrowser:
     case ProfilePicker::EntryPoint::kBackgroundModeManager:
     case ProfilePicker::EntryPoint::kProfileIdle:
+    case ProfilePicker::EntryPoint::kNewSessionOnExistingProcessNoProfile:
       return base_url;
     case ProfilePicker::EntryPoint::kProfileMenuAddNewProfile:
       return base_url.Resolve("new-profile");
@@ -318,9 +320,11 @@ void ProfilePickerFlowController::CancelPostSignInFlow() {
 
   switch (entry_point_) {
     case ProfilePicker::EntryPoint::kOnStartup:
+    case ProfilePicker::EntryPoint::kOnStartupNoProfile:
     case ProfilePicker::EntryPoint::kProfileMenuManageProfiles:
     case ProfilePicker::EntryPoint::kOpenNewWindowAfterProfileDeletion:
     case ProfilePicker::EntryPoint::kNewSessionOnExistingProcess:
+    case ProfilePicker::EntryPoint::kNewSessionOnExistingProcessNoProfile:
     case ProfilePicker::EntryPoint::kProfileLocked:
     case ProfilePicker::EntryPoint::kUnableToCreateBrowser:
     case ProfilePicker::EntryPoint::kBackgroundModeManager:
