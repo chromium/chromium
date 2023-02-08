@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "builder", "cpu", "defaults", "goma", "os", "xcode")
+load("//lib/builders.star", "builder", "cpu", "defaults", "goma", "os", "reclient", "xcode")
 
 luci.bucket(
     name = "webrtc.fyi",
@@ -45,6 +45,8 @@ defaults.os.set(os.LINUX_DEFAULT)
 defaults.pool.set("luci.chromium.webrtc.fyi")
 defaults.service_account.set("chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com")
 defaults.triggered_by.set(["webrtc-gitiles-trigger"])
+defaults.reclient_instance.set(reclient.instance.DEFAULT_TRUSTED)
+defaults.reclient_jobs.set(reclient.jobs.DEFAULT)
 
 # Builders are defined in lexicographic order by name
 
