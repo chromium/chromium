@@ -23,10 +23,8 @@ struct IssueInfo {
 
   // |title|: The title for the issue.
   // |severity|: The severity of the issue.
-  //
-  // TODO(crbug.com/1407333): Add sink_id as a ctor argument, as all issues have
-  // associated sinks.
-  IssueInfo(const std::string& title, Severity severity);
+  // |sink_id|: ID of the associated MediaSink.
+  IssueInfo(const std::string& title, Severity severity, MediaSink::Id sink_id);
   IssueInfo(const IssueInfo&);
   IssueInfo& operator=(const IssueInfo&);
   IssueInfo(IssueInfo&&);
@@ -46,8 +44,7 @@ struct IssueInfo {
   // with it.
   MediaRoute::Id route_id;
 
-  // ID of the sink associated with this issue, or empty if no sink is
-  // associated with it.
+  // ID of the sink associated with this issue.
   MediaSink::Id sink_id;
 };
 

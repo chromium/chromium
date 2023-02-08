@@ -5,6 +5,7 @@
 #include "components/media_router/common/issue.h"
 
 #include "base/atomic_sequence_num.h"
+#include "base/check.h"
 
 namespace media_router {
 
@@ -20,12 +21,17 @@ IssueInfo::IssueInfo(IssueInfo&&) = default;
 IssueInfo& IssueInfo::operator=(IssueInfo&&) = default;
 IssueInfo::~IssueInfo() = default;
 
-IssueInfo::IssueInfo(const std::string& title, Severity severity)
-    : title(title), severity(severity) {}
+IssueInfo::IssueInfo(const std::string& title,
+                     Severity severity,
+                     MediaSink::Id sink_id)
+    : title(title), severity(severity), sink_id(sink_id) {
+  DCHECK(!sink_id.empty());
+}
 
 bool IssueInfo::operator==(const IssueInfo& other) const {
   return title == other.title && severity == other.severity &&
-         message == other.message && route_id == other.route_id;
+         message == other.message && route_id == other.route_id &&
+         sink_id == other.sink_id;
 }
 
 Issue::Issue(IssueInfo info)

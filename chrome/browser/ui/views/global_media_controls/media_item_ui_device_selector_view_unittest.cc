@@ -550,7 +550,7 @@ TEST_F(MediaItemUIDeviceSelectorViewTest, CastDeviceButtonClickClearsIssue) {
   // cast session.
   auto sink = CreateMediaSink();
   media_router::IssueInfo issue_info(
-      "Issue Title", media_router::IssueInfo::Severity::WARNING);
+      "Issue Title", media_router::IssueInfo::Severity::WARNING, sink.id);
   media_router::Issue issue(issue_info);
   sink.issue = issue;
 

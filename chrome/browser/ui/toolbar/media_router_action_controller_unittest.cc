@@ -40,7 +40,8 @@ class MediaRouterActionControllerUnitTest : public BrowserWithTestWindowTest {
   MediaRouterActionControllerUnitTest()
       : issue_(media_router::IssueInfo(
             "title notification",
-            media_router::IssueInfo::Severity::NOTIFICATION)) {}
+            media_router::IssueInfo::Severity::NOTIFICATION,
+            "sinkId1")) {}
 
   MediaRouterActionControllerUnitTest(
       const MediaRouterActionControllerUnitTest&) = delete;
