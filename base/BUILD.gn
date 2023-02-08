@@ -1691,7 +1691,7 @@ component("base") {
       ]
     }
 
-    if (!is_ios) {
+    if (use_blink) {
       sources += [
         "memory/discardable_shared_memory.cc",
         "memory/discardable_shared_memory.h",
@@ -2111,9 +2111,7 @@ component("base") {
 
     configs += linux_configs
     all_dependent_configs += linux_configs
-    sources += [
-      "system/sys_info_linux.cc",
-    ]
+    sources += [ "system/sys_info_linux.cc" ]
     if (!is_cronet_build) {
       # These dependencies are not required on Android, and in the case
       # of xdg_mime must be excluded due to licensing restrictions.
@@ -2190,7 +2188,6 @@ component("base") {
       "native_library_ios.mm",
       "power_monitor/power_monitor_device_source_ios.mm",
       "process/launch_ios.cc",
-      "process/memory_stubs.cc",
       "process/process_metrics_ios.cc",
       "process/process_stubs.cc",
       "profiler/module_cache_mac.cc",
@@ -2202,6 +2199,17 @@ component("base") {
       "time/time_conversion_posix.cc",
       "time/time_mac.mm",
     ]
+
+    if (use_blink) {
+      sources += [
+        "process/memory_mac.mm",
+        "process/process_iterator_ios.mm",
+        "sync_socket_posix.cc",
+        "synchronization/waitable_event_watcher_mac.cc",
+      ]
+    } else {
+      sources += [ "process/memory_stubs.cc" ]
+    }
 
     if (is_cronet_build) {
       sources += [
@@ -2248,7 +2256,7 @@ component("base") {
     frameworks += [ "UIKit.framework" ]
   }
 
-  if (!is_ios) {
+  if (use_blink) {
     sources += [
       "files/file_path_watcher.cc",
       "files/file_path_watcher.h",
