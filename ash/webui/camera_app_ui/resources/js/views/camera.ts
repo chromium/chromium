@@ -636,13 +636,11 @@ export class Camera extends View implements CameraViewUI {
         const name = filenamer.newBurstName(true);
         await this.resultSaver.savePhoto(portraitBlob, name, portraitMetadata);
       } catch (e) {
-        if (e instanceof PortraitModeProcessError) {
-          // This error might be thrown when no face is detected or the
-          // segmentataion failed for the scene. Since there is not much we can
-          // do for either cases, we tolerate such error.
-          toast.show(I18nString.ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED);
-        } else {
-          toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
+        toast.show(I18nString.ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED);
+        // PortraitModeProcessError might be thrown when no face is detected
+        // or the segmentataion failed for the scene. Since there is not much
+        // we can do for either cases, we tolerate such error.
+        if (!(e instanceof PortraitModeProcessError)) {
           throw e;
         }
       }
