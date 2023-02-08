@@ -114,4 +114,4 @@ constants.CROSTINI_CONNECT_ERR = 'CrostiniConnectErr';
  * URLs.
  * @const {string}
  */
-constants.FSP_ACTION_HIDDEN_ODFS_URL = 'HIDDEN_ODFS_URL';
+constants.FSP_ACTION_HIDDEN_ONEDRIVE_URL = 'HIDDEN_ONEDRIVE_URL';
