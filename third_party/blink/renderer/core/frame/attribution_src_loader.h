@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "components/attribution_reporting/registration_type.mojom-blink-forward.h"
+#include "services/network/public/cpp/trigger_attestation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -16,6 +17,10 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace network {
+class TriggerAttestation;
+}  // namespace network
 
 namespace attribution_reporting {
 class SuitableOrigin;
@@ -117,7 +122,8 @@ class CORE_EXPORT AttributionSrcLoader
       attribution_reporting::SuitableOrigin reporting_origin,
       const AtomicString& source_json,
       const AtomicString& trigger_json,
-      uint64_t request_id);
+      uint64_t request_id,
+      const absl::optional<network::TriggerAttestation>& trigger_attestation);
 
   const Member<LocalFrame> local_frame_;
   size_t num_resource_clients_ = 0;

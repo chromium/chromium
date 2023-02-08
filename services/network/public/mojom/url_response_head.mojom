@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/alternate_protocol_usage.mojom";
 import "services/network/public/mojom/encoded_body_length.mojom";
+import "services/network/public/mojom/attribution.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
@@ -256,4 +257,25 @@ struct URLResponseHead {
   // algorithm.
   // See: https://fetch.spec.whatwg.org/#concept-http-network-fetch
   bool request_include_credentials = true;
+
+  // Supports aggregatable reports in the Attribution Reporting API:
+  // https://github.com/WICG/attribution-reporting-api.
+  //
+  // The property will be added only on responses to trigger registration
+  // requests sent to reporting origin registered as private state token issuer
+  // which returned a blind token attesting to the validity of the trigger.
+  //
+  // The structure contains a token that can be sent to a reporting origin
+  // alongside an aggregatable report for it to attest the validity of a
+  // trigger. The token is signed over the included aggregatable_report_id which
+  // must be used to create the aggregatable report.
+  //
+  // It is added as a property on the response to transfer the token from the
+  // network service (where it's generated) to blink where it is transferred to
+  // the browser alongside of the attribution data that it attests. See:
+  // https://github.com/WICG/attribution-reporting-api/blob/main/trigger_attestation.md
+  //
+  // TODO(https://crbug.com/1374121): Remove the property when attribution response
+  // parsing moves from blink to the network service.
+  TriggerAttestation? trigger_attestation;
 };

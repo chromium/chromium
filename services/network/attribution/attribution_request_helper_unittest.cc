@@ -152,8 +152,9 @@ TEST_F(AttributionRequestHelperTest, Finalize_AttestationTokenAdded) {
 
   RunFinalizeWith(*response_head);
 
-  // TODO(crbug.com/1405832): Update to test that the attestation token has been
-  // been added to the response.
+  ASSERT_TRUE(response_head->trigger_attestation);
+  EXPECT_TRUE(FakeCryptographer::IsToken(
+      response_head->trigger_attestation->token(), "blind-signature"));
 }
 
 TEST_F(AttributionRequestHelperTest, Finalize_NotBegun) {
@@ -165,8 +166,7 @@ TEST_F(AttributionRequestHelperTest, Finalize_NotBegun) {
 
   RunFinalizeWith(*response_head);
 
-  // TODO(crbug.com/1405832): Update to test that the attestation token has not
-  // been been added to the response.
+  EXPECT_FALSE(response_head->trigger_attestation);
 }
 
 struct CreateIfNeededTestCase {

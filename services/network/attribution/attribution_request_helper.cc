@@ -17,6 +17,7 @@
 #include "services/network/attribution/attribution_attestation_mediator.h"
 #include "services/network/attribution/boringssl_attestation_cryptographer.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/trigger_attestation.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/trust_tokens/trust_token_key_commitment_getter.h"
 #include "url/origin.h"
@@ -143,8 +144,9 @@ void AttributionRequestHelper::OnDoneProcessingAttestationResponse(
     return;
   }
 
-  // TODO(crbug.com/1405832) Add attestation header to the response as it gets
-  // updated with a trigger attestation property.
+  response.trigger_attestation =
+      TriggerAttestation::Create(/*token=*/maybe_attestation_header.value(),
+                                 aggregatable_report_id_.AsLowercaseString());
 
   std::move(done).Run();
 }

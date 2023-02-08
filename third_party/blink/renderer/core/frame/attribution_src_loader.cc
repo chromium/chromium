@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -190,7 +191,8 @@ class AttributionSrcLoader::ResourceClient
       attribution_reporting::SuitableOrigin reporting_origin,
       const AtomicString& source_json,
       const AtomicString& trigger_json,
-      uint64_t request_id);
+      uint64_t request_id,
+      const absl::optional<network::TriggerAttestation>& trigger_attestation);
 
   void Finish();
 
@@ -205,7 +207,8 @@ class AttributionSrcLoader::ResourceClient
   void HandleTriggerRegistration(
       const AtomicString& json,
       attribution_reporting::SuitableOrigin reporting_origin,
-      uint64_t request_id);
+      uint64_t request_id,
+      const absl::optional<network::TriggerAttestation>& trigger_attestation);
 
   // RawResourceClient:
   String DebugName() const override;
@@ -518,11 +521,12 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
     document->AddPostPrerenderingActivationStep(WTF::BindOnce(
         &AttributionSrcLoader::RegisterAttributionHeaders,
         WrapPersistentIfNeeded(this), *src_type, std::move(*reporting_origin),
-        source_json, trigger_json, resource->InspectorId()));
+        source_json, trigger_json, resource->InspectorId(),
+        response.GetTriggerAttestation()));
   } else {
-    RegisterAttributionHeaders(*src_type, std::move(*reporting_origin),
-                               source_json, trigger_json,
-                               resource->InspectorId());
+    RegisterAttributionHeaders(
+        *src_type, std::move(*reporting_origin), source_json, trigger_json,
+        resource->InspectorId(), response.GetTriggerAttestation());
   }
 
   return true;
@@ -533,7 +537,8 @@ void AttributionSrcLoader::RegisterAttributionHeaders(
     attribution_reporting::SuitableOrigin reporting_origin,
     const AtomicString& source_json,
     const AtomicString& trigger_json,
-    uint64_t request_id) {
+    uint64_t request_id,
+    const absl::optional<network::TriggerAttestation>& trigger_attestation) {
   // Create a client to mimic processing of attributionsrc requests. Note we do
   // not share `AttributionDataHosts` for redirects chains.
   // TODO(johnidel): Consider refactoring this such that we can share clients
@@ -541,7 +546,7 @@ void AttributionSrcLoader::RegisterAttributionHeaders(
   auto* client = MakeGarbageCollected<ResourceClient>(
       this, src_type, /*associated_with_navigation=*/false);
   client->HandleResponseHeaders(std::move(reporting_origin), source_json,
-                                trigger_json, request_id);
+                                trigger_json, request_id, trigger_attestation);
   client->Finish();
 }
 
@@ -615,14 +620,15 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
   }
 
   HandleResponseHeaders(std::move(*reporting_origin), source_json, trigger_json,
-                        request_id);
+                        request_id, response.GetTriggerAttestation());
 }
 
 void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
     attribution_reporting::SuitableOrigin reporting_origin,
     const AtomicString& source_json,
     const AtomicString& trigger_json,
-    uint64_t request_id) {
+    uint64_t request_id,
+    const absl::optional<network::TriggerAttestation>& trigger_attestation) {
   DCHECK(!source_json.IsNull() || !trigger_json.IsNull());
 
   switch (type_) {
@@ -641,7 +647,7 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
 
       if (!trigger_json.IsNull()) {
         HandleTriggerRegistration(trigger_json, std::move(reporting_origin),
-                                  request_id);
+                                  request_id, trigger_attestation);
       }
       break;
     case RegistrationType::kSourceOrTrigger:
@@ -663,7 +669,7 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
       if (!trigger_json.IsNull()) {
         type_ = RegistrationType::kTrigger;
         HandleTriggerRegistration(trigger_json, std::move(reporting_origin),
-                                  request_id);
+                                  request_id, trigger_attestation);
       }
 
       break;
@@ -694,7 +700,8 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
 void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
     const AtomicString& json,
     attribution_reporting::SuitableOrigin reporting_origin,
-    uint64_t request_id) {
+    uint64_t request_id,
+    const absl::optional<network::TriggerAttestation>& trigger_attestation) {
   DCHECK_EQ(type_, RegistrationType::kTrigger);
   DCHECK(!json.IsNull());
 
@@ -708,10 +715,9 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
     return;
   }
 
-  data_host_->TriggerDataAvailable(
-      std::move(reporting_origin), std::move(*trigger_data),
-      // TODO(crbug.com/1405832): pass down response's `attestation`.
-      /*attestation=*/absl::nullopt);
+  data_host_->TriggerDataAvailable(std::move(reporting_origin),
+                                   std::move(*trigger_data),
+                                   std::move(trigger_attestation));
 }
 
 }  // namespace blink
