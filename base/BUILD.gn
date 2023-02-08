@@ -338,8 +338,6 @@ component("base") {
     "files/file_error_or.h",
     "files/file_path.cc",
     "files/file_path.h",
-    "files/file_path_watcher.cc",
-    "files/file_path_watcher.h",
     "files/file_proxy.cc",
     "files/file_proxy.h",
     "files/file_tracing.cc",
@@ -416,8 +414,6 @@ component("base") {
     "memory/discardable_memory_allocator.cc",
     "memory/discardable_memory_allocator.h",
     "memory/discardable_memory_internal.h",
-    "memory/discardable_shared_memory.cc",
-    "memory/discardable_shared_memory.h",
     "memory/free_deleter.h",
     "memory/memory_pressure_listener.cc",
     "memory/memory_pressure_listener.h",
@@ -582,18 +578,10 @@ component("base") {
     "process/current_process_test.h",
     "process/environment_internal.cc",
     "process/environment_internal.h",
-    "process/kill.cc",
-    "process/kill.h",
-    "process/launch.cc",
-    "process/launch.h",
-    "process/memory.cc",
-    "process/memory.h",
     "process/process.h",
     "process/process_handle.cc",
     "process/process_handle.h",
     "process/process_info.h",
-    "process/process_iterator.cc",
-    "process/process_iterator.h",
     "process/process_metrics.cc",
     "process/process_metrics.h",
     "process/process_metrics_iocounters.h",
@@ -702,8 +690,6 @@ component("base") {
     "substring_set_matcher/substring_set_matcher.h",
     "supports_user_data.cc",
     "supports_user_data.h",
-    "sync_socket.cc",
-    "sync_socket.h",
     "synchronization/atomic_flag.cc",
     "synchronization/atomic_flag.h",
     "synchronization/condition_variable.h",
@@ -1005,7 +991,6 @@ component("base") {
   if (is_posix) {
     sources += [
       "debug/debugger_posix.cc",
-      "debug/stack_trace_posix.cc",
       "file_descriptor_posix.cc",
       "file_descriptor_posix.h",
       "files/dir_reader_posix.h",
@@ -1025,14 +1010,10 @@ component("base") {
       "posix/global_descriptors.h",
       "posix/safe_strerror.cc",
       "posix/safe_strerror.h",
-      "process/kill_posix.cc",
       "process/process_handle_posix.cc",
-      "process/process_metrics_posix.cc",
-      "process/process_posix.cc",
       "profiler/module_cache_posix.cc",
       "strings/string_util_posix.h",
       "strings/sys_string_conversions_posix.cc",
-      "sync_socket_posix.cc",
       "synchronization/condition_variable_posix.cc",
       "synchronization/lock_impl_posix.cc",
       "synchronization/waitable_event_posix.cc",
@@ -1222,7 +1203,6 @@ component("base") {
 
   # Android.
   if (is_android) {
-    sources -= [ "debug/stack_trace_posix.cc" ]
     sources += [
       "android/android_hardware_buffer_compat.cc",
       "android/android_hardware_buffer_compat.h",
@@ -1490,12 +1470,10 @@ component("base") {
       "process/process_handle_fuchsia.cc",
       "process/process_iterator_fuchsia.cc",
       "process/process_metrics_fuchsia.cc",
-      "process/process_metrics_posix.cc",
       "profiler/module_cache_posix.cc",
       "rand_util_fuchsia.cc",
       "strings/string_util_posix.h",
       "strings/sys_string_conversions_posix.cc",
-      "sync_socket_posix.cc",
       "synchronization/condition_variable_posix.cc",
       "synchronization/lock_impl_posix.cc",
       "synchronization/waitable_event_posix.cc",
@@ -1595,7 +1573,6 @@ component("base") {
       "debug/crash_logging.cc",
       "debug/crash_logging.h",
       "debug/stack_trace.cc",
-      "debug/stack_trace_posix.cc",
       "files/file_enumerator.cc",
       "files/file_proxy.cc",
       "files/file_util.cc",
@@ -1611,8 +1588,6 @@ component("base") {
       "memory/discardable_memory.h",
       "memory/discardable_memory_allocator.cc",
       "memory/discardable_memory_allocator.h",
-      "memory/discardable_shared_memory.cc",
-      "memory/discardable_shared_memory.h",
       "memory/madv_free_discardable_memory_allocator_posix.cc",
       "memory/madv_free_discardable_memory_allocator_posix.h",
       "memory/madv_free_discardable_memory_posix.cc",
@@ -1620,20 +1595,8 @@ component("base") {
       "native_library.cc",
       "native_library_posix.cc",
       "path_service.cc",
-      "process/kill.cc",
-      "process/kill.h",
-      "process/kill_posix.cc",
-      "process/launch.cc",
-      "process/launch.h",
-      "process/memory.cc",
-      "process/memory.h",
-      "process/process_iterator.cc",
-      "process/process_iterator.h",
       "process/process_metrics.cc",
-      "process/process_metrics_posix.cc",
-      "process/process_posix.cc",
       "profiler/module_cache_posix.cc",
-      "sync_socket_posix.cc",
       "system/sys_info.cc",
       "task/thread_pool/initialization_util.cc",
       "task/thread_pool/initialization_util.h",
@@ -1696,6 +1659,13 @@ component("base") {
       ]
     }
 
+    if ((is_posix && !is_ios) || is_fuchsia) {
+      sources += [
+        "process/process_metrics_posix.cc",
+        "sync_socket_posix.cc",
+      ]
+    }
+
     if (is_posix && !is_apple) {
       sources += [
         "posix/can_lower_nice_to.cc",
@@ -1707,6 +1677,32 @@ component("base") {
         "profiler/stack_copier_signal.h",
         "profiler/thread_delegate_posix.cc",
         "profiler/thread_delegate_posix.h",
+      ]
+    }
+
+    if (is_posix && !is_android) {
+      sources += [ "debug/stack_trace_posix.cc" ]
+    }
+
+    if (is_posix && !is_ios) {
+      sources += [
+        "process/kill_posix.cc",
+        "process/process_posix.cc",
+      ]
+    }
+
+    if (!is_ios) {
+      sources += [
+        "memory/discardable_shared_memory.cc",
+        "memory/discardable_shared_memory.h",
+        "process/kill.cc",
+        "process/kill.h",
+        "process/launch.cc",
+        "process/launch.h",
+        "process/memory.cc",
+        "process/memory.h",
+        "process/process_iterator.cc",
+        "process/process_iterator.h",
       ]
     }
 
@@ -2145,26 +2141,6 @@ component("base") {
 
   # iOS
   if (is_ios) {
-    sources -= [
-      "files/file_path_watcher.cc",
-      "files/file_path_watcher.h",
-      "memory/discardable_shared_memory.cc",
-      "memory/discardable_shared_memory.h",
-      "process/kill.cc",
-      "process/kill.h",
-      "process/kill_posix.cc",
-      "process/launch.cc",
-      "process/launch.h",
-      "process/memory.cc",
-      "process/memory.h",
-      "process/process_iterator.cc",
-      "process/process_iterator.h",
-      "process/process_metrics_posix.cc",
-      "process/process_posix.cc",
-      "sync_socket.h",
-      "sync_socket_posix.cc",
-      "synchronization/waitable_event_watcher.h",
-    ]
     sources += [
       "base_paths_mac.h",
       "base_paths_mac.mm",
@@ -2270,6 +2246,16 @@ component("base") {
     }
 
     frameworks += [ "UIKit.framework" ]
+  }
+
+  if (!is_ios) {
+    sources += [
+      "files/file_path_watcher.cc",
+      "files/file_path_watcher.h",
+      "sync_socket.cc",
+      "sync_socket.h",
+      "synchronization/waitable_event_watcher.h",
+    ]
   }
 
   if (dep_libevent) {
