@@ -17,7 +17,7 @@
 #include "cc/slim/frame_sink_impl_client.h"
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/resources/resource_format_utils.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -169,8 +169,12 @@ void FrameSinkImpl::MarkUIResourceForDeletion(cc::UIResourceId resource_id) {
   resource_provider_.RemoveImportedResource(itr->second.viz_resource_id);
 }
 
-bool FrameSinkImpl::HasResourceToDraw(cc::UIResourceId id) {
-  return uploaded_resources_.contains(id);
+viz::ResourceId FrameSinkImpl::GetVizResourceId(cc::UIResourceId resource_id) {
+  auto itr = uploaded_resources_.find(resource_id);
+  if (itr == uploaded_resources_.end()) {
+    return viz::kInvalidResourceId;
+  }
+  return itr->second.viz_resource_id;
 }
 
 bool FrameSinkImpl::IsUIResourceOpaque(cc::UIResourceId resource_id) {
@@ -210,24 +214,17 @@ void FrameSinkImpl::OnBeginFrame(
   }
 
   viz::CompositorFrame frame;
-  base::flat_set<cc::UIResourceId> ui_resource_ids;
+  base::flat_set<viz::ResourceId> viz_resource_ids;
   viz::HitTestRegionList hit_test_region_list;
-  if (!client_->BeginFrame(begin_frame_args, frame, ui_resource_ids,
+  if (!client_->BeginFrame(begin_frame_args, frame, viz_resource_ids,
                            hit_test_region_list)) {
     frame_sink_remote_->DidNotProduceFrame(
         viz::BeginFrameAck(begin_frame_args, false));
     return;
   }
 
-  std::vector<viz::ResourceId> viz_resource_ids;
-  for (auto ui_resource_id : ui_resource_ids) {
-    auto itr = uploaded_resources_.find(ui_resource_id);
-    if (itr == uploaded_resources_.end()) {
-      continue;
-    }
-    viz_resource_ids.push_back(itr->second.viz_resource_id);
-  }
-  resource_provider_.PrepareSendToParent(viz_resource_ids, &frame.resource_list,
+  resource_provider_.PrepareSendToParent(std::move(viz_resource_ids).extract(),
+                                         &frame.resource_list,
                                          context_provider_.get());
 
   bool send_new_hit_test_region_list = false;

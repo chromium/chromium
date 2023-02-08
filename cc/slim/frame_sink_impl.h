@@ -61,7 +61,7 @@ class FrameSinkImpl : public FrameSink,
   void UploadUIResource(cc::UIResourceId resource_id,
                         cc::UIResourceBitmap resource_bitmap);
   void MarkUIResourceForDeletion(cc::UIResourceId resource_id);
-  bool HasResourceToDraw(cc::UIResourceId id);
+  viz::ResourceId GetVizResourceId(cc::UIResourceId id);
   bool IsUIResourceOpaque(cc::UIResourceId resource_id);
   gfx::Size GetUIResourceSize(cc::UIResourceId resource_id);
 
