@@ -251,6 +251,14 @@ html[chrome-refresh-2023] {
 
   --cr-fallback-color-on-surface-variant: rgb(68, 71, 70);
 
+  /* States */
+  --cr-hover-background-color: var(--color-sys-state-hover,
+      rgba(var(--cr-fallback-color-on-surface-rgb), .08));
+  --cr-active-background-color: var(--color-sys-state-pressed,
+      rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+  --cr-focus-outline-color: var(--color-sys-state-focus-ring,
+      var(--cr-fallback-color-primary));
+
   /* Typography */
   --cr-primary-text-color: var(--color-primary-foreground,
       var(--cr-fallback-color-on-surface));

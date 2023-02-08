@@ -160,16 +160,16 @@
         }
       }
 
-      #background {
+      #hoverBackground {
         display: none;
       }
 
-      :host-context([chrome-refresh-2023]):host(:hover) #background {
-        background: currentColor;
+      :host-context([chrome-refresh-2023]):host(:hover) #hoverBackground {
+        background: var(--cr-hover-background-color);
         content: '';
         display: block;
         height: 100%;
-        opacity: .08;
+        pointer-events: none;
         position: absolute;
         width: 100%;
       }
@@ -263,4 +263,4 @@
     <slot id="suffixIcon" name="suffix-icon"
         on-slotchange="onSuffixIconSlotChanged_">
     </slot>
-    <div id="background"></div>
+    <div id="hoverBackground"></div>
