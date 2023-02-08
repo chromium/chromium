@@ -6,6 +6,9 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Surface tint -->
+    <color name="gm3_baseline_surface_tint">@color/gm3_baseline_surface_tint_light</color>
+
     <!-- Text colors -->
     <color name="default_primary_color">#F2F2F2</color>
     <color name="input_underline_error_color">#D32F2F</color>

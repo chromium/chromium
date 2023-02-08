@@ -93,6 +93,7 @@ android_library("java") {
     "//base:jni_java",
     "//build/android:build_java",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/widget/android:java",
     "//components/paint_preview/browser/android:java",
     "//content/public/android:content_java",
     "//third_party/android_swipe_refresh:android_swipe_refresh_java",

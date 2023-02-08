@@ -4,11 +4,10 @@
 
 package org.chromium.components.browser_ui.widget.promo;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -17,9 +16,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.components.browser_ui.test.BrowserUiDummyFragmentActivity;
 import org.chromium.components.browser_ui.widget.promo.PromoCardCoordinator.LayoutStyle;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -28,14 +29,14 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PromoCardCoordinatorUnitTest {
-    private Context mContext;
+    private Activity mActivity;
     private PropertyModel mModel;
     private PromoCardCoordinator mPromoCardCoordinator;
     private PromoCardView mView;
 
     @Before
     public void setUp() {
-        mContext = ApplicationProvider.getApplicationContext();
+        mActivity = Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class).setup().get();
         mModel = new PropertyModel.Builder(PromoCardProperties.ALL_KEYS).build();
     }
 
@@ -46,7 +47,7 @@ public class PromoCardCoordinatorUnitTest {
 
     private void setupCoordinator(@LayoutStyle int layoutStyle) {
         mPromoCardCoordinator =
-                new PromoCardCoordinator(mContext, mModel, "test-feature", layoutStyle);
+                new PromoCardCoordinator(mActivity, mModel, "test-feature", layoutStyle);
         mView = (PromoCardView) mPromoCardCoordinator.getView();
         Assert.assertNotNull("PromoCardView is null", mView);
     }

@@ -18,7 +18,7 @@ found in the LICENSE file.
         android:layout_height="@dimen/tile_view_icon_size"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/tile_view_icon_background_margin_top_modern"
-        android:background="@drawable/tile_view_icon_background_modern"/>
+        android:background="?attr/tileViewIconBackgroundModern"/>
 
     <!-- The main icon. -->
     <ImageView

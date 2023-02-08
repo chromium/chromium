@@ -9,6 +9,7 @@ import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
@@ -35,7 +36,11 @@ public class TabUiThemeUtil {
             if (isIncognito || ColorUtils.inNightMode(context)) {
                 return Color.BLACK;
             }
-            return ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2);
+
+            int elevationDimenId = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                    ? R.dimen.default_elevation_3
+                    : R.dimen.default_elevation_2;
+            return ChromeColors.getSurfaceColor(context, elevationDimenId);
         } else if (TabManagementFieldTrial.isTabStripDetachedEnabled()) {
             if (isIncognito) {
                 // Use a non-dynamic dark background color for incognito, slightly greyer than
@@ -88,7 +93,8 @@ public class TabUiThemeUtil {
 
         if (isIncognito) return Color.BLACK;
 
-        if (ColorUtils.inNightMode(context)) {
+        if (!ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                && ColorUtils.inNightMode(context)) {
             final int baseColor = SemanticColorUtils.getDefaultControlColorActive(context);
             final int overlayColor =
                     ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_0);

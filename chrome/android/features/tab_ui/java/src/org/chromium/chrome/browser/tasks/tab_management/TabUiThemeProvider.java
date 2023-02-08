@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.elevation.ElevationOverlayProvider;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
@@ -45,7 +46,9 @@ public class TabUiThemeProvider {
                                       : R.color.incognito_tab_bg_color;
             return ContextCompat.getColor(context, colorRes);
         } else {
-            float tabElevation = context.getResources().getDimension(R.dimen.tab_bg_elevation);
+            float tabElevation = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                    ? context.getResources().getDimension(R.dimen.default_elevation_5)
+                    : context.getResources().getDimension(R.dimen.tab_bg_elevation);
             @ColorInt
             int colorInt = isSelected
                     ? MaterialColors.getColor(context, org.chromium.chrome.R.attr.colorPrimary, TAG)

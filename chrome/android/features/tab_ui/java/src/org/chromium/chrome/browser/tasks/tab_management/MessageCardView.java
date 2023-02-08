@@ -12,6 +12,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
@@ -159,9 +160,11 @@ class MessageCardView extends LinearLayout {
             return;
         }
         // Set dynamic color.
+        final int elevationDimenId = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                ? R.dimen.default_elevation_2
+                : R.dimen.card_elevation;
         GradientDrawable gradientDrawable = (GradientDrawable) getBackground();
-        gradientDrawable.setColor(
-                ChromeColors.getSurfaceColor(getContext(), R.dimen.card_elevation));
+        gradientDrawable.setColor(ChromeColors.getSurfaceColor(getContext(), elevationDimenId));
     }
 
     /**

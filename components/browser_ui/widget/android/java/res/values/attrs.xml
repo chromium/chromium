@@ -117,4 +117,13 @@ found in the LICENSE file.
         <attr name="rippleColor"/>
         <attr name="verticalInset"/>
     </declare-styleable>
+
+    <declare-styleable name="MaterialCardViewNoShadow">
+        <attr name="cornerRadius" format="dimension"/>
+        <attr name="cardElevation" format="reference|dimension"/>
+    </declare-styleable>
+
+    <!-- Surface color drawables/dimens. See https://crbug.com/1410537. -->
+    <attr name="tileViewIconBackgroundModern" format="reference"/>
+    <attr name="cardElevation" format="reference|dimension"/>
 </resources>
