@@ -39,10 +39,6 @@ const char kSyncBagOfChips[] = "sync.bag_of_chips";
 const char kDeprecatedSyncInvalidationVersions[] = "sync.invalidation_versions";
 const char kSyncInvalidationVersions2[] = "sync.invalidation_versions2";
 
-// Obsolete pref.
-const char kSyncObsoleteKeystoreEncryptionBootstrapToken[] =
-    "sync.keystore_encryption_bootstrap_token";
-
 void UpdateInvalidationVersions(
     const std::map<ModelType, int64_t>& invalidation_versions,
     PrefService* pref_service) {
@@ -164,10 +160,6 @@ void SyncTransportDataPrefs::RegisterProfilePrefs(
   registry->RegisterTimeDeltaPref(kSyncPollIntervalSeconds, base::TimeDelta());
   registry->RegisterDictionaryPref(kDeprecatedSyncInvalidationVersions);
   registry->RegisterDictionaryPref(kSyncInvalidationVersions2);
-
-  // Obsolete pref.
-  registry->RegisterStringPref(kSyncObsoleteKeystoreEncryptionBootstrapToken,
-                               std::string());
 }
 
 void SyncTransportDataPrefs::ClearAll() {
@@ -329,10 +321,6 @@ void SyncTransportDataPrefs::UpdateInvalidationVersions(
     const std::map<ModelType, int64_t>& invalidation_versions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   syncer::UpdateInvalidationVersions(invalidation_versions, pref_service_);
-}
-
-void ClearObsoleteKeystoreBootstrapTokenPref(PrefService* pref_service) {
-  pref_service->ClearPref(kSyncObsoleteKeystoreEncryptionBootstrapToken);
 }
 
 }  // namespace syncer

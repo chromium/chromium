@@ -29,13 +29,6 @@ namespace {
 // kSyncRequested.
 const char kSyncSuppressStart[] = "sync.suppress_start";
 
-#if BUILDFLAG(IS_ANDROID)
-// Obsolete pref that used to store whether sync should no longer respect the
-// state of the master toggle for this user. This is now always the case.
-const char kObsoleteSyncDecoupledFromAndroidMasterSync[] =
-    "sync.decoupled_from_master_sync";
-#endif  // BUILDFLAG(IS_ANDROID)
-
 }  // namespace
 
 SyncPrefObserver::~SyncPrefObserver() = default;
@@ -100,10 +93,6 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   // Obsolete prefs.
   registry->RegisterBooleanPref(kSyncSuppressStart, false);
-#if BUILDFLAG(IS_ANDROID)
-  registry->RegisterBooleanPref(kObsoleteSyncDecoupledFromAndroidMasterSync,
-                                false);
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void SyncPrefs::AddSyncPrefObserver(SyncPrefObserver* sync_pref_observer) {
@@ -361,13 +350,6 @@ void SyncPrefs::SetPassphrasePromptMutedProductVersion(int major_version) {
 void SyncPrefs::ClearPassphrasePromptMutedProductVersion() {
   pref_service_->ClearPref(prefs::kSyncPassphrasePromptMutedProductVersion);
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void ClearObsoleteSyncDecoupledFromAndroidMasterSync(
-    PrefService* pref_service) {
-  pref_service->ClearPref(kObsoleteSyncDecoupledFromAndroidMasterSync);
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void MigrateSyncRequestedPrefPostMice(PrefService* pref_service) {

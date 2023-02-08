@@ -73,8 +73,6 @@ class SyncTransportDataPrefs {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-void ClearObsoleteKeystoreBootstrapTokenPref(PrefService* pref_service);
-
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_DRIVER_GLUE_SYNC_TRANSPORT_DATA_PREFS_H_

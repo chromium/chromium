@@ -509,83 +509,6 @@ namespace {
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-// Deprecated 11/2021.
-const char kWasPreviouslySetUpPrefName[] = "android_sms.was_previously_set_up";
-
-// Deprecated 12/2021.
-const char kAvailabilityProberOriginCheck[] =
-    "Availability.Prober.cache.IsolatedPrerenderOriginCheck";
-const char kAvailabilityProberTLSCanaryCheck[] =
-    "Availability.Prober.cache.IsolatedPrerenderTLSCanaryCheck";
-const char kAvailabilityProberDNSCanaryCheck[] =
-    "Availability.Prober.cache.IsolatedPrerenderDNSCanaryCheck";
-const char kStabilityRendererHangCount[] =
-    "user_experience_metrics.stability.renderer_hang_count";
-const char kStabilityIncompleteSessionEndCount[] =
-    "user_experience_metrics.stability.incomplete_session_end_count";
-const char kStabilitySessionEndCompleted[] =
-    "user_experience_metrics.stability.session_end_completed";
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 12/2021.
-const char kEduCoexistenceSecondaryAccountsInvalidationVersion[] =
-    "account_manager.edu_coexistence_secondary_accounts_invalidation_version";
-
-// Deprecated 12/2021.
-const char kSyncFirstRunCompleted[] = "sync.first_run_completed";
-
-// Deprecated 12/2021.
-const char kArcAppReinstallState[] = "arc_app_reinstall_state";
-
-// Deprecated 12/2021.
-const char kOsSyncFeatureEnabled[] = "sync.os_sync_feature_enabled";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 12/2021.
-#if BUILDFLAG(IS_ANDROID)
-const char kSearchGeolocationDisclosureDismissed[] =
-    "search_geolocation_disclosure.dismissed";
-const char kSearchGeolocationDisclosureShownCount[] =
-    "search_geolocation_disclosure.shown_count";
-const char kSearchGeolocationDisclosureLastShowDate[] =
-    "search_geolocation_disclosure.last_show_date";
-const char kSearchGeolocationPreDisclosureMetricsRecorded[] =
-    "search_geolocation_pre_disclosure_metrics_recorded";
-const char kSearchGeolocationPostDisclosureMetricsRecorded[] =
-    "search_geolocation_post_disclosure_metrics_recorded";
-#endif  // BUILDFLAG(IS_ANDROID)
-
-// Deprecated 01/2022.
-constexpr char kHasSeenLiteModeInfoBar[] =
-    "litemode.https-image-compression.user-has-seen-infobar";
-const char kDailyHttpContentLengthLastUpdateDate[] =
-    "data_reduction.last_update_date";
-const char kDailyHttpOriginalContentLength[] =
-    "data_reduction.daily_original_length";
-const char kDailyHttpReceivedContentLength[] =
-    "data_reduction.daily_received_length";
-const char kDataUsageReportingEnabled[] = "data_usage_reporting.enabled";
-const char kHttpReceivedContentLength[] = "http_received_content_length";
-const char kHttpOriginalContentLength[] = "http_original_content_length";
-const char kThisWeekNumber[] = "data_reduction.this_week_number";
-const char kThisWeekServicesDownstreamBackgroundKB[] =
-    "data_reduction.this_week_services_downstream_background_kb";
-const char kThisWeekServicesDownstreamForegroundKB[] =
-    "data_reduction.this_week_services_downstream_foreground_kb";
-const char kLastWeekServicesDownstreamBackgroundKB[] =
-    "data_reduction.last_week_services_downstream_background_kb";
-const char kLastWeekServicesDownstreamForegroundKB[] =
-    "data_reduction.last_week_services_downstream_foreground_kb";
-const char kThisWeekUserTrafficContentTypeDownstreamKB[] =
-    "data_reduction.this_week_user_traffic_contenttype_downstream_kb";
-const char kLastWeekUserTrafficContentTypeDownstreamKB[] =
-    "data_reduction.last_week_user_traffic_contenttype_downstream_kb";
-const char kDataSaverEnabled[] = "spdy_proxy.enabled";
-const char kDataReductionProxyWasEnabledBefore[] =
-    "spdy_proxy.was_enabled_before";
-const char kDataReductionProxyLastEnabledTime[] =
-    "data_reduction.last_enabled_time";
-
 // Deprecated 02/2022.
 #if !BUILDFLAG(IS_ANDROID)
 const char kMediaRouterCloudServicesPrefSet[] =
@@ -857,11 +780,6 @@ const char kArcTermsShownInOobe[] = "arc.terms.shown_in_oobe";
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-  // Deprecated 12/2021.
-  registry->RegisterIntegerPref(kStabilityRendererHangCount, 0);
-  registry->RegisterIntegerPref(kStabilityIncompleteSessionEndCount, 0);
-  registry->RegisterBooleanPref(kStabilitySessionEndCompleted, true);
-
   // Deprecated 02/2022.
   registry->RegisterBooleanPref(kWebSQLInThirdPartyContextEnabled, false);
 
@@ -968,57 +886,6 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterListPref(
       prefs::kManagedProfileSerialAllowUsbDevicesForUrlsDeprecated);
 #endif
-
-  registry->RegisterBooleanPref(kWasPreviouslySetUpPrefName, false);
-
-  registry->RegisterDictionaryPref(kAvailabilityProberOriginCheck);
-  registry->RegisterDictionaryPref(kAvailabilityProberTLSCanaryCheck);
-  registry->RegisterDictionaryPref(kAvailabilityProberDNSCanaryCheck);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterStringPref(
-      kEduCoexistenceSecondaryAccountsInvalidationVersion, std::string());
-
-  registry->RegisterBooleanPref(kSyncFirstRunCompleted, false);
-
-  registry->RegisterDictionaryPref(kArcAppReinstallState);
-
-  registry->RegisterBooleanPref(kOsSyncFeatureEnabled, false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_ANDROID)
-  registry->RegisterBooleanPref(kSearchGeolocationDisclosureDismissed, false);
-  registry->RegisterIntegerPref(kSearchGeolocationDisclosureShownCount, 0);
-  registry->RegisterInt64Pref(kSearchGeolocationDisclosureLastShowDate, 0);
-  registry->RegisterBooleanPref(kSearchGeolocationPreDisclosureMetricsRecorded,
-                                false);
-  registry->RegisterBooleanPref(kSearchGeolocationPostDisclosureMetricsRecorded,
-                                false);
-#endif
-
-  registry->RegisterBooleanPref(kHasSeenLiteModeInfoBar, false);
-  registry->RegisterInt64Pref(kDailyHttpContentLengthLastUpdateDate, 0L);
-  registry->RegisterListPref(kDailyHttpOriginalContentLength);
-  registry->RegisterListPref(kDailyHttpReceivedContentLength);
-  registry->RegisterBooleanPref(kDataUsageReportingEnabled, false);
-  registry->RegisterInt64Pref(kHttpReceivedContentLength, 0);
-  registry->RegisterInt64Pref(kHttpOriginalContentLength, 0);
-  registry->RegisterIntegerPref(kThisWeekNumber, 0);
-  registry->RegisterDictionaryPref(kThisWeekServicesDownstreamBackgroundKB,
-                                   PrefRegistry::LOSSY_PREF);
-  registry->RegisterDictionaryPref(kThisWeekServicesDownstreamForegroundKB,
-                                   PrefRegistry::LOSSY_PREF);
-  registry->RegisterDictionaryPref(kLastWeekServicesDownstreamBackgroundKB,
-                                   PrefRegistry::LOSSY_PREF);
-  registry->RegisterDictionaryPref(kLastWeekServicesDownstreamForegroundKB,
-                                   PrefRegistry::LOSSY_PREF);
-  registry->RegisterDictionaryPref(kThisWeekUserTrafficContentTypeDownstreamKB,
-                                   PrefRegistry::LOSSY_PREF);
-  registry->RegisterDictionaryPref(kLastWeekUserTrafficContentTypeDownstreamKB,
-                                   PrefRegistry::LOSSY_PREF);
-  registry->RegisterBooleanPref(kDataSaverEnabled, false);
-  registry->RegisterBooleanPref(kDataReductionProxyWasEnabledBefore, false);
-  registry->RegisterInt64Pref(kDataReductionProxyLastEnabledTime, 0L);
 
   registry->RegisterUint64Pref(kFlocIdValuePrefKey, 0);
   registry->RegisterIntegerPref(kFlocIdStatusPrefKey, 0);
@@ -1835,11 +1702,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-  // Added 12/2021.
-  local_state->ClearPref(kStabilityRendererHangCount);
-  local_state->ClearPref(kStabilityIncompleteSessionEndCount);
-  local_state->ClearPref(kStabilitySessionEndCompleted);
-
   // Added 01/2022.
   invalidation::InvalidatorRegistrarWithMemory::
       ClearTopicsWithObsoleteOwnerNames(local_state);
@@ -1960,65 +1822,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   chrome_browser_net::secure_dns::MigrateProbesSettingToOrFromBackup(
       profile_prefs);
 
-  // Added 11/2021.
-  syncer::ClearObsoleteKeystoreBootstrapTokenPref(profile_prefs);
-  profile_prefs->ClearPref(kWasPreviouslySetUpPrefName);
-
-  // Added 12/2021.
-  profile_prefs->ClearPref(kAvailabilityProberOriginCheck);
-  profile_prefs->ClearPref(kAvailabilityProberTLSCanaryCheck);
-  profile_prefs->ClearPref(kAvailabilityProberDNSCanaryCheck);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 12/2021.
-  profile_prefs->ClearPref(kEduCoexistenceSecondaryAccountsInvalidationVersion);
-
-  // Added 12/2021
-  profile_prefs->ClearPref(kSyncFirstRunCompleted);
-
-  // Added 12/2021.
-  profile_prefs->ClearPref(kArcAppReinstallState);
-
-  profile_prefs->ClearPref(kOsSyncFeatureEnabled);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Added 12/2021.
-#if BUILDFLAG(IS_ANDROID)
-  profile_prefs->ClearPref(kSearchGeolocationDisclosureDismissed);
-  profile_prefs->ClearPref(kSearchGeolocationDisclosureShownCount);
-  profile_prefs->ClearPref(kSearchGeolocationDisclosureLastShowDate);
-  profile_prefs->ClearPref(kSearchGeolocationPreDisclosureMetricsRecorded);
-  profile_prefs->ClearPref(kSearchGeolocationPostDisclosureMetricsRecorded);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  // Added 01/2022.
-  profile_prefs->ClearPref(kHasSeenLiteModeInfoBar);
-  syncer::SyncTransportDataPrefs::MigrateInvalidationVersions(profile_prefs);
-  profile_prefs->ClearPref(kDailyHttpContentLengthLastUpdateDate);
-  profile_prefs->ClearPref(kDailyHttpOriginalContentLength);
-  profile_prefs->ClearPref(kDailyHttpReceivedContentLength);
-  profile_prefs->ClearPref(kDataUsageReportingEnabled);
-  profile_prefs->ClearPref(kHttpReceivedContentLength);
-  profile_prefs->ClearPref(kHttpOriginalContentLength);
-  profile_prefs->ClearPref(kThisWeekNumber);
-  profile_prefs->ClearPref(kThisWeekServicesDownstreamBackgroundKB);
-  profile_prefs->ClearPref(kThisWeekServicesDownstreamForegroundKB);
-  profile_prefs->ClearPref(kLastWeekServicesDownstreamBackgroundKB);
-  profile_prefs->ClearPref(kLastWeekServicesDownstreamForegroundKB);
-  profile_prefs->ClearPref(kThisWeekUserTrafficContentTypeDownstreamKB);
-  profile_prefs->ClearPref(kLastWeekUserTrafficContentTypeDownstreamKB);
-  profile_prefs->ClearPref(kDataSaverEnabled);
-  profile_prefs->ClearPref(kDataReductionProxyWasEnabledBefore);
-  profile_prefs->ClearPref(kDataReductionProxyLastEnabledTime);
-
   // Added 01/2022.
   invalidation::InvalidatorRegistrarWithMemory::
       ClearTopicsWithObsoleteOwnerNames(profile_prefs);
-
-#if BUILDFLAG(IS_ANDROID)
-  // Added 01/2022.
-  syncer::ClearObsoleteSyncDecoupledFromAndroidMasterSync(profile_prefs);
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // Added 02/2022
   profile_prefs->ClearPref(kFlocIdValuePrefKey);

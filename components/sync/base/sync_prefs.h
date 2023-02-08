@@ -147,10 +147,6 @@ class SyncPrefs {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-#if BUILDFLAG(IS_ANDROID)
-void ClearObsoleteSyncDecoupledFromAndroidMasterSync(PrefService* pref_service);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void MigrateSyncRequestedPrefPostMice(PrefService* pref_service);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
