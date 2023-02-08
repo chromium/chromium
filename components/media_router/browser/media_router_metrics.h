@@ -217,20 +217,6 @@ class MediaRouterMetrics {
   // may be 0.
   static void RecordDeviceCount(int device_count);
 
-  // Records the number of sinks in |is_available| state, provided by |provider|
-  // that was opened via |activation_location|. Recorded for the global media
-  // controls and the Cast dialog, respectively.
-  static void RecordGmcDeviceCount(
-      MediaRouterDialogActivationLocation activation_location,
-      mojom::MediaRouteProviderId provider,
-      bool is_available,
-      int count);
-  static void RecordCastDialogDeviceCount(
-      MediaRouterDialogActivationLocation activation_location,
-      mojom::MediaRouteProviderId provider,
-      bool is_available,
-      int count);
-
   // Records the index of the device the user has started casting to on the
   // devices list. The index starts at 0.
   static void RecordStartRouteDeviceIndex(int index);

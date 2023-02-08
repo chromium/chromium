@@ -116,8 +116,6 @@ class MediaItemUIDeviceSelectorView
   void RemoveDevicesOfType(DeviceEntryUIType type);
   void StartCastSession(CastDeviceEntryView* entry);
   void DoStartCastSession(media_router::UIMediaSink sink);
-  void RecordCastDeviceCountAfterDelay();
-  void RecordCastDeviceCount();
   DeviceEntryUI* GetDeviceEntryUI(views::View* view) const;
   void RegisterAudioDeviceCallbacks();
   void DestroyCastController();

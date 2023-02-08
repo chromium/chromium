@@ -189,24 +189,6 @@ void CastDialogMetrics::OnCloseDialog(const base::Time& close_time) {
 void CastDialogMetrics::OnRecordSinkCount(
     const std::vector<CastDialogSinkButton*>& sink_buttons) {
   media_router::MediaRouterMetrics::RecordDeviceCount(sink_buttons.size());
-
-  std::map<MediaRouteProviderId, std::map<bool, int>> counts = {
-      {MediaRouteProviderId::CAST, {{true, 0}, {false, 0}}},
-      {MediaRouteProviderId::DIAL, {{true, 0}, {false, 0}}},
-      {MediaRouteProviderId::WIRED_DISPLAY, {{true, 0}, {false, 0}}}};
-  for (const CastDialogSinkButton* sink_button : sink_buttons) {
-    if (sink_button->sink().provider != MediaRouteProviderId::TEST) {
-      counts.at(sink_button->sink().provider).at(sink_button->GetEnabled())++;
-    }
-  }
-  for (auto provider : {MediaRouteProviderId::CAST, MediaRouteProviderId::DIAL,
-                        MediaRouteProviderId::WIRED_DISPLAY}) {
-    for (bool is_available : {true, false}) {
-      int count = counts.at(provider).at(is_available);
-      media_router::MediaRouterMetrics::RecordCastDialogDeviceCount(
-          activation_location_, provider, is_available, count);
-    }
-  }
 }
 
 void CastDialogMetrics::MaybeRecordFirstAction(MediaRouterUserAction action) {

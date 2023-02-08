@@ -50,25 +50,6 @@ std::string GetHistogramNameForProvider(
   }
 }
 
-std::string GetDeviceCountHistogramName(
-    const std::string& ui,
-    MediaRouterDialogActivationLocation activation_location,
-    mojom::MediaRouteProviderId provider,
-    bool is_available) {
-  std::string trigger;
-  switch (activation_location) {
-    case MediaRouterDialogActivationLocation::PAGE:
-      trigger = "PresentationApi";
-      break;
-    default:
-      trigger = "BrowserUi";
-  }
-  std::string mrp = ProviderIdToString(provider);
-  std::string state = is_available ? "Available" : "Unavailable";
-  return base::StrCat({MediaRouterMetrics::kHistogramUiDeviceCount, ".", ui,
-                       ".", trigger, ".", mrp, ".", state});
-}
-
 PresentationUrlType GetPresentationUrlType(const GURL& url) {
   if (url.SchemeIs(kDialPresentationUrlScheme))
     return PresentationUrlType::kDial;
@@ -221,30 +202,6 @@ void MediaRouterMetrics::RecordMediaSinkTypeForCastDialog(
 // static
 void MediaRouterMetrics::RecordDeviceCount(int device_count) {
   UMA_HISTOGRAM_COUNTS_100(kHistogramUiDeviceCount, device_count);
-}
-
-// static
-void MediaRouterMetrics::RecordGmcDeviceCount(
-    MediaRouterDialogActivationLocation activation_location,
-    mojom::MediaRouteProviderId provider,
-    bool is_available,
-    int count) {
-  base::UmaHistogramCounts100(
-      GetDeviceCountHistogramName("GlobalMediaControls", activation_location,
-                                  provider, is_available),
-      count);
-}
-
-// static
-void MediaRouterMetrics::RecordCastDialogDeviceCount(
-    MediaRouterDialogActivationLocation activation_location,
-    mojom::MediaRouteProviderId provider,
-    bool is_available,
-    int count) {
-  base::UmaHistogramCounts100(
-      GetDeviceCountHistogramName("CastHarmony", activation_location, provider,
-                                  is_available),
-      count);
 }
 
 // static

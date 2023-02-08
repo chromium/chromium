@@ -62,42 +62,6 @@ constexpr gfx::Insets kDropdownButtonBorderInsets{4};
 // devices.
 const int kAudioDevicesCountHistogramMax = 30;
 
-media_router::MediaRouterDialogActivationLocation ConvertToOrigin(
-    global_media_controls::GlobalMediaControlsEntryPoint entry_point) {
-  switch (entry_point) {
-    case global_media_controls::GlobalMediaControlsEntryPoint::kPresentation:
-      return media_router::MediaRouterDialogActivationLocation::PAGE;
-    case global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray:
-      return media_router::MediaRouterDialogActivationLocation::SYSTEM_TRAY;
-    case global_media_controls::GlobalMediaControlsEntryPoint::kToolbarIcon:
-      return media_router::MediaRouterDialogActivationLocation::TOOLBAR;
-  }
-}
-
-void RecordCastDeviceCountMetrics(
-    global_media_controls::GlobalMediaControlsEntryPoint entry_point,
-    std::vector<CastDeviceEntryView*> entries) {
-  MediaRouterMetrics::RecordDeviceCount(entries.size());
-
-  std::map<MediaRouteProviderId, std::map<bool, int>> counts = {
-      {MediaRouteProviderId::CAST, {{true, 0}, {false, 0}}},
-      {MediaRouteProviderId::DIAL, {{true, 0}, {false, 0}}},
-      {MediaRouteProviderId::WIRED_DISPLAY, {{true, 0}, {false, 0}}}};
-  for (const CastDeviceEntryView* entry : entries) {
-    if (entry->sink().provider != MediaRouteProviderId::TEST) {
-      counts.at(entry->sink().provider).at(entry->GetEnabled())++;
-    }
-  }
-  for (auto provider : {MediaRouteProviderId::CAST, MediaRouteProviderId::DIAL,
-                        MediaRouteProviderId::WIRED_DISPLAY}) {
-    for (bool is_available : {true, false}) {
-      int count = counts.at(provider).at(is_available);
-      MediaRouterMetrics::RecordGmcDeviceCount(ConvertToOrigin(entry_point),
-                                               provider, is_available, count);
-    }
-  }
-}
-
 absl::optional<media_router::MediaCastMode> GetPreferredCastMode(
     media_router::CastModeSet cast_mode) {
   if (base::Contains(cast_mode, media_router::MediaCastMode::PRESENTATION)) {
@@ -344,7 +308,6 @@ void MediaItemUIDeviceSelectorView::ShowDevices() {
         device_entry_views_container_->children().size(),
         kAudioDevicesCountHistogramMax);
     base::UmaHistogramBoolean(kDeviceSelectorOpenedHistogramName, true);
-    RecordCastDeviceCountAfterDelay();
     have_devices_been_shown_ = true;
   }
 
@@ -622,25 +585,6 @@ void MediaItemUIDeviceSelectorView::DoStartCastSession(
 
   MediaItemUIMetrics::RecordStartCastingMetrics(
       sink.icon_type, cast_mode.value(), entry_point_);
-}
-
-void MediaItemUIDeviceSelectorView::RecordCastDeviceCountAfterDelay() {
-  content::GetUIThreadTaskRunner({})->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&MediaItemUIDeviceSelectorView::RecordCastDeviceCount,
-                     weak_ptr_factory_.GetWeakPtr()),
-      MediaRouterMetrics::kDeviceCountMetricDelay);
-}
-
-void MediaItemUIDeviceSelectorView::RecordCastDeviceCount() {
-  std::vector<CastDeviceEntryView*> entries;
-  for (views::View* view : device_entry_views_container_->children()) {
-    DeviceEntryUI* entry = GetDeviceEntryUI(view);
-    if (entry->GetType() == DeviceEntryUIType::kCast) {
-      entries.push_back(static_cast<CastDeviceEntryView*>(entry));
-    }
-  }
-  RecordCastDeviceCountMetrics(entry_point_, entries);
 }
 
 void MediaItemUIDeviceSelectorView::RegisterAudioDeviceCallbacks() {
