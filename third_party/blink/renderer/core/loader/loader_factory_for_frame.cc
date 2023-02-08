@@ -109,15 +109,17 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
     mojo::PendingRemote<mojom::blink::KeepAliveHandle> pending_remote;
     mojo::PendingReceiver<mojom::blink::KeepAliveHandle> pending_receiver =
         pending_remote.InitWithNewPipeAndPassReceiver();
-    auto loader =
-        document_loader_->GetServiceWorkerNetworkProvider()->CreateURLLoader(
-            webreq, CreateTaskRunnerHandle(freezable_task_runner),
-            CreateTaskRunnerHandle(unfreezable_task_runner),
-            std::move(pending_remote), back_forward_cache_loader_helper);
-    if (loader) {
+    auto loader_factory = document_loader_->GetServiceWorkerNetworkProvider()
+                              ->GetSubresourceLoaderFactory(webreq);
+    if (loader_factory) {
       IssueKeepAliveHandleIfRequested(request, frame->GetLocalFrameHostRemote(),
                                       std::move(pending_receiver));
-      return loader;
+      return Platform::Current()
+          ->WrapURLLoaderFactory(std::move(loader_factory))
+          ->CreateURLLoader(
+              webreq, CreateTaskRunnerHandle(freezable_task_runner),
+              CreateTaskRunnerHandle(unfreezable_task_runner),
+              std::move(pending_remote), back_forward_cache_loader_helper);
     }
   }
 

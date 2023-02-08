@@ -305,6 +305,11 @@ std::unique_ptr<WebURLLoaderFactory> Platform::WrapURLLoaderFactory(
   return nullptr;
 }
 
+std::unique_ptr<WebURLLoaderFactory> Platform::WrapURLLoaderFactory(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  return nullptr;
+}
+
 std::unique_ptr<WebDedicatedWorkerHostFactoryClient>
 Platform::CreateDedicatedWorkerHostFactoryClient(
     WebDedicatedWorker*,

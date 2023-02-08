@@ -31,19 +31,15 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_SERVICE_WORKER_WEB_SERVICE_WORKER_NETWORK_PROVIDER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_SERVICE_WORKER_WEB_SERVICE_WORKER_NETWORK_PROVIDER_H_
 
-#include <memory>
-
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_type.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
-#include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 
 namespace blink {
 
-class WebBackForwardCacheLoaderHelper;
 class WebURLRequest;
 
 // This interface allows the Blink embedder to implement loading functionality
@@ -63,14 +59,10 @@ class WebServiceWorkerNetworkProvider {
   // request made.
   virtual void WillSendRequest(WebURLRequest&) = 0;
 
-  // Returns a URLLoader for loading |request|. May return nullptr to fall back
-  // to the default loading behavior.
-  virtual std::unique_ptr<WebURLLoader> CreateURLLoader(
-      const WebURLRequest& request,
-      std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>,
-      std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>,
-      CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>,
-      WebBackForwardCacheLoaderHelper) = 0;
+  // Returns a SharedURLLoaderFactory for loading |request|. May return nullptr
+  // to fall back to the default loading behavior.
+  virtual scoped_refptr<network::SharedURLLoaderFactory>
+  GetSubresourceLoaderFactory(const WebURLRequest& request) = 0;
 
   // For service worker clients.
   virtual blink::mojom::ControllerServiceWorkerMode

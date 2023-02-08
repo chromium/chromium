@@ -239,6 +239,15 @@ std::unique_ptr<blink::WebURLLoaderFactory>
 RendererBlinkPlatformImpl::WrapURLLoaderFactory(
     blink::CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>
         url_loader_factory) {
+  return WrapURLLoaderFactory(
+      base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
+          mojo::PendingRemote<network::mojom::URLLoaderFactory>(
+              std::move(url_loader_factory))));
+}
+
+std::unique_ptr<blink::WebURLLoaderFactory>
+RendererBlinkPlatformImpl::WrapURLLoaderFactory(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   // Check that there is always a main thread. It used to be possible to run
   // this code with a fuzzer without having a main thread, which is no longer
   // possible now.
@@ -252,10 +261,7 @@ RendererBlinkPlatformImpl::WrapURLLoaderFactory(
                    return blink::WebString::FromLatin1(h);
                  });
   return std::make_unique<blink::WebURLLoaderFactory>(
-      base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
-          mojo::PendingRemote<network::mojom::URLLoaderFactory>(
-              std::move(url_loader_factory))),
-      web_cors_exempt_header_list,
+      std::move(url_loader_factory), web_cors_exempt_header_list,
       /*terminate_sync_load_event=*/nullptr);
 }
 

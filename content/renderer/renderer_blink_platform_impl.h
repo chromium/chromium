@@ -36,6 +36,10 @@
 #include "third_party/skia/include/core/SkRefCnt.h"           // nogncheck
 #endif
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace blink {
 namespace scheduler {
 class WebThreadScheduler;
@@ -207,6 +211,9 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   std::unique_ptr<blink::WebURLLoaderFactory> WrapURLLoaderFactory(
       blink::CrossVariantMojoRemote<
           network::mojom::URLLoaderFactoryInterfaceBase> url_loader_factory)
+      override;
+  std::unique_ptr<blink::WebURLLoaderFactory> WrapURLLoaderFactory(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       override;
   std::unique_ptr<media::MediaLog> GetMediaLog(
       blink::MediaInspectorContext* inspector_context,

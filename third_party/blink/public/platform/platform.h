@@ -99,6 +99,7 @@ class URLLoaderFactory;
 class URLLoaderFactoryInterfaceBase;
 }
 class PendingSharedURLLoaderFactory;
+class SharedURLLoaderFactory;
 }
 
 namespace url {
@@ -263,6 +264,8 @@ class BLINK_PLATFORM_EXPORT Platform {
   virtual std::unique_ptr<WebURLLoaderFactory> WrapURLLoaderFactory(
       CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>
           url_loader_factory);
+  virtual std::unique_ptr<blink::WebURLLoaderFactory> WrapURLLoaderFactory(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Returns the default User-Agent string, it can either full User-Agent string
   // or reduced User-Agent string based on policy setting.
