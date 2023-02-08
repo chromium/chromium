@@ -1078,6 +1078,7 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
   if (ash::features::IsDriveFsBulkPinningEnabled()) {
     pin_manager_ = std::make_unique<drivefs::pinning::PinManager>(
         profile_->GetPath(), GetDriveFsInterface());
+    pin_manager_->ShouldCheckStalledFiles(true);
     GetDriveFsHost()->AddObserver(pin_manager_.get());
     ToggleBulkPinning();
   }

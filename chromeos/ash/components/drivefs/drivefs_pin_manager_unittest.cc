@@ -358,7 +358,7 @@ TEST_F(DriveFsPinManagerTest, Add) {
     EXPECT_EQ(file.total, size1);
     EXPECT_EQ(file.transferred, 0);
     EXPECT_FALSE(file.pinned);
-    EXPECT_FALSE(file.in_progress);
+    EXPECT_TRUE(file.in_progress);
   }
 
   {
@@ -385,7 +385,7 @@ TEST_F(DriveFsPinManagerTest, Add) {
     EXPECT_EQ(file.path, path2);
     EXPECT_EQ(file.total, size2);
     EXPECT_EQ(file.transferred, 0);
-    EXPECT_FALSE(file.in_progress);
+    EXPECT_TRUE(file.in_progress);
     EXPECT_TRUE(file.pinned);
   }
 
@@ -459,29 +459,6 @@ TEST_F(DriveFsPinManagerTest, Update) {
     EXPECT_EQ(progress.required_space, 20480);
   }
 
-  // Mark file as in progress.
-  EXPECT_TRUE(manager.Update(id1, path1, -1, -1));
-  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
-
-  {
-    const auto it = manager.files_to_track_.find(id1);
-    ASSERT_NE(it, manager.files_to_track_.end());
-    const auto& [id, file] = *it;
-    EXPECT_EQ(id, id1);
-    EXPECT_EQ(file.path, path1);
-    EXPECT_EQ(file.total, size1);
-    EXPECT_EQ(file.transferred, 0);
-    EXPECT_TRUE(file.in_progress);
-  }
-
-  {
-    const Progress progress = manager.GetProgress();
-    EXPECT_EQ(progress.pinned_files, 0);
-    EXPECT_EQ(progress.pinned_bytes, 5000);
-    EXPECT_EQ(progress.bytes_to_pin, 10000);
-    EXPECT_EQ(progress.required_space, 20480);
-  }
-
   // These updates should not modify anything.
   EXPECT_FALSE(manager.Update(id1, path1, -1, -1));
   EXPECT_FALSE(manager.Update(id1, path1, 0, -1));
@@ -497,7 +474,7 @@ TEST_F(DriveFsPinManagerTest, Update) {
     EXPECT_EQ(file.path, path1);
     EXPECT_EQ(file.total, size1);
     EXPECT_EQ(file.transferred, 0);
-    EXPECT_TRUE(file.in_progress);
+    EXPECT_FALSE(file.in_progress);
   }
 
   {
@@ -800,7 +777,6 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
     event.path = path1.value();
     event.state = ItemEvent::State::kQueued;
     event.bytes_to_transfer = 0;
-    EXPECT_TRUE(manager.OnSyncingEvent(event));
     EXPECT_FALSE(manager.OnSyncingEvent(event));
   }
 
@@ -825,7 +801,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
     EXPECT_EQ(file.total, 10000);
     EXPECT_EQ(file.transferred, 0);
     EXPECT_TRUE(file.pinned);
-    EXPECT_TRUE(file.in_progress);
+    EXPECT_FALSE(file.in_progress);
   }
 
   // Mark file 1 as in progress.

@@ -343,7 +343,8 @@ bool PinManager::Add(const Id id,
   DCHECK_GE(size, 0) << " for " << id << " " << Quote(path);
 
   const auto [it, ok] = files_to_track_.try_emplace(
-      id, File{.path = path, .total = size, .pinned = pinned});
+      id,
+      File{.path = path, .total = size, .pinned = pinned, .in_progress = true});
   DCHECK_EQ(id, it->first);
   File& file = it->second;
   if (!ok) {
@@ -477,11 +478,6 @@ bool PinManager::Update(Files::value_type& entry,
     modified = true;
   }
 
-  if (!file.in_progress) {
-    file.in_progress = true;
-    modified = true;
-  }
-
   if (transferred != file.transferred && transferred >= 0) {
     LOG_IF(ERROR, transferred < file.transferred)
         << "Progress went backwards from "
@@ -504,6 +500,10 @@ bool PinManager::Update(Files::value_type& entry,
         RoundToBlockSize(total) - RoundToBlockSize(file.total);
     file.total = total;
     modified = true;
+  }
+
+  if (modified) {
+    file.in_progress = true;
   }
 
   return modified;
@@ -958,22 +958,28 @@ void PinManager::CheckStalledFiles() {
     return;
   }
 
-  for (const auto& [id, file] : files_to_track_) {
-    if (file.pinned && !file.in_progress) {
-      const Path& path = file.path;
-      VLOG(2) << "Checking stalled " << id << " " << Quote(path);
-      drivefs_->GetMetadataByStableId(
-          static_cast<int64_t>(id),
-          base::BindOnce(&PinManager::OnMetadataForModifiedFile, GetWeakPtr(),
-                         id, path));
+  for (auto& [id, file] : files_to_track_) {
+    if (!file.pinned) {
+      DCHECK(files_to_pin_.contains(id));
+      continue;
     }
+
+    if (file.in_progress) {
+      file.in_progress = false;
+      continue;
+    }
+
+    const Path& path = file.path;
+    VLOG(1) << "Checking stalled " << id << " " << Quote(path);
+    drivefs_->GetMetadataByStableId(
+        static_cast<int64_t>(id),
+        base::BindOnce(&PinManager::OnMetadataForModifiedFile, GetWeakPtr(), id,
+                       path));
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&PinManager::CheckStalledFiles, GetWeakPtr()),
       kPeriodicRemovalInterval);
-
-  PinSomeFiles();
 }
 
 void PinManager::OnMetadataForCreatedFile(
