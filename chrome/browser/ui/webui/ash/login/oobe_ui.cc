@@ -177,7 +177,6 @@ constexpr char kLogo24PX1XSvgPath[] = "logo_24px-1x.svg";
 constexpr char kLogo24PX2XSvgPath[] = "logo_24px-2x.svg";
 constexpr char kSyncConsentIcons[] = "sync-consent-icons.html";
 constexpr char kSyncConsentIconsJs[] = "sync-consent-icons.m.js";
-constexpr char kArcAppDownloadingVideoPath[] = "res/arc_app_dowsnloading.mp4";
 #endif
 
 // Adds various product logo resources.
@@ -209,11 +208,6 @@ void AddArcScreensResources(content::WebUIDataSource* source) {
   source->AddResourcePath(kArcPlaystoreJSPath, IDR_ARC_SUPPORT_PLAYSTORE_JS);
   source->AddResourcePath(kArcPlaystoreLogoPath,
                           IDR_ARC_SUPPORT_PLAYSTORE_LOGO);
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  source->AddResourcePath(kArcAppDownloadingVideoPath,
-                          IDR_OOBE_ARC_APPS_DOWNLOADING_VIDEO);
-#endif
 }
 
 void AddAssistantScreensResources(content::WebUIDataSource* source) {
@@ -616,7 +610,6 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source) {
                             IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_JS);
   }
 
-  source->AddResourcePath("spinner.json", IDR_LOGIN_SPINNER_ANIMATION);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc,
       "worker-src blob: chrome://resources 'self';");

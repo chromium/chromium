@@ -111,6 +111,8 @@ generate_grd("build_oobe_grd") {
     "animations/gesture_go_back.json",
     "animations/gesture_go_home.json",
     "animations/gesture_hotseat_overview.json",
+    "animations/spinner.json",
+    "animations/spinner_dark.json",
     "animations/welcome_screen_animation.json",
 
     # Vector resources

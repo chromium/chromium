@@ -8,8 +8,6 @@
   </outputs>
   <release seq="1">
     <includes>
-      <part file="oobe_animation_resources.grdp" />
-
       <!-- Resources that are dynamically chosen to be served in runtime -->
       <!-- OOBE Custom CSS Variables -->
       <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_JS" use_base_dir="false" type="chrome_html"
