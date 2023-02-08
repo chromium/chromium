@@ -45,6 +45,13 @@ void DeleteComServer(UpdaterScope scope, bool uninstall_all) {
     installer::DeleteRegistryKey(UpdaterScopeToHKeyRoot(scope),
                                  GetComServerClsidRegistryPath(clsid),
                                  WorkItem::kWow64Default);
+
+    const std::wstring progid(GetProgIdForClsid(scope, clsid));
+    if (!progid.empty()) {
+      installer::DeleteRegistryKey(UpdaterScopeToHKeyRoot(scope),
+                                   GetComProgIdRegistryPath(progid),
+                                   WorkItem::kWow64Default);
+    }
   }
 }
 

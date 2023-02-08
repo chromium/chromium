@@ -265,6 +265,12 @@ void CheckInstallation(UpdaterScope scope,
       EXPECT_EQ(is_installed,
                 RegKeyExistsCOM(root, GetComServerAppidRegistryPath(clsid)));
     }
+
+    const std::wstring progid(GetProgIdForClsid(scope, clsid));
+    if (!progid.empty()) {
+      EXPECT_EQ(is_installed,
+                RegKeyExistsCOM(root, GetComProgIdRegistryPath(progid)));
+    }
   }
 
   for (const IID& iid :
@@ -558,6 +564,11 @@ void Clean(UpdaterScope scope) {
     EXPECT_TRUE(DeleteRegKeyCOM(root, GetComServerClsidRegistryPath(clsid)));
     if (IsSystemInstall(scope))
       EXPECT_TRUE(DeleteRegKeyCOM(root, GetComServerAppidRegistryPath(clsid)));
+
+    const std::wstring progid(GetProgIdForClsid(scope, clsid));
+    if (!progid.empty()) {
+      EXPECT_TRUE(DeleteRegKeyCOM(root, GetComProgIdRegistryPath(progid)));
+    }
   }
 
   for (const IID& iid : JoinVectors(GetSideBySideInterfaces(scope),
@@ -768,6 +779,16 @@ void ExpectInterfacesRegistered(UpdaterScope scope) {
         updater_server.CopyTo(IsSystemInstall(scope) ? __uuidof(IUpdaterSystem)
                                                      : __uuidof(IUpdaterUser),
                               IID_PPV_ARGS_Helper(&updater)));
+
+    // Verifies that the progid for the legacy clsid is registered.
+    CLSID expected_clsid = {};
+    EXPECT_HRESULT_SUCCEEDED(::CLSIDFromProgID(
+        IsSystemInstall(scope) ? L"GoogleUpdate.Update3WebMachine"
+                               : L"GoogleUpdate.Update3WebUser",
+        &expected_clsid));
+    EXPECT_EQ(expected_clsid, IsSystemInstall(scope)
+                                  ? __uuidof(GoogleUpdate3WebSystemClass)
+                                  : __uuidof(GoogleUpdate3WebUserClass));
 
     for (const CLSID& clsid : [&scope]() -> std::vector<CLSID> {
            if (IsSystemInstall(scope)) {

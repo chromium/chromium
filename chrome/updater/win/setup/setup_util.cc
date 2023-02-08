@@ -62,6 +62,107 @@ std::wstring CreateRandomTaskName(UpdaterScope scope) {
              : std::wstring();
 }
 
+// Adds work items to `list` to install the progid corresponding to `clsid`.
+void AddInstallComProgIdWorkItems(UpdaterScope scope,
+                                  CLSID clsid,
+                                  WorkItemList* list) {
+  const std::wstring progid(GetProgIdForClsid(scope, clsid));
+  if (!progid.empty()) {
+    const HKEY root = UpdaterScopeToHKeyRoot(scope);
+    const std::wstring progid_reg_path(GetComProgIdRegistryPath(progid));
+
+    // Delete any old registrations first.
+    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+      list->AddDeleteRegKeyWorkItem(root, progid_reg_path, key_flag);
+    }
+
+    list->AddCreateRegKeyWorkItem(root, progid_reg_path + L"\\CLSID",
+                                  WorkItem::kWow64Default);
+    list->AddSetRegValueWorkItem(root, progid_reg_path + L"\\CLSID",
+                                 WorkItem::kWow64Default, L"",
+                                 base::win::WStringFromGUID(clsid), true);
+  }
+}
+
+// Adds work items to `list` to install the interface `iid`.
+void AddInstallComInterfaceWorkItems(HKEY root,
+                                     const base::FilePath& typelib_path,
+                                     GUID iid,
+                                     WorkItemList* list) {
+  const std::wstring iid_reg_path = GetComIidRegistryPath(iid);
+  const std::wstring typelib_reg_path = GetComTypeLibRegistryPath(iid);
+
+  // Delete any old registrations first.
+  for (const auto& reg_path : {iid_reg_path, typelib_reg_path}) {
+    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+      list->AddDeleteRegKeyWorkItem(root, reg_path, key_flag);
+    }
+  }
+
+  // Registering the Ole Automation marshaler with the CLSID
+  // {00020424-0000-0000-C000-000000000046} as the proxy/stub for the
+  // interfaces.
+  list->AddCreateRegKeyWorkItem(root, iid_reg_path + L"\\ProxyStubClsid32",
+                                WorkItem::kWow64Default);
+  list->AddSetRegValueWorkItem(root, iid_reg_path + L"\\ProxyStubClsid32",
+                               WorkItem::kWow64Default, L"",
+                               L"{00020424-0000-0000-C000-000000000046}", true);
+  list->AddCreateRegKeyWorkItem(root, iid_reg_path + L"\\TypeLib",
+                                WorkItem::kWow64Default);
+  list->AddSetRegValueWorkItem(root, iid_reg_path + L"\\TypeLib",
+                               WorkItem::kWow64Default, L"",
+                               base::win::WStringFromGUID(iid), true);
+
+  // The TypeLib registration for the Ole Automation marshaler.
+  const base::FilePath qualified_typelib_path =
+      typelib_path.Append(GetComTypeLibResourceIndex(iid));
+  list->AddCreateRegKeyWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win32",
+                                WorkItem::kWow64Default);
+  list->AddSetRegValueWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win32",
+                               WorkItem::kWow64Default, L"",
+                               qualified_typelib_path.value(), true);
+  list->AddCreateRegKeyWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win64",
+                                WorkItem::kWow64Default);
+  list->AddSetRegValueWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win64",
+                               WorkItem::kWow64Default, L"",
+                               qualified_typelib_path.value(), true);
+}
+
+// Adds work items to `list` to install the server `iid`.
+void AddInstallServerWorkItems(HKEY root,
+                               CLSID clsid,
+                               const base::FilePath& com_server_path,
+                               bool internal_service,
+                               WorkItemList* list) {
+  const std::wstring clsid_reg_path = GetComServerClsidRegistryPath(clsid);
+
+  // Delete any old registrations first.
+  for (const auto& reg_path : {clsid_reg_path}) {
+    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+      list->AddDeleteRegKeyWorkItem(root, reg_path, key_flag);
+    }
+  }
+
+  list->AddCreateRegKeyWorkItem(root, clsid_reg_path, WorkItem::kWow64Default);
+  const std::wstring local_server32_reg_path =
+      base::StrCat({clsid_reg_path, L"\\LocalServer32"});
+  list->AddCreateRegKeyWorkItem(root, local_server32_reg_path,
+                                WorkItem::kWow64Default);
+
+  base::CommandLine run_com_server_command(com_server_path);
+  run_com_server_command.AppendSwitch(kServerSwitch);
+  run_com_server_command.AppendSwitchASCII(
+      kServerServiceSwitch, internal_service
+                                ? kServerUpdateServiceInternalSwitchValue
+                                : kServerUpdateServiceSwitchValue);
+  run_com_server_command.AppendSwitch(kEnableLoggingSwitch);
+  run_com_server_command.AppendSwitchASCII(kLoggingModuleSwitch,
+                                           kLoggingModuleSwitchValue);
+  list->AddSetRegValueWorkItem(
+      root, local_server32_reg_path, WorkItem::kWow64Default, L"",
+      run_com_server_command.GetCommandLineString(), true);
+}
+
 }  // namespace
 
 bool RegisterWakeTask(const base::CommandLine& run_command,
@@ -205,81 +306,6 @@ std::vector<CLSID> GetServers(bool is_internal, UpdaterScope scope) {
   return is_internal ? GetSideBySideServers(scope) : GetActiveServers(scope);
 }
 
-void AddInstallComInterfaceWorkItems(HKEY root,
-                                     const base::FilePath& typelib_path,
-                                     GUID iid,
-                                     WorkItemList* list) {
-  const std::wstring iid_reg_path = GetComIidRegistryPath(iid);
-  const std::wstring typelib_reg_path = GetComTypeLibRegistryPath(iid);
-
-  // Delete any old registrations first.
-  for (const auto& reg_path : {iid_reg_path, typelib_reg_path}) {
-    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY})
-      list->AddDeleteRegKeyWorkItem(root, reg_path, key_flag);
-  }
-
-  // Registering the Ole Automation marshaler with the CLSID
-  // {00020424-0000-0000-C000-000000000046} as the proxy/stub for the
-  // interfaces.
-  list->AddCreateRegKeyWorkItem(root, iid_reg_path + L"\\ProxyStubClsid32",
-                                WorkItem::kWow64Default);
-  list->AddSetRegValueWorkItem(root, iid_reg_path + L"\\ProxyStubClsid32",
-                               WorkItem::kWow64Default, L"",
-                               L"{00020424-0000-0000-C000-000000000046}", true);
-  list->AddCreateRegKeyWorkItem(root, iid_reg_path + L"\\TypeLib",
-                                WorkItem::kWow64Default);
-  list->AddSetRegValueWorkItem(root, iid_reg_path + L"\\TypeLib",
-                               WorkItem::kWow64Default, L"",
-                               base::win::WStringFromGUID(iid), true);
-
-  // The TypeLib registration for the Ole Automation marshaler.
-  const base::FilePath qualified_typelib_path =
-      typelib_path.Append(GetComTypeLibResourceIndex(iid));
-  list->AddCreateRegKeyWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win32",
-                                WorkItem::kWow64Default);
-  list->AddSetRegValueWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win32",
-                               WorkItem::kWow64Default, L"",
-                               qualified_typelib_path.value(), true);
-  list->AddCreateRegKeyWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win64",
-                                WorkItem::kWow64Default);
-  list->AddSetRegValueWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win64",
-                               WorkItem::kWow64Default, L"",
-                               qualified_typelib_path.value(), true);
-}
-
-void AddInstallServerWorkItems(HKEY root,
-                               CLSID clsid,
-                               const base::FilePath& com_server_path,
-                               bool internal_service,
-                               WorkItemList* list) {
-  const std::wstring clsid_reg_path = GetComServerClsidRegistryPath(clsid);
-
-  // Delete any old registrations first.
-  for (const auto& reg_path : {clsid_reg_path}) {
-    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY})
-      list->AddDeleteRegKeyWorkItem(root, reg_path, key_flag);
-  }
-
-  list->AddCreateRegKeyWorkItem(root, clsid_reg_path, WorkItem::kWow64Default);
-  const std::wstring local_server32_reg_path =
-      base::StrCat({clsid_reg_path, L"\\LocalServer32"});
-  list->AddCreateRegKeyWorkItem(root, local_server32_reg_path,
-                                WorkItem::kWow64Default);
-
-  base::CommandLine run_com_server_command(com_server_path);
-  run_com_server_command.AppendSwitch(kServerSwitch);
-  run_com_server_command.AppendSwitchASCII(
-      kServerServiceSwitch, internal_service
-                                ? kServerUpdateServiceInternalSwitchValue
-                                : kServerUpdateServiceSwitchValue);
-  run_com_server_command.AppendSwitch(kEnableLoggingSwitch);
-  run_com_server_command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                           kLoggingModuleSwitchValue);
-  list->AddSetRegValueWorkItem(
-      root, local_server32_reg_path, WorkItem::kWow64Default, L"",
-      run_com_server_command.GetCommandLineString(), true);
-}
-
 void AddComServerWorkItems(const base::FilePath& com_server_path,
                            bool is_internal,
                            WorkItemList* list) {
@@ -292,6 +318,7 @@ void AddComServerWorkItems(const base::FilePath& com_server_path,
   for (const auto& clsid : GetServers(is_internal, UpdaterScope::kUser)) {
     AddInstallServerWorkItems(HKEY_CURRENT_USER, clsid, com_server_path,
                               is_internal, list);
+    AddInstallComProgIdWorkItems(UpdaterScope::kUser, clsid, list);
   }
 
   for (const auto& iid : GetInterfaces(is_internal, UpdaterScope::kUser)) {
@@ -325,17 +352,39 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
   base::CommandLine com_switch(base::CommandLine::NO_PROGRAM);
   com_switch.AppendSwitch(kComServiceSwitch);
 
+  const std::vector<CLSID> clsids(
+      GetServers(internal_service, UpdaterScope::kSystem));
   list->AddWorkItem(new installer::InstallServiceWorkItem(
       GetServiceName(internal_service).c_str(),
       GetServiceDisplayName(internal_service).c_str(), SERVICE_AUTO_START,
-      com_service_command, com_switch, UPDATER_KEY,
-      GetServers(internal_service, UpdaterScope::kSystem), {}));
+      com_service_command, com_switch, UPDATER_KEY, clsids, {}));
+
+  for (const auto& clsid : clsids) {
+    AddInstallComProgIdWorkItems(UpdaterScope::kSystem, clsid, list);
+  }
 
   for (const auto& iid :
        GetInterfaces(internal_service, UpdaterScope::kSystem)) {
     AddInstallComInterfaceWorkItems(HKEY_LOCAL_MACHINE, com_service_path, iid,
                                     list);
   }
+}
+
+std::wstring GetProgIdForClsid(UpdaterScope scope, CLSID clsid) {
+  switch (scope) {
+    case UpdaterScope::kUser:
+      return clsid == __uuidof(GoogleUpdate3WebUserClass)
+                 ? L"GoogleUpdate.Update3WebUser"
+                 : L"";
+    case UpdaterScope::kSystem:
+      return clsid == __uuidof(GoogleUpdate3WebSystemClass)
+                 ? L"GoogleUpdate.Update3WebMachine"
+                 : L"";
+  }
+}
+
+std::wstring GetComProgIdRegistryPath(const std::wstring& progid) {
+  return base::StrCat({L"Software\\Classes\\", progid});
 }
 
 std::wstring GetComServerClsidRegistryPath(REFCLSID clsid) {
