@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 #include <array>
-#include <unordered_map>
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
@@ -27,22 +26,9 @@ namespace autofill {
 namespace {
 
 // The maximum capacity needed to store a locale up to the country code.
-constexpr size_t kLocaleCapacity =
+const size_t kLocaleCapacity =
     ULOC_LANG_CAPACITY + ULOC_SCRIPT_CAPACITY + ULOC_COUNTRY_CAPACITY + 1;
 
-// Mapping of fields needed for identifying libaddressinput fields that
-// considered required in Autofill.
-constexpr auto kRequiredFieldMapping =
-    base::MakeFixedFlatMap<::i18n::addressinput::AddressField,
-                           RequiredFieldsForAddressImport>(
-        {{::i18n::addressinput::AddressField::ADMIN_AREA,
-          RequiredFieldsForAddressImport::ADDRESS_REQUIRES_STATE},
-         {::i18n::addressinput::AddressField::LOCALITY,
-          RequiredFieldsForAddressImport::ADDRESS_REQUIRES_CITY},
-         {::i18n::addressinput::AddressField::STREET_ADDRESS,
-          RequiredFieldsForAddressImport::ADDRESS_REQUIRES_LINE1},
-         {::i18n::addressinput::AddressField::POSTAL_CODE,
-          RequiredFieldsForAddressImport::ADDRESS_REQUIRES_ZIP}});
 }  // namespace
 
 AutofillCountry::AutofillCountry(const std::string& country_code,
@@ -151,9 +137,4 @@ bool AutofillCountry::IsAddressFieldSettingAccessible(
              [](const AddressFormatExtension& rule) { return rule.type; });
 }
 
-bool AutofillCountry::IsAddressFieldRequired(AddressField address_field) const {
-  auto* mapping_it = kRequiredFieldMapping.find(address_field);
-  return mapping_it != kRequiredFieldMapping.end() &&
-         (required_fields_for_address_import_ & mapping_it->second);
-}
 }  // namespace autofill
