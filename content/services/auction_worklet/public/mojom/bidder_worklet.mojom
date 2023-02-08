@@ -35,6 +35,12 @@ enum KAnonymityBidMode {
   kEnforce  // Enforced.
 };
 
+// An opaque identifier that identifies an ad configuration used for
+// k-anonymity.
+struct KAnonKey {
+  string data;
+};
+
 // Subset of blink.mojom.InterestGroup that is used by GenerateBid() and can
 // vary between InterestGroups that can use the same BidderWorklet (so it's
 // "not shared" between InterestGroups that share the same BidderWorklet).
@@ -59,9 +65,9 @@ struct BidderWorkletNonSharedParams {
   array<blink.mojom.InterestGroupAd>? ads;
   array<blink.mojom.InterestGroupAd>? ad_components;
 
-  // ads_kanon[url] is true iff `url` is sufficiently k-anonymous to be used
-  // as an ad or an ad component.
-  map<url.mojom.Url, bool> ads_kanon;
+  // ads_kanon[kanon_key] is true iff `kanon_key` is sufficiently k-anonymous to
+  // be used as an ad or an ad component.
+  map<KAnonKey, bool> kanon_keys;
 };
 
 // Browser signals passed to the BidderWorklet's generateBid() method that are

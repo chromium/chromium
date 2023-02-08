@@ -36,9 +36,8 @@ bool IsAllowedAdUrl(
     const GURL& url,
     std::string& error_prefix,
     const char* argument_name,
+    const base::RepeatingCallback<bool(const GURL&)>& is_excluded,
     const std::vector<blink::InterestGroup::Ad>& ads,
-    const mojom::BidderWorkletNonSharedParams* bidder_worklet_non_shared_params,
-    bool restrict_to_kanon_ads,
     std::vector<std::string>& out_errors) {
   if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme)) {
     out_errors.push_back(base::StrCat({error_prefix, "bid ", argument_name,
@@ -48,12 +47,9 @@ bool IsAllowedAdUrl(
   }
 
   for (const auto& ad : ads) {
-    if (restrict_to_kanon_ads &&
-        !BidderWorklet::IsKAnon(bidder_worklet_non_shared_params,
-                                ad.render_url)) {
+    if (is_excluded.Run(ad.render_url)) {
       continue;
     }
-
     if (url == ad.render_url)
       return true;
   }
@@ -83,12 +79,14 @@ void SetBidBindings::ReInitialize(
     base::TimeTicks start,
     bool has_top_level_seller_origin,
     const mojom::BidderWorkletNonSharedParams* bidder_worklet_non_shared_params,
-    bool restrict_to_kanon_ads) {
+    base::RepeatingCallback<bool(const GURL&)> is_ad_excluded,
+    base::RepeatingCallback<bool(const GURL&)> is_component_ad_excluded) {
   DCHECK(bidder_worklet_non_shared_params->ads.has_value());
   start_ = start;
   has_top_level_seller_origin_ = has_top_level_seller_origin;
   bidder_worklet_non_shared_params_ = bidder_worklet_non_shared_params;
-  restrict_to_kanon_ads_ = restrict_to_kanon_ads;
+  is_ad_excluded_ = std::move(is_ad_excluded);
+  is_component_ad_excluded_ = std::move(is_component_ad_excluded);
 }
 
 void SetBidBindings::FillInGlobalTemplate(
@@ -106,7 +104,8 @@ void SetBidBindings::Reset() {
   bid_.reset();
   // Make sure we don't keep any dangling references to auction input.
   bidder_worklet_non_shared_params_ = nullptr;
-  restrict_to_kanon_ads_ = false;
+  is_ad_excluded_.Reset();
+  is_component_ad_excluded_.Reset();
 }
 
 // static
@@ -210,9 +209,8 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
   }
 
   GURL render_url(render_url_string);
-  if (!IsAllowedAdUrl(render_url, error_prefix, "render",
+  if (!IsAllowedAdUrl(render_url, error_prefix, "render", is_ad_excluded_,
                       bidder_worklet_non_shared_params_->ads.value(),
-                      bidder_worklet_non_shared_params_, restrict_to_kanon_ads_,
                       errors_out)) {
     return false;
   }
@@ -258,8 +256,8 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
       GURL ad_component_url(url_string);
       if (!IsAllowedAdUrl(
               ad_component_url, error_prefix, "adComponents",
+              is_component_ad_excluded_,
               bidder_worklet_non_shared_params_->ad_components.value(),
-              bidder_worklet_non_shared_params_, restrict_to_kanon_ads_,
               errors_out)) {
         return false;
       }

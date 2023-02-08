@@ -13,38 +13,14 @@
 namespace content {
 
 namespace {
-const GURL& extractUrlFromAd(const blink::InterestGroup::Ad& ad) {
-  return ad.render_url;
-}
+
+constexpr base::TimeDelta kKAnonymityExpiration = base::Days(7);
+
 }  // namespace
 
-std::string KAnonKeyForAdBid(const blink::InterestGroup& group,
-                             const GURL& ad_url) {
-  DCHECK(group.ads);
-  DCHECK(base::ranges::count(*group.ads, ad_url, &extractUrlFromAd) > 0 ||
-         (group.ad_components &&
-          base::ranges::count(*group.ad_components, ad_url, &extractUrlFromAd) >
-              0));
-  DCHECK(group.bidding_url);
-  return group.owner.GetURL().spec() + '\n' +
-         group.bidding_url.value_or(GURL()).spec() + '\n' + ad_url.spec();
-}
-
-GURL RenderUrlFromKAnonKeyForAdBid(const std::string& key) {
-  size_t pos = key.find_last_of('\n');
-  if (pos == std::string::npos)
-    return GURL();
-  return GURL(key.substr(pos + 1));
-}
-
-std::string KAnonKeyForAdNameReporting(const blink::InterestGroup& group,
-                                       const blink::InterestGroup::Ad& ad) {
-  DCHECK(group.ads);
-  DCHECK(base::Contains(*group.ads, ad));
-  DCHECK(group.bidding_url);
-  return group.owner.GetURL().spec() + '\n' +
-         group.bidding_url.value_or(GURL()).spec() + '\n' +
-         ad.render_url.spec() + '\n' + group.name;
+bool IsKAnonymous(const StorageInterestGroup::KAnonymityData& data,
+                  const base::Time now) {
+  return data.is_k_anonymous && data.last_updated + kKAnonymityExpiration > now;
 }
 
 InterestGroupKAnonymityManager::InterestGroupKAnonymityManager(

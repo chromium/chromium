@@ -64,7 +64,6 @@ namespace content {
 namespace {
 
 constexpr base::TimeDelta kMaxTimeout = base::Milliseconds(500);
-constexpr base::TimeDelta kKAnonymityExpiration = base::Days(7);
 
 // For group freshness metrics.
 constexpr base::TimeDelta kGroupFreshnessMin = base::Minutes(1);
@@ -77,31 +76,47 @@ bool IsUrlValid(const GURL& url) {
   return url.is_valid() && url.SchemeIs(url::kHttpsScheme);
 }
 
-bool IsKAnon(const base::flat_map<GURL, bool>& kanon_render_urls,
-             const GURL& url) {
-  auto it = kanon_render_urls.find(url);
-  return it != kanon_render_urls.end() && it->second;
+bool IsKAnon(const base::flat_map<std::string, bool>& kanon_keys,
+             const std::string& key) {
+  auto it = kanon_keys.find(key);
+  return it != kanon_keys.end() && it->second;
 }
 
-bool IsKAnon(const base::flat_map<GURL, bool>& kanon_render_urls,
+bool IsKAnon(const base::flat_map<std::string, bool>& kanon_keys,
+             const blink::InterestGroup& interest_group,
              const auction_worklet::mojom::BidderWorkletBid* bid) {
-  if (!IsKAnon(kanon_render_urls, bid->render_url))
+  if (!IsKAnon(kanon_keys,
+               blink::KAnonKeyForAdBid(interest_group, bid->render_url))) {
     return false;
+  }
   if (bid->ad_components.has_value()) {
     for (const auto& component : bid->ad_components.value()) {
-      if (!IsKAnon(kanon_render_urls, component))
+      if (!IsKAnon(kanon_keys, blink::KAnonKeyForAdComponentBid(component))) {
         return false;
+      }
     }
   }
   return true;
+}
+
+base::flat_map<auction_worklet::mojom::KAnonKeyPtr, bool> KAnonKeysToMojom(
+    const base::flat_map<std::string, bool>& kanon_keys) {
+  std::vector<std::pair<auction_worklet::mojom::KAnonKeyPtr, bool>> result;
+  for (const auto& key : kanon_keys) {
+    result.emplace_back(auction_worklet::mojom::KAnonKey::New(key.first),
+                        key.second);
+  }
+  return std::move(result);
 }
 
 // Finds InterestGroup::Ad in `ads` that matches `render_url`, if any. Returns
 // nullptr if `render_url` is invalid.
 const blink::InterestGroup::Ad* FindMatchingAd(
     const std::vector<blink::InterestGroup::Ad>& ads,
-    const base::flat_map<GURL, bool>& kanon_render_urls,
+    const base::flat_map<std::string, bool>& kanon_keys,
+    const blink::InterestGroup& interest_group,
     InterestGroupAuction::Bid::BidRole bid_role,
+    bool is_component_ad,
     const GURL& render_url) {
   // TODO(mmenke): Validate render URLs on load and make this a DCHECK just
   // before the return instead, since then `ads` will necessarily only contain
@@ -110,8 +125,12 @@ const blink::InterestGroup::Ad* FindMatchingAd(
     return nullptr;
 
   if (bid_role != InterestGroupAuction::Bid::BidRole::kUnenforcedKAnon) {
-    if (!IsKAnon(kanon_render_urls, render_url))
+    const std::string kanon_key =
+        is_component_ad ? blink::KAnonKeyForAdComponentBid(render_url)
+                        : blink::KAnonKeyForAdBid(interest_group, render_url);
+    if (!IsKAnon(kanon_keys, kanon_key)) {
       return nullptr;
+    }
   }
 
   for (const auto& ad : ads) {
@@ -638,28 +657,30 @@ class InterestGroupAuction::BuyerHelper
         /*errors=*/{});
   }
 
-  base::flat_map<GURL, bool> ComputeKAnon(
+  base::flat_map<std::string, bool> ComputeKAnon(
       const StorageInterestGroup& storage_interest_group,
       auction_worklet::mojom::KAnonymityBidMode kanon_mode) {
     if (kanon_mode == auction_worklet::mojom::KAnonymityBidMode::kNone) {
-      return base::flat_map<GURL, bool>();
+      return {};
     }
 
     // k-anon cache is always checked against the same time, to avoid weird
     // behavior of validity changing in the middle of the auction.
     base::Time start_time = auction_->auction_start_time_;
 
-    std::vector<std::pair<GURL, bool>> kanon_entries;
+    std::vector<std::pair<std::string, bool>> kanon_entries;
     for (const auto& ad_kanon : storage_interest_group.bidding_ads_kanon) {
-      bool is_kanon =
-          ad_kanon.is_k_anonymous &&
-          (ad_kanon.last_updated + kKAnonymityExpiration >= start_time);
-      if (is_kanon) {
-        kanon_entries.emplace_back(RenderUrlFromKAnonKeyForAdBid(ad_kanon.key),
-                                   true);
+      if (IsKAnonymous(ad_kanon, start_time)) {
+        kanon_entries.emplace_back(ad_kanon.key, true);
       }
     }
-    return base::flat_map<GURL, bool>(std::move(kanon_entries));
+    for (const auto& component_ad_kanon :
+         storage_interest_group.component_ads_kanon) {
+      if (IsKAnonymous(component_ad_kanon, start_time)) {
+        kanon_entries.emplace_back(component_ad_kanon.key, true);
+      }
+    }
+    return base::flat_map<std::string, bool>(std::move(kanon_entries));
   }
 
   // Invoked whenever the AuctionWorkletManager has provided a BidderWorket
@@ -680,7 +701,7 @@ class InterestGroupAuction::BuyerHelper
             bid_state);
     auction_worklet::mojom::KAnonymityBidMode kanon_mode =
         auction_->kanon_mode();
-    bid_state->kanon_render_urls = ComputeKAnon(*bid_state->bidder, kanon_mode);
+    bid_state->kanon_keys = ComputeKAnon(*bid_state->bidder, kanon_mode);
     bid_state->worklet_handle->AuthorizeSubresourceUrls(
         *auction_->subresource_url_builder_);
     bid_state->worklet_handle->GetBidderWorklet()->BeginGenerateBid(
@@ -691,7 +712,8 @@ class InterestGroupAuction::BuyerHelper
             interest_group.daily_update_url,
             interest_group.trusted_bidding_signals_keys,
             interest_group.user_bidding_signals, interest_group.ads,
-            interest_group.ad_components, bid_state->kanon_render_urls),
+            interest_group.ad_components,
+            KAnonKeysToMojom(bid_state->kanon_keys)),
         kanon_mode, bid_state->bidder->joining_origin,
         GetDirectFromSellerPerBuyerSignals(
             *auction_->subresource_url_builder_,
@@ -881,14 +903,14 @@ class InterestGroupAuction::BuyerHelper
     TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "bidder_worklet_generate_bid",
                                     *state->trace_id);
 
+    const blink::InterestGroup& interest_group = state->bidder->interest_group;
     absl::optional<uint32_t> maybe_bidding_signals_data_version;
     if (has_bidding_signals_data_version)
       maybe_bidding_signals_data_version = bidding_signals_data_version;
 
     if (has_set_priority) {
       auction_->interest_group_manager_->SetInterestGroupPriority(
-          blink::InterestGroupKey(state->bidder->interest_group.owner,
-                                  state->bidder->interest_group.name),
+          blink::InterestGroupKey(interest_group.owner, interest_group.name),
           set_priority);
     }
 
@@ -909,8 +931,7 @@ class InterestGroupAuction::BuyerHelper
             "Invalid priority signals overrides");
       } else {
         auction_->interest_group_manager_->UpdateInterestGroupPriorityOverrides(
-            blink::InterestGroupKey(state->bidder->interest_group.owner,
-                                    state->bidder->interest_group.name),
+            blink::InterestGroupKey(interest_group.owner, interest_group.name),
             std::move(update_priority_signals_overrides));
       }
     }
@@ -924,7 +945,7 @@ class InterestGroupAuction::BuyerHelper
             "Received k-anon bid data when not considering k-anon");
         mojo_kanon_bid.reset();
       } else if (mojo_bid &&
-                 IsKAnon(state->kanon_render_urls, mojo_bid.get())) {
+                 IsKAnon(state->kanon_keys, interest_group, mojo_bid.get())) {
         if (!mojo_kanon_bid->is_same_as_non_enforced()) {
           generate_bid_client_receiver_set_.ReportBadMessage(
               "Received different k-anon bid when unenforced bid already "
@@ -942,8 +963,7 @@ class InterestGroupAuction::BuyerHelper
                request_ptr) { return request_ptr.is_null(); }));
     if (!pa_requests.empty()) {
       PrivateAggregationRequests& pa_requests_for_bidder =
-          state->private_aggregation_requests[state->bidder->interest_group
-                                                  .owner];
+          state->private_aggregation_requests[interest_group.owner];
       pa_requests_for_bidder.insert(pa_requests_for_bidder.end(),
                                     std::move_iterator(pa_requests.begin()),
                                     std::move_iterator(pa_requests.end()));
@@ -1045,9 +1065,9 @@ class InterestGroupAuction::BuyerHelper
 
     const blink::InterestGroup& interest_group =
         bid_state.bidder->interest_group;
-    const blink::InterestGroup::Ad* matching_ad =
-        FindMatchingAd(*interest_group.ads, bid_state.kanon_render_urls,
-                       bid_role, mojo_bid->render_url);
+    const blink::InterestGroup::Ad* matching_ad = FindMatchingAd(
+        *interest_group.ads, bid_state.kanon_keys, interest_group, bid_role,
+        /*is_component_ad=*/false, mojo_bid->render_url);
     if (!matching_ad) {
       generate_bid_client_receiver_set_.ReportBadMessage(
           "Bid render URL must be a valid ad URL");
@@ -1074,8 +1094,8 @@ class InterestGroupAuction::BuyerHelper
       // Validate each ad component URL is valid and appears in the interest
       // group's `ad_components` field.
       for (const GURL& ad_component_url : *mojo_bid->ad_components) {
-        if (!FindMatchingAd(*interest_group.ad_components,
-                            bid_state.kanon_render_urls, bid_role,
+        if (!FindMatchingAd(*interest_group.ad_components, bid_state.kanon_keys,
+                            interest_group, bid_role, /*is_component_ad=*/true,
                             ad_component_url)) {
           generate_bid_client_receiver_set_.ReportBadMessage(
               "Bid ad components URL must match a valid ad component URL");
@@ -1794,13 +1814,13 @@ base::flat_set<std::string> InterestGroupAuction::GetKAnonKeysToJoin() const {
     DCHECK(scored_bid->bid);
     const blink::InterestGroup& interest_group =
         *scored_bid->bid->interest_group;
-    k_anon_keys_to_join.push_back(
-        KAnonKeyForAdBid(interest_group, scored_bid->bid->bid_ad->render_url));
-    k_anon_keys_to_join.push_back(
-        KAnonKeyForAdNameReporting(interest_group, *scored_bid->bid->bid_ad));
+    k_anon_keys_to_join.push_back(blink::KAnonKeyForAdBid(
+        interest_group, scored_bid->bid->bid_ad->render_url));
+    k_anon_keys_to_join.push_back(blink::KAnonKeyForAdNameReporting(
+        interest_group, *scored_bid->bid->bid_ad));
     for (const GURL& ad_component : scored_bid->bid->ad_components) {
       k_anon_keys_to_join.push_back(
-          KAnonKeyForAdBid(interest_group, ad_component));
+          blink::KAnonKeyForAdComponentBid(ad_component));
     }
   }
   return base::flat_set<std::string>(std::move(k_anon_keys_to_join));

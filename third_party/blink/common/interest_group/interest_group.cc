@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -317,6 +318,39 @@ bool InterestGroup::IsEqualForTesting(const InterestGroup& other) const {
              other.daily_update_url, other.trusted_bidding_signals_url,
              other.trusted_bidding_signals_keys, other.user_bidding_signals,
              other.ads, other.ad_components, other.ad_sizes, other.size_groups);
+}
+
+std::string KAnonKeyForAdBid(const blink::InterestGroup& group,
+                             const GURL& ad_url) {
+  DCHECK(group.ads);
+  DCHECK(base::Contains(
+      *group.ads, ad_url,
+      [](const blink::InterestGroup::Ad& ad) { return ad.render_url; }))
+      << "No such ad: " << ad_url;
+  DCHECK(group.bidding_url);
+  return KAnonKeyForAdBid(group.owner, group.bidding_url.value_or(GURL()),
+                          ad_url);
+}
+
+std::string KAnonKeyForAdBid(const url::Origin& owner,
+                             const GURL& bidding_url,
+                             const GURL& ad_url) {
+  return "AdBid\n" + owner.GetURL().spec() + '\n' + bidding_url.spec() + '\n' +
+         ad_url.spec();
+}
+
+std::string KAnonKeyForAdComponentBid(const GURL& ad_url) {
+  return "ComponentBid\n" + ad_url.spec();
+}
+
+std::string KAnonKeyForAdNameReporting(const blink::InterestGroup& group,
+                                       const blink::InterestGroup::Ad& ad) {
+  DCHECK(group.ads);
+  DCHECK(base::Contains(*group.ads, ad)) << "No such ad: " << ad.render_url;
+  DCHECK(group.bidding_url);
+  return "NameReport\n" + group.owner.GetURL().spec() + '\n' +
+         group.bidding_url.value_or(GURL()).spec() + '\n' +
+         ad.render_url.spec() + '\n' + group.name;
 }
 
 }  // namespace blink

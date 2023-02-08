@@ -30,11 +30,13 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
 
   // This must be called before every time this is used.
   // bidder_worklet_non_shared_params->ads.has_value() must be true.
-  void ReInitialize(base::TimeTicks start,
-                    bool has_top_level_seller_origin,
-                    const mojom::BidderWorkletNonSharedParams*
-                        bidder_worklet_non_shared_params,
-                    bool restrict_to_kanon_ads);
+  void ReInitialize(
+      base::TimeTicks start,
+      bool has_top_level_seller_origin,
+      const mojom::BidderWorkletNonSharedParams*
+          bidder_worklet_non_shared_params,
+      base::RepeatingCallback<bool(const GURL&)> is_ad_excluded,
+      base::RepeatingCallback<bool(const GURL&)> is_component_ad_excluded);
 
   void FillInGlobalTemplate(
       v8::Local<v8::ObjectTemplate> global_template) override;
@@ -59,7 +61,11 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
 
   raw_ptr<const mojom::BidderWorkletNonSharedParams>
       bidder_worklet_non_shared_params_ = nullptr;
-  bool restrict_to_kanon_ads_ = false;
+
+  // Callbacks set by ReInitialize and cleared by Reset which tell if an ad URL
+  // can be used in a valid bid. Used to check the bid for non-k-anonymous ads.
+  base::RepeatingCallback<bool(const GURL&)> is_ad_excluded_;
+  base::RepeatingCallback<bool(const GURL&)> is_component_ad_excluded_;
 
   mojom::BidderWorkletBidPtr bid_;
 };

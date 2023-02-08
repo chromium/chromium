@@ -117,9 +117,10 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
 
   static bool IsKAnon(const mojom::BidderWorkletNonSharedParams*
                           bidder_worklet_non_shared_params,
-                      const GURL& url);
+                      const std::string& key);
   static bool IsKAnon(const mojom::BidderWorkletNonSharedParams*
                           bidder_worklet_non_shared_params,
+                      const GURL& script_source_url,
                       const mojom::BidderWorkletBidPtr& bid);
 
   // mojom::BidderWorklet implementation:
@@ -405,7 +406,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     // `context_recycler_for_rerun` is permitted to be null, and should only be
     // set if `restrict_to_kanon_ads` is true.
     absl::optional<SingleGenerateBidResult> GenerateSingleBid(
-        const mojom::BidderWorkletNonSharedParamsPtr&
+        const mojom::BidderWorkletNonSharedParams&
             bidder_worklet_non_shared_params,
         const url::Origin& interest_group_join_origin,
         const std::string* auction_signals_json,

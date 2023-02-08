@@ -284,6 +284,11 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
   ContextRecycler context_recycler(helper_.get());
   context_recycler.AddSetBidBindings();
 
+  base::RepeatingCallback<bool(const GURL&)> matches_ad1 = base::BindRepeating(
+      [](const GURL& url) { return url == GURL("https://example.com/ad1"); });
+  base::RepeatingCallback<bool(const GURL&)> ignore_arg_return_false =
+      base::BindRepeating([](const GURL& ignored) { return false; });
+
   {
     ContextRecyclerScope scope(context_recycler);
     mojom::BidderWorkletNonSharedParamsPtr params =
@@ -295,7 +300,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     context_recycler.set_bid_bindings()->ReInitialize(
         base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/false, params.get(),
-        /*restrict_to_kanon_ads=*/false);
+        /*is_ad_excluded=*/ignore_arg_return_false,
+        /*is_component_ad_excluded=*/ignore_arg_return_false);
 
     task_environment_.FastForwardBy(base::Milliseconds(500));
 
@@ -328,7 +334,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     context_recycler.set_bid_bindings()->ReInitialize(
         base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/false, params.get(),
-        /*restrict_to_kanon_ads=*/false);
+        /*is_ad_excluded=*/ignore_arg_return_false,
+        /*is_component_ad_excluded=*/ignore_arg_return_false);
 
     task_environment_.FastForwardBy(base::Milliseconds(500));
 
@@ -365,7 +372,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     context_recycler.set_bid_bindings()->ReInitialize(
         base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/true, params.get(),
-        /*restrict_to_kanon_ads=*/false);
+        /*is_ad_excluded=*/ignore_arg_return_false,
+        /*is_component_ad_excluded=*/ignore_arg_return_false);
 
     task_environment_.FastForwardBy(base::Milliseconds(100));
 
@@ -404,7 +412,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     context_recycler.set_bid_bindings()->ReInitialize(
         base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/true, params.get(),
-        /*restrict_to_kanon_ads=*/false);
+        /*is_ad_excluded=*/ignore_arg_return_false,
+        /*is_component_ad_excluded=*/ignore_arg_return_false);
 
     task_environment_.FastForwardBy(base::Milliseconds(200));
 
@@ -455,7 +464,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     context_recycler.set_bid_bindings()->ReInitialize(
         base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/false, params.get(),
-        /*restrict_to_kanon_ads=*/false);
+        /*is_ad_excluded=*/ignore_arg_return_false,
+        /*is_component_ad_excluded=*/ignore_arg_return_false);
 
     task_environment_.FastForwardBy(base::Milliseconds(200));
 
@@ -484,7 +494,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
   }
 
   {
-    // restrict_to_kanon_ads = true affects checking.
+    // use ad filter function - ads excluded.
     ContextRecyclerScope scope(context_recycler);
     mojom::BidderWorkletNonSharedParamsPtr params =
         mojom::BidderWorkletNonSharedParams::New();
@@ -495,7 +505,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     context_recycler.set_bid_bindings()->ReInitialize(
         base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/false, params.get(),
-        /*restrict_to_kanon_ads=*/true);
+        /*is_ad_excluded=*/matches_ad1,
+        /*is_component_ad_excluded=*/matches_ad1);
 
     task_environment_.FastForwardBy(base::Milliseconds(500));
 
@@ -515,24 +526,24 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
   }
 
   {
-    // restrict_to_kanon_ads = true affects checking, with ad permitted.
+    // use ad filter function - ads permitted.
     ContextRecyclerScope scope(context_recycler);
     mojom::BidderWorkletNonSharedParamsPtr params =
         mojom::BidderWorkletNonSharedParams::New();
     params->ads.emplace();
-    params->ads.value().emplace_back(GURL("https://example.com/ad1"),
+    params->ads.value().emplace_back(GURL("https://example.com/ad2"),
                                      absl::nullopt);
-    params->ads_kanon.emplace(GURL("https://example.com/ad1"), true);
 
     context_recycler.set_bid_bindings()->ReInitialize(
         base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/false, params.get(),
-        /*restrict_to_kanon_ads=*/true);
+        /*is_ad_excluded=*/matches_ad1,
+        /*is_component_ad_excluded=*/matches_ad1);
 
     task_environment_.FastForwardBy(base::Milliseconds(500));
 
     gin::Dictionary bid_dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    bid_dict.Set("render", std::string("https://example.com/ad1"));
+    bid_dict.Set("render", std::string("https://example.com/ad2"));
     bid_dict.Set("bid", 10.0);
 
     std::vector<std::string> error_msgs;
@@ -543,7 +554,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     ASSERT_TRUE(context_recycler.set_bid_bindings()->has_bid());
     mojom::BidderWorkletBidPtr bid =
         context_recycler.set_bid_bindings()->TakeBid();
-    EXPECT_EQ("https://example.com/ad1", bid->render_url);
+    EXPECT_EQ("https://example.com/ad2", bid->render_url);
     EXPECT_EQ(10.0, bid->bid);
     EXPECT_EQ(base::Milliseconds(500), bid->bid_duration);
   }

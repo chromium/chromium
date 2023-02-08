@@ -12,41 +12,16 @@
 #include "content/public/browser/k_anonymity_service_delegate.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 
-class GURL;
-
 namespace content {
 class InterestGroupManagerImpl;
 
-// Calculates the k-anonymity key for an interest group from the owner and name
-std::string CONTENT_EXPORT KAnonKeyFor(const url::Origin& owner,
-                                       const std::string& name);
-
-// Calculates the k-anonymity key for an Ad that is used for determining if an
-// ad is k-anonymous for the purposes of bidding and winning an auction.
-// We want to avoid providing too much identifying information for event level
-// reporting in reportWin. This key is used to check that providing the interest
-// group owner and ad URL to the bidding script doesn't identify the user. It is
-// used to gate whether an ad can participate in a FLEDGE auction because event
-// level reports need to include both the owner and ad URL for the purposes of
-// an auction.
-// TODO(behamilton): Use a different key for ad components.
-std::string CONTENT_EXPORT KAnonKeyForAdBid(const blink::InterestGroup& group,
-                                            const GURL& ad_url);
-
-// Given a key computed by KAnonKeyForAdBid, returns the `render_url` of the
-// ad that was used to produce it.
-GURL CONTENT_EXPORT RenderUrlFromKAnonKeyForAdBid(const std::string& key);
-
-// Calculates the k-anonymity key for reporting the interest group name in
-// reportWin along with the given Ad.
-// We want to avoid providing too much identifying information for event level
-// reporting in reportWin. This key is used to check if including the interest
-// group name along with the interest group owner and ad URL would make the user
-// too identifiable. If this key is not k-anonymous then we do not provide the
-// interest group name to reportWin.
-std::string CONTENT_EXPORT
-KAnonKeyForAdNameReporting(const blink::InterestGroup& group,
-                           const blink::InterestGroup::Ad& ad);
+// Returns true if the k-anonymity data indicates that the k-anonymity key
+// `data.key` should be considered k-anonymous at time `now`. To be k-anonymous
+// `data.is_k_anonymous` must be true and `data.last_updated` must be less than
+// 7 days ago.
+bool CONTENT_EXPORT
+IsKAnonymous(const StorageInterestGroup::KAnonymityData& data,
+             const base::Time now);
 
 // Manages k-anonymity updates. Checks last updated times in the database
 // to limit updates (joins and queries) to once per day. Called by the

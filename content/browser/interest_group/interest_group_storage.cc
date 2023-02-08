@@ -1926,10 +1926,11 @@ absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
     if (db_interest_group.interest_group.ads) {
       for (auto& ad : db_interest_group.interest_group.ads.value()) {
         absl::optional<StorageInterestGroup::KAnonymityData> ad_kanon;
-        if (!DoGetKAnonymity(db,
-                             KAnonKeyForAdBid(db_interest_group.interest_group,
-                                              ad.render_url),
-                             ad_kanon)) {
+        if (!DoGetKAnonymity(
+                db,
+                blink::KAnonKeyForAdBid(db_interest_group.interest_group,
+                                        ad.render_url),
+                ad_kanon)) {
           return absl::nullopt;
         }
         if (!ad_kanon)
@@ -1939,7 +1940,7 @@ absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
 
         absl::optional<StorageInterestGroup::KAnonymityData> ad_name_kanon;
         if (!DoGetKAnonymity(db,
-                             KAnonKeyForAdNameReporting(
+                             blink::KAnonKeyForAdNameReporting(
                                  db_interest_group.interest_group, ad),
                              ad_name_kanon)) {
           return absl::nullopt;
@@ -1954,16 +1955,14 @@ absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
       for (auto& ad : db_interest_group.interest_group.ad_components.value()) {
         absl::optional<StorageInterestGroup::KAnonymityData> ad_kanon;
         if (!DoGetKAnonymity(db,
-                             KAnonKeyForAdBid(db_interest_group.interest_group,
-                                              ad.render_url),
+                             blink::KAnonKeyForAdComponentBid(ad.render_url),
                              ad_kanon)) {
           return absl::nullopt;
         }
         if (!ad_kanon)
           continue;
-        db_interest_group.bidding_ads_kanon.push_back(
+        db_interest_group.component_ads_kanon.push_back(
             std::move(ad_kanon).value());
-        // Component ads are not used in reporting.
       }
     }
   }

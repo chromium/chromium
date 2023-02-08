@@ -202,6 +202,38 @@ struct InterestGroupKey {
 // auction.
 using InterestGroupSet = std::set<InterestGroupKey>;
 
+// Calculates the k-anonymity key for an Ad that is used for determining if an
+// ad is k-anonymous for the purposes of bidding and winning an auction.
+// We want to avoid providing too much identifying information for event level
+// reporting in reportWin. This key is used to check that providing the interest
+// group owner and ad URL to the bidding script doesn't identify the user. It is
+// used to gate whether an ad can participate in a FLEDGE auction because event
+// level reports need to include both the owner and ad URL for the purposes of
+// an auction.
+std::string BLINK_COMMON_EXPORT KAnonKeyForAdBid(const InterestGroup& group,
+                                                 const GURL& ad_url);
+std::string BLINK_COMMON_EXPORT KAnonKeyForAdBid(const url::Origin& owner,
+                                                 const GURL& bidding_url,
+                                                 const GURL& ad_url);
+
+// Calculates the k-anonymity key for an ad component that is used for
+// determining if an ad component is k-anonymous for the purposes of bidding and
+// winning an auction. Since ad components are not provided to reporting, we
+// only are concerned with micro-targetting. This means we can just use the ad
+// url as the k-anonymity key.
+std::string BLINK_COMMON_EXPORT KAnonKeyForAdComponentBid(const GURL& ad_url);
+
+// Calculates the k-anonymity key for reporting the interest group name in
+// reportWin along with the given Ad.
+// We want to avoid providing too much identifying information for event level
+// reporting in reportWin. This key is used to check if including the interest
+// group name along with the interest group owner and ad URL would make the user
+// too identifiable. If this key is not k-anonymous then we do not provide the
+// interest group name to reportWin.
+std::string BLINK_COMMON_EXPORT
+KAnonKeyForAdNameReporting(const InterestGroup& group,
+                           const InterestGroup::Ad& ad);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_INTEREST_GROUP_INTEREST_GROUP_H_
