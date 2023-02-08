@@ -2272,6 +2272,9 @@ HitTestLayerRectList* Internals::touchEventTargetLayerRects(
   document->View()->UpdateAllLifecyclePhasesForTest();
 
   auto* hit_test_rects = MakeGarbageCollected<HitTestLayerRectList>();
+  if (!document->View()->RootCcLayer()) {
+    return hit_test_rects;
+  }
   for (const auto& layer : document->View()->RootCcLayer()->children()) {
     const cc::TouchActionRegion& touch_action_region =
         layer->touch_action_region();
