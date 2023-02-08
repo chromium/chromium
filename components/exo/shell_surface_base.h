@@ -311,6 +311,9 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // ui::AcceleratorTarget:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
+  // SurfaceTreeHost:
+  void SetRootSurface(Surface* root_surface) override;
+
   bool frame_enabled() const {
     return frame_type_ != SurfaceFrameType::NONE &&
            frame_type_ != SurfaceFrameType::SHADOW;

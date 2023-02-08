@@ -185,12 +185,25 @@ Surface* GetTargetSurfaceForLocatedEvent(
     const ui::LocatedEvent* original_event) {
   aura::Window* window =
       WMHelper::GetInstance()->GetCaptureClient()->GetCaptureWindow();
+  Surface* root_surface = nullptr;
+
   if (!window) {
-    return Surface::AsSurface(
-        static_cast<aura::Window*>(original_event->target()));
+    auto* target_window = static_cast<aura::Window*>(original_event->target());
+    auto* target_surface = Surface::AsSurface(target_window);
+    if (target_surface) {
+      return target_surface;
+    }
+    // The target can be a window of the shell surface, if it was
+    // capture but released during event dispatching.
+    root_surface = GetShellRootSurface(target_window);
+    if (!root_surface) {
+      return nullptr;
+    }
+    window = target_window;
+  } else {
+    root_surface = GetShellRootSurface(window);
   }
 
-  Surface* root_surface = GetShellRootSurface(window);
   // Skip if the event is captured by non exo windows.
   if (!root_surface) {
     auto* widget = views::Widget::GetTopLevelWidgetForNativeView(window);
@@ -213,7 +226,6 @@ Surface* GetTargetSurfaceForLocatedEvent(
   // search.
   auto cloned = original_event->Clone();
   ui::LocatedEvent* event = cloned->AsLocatedEvent();
-
   while (true) {
     gfx::PointF location_in_target_f = event->location_f();
     gfx::Point location_in_target = event->location();

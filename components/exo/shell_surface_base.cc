@@ -1351,6 +1351,15 @@ bool ShellSurfaceBase::AcceleratorPressed(const ui::Accelerator& accelerator) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// SurfaceTreeHost:
+void ShellSurfaceBase::SetRootSurface(Surface* root_surface) {
+  SurfaceTreeHost::SetRootSurface(root_surface);
+  if (widget_) {
+    SetShellRootSurface(widget_->GetNativeWindow(), root_surface);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // ShellSurfaceBase, protected:
 
 void ShellSurfaceBase::CreateShellSurfaceWidget(
