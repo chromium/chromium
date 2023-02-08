@@ -836,9 +836,8 @@ bool FirstPartySetsDatabase::MigrateToVersion3() {
   if (!db_->Execute(kRenamePolicyConfigurationsTableSql))
     return false;
 
-  meta_table_.SetVersionNumber(3);
-  meta_table_.SetCompatibleVersionNumber(3);
-  return true;
+  return meta_table_.SetVersionNumber(3) &&
+         meta_table_.SetCompatibleVersionNumber(3);
 }
 
 bool FirstPartySetsDatabase::MigrateToVersion4() {
@@ -862,20 +861,15 @@ bool FirstPartySetsDatabase::MigrateToVersion4() {
                      "FROM manual_sets") &&
                  db_->Execute("DROP TABLE manual_sets");
 
-  if (!success)
-    return false;
-
-  meta_table_.SetVersionNumber(4);
-  meta_table_.SetCompatibleVersionNumber(4);
-  return true;
+  return success && meta_table_.SetVersionNumber(4) &&
+         meta_table_.SetCompatibleVersionNumber(4);
 }
 
 bool FirstPartySetsDatabase::MigrateToVersion5() {
   DCHECK(db_->HasActiveTransactions());
   // Only updates the versions in the meta table for fixing crbug.com/1409117.
-  meta_table_.SetVersionNumber(5);
-  meta_table_.SetCompatibleVersionNumber(5);
-  return true;
+  return meta_table_.SetVersionNumber(5) &&
+         meta_table_.SetCompatibleVersionNumber(5);
 }
 
 void FirstPartySetsDatabase::IncreaseRunCount() {
