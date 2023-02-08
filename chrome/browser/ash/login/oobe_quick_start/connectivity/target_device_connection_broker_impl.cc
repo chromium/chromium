@@ -34,11 +34,10 @@ constexpr uint8_t kEndpointInfoVersion = 1;
 // http://google3/logs/proto/wireless/android/smartsetup/smart_setup_extension.proto;l=876;rcl=458110957
 constexpr uint8_t kEndpointInfoVerificationStyle = 0;
 
-// Device Type for Smart Setup, e.g. phone, tablet.
-// 0 = "Unknown", since there isn't yet a Chromebook option.
-// Values come from this enum:
-// http://google3/logs/proto/wireless/android/smartsetup/smart_setup_extension.proto;l=961;rcl=458110957
-constexpr uint8_t kEndpointInfoDeviceType = 0;
+// Device Type for Smart Setup, e.g. phone, tablet.  8 = "Chrome"
+// Values come from the DiscoveryEvent DeviceType enum:
+// http://google3/logs/proto/wireless/android/smartsetup/smart_setup_extension.proto;l=985;rcl=507029311
+constexpr uint8_t kEndpointInfoDeviceType = 8;
 
 // Boolean field indicating to Smart Setup whether the client is Quick Start.
 constexpr uint8_t kEndpointInfoIsQuickStart = 1;

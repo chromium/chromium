@@ -27,6 +27,8 @@ namespace ash::quick_start {
 namespace {
 
 constexpr size_t kMaxEndpointInfoDisplayNameLength = 18;
+constexpr uint8_t kEndpointInfoVerificationStyle = 0u;
+constexpr uint8_t kEndpointInfoDeviceType = 8u;
 
 // 10 random bytes to use as the RandomSessionId. The corresponding display name
 // code is (0x135e % 1000) = 958.
@@ -485,12 +487,12 @@ TEST_P(TargetDeviceConnectionBrokerImplEndpointInfoTest, GenerateEndpointInfo) {
 
   ASSERT_GT(endpoint_info.size(), i);
   uint8_t verification_style = endpoint_info[i];
-  EXPECT_EQ(0u, verification_style);
+  EXPECT_EQ(kEndpointInfoVerificationStyle, verification_style);
   i++;
 
   ASSERT_GT(endpoint_info.size(), i);
   uint8_t device_type = endpoint_info[i];
-  EXPECT_EQ(0u, device_type);
+  EXPECT_EQ(kEndpointInfoDeviceType, device_type);
   i++;
 
   // Parse the fixed-length RandomSessionId.
