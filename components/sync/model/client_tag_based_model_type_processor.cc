@@ -1232,15 +1232,11 @@ bool ClientTagBasedModelTypeProcessor::CheckForInvalidPersistedMetadata(
     base::UmaHistogramEnumeration(
         "Sync.ModelTypeEntityMetadataWithoutInitialSync",
         ModelTypeHistogramValue(type_));
-    // In older versions of the binary, commit-only types did not persist
-    // initial_sync_done(). So this branch can legitimately be exercised for
-    // commit-only types exactly once as an upgrade flow.
-    if (!CommitOnlyTypes().Has(type_)) {
-      ClearAllProvidedMetadataAndResetState(metadata_map);
-      // Not having `entity_tracker_` results in doing the initial sync again.
-      DCHECK(!entity_tracker_);
-      return false;
-    }
+
+    ClearAllProvidedMetadataAndResetState(metadata_map);
+    // Not having `entity_tracker_` results in doing the initial sync again.
+    DCHECK(!entity_tracker_);
+    return false;
   }
 
   // Check if ClearMetadataWhileStopped() was called before ModelReadyToSync().
