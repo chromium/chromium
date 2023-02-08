@@ -644,8 +644,6 @@ component("base") {
     "scoped_environment_variable_override.h",
     "scoped_generic.h",
     "scoped_multi_source_observation.h",
-    "scoped_native_library.cc",
-    "scoped_native_library.h",
     "scoped_observation.h",
     "scoped_observation_traits.h",
     "scoped_observation_traits_internal.h",
@@ -1011,17 +1009,12 @@ component("base") {
       "file_descriptor_posix.cc",
       "file_descriptor_posix.h",
       "files/dir_reader_posix.h",
-      "files/file_descriptor_watcher_posix.cc",
-      "files/file_descriptor_watcher_posix.h",
-      "files/file_enumerator_posix.cc",
       "files/file_posix.cc",
-      "files/file_util_posix.cc",
       "files/memory_mapped_file_posix.cc",
       "memory/madv_free_discardable_memory_allocator_posix.cc",
       "memory/madv_free_discardable_memory_allocator_posix.h",
       "memory/madv_free_discardable_memory_posix.cc",
       "memory/madv_free_discardable_memory_posix.h",
-      "memory/page_size_posix.cc",
       "message_loop/watchable_io_message_pump_posix.cc",
       "message_loop/watchable_io_message_pump_posix.h",
       "native_library_posix.cc",
@@ -1032,15 +1025,11 @@ component("base") {
       "posix/global_descriptors.h",
       "posix/safe_strerror.cc",
       "posix/safe_strerror.h",
-      "posix/unix_domain_socket.cc",
-      "posix/unix_domain_socket.h",
       "process/kill_posix.cc",
-      "process/launch_posix.cc",
       "process/process_handle_posix.cc",
       "process/process_metrics_posix.cc",
       "process/process_posix.cc",
       "profiler/module_cache_posix.cc",
-      "rand_util_posix.cc",
       "strings/string_util_posix.h",
       "strings/sys_string_conversions_posix.cc",
       "sync_socket_posix.cc",
@@ -1048,25 +1037,12 @@ component("base") {
       "synchronization/lock_impl_posix.cc",
       "synchronization/waitable_event_posix.cc",
       "synchronization/waitable_event_watcher_posix.cc",
-      "system/sys_info_posix.cc",
       "threading/platform_thread_internal_posix.cc",
       "threading/platform_thread_internal_posix.h",
       "threading/platform_thread_posix.cc",
       "threading/thread_local_storage_posix.cc",
       "timer/hi_res_timer_manager_posix.cc",
     ]
-
-    if (!is_nacl && !is_apple) {
-      sources += [
-        "profiler/stack_base_address_posix.cc",
-        "profiler/stack_base_address_posix.h",
-        "profiler/stack_copier_signal.cc",
-        "profiler/stack_copier_signal.h",
-        "profiler/stack_sampler_posix.cc",
-        "profiler/thread_delegate_posix.cc",
-        "profiler/thread_delegate_posix.h",
-      ]
-    }
   }
 
   if (is_linux || is_chromeos) {
@@ -1246,10 +1222,7 @@ component("base") {
 
   # Android.
   if (is_android) {
-    sources -= [
-      "debug/stack_trace_posix.cc",
-      "profiler/stack_sampler_posix.cc",
-    ]
+    sources -= [ "debug/stack_trace_posix.cc" ]
     sources += [
       "android/android_hardware_buffer_compat.cc",
       "android/android_hardware_buffer_compat.h",
@@ -1464,12 +1437,8 @@ component("base") {
       "file_descriptor_posix.cc",
       "file_descriptor_posix.h",
       "files/dir_reader_posix.h",
-      "files/file_descriptor_watcher_posix.cc",
-      "files/file_descriptor_watcher_posix.h",
-      "files/file_enumerator_posix.cc",
       "files/file_posix.cc",
       "files/file_util_fuchsia.cc",
-      "files/file_util_posix.cc",
       "files/memory_mapped_file_posix.cc",
       "fuchsia/default_job.cc",
       "fuchsia/default_job.h",
@@ -1500,7 +1469,6 @@ component("base") {
       "fuchsia/startup_context.h",
       "fuchsia/system_info.cc",
       "fuchsia/system_info.h",
-      "memory/page_size_posix.cc",
       "memory/platform_shared_memory_mapper_fuchsia.cc",
       "memory/platform_shared_memory_region_fuchsia.cc",
       "message_loop/message_pump_fuchsia.cc",
@@ -1524,7 +1492,6 @@ component("base") {
       "process/process_metrics_fuchsia.cc",
       "process/process_metrics_posix.cc",
       "profiler/module_cache_posix.cc",
-      "profiler/stack_sampler_posix.cc",
       "rand_util_fuchsia.cc",
       "strings/string_util_posix.h",
       "strings/sys_string_conversions_posix.cc",
@@ -1618,7 +1585,6 @@ component("base") {
       "files/file_path_watcher_stub.cc",
       "memory/page_size_nacl.cc",
       "process/process_stubs.cc",
-      "profiler/stack_sampler_posix.cc",
       "sync_socket_nacl.cc",
       "system/sys_info_nacl.cc",
       "threading/platform_thread_linux.cc",
@@ -1630,14 +1596,10 @@ component("base") {
       "debug/crash_logging.h",
       "debug/stack_trace.cc",
       "debug/stack_trace_posix.cc",
-      "files/file_descriptor_watcher_posix.cc",
-      "files/file_descriptor_watcher_posix.h",
       "files/file_enumerator.cc",
-      "files/file_enumerator_posix.cc",
       "files/file_proxy.cc",
       "files/file_util.cc",
       "files/file_util.h",
-      "files/file_util_posix.cc",
       "files/important_file_writer.cc",
       "files/important_file_writer.h",
       "files/important_file_writer_cleaner.cc",
@@ -1655,17 +1617,14 @@ component("base") {
       "memory/madv_free_discardable_memory_allocator_posix.h",
       "memory/madv_free_discardable_memory_posix.cc",
       "memory/madv_free_discardable_memory_posix.h",
-      "memory/page_size_posix.cc",
       "native_library.cc",
       "native_library_posix.cc",
       "path_service.cc",
-      "posix/unix_domain_socket.cc",
       "process/kill.cc",
       "process/kill.h",
       "process/kill_posix.cc",
       "process/launch.cc",
       "process/launch.h",
-      "process/launch_posix.cc",
       "process/memory.cc",
       "process/memory.h",
       "process/process_iterator.cc",
@@ -1674,11 +1633,8 @@ component("base") {
       "process/process_metrics_posix.cc",
       "process/process_posix.cc",
       "profiler/module_cache_posix.cc",
-      "rand_util_posix.cc",
-      "scoped_native_library.cc",
       "sync_socket_posix.cc",
       "system/sys_info.cc",
-      "system/sys_info_posix.cc",
       "task/thread_pool/initialization_util.cc",
       "task/thread_pool/initialization_util.h",
     ]
@@ -1695,6 +1651,8 @@ component("base") {
       "base_paths.h",
       "metrics/persistent_histogram_storage.cc",
       "metrics/persistent_histogram_storage.h",
+      "scoped_native_library.cc",
+      "scoped_native_library.h",
     ]
 
     if (is_win) {
@@ -1719,7 +1677,37 @@ component("base") {
     }
 
     if (is_posix) {
-      sources += [ "base_paths_posix.h" ]
+      sources += [
+        "base_paths_posix.h",
+        "posix/unix_domain_socket.cc",
+        "posix/unix_domain_socket.h",
+        "rand_util_posix.cc",
+        "system/sys_info_posix.cc",
+      ]
+    }
+
+    if (is_posix || is_fuchsia) {
+      sources += [
+        "files/file_descriptor_watcher_posix.cc",
+        "files/file_descriptor_watcher_posix.h",
+        "files/file_enumerator_posix.cc",
+        "files/file_util_posix.cc",
+        "memory/page_size_posix.cc",
+      ]
+    }
+
+    if (is_posix && !is_apple) {
+      sources += [
+        "posix/can_lower_nice_to.cc",
+        "posix/can_lower_nice_to.h",
+        "process/launch_posix.cc",
+        "profiler/stack_base_address_posix.cc",
+        "profiler/stack_base_address_posix.h",
+        "profiler/stack_copier_signal.cc",
+        "profiler/stack_copier_signal.h",
+        "profiler/thread_delegate_posix.cc",
+        "profiler/thread_delegate_posix.h",
+      ]
     }
 
     if (is_linux || is_chromeos) {
@@ -1981,7 +1969,6 @@ component("base") {
 
   # Desktop Mac.
   if (is_mac) {
-    sources -= [ "process/launch_posix.cc" ]
     sources += [
       "allocator/partition_allocator/shim/allocator_interception_mac.h",
       "allocator/partition_allocator/shim/allocator_interception_mac.mm",
@@ -2168,7 +2155,6 @@ component("base") {
       "process/kill_posix.cc",
       "process/launch.cc",
       "process/launch.h",
-      "process/launch_posix.cc",
       "process/memory.cc",
       "process/memory.h",
       "process/process_iterator.cc",
@@ -2338,11 +2324,8 @@ component("base") {
     }
   }
 
-  if (is_posix && !is_apple && !is_nacl) {
-    sources += [
-      "posix/can_lower_nice_to.cc",
-      "posix/can_lower_nice_to.h",
-    ]
+  if ((is_posix && !is_apple && !is_android) || is_fuchsia) {
+    sources += [ "profiler/stack_sampler_posix.cc" ]
   }
 
   if ((is_posix && !is_apple && !is_android && !is_chromeos) || is_fuchsia) {
