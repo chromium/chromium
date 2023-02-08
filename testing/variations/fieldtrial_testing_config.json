@@ -438,6 +438,7 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "enable_bookmarks": "true",
                         "enable_longpress_entry": "true",
                         "enable_share": "true"
                     },
