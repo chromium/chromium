@@ -176,19 +176,27 @@ public class PartialCustomTabDisplayManager
     }
 
     private @PartialCustomTabType int calculatePartialCustomTabType() {
-        @PartialCustomTabType
-        int type;
+        int displayWidthDp = mVersionCompat.getDisplayWidthDp();
 
-        // TODO: This is just placeholder logic used for now just to create a PCCT as a bottom sheet
-        // when we are in landscape and side-sheet when in portrait. Will be updated to decide based
-        // on breakpoint once that functionality is implemented.
-        if (mVersionCompat.getDisplayHeight() > mVersionCompat.getDisplayWidth()) {
-            type = PartialCustomTabType.BOTTOM_SHEET;
-        } else {
-            type = PartialCustomTabType.SIDE_SHEET;
+        if (mUnclampedInitialWidth == 0 && mUnclampedInitialHeight == 0) {
+            return PartialCustomTabType.FULL_SIZE;
         }
 
-        return type;
+        if (mUnclampedInitialWidth > 0 && mUnclampedInitialHeight > 0) {
+            return displayWidthDp < mBreakPointDp ? PartialCustomTabType.BOTTOM_SHEET
+                                                  : PartialCustomTabType.SIDE_SHEET;
+        }
+
+        if (mUnclampedInitialWidth > 0) {
+            return displayWidthDp < mBreakPointDp ? PartialCustomTabType.FULL_SIZE
+                                                  : PartialCustomTabType.SIDE_SHEET;
+        }
+
+        if (mUnclampedInitialHeight > 0) {
+            return PartialCustomTabType.BOTTOM_SHEET;
+        }
+
+        return PartialCustomTabType.FULL_SIZE; // unreachable
     }
 
     private PartialCustomTabBaseStrategy createSizeStrategy(@PartialCustomTabType int type) {

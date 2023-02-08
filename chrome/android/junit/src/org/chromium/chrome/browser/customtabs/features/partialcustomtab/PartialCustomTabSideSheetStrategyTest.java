@@ -18,6 +18,7 @@ import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.P
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH_LANDSCAPE;
 
+import android.os.Build;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -43,6 +44,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @LooperMode(Mode.PAUSED)
 @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
 public class PartialCustomTabSideSheetStrategyTest {
+    private static final float MINIMAL_WIDTH_RATIO = 0.33f;
     private boolean mFullscreen;
 
     @Rule
@@ -58,6 +60,19 @@ public class PartialCustomTabSideSheetStrategyTest {
                         true, mPCCTTestRule.mHandleStrategyFactory);
         pcct.setMockViewForTesting(mPCCTTestRule.mToolbarView, mPCCTTestRule.mToolbarCoordinator);
         return pcct;
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.Q)
+    public void create_sideSheetStrategy_Q() {
+        mPCCTTestRule.configLandscapeMode();
+        PartialCustomTabSideSheetStrategy strategy = createPcctSideSheetStrategy(2000);
+
+        assertEquals("Side-Sheet PCCT should be created",
+                PartialCustomTabBaseStrategy.PartialCustomTabType.SIDE_SHEET,
+                strategy.getStrategyType());
+        assertEquals(
+                "Side-sheet has wrong width", 2000, mPCCTTestRule.mAttributeResults.get(0).width);
     }
 
     @Test
@@ -79,8 +94,8 @@ public class PartialCustomTabSideSheetStrategyTest {
         mPCCTTestRule.verifyWindowFlagsSet();
 
         assertTabIsAtFullLandscapeHeight();
-        assertEquals(
-                "Side-sheet has wrong width", 5000, mPCCTTestRule.mAttributeResults.get(0).width);
+        assertEquals("Side-sheet has wrong width", DEVICE_WIDTH_LANDSCAPE,
+                mPCCTTestRule.mAttributeResults.get(0).width);
     }
 
     @Test
@@ -90,8 +105,9 @@ public class PartialCustomTabSideSheetStrategyTest {
         mPCCTTestRule.verifyWindowFlagsSet();
 
         assertTabIsAtFullLandscapeHeight();
-        assertEquals(
-                "Side-sheet has wrong width", 100, mPCCTTestRule.mAttributeResults.get(0).width);
+        assertEquals("Side-sheet has wrong width",
+                (int) (DEVICE_WIDTH_LANDSCAPE * MINIMAL_WIDTH_RATIO),
+                mPCCTTestRule.mAttributeResults.get(0).width);
     }
 
     @Test

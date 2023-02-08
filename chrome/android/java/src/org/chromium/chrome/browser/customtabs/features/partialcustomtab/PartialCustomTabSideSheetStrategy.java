@@ -21,6 +21,7 @@ import android.view.animation.AccelerateInterpolator;
 
 import androidx.annotation.Px;
 
+import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
@@ -31,6 +32,7 @@ import org.chromium.chrome.browser.tab.Tab;
  * class should be owned by the CustomTabActivity.
  */
 public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrategy {
+    private static final float MINIMAL_WIDTH_RATIO = 0.33f;
     private final @Px int mUnclampedInitialWidth;
 
     private ValueAnimator mCloseAnimator;
@@ -42,9 +44,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         super(activity, onResizedCallback, fullscreenManager, isTablet, interactWithBackground,
                 handleStrategyFactory);
 
-        // TODO(crbug.com/1406104) Implement logic for correct side sheet width
-        mUnclampedInitialWidth =
-                initialWidth == 0 ? mVersionCompat.getDisplayWidth() / 2 : initialWidth;
+        mUnclampedInitialWidth = initialWidth;
         mPositionUpdater = this::updatePosition;
 
         setupCloseAnimation();
@@ -171,9 +171,10 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     }
 
     private void positionOnWindow() {
+        int width = calculateWidth(mUnclampedInitialWidth);
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
         attrs.height = mHeight;
-        attrs.width = mUnclampedInitialWidth;
+        attrs.width = width;
 
         attrs.y = mStatusbarHeight;
         attrs.x = mVersionCompat.getDisplayWidth();
@@ -203,5 +204,10 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             var attrs = mActivity.getWindow().getAttributes();
             mOnResizedCallback.onResized(attrs.height, attrs.width);
         });
+    }
+
+    private int calculateWidth(int unclampedWidth) {
+        return MathUtils.clamp(unclampedWidth, mVersionCompat.getDisplayWidth(),
+                (int) (mVersionCompat.getDisplayWidth() * MINIMAL_WIDTH_RATIO));
     }
 }

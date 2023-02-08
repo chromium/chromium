@@ -33,7 +33,8 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
             CustomTabsConnection connection, @Nullable CustomTabsSessionToken session,
             ActivityLifecycleDispatcher lifecycleDispatcher, FullscreenManager fullscreenManager,
             boolean isTablet, boolean interactWithBackground) {
-        if (initialHeight <= 0) {
+        if (initialHeight <= 0
+                && (!ChromeFeatureList.sCctResizableSideSheet.isEnabled() || initialWidth <= 0)) {
             return new CustomTabHeightStrategy();
         }
 

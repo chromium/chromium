@@ -47,6 +47,9 @@ abstract class PartialCustomTabVersionCompat {
     /** Returns display width */
     abstract @Px int getDisplayWidth();
 
+    /** Returns display width in dp */
+    abstract int getDisplayWidthDp();
+
     /** Returns the status bar height */
     abstract @Px int getStatusbarHeight();
 
@@ -85,6 +88,11 @@ abstract class PartialCustomTabVersionCompat {
         @Px
         int getDisplayWidth() {
             return mActivity.getWindowManager().getCurrentWindowMetrics().getBounds().width();
+        }
+
+        @Override
+        int getDisplayWidthDp() {
+            return (int) (getDisplayWidth() / mActivity.getResources().getDisplayMetrics().density);
         }
 
         @Override
@@ -175,34 +183,24 @@ abstract class PartialCustomTabVersionCompat {
         // androidx.window.java.WindowInfoRepoJavaAdapter once the androidx API get finalized and is
         // available in Chromium to use #getCurrentWindowMetrics()/#currentWindowMetrics() to get
         // the height of the display our Window currently in.
-        //
-        // The #getRealMetrics() method will give the physical size of the screen, which is
-        // generally fine when the app is not in multi-window mode and #getMetrics() will give the
-        // height excludes the decor views, so not suitable for our case. But in multi-window mode,
-        // we have no much choice, the closest way is to use #getMetrics() method, because we need
-        // to handle rotation.
         @Override
         @Px
         int getDisplayHeight() {
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            if (MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity)) {
-                mActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-            } else {
-                mActivity.getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
-            }
+            DisplayMetrics displayMetrics = getDisplayMetrics();
             return displayMetrics.heightPixels;
         }
 
         @Override
         @Px
         int getDisplayWidth() {
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            if (MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity)) {
-                mActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-            } else {
-                mActivity.getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
-            }
+            DisplayMetrics displayMetrics = getDisplayMetrics();
             return displayMetrics.widthPixels;
+        }
+
+        @Override
+        int getDisplayWidthDp() {
+            DisplayMetrics displayMetrics = getDisplayMetrics();
+            return (int) (getDisplayWidth() / displayMetrics.density);
         }
 
         @Override
@@ -277,6 +275,24 @@ abstract class PartialCustomTabVersionCompat {
                 return true;
             }
             return false; // adding or removing did not happen
+        }
+
+        // Determines how to gather display metrics depending if in multi-window mode or not
+        //
+        // The #getRealMetrics() method will give the physical size of the screen, which is
+        // generally fine when the app is not in multi-window mode and #getMetrics() will give the
+        // height excluding the decor views, so not suitable for our case. But in multi-window mode,
+        // we do not have much choice, the closest way is to use #getMetrics() method, because we
+        // need to handle rotation.
+        private DisplayMetrics getDisplayMetrics() {
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            if (MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity)) {
+                mActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            } else {
+                mActivity.getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
+            }
+
+            return displayMetrics;
         }
     }
 }

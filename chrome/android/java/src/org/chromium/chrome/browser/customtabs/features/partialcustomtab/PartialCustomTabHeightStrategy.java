@@ -70,6 +70,7 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
      * display height.
      */
     private static final float EXTRA_HEIGHT_RATIO = 0.1f;
+    private static final int BOTTOM_SHEET_MAX_WIDTH_DP = 900;
     private static final int SPINNER_FADEIN_DURATION_MS = 100;
     private static final int SPINNER_FADEOUT_DURATION_MS = 400;
     private static final int NAVBAR_BUTTON_HIDE_SHOW_DELAY_MS = 150;
@@ -236,9 +237,7 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
         if (isFullscreen() || mActivity.findViewById(android.R.id.content) == null) return;
 
         initializeHeight();
-        if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
-            positionAtWidth(mVersionCompat.getDisplayWidth());
-        }
+        positionAtWidth(mVersionCompat.getDisplayWidth());
         updateShadowOffset();
         maybeInvokeResizeCallback();
         if (!isFixedHeight()) mRestoreAfterFindPage = false;
@@ -393,7 +392,13 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
     }
 
     private void positionAtWidth(int width) {
+        if (!ChromeFeatureList.sCctResizableSideSheet.isEnabled()) return;
+
+        int density = (int) (mActivity.getResources().getDisplayMetrics().density);
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
+        if (width / density > BOTTOM_SHEET_MAX_WIDTH_DP) {
+            width = BOTTOM_SHEET_MAX_WIDTH_DP * density;
+        }
         attrs.width = width;
         mActivity.getWindow().setAttributes(attrs);
     }

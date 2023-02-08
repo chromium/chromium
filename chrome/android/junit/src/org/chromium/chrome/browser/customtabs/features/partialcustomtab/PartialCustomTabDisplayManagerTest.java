@@ -43,8 +43,13 @@ public class PartialCustomTabDisplayManagerTest {
 
     private PartialCustomTabDisplayManager createPcctDisplayManager(
             @Px int heightPx, @Px int widthPx) {
+        return createPcctDisplayManager(heightPx, widthPx, 1850);
+    }
+
+    private PartialCustomTabDisplayManager createPcctDisplayManager(
+            @Px int heightPx, @Px int widthPx, int breakPointDp) {
         PartialCustomTabDisplayManager displayManager = new PartialCustomTabDisplayManager(
-                mPCCTTestRule.mActivity, heightPx, widthPx, 840, false,
+                mPCCTTestRule.mActivity, heightPx, widthPx, breakPointDp, false,
                 mPCCTTestRule.mOnResizedCallback, mPCCTTestRule.mActivityLifecycleDispatcher,
                 mPCCTTestRule.mFullscreenManager, false, true);
         var sizeStrategyCreator = displayManager.getSizeStrategyCreatorForTesting();
@@ -57,6 +62,48 @@ public class PartialCustomTabDisplayManagerTest {
                 mPCCTTestRule.mCustomTabToolbar, mPCCTTestRule.mHandleStrategyFactory,
                 testSizeStrategyCreator);
         return displayManager;
+    }
+
+    @Test
+    public void create_FullSize_NoFlagsSet() {
+        // TODO(crbug.com/1411917) To be implemented once prerequisite work is completed
+    }
+
+    @Test
+    public void create_SideSheet_WidthSetHeightNot_BelowBreakpoint() {
+        // TODO(crbug.com/1411917) To be implemented once prerequisite work is completed
+    }
+
+    @Test
+    public void create_SideSheet_WidthSetHeightNot_AboveBreakpoint() {
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(0, 2000, 840);
+        assertEquals("Side-Sheet PCCT should be created", PartialCustomTabType.SIDE_SHEET,
+                displayManager.getActiveStrategyType());
+    }
+
+    @Test
+    public void create_SideSheet_AboveBreakPoint() {
+        mPCCTTestRule.configLandscapeMode();
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
+
+        assertEquals("Side-Sheet PCCT should be created", PartialCustomTabType.SIDE_SHEET,
+                displayManager.getActiveStrategyType());
+    }
+
+    @Test
+    public void create_BottomSheet_HeightSetWidthNot() {
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(800, 0);
+        assertEquals("Bottom-Sheet PCCT should be created", PartialCustomTabType.BOTTOM_SHEET,
+                displayManager.getActiveStrategyType());
+    }
+
+    @Test
+    public void create_BottomSheet_BelowBreakPoint() {
+        mPCCTTestRule.configPortraitMode();
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
+
+        assertEquals("Bottom-Sheet PCCT should be created", PartialCustomTabType.BOTTOM_SHEET,
+                displayManager.getActiveStrategyType());
     }
 
     @Test
