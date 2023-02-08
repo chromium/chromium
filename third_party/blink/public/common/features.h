@@ -880,18 +880,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<
 // base url inheritance behavior from https://crbug.com/1356658.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNewBaseUrlInheritanceBehavior);
 
-// When an application calls getDisplayMedia(), a media-picker is displayed
-// to the user, allowing them to share a tab, a window or a screen.
-// * If this flag is enabled, the order is - tabs, windows, screens.
-// * If this flag is disabled, the order is - screens, windows, tabs.
-//
-// If {preferCurrentTab: true} is specified, the order is unaffected.
-//
-// When the new order is used, the default value of selfBrowserSurface
-// is "exclude", unless {preferCurrentTab: true} is specified, in which
-// case the default value is "include".
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNewGetDisplayMediaPickerOrder);
-
 // This function checks both kNewBaseUrlInheritanceBehavior and
 // kIsolateSandboxedIframes and returns true if either is enabled.
 BLINK_COMMON_EXPORT bool IsNewBaseUrlInheritanceBehaviorEnabled();

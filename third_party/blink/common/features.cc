@@ -1577,10 +1577,6 @@ BASE_FEATURE(kNewBaseUrlInheritanceBehavior,
              "NewBaseUrlInheritanceBehavior",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNewGetDisplayMediaPickerOrder,
-             "NewGetDisplayMediaPickerOrder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsNewBaseUrlInheritanceBehaviorEnabled() {
   // The kIsolateSandboxedIframes feature depends on the new base URL behavior,
   // so it enables the new behavior even if kNewBaseUrlInheritanceBehavior

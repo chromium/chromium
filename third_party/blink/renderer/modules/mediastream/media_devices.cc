@@ -548,9 +548,7 @@ ScriptPromise MediaDevices::getDisplayMedia(
   }
 
   MediaStreamConstraints* const constraints = ToMediaStreamConstraints(options);
-  if (base::FeatureList::IsEnabled(
-          blink::features::kNewGetDisplayMediaPickerOrder) &&
-      !options->hasSelfBrowserSurface() &&
+  if (!options->hasSelfBrowserSurface() &&
       (!options->hasPreferCurrentTab() || !options->preferCurrentTab())) {
     constraints->setSelfBrowserSurface("exclude");
   }

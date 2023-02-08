@@ -7524,26 +7524,6 @@
             ]
         }
     ],
-    "NewGetDisplayMediaPickerOrder": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NewGetDisplayMediaPickerOrder"
-                    ]
-                }
-            ]
-        }
-    ],
     "NewRegexForOtpFields": [
         {
             "platforms": [

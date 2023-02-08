@@ -26,7 +26,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
@@ -286,32 +285,13 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(web_contents);
 
-  std::vector<DesktopMediaList::Type> media_types;
+  std::vector<DesktopMediaList::Type> media_types{
+      DesktopMediaList::Type::kWebContents, DesktopMediaList::Type::kWindow,
+      DesktopMediaList::Type::kScreen};
   if (pending_request.request.video_type ==
       blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
-    media_types = {DesktopMediaList::Type::kCurrentTab,
-                   DesktopMediaList::Type::kWebContents,
-                   DesktopMediaList::Type::kWindow,
-                   DesktopMediaList::Type::kScreen};
-  } else if (base::FeatureList::IsEnabled(
-                 blink::features::kNewGetDisplayMediaPickerOrder) ||
-             content::desktop_capture::CanUsePipeWire()) {
-    // 1. The new order is tabs-windows-screens, and is applied so long as the
-    // killswitch is not engaged.
-    //
-    // 2. In order to prevent the PipeWire picker from appearing immediately
-    // (because we start with the first item in the list selected and show the
-    // PipeWire picker when we select a DesktopMediaList::Type it controls),
-    // ensure that we initially select "kWebContents".
-    // The killswitch to revert to the old behavior does not affect PipeWire,
-    // as PipeWire has always used the new order.
-    media_types = {DesktopMediaList::Type::kWebContents,
-                   DesktopMediaList::Type::kWindow,
-                   DesktopMediaList::Type::kScreen};
-  } else {
-    media_types = {DesktopMediaList::Type::kScreen,
-                   DesktopMediaList::Type::kWindow,
-                   DesktopMediaList::Type::kWebContents};
+    media_types.insert(media_types.begin(),
+                       DesktopMediaList::Type::kCurrentTab);
   }
 
   capture_policy::FilterMediaList(media_types, capture_level);
