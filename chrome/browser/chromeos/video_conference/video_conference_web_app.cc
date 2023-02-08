@@ -9,7 +9,7 @@
 #include "base/check.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_app_permissions.h"
+#include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/permission_controller.h"

@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -36,6 +37,8 @@ class VideoConferenceAppServiceClient
       public SessionObserver {
  public:
   using AppIdString = std::string;
+  using VideoConferencePermissions =
+      video_conference::VideoConferencePermissions;
 
   // AppState records information that is required for VideoConferenceManagerAsh
   // to show correct icons.
@@ -45,13 +48,6 @@ class VideoConferenceAppServiceClient
     base::Time last_activity_time;
     bool is_capturing_microphone = false;
     bool is_capturing_camera = false;
-  };
-
-  // Struct holding the granted status of media device permissions used by
-  // videoconferencing apps.
-  struct VideoConferencePermissions {
-    bool has_camera_permission = false;
-    bool has_microphone_permission = false;
   };
 
   VideoConferenceAppServiceClient();

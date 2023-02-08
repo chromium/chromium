@@ -15,6 +15,7 @@
 #include "ash/system/video_conference/video_conference_media_state.h"
 #include "ash/test/test_window_builder.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
+#include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -59,6 +61,9 @@ apps::AppPtr MakeApp(const AppIdString& app_id,
   }
   if (app_id == kAppId2) {
     app->name = kAppName2;
+  }
+  if (base::Contains(::video_conference::kSkipAppIds, app_id)) {
+    app->name = base::StrCat({"AppName-", app_id});
   }
 
   app->publisher_id = app_id;
@@ -696,6 +701,20 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
                          /*is_capturing_microphone=*/true);
   ASSERT_EQ(fake_try_controller->device_used_while_disabled_records().size(),
             2u);
+}
+
+IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
+                       SomeAppsAreNotTracked) {
+  // Install all apps that should be skipped.
+  for (const std::string& app_id : ::video_conference::kSkipAppIds) {
+    InstallApp(app_id);
+    // Accessing mic and camera should trigger tracking except the app_id is
+    // skipped.
+    SetAppCapabilityAccess(app_id, /*is_capturing_camera=*/true,
+                           /*is_capturing_microphone=*/true);
+  }
+
+  EXPECT_TRUE(GetMediaApps().empty());
 }
 
 }  // namespace ash

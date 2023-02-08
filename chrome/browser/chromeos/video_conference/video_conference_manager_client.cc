@@ -13,7 +13,7 @@
 #include "base/logging.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_app_permissions.h"
+#include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_media_listener.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
 #include "content/public/browser/web_contents.h"

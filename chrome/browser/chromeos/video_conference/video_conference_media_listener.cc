@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/video_conference/video_conference_media_listener.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "content/public/browser/web_contents.h"
@@ -103,6 +104,11 @@ VideoConferenceWebApp* VideoConferenceMediaListener::GetOrCreateVcWebApp(
     if (!is_capturing) {
       return nullptr;
     }
+
+    if (ShouldSkipId(contents->GetURL().host())) {
+      return nullptr;
+    }
+
     vc_app = create_vc_web_app_callback_.Run(contents);
   }
 

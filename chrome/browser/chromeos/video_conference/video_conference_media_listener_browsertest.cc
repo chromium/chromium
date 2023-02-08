@@ -7,11 +7,14 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -225,6 +228,39 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
 
   std::move(stop_capture_callback2).Run();
   EXPECT_EQ(media_listener->state().window_capture_count, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
+                       TestExtensionIDShouldNotBeTracked) {
+  std::unique_ptr<FakeVcMediaListener> media_listener =
+      std::make_unique<FakeVcMediaListener>();
+
+  // We can't directly navigate to TestExtensionUrl, so we use this workaround
+  // to set the url afterwards.
+  EXPECT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+  auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(0);
+
+  for (const std::string& app_id : kSkipAppIds) {
+    const GURL url = GURL(base::StrCat(
+        {"chrome-extension://", app_id, "/_generated_background_page.html"}));
+    web_contents->GetController().GetLastCommittedEntry()->SetURL(GURL(url));
+
+    // Verify that the url is indeed changed.
+    EXPECT_EQ(web_contents->GetURL().host(), app_id);
+
+    // Access video.
+    StartCapture(web_contents,
+                 blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
+
+    // Verify no app is tracked.
+    EXPECT_EQ(media_listener->state().window_capture_count, 0);
+
+    // Verify that VideoConferenceWebApp is not created for web_contents.
+    EXPECT_EQ(
+        content::WebContentsUserData<VideoConferenceWebApp>::FromWebContents(
+            web_contents),
+        nullptr);
+  }
 }
 
 }  // namespace video_conference

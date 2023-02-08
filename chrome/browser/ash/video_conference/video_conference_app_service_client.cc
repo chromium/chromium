@@ -25,7 +25,7 @@
 namespace ash {
 namespace {
 VideoConferenceAppServiceClient* g_client_instance = nullptr;
-}
+}  // namespace
 
 VideoConferenceAppServiceClient::VideoConferenceAppServiceClient()
     : client_id_(base::UnguessableToken::Create()),
@@ -148,11 +148,15 @@ void VideoConferenceAppServiceClient::OnCapabilityAccessUpdate(
 
   const bool is_capturing_camera = update.Camera().value_or(false);
   const bool is_capturing_microphone = update.Microphone().value_or(false);
+  const bool is_already_tracked = base::Contains(id_to_app_state_, app_id);
 
   // We only want to start tracking a app if it starts to accessing
   // microphone/camera.
-  if (!is_capturing_camera && !is_capturing_microphone &&
-      !base::Contains(id_to_app_state_, app_id)) {
+  if (!is_capturing_camera && !is_capturing_microphone && !is_already_tracked) {
+    return;
+  }
+
+  if (!is_already_tracked && ::video_conference::ShouldSkipId(app_id)) {
     return;
   }
 
