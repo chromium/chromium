@@ -3654,6 +3654,8 @@
       },
       'mac10.15-wpt-content-shell-fyi-rel': {
         'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
           'mac_10.15',
         ],
         'test_suites': {
@@ -3663,6 +3665,8 @@
       },
       'mac11-wpt-content-shell-fyi-rel': {
         'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
           'mac_11_x64',
         ],
         'test_suites': {
@@ -3672,6 +3676,8 @@
       },
       'mac12-arm64-wpt-content-shell-fyi-rel': {
         'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
           'mac_12_arm64',
         ],
         'test_suites': {
@@ -3681,6 +3687,8 @@
       },
       'mac12-wpt-content-shell-fyi-rel': {
         'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
           'mac_12_x64',
         ],
         'test_suites': {
