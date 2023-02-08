@@ -12,10 +12,13 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/test/values_test_util.h"
+#include "components/media_router/common/providers/cast/channel/cast_channel_enum.h"
+#include "components/media_router/common/providers/cast/channel/cast_channel_metrics.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "components/media_router/common/providers/cast/channel/cast_test_util.h"
 #include "content/public/test/browser_task_environment.h"
@@ -419,6 +422,10 @@ TEST_F(CastMessageHandlerTest, CloseConnectionFromReceiver) {
 }
 
 TEST_F(CastMessageHandlerTest, LaunchSession) {
+  base::HistogramTester histogram_tester;
+  cast_socket_.SetFlags(
+      static_cast<CastChannelFlags>(CastChannelFlag::kSha1DigestAlgorithm) |
+      static_cast<CastChannelFlags>(CastChannelFlag::kCRLMissing));
   ExpectEnsureConnectionThen(CastMessageType::kLaunch);
 
   const absl::optional<base::Value> json = base::JSONReader::Read(kAppParams);
@@ -457,6 +464,13 @@ TEST_F(CastMessageHandlerTest, LaunchSession) {
   OnMessage(response);
   run_loop_->Run();
   EXPECT_EQ(1, session_launch_response_count_);
+  // Flags associated with the CastSocket should be recorded on launch.
+  histogram_tester.ExpectBucketCount(kLaunchSessionChannelFlagsHistogram,
+                                     CastChannelFlag::kFlagsNone, 0);
+  histogram_tester.ExpectBucketCount(kLaunchSessionChannelFlagsHistogram,
+                                     CastChannelFlag::kSha1DigestAlgorithm, 1);
+  histogram_tester.ExpectBucketCount(kLaunchSessionChannelFlagsHistogram,
+                                     CastChannelFlag::kCRLMissing, 1);
 }
 
 TEST_F(CastMessageHandlerTest, LaunchSessionTimedOut) {

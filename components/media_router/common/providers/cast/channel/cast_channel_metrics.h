@@ -9,6 +9,9 @@
 
 namespace cast_channel {
 
+constexpr char kLaunchSessionChannelFlagsHistogram[] =
+    "Cast.Channel.LaunchSession.Flags";
+
 // Records the flags set on a Cast channel when a Cast LAUNCH message is sent.
 void RecordLaunchSessionChannelFlags(CastChannelFlags flags);
 

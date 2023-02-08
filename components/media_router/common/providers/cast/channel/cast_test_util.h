@@ -148,9 +148,8 @@ class MockCastSocket : public CastSocket {
     error_state_ = error_state;
   }
 
-  CastChannelFlags flags() const override {
-    return static_cast<CastChannelFlags>(CastChannelFlag::kFlagsNone);
-  }
+  CastChannelFlags flags() const override { return flags_; }
+  void SetFlags(CastChannelFlags flags) { flags_ = flags; }
 
   bool keep_alive() const override { return keep_alive_; }
   void SetKeepAlive(bool keep_alive) { keep_alive_ = keep_alive; }
@@ -165,6 +164,8 @@ class MockCastSocket : public CastSocket {
   net::IPEndPoint ip_endpoint_;
   int channel_id_;
   ChannelError error_state_;
+  CastChannelFlags flags_{
+      static_cast<CastChannelFlags>(CastChannelFlag::kFlagsNone)};
   bool keep_alive_;
   bool audio_only_;
 

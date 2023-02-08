@@ -9,9 +9,6 @@
 
 namespace cast_channel {
 
-constexpr char kLaunchSessionChannelFlagsHistogram[] =
-    "Cast.Channel.LaunchSession.Flags";
-
 void RecordLaunchSessionChannelFlags(CastChannelFlags flags) {
   if (!flags) {
     UMA_HISTOGRAM_ENUMERATION(kLaunchSessionChannelFlagsHistogram,
