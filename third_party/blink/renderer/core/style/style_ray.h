@@ -6,15 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_RAY_H_
 
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
-
-namespace gfx {
-class PointF;
-}
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
-
-struct PointAndTangent;
-struct StyleOffsetRotation;
 
 class StyleRay : public BasicShape {
  public:
@@ -29,17 +23,7 @@ class StyleRay : public BasicShape {
   static scoped_refptr<StyleRay> Create(float angle, RaySize, bool contain);
   ~StyleRay() override = default;
 
-  float CalculateRayPathLength(const gfx::PointF& initial_position,
-                               const gfx::SizeF& containing_box_size) const;
-  float CalculateLength(const gfx::PointF& anchor,
-                        const Length& offset_distance,
-                        const StyleOffsetRotation& offset_rotate,
-                        const gfx::PointF& initial_position,
-                        const gfx::RectF& bounding_box,
-                        const gfx::SizeF& containing_box_size) const;
-  PointAndTangent PointAndNormalAtLength(float length) const;
-
-  float Angle() const { return ClampTo<float, float>(angle_); }
+  float Angle() const { return angle_; }
   RaySize Size() const { return size_; }
   bool Contain() const { return contain_; }
 

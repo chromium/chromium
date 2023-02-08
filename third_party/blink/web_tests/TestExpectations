@@ -2759,6 +2759,18 @@ crbug.com/1085772 external/wpt/css/css-pseudo/first-line-opacity-001.html [ Fail
 crbug.com/798257 external/wpt/css/css-pseudo/first-line-line-height-002.html [ Failure ]
 
 # motion-1 issues
+crbug.com/641245 external/wpt/css/motion/offset-path-ray-002.html [ Failure ]
+crbug.com/641245 external/wpt/css/motion/offset-path-ray-003.html [ Failure ]
+crbug.com/641245 external/wpt/css/motion/offset-path-ray-004.html [ Failure ]
+crbug.com/641245 external/wpt/css/motion/offset-path-ray-005.html [ Failure ]
+crbug.com/641245 external/wpt/css/motion/offset-path-ray-006.html [ Failure ]
+crbug.com/641245 external/wpt/css/motion/offset-path-ray-007.html [ Failure ]
+crbug.com/641245 external/wpt/css/motion/offset-path-ray-009.html [ Failure ]
+crbug.com/641245 external/wpt/css/motion/offset-path-ray-contain-001.html [ Failure ]
+crbug.com/641245 external/wpt/css/motion/offset-path-ray-contain-002.html [ Failure ]
+crbug.com/641245 external/wpt/css/motion/offset-path-ray-contain-003.html [ Failure ]
+crbug.com/641245 external/wpt/css/motion/offset-path-ray-contain-004.html [ Failure ]
+crbug.com/641245 external/wpt/css/motion/offset-path-ray-contain-005.html [ Failure ]
 crbug.com/654669 external/wpt/css/motion/offset-path-shape.html [ Failure ]
 crbug.com/654666 external/wpt/css/motion/offset-path-url.html [ Failure ]
 

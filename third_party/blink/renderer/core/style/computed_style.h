@@ -63,7 +63,6 @@
 #include "third_party/blink/renderer/platform/geometry/length_point.h"
 #include "third_party/blink/renderer/platform/geometry/length_size.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -2035,14 +2034,12 @@ class ComputedStyle : public ComputedStyleBase,
     kExcludeTransformOperations
   };
   void ApplyTransform(gfx::Transform&,
-                      const LayoutBox* box,
                       const LayoutSize& border_box_data_size,
                       ApplyTransformOperations,
                       ApplyTransformOrigin,
                       ApplyMotionPath,
                       ApplyIndependentTransformProperties) const;
   void ApplyTransform(gfx::Transform&,
-                      const LayoutBox* box,
                       const gfx::RectF& bounding_box,
                       ApplyTransformOperations,
                       ApplyTransformOrigin,
@@ -2528,14 +2525,8 @@ class ComputedStyle : public ComputedStyleBase,
 
   void ApplyMotionPathTransform(float origin_x,
                                 float origin_y,
-                                const LayoutBox* box,
                                 const gfx::RectF& bounding_box,
                                 gfx::Transform&) const;
-  PointAndTangent CalculatePointAndTangentOnRay(
-      const LayoutBox* box,
-      const gfx::RectF& bounding_box,
-      const gfx::PointF& anchor_point) const;
-  PointAndTangent CalculatePointAndTangentOnPath() const;
 
   bool ScrollAnchorDisablingPropertyChanged(const ComputedStyle& other,
                                             const StyleDifference&) const;
