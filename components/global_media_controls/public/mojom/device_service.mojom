@@ -1,0 +1,78 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module global_media_controls.mojom;
+
+// These interfaces are a part of the crosapi but are also shared with
+// non-Chrome-OS desktop platforms. All the code implementing the interfaces in
+// this file runs in the browser process (either on the Ash side or the Lacros
+// side, in the case of Chrome OS).
+
+// Corresponds to icons shown in the device picker UI.
+enum IconType {
+  kUnknown = 0,
+  kThrobber = 1,
+  kInfo = 2,
+  kTv = 3,
+  kSpeaker = 4,
+  kSpeakerGroup = 5,
+  // A wired display is an example of a device using the input icon.
+  kInput = 6,
+};
+
+// Represents a media playback device, which may be a physical device such as a
+// TV or a smart speaker, or a virtual device.
+struct Device {
+  string id;
+  string name;
+  string status_text;
+  IconType icon;
+};
+
+// Provides access to devices on which media can be played back. One instance is
+// created per media session or presentation.
+// On Chrome OS, this is implemented by Lacros (or the Ash browser).
+interface DeviceListHost {
+  // Selecting a device may cause media to be played, stopped, etc. on that
+  // device depending on the current state.
+  SelectDevice(string device_id);
+};
+
+// Receives updates about devices available for media playback. Typically has a
+// 1-to-1 relationship with a DeviceListHost.
+// On Chrome OS, this is implemented by the Ash system UI.
+interface DeviceListClient {
+  // Receives devices available for playback of the media session that this
+  // object is associated with.
+  OnDevicesUpdated(array<Device> devices);
+};
+
+// Provides access to DeviceListHosts.
+// On Chrome OS, this is implemented by Lacros (or the Ash browser).
+interface DeviceService {
+  // Lets DeviceListClient start observing the DeviceListHost associated with
+  // the local media session specified by `session_id` obtained via
+  // `media_session.mojom.AudioFocusRequestState.request_id`.
+  //
+  // If a session is not found, then the pending remote/receiver get dropped,
+  // and the caller can be notified to do cleanup via their disconnect handlers.
+  GetDeviceListHostForSession(
+      string session_id, pending_receiver<DeviceListHost> host_receiver,
+      pending_remote<DeviceListClient> client_remote);
+
+  // Lets DeviceListClient start observing the DeviceListHost associated with
+  // the currently pending PresentationRequest (i.e. a website has made a
+  // request via the Presentation API and is waiting for a device to be chosen
+  // in the system UI).
+  //
+  // If no such request exists or this method has already been called for the
+  // current request, then the pending remote/receiver get dropped, and the
+  // caller can be notified to do cleanup via their disconnect handlers.
+  //
+  // If the request is associated with a local media session, then
+  // ObserveDeviceListHostForSession() should be called instead.
+  GetDeviceListHostForPresentation(
+      pending_receiver<DeviceListHost> host_receiver,
+      pending_remote<DeviceListClient> client_remote);
+};

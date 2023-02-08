@@ -95,25 +95,6 @@ bool IsIncompatibleDialSink(const UIMediaSink& sink) {
          sink.cast_modes.empty();
 }
 
-std::u16string GetStatusTextForSink(const UIMediaSink& sink) {
-  if (sink.issue)
-    return base::UTF8ToUTF16(sink.issue->info().title);
-  // If the sink is disconnecting, say so instead of using the source info
-  // stored in |sink.status_text|.
-  if (sink.state == UIMediaSinkState::DISCONNECTING)
-    return l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_DISCONNECTING);
-  if (!sink.status_text.empty())
-    return sink.status_text;
-  switch (sink.state) {
-    case UIMediaSinkState::AVAILABLE:
-      return l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_AVAILABLE);
-    case UIMediaSinkState::CONNECTING:
-      return l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_CONNECTING);
-    default:
-      return std::u16string();
-  }
-}
-
 }  // namespace
 
 CastDialogSinkButton::CastDialogSinkButton(PressedCallback callback,
@@ -121,7 +102,7 @@ CastDialogSinkButton::CastDialogSinkButton(PressedCallback callback,
     : HoverButton(std::move(callback),
                   CreatePrimaryIconForSink(sink),
                   sink.friendly_name,
-                  GetStatusTextForSink(sink),
+                  sink.GetStatusTextForDisplay(),
                   /** secondary_icon_view */ nullptr),
       sink_(sink) {
   SetEnabled(sink.state == UIMediaSinkState::AVAILABLE ||

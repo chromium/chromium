@@ -38,6 +38,10 @@ struct UIMediaSink {
   UIMediaSink(const UIMediaSink& other);
   ~UIMediaSink();
 
+  // Gets the status text that should be shown in the UI based on `status_text`,
+  // `state`, and `issue`.
+  std::u16string GetStatusTextForDisplay() const;
+
   // The unique ID for the media sink.
   std::string id;
 
