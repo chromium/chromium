@@ -55,18 +55,6 @@ struct CORE_EXPORT PaintInfo {
         cull_rect_(cull_rect),
         paint_flags_(paint_flags) {}
 
-  PaintInfo(GraphicsContext& new_context,
-            const PaintInfo& copy_other_fields_from)
-      : context(new_context),
-        phase(copy_other_fields_from.phase),
-        cull_rect_(copy_other_fields_from.cull_rect_),
-        fragment_id_(copy_other_fields_from.fragment_id_),
-        paint_flags_(copy_other_fields_from.paint_flags_) {
-    // We should never pass these flags to other PaintInfo.
-    DCHECK(!copy_other_fields_from.is_painting_background_in_contents_space);
-    DCHECK(!copy_other_fields_from.skips_background_);
-  }
-
   // Creates a PaintInfo for painting descendants. See comments about the paint
   // phases in PaintPhase.h for details.
   PaintInfo ForDescendants() const {

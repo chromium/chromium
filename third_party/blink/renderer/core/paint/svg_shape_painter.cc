@@ -255,12 +255,12 @@ void SVGShapePainter::PaintMarker(const PaintInfo& paint_info,
   if (SVGLayoutSupport::IsOverflowHidden(marker))
     canvas->clipRect(gfx::RectFToSkRect(marker.Viewport()));
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>(paint_info.context);
-  PaintInfo marker_paint_info(builder->Context(), paint_info);
   // It's expensive to track the transformed paint cull rect for each
   // marker so just disable culling. The shape paint call will already
   // be culled if it is outside the paint info cull rect.
-  marker_paint_info.ApplyInfiniteCullRect();
-
+  const PaintInfo marker_paint_info(builder->Context(), CullRect::Infinite(),
+                                    paint_info.phase,
+                                    paint_info.GetPaintFlags());
   SVGContainerPainter(marker).Paint(marker_paint_info);
   builder->EndRecording(*canvas);
 
