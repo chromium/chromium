@@ -480,6 +480,31 @@ TEST_F(ChromeContentBrowserClientGetLoggingFileTest, GetLoggingFile) {
   EXPECT_FALSE(client.GetLoggingFileName(cmd_line).empty());
 }
 
+#if BUILDFLAG(IS_WIN)
+TEST_F(ChromeContentBrowserClientGetLoggingFileTest,
+       GetLoggingFileFromCommandLine) {
+  base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
+  cmd_line.AppendSwitchASCII(switches::kLogFile, "c:\\path\\test_log.txt");
+  ChromeContentBrowserClient client;
+  base::FilePath log_file_name;
+  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("test_log.txt")).value(),
+            client.GetLoggingFileName(cmd_line).BaseName().value());
+  // Path must be absolute.
+  EXPECT_TRUE(client.GetLoggingFileName(cmd_line).IsAbsolute());
+}
+TEST_F(ChromeContentBrowserClientGetLoggingFileTest,
+       GetLoggingFileFromCommandLineFallback) {
+  base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
+  cmd_line.AppendSwitchASCII(switches::kLogFile, "test_log.txt");
+  ChromeContentBrowserClient client;
+  base::FilePath log_file_name;
+  // Windows falls back to the default if an absolute path is not provided.
+  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("chrome_debug.log")).value(),
+            client.GetLoggingFileName(cmd_line).BaseName().value());
+  // Path must be absolute.
+  EXPECT_TRUE(client.GetLoggingFileName(cmd_line).IsAbsolute());
+}
+#else
 TEST_F(ChromeContentBrowserClientGetLoggingFileTest,
        GetLoggingFileFromCommandLine) {
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
@@ -489,6 +514,7 @@ TEST_F(ChromeContentBrowserClientGetLoggingFileTest,
   EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("test_log.txt")).value(),
             client.GetLoggingFileName(cmd_line).value());
 }
+#endif  // BUILDFLAG(IS_WIN)
 
 class TestChromeContentBrowserClient : public ChromeContentBrowserClient {
  public:

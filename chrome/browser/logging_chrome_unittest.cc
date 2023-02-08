@@ -55,42 +55,83 @@ TEST_F(ChromeLoggingTest, LogFileName) {
   base::FilePath filename = logging::GetLogFileName(cmd_line());
   ASSERT_NE(base::FilePath::StringType::npos,
             filename.value().find(FILE_PATH_LITERAL("chrome_debug.log")));
+#if BUILDFLAG(IS_WIN)
+  ASSERT_TRUE(filename.IsAbsolute());
+#endif  // BUILDFLAG(IS_WIN)
 
   RestoreEnvironmentVariable();
 }
 
 // Tests the log file name getter with an environment variable.
+#if BUILDFLAG(IS_WIN)
 TEST_F(ChromeLoggingTest, EnvironmentLogFileName) {
-  SaveEnvironmentVariable("test env value");
-
+  SaveEnvironmentVariable("c:\\path\\test env value");
   base::FilePath filename = logging::GetLogFileName(cmd_line());
-  ASSERT_EQ(base::FilePath(FILE_PATH_LITERAL("test env value")).value(),
-            filename.value());
-
+  ASSERT_NE(base::FilePath::StringType::npos,
+            filename.value().find(FILE_PATH_LITERAL("test env value")));
+  ASSERT_TRUE(filename.IsAbsolute());
   RestoreEnvironmentVariable();
 }
+#else
+TEST_F(ChromeLoggingTest, EnvironmentLogFileName) {
+  SaveEnvironmentVariable("test env value");
+  base::FilePath filename = logging::GetLogFileName(cmd_line());
+  ASSERT_NE(base::FilePath::StringType::npos,
+            filename.value().find(FILE_PATH_LITERAL("test env value")));
+  RestoreEnvironmentVariable();
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 // Tests the log file name getter with a command-line flag.
+#if BUILDFLAG(IS_WIN)
+TEST_F(ChromeLoggingTest, FlagLogFileName) {
+  SetLogFileFlag("c:\\path\\test flag value");
+  base::FilePath filename = logging::GetLogFileName(cmd_line());
+  ASSERT_NE(base::FilePath::StringType::npos,
+            filename.value().find(FILE_PATH_LITERAL("test flag value")));
+  ASSERT_TRUE(filename.IsAbsolute());
+}
+// Non-absolute path falls back to default.
+TEST_F(ChromeLoggingTest, FlagLogFileNameNonAbsolute) {
+  SetLogFileFlag("test file value");
+  base::FilePath filename = logging::GetLogFileName(cmd_line());
+  ASSERT_NE(base::FilePath::StringType::npos,
+            filename.value().find(FILE_PATH_LITERAL("chrome_debug.log")));
+  ASSERT_TRUE(filename.IsAbsolute());
+}
+#else
 TEST_F(ChromeLoggingTest, FlagLogFileName) {
   SetLogFileFlag("test flag value");
-
   base::FilePath filename = logging::GetLogFileName(cmd_line());
-  ASSERT_EQ(base::FilePath(FILE_PATH_LITERAL("test flag value")).value(),
-            filename.value());
+  ASSERT_NE(base::FilePath::StringType::npos,
+            filename.value().find(FILE_PATH_LITERAL("test flag value")));
 }
+#endif  // BUILDFLAG(IS_WIN)
 
 // Tests the log file name getter with with an environment variable and a
 // command-line flag. The flag takes precedence.
+#if BUILDFLAG(IS_WIN)
+TEST_F(ChromeLoggingTest, EnvironmentAndFlagLogFileName) {
+  SaveEnvironmentVariable("c:\\path\\test env value");
+  SetLogFileFlag("d:\\path\\test flag value");
+
+  base::FilePath filename = logging::GetLogFileName(cmd_line());
+  ASSERT_NE(base::FilePath::StringType::npos,
+            filename.value().find(FILE_PATH_LITERAL("test flag value")));
+  ASSERT_TRUE(filename.IsAbsolute());
+  RestoreEnvironmentVariable();
+}
+#else
 TEST_F(ChromeLoggingTest, EnvironmentAndFlagLogFileName) {
   SaveEnvironmentVariable("test env value");
   SetLogFileFlag("test flag value");
 
   base::FilePath filename = logging::GetLogFileName(cmd_line());
-  ASSERT_EQ(base::FilePath(FILE_PATH_LITERAL("test flag value")).value(),
-            filename.value());
-
+  ASSERT_NE(base::FilePath::StringType::npos,
+            filename.value().find(FILE_PATH_LITERAL("test flag value")));
   RestoreEnvironmentVariable();
 }
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ChromeLoggingTest, TimestampedName) {

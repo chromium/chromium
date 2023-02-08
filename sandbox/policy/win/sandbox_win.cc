@@ -718,11 +718,13 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
       process_type == switches::kGpuProcess ||
       process_type == switches::kUtilityProcess) {
     if (logging::IsLoggingToFileEnabled()) {
-      DCHECK(base::FilePath(logging::GetLogFileFullPath()).IsAbsolute());
+      auto log_path = logging::GetLogFileFullPath();
+      DCHECK(base::FilePath(log_path).IsAbsolute());
       result = config->AddRule(SubSystem::kFiles, Semantics::kFilesAllowAny,
-                               logging::GetLogFileFullPath().c_str());
-      if (result != SBOX_ALL_OK)
+                               log_path.c_str());
+      if (result != SBOX_ALL_OK) {
         return result;
+      }
     }
   }
 

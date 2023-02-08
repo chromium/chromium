@@ -446,17 +446,6 @@ class GpuSandboxedProcessLauncherDelegate
     // Block this DLL even if it is not loaded by the browser process.
     config->AddDllToUnload(L"cmsetac.dll");
 
-    if (cmd_line_.HasSwitch(switches::kEnableLogging)) {
-      std::wstring log_file_path = logging::GetLogFileFullPath();
-      if (!log_file_path.empty()) {
-        sandbox::ResultCode result = config->AddRule(
-            sandbox::SubSystem::kFiles, sandbox::Semantics::kFilesAllowAny,
-            log_file_path.c_str());
-        if (result != sandbox::SBOX_ALL_OK)
-          return false;
-      }
-    }
-
     return true;
   }
 
