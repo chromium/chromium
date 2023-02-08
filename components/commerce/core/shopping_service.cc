@@ -209,6 +209,11 @@ void ShoppingService::HandleDidFinishLoadForProductInfo(WebWrapper* web) {
 
 void ShoppingService::OnProductInfoJavascriptResult(const GURL url,
                                                     base::Value result) {
+  // We should only ever get a string result from the script execution.
+  if (!result.is_string()) {
+    return;
+  }
+
   data_decoder::DataDecoder::ParseJsonIsolated(
       result.GetString(),
       base::BindOnce(&ShoppingService::OnProductInfoJsonSanitizationCompleted,
