@@ -228,7 +228,8 @@ def remap_paths_to_relative(coverage_file_path, chromium_src_dir, build_dir):
                 excluded_paths += 1
                 continue
 
-            relative_src_path = os.path.relpath(key, chromium_src_dir)
+            relative_src_path = os.path.relpath(key, chromium_src_dir).replace(
+                '\\', '/')
             value = coverage_json[key]
             value['path'] = relative_src_path
             coverage_json[relative_src_path] = value

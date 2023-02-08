@@ -266,7 +266,8 @@ export const add = (a, b) => a + b;
                                               'coverage.json').replace(
                                                   '\\', '/')
 
-            with open(coverage_file_path, 'w') as f:
+            with open(coverage_file_path, 'w', encoding='utf-8',
+                      newline='') as f:
                 f.write(test_file_data)
 
             merger.remap_paths_to_relative(coverage_file_path,
