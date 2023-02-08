@@ -347,7 +347,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1736420071277903564">Computer</translation>
 <translation id="1740951997222943430">Angiv en gyldig udløbsmåned</translation>
 <translation id="1741613555002899862">Skal angives og være en gyldig streng, når DnsOverHttpsMode er <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Sådan bruger vi disse data:<ph name="END_BOLD" /> Chrome registrerer emner, der interesserer dig, mens du browser. Emneetiketter er foruddefinerede og omfatter ting som Kunst og underholdning, Shopping og Sport. Senere, når du besøger et website, kan websitet anmode Chrome om nogle få af dine emner (men ikke din browserhistorik) for at tilpasse de annoncer, du får vist.</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Sådan bruger vi disse data:<ph name="END_BOLD" /> Chrome registrerer emner, du kan være interesseret i, mens du browser. Emneetiketter er foruddefinerede og omfatter ting som Kunst og underholdning, Shopping og Sport. Senere, når du besøger et website, kan websitet anmode Chrome om nogle få af dine emner (men ikke din browserhistorik) for at tilpasse de annoncer, du får vist.</translation>
 <translation id="1745880797583122200">Din browser administreres</translation>
 <translation id="1746113442205726301">Billedskift Y</translation>
 <translation id="1746531169546376413">0 grader</translation>
@@ -835,7 +835,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="306573536155379004">Spillet er startet.</translation>
 <translation id="3068991664510324412">Computer- og videospil</translation>
 <translation id="3080254622891793721">Grafik</translation>
-<translation id="3081538120861307764">Med henblik på at måle en annonces effektivitet deles der begrænsede typer data mellem websites, f.eks. det tidspunkt på dagen, hvor annoncen blev vist til dig.</translation>
+<translation id="3081538120861307764">For at måle effektiviteten af en annonce deles der begrænsede typer af data mellem websites, f.eks. det tidspunkt på dagen, hvor annoncen blev vist til dig.</translation>
 <translation id="3082007635241601060">Lad Google bruge dine kurve til at finde tilpassede rabatter, når sådanne er tilgængelige</translation>
 <translation id="3086579638707268289">Din aktivitet på nettet overvåges</translation>
 <translation id="3087734570205094154">Bund</translation>
@@ -875,7 +875,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="317878711435188021">Vide, hvornår du aktivt bruger denne enhed</translation>
 <translation id="3180358318770512945">Børn og forældre</translation>
 <translation id="3187306450550410410">Fleksibelt arbejde</translation>
-<translation id="3187472288455401631">Ad measurement</translation>
+<translation id="3187472288455401631">Annoncemåling</translation>
 <translation id="3190736958609431397">Hold ikke længere øje</translation>
 <translation id="319282854780294203">Sociale netværk</translation>
 <translation id="3194737229810486521"><ph name="URL" /> anmoder om at gemme data permanent på din enhed</translation>
@@ -1229,7 +1229,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4063924980214801036">Brug enhedsoplåsning til at bekræfte kort hurtigere</translation>
 <translation id="4067098466788473230">Studielegater og stipendier</translation>
 <translation id="4067947977115446013">Tilføj gyldig adresse</translation>
-<translation id="4070790659619547722">Med annoncemåling deles begrænsede typer data mellem websites for at måle, hvor effektive deres annoncer er, f.eks. det tidspunkt på dagen, hvor der blev vist en annonce til dig.</translation>
+<translation id="4070790659619547722">Med annoncemåling deles begrænsede typer data mellem websites for at måle effektiviteten af deres annoncer, f.eks. det tidspunkt på dagen, hvor en annonce blev vist til dig.</translation>
 <translation id="4072193657607981494">Indlæser politikker</translation>
 <translation id="4072486802667267160">Der opstod en fejl under behandlingen af din ordre. Prøv igen.</translation>
 <translation id="4073376909608563327">Enhedsoplåsning kunne ikke anvendes</translation>
@@ -2325,7 +2325,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6786145470008421571">Konvolut 6 x 9 tommer</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786747875388722282">Udvidelser</translation>
-<translation id="6787094689637422836">Vi lancerer nye privatlivsrelaterede funktioner, der giver dig flere valgmuligheder i forhold til, hvilke annoncer du får vist.</translation>
+<translation id="6787094689637422836">Vi introducerer nye privatlivsfunktioner, der giver dig flere valgmuligheder for de annoncer, du får vist.</translation>
 <translation id="678982761784843853">Beskyttede indholds-id'er</translation>
 <translation id="6790428901817661496">Afspil</translation>
 <translation id="679355240208270552">Ignoreret, fordi en standardsøgemaskine ikke er aktiveret af politikken.</translation>
@@ -2633,7 +2633,7 @@ Yderligere oplysninger:
 <translation id="7507075214339298899">Konvolut nr. 9</translation>
 <translation id="7508255263130623398">Det returnerede enheds-id for politikken er tomt eller stemmer ikke overens med det nuværende enheds-id</translation>
 <translation id="7508870219247277067">Avocadogrøn</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Sådan bruger websites disse data:<ph name="END_BOLD" /> Websites kan gemme oplysninger i Chrome om de ting, du kan lide. Hvis du f.eks. besøger et website om maratontræning, kan websitet vurdere, at du er interesseret i løbesko. Hvis du derefter besøger et andet website, kan websitet vise dig en annonce for løbesko, som det første website har foreslået.</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Sådan bruger websites disse data:<ph name="END_BOLD" /> Websites kan gemme oplysninger i Chrome om de ting, du kan lide. Hvis du f.eks. besøger et website om maratontræning, kan websitet skønne, at du er interesseret i løbesko. Hvis du derefter besøger et andet website, kan websitet vise dig en annonce for løbesko, som det første website har foreslået.</translation>
 <translation id="7510269639068718544">Katte</translation>
 <translation id="7511955381719512146">Det Wi-Fi-netværk, du bruger, kan kræve, at du går til <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Denne politik kan ikke angives som "Sand" og være obligatorisk. Derfor er den ændret til anbefalet.</translation>
@@ -2771,7 +2771,7 @@ Yderligere oplysninger:
 <translation id="7791543448312431591">Tilføj</translation>
 <translation id="7798389633136518089">Politikken blev ignoreret, da den ikke er angivet af en skytjeneste.</translation>
 <translation id="7800304661137206267">Forbindelsen er krypteret ved hjælp af <ph name="CIPHER" /> med <ph name="MAC" /> til meddelelsesgodkendelse og <ph name="KX" /> som hovedudvekslingsmekanisme.</translation>
-<translation id="7800977246388195491">Chrome registrerer emner, du kan være interesseret i, baseret på din seneste browserhistorik. Derudover kan de websites, du besøger, foretage en vurdering af, hvad du kan lide. Websites kan derefter anmode om disse oplysninger med henblik på at vise dig tilpassede annoncer. Du kan vælge, hvilke emner og websites der skal bruges til at vise dig annoncer.</translation>
+<translation id="7800977246388195491">Chrome registrerer emner, du kan være interesseret i, baseret på din seneste browserhistorik. De websites, du besøger, kan også fastslå, hvad du kan lide. Websites kan derefter anmode om disse oplysninger med henblik på at vise dig tilpassede annoncer. Du kan vælge, hvilke emner og websites der skal bruges til at vise dig annoncer.</translation>
 <translation id="7802523362929240268">Websitet er pålideligt</translation>
 <translation id="7802989406998618639">Angiv den <ph name="NUMBER_OF_DIGITS" />-cifrede sikkerhedskode på <ph name="SIDE_OF_CARD" />, så din bank kan verificere din identitet</translation>
 <translation id="780301667611848630">Nej tak</translation>
@@ -3299,7 +3299,7 @@ Yderligere oplysninger:
 <translation id="9155211586651734179">Forbundne eksterne lydenheder</translation>
 <translation id="9157595877708044936">Konfigurerer...</translation>
 <translation id="9164742147345933553">os://flags</translation>
-<translation id="9165305804774426672">De websites, du besøger, kan også foretage en vurdering af, hvad du kan lide, baseret på din aktivitet på websitet. Hvis du f.eks. besøger et website, der sælger løbesko til langdistanceløb, kan websitet vurdere, at du er interesseret i at løbe maraton.</translation>
+<translation id="9165305804774426672">De websites, du besøger, kan også skønne hvad du kan lide, baseret på din aktivitet på websitet. Hvis du f.eks. besøger et website, der sælger løbesko til langdistanceløb, kan websitet vurdere, at du er interesseret i at løbe maraton.</translation>
 <translation id="9166851138617700776">Flere oplysninger om foreslåede annoncer fra websites og annoncemåling</translation>
 <translation id="9168814207360376865">Tillad, at websites kan tjekke, om du har gemte betalingsmetoder</translation>
 <translation id="9169664750068251925">Bloker altid på dette website</translation>

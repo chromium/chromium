@@ -405,7 +405,7 @@ Privatne oznake poboljšavaju privatnost na webu i ne mogu se upotrebljavati da 
 <translation id="316694332262407393">Chrome je tu već pokrenut.</translation>
 <translation id="3167258285411721858">Možete zatražiti web-lokaciju za mobilne uređaje za <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3187472288455401631">Mjerenje oglasa</translation>
+<translation id="3187472288455401631">Mjerenje izvedbe oglasa</translation>
 <translation id="3207960819495026254">Označeno</translation>
 <translation id="3208584281581115441">Provjeri sad</translation>
 <translation id="3211426585530211793">Izbrisano <ph name="ITEM_TITLE" /></translation>
@@ -671,7 +671,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4678082183394354975">Tamna tema za web-lokacije uključena je u Chromeu</translation>
 <translation id="4684427112815847243">Sinkroniziraj sve</translation>
 <translation id="4685741273709472646">Odaberite na padajućem popisu</translation>
-<translation id="4687718960473379118">Oglasi koje predlaže web-lokacija</translation>
+<translation id="4687718960473379118">Oglasi koje predlažu web-lokacije</translation>
 <translation id="4689792375321623175">Pretraži sliku na Googleu <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Predmemorirane slike i datoteke</translation>

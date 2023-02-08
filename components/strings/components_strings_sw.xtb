@@ -317,7 +317,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="168693727862418163">Thamani ya sera hii imeshindwa kuthibitishwa kwenye taratibu yake na itapuuzwa.</translation>
 <translation id="168841957122794586">Cheti cha seva kina kitufe dhaifu cha kifichua msimbo.</translation>
 <translation id="1689333818294560261">Jina la kuwakilisha</translation>
-<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Jinsi unavyoweza kudhibiti data yako:<ph name="END_BOLD" /> Chrome hufuta kiotomatiki mada zilizohifadhiwa kwenye orodha kwa zaidi ya wiki 4. Kadiri unavyoendelea kuvinjari, mada inaweza kuonekana tena kwenye orodha. Unaweza pia kuzuia mada ambazo usingependa Chrome ishiriki na tovuti na kuzima mada za matangazo wakati wowote kwenye mipangilio ya Chrome.</translation>
+<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Jinsi unavyoweza kudhibiti data yako:<ph name="END_BOLD" /> Chrome hufuta kiotomatiki mada zilizohifadhiwa kwenye orodha kwa zaidi ya wiki 4. Kadiri unavyoendelea kuvinjari, mada inaweza kuonekana tena kwenye orodha. Pia, unaweza kuzuia mada ambazo hutaki Chrome ishiriki na tovuti na kuzima mada za matangazo wakati wowote kwenye mipangilio ya Chrome.</translation>
 <translation id="1697532407822776718">Mko tayari nyote!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Barua</translation>
@@ -347,7 +347,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1736420071277903564">Kompyuta</translation>
 <translation id="1740951997222943430">Andika mwezi sahihi wa kuisha kwa muda wa matumizi</translation>
 <translation id="1741613555002899862">Lazima ibainishwe na iwe mfuatano sahihi wakati DnsOverHttpsMode ni <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Jinsi tunavyotumia data hii:<ph name="END_BOLD" /> Chrome inarekodi mada zinazokuvutia kadiri unavyovinjari. Lebo za mada zinabainishwa mapema na hujumuisha mambo kama vile, Sanaa na Burudani, Ununuzi na Michezo. Baadaye, tovuti unayotembelea inaweza kuiomba Chrome ili ione mada zako kadhaa (lakini si historia yako ya kuvinjari) na iweke mapendeleo ya matangazo unayoona.</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Jinsi tunavyotumia data hii:<ph name="END_BOLD" /> Chrome hutambua mada zinazokuvutia kadiri unavyovinjari. Lebo za mada hubainishwa mapema na hujumuisha mambo kama vile, Sanaa na Burudani, Ununuzi na Michezo. Baadaye, tovuti unayotembelea inaweza kuiomba Chrome baadhi ya mada zako (lakini si historia yako ya kuvinjari) ili iweke mapendeleo ya matangazo unayoona.</translation>
 <translation id="1745880797583122200">Kivinjari chako kinadhibitiwa</translation>
 <translation id="1746113442205726301">Ugeuzaji wa Picha ya Y</translation>
 <translation id="1746531169546376413">Nyuzi 0</translation>
@@ -835,7 +835,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="306573536155379004">Mchezo umeanza.</translation>
 <translation id="3068991664510324412">Michezo ya kompyuta na video</translation>
 <translation id="3080254622891793721">Picha</translation>
-<translation id="3081538120861307764">Ili kupima utendaji wa tangazo, baadhi ya aina za data zinashirikiwa kati ya tovuti, kama vile muda wa siku ambapo ulionyeshwa tangazo.</translation>
+<translation id="3081538120861307764">Ili kupima utendaji wa tangazo, aina chache za data hushirikiwa baina ya tovuti, kama vile muda wa siku ambapo ulionyeshwa tangazo.</translation>
 <translation id="3082007635241601060">Ruhusu Google itumie vikapu vyako ili ikupatie mapunguzo yanayokufaa pale yanapotokea</translation>
 <translation id="3086579638707268289">Shughuli yako kwenye tovuti inafuatiliwa</translation>
 <translation id="3087734570205094154">Chini</translation>
@@ -1094,7 +1094,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3678342917559046352">Kiendelezi si Sahihi: Thamani inatakiwa iwe kati ya miundo ifuatayo: &lt;extension_id&gt; au &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Fungua ukurasa kwenye dirisha fiche jipya (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Maelezo ya cheti</translation>
-<translation id="3681421644246505351">Chrome hurekodi mada zinazokuvutia kulingana na historia yako ya kuvinjari ya hivi karibuni.</translation>
+<translation id="3681421644246505351">Chrome hubaini mada zinazokuvutia kulingana na historia yako ya kuvinjari ya hivi karibuni.</translation>
 <translation id="3693327506115126094">Chagua njia utakayotumia kuthibitisha kuwa ni wewe</translation>
 <translation id="3701427423622901115">Imekubali kuweka upya.</translation>
 <translation id="3704162925118123524">Mtandao unaotumia unaweza kukuhitaji kuutembelea ukurasa wake wa kuingia katika akaunti.</translation>
@@ -1339,7 +1339,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4282346679996504092">Arifa za bidhaa hii zimezimwa na alamisho imeondolewa</translation>
 <translation id="4285498937028063278">Banua</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Kadi hii imehifadhiwa kwenye Akaunti yako ya Google}other{Kadi hizi zimehifadhiwa kwenye Akaunti yako ya Google}}</translation>
-<translation id="4287495839370498922">Faragha ya matangazo iliyoboreshwa kwenye Chrome</translation>
+<translation id="4287495839370498922">Faragha iliyoboreshwa ya matangazo kwenye Chrome</translation>
 <translation id="4287885627794386150">Umetimiza masharti ya kutumia jaribio lakini hujaanza kulitumia</translation>
 <translation id="4297502707443874121">Kijipicha cha ukurasa wa <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Uwekezaji</translation>
@@ -1423,7 +1423,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="449126573531210296">Simba kwa njia fiche manenosiri yaliyosawazishwa ukitumia vitambulisho vya Akaunti yako ya Google</translation>
 <translation id="4492519888999857993">Vipengele hivi vimezimwa kwa chaguomsingi. Havitapatikana katika matoleo yajayo ya Chrome.</translation>
 <translation id="4493480324863638523">URL si sahihi. Lazima iwe URL yenye mfumo wa kawaida, k.m. http://example.com or https://example.com.</translation>
-<translation id="4494323206460475851">Unaweza kuona mada za matangazo kwenye mipangilio na kuzuia zile ambazo usingependa zishirikiwe na tovuti. Chrome pia hufuta kiotomatiki mada za matangazo zilizohifadhiwa kwenye orodha kwa zaidi ya wiki 4.</translation>
+<translation id="4494323206460475851">Unaweza kuona mada za matangazo kwenye mipangilio na kuzuia zile ambazo usingependa zishirikiwe na tovuti. Pia, Chrome hufuta kiotomatiki mada za matangazo zilizohifadhiwa kwenye orodha kwa zaidi ya wiki 4.</translation>
 <translation id="4500587658229086076">maudhui yasiyo salama</translation>
 <translation id="4506176782989081258">Hitilafu ya uthibitishaji: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Kuwasiliana na msimamizi wa mfumo</translation>
@@ -1882,7 +1882,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5598944008576757369">Chagua Njia ya Kulipa</translation>
 <translation id="560412284261940334">Usimamizi hautumiki</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Jinsi unavyoweza kudhibiti data yako:<ph name="END_BOLD" /> Chrome hufuta kiotomatiki tovuti ambazo zimekuwa katika orodha kwa zaidi ya wiki 4. Tovuti unayoitembelea tena inaweza kuonekana upya kwenye orodha. Unaweza kuzuia tovuti isikupendekezee matangazo na kuzima matangazo yanayopendekezwa na tovuti wakati wowote kwenye mipangilio ya Chrome.</translation>
+<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Jinsi unavyoweza kudhibiti data yako:<ph name="END_BOLD" /> Chrome hufuta kiotomatiki tovuti ambazo zimekuwa katika orodha kwa zaidi ya wiki 4. Tovuti unayoitembelea tena inaweza kuonekana upya kwenye orodha. Pia unaweza kuzuia tovuti isikupendekezee matangazo na kuzima matangazo yanayopendekezwa na tovuti wakati wowote kwenye mipangilio ya Chrome.</translation>
 <translation id="5610142619324316209">Kuangalia muunganisho</translation>
 <translation id="5610807607761827392">Unaweza kudhibiti maelezo ya kadi na anwani katika <ph name="BEGIN_LINK" />Mipangilio<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Tafsiri ukurasa huu ukitumia Google Tafsiri</translation>
@@ -2221,7 +2221,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="646793340882508547">Michezo ya kusisimua</translation>
 <translation id="6468485451923838994">Fonti</translation>
 <translation id="647261751007945333">Sera za kifaa</translation>
-<translation id="6475672344094591109">Tovuti zinaweza kuiomba Chrome taarifa zinazozisaidia kupima utendaji wa matangazo yake. Chrome hulinda faragha yako kwa kudhibiti taarifa ambazo tovuti zinaweza kushiriki na tovuti zingine.</translation>
+<translation id="6475672344094591109">Tovuti unazotembelea zinaweza kuiomba Chrome taarifa zinazozisaidia kupima utendaji wa matangazo kwenye tovuti hizo. Chrome hulinda faragha yako kwa kudhibiti taarifa ambazo tovuti zinaweza kushiriki na tovuti zingine.</translation>
 <translation id="6476284679642588870">Dhibiti njia za kulipa</translation>
 <translation id="6486200200930923183">Filamu za matukio halisi</translation>
 <translation id="6489534406876378309">Anza kupakia matukio ya kuacha kufanya kazi</translation>
@@ -2325,7 +2325,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6786145470008421571">Bahasha ya ukubwa wa inchi 6 kwa 9</translation>
 <translation id="67862343314499040">Zambarau iliyokolea</translation>
 <translation id="6786747875388722282">Viendelezi</translation>
-<translation id="6787094689637422836">Tunazindua vipengele vipya vya faragha vinavyokupatia chaguo zaidi juu ya matangazo unayoona.</translation>
+<translation id="6787094689637422836">Tunazindua vipengele vipya vya faragha vinavyokupatia chaguo zaidi kwa matangazo unayoona.</translation>
 <translation id="678982761784843853">Vitambulishi vya maudhui yanayolindwa</translation>
 <translation id="6790428901817661496">Cheza</translation>
 <translation id="679355240208270552">Imepuuzwa kwa sababu utafutaji chaguomsingi umezimwa na sera.</translation>
@@ -2631,7 +2631,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7507075214339298899">Bahasha ya ukubwa wa #9</translation>
 <translation id="7508255263130623398">Kitambulisho cha sera ya kifaa kilichorejeshwa hakina kitu au hakilingani na kitambulisho cha kifaa kilichopo</translation>
 <translation id="7508870219247277067">Kijani cha Parachichi</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Jinsi tovuti zinavyotumia data hii:<ph name="END_BOLD" /> Tovuti zinaweza kuhifadhi taarifa kwenye Chrome kuhusu mambo unayopendelea. Kwa mfano, iwapo utatembelea tovuti inayohusu mafunzo ya kukimbia mbio ndefu, tovuti inaweza kutambua kuwa unavutiwa na viatu vya kukimbilia. Baadaye, ikiwa utatembelea tovuti tofauti, tovuti hiyo inaweza kukuonyesha tangazo la viatu vya kukimbilia lililopendekezwa na tovuti ya kwanza.</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Jinsi tovuti zinavyotumia data hii:<ph name="END_BOLD" /> Tovuti zinaweza kuhifadhi taarifa kwenye Chrome kuhusu mambo unayopendelea. Kwa mfano, iwapo utatembelea tovuti iliyo na maudhui ya mafunzo ya kukimbia mbio ndefu, huenda tovuti ikaamua kwamba unavutiwa na viatu vya mazoezi ya kukimbia. Baadaye, ikiwa utatembelea tovuti tofauti, tovuti hiyo inaweza kukuonyesha tangazo la viatu vya mazoezi ya kukimbia lililopendekezwa na tovuti ya kwanza.</translation>
 <translation id="7510269639068718544">Paka</translation>
 <translation id="7511955381719512146">Wi-Fi unayotumia inaweza kukuhitaji kutembelea <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Sera hii haiwezi kuwekwa kuwa "inatumika" na kuwa ya lazima, kwa hivyo imebadilishwa kuwa "inayopendekezwa".</translation>
@@ -2769,7 +2769,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7791543448312431591">Ongeza</translation>
 <translation id="7798389633136518089">Imepuuzwa kwa sababu sera haijawekwa na chanzo cha wingu.</translation>
 <translation id="7800304661137206267">Muunganisho umesimbwa fiche kwa kutumia <ph name="CIPHER" />, kwa <ph name="MAC" /> ya uthibitishaji wa ujumbe na <ph name="KX" /> kama utaratibu muhimu wa ubadilishanaji.</translation>
-<translation id="7800977246388195491">Chrome hurekodi mada zinazokuvutia kulingana na historia yako ya kuvinjari ya hivi karibuni. Pia, tovuti unazotembelea zinaweza kurekodi mambo unayopendelea. Baadaye, tovuti zinaweza kuomba taarifa hizi ili kukuonyesha matangazo yaliyowekewa mapendeleo. Unaweza kuchagua mada na tovuti ambazo zinatumika kukuonyesha matangazo.</translation>
+<translation id="7800977246388195491">Chrome hutambua mada zinazokuvutia kulingana na historia yako ya kuvinjari ya hivi karibuni. Pia, tovuti unazotembelea zinaweza kubaini mambo unayopendelea. Baadaye, tovuti zinaweza kuomba taarifa hizi ili kukuonyesha matangazo yaliyowekewa mapendeleo. Unaweza kuchagua ni mada na tovuti zipi zinatumika kukuonyesha matangazo.</translation>
 <translation id="7802523362929240268">Tovuti hii ni sahihi</translation>
 <translation id="7802989406998618639">Weka msimbo wa usalama wenye tarakimu <ph name="NUMBER_OF_DIGITS" /> ulio katika <ph name="SIDE_OF_CARD" /> ili benki yako iweze kuthibitisha ni kuwa wewe</translation>
 <translation id="780301667611848630">Hapana</translation>
@@ -3074,7 +3074,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="860043288473659153">Jina la mmiliki wa kadi</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Data gani inatumiwa:<ph name="END_BOLD" /> Shughuli zako kwenye tovuti unazotembelea ukitumia Chrome kwenye kifaa hiki.</translation>
 <translation id="8606726445206553943">Tumia vifaa vyako vya MIDI</translation>
-<translation id="8606988009912891950">Mada za matangazo husaidia tovuti kukuonyesha matangazo yanayokufaa huku zikilinda historia yako ya kuvinjari na utambulisho wako. Chrome inaweza kurekodi mada zinazokuvutia kulingana na historia yako ya kuvinjari ya hivi karibuni. Baadaye, tovuti unayoitembelea inaweza kuomba Chrome ili ione mada zinazokufaa na iweke mapendeleo ya matangazo unayoona.</translation>
+<translation id="8606988009912891950">Mada za matangazo husaidia tovuti kukuonyesha matangazo yanayokufaa huku zikilinda historia yako ya kuvinjari na utambulisho wako. Chrome inaweza kutambua mada zinazokuvutia kulingana na historia yako ya kuvinjari ya hivi karibuni. Baadaye, tovuti unayoitembelea inaweza kuiomba Chrome mada zinazokufaa ili iweke mapendeleo kwenye matangazo unayoona.</translation>
 <translation id="8617269623452051934">matumizi ya kifaa chako</translation>
 <translation id="861775596732816396">Ukubwa wa 4</translation>
 <translation id="8620276786115098679">Bahasha ya muundo wa Kaku ya ukubwa wa 7</translation>
@@ -3326,7 +3326,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="935608979562296692">FUTA FOMU</translation>
 <translation id="936602727769022409">Unaweza kupoteza uwezo wa kufikia Akaunti yako ya Google. Chromium inapendekeza ubadilishe nenosiri lako sasa. Utaombwa uingie katika akaunti.</translation>
 <translation id="937457230470581909">Bustani za wanyama, matangi ya kufugia samaki na hifadhi</translation>
-<translation id="937804173274050966"><ph name="BEGIN_BOLD" />Aina ya data inayotumiwa:<ph name="END_BOLD" /> Mada za matangazo yako zinatokana na historia yako ya kuvinjari ya hivi karibuni, orodha ya tovuti ulizotembelea kwa kutumia Chrome kwenye kifaa hiki.</translation>
+<translation id="937804173274050966"><ph name="BEGIN_BOLD" />Aina ya data inayotumiwa:<ph name="END_BOLD" /> Mada zako za matangazo hutokana na historia yako ya kuvinjari ya hivi karibuni, orodha ya tovuti ulizotembelea kwa kutumia Chrome kwenye kifaa hiki.</translation>
 <translation id="939736085109172342">Folda mpya</translation>
 <translation id="940053046584497293">Safari na usafirishaji</translation>
 <translation id="945855313015696284">Angalia maelezo yaliyo hapa chini na ufute kadi zozote ambazo si sahihi</translation>

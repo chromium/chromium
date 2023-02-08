@@ -317,7 +317,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="168693727862418163">Hierdie beleidwaarde kon nie teen die skema bekragtig word nie en sal geïgnoreer word.</translation>
 <translation id="168841957122794586">Die bedienersertifikaat bevat 'n swak kriptografiese sleutel.</translation>
 <translation id="1689333818294560261">Bynaam</translation>
-<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Bestuur jou data só:<ph name="END_BOLD" /> Chrome vee onderwerpe wat ouer as 4 weke is, outomaties uit. As jy verder blaai, kan ’n onderwerp weer op die lys verskyn. Jy kan ook onderwerpe blokkeer wat jy nie wil hê Chrome met werwe moet deel nie, en advertensie-onderwerpe enige tyd in Chrome-instellings afskakel.</translation>
+<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Hoe jy jou data kan bestuur:<ph name="END_BOLD" /> Chrome vee onderwerpe wat ouer as 4 weke is, outomaties uit. ’n Onderwerp kan weer op die lys verskyn soos wat jy aanhou blaai. Jy kan ook onderwerpe blokkeer wat jy nie wil hê Chrome met werwe moet deel nie, en advertensie-onderwerpe enige tyd in Chrome-instellings afskakel.</translation>
 <translation id="1697532407822776718">Als is nou reg!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -347,7 +347,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1736420071277903564">Rekenaar</translation>
 <translation id="1740951997222943430">Voer 'n geldige vervalmaand in</translation>
 <translation id="1741613555002899862">Moet gespesifseer en 'n geldige string wees wanneer DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> is.</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Ons gebruik hierdie data só:<ph name="END_BOLD" /> Chrome neem kennis van onderwerpe waarin jy belangstel terwyl jy blaai. Onderwerpetikette word vooraf gedefinieer en sluit dinge in soos Kuns en Vermaak, Inkopies en Sport. ’n Werf wat jy besoek, kan later vir Chrome vir ’n paar van jou onderwerpe vra (maar nie jou blaaigeskiedenis nie) om die advertensies wat jy sien, te personaliseer.</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Hoe ons hierdie data gebruik:<ph name="END_BOLD" /> Chrome neem kennis van onderwerpe waarin jy belangstel terwyl jy blaai. Onderwerpetikette word vooraf gedefinieer en sluit dinge in soos Kuns en Vermaak, Inkopies en Sport. ’n Werf wat jy besoek, kan later vir Chrome vir ’n paar van jou onderwerpe vra (maar nie jou blaaigeskiedenis nie) om die advertensies wat jy sien, te personaliseer.</translation>
 <translation id="1745880797583122200">Jou blaaier word bestuur</translation>
 <translation id="1746113442205726301">Skuif prent langs Y-as</translation>
 <translation id="1746531169546376413">0 grade</translation>
@@ -460,7 +460,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="205212645995975601">Braai en rooster</translation>
 <translation id="2053111141626950936">Bladsye in <ph name="LANGUAGE" /> sal nie vertaal word nie.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Wanneer hierdie kontrole aan is en die status aktief is, bepaal Chrome met watter groot groep mense, of "kohort", jou onlangse blaai-aktiwiteit die meeste ooreenstem. Adverteerders kan advertensies vir die groep kies en jou blaai-aktiwiteit word privaat op jou toestel gehou. Jou groep word elke dag opgedateer.}=1{Wanneer hierdie kontrole aan is en die status aktief is, bepaal Chrome met watter groot groep mense, of "kohort", jou onlangse blaai-aktiwiteit die meeste ooreenstem. Adverteerders kan advertensies vir die groep kies en jou blaai-aktiwiteit word privaat op jou toestel gehou. Jou groep word elke dag opgedateer.}other{Wanneer hierdie kontrole aan is en die status aktief is, bepaal Chrome met watter groot groep mense, of "kohort", jou onlangse blaai-aktiwiteit die meeste ooreenstem. Adverteerders kan advertensies vir die groep kies en jou blaai-aktiwiteit word privaat op jou toestel gehou. Jou groep word elke {NUM_DAYS} dae opgedateer.}}</translation>
-<translation id="2056658168519009885">Werwe kan Chrome vir inligting vra wat sal help om die advertensies wat jy sien, te personaliseer.</translation>
+<translation id="2056658168519009885">Werwe kan Chrome vir inligting vra om te help om die advertensies wat jy sien, te personaliseer.</translation>
 <translation id="2059202684901022309">22x34 dm.</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 voorstel}other{# voorstelle}}</translation>
 <translation id="2066915425250589881">versoek om uit te vee</translation>
@@ -823,7 +823,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="301521992641321250">Outomaties geblokkeer</translation>
 <translation id="3016780570757425217">Jou ligging ken</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, druk Tab en dan Enter om voorstel te verwyder.</translation>
-<translation id="3023165109041533893">Werfvoorgestelde advertensies help om jou blaaigeskiedenis en identiteit te beskerm terwyl werwe vir jou relevante advertensies kan wys. ’n Werf wat jy besoek, kan op grond van jou aktiwiteit verwante advertensies voorstel terwyl jy blaai. Jy kan ’n lys van hierdie werwe sien en in instellings dié werwe blokkeer wat jy nie wil hê nie.</translation>
+<translation id="3023165109041533893">Werfvoorgestelde advertensies help om jou blaaigeskiedenis en identiteit te beskerm terwyl werwe vir jou relevante advertensies kan wys. ’n Werf wat jy besoek, kan op grond van jou aktiwiteit verwante advertensies voorstel terwyl jy blaai. Jy kan in instellings ’n lys van hierdie werwe sien en dié werwe blokkeer wat jy nie wil hê nie.</translation>
 <translation id="3024663005179499861">Verkeerde beleidtipe</translation>
 <translation id="3029752078111257850">Wêreldnuus</translation>
 <translation id="3037177537145227281">Spoor tans prys na</translation>
@@ -916,7 +916,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om vinnig 'n nuwe geleentheid in Google Kalender te skep</translation>
 <translation id="3261488570342242926">Kom meer te wete oor virtuele kaarte</translation>
 <translation id="3264837738038045344">Knoppie om Chrome-instellings te bestuur. Druk Enter om jou Chrome-instellings te besoek</translation>
-<translation id="3266367459139339908">Ons stel tans nuwe maniere bekend om te beperk wat werwe oor jou kan leer wanneer hulle vir jou gepersonaliseerde advertensies wys, byvoorbeeld:</translation>
+<translation id="3266367459139339908">Ons stel tans nuwe maniere bekend om te beperk wat werwe oor jou kan uitvind wanneer hulle vir jou gepersonaliseerde advertensies wys, byvoorbeeld:</translation>
 <translation id="3266793032086590337">Waarde (konflik)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Geen werwe geblokkeer nie, insluitend verwante werwe}=1{1 werf geblokkeer, insluitend verwante werwe}other{# werwe geblokkeer, insluitend verwante werwe}}</translation>
 <translation id="3268451620468152448">Maak oortjies oop</translation>
@@ -1423,7 +1423,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="449126573531210296">Enkripteer gesinkroniseerde wagwoorde met jou Google-rekening</translation>
 <translation id="4492519888999857993">Hierdie kenmerke word by verstek gedeaktiveer. Hulle sal nie in toekomstige weergawes van Chrome beskikbaar wees nie.</translation>
 <translation id="4493480324863638523">Ongeldige URL. Moet 'n URL met 'n standaardskema wees, byvoorbeeld, http://example.com of https://example.com.</translation>
-<translation id="4494323206460475851">Jy kan advertensie-onderwerpe in instellings sien en dié onderwerpe blokkeer wat jy nie met werwe wil deel nie. Chrome vee ook advertensie-onderwerpe wat ouer as 4 weke is, outomaties uit.</translation>
+<translation id="4494323206460475851">Jy kan advertensie-onderwerpe in instellings sien en dié onderwerpe blokkeer wat jy nie wil hê met werwe gedeel moet word nie. Chrome vee ook advertensie-onderwerpe wat ouer as 4 weke is, outomaties uit.</translation>
 <translation id="4500587658229086076">onveilige inhoud</translation>
 <translation id="4506176782989081258">Stawingsfout: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4506599922270137252">Die stelseladministrateur kontak</translation>
@@ -1882,7 +1882,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5598944008576757369">Kies betaalmetode</translation>
 <translation id="560412284261940334">Bestuur word nie gesteun nie</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Bestuur jou data só:<ph name="END_BOLD" /> Chrome vee werwe wat ouer as 4 weke is, outomaties uit. ’n Werf wat jy weer besoek, kan weer op die lys verskyn. Jy kan ook ’n werf keer om vir jou advertensies voor te stel, en werfvoorgestelde advertensies enige tyd in Chrome-instellings afskakel.</translation>
+<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Hoe jy jou data kan bestuur:<ph name="END_BOLD" /> Chrome vee werwe wat ouer as 4 weke is, outomaties uit. ’n Werf wat jy weer besoek, kan weer op die lys verskyn. Jy kan ook enige tyd in Chrome-instellings ’n werf keer om vir jou advertensies voor te stel en werfvoorgestelde advertensies afskakel.</translation>
 <translation id="5610142619324316209">Die verbinding nagaan</translation>
 <translation id="5610807607761827392">Jy kan kaarte en adresse in <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> bestuur.</translation>
 <translation id="561165882404867731">Vertaal hierdie bladsy met Google Vertaal</translation>
@@ -2221,7 +2221,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="646793340882508547">Avontuurspeletjies</translation>
 <translation id="6468485451923838994">Lettertipes</translation>
 <translation id="647261751007945333">Toestelbeleide</translation>
-<translation id="6475672344094591109">Werwe wat jy besoek, kan Chrome vra vir inligting wat hulle help om die werkverrigting van hul advertensies te meet. Chrome beskerm jou privaatheid deur die inligting wat werwe met mekaar kan deel, te beperk.</translation>
+<translation id="6475672344094591109">Werwe wat jy besoek kan Chrome vra vir inligting wat hulle help om die werkverrigting van hul advertensies te meet. Chrome beskerm jou privaatheid deur die inligting wat werwe met mekaar kan deel, te beperk.</translation>
 <translation id="6476284679642588870">Bestuur betaalmetodes</translation>
 <translation id="6486200200930923183">Dokumentêre flieks</translation>
 <translation id="6489534406876378309">Begin om omvalle op te laai</translation>
@@ -2325,7 +2325,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6786145470008421571">Koevert 6x9 dm.</translation>
 <translation id="67862343314499040">Pers</translation>
 <translation id="6786747875388722282">Uitbreidings</translation>
-<translation id="6787094689637422836">Ons stel nuwe privaatheidkenmerke bekend wat vir jou meer keuse gee oor die advertensies wat jy sien.</translation>
+<translation id="6787094689637422836">Ons stel nuwe privaatheidkenmerke bekend wat vir jou meer van ’n keuse gee oor die advertensies wat jy sien.</translation>
 <translation id="678982761784843853">ID's van beskermde inhoud</translation>
 <translation id="6790428901817661496">Speel</translation>
 <translation id="679355240208270552">Geïgnoreer, want versteksoektog is nie deur beleid geaktiveer nie.</translation>
@@ -2633,7 +2633,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7507075214339298899">Koevert #9</translation>
 <translation id="7508255263130623398">Teruggestuurde beleidtoestel-ID is leeg of stem nie met huidige toestel-ID ooreen nie</translation>
 <translation id="7508870219247277067">Avokadogroen</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Werwe gebruik hierdie data só:<ph name="END_BOLD" /> Werwe kan inligting oor dinge waarvan jy hou, met Chrome berg. Byvoorbeeld, as jy ’n werf oor marathonvoorbereiding besoek, kan die werf dalk besluit dat jy in hardloopskoene belangstel. As jy later ’n ander werf besoek, kan daardie werf vir jou ’n advertensie vir hardloopskoene wys wat deur die eerste werf voorgestel is.</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Hoe werwe hierdie data gebruik:<ph name="END_BOLD" /> Werwe kan inligting berg met Chrome oor dinge waarvan jy hou. As jy byvoorbeeld ’n werf oor marathonvoorbereiding besoek, kan die werf dalk besluit dat jy in hardloopskoene belangstel. As jy later ’n ander werf besoek, kan daardie werf vir jou ’n advertensie vir hardloopskoene wys wat deur die eerste werf voorgestel is.</translation>
 <translation id="7510269639068718544">Katte</translation>
 <translation id="7511955381719512146">Die Wi-Fi wat jy gebruik, kan vereis dat jy <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> besoek.</translation>
 <translation id="7512685745044087310">Hierdie beleid kan nie op "Waar" gestel wees en verpligtend wees nie en daarom is dit na aanbeveel verander.</translation>
@@ -3077,7 +3077,7 @@ Bykomende besonderhede:
 <translation id="860043288473659153">Kaarthouernaam</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Watter data word gebruik:<ph name="END_BOLD" /> Jou aktiwiteit op ’n werf wat jy besoek deur Chrome op hierdie toestel te gebruik.</translation>
 <translation id="8606726445206553943">Gebruik jou MIDI-toestelle</translation>
-<translation id="8606988009912891950">Advertensie-onderwerpe help om vir jou relevante advertensies te wys terwyl dit jou blaaigeskiedenis en identiteit beskerm. Chrome kan kennis neem van onderwerpe waarin jy belangstel gegrond op jou onlangse blaaigeskiedenis. ’n Werf wat jy besoek, kan Chrome later vir relevante onderwerpe vra om die advertensies wat jy sien, te personaliseer.</translation>
+<translation id="8606988009912891950">Advertensie-onderwerpe help werwe om vir jou relevante advertensies te wys terwyl dit jou blaaigeskiedenis en identiteit beskerm. Chrome kan kennis neem van onderwerpe waarin jy belangstel gegrond op jou onlangse blaaigeskiedenis. ’n Werf wat jy besoek, kan vir Chrome later vir relevante onderwerpe vra om die advertensies wat jy sien, te personaliseer.</translation>
 <translation id="8617269623452051934">jou toestelgebruik</translation>
 <translation id="861775596732816396">Grootte 4</translation>
 <translation id="8620276786115098679">Koevert Kaku 7</translation>
@@ -3298,7 +3298,7 @@ Bykomende besonderhede:
 <translation id="9155211586651734179">Oudiorandtoestelle is aangeheg</translation>
 <translation id="9157595877708044936">Stel tans op …</translation>
 <translation id="9164742147345933553">os://flags</translation>
-<translation id="9165305804774426672">Werwe wat jy besoek, kan ook bepaal waarvan jy hou gegrond op jou aktiwiteit op die werf. Byvoorbeeld, as jy ’n werf besoek wat langafstandhardloopskoene verkoop, kan die werf dalk besluit dat jy daarin belangstel om marathons te hardloop.</translation>
+<translation id="9165305804774426672">Werwe wat jy besoek, kan ook bepaal waarvan jy hou gegrond op jou aktiwiteit op die werf. As jy byvoorbeeld ’n werf besoek wat langafstandhardloopskoene verkoop, kan die werf dalk besluit dat jy belangstel om marathons te hardloop.</translation>
 <translation id="9166851138617700776">Meer oor werfvoorgestelde advertensies en advertensiemeting</translation>
 <translation id="9168814207360376865">Laat werwe toe om te kontroleer of jy betaalmetodes gestoor het</translation>
 <translation id="9169664750068251925">Blokkeer altyd op hierdie werf</translation>

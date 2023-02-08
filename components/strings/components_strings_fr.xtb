@@ -317,7 +317,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="168693727862418163">La valeur de la règle n'a pas été validée par rapport à son schéma et sera ignorée.</translation>
 <translation id="168841957122794586">Le certificat du serveur contient une clé de chiffrement faible.</translation>
 <translation id="1689333818294560261">Pseudo</translation>
-<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Comment vous pouvez gérer vos données<ph name="END_BOLD" /> : Chrome supprime automatiquement les thèmes s'ils datent de plus de quatre semaines. Au fil de votre navigation, un thème peut réapparaître dans la liste. Vous pouvez aussi bloquer certains thèmes pour empêcher que Chrome les partage avec les sites, et désactiver les thèmes publicitaires à tout moment dans les paramètres Chrome.</translation>
+<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Comment vous pouvez gérer vos données<ph name="END_BOLD" /> : Chrome supprime automatiquement les thèmes qui datent de plus de quatre semaines. À mesure que vous continuez de naviguer, un thème peut réapparaître dans la liste. Vous pouvez aussi bloquer certains thèmes pour empêcher que Chrome les partage avec les sites, et désactiver les thèmes d'annonces à tout moment dans les paramètres Chrome.</translation>
 <translation id="1697532407822776718">Vous êtes prêt !</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -347,7 +347,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1736420071277903564">Ordinateur</translation>
 <translation id="1740951997222943430">Saisissez un mois d'expiration valide</translation>
 <translation id="1741613555002899862">Cette règle doit être spécifiée avec une chaîne valide lorsque la règle DnsOverHttpsMode est définie sur <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données<ph name="END_BOLD" /> : Chrome se base sur votre navigation pour déterminer les thèmes qui vous intéressent. Les libellés des thèmes sont prédéfinis et incluent, par exemple, "Arts et divertissements", "Shopping" et "Sport". Par la suite, un site que vous consultez pourra demander à Chrome quelques-uns de vos thèmes (mais pas votre historique de navigation) pour personnaliser les annonces qui vous seront présentées.</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données<ph name="END_BOLD" /> : Chrome se base sur votre navigation pour déterminer les thèmes qui vous intéressent. Les libellés des thèmes sont prédéfinis et incluent, par exemple, "Arts et divertissements", "Achats" et "Sports". Par la suite, un site que vous consultez pourra demander à Chrome quelques-uns de vos thèmes (mais pas votre historique de navigation) pour personnaliser les annonces qui vous seront présentées.</translation>
 <translation id="1745880797583122200">Votre navigateur est géré</translation>
 <translation id="1746113442205726301">Décalage Y de l'image</translation>
 <translation id="1746531169546376413">0 degré</translation>
@@ -948,7 +948,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3339440062908617027">Course et randonnée</translation>
 <translation id="3339446062576134663">Cloud (Ash)</translation>
 <translation id="3340978935015468852">paramètres</translation>
-<translation id="3342018947887487892">Par la suite, un site auquel vous accédez pourra demander ces informations : soit vos thèmes publicitaires, soit les annonces suggérées par les sites que vous avez consultés.</translation>
+<translation id="3342018947887487892">Par la suite, un site auquel vous accédez pourra demander ces informations : soit vos thèmes d'annonces, soit les annonces suggérées par les sites que vous avez consultés.</translation>
 <translation id="3342366525167526994">Tatouages, piercings</translation>
 <translation id="3345782426586609320">Yeux</translation>
 <translation id="3349952286488694786">SRA2</translation>
@@ -1882,7 +1882,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5598944008576757369">Sélectionner un mode de paiement</translation>
 <translation id="560412284261940334">Gestion non acceptée.</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Comment vous pouvez gérer vos données<ph name="END_BOLD" /> : Chrome supprime automatiquement les sites s'ils datent de plus de quatre semaines. Un site peut réapparaître dans la liste si vous le consultez à nouveau. Vous pouvez aussi empêcher un site de vous suggérer des annonces et désactiver les annonces suggérées par les sites à tout moment dans les paramètres Chrome.</translation>
+<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Comment vous pouvez gérer vos données<ph name="END_BOLD" /> : Chrome supprime automatiquement les sites qui datent de plus de quatre semaines. Un site peut réapparaître dans la liste si vous le consultez à nouveau. Vous pouvez aussi bloquer un site pour l'empêcher de suggérer des annonces pour vous et désactiver les annonces suggérées par les sites à tout moment dans les paramètres Chrome.</translation>
 <translation id="5610142619324316209">Vérifier la connexion</translation>
 <translation id="5610807607761827392">Vous pouvez gérer les cartes et les adresses dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Traduisez cette page avec Google Traduction</translation>
@@ -2634,7 +2634,7 @@ Informations supplémentaires :
 <translation id="7507075214339298899">Enveloppe n°9</translation>
 <translation id="7508255263130623398">L'ID d'appareil de la règle renvoyé est vide ou ne correspond pas à l'ID d'appareil actuel.</translation>
 <translation id="7508870219247277067">Vert avocat</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Comment les sites utilisent ces données<ph name="END_BOLD" /> : les sites peuvent stocker dans Chrome des informations sur vos centres d'intérêt. Par exemple, si vous consultez un site sur l'entraînement pour le marathon, le site peut déterminer que vous êtes intéressé par les chaussures de running. Par la suite, si vous consultez un autre site, il peut diffuser une annonce pour des chaussures de running suggérée par le premier site.</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Comment les sites utilisent ces données<ph name="END_BOLD" /> : Les sites peuvent stocker dans Chrome des informations sur vos centres d'intérêt. Par exemple, si vous consultez un site dédié à l'entraînement pour le marathon, le site peut déterminer que vous êtes intéressé par les chaussures de running. Par la suite, si vous consultez un autre site, celui-ci peut diffuser une annonce pour des chaussures de running, suggérée par le premier site.</translation>
 <translation id="7510269639068718544">Chats</translation>
 <translation id="7511955381719512146">Pour utiliser ce réseau Wi-Fi, il est possible que vous deviez vous rendre sur la page <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Cette règle ne peut pas être définie sur "True" et être obligatoire. Sa valeur a donc été définie sur "Recommended".</translation>
@@ -2772,7 +2772,7 @@ Informations supplémentaires :
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="7798389633136518089">Règle ignorée, car non configurée par une source cloud.</translation>
 <translation id="7800304661137206267">La connexion est chiffrée au moyen de <ph name="CIPHER" />, avec <ph name="MAC" /> pour l'authentification des messages et <ph name="KX" /> pour la méthode d'échange de clés.</translation>
-<translation id="7800977246388195491">Chrome se base sur votre historique de navigation récent pour déterminer les thèmes qui vous intéressent. De plus, les sites que vous consultez peuvent déterminer vos centres d'intérêt. Par la suite, les sites pourront demander ces informations pour vous présenter des annonces personnalisées. Vous pouvez choisir les thèmes et les sites qui sont utilisés pour vous présenter des annonces.</translation>
+<translation id="7800977246388195491">Chrome se base sur votre historique de navigation récent pour déterminer les thèmes qui vous intéressent. De plus, les sites que vous consultez peuvent déterminer vos centres d'intérêt. Par la suite, les sites peuvent demander ces informations pour vous présenter des annonces personnalisées. Vous pouvez choisir les thèmes et les sites qui sont utilisés pour vous présenter des annonces.</translation>
 <translation id="7802523362929240268">Ce site est légitime</translation>
 <translation id="7802989406998618639">Saisissez le code de sécurité à <ph name="NUMBER_OF_DIGITS" /> chiffres à l'<ph name="SIDE_OF_CARD" /> afin que votre banque puisse confirmer votre identité</translation>
 <translation id="780301667611848630">Non, merci</translation>
@@ -3076,7 +3076,7 @@ Informations supplémentaires :
 <translation id="8589998999637048520">Qualité optimale</translation>
 <translation id="8600271352425265729">Uniquement cette fois-ci</translation>
 <translation id="860043288473659153">Nom du titulaire de la carte</translation>
-<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Quelles sont les données utilisées<ph name="END_BOLD" /> : votre activité sur un site que vous consultez dans Chrome sur cet appareil.</translation>
+<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Quelles sont les données utilisées<ph name="END_BOLD" /> : Votre activité sur un site que vous consultez dans Chrome sur cet appareil.</translation>
 <translation id="8606726445206553943">Utiliser vos appareils MIDI</translation>
 <translation id="8606988009912891950">Les thèmes d'annonces aident les sites à vous présenter des annonces pertinentes tout en protégeant votre historique de navigation et votre identité. Chrome peut déterminer les thèmes qui vous intéressent en fonction de votre historique de navigation récent. Par la suite, un site que vous consultez pourra demander à Chrome des thèmes pertinents pour personnaliser les annonces qui vous seront présentées.</translation>
 <translation id="8617269623452051934">si vous utilisez cet appareil</translation>
@@ -3187,7 +3187,7 @@ Informations supplémentaires :
 <translation id="8876033571432926051">Jeux grand public</translation>
 <translation id="8877780815363510165">Pêche</translation>
 <translation id="8884537526797090108">Impossible d'enregistrer un contenu confidentiel</translation>
-<translation id="8890798179125483517">Chrome supprime automatiquement les thèmes et les sites qui suggèrent des annonces s'ils datent de plus de quatre semaines. Vous pouvez aussi bloquer des thèmes et des sites spécifiques que vous n'aimez pas.</translation>
+<translation id="8890798179125483517">Chrome supprime automatiquement les thèmes et les sites qui suggèrent des annonces qui datent de plus de quatre semaines. Vous pouvez aussi bloquer des thèmes spécifiques et des sites que vous n'aimez pas.</translation>
 <translation id="8891727572606052622">Mode proxy non valide.</translation>
 <translation id="8894794286471754040">Bord long en premier</translation>
 <translation id="8897428486789851669">Natation</translation>
@@ -3300,7 +3300,7 @@ Informations supplémentaires :
 <translation id="9157595877708044936">Configuration en cours...</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Les sites que vous consultez peuvent aussi déterminer vos centres d'intérêt en fonction de votre activité sur ces sites. Par exemple, si vous consultez un site qui vend des chaussures de running pour les longues distances, le site peut déterminer que le marathon fait partie de vos centres d'intérêt.</translation>
-<translation id="9166851138617700776">En savoir plus sur la mesure des performances des annonces et les annonces suggérées par les sites</translation>
+<translation id="9166851138617700776">En savoir plus sur les annonces suggérées par les sites et la mesure des performances des annonces</translation>
 <translation id="9168814207360376865">Autoriser les sites à vérifier si vous avez enregistré des modes de paiement</translation>
 <translation id="9169664750068251925">Toujours bloquer sur ce site</translation>
 <translation id="9169931577761441333">Ajouter <ph name="APP_NAME" /> à l'écran d'accueil</translation>
@@ -3330,7 +3330,7 @@ Informations supplémentaires :
 <translation id="935608979562296692">EFFACER LE FORMULAIRE</translation>
 <translation id="936602727769022409">Vous pourriez perdre l'accès à votre compte Google. L'équipe Chromium vous recommande de modifier votre mot de passe maintenant. Vous devrez vous connecter.</translation>
 <translation id="937457230470581909">Zoos, aquariums et réserves</translation>
-<translation id="937804173274050966"><ph name="BEGIN_BOLD" />Quelles sont les données utilisées<ph name="END_BOLD" /> : vos thèmes publicitaires sont basés sur votre historique de navigation récent, qui liste les sites auxquels vous avez accédé dans Chrome sur cet appareil.</translation>
+<translation id="937804173274050966"><ph name="BEGIN_BOLD" />Quelles sont les données utilisées<ph name="END_BOLD" /> : Vos thèmes d'annonces sont basés sur votre historique de navigation récent, qui liste les sites auxquels vous avez accédé dans Chrome sur cet appareil.</translation>
 <translation id="939736085109172342">Nouveau dossier</translation>
 <translation id="940053046584497293">Voyages et transports</translation>
 <translation id="945855313015696284">Vérifiez les informations ci-dessous et supprimez les cartes non valides</translation>

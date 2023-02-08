@@ -317,7 +317,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="168693727862418163">Bu politika değeri, şemasına göre doğrulanamadı, yok sayılacak.</translation>
 <translation id="168841957122794586">Sunucu sertifikasında zayıf bir şifreleme anahtarı var.</translation>
 <translation id="1689333818294560261">Takma ad</translation>
-<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Verilerinizi yönetme:<ph name="END_BOLD" /> Chrome, 4 haftadan daha eski konuları otomatik olarak siler. Siz internette gezindikçe bir konu tekrar listede görünmeye başlayabilir. Ayrıca, dilediğiniz zaman Chrome ayarlarından Chrome'un sitelerle paylaşmasını istemediğiniz konuları engelleyebilir ve reklam konularını kapatabilirsiniz.</translation>
+<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Verilerinizi nasıl yönetebilirsiniz?<ph name="END_BOLD" /> Chrome, 4 haftadan daha eski konuları otomatik olarak siler. Siz internette gezindikçe bir konu tekrar listede görünmeye başlayabilir. Chrome ayarlarından Chrome'un sitelerle paylaşmasını istemediğiniz konuları engelleyebilir, reklam konularını kapatabilirsiniz.</translation>
 <translation id="1697532407822776718">Artık hazırsınız!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -347,7 +347,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1736420071277903564">Bilgisayar</translation>
 <translation id="1740951997222943430">Geçerli bir son kullanma ayı girin</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> olduğunda, DnsOverHttpsTemplate belirtilmeli ve geçerli bir dize olmalıdır.</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Bu verileri kullanma şeklimiz:<ph name="END_BOLD" /> Chrome, siz internette gezindikçe ilgi alanlarınızı not eder. Konu etiketleri önceden tanımlanmış olup sanat ve eğlence, alışveriş ve spor gibi konuları içerir. Daha sonrasında ziyaret ettiğiniz bir site, gördüğünüz reklamları kişiselleştirmek için Chrome'dan birkaç konuyu (tarama geçmişinizi değil) göstermesini isteyebilir.</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Bu verileri nasıl kullanırız?<ph name="END_BOLD" /> Chrome, siz internette gezindikçe ilgi alanlarınızı not eder. Konu etiketleri önceden tanımlanmış olup sanat ve eğlence, alışveriş ve spor gibi konuları içerir. Daha sonrasında ziyaret ettiğiniz bir site, gördüğünüz reklamları kişiselleştirmek için Chrome'dan birkaç konuyu (tarama geçmişinizi değil) göstermesini isteyebilir.</translation>
 <translation id="1745880797583122200">Tarayıcınız yönetilmektedir</translation>
 <translation id="1746113442205726301">Resim Y kayması</translation>
 <translation id="1746531169546376413">0 derece</translation>
@@ -948,7 +948,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3339440062908617027">Koşu ve yürüyüş</translation>
 <translation id="3339446062576134663">Bulut (Ash)</translation>
 <translation id="3340978935015468852">ayarlar</translation>
-<translation id="3342018947887487892">Daha sonrasında ziyaret ettiğiniz bir site, reklam konularınız veya ziyaret ettiğiniz siteler tarafından önerilen reklamlar gibi bilgileri isteyebilir.</translation>
+<translation id="3342018947887487892">Daha sonra ziyaret ettiğiniz bir site, reklam konularınız veya ziyaret ettiğiniz siteler tarafından önerilen reklamlar gibi bilgileri isteyebilir.</translation>
 <translation id="3342366525167526994">Beden sanatı</translation>
 <translation id="3345782426586609320">Gözler</translation>
 <translation id="3349952286488694786">SRA2</translation>
@@ -1229,7 +1229,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4063924980214801036">Kartları daha hızlı onaylamak için cihazda kilit açma kullanın</translation>
 <translation id="4067098466788473230">Eğitim yardımları ve burslar</translation>
 <translation id="4067947977115446013">Geçerli Adres Ekleyin</translation>
-<translation id="4070790659619547722">Reklam ölçümünde, reklamlarının performansını ölçmek isteyen siteler arasında, bir reklamın size gösterildiği saat gibi sınırlı veri türleri paylaşılır.</translation>
+<translation id="4070790659619547722">Reklam ölçümü, sitelerin gösterdikleri reklamların performansını ölçmeleri için sınırlı türde verinin uygulamalar arasında paylaşılmasını sağlar. Örneğin reklamın size gösterildiği saat gibi bilgiler paylaşılır.</translation>
 <translation id="4072193657607981494">Politikalar yükleniyor</translation>
 <translation id="4072486802667267160">Ödemeniz işlenirken bir hata oluştu. Lütfen tekrar deneyin.</translation>
 <translation id="4073376909608563327">Cihazda kilit açma kullanılamadı</translation>
@@ -1423,7 +1423,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="449126573531210296">Senkronize edilen şifreleri Google Hesabınızla şifreleyin</translation>
 <translation id="4492519888999857993">Bu özellikler varsayılan olarak devre dışı bırakılmıştır. Chrome'un gelecek sürümlerinde kullanılamayacaktır.</translation>
 <translation id="4493480324863638523">Geçersiz URL. Standart şemaya sahip bir URL olmalıdır. Ör. http://example.com veya https://example.com.</translation>
-<translation id="4494323206460475851">Reklam konularını ayarlarda görebilir ve sitelerle paylaşılmasını istemediğiniz konuları engelleyebilirsiniz. Chrome, 4 haftadan daha eski reklam konularını da otomatik olarak siler.</translation>
+<translation id="4494323206460475851">Reklam konularını ayarlarda görebilir ve sitelerle paylaşılmasını istemediğiniz konuları engelleyebilirsiniz. Ayrıca Chrome, 4 haftadan daha eski reklam konularını otomatik olarak siler.</translation>
 <translation id="4500587658229086076">güvenli olmayan içerik</translation>
 <translation id="4506176782989081258">Doğrulama hatası: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Sistem yöneticisiyle iletişime geçme</translation>
@@ -1882,7 +1882,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5598944008576757369">Ödeme Yöntemi Seç</translation>
 <translation id="560412284261940334">Yönetim desteklenmiyor</translation>
 <translation id="5605670050355397069">Ana Defter</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Verilerinizi yönetme:<ph name="END_BOLD" /> Chrome, 4 haftadan daha uzun süre önce ziyaret edilmiş siteleri otomatik olarak siler. Tekrar ziyaret ettiğiniz siteler yine listede görünebilir. Ayrıca, dilediğiniz zaman Chrome ayarlarından bir sitenin size reklam önermesini engelleyebilir ve site tarafından önerilen reklamları devre dışı bırakabilirsiniz.</translation>
+<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Verilerinizi nasıl yönetebilirsiniz?<ph name="END_BOLD" /> Chrome, 4 haftadan daha uzun süre önce ziyaret edilmiş siteleri otomatik olarak siler. Tekrar ziyaret ettiğiniz siteler yine listede görünebilir. Ayrıca, dilediğiniz zaman Chrome ayarlarından bir sitenin size reklam önermesini engelleyebilir ve site tarafından önerilen reklamları devre dışı bırakabilirsiniz.</translation>
 <translation id="5610142619324316209">Bağlantınızı kontrol etme</translation>
 <translation id="5610807607761827392">Kartları ve adresleri <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" />'da yönetebilirsiniz.</translation>
 <translation id="561165882404867731">Bu sayfayı Google Çeviri'yle çevirin</translation>
@@ -2059,7 +2059,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6051221802930200923"><ph name="SITE" /> sitesi sertifika sabitleme yöntemi kullandığından siteyi şu anda ziyaret edemezsiniz. Ağ hataları ve saldırılar genellikle geçici olduğundan bu sayfa muhtemelen daha sonra çalışacaktır.</translation>
 <translation id="6051898664905071243">Sayfa sayısı:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053735090575989697">Google'ın verilerinizi nasıl koruduğu hakkında daha fazla bilgiyi gizlilik politikamızda bulabilirsiniz.</translation>
+<translation id="6053735090575989697">Google'ın verilerinizi nasıl koruduğuyla ilgili daha fazla bilgi için Gizlilik Politikamıza göz atın.</translation>
 <translation id="6055888660316801977">Eşleşmeyen güvenli ödeme kimlik bilgisi sayfası</translation>
 <translation id="6058977677006700226">Kartlarınızı tüm cihazlarınızda kullanmak istiyor musunuz?</translation>
 <translation id="6059925163896151826">USB cihazları</translation>
@@ -2221,7 +2221,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="646793340882508547">Macera oyunları</translation>
 <translation id="6468485451923838994">Yazı tipleri</translation>
 <translation id="647261751007945333">Cihaz politikaları</translation>
-<translation id="6475672344094591109">Ziyaret ettiğiniz siteler, reklamlarının performansını ölçmek için Chrome'dan bilgi isteyebilir. Chrome, sitelerin birbirleriyle paylaşabileceği bilgileri sınırlandırarak gizliliğinizi korur.</translation>
+<translation id="6475672344094591109">Ziyaret ettiğiniz siteler, reklamlarının performansını ölçmek için Chrome'dan bilgi isteyebilir. Chrome, sitelerin diğer sitelerle paylaşabileceği bilgileri sınırlandırarak gizliliğinizi korur.</translation>
 <translation id="6476284679642588870">Ödeme yöntemlerini yönet</translation>
 <translation id="6486200200930923183">Belgesel filmler</translation>
 <translation id="6489534406876378309">Kilitlenmeleri yüklemeye başla</translation>
@@ -2633,7 +2633,7 @@ Ek ayrıntılar:
 <translation id="7507075214339298899">Zarf #9</translation>
 <translation id="7508255263130623398">Döndürülen politika cihaz kimliği boş veya mevcut cihaz kimliğiyle eşleşmiyor</translation>
 <translation id="7508870219247277067">Avokado Yeşili</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Sitelerin bu verileri kullanma şekli:<ph name="END_BOLD" /> Siteler, hoşlandığınız konularla bilgileri Chrome'da saklayabilir. Örneğin, maraton eğitimiyle ilgili bir siteyi ziyaret ederseniz bu site, koşu ayakkabılarıyla ilgilendiğinize karar verebilir. Daha sonra farklı bir siteyi ziyaret ettiğinizde de o site, ilk sitenin önerisi üzerine koşu ayakkabısı reklamı gösterebilir.</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Siteler bu verileri nasıl kullanır?<ph name="END_BOLD" /> Siteler, hoşlandığınız konularla ilgili bilgileri Chrome'da saklayabilir. Örneğin, maraton eğitimiyle ilgili bir siteyi ziyaret ederseniz bu site, koşu ayakkabılarıyla ilgilendiğinize karar verebilir. Daha sonra farklı bir siteyi ziyaret ettiğinizde de o site, ilk sitenin önerisi üzerine koşu ayakkabısı reklamı gösterebilir.</translation>
 <translation id="7510269639068718544">Kediler</translation>
 <translation id="7511955381719512146">Kullandığınız kablosuz bağlantı ağı, <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> adresini ziyaret etmenizi gerektiriyor olabilir.</translation>
 <translation id="7512685745044087310">Bu politika "Doğru" değerine ayarlanamadığı ve zorunlu tutulamadığı için önerilen olarak değiştirildi.</translation>
@@ -2771,7 +2771,7 @@ Ek ayrıntılar:
 <translation id="7791543448312431591">Ekle</translation>
 <translation id="7798389633136518089">Politika bir bulut kaynağı tarafından belirlenmediği için yok sayıldı.</translation>
 <translation id="7800304661137206267">Bağlantı, ileti kimlik doğrulaması için <ph name="MAC" /> ve anahtar değişim mekanizması olarak <ph name="KX" /> kullanılan <ph name="CIPHER" /> ile şifrelenmiştir.</translation>
-<translation id="7800977246388195491">Chrome, son tarama geçmişinize göre ilgi alanlarınızı not eder. Ayrıca, ziyaret ettiğiniz siteler nelerden hoşlandığınızı belirleyebilir. Daha sonrasında siteler size kişiselleştirilmiş reklamlar göstermek için bu bilgileri isteyebilir. Size reklam göstermek için hangi konuların ve sitelerin kullanılacağını seçebilirsiniz.</translation>
+<translation id="7800977246388195491">Chrome, son tarama geçmişinize bağlı olarak ilgilendiğiniz konuları not eder. Ayrıca, ziyaret ettiğiniz siteler nelerden hoşlandığınızı belirleyebilir. Daha sonrasında siteler size kişiselleştirilmiş reklamlar göstermek için bu bilgileri isteyebilir. Size reklam göstermek için hangi konuların ve sitelerin kullanılacağını seçebilirsiniz.</translation>
 <translation id="7802523362929240268">Site meşrudur</translation>
 <translation id="7802989406998618639">Bankanızın kimliğinizi doğrulayabilmesi için <ph name="SIDE_OF_CARD" /> yer alan <ph name="NUMBER_OF_DIGITS" /> basamaklı güvenlik kodunu girin</translation>
 <translation id="780301667611848630">Hayır, teşekkürler</translation>
@@ -3076,9 +3076,9 @@ Ek ayrıntılar:
 <translation id="8589998999637048520">En iyi kalite</translation>
 <translation id="8600271352425265729">Yalnız bu sefer</translation>
 <translation id="860043288473659153">Kart sahibinin adı</translation>
-<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Kullanılan veriler:<ph name="END_BOLD" /> Bu cihazda Chrome'u kullanarak ziyaret ettiğiniz bir sitedeki etkinliğiniz.</translation>
+<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Hangi veriler kullanılır?<ph name="END_BOLD" /> Bu cihazda Chrome'u kullanarak ziyaret ettiğiniz bir sitedeki etkinliğiniz.</translation>
 <translation id="8606726445206553943">MIDI cihazlarınızı kullanma</translation>
-<translation id="8606988009912891950">Reklam konuları, sitelerin size alakalı reklamlar göstermesine yardımcı olurken tarama geçmişinizi ve kimliğinizi korur. Chrome, son tarama geçmişinize göre ilgi alanlarınızı not edebilir. Daha sonrasında ziyaret ettiğiniz bir site, gördüğünüz reklamları kişiselleştirmek için Chrome'dan alakalı konuları göstermesini isteyebilir.</translation>
+<translation id="8606988009912891950">Reklam konuları, sitelerin size alakalı reklamlar göstermesine yardımcı olurken tarama geçmişinizi ve kimliğinizi korur. Chrome, son tarama geçmişinize bağlı olarak alanlarınızı not edebilir. Daha sonrasında ziyaret ettiğiniz bir site, gördüğünüz reklamları kişiselleştirmek için Chrome'dan alakalı konuları göstermesini isteyebilir.</translation>
 <translation id="8617269623452051934">cihaz kullanımınız</translation>
 <translation id="861775596732816396">Boyut 4</translation>
 <translation id="8620276786115098679">Zarf Kaku 7</translation>
@@ -3299,8 +3299,8 @@ Ek ayrıntılar:
 <translation id="9155211586651734179">Takılı durumdaki ses çevre birimleri</translation>
 <translation id="9157595877708044936">Ayarlanıyor...</translation>
 <translation id="9164742147345933553">os://flags</translation>
-<translation id="9165305804774426672">Ziyaret ettiğiniz siteler, sitedeki etkinliğinize göre nelerden hoşlandığınızı da belirleyebilir. Örneğin, uzun mesafe koşu ayakkabıları satan bir siteyi ziyaret ederseniz bu site maraton koşularıyla ilgilendiğinize karar verebilir.</translation>
-<translation id="9166851138617700776">Site tarafından önerilen reklamlar ve reklam ölçümü hakkında daha fazla bilgi</translation>
+<translation id="9165305804774426672">Ziyaret ettiğiniz siteler, sitedeki etkinliğinize bağlı olarak da nelerden hoşlandığınızı belirleyebilir. Örneğin, uzun mesafe koşu ayakkabıları satan bir siteyi ziyaret ederseniz bu site maraton koşularıyla ilgilendiğinize karar verebilir.</translation>
+<translation id="9166851138617700776">Site tarafından önerilen reklamlar ve reklam ölçümleriyle ilgili daha fazla bilgi</translation>
 <translation id="9168814207360376865">Sitelerin, kayıtlı ödeme yöntemleriniz olup olmadığını kontrol etmesine izin verin</translation>
 <translation id="9169664750068251925">Bu sitede her zaman engelle</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> uygulamasını Ana ekrana ekle</translation>

@@ -317,7 +317,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="168693727862418163">Vërtetimi i kësaj vlere të politikës kundrejt skemës së saj dështoi dhe do të shpërfillet.</translation>
 <translation id="168841957122794586">Certifikata e serverit përmban një çelës të dobët kriptografik.</translation>
 <translation id="1689333818294560261">Pseudonimi</translation>
-<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Si mund t'i menaxhosh të dhënat e tua:<ph name="END_BOLD" /> Chrome i fshin automatikisht temat që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një temë mund të shfaqet përsëri në listë. Mund t'i bllokosh po ashtu temat që nuk dëshiron që Chrome t'i ndajë me sajtet dhe mund t'i çaktivizosh temat e reklamave në çdo kohë te cilësimet e Chrome.</translation>
+<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Si mund t'i menaxhosh të dhënat e tua:<ph name="END_BOLD" /> Chrome i fshin në mënyrë automatike temat që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një temë mund të shfaqet përsëri në listë. Mund t'i bllokosh po ashtu temat që nuk dëshiron që Chrome t'i ndajë me sajtet dhe të çaktivizosh temat e reklamave në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="1697532407822776718">Je gati!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -460,7 +460,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="205212645995975601">Skara dhe pjekja në skarë</translation>
 <translation id="2053111141626950936">Faqet në <ph name="LANGUAGE" /> nuk do të përkthehen.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Kur ky kontroll është aktiv dhe statusi është aktiv, Chrome përcakton se me cilin grup të madh personash (kohortë) është më i ngjashëm aktiviteti yt i shfletimit së fundi. Reklamuesit mund të zgjedhin reklamat për grupin dhe aktiviteti yt i shfletimit mbahet privat në pajisjen tënde. Grupi yt përditësohet çdo ditë.}=1{Kur ky kontroll është aktiv dhe statusi është aktiv, Chrome përcakton se me cilin grup të madh personash (kohortë) është më i ngjashëm aktiviteti yt i shfletimit së fundi. Reklamuesit mund të zgjedhin reklamat për grupin dhe aktiviteti yt i shfletimit mbahet privat në pajisjen tënde. Grupi yt përditësohet çdo ditë.}other{Kur ky kontroll është aktiv dhe statusi është aktiv, Chrome përcakton se me cilin grup të madh personash (kohortë) është më i ngjashëm aktiviteti yt i shfletimit së fundi. Reklamuesit mund të zgjedhin reklamat për grupin dhe aktiviteti yt i shfletimit mbahet privat në pajisjen tënde. Grupi yt përditësohet çdo {NUM_DAYS} ditë.}}</translation>
-<translation id="2056658168519009885">Sajtet mund të kërkojnë informacione nga Chrome për t'i ndihmuar në personalizimin e reklamave që shikon ti.</translation>
+<translation id="2056658168519009885">Sajtet mund t'i kërkojnë informacione Chrome për t'i ndihmuar në personalizimin e reklamave që shikon ti.</translation>
 <translation id="2059202684901022309">22 x 34 inç</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugjerim}other{# sugjerime}}</translation>
 <translation id="2066915425250589881">të kërkosh që të fshihen</translation>
@@ -823,7 +823,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="301521992641321250">Bllokuar automatikisht</translation>
 <translation id="3016780570757425217">Njihu me vendndodhjen tënde</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, shtyp Tab dhe më pas shtyp Enter për të hequr sugjerimin.</translation>
-<translation id="3023165109041533893">Reklamat e sugjeruara nga sajtet ndihmojnë në mbrojtjen e historikut të shfletimit dhe identitetit tënd ndërkohë që bëjnë të mundur që sajtet të të shfaqin reklama të përshtatshme. Bazuar në aktivitetin tënd, një sajt që ke vizituar mund të sugjerojë reklama të ngjashme ndërkohë që ti vazhdon të shfletosh. Mund të shikosh një listë të këtyre sajteve dhe të bllokosh ato që nuk dëshiron te cilësimet.</translation>
+<translation id="3023165109041533893">Reklamat e sugjeruara nga sajtet ndihmojnë në mbrojtjen e historikut të shfletimit dhe identitetit tënd ndërkohë që bëjnë të mundur që sajtet të të shfaqin reklama të përshtatshme. Bazuar në aktivitetin tënd, një sajt që ke vizituar mund të sugjerojë reklama të ngjashme ndërkohë që ti vazhdon të shfletosh. Te cilësimet mund të shikosh një listë të këtyre sajteve dhe të bllokosh ato që nuk dëshiron.</translation>
 <translation id="3024663005179499861">Lloj i gabuar politike</translation>
 <translation id="3029752078111257850">Lajmet nga bota</translation>
 <translation id="3037177537145227281">Çmimi po monitorohet</translation>
@@ -916,7 +916,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të krijuar shpejt një ngjarje të re në "Google Calendar"</translation>
 <translation id="3261488570342242926">Mëso rreth kartave virtuale</translation>
 <translation id="3264837738038045344">Butoni "Menaxho cilësimet e Chrome". Shtyp "Enter" për të vizituar cilësimet e Chrome</translation>
-<translation id="3266367459139339908">Ne po prezantojmë mënyra të reja për të kufizuar se çfarë mund të mësojnë sajtet për ty kur të shfaqin reklama të personalizuara, për shembull:</translation>
+<translation id="3266367459139339908">Ne po prezantojmë mënyra të reja për të kufizuar se çfarë mund të mësojnë sajtet rreth teje kur të shfaqin reklama të personalizuara, për shembull:</translation>
 <translation id="3266793032086590337">Vlera (konflikt)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Nuk është bllokuar asnjë sajt, duke përfshirë sajtet e lidhura}=1{1 sajt i bllokuar, duke përfshirë sajtet e lidhura}other{# sajte të lidhura, duke përfshirë sajtet e lidhura}}</translation>
 <translation id="3268451620468152448">Hap skedat</translation>
@@ -1229,7 +1229,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4063924980214801036">Përdor shkyçjen e pajisjes për të konfirmuar kartat më shpejt</translation>
 <translation id="4067098466788473230">Grantet dhe bursat e studimit</translation>
 <translation id="4067947977115446013">Shto adresë të vlefshme</translation>
-<translation id="4070790659619547722">Me matjen e reklamave, lloje të kufizuara të të dhënave ndahen mes sajteve për të matur performancën e reklamave të tyre, si p.sh. ora kur të është shfaqur reklama.</translation>
+<translation id="4070790659619547722">Me matjen e reklamave, lloje të kufizuara të dhënash ndahen mes sajteve për të matur performancën e reklamave të tyre, si p.sh. ora kur të është shfaqur reklama.</translation>
 <translation id="4072193657607981494">Po ngarkohen politikat</translation>
 <translation id="4072486802667267160">Ndodhi një gabim gjatë përpunimit të porosisë. Provo përsëri.</translation>
 <translation id="4073376909608563327">Shkyçja e pajisjes nuk mund të përdorej</translation>
@@ -1423,7 +1423,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="449126573531210296">Enkripto fjalëkalimet e sinkronizuara me "Llogarinë tënde të Google"</translation>
 <translation id="4492519888999857993">Këto veçori janë të çaktivizuara si parazgjedhje. Ato nuk do të ofrohen në versionet e ardhshme të Chrome.</translation>
 <translation id="4493480324863638523">URL e pavlefshme. Duhet të jetë URL me një skemë standarde, p.sh. http://shembull.com ose https://shembull.com.</translation>
-<translation id="4494323206460475851">Mund të shikosh temat e reklamave te cilësimet dhe të bllokosh ato që nuk dëshiron të ndahen me sajtet. Chrome gjithashtu i fshin automatikisht temat e reklamave që janë më të vjetra se 4 javë.</translation>
+<translation id="4494323206460475851">Mund të shikosh temat e reklamave te cilësimet dhe të bllokosh ato që nuk dëshiron të ndahen me sajtet. Gjithashtu, Android i fshin në mënyrë autokatike temat e reklamave që janë më të vjetra se 4 javë.</translation>
 <translation id="4500587658229086076">përmbajtja e pasigurt</translation>
 <translation id="4506176782989081258">Gabim i miratimit: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Të kontaktosh me administratorin e sistemit</translation>
@@ -1882,7 +1882,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5598944008576757369">Zgjidh mënyrën e pagesës</translation>
 <translation id="560412284261940334">Menaxhimi nuk mbështetet</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Si mund t'i menaxhosh të dhënat e tua:<ph name="END_BOLD" /> Chrome i fshin automatikisht sajtet që janë më të vjetra se 4 javë. Një sajt që e viziton përsëri mund të shfaqet përsëri në listë. Mund ta bllokosh një sajt që të mos sugjerojë reklama për ty dhe mund t'i çaktivizosh reklamat e sugjeruara nga sajtet në çdo kohë te cilësimet e Chrome.</translation>
+<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Si mund t'i menaxhosh të dhënat e tua:<ph name="END_BOLD" /> Chrome i fshin në mënyrë automatike sajtet që janë më të vjetra se 4 javë. Një sajt që e viziton përsëri mund të shfaqet përsëri në listë. Gjithashtu mund të bllokosh një sajt që të mos sugjerojë reklama për ty dhe mund t'i çaktivizosh reklamat e sugjeruara nga sajtet në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="5610142619324316209">Të kontrollosh lidhjen</translation>
 <translation id="5610807607761827392">Mund t'i menaxhosh kartat dhe adresat te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Përktheje këtë faqe me "Përkthe me Google"</translation>
@@ -2220,7 +2220,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="646793340882508547">Lojërat aventurë</translation>
 <translation id="6468485451923838994">Shkrimet</translation>
 <translation id="647261751007945333">Politikat e pajisjes</translation>
-<translation id="6475672344094591109">Sajtet që viziton mund të kërkojnë informacione nga Chrome që i ndihmojnë ato të matin performancën e reklamave të tyre. Chrome e mbron privatësinë tënde duke kufizuar informacionet që mund të ndajnë sajtet me njëra-tjetrën.</translation>
+<translation id="6475672344094591109">Sajtet që viziton ti mund t'i kërkojnë informacione Chrome për t'i ndihmuar të matin performancën e reklamave të tyre. Chrome mbron privatësinë tënde duke kufizuar informacionet që mund të ndajnë sajtet me njëra-tjetrën.</translation>
 <translation id="6476284679642588870">Menaxho mënyrat e pagesës</translation>
 <translation id="6486200200930923183">Filmat dokumentarë</translation>
 <translation id="6489534406876378309">Nis ngarkimin e ndërprerjeve aksidentale</translation>
@@ -2632,7 +2632,7 @@ Detaje shtesë:
 <translation id="7507075214339298899">Zarf nr. 9</translation>
 <translation id="7508255263130623398">ID-ja e kthyer e pajisjes së politikës është bosh ose nuk përputhet me ID-në e pajisjes aktuale</translation>
 <translation id="7508870219247277067">Jeshile avokadoje</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Si i përdorin sajtet këto të dhëna:<ph name="END_BOLD" /> Sajtet mund të ruajnë informacione në Chrome për gjërat që të pëlqejnë. Për shembull, nëse viziton një sajt për stërvitje për maratona, sajti mund të vendosë se je i interesuar për atlete për vrapim. Më vonë, nëse viziton një sajt tjetër, ai sajt mund të të shfaqë një reklamë për atlete për vrapim sipas sugjerimit nga sajti i parë.</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Si i përdorin sajtet këto të dhëna:<ph name="END_BOLD" /> Sajtet mund të ruajnë informacione në Chrome për gjërat që të pëlqejnë. Për shembull, nëse ti viziton një sajt për trajnim për maratonë, sajti mund të vendosë që të interesojnë atlete vrapimi. Më vonë, nëse viziton një sajt tjetër, ai sajt mund të të shfaqë një reklamë për atlete vrapimi sipas sugjerimit të aplikacionit të parë.</translation>
 <translation id="7510269639068718544">Macet</translation>
 <translation id="7511955381719512146">Wi-Fi që po përdor mund të kërkojë që të vizitosh <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Kjo politikë nuk mund të caktohet në "E vërtetë" dhe të bëhet e detyrueshme, prandaj u ndryshua në "E rekomanduar".</translation>
@@ -2764,7 +2764,7 @@ Detaje shtesë:
 <translation id="7766518757692125295">Bordura</translation>
 <translation id="7773005668374414287">E njëjta renditje e kthyer lart</translation>
 <translation id="7785790577395078482">këtë tablet</translation>
-<translation id="7790488044432570133">Sajtet që viziton mund të kërkojnë informacione nga Chrome për t'i ndihmuar ato të matin performancën e reklamave të tyre. Chrome lejon që sajtet të mbledhin lloje të kufizuara të të dhënave, si p.sh. orën kur të është shfaqur një reklamë.</translation>
+<translation id="7790488044432570133">Sajtet që viziton ti mund t'i kërkojnë informacione Chrome për t'i ndihmuar të matin performancën e reklamave të tyre. Chrome lejon që sajtet të mbledhin lloje të kufizuara të të dhënave, si p.sh. orën kur të është shfaqur një reklamë.</translation>
 <translation id="7791011319128895129">E papublikuar</translation>
 <translation id="7791196057686275387">Lidhja në stivë</translation>
 <translation id="7791543448312431591">Shtoje</translation>
@@ -3185,7 +3185,7 @@ Detaje shtesë:
 <translation id="8876033571432926051">Lojërat e rastësishme</translation>
 <translation id="8877780815363510165">Peshkimi</translation>
 <translation id="8884537526797090108">Nuk mund të regjistrojë përmbajtje konfidenciale</translation>
-<translation id="8890798179125483517">Chrome i fshin automatikisht temat dhe sajtet që sugjerojnë reklama që janë më të vjetra se 4 javë. Ose mund t'i bllokosh temat dhe sajtet specifike që nuk të pëlqejnë.</translation>
+<translation id="8890798179125483517">Chrome i fshin në mënyrë automatike temat dhe sajtet që sugjerojnë reklama që janë më të vjetra se 4 javë. Ose mund t'i bllokosh temat dhe sajtet specifike që nuk të pëlqejnë.</translation>
 <translation id="8891727572606052622">Modalitet i pavlefshëm përfaqësuesi.</translation>
 <translation id="8894794286471754040">Ana e gjatë në fillim</translation>
 <translation id="8897428486789851669">Noti</translation>

@@ -948,7 +948,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3339440062908617027">Caminar i córrer</translation>
 <translation id="3339446062576134663">Al núvol (Ash)</translation>
 <translation id="3340978935015468852">configuració</translation>
-<translation id="3342018947887487892">Després, un lloc web que visitis pot demanar aquesta informació, siguin els temes d'anuncis o siguin els anuncis suggerits per llocs web que has visitat.</translation>
+<translation id="3342018947887487892">Més tard, un lloc web que visitis pot demanar aquesta informació, ja siguin els temes d'anuncis o els anuncis suggerits pels llocs web que has visitat.</translation>
 <translation id="3342366525167526994">Art corporal</translation>
 <translation id="3345782426586609320">Ulls</translation>
 <translation id="3349952286488694786">SRA2</translation>
@@ -1229,7 +1229,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4063924980214801036">Utilitza el desbloqueig del dispositiu per confirmar les targetes més ràpidament</translation>
 <translation id="4067098466788473230">Beques i ajudes per als estudis</translation>
 <translation id="4067947977115446013">Afegeix una adreça vàlida</translation>
-<translation id="4070790659619547722">Amb el mesurament d'anuncis, es comparteixen tipus de dades limitats entre llocs web per mesurar el rendiment dels anuncis, com ara l'hora en què se t'ha mostrat un anunci.</translation>
+<translation id="4070790659619547722">Amb el mesurament d'anuncis, es comparteixen tipus de dades limitats entre els llocs web per mesurar el rendiment dels seus anuncis, com ara l'hora en què se t'ha mostrat un anunci.</translation>
 <translation id="4072193657607981494">S'estan carregant les polítiques</translation>
 <translation id="4072486802667267160">S’ha produït un error en processar la comanda. Torna-ho a provar.</translation>
 <translation id="4073376909608563327">No s'ha pogut utilitzar el desbloqueig del dispositiu</translation>
@@ -2221,7 +2221,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="646793340882508547">Jocs d’aventura</translation>
 <translation id="6468485451923838994">Fonts</translation>
 <translation id="647261751007945333">Polítiques de dispositius</translation>
-<translation id="6475672344094591109">Els llocs web que visites poden demanar a Chrome informació que els ajudi a mesurar el rendiment dels anuncis. Chrome protegeix la teva privadesa limitant la informació que els llocs web poden compartir entre ells.</translation>
+<translation id="6475672344094591109">Els llocs web que visites poden demanar a Chrome informació que els ajuda a mesurar el rendiment dels seus anuncis. Chrome protegeix la teva privadesa limitant la informació que els llocs web poden compartir entre ells.</translation>
 <translation id="6476284679642588870">Gestiona les formes de pagament</translation>
 <translation id="6486200200930923183">Documentals</translation>
 <translation id="6489534406876378309">Comença a penjar els errors</translation>
@@ -2325,7 +2325,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6786145470008421571">Sobre de 6 x 9 polzades</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensions</translation>
-<translation id="6787094689637422836">Llançarem noves funcions de privadesa que et proporcionin més control sobre els anuncis que veus.</translation>
+<translation id="6787094689637422836">Llançarem noves funcions de privadesa que t'oferiran més opcions sobre els anuncis que veus.</translation>
 <translation id="678982761784843853">Identificadors de contingut protegit</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="679355240208270552">S'ha ignorat perquè la política no ha activat la cerca predeterminada.</translation>
@@ -2633,7 +2633,7 @@ Detalls addicionals:
 <translation id="7507075214339298899">Sobre número 9</translation>
 <translation id="7508255263130623398">L'identificador de dispositiu de la política que s'ha tornat és buit o no coincideix amb l'actual</translation>
 <translation id="7508870219247277067">Verd alvocat</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />De quina manera els llocs web utilitzen aquestes dades<ph name="END_BOLD" />: els llocs web poden emmagatzemar informació a Chrome sobre les coses que t'agraden. Per exemple, si visites un lloc web sobre entrenament per a maratons, és possible que el lloc web decideixi que t'interessen les sabatilles de curses. Més endavant, si visites un altre lloc web, aquest altre lloc web et pot mostrar un anunci de sabatilles de curses suggerit pel primer lloc web.</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Com els llocs webs utilitzen aquestes dades<ph name="END_BOLD" />: els llocs web poden emmagatzemar informació a Chrome sobre les coses que t'agraden. Per exemple, si utilitzes una aplicació sobre entrenament de maratons, el lloc web pot decidir que t'interessen les sabatilles de córrer. Més endavant, si visites un altre lloc web, aquest lloc web pot mostrar-te un anunci de sabatilles de córrer suggerit pel primer lloc web.</translation>
 <translation id="7510269639068718544">Gats</translation>
 <translation id="7511955381719512146">És possible que la xarxa Wi-Fi que esteu fent servir requereixi que visiteu <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Com que aquesta política no es pot establir en "True" i ser obligatòria, s'ha canviat a recomanada.</translation>
@@ -2765,13 +2765,13 @@ Detalls addicionals:
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7773005668374414287">Ordre idèntic de cara amunt</translation>
 <translation id="7785790577395078482">aquesta tauleta</translation>
-<translation id="7790488044432570133">Els llocs web que visites poden demanar a Chrome informació que els ajudi a mesurar el rendiment dels anuncis. Chrome permet que els llocs web recullin tipus de dades limitats, com ara l'hora del dia en què se t'ha mostrat un anunci.</translation>
+<translation id="7790488044432570133">Els llocs web que visites poden demanar a Chrome informació que els ajuda a mesurar el rendiment dels seus anuncis. Chrome permet que els llocs web recullin tipus de dades limitats, com ara l'hora del dia en què se t'ha mostrat un anunci.</translation>
 <translation id="7791011319128895129">No publicada</translation>
 <translation id="7791196057686275387">Embalat</translation>
 <translation id="7791543448312431591">Afegeix</translation>
 <translation id="7798389633136518089">S'ha ignorat perquè la política no s'ha establert al núvol.</translation>
 <translation id="7800304661137206267">La connexió està encriptada mitjançant <ph name="CIPHER" />, amb <ph name="MAC" /> per a l'autenticació de missatges i amb <ph name="KX" /> com a mecanisme d'intercanvi clau.</translation>
-<translation id="7800977246388195491">Chrome pren nota dels temes d'interès basant-se en el teu historial de navegació recent. A més, els llocs que visites poden determinar què t'agrada. Després, els llocs web poden demanar aquesta informació per mostrar-te anuncis personalitzats. Pots triar quins temes i llocs web s'utilitzen per mostrar-te anuncis.</translation>
+<translation id="7800977246388195491">Chrome pren nota dels temes d'interès segons el teu historial de navegació recent. Els llocs que visites també poden determinar què t'agrada. Més tard, els llocs web poden demanar aquesta informació per mostrar-te anuncis personalitzats. Pots triar quins temes i quins llocs web vols que s'utilitzin per mostrar-te anuncis.</translation>
 <translation id="7802523362929240268">El lloc web és legítim</translation>
 <translation id="7802989406998618639">Introdueix el codi de seguretat de <ph name="NUMBER_OF_DIGITS" /> dígits que es troba <ph name="SIDE_OF_CARD" /> perquè el banc pugui verificar la teva identitat</translation>
 <translation id="780301667611848630">No, gràcies</translation>
@@ -3298,7 +3298,7 @@ Detalls addicionals:
 <translation id="9155211586651734179">Els perifèrics d'àudio enllaçats</translation>
 <translation id="9157595877708044936">S'està configurant...</translation>
 <translation id="9164742147345933553">os://flags</translation>
-<translation id="9165305804774426672">Els llocs web que visites també poden determinar què t'agrada a partir de l'activitat que hi duus a terme. Per exemple, si visites un lloc web que ven sabatilles de curses de fons, és possible que el lloc web decideixi que t'interessa córrer maratons.</translation>
+<translation id="9165305804774426672">Els llocs web que visites també poden determinar què t'agrada a partir de l'activitat que hi duus a terme. Per exemple, si visites un lloc web que ven sabatilles per córrer llargues distàncies, el lloc web pot decidir que t'interessa córrer maratons.</translation>
 <translation id="9166851138617700776">Més informació sobre els anuncis suggerits per llocs web i el mesurament d'anuncis</translation>
 <translation id="9168814207360376865">Permet que els llocs web comprovin si tens formes de pagament desades</translation>
 <translation id="9169664750068251925">Bloqueja sempre en aquest lloc</translation>

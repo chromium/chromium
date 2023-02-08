@@ -317,7 +317,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="168693727862418163">Vrijednost ovog pravila u odnosu na njegovu šemu nije potvrđena pa će biti zanemareno.</translation>
 <translation id="168841957122794586">Potvrda servera sadrži slab kriptografski ključ.</translation>
 <translation id="1689333818294560261">Nadimak</translation>
-<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Kako možete upravljati svojim podacima:<ph name="END_BOLD" /> Chrome automatski briše teme koje su starije od 4 sedmice. Kako i dalje pregledate, tema bi se mogla ponovo pojaviti na listi. Također možete blokirati teme koje ne želite da Chrome dijeli s web lokacijama i isključiti teme oglasa u bilo kojem trenutku u postavkama Chromea.</translation>
+<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Kako možete upravljati podacima:<ph name="END_BOLD" /> Chrome automatski briše teme starije od 4 sedmice. Kako nastavljate pregledati, tema se može ponovo pojaviti na listi. Također možete blokirati teme koje ne želite da Chrome dijeli s web lokacijama i isključiti teme oglasa u bilo kojem trenutku u postavkama Chromea.</translation>
 <translation id="1697532407822776718">Sve je spremno!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -460,7 +460,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="205212645995975601">Roštilj i grilovanje</translation>
 <translation id="2053111141626950936">Stranice čiji jezik je <ph name="LANGUAGE" />, neće se prevoditi.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Kada je ova kontrola uključena i status aktivan, Chrome određuje kojoj je velikoj grupi ljudi, ili "kohorti", vaša nedavna aktivnost pregledanja najsličnija. Oglašivači mogu odabrati oglase za tu grupu, a vaša aktivnost pregledanja ostaje privatna na vašem uređaju. Vaša grupa se ažurira svaki dan.}=1{Kada je ova kontrola uključena i status aktivan, Chrome određuje kojoj je velikoj grupi ljudi, ili "kohorti", vaša nedavna aktivnost pregledanja najsličnija. Oglašivači mogu odabrati oglase za tu grupu, a vaša aktivnost pregledanja ostaje privatna na vašem uređaju. Vaša grupa se ažurira svaki dan.}one{Kada je ova kontrola uključena i status aktivan, Chrome određuje kojoj je velikoj grupi ljudi, ili "kohorti", vaša nedavna aktivnost pregledanja najsličnija. Oglašivači mogu odabrati oglase za tu grupu, a vaša aktivnost pregledanja ostaje privatna na vašem uređaju. Vaša grupa se ažurira svakih {NUM_DAYS} dan.}few{Kada je ova kontrola uključena i status aktivan, Chrome određuje kojoj je velikoj grupi ljudi, ili "kohorti", vaša nedavna aktivnost pregledanja najsličnija. Oglašivači mogu odabrati oglase za tu grupu, a vaša aktivnost pregledanja ostaje privatna na vašem uređaju. Vaša grupa se ažurira svaka {NUM_DAYS} dana.}other{Kada je ova kontrola uključena i status aktivan, Chrome određuje kojoj je velikoj grupi ljudi, ili "kohorti", vaša nedavna aktivnost pregledanja najsličnija. Oglašivači mogu odabrati oglase za tu grupu, a vaša aktivnost pregledanja ostaje privatna na vašem uređaju. Vaša grupa se ažurira svakih {NUM_DAYS} dana.}}</translation>
-<translation id="2056658168519009885">Web lokacije mogu zatražiti od Chromea informacije da pomognu u personalizaciji oglasa koje vidite.</translation>
+<translation id="2056658168519009885">Web lokacije mogu zatražiti od Chromea informacije radi personalizacije oglasa koje vidite.</translation>
 <translation id="2059202684901022309">22 x 34 in</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{Jedan prijedlog}one{# prijedlog}few{# prijedloga}other{# prijedloga}}</translation>
 <translation id="2066915425250589881">zatražiti da se izbriše</translation>
@@ -835,7 +835,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="306573536155379004">Igra je počela.</translation>
 <translation id="3068991664510324412">Kompjuterske i video igrice</translation>
 <translation id="3080254622891793721">Grafika</translation>
-<translation id="3081538120861307764">Da se izmjere performanse oglasa, ograničene vrste podataka se dijele među web lokacijama, npr. doba dana kada vam je oglas prikazan.</translation>
+<translation id="3081538120861307764">Za mjerenje performansi oglasa ograničene vrste podataka se dijele između web lokacija, npr. doba dana kada vam je oglas prikazan.</translation>
 <translation id="3082007635241601060">Dozvolite Googleu da koristi vaša kolica i pronađe personalizirane popuste kada su dostupni</translation>
 <translation id="3086579638707268289">Neko nadzire vašu aktivnost na webu</translation>
 <translation id="3087734570205094154">Dolje</translation>
@@ -948,7 +948,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3339440062908617027">Trčanje i brzo hodanje</translation>
 <translation id="3339446062576134663">Oblak (Ash)</translation>
 <translation id="3340978935015468852">postavke</translation>
-<translation id="3342018947887487892">Kasnije, web lokacija koju ste posjetili može zatražiti ove informacije – bilo teme oglasa ili oglase koje su predložile web lokacije koje ste posjetili.</translation>
+<translation id="3342018947887487892">Kasnije, web lokacija koju posjetite može zatražiti ove informacije – bilo teme oglasa ili oglase koje su predložile web lokacije koje ste posjetili.</translation>
 <translation id="3342366525167526994">Body art</translation>
 <translation id="3345782426586609320">Oči</translation>
 <translation id="3349952286488694786">SRA2</translation>
@@ -1497,7 +1497,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4682496302933121474">Prevesti stranicu?</translation>
 <translation id="468314109939257734">Pogledajte broj virtuelne kartice</translation>
-<translation id="4687718960473379118">Oglasi koje predlaže web lokacija</translation>
+<translation id="4687718960473379118">Oglasi koje predlažu web lokacije</translation>
 <translation id="4692623383562244444">Pretraživači</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Strana</translation>
@@ -1882,7 +1882,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5598944008576757369">Odaberite način plaćanja</translation>
 <translation id="560412284261940334">Upravljanje nije podržano</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Kako možete upravljati svojim podacima:<ph name="END_BOLD" /> Chrome automatski briše web lokacije koje su starije od 4 sedmice. Web lokacija koju ponovo posjetite može se ponovo pojaviti na listi. Također možete blokirati da vam web lokacija predlaže oglase i isključiti oglase koje predlažu web lokacije u bilo kojem trenutku u postavkama Chromea.</translation>
+<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Kako možete upravljati podacima:<ph name="END_BOLD" /> Chrome automatski briše web lokacije starije od 4 sedmice. Web lokacija koju ponovo posjetite može se ponovo pojaviti na listi. U postavkama Chromea u bilo kojem trenutku također možete blokirati da vam web lokacija predlaže oglase i isključiti oglase koje predlažu web lokacije.</translation>
 <translation id="5610142619324316209">Provjeriti vezu</translation>
 <translation id="5610807607761827392">Karticama i adresama možete upravljati u <ph name="BEGIN_LINK" />Postavkama<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Prevedite ovu stranicu pomoću Google Prevodioca</translation>
@@ -2221,7 +2221,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="646793340882508547">Avanturističke igre</translation>
 <translation id="6468485451923838994">Fontovi</translation>
 <translation id="647261751007945333">Pravila uređaja</translation>
-<translation id="6475672344094591109">Web lokacije koje posjetite mogu zatražiti od Chromea informacije koje im pomažu da izmjere performanse svojih oglasa. Chrome štiti vašu privatnost ograničivanjem informacija koje web lokacije mogu dijeliti jedna s drugom.</translation>
+<translation id="6475672344094591109">Web lokacije koje posjetite mogu od Chromea zatražiti informacije koje im pomažu da izmjere performanse svojih oglasa. Chrome štiti vašu privatnost ograničivanjem informacija koje web lokacije mogu dijeliti jedna s drugom.</translation>
 <translation id="6476284679642588870">Upravljajte načinima plaćanja</translation>
 <translation id="6486200200930923183">Dokumentarni filmovi</translation>
 <translation id="6489534406876378309">Pokreni otpremanje padova aplikacija</translation>
@@ -2633,7 +2633,7 @@ Dodatni detalji:
 <translation id="7507075214339298899">Koverta #9</translation>
 <translation id="7508255263130623398">Vraćeni ID uređaja pravila ne postoji ili ne odgovara trenutnom ID-u uređaja</translation>
 <translation id="7508870219247277067">Avokado zelena</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Kako web lokacije koriste ove podatke:<ph name="END_BOLD" /> web lokacije mogu pohranjivati informacije o stvarima koje vam se sviđaju u Chromeu. Naprimjer, ako posjetite web lokaciju o treningu za maraton, web lokacija može odlučiti da ste zainteresirani za patike za trčanje. Kasnije, ako posjetite drugu web lokaciju, ta web lokacija vam može prikazati oglas koji prikazuje patike za trčanje koje je predložila prva web lokacija.</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Kako web lokacije koriste ove podatke:<ph name="END_BOLD" /> web lokacije mogu pohranjivati u Chromeu informacije o stvarima koje vam se sviđaju. Naprimjer, ako posjetite web lokaciju o treningu za maraton, web lokacija može zaključiti da vas zanimaju patike za trčanje. Kasnije, ako posjetite drugu web lokaciju, ona vam može prikazati oglas za patike za trčanje koji je predložila prva web lokacija.</translation>
 <translation id="7510269639068718544">Mačke</translation>
 <translation id="7511955381719512146">WiFi koji koristite može od vas tražiti da posjetite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Ovo pravilo se ne može postaviti na "Tačno" i biti obavezno, stoga je promijenjeno u preporučeno.</translation>
@@ -2765,13 +2765,13 @@ Dodatni detalji:
 <translation id="7766518757692125295">Kontura</translation>
 <translation id="7773005668374414287">Isti redoslijed s odštampanom stranom prema gore</translation>
 <translation id="7785790577395078482">ovog tableta</translation>
-<translation id="7790488044432570133">Web lokacije koje posjetite mogu zatražiti od Chromea informacije koje im pomažu da izmjere performanse svojih oglasa. Chrome dozvoljava web lokacijama da prikupljaju ograničene vrste podataka, npr. doba dana kada vam je oglas prikazan.</translation>
+<translation id="7790488044432570133">Web lokacije koje posjetite mogu od Chromea zatražiti informacije radi mjerenja performansi svojih oglasa. Chrome dozvoljava web lokacijama da prikupljaju ograničene vrste podataka, npr. doba dana kada vam je oglas prikazan.</translation>
 <translation id="7791011319128895129">Neobjavljeno</translation>
 <translation id="7791196057686275387">Povezivanje</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7798389633136518089">Zanemareno jer pravilo nije postavio izvor u oblaku.</translation>
 <translation id="7800304661137206267">Veza je šifrirana pomoću <ph name="CIPHER" />, uz <ph name="MAC" /> za autentifikaciju poruka i <ph name="KX" /> kao mehanizam za razmjenu ključeva.</translation>
-<translation id="7800977246388195491">Chrome bilježi teme koje vas zanimaju na osnovu vaše nedavne historije pregledanja. Web lokacije koje posjetite mogu i utvrditi šta vam se sviđa. Kasnije, web lokacije mogu zatražiti ove informacije da vam prikažu personalizirane oglase. Možete odabrati teme i web lokacije koje će se koristiti za prikazivanje oglasa.</translation>
+<translation id="7800977246388195491">Chrome bilježi teme koje vas zanimaju na osnovu vaše nedavne historije pregledanja. Web lokacije koje posjetite također mogu odrediti šta vam se sviđa. Kasnije, web lokacije mogu zatražiti ove informacije da vam prikažu personalizirane oglase. Možete odabrati teme i web lokacije koje će se koristiti za prikazivanje oglasa.</translation>
 <translation id="7802523362929240268">Web stranica je zakonita</translation>
 <translation id="7802989406998618639">Unesite <ph name="NUMBER_OF_DIGITS" />-cifreni sigurnosni kôd na <ph name="SIDE_OF_CARD" /> da banka može potvrditi da ste to zaista vi</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
@@ -3075,7 +3075,7 @@ Dodatni detalji:
 <translation id="8589998999637048520">Najbolji kvalitet</translation>
 <translation id="8600271352425265729">Samo ovaj put</translation>
 <translation id="860043288473659153">Ime vlasnika kartice</translation>
-<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Koji podaci se koriste:<ph name="END_BOLD" /> vaša aktivnost na web lokaciji koju ste posjetili koristeći Chrome na ovom uređaju.</translation>
+<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Koji podaci se koriste:<ph name="END_BOLD" /> vaša aktivnost na web lokaciji koju posjetite koristeći Chrome na ovom uređaju.</translation>
 <translation id="8606726445206553943">Koristite MIDI uređaje</translation>
 <translation id="8606988009912891950">Teme oglasa pomažu web lokacijama da vam prikazuju relevantne oglase i štite vašu historiju pregledanja i identitet. Chrome može bilježiti teme koje vas zanimaju na osnovu vaše nedavne historije pregledanja. Kasnije, web lokacija koju posjetite može zatražiti od Chromea relevantne teme da personalizira oglase koje vidite.</translation>
 <translation id="8617269623452051934">korištenje vašeg uređaja</translation>
@@ -3186,7 +3186,7 @@ Dodatni detalji:
 <translation id="8876033571432926051">Ležerne igre</translation>
 <translation id="8877780815363510165">Pecanje</translation>
 <translation id="8884537526797090108">Nije moguće snimiti povjerljivi sadržaj</translation>
-<translation id="8890798179125483517">Chrome automatski briše teme i web lokacije koje predlažu oglase koji su stariji od 4 sedmice. Ili možete blokirati određene teme i web lokacije koje vam se ne sviđaju.</translation>
+<translation id="8890798179125483517">Chrome automatski briše teme i web lokacije koje predlažu oglase koji su stariji od 4 sedmice. A možete i blokirati određene teme i web lokacije koje vam se ne sviđaju.</translation>
 <translation id="8891727572606052622">Nevažeći način rada proksija.</translation>
 <translation id="8894794286471754040">Najprije duga strana</translation>
 <translation id="8897428486789851669">Plivanje</translation>
@@ -3298,7 +3298,7 @@ Dodatni detalji:
 <translation id="9155211586651734179">Povezane periferne zvučne uređaje</translation>
 <translation id="9157595877708044936">Postavljanje...</translation>
 <translation id="9164742147345933553">os://flags</translation>
-<translation id="9165305804774426672">Web lokacije koje posjetite mogu i utvrditi šta vam se sviđa na osnovu vaše aktivnosti na web lokaciji. Naprimjer, ako posjetite web lokaciju koja prodaje patike za trčanje na duge staze, web lokacija može odlučiti da ste zainteresirani za trčanje maratona.</translation>
+<translation id="9165305804774426672">Web lokacije koje posjetite također mogu utvrditi šta vam se sviđa na osnovu vaše aktivnosti na web lokaciji. Naprimjer, ako posjetite web lokaciju koja prodaje patike za trčanje na duge staze, web lokacija može zaključiti da vas zanima trčanje maratona.</translation>
 <translation id="9166851138617700776">Više o oglasima koje predlažu web lokacije i mjerenju oglasa</translation>
 <translation id="9168814207360376865">Dozvoli web lokacijama da provjere imate li sačuvane načine plaćanja</translation>
 <translation id="9169664750068251925">Uvijek blokiraj na ovoj web lokaciji</translation>

@@ -2632,7 +2632,7 @@
 <translation id="7507075214339298899">Envelope #9</translation>
 <translation id="7508255263130623398">傳回的政策裝置 ID 沒有任何內容，或是與目前的裝置 ID 不符</translation>
 <translation id="7508870219247277067">酪梨綠</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />網站使用這些資料的方式：<ph name="END_BOLD" />網站可以將你喜歡的內容相關資訊儲存在 Chrome 中。舉例來說，如果你造訪了一個馬拉松訓練相關網站，該網站可能會判定你對慢跑鞋感興趣，並在你之後造訪其他網站時，根據第一個網站的建議向你顯示慢跑鞋的廣告。</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />網站使用這些資料的方式：<ph name="END_BOLD" />網站可透過 Chrome  儲存與你喜愛事物相關的資訊。舉例來說，如果你造訪了一個馬拉松訓練相關網站，該網站可能會判定你對慢跑鞋感興趣，並在你之後造訪其他網站時，根據第一個網站的建議向你顯示慢跑鞋的廣告。</translation>
 <translation id="7510269639068718544">貓</translation>
 <translation id="7511955381719512146">目前使用的 Wi-Fi 網路可能會要求您造訪 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
 <translation id="7512685745044087310">這項政策無法設為「是」及強制使用，因此已改為建議使用。</translation>

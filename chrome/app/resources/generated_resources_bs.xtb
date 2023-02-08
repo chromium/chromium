@@ -4122,7 +4122,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (zadano)</translation>
 <translation id="4684427112815847243">Sinhroniziranje svega</translation>
 <translation id="4687613760714619596">Nepoznat uređaj (<ph name="DEVICE_ID" />)</translation>
-<translation id="4687718960473379118">Oglasi koje predlaže web lokacija</translation>
+<translation id="4687718960473379118">Oglasi koje predlažu web lokacije</translation>
 <translation id="4688036121858134881">ID lokalnog dnevnika: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> vraća ovaj uređaj na prethodnu verziju (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="4689235506267737042">Odaberite postavke demonstracije</translation>

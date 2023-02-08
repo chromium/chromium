@@ -460,7 +460,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="205212645995975601">BBQ at pag-iihaw</translation>
 <translation id="2053111141626950936">Hindi ita-translate ang mga page na nasa <ph name="LANGUAGE" />.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Kapag naka-on ang kontrol na ito at aktibo ang status, tinutukoy ng Chrome kung aling malaking grupo ng mga tao, o "cohort," ang pinakakatulad ng iyong kamakailang aktibidad sa pag-browse. Makakapili ang mga advertiser ng mga ad para sa grupo at pinapanatiling pribado sa iyong device ang aktibidad mo sa pag-browse. Ina-update ang iyong grupo araw-araw.}=1{Kapag naka-on ang kontrol na ito at aktibo ang status, tinutukoy ng Chrome kung aling malaking grupo ng mga tao, o "cohort," ang pinakakatulad ng iyong kamakailang aktibidad sa pag-browse. Makakapili ang mga advertiser ng mga ad para sa grupo at pinapanatiling pribado sa iyong device ang aktibidad mo sa pag-browse. Ina-update ang iyong grupo araw-araw.}one{Kapag naka-on ang kontrol na ito at aktibo ang status, tinutukoy ng Chrome kung aling malaking grupo ng mga tao, o "cohort," ang pinakakatulad ng iyong kamakailang aktibidad sa pag-browse. Makakapili ang mga advertiser ng mga ad para sa grupo at pinapanatiling pribado sa iyong device ang aktibidad mo sa pag-browse. Ina-update ang iyong grupo kada {NUM_DAYS} araw.}other{Kapag naka-on ang kontrol na ito at aktibo ang status, tinutukoy ng Chrome kung aling malaking grupo ng mga tao, o "cohort," ang pinakakatulad ng iyong kamakailang aktibidad sa pag-browse. Makakapili ang mga advertiser ng mga ad para sa grupo at pinapanatiling pribado sa iyong device ang aktibidad mo sa pag-browse. Ina-update ang iyong grupo kada {NUM_DAYS} na araw.}}</translation>
-<translation id="2056658168519009885">Puwedeng humingi ang mga site ng impormasyon mula sa Chrome na makakatulong na i-personalize ang mga ad na nakikita mo.</translation>
+<translation id="2056658168519009885">Puwedeng humiling ang mga site ng impormasyon sa Chrome para makatulong sa pag-personalize ng mga ad na nakikita mo.</translation>
 <translation id="2059202684901022309">22 x 34 in</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suhestyon}one{# suhestyon}other{# na suhestyon}}</translation>
 <translation id="2066915425250589881">hilinging i-delete</translation>
@@ -1094,7 +1094,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3678342917559046352">Invalid na Extension: Inaasahang isa sa mga sumusunod na form ang value: &lt;extension_id&gt; o &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Buksan ang page sa bagong Incognito window (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Impormasyon sa certificate</translation>
-<translation id="3681421644246505351">Itinatala ng Chrome ang mga kinaiinteresang paksa batay sa iyong kamakailang history ng pag-browse.</translation>
+<translation id="3681421644246505351">Nagtatala ang Chrome ng mga paksa kung saan ka interesado batay sa iyong kamakailang history ng pag-browse.</translation>
 <translation id="3693327506115126094">Piliin kung paano mo ive-verify na ikaw ito</translation>
 <translation id="3701427423622901115">Tinanggap ang pag-reset.</translation>
 <translation id="3704162925118123524">Ang network na ginagamit mo ay maaaring humiling sa iyo na bisitahin ang page ng pag-login nito.</translation>
@@ -2765,7 +2765,7 @@ Mga karagdagang detalye:
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7773005668374414287">Parehong pagkakasunod-sunod nang nakatihaya</translation>
 <translation id="7785790577395078482">ang tablet na ito</translation>
-<translation id="7790488044432570133">Puwedeng humingi ang mga site na binibisita mo ng impormasyon mula sa Chrome para matulungan silang sukatin ang performance ng kanilang mga ad. Pinapayagan ng Chrome ang mga site na mangolekta ng mga limitadong uri ng data, tulad ng oras kung kailan ipinakita sa iyo ang ad.</translation>
+<translation id="7790488044432570133">Puwedeng humiling ng impormasyon sa Chrome ang mga site na binibisita para matulungan silang masukat ang performance ng kanilang mga ad. Pinapayagan ng Chrome ang mga site na mangolekta ng mga limitadong uri ng data, tulad ng oras kung kailan ipinakita sa iyo ang isang ad.</translation>
 <translation id="7791011319128895129">Hindi pa na-release</translation>
 <translation id="7791196057686275387">Bale</translation>
 <translation id="7791543448312431591">Idagdag</translation>
@@ -3298,7 +3298,7 @@ Mga karagdagang detalye:
 <translation id="9155211586651734179">Naka-attach ang mga peripheral ng audio</translation>
 <translation id="9157595877708044936">Nagse-set up...</translation>
 <translation id="9164742147345933553">os://flags</translation>
-<translation id="9165305804774426672">Puwede ring tukuyin ng mga site na binibisita mo ang mga gusto mo batay sa iyong aktibidad sa site. Halimbawa, kung bibisita ka sa isang site na nagtitinda ng long-distance running shoes, posibleng tukuyin ng site na interesado kang tumakbo sa mga marathon.</translation>
+<translation id="9165305804774426672">Puwede ring matukoy ng mga site na binibisita mo ang mga gusto mo batay sa iyong aktibidad sa site. Halimbawa, kung bibisita ka sa isang site na nagbebenta ng long-distance running shoes, posibleng tukuyin ng site na interesado kang tumakbo sa mga marathon.</translation>
 <translation id="9166851138617700776">Higit pa tungkol sa mga ad na iminumungkahi ng site at pagsukat ng ad</translation>
 <translation id="9168814207360376865">Payagan ang mga site na tingnan kung may mga naka-save kang paraan ng pagbabayad</translation>
 <translation id="9169664750068251925">Palaging i-block sa site na ito</translation>
@@ -3345,7 +3345,7 @@ Mga karagdagang detalye:
 <translation id="975560348586398090">{COUNT,plural, =0{Wala}=1{1 item}one{# item}other{# na item}}</translation>
 <translation id="976522784004777030">5 x 8 in</translation>
 <translation id="977502174772294970">Mga Kasalan</translation>
-<translation id="979503328401807348">Higit pang kapaki-pakinabang na ad</translation>
+<translation id="979503328401807348">Mga mas kapaki-pakinabang na ad</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="982885543310356857">Mga classic na sasakyan</translation>
 <translation id="984275831282074731">Mga paraan ng pagbabayad</translation>

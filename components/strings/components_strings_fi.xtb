@@ -317,7 +317,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="168693727862418163">Tämän käytännön arvon ei onnistunut vahvistamaan kaavaa ja se ohitetaan.</translation>
 <translation id="168841957122794586">Palvelinvarmenne sisältää heikon salausavaimen.</translation>
 <translation id="1689333818294560261">Lempinimi</translation>
-<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Miten voit vaikuttaa dataasi:<ph name="END_BOLD" /> Chrome poistaa yli neljä viikkoa vanhat aiheet automaattisesti. Kun jatkat selaamista, aihe voi näkyä listalla uudelleen. Voit myös estää aiheet, joita et halua Chromen jakavan sivustoille, ja laittaa mainosten aiheet pois päältä Chromen asetuksista milloin tahansa.</translation>
+<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Miten voit vaikuttaa dataasi:<ph name="END_BOLD" /> Chrome poistaa yli neljä viikkoa vanhat aiheet automaattisesti. Kun jatkat selaamista, aihe voi näkyä listalla uudelleen. Voit myös estää aiheet, joita et halua Chromen jakavan sivustoille, ja laittaa mainosaiheet pois päältä Chromen asetuksista milloin tahansa.</translation>
 <translation id="1697532407822776718">Kaikki on valmista.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Kirje</translation>
@@ -1424,7 +1424,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="449126573531210296">Salaa synkronoidut salasanat Google-tilisi avulla</translation>
 <translation id="4492519888999857993">Nämä ominaisuudet ovat oletuksena poissa käytöstä. Ne eivät ole käytettävissä Chromen tulevissa versioissa.</translation>
 <translation id="4493480324863638523">Virheellinen URL-osoite URL-osoitteen on oltava vakiomallien mukainen, esimerkiksi "http://example.com" tai "https://example.com".</translation>
-<translation id="4494323206460475851">Asetuksista näet mainosten aiheet ja voit estää sellaiset, joita et halua jakaa sivustoille. Chrome myös poistaa yli neljä viikkoa vanhat mainosten aiheet automaattisesti.</translation>
+<translation id="4494323206460475851">Asetuksista näet mainosaiheet ja voit estää sellaiset, joita et halua jakaa sivustoille. Chrome myös poistaa yli neljä viikkoa vanhat mainosaiheet automaattisesti.</translation>
 <translation id="4500587658229086076">suojaamaton sisältö</translation>
 <translation id="4506176782989081258">Todennusvirhe: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Ota yhteyttä järjestelmänvalvojaan.</translation>
@@ -3057,7 +3057,7 @@ Lisätietoja:
 <translation id="8533619373899488139">Voit nähdä estetyt URL-osoitteet ja muut järjestelmänvalvojasi määräämät käytännöt osoitteessa &lt;strong&gt;chrome://policy&lt;/strong&gt;.</translation>
 <translation id="8539500321752640291">Myönnetäänkö 2 lupaa?</translation>
 <translation id="8541158209346794904">Bluetooth-laite</translation>
-<translation id="8541410041357371550">Tämä sivusto saa mainosten aiheet Chromesta, jotta voit nähdä osuvampia mainoksia</translation>
+<translation id="8541410041357371550">Tämä sivusto saa mainosaiheet Chromesta, jotta voit nähdä osuvampia mainoksia</translation>
 <translation id="8542014550340843547">Kolme niittiä alareunassa</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Voit <ph name="BEGIN_ERROR_LINK" />ilmoittaa löytyneestä ongelmasta<ph name="END_ERROR_LINK" /> tai <ph name="BEGIN_LINK" />siirtyä mahdollisesti haitalliselle sivustolle<ph name="END_LINK" />, jos ymmärrät tietoturvariskit.</translation>
@@ -3079,7 +3079,7 @@ Lisätietoja:
 <translation id="860043288473659153">Kortinhaltijan nimi</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Mitä dataa käytetään:<ph name="END_BOLD" /> Toimintasi sivustolla, jolla käyt Chromella tällä laitteella.</translation>
 <translation id="8606726445206553943">Käyttää MIDI-laitteitasi.</translation>
-<translation id="8606988009912891950">Mainosten aiheiden avulla sivustot voivat näyttää sinulle osuvia mainoksia niin, että selaushistoriasi ja henkilöllisyytesi pysyvät suojattuina. Chrome voi havaita viimeaikaisen selaushistoriasi perusteella sinua kiinnostavia aiheita. Avaamasi sivustot voivat myöhemmin pyytää osuvia aiheita Chromelta personoidakseen näkemiäsi mainoksia.</translation>
+<translation id="8606988009912891950">Mainosaiheiden avulla sivustot voivat näyttää sinulle osuvia mainoksia niin, että selaushistoriasi ja henkilöllisyytesi pysyvät suojattuina. Chrome voi havaita viimeaikaisen selaushistoriasi perusteella sinua kiinnostavia aiheita. Avaamasi sivustot voivat myöhemmin pyytää osuvia aiheita Chromelta personoidakseen näkemiäsi mainoksia.</translation>
 <translation id="8617269623452051934">laitteesi käyttö</translation>
 <translation id="861775596732816396">Koko 4</translation>
 <translation id="8620276786115098679">Kirjekuori Kaku 7</translation>
@@ -3331,7 +3331,7 @@ Lisätietoja:
 <translation id="935608979562296692">TYHJENNÄ LOMAKE</translation>
 <translation id="936602727769022409">Saatat menettää Google-tilisi käyttöoikeuden. Chromium suosittelee vaihtamaan salasanan nyt. Sinua pyydetään kirjautumaan sisään.</translation>
 <translation id="937457230470581909">Eläintarhat, akvaariot ja suojelualueet</translation>
-<translation id="937804173274050966"><ph name="BEGIN_BOLD" />Mitä dataa käytetään:<ph name="END_BOLD" /> Mainosten aiheet perustuvat viimeaikaiseen selaushistoriaasi, luetteloon sivustoista, joilla olet käynyt Chromella tällä laitteella.</translation>
+<translation id="937804173274050966"><ph name="BEGIN_BOLD" />Mitä dataa käytetään:<ph name="END_BOLD" /> Mainosaiheet perustuvat viimeaikaiseen selaushistoriaasi, luetteloon sivustoista, joilla olet käynyt Chromella tällä laitteella.</translation>
 <translation id="939736085109172342">Uusi kansio</translation>
 <translation id="940053046584497293">Matkailu ja liikkuminen</translation>
 <translation id="945855313015696284">Tarkista tiedot alta ja poista virheelliset kortit.</translation>

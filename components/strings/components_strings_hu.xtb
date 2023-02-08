@@ -317,7 +317,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="168693727862418163">A házirend értéke nem egyezik a sémájával, ezért a rendszer figyelmen kívül hagyja.</translation>
 <translation id="168841957122794586">A szervertanúsítvány gyenge titkosítási kulcsot tartalmaz.</translation>
 <translation id="1689333818294560261">Egyedi név</translation>
-<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Az adatok kezelésének módja<ph name="END_BOLD" />: A Chrome automatikusan törli a négy hétnél régebbi témákat. A böngészési tevékenysége alapján előfordulhat, hogy egy adott téma újra megjelenik a listában. A Chrome beállításai között bármikor letilthatja azokat a témákat, amelyeket nem szeretne, hogy a Chrome megosszon a webhelyekkel, valamint kikapcsolhatja a hirdetéstémákat.</translation>
+<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Az adatok kezelésének módja<ph name="END_BOLD" />: A Chrome automatikusan törli a négy hétnél régebbi témákat. A böngészés során egy-egy téma újra megjelenhet a listán. Lehetősége van arra is, hogy letiltsa azokat a témákat, amelyeket nem szeretné, hogy a Chrome megosszon a webhelyekkel, valamint bármikor ki is kapcsolhatja a hirdetéstémákat a Chrome beállításaiban.</translation>
 <translation id="1697532407822776718">Máris elkészült!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -347,7 +347,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1736420071277903564">Számítógép</translation>
 <translation id="1740951997222943430">Érvényes lejárati hónapot kell megadnia</translation>
 <translation id="1741613555002899862">Meg kell adni, és érvényes karakterláncnak kell lennie, ha a DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Az adatok felhasználási módja<ph name="END_BOLD" />: A Chrome böngészés közben megállapítja az Önt érdeklő témákat. A témakörcímkék előre definiáltak. Például: művészet és szórakoztatás, vásárlás és sport. Később az Ön által felkeresett webhelyek a megjelenő hirdetések személyre szabásához lekérhetnek néhány témát (de a böngészési előzményeket nem).</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Az adatok felhasználási módja<ph name="END_BOLD" />: Böngészés közben a Chrome feljegyzi az Önt érdeklő témákat. A témakörcímkék előre meg vannak határozva, például a következők tartoznak közéjük: Művészet és szórakozás, Vásárlás és Sport. Később az Ön által felkeresett webhelyek a megjelenő hirdetések személyre szabásához lekérhetnek néhány témát (de a böngészési előzményeket nem).</translation>
 <translation id="1745880797583122200">A böngésző felügyelet alatt áll</translation>
 <translation id="1746113442205726301">Kép Y-eltolása</translation>
 <translation id="1746531169546376413">0 fok</translation>
@@ -460,7 +460,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="205212645995975601">Barbecue és grillezés</translation>
 <translation id="2053111141626950936">A(z) <ph name="LANGUAGE" /> nyelvű oldalak nem lesznek lefordítva.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Ha ez a vezérlő be van kapcsolva, és az állapot aktív, a Chrome meghatározza, hogy az Ön legutóbbi böngészési tevékenysége melyik nagy társadalmi csoporthoz, azaz „kohorszhoz” hasonlít leginkább. A hirdetők kiválaszthatják a hirdetéseket a csoporthoz, ám a böngészési előzményeit privát módon tárolja a rendszer az eszközén. Csoportja minden nap frissül.}=1{Ha ez a vezérlő be van kapcsolva, és az állapot aktív, a Chrome meghatározza, hogy az Ön legutóbbi böngészési tevékenysége melyik nagy társadalmi csoporthoz, azaz „kohorszhoz” hasonlít leginkább. A hirdetők kiválaszthatják a hirdetéseket a csoporthoz, ám a böngészési előzményeit privát módon tárolja a rendszer az eszközén. Csoportja minden nap frissül.}other{Ha ez a vezérlő be van kapcsolva, és az állapot aktív, a Chrome meghatározza, hogy az Ön legutóbbi böngészési tevékenysége melyik nagy társadalmi csoporthoz, azaz „kohorszhoz” hasonlít leginkább. A hirdetők kiválaszthatják a hirdetéseket a csoporthoz, ám a böngészési előzményeit privát módon tárolja a rendszer az eszközén. Csoportja {NUM_DAYS} naponta frissül.}}</translation>
-<translation id="2056658168519009885">A webhelyek információkat kérhetnek a Chrome-tól az Ön számára megjelenő hirdetések személyre szabása érdekében.</translation>
+<translation id="2056658168519009885">A webhelyek információkat kérhetnek a Chrome-tól az Önnek megjelenített hirdetések személyre szabásához.</translation>
 <translation id="2059202684901022309">22 × 34 hüvelyk</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 javaslat}other{# javaslat}}</translation>
 <translation id="2066915425250589881">kérelmezheti az adatok törlését</translation>
@@ -823,7 +823,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="301521992641321250">Automatikusan letiltva</translation>
 <translation id="3016780570757425217">Az Ön tartózkodási helyének megismerése</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, a javaslat eltávolításához nyomja le a Tab, majd az Enter gombot.</translation>
-<translation id="3023165109041533893">A webhely által javasolt hirdetések segítik a böngészési előzmények és a személyazonosság védelmét, miközben lehetővé teszik a webhelyek számára releváns hirdetések megjelenítését. A tevékenységei alapján egy felkeresett webhely kapcsolódó hirdetéseket javasolhat, miközben Ön folytatja a böngészést. A beállításokban megtekintheti ezeknek a webhelyeknek a listáját, és letilthatja őket.</translation>
+<translation id="3023165109041533893">A webhely által javasolt hirdetések segítik a böngészési előzmények és a személyazonosság védelmét, miközben lehetővé teszik a webhelyek számára, hogy releváns hirdetéseket jelenítsenek meg Önnek. A tevékenységei alapján egy felkeresett webhely kapcsolódó hirdetéseket javasolhat, miközben Ön folytatja a böngészést. A beállításokban megtekintheti ezeknek a webhelyeknek a listáját, és letilthatja őket.</translation>
 <translation id="3024663005179499861">Nem megfelelő irányelvtípus</translation>
 <translation id="3029752078111257850">Hírek a nagyvilágból</translation>
 <translation id="3037177537145227281">Ár nyomon követése…</translation>
@@ -914,7 +914,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt új esemény gyors létrehozásához a Google Naptár szolgáltatással</translation>
 <translation id="3261488570342242926">További információ a virtuális kártyákról</translation>
 <translation id="3264837738038045344">A Chrome beállításainak kezelése gomb. Nyomja le az Enter gombot a Chrome beállításainak megnyitásához.</translation>
-<translation id="3266367459139339908">Új módszereket vezetünk be, amelyekkel korlátozható, hogy mit tudhatnak meg Önről a webhelyek, amikor személyre szabott hirdetéseket jelenítenek meg. Például:</translation>
+<translation id="3266367459139339908">Új módszereket vezetünk be annak korlátozására, hogy mit tudhatnak meg a felhasználókról a webhelyek, amikor személyre szabott hirdetéseket jelenítenek meg. Például:</translation>
 <translation id="3266793032086590337">Érték (ütközés)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Nincs letiltott webhely, beleértve a kapcsolódó webhelyeket is}=1{1 letiltott webhely, beleértve a kapcsolódó webhelyeket is}other{# letiltott webhely, beleértve a kapcsolódó webhelyeket is}}</translation>
 <translation id="3268451620468152448">Megnyitott lapok</translation>
@@ -1092,7 +1092,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3678342917559046352">Érvénytelen bővítmény: A várt érték a következő formátumok egyike: &lt;extension_id&gt; vagy &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Oldal megnyitása új inkognitó ablakban (Ctrl+Shift+N)</translation>
 <translation id="3681007416295224113">Tanúsítvány adatai</translation>
-<translation id="3681421644246505351">A Chrome az Önt esetlegesen érdeklő témaköröket a legutóbbi böngészési előzményei alapján állapítja meg.</translation>
+<translation id="3681421644246505351">A Chrome feljegyzi az Önt érdeklő témákat a legutóbbi böngészési előzményei alapján.</translation>
 <translation id="3693327506115126094">Válassza ki, hogyan szeretné igazolni személyazonosságát</translation>
 <translation id="3701427423622901115">Visszaállítás elfogadva.</translation>
 <translation id="3704162925118123524">Előfordulhat, hogy az Ön által használt hálózat megköveteli a bejelentkezési oldalán történő bejelentkezést.</translation>
@@ -1227,7 +1227,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4063924980214801036">Az eszköz feloldási módszerének használata a kártyák gyorsabb igazolásához</translation>
 <translation id="4067098466788473230">Tanulási ösztöndíjak</translation>
 <translation id="4067947977115446013">Érvényes címet adjon meg</translation>
-<translation id="4070790659619547722">A hirdetésméréssel a webhelyek között korlátozott adattípusok kerülnek megosztásra a hirdetések teljesítményének mérése érdekében (ilyen adat például az a napszak, amikor a hirdetés megjelent Önnek).</translation>
+<translation id="4070790659619547722">A hirdetésméréssel korlátozott adattípusokat osztanak meg egymással a webhelyek a hirdetéseik teljesítményének mérése érdekében (ilyen adat például az a napszak, amikor egy adott hirdetés megjelent Önnek).</translation>
 <translation id="4072193657607981494">Házirendek betöltése…</translation>
 <translation id="4072486802667267160">Hiba történt a rendelés feldolgozása közben. Kérjük, próbálja újra.</translation>
 <translation id="4073376909608563327">Nem sikerült az eszköz feloldási módszerének használata</translation>
@@ -1421,7 +1421,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="449126573531210296">Szinkronizált jelszavak titkosítása a Google-fiókkal</translation>
 <translation id="4492519888999857993">Ezek a funkciók alapértelmezés szerint le vannak tiltva. A Chrome későbbi verzióiban nem állnak majd rendelkezésre.</translation>
 <translation id="4493480324863638523">Érvénytelen URL. Az URL-nek szabványos sémával kell rendelkeznie, például http://example.com vagy https://example.com.</translation>
-<translation id="4494323206460475851">A hirdetéstémákat megtekintheti a beállítások között, és letilthatja azokat, amelyeket nem szeretne megosztani a webhelyekkel. A Chrome ezenkívül automatikusan törli a négy hétnél régebbi hirdetéstémákat.</translation>
+<translation id="4494323206460475851">A hirdetéstémákat megtekintheti a beállítások között, ahol le is tilthatja azokat a témákat, amelyeket nem szeretne megosztani a webhelyekkel. A Chrome ezenkívül automatikusan törli a négy hétnél régebbi hirdetéstémákat.</translation>
 <translation id="4500587658229086076">nem biztonságos tartalmak</translation>
 <translation id="4506176782989081258">Érvényesítési hiba: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Kapcsolatfelvétel a rendszergazdával</translation>
@@ -1880,7 +1880,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5598944008576757369">Fizetési mód kiválasztása</translation>
 <translation id="560412284261940334">A kezelés nem támogatott</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Az adatok kezelésének módja<ph name="END_BOLD" />: A Chrome automatikusan törli a négy hétnél régebbi webhelyeket. Előfordulhat, hogy egy újra felkeresett webhely ismét megjelenik a listán. A Chrome beállításai között letilthatja, hogy egy adott webhely hirdetéseket javasoljon Önnek, és bármikor kikapcsolhatja a webhely által javasolt hirdetéseket.</translation>
+<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Az adatok kezelésének módja<ph name="END_BOLD" />: A Chrome automatikusan törli a négy hétnél régebbi webhelyeket. Egy ismét felkeresett webhely újra megjelenhet a listán. A Chrome beállításai között letilthatja, hogy egy adott webhely hirdetéseket javasoljon Önnek, és bármikor kikapcsolhatja a webhely által javasolt hirdetéseket.</translation>
 <translation id="5610142619324316209">A kapcsolat ellenőrzése</translation>
 <translation id="5610807607761827392">A kártyákat és a címeket a <ph name="BEGIN_LINK" />Beállítások<ph name="END_LINK" /> menüpontban kezelheti.</translation>
 <translation id="561165882404867731">Oldal fordítása a Google Fordítóval</translation>
@@ -2057,7 +2057,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6051221802930200923">Pillanatnyilag nem tudja felkeresni a(z) <ph name="SITE" /> webhelyet, mivel a webhely tanúsítványrögzítést használ. A hálózati hibák és támadások rendszerint átmenetiek, ezért az említett oldal működése később valószínűleg helyreáll.</translation>
 <translation id="6051898664905071243">Oldalak száma:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053735090575989697">Az adatvédelmi irányelveinkben talál további információkat arról, hogy a Google miként gondoskodik az Ön adatainak védelméről.</translation>
+<translation id="6053735090575989697">Az adatvédelmi irányelvekben további információkat is találhat arról, hogy a Google miként védi az adatait.</translation>
 <translation id="6055888660316801977">A biztonságos fizetés hitelesítési adataihoz tartozó nem egyező hitelesítési adatok űrlapja</translation>
 <translation id="6058977677006700226">Minden eszközén szeretné használni a kártyákat?</translation>
 <translation id="6059925163896151826">USB-eszközök</translation>
@@ -2631,7 +2631,7 @@ További részletek:
 <translation id="7507075214339298899">9. boríték</translation>
 <translation id="7508255263130623398">A visszakapott házirend eszközazonosítója üres, vagy nem felel meg a jelenlegi eszközazonosítónak</translation>
 <translation id="7508870219247277067">Avokádózöld</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Az adatok felhasználása a webhelyek által<ph name="END_BOLD" />: A webhelyek tárolhatnak az Ön által kedvelt dolgokkal kapcsolatos információkat a Chrome-ban. Ha például egy maratonra való edzésről szóló webhelyet keres fel, a webhely dönthet úgy, hogy Önt érdeklik a futócipők. Ha később egy másik webhelyre látogat, az adott webhely futócipőket tartalmazó hirdetést jeleníthet meg az első webhely javaslata alapján.</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Hogyan használják a webhelyek ezeket az adatokat?<ph name="END_BOLD" /> A webhelyek információkat tárolhatnak a Chrome-ban az Önt érdeklő témákról. Ha például felkeres egy maratonra való felkészüléssel kapcsolatos webhelyet, a webhely megállapíthatja, hogy Önt érdeklik a futócipők. Később, egy másik webhely megjeleníthet Önnek egy futócipőkkel kapcsolatos hirdetést az első webhely javaslata alapján.</translation>
 <translation id="7510269639068718544">Macskák</translation>
 <translation id="7511955381719512146">Az Ön által használt Wi-Fi-hálózat megkövetelheti a(z) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> felkeresését.</translation>
 <translation id="7512685745044087310">Ez a házirend nem állítható „true” (igaz) értékre, és nem tehető kötelezővé, ezért ajánlottra lett módosítva.</translation>
@@ -3074,9 +3074,9 @@ További részletek:
 <translation id="8589998999637048520">Legjobb minőség</translation>
 <translation id="8600271352425265729">Csak most</translation>
 <translation id="860043288473659153">Kártyatulajdonos neve</translation>
-<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Felhasznált adatok:<ph name="END_BOLD" /> A Chrome használatával ezen az eszközön felkeresett webhelyeken végzett tevékenységei.</translation>
+<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Felhasznált adatok:<ph name="END_BOLD" /> Az Ön tevékenységei az ezen az eszközön a Chrome használatával felkeresett webhelyeken.</translation>
 <translation id="8606726445206553943">MIDI-eszközök használata</translation>
-<translation id="8606988009912891950">A hirdetéstémák segítségével a webhelyek releváns hirdetéseket jeleníthetnek meg Önnek, miközben védik a böngészési előzményeket és a személyazonosságot. A Chrome megállapíthatja az Önt esetlegesen érdeklő témaköröket a legutóbbi böngészési előzményei alapján. Később az Ön által felkeresett webhelyek a megjelenő hirdetések személyre szabásához lekérhetik a Chrome-tól releváns témákat.</translation>
+<translation id="8606988009912891950">A hirdetéstémák segítségével a webhelyek releváns hirdetéseket jeleníthetnek meg Önnek, miközben védik a böngészési előzményeket és a személyazonosságot. A Chrome feljegyezheti az Önt érdeklő témákat a legutóbbi böngészési előzményei alapján. Később egy Ön által használt alkalmazás lekérdezheti a Chrome-tól a releváns témákat, hogy személyre szabhassa az Önnek megjelenő hirdetéseket.</translation>
 <translation id="8617269623452051934">aktív eszközhasználat</translation>
 <translation id="861775596732816396">Méret: 4</translation>
 <translation id="8620276786115098679">Kaku 7 boríték</translation>
@@ -3185,7 +3185,7 @@ További részletek:
 <translation id="8876033571432926051">Egyszerű játékok</translation>
 <translation id="8877780815363510165">Halászat és horgászat</translation>
 <translation id="8884537526797090108">Nem lehet rögzíteni bizalmas tartalmakat</translation>
-<translation id="8890798179125483517">A Chrome automatikusan törli a négy hétnél régebbi, hirdetéseket javasló témákat és webhelyeket. Lehetősége van az Önt nem érdeklő témák és webhelyek letiltására is.</translation>
+<translation id="8890798179125483517">A Chrome automatikusan törli a négy hétnél régebbi, hirdetéseket javasló témákat és webhelyeket. Önnek lehetősége van arra is, hogy letiltson bizonyos témákat és webhelyeket.</translation>
 <translation id="8891727572606052622">Érvénytelen proxymód.</translation>
 <translation id="8894794286471754040">Hosszú él először</translation>
 <translation id="8897428486789851669">Úszás</translation>
@@ -3297,8 +3297,8 @@ További részletek:
 <translation id="9155211586651734179">Csatlakoztatott hangperifériák</translation>
 <translation id="9157595877708044936">Előkészítés...</translation>
 <translation id="9164742147345933553">os://flags</translation>
-<translation id="9165305804774426672">A felkeresett webhelyek a webhelyen végzett tevékenységei alapján is kikövetkeztethetik, hogy mit kedvel. Ha például Ön egy hosszútávfutó-cipőket árusító webhelyet keres fel, akkor előfordulhat, hogy a webhely úgy dönt, Ön érdeklődik a maratonfutás iránt.</translation>
-<translation id="9166851138617700776">További információ a webhely által javasolt hirdetésekről és a hirdetések méréséről</translation>
+<translation id="9165305804774426672">A felkeresett webhelyek a webhelyen végzett tevékenységei alapján is kikövetkeztethetik, hogy mit kedvel. Ha például Ön felkeres egy hosszútávfutáshoz készült cipőket árusító webhelyet, akkor előfordulhat, hogy a webhely úgy dönt, Ön érdeklődik a maratonfutás iránt.</translation>
+<translation id="9166851138617700776">További információ a webhely által javasolt hirdetésekről és a hirdetésmérésről</translation>
 <translation id="9168814207360376865">Engedélyezés a webhelyek számára, hogy ellenőrizzék, van-e elmentett fizetési módja</translation>
 <translation id="9169664750068251925">Mindig tiltsa ezen az oldalon</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> hozzáadása a kezdőképernyőhöz</translation>

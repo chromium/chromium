@@ -671,7 +671,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4678082183394354975">Le thème sombre pour les sites est activé dans Chrome</translation>
 <translation id="4684427112815847243">Tout synchroniser</translation>
 <translation id="4685741273709472646">Sélectionnez dans la liste du menu déroulant</translation>
-<translation id="4687718960473379118">Annonces suggérées par un site</translation>
+<translation id="4687718960473379118">Annonces suggérées par les sites</translation>
 <translation id="4689792375321623175">Rechercher avec Google <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autre option de livraison}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autre option de livraison}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autres options de livraison}}</translation>
 <translation id="4699172675775169585">Images et fichiers dans la mémoire cache</translation>

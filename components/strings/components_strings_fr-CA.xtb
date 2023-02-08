@@ -347,7 +347,7 @@
 <translation id="1736420071277903564">Ordinateur</translation>
 <translation id="1740951997222943430">Entrez un mois d'expiration valide</translation>
 <translation id="1741613555002899862">Doit être indiquée et être une chaîne valide lorsque la politique DnsOverHttpsMode est définie à <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données :<ph name="END_BOLD" /> Chrome enregistre les sujets d'intérêt pendant votre navigation sur le Web. Les étiquettes de sujet sont prédéfinies et comprennent des catégories telles que Arts et divertissement, Magasinage et Sports. Ultérieurement, un site que vous visitez peut demander à Chrome de voir quelques-uns de vos sujets d'intérêt pour personnaliser les annonces que vous voyez. Il ne peut pas demander à voir votre historique de navigation.</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données :<ph name="END_BOLD" /> Chrome enregistre les sujets d'intérêt pendant votre navigation sur le Web. Les étiquettes de sujet sont prédéfinies et comprennent des catégories telles que les arts et le divertissement, le magasinage et les sports. Par la suite, un site que vous visitez peut demander à Chrome quelques-uns de vos sujets d'intérêt pour personnaliser les annonces que vous voyez. Il ne peut pas demander à voir votre historique de navigation.</translation>
 <translation id="1745880797583122200">Votre navigateur est géré</translation>
 <translation id="1746113442205726301">Décalage Y de l'image</translation>
 <translation id="1746531169546376413">0 degré</translation>
@@ -460,7 +460,7 @@
 <translation id="205212645995975601">Barbecue et grillades</translation>
 <translation id="2053111141626950936">Les pages en <ph name="LANGUAGE" /> ne seront pas traduites.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Lorsque cette commande est activée et que son état est défini à actif, Chrome détermine à quel grand groupe de personnes, ou « cohorte », votre activité de navigation récente ressemble le plus. Les annonceurs peuvent sélectionner des annonces pour le groupe, et votre activité de navigation reste privée sur votre appareil. Votre groupe est mis à jour tous les jours.}=1{Lorsque cette commande est activée et que son état est défini à actif, Chrome détermine à quel grand groupe de personnes, ou « cohorte », votre activité de navigation récente ressemble le plus. Les annonceurs peuvent sélectionner des annonces pour le groupe, et votre activité de navigation reste privée sur votre appareil. Votre groupe est mis à jour tous les jours.}one{Lorsque cette commande est activée et que son état est défini à actif, Chrome détermine à quel grand groupe de personnes, ou « cohorte », votre activité de navigation récente ressemble le plus. Les annonceurs peuvent sélectionner des annonces pour le groupe, et votre activité de navigation reste privée sur votre appareil. Votre groupe est mis à jour chaque {NUM_DAYS} jour.}other{Lorsque cette commande est activée et que son état est défini à actif, Chrome détermine à quel grand groupe de personnes, ou « cohorte », votre activité de navigation récente ressemble le plus. Les annonceurs peuvent sélectionner des annonces pour le groupe, et votre activité de navigation reste privée sur votre appareil. Votre groupe est mis à jour tous les {NUM_DAYS} jours.}}</translation>
-<translation id="2056658168519009885">Les sites peuvent demander à Chrome des renseignements pour personnaliser les annonces que vous voyez.</translation>
+<translation id="2056658168519009885">Les sites peuvent demander des renseignements à Chrome pour personnaliser les annonces que vous voyez.</translation>
 <translation id="2059202684901022309">22 po x 34 po</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suggestion}one{# suggestion}other{# suggestions}}</translation>
 <translation id="2066915425250589881">demander la suppression</translation>
@@ -823,7 +823,7 @@
 <translation id="301521992641321250">Bloquée automatiquement</translation>
 <translation id="3016780570757425217">Connaître votre emplacement</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour retirer la suggestion.</translation>
-<translation id="3023165109041533893">Les annonces suggérées par un site aident à protéger votre historique de navigation et votre identité tout en permettant aux sites de vous montrer des annonces plus pertinentes. En fonction de votre activité, un site visité peut suggérer des annonces associées au fur et à mesure que vous continuez votre navigation. Vous pouvez consulter une liste de ces sites et bloquer ceux que vous ne voulez pas dans les paramètres.</translation>
+<translation id="3023165109041533893">Les annonces suggérées par les sites permettent à ces derniers de vous montrer des annonces pertinentes tout en protégeant votre historique de navigation et votre identité. En fonction de votre activité, un site que vous visitez peut suggérer des annonces connexes au fur et à mesure que vous continuez votre navigation. Dans les paramètres, vous pouvez consulter une liste de ces sites et bloquer ceux que vous ne voulez pas.</translation>
 <translation id="3024663005179499861">Type de politique incorrect</translation>
 <translation id="3029752078111257850">Actualités internationales</translation>
 <translation id="3037177537145227281">Suivi du prix en cours…</translation>
@@ -916,7 +916,7 @@
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour rapidement créer un événement dans Google Agenda</translation>
 <translation id="3261488570342242926">En savoir plus sur les cartes virtuelles</translation>
 <translation id="3264837738038045344">Bouton Gérer les paramètres de Chrome, appuyez sur la touche Entrée pour accéder à vos paramètres de Chrome</translation>
-<translation id="3266367459139339908">Chrome lance de nouvelles façons de restreindre ce que les sites peuvent savoir sur vous lorsqu'ils vous présentent des annonces personnalisées, par exemple :</translation>
+<translation id="3266367459139339908">Chrome lance de nouvelles façons de limiter ce que les sites peuvent apprendre sur vous lorsqu'ils vous présentent des annonces personnalisées, par exemple :</translation>
 <translation id="3266793032086590337">Valeur (conflit)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Aucun site bloqué, y compris les sites connexes}=1{1 site bloqué, y compris les sites connexes}one{# site bloqué, y compris les sites connexes}other{# sites bloqués, y compris les sites connexes}}</translation>
 <translation id="3268451620468152448">Onglets ouverts</translation>
@@ -948,7 +948,7 @@
 <translation id="3339440062908617027">Course et marche</translation>
 <translation id="3339446062576134663">Nuage (Ash)</translation>
 <translation id="3340978935015468852">paramètres</translation>
-<translation id="3342018947887487892">Ultérieurement, un site que vous visitez peut demander de voir soit vos sujets d'annonces, soit des annonces suggérées par les sites visités.</translation>
+<translation id="3342018947887487892">Par la suite, un site que vous visitez peut demander ces renseignements, qu'il s'agisse de vos sujets d'annonces ou d'annonces suggérées par les sites visités.</translation>
 <translation id="3342366525167526994">Art corporel</translation>
 <translation id="3345782426586609320">Yeux</translation>
 <translation id="3349952286488694786">SRA2</translation>
@@ -1229,7 +1229,7 @@
 <translation id="4063924980214801036">Le déverrouillage de l'appareil est utilisé pour vérifier les cartes plus rapidement</translation>
 <translation id="4067098466788473230">Bourses d'études</translation>
 <translation id="4067947977115446013">Ajouter une adresse valide</translation>
-<translation id="4070790659619547722">Avec la mesure des annonces, des types de données restreints sont partagés entre les sites pour qu'ils puissent mesurer la performance de leurs annonces, comme l'heure à laquelle une publicité vous a été présentée.</translation>
+<translation id="4070790659619547722">Pour la mesure des annonces, des types de données restreints sont partagés entre les sites pour qu'ils puissent mesurer la performance de leurs annonces, comme l'heure à laquelle une annonce vous a été montrée.</translation>
 <translation id="4072193657607981494">Chargement des politiques en cours…</translation>
 <translation id="4072486802667267160">Une erreur s'est produite lors du traitement de votre commande. Veuillez réessayer.</translation>
 <translation id="4073376909608563327">Impossible d'utiliser le déverrouillage de l'appareil</translation>
@@ -1423,7 +1423,7 @@
 <translation id="449126573531210296">Chiffrer les mots de passe synchronisés avec votre compte Google</translation>
 <translation id="4492519888999857993">Ces fonctionnalités sont désactivées par défaut. Elles ne seront pas proposées dans les prochaines versions de Chrome.</translation>
 <translation id="4493480324863638523">URL incorrecte. Le format de l'URL doit être standard. Par exemple : http://example.com ou https://example.com.</translation>
-<translation id="4494323206460475851">Vous pouvez consulter les sujets d'annonces dans les paramètres et bloquer ceux que vous ne souhaitez pas partager avec les sites. Chrome supprime également automatiquement les sujets d'annonces ayant plus de quatre semaines.</translation>
+<translation id="4494323206460475851">Vous pouvez consulter les sujets d'annonces dans les paramètres et bloquer ceux que vous ne souhaitez pas partager avec les sites. De plus, Chrome supprime automatiquement les sujets d'annonces ayant plus de quatre semaines.</translation>
 <translation id="4500587658229086076">Contenu non sécurisé</translation>
 <translation id="4506176782989081258">Erreur de validation : <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">De communiquer avec l'administrateur système</translation>
@@ -1497,7 +1497,7 @@
 <translation id="467809019005607715">Google Présentations</translation>
 <translation id="4682496302933121474">Traduire la page?</translation>
 <translation id="468314109939257734">Afficher votre numéro de carte virtuelle</translation>
-<translation id="4687718960473379118">Annonces suggérées par un site</translation>
+<translation id="4687718960473379118">Annonces suggérées par les sites</translation>
 <translation id="4692623383562244444">Moteurs de recherche</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Côté</translation>
@@ -1882,7 +1882,7 @@
 <translation id="5598944008576757369">Choisir un mode de paiement</translation>
 <translation id="560412284261940334">La gestion n'est pas prise en charge</translation>
 <translation id="5605670050355397069">Grand livre</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Comment gérer vos données :<ph name="END_BOLD" /> Chrome supprime automatiquement les sites ayant de plus de quatre semaines. Un site que vous revisitez pourrait réapparaître sur la liste. Vous pouvez également empêcher un site de vous suggérer des annonces et désactiver les annonces suggérées par le site à tout moment dans les paramètres de Chrome.</translation>
+<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Comment gérer vos données :<ph name="END_BOLD" /> Chrome supprime automatiquement les sites ayant de plus de quatre semaines. Un site que vous visitez de nouveau peut réapparaître dans la liste. Vous pouvez également empêcher un site de vous suggérer des annonces et désactiver les annonces suggérées par le site à tout moment dans les paramètres de Chrome.</translation>
 <translation id="5610142619324316209">De vérifier la connexion</translation>
 <translation id="5610807607761827392">Vous pouvez gérer les cartes et les adresses dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Traduisez cette page avec Google Traduction</translation>
@@ -2059,7 +2059,7 @@
 <translation id="6051221802930200923">Vous ne pouvez pas consulter le site <ph name="SITE" /> pour le moment, car le site Web utilise l'épinglage de certificat. Les erreurs réseau et les attaques sont généralement temporaires. Vous devriez donc pouvoir accéder à cette page plus tard.</translation>
 <translation id="6051898664905071243">Nombre de pages :</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053735090575989697">Apprenez-en plus sur la manière dont Google protège vos données en consultant notre politique de confidentialité.</translation>
+<translation id="6053735090575989697">Apprenez-en plus sur la façon dont Google protège vos données dans notre politique de confidentialité.</translation>
 <translation id="6055888660316801977">Feuille d'authentification pour l'authentifiant de paiement sécurisé qui ne correspond pas</translation>
 <translation id="6058977677006700226">Utiliser vos cartes sur tous vos appareils?</translation>
 <translation id="6059925163896151826">Appareils USB</translation>
@@ -2325,7 +2325,7 @@
 <translation id="6786145470008421571">Enveloppe 6 x 9 po</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786747875388722282">Extensions</translation>
-<translation id="6787094689637422836">Chrome lance de nouvelles fonctionnalités de confidentialité qui vous permettent de mieux choisir les annonces que vous voyez.</translation>
+<translation id="6787094689637422836">Chrome lance de nouvelles fonctionnalités de confidentialité qui vous donnent plus de choix quant aux annonces que vous voyez.</translation>
 <translation id="678982761784843853">Identifiants de contenu protégé</translation>
 <translation id="6790428901817661496">Jouer</translation>
 <translation id="679355240208270552">Sans effet, car la recherche par défaut n'est pas activée par une politique.</translation>
@@ -2633,7 +2633,7 @@ Détails supplémentaires :
 <translation id="7507075214339298899">Enveloppe nᵒ 9</translation>
 <translation id="7508255263130623398">L'ID d'appareil de la règle renvoyé est vide ou ne correspond pas à l'ID d'appareil actuel</translation>
 <translation id="7508870219247277067">Avocat</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Comment les sites utilisent ces données :<ph name="END_BOLD" /> les sites peuvent stocker des renseignements sur ce que vous aimez dans Chrome. Par exemple, si vous visitez un site consacré à l'entraînement au marathon, le site pourrait déterminer que vous êtes intéressé par les chaussures de course. Ultérieurement, si vous visitez un autre site, celui-ci peut vous montrer une annonce pour des chaussures de course suggérées par le premier site.</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Comment les sites utilisent ces données :<ph name="END_BOLD" /> les sites peuvent stocker dans Chrome des renseignements concernant les sujets qui vous intéressent. Par exemple, si vous visitez un site consacré à l'entraînement au marathon, le site pourrait déterminer que vous êtes intéressé par les chaussures de course. Par la suite, si vous visitez un autre site, celui-ci peut vous montrer une annonce pour des chaussures de course suggérées par le premier site.</translation>
 <translation id="7510269639068718544">Chats</translation>
 <translation id="7511955381719512146">Le réseau Wi-Fi que vous utilisez peut vous demander de visiter <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Cette politique ne peut pas être définie à « Vrai » et être obligatoire, alors elle a été définie à Recommandé.</translation>
@@ -2765,13 +2765,13 @@ Détails supplémentaires :
 <translation id="7766518757692125295">Jupe</translation>
 <translation id="7773005668374414287">Même ordre, face vers le haut</translation>
 <translation id="7785790577395078482">cette tablette</translation>
-<translation id="7790488044432570133">Les sites que vous visitez peuvent demander à Chrome des renseignements pour les aider à mesurer la performance de leurs annonces. Chrome permet aux sites de recueillir des types de données restreints, comme l'heure à laquelle une annonce vous a été présentée.</translation>
+<translation id="7790488044432570133">Les sites que vous visitez peuvent demander des renseignements à Chrome pour les aider à mesurer la performance de leurs annonces. Chrome permet aux sites de collecter des types limités de données, comme l'heure à laquelle une annonce vous a été présentée.</translation>
 <translation id="7791011319128895129">Non publiée</translation>
 <translation id="7791196057686275387">Balle</translation>
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="7798389633136518089">Cette politique est ignorée parce qu'elle n'est pas définie par une source infonuagique.</translation>
 <translation id="7800304661137206267">La connexion est chiffrée au moyen de <ph name="CIPHER" />, avec <ph name="MAC" /> pour l'authentification des messages et <ph name="KX" /> pour la méthode d'échange de clés.</translation>
-<translation id="7800977246388195491">Chrome enregistre les sujets d'intérêt en fonction de votre historique de navigation récent. De plus, les sites que vous visitez peuvent déterminer ce que vous aimez. Ultérieurement, les sites peuvent demander ces renseignements pour vous présenter des annonces personnalisées. Vous pouvez déterminer quels sujets et sites sont utilisés pour vous présenter des annonces personnalisées.</translation>
+<translation id="7800977246388195491">Chrome enregistre les sujets d'intérêt en fonction de votre historique de navigation récent. De plus, les sites que vous visitez peuvent déterminer ce qui vous intéresse. Par la suite, les sites peuvent demander ces renseignements pour vous montrer des annonces personnalisées. Vous pouvez choisir sites et les sujets qui sont utilisés pour vous montrer des annonces.</translation>
 <translation id="7802523362929240268">Site officiel</translation>
 <translation id="7802989406998618639">Saisissez le code de sécurité à <ph name="NUMBER_OF_DIGITS" /> chiffres sur le <ph name="SIDE_OF_CARD" /> afin que votre banque puisse vérifier qu'il s'agit bien de vous</translation>
 <translation id="780301667611848630">Non merci</translation>
@@ -3075,9 +3075,9 @@ Détails supplémentaires :
 <translation id="8589998999637048520">Meilleure qualité</translation>
 <translation id="8600271352425265729">Uniquement cette fois-ci</translation>
 <translation id="860043288473659153">Nom du titulaire de la carte</translation>
-<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Quelles données sont utilisées :<ph name="END_BOLD" /> votre activité sur un site que vous visitez à l'aide de Chrome sur cet appareil.</translation>
+<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Les données sont utilisées :<ph name="END_BOLD" /> Votre activité sur un site que vous visitez à l'aide de Chrome sur cet appareil.</translation>
 <translation id="8606726445206553943">Utiliser vos appareils MIDI</translation>
-<translation id="8606988009912891950">Les sujets d'annonces aident les sites à vous montrer des annonces pertinentes tout en protégeant votre historique de navigation et votre identité. Chrome peut enregistrer les sujets d'intérêt en fonction de votre historique de navigation récent. Ultérieurement, un site que vous visitez peut demander à Chrome de consulter les sujets qui vous intéressent pour personnaliser les annonces que vous voyez.</translation>
+<translation id="8606988009912891950">Les sujets d'annonces permettent aux sites de vous montrer des annonces pertinentes tout en protégeant votre historique de navigation et votre identité. Chrome peut enregistrer les sujets d'intérêt en fonction de votre historique de navigation récent. Par la suite, un site que vous visitez peut demander à Chrome de lui fournir les sujets qui vous intéressent pour personnaliser les annonces que vous voyez.</translation>
 <translation id="8617269623452051934">votre utilisation de l'appareil</translation>
 <translation id="861775596732816396">Taille 4</translation>
 <translation id="8620276786115098679">Enveloppe Kaku nᵒ 7</translation>
@@ -3298,8 +3298,8 @@ Détails supplémentaires :
 <translation id="9155211586651734179">Périphériques audio connectés</translation>
 <translation id="9157595877708044936">Configuration en cours...</translation>
 <translation id="9164742147345933553">os://indicateurs</translation>
-<translation id="9165305804774426672">Les sites que vous visitez peuvent également déterminer ce que vous aimez en fonction de votre activité sur ceux-ci. Par exemple, si vous visitez un site qui vend des chaussures de course longue distance, le site peut déterminer que vous souhaitez courir des marathons.</translation>
-<translation id="9166851138617700776">En savoir plus sur les annonces suggérées par les sites et la mesure des annonces</translation>
+<translation id="9165305804774426672">Les sites que vous visitez peuvent également déterminer ce qui vous intéresse en fonction de votre activité sur ceux-ci. Par exemple, si vous visitez un site qui vend des chaussures de course de fond, le site peut déterminer que vous vous intéressez aux marathons.</translation>
+<translation id="9166851138617700776">En savoir plus sur les annonces suggérées par les sites et sur la mesure des annonces</translation>
 <translation id="9168814207360376865">Autoriser les sites à vérifier si des modes de paiement sont enregistrés</translation>
 <translation id="9169664750068251925">Toujours bloquer pour ce site</translation>
 <translation id="9169931577761441333">Ajoutez <ph name="APP_NAME" /> à l'écran d'accueil</translation>
@@ -3329,7 +3329,7 @@ Détails supplémentaires :
 <translation id="935608979562296692">EFFACER LE CONTENU DU FORMULAIRE</translation>
 <translation id="936602727769022409">Vous risquez de perdre l'accès à votre compte Google. Chromium recommande de modifier votre mot de passe immédiatement. Vous serez invité à vous connecter.</translation>
 <translation id="937457230470581909">Zoos, aquariums et réserves naturelles</translation>
-<translation id="937804173274050966"><ph name="BEGIN_BOLD" />Quelles données sont utilisées :<ph name="END_BOLD" /> vos sujets d'annonces sont basés sur votre historique de navigation récent, soit une liste des sites que vous avez visités à l'aide de Chrome sur cet appareil.</translation>
+<translation id="937804173274050966"><ph name="BEGIN_BOLD" />Quelles données sont utilisées :<ph name="END_BOLD" /> Vos sujets d'annonces sont basés sur votre historique de navigation récent, soit une liste des sites que vous avez visités à l'aide de Chrome sur cet appareil.</translation>
 <translation id="939736085109172342">Nouveau dossier</translation>
 <translation id="940053046584497293">Voyages et transports</translation>
 <translation id="945855313015696284">Vérifiez les renseignements ci-dessous et supprimez les cartes incorrectes</translation>

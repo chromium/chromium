@@ -823,7 +823,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="301521992641321250">Automatiškai užblokuota</translation>
 <translation id="3016780570757425217">Žinoti jūsų vietovę</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, paspauskite tabuliavimo klavišą, tada „Enter“, kad pašalintumėte pasiūlymą.</translation>
-<translation id="3023165109041533893">Svetainių siūlomi skelbimai padeda apsaugoti jūsų naršymo istoriją bei tapatybę ir suteikia svetainėms galimybę rodyti jums aktualius skelbimus. Atsižvelgiant į jūsų veiklą, jums naršant toliau svetainė, kurioje lankėtės, gali siūlyti susijusius skelbimus. Galite peržiūrėti šių svetainių sąrašą ir užblokuoti nepageidaujamas svetaines nustatymuose.</translation>
+<translation id="3023165109041533893">Svetainių siūlomi skelbimai padeda apsaugoti jūsų naršymo istoriją bei tapatybę, leisdami svetainėms rodyti jums aktualius skelbimus. Atsižvelgiant į jūsų veiklą, jums naršant toliau svetainė, kurioje lankėtės, gali siūlyti susijusius skelbimus. Galite peržiūrėti šių svetainių sąrašą ir užblokuoti nepageidaujamas svetaines nustatymuose.</translation>
 <translation id="3024663005179499861">Netinkamas politikos tipas</translation>
 <translation id="3029752078111257850">Pasaulio naujienos</translation>
 <translation id="3037177537145227281">Kaina stebima</translation>
@@ -835,7 +835,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="306573536155379004">Žaidimas prasidėjo.</translation>
 <translation id="3068991664510324412">Kompiuteriniai ir vaizdo žaidimai</translation>
 <translation id="3080254622891793721">Grafiniai elementai</translation>
-<translation id="3081538120861307764">Siekiant įvertinti skelbimo našumą, skirtingose svetainėse bendrinami tam tikrų tipų duomenys, pvz., paros laikas, kada skelbimas buvo jums rodomas.</translation>
+<translation id="3081538120861307764">Siekiant įvertinti skelbimo našumą, svetainėse bendrinami ribotų tipų duomenys, pvz., paros laikas, kada skelbimas buvo jums rodomas.</translation>
 <translation id="3082007635241601060">Leiskite „Google“, kai yra galimybė, pasinaudojus jūsų kortelėmis rasti suasmenintų nuolaidų</translation>
 <translation id="3086579638707268289">Jūsų veikla žiniatinklyje stebima</translation>
 <translation id="3087734570205094154">Apačia</translation>
@@ -2222,7 +2222,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="646793340882508547">Nuotykių žaidimai</translation>
 <translation id="6468485451923838994">Šriftai</translation>
 <translation id="647261751007945333">Įrenginio politika</translation>
-<translation id="6475672344094591109">Svetainės, kuriose lankotės, gali prašyti „Chrome“ pateikti informacijos, padedančios įvertinti skelbimų našumą. „Chrome“ saugo jūsų privatumą apribodama informaciją, kurią svetainės gali bendrinti tarpusavyje.</translation>
+<translation id="6475672344094591109">Svetainės, kuriose lankotės, gali prašyti „Chrome“ informacijos, kad galėtų lengviau įvertinti savo skelbimų našumą. „Chrome“ užtikrina jūsų privatumą ribodama svetainių bendrinamą informaciją.</translation>
 <translation id="6476284679642588870">Tvarkyti mokėjimo metodus</translation>
 <translation id="6486200200930923183">Dokumentiniai filmai</translation>
 <translation id="6489534406876378309">Pradėti įkelti strigtis</translation>
@@ -2326,7 +2326,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6786145470008421571">6 x 9 col. vokas</translation>
 <translation id="67862343314499040">Violetinė</translation>
 <translation id="6786747875388722282">Plėtiniai</translation>
-<translation id="6787094689637422836">Pristatome naujas privatumo funkcijas, kurios suteikia daugiau galimybių pasirinkti jums rodomų skelbimų temas.</translation>
+<translation id="6787094689637422836">Pristatome naujas privatumo funkcijas, suteikiančias daugiau norimų matyti skelbimų pasirinkimo galimybių.</translation>
 <translation id="678982761784843853">Apsaugoto turinio ID</translation>
 <translation id="6790428901817661496">Žaisti</translation>
 <translation id="679355240208270552">Nepaisoma, nes numatytoji paieška neįgalinta pagal politiką.</translation>

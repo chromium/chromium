@@ -4109,7 +4109,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (par défaut)</translation>
 <translation id="4684427112815847243">Tout synchroniser</translation>
 <translation id="4687613760714619596">Appareil inconnu (<ph name="DEVICE_ID" />)</translation>
-<translation id="4687718960473379118">Annonces suggérées par un site</translation>
+<translation id="4687718960473379118">Annonces suggérées par les sites</translation>
 <translation id="4688036121858134881">Identifiant du journal local : <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> restaure une version antérieure de cet appareil (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="4689235506267737042">Choisir vos préférences pour la démonstration</translation>

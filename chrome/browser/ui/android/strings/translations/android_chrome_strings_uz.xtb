@@ -405,7 +405,7 @@ Ishonch tokenlari Internetdagi maxfiylikni oshiradi va shaxsiy maʼlumotlaringiz
 <translation id="316694332262407393">Chrome allaqachon ishga tushgan.</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" /> saytining mobil versiyasini talab qilish mumkin</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3187472288455401631">Reklamani oʻlchash</translation>
+<translation id="3187472288455401631">Reklamalarni baholash</translation>
 <translation id="3207960819495026254">Xatcho‘plarga qo‘shildi</translation>
 <translation id="3208584281581115441">Hozir tekshirish</translation>
 <translation id="3211426585530211793">Oʻchirib tashlandi: <ph name="ITEM_TITLE" /></translation>
@@ -671,7 +671,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4678082183394354975">Chrome brauzerida bu saytlar uchun tungi mavzu yoniq</translation>
 <translation id="4684427112815847243">Hamma narsa sinxronlansin</translation>
 <translation id="4685741273709472646">Pastga ochiluvchi roʻyxatdan tanlang</translation>
-<translation id="4687718960473379118">Sayt taklif qilgan reklama</translation>
+<translation id="4687718960473379118">Saytlar taklif qiladigan reklamalar</translation>
 <translation id="4689792375321623175">Rasmni Googledan qidirish <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 va yana <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ta}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 va yana <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ta}}</translation>
 <translation id="4699172675775169585">Keshda saqlangan tavsirlar va boshqa fayllar</translation>

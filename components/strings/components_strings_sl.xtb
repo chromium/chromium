@@ -317,7 +317,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="168693727862418163">Preverjanje vrednosti tega pravilnika v skladu z njegovo shemo ni uspelo in bo prezrta.</translation>
 <translation id="168841957122794586">Potrdilo strežnika vsebuje šibek šifrirni ključ.</translation>
 <translation id="1689333818294560261">Vzdevek</translation>
-<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Kako lahko upravljate podatke:<ph name="END_BOLD" /> Chrome samodejno izbriše teme, starejše od štirih tednov. Ko nadaljujete brskanje, se lahko na seznamu znova prikaže tema. V Chromovih nastavitvah lahko prav tako kadar koli blokirate teme, za katere ne želite, da jih Chrome deli s spletnimi mesti, in izklopite teme oglasov.</translation>
+<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Kako lahko upravljate podatke:<ph name="END_BOLD" /> Chrome samodejno izbriše teme, starejše od štirih tednov. Ko nadaljujete brskanje, se tema lahko znova prikaže na seznamu. V Chromovih nastavitvah lahko prav tako kadar koli blokirate teme, za katere ne želite, da jih Chrome deli s spletnimi mesti, in izklopite teme oglasov.</translation>
 <translation id="1697532407822776718">Pripravljeni ste.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -1882,7 +1882,8 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5598944008576757369">Izbira plačilnega sredstva</translation>
 <translation id="560412284261940334">Upravljanje ni podprto</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Kako lahko upravljate podatke:<ph name="END_BOLD" /> Chrome samodejno izbriše podatke o spletnih mestih, starejše od štirih tednov. Spletno mesto, ki ga znova obiščete, se morda znova prikaže na seznamu. Če ne želite, da vam spletno mesto predlaga oglase, lahko to možnost kadar koli izklopite v nastavitvah Chroma.</translation>
+<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Kako lahko upravljate podatke:<ph name="END_BOLD" /> Chrome samodejno izbriše podatke o spletnih mestih, starejše od štirih tednov. Spletno mesto, ki ga znova obiščete, se morda znova prikaže na seznamu. 
+Poleg tega lahko v nastavitvah Chroma kadar koli blokirate, da bi spletno mesto predlagalo oglase za vas, ali izklopite oglase, ki jih predlagajo spletna mesta.</translation>
 <translation id="5610142619324316209">preveriti povezavo</translation>
 <translation id="5610807607761827392">Kartice in naslove je mogoče upravljati v <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Prevajanje te strani z Google Prevajalnikom</translation>
@@ -2059,7 +2060,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6051221802930200923">Spletnega mesta <ph name="SITE" /> trenutno ni mogoče obiskati, ker uporablja pripenjanje potrdil. Napake omrežja in napadi na omrežje so običajno začasni, zato bo ta stran verjetno delovala pozneje.</translation>
 <translation id="6051898664905071243">Število strani:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053735090575989697">Več o tem, kako Google varuje vaše podatke, lahko preberete v pravilniku o zasebnosti.</translation>
+<translation id="6053735090575989697">Več informacij o tem, kako Google varuje vaše podatke, najdete v našem pravilniku o zasebnosti.</translation>
 <translation id="6055888660316801977">Preglednica za neujemanje poverilnic poverilnice za varno plačilo</translation>
 <translation id="6058977677006700226">Želite kartice uporabljati v vseh svojih napravah?</translation>
 <translation id="6059925163896151826">Naprave USB</translation>
@@ -2633,7 +2634,7 @@ Dodatne podrobnosti:
 <translation id="7507075214339298899">Kuverta št. 9</translation>
 <translation id="7508255263130623398">Vrnjen ID naprave pravilnika je prazen ali se ne ujema s trenutnim ID-jem naprave</translation>
 <translation id="7508870219247277067">Avokadovo zelena</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Kako spletna mesta uporabljajo te podatke:<ph name="END_BOLD" /> Spletna mesta lahko v Chromu shranjujejo podatke o stvareh, ki so vam všeč. Če na primer obiščete spletno mesto o pripravah na maraton, bo spletno mesto morda ugotovilo, da vas zanima tekaška obutev. Če pozneje obiščete drugo spletno mesto, lahko to spletno mesto prikaže oglas za tekaško obutev, ki ga je predlagalo prvo spletno mesto.</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Kako spletna mesta uporabljajo te podatke:<ph name="END_BOLD" /> Spletna mesta lahko v Chromu shranjujejo informacije o tem, kaj vam je všeč. Če na primer obiščete spletno mesto o pripravah na maraton, bo spletno mesto morda ugotovilo, da vas zanima tekaška obutev. Če pozneje obiščete drugo spletno mesto, lahko to spletno mesto prikaže oglas za tekaško obutev, ki ga je predlagalo prvo spletno mesto.</translation>
 <translation id="7510269639068718544">Mačke</translation>
 <translation id="7511955381719512146">Omrežje Wi-Fi, ki ga uporabljate, morda zahteva, da obiščete <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Tega pravilnika ni mogoče nastaviti na »True« in nastaviti, da je obenem obvezen, zato je spremenjen v priporočljivega.</translation>

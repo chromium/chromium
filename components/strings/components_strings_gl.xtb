@@ -347,7 +347,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1736420071277903564">Ordenador</translation>
 <translation id="1740951997222943430">Introduce un mes de caducidade válido</translation>
 <translation id="1741613555002899862">Debe especificarse e ser unha cadea válida cando DnsOverHttpsMode é <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Como usamos estes datos?<ph name="END_BOLD" /> Chrome rexistra temas de interese a medida que navegas. As etiquetas dos temas están predefinidas e inclúen categorías como Arte e entretemento, Compras ou Deportes. Máis tarde, os sitios que visites poderán solicitarlle información a Chrome sobre algúns dos teus temas (non así o teu historial de navegación) para personalizar os anuncios que se che mostren.</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Como usamos estes datos?<ph name="END_BOLD" /> Chrome detecta temas de interese mentres navegas. As etiquetas dos temas están predefinidas e inclúen categorías como Arte e entretemento, Compras ou Deportes. Máis tarde, os sitios que visites poderán solicitarlle información a Chrome sobre algúns dos teus temas (non así o teu historial de navegación) para personalizar os anuncios que se che mostren.</translation>
 <translation id="1745880797583122200">O teu navegador está xestionado</translation>
 <translation id="1746113442205726301">Desprazamento da imaxe no eixe Y</translation>
 <translation id="1746531169546376413">0 graos</translation>
@@ -823,7 +823,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="301521992641321250">Bloqueado automaticamente</translation>
 <translation id="3016780570757425217">Coñecer a túa localización</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />. Para quitar a suxestión, preme Tabulador e, a continuación, Introducir.</translation>
-<translation id="3023165109041533893">Os anuncios suxeridos polos sitios axudan a protexer o teu historial de navegación e a túa identidade, e permiten que os sitios che mostren anuncios relevantes. En función da túa actividade, os sitios que visites poden suxerirche anuncios relacionados a medida que navegues pola Web. Na configuración podes ver unha lista destes sitios e bloquear os que non queiras.</translation>
+<translation id="3023165109041533893">Os anuncios suxeridos polos sitios axudan a protexer o teu historial de navegación e a túa identidade, ao mesmo tempo que permiten que os sitios che mostren anuncios relevantes. En función da túa actividade, os sitios que visites poden suxerir anuncios relacionados a medida que navegues pola Web. Podes ver a lista destes sitios na configuración e bloquear os que non queiras.</translation>
 <translation id="3024663005179499861">Tipo de política incorrecta</translation>
 <translation id="3029752078111257850">Actualidade mundial</translation>
 <translation id="3037177537145227281">Estase facendo un seguimento do prezo</translation>
@@ -916,7 +916,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para crear rapidamente un novo evento en Google Calendar</translation>
 <translation id="3261488570342242926">Máis información sobre as tarxetas virtuais</translation>
 <translation id="3264837738038045344">Botón para xestionar a configuración de Chrome. Para consultar a configuración de Chrome, preme Introducir</translation>
-<translation id="3266367459139339908">Imos lanzar novas formas de limitar a información que os sitios poden obter sobre ti ao mostrarche anuncios personalizados. Por exemplo:</translation>
+<translation id="3266367459139339908">Imos ofrecer novas formas de limitar a información que os sitios poden obter sobre ti cando che mostran anuncios personalizados. Por exemplo:</translation>
 <translation id="3266793032086590337">Valor (en conflito)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Non hai sitios bloqueados, incluídos os relacionados}=1{1 sitio bloqueado, incluídos os sitios relacionados}other{# sitios bloqueados, incluídos os relacionados}}</translation>
 <translation id="3268451620468152448">Pestanas abertas</translation>
@@ -948,7 +948,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3339440062908617027">Correr e camiñar</translation>
 <translation id="3339446062576134663">Nube (Ash)</translation>
 <translation id="3340978935015468852">configuración</translation>
-<translation id="3342018947887487892">Máis tarde, os sitios que visites poderán solicitar esta información, ben sexa sobre os teus temas de anuncios ou sobre os anuncios suxeridos polos sitios que visitases anteriormente.</translation>
+<translation id="3342018947887487892">Máis tarde, un sitio que visites pode solicitar esta información; ben os teus temas de anuncios, ou ben anuncios suxeridos polos sitios que visitases anteriormente.</translation>
 <translation id="3342366525167526994">Arte corporal</translation>
 <translation id="3345782426586609320">Ollos</translation>
 <translation id="3349952286488694786">SRA2</translation>
@@ -1229,7 +1229,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4063924980214801036">Utiliza o desbloqueo do dispositivo para confirmar as tarxetas máis rápido</translation>
 <translation id="4067098466788473230">Bolsas de estudo e prácticas</translation>
 <translation id="4067947977115446013">Engade un enderezo válido</translation>
-<translation id="4070790659619547722">Coa medición de anuncios compártense tipos de datos limitados entre os sitios para medir o rendemento dos seus anuncios (por exemplo, a hora do día na que se che mostrou un anuncio).</translation>
+<translation id="4070790659619547722">Coa medición de anuncios, compártense tipos limitados de datos entre os sitios para medir o rendemento publicitario, como a hora do día na que se che mostrou un anuncio.</translation>
 <translation id="4072193657607981494">Cargando políticas</translation>
 <translation id="4072486802667267160">Produciuse un erro ao procesar a túa solicitude. Téntao de novo.</translation>
 <translation id="4073376909608563327">Non se puido usar o desbloqueo do dispositivo</translation>
@@ -1882,7 +1882,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5598944008576757369">Escoller método de pago</translation>
 <translation id="560412284261940334">Xestión non admitida</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Como podes xestionar os teus datos?<ph name="END_BOLD" /> Chrome elimina automaticamente os sitios que teñen máis de 4 semanas de antigüidade. Se volves visitar un sitio, é posible que apareza na lista outra vez. Tamén podes bloquear as suxestións de anuncios dos sitios, así como desactivar os anuncios suxeridos polos sitios en calquera momento na configuración de Chrome.</translation>
+<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Como podes xestionar os teus datos?<ph name="END_BOLD" /> Chrome elimina de xeito automático os sitios que teñen máis de 4 semanas de antigüidade. Se volves visitar un sitio, podería aparecer outra vez na lista. Tamén podes impedir que os sitios che suxiran anuncios ou desactivar os anuncios suxeridos polos sitios en calquera momento na configuración de Chrome.</translation>
 <translation id="5610142619324316209">Comprobar a conexión</translation>
 <translation id="5610807607761827392">Podes xestionar as tarxetas e os enderezos na <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Traduce esta páxina co Tradutor de Google</translation>
@@ -2325,7 +2325,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6786145470008421571">Sobre 6 x 9 polgadas</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensións</translation>
-<translation id="6787094689637422836">Imos lanzar novas funcións de privacidade que che ofrecerán máis opcións relacionadas cos anuncios que se che mostran.</translation>
+<translation id="6787094689637422836">Estamos lanzando novas funcións de privacidade que che ofrecen máis opcións sobre os anuncios que ves.</translation>
 <translation id="678982761784843853">Códigos de identificación de contido protexido</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="679355240208270552">Ignorouse porque a busca predeterminada non está activada pola política.</translation>
@@ -2633,7 +2633,7 @@ Detalles adicionais:
 <translation id="7507075214339298899">Sobre n.º 9</translation>
 <translation id="7508255263130623398">O código de dispositivo da política está baleiro ou non coincide co código do dispositivo actual</translation>
 <translation id="7508870219247277067">Verde aguacate</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Como usan os sitios estes datos?<ph name="END_BOLD" /> Os sitios poden almacenar con Chrome información sobre o que che gusta. Por exemplo, se visitas un sitio sobre adestramento para maratóns, ese sitio podería determinar que che interesan as zapatillas deportivas. Máis tarde, se visitas un sitio distinto, poderá mostrárseche nel un anuncio de zapatillas deportivas suxerido polo primeiro sitio.</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Como usan os sitios estes datos?<ph name="END_BOLD" /> Os sitios poden almacenar con Chrome información sobre o que che gusta. Por exemplo, se visitas un sitio de adestramento para maratóns, ese sitio podería determinar que che interesan as zapatillas deportivas. Máis tarde, se visitas un sitio diferente, este poderá mostrarche un anuncio de zapatillas deportivas suxerido polo primeiro sitio.</translation>
 <translation id="7510269639068718544">Gatos</translation>
 <translation id="7511955381719512146">É posible que a rede wifi que utilizas requira o acceso a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Esta política non pode configurarse co valor True (Verdadeiro) e ser obrigatoria, así que se definiu como recomendada.</translation>
@@ -2765,7 +2765,7 @@ Detalles adicionais:
 <translation id="7766518757692125295">Saia</translation>
 <translation id="7773005668374414287">A mesma orde cara arriba</translation>
 <translation id="7785790577395078482">esta tableta</translation>
-<translation id="7790488044432570133">Os sitios que visitas poden solicitarlle información a Google para axudarlles a medir o rendemento dos seus anuncios. Chrome permite que os sitios recompilen tipos de datos limitados (por exemplo, a hora do día na que se che mostrou un anuncio).</translation>
+<translation id="7790488044432570133">Os sitios que visitas poden solicitarlle información a Google para axudarlles a medir o rendemento dos seus anuncios. Chrome permite que os sitios recompilen tipos limitados de datos (por exemplo, a hora do día na que se che mostrou un anuncio).</translation>
 <translation id="7791011319128895129">Sen publicar</translation>
 <translation id="7791196057686275387">Bala</translation>
 <translation id="7791543448312431591">Engadir</translation>
@@ -3075,9 +3075,9 @@ Detalles adicionais:
 <translation id="8589998999637048520">Calidade máxima</translation>
 <translation id="8600271352425265729">Só esta vez</translation>
 <translation id="860043288473659153">Nome do titular da tarxeta</translation>
-<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Que datos se usan?<ph name="END_BOLD" /> A túa actividade nos sitios que visitas usando Chrome neste dispositivo.</translation>
+<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Que datos se utilizan?<ph name="END_BOLD" /> A túa actividade nos sitios que visitas usando Chrome neste dispositivo.</translation>
 <translation id="8606726445206553943">Usar os dispositivos MIDI</translation>
-<translation id="8606988009912891950">Os temas de anuncios axudan aos sitios a mostrarche anuncios relevantes e protexen o teu historial de navegación e a túa identidade. Chrome pode tomar nota dos temas de interese en función do teu historial de navegación recente. Máis tarde, os sitios que visites poderán solicitarlle información a Chrome sobre os temas relevantes para personalizar os anuncios que se che mostren.</translation>
+<translation id="8606988009912891950">Os temas de anuncios axudan a que os sitios che mostren anuncios relevantes protexendo o teu historial de navegación e a túa identidade. Chrome pode tomar nota dos temas de interese en función do teu historial de navegación recente. Máis tarde, os sitios que visites poderán solicitarlle información a Chrome sobre os temas relevantes para personalizar os anuncios que se che mostren.</translation>
 <translation id="8617269623452051934">uso do dispositivo</translation>
 <translation id="861775596732816396">Tamaño 4</translation>
 <translation id="8620276786115098679">Sobre Kaku-7</translation>
@@ -3298,7 +3298,7 @@ Detalles adicionais:
 <translation id="9155211586651734179">Os periféricos de audio conectados</translation>
 <translation id="9157595877708044936">Configurando...</translation>
 <translation id="9164742147345933553">os://flags</translation>
-<translation id="9165305804774426672">Os sitios que visitas tamén poden determinar o que che gusta en función da túa actividade neles. Por exemplo, se visitas un sitio no que se venden zapatillas deportivas para carreiras de longa distancia, ese sitio pode determinar que che interesa correr maratóns.</translation>
+<translation id="9165305804774426672">Os sitios que visitas tamén poden determinar o que che gusta en función da túa actividade neles. Por exemplo, se visitas un sitio que vende zapatillas deportivas para carreiras de longa distancia, ese sitio podería determinar que che interesa participar en maratóns.</translation>
 <translation id="9166851138617700776">Máis información sobre os anuncios suxeridos polos sitios e a medición de anuncios</translation>
 <translation id="9168814207360376865">Permitir que os sitios comproben se tes métodos de pago gardados</translation>
 <translation id="9169664750068251925">Bloquear sempre neste sitio</translation>
@@ -3329,7 +3329,7 @@ Detalles adicionais:
 <translation id="935608979562296692">BORRAR FORMULARIO</translation>
 <translation id="936602727769022409">Poderías perder o acceso á túa Conta de Google. Chromium recoméndache que cambies de contrasinal agora. Deberás iniciar sesión.</translation>
 <translation id="937457230470581909">Zoos, acuarios e reservas naturais</translation>
-<translation id="937804173274050966"><ph name="BEGIN_BOLD" />Que datos se usan?<ph name="END_BOLD" /> Os temas dos anuncios baséanse no teu historial de navegación recente, que é unha lista dos sitios que visitaches usando Chrome neste dispositivo.</translation>
+<translation id="937804173274050966"><ph name="BEGIN_BOLD" />Que datos se utilizan?<ph name="END_BOLD" /> Os temas dos anuncios baséanse no teu historial de navegación recente, que é unha lista dos sitios que visitaches usando Chrome neste dispositivo.</translation>
 <translation id="939736085109172342">Cartafol novo</translation>
 <translation id="940053046584497293">Viaxes e transporte</translation>
 <translation id="945855313015696284">Comproba a información que aparece a continuación e elimina as tarxetas non válidas</translation>

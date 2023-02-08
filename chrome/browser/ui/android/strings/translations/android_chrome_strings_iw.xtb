@@ -405,7 +405,7 @@
 <translation id="316694332262407393">‏Chrome כבר פועל כאן.</translation>
 <translation id="3167258285411721858">ניתן לבקש את האתר לנייד של <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3187472288455401631">מדידת מודעות</translation>
+<translation id="3187472288455401631">מדידת המודעות</translation>
 <translation id="3207960819495026254">מסומן בסימנייה</translation>
 <translation id="3208584281581115441">בדיקה עכשיו</translation>
 <translation id="3211426585530211793">מועד המחיקה: <ph name="ITEM_TITLE" /></translation>
@@ -671,7 +671,7 @@
 <translation id="4678082183394354975">‏עיצוב כהה פועל לאתרים ב-Chrome</translation>
 <translation id="4684427112815847243">סנכרון הכל</translation>
 <translation id="4685741273709472646">בחירה מתוך הרשימה הנפתחת</translation>
-<translation id="4687718960473379118">הצעות למודעות מאתרים</translation>
+<translation id="4687718960473379118">מודעות שאתרים מציעים</translation>
 <translation id="4689792375321623175">‏חיפוש בתמונה עם Google <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> נוספת}one{‏<ph name="SHIPPING_OPTION_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> נוספות}two{‏<ph name="SHIPPING_OPTION_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> נוספות}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> נוספות}}</translation>
 <translation id="4699172675775169585">תמונות וקבצים במטמון</translation>

@@ -945,7 +945,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3339440062908617027">Běh a chůze</translation>
 <translation id="3339446062576134663">Cloud (Ash)</translation>
 <translation id="3340978935015468852">nastavení</translation>
-<translation id="3342018947887487892">Později může navštívený web požádat o tyto informace – buď o témata reklam, nebo o reklamy navržené navštívenými weby.</translation>
+<translation id="3342018947887487892">Když později navštívíte nějaký web, může o tyto informace požádat – buď o témata vašich reklam, nebo o reklamy navržené weby, které jste navštívili.</translation>
 <translation id="3342366525167526994">Zdobení těla</translation>
 <translation id="3345782426586609320">Oči</translation>
 <translation id="3349952286488694786">SRA2</translation>
@@ -1225,7 +1225,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4063924980214801036">Potvrzovat karty rychleji pomocí odemknutí zařízení</translation>
 <translation id="4067098466788473230">Studijní granty a stipendia</translation>
 <translation id="4067947977115446013">Přidejte platnou adresu</translation>
-<translation id="4070790659619547722">S měřením reklam se mezi weby sdílejí určité typy dat, aby weby mohly měřit výkon reklam, například v kterou denní dobu se vám reklama zobrazila.</translation>
+<translation id="4070790659619547722">Při měření reklam jsou mezi weby sdíleny omezené typy dat za účelem měření výkonu reklam, například denní doby, kdy se vám reklama zobrazila.</translation>
 <translation id="4072193657607981494">Načítání zásad</translation>
 <translation id="4072486802667267160">Při zpracování objednávky došlo k chybě. Zkuste to prosím znovu.</translation>
 <translation id="4073376909608563327">Odemknutí zařízení se nepodařilo použít</translation>
@@ -1878,7 +1878,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5598944008576757369">Vybrat platební metodu</translation>
 <translation id="560412284261940334">Správa není podporována</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Jak můžete svá data spravovat:<ph name="END_BOLD" /> Weby, které jsou starší než 4 týdny, Chrome automaticky maže. Web, který navštívíte znovu, se na seznamu může opět objevit. Navrhování reklam pro vás můžete webu také kdykoliv zablokovat a reklamy navrhované weby můžete v nastavení Chromu kdykoliv vypnout.</translation>
+<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Jak můžete svá data spravovat:<ph name="END_BOLD" /> Informace z webů starší než 4 týdny Chrome automaticky maže. Web, který navštívíte znovu, se na seznamu může opět objevit. V nastavení Chromu také můžete kdykoliv webu zakázat, aby vám navrhoval reklamy nebo reklamy navrhované weby vypnout.</translation>
 <translation id="5610142619324316209">Zkontrolovat připojení</translation>
 <translation id="5610807607761827392">Karty a adresy můžete spravovat v <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Přeložte tuto stránku pomocí Překladače Google</translation>
@@ -2055,7 +2055,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6051221802930200923">Web <ph name="SITE" /> teď nemůžete navštívit, protože používá připínání certifikátů. Síťové chyby a útoky jsou obvykle dočasné, tato stránka pravděpodobně později bude fungovat.</translation>
 <translation id="6051898664905071243">Počet stránek:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053735090575989697">Další informace o tom, jak Google chrání vaše data, najdete v našich zásadách ochrany soukromí.</translation>
+<translation id="6053735090575989697">Další informace o tom, jak Google chrání vaše údaje, najdete v našich zásadách ochrany soukromí.</translation>
 <translation id="6055888660316801977">List identifikačních údajů pro zabezpečené platby o nenalezených odpovídajících identifikačních údajích</translation>
 <translation id="6058977677006700226">Chcete své karty používat na všech svých zařízeních?</translation>
 <translation id="6059925163896151826">Zařízení USB</translation>
@@ -2759,7 +2759,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7773005668374414287">Stejné pořadí lícem nahoru</translation>
 <translation id="7785790577395078482">tento tablet</translation>
-<translation id="7790488044432570133">Navštívené weby mohou požádat Chrome o informace, které jim pomohou měřit výkon reklam. Chrome umožňuje webům shromažďovat určité typy dat, například denní dobu, kdy se vám reklama zobrazila.</translation>
+<translation id="7790488044432570133">Weby, které navštívíte, mohou Chrome požádat o informace k měření výkonu reklam. Chrome webům umožňuje shromažďovat omezené typy dat, například denní dobu, kdy se vám zobrazila reklama.</translation>
 <translation id="7791011319128895129">Nevydáno</translation>
 <translation id="7791196057686275387">Balení</translation>
 <translation id="7791543448312431591">Přidat</translation>
@@ -3181,7 +3181,7 @@ Další podrobnosti:
 <translation id="8876033571432926051">Nenáročné hry</translation>
 <translation id="8877780815363510165">Rybaření</translation>
 <translation id="8884537526797090108">Důvěrný obsah zaznamenat nelze</translation>
-<translation id="8890798179125483517">Témata a weby navrhující reklamy, které jsou starší než 4 týdny, Chrome automaticky maže. Případně můžete zablokovat konkrétní témata a weby, které se vám nelíbí.</translation>
+<translation id="8890798179125483517">Témata a weby navrhující reklamy, které jsou starší než 4 týdny, Chrome automaticky maže. Případně můžete zablokovat konkrétní témata a weby, u kterých nechcete, aby návrhy vytvářely.</translation>
 <translation id="8891727572606052622">Neplatný režim proxy serveru.</translation>
 <translation id="8894794286471754040">Dlouhou stranou napřed</translation>
 <translation id="8897428486789851669">Plavání</translation>

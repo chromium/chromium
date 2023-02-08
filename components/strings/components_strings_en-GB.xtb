@@ -347,7 +347,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1736420071277903564">Computer</translation>
 <translation id="1740951997222943430">Enter a valid expiry month</translation>
 <translation id="1741613555002899862">Must be specified and a valid string when DnsOverHttpsMode is <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Chrome notes topics of interest as you browse. Topic labels are predefined and include things like Arts and Entertainment, Shopping and Sports. Later, a site that you visit can ask Chrome for a few of your topics (but not your browsing history) to personalise the ads that you see.</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Chrome notes topics of interest as you browse. Topic labels are predefined and include things like Arts and entertainment, Shopping and Sports. Later, a site that you visit can ask Chrome for a few of your topics (but not your browsing history) to personalise the ads that you see.</translation>
 <translation id="1745880797583122200">Your browser is managed</translation>
 <translation id="1746113442205726301">Image Y shift</translation>
 <translation id="1746531169546376413">0 degrees</translation>

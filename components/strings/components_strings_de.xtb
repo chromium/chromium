@@ -317,7 +317,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="168693727862418163">Die Richtlinienwertprüfung des Schemas ist fehlgeschlagen. Der Richtlinienwert wird ignoriert.</translation>
 <translation id="168841957122794586">Das Serverzertifikat weist einen schwachen kryptografischen Schlüssel auf.</translation>
 <translation id="1689333818294560261">Alias</translation>
-<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />So kannst du deine Daten verwalten<ph name="END_BOLD" />: Chrome löscht Themen automatisch, die älter als vier Wochen sind. Je nach deinen Browsingaktivitäten können die Themen wieder in der Liste erscheinen. Du kannst auch jederzeit in den Einstellungen von Chrome Themen blockieren, die Chrome nicht mit Websites teilen soll, und Werbethemen deaktivieren.</translation>
+<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />So kannst du deine Daten verwalten<ph name="END_BOLD" />: Themen, die älter als vier Wochen sind, werden in Chrome automatisch gelöscht. Je nach deinen Browseraktivitäten können die Themen wieder in der Liste erscheinen. Du kannst in den Einstellungen von Chrome auch Themen blockieren, die Chrome nicht mit Websites teilen soll, und Werbethemen deaktivieren.</translation>
 <translation id="1697532407822776718">Fertig!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -347,7 +347,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1736420071277903564">Computer</translation>
 <translation id="1740951997222943430">Gib einen gültigen Ablaufmonat ein</translation>
 <translation id="1741613555002899862">Muss angegeben werden und ein gültiger String sein, wenn "DnsOverHttpsMode" auf <ph name="SECURE_DNS_MODE_SECURE" /> gesetzt ist.</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />So verwenden wir diese Daten<ph name="END_BOLD" />: Chrome merkt sich deine Interessen, während du surfst. Themenlabels sind vordefiniert und umfassen Dinge wie Kunst und Unterhaltung, Shopping und Sport. Wenn du dann eine Website besuchst, kann diese einige deiner Themen von Chrome anfordern (nicht den Browserverlauf), um Werbung, die dir angezeigt wird, zu personalisieren.</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />So verwenden wir diese Daten<ph name="END_BOLD" />: Chrome schließt aufgrund der von dir besuchten Websites auf Themen, die dich interessieren könnten. Die Themenbereiche sind vordefiniert, wie beispielsweise „Kunst und Unterhaltung“, „Shopping“ und „Sport“. Wenn du dann eine Website besuchst, kann diese von Chrome einige deiner Themen anfordern, um die dir angezeigte Werbung zu personalisieren. Daten über deinen Browserverlauf werden allerdings nicht weitergegeben.</translation>
 <translation id="1745880797583122200">Dein Browser wird verwaltet</translation>
 <translation id="1746113442205726301">Y-Verschiebung des Bilds</translation>
 <translation id="1746531169546376413">0°</translation>
@@ -460,7 +460,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="205212645995975601">Barbecue und Grillen</translation>
 <translation id="2053111141626950936">Seiten auf <ph name="LANGUAGE" /> werden nicht übersetzt.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Wenn dieses Steuerelement aktiviert und aktiv ist, bestimmt Chrome, welcher großen Personengruppe oder „Kohorte“ deine aktuellen Browseraktivitäten am ähnlichsten sind. Werbetreibende können Werbung für die einzelnen Gruppen auswählen und deine Browseraktivitäten werden sicher auf deinem Gerät gespeichert. Deine Gruppe wird täglich aktualisiert.}=1{Wenn dieses Steuerelement aktiviert und aktiv ist, bestimmt Chrome, welcher großen Personengruppe oder „Kohorte“ deine aktuellen Browseraktivitäten am ähnlichsten sind. Werbetreibende können Werbung für die einzelnen Gruppen auswählen und deine Browseraktivitäten werden sicher auf deinem Gerät gespeichert. Deine Gruppe wird täglich aktualisiert.}other{Wenn dieses Steuerelement aktiviert und aktiv ist, bestimmt Chrome, welcher großen Personengruppe oder „Kohorte“ deine aktuellen Browseraktivitäten am ähnlichsten sind. Werbetreibende können Werbung für die einzelnen Gruppen auswählen und deine Browseraktivitäten werden sicher auf deinem Gerät gespeichert. Deine Gruppe wird alle {NUM_DAYS} Tage aktualisiert.}}</translation>
-<translation id="2056658168519009885">Websites können Informationen von Chrome anfordern, um gezeigte Werbung besser zu personalisieren.</translation>
+<translation id="2056658168519009885">Websites können Informationen von Chrome anfordern, um dir personalisierte Werbung anzuzeigen.</translation>
 <translation id="2059202684901022309">22 x 34 Zoll</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 Vorschlag}other{# Vorschläge}}</translation>
 <translation id="2066915425250589881">Löschung beantragen</translation>
@@ -823,7 +823,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="301521992641321250">Automatisch blockiert</translation>
 <translation id="3016780570757425217">Deinen Standort abrufen</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" /> – drücke die Tabulatortaste und dann die Eingabetaste, um den Vorschlag zu entfernen.</translation>
-<translation id="3023165109041533893">Mithilfe von Werbung, die von Websites vorgeschlagen wird, kannst du deinen Browserverlauf und deine Privatsphäre besser schützen und Websites gleichzeitig ermöglichen, relevante Werbung einzublenden. Besuchte Websites können auf Grundlage deiner Aktivitäten beim weiteren Surfen passende Werbung vorschlagen. In den Einstellungen kannst du eine Liste dieser Websites aufrufen und unerwünschte Websites blockieren.</translation>
+<translation id="3023165109041533893">Wenn du von Websites vorgeschlagene Werbung erlaubst, dürfen Websites dir relevante Werbung präsentieren – deine Identität und dein Browserverlauf bleiben dabei aber geschützt. Eine von dir besuchte Website kann ausgehend von deinen Aktivitäten entsprechende Werbung vorschlagen. In den Einstellungen kannst du eine Liste dieser Websites aufrufen und unerwünschte Websites blockieren.</translation>
 <translation id="3024663005179499861">Falscher Richtlinientyp</translation>
 <translation id="3029752078111257850">Internationale Nachrichten</translation>
 <translation id="3037177537145227281">Preis wird beobachtet</translation>
@@ -835,7 +835,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="306573536155379004">Spiel gestartet.</translation>
 <translation id="3068991664510324412">Computer- und Videospiele</translation>
 <translation id="3080254622891793721">Grafik</translation>
-<translation id="3081538120861307764">Zur Messung der Leistung einer Werbeanzeige werden nur manche Datentypen zwischen Websites geteilt, beispielsweise die Tageszeit, zu der dir eine Werbeanzeige präsentiert wurde.</translation>
+<translation id="3081538120861307764">Zur Analyse der Leistung von Werbeanzeigen werden nur bestimmte Arten von Daten zwischen Websites geteilt, beispielsweise die Tageszeit, zu der dir eine Werbeanzeige präsentiert wurde.</translation>
 <translation id="3082007635241601060">Zulassen, das Google personalisierte Rabatte für deinen Einkaufswagen findet</translation>
 <translation id="3086579638707268289">Deine Aktivitäten im Web werden überwacht</translation>
 <translation id="3087734570205094154">Unten</translation>
@@ -875,7 +875,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="317878711435188021">Informationen zu deiner aktiven Nutzung dieses Geräts abrufen</translation>
 <translation id="3180358318770512945">Eltern</translation>
 <translation id="3187306450550410410">Flexible Arbeits(-zeit-)modelle</translation>
-<translation id="3187472288455401631">Anzeigenanalyse</translation>
+<translation id="3187472288455401631">Analyse von Werbung</translation>
 <translation id="3190736958609431397">Nicht mehr beobachten</translation>
 <translation id="319282854780294203">Soziale Netzwerke</translation>
 <translation id="3194737229810486521"><ph name="URL" /> möchte Daten dauerhaft auf deinem Gerät speichern</translation>
@@ -948,7 +948,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3339440062908617027">Lauf- und Gehsport</translation>
 <translation id="3339446062576134663">Cloud (Ash)</translation>
 <translation id="3340978935015468852">Einstellungen</translation>
-<translation id="3342018947887487892">Wenn du dann eine Website besuchst, kann sie diese Informationen anfordern – entweder deine Werbethemen oder Werbung, die von dir besuchte Websites vorgeschlagen.</translation>
+<translation id="3342018947887487892">Wenn du dann eine Website besuchst, kann diese Informationen anfordern – entweder deine Werbethemen oder Werbung, die andere Websites dir vorgeschlagen haben.</translation>
 <translation id="3342366525167526994">Körperschmuck und -kunst</translation>
 <translation id="3345782426586609320">Augen</translation>
 <translation id="3349952286488694786">SRA2</translation>
@@ -1074,7 +1074,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3634530185120165534">Fach 5</translation>
 <translation id="3634567936866541746">Du hast dein Passwort gerade auf einer verdächtigen Seite eingegeben. Chrome empfiehlt, deine gespeicherten Passwörter zu überprüfen, um deine Konten besser zu schützen.</translation>
 <translation id="3642638418806704195">Anwendung:</translation>
-<translation id="3646643500201740985">Leistung einer Anzeige messen</translation>
+<translation id="3646643500201740985">Leistung einer Werbeanzeige messen</translation>
 <translation id="3647286794400715637">Jeder URL-Stringeintrag muss eine oder zwei URLs enthalten.</translation>
 <translation id="3650584904733503804">Überprüfung erfolgreich</translation>
 <translation id="3653033846669030038">Freizeitparks</translation>
@@ -1092,7 +1092,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3678342917559046352">Ungültige Erweiterung: Für den Wert wurde eines der folgenden Formate erwartet: &lt;extension_id&gt; oder &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Seite in einem neuen Inkognitofenster öffnen (Strg + Umschalttaste + N)</translation>
 <translation id="3681007416295224113">Zertifikatinformationen</translation>
-<translation id="3681421644246505351">Chrome merkt sich auf Grundlage deines aktuellen Browserverlaufs, welche Themen dich interessieren.</translation>
+<translation id="3681421644246505351">Chrome schließt aufgrund deines aktuellen Browserverlaufs auf Themen, die dich interessieren könnten.</translation>
 <translation id="3693327506115126094">Methode zur Bestätigung deiner Identität auswählen</translation>
 <translation id="3701427423622901115">Zurücksetzen bestätigt.</translation>
 <translation id="3704162925118123524">Eventuell musst du die Anmeldeseite des verwendeten Netzwerks aufrufen.</translation>
@@ -1227,7 +1227,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4063924980214801036">Geräteentsperrung verwenden, um Karten schneller zu bestätigen</translation>
 <translation id="4067098466788473230">Stipendien</translation>
 <translation id="4067947977115446013">Gültige Adresse hinzufügen</translation>
-<translation id="4070790659619547722">Bei der Messung der Leistung von Werbeanzeigen werden nur manche Datentypen zwischen Websites geteilt, beispielsweise die Tageszeit, zu der dir Werbung präsentiert wurde.</translation>
+<translation id="4070790659619547722">Ist die Funktion zur Analyse von Werbung aktiviert, werden zwischen Websites bestimmte Daten übertragen, um die Leistung der auf ihnen präsentierten Werbung zu messen. Unter anderem wird erfasst, zu welcher Uhrzeit welche Werbung eingeblendet wurde.</translation>
 <translation id="4072193657607981494">Richtlinien werden geladen</translation>
 <translation id="4072486802667267160">Bei der Verarbeitung deiner Bestellung ist ein Fehler aufgetreten. Bitte versuche es noch einmal.</translation>
 <translation id="4073376909608563327">Geräteentsperrung kann nicht verwendet werden</translation>
@@ -1421,7 +1421,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="449126573531210296">Synchronisierte Passwörter mit meinem Google-Konto verschlüsseln</translation>
 <translation id="4492519888999857993">Diese Funktionen sind standardmäßig deaktiviert. Sie werden in künftigen Versionen von Chrome nicht länger verfügbar sein.</translation>
 <translation id="4493480324863638523">Ungültige URL. Dies muss eine URL mit einem Standardschema sein, z. B. "http://example.com" oder "https://example.com".</translation>
-<translation id="4494323206460475851">In den Einstellungen kannst du dir Werbethemen ansehen und diejenigen blockieren, die nicht mit Websites geteilt werden sollen. Darüber hinaus werden in Chrome Werbethemen automatisch gelöscht, die älter als vier Wochen sind.</translation>
+<translation id="4494323206460475851">Du kannst dir die Werbethemen in deinen Einstellungen ansehen und diejenigen blockieren, die nicht mit Websites geteilt werden sollen. Darüber hinaus werden in Chrome Werbethemen automatisch gelöscht, die älter als vier Wochen sind.</translation>
 <translation id="4500587658229086076">Unsichere Inhalte</translation>
 <translation id="4506176782989081258">Fehler bei der Überprüfung: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Kontakt mit dem Systemadministrator aufnehmen</translation>
@@ -1880,7 +1880,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5598944008576757369">Zahlungsmethode auswählen</translation>
 <translation id="560412284261940334">Verwaltung wird nicht unterstützt.</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />So kannst du deine Daten verwalten<ph name="END_BOLD" />: Chrome löscht Websites automatisch, die älter als vier Wochen sind. Eine Website, die du noch einmal besuchst, kann wieder in der Liste angezeigt werden. Du kannst auch jederzeit in den Einstellungen von Chrome Websites blockieren, damit sie keine Werbung vorschlagen, und die Funktion für von Websites vorgeschlagene Werbung deaktivieren.</translation>
+<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />So kannst du deine Daten verwalten<ph name="END_BOLD" />: Daten zu Websites, die älter als vier Wochen sind, werden von Chrome automatisch gelöscht. Websites, die du noch einmal besuchst, können aber wieder in der Liste angezeigt werden. In den Einstellungen von Chrome kannst du auch Websites blockieren, damit sie keine Werbung vorschlagen, und die Funktion für von Websites vorgeschlagene Werbung deaktivieren.</translation>
 <translation id="5610142619324316209">Verbindung prüfen</translation>
 <translation id="5610807607761827392"><ph name="BEGIN_LINK" />Karten und Adressen kannst du in den Einstellungen verwalten.<ph name="END_LINK" /></translation>
 <translation id="561165882404867731">Diese Seite mit Google Übersetzer übersetzen</translation>
@@ -2219,7 +2219,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="646793340882508547">Abenteuerspiele</translation>
 <translation id="6468485451923838994">Schriftarten</translation>
 <translation id="647261751007945333">Geräterichtlinien</translation>
-<translation id="6475672344094591109">Besuchte Websites können Informationen von Chrome anfordern, um die Leistung ihrer Werbeanzeigen besser messen zu können. Chrome trägt zum Schutz deiner Privatsphäre bei, indem die Informationen beschränkt werden, die Websites miteinander teilen können.</translation>
+<translation id="6475672344094591109">Von dir besuchte Websites können von Chrome Informationen abfragen, um die Leistung ihrer Werbeanzeigen messen zu können. Chrome trägt zum Schutz deiner Daten bei, indem die Informationen beschränkt werden, die Websites miteinander teilen können.</translation>
 <translation id="6476284679642588870">Zahlungsmethoden verwalten</translation>
 <translation id="6486200200930923183">Dokumentarfilme</translation>
 <translation id="6489534406876378309">Hochladen von Abstürzen starten</translation>
@@ -2323,7 +2323,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6786145470008421571">Umschlag 6 × 9 Zoll</translation>
 <translation id="67862343314499040">Violett</translation>
 <translation id="6786747875388722282">Erweiterungen</translation>
-<translation id="6787094689637422836">Wir führen neue Datenschutzfunktionen ein, die dir mehr Möglichkeiten geben, die dir angezeigte Werbung zu beeinflussen.</translation>
+<translation id="6787094689637422836">Wir führen neue Datenschutzeinstellungen ein, mit denen du mehr Auswahlmöglichkeiten in Bezug auf die angezeigte Werbung hast.</translation>
 <translation id="678982761784843853">Geschützte Inhalts-IDs</translation>
 <translation id="6790428901817661496">Wiedergabe</translation>
 <translation id="679355240208270552">Ignoriert, da die Standardsuchmaschine durch die Richtlinie deaktiviert ist.</translation>
@@ -2631,7 +2631,7 @@ Weitere Details:
 <translation id="7507075214339298899">Umschlag Nr. 9</translation>
 <translation id="7508255263130623398">Zurückgegebene Geräte-ID der Richtlinie ist leer oder entspricht nicht der aktuellen Geräte-ID</translation>
 <translation id="7508870219247277067">Avocadogrün</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />So verwenden Websites diese Daten<ph name="END_BOLD" />: Websites können Daten zu deinen Vorlieben in Chrome speichern. Wenn du zum Beispiel eine Website zum Thema Marathontraining besuchst, könnte die Website daraus schließen, dass du an Laufschuhen interessiert bist. Wenn du dann eine andere Website besuchst, kann dir dort unter Umständen Werbung für Laufschuhe angezeigt werden, die von der ersten Website vorgeschlagen wurde.</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />So werden diese Daten von Websites verwendet<ph name="END_BOLD" />: Websites können in Chrome Informationen zu Themen speichern, die dich interessieren. Wenn du zum Beispiel eine Website zum Thema Marathontraining besuchst, könnte daraus geschlossen werden, dass du an Laufschuhen interessiert bist. Wenn du dann später eine andere Website besuchst, kann dir dort unter Umständen Werbung für Laufschuhe angezeigt werden, die von der ersten Website vorgeschlagen wurde.</translation>
 <translation id="7510269639068718544">Katzen</translation>
 <translation id="7511955381719512146">Unter Umständen erfordert das verwendete WLAN, dass du <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> aufrufst.</translation>
 <translation id="7512685745044087310">Diese Richtlinie kann nicht auf „Wahr“ eingestellt und gleichzeitig verbindlich sein. Deshalb wurde sie zu „Empfohlen“ geändert.</translation>
@@ -2763,13 +2763,13 @@ Weitere Details:
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7773005668374414287">Gleiche Reihenfolge Vorderseite nach oben</translation>
 <translation id="7785790577395078482">diesem Tablet</translation>
-<translation id="7790488044432570133">Besuchte Websites können Informationen von Chrome anfordern, um die Leistung ihrer Werbeanzeigen besser messen zu können. Chrome erlaubt Websites, nur manche Datentypen zu erheben, beispielsweise die Tageszeit, zu der dir eine Werbeanzeige präsentiert wurde.</translation>
+<translation id="7790488044432570133">Von dir besuchte Websites können von Chrome Informationen abfragen, um die Leistung ihrer Werbeanzeigen zu messen. Chrome erlaubt Websites aber nur die Datenerhebung zu bestimmten Informationsarten, z. B. die Uhrzeit, zu der eine Werbeanzeige präsentiert wurde.</translation>
 <translation id="7791011319128895129">Unveröffentlicht</translation>
 <translation id="7791196057686275387">Bündel</translation>
 <translation id="7791543448312431591">Hinzufügen</translation>
 <translation id="7798389633136518089">Ignoriert, weil die Richtlinie nicht von einer cloudbasierten Quelle konfiguriert wurde.</translation>
 <translation id="7800304661137206267">Die Verbindung ist mit <ph name="CIPHER" /> verschlüsselt; für die Nachrichtenauthentifizierung wird <ph name="MAC" /> verwendet und als Mechanismus für den Schlüsselaustausch <ph name="KX" />.</translation>
-<translation id="7800977246388195491">Chrome merkt sich auf Grundlage deines aktuellen Browserverlaufs, welche Themen dich interessieren. Außerdem können besuchte Websites feststellen, was dir gefällt. Websites können diese Informationen dann anfordern, um dir personalisierte Werbung zu zeigen. Du kannst festlegen, welche Themen und Websites für Werbung verwendet werden.</translation>
+<translation id="7800977246388195491">Chrome schließt aufgrund deines aktuellen Browserverlaufs auf Themen, die dich interessieren könnten. Außerdem können besuchte Websites feststellen, was dir gefällt. Weitere besuchte Websites können diese Informationen abfragen und dir dann personalisierte Werbung anzeigen. Du kannst festlegen, welche Themen und Websites für Werbung verwendet werden.</translation>
 <translation id="7802523362929240268">Website ist vertrauenswürdig</translation>
 <translation id="7802989406998618639">Gib den <ph name="NUMBER_OF_DIGITS" />-stelligen Sicherheitscode auf der <ph name="SIDE_OF_CARD" /> ein, damit deine Bank deine Identität bestätigen kann</translation>
 <translation id="780301667611848630">Kein Interesse</translation>
@@ -3074,9 +3074,9 @@ Weitere Details:
 <translation id="8589998999637048520">Beste Qualität</translation>
 <translation id="8600271352425265729">Nur dieses Mal</translation>
 <translation id="860043288473659153">Name des Karteninhabers</translation>
-<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Welche Daten werden verwendet?<ph name="END_BOLD" /> Deine Aktivitäten auf einer Website, die du mit Chrome auf diesem Gerät besucht hast.</translation>
+<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Welche Daten werden verwendet?<ph name="END_BOLD" /> Deine Aktivitäten auf einer Website, die du mit Chrome auf diesem Gerät besuchst.</translation>
 <translation id="8606726445206553943">Deine MIDI-Geräte verwenden</translation>
-<translation id="8606988009912891950">Werbethemen helfen Websites dabei, dir relevante Werbung anzeigen zu können, und tragen gleichzeitig zu einem besseren Schutz deines Browserverlaufs und deiner Privatsphäre bei. Chrome kann sich auf Grundlage deines aktuellen Browserverlaufs merken, welche Themen dich interessieren. Wenn du dann eine Website besuchst, kann diese relevante Themen von Chrome anfordern, um die dir gezeigte Werbung zu personalisieren.</translation>
+<translation id="8606988009912891950">Werbethemen unterstützen Websites dabei, dir relevante Werbung zu zeigen – deine Identität und dein Browserverlauf werden dabei geschützt. Chrome kann aufgrund deines aktuellen Browserverlaufs auf Themen schließen, die dich interessieren könnten. Websites, die du besuchst, können dann relevante Themen von Chrome anfordern, um die dir angezeigte Werbung zu personalisieren.</translation>
 <translation id="8617269623452051934">Informationen zu deiner Gerätenutzung</translation>
 <translation id="861775596732816396">Größe 4</translation>
 <translation id="8620276786115098679">Umschlag Kaku 7</translation>
@@ -3185,7 +3185,7 @@ Weitere Details:
 <translation id="8876033571432926051">Casual Games</translation>
 <translation id="8877780815363510165">Angeln</translation>
 <translation id="8884537526797090108">Vertrauliche Inhalte können nicht aufgezeichnet werden</translation>
-<translation id="8890798179125483517">In Chrome werden Themen und Werbung vorschlagende Websites, die älter als vier Wochen sind, automatisch gelöscht. Du kannst aber auch bestimmte Themen und Websites blockieren.</translation>
+<translation id="8890798179125483517">Themen sowie Websites, die Werbung vorschlagen, die länger als vier Wochen auf der Liste stehen, werden in Chrome automatisch gelöscht. Du kannst bestimmte Themen und Websites aber auch gezielt blockieren.</translation>
 <translation id="8891727572606052622">Ungültiger Proxymodus</translation>
 <translation id="8894794286471754040">Lange Seite zuerst</translation>
 <translation id="8897428486789851669">Schwimmen</translation>
@@ -3298,7 +3298,7 @@ Weitere Details:
 <translation id="9155211586651734179">Verbundene Audio-Peripheriegeräte</translation>
 <translation id="9157595877708044936">Einrichtung läuft...</translation>
 <translation id="9164742147345933553">os://flags</translation>
-<translation id="9165305804774426672">Besuchte Websites können deine Vorlieben auch anhand deiner Aktivitäten auf der Website bestimmen. Wenn du zum Beispiel eine Website besuchst, auf der Langstreckenlaufschuhe verkauft werden, könnte die Website daraus schließen, dass du an Marathonläufen interessiert bist.</translation>
+<translation id="9165305804774426672">Bei besuchten Websites kann auch anhand deiner Aktivitäten auf der Website ermittelt werden, was dir gefällt. Wenn du zum Beispiel eine Website besuchst, auf der Schuhe für Langstreckenläufe verkauft werden, könnte daraus geschlossen werden, dass du an Marathonläufen interessiert bist.</translation>
 <translation id="9166851138617700776">Weitere Informationen zu von Websites vorgeschlagener Werbung und zur Analyse von Werbung</translation>
 <translation id="9168814207360376865">Websites die Abfrage gespeicherter Zahlungsmethoden erlauben</translation>
 <translation id="9169664750068251925">Auf dieser Website immer blockieren</translation>

@@ -317,7 +317,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="168693727862418163">Nilai kebijakan ini gagal memvalidasi skemanya dan akan diabaikan.</translation>
 <translation id="168841957122794586">Sertifikat server berisi kunci kriptografis yang lemah.</translation>
 <translation id="1689333818294560261">Nama panggilan</translation>
-<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cara Anda dapat mengelola data Anda:<ph name="END_BOLD" /> Chrome otomatis menghapus topik yang tersimpan lebih dari 4 minggu. Saat Anda menjelajah, suatu topik mungkin muncul kembali di daftar. Anda juga dapat memblokir topik dari Chrome yang tidak ingin Anda bagikan ke situs dan menonaktifkan topik iklan kapan saja di setelan Chrome.</translation>
+<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cara untuk mengelola data Anda:<ph name="END_BOLD" /> Chrome otomatis menghapus topik yang tersimpan lebih dari 4 minggu. Saat Anda menjelajah, suatu topik mungkin muncul kembali di daftar. Anda juga dapat memblokir topik dari Chrome yang tidak ingin Anda bagikan ke situs dan menonaktifkan topik iklan kapan saja di setelan Chrome.</translation>
 <translation id="1697532407822776718">Anda sudah siap!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -835,7 +835,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="306573536155379004">Game dimulai.</translation>
 <translation id="3068991664510324412">Game komputer &amp; video game</translation>
 <translation id="3080254622891793721">Grafis</translation>
-<translation id="3081538120861307764">Untuk mengukur performa iklan, jenis data tertentu akan dibagikan antar-situs, seperti waktu iklan ditampilkan kepada Anda.</translation>
+<translation id="3081538120861307764">Untuk mengukur performa iklan, beberapa jenis data tertentu akan dibagikan antar-situs, seperti waktu iklan ditampilkan kepada Anda.</translation>
 <translation id="3082007635241601060">Izinkan Google menggunakan keranjang Anda untuk menemukan diskon yang dipersonalisasi, jika tersedia</translation>
 <translation id="3086579638707268289">Aktivitas Anda di web sedang dipantau</translation>
 <translation id="3087734570205094154">Bawah</translation>
@@ -875,7 +875,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="317878711435188021">Mengetahui saat Anda aktif menggunakan perangkat ini</translation>
 <translation id="3180358318770512945">Parenting</translation>
 <translation id="3187306450550410410">Pengaturan kerja fleksibel</translation>
-<translation id="3187472288455401631">Ad measurement</translation>
+<translation id="3187472288455401631">Pengukuran iklan</translation>
 <translation id="3190736958609431397">Batalkan pemantauan</translation>
 <translation id="319282854780294203">Jaringan sosial</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ingin menyimpan data di perangkat Anda secara permanen</translation>
@@ -916,7 +916,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuat acara baru di Google Kalender dengan cepat</translation>
 <translation id="3261488570342242926">Pelajari kartu virtual</translation>
 <translation id="3264837738038045344">Tombol Kelola setelan Chrome, tekan Enter untuk membuka setelan Chrome Anda</translation>
-<translation id="3266367459139339908">Kami meluncurkan cara baru untuk membatasi informasi Anda yang dapat dipelajari situs saat situs tersebut menampilkan iklan yang dipersonalisasi kepada Anda, misalnya:</translation>
+<translation id="3266367459139339908">Kami meluncurkan cara baru untuk membatasi informasi Anda yang dapat dipelajari situs tentang Anda saat menampilkan iklan yang dipersonalisasi, misalnya:</translation>
 <translation id="3266793032086590337">Nilai (bertentangan)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Tidak ada situs yang diblokir, termasuk situs terkait}=1{1 situs diblokir, termasuk situs terkait}other{# situs diblokir, termasuk situs terkait}}</translation>
 <translation id="3268451620468152448">Tab Terbuka</translation>
@@ -1228,7 +1228,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4063924980214801036">Gunakan fitur buka kunci perangkat untuk mengonfirmasi kartu lebih cepat</translation>
 <translation id="4067098466788473230">Hibah &amp; beasiswa pendidikan</translation>
 <translation id="4067947977115446013">Tambahkan Alamat yang Valid</translation>
-<translation id="4070790659619547722">Dengan pengukuran iklan, jenis data tertentu akan dibagikan antar-situs untuk mengukur performa iklan situs tersebut, seperti waktu iklan ditampilkan kepada Anda.</translation>
+<translation id="4070790659619547722">Dengan pengukuran iklan, jenis data tertentu akan dibagikan antar-situs untuk mengukur performa iklan mereka, misalnya jam berapa iklan ditampilkan kepada Anda.</translation>
 <translation id="4072193657607981494">Memuat kebijakan</translation>
 <translation id="4072486802667267160">Terjadi error saat memproses pesanan Anda. Harap coba lagi.</translation>
 <translation id="4073376909608563327">Tidak dapat menggunakan fitur buka kunci perangkat</translation>
@@ -1338,7 +1338,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4282346679996504092">Notifikasi untuk produk ini telah dinonaktifkan dan bookmark dihapus</translation>
 <translation id="4285498937028063278">Lepaskan</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Kartu ini telah disimpan di Akun Google Anda}other{Kartu-kartu ini telah disimpan di Akun Google Anda}}</translation>
-<translation id="4287495839370498922">Privasi iklan yang ditingkatkan di Chrome</translation>
+<translation id="4287495839370498922">Privasi iklan yang lebih baik di Chrome</translation>
 <translation id="4287885627794386150">Memenuhi syarat untuk uji coba tetapi tidak aktif</translation>
 <translation id="4297502707443874121">Thumbnail untuk halaman <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Investasi</translation>
@@ -1422,7 +1422,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="449126573531210296">Enkripsikan sandi yang disinkronkan dengan Akun Google Anda</translation>
 <translation id="4492519888999857993">Fitur ini dinonaktifkan secara default. Fitur ini tidak akan tersedia pada versi mendatang Chrome.</translation>
 <translation id="4493480324863638523">URL tidak valid. Harus berupa URL dengan skema standar, misalnya http://example.com atau https://example.com.</translation>
-<translation id="4494323206460475851">Anda dapat melihat topik iklan di setelan dan memblokir topik yang tidak ingin Anda bagikan ke situs. Chrome juga otomatis menghapus topik iklan yang tersimpan lebih dari 4 minggu.</translation>
+<translation id="4494323206460475851">Anda dapat melihat topik iklan di setelan dan memblokir topik yang tidak ingin Anda bagikan ke situs. Chrome juga menghapus otomatis topik iklan yang tersimpan lebih dari 4 minggu.</translation>
 <translation id="4500587658229086076">konten tidak aman</translation>
 <translation id="4506176782989081258">Kesalahan validasi: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Hubungi admin sistem</translation>
@@ -1881,7 +1881,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5598944008576757369">Pilih Metode Pembayaran</translation>
 <translation id="560412284261940334">Pengelolaan tidak didukung</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Cara Anda dapat mengelola data Anda:<ph name="END_BOLD" /> Chrome otomatis menghapus situs yang tersimpan lebih dari 4 minggu. Situs yang Anda buka lagi dapat kembali muncul di daftar. Anda juga dapat memblokir situs agar tidak menyarankan iklan dan menonaktifkan iklan yang disarankan situs kapan saja di setelan Chrome.</translation>
+<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Cara Anda dapat mengelola data Anda:<ph name="END_BOLD" /> Chrome otomatis menghapus situs yang tersimpan lebih dari 4 minggu. Situs yang Anda buka lagi mungkin akan muncul kembali di daftar. Anda juga dapat memblokir situs agar tidak menyarankan iklan dan menonaktifkan iklan yang disarankan situs kapan saja di setelan Chrome.</translation>
 <translation id="5610142619324316209">Periksa sambungan</translation>
 <translation id="5610807607761827392">Anda dapat mengelola kartu dan alamat di <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Terjemahkan halaman ini dengan Google Terjemahan</translation>
@@ -2762,7 +2762,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7766518757692125295">Perbatasan</translation>
 <translation id="7773005668374414287">Urutan yang sama menghadap ke atas</translation>
 <translation id="7785790577395078482">tablet ini</translation>
-<translation id="7790488044432570133">Situs yang Anda buka dapat meminta informasi kepada Chrome untuk membantunya mengukur performa iklan. Chrome memungkinkan situs mengumpulkan jenis data tertentu, seperti waktu iklan ditampilkan kepada Anda.</translation>
+<translation id="7790488044432570133">Situs yang Anda buka dapat meminta informasi kepada Chrome untuk membantunya mengukur performa iklan. Chrome memungkinkan situs mengumpulkan jenis data tertentu, misalnya jam berapa iklan ditampilkan kepada Anda.</translation>
 <translation id="7791011319128895129">Belum dirilis</translation>
 <translation id="7791196057686275387">Bale</translation>
 <translation id="7791543448312431591">Tambahkan</translation>
@@ -3072,7 +3072,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="860043288473659153">Nama pemegang kartu</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Data yang digunakan:<ph name="END_BOLD" /> Aktivitas Anda di situs yang dibuka menggunakan Chrome di perangkat ini.</translation>
 <translation id="8606726445206553943">Menggunakan perangkat MIDI Anda</translation>
-<translation id="8606988009912891950">Topik iklan membantu situs menampilkan iklan yang relevan sekaligus melindungi histori penjelajahan dan identitas Anda. Chrome dapat mencatat topik minat berdasarkan histori penjelajahan terbaru Anda. Kemudian, situs yang Anda buka dapat meminta topik yang relevan kepada Chrome untuk mempersonalisasi iklan yang Anda lihat.</translation>
+<translation id="8606988009912891950">Topik iklan membantu situs menampilkan iklan yang relevan, sambil tetap melindungi histori penjelajahan dan identitas Anda. Chrome dapat mencatat topik yang Anda minati berdasarkan histori penjelajahan terbaru Anda. Kemudian, situs yang Anda buka dapat meminta topik yang relevan dari Chrome untuk mempersonalisasi iklan yang Anda lihat.</translation>
 <translation id="8617269623452051934">penggunaan perangkat Anda</translation>
 <translation id="861775596732816396">Ukuran 4</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>

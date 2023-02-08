@@ -347,7 +347,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1736420071277903564">Datamaskin</translation>
 <translation id="1740951997222943430">Angi en gyldig utløpsmåned</translation>
 <translation id="1741613555002899862">Må være angitt som en gyldig streng når DnsOverHttpsMode er <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Slik bruker vi disse dataene:<ph name="END_BOLD" /> Chrome skriver ned emner som du er interessert i, mens du blar gjennom. Emneetiketter er forhåndsdefinerte og kan blant annet omfatte kunst og underholdning, shopping og sport. Senere kan nettsteder du besøker, spørre Chrome om noen av emnene dine (men ikke nettleserloggen) for å gi deg personlig tilpassede annonser.</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Slik bruker vi disse dataene:<ph name="END_BOLD" /> Chrome merker seg emner som du er interessert i, mens du blar gjennom. Emneetiketter er forhåndsdefinerte og kan blant annet omfatte ting som kunst og underholdning, shopping og sport. Senere kan nettsteder du besøker, spørre Chrome om noen av emnene dine (men ikke nettleserloggen) for å gi deg personlig tilpassede annonser.</translation>
 <translation id="1745880797583122200">Nettleseren din administreres</translation>
 <translation id="1746113442205726301">Y-forskyvning av bilde</translation>
 <translation id="1746531169546376413">0 grader</translation>
@@ -835,7 +835,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="306573536155379004">Spillet er startet.</translation>
 <translation id="3068991664510324412">Data- og videospill</translation>
 <translation id="3080254622891793721">Grafikk</translation>
-<translation id="3081538120861307764">For å måle innfrielsen for en annonse deles begrensede typer data mellom nettstedene, for eksempel tidspunktet du ble vist en annonse.</translation>
+<translation id="3081538120861307764">For å måle innfrielsen for en annonse deles begrensede typer data mellom nettstedene, for eksempel når på dagen du ble vist en annonse.</translation>
 <translation id="3082007635241601060">La Google bruke handlevognene dine for å finne personlig tilpassede rabatter hvis tilgjengelig</translation>
 <translation id="3086579638707268289">Aktiviteten din på nettet overvåkes</translation>
 <translation id="3087734570205094154">Bunn</translation>
@@ -1076,7 +1076,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3634530185120165534">Skuff 5</translation>
 <translation id="3634567936866541746">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chrome anbefaler at du sikrer kontoene dine ved å sjekke de lagrede passordene dine.</translation>
 <translation id="3642638418806704195">Program:</translation>
-<translation id="3646643500201740985">Måling av hvordan en annonse innfrir</translation>
+<translation id="3646643500201740985">Måling av annonseresultater</translation>
 <translation id="3647286794400715637">Hver nettadresse-strengoppføring må inneholde 1–2 nettadresser.</translation>
 <translation id="3650584904733503804">Valideringen var vellykket</translation>
 <translation id="3653033846669030038">Fonøyelsesparker</translation>
@@ -1497,7 +1497,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="467809019005607715">Google Presentasjoner</translation>
 <translation id="4682496302933121474">Vil du oversette siden?</translation>
 <translation id="468314109939257734">Se det virtuelle kortnummeret ditt</translation>
-<translation id="4687718960473379118">Foreslåtte annonser for nettsted</translation>
+<translation id="4687718960473379118">Annonser foreslått av nettstedet</translation>
 <translation id="4692623383562244444">Søkemotorer</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Side</translation>
@@ -2325,7 +2325,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6786145470008421571">Konvolutt 6 x 9 tommer</translation>
 <translation id="67862343314499040">Fiolett</translation>
 <translation id="6786747875388722282">Utvidelser</translation>
-<translation id="6787094689637422836">Vi lanserer nye personvernfunksjoner som gir deg flere valgmuligheter for annonsene du ser.</translation>
+<translation id="6787094689637422836">Vi lanserer nye personvernfunksjoner som gir deg bedre mulighet til å velge hvilke annonser du ser.</translation>
 <translation id="678982761784843853">ID-er for beskyttet innhold</translation>
 <translation id="6790428901817661496">Spill av</translation>
 <translation id="679355240208270552">Ignorert fordi standardsøk ikke er aktivert av regel.</translation>
@@ -2632,7 +2632,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7507075214339298899">Konvolutt nr. 9</translation>
 <translation id="7508255263130623398">Den returnerte enhets-ID-en for regelen er tom eller samsvarer ikke med den faktiske enhets-ID-en</translation>
 <translation id="7508870219247277067">Avokadogrønn</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Slik bruker nettsteder disse dataene:<ph name="END_BOLD" /> Nettsteder kan lagre informasjon i Chrome om ting du liker. Hvis du for eksempel besøker et nettsted om maratontrening, kan det hende at nettstedet bestemmer at du er interessert i joggesko. Hvis du senere besøker et annet nettsted, kan det aktuelle nettstedet vise deg en annonse for joggesko som er foreslått av det første nettstedet.</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Slik bruker nettsteder disse dataene:<ph name="END_BOLD" /> Nettsteder kan lagre informasjon i Chrome om ting du liker. Hvis du for eksempel besøker et nettsted om maratontrening, kan det hende at nettstedet fastslår at du er interessert i løpesko. Hvis du senere besøker et annet nettsted, kan det aktuelle nettstedet vise deg en annonse for løpesko som ble foreslått av det første nettstedet.</translation>
 <translation id="7510269639068718544">Katter</translation>
 <translation id="7511955381719512146">Det kan hende at Wifi-nettverket du bruker, krever at du besøker <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Denne regelen kan ikke settes til «True» (sann) og være obligatorisk. Derfor ble den endret til anbefalt.</translation>
@@ -3298,7 +3298,7 @@ Mer informasjon:
 <translation id="9157595877708044936">Konfigurerer ...</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Nettsteder du besøker, kan også fastslå hva du liker, basert på aktiviteten din på nettstedet. Hvis du for eksempel besøker et nettsted som selger joggesko for langdistanseturer, kan det hende at nettstedet bestemmer seg for at du er interessert i å løpe maraton.</translation>
-<translation id="9166851138617700776">Mer om nettstedsforeslåtte annonser og annonsemåling</translation>
+<translation id="9166851138617700776">Mer om annonser som er foreslått av nettsteder og annonsemåling</translation>
 <translation id="9168814207360376865">Tillatt nettsteder å sjekke om du har noen lagrede betalingsmåter</translation>
 <translation id="9169664750068251925">Blokkér alltid på dette nettstedet</translation>
 <translation id="9169931577761441333">Legg til <ph name="APP_NAME" /> på startskjermen</translation>
@@ -3344,7 +3344,7 @@ Mer informasjon:
 <translation id="975560348586398090">{COUNT,plural, =0{Ingen}=1{1 element}other{# elementer}}</translation>
 <translation id="976522784004777030">5 x 8 tommer</translation>
 <translation id="977502174772294970">Bryllup</translation>
-<translation id="979503328401807348">Mer nyttige annonser</translation>
+<translation id="979503328401807348">Nyttigere annonser</translation>
 <translation id="981121421437150478">Uten nett</translation>
 <translation id="982885543310356857">Klassiske kjøretøy</translation>
 <translation id="984275831282074731">Betalingsmåter</translation>

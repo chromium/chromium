@@ -3565,7 +3565,7 @@
 <translation id="4175737294868205930">محل ذخیره‌سازی دائمی</translation>
 <translation id="4176463684765177261">غیرفعال شد</translation>
 <translation id="4176864026061939326">این دستگاه مدیریت می‌شود. سرپرست دستگاه برای حساب <ph name="USER_EMAIL_ADDRESS" /> به نمایه جدیدی نیاز دارد</translation>
-<translation id="4177501066905053472">موضوعات آگهی</translation>
+<translation id="4177501066905053472">موضوع‌های آگهی</translation>
 <translation id="4180788401304023883">‏مجوز CA "<ph name="CERTIFICATE_NAME" />" حذف شود؟</translation>
 <translation id="4181602000363099176">۲۰ برابر</translation>
 <translation id="4181841719683918333">زبان‌ها</translation>
@@ -4440,7 +4440,7 @@
 <translation id="4992458225095111526">‏تأیید Powerwash</translation>
 <translation id="4992473555164495036">سرپرست سیستم روش‌های ورودی دردسترس را محدود کرده است.</translation>
 <translation id="4994754230098574403">درحال راه‌اندازی</translation>
-<translation id="4995293419989417004">درباره موضوعات آگهی بیشتر بدانید</translation>
+<translation id="4995293419989417004">درباره موضوع‌های آگهی بیشتر بدانید</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{هیچ ماشین مجازی <ph name="VM_TYPE" /> پیدا نشد}=1{‏۱ ماشین مجازی <ph name="VM_TYPE" /> پیدا شد: <ph name="VM_NAME_LIST" />}one{‏{NUM_VMS} ماشین مجازی <ph name="VM_TYPE" /> پیدا شد: <ph name="VM_NAME_LIST" />}other{‏{NUM_VMS} ماشین مجازی <ph name="VM_TYPE" /> پیدا شد: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">اتصال اینترنت ندارید.</translation>
 <translation id="4998430619171209993">روشن</translation>
@@ -7276,7 +7276,7 @@
 <translation id="7634280112532283638">کاهش هرزنامه و تقلب</translation>
 <translation id="7634566076839829401">مشکلی پیش آمد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="7635048370253485243">سرپرستتان آن را پین کرده است</translation>
-<translation id="7635711411613274199">درحین مرور، شخصی شدن یا نشدن آگهی‌هایی که می‌بینید به این تنظیم، <ph name="BEGIN_LINK1" />موضوعات آگهی<ph name="LINK_END1" />، <ph name="BEGIN_LINK2" />تنظیمات کوکی<ph name="LINK_END2" /> شما، و اینکه آیا سایتی که مشاهده می‌کنید آگهی‌ها را شخصی‌سازی می‌کند یا نه بستگی دارد</translation>
+<translation id="7635711411613274199">درحین مرور، شخصی شدن یا نشدن آگهی‌هایی که می‌بینید به این تنظیم، <ph name="BEGIN_LINK1" />موضوع‌های آگهی<ph name="LINK_END1" />، <ph name="BEGIN_LINK2" />تنظیمات کوکی<ph name="LINK_END2" /> شما، و اینکه آیا سایتی که مشاهده می‌کنید آگهی‌ها را شخصی‌سازی می‌کند یا نه بستگی دارد</translation>
 <translation id="7636919061354591437">نصب در این دستگاه</translation>
 <translation id="7637253234491814483">حسگر اثر انگشت را در بالا گوشه راست صفحه‌کلید، کنار دکمه روشن/ خاموش لمس کنید. داده‌های اثر انگشتتان به‌صورت ایمن ذخیره می‌شود و هرگز از <ph name="DEVICE_TYPE" /> شما خارج نمی‌شود.</translation>
 <translation id="7637272932128132922">وقتی این برگه غیرفعال بود، «بهینه‌سازی حافظ» حافظه را برای کارهای دیگر آزاد کرد. هرزمان بخواهید می‌توانید آن را در <ph name="SETTINGS_LINK" /> تغییر دهید.</translation>
