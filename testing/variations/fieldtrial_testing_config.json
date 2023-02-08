@@ -3380,6 +3380,21 @@
             ]
         }
     ],
+    "CrOSLateBootSuspendToHibernate": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootSuspendToHibernate"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSMglruARM": [
         {
             "platforms": [
