@@ -39,8 +39,10 @@ import android.view.View;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-// The view binder of the tasks surface view.
-class TasksViewBinder {
+/**
+ *  The view binder of the tasks surface view.
+ */
+public class TasksViewBinder {
     public static void bind(PropertyModel model, TasksView view, PropertyKey propertyKey) {
         if (propertyKey == FAKE_SEARCH_BOX_CLICK_LISTENER) {
             view.getSearchBoxCoordinator().setSearchBoxClickListener(

@@ -11,6 +11,8 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SHOWING_OVERVIEW;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.RESET_FEED_SURFACE_SCROLL_POSITION;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.TOP_MARGIN;
+import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_CLICK_LISTENER;
+import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_TEXT_WATCHER;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_FAKE_SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_INCOGNITO;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_INITIALIZED;
@@ -20,6 +22,7 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_SURFA
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_TITLE_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
+import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.LENS_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MORE_TABS_CLICK_LISTENER;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
@@ -30,9 +33,12 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.SINGLE_T
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TAB_SWITCHER_TITLE_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TOP_TOOLBAR_PLACEHOLDER_HEIGHT;
+import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -64,8 +70,10 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
+import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -89,6 +97,8 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
+
+import java.util.List;
 
 /** The mediator implements the logic to interact with the surfaces and caller. */
 class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.OnClickListener,
@@ -201,6 +211,10 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     private boolean mHideOverviewOnTabSelecting = true;
     private StartSurface.OnTabSelectingListener mOnTabSelectingListener;
     private ViewGroup mTabSwitcherContainer;
+    // The single or carousel Tab switcher module on the Start surface.
+    // None-null when the Start surface refactoring is enabled.
+    @Nullable
+    private TabSwitcher mTabSwitcherModule;
     private SnackbarManager mSnackbarManager;
     private boolean mIsNativeInitialized;
     // The timestamp at which the Start Surface was last shown to the user.
@@ -208,8 +222,11 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     private boolean mIsStartSurfaceRefactorEnabled;
     private OnClickListener mTabSwitcherClickHandler;
 
+    // TODO(crbug.com/1315676): Clean up TabSwitcher#Controller once the start surface refactoring
+    // is done.
     StartSurfaceMediator(Controller controller, ViewGroup tabSwitcherContainer,
-            TabModelSelector tabModelSelector, @Nullable PropertyModel propertyModel,
+            @Nullable TabSwitcher tabSwitcherModule, TabModelSelector tabModelSelector,
+            @Nullable PropertyModel propertyModel,
             @Nullable SecondaryTasksSurfaceInitializer secondaryTasksSurfaceInitializer,
             boolean isStartSurfaceEnabled, Context context,
             BrowserControlsStateProvider browserControlsStateProvider,
@@ -222,6 +239,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             OnClickListener tabSwitcherClickHandler) {
         mController = controller;
         mTabSwitcherContainer = tabSwitcherContainer;
+        mTabSwitcherModule = tabSwitcherModule;
         mTabModelSelector = tabModelSelector;
         mPropertyModel = propertyModel;
         mSecondaryTasksSurfaceInitializer = secondaryTasksSurfaceInitializer;
@@ -250,6 +268,19 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
 
         if (mPropertyModel != null) {
             assert mIsStartSurfaceEnabled;
+
+            if (mTabSwitcherModule != null) {
+                boolean isTabCarousel = mTabSwitcherModule.getController().getTabSwitcherType()
+                        == TabSwitcherType.CAROUSEL;
+                mPropertyModel.set(IS_TAB_CAROUSEL_VISIBLE, isTabCarousel);
+                mPropertyModel.set(IS_TAB_CAROUSEL_TITLE_VISIBLE, isTabCarousel);
+
+                // Set the initial state.
+                mPropertyModel.set(IS_SURFACE_BODY_VISIBLE, true);
+                mPropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, true);
+                mPropertyModel.set(IS_VOICE_RECOGNITION_BUTTON_VISIBLE, false);
+                mPropertyModel.set(IS_LENS_BUTTON_VISIBLE, false);
+            }
 
             // Show feed loading image if necessary.
             if (shouldShowFeedPlaceholder()) {
@@ -459,8 +490,51 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                     if (mLogoCoordinator != null) mLogoCoordinator.initWithNative();
                 }
             }
-        }
 
+            if (mTabSwitcherModule != null) {
+                mPropertyModel.set(FAKE_SEARCH_BOX_CLICK_LISTENER, v -> {
+                    mOmniboxStub.setUrlBarFocus(
+                            true, null, OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_TAP);
+                    RecordUserAction.record("TasksSurface.FakeBox.Tapped");
+                });
+                mPropertyModel.set(FAKE_SEARCH_BOX_TEXT_WATCHER, new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (s.length() == 0) return;
+                        mOmniboxStub.setUrlBarFocus(true, s.toString(),
+                                OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS);
+                        RecordUserAction.record("TasksSurface.FakeBox.LongPressed");
+
+                        // This won't cause infinite loop since we checked s.length() == 0 above.
+                        s.clear();
+                    }
+                });
+                mPropertyModel.set(VOICE_SEARCH_BUTTON_CLICK_LISTENER, v -> {
+                    FeedReliabilityLogger feedReliabilityLogger = getFeedReliabilityLogger();
+                    if (feedReliabilityLogger != null) {
+                        feedReliabilityLogger.onVoiceSearch();
+                    }
+                    mOmniboxStub.getVoiceRecognitionHandler().startVoiceRecognition(
+                            VoiceRecognitionHandler.VoiceInteractionSource.TASKS_SURFACE);
+                    RecordUserAction.record("TasksSurface.FakeBox.VoiceSearch");
+                });
+
+                mPropertyModel.set(LENS_BUTTON_CLICK_LISTENER, v -> {
+                    LensMetrics.recordClicked(LensEntryPoint.TASKS_SURFACE);
+                    mOmniboxStub.startLens(LensEntryPoint.TASKS_SURFACE);
+                });
+            }
+        }
+        if (mTabSwitcherModule != null) {
+            mTabSwitcherModule.initWithNative();
+        }
         mFeedVisibilityPrefOnStartUp = prefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE);
     }
 
@@ -668,7 +742,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             // reset the scrolling position.
             resetScrollPosition();
         } else if (mStartSurfaceState == StartSurfaceState.SHOWING_TABSWITCHER) {
-            maybeDestroyFeedPlaceholder();
+            onHide();
             // Set secondary surface visible to make sure tab list recyclerview is updated in time
             // (before GTS animations start). We need to skip
             // mSecondaryTasksSurfaceController#showOverview here since it will hide GTS animations.
@@ -887,10 +961,13 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         return ret;
     }
 
-    void maybeDestroyFeedPlaceholder() {
+    void onHide() {
         if (mFeedPlaceholderCoordinator != null) {
             mFeedPlaceholderCoordinator.destroy();
             mFeedPlaceholderCoordinator = null;
+        }
+        if (mTabSwitcherModule != null) {
+            mTabSwitcherModule.getTabListDelegate().postHiding();
         }
     }
 
@@ -1365,6 +1442,12 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         return mLogoCoordinator != null && mLogoCoordinator.isLogoVisible();
     }
 
+    void performSearchQuery(String queryText, List<String> searchParams) {
+        if (mOmniboxStub != null) {
+            mOmniboxStub.performSearchQuery(queryText, searchParams);
+        }
+    }
+
     void setOnTabSelectingListener(StartSurface.OnTabSelectingListener onTabSelectingListener) {
         mOnTabSelectingListener = onTabSelectingListener;
     }
@@ -1495,5 +1578,13 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         assert mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR) != null;
         return mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR)
                 .getFeedActionDelegateForTesting(); // IN-TEST
+    }
+
+    TabSwitcher getTabSwitcherModuleForTesting() {
+        return mTabSwitcherModule;
+    }
+
+    Runnable getInitializeMVTilesRunnableForTesting() {
+        return mInitializeMVTilesRunnable;
     }
 }

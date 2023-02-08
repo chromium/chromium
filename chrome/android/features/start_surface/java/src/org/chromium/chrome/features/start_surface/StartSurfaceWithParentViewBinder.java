@@ -17,7 +17,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The binder controls the display of the {@link TasksView} in its parent. */
-class TasksSurfaceViewBinder {
+class StartSurfaceWithParentViewBinder {
     private static final long FADE_IN_DURATION_MS = 50;
 
     /**

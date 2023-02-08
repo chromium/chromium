@@ -48,7 +48,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabListDeleg
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurface.TabSwitcherViewObserver;
-import org.chromium.chrome.features.tasks.TasksSurface;
+import org.chromium.chrome.features.tasks.TasksView;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -484,15 +484,14 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
                 || mStartSurface.getStartSurfaceState() != StartSurfaceState.SHOWN_HOMEPAGE) {
             return;
         }
-        TasksSurface primaryTasksSurface = mStartSurface.getPrimaryTasksSurface();
+        TasksView primaryTasksSurface = mStartSurface.getPrimarySurfaceView();
         assert primaryTasksSurface != null;
 
         if (mBackgroundTabAnimation != null && mBackgroundTabAnimation.isStarted()) {
             mBackgroundTabAnimation.end();
         }
-        mBackgroundTabAnimation =
-                BackgroundTabAnimation.create(this, (ViewGroup) primaryTasksSurface.getView(),
-                        originX, originY, getOrientation() == Orientation.PORTRAIT);
+        mBackgroundTabAnimation = BackgroundTabAnimation.create(this, primaryTasksSurface, originX,
+                originY, getOrientation() == Orientation.PORTRAIT);
         mBackgroundTabAnimation.start();
     }
 

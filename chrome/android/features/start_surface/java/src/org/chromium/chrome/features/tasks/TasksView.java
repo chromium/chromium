@@ -46,7 +46,6 @@ import org.chromium.ui.base.WindowAndroid;
  * The view of the tasks surface. Set public for testing.
  */
 public class TasksView extends CoordinatorLayoutForPointer {
-    private static final int OMNIBOX_BOTTOM_PADDING_DP = 4;
     private static final MutableFlagWithSafeDefault sIncognitoRevampFlag =
             new MutableFlagWithSafeDefault(ChromeFeatureList.INCOGNITO_NTP_REVAMP, false);
 
@@ -63,7 +62,6 @@ public class TasksView extends CoordinatorLayoutForPointer {
             CookieControlsEnforcement.NO_ENFORCEMENT;
     private View.OnClickListener mIncognitoCookieControlsIconClickListener;
     private UiConfig mUiConfig;
-    private boolean mIsIncognito;
 
     /** Default constructor needed to inflate via XML. */
     public TasksView(Context context, AttributeSet attrs) {
@@ -117,11 +115,11 @@ public class TasksView extends CoordinatorLayoutForPointer {
                 titleDescription.getPaddingBottom());
     }
 
-    ViewGroup getCarouselTabSwitcherContainer() {
+    public ViewGroup getCarouselTabSwitcherContainer() {
         return mCarouselTabSwitcherContainer;
     }
 
-    ViewGroup getBodyViewContainer() {
+    public ViewGroup getBodyViewContainer() {
         return findViewById(R.id.tasks_surface_body);
     }
 
@@ -208,7 +206,6 @@ public class TasksView extends CoordinatorLayoutForPointer {
         int hintTextColor = mContext.getColor(isIncognito ? R.color.locationbar_light_hint_text
                                                           : R.color.locationbar_dark_hint_text);
         mSearchBoxCoordinator.setSearchBoxHintColor(hintTextColor);
-        mIsIncognito = isIncognito;
     }
 
     /**
@@ -388,7 +385,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
      * Add a header offset change listener.
      * @param onOffsetChangedListener The given header offset change listener.
      */
-    void addHeaderOffsetChangeListener(
+    public void addHeaderOffsetChangeListener(
             AppBarLayout.OnOffsetChangedListener onOffsetChangedListener) {
         if (mHeaderView != null) {
             mHeaderView.addOnOffsetChangedListener(onOffsetChangedListener);
@@ -399,7 +396,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
      * Remove the given header offset change listener.
      * @param onOffsetChangedListener The header offset change listener which should be removed.
      */
-    void removeHeaderOffsetChangeListener(
+    public void removeHeaderOffsetChangeListener(
             AppBarLayout.OnOffsetChangedListener onOffsetChangedListener) {
         if (mHeaderView != null) {
             mHeaderView.removeOnOffsetChangedListener(onOffsetChangedListener);
@@ -415,7 +412,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
      * @param buttonSize Current height and width of the buttons in fake search box layout.
      * @param lensButtonLeftMargin Current left margin of the lens button in fake search box layout.
      */
-    void updateFakeSearchBox(int height, int topMargin, int endPadding, float translationX,
+    public void updateFakeSearchBox(int height, int topMargin, int endPadding, float translationX,
             int buttonSize, int lensButtonLeftMargin) {
         if (mSearchBoxCoordinator.getView().getVisibility() != View.VISIBLE) return;
         mSearchBoxCoordinator.setHeight(height);

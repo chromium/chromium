@@ -17,7 +17,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
-import org.chromium.chrome.features.tasks.TasksSurface;
+import org.chromium.chrome.features.tasks.TasksView;
 
 /** Interface to communicate with the start surface. */
 public interface StartSurface {
@@ -162,7 +162,8 @@ public interface StartSurface {
      * Show the overview.
      * @param animate Whether we should animate while showing.
      */
-    // TODO(crbug.com/1315676): Decouple Start surface layout and Grid tab switcher layout.
+    // TODO(crbug.com/1315676): Rename this function once the Start surface layout and Grid tab
+    // switcher layout are decoupled.
     void showOverview(boolean animate);
 
     /**
@@ -255,6 +256,7 @@ public interface StartSurface {
      * carousel/single tab switcher when start surface is enabled; when start surface is disabled,
      * null should be returned.
      */
+    // TODO(crbug.com/1315676): Remove this API after the refactoring is done.
     TabSwitcher.TabListDelegate getCarouselOrSingleTabListDelegate();
 
     /**
@@ -272,11 +274,11 @@ public interface StartSurface {
             boolean isOverviewShownOnStartup, final long activityCreationTimeMs);
 
     /**
-     * Returns the primary {@link TasksSurface} (omnibox, most visited, feed, etc.). Can be null if
+     * Returns the primary {@link TasksView} (omnibox, most visited, feed, etc.). Can be null if
      * grid tab switcher is enabled but Start surface is disabled.
      */
     @Nullable
-    TasksSurface getPrimaryTasksSurface();
+    TasksView getPrimarySurfaceView();
 
     /**
      * TODO(crbug.com/1315676): Remove this API after the bug is resolved.

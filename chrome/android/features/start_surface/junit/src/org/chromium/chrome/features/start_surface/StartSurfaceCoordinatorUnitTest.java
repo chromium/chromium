@@ -5,6 +5,10 @@
 package org.chromium.chrome.features.start_surface;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -42,8 +46,12 @@ import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
 import org.chromium.chrome.browser.suggestions.tile.TileSource;
 import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -85,7 +93,36 @@ public class StartSurfaceCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
+    public void testShowAndHideWithRefactorEnabled() {
+        assertTrue(ChromeFeatureList.sStartSurfaceRefactor.isEnabled());
+        assertNull(mCoordinator.getTasksSurfaceForTesting());
+        TabSwitcher tabSwitcherModule =
+                mCoordinator.getMediatorForTesting().getTabSwitcherModuleForTesting();
+        assertNotNull(tabSwitcherModule);
+        assertEquals(TabSwitcherType.SINGLE,
+                tabSwitcherModule.getTabListDelegate().getListModeForTesting());
+        assertNotNull(mCoordinator.getViewForTesting());
+
+        mCoordinator.showOverview(false);
+        assertTrue(mCoordinator.isMVTilesInitializedForTesting());
+        assertFalse(mCoordinator.isMVTilesCleanedUpForTesting());
+        assertNotNull(mCoordinator.getTileGroupDelegateForTesting());
+
+        mCoordinator.onHide();
+        assertTrue(mCoordinator.isMVTilesCleanedUpForTesting());
+        assertFalse(mCoordinator.isMVTilesInitializedForTesting());
+        assertNull(mCoordinator.getTileGroupDelegateForTesting());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     public void testCleanUpMVTilesAfterHiding() {
+        assertFalse(ChromeFeatureList.sStartSurfaceRefactor.isEnabled());
+        assertNotNull(mCoordinator.getTasksSurfaceForTesting());
+        assertNull(mCoordinator.getMediatorForTesting().getTabSwitcherModuleForTesting());
+        assertNull(mCoordinator.getViewForTesting());
+
         mCoordinator.setStartSurfaceState(StartSurfaceState.SHOWING_HOMEPAGE);
         mCoordinator.showOverview(false);
 

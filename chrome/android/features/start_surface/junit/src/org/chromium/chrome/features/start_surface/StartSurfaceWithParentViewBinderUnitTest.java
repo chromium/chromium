@@ -32,10 +32,10 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/** Tests for {@link TasksSurfaceViewBinder}. */
+/** Tests for {@link StartSurfaceWithParentViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class TasksSurfaceViewBinderUnitTest {
+public class StartSurfaceWithParentViewBinderUnitTest {
     private Activity mActivity;
     private ViewGroup mParentView;
     private ViewGroup mTasksSurfaceView;
@@ -57,9 +57,9 @@ public class TasksSurfaceViewBinderUnitTest {
 
         mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(mPropertyModel,
-                new TasksSurfaceViewBinder.ViewHolder(
+                new StartSurfaceWithParentViewBinder.ViewHolder(
                         mParentView, mTasksSurfaceView, mFeedSwipeRefreshLayout),
-                TasksSurfaceViewBinder::bind);
+                StartSurfaceWithParentViewBinder::bind);
     }
 
     @Test

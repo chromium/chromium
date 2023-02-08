@@ -6,7 +6,6 @@ package org.chromium.chrome.features.start_surface;
 
 import android.animation.Animator;
 import android.content.Context;
-import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -17,7 +16,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
-import org.chromium.chrome.features.tasks.TasksSurface;
+import org.chromium.chrome.features.tasks.TasksView;
 
 /**
  * A {@link Layout} that shows Start Surface home view.
@@ -131,15 +130,14 @@ public class StartSurfaceHomeLayout extends Layout {
         if (!background || newIsIncognito || !mIsShown) {
             return;
         }
-        TasksSurface primaryTasksSurface = mStartSurface.getPrimaryTasksSurface();
-        assert primaryTasksSurface != null;
+        TasksView startSurfaceView = mStartSurface.getPrimarySurfaceView();
+        assert startSurfaceView != null;
 
         if (mBackgroundTabAnimation != null && mBackgroundTabAnimation.isStarted()) {
             mBackgroundTabAnimation.end();
         }
-        mBackgroundTabAnimation =
-                BackgroundTabAnimation.create(this, (ViewGroup) primaryTasksSurface.getView(),
-                        originX, originY, getOrientation() == Orientation.PORTRAIT);
+        mBackgroundTabAnimation = BackgroundTabAnimation.create(
+                this, startSurfaceView, originX, originY, getOrientation() == Orientation.PORTRAIT);
         mBackgroundTabAnimation.start();
     }
 

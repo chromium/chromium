@@ -782,11 +782,19 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Layout activeLayout = getActiveLayout();
             Assert.assertEquals(LayoutType.TAB_SWITCHER, activeLayout.getLayoutType());
-            Assert.assertEquals(expectedTabListMode,
-                    mActivityTestRule.getActivity()
-                            .getStartSurface()
-                            .getGridTabListDelegate()
-                            .getListModeForTesting());
+            int tabListMode;
+            if (mIsStartSurfaceRefactorEnabled) {
+                tabListMode = mActivityTestRule.getActivity()
+                                      .getTabSwitcherForTesting()
+                                      .getTabListDelegate()
+                                      .getListModeForTesting();
+            } else {
+                tabListMode = mActivityTestRule.getActivity()
+                                      .getStartSurface()
+                                      .getGridTabListDelegate()
+                                      .getListModeForTesting();
+            }
+            Assert.assertEquals(expectedTabListMode, tabListMode);
         });
     }
 

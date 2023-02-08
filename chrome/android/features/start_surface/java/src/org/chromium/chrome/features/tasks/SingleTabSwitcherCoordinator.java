@@ -27,14 +27,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator of the single tab tab switcher. */
-class SingleTabSwitcherCoordinator implements TabSwitcher {
+public class SingleTabSwitcherCoordinator implements TabSwitcher {
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private final SingleTabSwitcherMediator mMediator;
     private final TabListFaviconProvider mTabListFaviconProvider;
     private final TabSwitcher.TabListDelegate mTabListDelegate;
     private final TabModelSelector mTabModelSelector;
 
-    SingleTabSwitcherCoordinator(@NonNull Activity activity, @NonNull ViewGroup container,
+    public SingleTabSwitcherCoordinator(@NonNull Activity activity, @NonNull ViewGroup container,
             @NonNull TabModelSelector tabModelSelector) {
         mTabModelSelector = tabModelSelector;
         PropertyModel propertyModel = new PropertyModel(SingleTabViewProperties.ALL_KEYS);
@@ -149,7 +149,6 @@ class SingleTabSwitcherCoordinator implements TabSwitcher {
 
     @Override
     public Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
-        assert false : "should not reach here";
         return null;
     }
 

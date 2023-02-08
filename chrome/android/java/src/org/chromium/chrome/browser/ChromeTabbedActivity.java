@@ -2823,6 +2823,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         return mStartSurfaceSupplier.get();
     }
 
+    public TabSwitcher getTabSwitcherForTesting() {
+        return mTabSwitcherSupplier.get();
+    }
+
     private ComposedBrowserControlsVisibilityDelegate getAppBrowserControlsVisibilityDelegate() {
         // TODO(jinsukkim): Move this to RootUiCoordinator.
         return ((TabbedRootUiCoordinator) mRootUiCoordinator)

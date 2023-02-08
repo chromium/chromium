@@ -37,8 +37,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.query_tiles.QueryTileSection;
 import org.chromium.chrome.browser.query_tiles.QueryTileUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
-import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
 import org.chromium.chrome.browser.tab.Tab;
@@ -52,6 +50,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewMan
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.features.start_surface.MostVisitedSuggestionsUiDelegate;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -225,8 +224,8 @@ public class TasksSurfaceCoordinator implements TasksSurface {
         Profile profile = Profile.getLastUsedRegularProfile();
         MostVisitedTileNavigationDelegate navigationDelegate =
                 new MostVisitedTileNavigationDelegate(mActivity, profile, mParentTabSupplier);
-        mSuggestionsUiDelegate =
-                new MostVisitedSuggestionsUiDelegate(navigationDelegate, profile, mSnackbarManager);
+        mSuggestionsUiDelegate = new MostVisitedSuggestionsUiDelegate(
+                mView, navigationDelegate, profile, mSnackbarManager);
         mTileGroupDelegate = new TileGroupDelegateImpl(mActivity, profile, navigationDelegate,
                 mSnackbarManager, BrowserUiUtils.HostSurface.START_SURFACE);
 
@@ -340,20 +339,6 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     @Override
     public @Nullable TabSwitcherCustomViewManager getTabSwitcherCustomViewManager() {
         return (mTabSwitcher != null) ? mTabSwitcher.getTabSwitcherCustomViewManager() : null;
-    }
-
-    /** Suggestions UI Delegate for constructing the TileGroup. */
-    private class MostVisitedSuggestionsUiDelegate extends SuggestionsUiDelegateImpl {
-        public MostVisitedSuggestionsUiDelegate(SuggestionsNavigationDelegate navigationDelegate,
-                Profile profile, SnackbarManager snackbarManager) {
-            super(navigationDelegate, profile, /*host=*/null, snackbarManager);
-        }
-
-        @Override
-        public boolean isVisible() {
-            return mView.getVisibility() == View.VISIBLE
-                    && mView.findViewById(R.id.mv_tiles_layout).getVisibility() == View.VISIBLE;
-        }
     }
 
     private void storeQueryTilesVisibility(boolean isShown) {
