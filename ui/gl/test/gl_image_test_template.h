@@ -23,8 +23,8 @@
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
-#include "ui/gl/test/gl_image_test_support.h"
 #include "ui/gl/test/gl_test_helper.h"
+#include "ui/gl/test/gl_test_support.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/mac/mac_util.h"
@@ -70,7 +70,7 @@ class GLImageTest : public testing::Test {
   // Overridden from testing::Test:
   void SetUp() override {
     auto prefered_impl = delegate_.GetPreferedGLImplementation();
-    display_ = GLImageTestSupport::InitializeGL(prefered_impl);
+    display_ = GLTestSupport::InitializeGL(prefered_impl);
     surface_ = gl::init::CreateOffscreenGLSurface(display_, gfx::Size());
     context_ =
         gl::init::CreateGLContext(nullptr, surface_.get(), GLContextAttribs());
@@ -82,7 +82,7 @@ class GLImageTest : public testing::Test {
     context_->ReleaseCurrent(surface_.get());
     context_ = nullptr;
     surface_ = nullptr;
-    GLImageTestSupport::CleanupGL(display_);
+    GLTestSupport::CleanupGL(display_);
   }
 
  protected:

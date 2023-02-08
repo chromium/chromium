@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gl/test/gl_image_test_support.h"
+#include "ui/gl/test/gl_test_support.h"
 
 #include <vector>
 
@@ -35,7 +35,7 @@ void rgb_to_yuv(uint8_t r, uint8_t g, uint8_t b, T* y, T* u, T* v) {
 }  // namespace
 
 // static
-GLDisplay* GLImageTestSupport::InitializeGL(
+GLDisplay* GLTestSupport::InitializeGL(
     absl::optional<GLImplementationParts> prefered_impl) {
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams params;
@@ -62,18 +62,18 @@ GLDisplay* GLImageTestSupport::InitializeGL(
 }
 
 // static
-void GLImageTestSupport::CleanupGL(GLDisplay* display) {
+void GLTestSupport::CleanupGL(GLDisplay* display) {
   GLSurfaceTestSupport::ShutdownGL(display);
 }
 
 // static
-void GLImageTestSupport::SetBufferDataToColor(int width,
-                                              int height,
-                                              int stride,
-                                              int plane,
-                                              gfx::BufferFormat format,
-                                              const uint8_t color[4],
-                                              uint8_t* data) {
+void GLTestSupport::SetBufferDataToColor(int width,
+                                         int height,
+                                         int stride,
+                                         int plane,
+                                         gfx::BufferFormat format,
+                                         const uint8_t color[4],
+                                         uint8_t* data) {
   switch (format) {
     case gfx::BufferFormat::R_8:
     case gfx::BufferFormat::RG_88:
@@ -199,7 +199,9 @@ void GLImageTestSupport::SetBufferDataToColor(int width,
     case gfx::BufferFormat::RGBA_F16: {
       DCHECK_EQ(0, plane);
       float float_color[4] = {
-          color[0] / 255.f, color[1] / 255.f, color[2] / 255.f,
+          color[0] / 255.f,
+          color[1] / 255.f,
+          color[2] / 255.f,
           color[3] / 255.f,
       };
       uint16_t half_float_color[4];
@@ -300,8 +302,9 @@ void GLImageTestSupport::SetBufferDataToColor(int width,
       if (plane == 0) {
         for (int y = 0; y < height; ++y) {
           uint16_t* row = reinterpret_cast<uint16_t*>(data + y * stride);
-          for (int x = 0; x < width; ++x)
+          for (int x = 0; x < width; ++x) {
             row[x] = yuv[0] << 2;
+          }
         }
       } else {
         for (int y = 0; y < height / 2; ++y) {

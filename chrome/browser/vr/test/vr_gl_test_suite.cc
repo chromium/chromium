@@ -6,7 +6,7 @@
 
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_implementation.h"
-#include "ui/gl/test/gl_image_test_support.h"
+#include "ui/gl/test/gl_test_support.h"
 
 #if defined(VR_USE_COMMAND_BUFFER)
 #include "gpu/command_buffer/client/gles2_lib.h"  // nogncheck
@@ -20,7 +20,7 @@ VrGlTestSuite::VrGlTestSuite(int argc, char** argv) : VrTestSuite(argc, argv) {}
 void VrGlTestSuite::Initialize() {
   VrTestSuite::Initialize();
 
-  display_ = gl::GLImageTestSupport::InitializeGL(absl::nullopt);
+  display_ = gl::GLTestSupport::InitializeGL(absl::nullopt);
 
 #if defined(VR_USE_COMMAND_BUFFER)
   // Always enable gpu and oop raster, regardless of platform and denylist.
@@ -32,7 +32,7 @@ void VrGlTestSuite::Initialize() {
 }
 
 void VrGlTestSuite::Shutdown() {
-  gl::GLImageTestSupport::CleanupGL(display_);
+  gl::GLTestSupport::CleanupGL(display_);
   vr::VrTestSuite::Shutdown();
 }
 

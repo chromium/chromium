@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GL_TEST_GL_IMAGE_TEST_SUPPORT_H_
-#define UI_GL_TEST_GL_IMAGE_TEST_SUPPORT_H_
+#ifndef UI_GL_TEST_GL_TEST_SUPPORT_H_
+#define UI_GL_TEST_GL_TEST_SUPPORT_H_
 
 #include <stdint.h>
 
@@ -14,8 +14,7 @@
 namespace gl {
 class GLDisplay;
 
-// TODO(blundell): Rename this class/file. They don't reference GLImage.
-class GLImageTestSupport {
+class GLTestSupport {
  public:
   // Initialize GL for image testing. |prefered_impl| is the GL implementation
   // to select if it is an allowed GL implementation. Otherwise it selects the
@@ -38,4 +37,4 @@ class GLImageTestSupport {
 
 }  // namespace gl
 
-#endif  // UI_GL_TEST_GL_IMAGE_TEST_SUPPORT_H_
+#endif  // UI_GL_TEST_GL_TEST_SUPPORT_H_

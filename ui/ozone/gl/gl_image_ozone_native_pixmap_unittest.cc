@@ -64,7 +64,7 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
 
       for (size_t plane = 0; plane < pixmap->GetNumberOfPlanes(); ++plane) {
         void* data = client_pixmap->GetMemoryAddress(plane);
-        GLImageTestSupport::SetBufferDataToColor(
+        GLTestSupport::SetBufferDataToColor(
             size.width(), size.height(), pixmap->GetDmaBufPitch(plane), plane,
             pixmap->GetBufferFormat(), color, static_cast<uint8_t*>(data));
       }

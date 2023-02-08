@@ -51,7 +51,7 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
 
     std::unique_ptr<uint8_t[]> pixels(
         new uint8_t[BufferSizeForBufferFormat(size, format)]);
-    GLImageTestSupport::SetBufferDataToColor(
+    GLTestSupport::SetBufferDataToColor(
         size.width(), size.height(),
         static_cast<int>(RowSizeForBufferFormat(size.width(), format, 0)), 0,
         format, color, pixels.get());
