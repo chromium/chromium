@@ -5,9 +5,6 @@
 //base/numerics
 //base/third_party/double_conversion
 //base/third_party/dynamic_annotations
-//base/third_party/symbolize
-//base/third_party/xdg_mime
-//base/third_party/xdg_user_dirs
 //base/tracing/protos
 //build
 //build/android
