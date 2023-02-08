@@ -25,9 +25,9 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -51,7 +51,6 @@ import org.chromium.components.webapps.WebappsIconUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.device.mojom.ScreenOrientationLockType;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -66,7 +65,7 @@ import java.util.Map;
  * Tests WebApkUpdateManager. This class contains tests which cannot be done as JUnit tests.
  */
 @RunWith(ParameterizedRunner.class)
-@DoNotBatch(reason = "The update pipeline runs once per startup.")
+@Batch(Batch.PER_CLASS)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ChromeSwitches.CHECK_FOR_WEB_MANIFEST_UPDATE_ON_STARTUP})
@@ -74,9 +73,6 @@ import java.util.Map;
 public class WebApkUpdateManagerTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    @Rule
-    public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
 
     /**
      * The parameters for the App Identity tests (for which flag is enabled).
@@ -245,7 +241,7 @@ public class WebApkUpdateManagerTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivity = mActivityTestRule.getActivity();
         mTab = mActivity.getActivityTab();
-        mTestServer = mTestServerRule.getServer();
+        mTestServer = mActivityTestRule.getTestServer();
 
         mTestValues = new FeatureList.TestValues();
         FeatureList.setTestValues(mTestValues);
@@ -471,6 +467,8 @@ public class WebApkUpdateManagerTest {
             boolean allowShellVersion, boolean changeName, boolean changeShortName,
             boolean changeIcon) throws Exception {
         mIconOrNameUpdateDialogShown = false;
+        WebappDataStorage storage = WebappRegistry.getInstance().getWebappDataStorage(WEBAPK_ID);
+        storage.updateLastWebApkUpdateHashAccepted("");
 
         CreationData creationData = defaultCreationData();
         creationData.startUrl =
