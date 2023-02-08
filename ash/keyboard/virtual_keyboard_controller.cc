@@ -47,7 +47,12 @@ void ResetVirtualKeyboard() {
 }  // namespace
 
 VirtualKeyboardController::VirtualKeyboardController()
-    : ignore_external_keyboard_(false), ignore_internal_keyboard_(false) {
+    : ignore_external_keyboard_(false),
+      ignore_internal_keyboard_(false),
+      bluetooth_devices_observer_(
+          std::make_unique<BluetoothDevicesObserver>(base::BindRepeating(
+              &VirtualKeyboardController::OnBluetoothAdapterOrDeviceChanged,
+              base::Unretained(this)))) {
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
   Shell::Get()->session_controller()->AddObserver(this);
   ui::DeviceDataManager::GetInstance()->AddObserver(this);
@@ -58,11 +63,6 @@ VirtualKeyboardController::VirtualKeyboardController()
       &VirtualKeyboardController::ForceShowKeyboardWithKeyset,
       base::Unretained(this), input_method::ImeKeyset::kEmoji));
   keyboard::KeyboardUIController::Get()->AddObserver(this);
-
-  bluetooth_devices_observer_ =
-      std::make_unique<BluetoothDevicesObserver>(base::BindRepeating(
-          &VirtualKeyboardController::OnBluetoothAdapterOrDeviceChanged,
-          base::Unretained(this)));
 }
 
 VirtualKeyboardController::~VirtualKeyboardController() {
