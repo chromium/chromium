@@ -296,7 +296,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest, TestInvalidMetaTableRecovery) {
     ASSERT_TRUE(
         db.Open(temp_dir_.GetPath().Append(kReportingAndNELStoreFilename)));
     sql::MetaTable meta_table;
-    meta_table.Init(&db, 1, 1);
+    ASSERT_TRUE(meta_table.Init(&db, 1, 1));
     ASSERT_TRUE(db.Execute("DELETE FROM meta"));
     db.Close();
   }
