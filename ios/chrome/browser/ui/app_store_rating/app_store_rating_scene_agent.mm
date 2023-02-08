@@ -28,14 +28,17 @@
 @interface AppStoreRatingSceneAgent ()
 
 // Determines whether the user has used Chrome for at least 3
-// different days within the past 7 days.
-@property(nonatomic, assign, readonly, getter=isChromeUsed3DaysInPastWeek)
-    BOOL chromeUsed3DaysInPastWeek;
+// different days within the past 7 days for stable channel.
+// In Canary and Dev channels, the requirement is at least 1 day
+// in the past 7 days.
+@property(nonatomic, assign, readonly, getter=isDaysInPastWeekRequirementMet)
+    BOOL daysInPastWeekRequirementMet;
 
 // Determines whether the user has used Chrome for at least 15
-// different days overall.
-@property(nonatomic, assign, readonly, getter=isChromeUsed15Days)
-    BOOL chromeUsed15Days;
+// different days overall for stable channel. In Canary and Dev channels,
+// the requirement is at least 1 day.
+@property(nonatomic, assign, readonly, getter=isTotalDaysRequirementMet)
+    BOOL totalDaysRequirementMet;
 
 // Determines whether the user has enabled the Credentials
 // Provider Extension.
@@ -56,8 +59,8 @@
 }
 
 - (BOOL)isUserEngaged {
-  return IsChromeLikelyDefaultBrowser() && self.chromeUsed3DaysInPastWeek &&
-         self.chromeUsed15Days && self.CPEEnabled;
+  return IsChromeLikelyDefaultBrowser() && self.daysInPastWeekRequirementMet &&
+         self.totalDaysRequirementMet && self.CPEEnabled;
 }
 
 #pragma mark - SceneStateObserver
@@ -88,16 +91,18 @@
 
 #pragma mark - Getters
 
-- (BOOL)isChromeUsed3DaysInPastWeek {
+- (BOOL)isDaysInPastWeekRequirementMet {
   NSArray* activeDaysInPastWeek =
       base::mac::ObjCCastStrict<NSArray>([[NSUserDefaults standardUserDefaults]
           objectForKey:kAppStoreRatingActiveDaysInPastWeekKey]);
-  return [activeDaysInPastWeek count] >= 3;
+  return [activeDaysInPastWeek count] >=
+         kAppStoreRatingDaysOnChromeInPastWeekRequirement;
 }
 
-- (BOOL)isChromeUsed15Days {
+- (BOOL)isTotalDaysRequirementMet {
   return [[NSUserDefaults standardUserDefaults]
-             integerForKey:kAppStoreRatingTotalDaysOnChromeKey] >= 15;
+             integerForKey:kAppStoreRatingTotalDaysOnChromeKey] >=
+         kAppStoreRatingTotalDaysOnChromeRequirement;
 }
 
 - (BOOL)isCPEEnabled {
