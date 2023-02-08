@@ -346,7 +346,6 @@ public class PersonalDataManager {
             return mOrigin;
         }
 
-        @CalledByNative("AutofillProfile")
         public @Source int getSource() {
             return mSource;
         }

@@ -27,7 +27,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
-import org.chromium.chrome.browser.autofill.Source;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -217,79 +216,6 @@ public class AutofillProfilesFragmentTest {
         AutofillProfileEditorPreference oldProfile =
                 autofillProfileFragment.findPreference("John Doe");
         Assert.assertNull(oldProfile);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Preferences"})
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES})
-    public void testEditAccountProfile() throws Exception {
-        mHelper.setProfile(new AutofillProfile("", "https://example.com", true, Source.ACCOUNT,
-                "" /* honorific prefix */, "Account Updated #0", "Google", "111 Fourth St",
-                "California", "Los Angeles", "", "90291", "", "US", "650-253-0000",
-                "fourth@gmail.com", "en-US"));
-
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
-
-        // Check the preferences on the initial screen.
-        Assert.assertEquals(7 /* One toggle + one add button + 5 profiles. */,
-                autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
-        AutofillProfileEditorPreference johnProfile =
-                autofillProfileFragment.findPreference("Account Updated #0");
-        Assert.assertNotNull(johnProfile);
-
-        // Invalid input.
-        updatePreferencesAndWait(autofillProfileFragment, johnProfile,
-                new String[] {"Dr.", "Account Updated #1", "Google",
-                        "" /* Street address is required. */, "Los Angeles", "CA", "90291",
-                        "650-253-0000", "edit@profile.com"},
-                R.id.editor_dialog_done_button, true);
-
-        // Fix invalid input.
-        updatePreferencesAndWait(autofillProfileFragment, johnProfile,
-                new String[] {"Dr.", "Account Updated #2", "Google",
-                        "222 Fourth St" /* Enter street address. */, "Los Angeles", "CA", "90291",
-                        "650-253-0000", "edit@profile.com"},
-                R.id.editor_dialog_done_button, false);
-        // Check if the preferences are updated correctly.
-        Assert.assertEquals(7 /* One toggle + one add button + five profiles. */,
-                autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
-        AutofillProfileEditorPreference editedProfile =
-                autofillProfileFragment.findPreference("Account Updated #2");
-        Assert.assertNotNull(editedProfile);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Preferences"})
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES})
-    public void testEditInvalidAccountProfile() throws Exception {
-        mHelper.setProfile(new AutofillProfile("", "https://example.com", true, Source.ACCOUNT,
-                "" /* honorific prefix */, "Account Updated #0", "Google",
-                "" /** Street address is required in US but already missing. */, "California",
-                "Los Angeles", "", "90291", "", "US", "650-253-0000", "fourth@gmail.com", "en-US"));
-
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
-
-        // Check the preferences on the initial screen.
-        Assert.assertEquals(7 /* One toggle + one add button + 5 profiles. */,
-                autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
-        AutofillProfileEditorPreference johnProfile =
-                autofillProfileFragment.findPreference("Account Updated #0");
-        Assert.assertNotNull(johnProfile);
-
-        // Edit profile.
-        updatePreferencesAndWait(autofillProfileFragment, johnProfile,
-                new String[] {"Dr.", "Account Updated #1", "Google",
-                        "" /* Dont fix missing Street address. */, "Los Angeles", "CA", "90291",
-                        "650-253-0000", "edit@profile.com"},
-                R.id.editor_dialog_done_button, false);
-        // Check if the preferences are updated correctly.
-        Assert.assertEquals(7 /* One toggle + one add button + five profiles. */,
-                autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
-        AutofillProfileEditorPreference editedProfile =
-                autofillProfileFragment.findPreference("Account Updated #1");
-        Assert.assertNotNull(editedProfile);
     }
 
     @Test

@@ -61,7 +61,6 @@ class AutofillProfile : public AutofillDataModel {
   AutofillProfile(const std::string& guid,
                   const std::string& origin,
                   Source source = Source::kLocalOrSyncable);
-  explicit AutofillProfile(Source source);
 
   // Server profile constructor. The type must be SERVER_PROFILE (this serves
   // to differentiate this constructor). |server_id| can be empty. If empty,

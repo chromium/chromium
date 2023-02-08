@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.GetSubKeysReques
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorBase;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorModel;
-import org.chromium.chrome.browser.autofill.settings.AddressValidationType;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressField;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressUiComponent;
@@ -527,8 +526,8 @@ public class AddressEditor
      * the profile that's being edited.
      */
     private void addAddressFieldsToEditor(String countryCode, String languageCode) {
-        mAddressUiComponents = mAutofillProfileBridge.getAddressUiComponents(
-                countryCode, languageCode, AddressValidationType.PAYMENT_REQUEST);
+        mAddressUiComponents =
+                mAutofillProfileBridge.getAddressUiComponents(countryCode, languageCode);
         // In terms of order, country must be the first field.
         mCountryField.setCustomErrorMessage(getAddressError(AddressField.COUNTRY));
         mEditor.addField(mCountryField);

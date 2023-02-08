@@ -36,9 +36,10 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   static base::android::ScopedJavaLocalRef<jobject> CreateJavaProfileFromNative(
       JNIEnv* env,
       const AutofillProfile& profile);
-  static AutofillProfile CreateNativeProfileFromJava(
+  static void PopulateNativeProfileFromJava(
       const base::android::JavaParamRef<jobject>& jprofile,
-      JNIEnv* env);
+      JNIEnv* env,
+      AutofillProfile* profile);
 
   // Returns true if personal data manager has loaded the initial data.
   jboolean IsDataLoaded(

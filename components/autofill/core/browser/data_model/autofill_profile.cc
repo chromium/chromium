@@ -230,11 +230,8 @@ AutofillProfile::AutofillProfile(RecordType type, const std::string& server_id)
   DCHECK(type == SERVER_PROFILE);
 }
 
-AutofillProfile::AutofillProfile(Source source)
-    : AutofillProfile(base::GenerateGUID(), std::string(), source) {}
-
 AutofillProfile::AutofillProfile()
-    : AutofillProfile(Source::kLocalOrSyncable) {}
+    : AutofillProfile(base::GenerateGUID(), std::string()) {}
 
 AutofillProfile::AutofillProfile(const AutofillProfile& profile)
     : AutofillDataModel(std::string(), std::string()),
