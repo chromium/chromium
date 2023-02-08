@@ -6,6 +6,7 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -15,37 +16,9 @@
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_cycle/window_cycle_view.h"
-#include "ui/aura/client/aura_constants.h"
-#include "ui/views/background.h"
-#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-
-namespace {
-
-// Helper to modify our windows in this pixel test so they are more visible
-// when debugging.
-void DecorateWindow(aura::Window* window,
-                    const std::u16string& title,
-                    SkColor color) {
-  auto* widget = views::Widget::GetWidgetForNativeWindow(window);
-  DCHECK(widget);
-  widget->client_view()->AddChildView(
-      views::Builder<views::View>()
-          .SetBackground(views::CreateRoundedRectBackground(color, 4.f))
-          .Build());
-
-  // Add a title and an app icon so that the header is fully stocked.
-  window->SetTitle(title);
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(1, 1);
-  bitmap.eraseColor(SK_ColorCYAN);
-  window->SetProperty(aura::client::kAppIconKey,
-                      gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
-}
-
-}  // namespace
 
 // TODO(b/261084863): For now, add some basic tests. Further investigation is
 // needed to determine the location of the test files, whether the tests should

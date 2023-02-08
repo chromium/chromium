@@ -12,7 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "ui/aura/window.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot_aura.h"
 
@@ -85,6 +85,25 @@ bool IsStackedBelow(aura::Window* win1, aura::Window* win2) {
   DCHECK(win1_iter != children.end());
   DCHECK(win2_iter != children.end());
   return win1_iter < win2_iter;
+}
+
+void DecorateWindow(aura::Window* window,
+                    const std::u16string& title,
+                    SkColor color) {
+  auto* widget = views::Widget::GetWidgetForNativeWindow(window);
+  DCHECK(widget);
+  widget->client_view()->AddChildView(
+      views::Builder<views::View>()
+          .SetBackground(views::CreateRoundedRectBackground(color, 4.f))
+          .Build());
+
+  // Add a title and an app icon so that the header is fully stocked.
+  window->SetTitle(title);
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1, 1);
+  bitmap.eraseColor(SK_ColorCYAN);
+  window->SetProperty(aura::client::kAppIconKey,
+                      gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
 }
 
 }  // namespace ash
