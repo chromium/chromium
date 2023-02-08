@@ -21,9 +21,6 @@ struct AttributionConfig;
 base::expected<base::Value::Dict, std::string>
     AttributionSimulatorInputFromInteropInput(base::Value::Dict);
 
-base::expected<base::Value::Dict, std::string>
-    AttributionInteropOutputFromSimulatorOutput(base::Value::Dict);
-
 base::expected<AttributionConfig, std::string> ParseAttributionConfig(
     const base::Value::Dict&);
 

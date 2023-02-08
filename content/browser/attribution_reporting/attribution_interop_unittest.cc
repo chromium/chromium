@@ -96,12 +96,9 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
   auto input = AttributionSimulatorInputFromInteropInput(std::move(dict));
   ASSERT_TRUE(input.has_value()) << input.error();
 
-  auto simulator_output = RunAttributionSimulation(std::move(*input), config);
-  ASSERT_TRUE(simulator_output.has_value()) << simulator_output.error();
-
-  auto actual_output =
-      AttributionInteropOutputFromSimulatorOutput(std::move(*simulator_output));
+  auto actual_output = RunAttributionSimulation(std::move(*input), config);
   ASSERT_TRUE(actual_output.has_value()) << actual_output.error();
+
   EXPECT_THAT(*actual_output, base::test::IsJson(*expected_output));
 }
 

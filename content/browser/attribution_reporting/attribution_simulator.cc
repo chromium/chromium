@@ -108,6 +108,21 @@ struct AttributionReportJsonConverter {
         report_body.Remove("aggregation_service_payloads");
         report_body.Remove("source_registration_time");
 
+        const auto& aggregatable_data =
+            absl::get<AttributionReport::AggregatableAttributionData>(
+                report.data());
+
+        base::Value::List list;
+        for (const auto& contribution : aggregatable_data.contributions) {
+          base::Value::Dict dict;
+          dict.Set("key", attribution_reporting::HexEncodeAggregationKey(
+                              contribution.key()));
+          dict.Set("value", base::checked_cast<int>(contribution.value()));
+
+          list.Append(std::move(dict));
+        }
+        report_body.Set("histograms", std::move(list));
+
         break;
       }
       case AttributionReport::Type::kEventLevel:
@@ -118,29 +133,12 @@ struct AttributionReportJsonConverter {
     }
 
     base::Value::Dict value;
-    value.Set("report", std::move(report_body));
+    value.Set("payload", std::move(report_body));
     value.Set("report_url", report.ReportURL(is_debug_report).spec());
 
-    value.Set("intended_report_time",
+    value.Set("report_time",
               FormatTime(is_debug_report ? report.attribution_info().time
                                          : report.report_time()));
-
-    if (const auto* aggregatable_data =
-            absl::get_if<AttributionReport::AggregatableAttributionData>(
-                &report.data())) {
-      base::Value::List list;
-      for (const auto& contribution : aggregatable_data->contributions) {
-        base::Value::Dict dict;
-        dict.Set("key", attribution_reporting::HexEncodeAggregationKey(
-                            contribution.key()));
-        dict.Set("value", base::checked_cast<int>(contribution.value()));
-
-        list.Append(std::move(dict));
-      }
-      base::Value::Dict test_info;
-      test_info.Set("histograms", std::move(list));
-      value.Set("test_info", std::move(test_info));
-    }
 
     return value;
   }
@@ -163,7 +161,7 @@ struct AttributionReportJsonConverter {
     }
 
     base::Value::Dict value;
-    value.Set("report", std::move(report_body));
+    value.Set("payload", std::move(report_body));
     value.Set("report_url", report.ReportURL().spec());
     value.Set("report_time", FormatTime(time));
     return value;
@@ -282,22 +280,22 @@ class AttributionEventHandler : public AttributionObserver {
     base::Value::Dict output;
 
     if (!event_level_reports_.empty()) {
-      output.Set("event_level_reports",
+      output.Set("event_level_results",
                  std::exchange(event_level_reports_, {}));
     }
 
     if (!debug_event_level_reports_.empty()) {
-      output.Set("debug_event_level_reports",
+      output.Set("debug_event_level_results",
                  std::exchange(debug_event_level_reports_, {}));
     }
 
     if (!aggregatable_reports_.empty()) {
-      output.Set("aggregatable_reports",
+      output.Set("aggregatable_results",
                  std::exchange(aggregatable_reports_, {}));
     }
 
     if (!debug_aggregatable_reports_.empty()) {
-      output.Set("debug_aggregatable_reports",
+      output.Set("debug_aggregatable_results",
                  std::exchange(debug_aggregatable_reports_, {}));
     }
 
