@@ -39,7 +39,10 @@
     error="[[error]]" sheet-count="[[sheetCount_]]" state="[[state]]"
     settings="[[settings]]" managed="[[controlsManaged]]">
 </print-preview-header>
-<div id="container" show-bottom-shadow>
+<!-- TODO(dizhangg): Need negative tabindex so the container doesn't get
+         focused. Delete this comment when KeyboardFocusableScrollers is enabled
+         by default. -->
+<div id="container" show-bottom-shadow tabindex="-1">
   <print-preview-destination-settings id="destinationSettings"
       dark="[[inDarkMode]]" destination="{{destination}}"
       destination-state="{{destinationState}}"
