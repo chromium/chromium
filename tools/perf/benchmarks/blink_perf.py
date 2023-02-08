@@ -794,3 +794,17 @@ class BlinkPerfWebGPUFastCall(_BlinkPerfBenchmark):
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs(
         ['--enable-unsafe-webgpu', '--enable-features=V8TurboFastApiCalls'])
+
+
+@benchmark.Info(emails=[
+    'bokan@chromium.org', 'khushalsagar@chromium.org', 'vmpstr@chromium.org'
+],
+                component='Blink>ViewTransitions',
+                documentation_url='https://bit.ly/blink-perf-benchmarks')
+class BlinkPerfViewTransitions(_BlinkPerfBenchmark):
+  SUBDIR = 'view_transitions'
+  TAGS = _BlinkPerfBenchmark.TAGS + ['all']
+
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_blink_perf.view_transitions'
