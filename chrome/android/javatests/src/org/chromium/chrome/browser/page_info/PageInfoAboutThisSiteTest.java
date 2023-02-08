@@ -302,6 +302,7 @@ public class PageInfoAboutThisSiteTest {
     @Features.EnableFeatures({ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_EN,
             ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_NON_EN,
             ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_INFO})
+    @Features.DisableFeatures(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_IMPROVED_BOTTOMSHEET)
     public void
     testAboutThisSiteOpensEphemeralTab() throws Exception {
         mockResponse(createDescription());
