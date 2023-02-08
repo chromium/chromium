@@ -4967,6 +4967,7 @@ if (is_chromeos_lacros) {
       "//components/services/app_service/public/cpp:test_support",
       "//components/soda:constants",
       "//components/user_manager:user_manager",
+      "//ui/display:test_support",
       "//ui/gfx/codec",
       "//ui/ozone",
       "//ui/platform_window",

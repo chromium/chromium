@@ -287,10 +287,19 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
         if (!pip_options.has_value()) {
           return {nullptr, -1};
         }
+
+        const BrowserWindow* const browser_window = params.browser->window();
+        const gfx::NativeWindow native_window =
+            browser_window ? browser_window->GetNativeWindow()
+                           : gfx::kNullNativeWindow;
+        const display::Screen* const screen = display::Screen::GetScreen();
+        const display::Display display =
+            browser_window ? screen->GetDisplayNearestWindow(native_window)
+                           : screen->GetDisplayForNewWindows();
+
         browser_params.initial_bounds = PictureInPictureWindowManager::
-            CalculateInitialPictureInPictureWindowBounds(
-                *pip_options,
-                display::Screen::GetScreen()->GetDisplayForNewWindows());
+            CalculateInitialPictureInPictureWindowBounds(*pip_options, display);
+
         browser_params.initial_aspect_ratio =
             pip_options->initial_aspect_ratio > 0.0
                 ? pip_options->initial_aspect_ratio

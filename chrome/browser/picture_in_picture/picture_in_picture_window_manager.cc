@@ -217,7 +217,6 @@ PictureInPictureWindowManager::CalculateInitialPictureInPictureWindowBounds(
 
   gfx::Point default_origin =
       gfx::Point(window_diff_width - buffer, window_diff_height - buffer);
-  default_origin += work_area.OffsetFromOrigin();
   window_bounds.set_origin(default_origin);
 
   return window_bounds;

@@ -50,10 +50,17 @@
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "ui/display/screen_base.h"
+#include "ui/display/test/scoped_screen_override.h"
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/shell.h"
+#include "ui/display/test/display_manager_test_api.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::WebContents;
 
@@ -1918,6 +1925,146 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   Navigate(&params);
 
   EXPECT_EQ(params.browser, nullptr);
+}
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// This class extends the basic logic in display::ScreenBase to allow us to mock
+// the call to `GetDisplayNearestWindow`. This provides a way to ensure that the
+// opener window is on a specific display, since the display::ScreenBase
+// implementation only ever returns the primary display. This is not needed on
+// Ash since Ash uses DisplayManagerTestApi.
+class MockScreen : public display::ScreenBase {
+ public:
+  MockScreen() = default;
+  ~MockScreen() override = default;
+
+  // display::ScreenBase:
+  display::Display GetDisplayNearestWindow(
+      gfx::NativeWindow window) const override {
+    return display_nearest_window_.value_or(
+        display::ScreenBase::GetDisplayNearestWindow(window));
+  }
+
+  void set_display_nearest_window(display::Display display) {
+    display_nearest_window_ = display;
+  }
+
+ private:
+  absl::optional<display::Display> display_nearest_window_;
+};
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Windows has assumptions that the screen is a ScreenWin, which causes a crash
+// when we inject the MockScreen.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_BrowserNavigatorTestWithMockScreen \
+  DISABLED_BrowserNavigatorTestWithMockScreen
+#else
+#define MAYBE_BrowserNavigatorTestWithMockScreen \
+  BrowserNavigatorTestWithMockScreen
+#endif
+class MAYBE_BrowserNavigatorTestWithMockScreen : public BrowserNavigatorTest {
+ public:
+  void SetScreenInstance() override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Use the default. See `SetUpOnMainThread`.
+    BrowserNavigatorTest::SetScreenInstance();
+#else
+    screen_override_.emplace(&mock_screen_);
+    mock_screen_.display_list().AddDisplay({1, gfx::Rect(0, 0, 800, 800)},
+                                           display::DisplayList::Type::PRIMARY);
+    mock_screen_.display_list().AddDisplay(
+        {2, gfx::Rect(800, 0, 800, 800)},
+        display::DisplayList::Type::NOT_PRIMARY);
+    ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+
+  void SetUpOnMainThread() override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // This has to happen later than `SetScreenInstance` as the Ash shell does
+    // not exist yet.
+    display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+        .UpdateDisplay("0+0-800x800,800+0-800x800");
+    ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+ protected:
+  MockScreen& mock_screen() { return mock_screen_; }
+
+ private:
+  MockScreen mock_screen_;
+  absl::optional<display::test::ScopedScreenOverride> screen_override_;
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+};
+
+IN_PROC_BROWSER_TEST_F(MAYBE_BrowserNavigatorTestWithMockScreen,
+                       Disposition_PictureInPicture_OpensInSameDisplay) {
+  // Create the params for the PiP request.
+  auto pip_options = blink::mojom::PictureInPictureWindowOptions::New();
+  pip_options->width = 500;
+  pip_options->height = 400;
+  WebContents::CreateParams web_contents_params(browser()->profile());
+  web_contents_params.picture_in_picture_options = *pip_options;
+
+  // Ensure we have the two displays.
+  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+  auto display1 = display::Screen::GetScreen()->GetAllDisplays()[0];
+  auto display2 = display::Screen::GetScreen()->GetAllDisplays()[1];
+
+  {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Put the opener on display 1.
+    browser()->window()->SetBounds(display1.work_area());
+#else
+    // Make the MockScreen report the opener as being on display 1.
+    mock_screen().set_display_nearest_window(display1);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+    // Ensure that the opener is on display 1.
+    const auto opener_display =
+        display::Screen::GetScreen()->GetDisplayNearestWindow(
+            browser()->window()->GetNativeWindow());
+    ASSERT_EQ(display1.id(), opener_display.id());
+
+    // Open the PiP window.
+    NavigateParams params(MakeNavigateParams(browser()));
+    params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
+    params.contents_to_insert = WebContents::Create(web_contents_params);
+    Navigate(&params);
+
+    // The PiP window should also be on display 1.
+    EXPECT_TRUE(
+        display1.work_area().Contains(params.browser->window()->GetBounds()));
+  }
+
+  {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Put the opener on display 2.
+    browser()->window()->SetBounds(display2.work_area());
+#else
+    // Make the MockScreen report the opener as being on display 2.
+    mock_screen().set_display_nearest_window(display2);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+    // Ensure that the opener is on display 2.
+    const auto opener_display =
+        display::Screen::GetScreen()->GetDisplayNearestWindow(
+            browser()->window()->GetNativeWindow());
+    ASSERT_EQ(display2.id(), opener_display.id());
+
+    // Open the PiP window.
+    NavigateParams params(MakeNavigateParams(browser()));
+    params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
+    params.contents_to_insert = WebContents::Create(web_contents_params);
+    Navigate(&params);
+
+    // The PiP window should also be on display 2.
+    EXPECT_TRUE(
+        display2.work_area().Contains(params.browser->window()->GetBounds()));
+  }
 }
 
 }  // namespace
