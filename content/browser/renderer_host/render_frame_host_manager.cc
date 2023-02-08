@@ -3340,7 +3340,31 @@ void RenderFrameHostManager::CreateRenderFrameProxy(
     // object to depend on it is necessarily a main frame one.
     scoped_refptr<RenderViewHostImpl> render_view_host =
         frame_tree_node_->frame_tree().GetRenderViewHost(group);
-    CHECK(render_view_host || frame_tree_node_->IsMainFrame());
+    if (!frame_tree_node_->IsMainFrame()) {
+      SCOPED_CRASH_KEY_BOOL("Bug1400009", "sig_exists", !!group);
+      SCOPED_CRASH_KEY_STRING256("Bug1400009", "current_rfh_url",
+                                 render_frame_host_->GetLastCommittedURL()
+                                     .GetWithEmptyPath()
+                                     .possibly_invalid_spec());
+      SCOPED_CRASH_KEY_NUMBER("Bug1400009", "target_si",
+                              (int)instance->GetId());
+      SCOPED_CRASH_KEY_NUMBER(
+          "Bug1400009", "current_rfh_si",
+          (int)render_frame_host_->GetSiteInstance()->GetId());
+      SCOPED_CRASH_KEY_STRING64("Bug1400009", "current_lifecycle",
+                                RenderFrameHostImpl::LifecycleStateImplToString(
+                                    render_frame_host_->lifecycle_state()));
+      RenderFrameHostImpl* parent_rfh = render_frame_host_->GetParent();
+      SCOPED_CRASH_KEY_NUMBER("Bug1400009", "parent_si",
+                              (int)parent_rfh->GetSiteInstance()->GetId());
+      SCOPED_CRASH_KEY_BOOL("Bug1400009", "parent_rvh_exists",
+                            !!frame_tree_node_->frame_tree().GetRenderViewHost(
+                                parent_rfh->GetSiteInstance()->group()));
+      SCOPED_CRASH_KEY_STRING64("Bug1400009", "parent_lifecycle",
+                                RenderFrameHostImpl::LifecycleStateImplToString(
+                                    parent_rfh->lifecycle_state()));
+      CHECK(render_view_host);
+    }
     if (!render_view_host) {
       // Before creating a new RenderFrameProxyHost, ensure a RenderViewHost
       // exists for |instance|, as it creates the page level structure in Blink.

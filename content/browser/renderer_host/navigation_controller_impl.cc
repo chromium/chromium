@@ -2622,6 +2622,23 @@ bool NavigationControllerImpl::StartHistoryNavigationInNewSubframe(
 
   request->SetNavigationClient(std::move(*navigation_client));
 
+  SCOPED_CRASH_KEY_STRING256(
+      "Bug1400009", "req_url",
+      request->GetURL().GetWithEmptyPath().possibly_invalid_spec());
+  SCOPED_CRASH_KEY_NUMBER(
+      "Bug1400009", "nav_entry_si",
+      entry->site_instance() ? ((int)entry->site_instance()->GetId()) : -1);
+  SCOPED_CRASH_KEY_NUMBER("Bug1400009", "fne_si",
+                          frame_entry->site_instance()
+                              ? ((int)frame_entry->site_instance()->GetId())
+                              : -1);
+  bool has_sig =
+      (frame_entry->site_instance() && frame_entry->site_instance()->group());
+  SCOPED_CRASH_KEY_BOOL("Bug1400009", "fne_sig_exists", has_sig);
+  SCOPED_CRASH_KEY_BOOL("Bug1400009", "fne_sig_has_rvh",
+                        has_sig ? (!!frame_tree_->GetRenderViewHost(
+                                      frame_entry->site_instance()->group()))
+                                : false);
   render_frame_host->frame_tree_node()->navigator().Navigate(std::move(request),
                                                              ReloadType::NONE);
 

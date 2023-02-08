@@ -1228,6 +1228,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // kRunningUnloadHandlers states.
     kReadyToBeDeleted,
   };
+  // Returns the string corresponding to LifecycleStateImpl, used for logging
+  // crash keys.
+  static const char* LifecycleStateImplToString(LifecycleStateImpl state);
+
   LifecycleStateImpl lifecycle_state() const { return lifecycle_state_; }
 
   // Updates the `lifecycle_state_`. This will also notify the delegate

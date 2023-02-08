@@ -695,29 +695,6 @@ DetermineAfterCommitWhetherToForbidTrustTokenRedemption(
              : network::mojom::TrustTokenRedemptionPolicy::kForbid;
 }
 
-// Returns the string corresponding to LifecycleStateImpl, used for logging
-// crash keys.
-const char* LifecycleStateImplToString(
-    RenderFrameHostImpl::LifecycleStateImpl state) {
-  using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
-  switch (state) {
-    case LifecycleStateImpl::kSpeculative:
-      return "Speculative";
-    case LifecycleStateImpl::kPrerendering:
-      return "Prerendering";
-    case LifecycleStateImpl::kPendingCommit:
-      return "PendingCommit";
-    case LifecycleStateImpl::kActive:
-      return "Active";
-    case LifecycleStateImpl::kInBackForwardCache:
-      return "InBackForwardCache";
-    case LifecycleStateImpl::kRunningUnloadHandlers:
-      return "RunningUnloadHandlers";
-    case LifecycleStateImpl::kReadyToBeDeleted:
-      return "ReadyToBeDeleted";
-  }
-}
-
 // Verify that |browser_side_origin| and |renderer_side_origin| match.  See also
 // https://crbug.com/888079. Returns true if the origins match, and false
 // otherwise.
@@ -810,8 +787,9 @@ void DumpPrerenderTerminationSnapshot(
   SCOPED_CRASH_KEY_NUMBER("Prerender", "termination_state",
                           static_cast<int>(info.status));
   SCOPED_CRASH_KEY_NUMBER("Prerender", "exit_code", info.exit_code);
-  SCOPED_CRASH_KEY_STRING32("Prerender", "rfhi_lifecycle",
-                            LifecycleStateImplToString(lifecycle_state));
+  SCOPED_CRASH_KEY_STRING32(
+      "Prerender", "rfhi_lifecycle",
+      RenderFrameHostImpl::LifecycleStateImplToString(lifecycle_state));
   base::debug::DumpWithoutCrashing();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -1529,6 +1507,28 @@ GetCodeCacheHostReceiverHandler() {
 void RenderFrameHostImpl::SetCodeCacheHostReceiverHandlerForTesting(
     CodeCacheHostReceiverHandler handler) {
   GetCodeCacheHostReceiverHandler() = handler;
+}
+
+// static
+const char* RenderFrameHostImpl::LifecycleStateImplToString(
+    RenderFrameHostImpl::LifecycleStateImpl state) {
+  using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
+  switch (state) {
+    case LifecycleStateImpl::kSpeculative:
+      return "Speculative";
+    case LifecycleStateImpl::kPrerendering:
+      return "Prerendering";
+    case LifecycleStateImpl::kPendingCommit:
+      return "PendingCommit";
+    case LifecycleStateImpl::kActive:
+      return "Active";
+    case LifecycleStateImpl::kInBackForwardCache:
+      return "InBackForwardCache";
+    case LifecycleStateImpl::kRunningUnloadHandlers:
+      return "RunningUnloadHandlers";
+    case LifecycleStateImpl::kReadyToBeDeleted:
+      return "ReadyToBeDeleted";
+  }
 }
 
 RenderFrameHostImpl::RenderFrameHostImpl(
@@ -14610,7 +14610,7 @@ void RenderFrameHostImpl::DocumentAssociatedData::
 
 std::ostream& operator<<(std::ostream& o,
                          const RenderFrameHostImpl::LifecycleStateImpl& s) {
-  return o << LifecycleStateImplToString(s);
+  return o << RenderFrameHostImpl::LifecycleStateImplToString(s);
 }
 
 net::CookieSettingOverrides RenderFrameHostImpl::GetCookieSettingOverrides() {
