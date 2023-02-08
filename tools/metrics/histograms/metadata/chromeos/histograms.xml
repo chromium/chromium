@@ -1228,6 +1228,58 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Healthd.DiagnosticResult.{Routine}"
+    enum="CrosHealthdDiagnosticResult" expires_after="2023-12-31">
+  <owner>weiluanwang@google.com</owner>
+  <owner>dennyh@google.com</owner>
+  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <summary>
+    Records the diagnostic results from healthd to analyze the usage and the
+    pass rate. Emitted when a routine terminates.
+  </summary>
+  <token key="Routine">
+    <variant name="AcPower"/>
+    <variant name="ArcDnsResolution"/>
+    <variant name="ArcHttp"/>
+    <variant name="ArcPing"/>
+    <variant name="AudioSetGain"/>
+    <variant name="AudioSetVolume"/>
+    <variant name="BatteryCapacity"/>
+    <variant name="BatteryCharge"/>
+    <variant name="BatteryDischarge"/>
+    <variant name="BatteryHealth"/>
+    <variant name="CaptivePortal"/>
+    <variant name="CpuCache"/>
+    <variant name="CpuStress"/>
+    <variant name="DiskRead"/>
+    <variant name="DnsLatency"/>
+    <variant name="DnsResolution"/>
+    <variant name="DnsResolverPresent"/>
+    <variant name="EmmcLifetime"/>
+    <variant name="Fingerprint"/>
+    <variant name="FingerprintAlive"/>
+    <variant name="FloatingPointAccuracy"/>
+    <variant name="GatewayCanBePinged"/>
+    <variant name="HasSecureWiFiConnection"/>
+    <variant name="HttpFirewall"/>
+    <variant name="HttpsFirewall"/>
+    <variant name="HttpsLatency"/>
+    <variant name="LanConnectivity"/>
+    <variant name="LedLitUp"/>
+    <variant name="Memory"/>
+    <variant name="NvmeSelfTest"/>
+    <variant name="NvmeWearLevel"/>
+    <variant name="PrimeSearch"/>
+    <variant name="PrivacyScreen"/>
+    <variant name="SensitiveSensor"/>
+    <variant name="SignalStrength"/>
+    <variant name="SmartctlCheck"/>
+    <variant name="SmartctlCheckWithPercentageUsed"/>
+    <variant name="Urandom"/>
+    <variant name="VideoConferencing"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Healthd.TelemetryResult.{Category}"
     enum="CrosHealthdTelemetryResult" expires_after="2023-12-31">
   <owner>weiluanwang@google.com</owner>

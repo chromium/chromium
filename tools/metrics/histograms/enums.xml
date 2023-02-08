@@ -22292,6 +22292,17 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="2" label="Finished with &quot;Keep Exploring&quot; button"/>
 </enum>
 
+<enum name="CrosHealthdDiagnosticResult">
+  <int value="0" label="Passed"/>
+  <int value="1" label="Failed"/>
+  <int value="2" label="Error"/>
+  <int value="3" label="Cancelled"/>
+  <int value="4" label="FailedToStart"/>
+  <int value="5" label="Removed"/>
+  <int value="6" label="Unsupported"/>
+  <int value="7" label="NotRun"/>
+</enum>
+
 <enum name="CrosHealthdTelemetryResult">
   <int value="0" label="Success"/>
   <int value="1" label="Error"/>
