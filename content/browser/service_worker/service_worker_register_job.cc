@@ -364,8 +364,6 @@ void ServiceWorkerRegisterJob::OnUpdateCheckFinished(
     ServiceWorkerSingleScriptUpdateChecker::Result result,
     std::unique_ptr<ServiceWorkerSingleScriptUpdateChecker::FailureInfo>
         failure_info,
-    // TODO(crbug.com/1371756) `updated_sha256_script_checksums` will be used in
-    // a follow-up CL.
     const std::map<GURL, std::string>& updated_sha256_script_checksums) {
   // Update check failed.
   if (result == ServiceWorkerSingleScriptUpdateChecker::Result::kFailed) {
@@ -381,6 +379,23 @@ void ServiceWorkerRegisterJob::OnUpdateCheckFinished(
 
   // Update check succeeded.
   if (result == ServiceWorkerSingleScriptUpdateChecker::Result::kIdentical) {
+    if (updated_sha256_script_checksums.size() > 0) {
+      // Update checksums on cached scripts and set it to the map.
+      base::flat_map<int64_t, std::string> updated_checksum_map;
+      ServiceWorkerScriptCacheMap& cache_map =
+          *registration()->GetNewestVersion()->script_cache_map();
+      for (const auto& item : updated_sha256_script_checksums) {
+        cache_map.UpdateSha256Checksum(item.first, item.second);
+        const int64_t resource_id = cache_map.LookupResourceId(item.first);
+        updated_checksum_map.emplace(resource_id, item.second);
+      }
+      // Update resource list on the database. Pass a no-op callback as the
+      // checksums are only used for an optimization and we don't need to wait
+      // for the completion.
+      context_->registry()->UpdateResourceSha256Checksums(
+          registration()->id(), key_, updated_checksum_map,
+          /*callback=*/base::DoNothing());
+    }
     ResolvePromise(blink::ServiceWorkerStatusCode::kOk, std::string(),
                    registration());
     // This terminates the current job (|this|).

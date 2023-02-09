@@ -120,6 +120,11 @@ class ServiceWorkerStorageControlImpl
       const blink::StorageKey& key,
       blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type,
       UpdateFetchHandlerTypeCallback callback) override;
+  void UpdateResourceSha256Checksums(
+      int64_t registration_id,
+      const blink::StorageKey& key,
+      const base::flat_map<int64_t, std::string>& updated_sha256_checksums,
+      UpdateResourceSha256ChecksumsCallback callback) override;
   void GetNewRegistrationId(GetNewRegistrationIdCallback callback) override;
   void GetNewVersionId(GetNewVersionIdCallback callback) override;
   void GetNewResourceId(GetNewResourceIdCallback callback) override;

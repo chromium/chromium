@@ -328,6 +328,22 @@ class ServiceWorkerStorageTest : public testing::Test {
     return result;
   }
 
+  ServiceWorkerDatabase::Status UpdateResourceSha256Checksums(
+      int64_t registration_id,
+      const blink::StorageKey& key,
+      const base::flat_map<int64_t, std::string>& updated_sha256_checksums) {
+    ServiceWorkerDatabase::Status result;
+    base::RunLoop loop;
+    storage()->UpdateResourceSha256Checksums(
+        registration_id, key, updated_sha256_checksums,
+        base::BindLambdaForTesting([&](ServiceWorkerDatabase::Status status) {
+          result = status;
+          loop.Quit();
+        }));
+    loop.Run();
+    return result;
+  }
+
   ServiceWorkerDatabase::Status FindRegistrationForClientUrl(
       const GURL& document_url,
       const blink::StorageKey& key) {
@@ -557,6 +573,7 @@ TEST_F(ServiceWorkerStorageTest, DisabledStorage) {
   const GURL kScript("http://www.example.com/script.js");
   const GURL kDocumentUrl("http://www.example.com/scope/document.html");
   const int64_t kRegistrationId = 0;
+  const int64_t kRegistrationId2 = 1;
   const int64_t kVersionId = 0;
   const int64_t kResourceId = 0;
 
@@ -594,6 +611,16 @@ TEST_F(ServiceWorkerStorageTest, DisabledStorage) {
                 kRegistrationId, kKey,
                 blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable),
             ServiceWorkerDatabase::Status::kErrorDisabled);
+
+  std::vector<ResourceRecord> resources2;
+  resources2.push_back(CreateResourceRecord(kResourceId, kScript, 100));
+  CreateRegistrationData(kRegistrationId2, kVersionId, kScope, kKey, kScript,
+                         resources2);
+  EXPECT_EQ(
+      UpdateResourceSha256Checksums(kRegistrationId2, kKey,
+                                    base::flat_map<int64_t, std::string>(
+                                        {{resources2[0]->resource_id, ""}})),
+      ServiceWorkerDatabase::Status::kErrorDisabled);
 
   EXPECT_EQ(DeleteRegistration(kRegistrationId, kKey),
             ServiceWorkerDatabase::Status::kErrorDisabled);

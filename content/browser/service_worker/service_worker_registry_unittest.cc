@@ -482,6 +482,21 @@ class ServiceWorkerRegistryTest : public testing::Test {
     return result;
   }
 
+  blink::ServiceWorkerStatusCode UpdateResourceSha256Checksums(
+      const ServiceWorkerRegistration* registration,
+      const base::flat_map<int64_t, std::string>& updated_sha256_checksums) {
+    base::RunLoop loop;
+    blink::ServiceWorkerStatusCode result;
+    registry()->UpdateResourceSha256Checksums(
+        registration->id(), registration->key(), updated_sha256_checksums,
+        base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
+          result = status;
+          loop.Quit();
+        }));
+    loop.Run();
+    return result;
+  }
+
   GetStorageUsageForStorageKeyResult GetStorageUsageForStorageKey(
       const blink::StorageKey& key) {
     GetStorageUsageForStorageKeyResult result;
@@ -888,6 +903,12 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   ASSERT_EQ(UpdateFetchHandlerType(
                 found_registration.get(),
                 ServiceWorkerVersion::FetchHandlerType::kEmptyFetchHandler),
+            blink::ServiceWorkerStatusCode::kOk);
+  ASSERT_EQ(UpdateResourceSha256Checksums(
+                found_registration.get(),
+                base::flat_map<int64_t, std::string>(
+                    {{resources[0]->resource_id, "fakevalue1"},
+                     {resources[1]->resource_id, "fakevalue2"}})),
             blink::ServiceWorkerStatusCode::kOk);
 
   found_registration = nullptr;

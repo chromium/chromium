@@ -883,6 +883,56 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::UpdateFetchHandlerType(
   return WriteBatch(&batch);
 }
 
+ServiceWorkerDatabase::Status
+ServiceWorkerDatabase::UpdateResourceSha256Checksums(
+    int64_t registration_id,
+    const blink::StorageKey& key,
+    const base::flat_map<int64_t, std::string>& updated_sha256_checksums) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  leveldb::WriteBatch batch;
+
+  Status status = LazyOpen(false);
+  if (IsNewOrNonexistentDatabase(status)) {
+    return Status::kErrorNotFound;
+  }
+  if (status != Status::kOk) {
+    return status;
+  }
+
+  mojom::ServiceWorkerRegistrationDataPtr registration;
+  status = ReadRegistrationData(registration_id, key, &registration);
+  if (status != Status::kOk) {
+    return status;
+  }
+
+  std::vector<mojom::ServiceWorkerResourceRecordPtr> resources;
+  status = ReadResourceRecords(*registration, &resources);
+  if (status != Status::kOk) {
+    return status;
+  }
+
+  std::set<int64_t> updated_resource_ids;
+  for (const auto& resource : resources) {
+    if (!updated_resource_ids.insert(resource->resource_id).second) {
+      // The database wrongly contains the same resource id.
+      return Status::kErrorCorrupted;
+    }
+    auto itr = updated_sha256_checksums.find(resource->resource_id);
+    if (itr == updated_sha256_checksums.end()) {
+      return Status::kErrorNotFound;
+    }
+    resource->sha256_checksum = itr->second;
+    WriteResourceRecordInBatch(*resource, registration->version_id, &batch);
+  }
+
+  // Check if all updated_sha256_checksums are used.
+  if (updated_resource_ids.size() != updated_sha256_checksums.size()) {
+    return Status::kErrorNotFound;
+  }
+
+  return WriteBatch(&batch);
+}
+
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::DeleteRegistration(
     int64_t registration_id,
     const blink::StorageKey& key,

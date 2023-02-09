@@ -57,6 +57,11 @@ class CONTENT_EXPORT ServiceWorkerScriptCacheMap {
       const std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>&
           resources);
 
+  // Updates sha256_checksum to the resource. sha256_checksum can be updated
+  // after the update check process.
+  void UpdateSha256Checksum(const GURL& url,
+                            const std::string& sha256_checksum);
+
   // Writes the metadata of the existing script.
   void WriteMetadata(const GURL& url,
                      base::span<const uint8_t> data,

@@ -650,6 +650,21 @@ void ServiceWorkerRegistry::UpdateFetchHandlerType(
           fetch_handler_type));
 }
 
+void ServiceWorkerRegistry::UpdateResourceSha256Checksums(
+    int64_t registration_id,
+    const blink::StorageKey& key,
+    const base::flat_map<int64_t, std::string>& updated_sha256_checksums,
+    StatusCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CreateInvokerAndStartRemoteCall(
+      &storage::mojom::ServiceWorkerStorageControl::
+          UpdateResourceSha256Checksums,
+      base::BindOnce(&ServiceWorkerRegistry::DidUpdateRegistration,
+                     weak_factory_.GetWeakPtr(), std::move(callback)),
+      static_cast<const int64_t>(registration_id), key,
+      updated_sha256_checksums);
+}
+
 void ServiceWorkerRegistry::StoreUncommittedResourceId(
     int64_t resource_id,
     const blink::StorageKey& key) {

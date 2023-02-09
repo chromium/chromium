@@ -235,7 +235,11 @@ interface ServiceWorkerStorageControl {
                          blink.mojom.StorageKey key,
                          blink.mojom.ServiceWorkerFetchHandlerType type) =>
       (ServiceWorkerDatabaseStatus status);
-
+  // Updates sha256 checksum fields in resource records.
+  UpdateResourceSha256Checksums(int64 registratation_id,
+                                blink.mojom.StorageKey key,
+                                map<int64, string> updated_sha256_checksums) =>
+      (ServiceWorkerDatabaseStatus status);
   // Returns a new registration id which is guaranteed to be unique in the
   // storage. Returns blink::mojom::kInvalidServiceWorkerRegistrationId if the
   // storage is disabled.

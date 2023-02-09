@@ -105,6 +105,13 @@ void ServiceWorkerScriptCacheMap::SetResources(
   }
 }
 
+void ServiceWorkerScriptCacheMap::UpdateSha256Checksum(
+    const GURL& url,
+    const std::string& sha256_checksum) {
+  DCHECK(base::Contains(resource_map_, url));
+  resource_map_[url]->sha256_checksum = sha256_checksum;
+}
+
 void ServiceWorkerScriptCacheMap::WriteMetadata(
     const GURL& url,
     base::span<const uint8_t> data,

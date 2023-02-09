@@ -277,6 +277,15 @@ void ServiceWorkerStorageControlImpl::UpdateFetchHandlerType(
                                    std::move(callback));
 }
 
+void ServiceWorkerStorageControlImpl::UpdateResourceSha256Checksums(
+    int64_t registration_id,
+    const blink::StorageKey& key,
+    const base::flat_map<int64_t, std::string>& updated_sha256_checksums,
+    UpdateResourceSha256ChecksumsCallback callback) {
+  storage_->UpdateResourceSha256Checksums(
+      registration_id, key, updated_sha256_checksums, std::move(callback));
+}
+
 void ServiceWorkerStorageControlImpl::GetNewRegistrationId(
     GetNewRegistrationIdCallback callback) {
   storage_->GetNewRegistrationId(std::move(callback));

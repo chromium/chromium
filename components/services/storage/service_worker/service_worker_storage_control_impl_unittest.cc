@@ -363,6 +363,22 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
     return out_status;
   }
 
+  DatabaseStatus UpdateResourceSha256Checksums(
+      int64_t registration_id,
+      const blink::StorageKey& key,
+      const base::flat_map<int64_t, std::string>& updated_sha256_checksums) {
+    DatabaseStatus out_status;
+    base::RunLoop loop;
+    storage()->UpdateResourceSha256Checksums(
+        registration_id, key, updated_sha256_checksums,
+        base::BindLambdaForTesting([&](DatabaseStatus status) {
+          out_status = status;
+          loop.Quit();
+        }));
+    loop.Run();
+    return out_status;
+  }
+
   DatabaseStatus UpdateNavigationPreloadEnabled(int64_t registration_id,
                                                 const blink::StorageKey& key,
                                                 bool enable) {
@@ -965,6 +981,61 @@ TEST_F(ServiceWorkerStorageControlImplTest, UpdateFetchHandlerType) {
     EXPECT_EQ(result.entry->registration->fetch_handler_type,
               blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable);
   }
+}
+
+TEST_F(ServiceWorkerStorageControlImplTest, UpdateResourceSha256Checksums) {
+  const GURL kScope("https://www.example.com/");
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
+  const GURL kScriptUrl("https://www.example.com/sw.js");
+  const GURL kImportedScriptUrl("https://www.example.com/imported.js");
+
+  LazyInitializeForTest();
+
+  // Preparation: Create a registration with two resources. These aren't written
+  // to storage yet.
+  std::vector<ResourceRecord> resources;
+  const int64_t resource_id1 = GetNewResourceId();
+  const std::string resource_data1 = "main script data";
+  resources.push_back(mojom::ServiceWorkerResourceRecord::New(
+      resource_id1, kScriptUrl, resource_data1.size(),
+      /*sha256_checksum=*/absl::nullopt));
+
+  const int64_t resource_id2 = GetNewResourceId();
+  const std::string resource_data2 = "imported script data";
+  resources.push_back(mojom::ServiceWorkerResourceRecord::New(
+      resource_id2, kImportedScriptUrl, resource_data2.size(),
+      /*sha256_checksum=*/absl::nullopt));
+
+  // Preparation: Create a registration with two resources.
+  const int64_t registration_id = GetNewRegistrationId();
+  const int64_t version_id = GetNewVersionId().version_id;
+  RegistrationData registration_data = CreateRegistrationData(
+      registration_id, version_id, kScope, kKey, kScriptUrl, resources);
+  DatabaseStatus status =
+      StoreRegistration(std::move(registration_data), std::move(resources));
+  ASSERT_EQ(status, DatabaseStatus::kOk);
+
+  // Resources written in the storage don't have |sha256_checksum|
+  FindRegistrationResult result = FindRegistrationForId(registration_id, kKey);
+  ASSERT_EQ(result.status, DatabaseStatus::kOk);
+  ASSERT_FALSE(result.entry->resources[0]->sha256_checksum.has_value());
+  ASSERT_FALSE(result.entry->resources[1]->sha256_checksum.has_value());
+
+  // Update resources with fake checksum strings.
+  const std::string expected_checksum1 = "abcd";
+  const std::string expected_checksum2 = "efgh";
+  status = UpdateResourceSha256Checksums(
+      registration_id, kKey,
+      base::flat_map<int64_t, std::string>(
+          {{result.entry->resources[0]->resource_id, expected_checksum1},
+           {result.entry->resources[1]->resource_id, expected_checksum2}}));
+  EXPECT_EQ(status, DatabaseStatus::kOk);
+
+  // Now resources from the storage have fake checksums.
+  result = FindRegistrationForId(registration_id, kKey);
+  ASSERT_EQ(result.status, DatabaseStatus::kOk);
+  EXPECT_EQ(result.entry->resources[0]->sha256_checksum, expected_checksum1);
+  EXPECT_EQ(result.entry->resources[1]->sha256_checksum, expected_checksum2);
 }
 
 TEST_F(ServiceWorkerStorageControlImplTest, Update) {

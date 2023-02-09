@@ -548,6 +548,33 @@ void ServiceWorkerStorage::UpdateFetchHandlerType(
       std::move(callback));
 }
 
+void ServiceWorkerStorage::UpdateResourceSha256Checksums(
+    int64_t registration_id,
+    const blink::StorageKey& key,
+    const base::flat_map<int64_t, std::string>& updated_sha256_checksums,
+    DatabaseStatusCallback callback) {
+  switch (state_) {
+    case STORAGE_STATE_DISABLED:
+      std::move(callback).Run(ServiceWorkerDatabase::Status::kErrorDisabled);
+      return;
+    case STORAGE_STATE_INITIALIZING:
+    case STORAGE_STATE_UNINITIALIZED:
+      LazyInitialize(
+          base::BindOnce(&ServiceWorkerStorage::UpdateResourceSha256Checksums,
+                         weak_factory_.GetWeakPtr(), registration_id, key,
+                         updated_sha256_checksums, std::move(callback)));
+      return;
+    case STORAGE_STATE_INITIALIZED:
+      break;
+  }
+  database_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&ServiceWorkerDatabase::UpdateResourceSha256Checksums,
+                     base::Unretained(database_.get()), registration_id, key,
+                     updated_sha256_checksums),
+      std::move(callback));
+}
+
 void ServiceWorkerStorage::DeleteRegistration(
     int64_t registration_id,
     const blink::StorageKey& key,

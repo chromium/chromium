@@ -2238,6 +2238,111 @@ TEST(ServiceWorkerDatabaseTest, UpdateFetchHandlerType) {
                 blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable));
 }
 
+TEST(ServiceWorkerDatabaseTest, UpdateResourceSha256Checksums) {
+  std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
+  GURL origin("https://example.com");
+  blink::StorageKey key(url::Origin::Create(origin));
+  ServiceWorkerDatabase::DeletedVersion deleted_version;
+
+  // Should be false because a registration does not exist.
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
+            database->UpdateLastCheckTime(0, key, base::Time::Now()));
+
+  // Add a registration.
+  RegistrationData data;
+  data.registration_id = 100;
+  data.scope = URL(origin, "/foo");
+  data.key = key;
+  data.script = URL(origin, "/script.js");
+  data.version_id = 200;
+  data.last_update_check = base::Time::Now();
+  data.fetch_handler_type =
+      blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable;
+  data.resources_total_size_bytes = 100;
+  std::vector<ResourceRecordPtr> resources;
+  resources.push_back(CreateResource(1, data.script, 100));
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data, resources, &deleted_version));
+
+  // Make sure that the registration is stored.
+  RegistrationDataPtr data_out;
+  std::vector<ResourceRecordPtr> resources_out;
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->ReadRegistration(data.registration_id, key, &data_out,
+                                       &resources_out));
+  VerifyRegistrationData(data, *data_out);
+  EXPECT_EQ(1u, resources_out.size());
+
+  // Update resources.
+  const std::string fake_checksum = "abcdef";
+  const base::flat_map<int64_t, std::string> updated_checksums(
+      {{resources[0]->resource_id, fake_checksum}});
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->UpdateResourceSha256Checksums(data.registration_id, key,
+                                                    updated_checksums));
+
+  // Make sure that the registration is updated.
+  resources_out.clear();
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->ReadRegistration(data.registration_id, key, &data_out,
+                                       &resources_out));
+  EXPECT_EQ(1u, resources_out.size());
+  EXPECT_EQ(fake_checksum, resources_out[0]->sha256_checksum);
+
+  // Test with an invalid resource_id. The update should fail.
+  const int64_t invalid_resource_id =
+      resources[0]->resource_id + resources.size();
+  const std::string fake_checksum2 = fake_checksum + "g";
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
+            database->UpdateResourceSha256Checksums(
+                data.registration_id, key,
+                base::flat_map<int64_t, std::string>(
+                    {{invalid_resource_id, fake_checksum2}})));
+  resources_out.clear();
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->ReadRegistration(data.registration_id, key, &data_out,
+                                       &resources_out));
+  EXPECT_EQ(1u, resources_out.size());
+  EXPECT_EQ(fake_checksum, resources_out[0]->sha256_checksum);
+
+  // Delete the registration.
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->DeleteRegistration(data.registration_id, key,
+                                         &deleted_version));
+  EXPECT_EQ(data.registration_id, deleted_version.registration_id);
+
+  // Should be false because the registration is gone.
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
+            database->UpdateResourceSha256Checksums(data.registration_id, key,
+                                                    updated_checksums));
+
+  // Test with the resource_id which is not stored in the database. The update
+  // should fail.
+  data.version_id = 201;
+  data.resources_total_size_bytes = 205;
+  std::vector<ResourceRecordPtr> resources2;
+  resources2.push_back(CreateResource(2, data.script, 100));
+  resources2.push_back(CreateResource(3, URL(origin, "/script2.js"), 105));
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data, resources2, &deleted_version));
+  // Make sure that the registration is updated.
+  resources_out.clear();
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->ReadRegistration(data.registration_id, key, &data_out,
+                                       &resources_out));
+  EXPECT_EQ(2u, resources_out.size());
+  // Update the checksum. This should return kErrorNotFound status because the
+  // number of updated checksums and the number of scripts in the database are
+  // inconsistent, and any checksums are not updated.
+  const base::flat_map<int64_t, std::string> updated_checksums2(
+      {{resources2[0]->resource_id, "yetanotherchecksum"}});
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
+            database->UpdateResourceSha256Checksums(data.registration_id, key,
+                                                    updated_checksums2));
+  EXPECT_FALSE(resources_out[0]->sha256_checksum.has_value());
+  EXPECT_FALSE(resources_out[1]->sha256_checksum.has_value());
+}
+
 TEST(ServiceWorkerDatabaseTest, UncommittedAndPurgeableResourceIds) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
 

@@ -167,6 +167,13 @@ class ServiceWorkerDatabase {
       const blink::StorageKey& key,
       const blink::mojom::ServiceWorkerFetchHandlerType type);
 
+  // Updates script resource records for the specified registration.
+  // Returns OK if it's successfully updated. Otherwise, returns an error.
+  Status UpdateResourceSha256Checksums(
+      int64_t registration_id,
+      const blink::StorageKey& key,
+      const base::flat_map<int64_t, std::string>& updated_sha256_checksums);
+
   // Deletes a registration for |registration_id| and moves resource records
   // associated with it into the purgeable list. If deletion occurred, fills
   // |deleted_version| with the version that was deleted; otherwise, sets

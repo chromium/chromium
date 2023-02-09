@@ -185,6 +185,14 @@ class ServiceWorkerStorage {
                               blink::mojom::ServiceWorkerFetchHandlerType type,
                               DatabaseStatusCallback callback);
 
+  // Updates sha256 scripts in resource lists of the active service worker
+  // version's.
+  void UpdateResourceSha256Checksums(
+      int64_t registration_id,
+      const blink::StorageKey& key,
+      const base::flat_map<int64_t, std::string>& updated_sha256_checksums,
+      DatabaseStatusCallback callback);
+
   // Deletes the registration specified by |registration_id|. This should be
   // called only from ServiceWorkerRegistry.
   void DeleteRegistration(int64_t registration_id,
