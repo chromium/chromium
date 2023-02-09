@@ -10,7 +10,7 @@ import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_util
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertLE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {assertNotStyle, assertStyle, installMock, keydown} from './test_support.js';
@@ -75,8 +75,8 @@ function createImageDoodle(width: number = 500, height: number = 200): Doodle {
 }
 
 suite('NewTabPageLogoTest', () => {
-  let windowProxy: TestBrowserProxy<WindowProxy>;
-  let handler: TestBrowserProxy<PageHandlerRemote>;
+  let windowProxy: TestMock<WindowProxy>;
+  let handler: TestMock<PageHandlerRemote>;
 
   async function createLogo(doodle: Doodle|null = null): Promise<LogoElement> {
     handler.setResultFor('getDoodle', Promise.resolve({

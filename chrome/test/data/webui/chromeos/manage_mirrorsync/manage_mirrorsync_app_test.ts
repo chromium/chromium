@@ -10,6 +10,7 @@ import {FolderSelector} from 'chrome://manage-mirrorsync/components/folder_selec
 import {PageHandlerRemote} from 'chrome://manage-mirrorsync/manage_mirrorsync.mojom-webui.js';
 import {assertArrayEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 /**
@@ -18,11 +19,11 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
  */
 class ManageMirrorSyncTestBrowserProxy extends TestBrowserProxy implements
     BrowserProxy {
-  handler: PageHandlerRemote&TestBrowserProxy;
+  handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
 
   constructor() {
     super(['getChildFolders']);
-    this.handler = TestBrowserProxy.fromClass(PageHandlerRemote);
+    this.handler = TestMock.fromClass(PageHandlerRemote);
   }
 }
 

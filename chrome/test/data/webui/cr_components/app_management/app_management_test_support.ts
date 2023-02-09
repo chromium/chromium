@@ -6,15 +6,16 @@ import {App, AppType, InstallReason, InstallSource, OptionalBool, PageCallbackRo
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 export class TestAppManagementBrowserProxy extends TestBrowserProxy implements
     BrowserProxy {
   callbackRouter: PageCallbackRouter;
-  handler: PageHandlerRemote&TestBrowserProxy;
+  handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
 
   constructor() {
     super(['recordEnumerationValue']);
-    this.handler = TestBrowserProxy.fromClass(PageHandlerRemote);
+    this.handler = TestMock.fromClass(PageHandlerRemote);
     this.callbackRouter = new PageCallbackRouter();
   }
 

@@ -10,13 +10,13 @@ import {RecipesHandlerRemote} from 'chrome://new-tab-page/recipes.mojom-webui.js
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../test_support.js';
 
 suite('NewTabPageModulesRecipesTest', () => {
-  let handler: TestBrowserProxy<RecipesHandlerRemote>;
+  let handler: TestMock<RecipesHandlerRemote>;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

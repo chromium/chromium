@@ -4,14 +4,15 @@
 
 import {ClusterAction, MetricsProxy, PageCallbackRouter, PageHandlerRemote, RelatedSearchAction, VisitAction, VisitType} from 'chrome://history/history.js';
 import {TestBrowserProxy as BaseTestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 export class TestBrowserProxy extends BaseTestBrowserProxy {
-  handler: PageHandlerRemote&BaseTestBrowserProxy;
+  handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
   callbackRouter: PageCallbackRouter;
 
   constructor() {
     super([]);
-    this.handler = BaseTestBrowserProxy.fromClass(PageHandlerRemote);
+    this.handler = TestMock.fromClass(PageHandlerRemote);
     this.callbackRouter = new PageCallbackRouter();
   }
 }

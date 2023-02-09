@@ -10,7 +10,7 @@ import {NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.j
 import {BackgroundCollection, CollectionImage, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {assertNotStyle, assertStyle, createBackgroundImage, createTheme, installMock} from './test_support.js';
@@ -22,8 +22,8 @@ function createCollection(
 }
 
 suite('NewTabPageCustomizeBackgroundsTest', () => {
-  let windowProxy: TestBrowserProxy<WindowProxy>;
-  let handler: TestBrowserProxy<PageHandlerRemote>;
+  let windowProxy: TestMock<WindowProxy>;
+  let handler: TestMock<PageHandlerRemote>;
 
   async function createCustomizeBackgrounds():
       Promise<CustomizeBackgroundsElement> {

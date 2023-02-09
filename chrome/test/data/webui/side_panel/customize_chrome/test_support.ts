@@ -4,16 +4,16 @@
 
 import {BackgroundImage, Theme, ThirdPartyThemeInfo} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 type Installer<T> = (instance: T) => void;
 
 export function installMock<T extends object>(
-    clazz: Constructor<T>, installer?: Installer<T>): TestBrowserProxy<T> {
+    clazz: Constructor<T>, installer?: Installer<T>): TestMock<T> {
   installer = installer ||
       (clazz as unknown as {setInstance: Installer<T>}).setInstance;
-  const mock = TestBrowserProxy.fromClass(clazz);
+  const mock = TestMock.fromClass(clazz);
   installer!(mock);
   return mock;
 }

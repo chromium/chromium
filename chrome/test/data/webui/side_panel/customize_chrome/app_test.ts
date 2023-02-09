@@ -9,13 +9,13 @@ import {AppElement} from 'chrome://customize-chrome-side-panel.top-chrome/app.js
 import {BackgroundCollection, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote, CustomizeChromeSection} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {assertEquals, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {installMock} from './test_support.js';
 
 suite('AppTest', () => {
   let customizeChromeApp: AppElement;
-  let handler: TestBrowserProxy<CustomizeChromePageHandlerRemote>;
+  let handler: TestMock<CustomizeChromePageHandlerRemote>;
   let callbackRouter: CustomizeChromePageRemote;
 
   setup(async () => {

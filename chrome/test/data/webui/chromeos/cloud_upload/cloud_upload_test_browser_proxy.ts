@@ -4,7 +4,7 @@
 
 import {DialogArgs, DialogPage, DialogTask, PageHandlerRemote} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 export interface ProxyOptions {
   fileName?: string|null;
@@ -21,10 +21,10 @@ export interface ProxyOptions {
  * mojo responses.
  */
 export class CloudUploadTestBrowserProxy implements CloudUploadBrowserProxy {
-  handler: PageHandlerRemote&TestBrowserProxy;
+  handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
 
   constructor(options: ProxyOptions) {
-    this.handler = TestBrowserProxy.fromClass(PageHandlerRemote);
+    this.handler = TestMock.fromClass(PageHandlerRemote);
     const args: DialogArgs = {
       fileNames: [],
       dialogPage: options.dialogPage,

@@ -8,12 +8,12 @@ import {RecipesHandlerProxy, RecipesModuleElementV2, recipeTasksV2Descriptor} fr
 import {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {RecipesHandlerRemote} from 'chrome://new-tab-page/recipes.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {installMock} from '../../test_support.js';
 
 suite('NewTabPageModulesRecipesV2ModuleTest', () => {
-  let handler: TestBrowserProxy<RecipesHandlerRemote>;
+  let handler: TestMock<RecipesHandlerRemote>;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

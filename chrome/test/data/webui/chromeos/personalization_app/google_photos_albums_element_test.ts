@@ -8,7 +8,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {fetchGooglePhotosAlbums, getCountText, GooglePhotosAlbum, GooglePhotosAlbums, initializeGooglePhotosData, PersonalizationActionName, PersonalizationRouter, SetErrorAction, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
 import {assertDeepEquals, assertEquals, assertGT, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {baseSetup, createSvgDataUrl, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
@@ -209,7 +209,7 @@ suite('GooglePhotosAlbumsTest', function() {
     });
 
     // Mock singleton |PersonalizationRouter|.
-    const router = TestBrowserProxy.fromClass(PersonalizationRouter);
+    const router = TestMock.fromClass(PersonalizationRouter);
     PersonalizationRouter.instance = () => router;
 
     // Mock |PersonalizationRouter.selectGooglePhotosAlbum()|.

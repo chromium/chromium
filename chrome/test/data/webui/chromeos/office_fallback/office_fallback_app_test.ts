@@ -8,7 +8,7 @@ import {DialogChoice, PageHandlerRemote} from 'chrome://office-fallback/office_f
 import {OfficeFallbackBrowserProxy} from 'chrome://office-fallback/office_fallback_browser_proxy.js';
 import type {OfficeFallbackElement} from 'chrome://office-fallback/office_fallback_dialog.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 
 /**
@@ -16,11 +16,11 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
  * mojo responses.
  */
 class OfficeFallbackTestBrowserProxy implements OfficeFallbackBrowserProxy {
-  handler: PageHandlerRemote&TestBrowserProxy;
+  handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
   dialogArgs: string;
 
   constructor() {
-    this.handler = TestBrowserProxy.fromClass(PageHandlerRemote);
+    this.handler = TestMock.fromClass(PageHandlerRemote);
     // Creating JSON string as in OfficeFallbackDialog::GetDialogArgs().
     const args = {
       'titleText': 'a title',

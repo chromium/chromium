@@ -5,10 +5,9 @@
 import {ConsentStatus, CrSettingsPrefs, DspHotwordState, GoogleAssistantBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 suite('GoogleAssistantHandler', function() {
   /** @type {SettingsGoogleAssistantPageElement} */
@@ -24,7 +23,7 @@ suite('GoogleAssistantHandler', function() {
   });
 
   setup(function() {
-    browserProxy = TestBrowserProxy.fromClass(GoogleAssistantBrowserProxyImpl);
+    browserProxy = TestMock.fromClass(GoogleAssistantBrowserProxyImpl);
     GoogleAssistantBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     PolymerTest.clearBody();
@@ -274,7 +273,7 @@ suite('GoogleAssistantHandlerWithNoDspHotword', function() {
   });
 
   setup(function() {
-    browserProxy = TestBrowserProxy.fromClass(GoogleAssistantBrowserProxyImpl);
+    browserProxy = TestMock.fromClass(GoogleAssistantBrowserProxyImpl);
     GoogleAssistantBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     PolymerTest.clearBody();

@@ -17,7 +17,7 @@ import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {assertNotStyle, assertStyle, installMock} from './test_support.js';
@@ -25,7 +25,7 @@ import {assertNotStyle, assertStyle, installMock} from './test_support.js';
 suite('CardsTest', () => {
   let customizeCards: CardsElement;
   let metrics: MetricsTracker;
-  let handler: TestBrowserProxy<CustomizeChromePageHandlerRemote>;
+  let handler: TestMock<CustomizeChromePageHandlerRemote>;
   let callbackRouterRemote: CustomizeChromePageRemote;
 
   setup(async () => {
@@ -189,7 +189,7 @@ suite('CardsTest', () => {
   });
 
   suite('Chrome Cart', () => {
-    let cartHandler: TestBrowserProxy<CartHandlerRemote>;
+    let cartHandler: TestMock<CartHandlerRemote>;
 
     suiteSetup(() => {
       cartHandler = installMock(CartHandlerRemote, ChromeCartProxy.setHandler);

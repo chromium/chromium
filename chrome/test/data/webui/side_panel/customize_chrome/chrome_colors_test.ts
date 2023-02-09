@@ -11,14 +11,14 @@ import {ChromeColor, CustomizeChromePageCallbackRouter, CustomizeChromePageHandl
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {assertDeepEquals, assertEquals, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {createTheme, installMock} from './test_support.js';
 
 suite('ChromeColorsTest', () => {
   let chromeColorsElement: ChromeColorsElement;
-  let handler: TestBrowserProxy<CustomizeChromePageHandlerRemote>;
+  let handler: TestMock<CustomizeChromePageHandlerRemote>;
   let callbackRouter: CustomizeChromePageRemote;
 
   setup(async () => {

@@ -7,12 +7,12 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {historyClustersDescriptor, HistoryClustersModuleElement, HistoryClustersProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {Cluster, PageCallbackRouter, PageHandlerRemote, PageRemote, QueryResult, RawVisitData, URLVisit} from 'chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {installMock} from '../../test_support.js';
 
 suite('NewTabPageModulesHistoryClustersModuleTest', () => {
-  let handler: TestBrowserProxy<PageHandlerRemote>;
+  let handler: TestMock<PageHandlerRemote>;
   let callbackRouter: PageRemote;
 
   setup(() => {

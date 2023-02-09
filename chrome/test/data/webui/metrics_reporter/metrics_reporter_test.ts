@@ -8,14 +8,14 @@ import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.
 import {BrowserProxyImpl} from 'chrome://resources/js/metrics_reporter/browser_proxy.js';
 import {MetricsReporter, MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 suite('MetricsReporterTest', function() {
   const DELTA_TIME: bigint = 1000n;
   let now: bigint;
 
   let callbackRouter: PageMetricsCallbackRouter;
-  const apiProxy = TestBrowserProxy.fromClass(BrowserProxyImpl);
+  const apiProxy = TestMock.fromClass(BrowserProxyImpl);
   let metricsReporter: MetricsReporter;
 
   function forwardTime() {

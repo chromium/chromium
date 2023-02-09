@@ -8,13 +8,13 @@ import {FooHandlerRemote} from 'chrome://new-tab-page/foo.mojom-webui.js';
 import {DummyModuleElement, dummyV2Descriptor, FooProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../test_support.js';
 
 suite('NewTabPageModulesDummyModuleTest', () => {
-  let handler: TestBrowserProxy<FooHandlerRemote>;
+  let handler: TestMock<FooHandlerRemote>;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

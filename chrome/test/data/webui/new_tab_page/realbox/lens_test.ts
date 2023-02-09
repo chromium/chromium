@@ -10,7 +10,7 @@ import {AutocompleteMatch} from 'chrome://resources/cr_components/omnibox/omnibo
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestRealboxBrowserProxy} from './test_realbox_browser_proxy.js';
@@ -44,7 +44,7 @@ suite('Lens search', () => {
 
   let testProxy: TestRealboxBrowserProxy;
 
-  const testMetricsReporterProxy = TestBrowserProxy.fromClass(BrowserProxyImpl);
+  const testMetricsReporterProxy = TestMock.fromClass(BrowserProxyImpl);
 
   function areMatchesShowing(): boolean {
     // Force a synchronous render.

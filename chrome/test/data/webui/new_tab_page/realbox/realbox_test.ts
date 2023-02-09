@@ -12,7 +12,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {assertStyle} from '../test_support.js';
@@ -124,7 +124,7 @@ suite('NewTabPageRealboxTest', () => {
 
   let testProxy: TestRealboxBrowserProxy;
 
-  const testMetricsReporterProxy = TestBrowserProxy.fromClass(BrowserProxyImpl);
+  const testMetricsReporterProxy = TestMock.fromClass(BrowserProxyImpl);
 
   suiteSetup(() => {
     loadTimeData.overrideValues({

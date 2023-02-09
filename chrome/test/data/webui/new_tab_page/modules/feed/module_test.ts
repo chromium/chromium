@@ -8,13 +8,13 @@ import {FeedHandlerRemote} from 'chrome://new-tab-page/feed.mojom-webui.js';
 import {FeedModuleElement, FeedProxy, feedV2Descriptor} from 'chrome://new-tab-page/lazy_load.js';
 import {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../test_support.js';
 
 suite('NewTabPageModulesFeedModuleTest', () => {
-  let handler: TestBrowserProxy<FeedHandlerRemote>;
+  let handler: TestMock<FeedHandlerRemote>;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

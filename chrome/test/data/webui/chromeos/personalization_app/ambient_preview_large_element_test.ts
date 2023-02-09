@@ -9,7 +9,7 @@ import {AmbientObserver, AmbientPreviewLarge, Paths, PersonalizationRouter, Topi
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestAmbientProvider} from './test_ambient_interface_provider.js';
@@ -21,7 +21,7 @@ suite('AmbientPreviewLargeTest', function() {
   let ambientProvider: TestAmbientProvider;
   let personalizationStore: TestPersonalizationStore;
   const routerOriginal = PersonalizationRouter.instance;
-  const routerMock = TestBrowserProxy.fromClass(PersonalizationRouter);
+  const routerMock = TestMock.fromClass(PersonalizationRouter);
 
   setup(() => {
     const mocks = baseSetup();

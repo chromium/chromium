@@ -10,7 +10,7 @@ import {BackgroundCollection, CustomizeChromePageCallbackRouter, CustomizeChrome
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {createBackgroundImage, createTheme, installMock} from './test_support.js';
@@ -29,7 +29,7 @@ function createTestCollections(length: number): BackgroundCollection[] {
 
 suite('CategoriesTest', () => {
   let categoriesElement: CategoriesElement;
-  let handler: TestBrowserProxy<CustomizeChromePageHandlerRemote>;
+  let handler: TestMock<CustomizeChromePageHandlerRemote>;
   let callbackRouterRemote: CustomizeChromePageRemote;
 
   async function setInitialSettings(numCollections: number) {

@@ -9,7 +9,7 @@ import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, Cus
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {ThemeSnapshotElement} from 'chrome://customize-chrome-side-panel.top-chrome/theme_snapshot.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {$$, assertStyle, createBackgroundImage, createTheme, installMock} from './test_support.js';
 
@@ -17,7 +17,7 @@ import {$$, assertStyle, createBackgroundImage, createTheme, installMock} from '
 suite('ThemeSnapshotTest', () => {
   let themeSnapshotElement: ThemeSnapshotElement;
   let callbackRouterRemote: CustomizeChromePageRemote;
-  let handler: TestBrowserProxy<CustomizeChromePageHandlerRemote>;
+  let handler: TestMock<CustomizeChromePageHandlerRemote>;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

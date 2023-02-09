@@ -13,13 +13,13 @@ import {ManagedDialogElement} from 'chrome://resources/cr_components/managed_dia
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {$$, assertStyle, capture, createBackgroundImage, createTheme, installMock} from './test_support.js';
 
 suite('ColorsTest', () => {
   let colorsElement: ColorsElement;
-  let handler: TestBrowserProxy<CustomizeChromePageHandlerRemote>;
+  let handler: TestMock<CustomizeChromePageHandlerRemote>;
   let callbackRouter: CustomizeChromePageRemote;
   let chromeColorsResolver: PromiseResolver<{colors: ChromeColor[]}>;
 

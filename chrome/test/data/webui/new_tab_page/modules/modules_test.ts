@@ -10,15 +10,15 @@ import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-ta
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {assertNotStyle, assertStyle, capture, createElement, initNullModule, installMock, render} from '../test_support.js';
 
 suite('NewTabPageModulesModulesTest', () => {
-  let handler: TestBrowserProxy<PageHandlerRemote>;
+  let handler: TestMock<PageHandlerRemote>;
   let callbackRouterRemote: PageRemote;
   let metrics: MetricsTracker;
-  let moduleRegistry: TestBrowserProxy<ModuleRegistry>;
+  let moduleRegistry: TestMock<ModuleRegistry>;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

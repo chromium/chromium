@@ -10,13 +10,13 @@ import {HistoryClustersElement} from 'chrome://resources/cr_components/history_c
 import {Cluster, PageCallbackRouter, PageHandlerRemote, PageRemote, QueryResult, RawVisitData, URLVisit} from 'chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
-let handler: PageHandlerRemote&TestBrowserProxy;
+let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
 let callbackRouterRemote: PageRemote;
 
 function createBrowserProxy() {
-  handler = TestBrowserProxy.fromClass(PageHandlerRemote);
+  handler = TestMock.fromClass(PageHandlerRemote);
   const callbackRouter = new PageCallbackRouter();
   BrowserProxyImpl.setInstance(new BrowserProxyImpl(handler, callbackRouter));
   callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();

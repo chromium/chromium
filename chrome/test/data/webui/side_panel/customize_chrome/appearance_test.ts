@@ -11,7 +11,7 @@ import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-
 import {ManagedDialogElement} from 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {$$, assertNotStyle, assertStyle, createBackgroundImage, createTheme, createThirdPartyThemeInfo, installMock} from './test_support.js';
@@ -19,7 +19,7 @@ import {$$, assertNotStyle, assertStyle, createBackgroundImage, createTheme, cre
 suite('AppearanceTest', () => {
   let appearanceElement: AppearanceElement;
   let callbackRouterRemote: CustomizeChromePageRemote;
-  let handler: TestBrowserProxy<CustomizeChromePageHandlerRemote>;
+  let handler: TestMock<CustomizeChromePageHandlerRemote>;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

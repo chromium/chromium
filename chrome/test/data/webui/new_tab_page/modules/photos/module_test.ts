@@ -10,13 +10,13 @@ import {PhotosHandlerRemote} from 'chrome://new-tab-page/photos.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../test_support.js';
 
 suite('NewTabPageModulesPhotosModuleTest', () => {
-  let handler: TestBrowserProxy<PhotosHandlerRemote>;
+  let handler: TestMock<PhotosHandlerRemote>;
   let metrics: MetricsTracker;
 
   setup(() => {
