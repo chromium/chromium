@@ -9,9 +9,11 @@ import './strings.m.js';
 import './password_list_item.js';
 import './dialogs/add_password_dialog.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -54,12 +56,19 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         value: '',
       },
 
+      shownGroupsCount_: {
+        type: Number,
+        value: 0,
+        observer: 'announceSearchResults_',
+      },
+
       showAddPasswordDialog_: Boolean,
     };
   }
 
   private groups_: chrome.passwordsPrivate.CredentialGroup[] = [];
   private searchTerm_: string;
+  private shownGroupsCount_: number;
   private showAddPasswordDialog_: boolean;
 
   private setSavedPasswordsListener_: (
@@ -118,7 +127,10 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     if (!this.searchTerm_.trim()) {
       return;
     }
-    // TODO(crbug.com/1400289): Announce search result.
+    const searchResult =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'searchResults', this.shownGroupsCount_);
+    getAnnouncerInstance().announce(searchResult);
   }
 
   private onAddPasswordClick_() {

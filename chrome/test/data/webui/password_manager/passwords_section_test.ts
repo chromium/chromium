@@ -288,4 +288,23 @@ suite('PasswordsSectionTest', function() {
     assertTrue(!!addDialog);
     assertTrue(addDialog.$.dialog.open);
   });
+
+  test('search calls plural string proxy to announce result', async function() {
+    passwordManager.data.groups = [
+      createCredentialGroup({name: 'foo.com'}),
+      createCredentialGroup({name: 'bar.com'}),
+    ];
+
+    await createPasswordsSection();
+
+    pluralString.reset();
+    const query = new URLSearchParams();
+    query.set(UrlParam.SEARCH_TERM, 'Foo');
+    Router.getInstance().updateRouterParams(query);
+    const params = await pluralString.whenCalled('getPluralString');
+    await flushTasks();
+
+    assertEquals('searchResults', params.messageName);
+    assertEquals(1, params.itemCount);
+  });
 });
