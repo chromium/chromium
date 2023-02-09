@@ -9325,6 +9325,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Graphics.Smoothness.PercentDroppedFrames">
+  <obsolete>
+    Deprecated 02/2023.
+  </obsolete>
   <owner>animations-dev@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
   <summary>

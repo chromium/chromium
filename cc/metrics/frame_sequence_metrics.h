@@ -21,7 +21,6 @@ struct BeginFrameArgs;
 }  // namespace viz
 
 namespace cc {
-class ThroughputUkmReporter;
 class JankMetrics;
 struct FrameInfo;
 
@@ -74,8 +73,7 @@ inline bool HasCompositorThreadAnimation(const ActiveTrackers& trackers) {
 
 class CC_EXPORT FrameSequenceMetrics {
  public:
-  FrameSequenceMetrics(FrameSequenceTrackerType type,
-                       ThroughputUkmReporter* ukm_reporter);
+  explicit FrameSequenceMetrics(FrameSequenceTrackerType type);
   ~FrameSequenceMetrics();
 
   FrameSequenceMetrics(const FrameSequenceMetrics&) = delete;
@@ -90,13 +88,6 @@ class CC_EXPORT FrameSequenceMetrics {
     static bool CanReportHistogram(
         FrameSequenceMetrics* metrics,
         FrameInfo::SmoothEffectDrivingThread thread_type,
-        const ThroughputData& data);
-
-    // Returns the dropped throughput in percent
-    static int ReportDroppedFramePercentHistogram(
-        FrameSequenceMetrics* metrics,
-        FrameInfo::SmoothEffectDrivingThread thread_type,
-        int metric_index,
         const ThroughputData& data);
 
     // Returns the missed deadline throughput in percent
@@ -115,17 +106,6 @@ class CC_EXPORT FrameSequenceMetrics {
       frames_expected += data.frames_expected;
       frames_produced += data.frames_produced;
       frames_ontime += data.frames_ontime;
-#if DCHECK_IS_ON()
-      frames_processed += data.frames_processed;
-      frames_received += data.frames_received;
-#endif
-    }
-
-    int DroppedFramePercent() const {
-      if (frames_expected == 0)
-        return 0;
-      return std::ceil(100 * (frames_expected - frames_produced) /
-                       static_cast<double>(frames_expected));
     }
 
     int MissedDeadlineFramePercent() const {
@@ -146,15 +126,6 @@ class CC_EXPORT FrameSequenceMetrics {
     // Tracks the number of frames that were actually presented to the user
     // that didn't miss the vsync deadline during this frame-sequence.
     uint32_t frames_ontime = 0;
-
-#if DCHECK_IS_ON()
-    // Tracks the number of frames that is either submitted or reported as no
-    // damage.
-    uint32_t frames_processed = 0;
-
-    // Tracks the number of begin-frames that are received.
-    uint32_t frames_received = 0;
-#endif
   };
 
   void SetScrollingThread(FrameInfo::SmoothEffectDrivingThread thread);
@@ -189,9 +160,6 @@ class CC_EXPORT FrameSequenceMetrics {
   uint32_t frames_checkerboarded() const { return frames_checkerboarded_; }
 
   FrameSequenceTrackerType type() const { return type_; }
-  ThroughputUkmReporter* ukm_reporter() const {
-    return throughput_ukm_reporter_;
-  }
 
   // Must be called before destructor.
   void ReportLeftoverData();
@@ -232,10 +200,6 @@ class CC_EXPORT FrameSequenceMetrics {
                  uint32_t dropped);
     void Terminate();
   } trace_data_{this};
-
-  // Pointer to the reporter owned by the FrameSequenceTrackerCollection.
-  const raw_ptr<ThroughputUkmReporter, DanglingUntriaged>
-      throughput_ukm_reporter_;
 
   // Track state for measuring the PercentDroppedFrames v3 metrics.
   struct {

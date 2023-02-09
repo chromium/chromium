@@ -5,7 +5,6 @@
 #include "cc/metrics/frame_sequence_tracker.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "cc/metrics/throughput_ukm_reporter.h"
 #include "cc/trees/ukm_manager.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -16,7 +15,7 @@ namespace cc {
 TEST(FrameSequenceMetricsTest, MergeMetrics) {
   // Create a metric with only a small number of frames. It shouldn't report any
   // metrics.
-  FrameSequenceMetrics first(FrameSequenceTrackerType::kTouchScroll, nullptr);
+  FrameSequenceMetrics first(FrameSequenceTrackerType::kTouchScroll);
   first.impl_throughput().frames_expected = 20;
   first.impl_throughput().frames_produced = 10;
   first.impl_throughput().frames_ontime = 5;
@@ -24,7 +23,7 @@ TEST(FrameSequenceMetricsTest, MergeMetrics) {
 
   // Create a second metric with too few frames to report any metrics.
   auto second = std::make_unique<FrameSequenceMetrics>(
-      FrameSequenceTrackerType::kTouchScroll, nullptr);
+      FrameSequenceTrackerType::kTouchScroll);
   second->impl_throughput().frames_expected = 90;
   second->impl_throughput().frames_produced = 60;
   second->impl_throughput().frames_ontime = 50;
@@ -38,14 +37,14 @@ TEST(FrameSequenceMetricsTest, MergeMetrics) {
 
 #if DCHECK_IS_ON()
 TEST(FrameSequenceMetricsTest, ScrollingThreadMergeMetrics) {
-  FrameSequenceMetrics first(FrameSequenceTrackerType::kTouchScroll, nullptr);
+  FrameSequenceMetrics first(FrameSequenceTrackerType::kTouchScroll);
   first.SetScrollingThread(FrameInfo::SmoothEffectDrivingThread::kCompositor);
   first.impl_throughput().frames_expected = 20;
   first.impl_throughput().frames_produced = 10;
   first.impl_throughput().frames_ontime = 10;
 
   auto second = std::make_unique<FrameSequenceMetrics>(
-      FrameSequenceTrackerType::kTouchScroll, nullptr);
+      FrameSequenceTrackerType::kTouchScroll);
   second->SetScrollingThread(FrameInfo::SmoothEffectDrivingThread::kMain);
   second->main_throughput().frames_expected = 50;
   second->main_throughput().frames_produced = 10;
@@ -60,7 +59,7 @@ TEST(FrameSequenceMetricsTest, AllMetricsReported) {
 
   // Create a metric with enough frames on impl to be reported, but not enough
   // on main.
-  FrameSequenceMetrics first(FrameSequenceTrackerType::kTouchScroll, nullptr);
+  FrameSequenceMetrics first(FrameSequenceTrackerType::kTouchScroll);
   first.impl_throughput().frames_expected = 120;
   first.impl_throughput().frames_produced = 80;
   first.impl_throughput().frames_ontime = 60;
@@ -73,11 +72,6 @@ TEST(FrameSequenceMetricsTest, AllMetricsReported) {
   // The compositor-thread metric should be reported, but not the main-thread
   // metric.
   histograms.ExpectTotalCount(
-      "Graphics.Smoothness.PercentDroppedFrames.CompositorThread.TouchScroll",
-      1u);
-  histograms.ExpectTotalCount(
-      "Graphics.Smoothness.PercentDroppedFrames.MainThread.TouchScroll", 0u);
-  histograms.ExpectTotalCount(
       "Graphics.Smoothness.PercentMissedDeadlineFrames.CompositorThread."
       "TouchScroll",
       1u);
@@ -89,7 +83,7 @@ TEST(FrameSequenceMetricsTest, AllMetricsReported) {
   EXPECT_TRUE(first.HasDataLeftForReporting());
 
   auto second = std::make_unique<FrameSequenceMetrics>(
-      FrameSequenceTrackerType::kTouchScroll, nullptr);
+      FrameSequenceTrackerType::kTouchScroll);
   second->impl_throughput().frames_expected = 110;
   second->impl_throughput().frames_produced = 100;
   second->impl_throughput().frames_ontime = 80;
@@ -98,11 +92,6 @@ TEST(FrameSequenceMetricsTest, AllMetricsReported) {
   first.Merge(std::move(second));
   EXPECT_TRUE(first.HasEnoughDataForReporting());
   first.ReportMetrics();
-  histograms.ExpectTotalCount(
-      "Graphics.Smoothness.PercentDroppedFrames.CompositorThread.TouchScroll",
-      2u);
-  histograms.ExpectTotalCount(
-      "Graphics.Smoothness.PercentDroppedFrames.MainThread.TouchScroll", 1u);
   histograms.ExpectTotalCount(
       "Graphics.Smoothness.PercentMissedDeadlineFrames.CompositorThread."
       "TouchScroll",
@@ -119,8 +108,7 @@ TEST(FrameSequenceMetricsTest, IrrelevantMetricsNotReported) {
 
   // Create a metric with enough frames on impl to be reported, but not enough
   // on main.
-  FrameSequenceMetrics first(FrameSequenceTrackerType::kCompositorAnimation,
-                             nullptr);
+  FrameSequenceMetrics first(FrameSequenceTrackerType::kCompositorAnimation);
   first.impl_throughput().frames_expected = 120;
   first.impl_throughput().frames_produced = 80;
   first.impl_throughput().frames_ontime = 70;
@@ -132,17 +120,6 @@ TEST(FrameSequenceMetricsTest, IrrelevantMetricsNotReported) {
 
   // The compositor-thread metric should be reported, but not the main-thread
   // or slower-thread metric.
-  histograms.ExpectTotalCount(
-      "Graphics.Smoothness.PercentDroppedFrames.CompositorThread."
-      "CompositorAnimation",
-      1u);
-  histograms.ExpectTotalCount(
-      "Graphics.Smoothness.PercentDroppedFrames.MainThread.CompositorAnimation",
-      0u);
-  histograms.ExpectTotalCount(
-      "Graphics.Smoothness.PercentDroppedFrames.SlowerThread."
-      "CompositorAnimation",
-      0u);
   histograms.ExpectTotalCount(
       "Graphics.Smoothness.PercentMissedDeadlineFrames.CompositorThread."
       "CompositorAnimation",
@@ -164,7 +141,7 @@ TEST(FrameSequenceMetricsTest, IrrelevantMetricsNotReported) {
   EXPECT_EQ(first.main_throughput().frames_produced, 0u);
   EXPECT_EQ(first.main_throughput().frames_ontime, 0u);
 
-  FrameSequenceMetrics second(FrameSequenceTrackerType::kRAF, nullptr);
+  FrameSequenceMetrics second(FrameSequenceTrackerType::kRAF);
   second.impl_throughput().frames_expected = 120;
   second.impl_throughput().frames_produced = 80;
   second.impl_throughput().frames_ontime = 70;
@@ -177,106 +154,12 @@ TEST(FrameSequenceMetricsTest, IrrelevantMetricsNotReported) {
   // The main-thread metric should be reported, but not the compositor-thread
   // or slower-thread metric.
   histograms.ExpectTotalCount(
-      "Graphics.Smoothness.PercentDroppedFrames.CompositorThread.RAF", 0u);
-  histograms.ExpectTotalCount(
-      "Graphics.Smoothness.PercentDroppedFrames.MainThread.RAF", 1u);
-  histograms.ExpectTotalCount(
-      "Graphics.Smoothness.PercentDroppedFrames.SlowerThread.RAF", 0u);
-  histograms.ExpectTotalCount(
       "Graphics.Smoothness.PercentMissedDeadlineFrames.CompositorThread.RAF",
       0u);
   histograms.ExpectTotalCount(
       "Graphics.Smoothness.PercentMissedDeadlineFrames.MainThread.RAF", 1u);
   histograms.ExpectTotalCount(
       "Graphics.Smoothness.PercentMissedDeadlineFrames.SlowerThread.RAF", 0u);
-}
-
-TEST(FrameSequenceMetricsTest, ScrollingThreadMetricsReportedForInteractions) {
-  auto setup = []() {
-    auto metrics = std::make_unique<FrameSequenceMetrics>(
-        FrameSequenceTrackerType::kTouchScroll, nullptr);
-    metrics->impl_throughput().frames_expected = 100;
-    metrics->impl_throughput().frames_produced = 80;
-    metrics->impl_throughput().frames_ontime = 70;
-    metrics->main_throughput().frames_expected = 100;
-    metrics->main_throughput().frames_produced = 60;
-    metrics->main_throughput().frames_ontime = 50;
-    return metrics;
-  };
-
-  const char metric[] =
-      "Graphics.Smoothness.PercentDroppedFrames.AllInteractions";
-  {
-    // The main-thread metric should be reported in AllInteractions when
-    // main-thread is the scrolling-thread.
-    base::HistogramTester histograms;
-    auto metrics = setup();
-    EXPECT_TRUE(metrics->HasEnoughDataForReporting());
-    metrics->SetScrollingThread(FrameInfo::SmoothEffectDrivingThread::kMain);
-    metrics->ReportMetrics();
-    histograms.ExpectTotalCount(metric, 1u);
-    EXPECT_THAT(histograms.GetAllSamples(metric),
-                testing::ElementsAre(base::Bucket(40, 1)));
-  }
-  {
-    // The compositor-thread metric should be reported in AllInteractions when
-    // compositor-thread is the scrolling-thread.
-    base::HistogramTester histograms;
-    auto metrics = setup();
-    EXPECT_TRUE(metrics->HasEnoughDataForReporting());
-    metrics->SetScrollingThread(
-        FrameInfo::SmoothEffectDrivingThread::kCompositor);
-    metrics->ReportMetrics();
-    histograms.ExpectTotalCount(metric, 1u);
-    EXPECT_THAT(histograms.GetAllSamples(metric),
-                testing::ElementsAre(base::Bucket(20, 1)));
-  }
-}
-
-TEST(FrameSequenceMetricsTest, CompositorSharedElementTransitionReported) {
-  base::HistogramTester histograms;
-
-  auto metrics = std::make_unique<FrameSequenceMetrics>(
-      FrameSequenceTrackerType::kSETCompositorAnimation, nullptr);
-  metrics->impl_throughput().frames_expected = 100;
-  metrics->impl_throughput().frames_produced = 80;
-  metrics->impl_throughput().frames_ontime = 70;
-  metrics->main_throughput().frames_expected = 100;
-  metrics->main_throughput().frames_produced = 60;
-  metrics->main_throughput().frames_ontime = 50;
-  EXPECT_TRUE(metrics->HasEnoughDataForReporting());
-  metrics->ReportMetrics();
-  histograms.ExpectTotalCount(
-      "Graphics.Smoothness.PercentDroppedFrames.CompositorThread."
-      "SETCompositorAnimation",
-      1u);
-  histograms.ExpectTotalCount(
-      "Graphics.Smoothness.PercentDroppedFrames.MainThread."
-      "SETCompositorAnimation",
-      0u);
-}
-
-TEST(FrameSequenceMetricsTest, MainThreadSharedElementTransitionReported) {
-  base::HistogramTester histograms;
-
-  auto metrics = std::make_unique<FrameSequenceMetrics>(
-      FrameSequenceTrackerType::kSETMainThreadAnimation, nullptr);
-  metrics->impl_throughput().frames_expected = 100;
-  metrics->impl_throughput().frames_produced = 80;
-  metrics->impl_throughput().frames_ontime = 70;
-  metrics->main_throughput().frames_expected = 100;
-  metrics->main_throughput().frames_produced = 60;
-  metrics->main_throughput().frames_ontime = 50;
-  EXPECT_TRUE(metrics->HasEnoughDataForReporting());
-  metrics->ReportMetrics();
-  histograms.ExpectTotalCount(
-      "Graphics.Smoothness.PercentDroppedFrames.CompositorThread."
-      "SETMainThreadAnimation",
-      0u);
-  histograms.ExpectTotalCount(
-      "Graphics.Smoothness.PercentDroppedFrames.MainThread."
-      "SETMainThreadAnimation",
-      1u);
 }
 
 }  // namespace cc

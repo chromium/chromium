@@ -83,13 +83,9 @@ const char* FrameSequenceTracker::GetFrameSequenceTrackerTypeName(
   }
 }
 
-FrameSequenceTracker::FrameSequenceTracker(
-    FrameSequenceTrackerType type,
-    ThroughputUkmReporter* throughput_ukm_reporter)
+FrameSequenceTracker::FrameSequenceTracker(FrameSequenceTrackerType type)
     : custom_sequence_id_(-1),
-      metrics_(
-          std::make_unique<FrameSequenceMetrics>(type,
-                                                 throughput_ukm_reporter)) {
+      metrics_(std::make_unique<FrameSequenceMetrics>(type)) {
   DCHECK_LT(type, FrameSequenceTrackerType::kMaxType);
   DCHECK(type != FrameSequenceTrackerType::kCustom);
   // TODO(crbug.com/1158439): remove the trace event once the validation is
@@ -104,8 +100,7 @@ FrameSequenceTracker::FrameSequenceTracker(
     FrameSequenceMetrics::CustomReporter custom_reporter)
     : custom_sequence_id_(custom_sequence_id),
       metrics_(std::make_unique<FrameSequenceMetrics>(
-          FrameSequenceTrackerType::kCustom,
-          /*ukm_reporter=*/nullptr)) {
+          FrameSequenceTrackerType::kCustom)) {
   DCHECK_GT(custom_sequence_id_, 0);
   metrics_->SetCustomReporter(std::move(custom_reporter));
 }
@@ -161,9 +156,6 @@ void FrameSequenceTracker::ReportBeginImplFrame(
                          args.frames_throttled_since_last);
   impl_throughput().frames_expected +=
       begin_impl_frame_data_.previous_sequence_delta;
-#if DCHECK_IS_ON()
-  ++impl_throughput().frames_received;
-#endif
 
   if (first_frame_timestamp_.is_null())
     first_frame_timestamp_ = args.frame_time;
@@ -279,14 +271,6 @@ void FrameSequenceTracker::ReportSubmitFrame(
     return;
   }
 
-#if DCHECK_IS_ON()
-  DCHECK(is_inside_frame_) << TRACKER_DCHECK_MSG;
-  DCHECK_LT(impl_throughput().frames_processed,
-            impl_throughput().frames_received)
-      << TRACKER_DCHECK_MSG;
-  ++impl_throughput().frames_processed;
-#endif
-
   last_processed_impl_sequence_ = ack.frame_id.sequence_number;
   if (first_submitted_frame_ == 0)
     first_submitted_frame_ = frame_token;
@@ -396,16 +380,6 @@ void FrameSequenceTracker::ReportFrameEnd(
     metrics()->NotifyNoUpdateForJankReporter(
         FrameInfo::SmoothEffectDrivingThread::kCompositor,
         args.frame_id.sequence_number, args.interval);
-#if DCHECK_IS_ON()
-    ++impl_throughput().frames_processed;
-    // If these two are the same, it means that each impl frame is either
-    // no-damage or submitted. That's expected, so we don't need those in the
-    // output of DCHECK.
-    if (impl_throughput().frames_processed == impl_throughput().frames_received)
-      ignored_trace_char_count_ = frame_sequence_trace_.str().size();
-    else
-      NOTREACHED() << TRACKER_DCHECK_MSG;
-#endif
     begin_impl_frame_data_.previous_sequence = 0;
   }
   // last_submitted_frame_ == 0 means the last impl frame has been presented.
@@ -710,11 +684,6 @@ bool FrameSequenceTracker::ShouldReportMetricsNow(
 }
 
 std::unique_ptr<FrameSequenceMetrics> FrameSequenceTracker::TakeMetrics() {
-#if DCHECK_IS_ON()
-  DCHECK_EQ(impl_throughput().frames_received,
-            impl_throughput().frames_processed)
-      << frame_sequence_trace_.str().substr(ignored_trace_char_count_);
-#endif
   return std::move(metrics_);
 }
 

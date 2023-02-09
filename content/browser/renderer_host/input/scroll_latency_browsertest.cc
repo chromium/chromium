@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(ScrollThroughputBrowserTest,
   scroll_update_watcher->GetAckStateWaitIfNecessary();
 
   const char histogram_name[] =
-      "Graphics.Smoothness.PercentDroppedFrames.ScrollingThread.TouchScroll";
+      "Graphics.Smoothness.PercentDroppedFrames3.CompositorThread.TouchScroll";
   while (!GetSampleCountForHistogram(histogram_name)) {
     GiveItSomeTime();
     FetchHistogramsFromChildProcesses();

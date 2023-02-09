@@ -1206,7 +1206,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollByRAF) {
   // metrics.
   FetchHistogramsFromChildProcesses();
   auto initial_samples = histogram_tester.GetAllSamples(
-      "Graphics.Smoothness.PercentDroppedFrames.MainThread.RAF");
+      "Graphics.Smoothness.PercentDroppedFrames3.MainThread.RAF");
   ASSERT_EQ(initial_samples.size(), 0u);
 
   const int pre_scroll_frame_count = frame_observer.render_frame_count();
@@ -1245,7 +1245,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollByRAF) {
   // passed. If the test times out then the bug is back.
   while (histogram_tester
              .GetAllSamples(
-                 "Graphics.Smoothness.PercentDroppedFrames.MainThread.RAF")
+                 "Graphics.Smoothness.PercentDroppedFrames3.MainThread.RAF")
              .empty()) {
     frame_observer.WaitForAnyFrameSubmission();
     FetchHistogramsFromChildProcesses();
