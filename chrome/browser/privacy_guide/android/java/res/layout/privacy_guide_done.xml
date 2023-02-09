@@ -45,25 +45,64 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             app:titleText="@string/privacy_guide_privacy_sandbox_heading" />
 
-        <TextView
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="8dp"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/privacy_guide_privacy_sandbox_description"
-            style="@style/TextAppearance.TextMedium.Secondary" />
+            android:layout_marginHorizontal="@dimen/done_step_explanation_marginHorizontal"
+            android:layout_marginBottom="@dimen/done_step_explanation_marginBottom"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/privacy_guide_privacy_sandbox_description"
+                style="@style/TextAppearance.TextMedium.Secondary" />
+
+            <org.chromium.ui.widget.ChromeImageButton
+                android:id="@+id/sb_button"
+                android:layout_width="@dimen/done_step_link_button_size"
+                android:layout_height="@dimen/done_step_link_button_size"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="@dimen/done_step_link_button_marginHorizontal"
+                android:src="@drawable/open_in_new_tab"
+                android:background="?android:attr/selectableItemBackground"
+                android:contentDescription="@string/accessibility_expand_button"
+                app:tint="@color/default_icon_color_tint_list" />
+        </LinearLayout>
 
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationHeading
+            android:id="@+id/waa_heading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:titleText="@string/privacy_guide_web_app_activity_heading" />
 
-        <TextView
-            android:layout_marginHorizontal="16dp"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/waa_explanation"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/privacy_guide_web_app_activity_description"
-            style="@style/TextAppearance.TextMedium.Secondary" />
+            android:layout_marginHorizontal="@dimen/done_step_explanation_marginHorizontal"
+            android:layout_marginBottom="@dimen/done_step_explanation_marginBottom"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/privacy_guide_web_app_activity_description"
+                style="@style/TextAppearance.TextMedium.Secondary" />
+
+            <org.chromium.ui.widget.ChromeImageButton
+                android:id="@+id/waa_button"
+                android:layout_width="@dimen/done_step_link_button_size"
+                android:layout_height="@dimen/done_step_link_button_size"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="@dimen/done_step_link_button_marginHorizontal"
+                android:src="@drawable/open_in_new_tab"
+                android:background="?android:attr/selectableItemBackground"
+                android:contentDescription="@string/accessibility_expand_button"
+                app:tint="@color/default_icon_color_tint_list" />
+        </LinearLayout>
 
     </LinearLayout>
 

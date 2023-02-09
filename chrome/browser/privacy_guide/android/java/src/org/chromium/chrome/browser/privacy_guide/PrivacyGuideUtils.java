@@ -7,10 +7,13 @@ package org.chromium.chrome.browser.privacy_guide;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -21,18 +24,27 @@ import java.util.Set;
  * PrivacyGuideFragment.FragmentType}s.
  */
 class PrivacyGuideUtils {
-    public static boolean isMsbbEnabled() {
+    static boolean isMsbbEnabled() {
         return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
                 Profile.getLastUsedRegularProfile());
     }
-    public static boolean isHistorySyncEnabled() {
+
+    static boolean isHistorySyncEnabled() {
         Set<Integer> syncTypes = SyncService.get().getSelectedTypes();
         return syncTypes.contains(UserSelectableType.HISTORY);
     }
-    public static @SafeBrowsingState int getSafeBrowsingState() {
+
+    static boolean isUserSignedIn() {
+        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
+                Profile.getLastUsedRegularProfile());
+        return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
+    }
+
+    static @SafeBrowsingState int getSafeBrowsingState() {
         return SafeBrowsingBridge.getSafeBrowsingState();
     }
-    public static @CookieControlsMode int getCookieControlsMode() {
+
+    static @CookieControlsMode int getCookieControlsMode() {
         return UserPrefs.get(Profile.getLastUsedRegularProfile())
                 .getInteger(PrefNames.COOKIE_CONTROLS_MODE);
     }
