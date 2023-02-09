@@ -299,8 +299,9 @@ bool Text::TextLayoutObjectIsNeeded(const AttachContext& context,
     return false;
 
   // pre-wrap in SVG never makes layoutObject.
-  if (style.WhiteSpace() == EWhiteSpace::kPreWrap && parent.IsSVG())
+  if (!style.CollapseWhiteSpace() && style.ShouldWrapLine() && parent.IsSVG()) {
     return false;
+  }
 
   // pre/pre-wrap/pre-line always make layoutObjects.
   if (style.PreserveNewline())
