@@ -642,6 +642,29 @@ const FeatureEntry::FeatureVariation
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kEsbIphBubbleAndCollapseSettingsEnableIph[] = {
+    {"EnableEsbIphBubble", "true"}};
+
+const FeatureEntry::FeatureParam
+    kEsbIphBubbleAndCollapseSettingsEnableCollapse[] = {
+        {"EnableEsbSettingCollapse", "true"}};
+
+const FeatureEntry::FeatureParam kEsbIphBubbleAndCollapseSettingsBothEnabled[] =
+    {{"EnableEsbIphBubble", "true"}, {"EnableEsbSettingCollapse", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kEsbIphBubbleAndCollapseSettingsVariations[] = {
+        {"IPH and Settings Collapse",
+         kEsbIphBubbleAndCollapseSettingsBothEnabled,
+         std::size(kEsbIphBubbleAndCollapseSettingsBothEnabled), nullptr},
+        {"IPH Only", kEsbIphBubbleAndCollapseSettingsEnableIph,
+         std::size(kEsbIphBubbleAndCollapseSettingsEnableIph), nullptr},
+        {"Settings Collapse Only",
+         kEsbIphBubbleAndCollapseSettingsEnableCollapse,
+         std::size(kEsbIphBubbleAndCollapseSettingsEnableCollapse), nullptr}};
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::FeatureParam kForceDark_SimpleHsl[] = {
     {"inversion_method", "hsl_based"},
@@ -7550,7 +7573,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::
          kEnableEnhancedSafeBrowsingSettingsImprovementsDescription,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(safe_browsing::kEsbIphBubbleAndCollapseSettings)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         safe_browsing::kEsbIphBubbleAndCollapseSettings,
+         kEsbIphBubbleAndCollapseSettingsVariations,
+         "EsbIphBubbleAndCollapseSettingsVariations")},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
