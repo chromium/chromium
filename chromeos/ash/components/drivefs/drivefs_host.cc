@@ -174,11 +174,7 @@ class DriveFsHost::MountState : public DriveFsSession,
 
   void OnSyncingStatusUpdate(mojom::SyncingStatusPtr status) override {
     if (base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus)) {
-      // Reset the timer if it has finished. This will cause individual syncing
-      // status events to be dispatched as soon as the timer finishes again.
-      if (!sync_throttle_timer_->IsRunning()) {
-        sync_throttle_timer_->Reset();
-      }
+      ResetThrottleTimer();
 
       // Keep track of the syncing paths.
       bool has_invalid_progress = false;
@@ -224,6 +220,15 @@ class DriveFsHost::MountState : public DriveFsSession,
     }
   }
 
+  // Reset the timer if it has finished. This will cause individual syncing
+  // status events to be dispatched as soon as the timer finishes again.
+  void ResetThrottleTimer() {
+    if (base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus) &&
+        !sync_throttle_timer_->IsRunning()) {
+      sync_throttle_timer_->Reset();
+    }
+  }
+
   void OnMirrorSyncingStatusUpdate(mojom::SyncingStatusPtr status) override {
     for (auto& observer : host_->observers_) {
       observer.OnMirrorSyncingStatusUpdate(*status);
@@ -242,14 +247,15 @@ class DriveFsHost::MountState : public DriveFsSession,
   }
 
   void OnError(mojom::DriveErrorPtr error) override {
-    base::FilePath path = host_->GetMountPath();
-
     // Verify if we have a valid stable_id. It could be invalid because the
     // DriveFs version that reports stable_id for DriveErrors hasn't been
     // uprreved into ChromeOS yet, but it could be due to some actual error.
-    if (error->stable_id > 0) {
+    if (base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus) &&
+        error->stable_id > 0) {
+      base::FilePath path = host_->GetMountPath();
       if (base::FilePath("/").AppendRelativePath(base::FilePath(error->path),
                                                  &path)) {
+        ResetThrottleTimer();
         sync_status_tracker_->SetError(error->stable_id, std::move(path));
       } else {
         LOG(ERROR) << "Failed to make path relative to drive root";
