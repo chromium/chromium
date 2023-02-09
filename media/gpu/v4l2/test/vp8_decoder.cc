@@ -157,8 +157,10 @@ struct v4l2_vp8_segment FillV4L2VP8SegmentationHeader(
     v4l2_segment.flags |= V4L2_VP8_SEGMENT_FLAG_UPDATE_MAP;
   if (vp8_segmentation_hdr.update_segment_feature_data)
     v4l2_segment.flags |= V4L2_VP8_SEGMENT_FLAG_UPDATE_FEATURE_DATA;
-  if (vp8_segmentation_hdr.segment_feature_mode)
+  if (vp8_segmentation_hdr.segment_feature_mode ==
+      media::Vp8SegmentationHeader::FEATURE_MODE_DELTA) {
     v4l2_segment.flags |= V4L2_VP8_SEGMENT_FLAG_DELTA_VALUE_MODE;
+  }
 
   static_assert(
       std::size(decltype(v4l2_segment.quant_update){}) == media::kMaxMBSegments,
@@ -375,6 +377,8 @@ struct v4l2_ctrl_vp8_frame Vp8Decoder::SetupFrameHeaders(
     v4l2_frame_headers.flags |= V4L2_VP8_FRAME_FLAG_SIGN_BIAS_GOLDEN;
   if (frame_hdr.sign_bias_alternate)
     v4l2_frame_headers.flags |= V4L2_VP8_FRAME_FLAG_SIGN_BIAS_ALT;
+  if (frame_hdr.is_experimental)
+    v4l2_frame_headers.flags |= V4L2_VP8_FRAME_FLAG_EXPERIMENTAL;
 
   static_assert(std::size(decltype(v4l2_frame_headers.dct_part_sizes){}) ==
                     media::kMaxDCTPartitions,
