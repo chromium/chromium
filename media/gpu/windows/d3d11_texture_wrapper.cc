@@ -202,8 +202,8 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
     return;
   }
 
-  helper_->AddWillDestroyStubCB(
-      base::BindOnce(&GpuResources::Destroy, weak_factory_.GetWeakPtr()));
+  helper_->AddWillDestroyStubCB(base::BindOnce(&GpuResources::OnWillDestroyStub,
+                                               weak_factory_.GetWeakPtr()));
 
   // Usage flags to allow the display compositor to draw from it, video to
   // decode, and allow webgl/canvas access.
@@ -262,7 +262,7 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
         std::move(backing), memory_type_tracker));
   }
 
-  std::unique_ptr<SharedImageRep> shared_image_rep =
+  std::unique_ptr<gpu::VideoDecodeImageRepresentation> shared_image_rep =
       shared_image_manager->ProduceVideoDecode(video_device.Get(), mailboxes[0],
                                                memory_type_tracker);
   if (!shared_image_rep) {
@@ -278,17 +278,27 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
 
 DefaultTexture2DWrapper::GpuResources::~GpuResources() {
   // Destroy shared images with a current context, otherwise mark context lost.
-  const bool have_context = helper_ && helper_->MakeContextCurrent();
-  Destroy(have_context);
-}
-
-void DefaultTexture2DWrapper::GpuResources::Destroy(bool have_context) {
-  if (!have_context) {
+  // Check that |helper_| hasn't been reset due to stub destruction in which
+  // case context loss would already have been propagated in OnWillDestroyStub.
+  if (helper_ && !helper_->MakeContextCurrent()) {
     for (auto& shared_image_rep : shared_images_) {
       shared_image_rep->OnContextLost();
     }
   }
   shared_images_.clear();
+}
+
+void DefaultTexture2DWrapper::GpuResources::OnWillDestroyStub(
+    bool have_context) {
+  // Only mark context lost - do not clear shared image representations yet to
+  // ensure that GpuResources holds the last ref to the shared image.
+  if (!have_context) {
+    for (auto& shared_image_rep : shared_images_) {
+      shared_image_rep->OnContextLost();
+    }
+  }
+  // Reset |helper_| so that we can detect that stub has been destroyed later.
+  helper_.reset();
 }
 
 }  // namespace media
