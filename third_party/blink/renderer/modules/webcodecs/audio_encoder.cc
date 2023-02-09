@@ -281,19 +281,6 @@ bool VerifyCodecSupportStatic(AudioEncoderTraits::ParsedConfig* config,
                                    {44100, 48000})) {
           return false;
         }
-#if BUILDFLAG(IS_MAC)
-        if (config->options.aac.has_value() &&
-            config->options.aac->format ==
-                media::AudioEncoder::AacOutputFormat::ADTS) {
-          if (exception_state) {
-            exception_state->ThrowDOMException(
-                DOMExceptionCode::kNotSupportedError,
-                "ADTS is not supported on Mac yet");
-          }
-          return false;
-        }
-#endif  // BUILDFLAG(IS_MAC)
-
         return true;
       }
       [[fallthrough]];
