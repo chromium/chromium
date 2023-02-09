@@ -47,9 +47,6 @@ export const InteractionMedium = {
  *    practiceTitle: (string|undefined),
  *    practiceInstructions: (string|undefined),
  *    practiceFile: (string|undefined),
- *    practiceState: (Object|undefined),
- *    hints: (Array|undefined),
- *    events: (Array|undefined)
  * }}
  */
 export let LessonData;

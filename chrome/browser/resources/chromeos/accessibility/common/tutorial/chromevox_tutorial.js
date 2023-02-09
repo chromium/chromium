@@ -21,21 +21,6 @@ import {NavigationButtons} from './navigation_buttons.js';
 import {TutorialBehavior} from './tutorial_behavior.js';
 import {TutorialLesson} from './tutorial_lesson.js';
 
-/**
- * The types of nudges given by the tutorial.
- * General nudges: announce the current item three times, then give two general
- * hints about how to navigate with ChromeVox, then a final nudge about how to
- * exit the tutorial.
- * Practice area nudges: specified by the |hints| array in lessonData. These
- * are nudges for the practice area and are only given when the practice area
- * is active.
- * @enum {string}
- */
-const NudgeType = {
-  GENERAL: 'general',
-  PRACTICE_AREA: 'practice_area',
-};
-
 Polymer({
   is: 'chromevox-tutorial',
 
@@ -223,9 +208,6 @@ Polymer({
           practiceInstructions:
               'tutorial_quick_orientation_lists_practice_instructions',
           practiceFile: 'selects',
-          practiceState: {},
-          events: [],
-          hints: [],
         },
 
         {
@@ -271,9 +253,6 @@ Polymer({
           practiceTitle: 'tutorial_jump_practice_title',
           practiceInstructions: 'tutorial_jump_practice_instructions',
           practiceFile: 'jump_commands',
-          practiceState: {},
-          events: [],
-          hints: [],
         },
 
         {
@@ -412,11 +391,10 @@ Polymer({
     document.addEventListener('keydown', this.onKeyDown.bind(this));
     this.addEventListener('startpractice', evt => {
       this.isPracticeAreaActive = true;
-      this.startNudges(NudgeType.PRACTICE_AREA);
     });
     this.addEventListener('endpractice', evt => {
       this.isPracticeAreaActive = false;
-      this.startNudges(NudgeType.GENERAL);
+      this.startNudges();
     });
   },
 
@@ -431,7 +409,7 @@ Polymer({
   /** @private */
   onTutorialVisibilityChanged_() {
     if (this.isVisible) {
-      this.startNudges(NudgeType.GENERAL);
+      this.startNudges();
     } else {
       this.stopNudges();
       this.dispatchEvent(new CustomEvent('closetutorial', {}));
@@ -516,13 +494,10 @@ Polymer({
 
   // Nudges.
 
-  /**
-   * @param {NudgeType} type
-   * @private
-   */
-  startNudges(type) {
+  /** @private */
+  startNudges() {
     this.stopNudges();
-    this.initializeNudges(type);
+    this.initializeNudges();
     this.setNudgeInterval();
   },
 
@@ -533,12 +508,11 @@ Polymer({
   },
 
   /**
-   * @param {NudgeType} type
    * @private
    * @suppress {undefinedVars|missingProperties} For referencing QueueMode,
    * which is defined on the Panel window.
    */
-  initializeNudges(type) {
+  initializeNudges() {
     const maybeGiveNudge = msg => {
       if (this.interactiveMode_) {
         // Do not announce message since ChromeVox blocks actions in interactive
@@ -550,38 +524,26 @@ Polymer({
     };
 
     this.nudgeArray_ = [];
-    if (type === NudgeType.PRACTICE_AREA) {
-      // Convert hint strings into functions that will request speech for those
-      // strings.
-      const hints = this.lessonData[this.activeLessonId].hints || [];
-      for (const hint of hints) {
-        this.nudgeArray_.push(
-            this.requestSpeech.bind(this, hint, QueueMode.INTERJECT));
-      }
-    } else if (type === NudgeType.GENERAL) {
-      const messages = this.medium === InteractionMedium.KEYBOARD ?
-          [
-            'tutorial_hint_navigate',
-            'tutorial_hint_click',
-            'tutorial_hint_exit',
-          ] :
-          [
-            'tutorial_touch_hint_navigate',
-            'tutorial_touch_hint_click',
-            'tutorial_touch_hint_exit',
-          ];
-      this.nudgeArray_ = [
-        this.requestFullyDescribe.bind(this),
-        this.requestFullyDescribe.bind(this),
-        this.requestFullyDescribe.bind(this),
-        maybeGiveNudge.bind(this, this.getMsg(messages[0])),
-        maybeGiveNudge.bind(this, this.getMsg(messages[1])),
-        this.requestSpeech.bind(
-            this, this.getMsg(messages[2]), QueueMode.INTERJECT),
-      ];
-    } else {
-      throw new Error('Invalid NudgeType: ' + type);
-    }
+    const messages = this.medium === InteractionMedium.KEYBOARD ?
+        [
+          'tutorial_hint_navigate',
+          'tutorial_hint_click',
+          'tutorial_hint_exit',
+        ] :
+        [
+          'tutorial_touch_hint_navigate',
+          'tutorial_touch_hint_click',
+          'tutorial_touch_hint_exit',
+        ];
+    this.nudgeArray_ = [
+      this.requestFullyDescribe.bind(this),
+      this.requestFullyDescribe.bind(this),
+      this.requestFullyDescribe.bind(this),
+      maybeGiveNudge.bind(this, this.getMsg(messages[0])),
+      maybeGiveNudge.bind(this, this.getMsg(messages[1])),
+      this.requestSpeech.bind(
+          this, this.getMsg(messages[2]), QueueMode.INTERJECT),
+    ];
   },
 
   /** @private */
