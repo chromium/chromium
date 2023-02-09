@@ -532,7 +532,8 @@ void Desk::Activate(bool update_window_activation) {
       auto& adw_data = all_desk_window_stacking_[root];
 
       if (!adw_data.empty() && adw_data.front().window == window &&
-          adw_data.front().order == 0) {
+          adw_data.front().order == 0 &&
+          !WindowState::Get(window)->IsMinimized()) {
         wm::ActivateWindow(window);
         return;
       }
