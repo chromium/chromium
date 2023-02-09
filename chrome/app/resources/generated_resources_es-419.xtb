@@ -143,7 +143,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1126809382673880764">No te protege contra descargas, extensiones ni sitios web peligrosos. Seguirás teniendo la protección (donde esté disponible) de la Navegación segura en otros servicios de Google, como Gmail y la Búsqueda.</translation>
 <translation id="1128090040635299943">Se está configurando Linux. Este proceso tomará unos minutos.</translation>
 <translation id="1128591060186966949">Editar el motor de búsqueda</translation>
-<translation id="1129420403709586868">Ve las fotos y el contenido multimedia del teléfono</translation>
+<translation id="1129420403709586868">Ver las fotos y el contenido multimedia del teléfono</translation>
 <translation id="1129850422003387628">Administrar apps</translation>
 <translation id="113050636487300043">Elige un nombre y un tema de color para diferenciar los perfiles.</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" />: Parte del grupo <ph name="GROUP_NAME" /></translation>
@@ -2406,7 +2406,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3151539355209957474">Hora de inicio</translation>
 <translation id="3151562827395986343">Borra el historial, las cookies, la caché y más</translation>
 <translation id="3151786313568798007">Orientación</translation>
-<translation id="3152356229013609796">Mira las notificaciones del teléfono, descártalas o respóndelas</translation>
+<translation id="3152356229013609796">Mirar las notificaciones del teléfono, descartarlas o responderlas</translation>
 <translation id="3157387275655328056">Agregar a la Lista de lectura</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158033540161634471">Configura tu huella</translation>
@@ -3903,7 +3903,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4563210852471260509">El idioma inicial de entrada es chino</translation>
 <translation id="4563382028841851106">Quitar de la cuenta</translation>
 <translation id="4563880231729913339">Dedo 3</translation>
-<translation id="4564245002465020751">Termina la configuración en el teléfono.</translation>
+<translation id="4564245002465020751">Termina la configuración en el teléfono</translation>
 <translation id="4565377596337484307">Ocultar contraseña</translation>
 <translation id="4565917129334815774">Almacenar los registros del sistema</translation>
 <translation id="4566170377336116390">Si quieres cambiar después de la inscripción, tendrás que restablecer la configuración de fábrica del dispositivo (powerwash).</translation>
@@ -5926,7 +5926,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6466258437571594570">Los sitios no podrán interrumpirte para preguntarte si quieres recibir notificaciones</translation>
 <translation id="6466988389784393586">&amp;Abrir todos los favoritos</translation>
 <translation id="6467304607960172345">Optimizar los videos en pantalla completa</translation>
-<translation id="6467377768028664108">Entonces, tu <ph name="DEVICE_TYPE" /> podrá hacer lo siguiente:</translation>
+<translation id="6467377768028664108">Tu <ph name="DEVICE_TYPE" /> te permitirá lo siguiente:</translation>
 <translation id="6468485451923838994">Fuentes</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> archivos</translation>
 <translation id="6469557521904094793">Activar la red móvil</translation>
@@ -7627,7 +7627,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8037357227543935929">Preguntar (predeterminado)</translation>
 <translation id="803771048473350947">Archivo</translation>
 <translation id="8041089156583427627">Enviar comentario</translation>
-<translation id="8041267120753677077">Transmite las apps de tu teléfono</translation>
+<translation id="8041267120753677077">Transmitir las apps de tu teléfono</translation>
 <translation id="8042142357103597104">Opacidad del texto</translation>
 <translation id="8042331986490021244">Las contraseñas se encriptan en tu dispositivo antes de guardarse en el Administrador de contraseñas de Google</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> no responde.</translation>
