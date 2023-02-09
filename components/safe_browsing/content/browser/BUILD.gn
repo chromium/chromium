@@ -165,7 +165,10 @@ source_set("unit_tests") {
   ]
 
   if (safe_browsing_mode > 0) {
-    sources += [ "ui_manager_unittest.cc" ]
+    sources += [
+      "browser_url_loader_throttle_unittest.cc",
+      "ui_manager_unittest.cc",
+    ]
     deps += [
       "//components/prefs",
       "//components/prefs:test_support",
