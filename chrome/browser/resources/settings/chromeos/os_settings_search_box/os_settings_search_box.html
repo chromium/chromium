@@ -91,7 +91,7 @@
     border-radius: 0 0 20px 20px;
     box-shadow: var(--cr-elevation-3);
     display: table;
-    padding-bottom: 16px;
+    padding-bottom: 8px;
     width: var(--cr-toolbar-field-width);
   }
 
@@ -99,20 +99,38 @@
     max-height: 50vh;
   }
 
-  .search-feedback-icon {
-    margin-inline-end: 6px;
+  .pill-button-with-icon {
+    --border-color: transparent;
+    --hover-bg-color: var(--cros-highlight-color);
+    --text-color: var(--cros-text-color-secondary);
+    border-radius: 24px;
+    margin-inline-end: 8px;
+    padding: 4px 8px;
+  }
+
+  .pill-button-with-icon:hover {
+    --text-color: var(--cros-text-color-prominent);
+  }
+
+  .pill-button-with-icon iron-icon {
+    fill: var(--cros-text-color-secondary);
+    margin-inline-end: 4px;
+  }
+
+  .pill-button-with-icon:hover iron-icon {
+    fill: var(--cros-text-color-prominent);
   }
 
   #noSearchResultsContainer {
-    height: 24px;
-    margin-inline-start: 64px;
-    margin-top: var(--separator-height);
+    height: 32px;
+    line-height: 32px;
+    margin-inline-start: 24px;
   }
 
   #reportSearchResult {
     display: flex;
     justify-content: flex-end;
-    margin: 0 16px;
+    margin-inline-start: 8px;
   }
 
   /* The separator covers the top box shadow of the dropdown so that
@@ -169,10 +187,13 @@
       <div id="reportSearchResult">
         <cr-button
             id="reportSearchResultButton"
+            class="pill-button-with-icon"
             hidden="[[searchResultsExist_]]"
             on-click="onSendFeedbackClick_">
-            <iron-icon class="search-feedback-icon"
-                icon="os-settings:feedback">
+            <iron-icon
+                class="search-feedback-icon"
+                icon="os-settings:feedback"
+                slot="prefix-icon">
             </iron-icon>
             <span>$i18n{searchFeedbackButton}</span>
         </cr-button>
