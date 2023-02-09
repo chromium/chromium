@@ -6129,6 +6129,21 @@
             ]
         }
     ],
+    "IOSScopedCriticalActionReuseEnabled": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ScopedCriticalActionReuseEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSShareChrome": [
         {
             "platforms": [
