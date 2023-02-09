@@ -314,10 +314,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
                     LayoutType.TAB_SWITCHER));
 
             mTabSwitcherAndStartSurfaceLayout.setPerfListenerForTesting(null);
-            // Make sure the fading animation is done.
-            Thread.sleep(1000);
-            TestThreadUtils.runOnUiThreadBlocking(() -> { startSurface.onBackPressed(); });
-            Thread.sleep(1000);
+            TabUiTestHelper.pressBackOnGts(startSurface);
             LayoutTestUtils.waitForLayout(
                     mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
         }

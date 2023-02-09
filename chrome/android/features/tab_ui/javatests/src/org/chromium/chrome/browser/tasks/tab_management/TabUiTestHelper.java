@@ -68,6 +68,8 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.features.start_surface.StartSurface;
+import org.chromium.chrome.features.start_surface.StartSurfaceCoordinator;
 import org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -761,5 +763,17 @@ public class TabUiTestHelper {
             Layout layout = cta.getLayoutManager().getOverviewLayout();
             assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
         }
+    }
+
+    /**
+     * Presses the back button on the grid tab switcher and make sure that the fading animation
+     * is done.
+     * @param startSurface The {@link StartSurfaceCoordinator} which handles the back button
+     *        pressing on GTS.
+     */
+    public static void pressBackOnGts(StartSurface startSurface) throws InterruptedException {
+        Thread.sleep(1000);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { startSurface.onBackPressed(); });
+        Thread.sleep(1000);
     }
 }

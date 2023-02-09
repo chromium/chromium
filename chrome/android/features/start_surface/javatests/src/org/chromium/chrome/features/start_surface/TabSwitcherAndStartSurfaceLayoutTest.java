@@ -767,7 +767,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     // clang-format off
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1063991",
         sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
-    public void testIncognitoToggle_tabCount() {
+    public void testIncognitoToggle_tabCount() throws InterruptedException{
         // clang-format on
         mActivityTestRule.loadUrl(mUrl);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1111,7 +1111,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/0.75/enable_launch_polish/true"})
     @DisabledTest(message = "https://crbug.com/1122657")
-    public void testThumbnailAspectRatio_point75() {
+    public void testThumbnailAspectRatio_point75() throws InterruptedException{
         // clang-format on
         prepareTabs(2, 0, "about:blank");
         enterTabSwitcher(mActivityTestRule.getActivity());
@@ -1281,8 +1281,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/0.75"})
-    @DisabledTest(message = "https://crbug.com/1367310")
-    public void testExpandTab_withAspectRatioPoint75() {
+    public void testExpandTab_withAspectRatioPoint75() throws InterruptedException {
         // clang-format on
         prepareTabs(1, 0, mUrl);
         enterTabSwitcher(mActivityTestRule.getActivity());
@@ -2084,12 +2083,12 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     /**
      * If thumbnail checking is not needed, use {@link TabUiTestHelper#leaveTabSwitcher} instead.
      */
-    private void leaveGTSAndVerifyThumbnailsAreReleased() {
+    private void leaveGTSAndVerifyThumbnailsAreReleased() throws InterruptedException {
         assertTrue(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
                 LayoutType.TAB_SWITCHER));
 
         StartSurface startSurface = mTabSwitcherAndStartSurfaceLayout.getStartSurfaceForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(() -> { startSurface.onBackPressed(); });
+        TabUiTestHelper.pressBackOnGts(startSurface);
         // TODO(wychen): using default timeout or even converting to
         //  OverviewModeBehaviorWatcher shouldn't increase flakiness.
         LayoutTestUtils.waitForLayout(
