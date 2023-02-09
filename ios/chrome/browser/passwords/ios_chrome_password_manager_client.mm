@@ -238,7 +238,7 @@ void IOSChromePasswordManagerClient::NotifySuccessfulLoginWithExistingPassword(
         submitted_manager) {
   helper_.NotifySuccessfulLoginWithExistingPassword(
       std::move(submitted_manager));
-  if (IsCredentialProviderExtensionPromoEnabled()) {
+  if (IsCredentialProviderExtensionPromoEnabledOnLoginWithAutofill()) {
     [bridge_
         showCredentialProviderPromo:CredentialProviderPromoTrigger::
                                         SuccessfulLoginUsingExistingPassword];

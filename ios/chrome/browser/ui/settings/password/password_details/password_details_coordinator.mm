@@ -89,7 +89,7 @@
     _credential = credential;
     _manager = manager;
     _reauthenticationModule = reauthModule;
-    if (IsCredentialProviderExtensionPromoEnabled()) {
+    if (IsCredentialProviderExtensionPromoEnabledOnPasswordCopied()) {
       _credentialProviderPromoHandler = HandlerForProtocol(
           browser->GetCommandDispatcher(), CredentialProviderPromoCommands);
     }
@@ -115,7 +115,7 @@
     _affiliatedGroup = affiliatedGroup;
     _manager = manager;
     _reauthenticationModule = reauthModule;
-    if (IsCredentialProviderExtensionPromoEnabled()) {
+    if (IsCredentialProviderExtensionPromoEnabledOnPasswordCopied()) {
       _credentialProviderPromoHandler = HandlerForProtocol(
           browser->GetCommandDispatcher(), CredentialProviderPromoCommands);
     }
@@ -293,7 +293,7 @@
 }
 
 - (void)onPasswordCopiedByUser {
-  if (IsCredentialProviderExtensionPromoEnabled()) {
+  if (IsCredentialProviderExtensionPromoEnabledOnPasswordCopied()) {
     DCHECK(_credentialProviderPromoHandler);
     [_credentialProviderPromoHandler
         showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::

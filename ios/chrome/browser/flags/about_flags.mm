@@ -520,6 +520,29 @@ const FeatureEntry::FeatureVariation kTabInactivityThresholdVariations[] = {
      std::size(kTabInactivityThresholdThreeWeeks), nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kCredentialProviderExtensionPromoOnPasswordSaved[] = {
+        {kCredentialProviderExtensionPromoOnPasswordSavedParam, "true"}};
+const FeatureEntry::FeatureParam
+    kCredentialProviderExtensionPromoOnPasswordCopied[] = {
+        {kCredentialProviderExtensionPromoOnPasswordCopiedParam, "true"}};
+const FeatureEntry::FeatureParam
+    kCredentialProviderExtensionPromoOnLoginWithAutofill[] = {
+        {kCredentialProviderExtensionPromoOnLoginWithAutofillParam, "true"}};
+
+const FeatureEntry::FeatureVariation
+    kCredentialProviderExtensionPromoVariations[] = {
+        {"On password saved", kCredentialProviderExtensionPromoOnPasswordSaved,
+         std::size(kCredentialProviderExtensionPromoOnPasswordSaved), nullptr},
+        {"On password copied",
+         kCredentialProviderExtensionPromoOnPasswordCopied,
+         std::size(kCredentialProviderExtensionPromoOnPasswordCopied), nullptr},
+        {"On successful login with autofill",
+         kCredentialProviderExtensionPromoOnLoginWithAutofill,
+         std::size(kCredentialProviderExtensionPromoOnLoginWithAutofill),
+         nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1184,7 +1207,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"credential-provider-extension-promo",
      flag_descriptions::kCredentialProviderExtensionPromoName,
      flag_descriptions::kCredentialProviderExtensionPromoDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kCredentialProviderExtensionPromo)},
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kCredentialProviderExtensionPromo,
+                                    kCredentialProviderExtensionPromoVariations,
+                                    "CredentialProviderExtensionPromo")},
     {"default-browser-blue-dot-promo",
      flag_descriptions::kDefaultBrowserBlueDotPromoName,
      flag_descriptions::kDefaultBrowserBlueDotPromoDescription,

@@ -42,7 +42,7 @@ void PasswordInfobarBannerInteractionHandler::BannerVisibilityChanged(
 void PasswordInfobarBannerInteractionHandler::MainButtonTapped(
     InfoBarIOS* infobar) {
   infobar->set_accepted(GetInfobarDelegate(infobar)->Accept());
-  if (IsCredentialProviderExtensionPromoEnabled() &&
+  if (IsCredentialProviderExtensionPromoEnabledOnPasswordSaved() &&
       infobar->infobar_type() == InfobarType::kInfobarTypePasswordSave) {
     id<CredentialProviderPromoCommands> credentialProviderPromoHandler =
         HandlerForProtocol(browser_->GetCommandDispatcher(),
