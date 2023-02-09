@@ -366,7 +366,7 @@ TEST_F(ReadAnythingAppControllerTest, GetTextContent_NoSelection) {
   EXPECT_EQ(more_text_content, GetTextContent(4));
 }
 
-TEST_F(ReadAnythingAppControllerTest, GetTextContent_With2NodeSelection) {
+TEST_F(ReadAnythingAppControllerTest, GetTextContent_WithSelection) {
   std::string text_content_1 = "Hello";
   std::string text_content_2 = " world";
   std::string text_content_3 = " friend";
@@ -394,75 +394,9 @@ TEST_F(ReadAnythingAppControllerTest, GetTextContent_With2NodeSelection) {
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
   EXPECT_EQ("Hello world friend", GetTextContent(1));
-  EXPECT_EQ("ello", GetTextContent(2));
-  EXPECT_EQ(" wo", GetTextContent(3));
-  EXPECT_EQ(" friend", GetTextContent(4));
-}
-
-TEST_F(ReadAnythingAppControllerTest, GetTextContent_With3NodeSelection) {
-  std::string text_content_1 = "Hello";
-  std::string text_content_2 = " world";
-  std::string text_content_3 = " friend";
-  ui::AXTreeUpdate update;
-  SetUpdateTreeID(&update);
-  update.nodes.resize(3);
-  update.nodes[0].id = 2;
-  update.nodes[1].id = 3;
-  update.nodes[2].id = 4;
-  update.nodes[0].role = ax::mojom::Role::kStaticText;
-  update.nodes[0].SetName(text_content_1);
-  update.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
-  update.nodes[1].role = ax::mojom::Role::kStaticText;
-  update.nodes[1].SetName(text_content_2);
-  update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
-  update.nodes[2].role = ax::mojom::Role::kStaticText;
-  update.nodes[2].SetName(text_content_3);
-  update.nodes[2].SetNameFrom(ax::mojom::NameFrom::kContents);
-  // Create selection from node 2-4.
-  update.tree_data.sel_anchor_object_id = 2;
-  update.tree_data.sel_focus_object_id = 4;
-  update.tree_data.sel_anchor_offset = 1;
-  update.tree_data.sel_focus_offset = 3;
-  update.tree_data.sel_is_backward = false;
-  AccessibilityEventReceived({update});
-  OnAXTreeDistilled({});
-  EXPECT_EQ("Hello world friend", GetTextContent(1));
-  EXPECT_EQ("ello", GetTextContent(2));
-  EXPECT_EQ(" world", GetTextContent(3));
-  EXPECT_EQ(" fr", GetTextContent(4));
-}
-
-TEST_F(ReadAnythingAppControllerTest, GetTextContent_WithBackwardSelection) {
-  std::string text_content_1 = "Hello";
-  std::string text_content_2 = " world";
-  std::string text_content_3 = " friend";
-  ui::AXTreeUpdate update;
-  SetUpdateTreeID(&update);
-  update.nodes.resize(3);
-  update.nodes[0].id = 2;
-  update.nodes[1].id = 3;
-  update.nodes[2].id = 4;
-  update.nodes[0].role = ax::mojom::Role::kStaticText;
-  update.nodes[0].SetName(text_content_1);
-  update.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
-  update.nodes[1].role = ax::mojom::Role::kStaticText;
-  update.nodes[1].SetName(text_content_2);
-  update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
-  update.nodes[2].role = ax::mojom::Role::kStaticText;
-  update.nodes[2].SetName(text_content_3);
-  update.nodes[2].SetNameFrom(ax::mojom::NameFrom::kContents);
-  // Create backward selection from node 4-3.
-  update.tree_data.sel_anchor_object_id = 4;
-  update.tree_data.sel_focus_object_id = 3;
-  update.tree_data.sel_anchor_offset = 5;
-  update.tree_data.sel_focus_offset = 2;
-  update.tree_data.sel_is_backward = true;
-  AccessibilityEventReceived({update});
-  OnAXTreeDistilled({});
-  EXPECT_EQ("Hello world friend", GetTextContent(1));
   EXPECT_EQ("Hello", GetTextContent(2));
-  EXPECT_EQ("orld", GetTextContent(3));
-  EXPECT_EQ(" frie", GetTextContent(4));
+  EXPECT_EQ(" world", GetTextContent(3));
+  EXPECT_EQ(" friend", GetTextContent(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetUrl) {

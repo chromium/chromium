@@ -625,7 +625,7 @@ suite('ReadAnythingAppTest', () => {
         },
       ],
       selection: {
-        anchor_object_id: 3,
+        anchor_object_id: 5,
         focus_object_id: 7,
         anchor_offset: 1,
         focus_offset: 2,
@@ -633,11 +633,9 @@ suite('ReadAnythingAppTest', () => {
       },
     };
     chrome.readAnything.setContentForTesting(axTree, []);
-    // The expected string contains the selected text only inside of the node
-    // that is common to the entire selection, which is the root node in this
-    // example. Since the root node's html tag is '#document' which isn't valid,
-    // we replace it with a div.
-    const expected = '<div><p>ello</p><p>World</p><p>Fr</p></div>';
+    // The expected string contains the complete text of each node in the
+    // selection.
+    const expected = '<div><p>World</p><p>Friend</p></div>';
     assertContainerInnerHTML(expected);
   });
 
@@ -707,11 +705,9 @@ suite('ReadAnythingAppTest', () => {
       },
     };
     chrome.readAnything.setContentForTesting(axTree, []);
-    // The expected string contains the selected text only inside of the node
-    // that is common to the entire selection, which is the root node in this
-    // example. Since the root node's html tag is '#document' which isn't valid,
-    // we replace it with a div.
-    const expected = '<div><p>ello</p><p>World</p><p>Fr</p></div>';
+    // The expected string contains the complete text of each node in the
+    // selection.
+    const expected = '<div><p>Hello</p><p>World</p><p>Friend</p></div>';
     assertContainerInnerHTML(expected);
   });
 

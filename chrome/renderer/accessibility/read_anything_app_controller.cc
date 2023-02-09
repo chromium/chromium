@@ -471,8 +471,6 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   display_node_ids_.clear();
   start_node_ = nullptr;
   end_node_ = nullptr;
-  start_offset_ = -1;
-  end_offset_ = -1;
   content_node_ids_ = content_node_ids;
   distillation_in_progress_ = false;
 
@@ -537,20 +535,14 @@ void ReadAnythingAppController::PostProcessAXTreeWithSelection() {
   DCHECK(focus_node);
   start_node_ = selection.is_backward ? focus_node : anchor_node;
   end_node_ = selection.is_backward ? anchor_node : focus_node;
-  start_offset_ =
-      selection.is_backward ? selection.focus_offset : selection.anchor_offset;
-  end_offset_ =
-      selection.is_backward ? selection.anchor_offset : selection.focus_offset;
 
   // If start node or end node is ignored, go to the nearest unignored node
   // within the selection.
   if (start_node_->IsIgnored()) {
     start_node_ = start_node_->GetNextUnignoredInTreeOrder();
-    start_offset_ = 0;
   }
   if (end_node_->IsIgnored()) {
     end_node_ = end_node_->GetNextUnignoredInTreeOrder();
-    end_offset_ = 0;
   }
 
   // Display nodes are the nodes which will be displayed by the rendering
@@ -748,16 +740,7 @@ std::string ReadAnythingAppController::GetTextContent(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  std::string text_content = ax_node->GetTextContentUTF8();
-  // If this node is the start or end node, truncate the text content by the
-  // corresponding offset.
-  if (has_selection_) {
-    if (ax_node == start_node_)
-      text_content.erase(0, start_offset_);
-    if (ax_node == end_node_)
-      text_content.resize(end_offset_);
-  }
-  return text_content;
+  return ax_node->GetTextContentUTF8();
 }
 
 std::string ReadAnythingAppController::GetTextDirection(

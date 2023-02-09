@@ -133,8 +133,7 @@ class ReadAnythingAppController
   // Helper functions for the rendering algorithm. Post-process the AXTree and
   // cache values before sending an `updateContent` notification to the Read
   // Anything app.ts. These functions:
-  // 1. Save state related to selection (start_node_, end_node_, start_offset_,
-  //    end_offset_).
+  // 1. Save state related to selection (start_node_, end_node_).
   // 2. Save the display_node_ids_, which is a set of all nodes to be displayed
   //    in Read Anything app.ts.
   void PostProcessAXTreeWithSelection();
@@ -226,8 +225,6 @@ class ReadAnythingAppController
   bool has_selection_ = false;
   ui::AXNode* start_node_ = nullptr;
   ui::AXNode* end_node_ = nullptr;
-  int32_t start_offset_ = -1;
-  int32_t end_offset_ = -1;
 
   // Theme information.
   SkColor background_color_;
