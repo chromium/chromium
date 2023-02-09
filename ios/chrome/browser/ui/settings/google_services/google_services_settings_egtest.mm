@@ -128,15 +128,22 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 }
 
 // Tests the Google Services settings.
-// TODO(crbug.com/1414307): Test fails on simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testOpeningServices DISABLED_testOpeningServices
-#else
-#define MAYBE_testOpeningServices testOpeningServices
-#endif
-- (void)MAYBE_testOpeningServices {
+- (void)testOpeningServices {
   [self openGoogleServicesSettings];
-  [self assertNonPersonalizedServices];
+  [self
+      assertCellWithTitleID:IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_TEXT
+               detailTextID:
+                   IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_DETAIL];
+  [self
+      assertCellWithTitleID:
+          IDS_IOS_GOOGLE_SERVICES_SETTINGS_BETTER_SEARCH_AND_BROWSING_TEXT
+               detailTextID:
+                   IDS_IOS_GOOGLE_SERVICES_SETTINGS_BETTER_SEARCH_AND_BROWSING_DETAIL];
+  [self
+      assertCellWithTitleID:
+          IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_SEARCH_SUGGESTIONS_TEXT
+               detailTextID:
+                   IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_SEARCH_SUGGESTIONS_DETAIL];
 }
 
 // Tests that disabling the "Allow Chrome sign-in" > "Sign out" option blocks
@@ -550,24 +557,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 - (void)assertCellWithTitleID:(int)titleID detailTextID:(int)detailTextID {
   [[self cellElementInteractionWithTitleID:titleID detailTextID:detailTextID]
       assertWithMatcher:grey_notNil()];
-}
-
-// Asserts that the non-personalized service section is visible.
-- (void)assertNonPersonalizedServices {
-  [self
-      assertCellWithTitleID:
-          IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_SEARCH_SUGGESTIONS_TEXT
-               detailTextID:
-                   IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_SEARCH_SUGGESTIONS_DETAIL];
-  [self
-      assertCellWithTitleID:IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_TEXT
-               detailTextID:
-                   IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_DETAIL];
-  [self
-      assertCellWithTitleID:
-          IDS_IOS_GOOGLE_SERVICES_SETTINGS_BETTER_SEARCH_AND_BROWSING_TEXT
-               detailTextID:
-                   IDS_IOS_GOOGLE_SERVICES_SETTINGS_BETTER_SEARCH_AND_BROWSING_DETAIL];
 }
 
 @end
