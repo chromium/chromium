@@ -5701,6 +5701,24 @@
     'name': 'chromium.updater',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
+      'linux-updater-tester-dbg': {
+        'mixins': [
+          'linux-bionic',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'updater_gtests_linux',
+        },
+      },
+      'linux-updater-tester-rel': {
+        'test_suites': {
+          'gtest_tests': 'updater_gtests_linux',
+        },
+        'mixins': [
+          'linux-bionic',
+          'x86-64',
+        ],
+      },
       'mac-updater-builder-arm64-dbg': {
         'additional_compile_targets': ['chrome/updater:all'],
       },

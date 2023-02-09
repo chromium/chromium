@@ -5032,6 +5032,11 @@
       },
     },
 
+    'updater_gtests_linux': {
+      'updater_tests': {},
+      # 'updater_tests_system' is not yet supported on Linux.
+    },
+
     'updater_gtests_mac': {
       'updater_tests': {},
       'updater_tests_system': {

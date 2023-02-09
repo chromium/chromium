@@ -344,6 +344,16 @@ builder.
   * [`//content/browser/tracing/.+`](https://cs.chromium.org/chromium/src/content/browser/tracing/)
   * [`//services/tracing/.+`](https://cs.chromium.org/chromium/src/services/tracing/)
 
+* [linux-updater-try-builder-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-updater-try-builder-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-updater-try-builder-dbg""))
+
+  Location filters:
+  * [`//chrome/updater/.+`](https://cs.chromium.org/chromium/src/chrome/updater/)
+
+* [linux-updater-try-builder-rel](https://ci.chromium.org/p/chromium/builders/try/linux-updater-try-builder-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-updater-try-builder-rel""))
+
+  Location filters:
+  * [`//chrome/updater/.+`](https://cs.chromium.org/chromium/src/chrome/updater/)
+
 * [linux-x64-castos-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-x64-castos-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-x64-castos-dbg""))
 
   Location filters:

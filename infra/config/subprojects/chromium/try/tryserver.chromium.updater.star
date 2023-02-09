@@ -22,6 +22,13 @@ consoles.list_view(
     name = "tryserver.chromium.updater",
 )
 
+def updater_linux_builder(*, name, **kwargs):
+    kwargs.setdefault("os", os.LINUX_DEFAULT)
+    kwargs.setdefault("goma_backend", None)
+    kwargs.setdefault("reclient_instance", reclient.instance.DEFAULT_UNTRUSTED)
+    kwargs.setdefault("reclient_jobs", reclient.jobs.LOW_JOBS_FOR_CQ)
+    return try_.builder(name = name, **kwargs)
+
 def updater_mac_builder(*, name, **kwargs):
     kwargs.setdefault("os", os.MAC_ANY)
     return try_.builder(name = name, **kwargs)
@@ -30,6 +37,34 @@ def updater_windows_builder(*, name, **kwargs):
     kwargs.setdefault("cores", 8)
     kwargs.setdefault("os", os.WINDOWS_DEFAULT)
     return try_.builder(name = name, **kwargs)
+
+updater_linux_builder(
+    name = "linux-updater-try-builder-dbg",
+    mirrors = [
+        "ci/linux-updater-builder-dbg",
+        "ci/linux-updater-tester-dbg",
+    ],
+    main_list_view = "try",
+    tryjob = try_.job(
+        location_filters = [
+            "chrome/updater/.+",
+        ],
+    ),
+)
+
+updater_linux_builder(
+    name = "linux-updater-try-builder-rel",
+    mirrors = [
+        "ci/linux-updater-builder-rel",
+        "ci/linux-updater-tester-rel",
+    ],
+    main_list_view = "try",
+    tryjob = try_.job(
+        location_filters = [
+            "chrome/updater/.+",
+        ],
+    ),
+)
 
 updater_mac_builder(
     name = "mac-updater-try-builder-dbg",

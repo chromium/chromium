@@ -40,6 +40,104 @@ consoles.console_view(
 )]
 
 ci.builder(
+    name = "linux-updater-builder-dbg",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    builderless = True,
+    cores = None,
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|linux",
+        short_name = "bld",
+    ),
+)
+
+ci.builder(
+    name = "linux-updater-builder-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    builderless = True,
+    cores = None,
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "release|linux",
+        short_name = "bld",
+    ),
+)
+
+ci.thin_tester(
+    name = "linux-updater-tester-dbg",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    triggered_by = ["linux-updater-builder-dbg"],
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|linux",
+        short_name = "test",
+    ),
+)
+
+ci.thin_tester(
+    name = "linux-updater-tester-rel",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    triggered_by = ["linux-updater-builder-rel"],
+    console_view_entry = consoles.console_view_entry(
+        category = "release|linux",
+        short_name = "test",
+    ),
+)
+
+ci.builder(
     name = "mac-updater-builder-dbg",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

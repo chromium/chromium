@@ -741,6 +741,8 @@
     },
 
     'chromium.updater': {
+      'linux-updater-builder-dbg': 'updater_debug_bot_reclient',
+      'linux-updater-builder-rel': 'updater_release_bot_reclient',
       'mac-updater-builder-arm64-dbg': 'updater_debug_bot_arm64_reclient',
       'mac-updater-builder-arm64-rel': 'updater_release_bot_arm64_reclient',
       'mac-updater-builder-asan-dbg': 'updater_debug_bot_asan_reclient',
@@ -1352,6 +1354,8 @@
     },
 
     'tryserver.chromium.updater': {
+       'linux-updater-try-builder-dbg': 'updater_debug_bot_reclient',
+       'linux-updater-try-builder-rel': 'updater_release_trybot_reclient',
        'mac-updater-try-builder-dbg': 'updater_debug_bot_reclient',
        'mac-updater-try-builder-rel': 'updater_release_trybot_reclient',
        'win-updater-try-builder-dbg': 'updater_debug_bot_reclient',
@@ -3694,35 +3698,35 @@
     ],
 
     'updater_debug_bot_arm64_reclient': [
-      'arm64', 'updater_on_win_mac', 'debug_static_bot_reclient',
+      'arm64', 'updater', 'debug_static_bot_reclient',
     ],
 
     'updater_debug_bot_asan_reclient': [
-      'updater_on_win_mac', 'asan', 'debug_static_bot_reclient',
+      'updater', 'asan', 'debug_static_bot_reclient',
     ],
 
     'updater_debug_bot_reclient': [
-      'updater_on_win_mac', 'debug_static_bot_reclient',
+      'updater', 'debug_static_bot_reclient',
     ],
 
     'updater_debug_bot_x86_reclient': [
-      'updater_on_win_mac', 'debug_static_bot_reclient', 'x86', 'no_symbols',
+      'updater', 'debug_static_bot_reclient', 'x86', 'no_symbols',
     ],
 
     'updater_release_bot_arm64_reclient': [
-      'arm64', 'updater_on_win_mac', 'release_bot_reclient',
+      'arm64', 'updater', 'release_bot_reclient',
     ],
 
     'updater_release_bot_reclient': [
-      'updater_on_win_mac', 'release_bot_reclient',
+      'updater', 'release_bot_reclient',
     ],
 
     'updater_release_bot_x86_reclient': [
-      'updater_on_win_mac', 'release_bot_reclient', 'x86',
+      'updater', 'release_bot_reclient', 'x86',
     ],
 
     'updater_release_trybot_reclient': [
-      'updater_on_win_mac', 'release_trybot_reclient',
+      'updater', 'release_trybot_reclient',
     ],
 
     'v8_future_debug_bot_reclient': [
@@ -4724,7 +4728,7 @@
       'gn_args': 'is_ubsan_vptr=true',
     },
 
-    'updater_on_win_mac': {
+    'updater': {
       'gn_args': 'enable_updater=true',
     },
 
