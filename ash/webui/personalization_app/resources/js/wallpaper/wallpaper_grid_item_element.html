@@ -24,9 +24,11 @@
     outline: none;
   }
 
+  /* TODO(b/258686035): Clean up style once jelly is on by default. */
   :host([aria-selected='true']:not([placeholder])) .item {
-    background-color: rgba(var(--cros-color-prominent-rgb),
-        var(--personalization-app-second-tone-opacity));
+    background-color: var(--cros-sys-highlight_shape, rgba(
+      var(--cros-color-prominent-rgb),
+      var(--personalization-app-second-tone-opacity)));
     border-radius:
       calc(var(--personalization-app-grid-item-border-radius) + 4px);
   }
