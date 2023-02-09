@@ -620,8 +620,8 @@ void FrameImpl::AddNewContents(
       // The PopupFrameCreationInfo won't be needed anymore, so clear it out.
       new_contents->SetUserData(kPopupCreationInfo, nullptr);
 
-      // ContextImpl::CreateFrameInternal() verified that |params_for_popups_|
-      // can be cloned, so it cannot fail here.
+      // ContextImpl::CreateFrameForWebContents() verified that
+      // |params_for_popups_| can be cloned, so it cannot fail here.
       fuchsia::web::CreateFrameParams params;
       zx_status_t status = params_for_popups_.Clone(&params);
       ZX_DCHECK(status == ZX_OK, status);
