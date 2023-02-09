@@ -28,7 +28,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.blink.mojom.MhtmlLoadResult;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -391,14 +391,14 @@ public class OfflinePageUtilsTest {
     @Test
     @SmallTest
     public void testMhtmlLoadResultFromRendererWithNamespace() throws Exception {
-        HistogramDelta histogramDelta = new HistogramDelta(
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
                 MHTML_LOAD_RESULT_UMA_BASE_NAME + "." + OfflinePageBridge.ASYNC_NAMESPACE,
                 MhtmlLoadResult.SUCCESS);
 
         loadOfflinePage(ASYNC_ID);
 
-        // Check that our count of MhtmlLoadResult.SUCCESS increased by one.
-        Assert.assertEquals(1, histogramDelta.getDelta());
+        histogramWatcher.assertExpected(
+                "Count of MhtmlLoadResult.SUCCESS should have increased by one.");
     }
 
     /**
@@ -410,7 +410,7 @@ public class OfflinePageUtilsTest {
     @Test
     @SmallTest
     public void testInvalidMhtmlMainResourceMimeType() {
-        HistogramDelta histogramDelta = new HistogramDelta(
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
                 MHTML_LOAD_RESULT_UMA_NAME_UNTRUSTED, MhtmlLoadResult.MISSING_MAIN_RESOURCE);
         String testUrl = UrlUtils.getTestFileUrl("offline_pages/invalid_main_resource.mhtml");
         sActivityTestRule.loadUrl(testUrl);
@@ -424,7 +424,7 @@ public class OfflinePageUtilsTest {
         // The Offline Page Item will be empty because no data can be extracted from the renderer.
         // Also should not crash.
         Assert.assertEquals(testUrl, offlinePageItem.get().getUrl());
-        Assert.assertEquals(1, histogramDelta.getDelta());
+        histogramWatcher.assertExpected();
     }
 
     /**
@@ -434,7 +434,7 @@ public class OfflinePageUtilsTest {
     @Test
     @SmallTest
     public void testEmptyMhtml() {
-        HistogramDelta histogramDelta = new HistogramDelta(
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
                 MHTML_LOAD_RESULT_UMA_NAME_UNTRUSTED, MhtmlLoadResult.EMPTY_FILE);
         String testUrl = UrlUtils.getTestFileUrl("offline_pages/empty.mhtml");
         sActivityTestRule.loadUrl(testUrl);
@@ -446,7 +446,7 @@ public class OfflinePageUtilsTest {
         });
 
         Assert.assertEquals(testUrl, offlinePageItem.get().getUrl());
-        Assert.assertEquals(1, histogramDelta.getDelta());
+        histogramWatcher.assertExpected();
     }
 
     /**
@@ -456,7 +456,7 @@ public class OfflinePageUtilsTest {
     @Test
     @SmallTest
     public void testMhtmlWithNoResources() {
-        HistogramDelta histogramDelta = new HistogramDelta(
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
                 MHTML_LOAD_RESULT_UMA_NAME_UNTRUSTED, MhtmlLoadResult.INVALID_ARCHIVE);
         String testUrl = UrlUtils.getTestFileUrl("offline_pages/no_resources.mhtml");
         sActivityTestRule.loadUrl(testUrl);
@@ -468,7 +468,7 @@ public class OfflinePageUtilsTest {
         });
 
         Assert.assertEquals(testUrl, offlinePageItem.get().getUrl());
-        Assert.assertEquals(1, histogramDelta.getDelta());
+        histogramWatcher.assertExpected();
     }
 
     private void loadPageAndSave(ClientId clientId) throws Exception {
