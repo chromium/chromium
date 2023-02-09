@@ -1994,6 +1994,9 @@ bool ShellUtil::CreateOrUpdateShortcut(ShortcutLocation location,
         << "Failed to pin to taskbar " << shortcut_path.value();
     if (pinned)
       *pinned = pin_succeeded;
+    if (pin_succeeded) {
+      ::SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
+    }
   }
 
   return true;
