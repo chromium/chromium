@@ -493,8 +493,6 @@ void AmbientController::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void AmbientController::OnMouseEvent(ui::MouseEvent* event) {
-  // Prevent dispatching mouse event to the windows behind screen saver.
-  event->StopPropagation();
   // |DismissUI| on actual mouse move only if the screen saver widget is shown
   // (images are downloaded).
   if (event->type() == ui::ET_MOUSE_MOVED) {
@@ -506,6 +504,9 @@ void AmbientController::OnMouseEvent(ui::MouseEvent* event) {
     return;
   }
 
+  // Prevent dispatching mouse event to the windows behind screen saver.
+  // Let move event pass through, so that it clears hover states.
+  event->StopPropagation();
   if (event->IsAnyButton()) {
     DismissUI();
   }
