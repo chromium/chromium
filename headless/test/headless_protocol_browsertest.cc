@@ -303,7 +303,7 @@ HEADLESS_PROTOCOL_TEST(Geolocation, "emulation/geolocation-crash.js")
 HEADLESS_PROTOCOL_TEST(DragStarted, "input/dragIntercepted.js")
 
 // https://crbug.com/1414190
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_InputClipboardOps DISABLED_InputClipboardOps
 #else
 #define MAYBE_InputClipboardOps InputClipboardOps
