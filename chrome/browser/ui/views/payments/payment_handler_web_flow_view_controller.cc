@@ -129,7 +129,7 @@ class ReadOnlyOriginView : public views::View {
       origin_label->SetID(static_cast<int>(DialogViewID::SHEET_TITLE));
 
       // Pad to keep header as the same height as when the page title is valid.
-      constexpr int kVerticalPadding = 10;
+      constexpr int kVerticalPadding = 13;
       origin_label->SetBorder(views::CreateEmptyBorder(
           gfx::Insets::TLBR(kVerticalPadding, 0, kVerticalPadding, 0)));
     }
@@ -275,14 +275,11 @@ void PaymentHandlerWebFlowViewController::FillContentView(
 
   // The webview must get an explicitly set height otherwise the layout doesn't
   // make it fill its container. This is likely because it has no content at the
-  // time of first layout (nothing has loaded yet). Because of this, set it to.
+  // time of first layout (nothing has loaded yet). Because of this, set it to
   // total_dialog_height - header_height. On the other hand, the width will be
   // properly set so it can be 0 here.
-  //
-  // TODO(crbug.com/1385136): Correct this for the experimental minimal header
-  // UX (currently it leaves a gap at the bottom of the dialog).
-  web_view->SetPreferredSize(
-      gfx::Size(0, dialog()->GetActualPaymentHandlerDialogHeight() - 75));
+  web_view->SetPreferredSize(gfx::Size(
+      0, dialog()->GetActualPaymentHandlerDialogHeight() - GetHeaderHeight()));
 }
 
 bool PaymentHandlerWebFlowViewController::ShouldShowPrimaryButton() {
@@ -309,6 +306,7 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
   // | ICON |          origin          | CLOSE |
   // +-----------------------------------------+
 
+  container->SetID(static_cast<int>(DialogViewID::PAYMENT_APP_HEADER));
   container->SetBackground(GetHeaderBackground(container));
   constexpr int kVerticalInset = 8;
   constexpr int kHeaderHorizontalInset = 16;

@@ -189,6 +189,9 @@ class PaymentRequestSheetController {
   // also return true for ShouldShowPrimaryButton.
   virtual bool ShouldAccelerateEnterKey();
 
+  // Returns the height of the active header view.
+  int GetHeaderHeight();
+
   views::MdTextButton* primary_button() { return primary_button_; }
 
   views::View* header_content_separator_container() {

@@ -443,6 +443,7 @@ void PaymentRequestSheetController::PopulateSheetHeaderView(
     views::View* container) {
   DCHECK_EQ(container, header_view_);
 
+  container->SetID(static_cast<int>(DialogViewID::PAYMENT_APP_HEADER));
   container->SetBackground(GetHeaderBackground(header_view_));
   views::BoxLayout* layout =
       container->SetLayoutManager(std::make_unique<views::BoxLayout>());
@@ -560,6 +561,12 @@ bool PaymentRequestSheetController::ShouldAccelerateEnterKey() {
 void PaymentRequestSheetController::CloseButtonPressed() {
   if (dialog()->IsInteractive())
     dialog()->CloseDialog();
+}
+
+int PaymentRequestSheetController::GetHeaderHeight() {
+  return header_view_
+             ? header_view_->GetHeightForWidth(dialog()->GetActualDialogWidth())
+             : 0;
 }
 
 void PaymentRequestSheetController::AddPrimaryButton(views::View* container) {

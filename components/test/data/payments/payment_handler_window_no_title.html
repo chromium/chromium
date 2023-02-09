@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=0.5, maximum-scale=0.5, minimum-scale=0.5">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    This window will auto-close.
+    <script>
+      navigator.serviceWorker.controller.postMessage('confirm');
+    </script>
+  </body>
+</html>

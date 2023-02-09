@@ -82,12 +82,14 @@ async function launch(methodNameOverride) {
  * Launches the payment handler without waiting for a response to be returned.
  * @param {string} methodNameOverride - The payment method to launch. If not
  *     specified, the global methodName set from install() will be used.
+ * @param {string} windowPage - The page to load in the payment handler window.
  * @return {string} The 'success' or error message.
  */
-function launchWithoutWaitForResponse(methodNameOverride) {
+function launchWithoutWaitForResponse(methodNameOverride, windowPage) {
   let method =
       (methodNameOverride !== undefined) ? methodNameOverride : methodName;
-  return launchWithoutWaitForResponseWithMethods([{supportedMethods: method}]);
+  return launchWithoutWaitForResponseWithMethods(
+      [{supportedMethods: method, data: {'windowPage': windowPage}}]);
 }
 
 /**
