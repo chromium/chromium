@@ -140,6 +140,7 @@ TEST_F(UpdaterStateTest, UpdaterNamePerUser) {
 #endif  // BUILDFLAG(IS_WIN)
 
   // Create an empty updater prefs file to mock a detection of the updater.
+  EXPECT_TRUE(base::CreateDirectory(prefs_path->DirName()));
   EXPECT_TRUE(base::WriteFile(*prefs_path, "{}"));
   EXPECT_STREQ("ChromiumUpdater",
                UpdaterState::GetState(false).at("name").c_str());
