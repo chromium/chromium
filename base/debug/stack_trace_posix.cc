@@ -14,6 +14,7 @@
 #include <string.h>
 #include <sys/param.h>
 #include <sys/stat.h>
+#include <sys/syscall.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -300,6 +301,27 @@ void PrintToStderr(const char* output) {
   std::ignore = HANDLE_EINTR(write(STDERR_FILENO, output, strlen(output)));
 }
 
+#if BUILDFLAG(IS_LINUX)
+void AlarmSignalHandler(int signal, siginfo_t* info, void* void_context) {
+  // We have seen rare cases on AMD linux where the default signal handler
+  // either does not run or a thread (Probably an AMD driver thread) prevents
+  // the termination of the gpu process. We catch this case when the alarm fires
+  // and then call exit_group() to kill all threads of the process. This has
+  // resolved the zombie gpu process issues we have seen on our context lost
+  // test.
+  // Note that many different calls were tried to kill the process when it is in
+  // this state. Only 'exit_group' was found to cause termination and it is
+  // speculated that only this works because only this exit kills all threads in
+  // the process (not simply the current thread).
+  // See: http://crbug.com/1396451.
+  PrintToStderr(
+      "Warning: Default signal handler failed to terminate process.\n");
+  PrintToStderr("Calling exit_group() directly to prevent timeout.\n");
+  // See: https://man7.org/linux/man-pages/man2/exit_group.2.html
+  syscall(SYS_exit_group, EXIT_FAILURE);
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
 void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
   // NOTE: This code MUST be async-signal safe.
   // NO malloc or stdio is allowed here.
@@ -520,11 +542,27 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
   PrintToStderr(
       "Calling _exit(EXIT_FAILURE). Core file will not be generated.\n");
   _exit(EXIT_FAILURE);
-#endif  // !BUILDFLAG(IS_LINUX)
+#else   // BUILDFLAG(IS_LINUX)
 
   // After leaving this handler control flow returns to the point where the
   // signal was raised, raising the current signal once again but executing the
   // default handler instead of this one.
+
+  // Set an alarm to trigger in case the default handler does not terminate
+  // the process. See 'AlarmSignalHandler' for more details.
+  struct sigaction action;
+  memset(&action, 0, sizeof(action));
+  action.sa_flags = static_cast<int>(SA_RESETHAND);
+  action.sa_sigaction = &AlarmSignalHandler;
+  sigemptyset(&action.sa_mask);
+  sigaction(SIGALRM, &action, nullptr);
+  // 'alarm' function is signal handler safe.
+  // https://man7.org/linux/man-pages/man7/signal-safety.7.html
+  // This delay is set to be long enough for the real signal handler to fire but
+  // shorter than chrome's process watchdog timer.
+  constexpr unsigned int kAlarmSignalDelaySeconds = 5;
+  alarm(kAlarmSignalDelaySeconds);
+#endif  // !BUILDFLAG(IS_LINUX)
 }
 
 class PrintBacktraceOutputHandler : public BacktraceOutputHandler {
