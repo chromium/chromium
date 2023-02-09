@@ -188,4 +188,41 @@ TEST_F(WebFrameSerializerTest, WithoutFrameUrl) {
   EXPECT_EQ(expected_html, actual_html);
 }
 
+TEST_F(WebFrameSerializerTest, ShadowDOM) {
+  const char* expected_html = R"HTML(<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"></head><body>
+<div id="host1"><template shadowrootmode="open">
+    <div>hello world</div>
+  </template>
+  
+</div>
+<div id="host2"><template shadowrootmode="closed">
+    <div>hello world</div>
+  </template>
+  
+</div>
+<div id="host3"><template shadowrootmode="open" shadowrootdelegatesfocus>
+    <div>hello world</div>
+  </template>
+  
+</div>
+<div id="host4"><template shadowrootmode="open">
+    <slot></slot>
+  </template>
+  
+  <div>light dom slotted</div>
+</div>
+<div id="host5"><template shadowrootmode="open"><div>hello world</div></template>
+  <div>light dom</div>
+</div>
+<script>
+host5.attachShadow({mode: 'open'}).innerHTML = '<div>hello world</div>';
+</script>
+</body></html>)HTML";
+  String actual_html =
+      SerializeFile("http://www.test.com", "shadowdom.html", true);
+  EXPECT_EQ(String(expected_html), actual_html);
+}
+
 }  // namespace blink

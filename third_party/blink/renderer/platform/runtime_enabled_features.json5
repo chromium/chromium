@@ -2456,6 +2456,11 @@
       base_feature: "SanitizerAPI",
     },
     {
+      name: "SaveAsWithDeclarativeShadowDOM",
+      base_feature: "SaveAsWithDeclarativeShadowDOM",
+      status: "stable",
+    },
+    {
       // https://wicg.github.io/webcomponents/proposals/Scoped-Custom-Element-Registries
       name: "ScopedCustomElementRegistry",
       status: "test",

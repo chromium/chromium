@@ -35,6 +35,7 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_frame_serializer.h"
 #include "third_party/blink/public/web/web_frame_serializer_client.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/platform/text/web_entities.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -153,6 +154,9 @@ class WebFrameSerializerImpl {
   void EncodeAndFlushBuffer(WebFrameSerializerClient::FrameSerializationStatus,
                             SerializeDomParam*,
                             FlushOption);
+
+  // Serialize the open tag of a ShadowRoot as a <template>
+  void ShadowRootTagToString(ShadowRoot*, SerializeDomParam*);
 
   // Serialize open tag of an specified element.
   void OpenTagToString(Element*, SerializeDomParam*);
