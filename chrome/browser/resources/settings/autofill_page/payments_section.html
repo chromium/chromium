@@ -124,7 +124,7 @@
 
   <button id="menuRemoveCreditCard" class="dropdown-item"
       hidden$="[[!activeCreditCard_.metadata.isLocal]]"
-      on-click="onMenuRemoveCreditCardClick_">$i18n{removeCreditCard}</button>
+      on-click="onMenuRemoveCreditCardClick_">$i18n{delete}</button>
   <button id="menuClearCreditCard" class="dropdown-item"
       on-click="onMenuClearCreditCardClick_"
       hidden$="[[!activeCreditCard_.metadata.isCached]]">
@@ -173,4 +173,11 @@
   <settings-virtual-card-unenroll-dialog credit-card="[[activeCreditCard_]]"
       on-close="onVirtualCardUnenrollDialogClose_">
   </settings-virtual-card-unenroll-dialog>
+</template>
+
+<template is="dom-if" if="[[showLocalCreditCardRemoveConfirmationDialog_]]"
+    restamp>
+  <settings-local-credit-card-remove-confirmation-dialog
+      on-close="onLocalCreditCardRemoveConfirmationDialogClose_">
+  </setting-local-credit-card-remove-confirmation-dialog>
 </template>

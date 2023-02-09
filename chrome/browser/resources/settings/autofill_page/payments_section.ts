@@ -18,6 +18,7 @@ import '../controls/settings_toggle_button.js';
 import '../prefs/prefs.js';
 import './credit_card_edit_dialog.js';
 import './iban_edit_dialog.js';
+import './local_credit_card_remove_confirmation_dialog.js';
 import './passwords_shared.css.js';
 import './payments_list.js';
 import './virtual_card_unenroll_dialog.js';
@@ -140,6 +141,7 @@ export class SettingsPaymentsSectionElement extends
 
       showCreditCardDialog_: Boolean,
       showIbanDialog_: Boolean,
+      showLocalCreditCardRemoveConfirmationDialog_: Boolean,
       showVirtualCardUnenrollDialog_: Boolean,
       migratableCreditCardsInfo_: String,
 
@@ -189,6 +191,7 @@ export class SettingsPaymentsSectionElement extends
   private activeIban_: chrome.autofillPrivate.IbanEntry|null;
   private showCreditCardDialog_: boolean;
   private showIbanDialog_: boolean;
+  private showLocalCreditCardRemoveConfirmationDialog_: boolean;
   private showVirtualCardUnenrollDialog_: boolean;
   private migratableCreditCardsInfo_: string;
   private migrationEnabled_: boolean;
@@ -410,13 +413,31 @@ export class SettingsPaymentsSectionElement extends
     window.open(loadTimeData.getString('manageCreditCardsUrl'));
   }
 
+  private onLocalCreditCardRemoveConfirmationDialogClose_() {
+    // Only remove the credit card entry if the user closed the dialog via the
+    // confirmation button (instead of cancel or close).
+    const confirmationDialog = this.shadowRoot!.querySelector(
+        'settings-local-credit-card-remove-confirmation-dialog');
+    assert(confirmationDialog);
+    if (confirmationDialog.wasConfirmed()) {
+      assert(this.activeCreditCard_);
+      assert(this.activeCreditCard_.guid);
+      this.paymentsManager_.removeCreditCard(this.activeCreditCard_.guid);
+      this.activeCreditCard_ = null;
+    }
+
+    this.showLocalCreditCardRemoveConfirmationDialog_ = false;
+    assert(this.activeDialogAnchor_);
+    focusWithoutInk(this.activeDialogAnchor_);
+    this.activeDialogAnchor_ = null;
+  }
+
   /**
    * Handles clicking on the "Remove" credit card button.
    */
   private onMenuRemoveCreditCardClick_() {
-    this.paymentsManager_.removeCreditCard(this.activeCreditCard_!.guid!);
+    this.showLocalCreditCardRemoveConfirmationDialog_ = true;
     this.$.creditCardSharedMenu.close();
-    this.activeCreditCard_ = null;
   }
 
   /**
