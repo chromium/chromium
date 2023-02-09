@@ -644,7 +644,7 @@ TEST_F(BluetoothFlossTest, SetAdvertisingInterval) {
   EXPECT_EQ(static_cast<uint32_t>(0),
             GetFakeAdvertiserClient()->set_advertising_parameters_called_);
   adapter_->SetAdvertisingInterval(
-      base::TimeDelta(), base::TimeDelta(),
+      base::Milliseconds(20), base::Milliseconds(10240),
       base::BindLambdaForTesting([&run_loop1]() { run_loop1.Quit(); }),
       base::BindOnce([](device::BluetoothAdvertisement::ErrorCode error_code) {
         FAIL();

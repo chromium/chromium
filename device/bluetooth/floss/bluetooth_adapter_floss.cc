@@ -84,6 +84,11 @@ bool DeviceNeedsToReadProperties(device::BluetoothDevice* device) {
 
 }  // namespace
 
+// According to the Bluetooth spec, these are the min and max values possible
+// for advertising interval. Core 5.3 Spec, Vol 4, Part E, Section 7.8.5.
+constexpr uint16_t kMinIntervalMs = 20;
+constexpr uint16_t kMaxIntervalMs = 10240;
+
 // static
 scoped_refptr<BluetoothAdapterFloss> BluetoothAdapterFloss::CreateAdapter() {
   return base::WrapRefCounted(new BluetoothAdapterFloss());
@@ -1003,10 +1008,25 @@ void BluetoothAdapterFloss::SetAdvertisingInterval(
     const base::TimeDelta& min,
     const base::TimeDelta& max,
     base::OnceClosure callback,
-    AdvertisementErrorCallback r_callback) {
-  interval_ms_ = static_cast<uint16_t>(
+    AdvertisementErrorCallback error_callback) {
+  uint16_t min_ms = static_cast<uint16_t>(
       std::min(static_cast<int64_t>(std::numeric_limits<uint16_t>::max()),
                min.InMilliseconds()));
+  uint16_t max_ms = static_cast<uint16_t>(
+      std::min(static_cast<int64_t>(std::numeric_limits<uint16_t>::max()),
+               max.InMilliseconds()));
+
+  // TODO(b/253718595): Support a 'no preference' option so Floss can choose a
+  // default value for the advertising interval. We are temporarily performing
+  // parameter checking to fulfill existing callers' expectations.
+  if (min_ms < kMinIntervalMs || max_ms > kMaxIntervalMs || min_ms > max_ms) {
+    std::move(error_callback)
+        .Run(device::BluetoothAdvertisement::
+                 ERROR_INVALID_ADVERTISEMENT_INTERVAL);
+    return;
+  }
+  interval_ms_ = min_ms;
+
   for (const auto& adv : advertisements_) {
     adv->SetAdvertisingInterval(interval_ms_, base::DoNothing(),
                                 base::DoNothing());
