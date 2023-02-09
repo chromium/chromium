@@ -183,10 +183,17 @@ const char kServerDisconnect[] = "ServerDisconnect";
 const char kAddService[] = "AddService";
 const char kRemoveService[] = "RemoveService";
 const char kClearServices[] = "ClearServices";
+const char kSendResponse[] = "SendResponse";
 
 const char kOnServerRegistered[] = "OnServerRegistered";
 const char kOnServerConnectionState[] = "OnServerConnectionState";
 const char kOnServerServiceAdded[] = "OnServerServiceAdded";
+const char kOnServerCharacteristicReadRequest[] =
+    "OnServerCharacteristicReadRequest";
+const char kOnServerDescriptorReadRequest[] = "OnServerDescriptorReadRequest";
+const char kOnServerCharacteristicWriteRequest[] =
+    "OnServerCharacteristicWriteRequest";
+const char kOnServerDescriptorWriteRequest[] = "OnServerDescriptorWriteRequest";
 }  // namespace gatt
 
 namespace advertiser {

@@ -78,6 +78,13 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 }
 
 template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const GattStatus& status) {
+  int32_t value = static_cast<int32_t>(status);
+  WriteDBusParam(writer, value);
+}
+
+template <>
 const DBusTypeInfo& GetDBusTypeInfo(const GattStatus*) {
   static DBusTypeInfo info{"u", "GattStatus"};
   return info;
@@ -441,6 +448,16 @@ void FlossGattManagerClient::ClearServices(ResponseCallback<Void> callback) {
   CallGattMethod<Void>(std::move(callback), gatt::kClearServices, server_id_);
 }
 
+void FlossGattManagerClient::SendResponse(ResponseCallback<Void> callback,
+                                          const std::string& remote_device,
+                                          int32_t request_id,
+                                          GattStatus status,
+                                          int32_t offset,
+                                          std::vector<uint8_t> value) {
+  CallGattMethod<Void>(std::move(callback), gatt::kSendResponse, server_id_,
+                       remote_device, request_id, status, offset, value);
+}
+
 void FlossGattManagerClient::Init(dbus::Bus* bus,
                                   const std::string& service_name,
                                   const int adapter_index) {
@@ -507,6 +524,18 @@ void FlossGattManagerClient::Init(dbus::Bus* bus,
   gatt_server_exported_callback_manager_.AddMethod(
       gatt::kOnServerServiceAdded,
       &FlossGattServerObserver::GattServerServiceAdded);
+  gatt_server_exported_callback_manager_.AddMethod(
+      gatt::kOnServerCharacteristicReadRequest,
+      &FlossGattServerObserver::GattServerCharacteristicReadRequest);
+  gatt_server_exported_callback_manager_.AddMethod(
+      gatt::kOnServerDescriptorReadRequest,
+      &FlossGattServerObserver::GattServerDescriptorReadRequest);
+  gatt_server_exported_callback_manager_.AddMethod(
+      gatt::kOnServerCharacteristicWriteRequest,
+      &FlossGattServerObserver::GattServerCharacteristicWriteRequest);
+  gatt_server_exported_callback_manager_.AddMethod(
+      gatt::kOnServerDescriptorWriteRequest,
+      &FlossGattServerObserver::GattServerDescriptorWriteRequest);
 
   // Export callbacks.
   if (!gatt_client_exported_callback_manager_.ExportCallback(
@@ -733,6 +762,62 @@ void FlossGattManagerClient::GattServerServiceAdded(GattStatus status,
                                                     GattService service) {
   for (auto& observer : gatt_server_observers_) {
     observer.GattServerServiceAdded(status, service);
+  }
+}
+
+void FlossGattManagerClient::GattServerCharacteristicReadRequest(
+    std::string address,
+    int32_t request_id,
+    int32_t offset,
+    bool is_long,
+    int32_t handle) {
+  for (auto& observer : gatt_server_observers_) {
+    observer.GattServerCharacteristicReadRequest(address, request_id, offset,
+                                                 is_long, handle);
+  }
+}
+
+void FlossGattManagerClient::GattServerDescriptorReadRequest(
+    std::string address,
+    int32_t request_id,
+    int32_t offset,
+    bool is_long,
+    int32_t handle) {
+  for (auto& observer : gatt_server_observers_) {
+    observer.GattServerDescriptorReadRequest(address, request_id, offset,
+                                             is_long, handle);
+  }
+}
+
+void FlossGattManagerClient::GattServerCharacteristicWriteRequest(
+    std::string address,
+    int32_t request_id,
+    int32_t offset,
+    int32_t length,
+    bool is_prepared_write,
+    bool needs_response,
+    int32_t handle,
+    std::vector<uint8_t> value) {
+  for (auto& observer : gatt_server_observers_) {
+    observer.GattServerCharacteristicWriteRequest(
+        address, request_id, offset, length, is_prepared_write, needs_response,
+        handle, value);
+  }
+}
+
+void FlossGattManagerClient::GattServerDescriptorWriteRequest(
+    std::string address,
+    int32_t request_id,
+    int32_t offset,
+    int32_t length,
+    bool is_prepared_write,
+    bool needs_response,
+    int32_t handle,
+    std::vector<uint8_t> value) {
+  for (auto& observer : gatt_server_observers_) {
+    observer.GattServerDescriptorWriteRequest(address, request_id, offset,
+                                              length, is_prepared_write,
+                                              needs_response, handle, value);
   }
 }
 

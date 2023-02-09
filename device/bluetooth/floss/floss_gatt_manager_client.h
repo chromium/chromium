@@ -242,6 +242,41 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattServerObserver
 
   // A Gatt service has been added to the server.
   virtual void GattServerServiceAdded(GattStatus status, GattService service) {}
+
+  // A remote device has requested to read a Gatt server characteristic.
+  virtual void GattServerCharacteristicReadRequest(std::string address,
+                                                   int32_t request_id,
+                                                   int32_t offset,
+                                                   bool is_long,
+                                                   int32_t handle) {}
+
+  // A remote device has requested to read a Gatt server descriptor.
+  virtual void GattServerDescriptorReadRequest(std::string address,
+                                               int32_t request_id,
+                                               int32_t offset,
+                                               bool is_long,
+                                               int32_t handle) {}
+
+  // A remote device has requested to write to a Gatt server characteristic.
+  virtual void GattServerCharacteristicWriteRequest(
+      std::string address,
+      int32_t request_id,
+      int32_t offset,
+      int32_t length,
+      bool is_prepared_write,
+      bool needs_response,
+      int32_t handle,
+      std::vector<uint8_t> value) {}
+
+  // A remote device has requested to write to a Gatt server descriptor.
+  virtual void GattServerDescriptorWriteRequest(std::string address,
+                                                int32_t request_id,
+                                                int32_t offset,
+                                                int32_t length,
+                                                bool is_prepared_write,
+                                                bool needs_response,
+                                                int32_t handle,
+                                                std::vector<uint8_t> value) {}
 };
 
 class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
@@ -372,6 +407,14 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
   // Clear all Gatt services.
   virtual void ClearServices(ResponseCallback<Void> callback);
 
+  // Send a response to a given device.
+  virtual void SendResponse(ResponseCallback<Void> callback,
+                            const std::string& remote_device,
+                            int32_t request_id,
+                            GattStatus status,
+                            int32_t offset,
+                            std::vector<uint8_t> value);
+
   // Initialize the gatt client for the given adapter.
   void Init(dbus::Bus* bus,
             const std::string& service_name,
@@ -438,6 +481,33 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
                                  bool connected,
                                  std::string address) override;
   void GattServerServiceAdded(GattStatus status, GattService service) override;
+  void GattServerCharacteristicReadRequest(std::string address,
+                                           int32_t request_id,
+                                           int32_t offset,
+                                           bool is_long,
+                                           int32_t handle) override;
+  void GattServerDescriptorReadRequest(std::string address,
+                                       int32_t request_id,
+                                       int32_t offset,
+                                       bool is_long,
+                                       int32_t handle) override;
+  void GattServerCharacteristicWriteRequest(
+      std::string address,
+      int32_t request_id,
+      int32_t offset,
+      int32_t length,
+      bool is_prepared_write,
+      bool needs_response,
+      int32_t handle,
+      std::vector<uint8_t> value) override;
+  void GattServerDescriptorWriteRequest(std::string address,
+                                        int32_t request_id,
+                                        int32_t offset,
+                                        int32_t length,
+                                        bool is_prepared_write,
+                                        bool needs_response,
+                                        int32_t handle,
+                                        std::vector<uint8_t> value) override;
 
   // Managed by FlossDBusManager - we keep local pointer to access object proxy.
   base::raw_ptr<dbus::Bus> bus_ = nullptr;
