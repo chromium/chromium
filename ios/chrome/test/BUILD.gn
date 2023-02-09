@@ -258,6 +258,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/snapshots:unit_tests",
     "//ios/chrome/browser/ssl:unit_tests",
     "//ios/chrome/browser/store_kit:unit_tests",
+    "//ios/chrome/browser/supervised_user:unit_tests",
     "//ios/chrome/browser/sync:unit_tests",
     "//ios/chrome/browser/tabs:unit_tests",
     "//ios/chrome/browser/tabs_search:unit_tests",

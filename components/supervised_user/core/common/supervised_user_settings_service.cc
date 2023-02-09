@@ -259,7 +259,11 @@ SyncData SupervisedUserSettingsService::CreateSyncDataForSetting(
 }
 
 void SupervisedUserSettingsService::Shutdown() {
-  store_->RemoveObserver(this);
+  // Allow calling `Shutdown()` even if `Init(...)` was never
+  // invoked on the service.
+  if (store_) {
+    store_->RemoveObserver(this);
+  }
   shutdown_callback_list_.Notify();
 }
 

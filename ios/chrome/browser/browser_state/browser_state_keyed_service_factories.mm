@@ -66,6 +66,7 @@
 #import "ios/chrome/browser/signin/signin_client_factory.h"
 #import "ios/chrome/browser/signin/signin_error_controller_factory.h"
 #import "ios/chrome/browser/signin/trusted_vault_client_backend_factory.h"
+#import "ios/chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #import "ios/chrome/browser/sync/ios_user_event_service_factory.h"
 #import "ios/chrome/browser/sync/model_type_store_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
@@ -162,6 +163,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   segmentation_platform::SegmentationPlatformServiceFactory::GetInstance();
   SigninBrowserStateInfoUpdaterFactory::GetInstance();
   SigninClientFactory::GetInstance();
+  SupervisedUserSettingsServiceFactory::GetInstance();
   SyncSetupServiceFactory::GetInstance();
   TextToSpeechPlaybackControllerFactory::GetInstance();
   AcceptLanguagesServiceFactory::GetInstance();

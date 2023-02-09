@@ -1,0 +1,31 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("supervised_user") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "supervised_user_settings_service_factory.h",
+    "supervised_user_settings_service_factory.mm",
+  ]
+  deps = [
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
+    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/browser_state",
+  ]
+}
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "supervised_user_settings_service_factory_unittest.mm" ]
+  deps = [
+    ":supervised_user",
+    "//base/test:test_support",
+    "//components/supervised_user/core/common",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/web/public/test",
+  ]
+}
