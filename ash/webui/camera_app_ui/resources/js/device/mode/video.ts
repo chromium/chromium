@@ -219,6 +219,11 @@ export class Video extends ModeBase {
   private autoStopped = false;
 
   /**
+   * Whether the current recording should be stopped.
+   */
+  private stopped = false;
+
+  /**
    * HTMLElement displaying warning about low storage.
    */
   private readonly lowStorageWarningNudge = dom.get('#nudge', HTMLDivElement);
@@ -461,6 +466,7 @@ export class Video extends ModeBase {
     this.togglePausedInternal = null;
     this.everPaused = false;
     this.autoStopped = false;
+    this.stopped = false;
 
     if (this.recordingType === RecordType.NORMAL) {
       const canStart = await this.startMonitorStorage();
@@ -499,6 +505,10 @@ export class Video extends ModeBase {
     } catch (e) {
       toast.show(I18nString.ERROR_MSG_RECORD_START_FAILED);
       throw e;
+    }
+
+    if (this.stopped) {
+      throw new CanceledError('Recording stopped');
     }
 
     this.recordingType = this.getToggledRecordOption();
@@ -581,6 +591,7 @@ export class Video extends ModeBase {
   }
 
   override stop(): void {
+    this.stopped = true;
     if (loadTimeData.getChromeFlag(Flag.LOW_STORAGE_WARNING)) {
       ChromeHelper.getInstance().stopMonitorStorage();
     }
@@ -698,14 +709,17 @@ export class Video extends ModeBase {
         const onStart = () => {
           assert(this.mediaRecorder !== null);
 
+          if (this.stopped) {
+            this.mediaRecorder.stop();
+            return;
+          }
           state.set(state.State.RECORDING, true);
-          this.mediaRecorder.removeEventListener('start', onStart);
         };
 
         assert(this.mediaRecorder !== null);
         this.mediaRecorder.addEventListener('dataavailable', onDataAvailable);
         this.mediaRecorder.addEventListener('stop', onStop);
-        this.mediaRecorder.addEventListener('start', onStart);
+        this.mediaRecorder.addEventListener('start', onStart, {once: true});
 
         window.addEventListener('beforeunload', beforeUnloadListener);
 
