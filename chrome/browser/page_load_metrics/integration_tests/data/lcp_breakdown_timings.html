@@ -1,0 +1,58 @@
+<script>
+  const addText = (element_id) => {
+    const paragraph = document.createElement('p');
+    paragraph.id = element_id;
+    paragraph.innerHTML = 'This is a text larger in size than the green-16x16.png.';
+    document.body.appendChild(paragraph);
+  }
+
+  const addImage = async (url, element_id) => {
+    await new Promise(resolve => {
+      const img = document.createElement('img');
+      img.id = element_id;
+      img.addEventListener('load', resolve);
+      img.src = url;
+      document.body.appendChild(img);
+    });
+  }
+
+  const getLCP = async (id) => {
+    let expected_entries = [];
+    return await new Promise(resolve => {
+      new PerformanceObserver((list, observer) => {
+        list.getEntries().forEach(e => {
+          if (e.id == id) {
+            observer.disconnect();
+            resolve(e.startTime);
+          }
+        });
+      }).observe({ type: "largest-contentful-paint", buffered: true });
+    });
+  };
+
+  let resource_timing;
+  const getResourceTimingEntry = async (url) => {
+    if (resource_timing) {
+      return resource_timing;
+    }
+    resource_timing = await new Promise(resolve => {
+      new PerformanceObserver((list, observer) => {
+        list.getEntries().forEach(entry => {
+          if (entry.name.includes(url)) {
+            observer.disconnect();
+            resolve(entry);
+          }
+        });
+      }).observe({ 'type': 'resource', 'buffered': true });
+    });
+    return resource_timing;
+  }
+
+  const getRequestStart = async (url) => {
+    return (await getResourceTimingEntry(url)).requestStart;
+  }
+
+  const getResponseEnd = async (url) => {
+    return (await getResourceTimingEntry(url)).responseEnd;
+  }
+</script>

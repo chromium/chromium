@@ -58,6 +58,9 @@ class MediaTiming : public GarbageCollectedMixin {
   // Returns the type. For images it would be the specific types like jpg etc.
   // For video, it would be video.
   virtual AtomicString MediaType() const = 0;
+
+  virtual base::TimeTicks LoadStart() const = 0;
+  virtual base::TimeTicks LoadEnd() const = 0;
 };
 
 }  // namespace blink

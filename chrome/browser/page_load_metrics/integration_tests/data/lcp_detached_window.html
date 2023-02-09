@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+
+<head>
+</head>
+
+<body>
+  <script>
+    const addImage = async (openedWindow) => {
+      await new Promise(resolve => {
+        const img = openedWindow.document.createElement('img');
+        img.addEventListener('load', resolve);
+        img.src = '/images/green-16x16.png';
+        openedWindow.document.body.appendChild(img);
+      });
+    }
+
+    const runTest = () => {
+      let otherWindow = window.open(document.location.origin + '/lcp_breakdown_timings.html');
+      otherWindow.addEventListener('load', () => {
+        window.addEventListener('message', otherWindow.close);
+        addImage(otherWindow);
+      });
+    }
+  </script>
+</body>
+
+</html>

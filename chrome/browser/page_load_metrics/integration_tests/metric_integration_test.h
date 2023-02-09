@@ -93,10 +93,20 @@ class MetricIntegrationTest : public InProcessBrowserTest {
   // metric name and value.
   void ExpectUKMPageLoadMetric(base::StringPiece metric_name,
                                int64_t expected_value);
+
+  void ExpectUKMPageLoadMetricNonExistence(base::StringPiece metric_name);
+
+  void ExpectUKMPageLoadMetricNonExistenceWithExpectedPageLoadMetricsNum(
+      unsigned long expected_num_page_load_metrics,
+      base::StringPiece metric_name);
+
   void ExpectUKMPageLoadMetricGreaterThan(base::StringPiece metric_name,
                                           int64_t expected_value);
   void ExpectUKMPageLoadMetricLowerThan(base::StringPiece metric_name,
                                         int64_t expected_value);
+
+  void ExpectUKMPageLoadMetricsInAscendingOrder(base::StringPiece metric_name1,
+                                                base::StringPiece metric_name2);
 
   int64_t GetUKMPageLoadMetricFlagSet(base::StringPiece metric_name);
 

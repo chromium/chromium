@@ -63,6 +63,14 @@ class VideoTiming final : public GarbageCollected<VideoTiming>,
     // TODO(crbug.com/1379728): Revisit priority reporting also for videos.
     return absl::nullopt;
   }
+  // Video timing does not have information about load start/end time. The
+  // functions return 0 Timeticks as placeholders which would not be reported to
+  // UKM.
+  // TODO(crbug.com/1414077): We should determine what the load start and end
+  // time should be for videos.
+  base::TimeTicks LoadStart() const override { return base::TimeTicks(); }
+
+  base::TimeTicks LoadEnd() const override { return base::TimeTicks(); }
 
  private:
   KURL url_;

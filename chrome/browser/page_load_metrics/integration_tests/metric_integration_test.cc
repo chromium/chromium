@@ -154,6 +154,23 @@ void MetricIntegrationTest::ExpectUKMPageLoadMetric(StringPiece metric_name,
                                      expected_value);
 }
 
+void MetricIntegrationTest::ExpectUKMPageLoadMetricNonExistence(
+    StringPiece metric_name) {
+  EXPECT_FALSE(TestUkmRecorder::EntryHasMetric(GetEntry().get(), metric_name));
+}
+
+void MetricIntegrationTest::
+    ExpectUKMPageLoadMetricNonExistenceWithExpectedPageLoadMetricsNum(
+        unsigned long expected_num_page_load_metrics,
+        StringPiece metric_name) {
+  auto merged_entries =
+      ukm_recorder().GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(expected_num_page_load_metrics, merged_entries.size());
+  for (const auto& kv : merged_entries) {
+    EXPECT_FALSE(TestUkmRecorder::EntryHasMetric(kv.second.get(), metric_name));
+  }
+}
+
 void MetricIntegrationTest::ExpectUKMPageLoadMetricGreaterThan(
     base::StringPiece metric_name,
     int64_t expected_value) {
@@ -176,6 +193,22 @@ void MetricIntegrationTest::ExpectUKMPageLoadMetricLowerThan(
   const int64_t* value =
       TestUkmRecorder::GetEntryMetric(kv->second.get(), metric_name);
   EXPECT_LT(*value, expected_value);
+}
+
+void MetricIntegrationTest::ExpectUKMPageLoadMetricsInAscendingOrder(
+    base::StringPiece metric_name1,
+    base::StringPiece metric_name2) {
+  auto merged_entries =
+      ukm_recorder().GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+  const auto& kv = merged_entries.begin();
+  const int64_t* value1 =
+      TestUkmRecorder::GetEntryMetric(kv->second.get(), metric_name1);
+  EXPECT_TRUE(value1 != nullptr);
+  const int64_t* value2 =
+      TestUkmRecorder::GetEntryMetric(kv->second.get(), metric_name2);
+  EXPECT_TRUE(value2 != nullptr);
+  EXPECT_LE(*value1, *value2);
 }
 
 int64_t MetricIntegrationTest::GetUKMPageLoadMetricFlagSet(

@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 
 namespace blink {
 
@@ -208,6 +209,39 @@ absl::optional<WebURLRequest::Priority> PerformanceTimingForReporting::
   }
   return paint_timing_detector
       ->LargestContentfulPaintImageRequestPriorityForMetrics();
+}
+
+absl::optional<base::TimeDelta>
+PerformanceTimingForReporting::LargestContentfulPaintImageLoadStart() const {
+  PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
+
+  DCHECK(paint_timing_detector);
+
+  base::TimeTicks time =
+      paint_timing_detector->LargestImageLoadStartForMetrics();
+
+  // Return nullopt if time is base::TimeTicks(0);
+  if (time.is_null()) {
+    return absl::nullopt;
+  }
+
+  return MonotonicTimeToPseudoWallTime(time);
+}
+
+absl::optional<base::TimeDelta>
+PerformanceTimingForReporting::LargestContentfulPaintImageLoadEnd() const {
+  PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
+
+  DCHECK(paint_timing_detector);
+
+  base::TimeTicks time = paint_timing_detector->LargestImageLoadEndForMetrics();
+
+  // Return nullopt if time is base::TimeTicks(0);
+  if (time.is_null()) {
+    return absl::nullopt;
+  }
+
+  return MonotonicTimeToPseudoWallTime(time);
 }
 
 uint64_t PerformanceTimingForReporting::LargestTextPaintForMetrics() const {

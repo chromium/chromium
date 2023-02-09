@@ -101,6 +101,16 @@ class CORE_EXPORT PerformanceTimingForReporting final
   absl::optional<WebURLRequest::Priority>
   LargestContentfulPaintImageRequestPriorityForMetrics() const;
 
+  // The timestamp when the LCP starts loading. This method is called only when
+  // the LCP corresponds to media elements (image or video). For videos, the
+  // values are 0 and won't be reported to UKM. Effectively, only LCP
+  // corresponding to images have the load start/end reported to UKM.
+  absl::optional<base::TimeDelta> LargestContentfulPaintImageLoadStart() const;
+
+  // The timestamp when the LCP element completes loading. This method works in
+  // the same way as the above LargestContentfulPaintImageLoadStart.
+  absl::optional<base::TimeDelta> LargestContentfulPaintImageLoadEnd() const;
+
   // The time of the first paint of the largest text within viewport.
   // Largest Text Paint is the first paint after the largest text within
   // viewport being painted. LargestTextPaint and LargestTextPaintSize

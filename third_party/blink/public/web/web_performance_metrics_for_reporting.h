@@ -80,6 +80,8 @@ class BLINK_EXPORT WebPerformanceMetricsForReporting {
   double FirstMeaningfulPaint() const;
   double LargestImagePaintForMetrics() const;
   uint64_t LargestImagePaintSizeForMetrics() const;
+  absl::optional<base::TimeDelta> LargestContentfulPaintImageLoadStart() const;
+  absl::optional<base::TimeDelta> LargestContentfulPaintImageLoadEnd() const;
   double LargestTextPaintForMetrics() const;
   uint64_t LargestTextPaintSizeForMetrics() const;
   base::TimeTicks LargestContentfulPaintAsMonotonicTimeForMetrics() const;
