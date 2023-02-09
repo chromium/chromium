@@ -402,6 +402,8 @@ source_set("platform_api_comm") {
     "src/internal/platform/implementation/ble_v2.h",
     "src/internal/platform/implementation/bluetooth_adapter.h",
     "src/internal/platform/implementation/bluetooth_classic.h",
+    "src/internal/platform/implementation/credential_callbacks.h",
+    "src/internal/platform/implementation/credential_storage.h",
     "src/internal/platform/implementation/server_sync.h",
     "src/internal/platform/implementation/webrtc.h",
     "src/internal/platform/implementation/wifi.h",
@@ -411,6 +413,7 @@ source_set("platform_api_comm") {
   ]
   public_deps = [
     ":connections_credential_proto",
+    ":connections_local_credential_proto",
     ":offline_wire_formats_proto",
     ":platform_base",
     ":platform_base_cancellation_flag",
@@ -777,7 +780,7 @@ source_set("presence_types") {
   ]
   public_deps = [
     ":connections_credential_proto",
-    ":connections_device_metadata_proto",
+    ":connections_metadata_proto",
     ":platform_base",
     ":platform_base_connection_info",
     ":platform_public_logging",
@@ -906,13 +909,19 @@ proto_library("connections_credential_proto") {
   proto_in_dir = "src"
   sources = [ "${proto_in_dir}/internal/proto/credential.proto" ]
   proto_out_dir = "third_party/nearby"
-  proto_deps = [ ":connections_device_metadata_proto" ]
-  link_deps = [ ":connections_device_metadata_proto" ]
 }
 
-proto_library("connections_device_metadata_proto") {
+proto_library("connections_local_credential_proto") {
   proto_in_dir = "src"
-  sources = [ "${proto_in_dir}/internal/proto/device_metadata.proto" ]
+  sources = [ "${proto_in_dir}/internal/proto/local_credential.proto" ]
+  proto_out_dir = "third_party/nearby"
+  proto_deps = [ ":connections_credential_proto" ]
+  link_deps = [ ":connections_credential_proto" ]
+}
+
+proto_library("connections_metadata_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/internal/proto/metadata.proto" ]
   proto_out_dir = "third_party/nearby"
 }
 
