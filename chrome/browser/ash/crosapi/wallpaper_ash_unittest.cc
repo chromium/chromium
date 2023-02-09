@@ -92,13 +92,15 @@ class WallpaperAshTest : public testing::Test {
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
 };
 
-TEST_F(WallpaperAshTest, SetWallpaper) {
+// TODO(b/258819982): Remove in M115.
+TEST_F(WallpaperAshTest, SetWallpaperDeprecated) {
   crosapi::mojom::WallpaperSettingsPtr settings =
       crosapi::mojom::WallpaperSettings::New();
   settings->data = CreateJpeg();
+  test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
 
   base::RunLoop loop;
-  wallpaper_ash_.SetWallpaper(
+  wallpaper_ash_.SetWallpaperDeprecated(
       std::move(settings), "extension_id", "extension_name",
       base::BindLambdaForTesting(
           [&loop](const std::vector<uint8_t>& thumbnail_data) {
@@ -110,17 +112,81 @@ TEST_F(WallpaperAshTest, SetWallpaper) {
   ASSERT_EQ(1, test_wallpaper_controller_.get_third_party_wallpaper_count());
 }
 
+// TODO(b/258819982): Remove in M115.
+TEST_F(WallpaperAshTest, SetWallpaperDeprecated_InvalidWallpaper) {
+  crosapi::mojom::WallpaperSettingsPtr settings =
+      crosapi::mojom::WallpaperSettings::New();
+  test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
+  // Created invalid data by not adding a wallpaper image to the settings data.
+
+  base::RunLoop loop;
+  wallpaper_ash_.SetWallpaperDeprecated(
+      std::move(settings), "extension_id", "extension_name",
+      base::BindLambdaForTesting(
+          [&loop](const std::vector<uint8_t>& thumbnail_data) {
+            ASSERT_TRUE(thumbnail_data.empty());
+            loop.Quit();
+          }));
+  loop.Run();
+
+  ASSERT_EQ(0, test_wallpaper_controller_.get_third_party_wallpaper_count());
+}
+
+TEST_F(WallpaperAshTest, SetWallpaper) {
+  crosapi::mojom::WallpaperSettingsPtr settings =
+      crosapi::mojom::WallpaperSettings::New();
+  settings->data = CreateJpeg();
+  test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
+
+  base::RunLoop loop;
+  wallpaper_ash_.SetWallpaper(
+      std::move(settings), "extension_id", "extension_name",
+      base::BindLambdaForTesting(
+          [&loop](const crosapi::mojom::SetWallpaperResultPtr result) {
+            ASSERT_TRUE(result->is_thumbnail_data());
+            ASSERT_FALSE(result->get_thumbnail_data().empty());
+            loop.Quit();
+          }));
+  loop.Run();
+
+  ASSERT_EQ(1, test_wallpaper_controller_.get_third_party_wallpaper_count());
+}
+
 TEST_F(WallpaperAshTest, SetWallpaper_InvalidWallpaper) {
   crosapi::mojom::WallpaperSettingsPtr settings =
       crosapi::mojom::WallpaperSettings::New();
+  test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
   // Created invalid data by not adding a wallpaper image to the settings data.
 
   base::RunLoop loop;
   wallpaper_ash_.SetWallpaper(
       std::move(settings), "extension_id", "extension_name",
       base::BindLambdaForTesting(
-          [&loop](const std::vector<uint8_t>& thumbnail_data) {
-            ASSERT_TRUE(thumbnail_data.empty());
+          [&loop](const crosapi::mojom::SetWallpaperResultPtr result) {
+            ASSERT_TRUE(result->is_error_message());
+            ASSERT_EQ("Decoding wallpaper data failed.",
+                      result->get_error_message());
+            loop.Quit();
+          }));
+  loop.Run();
+
+  ASSERT_EQ(0, test_wallpaper_controller_.get_third_party_wallpaper_count());
+}
+
+TEST_F(WallpaperAshTest, SetWallpaper_InvalidUser) {
+  crosapi::mojom::WallpaperSettingsPtr settings =
+      crosapi::mojom::WallpaperSettings::New();
+  settings->data = CreateJpeg();
+  // Setting the wallpaper fails because we haven't set the current user.
+
+  base::RunLoop loop;
+  wallpaper_ash_.SetWallpaper(
+      std::move(settings), "extension_id", "extension_name",
+      base::BindLambdaForTesting(
+          [&loop](const crosapi::mojom::SetWallpaperResultPtr result) {
+            ASSERT_TRUE(result->is_error_message());
+            ASSERT_EQ("Setting the wallpaper failed due to user permissions.",
+                      result->get_error_message());
             loop.Quit();
           }));
   loop.Run();

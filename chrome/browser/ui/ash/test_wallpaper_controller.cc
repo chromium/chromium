@@ -14,6 +14,7 @@
 #include "base/ranges/algorithm.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
+#include "test_wallpaper_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -162,11 +163,18 @@ void TestWallpaperController::SetDevicePolicyWallpaperPath(
   NOTIMPLEMENTED();
 }
 
+void TestWallpaperController::SetCurrentUser(const AccountId& account_id) {
+  current_account_id = account_id;
+}
+
 bool TestWallpaperController::SetThirdPartyWallpaper(
     const AccountId& account_id,
     const std::string& file_name,
     ash::WallpaperLayout layout,
     const gfx::ImageSkia& image) {
+  if (current_account_id != account_id) {
+    return false;
+  }
   ShowWallpaperImage(image);
   ++third_party_wallpaper_count_;
   return true;

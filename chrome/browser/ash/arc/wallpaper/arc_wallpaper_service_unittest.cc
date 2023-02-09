@@ -143,6 +143,7 @@ TEST_F(ArcWallpaperServiceTest, SetAndGetWallpaper) {
   service_->SetDecodeRequestSenderForTesting(
       std::make_unique<SuccessDecodeRequestSender>());
   std::vector<uint8_t> bytes;
+  test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
   service_->SetWallpaper(bytes, 10 /*wallpaper_id=*/);
   ASSERT_EQ(1u, wallpaper_instance_->changed_ids().size());
   EXPECT_EQ(10, wallpaper_instance_->changed_ids()[0]);
@@ -159,6 +160,7 @@ TEST_F(ArcWallpaperServiceTest, SetAndGetWallpaper) {
 TEST_F(ArcWallpaperServiceTest, SetWallpaperFailure) {
   service_->SetDecodeRequestSenderForTesting(
       std::make_unique<FailureDecodeRequestSender>());
+  test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
   std::vector<uint8_t> bytes;
   service_->SetWallpaper(bytes, 10 /*wallpaper_id=*/);
 

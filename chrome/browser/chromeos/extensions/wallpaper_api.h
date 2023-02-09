@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chrome/common/extensions/api/wallpaper.h"
+#include "chromeos/crosapi/mojom/wallpaper.mojom.h"
 #include "components/account_id/account_id.h"
 #include "extensions/browser/extension_function.h"
 
@@ -36,7 +37,10 @@ class WallpaperSetWallpaperFunction : public ExtensionFunction {
   // Called by OnURLFetchComplete().
   void OnWallpaperFetched(bool success, const std::string& response);
 
-  void OnWallpaperSetOnAsh(const std::vector<uint8_t>& thumbnail);
+  // TODO(b/258819982): Remove in M115.
+  void OnWallpaperSetOnAshDeprecated(const std::vector<uint8_t>& thumbnail);
+
+  void OnWallpaperSetOnAsh(const crosapi::mojom::SetWallpaperResultPtr result);
 
   void SetWallpaperOnAsh();
 

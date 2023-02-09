@@ -112,6 +112,7 @@ class TestWallpaperController : public ash::WallpaperController {
   bool GetDailyGooglePhotosWallpaperIdCache(
       const AccountId& account_id,
       DailyGooglePhotosIdCache& ids_out) const override;
+  void SetCurrentUser(const AccountId& account_id);
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper,
                            SetWallpaperCallback callback) override;
@@ -125,6 +126,8 @@ class TestWallpaperController : public ash::WallpaperController {
                           const std::string& data) override;
   void SetDevicePolicyWallpaperPath(
       const base::FilePath& device_policy_wallpaper_path) override;
+  // Call `SetCurrentUser` with the account_id before calling
+  // SetThirdPartyWallpaper, or else it will fail.
   bool SetThirdPartyWallpaper(const AccountId& account_id,
                               const std::string& file_name,
                               ash::WallpaperLayout layout,
@@ -182,6 +185,7 @@ class TestWallpaperController : public ash::WallpaperController {
 
   base::ObserverList<ash::WallpaperControllerObserver>::Unchecked observers_;
 
+  AccountId current_account_id;
   gfx::ImageSkia current_wallpaper;
 };
 

@@ -208,6 +208,17 @@ void WallpaperSetWallpaperFunction::OnWallpaperFetched(
 }
 
 void WallpaperSetWallpaperFunction::OnWallpaperSetOnAsh(
+    const crosapi::mojom::SetWallpaperResultPtr result) {
+  if (result->is_thumbnail_data()) {
+    Respond(params_->details.thumbnail
+                ? WithArguments(Value(std::move(result->get_thumbnail_data())))
+                : NoArguments());
+  } else {
+    Respond(Error(result->get_error_message()));
+  }
+}
+
+void WallpaperSetWallpaperFunction::OnWallpaperSetOnAshDeprecated(
     const std::vector<uint8_t>& thumbnail_data) {
   Respond(params_->details.thumbnail
               ? WithArguments(Value(std::move(thumbnail_data)))
@@ -235,8 +246,28 @@ void WallpaperSetWallpaperFunction::SetWallpaperOnAsh() {
     return;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto ash_version = chromeos::LacrosService::Get()
+                         ->GetInterfaceVersion<crosapi::mojom::Wallpaper>();
+  if (ash_version <
+      static_cast<int>(crosapi::mojom::Wallpaper::kSetWallpaperMinVersion)) {
+    wallpaper_api->SetWallpaperDeprecated(
+        std::move(settings), extension_id, extension_name,
+        base::BindOnce(
+            &WallpaperSetWallpaperFunction::OnWallpaperSetOnAshDeprecated,
+            this));
+  } else {
+    wallpaper_api->SetWallpaper(
+        std::move(settings), extension_id, extension_name,
+        base::BindOnce(&WallpaperSetWallpaperFunction::OnWallpaperSetOnAsh,
+                       this));
+  }
+#else
+  // Without lacros, there is never a version mismatch between this file and
+  // wallpaper_ash.
   wallpaper_api->SetWallpaper(
       std::move(settings), extension_id, extension_name,
       base::BindOnce(&WallpaperSetWallpaperFunction::OnWallpaperSetOnAsh,
                      this));
+#endif
 }

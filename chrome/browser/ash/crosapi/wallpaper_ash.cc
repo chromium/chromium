@@ -85,6 +85,30 @@ void WallpaperAsh::BindReceiver(
   receivers_.Add(this, std::move(pending_receiver));
 }
 
+void WallpaperAsh::SetWallpaperDeprecated(
+    mojom::WallpaperSettingsPtr wallpaper_settings,
+    const std::string& extension_id,
+    const std::string& extension_name,
+    SetWallpaperDeprecatedCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(ash::LoginState::Get()->IsUserLoggedIn());
+  // Prevent any in progress decodes from changing wallpaper.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  // Notify the last pending request, if any, that it is canceled.
+  if (deprecated_pending_callback_) {
+    std::move(deprecated_pending_callback_).Run(std::vector<uint8_t>());
+  }
+  deprecated_pending_callback_ = std::move(callback);
+  const std::vector<uint8_t>& data = wallpaper_settings->data;
+  data_decoder::DecodeImage(
+      &data_decoder_, data, data_decoder::mojom::ImageCodec::kDefault,
+      /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes,
+      /*desired_image_frame_size=*/gfx::Size(),
+      base::BindOnce(
+          &WallpaperAsh::OnWallpaperDecoded, weak_ptr_factory_.GetWeakPtr(),
+          std::move(wallpaper_settings), extension_id, extension_name));
+}
+
 void WallpaperAsh::SetWallpaper(mojom::WallpaperSettingsPtr wallpaper_settings,
                                 const std::string& extension_id,
                                 const std::string& extension_name,
@@ -95,7 +119,8 @@ void WallpaperAsh::SetWallpaper(mojom::WallpaperSettingsPtr wallpaper_settings,
   weak_ptr_factory_.InvalidateWeakPtrs();
   // Notify the last pending request, if any, that it is canceled.
   if (pending_callback_) {
-    std::move(pending_callback_).Run(std::vector<uint8_t>());
+    SendErrorResult(
+        "Received a new SetWallpaper request that overrides this one.");
   }
   pending_callback_ = std::move(callback);
   const std::vector<uint8_t>& data = wallpaper_settings->data;
@@ -117,8 +142,7 @@ void WallpaperAsh::OnWallpaperDecoded(
   if (bitmap.isNull()) {
     LOG(ERROR) << "Decoding wallpaper data failed from extension_id '"
                << extension_id << "'";
-    DCHECK(pending_callback_);
-    std::move(pending_callback_).Run(std::vector<uint8_t>());
+    SendErrorResult("Decoding wallpaper data failed.");
     return;
   }
   ash::WallpaperLayout layout = GetLayoutEnum(wallpaper_settings->layout);
@@ -139,8 +163,16 @@ void WallpaperAsh::OnWallpaperDecoded(
   gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(immutable_bitmap);
   image.MakeThreadSafe();
 
-  WallpaperControllerClientImpl::Get()->SetThirdPartyWallpaper(
+  bool success = WallpaperControllerClientImpl::Get()->SetThirdPartyWallpaper(
       account_id, file_name, layout, image);
+
+  if (!success) {
+    const std::string error =
+        "Setting the wallpaper failed due to user permissions.";
+    LOG(ERROR) << error;
+    SendErrorResult(error);
+    return;
+  }
 
   // We need to generate thumbnail image anyway to make the current third party
   // wallpaper syncable through different devices.
@@ -148,8 +180,36 @@ void WallpaperAsh::OnWallpaperDecoded(
   std::vector<uint8_t> thumbnail_data = GenerateThumbnail(
       image, gfx::Size(kWallpaperThumbnailWidth, kWallpaperThumbnailHeight));
 
-  DCHECK(pending_callback_);
-  std::move(pending_callback_).Run(thumbnail_data);
+  SendSuccessResult(thumbnail_data);
 }
 
+void WallpaperAsh::SendErrorResult(const std::string& response) {
+  if (pending_callback_) {
+    DCHECK(!deprecated_pending_callback_)
+        << "There should only be one callback at a time.";
+    std::move(pending_callback_)
+        .Run(crosapi::mojom::SetWallpaperResult::NewErrorMessage(response));
+  }
+  if (deprecated_pending_callback_) {
+    DCHECK(!pending_callback_)
+        << "There should only be one callback at a time.";
+    std::move(deprecated_pending_callback_).Run(std::vector<uint8_t>());
+  }
+}
+
+void WallpaperAsh::SendSuccessResult(
+    const std::vector<uint8_t>& thumbnail_data) {
+  if (pending_callback_) {
+    DCHECK(!deprecated_pending_callback_)
+        << "There should only be one callback at a time.";
+    std::move(pending_callback_)
+        .Run(crosapi::mojom::SetWallpaperResult::NewThumbnailData(
+            thumbnail_data));
+  }
+  if (deprecated_pending_callback_) {
+    DCHECK(!pending_callback_)
+        << "There should only be one callback at a time.";
+    std::move(deprecated_pending_callback_).Run(thumbnail_data);
+  }
+}
 }  // namespace crosapi

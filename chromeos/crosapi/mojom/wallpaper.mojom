@@ -12,6 +12,14 @@ enum WallpaperLayout {
   kCenterCropped = 3,
 };
 
+[Stable]
+union SetWallpaperResult {
+  // On success, the thumbnail data of the wallpaper image is returned.
+  array<uint8> thumbnail_data;
+  // On failure, an error message is returned.
+  string error_message;
+};
+
 [Stable, Uuid="a2940756-55ef-4fc7-af10-f74a5bba6716"]
 struct WallpaperSettings {
  array<uint8> data@0;      // The jpeg or png encoded wallpaper image.
@@ -23,11 +31,23 @@ struct WallpaperSettings {
 // |extension_id| and |extension_name| are from the extension that is setting
 // the wallpaper (ie, using the wallpaper API). This information is used
 // internally to notify the Wallpaper Manager about the change.
-// Next version: 1
-// Next method id: 1
+//
+// The operation can fail if:
+// 1) there is an error decoding the image.
+// 2) the user is not permitted to change the wallpaper.
+// 3) updating the on-screen wallpaper is not allowed at the moment.
+// Next version: 2
+// Next method id: 2
 [Stable, Uuid="e2529a0d-9b3d-4ca3-9cca-23bc94a709e9"]
 interface Wallpaper {
-  // Sets the wallpaper.
-  SetWallpaper@0(WallpaperSettings wallpaper, string extension_id,
-      string extension_name) => (array<uint8> thumbnail_data);
+  // Sets the wallpaper. Deprecated in M112. Use SetWallpaper instead.
+  // TODO(b/258819982): Remove SetWallpaperDeprecated in M115.
+  SetWallpaperDeprecated@0(WallpaperSettings wallpaper, string extension_id,
+                  string extension_name) => (array<uint8> thumbnail_data);
+
+  // Sets the wallpaper and returns the result.
+  [MinVersion=1]
+  SetWallpaper@1(WallpaperSettings wallpaper, string exension_id,
+                              string extension_name)
+      => (SetWallpaperResult result);
 };

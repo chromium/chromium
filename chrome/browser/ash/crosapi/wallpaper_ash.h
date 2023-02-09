@@ -27,6 +27,14 @@ class WallpaperAsh : public mojom::Wallpaper {
   void BindReceiver(mojo::PendingReceiver<mojom::Wallpaper> receiver);
 
   // mojom::Wallpaper:
+  // Use SetWallpaper instead of SetWallpaperDeprecated. SetWallpaper has more
+  // comprehensive error responses when failing to download, decode, or set
+  // wallpapers.
+  // TODO(b/258819982): Remove in M115.
+  void SetWallpaperDeprecated(mojom::WallpaperSettingsPtr wallpaper_settings,
+                              const std::string& extension_id,
+                              const std::string& extension_name,
+                              SetWallpaperDeprecatedCallback callback) override;
   void SetWallpaper(mojom::WallpaperSettingsPtr wallpaper_settings,
                     const std::string& extension_id,
                     const std::string& extension_name,
@@ -37,8 +45,12 @@ class WallpaperAsh : public mojom::Wallpaper {
                           const std::string& extension_id,
                           const std::string& extension_name,
                           const SkBitmap& bitmap);
+  void SendErrorResult(const std::string& response);
+  void SendSuccessResult(const std::vector<uint8_t>& thumbnail_data);
 
   mojo::ReceiverSet<mojom::Wallpaper> receivers_;
+  // TODO(b/258819982): Remove in M115.
+  SetWallpaperDeprecatedCallback deprecated_pending_callback_;
   SetWallpaperCallback pending_callback_;
   data_decoder::DataDecoder data_decoder_;
   base::WeakPtrFactory<WallpaperAsh> weak_ptr_factory_{this};
