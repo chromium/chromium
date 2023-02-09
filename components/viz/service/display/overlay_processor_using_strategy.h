@@ -185,24 +185,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // pass through to hardware through CheckOverlaySupport. It is not passed
   // through as a const member because the underlay strategy changes the
   // |primary_plane|'s blending setting.
-  bool AttemptWithStrategies(
-      const SkM44& output_color_matrix,
-      const OverlayProcessorInterface::FilterOperationsMap&
-          render_pass_backdrop_filters,
-      DisplayResourceProvider* resource_provider,
-      AggregatedRenderPassList* render_pass_list,
-      SurfaceDamageRectList* surface_damage_rect_list,
-      OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
-      OverlayCandidateList* candidates,
-      std::vector<gfx::Rect>* content_bounds);
-
-  // Iterate through a list of strategies and attempt to overlay with each.
-  // Returns true if one of the attempts is successful. Has to be called after
-  // InitializeStrategies(). A |primary_plane| represents the output surface's
-  // buffer that comes from |BufferQueue|. It is passed in here so it could be
-  // pass through to hardware through CheckOverlaySupport. It is not passed
-  // through as a const member because the underlay strategy changes the
-  // |primary_plane|'s blending setting.
   bool AttemptWithStrategiesPrioritized(
       const SkM44& output_color_matrix,
       const OverlayProcessorInterface::FilterOperationsMap&

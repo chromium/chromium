@@ -27,16 +27,6 @@ class VIZ_SERVICE_EXPORT OverlayStrategySingleOnTop
 
   ~OverlayStrategySingleOnTop() override;
 
-  bool Attempt(const SkM44& output_color_matrix,
-               const OverlayProcessorInterface::FilterOperationsMap&
-                   render_pass_backdrop_filters,
-               DisplayResourceProvider* resource_provider,
-               AggregatedRenderPassList* render_pass,
-               SurfaceDamageRectList* surface_damage_rect_list,
-               const PrimaryPlane* primary_plane,
-               OverlayCandidateList* candidate_list,
-               std::vector<gfx::Rect>* content_bounds) override;
-
   void ProposePrioritized(const SkM44& output_color_matrix,
                           const OverlayProcessorInterface::FilterOperationsMap&
                               render_pass_backdrop_filters,
@@ -75,7 +65,6 @@ class VIZ_SERVICE_EXPORT OverlayStrategySingleOnTop
   raw_ptr<OverlayProcessorUsingStrategy> capability_checker_;  // Weak.
 
   ResourceId previous_frame_resource_id_ = kInvalidResourceId;
-  size_t same_resource_id_frames_count_ = 0;
 };
 
 }  // namespace viz

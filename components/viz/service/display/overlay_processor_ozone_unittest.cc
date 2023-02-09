@@ -269,15 +269,9 @@ TEST(OverlayProcessorOzoneTest, ObserveHardwareCapabilites) {
   OverlayCandidateList candidates;
   // Enable 4 overlays
   const std::vector<base::test::FeatureRefAndParams> feature_and_params_list = {
-      {features::kEnableOverlayPrioritization, {}},
       {features::kUseMultipleOverlays, {{features::kMaxOverlaysParam, "4"}}}};
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitWithFeaturesAndParameters(feature_and_params_list, {});
-  // When overlay prioritization is explicitly disabled (Lacros) we should
-  // skip multiple overlays tests.
-  if (!features::IsOverlayPrioritizationEnabled()) {
-    GTEST_SKIP();
-  }
 
   auto fake_candidates_unique = std::make_unique<FakeOverlayCandidatesOzone>();
   auto* fake_candidates = fake_candidates_unique.get();

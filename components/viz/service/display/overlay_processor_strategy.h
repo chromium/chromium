@@ -25,21 +25,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStrategy {
   virtual ~OverlayProcessorStrategy() = default;
   using PrimaryPlane = OverlayProcessorInterface::OutputSurfaceOverlayPlane;
 
-  // Returns false if the strategy cannot be made to work with the
-  // current set of render passes. Returns true if the strategy was successful
-  // and adds any additional passes necessary to represent overlays to
-  // |render_pass_list|. Most strategies should look at the primary
-  // RenderPass, the last element.
-  virtual bool Attempt(const SkM44& output_color_matrix,
-                       const OverlayProcessorInterface::FilterOperationsMap&
-                           render_pass_backdrop_filters,
-                       DisplayResourceProvider* resource_provider,
-                       AggregatedRenderPassList* render_pass_list,
-                       SurfaceDamageRectList* surface_damage_rect_list,
-                       const PrimaryPlane* primary_plane,
-                       OverlayCandidateList* candidates,
-                       std::vector<gfx::Rect>* content_bounds) = 0;
-
   // Appends all legitimate overlay candidates to the list |candidates|
   // for this strategy.  It is very important to note that this function
   // should not attempt a specific candidate it should merely identify them

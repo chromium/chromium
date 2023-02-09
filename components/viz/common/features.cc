@@ -33,10 +33,6 @@ const char kDynamicSchedulerPercentile[] = "percentile";
 
 namespace features {
 
-BASE_FEATURE(kEnableOverlayPrioritization,
-             "EnableOverlayPrioritization",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUseMultipleOverlays,
              "UseMultipleOverlays",
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -230,10 +226,6 @@ BASE_FEATURE(kRendererAllocatesImages,
 BASE_FEATURE(kEvictSubtree, "EvictSubtree", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-bool IsOverlayPrioritizationEnabled() {
-  return base::FeatureList::IsEnabled(kEnableOverlayPrioritization);
-}
-
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
 }
@@ -356,10 +348,6 @@ absl::optional<double> IsDynamicSchedulerEnabledForClients() {
 }
 
 int MaxOverlaysConsidered() {
-  if (!IsOverlayPrioritizationEnabled()) {
-    return 1;
-  }
-
   if (!base::FeatureList::IsEnabled(kUseMultipleOverlays)) {
     return 1;
   }

@@ -174,17 +174,10 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
   // CALayers because the framebuffer would be missing the removed quads'
   // contents.
   if (render_pass->copy_requests.empty()) {
-    if (features::IsOverlayPrioritizationEnabled()) {
-      success = AttemptWithStrategiesPrioritized(
-          output_color_matrix, render_pass_backdrop_filters, resource_provider,
-          render_passes, &surface_damage_rect_list, output_surface_plane,
-          candidates, content_bounds, damage_rect);
-    } else {
-      success = AttemptWithStrategies(
-          output_color_matrix, render_pass_backdrop_filters, resource_provider,
-          render_passes, &surface_damage_rect_list, output_surface_plane,
-          candidates, content_bounds);
-    }
+    success = AttemptWithStrategiesPrioritized(
+        output_color_matrix, render_pass_backdrop_filters, resource_provider,
+        render_passes, &surface_damage_rect_list, output_surface_plane,
+        candidates, content_bounds, damage_rect);
   }
   LogCheckOverlaySupportMetrics();
 
@@ -436,35 +429,6 @@ void OverlayProcessorUsingStrategy::AdjustOutputSurfaceOverlay(
   if (last_successful_strategy_ &&
       last_successful_strategy_->RemoveOutputSurfaceAsOverlay())
     output_surface_plane->reset();
-}
-
-bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
-    const SkM44& output_color_matrix,
-    const OverlayProcessorInterface::FilterOperationsMap&
-        render_pass_backdrop_filters,
-    DisplayResourceProvider* resource_provider,
-    AggregatedRenderPassList* render_pass_list,
-    SurfaceDamageRectList* surface_damage_rect_list,
-    OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
-    OverlayCandidateList* candidates,
-    std::vector<gfx::Rect>* content_bounds) {
-  last_successful_strategy_ = nullptr;
-  for (const auto& strategy : strategies_) {
-    if (strategy->Attempt(output_color_matrix, render_pass_backdrop_filters,
-                          resource_provider, render_pass_list,
-                          surface_damage_rect_list, primary_plane, candidates,
-                          content_bounds)) {
-      // This function is used by underlay strategy to mark the primary plane as
-      // enable_blending.
-      strategy->AdjustOutputSurfaceOverlay(primary_plane);
-      LogStrategyEnumUMA(strategy->GetUMAEnum());
-      last_successful_strategy_ = strategy.get();
-      return true;
-    }
-  }
-
-  LogStrategyEnumUMA(OverlayStrategy::kNoStrategyUsed);
-  return false;
 }
 
 void OverlayProcessorUsingStrategy::SortProposedOverlayCandidatesPrioritized(

@@ -20,68 +20,6 @@ OverlayStrategySingleOnTop::OverlayStrategySingleOnTop(
 
 OverlayStrategySingleOnTop::~OverlayStrategySingleOnTop() {}
 
-bool OverlayStrategySingleOnTop::Attempt(
-    const SkM44& output_color_matrix,
-    const OverlayProcessorInterface::FilterOperationsMap&
-        render_pass_backdrop_filters,
-    DisplayResourceProvider* resource_provider,
-    AggregatedRenderPassList* render_pass_list,
-    SurfaceDamageRectList* surface_damage_rect_list,
-    const PrimaryPlane* primary_plane,
-    OverlayCandidateList* candidate_list,
-    std::vector<gfx::Rect>* content_bounds) {
-  // Before we attempt an overlay strategy, we shouldn't have a candidate.
-  DCHECK(candidate_list->empty());
-  auto* render_pass = render_pass_list->back().get();
-  QuadList* quad_list = &render_pass->quad_list;
-  // Build a list of candidates with the associated quad.
-  OverlayCandidate best_candidate;
-  OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
-      render_pass, resource_provider, surface_damage_rect_list,
-      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane));
-
-  auto best_quad_it = quad_list->end();
-  for (auto it = quad_list->begin(); it != quad_list->end(); ++it) {
-    OverlayCandidate candidate;
-    if (candidate_factory.FromDrawQuad(*it, candidate) ==
-            OverlayCandidate::CandidateStatus::kSuccess &&
-        !candidate.has_mask_filter &&
-        !OverlayCandidate::IsOccluded(candidate, quad_list->cbegin(), it)) {
-      // If the candidate has been promoted previously and has not changed
-      // (resource ID is the same) for 3 frames, do not use it as Overlay as
-      // flattening it to the main fb will be more power efficient when the
-      // contents don't change.
-      if (candidate.resource_id == previous_frame_resource_id_ &&
-          ++same_resource_id_frames_count_ >
-              kMaxFrameCandidateWithSameResourceId) {
-        continue;
-      }
-      if (candidate.display_rect.size().GetArea() >
-          best_candidate.display_rect.size().GetArea()) {
-        best_candidate = candidate;
-        best_quad_it = it;
-      }
-    }
-  }
-  if (best_quad_it == quad_list->end())
-    return false;
-
-  OverlayProposedCandidate proposed_candidate(best_quad_it, best_candidate,
-                                              this);
-  if (TryOverlay(render_pass, primary_plane, candidate_list,
-                 proposed_candidate)) {
-    if (previous_frame_resource_id_ != best_candidate.resource_id) {
-      previous_frame_resource_id_ = best_candidate.resource_id;
-      same_resource_id_frames_count_ = 1;
-    }
-    return true;
-  } else {
-    previous_frame_resource_id_ = kInvalidResourceId;
-    same_resource_id_frames_count_ = 0;
-    return false;
-  }
-}
-
 void OverlayStrategySingleOnTop::ProposePrioritized(
     const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&

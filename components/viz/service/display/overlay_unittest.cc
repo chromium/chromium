@@ -739,19 +739,8 @@ class UseMultipleOverlaysTest : public OverlayTest<OverlayProcessorType> {
   UseMultipleOverlaysTest() {
     // To use more than one overlay, we need to enable some features.
     const std::vector<base::test::FeatureRefAndParams> featureAndParamsList = {
-        {features::kEnableOverlayPrioritization, {}},
         {features::kUseMultipleOverlays, {{features::kMaxOverlaysParam, "4"}}}};
     scoped_features.InitWithFeaturesAndParameters(featureAndParamsList, {});
-  }
-
- protected:
-  void SetUp() override {
-    OverlayTest<OverlayProcessorType>::SetUp();
-    // When overlay prioritization is explicitly disabled (Lacros) we should
-    // skip multiple overlays tests.
-    if (!features::IsOverlayPrioritizationEnabled()) {
-      GTEST_SKIP();
-    }
   }
 
  private:
@@ -1102,9 +1091,6 @@ TEST_F(SingleOverlayOnTopTest, PrioritizeBiggerOne) {
 // significant error. Here we test that if we have two candidates with same
 // tracking id the first candidate in the root is selected for overlay.
 TEST_F(SingleOverlayOnTopTest, CandidateIdCollision) {
-  if (!features::IsOverlayPrioritizationEnabled())
-    return;
-
   auto pass = CreateRenderPass();
   const auto kCandidateRect = gfx::Rect(0, 0, 16, 16);
   TextureDrawQuad* quad_a = CreateCandidateQuadAt(
@@ -1168,9 +1154,6 @@ TEST_F(SingleOverlayOnTopTest, CandidateIdCollision) {
 // Tests to make sure that quads from different surfaces have different
 // candidate tracking ids.
 TEST_F(SingleOverlayOnTopTest, CandidateTrackIdUniqueSurface) {
-  if (!features::IsOverlayPrioritizationEnabled())
-    return;
-
   auto pass = CreateRenderPass();
   const auto kCandidateRect = gfx::Rect(0, 0, 16, 16);
   TextureDrawQuad* quad_a = CreateCandidateQuadAt(
@@ -1206,9 +1189,6 @@ TEST_F(SingleOverlayOnTopTest, CandidateTrackIdUniqueSurface) {
 // prioritization to be very indecisive and flip priorities every frame. The
 // root cause for this issue has been resolved.
 TEST_F(SingleOverlayOnTopTest, StablePrioritizeIntervalFrame) {
-  if (!features::IsOverlayPrioritizationEnabled())
-    return;
-
   const auto kCandidateRectA = gfx::Rect(0, 0, 16, 16);
   // Add a bigger quad below the previous one, but not occluded.
   const auto kCandidateRectB = gfx::Rect(20, 20, 16, 16);
@@ -2195,10 +2175,6 @@ TEST_F(UnderlayTest, DisallowFilteredQuadOnTop) {
 }
 
 TEST_F(UnderlayTest, AllowFilteredQuadOnTopForProtectedVideo) {
-  // This is only used in the overlay prioritization path.
-  if (!features::IsOverlayPrioritizationEnabled())
-    return;
-
   auto pass = CreateRenderPass();
 
   AggregatedRenderPassId render_pass_id{3};
@@ -2501,17 +2477,10 @@ TEST_F(SingleOverlayOnTopTest, CheckPromotionHintBasic) {
 }
 
 TEST_F(ChangeSingleOnTopTest, DoNotPromoteIfContentsDontChange) {
-  // Resource ID for the repeated quads. Value should be equivalent to
-  // OverlayStrategySingleOnTop::kMaxFrameCandidateWithSameResourceId.
-  size_t kFramesSkippedBeforeNotPromoting = 3;
-
-  // The overlay prioritization feature supports overlay demotion for unchanging
-  // overlays however the timing is slightly different as prioritization is
-  // frame counter based.
-  if (features::IsOverlayPrioritizationEnabled()) {
-    kFramesSkippedBeforeNotPromoting =
-        overlay_processor_->TrackerConfigAccessor().max_num_frames_avg;
-  }
+  // Overlay demotion for unchanging overlays is frame counter based because of
+  // overlay prioritization.
+  size_t kFramesSkippedBeforeNotPromoting =
+      overlay_processor_->TrackerConfigAccessor().max_num_frames_avg;
 
   ResourceId previous_resource_id;
   int64_t frame_counter = 0;
@@ -2582,13 +2551,6 @@ TEST_F(ChangeSingleOnTopTest, DoNotPromoteIfContentsDontChange) {
 }
 
 TEST_F(FullThresholdTest, ThresholdTestForPrioritization) {
-  // This test is specific to the prioritized version of the overlay strategies.
-  // The thresholds of damage and frame rate are only features of
-  // prioritization.
-  if (!features::IsOverlayPrioritizationEnabled()) {
-    return;
-  }
-
   int64_t frame_counter = 0;
   // This is a helper function to simulate framerates.
 
@@ -4478,10 +4440,6 @@ TEST_F(UnderlayTest, ProtectedVideoOverlayScaling) {
   // This test verifies the algorithm used when adjusting the scaling for
   // protected content due to HW overlay scaling limitations where we resort
   // to clipping when we need to downscale beyond the HW's limits.
-
-  // This is only used in the overlay prioritization path.
-  if (!features::IsOverlayPrioritizationEnabled())
-    return;
 
   // 0.5 should fail, and then it'll increase it by 0.5 each try until it
   // succeeds. Have it succeed at 0.65f.
