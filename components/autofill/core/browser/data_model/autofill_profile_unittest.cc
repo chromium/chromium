@@ -1803,8 +1803,8 @@ class ProfileRankingTest
 TEST_P(ProfileRankingTest, HasGreaterRankingThan) {
   // Enable kAutofillEnableRankingFormulaProfiles so that it uses the new
   // formula instead of frecency.
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
       features::kAutofillEnableRankingFormulaAddressProfiles);
 
   auto test_case = GetParam();

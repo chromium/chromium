@@ -1995,8 +1995,8 @@ class VirtualCardRankingTest
 TEST_P(VirtualCardRankingTest, HasGreaterRankingThan) {
   // Enable kAutofillEnableRankingFormulaCreditCards so that it uses new formula
   // instead of frecency.
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
       features::kAutofillEnableRankingFormulaCreditCards);
 
   auto test_case = GetParam();
