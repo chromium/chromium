@@ -122,37 +122,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PaymentRequest.ManifestVerifierCacheHitPaymentMethod"
-    enum="Boolean" expires_after="M120">
-  <owner>pkotwicz@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records whether the payment ManifestVerifier found the payment method
-    manifest in the browser cache.
-  </summary>
-</histogram>
-
-<histogram
-    name="PaymentRequest.ManifestVerifierCheckCachePaymentMethodDuration"
-    units="ms" expires_after="M120">
-  <owner>pkotwicz@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records how long it takes to check the browser cache for the payment method
-    manifest.
-  </summary>
-</histogram>
-
-<histogram
-    name="PaymentRequest.ManifestVerifierDownloadAndParseMethodManifestDuration"
-    units="ms" expires_after="M120">
-  <owner>pkotwicz@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records how long it takes to download the payment method manifest.
-  </summary>
-</histogram>
-
 <histogram name="PaymentRequest.NumberOfSuggestionsShown" units="units"
     expires_after="2022-11-22">
   <owner>rouslan@chromium.org</owner>
