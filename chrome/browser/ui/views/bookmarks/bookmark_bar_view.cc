@@ -1854,8 +1854,7 @@ void BookmarkBarView::UpdateAppearanceForTheme() {
       chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kManaged,
                                     kColorBookmarkFolderIcon));
 
-  if (apps_page_shortcut_->GetVisible())
-    apps_page_shortcut_->SetEnabledTextColors(color);
+  apps_page_shortcut_->SetEnabledTextColors(color);
 
   const SkColor overflow_color =
       color_provider->GetColor(kColorBookmarkButtonIcon);
