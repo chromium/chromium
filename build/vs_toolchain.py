@@ -318,7 +318,14 @@ def _CopyUCRTRuntime(target_dir, source_dir, target_cpu, suffix):
     version_dirs = glob.glob(os.path.join(redist_dir, '10.*'))
     if len(version_dirs) > 0:
       _SortByHighestVersionNumberFirst(version_dirs)
-      redist_dir = version_dirs[0]
+      # With SDK installed through VS2022,
+      # C:\Program Files (x86)\Windows Kits\10\Redist\10.0.22621.0
+      # does not have a UCRT directory. Redist\10.0.22000.0 does have a UCRT
+      # directory with the files we need.
+      for directory in version_dirs:
+        if os.path.isdir(os.path.join(directory, 'ucrt')):
+          redist_dir = directory
+          break
     ucrt_dll_dirs = os.path.join(redist_dir, 'ucrt', 'DLLs', target_cpu)
     ucrt_files = glob.glob(os.path.join(ucrt_dll_dirs, 'api-ms-win-*.dll'))
     assert len(ucrt_files) > 0
@@ -340,6 +347,8 @@ def _CopyUCRTRuntime(target_dir, source_dir, target_cpu, suffix):
         if not os.path.isdir(sdk_redist_root_version):
           continue
         source_dir = os.path.join(sdk_redist_root_version, target_cpu, 'ucrt')
+        if not os.path.isdir(source_dir):
+          continue
         break
     _CopyRuntimeImpl(os.path.join(target_dir, 'ucrtbase' + suffix),
                      os.path.join(source_dir, 'ucrtbase' + suffix))
