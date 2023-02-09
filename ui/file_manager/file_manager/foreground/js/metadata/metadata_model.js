@@ -159,22 +159,28 @@ export class MetadataModel {
     const {allEntries} = getStore().getState();
 
     // Only update corresponding entries that are available in the store.
-    const entriesToUpdate =
-        fileUrls.map(url => allEntries[url]?.entry).filter(Boolean);
+    const itemsToUpdate = [];
+    const entriesToUpdate = [];
+    for (let i = 0; i < fileUrls.length; i++) {
+      const url = fileUrls[i];
+      const entry = allEntries[url]?.entry;
+      if (!entry) {
+        continue;
+      }
+      entriesToUpdate.push(entry);
+      const item = new MetadataItem();
+      names.forEach((key, j) => item[key] = values[i][j]);
+      itemsToUpdate.push(item);
+    }
 
     if (entriesToUpdate.length === 0) {
       return;
     }
 
-    const items = values.map(row => {
-      const item = new MetadataItem();
-      names.forEach((key, i) => item[key] = row[i]);
-      return item;
-    });
     this.cache_.invalidate(
         this.cache_.generateRequestId(), entriesToUpdate, names);
     this.cache_.storeProperties(
-        this.cache_.generateRequestId(), entriesToUpdate, items, names);
+        this.cache_.generateRequestId(), entriesToUpdate, itemsToUpdate, names);
   }
 
   /**
