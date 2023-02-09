@@ -66,6 +66,10 @@ const char kHistogramStateCount[] = "Ash.DeviceActiveClient.StateCount";
 const char kHistogramsPreservedFileState[] =
     "Ash.DeviceActiveClient.PreservedFileState";
 
+// Record the Check Membership process cases.
+const char kCheckMembershipProcessCase[] =
+    "Ash.DeviceActiveClient.CheckMembershipCases";
+
 // Duration histogram uses State variant in order to create
 // unique histograms measuring durations by State.
 const char kHistogramDurationPrefix[] = "Ash.DeviceActiveClient.Duration";
@@ -259,6 +263,14 @@ void RecordPreservedFileState(
     DeviceActivityClient::PreservedFileState preserved_file_state) {
   base::UmaHistogramEnumeration(kHistogramsPreservedFileState,
                                 preserved_file_state);
+}
+
+// Histogram to record number of different failed/success cases for check
+// membership process.
+void RecordCheckMembershipCases(
+    DeviceActivityClient::CheckMembershipResponseCases check_membership_case) {
+  base::UmaHistogramEnumeration(kCheckMembershipProcessCase,
+                                check_membership_case);
 }
 
 std::unique_ptr<network::ResourceRequest> GenerateResourceRequest(
@@ -806,6 +818,9 @@ void DeviceActivityClient::TransitionToCheckMembershipOprf(
       current_use_case->GetPsmRlweClient()->CreateOprfRequest();
   if (!status_or_oprf_request.ok()) {
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
+    RecordCheckMembershipCases(
+        DeviceActivityClient::CheckMembershipResponseCases::
+            kOprfResponseBodyFailed);
     TransitionToIdle(current_use_case);
     return;
   }
@@ -857,6 +872,9 @@ void DeviceActivityClient::OnCheckMembershipOprfDone(
   FresnelPsmRlweOprfResponse psm_oprf_response;
   if (!response_body || !psm_oprf_response.ParseFromString(*response_body)) {
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
+    RecordCheckMembershipCases(
+        DeviceActivityClient::CheckMembershipResponseCases::
+            kOprfResponseBodyFailed);
     TransitionToIdle(current_use_case);
     return;
   }
@@ -864,6 +882,9 @@ void DeviceActivityClient::OnCheckMembershipOprfDone(
   // Parse |fresnel_oprf_response| for oprf_response.
   if (!psm_oprf_response.has_rlwe_oprf_response()) {
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
+    RecordCheckMembershipCases(
+        DeviceActivityClient::CheckMembershipResponseCases::
+            kNotHasRlweOprfResponse);
     TransitionToIdle(current_use_case);
     return;
   }
@@ -898,6 +919,9 @@ void DeviceActivityClient::TransitionToCheckMembershipQuery(
       current_use_case->GetPsmRlweClient()->CreateQueryRequest(oprf_response);
   if (!status_or_query_request.ok()) {
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
+    RecordCheckMembershipCases(
+        DeviceActivityClient::CheckMembershipResponseCases::
+            kCreateQueryRequestFailed);
     TransitionToIdle(current_use_case);
     return;
   }
@@ -949,6 +973,9 @@ void DeviceActivityClient::OnCheckMembershipQueryDone(
   FresnelPsmRlweQueryResponse psm_query_response;
   if (!response_body || !psm_query_response.ParseFromString(*response_body)) {
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
+    RecordCheckMembershipCases(
+        DeviceActivityClient::CheckMembershipResponseCases::
+            kQueryResponseBodyFailed);
     TransitionToIdle(current_use_case);
     return;
   }
@@ -956,6 +983,9 @@ void DeviceActivityClient::OnCheckMembershipQueryDone(
   // Parse |fresnel_query_response| for psm query_response.
   if (!psm_query_response.has_rlwe_query_response()) {
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
+    RecordCheckMembershipCases(
+        DeviceActivityClient::CheckMembershipResponseCases::
+            kNotHasRlweQueryResponse);
     TransitionToIdle(current_use_case);
     return;
   }
@@ -968,6 +998,9 @@ void DeviceActivityClient::OnCheckMembershipQueryDone(
 
   if (!status_or_response.ok()) {
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
+    RecordCheckMembershipCases(
+        DeviceActivityClient::CheckMembershipResponseCases::
+            kProcessQueryResponseFailed);
     TransitionToIdle(current_use_case);
     return;
   }
@@ -979,6 +1012,9 @@ void DeviceActivityClient::OnCheckMembershipQueryDone(
 
   if (rlwe_membership_responses.membership_responses_size() != 1) {
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
+    RecordCheckMembershipCases(
+        DeviceActivityClient::CheckMembershipResponseCases::
+            kMembershipResponsesSizeIsNotOne);
     TransitionToIdle(current_use_case);
     return;
   }
@@ -993,6 +1029,8 @@ void DeviceActivityClient::OnCheckMembershipQueryDone(
 
   if (!is_psm_id_member) {
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
+    RecordCheckMembershipCases(
+        DeviceActivityClient::CheckMembershipResponseCases::kIsNotPsmIdMember);
     TransitionToCheckIn(current_use_case);
     return;
   }
@@ -1002,6 +1040,9 @@ void DeviceActivityClient::OnCheckMembershipQueryDone(
   current_use_case->SetLastKnownPingTimestamp(
       last_transition_out_of_idle_time_);
 
+  RecordCheckMembershipCases(
+      DeviceActivityClient::CheckMembershipResponseCases::
+          kSuccessfullySetLocalState);
   RecordDurationStateMetric(state_, state_timer_.Elapsed());
   TransitionToIdle(current_use_case);
   return;

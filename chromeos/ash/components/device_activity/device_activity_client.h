@@ -130,6 +130,23 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
     kMaxValue = kDeviceActivityClientOnGetLastPingDatesStatusFetched,
   };
 
+  // Records UMA histogram for different failed cases before set the last
+  // ping time to local_state_ after checking membership has response.
+  enum class CheckMembershipResponseCases {
+    kUnknown = 0,
+    kCreateOprfRequestFailed = 1,
+    kOprfResponseBodyFailed = 2,
+    kNotHasRlweOprfResponse = 3,
+    kCreateQueryRequestFailed = 4,
+    kQueryResponseBodyFailed = 5,
+    kNotHasRlweQueryResponse = 6,
+    kProcessQueryResponseFailed = 7,
+    kMembershipResponsesSizeIsNotOne = 8,
+    kIsNotPsmIdMember = 9,
+    kSuccessfullySetLocalState = 10,
+    kMaxValue = kSuccessfullySetLocalState,
+  };
+
   // Records UMA histogram for number of times various methods are called in
   // device_activity/.
   static void RecordDeviceActivityMethodCalled(

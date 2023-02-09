@@ -2330,6 +2330,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.DeviceActiveClient.CheckMembershipCases"
+    enum="DeviceActiveCheckMembershipResponseCases" expires_after="2023-08-06">
+  <owner>qianwan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Record the number of different failed/success cases for check membership
+    process. Refer to ash::device_activity::DeviceActivityClient for details.
+  </summary>
+</histogram>
+
 <histogram name="Ash.DeviceActiveClient.Duration.{DeviceActiveClientState}"
     units="ms" expires_after="2023-03-19">
   <owner>hirthanan@google.com</owner>

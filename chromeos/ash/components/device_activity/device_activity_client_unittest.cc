@@ -894,8 +894,9 @@ TEST_F(DeviceActivityClientTest, CheckInOnLocalStateSetAndPingRequired) {
 TEST_F(DeviceActivityClientTest, TransitionClientToIdleOnInvalidOprfResponse) {
   // Device active reporting starts check membership on network connect.
   SetWifiNetworkState(shill::kStateOnline);
+  auto use_cases = device_activity_client_->GetUseCases();
 
-  for (auto* use_case : device_activity_client_->GetUseCases()) {
+  for (auto* use_case : use_cases) {
     SCOPED_TRACE(testing::Message()
                  << "PSM use case: "
                  << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
@@ -905,12 +906,19 @@ TEST_F(DeviceActivityClientTest, TransitionClientToIdleOnInvalidOprfResponse) {
 
     // Return an invalid Fresnel OPRF response.
     SimulateOprfResponse(/*fresnel_oprf_response*/ std::string(), net::HTTP_OK);
+
     task_environment_.RunUntilIdle();
   }
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
   EXPECT_EQ(device_activity_client_->GetState(),
             DeviceActivityClient::State::kIdle);
+
+  histogram_tester_.ExpectBucketCount(
+      "Ash.DeviceActiveClient.CheckMembershipCases",
+      DeviceActivityClient::CheckMembershipResponseCases::
+          kNotHasRlweOprfResponse,
+      use_cases.size());
 }
 
 TEST_F(DeviceActivityClientTest, TransitionClientToIdleOnInvalidQueryResponse) {
