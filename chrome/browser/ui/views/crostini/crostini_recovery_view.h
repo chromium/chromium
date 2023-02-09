@@ -7,15 +7,24 @@
 
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
-#include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
+class Profile;
+
 namespace crostini {
 enum class CrostiniResult;
-}  // namespace crostini
 
-class Profile;
+// Show the Crostini Recovery dialog when Crostini is still running after a
+// Chrome crash. The user must either restart the VM, or launch a terminal.
+void ShowCrostiniRecoveryView(Profile* profile,
+                              CrostiniUISurface ui_surface,
+                              const std::string& app_id,
+                              int64_t display_id,
+                              const std::vector<LaunchArg>& args,
+                              CrostiniSuccessCallback callback);
+
+}  // namespace crostini
 
 // Provides a warning to the user that an upgrade is required and and internet
 // connection is needed.

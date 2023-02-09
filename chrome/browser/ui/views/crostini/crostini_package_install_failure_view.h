@@ -8,6 +8,13 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
+namespace crostini {
+
+// Shows the UI with the error message when installing a package fails.
+void ShowCrostiniPackageInstallFailureView(const std::string& error_message);
+
+}  // namespace crostini
+
 // Displays error information when the user fails to install a package.
 class CrostiniPackageInstallFailureView
     : public views::BubbleDialogDelegateView {

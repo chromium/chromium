@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/values.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
@@ -30,10 +29,6 @@ namespace base {
 class FilePath;
 class TimeTicks;
 }  // namespace base
-
-namespace views {
-class Widget;
-}  // namespace views
 
 class Profile;
 
@@ -66,8 +61,6 @@ enum class CrostiniAppLaunchAppType {
 
   kMaxValue = kRegisteredApp,
 };
-
-struct LinuxPackageInfo;
 
 // Checks if user profile is able to a crostini app with a given app_id.
 bool IsUninstallable(Profile* profile, const std::string& app_id);
@@ -121,51 +114,6 @@ std::string GetActivePortListAsJSON(Profile* profile);
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class CrostiniUISurface { kSettings = 0, kAppList = 1, kCount };
-
-// See chrome/browser/ui/views/crostini for implementation of the ShowXXX
-// functions below.
-
-// Shows the Crostini Uninstaller dialog.
-void ShowCrostiniUninstallerView(Profile* profile);
-bool IsCrostiniRecoveryViewShowing();
-
-// Shows the Crostini App installer dialog.
-void ShowCrostiniAppInstallerView(Profile* profile,
-                                  const LinuxPackageInfo& package_info);
-// Shows the Crostini force-close dialog. If |app_name| is nonempty, the dialog
-// will include the window's name as text. Returns a handle to that dialog, so
-// that we can add observers to the dialog itself.
-views::Widget* ShowCrostiniForceCloseDialog(
-    const std::string& app_name,
-    views::Widget* closable_widget,
-    base::OnceClosure force_close_callback);
-// Shows the ui with the error message when installing a package fails.
-void ShowCrostiniPackageInstallFailureView(const std::string& error_message);
-
-// Shows the Crostini Container Upgrade dialog (for running upgrades in the
-// container).
-void ShowCrostiniUpdateFilesystemView(Profile* profile,
-                                      CrostiniUISurface ui_surface);
-// Show the Crostini Container Upgrade dialog after a delay
-// (CloseCrostiniUpdateFilesystemView will cancel the next dialog show).
-void PrepareShowCrostiniUpdateFilesystemView(Profile* profile,
-                                             CrostiniUISurface ui_surface);
-// Closes the current CrostiniUpdateFilesystemView or ensures that the view will
-// not open until PrepareShowCrostiniUpdateFilesystemView is called again.
-void CloseCrostiniUpdateFilesystemView();
-
-// Show the Crostini Software Config dialog (for installing Ansible and
-// applying an Ansible playbook in the container).
-void ShowCrostiniAnsibleSoftwareConfigView(Profile* profile);
-
-// Show the Crostini Recovery dialog when Crostini is still running after a
-// Chrome crash. The user must either restart the VM, or launch a terminal.
-void ShowCrostiniRecoveryView(Profile* profile,
-                              CrostiniUISurface ui_surface,
-                              const std::string& app_id,
-                              int64_t display_id,
-                              const std::vector<LaunchArg>& args,
-                              CrostiniSuccessCallback callback);
 
 // Add a newly created LXD container to the kCrostiniContainers pref
 void AddNewLxdContainerToPrefs(Profile* profile,

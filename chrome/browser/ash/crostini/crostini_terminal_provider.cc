@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/extensions/api/terminal/startup_status.h"
+#include "chrome/browser/ui/views/crostini/crostini_recovery_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 

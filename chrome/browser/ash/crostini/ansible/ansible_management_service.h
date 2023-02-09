@@ -14,6 +14,10 @@
 
 class Profile;
 
+namespace views {
+class Widget;
+}  // namespace views
+
 namespace crostini {
 
 struct AnsibleConfiguration {

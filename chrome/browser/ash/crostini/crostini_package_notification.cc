@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/ui/views/crostini/crostini_package_install_failure_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
