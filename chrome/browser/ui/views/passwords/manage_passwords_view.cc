@@ -39,6 +39,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textarea/textarea.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -183,6 +184,30 @@ std::unique_ptr<views::Label> CreateNoteLabel(
   return note_label;
 }
 
+std::unique_ptr<views::View> CreateEditUsernameRow(
+    const password_manager::PasswordForm& form,
+    views::Textfield** textfield) {
+  DCHECK(form.username_value.empty());
+  auto row = std::make_unique<views::FlexLayoutView>();
+  row->SetCollapseMargins(true);
+  row->SetDefault(
+      views::kMarginsKey,
+      gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
+                             views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
+  row->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+  row->AddChildView(CreateWrappedView(CreateIconView(kAccountCircleIcon)));
+
+  *textfield = row->AddChildView(std::make_unique<views::Textfield>());
+  // TODO(crbug.com/1382017): use internationalized string.
+  (*textfield)->SetAccessibleName(u"Username");
+  (*textfield)
+      ->SetProperty(
+          views::kFlexBehaviorKey,
+          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                                   views::MaximumFlexSizeRule::kUnbounded));
+  return row;
+}
+
 std::unique_ptr<views::View> CreateEditNoteRow(
     const password_manager::PasswordForm& form,
     views::Textarea** textarea) {
@@ -282,6 +307,12 @@ bool ManagePasswordsView::Accept() {
   // selected.
   DCHECK(currently_selected_password_.has_value());
   DCHECK(note_textarea_);
+  // If the username isn't empty, the details view doesn't allow editing the
+  // username, and the user textfield is never created.
+  if (username_textfield_) {
+    currently_selected_password_->username_value =
+        username_textfield_->GetText();
+  }
   currently_selected_password_->SetNoteWithEmptyUniqueDisplayName(
       note_textarea_->GetText());
   // TODO(crbug.com/1408790): invoke the controller to update the note in the
@@ -411,13 +442,32 @@ std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordDetailsView() {
   auto container_view = std::make_unique<views::BoxLayoutView>();
   container_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
 
-  // TODO(crbug.com/1408790): Handle the empty username case.
-  container_view->AddChildView(CreateDetailsRow(
-      kAccountCircleIcon, CreateUsernameLabel(*currently_selected_password_),
-      vector_icons::kContentCopyIcon,
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_COPY_USERNAME),
-      base::BindRepeating(&WriteToClipboard,
-                          currently_selected_password_->username_value)));
+  if (!currently_selected_password_->username_value.empty()) {
+    // Set the edit username field to nullptr in case the username has been just
+    // added in the Edit username mode, and the layout is being recreated.
+    display_username_row_ = nullptr;
+    edit_username_row_ = nullptr;
+    username_textfield_ = nullptr;
+    container_view->AddChildView(CreateDetailsRow(
+        kAccountCircleIcon, CreateUsernameLabel(*currently_selected_password_),
+        vector_icons::kContentCopyIcon,
+        l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_COPY_USERNAME),
+        base::BindRepeating(&WriteToClipboard,
+                            currently_selected_password_->username_value)));
+  } else {
+    // TODO(crbug.com/1408790): use internationalized string for the username
+    // action
+    // button tooltip text.
+    display_username_row_ = container_view->AddChildView(CreateDetailsRow(
+        kAccountCircleIcon, CreateUsernameLabel(*currently_selected_password_),
+        vector_icons::kEditIcon, u"Edit Username",
+        base::BindRepeating(&ManagePasswordsView::SwitchToEditUsernameMode,
+                            base::Unretained(this))));
+    edit_username_row_ = container_view->AddChildView(CreateEditUsernameRow(
+        *currently_selected_password_, &username_textfield_));
+    edit_username_row_->SetVisible(false);
+  }
+
   std::unique_ptr<views::Label> password_label =
       CreatePasswordLabel(*currently_selected_password_);
   container_view->AddChildView(CreateDetailsRow(
@@ -506,6 +556,20 @@ void ManagePasswordsView::RecreateLayout() {
   }
   PreferredSizeChanged();
   SizeToContents();
+}
+
+void ManagePasswordsView::SwitchToEditUsernameMode() {
+  DCHECK(display_username_row_);
+  DCHECK(edit_username_row_);
+  display_username_row_->SetVisible(false);
+  edit_username_row_->SetVisible(true);
+  SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
+  // TODO(crbug.com/1408790): use internationalized string.
+  SetButtonLabel(ui::DIALOG_BUTTON_OK, u"Update");
+  PreferredSizeChanged();
+  SizeToContents();
+  DCHECK(username_textfield_);
+  username_textfield_->RequestFocus();
 }
 
 void ManagePasswordsView::SwitchToEditNoteMode() {

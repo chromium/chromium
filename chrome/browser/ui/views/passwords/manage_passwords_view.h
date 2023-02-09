@@ -12,6 +12,7 @@
 class PageSwitcherView;
 namespace views {
 class Textarea;
+class Textfield;
 }
 
 // A dialog for managing stored password and federated login information for a
@@ -47,6 +48,7 @@ class ManagePasswordsView : public PasswordBubbleViewBase {
   // `currently_selected_password_` isn't set.
   void RecreateLayout();
 
+  void SwitchToEditUsernameMode();
   void SwitchToEditNoteMode();
 
   void SwitchToDisplayMode();
@@ -67,9 +69,14 @@ class ManagePasswordsView : public PasswordBubbleViewBase {
   // currently selected password.
   absl::optional<password_manager::PasswordForm> currently_selected_password_;
 
+  views::View* display_username_row_ = nullptr;
+  views::View* edit_username_row_ = nullptr;
+  views::Textfield* username_textfield_ = nullptr;
+
   views::View* display_note_row_ = nullptr;
   views::View* edit_note_row_ = nullptr;
   views::Textarea* note_textarea_ = nullptr;
+
   ItemsBubbleController controller_;
   raw_ptr<PageSwitcherView> page_container_ = nullptr;
 };
