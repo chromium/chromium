@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/metrics/data_use_tracker.h"
 #include "components/metrics/log_store.h"
+#include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/metrics_upload_scheduler.h"
@@ -250,7 +251,9 @@ void ReportingService::OnLogUploadComplete(int response_code,
       // Chrome is in the foreground because of the assumption that
       // |local_state_| will be flushed when convenient, and we do not want to
       // do more work than necessary on the main thread while Chrome is visible.
-      if (!is_in_foreground_) {
+      if (base::FeatureList::IsEnabled(
+              features::kReportingServiceFlushPrefsOnUploadInBackground) &&
+          !is_in_foreground_) {
         local_state_->CommitPendingWrite();
       }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

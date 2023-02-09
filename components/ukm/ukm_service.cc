@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/log_decoder.h"
+#include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/ukm_demographic_metrics_provider.h"
@@ -208,9 +209,12 @@ UkmService::UkmService(PrefService* pref_service,
   DVLOG(1) << "UkmService::Constructor";
   reporting_service_.Initialize();
 
-  cloned_install_subscription_ = client->AddOnClonedInstallDetectedCallback(
-      base::BindOnce(&UkmService::OnClonedInstallDetected,
-                     self_ptr_factory_.GetWeakPtr()));
+  if (base::FeatureList::IsEnabled(
+          metrics::features::kMetricsClearLogsOnClonedInstall)) {
+    cloned_install_subscription_ = client->AddOnClonedInstallDetectedCallback(
+        base::BindOnce(&UkmService::OnClonedInstallDetected,
+                       self_ptr_factory_.GetWeakPtr()));
+  }
 
   base::RepeatingClosure rotate_callback = base::BindRepeating(
       &UkmService::RotateLog, self_ptr_factory_.GetWeakPtr());
