@@ -6,9 +6,32 @@
 
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/common/autofill_clock.h"
 
 namespace autofill::data_logs {
 namespace {
+// Time limit within which the last autofill event is considered related to the
+// feedback report.
+constexpr base::TimeDelta kAutofillEventTimeLimit = base::Minutes(3);
+
+std::string FillDataTypeToStr(FillDataType type) {
+  switch (type) {
+    case FillDataType::kUndefined:
+      return "Undefined";
+    case FillDataType::kAutofillProfile:
+      return "AutofillProfile";
+    case FillDataType::kCreditCard:
+      return "CreditCard";
+    case FillDataType::kSingleFieldFormFillerAutocomplete:
+      return "SingleFieldFormFillerAutocomplete";
+    case FillDataType::kSingleFieldFormFillerIban:
+      return "SingleFieldFormFillerIban";
+    case FillDataType::kSingleFieldFormFillerPromoCode:
+      return "SingleFieldFormFillerPromoCode";
+  }
+}
+
 base::Value::Dict BuildFieldDataLogs(AutofillField* field) {
   base::Value::Dict field_data;
   field_data.Set("field_signature",
@@ -33,6 +56,39 @@ base::Value::Dict BuildFieldDataLogs(AutofillField* field) {
   field_data.Set("is_focusable", field->IsFocusable());
   field_data.Set("is_visible", field->is_visible);
   return field_data;
+}
+
+base::Value::Dict BuildLastAutofillEventLogs(AutofillManager* manager) {
+  base::Value::Dict dict;
+
+  FillDataType type = FillDataType::kUndefined;
+  std::string associated_country;
+  base::Time last_autofill_event_timestamp = base::Time();
+  bool had_trigger_event = false;
+  for (const auto& [form_id, form] : manager->form_structures()) {
+    for (const auto& field : form->fields()) {
+      for (const auto& field_log_event : field->field_log_events()) {
+        if (const autofill::TriggerFillFieldLogEvent* trigger_event =
+                absl::get_if<TriggerFillFieldLogEvent>(&field_log_event)) {
+          had_trigger_event = true;
+          if (trigger_event->timestamp > last_autofill_event_timestamp) {
+            last_autofill_event_timestamp = trigger_event->timestamp;
+            type = trigger_event->data_type;
+            associated_country = trigger_event->associated_country_code;
+          }
+        }
+      }
+    }
+  }
+  // Only include last autofill event metadata if the event occurred less than
+  // `kAutofillEventTimeLimit` minutes ago.
+  if (had_trigger_event &&
+      (AutofillClock::Now() - last_autofill_event_timestamp) <=
+          kAutofillEventTimeLimit) {
+    dict.Set("type", FillDataTypeToStr(type));
+    dict.Set("associated_country", associated_country);
+  }
+  return dict;
 }
 }  // namespace
 
@@ -66,6 +122,11 @@ base::Value::Dict FetchAutofillFeedbackData(AutofillManager* manager) {
 
   dict.Set("form_structures", std::move(form_structures));
 
+  base::Value::Dict last_autofill_event_data =
+      BuildLastAutofillEventLogs(manager);
+  if (!last_autofill_event_data.empty()) {
+    dict.Set("last_autofill_event", std::move(last_autofill_event_data));
+  }
   return dict;
 }
 
