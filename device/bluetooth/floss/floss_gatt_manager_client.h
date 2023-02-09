@@ -281,6 +281,18 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattServerObserver
   // A server sent out a notification.
   virtual void GattServerNotificationSent(std::string address,
                                           GattStatus status) {}
+
+  // A remote device changed the PHY.
+  virtual void GattServerPhyUpdate(std::string address,
+                                   LePhy tx_phy,
+                                   LePhy rx_phy,
+                                   GattStatus status) {}
+
+  // A remote device read the PHY.
+  virtual void GattServerPhyRead(std::string address,
+                                 LePhy tx_phy,
+                                 LePhy rx_phy,
+                                 GattStatus status) {}
 };
 
 class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
@@ -402,6 +414,17 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
   virtual void ServerDisconnect(ResponseCallback<Void> callback,
                                 const std::string& remote_device);
 
+  // Set the preferred connection PHY.
+  virtual void ServerSetPreferredPhy(ResponseCallback<Void> callback,
+                                     const std::string& remote_device,
+                                     LePhy tx_phy,
+                                     LePhy rx_phy,
+                                     int32_t phy_options);
+
+  // Read the current transmitter and receiver PHY of the connection.
+  virtual void ServerReadPhy(ResponseCallback<Void> callback,
+                             const std::string& remote_device);
+
   // Add a Gatt service.
   virtual void AddService(ResponseCallback<Void> callback, GattService service);
 
@@ -522,6 +545,14 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
                                         std::vector<uint8_t> value) override;
   void GattServerNotificationSent(std::string address,
                                   GattStatus status) override;
+  void GattServerPhyUpdate(std::string address,
+                           LePhy tx_phy,
+                           LePhy rx_phy,
+                           GattStatus status) override;
+  void GattServerPhyRead(std::string address,
+                         LePhy tx_phy,
+                         LePhy rx_phy,
+                         GattStatus status) override;
 
   // Managed by FlossDBusManager - we keep local pointer to access object proxy.
   base::raw_ptr<dbus::Bus> bus_ = nullptr;

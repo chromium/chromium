@@ -432,6 +432,22 @@ void FlossGattManagerClient::ServerDisconnect(
                        remote_device);
 }
 
+void FlossGattManagerClient::ServerSetPreferredPhy(
+    ResponseCallback<Void> callback,
+    const std::string& remote_device,
+    LePhy tx_phy,
+    LePhy rx_phy,
+    int32_t phy_options) {
+  CallGattMethod<Void>(std::move(callback), gatt::kServerSetPreferredPhy,
+                       server_id_, remote_device, tx_phy, rx_phy, phy_options);
+}
+
+void FlossGattManagerClient::ServerReadPhy(ResponseCallback<Void> callback,
+                                           const std::string& remote_device) {
+  CallGattMethod<Void>(std::move(callback), gatt::kServerReadPhy, server_id_,
+                       remote_device);
+}
+
 void FlossGattManagerClient::AddService(ResponseCallback<Void> callback,
                                         GattService service) {
   CallGattMethod<Void>(std::move(callback), gatt::kAddService, server_id_,
@@ -549,6 +565,10 @@ void FlossGattManagerClient::Init(dbus::Bus* bus,
   gatt_server_exported_callback_manager_.AddMethod(
       gatt::kOnServerNotificationSent,
       &FlossGattServerObserver::GattServerNotificationSent);
+  gatt_server_exported_callback_manager_.AddMethod(
+      gatt::kOnPhyUpdate, &FlossGattServerObserver::GattServerPhyUpdate);
+  gatt_server_exported_callback_manager_.AddMethod(
+      gatt::kOnPhyRead, &FlossGattServerObserver::GattServerPhyRead);
 
   // Export callbacks.
   if (!gatt_client_exported_callback_manager_.ExportCallback(
@@ -838,6 +858,24 @@ void FlossGattManagerClient::GattServerNotificationSent(std::string address,
                                                         GattStatus status) {
   for (auto& observer : gatt_server_observers_) {
     observer.GattServerNotificationSent(address, status);
+  }
+}
+
+void FlossGattManagerClient::GattServerPhyUpdate(std::string address,
+                                                 LePhy tx_phy,
+                                                 LePhy rx_phy,
+                                                 GattStatus status) {
+  for (auto& observer : gatt_server_observers_) {
+    observer.GattServerPhyUpdate(address, tx_phy, rx_phy, status);
+  }
+}
+
+void FlossGattManagerClient::GattServerPhyRead(std::string address,
+                                               LePhy tx_phy,
+                                               LePhy rx_phy,
+                                               GattStatus status) {
+  for (auto& observer : gatt_server_observers_) {
+    observer.GattServerPhyRead(address, tx_phy, rx_phy, status);
   }
 }
 
