@@ -94,8 +94,13 @@ bool RequestDispatcherImpl::DispatchRequest(
           std::move(event->event_name), std::move(event->event_args),
           std::move(callback));
     }
+    return true;
   }
-  return !remotes.empty();
+  // Unable to dispatch the request to the target extension in either ash or
+  // lacros.
+  LOG(ERROR) << "Unable to dispatch request to target extension: "
+             << extension_id_;
+  return false;
 }
 
 void RequestDispatcherImpl::CancelRequest(

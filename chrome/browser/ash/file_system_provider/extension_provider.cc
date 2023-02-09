@@ -114,9 +114,6 @@ RequestManager* ExtensionProvider::GetRequestManager() {
 
 bool ExtensionProvider::RequestMount(Profile* profile,
                                      RequestMountCallback callback) {
-  extensions::EventRouter* const event_router =
-      extensions::EventRouter::Get(profile);
-  DCHECK(event_router);
   // Create two callbacks of which only one will be called because
   // RequestManager::CreateRequest() is guaranteed not to call |callback| if it
   // signals an error (by returning request_id == 0).

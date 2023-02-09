@@ -265,6 +265,7 @@ bool Service::RequestMount(const ProviderId& provider_id,
 
   ProviderInterface* const provider = GetProvider(provider_id);
   if (!provider) {
+    LOG(ERROR) << "Provider id " << provider_id.ToString() << " not found";
     std::move(callback).Run(base::File::FILE_ERROR_FAILED);
     return false;
   }
