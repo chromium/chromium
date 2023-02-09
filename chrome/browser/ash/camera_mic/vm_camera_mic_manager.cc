@@ -209,21 +209,26 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
 
     if (notifications_.active != kNoNotification) {
       CloseNotification(notifications_.active);
+      if (features::IsPrivacyIndicatorsEnabled()) {
+        UpdatePrivacyIndicatorsView(
+            /*app_id=*/GetNotificationId(vm_type_, notifications_.active),
+            /*is_camera_used=*/false, /*is_microphone_used=*/false);
+      }
     }
+
     if (new_notification != kNoNotification) {
       OpenNotification(new_notification);
+      if (features::IsPrivacyIndicatorsEnabled()) {
+        UpdatePrivacyIndicatorsView(
+            /*app_id=*/GetNotificationId(vm_type_, new_notification),
+            /*is_camera_used=*/
+            new_notification[static_cast<size_t>(DeviceType::kCamera)],
+            /*is_microphone_used=*/
+            new_notification[static_cast<size_t>(DeviceType::kMic)]);
+      }
     }
+
     notifications_.active = new_notification;
-
-    if (features::IsPrivacyIndicatorsEnabled()) {
-      UpdatePrivacyIndicatorsView(
-          /*app_id=*/GetNotificationId(vm_type_, new_notification),
-          /*is_camera_used=*/
-          new_notification[static_cast<size_t>(DeviceType::kCamera)],
-          /*is_microphone_used=*/
-          new_notification[static_cast<size_t>(DeviceType::kMic)]);
-    }
-
     notification_changed_callback_.Run();
   }
 

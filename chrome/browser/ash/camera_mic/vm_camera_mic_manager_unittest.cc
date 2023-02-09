@@ -316,6 +316,12 @@ TEST_F(VmCameraMicManagerPrivacyIndicatorsTest, PrivacyIndicatorsView) {
   SetCameraPrivacyIsOn(false);
   ForwardToStable();
   ExpectPrivacyIndicatorsVisible(/*visible=*/true);
+
+  // Switch back to not accessing, the indicator should not be visible.
+  SetCameraAccessing(kPluginVm, false);
+  SetCameraPrivacyIsOn(false);
+  ForwardToStable();
+  ExpectPrivacyIndicatorsVisible(/*visible=*/false);
 }
 
 // Test `IsDeviceActive()` and `IsNotificationActive()`.
