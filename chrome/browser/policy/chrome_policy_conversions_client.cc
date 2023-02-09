@@ -22,6 +22,7 @@
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
 #include "components/policy/core/browser/policy_error_map.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
@@ -134,13 +135,15 @@ Value::List ChromePolicyConversionsClient::GetExtensionPolicies(
   const extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(extension_profile);
   if (!registry) {
-    LOG(ERROR) << "Cannot dump extension policies, no extension registry";
+    LOG_POLICY(ERROR, POLICY_PROCESSING)
+        << "Cannot dump extension policies, no extension registry";
     return policies;
   }
   auto* schema_registry_service =
       extension_profile->GetOriginalProfile()->GetPolicySchemaRegistryService();
   if (!schema_registry_service || !schema_registry_service->registry()) {
-    LOG(ERROR) << "Cannot dump extension policies, no schema registry service";
+    LOG_POLICY(ERROR, POLICY_PROCESSING)
+        << "Cannot dump extension policies, no schema registry service";
     return policies;
   }
   const scoped_refptr<SchemaMap> schema_map =

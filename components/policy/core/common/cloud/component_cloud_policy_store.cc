@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
-#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -22,6 +21,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/resource_cache.h"
 #include "components/policy/core/common/external_data_fetcher.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_proto_decoders.h"
 #include "components/policy/proto/chrome_extension_policy.pb.h"
@@ -179,7 +179,8 @@ void ComponentCloudPolicyStore::Load() {
     // Validate the protobuf.
     auto proto = std::make_unique<em::PolicyFetchResponse>();
     if (!proto->ParseFromString(it->second)) {
-      LOG(ERROR) << "Failed to parse the cached policy fetch response.";
+      LOG_POLICY(ERROR, CBCM_ENROLLMENT)
+          << "Failed to parse the cached policy fetch response.";
       Delete(ns);
       continue;
     }
@@ -189,8 +190,9 @@ void ComponentCloudPolicyStore::Load() {
     if (!ValidatePolicy(ns, std::move(proto), &policy_data, &payload,
                         &policy_error)) {
       // The policy fetch response is corrupted.
-      LOG(ERROR) << "Discarding policy for component " << ns.component_id
-                 << " due to policy validation failure: " << policy_error;
+      LOG_POLICY(ERROR, CBCM_ENROLLMENT)
+          << "Discarding policy for component " << ns.component_id
+          << " due to policy validation failure: " << policy_error;
       Delete(ns);
       continue;
     }
@@ -198,7 +200,8 @@ void ComponentCloudPolicyStore::Load() {
     // The protobuf looks good; load the policy data.
     std::string data;
     if (cache_->Load(domain_constants_->data_cache_key, id, &data).empty()) {
-      LOG(ERROR) << "Failed to load the cached policy data.";
+      LOG_POLICY(ERROR, CBCM_ENROLLMENT)
+          << "Failed to load the cached policy data.";
       Delete(ns);
       continue;
     }
@@ -206,8 +209,9 @@ void ComponentCloudPolicyStore::Load() {
     std::string data_error;
     if (!ValidateData(data, payload.secure_hash(), &policy, &data_error)) {
       // The data for this proto is corrupted.
-      LOG(ERROR) << "Discarding policy for component " << ns.component_id
-                 << " due to data validation failure: " << data_error;
+      LOG_POLICY(ERROR, POLICY_PROCESSING)
+          << "Discarding policy for component " << ns.component_id
+          << " due to data validation failure: " << data_error;
       Delete(ns);
       continue;
     }
@@ -236,8 +240,9 @@ bool ComponentCloudPolicyStore::Store(const PolicyNamespace& ns,
   PolicyMap policy;
   std::string error;
   if (!ValidateData(data, secure_hash, &policy, &error)) {
-    LOG(ERROR) << "Discarding policy for component " << ns.component_id
-               << " due to data validation failure: " << error;
+    LOG_POLICY(ERROR, CBCM_ENROLLMENT)
+        << "Discarding policy for component " << ns.component_id
+        << " due to data validation failure: " << error;
     return false;
   }
 

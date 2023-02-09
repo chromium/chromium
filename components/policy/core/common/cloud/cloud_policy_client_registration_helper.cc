@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -77,10 +78,15 @@ void CloudPolicyClientRegistrationHelper::IdentityManagerHelper::
   DCHECK(access_token_fetcher_);
   access_token_fetcher_.reset();
 
-  if (error.state() == GoogleServiceAuthError::NONE)
+  if (error.state() == GoogleServiceAuthError::NONE) {
+    DLOG_POLICY(INFO, POLICY_AUTH) << "Successfully fetched access token for "
+                                      "cloud management regitration.";
     std::move(callback_).Run(token_info.token);
-  else
+  } else {
+    DLOG_POLICY(ERROR, POLICY_AUTH)
+        << "Failed to fetch access token for cloud management regitration.";
     std::move(callback_).Run("");
+  }
 }
 
 CloudPolicyClientRegistrationHelper::CloudPolicyClientRegistrationHelper(
@@ -101,7 +107,8 @@ void CloudPolicyClientRegistrationHelper::StartRegistration(
     signin::IdentityManager* identity_manager,
     const CoreAccountId& account_id,
     base::OnceClosure callback) {
-  DVLOG(1) << "Starting registration process with account_id";
+  DVLOG_POLICY(1, CBCM_ENROLLMENT)
+      << "Starting registration process with account_id";
   DCHECK(!client_->is_registered());
   callback_ = std::move(callback);
   client_->AddObserver(this);
@@ -119,7 +126,8 @@ void CloudPolicyClientRegistrationHelper::StartRegistrationWithEnrollmentToken(
     const ClientDataDelegate& client_data_delegate,
     bool is_mandatory,
     base::OnceClosure callback) {
-  DVLOG(1) << "Starting registration process with enrollment token";
+  DVLOG_POLICY(1, POLICY_AUTH)
+      << "Starting device registration with enrollment token = " << token;
   DCHECK(!client_->is_registered());
   callback_ = std::move(callback);
   client_->AddObserver(this);
@@ -132,15 +140,17 @@ void CloudPolicyClientRegistrationHelper::OnTokenFetched(
   identity_manager_helper_.reset();
 
   if (access_token.empty()) {
-    DLOG(WARNING) << "Could not fetch access token for "
-                  << GaiaConstants::kDeviceManagementServiceOAuth;
+    DLOG_POLICY(WARNING, POLICY_AUTH)
+        << "Could not fetch access token for "
+        << GaiaConstants::kDeviceManagementServiceOAuth;
     RequestCompleted();
     return;
   }
 
   // Cache the access token to be used after the GetUserInfo call.
   oauth_access_token_ = access_token;
-  DVLOG(1) << "Fetched new scoped OAuth token:" << oauth_access_token_;
+  DVLOG_POLICY(1, POLICY_AUTH)
+      << "Fetched new scoped OAuth token:" << oauth_access_token_;
   // Now we've gotten our access token - contact GAIA to see if this is a
   // hosted domain.
   user_info_fetcher_ =
@@ -150,7 +160,8 @@ void CloudPolicyClientRegistrationHelper::OnTokenFetched(
 
 void CloudPolicyClientRegistrationHelper::OnGetUserInfoFailure(
     const GoogleServiceAuthError& error) {
-  DVLOG(1) << "Failed to fetch user info from GAIA: " << error.state();
+  DVLOG_POLICY(1, POLICY_AUTH)
+      << "Failed to fetch user info from GAIA: " << error.state();
   user_info_fetcher_.reset();
   RequestCompleted();
 }
@@ -159,11 +170,13 @@ void CloudPolicyClientRegistrationHelper::OnGetUserInfoSuccess(
     const base::Value::Dict& data) {
   user_info_fetcher_.reset();
   if (!data.Find(kGetHostedDomainKey)) {
-    DVLOG(1) << "User not from a hosted domain - skipping registration";
+    DVLOG_POLICY(1, POLICY_AUTH)
+        << "User not from a hosted domain - skipping registration";
     RequestCompleted();
     return;
   }
-  DVLOG(1) << "Registering CloudPolicyClient for user from hosted domain";
+  DVLOG_POLICY(1, POLICY_AUTH)
+      << "Registering CloudPolicyClient for user from hosted domain";
   // The user is from a hosted domain, so it's OK to register the
   // CloudPolicyClient and make requests to DMServer.
   if (client_->is_registered()) {
@@ -189,7 +202,7 @@ void CloudPolicyClientRegistrationHelper::OnPolicyFetched(
 
 void CloudPolicyClientRegistrationHelper::OnRegistrationStateChanged(
     CloudPolicyClient* client) {
-  DVLOG(1) << "Client registration succeeded";
+  DVLOG_POLICY(1, CBCM_ENROLLMENT) << "Client registration succeeded";
   DCHECK_EQ(client, client_);
   DCHECK(client->is_registered());
   RequestCompleted();
@@ -197,7 +210,7 @@ void CloudPolicyClientRegistrationHelper::OnRegistrationStateChanged(
 
 void CloudPolicyClientRegistrationHelper::OnClientError(
     CloudPolicyClient* client) {
-  DVLOG(1) << "Client registration failed";
+  DVLOG_POLICY(1, CBCM_ENROLLMENT) << "Client registration failed";
   DCHECK_EQ(client, client_);
   RequestCompleted();
 }

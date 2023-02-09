@@ -16,6 +16,7 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #include "components/policy/core/common/features.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/secure_connect.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -186,13 +187,13 @@ void UserCloudSigninRestrictionPolicyFetcher::
       url_loader->NetError());
   if (url_loader->NetError() != net::OK) {
     if (response_code) {
-      LOG(WARNING)
+      LOG_POLICY(WARNING, POLICY_AUTH)
           << "ManagedAccountsSigninRestriction request failed with HTTP code: "
           << response_code.value();
     } else {
       error =
           GoogleServiceAuthError::FromConnectionError(url_loader->NetError());
-      LOG(WARNING)
+      LOG_POLICY(WARNING, POLICY_AUTH)
           << "ManagedAccountsSigninRestriction request failed with error: "
           << url_loader->NetError();
     }
@@ -203,7 +204,8 @@ void UserCloudSigninRestrictionPolicyFetcher::
     if (result && result->FindStringKey("policyValue"))
       restriction = *result->FindStringKey("policyValue");
     else
-      LOG(WARNING) << "Failed to ManagedAccountsSigninRestriction response";
+      LOG_POLICY(WARNING, POLICY_AUTH)
+          << "Failed to ManagedAccountsSigninRestriction response";
   }
 
   std::move(callback).Run(std::move(restriction));

@@ -7,7 +7,6 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
-#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -15,6 +14,7 @@
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_details.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_merger.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/schema.h"
@@ -78,7 +78,8 @@ base::Value::Dict PolicyConversionsClient::GetChromePolicies() {
 
   auto* schema_registry = GetPolicySchemaRegistry();
   if (!schema_registry) {
-    LOG(ERROR) << "Cannot dump Chrome policies, no schema registry";
+    LOG_POLICY(ERROR, POLICY_PROCESSING)
+        << "Cannot retrieve Chrome policies, no schema registry";
     return Value::Dict();
   }
 
@@ -108,6 +109,8 @@ base::Value::Dict PolicyConversionsClient::GetChromePolicies() {
 base::Value::Dict PolicyConversionsClient::GetPrecedencePolicies() {
   DCHECK(HasUserPolicies());
 
+  VLOG_POLICY(3, POLICY_FETCHING) << "Client has user policies; getting "
+                                     "precedence-related policies for Chrome";
   PolicyNamespace policy_namespace =
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string());
   const PolicyMap& chrome_policies =
@@ -115,7 +118,8 @@ base::Value::Dict PolicyConversionsClient::GetPrecedencePolicies() {
 
   auto* schema_registry = GetPolicySchemaRegistry();
   if (!schema_registry) {
-    LOG(ERROR) << "Cannot dump Chrome precedence policies, no schema registry";
+    LOG_POLICY(ERROR, POLICY_PROCESSING)
+        << "Cannot retrieve Chrome precedence policies, no schema registry";
     return Value::Dict();
   }
 
@@ -299,8 +303,11 @@ Value::Dict PolicyConversionsClient::GetPolicyValue(
       error = base::JoinString(
           {policy_map_errors, errors->GetErrorMessages(policy_name)}, u"\n");
   }
-  if (!error.empty())
+  if (!error.empty()) {
     value.Set("error", error);
+    LOG_POLICY(ERROR, POLICY_PROCESSING)
+        << policy_name << " has an error of type: " << error;
+  }
 
   std::u16string warning = policy.GetLocalizedMessages(
       PolicyMap::MessageType::kWarning,
@@ -364,6 +371,8 @@ Value::Dict PolicyConversionsClient::GetPolicyValues(
     const PoliciesSet& future_policies,
     const absl::optional<PolicyConversions::PolicyToSchemaMap>&
         known_policy_schemas) const {
+  DVLOG_POLICY(2, POLICY_PROCESSING) << "Retrieving map of policy values";
+
   base::Value::Dict values;
   for (const auto& entry : map) {
     const std::string& policy_name = entry.first;

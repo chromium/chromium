@@ -11,6 +11,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/features.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -260,13 +261,15 @@ void DMServerJobConfiguration::OnURLLoadComplete(
   em::DeviceManagementResponse response;
   if (code == DM_STATUS_SUCCESS && !response.ParseFromString(response_body)) {
     code = DM_STATUS_RESPONSE_DECODING_ERROR;
-    LOG(WARNING) << "DMServer sent an invalid response";
+    LOG_POLICY(WARNING, POLICY_FETCHING) << "DMServer sent an invalid response";
   } else if (response_code != DeviceManagementService::kSuccess) {
     if (response.ParseFromString(response_body)) {
-      LOG(WARNING) << "DMServer sent an error response: " << response_code
-                   << ". " << response.error_message();
+      LOG_POLICY(WARNING, POLICY_FETCHING)
+          << "DMServer sent an error response: " << response_code << ". "
+          << response.error_message();
     } else {
-      LOG(WARNING) << "DMServer sent an error response: " << response_code;
+      LOG_POLICY(WARNING, POLICY_FETCHING)
+          << "DMServer sent an error response: " << response_code;
     }
   }
 

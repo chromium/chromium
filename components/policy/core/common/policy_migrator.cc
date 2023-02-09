@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -29,8 +30,9 @@ void PolicyMigrator::CopyPolicyIfUnset(PolicyMap& source,
   PolicyMap::Entry* entry = source.GetMutable(migration.old_name);
   if (entry) {
     if (!dest->Get(migration.new_name)) {
-      VLOG(3) << "Legacy policy '" << migration.old_name
-              << "' has been copied to '" << migration.new_name << "'.";
+      VLOG_POLICY(3, POLICY_PROCESSING)
+          << "Legacy policy '" << migration.old_name << "' has been copied to '"
+          << migration.new_name << "'.";
       auto new_entry = entry->DeepCopy();
       migration.transform.Run(new_entry.value_unsafe());
       new_entry.AddMessage(PolicyMap::MessageType::kWarning,
@@ -38,15 +40,16 @@ void PolicyMigrator::CopyPolicyIfUnset(PolicyMap& source,
                            {base::UTF8ToUTF16(migration.old_name)});
       dest->Set(migration.new_name, std::move(new_entry));
     } else {
-      VLOG(3) << "Legacy policy '" << migration.old_name
-              << "' is ignored because '" << migration.new_name
-              << "' is also set. ";
+      VLOG_POLICY(3, POLICY_PROCESSING)
+          << "Legacy policy '" << migration.old_name << "' is ignored because '"
+          << migration.new_name << "' is also set. ";
     }
     entry->AddMessage(PolicyMap::MessageType::kError,
                       IDS_POLICY_MIGRATED_OLD_POLICY,
                       {base::UTF8ToUTF16(migration.new_name)});
   } else {
-    VLOG(3) << "Legacy policy '" << migration.old_name << "' is not set.";
+    VLOG_POLICY(3, POLICY_PROCESSING)
+        << "Legacy policy '" << migration.old_name << "' is not set.";
   }
 }
 

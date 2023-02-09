@@ -6,9 +6,9 @@
 
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
-#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/load_flags.h"
@@ -108,10 +108,11 @@ void UserInfoFetcher::OnFetchComplete(
   if (url_loader->NetError() != net::OK) {
     if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
       int response_code = url_loader->ResponseInfo()->headers->response_code();
-      DLOG(WARNING) << "UserInfo request failed with HTTP code: "
-                    << response_code;
+      DLOG_POLICY(WARNING, POLICY_AUTH)
+          << "UserInfo request failed with HTTP code: " << response_code;
       error = GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED);
     } else {
+      DLOG_POLICY(WARNING, POLICY_AUTH) << "UserInfo request failed";
       error =
           GoogleServiceAuthError::FromConnectionError(url_loader->NetError());
     }
@@ -124,7 +125,8 @@ void UserInfoFetcher::OnFetchComplete(
   // Successfully fetched userinfo from the server - parse it and hand it off
   // to the delegate.
   DCHECK(unparsed_data);
-  DVLOG(1) << "Received UserInfo response: " << *unparsed_data;
+  DVLOG_POLICY(1, POLICY_AUTH)
+      << "Received UserInfo response: " << *unparsed_data;
   absl::optional<base::Value> parsed_value =
       base::JSONReader::Read(*unparsed_data);
   if (parsed_value && parsed_value->is_dict()) {

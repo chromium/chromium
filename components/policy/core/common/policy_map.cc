@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,6 +18,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/affiliation.h"
 #include "components/policy/core/common/policy_details.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_merger.h"
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
@@ -547,7 +547,8 @@ void PolicyMap::LoadFrom(const base::Value::Dict& policies,
                          PolicySource source) {
   for (auto it : policies) {
     if (IsPolicyExternal(it.first)) {
-      LOG(WARNING) << "Ignoring external policy: " << it.first;
+      LOG_POLICY(WARNING, POLICY_PROCESSING)
+          << "Ignoring external policy: " << it.first;
       continue;
     }
     Set(it.first, level, scope, source, it.second.Clone(), nullptr);

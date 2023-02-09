@@ -24,6 +24,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_bundle.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_merger.h"
 #include "components/policy/core/common/policy_types.h"
@@ -228,7 +229,7 @@ bool PolicyServiceImpl::IsFirstPolicyLoadComplete(PolicyDomain domain) const {
 void PolicyServiceImpl::RefreshPolicies(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  VLOG(2) << "Policy refresh starting";
+  VLOG_POLICY(2, POLICY_PROCESSING) << "Policy refresh starting";
 
   if (!callback.is_null())
     refresh_callbacks_.push_back(std::move(callback));
@@ -241,7 +242,7 @@ void PolicyServiceImpl::RefreshPolicies(base::OnceClosure callback) {
         FROM_HERE, base::BindOnce(&PolicyServiceImpl::MergeAndTriggerUpdates,
                                   update_task_ptr_factory_.GetWeakPtr()));
 
-    VLOG(2) << "Policy refresh has no providers";
+    VLOG_POLICY(2, POLICY_PROCESSING) << "Policy refresh has no providers";
   } else {
     // Some providers might invoke OnUpdatePolicy synchronously while handling
     // RefreshPolicies. Mark all as pending before refreshing.
@@ -487,7 +488,8 @@ void PolicyServiceImpl::MaybeNotifyPolicyDomainStatusChange(
     for (auto& observer : iter->second) {
       observer.OnPolicyServiceInitialized(policy_domain);
       if (!weak_this) {
-        VLOG(1) << "PolicyService destroyed while notifying observers.";
+        VLOG_POLICY(1, POLICY_PROCESSING)
+            << "PolicyService destroyed while notifying observers.";
         return;
       }
       if (policy_domain_status_[policy_domain] ==

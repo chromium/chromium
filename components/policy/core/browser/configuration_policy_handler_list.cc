@@ -6,10 +6,10 @@
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/configuration_policy_handler_parameters.h"
 #include "components/policy/core/browser/policy_error_map.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/values_util.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
@@ -107,7 +107,7 @@ bool ConfigurationPolicyHandlerList::FilterOutUnsupportedPolicies(
   if (!policy_details) {
     const std::string prefix(kPolicyCommentPrefix);
     if (iter->first.compare(0, prefix.length(), prefix) != 0) {
-      DVLOG(1) << "Unknown policy: " << iter->first;
+      DVLOG_POLICY(1, POLICY_PROCESSING) << "Unknown policy: " << iter->first;
     }
     return false;
   }
@@ -127,7 +127,8 @@ bool ConfigurationPolicyHandlerList::IsPlatformDevicePolicy(
   if (iter->second.source == POLICY_SOURCE_PLATFORM &&
       policy_details.is_device_policy) {
     // Device Policy is only implemented as Cloud Policy (not Platform Policy).
-    LOG(WARNING) << "Ignoring device platform policy: " << iter->first;
+    LOG_POLICY(WARNING, POLICY_PROCESSING)
+        << "Ignoring device platform policy: " << iter->first;
     return true;
   }
   return false;

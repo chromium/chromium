@@ -13,11 +13,11 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/external_policy_data_fetcher.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/proto/chrome_extension_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -63,13 +63,14 @@ void ComponentCloudPolicyUpdater::UpdateExternalPolicy(
   // The policy is also rejected if it exceeds the maximum size.
   std::string serialized_response;
   if (!response->SerializeToString(&serialized_response)) {
-    LOG(ERROR) << "Failed to serialize policy fetch response.";
+    LOG_POLICY(ERROR, CBCM_ENROLLMENT)
+        << "Failed to serialize policy fetch response.";
     return;
   }
   if (serialized_response.size() > kPolicyProtoMaxSize) {
-    LOG(ERROR) << "Policy fetch response too large: "
-               << serialized_response.size() << " bytes (max "
-               << kPolicyProtoMaxSize << ").";
+    LOG_POLICY(ERROR, CBCM_ENROLLMENT)
+        << "Policy fetch response too large: " << serialized_response.size()
+        << " bytes (max " << kPolicyProtoMaxSize << ").";
     return;
   }
 
@@ -79,8 +80,9 @@ void ComponentCloudPolicyUpdater::UpdateExternalPolicy(
   std::string error;
   if (!store_->ValidatePolicy(ns, std::move(response), policy_data.get(), &data,
                               &error)) {
-    LOG(ERROR) << "Discarding policy for component " << ns.component_id
-               << " due to policy validation failure: " << error;
+    LOG_POLICY(ERROR, CBCM_ENROLLMENT)
+        << "Discarding policy for component " << ns.component_id
+        << " due to policy validation failure: " << error;
     return;
   }
 
@@ -94,6 +96,10 @@ void ComponentCloudPolicyUpdater::UpdateExternalPolicy(
   if (data.download_url().empty() || !data.has_secure_hash()) {
     // If there is no policy for this component or the policy has been removed,
     // cancel any existing request to fetch policy for this component.
+    LOG_POLICY(WARNING, CBCM_ENROLLMENT)
+        << "Cancelling existing request to fetch policy for component: "
+        << ns.component_id
+        << "there is no pilicy for component or the policy has been removed.";
     external_policy_data_updater_.CancelExternalDataFetch(key);
 
     // Delete any existing policy for this component.
@@ -101,6 +107,8 @@ void ComponentCloudPolicyUpdater::UpdateExternalPolicy(
   } else {
     // Make a request to fetch policy for this component. If another fetch
     // request is already pending for the component, it will be canceled.
+    LOG_POLICY(INFO, CBCM_ENROLLMENT)
+        << "Fetching policy for component: " << ns.component_id;
     external_policy_data_updater_.FetchExternalData(
         key,
         ExternalPolicyDataUpdater::Request(

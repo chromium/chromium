@@ -8,13 +8,13 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -82,7 +82,8 @@ bool FailedWithProxy(const std::string& mime_type,
                      int net_error,
                      bool was_fetched_via_proxy) {
   if (IsProxyError(net_error)) {
-    LOG(WARNING) << "Proxy failed while contacting dmserver.";
+    LOG_POLICY(WARNING, CBCM_ENROLLMENT)
+        << "Proxy failed while contacting dmserver.";
     return true;
   }
 
@@ -92,8 +93,9 @@ bool FailedWithProxy(const std::string& mime_type,
     // The proxy server can be misconfigured but pointing to an existing
     // server that replies to requests. Try to recover if a successful
     // request that went through a proxy returns an unexpected mime type.
-    LOG(WARNING) << "Got bad mime-type in response from dmserver that was "
-                 << "fetched via a proxy.";
+    LOG_POLICY(WARNING, CBCM_ENROLLMENT)
+        << "Got bad mime-type in response from dmserver that was "
+        << "fetched via a proxy.";
     return true;
   }
 
@@ -477,11 +479,12 @@ DeviceManagementService::JobImpl::OnURLLoaderCompleteInternal(
 
   config_->OnBeforeRetry(response_code, response_body);
   int retry_delay = GetRetryDelay(retry_method);
-  LOG(WARNING) << "Request of type "
-               << JobConfiguration::GetJobTypeAsString(config_->GetType())
-               << " failed (net_error = " << net_error
-               << ", response_code = " << response_code << "), retrying in "
-               << retry_delay << "ms.";
+  LOG_POLICY(WARNING, CBCM_ENROLLMENT)
+      << "Request of type "
+      << JobConfiguration::GetJobTypeAsString(config_->GetType())
+      << " failed (net_error = " << net_error
+      << ", response_code = " << response_code << "), retrying in "
+      << retry_delay << "ms.";
   if (!is_test) {
     task_runner_->PostDelayedTask(
         FROM_HERE,
@@ -503,25 +506,28 @@ DeviceManagementService::JobImpl::HandleResponseData(
     // Using histogram functions which allows runtime histogram name.
     base::UmaHistogramEnumeration(uma_name,
                                   DMServerRequestSuccess::kRequestFailed);
-    LOG(WARNING) << "Request of type "
-                 << JobConfiguration::GetJobTypeAsString(config_->GetType())
-                 << " failed (net_error = " << net_error << ").";
+    LOG_POLICY(WARNING, CBCM_ENROLLMENT)
+        << "Request of type "
+        << JobConfiguration::GetJobTypeAsString(config_->GetType())
+        << " failed (net_error = " << net_error << ").";
     config_->OnURLLoadComplete(this, net_error, response_code, std::string());
     return RetryMethod::NO_RETRY;
   }
 
   if (response_code != kSuccess) {
-    LOG(WARNING) << "Request of type "
-                 << JobConfiguration::GetJobTypeAsString(config_->GetType())
-                 << " failed (response_code = " << response_code << ").";
+    LOG_POLICY(WARNING, CBCM_ENROLLMENT)
+        << "Request of type "
+        << JobConfiguration::GetJobTypeAsString(config_->GetType())
+        << " failed (response_code = " << response_code << ").";
     base::UmaHistogramEnumeration(uma_name,
                                   DMServerRequestSuccess::kRequestError);
   } else {
     // Success with retries_count_ retries.
     if (retries_count_) {
-      LOG(WARNING) << "Request of type "
-                   << JobConfiguration::GetJobTypeAsString(config_->GetType())
-                   << " succeeded after " << retries_count_ << " retries.";
+      LOG_POLICY(WARNING, CBCM_ENROLLMENT)
+          << "Request of type "
+          << JobConfiguration::GetJobTypeAsString(config_->GetType())
+          << " succeeded after " << retries_count_ << " retries.";
     }
     base::UmaHistogramExactLinear(
         uma_name, retries_count_,

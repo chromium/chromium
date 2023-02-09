@@ -11,7 +11,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
@@ -27,6 +26,7 @@
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/signing_service.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -55,7 +55,8 @@ DeviceMode TranslateProtobufDeviceMode(
     case em::DeviceRegisterResponse::DEMO:
       return DEVICE_MODE_DEMO;
   }
-  LOG(ERROR) << "Unknown enrollment mode in registration response: " << mode;
+  LOG_POLICY(ERROR, CBCM_ENROLLMENT)
+      << "Unknown enrollment mode in registration response: " << mode;
   return DEVICE_MODE_NOT_SET;
 }
 
@@ -409,7 +410,8 @@ void CloudPolicyClient::FetchPolicy() {
 
   VLOG(2) << "Policy fetch starting";
   for (const auto& type : types_to_fetch_) {
-    VLOG(2) << "Fetching policy type: " << type.first << " -> " << type.second;
+    VLOG_POLICY(2, POLICY_FETCHING)
+        << "Fetching policy type: " << type.first << " -> " << type.second;
   }
 
   auto config = std::make_unique<DMServerJobConfiguration>(
@@ -1075,12 +1077,13 @@ void CloudPolicyClient::OnRegisterCompleted(DMServerJobResult result) {
   if (result.dm_status == DM_STATUS_SUCCESS) {
     if (!result.response.has_register_response() ||
         !result.response.register_response().has_device_management_token()) {
-      LOG(WARNING) << "Invalid registration response.";
+      LOG_POLICY(WARNING, CBCM_ENROLLMENT) << "Invalid registration response.";
       result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
     } else if (!reregistration_dm_token_.empty() &&
                reregistration_dm_token_ != result.response.register_response()
                                                .device_management_token()) {
-      LOG(WARNING) << "Reregistration DMToken mismatch.";
+      LOG_POLICY(WARNING, CBCM_ENROLLMENT)
+          << "Reregistration DMToken mismatch.";
       result.dm_status = DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID;
     }
   }
@@ -1098,10 +1101,12 @@ void CloudPolicyClient::OnRegisterCompleted(DMServerJobResult result) {
             std::move(*configuration_seed).TakeDict());
       } else {
         configuration_seed_.reset();
-        LOG(ERROR) << "Failed to parse configuration seed";
+        LOG_POLICY(ERROR, CBCM_ENROLLMENT)
+            << "Failed to parse configuration seed";
       }
     }
-    DVLOG(1) << "Client registration complete - DMToken = " << dm_token_;
+    DVLOG_POLICY(1, CBCM_ENROLLMENT)
+        << "Client registration complete - DMToken = " << dm_token_;
 
     // Device mode is only relevant for device policy really, it's the
     // responsibility of the consumer of the field to check validity.
@@ -1132,13 +1137,15 @@ void CloudPolicyClient::OnFetchRobotAuthCodesCompleted(
 
   if (result.dm_status == DM_STATUS_SUCCESS &&
       (!result.response.has_service_api_access_response())) {
-    LOG(WARNING) << "Invalid service api access response.";
+    LOG_POLICY(WARNING, CBCM_ENROLLMENT)
+        << "Invalid service api access response.";
     result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
   }
   last_dm_status_ = result.dm_status;
   if (result.dm_status == DM_STATUS_SUCCESS) {
-    DVLOG(1) << "Device robot account auth code fetch complete - code = "
-             << result.response.service_api_access_response().auth_code();
+    DVLOG_POLICY(1, CBCM_ENROLLMENT)
+        << "Device robot account auth code fetch complete - code = "
+        << result.response.service_api_access_response().auth_code();
     std::move(callback).Run(
         result.dm_status,
         result.response.service_api_access_response().auth_code());
@@ -1152,7 +1159,7 @@ void CloudPolicyClient::OnPolicyFetchCompleted(DMServerJobResult result) {
   if (result.dm_status == DM_STATUS_SUCCESS) {
     if (!result.response.has_policy_response() ||
         result.response.policy_response().responses_size() == 0) {
-      LOG(WARNING) << "Empty policy response.";
+      LOG_POLICY(WARNING, CBCM_ENROLLMENT) << "Empty policy response.";
       result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
     }
   }
@@ -1174,7 +1181,8 @@ void CloudPolicyClient::OnPolicyFetchCompleted(DMServerJobResult result) {
       em::PolicyData policy_data;
       if (!policy_data.ParseFromString(fetch_response.policy_data()) ||
           !policy_data.IsInitialized() || !policy_data.has_policy_type()) {
-        LOG(WARNING) << "Invalid PolicyData received, ignoring";
+        LOG_POLICY(WARNING, CBCM_ENROLLMENT)
+            << "Invalid PolicyData received, ignoring";
         continue;
       }
       const std::string& type = policy_data.policy_type();
@@ -1184,8 +1192,9 @@ void CloudPolicyClient::OnPolicyFetchCompleted(DMServerJobResult result) {
       }
       std::pair<std::string, std::string> key(type, entity_id);
       if (base::Contains(last_policy_fetch_responses_, key)) {
-        LOG(WARNING) << "Duplicate PolicyFetchResponse for type: " << type
-                     << ", entity: " << entity_id << ", ignoring";
+        LOG_POLICY(WARNING, CBCM_ENROLLMENT)
+            << "Duplicate PolicyFetchResponse for type: " << type
+            << ", entity: " << entity_id << ", ignoring";
         continue;
       }
       last_policy_fetch_responses_[key] = fetch_response;
@@ -1193,11 +1202,12 @@ void CloudPolicyClient::OnPolicyFetchCompleted(DMServerJobResult result) {
     state_keys_to_upload_.clear();
     NotifyPolicyFetched();
 
-    VLOG(2) << "Policy fetch success";
+    VLOG_POLICY(2, CBCM_ENROLLMENT) << "Policy fetch succeeded";
   } else {
     NotifyClientError();
 
-    VLOG(2) << "Policy fetch error: " << last_dm_status_;
+    VLOG_POLICY(2, CBCM_ENROLLMENT)
+        << "Policy fetching failed with DM status error: " << last_dm_status_;
 
     if (result.dm_status == DM_STATUS_SERVICE_DEVICE_NOT_FOUND ||
         result.dm_status == DM_STATUS_SERVICE_DEVICE_NEEDS_RESET) {
@@ -1218,7 +1228,8 @@ void CloudPolicyClient::OnCertificateUploadCompleted(
     success = false;
     NotifyClientError();
   } else if (!result.response.has_cert_upload_response()) {
-    LOG(WARNING) << "Empty upload certificate response.";
+    LOG_POLICY(WARNING, CBCM_ENROLLMENT)
+        << "Empty upload certificate response.";
     success = false;
   }
   std::move(callback).Run(success);
@@ -1232,7 +1243,8 @@ void CloudPolicyClient::OnDeviceAttributeUpdatePermissionCompleted(
 
   if (result.dm_status == DM_STATUS_SUCCESS &&
       !result.response.has_device_attribute_update_permission_response()) {
-    LOG(WARNING) << "Invalid device attribute update permission response.";
+    LOG_POLICY(WARNING, CBCM_ENROLLMENT)
+        << "Invalid device attribute update permission response.";
     result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
   }
 
@@ -1256,7 +1268,8 @@ void CloudPolicyClient::OnDeviceAttributeUpdated(
 
   if (result.dm_status == DM_STATUS_SUCCESS &&
       !result.response.has_device_attribute_update_response()) {
-    LOG(WARNING) << "Invalid device attribute update response.";
+    LOG_POLICY(WARNING, CBCM_ENROLLMENT)
+        << "Invalid device attribute update response.";
     result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
   }
 

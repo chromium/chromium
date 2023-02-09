@@ -12,6 +12,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -91,7 +92,8 @@ void MachineLevelUserCloudPolicyManager::DisconnectAndRemovePolicy() {
 }
 
 void MachineLevelUserCloudPolicyManager::Init(SchemaRegistry* registry) {
-  DVLOG(1) << "Machine level cloud policy manager initialized";
+  DVLOG_POLICY(1, POLICY_FETCHING)
+      << "Machine level cloud policy manager initialized";
   // Call to grand-parent's Init() instead of parent's is intentional.
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)
   ConfigurationPolicyProvider::Init(registry);

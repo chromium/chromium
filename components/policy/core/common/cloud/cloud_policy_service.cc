@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace em = enterprise_management;
@@ -130,8 +131,9 @@ void CloudPolicyService::OnStoreLoaded(CloudPolicyStore* store) {
   // Finally, set up registration if necessary.
   if (policy && policy->has_request_token() && policy->has_device_id() &&
       !client_->is_registered()) {
-    DVLOG(1) << "Setting up registration with request token: "
-             << policy->request_token();
+    DVLOG_POLICY(1, CBCM_ENROLLMENT)
+        << "Setting up registration with request token: "
+        << policy->request_token();
     std::vector<std::string> user_affiliation_ids(
         policy->user_affiliation_ids().begin(),
         policy->user_affiliation_ids().end());
@@ -199,6 +201,7 @@ void CloudPolicyService::ReportValidationResult(CloudPolicyStore* store) {
     }
   }
 
+  VLOG_POLICY(2, CBCM_ENROLLMENT) << "Uploading Policy Validation Report.";
   client_->UploadPolicyValidationReport(
       status, validation_result->value_validation_issues, policy_type_,
       validation_result->policy_token);
@@ -218,9 +221,11 @@ void CloudPolicyService::RefreshCompleted(bool success) {
 
   // If there was an error while fetching the policies the first time, assume
   // that there are no policies until the next retry.
-  if (!success)
+  if (!success) {
+    DVLOG_POLICY(2, POLICY_FETCHING)
+        << "Error while fetching policy. No policies until the next retry.";
     store_->SetFirstPoliciesLoaded(true);
-
+  }
   // Clear state and |refresh_callbacks_| before actually invoking them, s.t.
   // triggering new policy fetches behaves as expected.
   std::vector<RefreshPolicyCallback> callbacks;

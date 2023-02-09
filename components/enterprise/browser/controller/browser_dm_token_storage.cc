@@ -22,6 +22,7 @@
 #include "base/syslog_logging.h"
 #include "build/build_config.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
+#include "components/policy/core/common/policy_logger.h"
 
 namespace policy {
 
@@ -189,6 +190,7 @@ void BrowserDMTokenStorage::InitIfNeeded() {
 
   enrollment_token_ = delegate_->InitEnrollmentToken();
   DVLOG(1) << "Enrollment token = " << enrollment_token_;
+  DVLOG_POLICY(1, CBCM_ENROLLMENT) << "Initializing the DMTokenStorage.";
 
   std::string init_dm_token = delegate_->InitDMToken();
   if (init_dm_token.empty()) {

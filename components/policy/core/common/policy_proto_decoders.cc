@@ -9,13 +9,13 @@
 #include <memory>
 
 #include "base/json/json_reader.h"
-#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/cloud_policy.pb.h"
@@ -67,7 +67,8 @@ base::Value DecodeIntegerProto(const em::IntegerPolicyProto& proto,
 
   if (value < std::numeric_limits<int>::min() ||
       value > std::numeric_limits<int>::max()) {
-    LOG(WARNING) << "Integer value " << value << " out of numeric limits";
+    LOG_POLICY(WARNING, POLICY_PROCESSING)
+        << "Integer value " << value << " out of numeric limits";
     *error = "Number out of range - invalid int32";
     return base::Value(base::NumberToString(value));
   }
@@ -100,7 +101,7 @@ base::Value DecodeJsonProto(const em::StringPolicyProto& proto,
   if (!value_with_error.has_value()) {
     // Can't parse as JSON so return it as a string, and leave it to the handler
     // to validate.
-    LOG(WARNING) << "Invalid JSON: " << json;
+    LOG_POLICY(WARNING, POLICY_PROCESSING) << "Invalid JSON: " << json;
     *error = value_with_error.error().message;
     return base::Value(json);
   }

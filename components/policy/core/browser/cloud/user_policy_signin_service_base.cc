@@ -14,6 +14,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
@@ -61,6 +62,8 @@ void UserPolicySigninServiceBase::FetchPolicyForSignedInUser(
     const std::string& client_id,
     scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory,
     PolicyFetchCallback callback) {
+  DVLOG_POLICY(3, POLICY_FETCHING)
+      << "Starting policy fetching for signed-in user.";
   UserCloudPolicyManager* manager = policy_manager();
   DCHECK(manager);
 
@@ -107,7 +110,8 @@ void UserPolicySigninServiceBase::OnClientError(CloudPolicyClient* client) {
       // OK, policy fetch failed with MANAGEMENT_NOT_SUPPORTED - this is our
       // trigger to revert to "unmanaged" mode (we will check for management
       // being re-enabled on the next restart and/or login).
-      DVLOG(1) << "DMServer returned NOT_SUPPORTED error - removing policy";
+      DVLOG_POLICY(1, POLICY_FETCHING)
+          << "DMServer returned NOT_SUPPORTED error - removing policy";
 
       // Can't shutdown now because we're in the middle of a callback from
       // the CloudPolicyClient, so queue up a task to do the shutdown.
@@ -117,7 +121,9 @@ void UserPolicySigninServiceBase::OnClientError(CloudPolicyClient* client) {
               &UserPolicySigninServiceBase::ShutdownUserCloudPolicyManager,
               weak_factory_.GetWeakPtr()));
     } else {
-      DVLOG(1) << "Error fetching policy: " << client->last_dm_status();
+      DVLOG_POLICY(1, POLICY_FETCHING)
+          << "Error fetching policy with DM status: "
+          << client->last_dm_status();
     }
   }
 }
@@ -157,7 +163,8 @@ UserPolicySigninServiceBase::CreateClientForRegistrationOnly(
 
   // If the user should not get policy, just bail out.
   if (!policy_manager() || !ShouldLoadPolicyForUser(username)) {
-    DVLOG(1) << "Signed in user is not in the allowlist";
+    DVLOG_POLICY(1, POLICY_FETCHING)
+        << "Signed-in user is not in the allowlist";
     return nullptr;
   }
 
@@ -188,8 +195,8 @@ void UserPolicySigninServiceBase::InitializeForSignedInUser(
       ShouldLoadPolicyForUser(account_id.GetUserEmail());
   manager->SetPoliciesRequired(should_load_policies);
   if (!should_load_policies) {
-    DVLOG(1) << "Policy load not enabled for user: "
-             << account_id.GetUserEmail();
+    DVLOG_POLICY(1, POLICY_FETCHING)
+        << "Policy load not enabled for user: " << account_id.GetUserEmail();
     return;
   }
 
@@ -297,7 +304,7 @@ void UserPolicySigninServiceBase::RegisterCloudPolicyService() {
   DCHECK(policy_manager()->core()->client());
   DCHECK(!policy_manager()->IsClientRegistered());
 
-  DVLOG(1) << "Fetching new DM Token";
+  DVLOG_POLICY(1, POLICY_FETCHING) << "Fetching new DM Token";
 
   // Do nothing if already starting the registration process in which case there
   // will be an instance of |registration_helper_|.
@@ -334,7 +341,8 @@ void UserPolicySigninServiceBase::
   // it means that there is no cached policy and so we need to initiate a new
   // client registration.
   if (manager->IsClientRegistered()) {
-    DVLOG(1) << "Client already registered - not fetching DMToken";
+    DVLOG_POLICY(1, POLICY_FETCHING)
+        << "Client already registered - not fetching DMToken";
     ProhibitSignoutIfNeeded();
     return;
   }
@@ -343,7 +351,8 @@ void UserPolicySigninServiceBase::
     // No token yet. This can only happen on Desktop platforms which should
     // listen to OnRefreshTokenUpdatedForAccount() and will re-attempt
     // registration once the token is available.
-    DLOG(WARNING) << "No OAuth Refresh Token - delaying policy download";
+    DLOG_POLICY(WARNING, POLICY_AUTH)
+        << "No OAuth Refresh Token - delaying policy download";
     return;
   }
 
