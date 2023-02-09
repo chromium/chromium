@@ -30,6 +30,11 @@ class AX_EXPORT AXSelection final {
            anchor_object_id == focus_object_id && anchor_offset == focus_offset;
   }
 
+  constexpr bool HasSelection() const {
+    return anchor_object_id != ui::kInvalidAXNodeID &&
+           focus_object_id != ui::kInvalidAXNodeID;
+  }
+
   bool is_backward = false;
   AXNodeID anchor_object_id = kInvalidAXNodeID;
   int anchor_offset = -1;
