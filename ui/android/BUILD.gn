@@ -113,6 +113,7 @@ java_cpp_enum("java_enums_srcjar") {
     "../base/pointer/pointer_device.h",
     "../base/ui_base_types.h",
     "../events/android/gesture_event_type.h",
+    "../events/back_gesture_event.h",
     "../gfx/android/java_bitmap.h",
     "../gfx/overlay_transform.h",
     "overscroll_refresh.h",
