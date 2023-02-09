@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -3051,7 +3052,9 @@ static const TreeScope* GetAnchorQueryTreeScope(const Length& length) {
   DCHECK(length.GetCalculationValue().IsExpression());
   const auto& query = To<CalculationExpressionAnchorQueryNode>(
       *length.GetCalculationValue().GetOrCreateExpression());
-  return query.AnchorName() ? query.AnchorName()->GetTreeScope() : nullptr;
+  return query.AnchorSpecifier().IsNamed()
+             ? query.AnchorSpecifier().GetName().GetTreeScope()
+             : nullptr;
 }
 
 TEST_F(StyleResolverTest, ScopedAnchorFunction) {

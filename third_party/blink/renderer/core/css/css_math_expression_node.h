@@ -49,7 +49,6 @@ namespace blink {
 static const int kMaxExpressionDepth = 100;
 
 class CalculationExpressionNode;
-class CSSCustomIdentValue;
 class CSSNumericLiteralValue;
 
 // The order of this enum should not change since its elements are used as
@@ -337,7 +336,7 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
     : public CSSMathExpressionNode {
  public:
   CSSMathExpressionAnchorQuery(CSSAnchorQueryType type,
-                               const CSSCustomIdentValue* anchor_name,
+                               const CSSValue* anchor_specifier,
                                const CSSValue& value,
                                const CSSPrimitiveValue* fallback);
 
@@ -399,7 +398,7 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
 
  private:
   CSSAnchorQueryType type_;
-  Member<const CSSCustomIdentValue> anchor_name_;
+  Member<const CSSValue> anchor_specifier_;
   Member<const CSSValue> value_;
   Member<const CSSPrimitiveValue> fallback_;
 };

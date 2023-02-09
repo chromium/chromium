@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_anchor_query_map.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_logical_link.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 
 namespace blink {
 
@@ -350,31 +351,32 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::Evaluate(
     const CalculationExpressionNode& node) const {
   DCHECK(node.IsAnchorQuery());
   const auto& anchor_query = To<CalculationExpressionAnchorQueryNode>(node);
-  // TODO(xiaochengh): Handle the 'implicit' keyword anchor spec.
   switch (anchor_query.Type()) {
     case AnchorQueryType::kAnchor:
-      return EvaluateAnchor(anchor_query.AnchorName(),
+      return EvaluateAnchor(anchor_query.AnchorSpecifier(),
                             anchor_query.AnchorSide(),
                             anchor_query.AnchorSidePercentageOrZero());
     case AnchorQueryType::kAnchorSize:
-      return EvaluateAnchorSize(anchor_query.AnchorName(),
+      return EvaluateAnchorSize(anchor_query.AnchorSpecifier(),
                                 anchor_query.AnchorSize());
   }
 }
 
 const NGLogicalAnchorReference* NGAnchorEvaluatorImpl::ResolveAnchorReference(
-    const ScopedCSSName* anchor_name) const {
-  if (!anchor_name && !default_anchor_specifier_ && !implicit_anchor_) {
+    const AnchorSpecifierValue& anchor_specifier) const {
+  if (!anchor_specifier.IsNamed() && !default_anchor_specifier_ &&
+      !implicit_anchor_) {
     return nullptr;
   }
   const NGLogicalAnchorQuery* anchor_query = AnchorQuery();
   if (!anchor_query) {
     return nullptr;
   }
-  if (anchor_name) {
-    return anchor_query->AnchorReference(anchor_name, is_in_top_layer_);
+  if (anchor_specifier.IsNamed()) {
+    return anchor_query->AnchorReference(&anchor_specifier.GetName(),
+                                         is_in_top_layer_);
   }
-  if (default_anchor_specifier_) {
+  if (anchor_specifier.IsDefault() && default_anchor_specifier_) {
     return anchor_query->AnchorReference(default_anchor_specifier_,
                                          is_in_top_layer_);
   }
@@ -382,12 +384,12 @@ const NGLogicalAnchorReference* NGAnchorEvaluatorImpl::ResolveAnchorReference(
 }
 
 absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchor(
-    const ScopedCSSName* anchor_name,
+    const AnchorSpecifierValue& anchor_specifier,
     AnchorValue anchor_value,
     float percentage) const {
   has_anchor_functions_ = true;
   const NGLogicalAnchorReference* anchor_reference =
-      ResolveAnchorReference(anchor_name);
+      ResolveAnchorReference(anchor_specifier);
   if (!anchor_reference) {
     return absl::nullopt;
   }
@@ -400,11 +402,11 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchor(
 }
 
 absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchorSize(
-    const ScopedCSSName* anchor_name,
+    const AnchorSpecifierValue& anchor_specifier,
     AnchorSizeValue anchor_size_value) const {
   has_anchor_functions_ = true;
   const NGLogicalAnchorReference* anchor_reference =
-      ResolveAnchorReference(anchor_name);
+      ResolveAnchorReference(anchor_specifier);
   if (!anchor_reference) {
     return absl::nullopt;
   }

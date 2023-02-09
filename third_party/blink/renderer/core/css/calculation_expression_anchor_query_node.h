@@ -11,24 +11,28 @@
 
 namespace blink {
 
+class AnchorSpecifierValue;
+
 class CORE_EXPORT CalculationExpressionAnchorQueryNode final
     : public CalculationExpressionNode {
  public:
   static scoped_refptr<const CalculationExpressionAnchorQueryNode> CreateAnchor(
-      const ScopedCSSName* name,
+      const AnchorSpecifierValue& anchor_specifier,
       AnchorValue side,
       const Length& fallback);
   static scoped_refptr<const CalculationExpressionAnchorQueryNode>
-  CreateAnchorPercentage(const ScopedCSSName* name,
+  CreateAnchorPercentage(const AnchorSpecifierValue& anchor_specifier,
                          float percentage,
                          const Length& fallback);
   static scoped_refptr<const CalculationExpressionAnchorQueryNode>
-  CreateAnchorSize(const ScopedCSSName* name,
+  CreateAnchorSize(const AnchorSpecifierValue& anchor_specifier,
                    AnchorSizeValue size,
                    const Length& fallback);
 
   AnchorQueryType Type() const { return type_; }
-  const ScopedCSSName* AnchorName() const { return anchor_name_; }
+  const AnchorSpecifierValue& AnchorSpecifier() const {
+    return *anchor_specifier_;
+  }
   AnchorValue AnchorSide() const {
     DCHECK_EQ(type_, AnchorQueryType::kAnchor);
     return value_.anchor_side;
@@ -67,13 +71,14 @@ class CORE_EXPORT CalculationExpressionAnchorQueryNode final
     AnchorSizeValue anchor_size;
   };
 
-  CalculationExpressionAnchorQueryNode(AnchorQueryType type,
-                                       const ScopedCSSName* anchor_name,
-                                       AnchorQueryValue value,
-                                       float side_percentage,
-                                       const Length& fallback)
+  CalculationExpressionAnchorQueryNode(
+      AnchorQueryType type,
+      const AnchorSpecifierValue& anchor_specifier,
+      AnchorQueryValue value,
+      float side_percentage,
+      const Length& fallback)
       : type_(type),
-        anchor_name_(anchor_name),
+        anchor_specifier_(anchor_specifier),
         value_(value),
         side_percentage_(side_percentage),
         fallback_(fallback) {
@@ -82,7 +87,7 @@ class CORE_EXPORT CalculationExpressionAnchorQueryNode final
 
  private:
   AnchorQueryType type_;
-  Persistent<const ScopedCSSName> anchor_name_;
+  Persistent<const AnchorSpecifierValue> anchor_specifier_;
   AnchorQueryValue value_;
   float side_percentage_ = 0;  // For AnchorSideValue::kPercentage only
   Length fallback_;

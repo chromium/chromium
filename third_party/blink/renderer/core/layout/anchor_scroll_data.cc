@@ -20,7 +20,8 @@ namespace {
 const LayoutObject* AnchorScrollObject(const LayoutObject* layout_object) {
   if (!layout_object || !layout_object->IsOutOfFlowPositioned())
     return nullptr;
-  const AnchorScrollValue* value = layout_object->StyleRef().AnchorScroll();
+  const ComputedStyle& style = layout_object->StyleRef();
+  const AnchorSpecifierValue* value = style.AnchorScroll();
   if (!value)
     return nullptr;
 
@@ -40,15 +41,18 @@ const LayoutObject* AnchorScrollObject(const LayoutObject* layout_object) {
   const bool is_in_top_layer = element ? element->IsInTopLayer() : false;
 
   const NGPhysicalFragment* fragment = nullptr;
-  if (value->IsImplicit()) {
+  if (value->IsNamed()) {
+    fragment = anchor_query->Fragment(&value->GetName(), is_in_top_layer);
+  } else if (value->IsDefault() && style.AnchorDefault()) {
+    fragment = anchor_query->Fragment(style.AnchorDefault(), is_in_top_layer);
+  } else {
+    DCHECK(value->IsImplicit() ||
+           (value->IsDefault() && !style.AnchorDefault()));
     Element* anchor = element ? element->ImplicitAnchorElement() : nullptr;
     LayoutObject* anchor_layout_object =
         anchor ? anchor->GetLayoutObject() : nullptr;
     if (anchor_layout_object)
       fragment = anchor_query->Fragment(anchor_layout_object, is_in_top_layer);
-  } else {
-    DCHECK(value->IsNamed());
-    fragment = anchor_query->Fragment(&value->GetName(), is_in_top_layer);
   }
 
   // |is_in_top_layer| allows NGPhysicalAnchorQuery to return elements that are

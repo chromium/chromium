@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 blink_core_sources_style = [
-  "anchor_scroll_value.cc",
-  "anchor_scroll_value.h",
+  "anchor_specifier_value.cc",
+  "anchor_specifier_value.h",
   "applied_text_decoration.cc",
   "applied_text_decoration.h",
   "applied_text_decoration_list.h",

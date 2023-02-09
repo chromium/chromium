@@ -67,7 +67,7 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/core/style/anchor_scroll_value.h"
+#include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
@@ -1691,7 +1691,7 @@ ScopedCSSName* StyleBuilderConverter::ConvertAnchorDefault(
                                              custom_ident.GetTreeScope());
 }
 
-AnchorScrollValue* StyleBuilderConverter::ConvertAnchorScroll(
+AnchorSpecifierValue* StyleBuilderConverter::ConvertAnchorScroll(
     StyleResolverState& state,
     const CSSValue& value) {
   DCHECK(value.IsScopedValue());
@@ -1699,15 +1699,17 @@ AnchorScrollValue* StyleBuilderConverter::ConvertAnchorScroll(
     switch (identifier_value->GetValueID()) {
       case CSSValueID::kNone:
         return nullptr;
+      case CSSValueID::kDefault:
+        return AnchorSpecifierValue::Default();
       case CSSValueID::kImplicit:
-        return AnchorScrollValue::Implicit();
+        return AnchorSpecifierValue::Implicit();
       default:
         NOTREACHED();
         return nullptr;
     }
   }
   const CSSCustomIdentValue& custom_ident = To<CSSCustomIdentValue>(value);
-  return MakeGarbageCollected<AnchorScrollValue>(
+  return MakeGarbageCollected<AnchorSpecifierValue>(
       *MakeGarbageCollected<ScopedCSSName>(custom_ident.Value(),
                                            custom_ident.GetTreeScope()));
 }

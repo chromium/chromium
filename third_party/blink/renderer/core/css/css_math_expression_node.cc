@@ -1240,23 +1240,24 @@ bool CSSMathExpressionOperation::InvolvesPercentageComparisons() const {
 
 CSSMathExpressionAnchorQuery::CSSMathExpressionAnchorQuery(
     CSSAnchorQueryType type,
-    const CSSCustomIdentValue* anchor_name,
+    const CSSValue* anchor_specifier,
     const CSSValue& value,
     const CSSPrimitiveValue* fallback)
-    : CSSMathExpressionNode(kCalcPercentLength,
-                            false /* has_comparisons */,
-                            (anchor_name && !anchor_name->IsScopedValue()) ||
-                                (fallback && !fallback->IsScopedValue())),
+    : CSSMathExpressionNode(
+          kCalcPercentLength,
+          false /* has_comparisons */,
+          (anchor_specifier && !anchor_specifier->IsScopedValue()) ||
+              (fallback && !fallback->IsScopedValue())),
       type_(type),
-      anchor_name_(anchor_name),
+      anchor_specifier_(anchor_specifier),
       value_(value),
       fallback_(fallback) {}
 
 String CSSMathExpressionAnchorQuery::CustomCSSText() const {
   StringBuilder result;
   result.Append(IsAnchor() ? "anchor(" : "anchor-size(");
-  if (anchor_name_) {
-    result.Append(anchor_name_->CustomCSSText());
+  if (anchor_specifier_) {
+    result.Append(anchor_specifier_->CssText());
     result.Append(" ");
   }
   result.Append(value_->CssText());
@@ -1275,7 +1276,8 @@ bool CSSMathExpressionAnchorQuery::operator==(
     return false;
   }
   return type_ == other_anchor->type_ &&
-         base::ValuesEquivalent(anchor_name_, other_anchor->anchor_name_) &&
+         base::ValuesEquivalent(anchor_specifier_,
+                                other_anchor->anchor_specifier_) &&
          base::ValuesEquivalent(value_, other_anchor->value_) &&
          base::ValuesEquivalent(fallback_, other_anchor->fallback_);
 }
@@ -1334,10 +1336,17 @@ scoped_refptr<const CalculationExpressionNode>
 CSSMathExpressionAnchorQuery::ToCalculationExpression(
     const CSSLengthResolver& length_resolver) const {
   DCHECK(IsScopedValue());
-  ScopedCSSName* anchor_name =
-      anchor_name_ ? MakeGarbageCollected<ScopedCSSName>(
-                         anchor_name_->Value(), anchor_name_->GetTreeScope())
-                   : nullptr;
+  AnchorSpecifierValue* anchor_specifier = AnchorSpecifierValue::Default();
+  if (const auto* implicit =
+          DynamicTo<CSSIdentifierValue>(anchor_specifier_.Get())) {
+    DCHECK_EQ(implicit->GetValueID(), CSSValueID::kImplicit);
+    anchor_specifier = AnchorSpecifierValue::Implicit();
+  } else if (const auto* custom_ident =
+                 DynamicTo<CSSCustomIdentValue>(anchor_specifier_.Get())) {
+    anchor_specifier = MakeGarbageCollected<AnchorSpecifierValue>(
+        *MakeGarbageCollected<ScopedCSSName>(custom_ident->Value(),
+                                             custom_ident->GetTreeScope()));
+  }
   Length fallback = fallback_ ? fallback_->ConvertToLength(length_resolver)
                               : Length::Fixed(0);
 
@@ -1346,17 +1355,18 @@ CSSMathExpressionAnchorQuery::ToCalculationExpression(
             DynamicTo<CSSPrimitiveValue>(*value_)) {
       DCHECK(percentage->IsPercentage());
       return CalculationExpressionAnchorQueryNode::CreateAnchorPercentage(
-          anchor_name, percentage->GetFloatValue(), fallback);
+          *anchor_specifier, percentage->GetFloatValue(), fallback);
     }
     const CSSIdentifierValue& side = To<CSSIdentifierValue>(*value_);
     return CalculationExpressionAnchorQueryNode::CreateAnchor(
-        anchor_name, CSSValueIDToAnchorValueEnum(side.GetValueID()), fallback);
+        *anchor_specifier, CSSValueIDToAnchorValueEnum(side.GetValueID()),
+        fallback);
   }
 
   DCHECK_EQ(type_, CSSAnchorQueryType::kAnchorSize);
   const CSSIdentifierValue& size = To<CSSIdentifierValue>(*value_);
   return CalculationExpressionAnchorQueryNode::CreateAnchorSize(
-      anchor_name, CSSValueIDToAnchorSizeValueEnum(size.GetValueID()),
+      *anchor_specifier, CSSValueIDToAnchorSizeValueEnum(size.GetValueID()),
       fallback);
 }
 
@@ -1365,9 +1375,8 @@ CSSMathExpressionAnchorQuery::PopulateWithTreeScope(
     const TreeScope* tree_scope) const {
   return *MakeGarbageCollected<CSSMathExpressionAnchorQuery>(
       type_,
-      anchor_name_ ? To<CSSCustomIdentValue>(
-                         &anchor_name_->EnsureScopedValue(tree_scope))
-                   : nullptr,
+      anchor_specifier_ ? &anchor_specifier_->EnsureScopedValue(tree_scope)
+                        : nullptr,
       *value_,
       fallback_
           ? To<CSSPrimitiveValue>(&fallback_->EnsureScopedValue(tree_scope))
@@ -1375,7 +1384,7 @@ CSSMathExpressionAnchorQuery::PopulateWithTreeScope(
 }
 
 void CSSMathExpressionAnchorQuery::Trace(Visitor* visitor) const {
-  visitor->Trace(anchor_name_);
+  visitor->Trace(anchor_specifier_);
   visitor->Trace(value_);
   visitor->Trace(fallback_);
   CSSMathExpressionNode::Trace(visitor);
@@ -1436,9 +1445,13 @@ class CSSMathExpressionNodeParser {
       return nullptr;
     }
 
-    const CSSCustomIdentValue* anchor_name =
-        css_parsing_utils::ConsumeDashedIdent(tokens, context_);
-    // |anchor_name| may be omitted for the implicit anchor elements
+    // |anchor_specifier| may be omitted to represent the default anchor.
+    const CSSValue* anchor_specifier =
+        css_parsing_utils::ConsumeIdent<CSSValueID::kImplicit>(tokens);
+    if (!anchor_specifier) {
+      anchor_specifier =
+          css_parsing_utils::ConsumeDashedIdent(tokens, context_);
+    }
 
     tokens.ConsumeWhitespace();
     const CSSValue* value = nullptr;
@@ -1480,7 +1493,7 @@ class CSSMathExpressionNodeParser {
       return nullptr;
     }
     return MakeGarbageCollected<CSSMathExpressionAnchorQuery>(
-        anchor_query_type, anchor_name, *value, fallback);
+        anchor_query_type, anchor_specifier, *value, fallback);
   }
 
   CSSMathExpressionNode* ParseMathFunction(CSSValueID function_id,
@@ -1867,17 +1880,20 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
     CSSAnchorQueryType type = anchor_query.Type() == AnchorQueryType::kAnchor
                                   ? CSSAnchorQueryType::kAnchor
                                   : CSSAnchorQueryType::kAnchorSize;
-    const CSSCustomIdentValue* anchor_name = nullptr;
-    if (const ScopedCSSName* passed_name = anchor_query.AnchorName()) {
-      anchor_name = To<CSSCustomIdentValue>(
-          &MakeGarbageCollected<CSSCustomIdentValue>(passed_name->GetName())
-               ->EnsureScopedValue(passed_name->GetTreeScope()));
+    const CSSValue* anchor_specifier = nullptr;
+    if (anchor_query.AnchorSpecifier().IsImplicit()) {
+      anchor_specifier = CSSIdentifierValue::Create(CSSValueID::kImplicit);
+    } else if (anchor_query.AnchorSpecifier().IsNamed()) {
+      const ScopedCSSName& name = anchor_query.AnchorSpecifier().GetName();
+      anchor_specifier = To<CSSCustomIdentValue>(
+          &MakeGarbageCollected<CSSCustomIdentValue>(name.GetName())
+               ->EnsureScopedValue(name.GetTreeScope()));
     }
     CSSValue* value = AnchorQueryValueToCSSValue(anchor_query);
     CSSPrimitiveValue* fallback = CSSPrimitiveValue::CreateFromLength(
         anchor_query.GetFallback(), /* zoom */ 1);
-    return MakeGarbageCollected<CSSMathExpressionAnchorQuery>(type, anchor_name,
-                                                              *value, fallback);
+    return MakeGarbageCollected<CSSMathExpressionAnchorQuery>(
+        type, anchor_specifier, *value, fallback);
   }
 
   DCHECK(node.IsOperation());

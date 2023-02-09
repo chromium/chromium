@@ -22,6 +22,7 @@
 
 namespace blink {
 
+class AnchorSpecifierValue;
 class LayoutObject;
 class NGLogicalAnchorQuery;
 class NGLogicalAnchorQueryMap;
@@ -314,13 +315,14 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
  private:
   const NGLogicalAnchorQuery* AnchorQuery() const;
   const NGLogicalAnchorReference* ResolveAnchorReference(
-      const ScopedCSSName* anchor_name) const;
+      const AnchorSpecifierValue& anchor_specifier) const;
 
-  absl::optional<LayoutUnit> EvaluateAnchor(const ScopedCSSName* anchor_name,
-                                            AnchorValue anchor_value,
-                                            float percentage) const;
+  absl::optional<LayoutUnit> EvaluateAnchor(
+      const AnchorSpecifierValue& anchor_specifier,
+      AnchorValue anchor_value,
+      float percentage) const;
   absl::optional<LayoutUnit> EvaluateAnchorSize(
-      const ScopedCSSName* anchor_name,
+      const AnchorSpecifierValue& anchor_specifier,
       AnchorSizeValue anchor_size_value) const;
 
   mutable const NGLogicalAnchorQuery* anchor_query_ = nullptr;

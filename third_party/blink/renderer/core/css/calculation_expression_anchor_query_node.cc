@@ -4,40 +4,44 @@
 
 #include "third_party/blink/renderer/core/css/calculation_expression_anchor_query_node.h"
 #include "base/memory/values_equivalent.h"
+#include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 
 namespace blink {
 
 // static
 scoped_refptr<const CalculationExpressionAnchorQueryNode>
-CalculationExpressionAnchorQueryNode::CreateAnchor(const ScopedCSSName* name,
-                                                   AnchorValue side,
-                                                   const Length& fallback) {
+CalculationExpressionAnchorQueryNode::CreateAnchor(
+    const AnchorSpecifierValue& anchor_specifier,
+    AnchorValue side,
+    const Length& fallback) {
   AnchorQueryValue value = {.anchor_side = side};
   return base::MakeRefCounted<CalculationExpressionAnchorQueryNode>(
-      AnchorQueryType::kAnchor, name, value, /* percentage */ 0, fallback);
+      AnchorQueryType::kAnchor, anchor_specifier, value, /* percentage */ 0,
+      fallback);
 }
 
 // static
 scoped_refptr<const CalculationExpressionAnchorQueryNode>
 CalculationExpressionAnchorQueryNode::CreateAnchorPercentage(
-    const ScopedCSSName* name,
+    const AnchorSpecifierValue& anchor_specifier,
     float percentage,
     const Length& fallback) {
   AnchorQueryValue value = {.anchor_side = AnchorValue::kPercentage};
   return base::MakeRefCounted<CalculationExpressionAnchorQueryNode>(
-      AnchorQueryType::kAnchor, name, value, percentage, fallback);
+      AnchorQueryType::kAnchor, anchor_specifier, value, percentage, fallback);
 }
 
 //  static
 scoped_refptr<const CalculationExpressionAnchorQueryNode>
 CalculationExpressionAnchorQueryNode::CreateAnchorSize(
-    const ScopedCSSName* name,
+    const AnchorSpecifierValue& anchor_specifier,
     AnchorSizeValue size,
     const Length& fallback) {
   AnchorQueryValue value = {.anchor_size = size};
   return base::MakeRefCounted<CalculationExpressionAnchorQueryNode>(
-      AnchorQueryType::kAnchorSize, name, value, /* percentage */ 0, fallback);
+      AnchorQueryType::kAnchorSize, anchor_specifier, value, /* percentage */ 0,
+      fallback);
 }
 
 bool CalculationExpressionAnchorQueryNode::operator==(
@@ -50,7 +54,8 @@ bool CalculationExpressionAnchorQueryNode::operator==(
   if (type_ != other_anchor_query->type_) {
     return false;
   }
-  if (!base::ValuesEquivalent(anchor_name_, other_anchor_query->anchor_name_)) {
+  if (!base::ValuesEquivalent(anchor_specifier_,
+                              other_anchor_query->anchor_specifier_)) {
     return false;
   }
   if (type_ == AnchorQueryType::kAnchor) {
@@ -75,7 +80,8 @@ bool CalculationExpressionAnchorQueryNode::operator==(
 scoped_refptr<const CalculationExpressionNode>
 CalculationExpressionAnchorQueryNode::Zoom(double factor) const {
   return base::MakeRefCounted<CalculationExpressionAnchorQueryNode>(
-      type_, anchor_name_, value_, side_percentage_, fallback_.Zoom(factor));
+      type_, *anchor_specifier_, value_, side_percentage_,
+      fallback_.Zoom(factor));
 }
 
 float CalculationExpressionAnchorQueryNode::Evaluate(

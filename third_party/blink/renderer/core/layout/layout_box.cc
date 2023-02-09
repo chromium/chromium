@@ -829,7 +829,7 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
     GetCustomLayoutChild()->styleMap()->UpdateStyle(GetDocument(), StyleRef());
 
   if (diff.NeedsNormalPaintInvalidation()) {
-    if (const AnchorScrollValue* old_anchor_scroll =
+    if (const AnchorSpecifierValue* old_anchor_scroll =
             old_style ? old_style->AnchorScroll() : nullptr;
         !base::ValuesEquivalent(StyleRef().AnchorScroll().Get(),
                                 old_anchor_scroll)) {
