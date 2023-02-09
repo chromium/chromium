@@ -109,6 +109,8 @@ public final class ProductionSupportedFlagList {
                     "Disables WebView from checking for app recovery mitigations."),
             Flag.commandLine(AwSwitches.WEBVIEW_ENABLE_APP_RECOVERY,
                     "Enables WebView to check for app recovery mitigations."),
+            Flag.baseFeature("DefaultPassthroughCommandDecoder",
+                    "Use the passthrough GLES2 command decoder."),
             Flag.baseFeature(GpuFeatures.WEBVIEW_VULKAN,
                     "Use Vulkan for composite. Requires Android device and OS support. May crash "
                             + "if enabled on unsupported device."),
