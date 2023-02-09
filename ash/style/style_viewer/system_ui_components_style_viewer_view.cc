@@ -172,6 +172,8 @@ void SystemUIComponentsStyleViewerView::CreateAndShowWidget() {
   viewer_view->AddComponent(
       u"System Textfield",
       base::BindRepeating(&CreateSystemTextfieldInstancesGridView));
+  viewer_view->AddComponent(
+      u"Pagination", base::BindRepeating(&CreatePaginationInstancesGridView));
 
   // Show PillButton on start.
   viewer_view->ShowComponentInstances(u"PillButton");

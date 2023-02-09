@@ -27,6 +27,7 @@ std::unique_ptr<SystemUIComponentsGridView> CreateKnobSwitchInstancesGridView();
 std::unique_ptr<SystemUIComponentsGridView> CreateTabSliderInstancesGridView();
 std::unique_ptr<SystemUIComponentsGridView>
 CreateSystemTextfieldInstancesGridView();
+std::unique_ptr<SystemUIComponentsGridView> CreatePaginationInstancesGridView();
 
 }  // namespace ash
 
