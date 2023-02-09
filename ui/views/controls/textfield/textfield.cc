@@ -799,26 +799,44 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
         touch_handles_hidden_due_to_scroll_ =
             touch_selection_controller_ != nullptr;
         DestroyTouchSelection();
-        drag_start_location_ = event->location();
-        drag_start_display_offset_ =
-            GetRenderText()->GetUpdatedDisplayOffset().x();
+#if BUILDFLAG(IS_CHROMEOS)
+        if (::features::IsTouchTextEditingRedesignEnabled()) {
+          // If the scroll begins in a horizontal direction, use the scroll
+          // sequence for cursor placement.
+          const float abs_delta_x = abs(event->details().scroll_x_hint());
+          const float abs_delta_y = abs(event->details().scroll_y_hint());
+          if (abs_delta_x >= abs_delta_y) {
+            dragging_cursor_ = true;
+          }
+        }
+#endif
+        if (!dragging_cursor_) {
+          drag_start_location_ = event->location();
+          drag_start_display_offset_ =
+              GetRenderText()->GetUpdatedDisplayOffset().x();
+        }
         event->SetHandled();
       }
       break;
     case ui::ET_GESTURE_SCROLL_UPDATE:
       if (HasFocus()) {
-        int new_offset = drag_start_display_offset_ + event->location().x() -
-                         drag_start_location_.x();
-        GetRenderText()->SetDisplayOffset(new_offset);
-        SchedulePaint();
+        if (dragging_cursor_) {
+          MoveCursorTo(event->location(), false);
+        } else {
+          int new_offset = drag_start_display_offset_ + event->location().x() -
+                           drag_start_location_.x();
+          GetRenderText()->SetDisplayOffset(new_offset);
+          SchedulePaint();
+        }
         event->SetHandled();
       }
       break;
     case ui::ET_GESTURE_SCROLL_END:
     case ui::ET_SCROLL_FLING_START:
       if (HasFocus()) {
-        if (touch_handles_hidden_due_to_scroll_) {
+        if (dragging_cursor_ || touch_handles_hidden_due_to_scroll_) {
           CreateTouchSelectionControllerAndNotifyIt();
+          dragging_cursor_ = false;
           touch_handles_hidden_due_to_scroll_ = false;
         }
         event->SetHandled();

@@ -749,6 +749,11 @@ class VIEWS_EXPORT Textfield : public View,
 
   SelectionController selection_controller_;
 
+  // Whether the user is currently dragging the cursor. If true, the current
+  // scroll sequence will be used for cursor placement rather than for
+  // scrolling.
+  bool dragging_cursor_ = false;
+
   // Used to track touch drag starting location and offset to enable touch
   // scrolling.
   gfx::Point drag_start_location_;
