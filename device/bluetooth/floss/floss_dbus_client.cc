@@ -184,6 +184,7 @@ const char kAddService[] = "AddService";
 const char kRemoveService[] = "RemoveService";
 const char kClearServices[] = "ClearServices";
 const char kSendResponse[] = "SendResponse";
+const char kServerSendNotification[] = "SendNotification";
 
 const char kOnServerRegistered[] = "OnServerRegistered";
 const char kOnServerConnectionState[] = "OnServerConnectionState";
@@ -194,6 +195,7 @@ const char kOnServerDescriptorReadRequest[] = "OnServerDescriptorReadRequest";
 const char kOnServerCharacteristicWriteRequest[] =
     "OnServerCharacteristicWriteRequest";
 const char kOnServerDescriptorWriteRequest[] = "OnServerDescriptorWriteRequest";
+const char kOnServerNotificationSent[] = "OnNotificationSent";
 }  // namespace gatt
 
 namespace advertiser {

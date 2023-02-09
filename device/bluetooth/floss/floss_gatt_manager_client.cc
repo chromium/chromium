@@ -458,6 +458,16 @@ void FlossGattManagerClient::SendResponse(ResponseCallback<Void> callback,
                        remote_device, request_id, status, offset, value);
 }
 
+void FlossGattManagerClient::ServerSendNotification(
+    ResponseCallback<Void> callback,
+    const std::string& remote_device,
+    int32_t handle,
+    bool confirm,
+    std::vector<uint8_t> value) {
+  CallGattMethod<Void>(std::move(callback), gatt::kServerSendNotification,
+                       server_id_, remote_device, handle, confirm, value);
+}
+
 void FlossGattManagerClient::Init(dbus::Bus* bus,
                                   const std::string& service_name,
                                   const int adapter_index) {
@@ -536,6 +546,9 @@ void FlossGattManagerClient::Init(dbus::Bus* bus,
   gatt_server_exported_callback_manager_.AddMethod(
       gatt::kOnServerDescriptorWriteRequest,
       &FlossGattServerObserver::GattServerDescriptorWriteRequest);
+  gatt_server_exported_callback_manager_.AddMethod(
+      gatt::kOnServerNotificationSent,
+      &FlossGattServerObserver::GattServerNotificationSent);
 
   // Export callbacks.
   if (!gatt_client_exported_callback_manager_.ExportCallback(
@@ -818,6 +831,13 @@ void FlossGattManagerClient::GattServerDescriptorWriteRequest(
     observer.GattServerDescriptorWriteRequest(address, request_id, offset,
                                               length, is_prepared_write,
                                               needs_response, handle, value);
+  }
+}
+
+void FlossGattManagerClient::GattServerNotificationSent(std::string address,
+                                                        GattStatus status) {
+  for (auto& observer : gatt_server_observers_) {
+    observer.GattServerNotificationSent(address, status);
   }
 }
 

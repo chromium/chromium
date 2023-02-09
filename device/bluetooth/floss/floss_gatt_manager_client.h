@@ -277,6 +277,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattServerObserver
                                                 bool needs_response,
                                                 int32_t handle,
                                                 std::vector<uint8_t> value) {}
+
+  // A server sent out a notification.
+  virtual void GattServerNotificationSent(std::string address,
+                                          GattStatus status) {}
 };
 
 class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
@@ -415,6 +419,14 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
                             int32_t offset,
                             std::vector<uint8_t> value);
 
+  // Send a notification, with the option to specify whether or not the client
+  // must confirm explicit acknowledgement.
+  virtual void ServerSendNotification(ResponseCallback<Void> callback,
+                                      const std::string& remote_device,
+                                      int32_t handle,
+                                      bool confirm,
+                                      std::vector<uint8_t> value);
+
   // Initialize the gatt client for the given adapter.
   void Init(dbus::Bus* bus,
             const std::string& service_name,
@@ -508,6 +520,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
                                         bool needs_response,
                                         int32_t handle,
                                         std::vector<uint8_t> value) override;
+  void GattServerNotificationSent(std::string address,
+                                  GattStatus status) override;
 
   // Managed by FlossDBusManager - we keep local pointer to access object proxy.
   base::raw_ptr<dbus::Bus> bus_ = nullptr;
