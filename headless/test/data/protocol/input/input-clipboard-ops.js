@@ -36,6 +36,8 @@
     });
   }
 
+  await dp.Browser.grantPermissions({permissions: ['clipboardReadWrite']});
+
   const modControl = 2;
   const modCommand = 4;
   const mod = navigator.platform.includes('Mac') ? modCommand : modControl;
