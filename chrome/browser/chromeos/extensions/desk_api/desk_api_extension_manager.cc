@@ -222,4 +222,9 @@ void DeskApiExtensionManager::RemoveExtensionIfInstalled() {
   }
 }
 
+// static
+void DeskApiExtensionManager::EnsureFactoryBuilt() {
+  DeskApiExtensionManager::GetFactory();
+}
+
 }  // namespace chromeos

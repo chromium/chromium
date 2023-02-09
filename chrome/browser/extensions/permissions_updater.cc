@@ -786,4 +786,9 @@ void PermissionsUpdater::RemovePermissionsImpl(
       std::move(completion_callback));
 }
 
+// static
+void PermissionsUpdater::EnsureAssociatedFactoryBuilt() {
+  PermissionsUpdaterShutdownNotifierFactory::GetInstance();
+}
+
 }  // namespace extensions

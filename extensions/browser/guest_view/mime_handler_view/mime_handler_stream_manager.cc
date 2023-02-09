@@ -273,4 +273,9 @@ bool MimeHandlerStreamManager::EmbedderObserver::IsTrackedRenderFrameHost(
   }
 }
 
+// static
+void MimeHandlerStreamManager::EnsureFactoryBuilt() {
+  MimeHandlerStreamManagerFactory::GetInstance();
+}
+
 }  // namespace extensions

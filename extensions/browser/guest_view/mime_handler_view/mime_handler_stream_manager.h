@@ -53,6 +53,8 @@ class MimeHandlerStreamManager : public KeyedService,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(::ChromeMimeHandlerViewTest, Basic);
 

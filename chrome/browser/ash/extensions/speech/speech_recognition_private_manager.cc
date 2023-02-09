@@ -58,9 +58,10 @@ class SpeechRecognitionPrivateManagerFactory
   static SpeechRecognitionPrivateManager* GetForBrowserContext(
       content::BrowserContext* context);
 
+  static SpeechRecognitionPrivateManagerFactory* GetInstance();
+
  private:
   friend class base::NoDestructor<SpeechRecognitionPrivateManagerFactory>;
-  static SpeechRecognitionPrivateManagerFactory* GetInstance();
 
   SpeechRecognitionPrivateManagerFactory();
   ~SpeechRecognitionPrivateManagerFactory() override = default;
@@ -117,8 +118,7 @@ SpeechRecognitionPrivateManager* SpeechRecognitionPrivateManager::Get(
 // static
 BrowserContextKeyedServiceFactory*
 SpeechRecognitionPrivateManager::GetFactory() {
-  static base::NoDestructor<SpeechRecognitionPrivateManagerFactory> g_factory;
-  return g_factory.get();
+  return SpeechRecognitionPrivateManagerFactory::GetInstance();
 }
 
 void SpeechRecognitionPrivateManager::HandleStart(
@@ -214,6 +214,11 @@ SpeechRecognitionPrivateManager::GetSpeechRecognizer(const std::string& key) {
         this, context_, key);
 
   return recognizer.get();
+}
+
+// static
+void SpeechRecognitionPrivateManager::EnsureFactoryBuilt() {
+  GetFactory();
 }
 
 }  // namespace extensions

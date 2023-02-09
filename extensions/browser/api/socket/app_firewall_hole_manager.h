@@ -76,6 +76,8 @@ class AppFirewallHoleManager : public KeyedService,
                                         uint16_t port,
                                         const std::string& extension_id);
 
+  static void EnsureFactoryBuilt();
+
  private:
   friend class AppFirewallHole;
 

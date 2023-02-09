@@ -68,6 +68,8 @@ class IncognitoConnectability : public BrowserContextKeyedAPI {
              const GURL& url,
              base::OnceCallback<void(bool)> callback);
 
+  static void EnsureFactoryBuilt();
+
  private:
   struct TabContext {
     TabContext();

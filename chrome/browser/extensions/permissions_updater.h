@@ -150,6 +150,8 @@ class PermissionsUpdater {
   void AddPermissionsForTesting(const Extension& extension,
                                 const PermissionSet& permissions);
 
+  static void EnsureAssociatedFactoryBuilt();
+
  private:
   class NetworkPermissionsUpdateHelper;
 

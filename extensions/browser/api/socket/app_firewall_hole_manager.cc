@@ -167,4 +167,9 @@ void AppFirewallHoleManager::OnAppWindowShown(AppWindow* app_window,
   }
 }
 
+// static
+void AppFirewallHoleManager::EnsureFactoryBuilt() {
+  AppFirewallHoleManagerFactory::GetInstance();
+}
+
 }  // namespace extensions

@@ -64,6 +64,8 @@ class ContactCenterInsightsExtensionManager : public KeyedService {
   // Boolean helper that decides if the component extension can be installed.
   bool CanInstallExtension() const;
 
+  static void EnsureFactoryBuilt();
+
  private:
   // Retrieves the factory instance for the
   // `ContactCenterInsightsExtensionManager`.

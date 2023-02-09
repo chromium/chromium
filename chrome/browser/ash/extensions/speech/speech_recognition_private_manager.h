@@ -60,6 +60,8 @@ class SpeechRecognitionPrivateManager
   // Handles a call to stop speech recognition.
   void HandleStop(const std::string& key, OnStopCallback callback);
 
+  static void EnsureFactoryBuilt();
+
  private:
   friend class SpeechRecognitionPrivateManagerTest;
   friend class SpeechRecognitionPrivateApiTest;

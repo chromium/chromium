@@ -540,4 +540,9 @@ void MessagingAPIMessageFilter::OnResponsePending(
       ->NotifyResponsePending(port_id, render_process_id_, port_context);
 }
 
+// static
+void MessagingAPIMessageFilter::EnsureAssociatedFactoryBuilt() {
+  ShutdownNotifierFactory::GetInstance();
+}
+
 }  // namespace extensions

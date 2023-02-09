@@ -173,4 +173,9 @@ void ContactCenterInsightsExtensionManager::RemoveExtensionIfInstalled() {
   }
 }
 
+// static
+void ContactCenterInsightsExtensionManager::EnsureFactoryBuilt() {
+  ContactCenterInsightsExtensionManager::GetFactory();
+}
+
 }  // namespace chromeos

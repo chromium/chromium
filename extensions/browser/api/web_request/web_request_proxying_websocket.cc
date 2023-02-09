@@ -526,4 +526,9 @@ void WebRequestProxyingWebSocket::OnMojoConnectionError() {
   // Deletes |this|.
 }
 
+// static
+void WebRequestProxyingWebSocket::EnsureAssociatedFactoryBuilt() {
+  ShutdownNotifierFactory::GetInstance();
+}
+
 }  // namespace extensions

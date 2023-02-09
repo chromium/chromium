@@ -33,6 +33,8 @@ class MessagingAPIMessageFilter : public content::BrowserMessageFilter {
   MessagingAPIMessageFilter& operator=(const MessagingAPIMessageFilter&) =
       delete;
 
+  static void EnsureAssociatedFactoryBuilt();
+
  private:
   friend class base::DeleteHelper<MessagingAPIMessageFilter>;
   friend class content::BrowserThread;

@@ -352,6 +352,8 @@ class WebRequestProxyingURLLoaderFactory
   bool IsForServiceWorkerScript() const;
   bool IsForDownload() const;
 
+  static void EnsureAssociatedFactoryBuilt();
+
  private:
   void OnTargetFactoryError();
   void OnProxyBindingError();

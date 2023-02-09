@@ -44,6 +44,8 @@ class ExtensionActionManager : public KeyedService,
   // the manifest key.
   ExtensionAction* GetExtensionAction(const Extension& extension) const;
 
+  static void EnsureFactoryBuilt();
+
  private:
   // Implement ExtensionRegistryObserver.
   void OnExtensionUnloaded(content::BrowserContext* browser_context,

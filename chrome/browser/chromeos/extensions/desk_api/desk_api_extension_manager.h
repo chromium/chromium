@@ -68,6 +68,8 @@ class DeskApiExtensionManager : public KeyedService {
   // https://developer.chrome.com/docs/extensions/mv3/intro/
   std::string GetManifest() const;
 
+  static void EnsureFactoryBuilt();
+
  private:
   // Retrieves the factory instance for the
   // `DeskApiExtensionManager`.

@@ -117,4 +117,9 @@ ExtensionAction* ExtensionActionManager::GetExtensionAction(
   return raw_action;
 }
 
+// static
+void ExtensionActionManager::EnsureFactoryBuilt() {
+  ExtensionActionManagerFactory::GetInstance();
+}
+
 }  // namespace extensions

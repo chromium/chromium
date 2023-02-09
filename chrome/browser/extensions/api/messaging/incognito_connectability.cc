@@ -206,4 +206,9 @@ IncognitoConnectability::GetFactoryInstance() {
   return g_incognito_connectability_factory.Pointer();
 }
 
+// static
+void IncognitoConnectability::EnsureFactoryBuilt() {
+  GetFactoryInstance();
+}
+
 }  // namespace extensions

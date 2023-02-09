@@ -105,6 +105,8 @@ class WebRequestProxyingWebSocket
       content::BrowserContext* browser_context,
       WebRequestAPI::ProxySet* proxies);
 
+  static void EnsureAssociatedFactoryBuilt();
+
  private:
   void OnBeforeRequestComplete(int error_code);
   void OnBeforeSendHeadersComplete(const std::set<std::string>& removed_headers,

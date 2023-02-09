@@ -62,4 +62,9 @@ void BookmarksApiWatcher::NotifyApiInvoked(
     observer.OnBookmarksApiInvoked(extension, func);
 }
 
+// static
+void BookmarksApiWatcher::EnsureFactoryBuilt() {
+  BookmarksApiWatcherFactory::GetInstance();
+}
+
 }  // namespace extensions
