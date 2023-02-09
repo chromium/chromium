@@ -519,6 +519,8 @@ class CrostiniManager : public KeyedService,
   // ConciergeClient::VmObserver:
   void OnVmStarted(const vm_tools::concierge::VmStartedSignal& signal) override;
   void OnVmStopped(const vm_tools::concierge::VmStoppedSignal& signal) override;
+  void OnVmStopping(
+      const vm_tools::concierge::VmStoppingSignal& signal) override;
 
   // CiceroneClient::Observer:
   void OnContainerStarted(

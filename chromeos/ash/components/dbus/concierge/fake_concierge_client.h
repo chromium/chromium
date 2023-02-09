@@ -37,6 +37,7 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
 
   bool IsVmStartedSignalConnected() override;
   bool IsVmStoppedSignalConnected() override;
+  bool IsVmStoppingSignalConnected() override;
   bool IsDiskImageProgressSignalConnected() override;
   void CreateDiskImage(
       const vm_tools::concierge::CreateDiskImageRequest& request,
@@ -210,6 +211,9 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   void set_vm_stopped_signal_connected(bool connected) {
     is_vm_stopped_signal_connected_ = connected;
   }
+  void set_vm_stopping_signal_connected(bool connected) {
+    is_vm_stopping_signal_connected_ = connected;
+  }
   void set_disk_image_progress_signal_connected(bool connected) {
     is_disk_image_progress_signal_connected_ = connected;
   }
@@ -333,6 +337,7 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
 
   void NotifyVmStarted(const vm_tools::concierge::VmStartedSignal& signal);
   void NotifyVmStopped(const vm_tools::concierge::VmStoppedSignal& signal);
+  void NotifyVmStopping(const vm_tools::concierge::VmStoppingSignal& signal);
   bool HasVmObservers() const;
 
   void NotifyConciergeStopped();
@@ -383,6 +388,7 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
 
   bool is_vm_started_signal_connected_ = true;
   bool is_vm_stopped_signal_connected_ = true;
+  bool is_vm_stopping_signal_connected_ = true;
   bool is_disk_image_progress_signal_connected_ = true;
 
   bool wait_for_service_to_be_available_response_ = true;

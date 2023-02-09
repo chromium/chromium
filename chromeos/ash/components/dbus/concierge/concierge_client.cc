@@ -74,6 +74,10 @@ class ConciergeClientImpl : public ConciergeClient {
     return is_vm_stopped_signal_connected_;
   }
 
+  bool IsVmStoppingSignalConnected() override {
+    return is_vm_stopping_signal_connected_;
+  }
+
   bool IsDiskImageProgressSignalConnected() override {
     return is_disk_import_progress_signal_connected_;
   }
@@ -307,6 +311,12 @@ class ConciergeClientImpl : public ConciergeClient {
         base::BindOnce(&ConciergeClientImpl::OnSignalConnected,
                        weak_ptr_factory_.GetWeakPtr()));
     concierge_proxy_->ConnectToSignal(
+        concierge::kVmConciergeInterface, concierge::kVmStoppingSignal,
+        base::BindRepeating(&ConciergeClientImpl::OnVmStoppingSignal,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&ConciergeClientImpl::OnSignalConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
+    concierge_proxy_->ConnectToSignal(
         concierge::kVmConciergeInterface, concierge::kDiskImageProgressSignal,
         base::BindRepeating(&ConciergeClientImpl::OnDiskImageProgress,
                             weak_ptr_factory_.GetWeakPtr()),
@@ -421,6 +431,22 @@ class ConciergeClientImpl : public ConciergeClient {
       observer.OnVmStopped(vm_stopped_signal);
   }
 
+  void OnVmStoppingSignal(dbus::Signal* signal) {
+    DCHECK_EQ(signal->GetInterface(), concierge::kVmConciergeInterface);
+    DCHECK_EQ(signal->GetMember(), concierge::kVmStoppingSignal);
+
+    concierge::VmStoppingSignal vm_stopping_signal;
+    dbus::MessageReader reader(signal);
+    if (!reader.PopArrayOfBytesAsProto(&vm_stopping_signal)) {
+      LOG(ERROR) << "Failed to parse proto from DBus Signal";
+      return;
+    }
+
+    for (auto& observer : vm_observer_list_) {
+      observer.OnVmStopping(vm_stopping_signal);
+    }
+  }
+
   void OnDiskImageProgress(dbus::Signal* signal) {
     DCHECK_EQ(signal->GetInterface(), concierge::kVmConciergeInterface);
     DCHECK_EQ(signal->GetMember(), concierge::kDiskImageProgressSignal);
@@ -450,6 +476,8 @@ class ConciergeClientImpl : public ConciergeClient {
       is_vm_stopped_signal_connected_ = is_connected;
     } else if (signal_name == concierge::kDiskImageProgressSignal) {
       is_disk_import_progress_signal_connected_ = is_connected;
+    } else if (signal_name == concierge::kVmStoppingSignal) {
+      is_vm_stopping_signal_connected_ = is_connected;
     } else {
       NOTREACHED();
     }
@@ -466,6 +494,7 @@ class ConciergeClientImpl : public ConciergeClient {
 
   bool is_vm_started_signal_connected_ = false;
   bool is_vm_stopped_signal_connected_ = false;
+  bool is_vm_stopping_signal_connected_ = false;
   bool is_disk_import_progress_signal_connected_ = false;
 
   // Note: This should remain the last member so it'll be destroyed and

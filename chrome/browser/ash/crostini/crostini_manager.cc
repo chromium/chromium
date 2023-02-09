@@ -2768,10 +2768,23 @@ void CrostiniManager::OnVmStopped(
   if (signal.owner_id() != owner_id_)
     return;
   if (running_vms_.find(signal.name()) == running_vms_.end()) {
-    LOG(ERROR) << "Ignoring VmStopped for " << signal.name();
+    LOG(WARNING) << "Ignoring VmStopped for " << signal.name();
     return;
   }
   OnVmStoppedCleanup(signal.name());
+}
+
+void CrostiniManager::OnVmStopping(
+    const vm_tools::concierge::VmStoppingSignal& signal) {
+  if (signal.owner_id() != owner_id_) {
+    return;
+  }
+  auto iter = running_vms_.find(signal.name());
+  if (iter == running_vms_.end()) {
+    LOG(WARNING) << "Ignoring VmStopping for " << signal.name();
+    return;
+  }
+  iter->second.state = VmState::STOPPING;
 }
 
 void CrostiniManager::OnContainerShutdown(

@@ -322,4 +322,15 @@ TEST_F(GuestOsSessionTrackerTest, GetGuestIdForToken) {
       container_shutdown_signal_);
   ASSERT_EQ(absl::nullopt, tracker_.GetGuestIdForToken(token_));
 }
+
+TEST_F(GuestOsSessionTrackerTest, IsVmStopping) {
+  vm_tools::concierge::VmStoppingSignal signal;
+  signal.set_name("vm_name");
+  FakeConciergeClient()->NotifyVmStopping(signal);
+  ASSERT_TRUE(tracker_.IsVmStopping(signal.name()));
+
+  FakeConciergeClient()->NotifyVmStopped(vm_shutdown_signal_);
+  ASSERT_FALSE(tracker_.IsVmStopping(signal.name()));
+}
+
 }  // namespace guest_os

@@ -81,6 +81,10 @@ bool FakeConciergeClient::IsVmStoppedSignalConnected() {
   return is_vm_stopped_signal_connected_;
 }
 
+bool FakeConciergeClient::IsVmStoppingSignalConnected() {
+  return is_vm_stopping_signal_connected_;
+}
+
 bool FakeConciergeClient::IsDiskImageProgressSignalConnected() {
   return is_disk_image_progress_signal_connected_;
 }
@@ -413,10 +417,17 @@ void FakeConciergeClient::NotifyVmStarted(
 
 void FakeConciergeClient::NotifyVmStopped(
     const vm_tools::concierge::VmStoppedSignal& signal) {
-  // Now GetVmInfo can return success.
+  // Now GetVmInfo can no longer succeed.
   get_vm_info_response_->set_success(false);
   for (auto& observer : vm_observer_list_)
     observer.OnVmStopped(signal);
+}
+
+void FakeConciergeClient::NotifyVmStopping(
+    const vm_tools::concierge::VmStoppingSignal& signal) {
+  for (auto& observer : vm_observer_list_) {
+    observer.OnVmStopping(signal);
+  }
 }
 
 bool FakeConciergeClient::HasVmObservers() const {

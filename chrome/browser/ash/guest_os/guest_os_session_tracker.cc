@@ -155,6 +155,10 @@ bool GuestOsSessionTracker::IsRunning(const GuestId& id) {
   return guests_.contains(id);
 }
 
+bool GuestOsSessionTracker::IsVmStopping(const std::string& vm_name) {
+  return stopping_vms_.contains(vm_name);
+}
+
 // ash::ConciergeClient::VmObserver overrides.
 void GuestOsSessionTracker::OnVmStarted(
     const vm_tools::concierge::VmStartedSignal& signal) {
@@ -172,6 +176,7 @@ void GuestOsSessionTracker::OnVmStopped(
     return;
   }
   vms_.erase(signal.name());
+  stopping_vms_.erase(signal.name());
   std::vector<GuestId> ids;
   for (const auto& pair : guests_) {
     if (pair.first.vm_name != signal.name()) {
@@ -182,6 +187,11 @@ void GuestOsSessionTracker::OnVmStopped(
   for (const auto& id : ids) {
     HandleContainerShutdown(id.vm_name, id.container_name);
   }
+}
+
+void GuestOsSessionTracker::OnVmStopping(
+    const vm_tools::concierge::VmStoppingSignal& signal) {
+  stopping_vms_.insert(signal.name());
 }
 
 // ash::CiceroneClient::Observer overrides.
