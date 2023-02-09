@@ -1066,6 +1066,7 @@ void CanvasRenderingContext2D::DrawTextInternal(
       break;
   }
 
+  bounds.Offset(location.x(), location.y());
   if (paint_type == CanvasRenderingContext2DState::kStrokePaintType)
     InflateStrokeRect(bounds);
 
@@ -1079,8 +1080,6 @@ void CanvasRenderingContext2D::DrawTextInternal(
     c->scale(ClampTo<float>(width / font_width), 1);
     location.set_x(location.x() / ClampTo<float>(width / font_width));
   }
-
-  bounds.Offset(location.x(), location.y());
 
   Draw<OverdrawOp::kNone>(
       [this, text = std::move(text), direction, bidi_override, location](
