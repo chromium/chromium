@@ -40,6 +40,7 @@ declare namespace chrome {
       attachedFileBlobUuid?: string;
       screenshotBlobUuid?: string;
       useSystemWindowFrame?: boolean;
+      sendAutofillMetadata?: boolean;
       sendBluetoothLogs?: boolean;
       sendTabTitles?: boolean;
       assistantDebugInfoAllowed?: boolean;

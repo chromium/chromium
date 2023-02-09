@@ -107,6 +107,10 @@ namespace feedbackPrivate {
     // A JSON formatted string containing autofill metadata for this
     // feedback report.
     DOMString? autofillMetadata;
+
+    // Whether or not |autofillMetadata| should be included in the feedback
+    // report.
+    boolean? sendAutofillMetadata;
   };
 
   // Possible statuses that can result from sending feedback.

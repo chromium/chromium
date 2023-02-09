@@ -424,7 +424,6 @@ function sendReport(): boolean {
   feedbackInfo.email =
       getRequiredElement<HTMLSelectElement>('user-email-drop-down').value;
 
-  // TODO(crbug.com/1407646): Send autofill metadata if checkbox is checked.
   let useSystemInfo = false;
   let useHistograms = false;
   const checkbox = $<HTMLInputElement>('sys-info-checkbox');
@@ -432,6 +431,12 @@ function sendReport(): boolean {
     // Send histograms along with system info.
     useHistograms = true;
     useSystemInfo = true;
+  }
+
+  const autofillCheckbox = $<HTMLInputElement>('autofill-metadata-checkbox');
+  if (autofillCheckbox != null && autofillCheckbox.checked &&
+      !getRequiredElement('autofill-checkbox-container').hidden) {
+    feedbackInfo.sendAutofillMetadata = true;
   }
 
   // <if expr="chromeos_ash">
@@ -658,8 +663,7 @@ function initialize() {
     const autofillMetadataUrlElement = $('autofill-metadata-url');
 
     if (autofillMetadataUrlElement) {
-      // Opens a new window showing the full anonymized system+app
-      // information.
+      // Opens a new window showing the full anonymized autofill metadata.
       autofillMetadataUrlElement.onclick = function(e) {
         e.preventDefault();
 
