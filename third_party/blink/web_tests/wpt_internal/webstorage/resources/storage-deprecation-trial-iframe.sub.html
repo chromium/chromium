@@ -1,11 +1,12 @@
 <!doctype html>
 <meta charset="utf-8">
 <body>
-<script>
+<script type="module">
+import { isSessionStorage } from "/wpt_internal/webstorage/resources/storage-deprecation-trial-utils.js";
+        
 // Step 4 (wpt_internal/webstorage/storage-deprecation-trial-{enabled|disabled}-{local|session}.sub.https.html)
-const useSessionStorage = (new URLSearchParams(window.location.search)).has("session");
 const iframe = document.createElement("iframe");
-iframe.src = "https://{{host}}:{{ports[https][0]}}/wpt_internal/webstorage/resources/storage-deprecation-trial-iframe-iframe.html" + (useSessionStorage ? "?session" : "");
+iframe.src = "https://{{host}}:{{ports[https][0]}}/wpt_internal/webstorage/resources/storage-deprecation-trial-iframe-iframe.html" + (isSessionStorage() ? "?session" : "");
 document.body.appendChild(iframe);
 </script>
 </body>

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test for Local Storage with DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning enabled and a cross-origin redirect assert_true: The local storage data must not be consistent. expected true got false
+Harness: the test ran to completion.
+

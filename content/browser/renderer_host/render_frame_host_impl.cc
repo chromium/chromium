@@ -12547,7 +12547,11 @@ void RenderFrameHostImpl::SendCommitNavigation(
                   GetSiteInstance()->GetStoragePartitionConfig())
               ->id();
       partition->BindSessionStorageAreaForProcess(
-          process_id, commit_params->storage_key, namespace_id,
+          process_id,
+          navigation_request->frame_tree_node()
+              ->frame_tree()
+              .GetSessionStorageKey(commit_params->storage_key),
+          namespace_id,
           storage_info->session_storage_area.InitWithNewPipeAndPassReceiver());
     }
   }

@@ -1,0 +1,17 @@
+<!doctype html>
+<meta charset="utf-8">
+<body>
+<script type="module">
+import { isSessionStorage } from "/wpt_internal/webstorage/resources/storage-deprecation-trial-utils.js";
+
+// Step 6 (wpt_internal/webstorage/storage-deprecation-trial-redirect-{session|local}.sub.https.html)
+window.addEventListener("message", e => {
+  // Step 9 (wpt_internal/webstorage/storage-deprecation-trial-redirect-{session|local}.sub.https.html)
+  window.opener.postMessage(e.data, "*");
+});
+// Step 7 (wpt_internal/webstorage/storage-deprecation-trial-redirect-{session|local}.sub.https.html)
+let iframe = document.createElement("iframe");
+iframe.src = "https://{{hosts[alt][]}}:{{ports[https][0]}}/wpt_internal/webstorage/resources/storage-deprecation-trial-redirect-tab-3-iframe.html" + (isSessionStorage() ? "?session" : "");
+document.body.appendChild(iframe);
+</script>
+</body>

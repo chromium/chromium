@@ -1,0 +1,15 @@
+<!doctype html>
+<meta charset="utf-8">
+<script type="module">
+import { isSessionStorage } from "/wpt_internal/webstorage/resources/storage-deprecation-trial-utils.js";
+
+// Step 9 (wpt_internal/webstorage/storage-deprecation-trial-redirect-{session|local}.sub.https.html)
+const storage = isSessionStorage() ? sessionStorage : localStorage;
+const hasData = storage.getItem("test") == "DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning";
+storage.clear();
+if (hasData) {
+  window.top.postMessage("success", "*");
+} else {
+  window.top.postMessage("failure", "*");
+}
+</script>

@@ -1,8 +1,12 @@
 const STORAGE_KEY = "UserID";
 
+export function isSessionStorage() {
+  return (new URLSearchParams(window.location.search)).has("session");
+}
+
 export function getOrCreateID(useSessionStorage) {
   if(typeof useSessionStorage !== "boolean") {
-    throw new Error("`useSessionStorage` should be a boolean");
+    useSessionStorage = isSessionStorage();
   }
   const storage = useSessionStorage ? sessionStorage : localStorage;
   if (!storage.getItem(STORAGE_KEY)) {
@@ -14,7 +18,7 @@ export function getOrCreateID(useSessionStorage) {
 
 export function clearID(useSessionStorage) {
   if(typeof useSessionStorage !== "boolean") {
-    throw new Error("`useSessionStorage` should be a boolean");
+    useSessionStorage = isSessionStorage();
   }
   const storage = useSessionStorage ? sessionStorage : localStorage;
   storage.clear();

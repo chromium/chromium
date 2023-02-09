@@ -7006,5 +7006,3 @@ crbug.com/1413770 wpt_internal/storage/estimate-usage-details-filesystem.https.t
 
 # Sheriff 2023-02-09
 crbug.com/1414105 [ Win ] virtual/gpu/fast/canvas/OffscreenCanvas-filter-in-worker.html [ Crash Failure Pass ]
-# Working on fix in https://chromium-review.googlesource.com/c/chromium/src/+/4235072
-crbug.com/1414274 wpt_internal/webstorage/session-storage-deprecation-trial-redirect.sub.https.html [ Failure Pass ]

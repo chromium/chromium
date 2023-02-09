@@ -1,0 +1,8 @@
+<!doctype html>
+<meta charset="utf-8">
+<script type="module">
+import { isSessionStorage } from "/wpt_internal/webstorage/resources/storage-deprecation-trial-utils.js";
+
+// Step 3 (wpt_internal/webstorage/storage-deprecation-trial-redirect-{local|session}.sub.https.html)
+window.location = "https://{{hosts[alt][]}}:{{ports[https][0]}}/wpt_internal/webstorage/resources/storage-deprecation-trial-redirect-tab-2.sub.html" + (isSessionStorage() ? "?session" : "");
+</script>

@@ -30,7 +30,7 @@ async_test(t => {
   }));
 
   // Step 2
-  newTab = window.open("https://{{host}}:{{ports[https][0]}}/wpt_internal/webstorage/resources/session-storage-deprecation-trial-redirect-tab-1.sub.https.html");
+  newTab = window.open("https://{{host}}:{{ports[https][0]}}/wpt_internal/webstorage/resources/storage-deprecation-trial-redirect-tab-1.sub.html?session");
 }, "Test for Session Storage with DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning enabled and a cross-origin redirect");
 </script>
 </body>

@@ -1,0 +1,15 @@
+<!doctype html>
+<meta charset="utf-8">
+<script type="module">
+import { isSessionStorage } from "/wpt_internal/webstorage/resources/storage-deprecation-trial-utils.js";
+
+// Step 6 (wpt_internal/webstorage/storage-cross-origin-redirect-{local|session}.sub.https.html)
+const storage = isSessionStorage() ? sessionStorage : localStorage;
+const hasData = storage.getItem("test") == "CrossOrigin";
+storage.clear();
+if (hasData) {
+  window.opener.postMessage("success", "*");
+} else {
+  window.opener.postMessage("failure", "*");
+}
+</script>

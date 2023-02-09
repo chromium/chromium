@@ -1,0 +1,13 @@
+<!doctype html>
+<meta charset="utf-8">
+<script type="module">
+import { isSessionStorage } from "/wpt_internal/webstorage/resources/storage-deprecation-trial-utils.js";
+// Generate token in headers file with the command:
+// generate_token.py https://not-web-platform.test:8444 DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning --expire-timestamp=2000000000
+//
+// Step 4 (wpt_internal/webstorage/session-storage-deprecation-trial-redirect-{local|session}.sub.https.html)
+const storage = isSessionStorage() ? sessionStorage : localStorage;
+storage.setItem("test", "DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning");
+// Step 5 (wpt_internal/webstorage/session-storage-deprecation-trial-redirect-{local|session}.sub.https.html)
+window.location = "https://{{host}}:{{ports[https][0]}}/wpt_internal/webstorage/resources/storage-deprecation-trial-redirect-tab-3.sub.html" + (isSessionStorage() ? "?session" : "");
+</script>

@@ -1,0 +1,33 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Local Storage: cross-origin redirect</title>
+<meta name=help href="https://privacycg.github.io/storage-partitioning/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+// Here's the set-up for this test:
+// Step 1 (original tab) Set up a listener for "success" and "failure" messages.
+// Step 2 (original tab) Open a new tab on origin 1.
+// Step 3 (new tab, origin 1) Add local storage data.
+// Step 4 (new tab, origin 1) Redirect to origin 2.
+// Step 5 (new tab, origin 2) Redirect to origin 1.
+// Step 6 (new tab, origin 1) Send "success" if local storage data present and "failure" otherwise.
+// Step 7 (original tab) Assert success and exit.
+
+async_test(t => {
+  let newTab;
+
+  // Step 1
+  window.addEventListener("message", t.step_func(e => {
+    // Step 7
+    assert_true(e.data == "success", "The local storage data must be consistent.");
+    newTab.close();
+    t.done();
+  }));
+
+  // Step 2
+  newTab = window.open("https://{{host}}:{{ports[https][0]}}/wpt_internal/webstorage/resources/storage-cross-origin-redirect-tab-1.sub.html");
+}, "Test for Local Storage with cross-origin redirect");
+</script>
+</body>

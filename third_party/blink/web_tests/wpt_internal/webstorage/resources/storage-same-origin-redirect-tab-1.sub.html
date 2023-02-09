@@ -1,0 +1,11 @@
+<!doctype html>
+<meta charset="utf-8">
+<script type="module">
+import { isSessionStorage } from "/wpt_internal/webstorage/resources/storage-deprecation-trial-utils.js";
+
+// Step 3 (wpt_internal/webstorage/storage-same-origin-redirect-{local|session}.sub.https.html)
+const storage = isSessionStorage() ? sessionStorage : localStorage;
+storage.setItem("test", "SameOrigin");
+// Step 4 (wpt_internal/webstorage/storage-same-origin-redirect-{local|session}.sub.https.html)
+window.location = "https://{{host}}:{{ports[https][0]}}/wpt_internal/webstorage/resources/storage-same-origin-redirect-tab-2.html" + (isSessionStorage() ? "?session" : "");
+</script>
