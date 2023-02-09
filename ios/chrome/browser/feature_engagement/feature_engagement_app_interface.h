@@ -55,11 +55,6 @@
 // NO if FeatureEngagementTracker failed to load.
 + (BOOL)enableOverflowMenuTipTriggering [[nodiscard]];
 
-// Enables the feed header tip to be triggered. Clients must call +reset after
-// the test finish running. Returns NO if FeatureEngagementTracker failed to
-// load.
-+ (BOOL)enableFeedHeaderTipTriggering [[nodiscard]];
-
 // Starts manual page translation.
 + (void)showTranslate;
 
