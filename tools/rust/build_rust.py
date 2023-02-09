@@ -53,9 +53,8 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
                  'scripts'))
 
-from build import (AddCMakeToPath, AddOpenSSLToEnv, AddZlibToPath,
-                   CheckoutGitRepo, GetLibXml2Dirs, LLVM_BUILD_TOOLS_DIR,
-                   RunCommand)
+from build import (AddCMakeToPath, AddZlibToPath, CheckoutGitRepo,
+                   GetLibXml2Dirs, LLVM_BUILD_TOOLS_DIR, RunCommand)
 from update import (CLANG_REVISION, CLANG_SUB_REVISION, DownloadAndUnpack,
                     LLVM_BUILD_DIR, GetDefaultHostOs, RmTree, UpdatePackage)
 import build
@@ -100,6 +99,24 @@ RUST_CARGO_CONFIG_TEMPLATE_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), 'cargo-config.toml.template')
 RUST_SRC_VENDOR_DIR = os.path.join(RUST_SRC_DIR, 'vendor')
 
+# CIPD Versions from:
+# - List all platforms
+# cipd ls infra/3pp/static_libs/openssl/
+# - Find all versions for a platform
+# cipd instances infra/3pp/static_libs/openssl/linux-amd64
+# - Find the version tag for a version
+# cipd desc infra/3pp/static_libs/openssl/linux-amd64 --version <instance id>
+# - A version tag looks like: `version:2@1.1.1j.chromium.2` and we
+#   store the part after the `2@` here.
+CIPD_DOWNLOAD_URL = f'https://chrome-infra-packages.appspot.com/dl'
+OPENSSL_CIPD_LINUX_AMD_PATH = 'infra/3pp/static_libs/openssl/linux-amd64'
+OPENSSL_CIPD_LINUX_AMD_VERSION = '1.1.1j.chromium.2'
+OPENSSL_CIPD_MAC_AMD_PATH = 'infra/3pp/static_libs/openssl/mac-amd64'
+OPENSSL_CIPD_MAC_AMD_VERSION = '1.1.1j.chromium.2'
+OPENSSL_CIPD_MAC_ARM_PATH = 'infra/3pp/static_libs/openssl/mac-amd64'
+OPENSSL_CIPD_MAC_ARM_VERSION = '1.1.1j.chromium.2'
+# TODO(crbug.com/1271215): Pull Windows OpenSSL from 3pp when it exists.
+
 if sys.platform == 'win32':
     LD_PATH_FLAG = '/LIBPATH:'
 else:
@@ -117,6 +134,31 @@ TEST_SUITES = [
     'tests/codegen',
     'tests/ui',
 ]
+
+
+def AddOpenSSLToEnv(build_mac_arm):
+    """Download OpenSSL, and add to OPENSSL_DIR."""
+    ssl_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'openssl')
+
+    if sys.platform == 'darwin':
+        if platform.machine() == 'arm64' or build_mac_arm:
+            ssl_url = (f'{CIPD_DOWNLOAD_URL}/{OPENSSL_CIPD_MAC_ARM_PATH}'
+                       f'/+/version:2@{OPENSSL_CIPD_MAC_ARM_VERSION}')
+        else:
+            ssl_url = (f'{CIPD_DOWNLOAD_URL}/{OPENSSL_CIPD_MAC_AMD_PATH}'
+                       f'/+/version:2@{OPENSSL_CIPD_MAC_AMD_VERSION}')
+    elif sys.platform == 'win32':
+        ssl_url = (f'{CIPD_DOWNLOAD_URL}/{OPENSSL_CIPD_WIN_AMD_PATH}'
+                   f'/+/version:2@{OPENSSL_CIPD_WIN_AMD_VERSION}')
+    else:
+        ssl_url = (f'{CIPD_DOWNLOAD_URL}/{OPENSSL_CIPD_LINUX_AMD_PATH}'
+                   f'/+/version:2@{OPENSSL_CIPD_LINUX_AMD_VERSION}')
+
+    if os.path.exists(ssl_dir):
+        RmTree(ssl_dir)
+    DownloadAndUnpack(ssl_url, ssl_dir, is_known_zip=True)
+    os.environ['OPENSSL_DIR'] = ssl_dir
+    return ssl_dir
 
 
 def VerifyStage0JsonHash():
@@ -486,9 +528,11 @@ def main():
     else:
         libxml2_dirs = None
 
-    # Cargo requires OpenSSL to build, and it's not already present on Mac
-    # builders.
-    if sys.platform == 'darwin':
+    # TODO(crbug.com/1271215): OpenSSL is somehow already present on the Windows
+    # builder, but we should change to using a package from 3pp when it is
+    # available.
+    if sys.platform != 'win32':
+        # Cargo depends on OpenSSL.
         AddOpenSSLToEnv(args.build_mac_arm)
 
     if args.run_xpy:
