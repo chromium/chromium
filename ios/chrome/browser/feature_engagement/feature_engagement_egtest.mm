@@ -348,8 +348,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
 
 // Verifies that the New Tab Tip does not appear if all conditions are met,
 // but the NTP is open.
-// TODO(crbug.com/934248) The test is flaky.
-- (void)DISABLED_testNewTabTipPromoDoesNotAppearOnNTP {
+- (void)testNewTabTipPromoDoesNotAppearOnNTP {
   GREYAssert([FeatureEngagementAppInterface enableNewTabTipTriggering],
              @"Feature Engagement tracker did not load");
 
@@ -369,8 +368,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
 
 // Verifies that the bottom toolbar tip is displayed when the phone is in split
 // toolbar mode.
-// TODO(crbug.com/934248) The test is flaky.
-- (void)DISABLED_testBottomToolbarAppear {
+- (void)testBottomToolbarAppear {
   if (![ChromeEarlGrey isSplitToolbarMode])
     return;
 
