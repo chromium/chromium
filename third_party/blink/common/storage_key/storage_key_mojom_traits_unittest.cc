@@ -61,11 +61,11 @@ TEST(StorageKeyMojomTraitsTest, SerializeAndDeserialize) {
             nullptr, blink::mojom::AncestorChainBit::kCrossSite),
         StorageKey::CreateWithOptionalNonce(
             url::Origin(), net::SchemefulSite(), nullptr,
-            blink::mojom::AncestorChainBit::kSameSite),
+            blink::mojom::AncestorChainBit::kCrossSite),
         StorageKey::CreateWithOptionalNonce(
             url::Origin::Create(GURL("http://example.com")),
             net::SchemefulSite(), nullptr,
-            blink::mojom::AncestorChainBit::kSameSite),
+            blink::mojom::AncestorChainBit::kCrossSite),
     };
 
     for (auto& original : test_keys) {

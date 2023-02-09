@@ -545,7 +545,7 @@ TEST_F(StorageKeyTest, SerializeDeserializeOpaqueTopLevelSite) {
       EXPECT_TRUE(test.top_level_site.opaque());
       StorageKey key = StorageKey::CreateWithOptionalNonce(
           test.origin, test.top_level_site, nullptr,
-          blink::mojom::AncestorChainBit::kSameSite);
+          blink::mojom::AncestorChainBit::kCrossSite);
       if (toggle) {
         EXPECT_EQ(test.expected_serialization_with_partitioning,
                   key.Serialize());
@@ -964,7 +964,7 @@ TEST_F(StorageKeyTest, ToCookiePartitionKey) {
   }
 }
 
-TEST_F(StorageKeyTest, NonceRequiresMatchingOriginSiteAndSameSite) {
+TEST_F(StorageKeyTest, NonceRequiresMatchingOriginSiteAndCrossSite) {
   const url::Origin origin = url::Origin::Create(GURL("https://foo.com"));
   const net::SchemefulSite site(origin);
   const net::SchemefulSite opaque_site;
@@ -976,9 +976,9 @@ TEST_F(StorageKeyTest, NonceRequiresMatchingOriginSiteAndSameSite) {
     scope_feature_list.InitWithFeatureState(
         net::features::kThirdPartyStoragePartitioning, toggle);
 
-    // A nonce key with a matching origin/site that's SameSite works.
+    // A nonce key with a matching origin/site that's CrossSite works.
     std::ignore = StorageKey::CreateWithOptionalNonce(
-        origin, site, &nonce, mojom::AncestorChainBit::kSameSite);
+        origin, site, &nonce, mojom::AncestorChainBit::kCrossSite);
 
     // A nonce key with a non-matching origin/site that's SameSite fails.
     EXPECT_DCHECK_DEATH(StorageKey::CreateWithOptionalNonce(
@@ -986,9 +986,9 @@ TEST_F(StorageKeyTest, NonceRequiresMatchingOriginSiteAndSameSite) {
     EXPECT_DCHECK_DEATH(StorageKey::CreateWithOptionalNonce(
         origin, other_site, &nonce, mojom::AncestorChainBit::kSameSite));
 
-    // A nonce key with a matching origin/site that's CrossSite fails.
+    // A nonce key with a matching origin/site that's SameSite fails.
     EXPECT_DCHECK_DEATH(StorageKey::CreateWithOptionalNonce(
-        origin, site, &nonce, mojom::AncestorChainBit::kCrossSite));
+        origin, site, &nonce, mojom::AncestorChainBit::kSameSite));
 
     // A nonce key with a non-matching origin/site that's CrossSite fails.
     EXPECT_DCHECK_DEATH(StorageKey::CreateWithOptionalNonce(
@@ -998,7 +998,7 @@ TEST_F(StorageKeyTest, NonceRequiresMatchingOriginSiteAndSameSite) {
   }
 }
 
-TEST_F(StorageKeyTest, OpaqueTopLevelSiteRequiresSameSite) {
+TEST_F(StorageKeyTest, OpaqueTopLevelSiteRequiresCrossSite) {
   const url::Origin origin = url::Origin::Create(GURL("https://foo.com"));
   const net::SchemefulSite site(origin);
   const net::SchemefulSite opaque_site;
@@ -1014,13 +1014,13 @@ TEST_F(StorageKeyTest, OpaqueTopLevelSiteRequiresSameSite) {
     std::ignore = StorageKey::CreateWithOptionalNonce(
         origin, site, nullptr, mojom::AncestorChainBit::kCrossSite);
 
-    // An opaque site with SameSite works.
+    // An opaque site with CrossSite works.
     std::ignore = StorageKey::CreateWithOptionalNonce(
-        origin, opaque_site, nullptr, mojom::AncestorChainBit::kSameSite);
+        origin, opaque_site, nullptr, mojom::AncestorChainBit::kCrossSite);
 
-    // An opaque site with CrossSite fails.
+    // An opaque site with SameSite fails.
     EXPECT_DCHECK_DEATH(StorageKey::CreateWithOptionalNonce(
-        origin, opaque_site, nullptr, mojom::AncestorChainBit::kCrossSite));
+        origin, opaque_site, nullptr, mojom::AncestorChainBit::kSameSite));
   }
 }
 
@@ -1181,7 +1181,7 @@ TEST_F(StorageKeyTest, WithOrigin) {
         {
             blink::StorageKey::CreateWithOptionalNonce(
                 origin, opaque_site, nullptr,
-                mojom::AncestorChainBit::kSameSite),
+                mojom::AncestorChainBit::kCrossSite),
             origin,
             absl::nullopt,
         },
@@ -1189,27 +1189,27 @@ TEST_F(StorageKeyTest, WithOrigin) {
         {
             blink::StorageKey::CreateWithOptionalNonce(
                 origin, opaque_site, nullptr,
-                mojom::AncestorChainBit::kSameSite),
+                mojom::AncestorChainBit::kCrossSite),
             other_origin,
             blink::StorageKey::CreateWithOptionalNonce(
                 other_origin, opaque_site, nullptr,
-                mojom::AncestorChainBit::kSameSite),
+                mojom::AncestorChainBit::kCrossSite),
         },
         // No change in nonce key updated with same origin.
         {
             blink::StorageKey::CreateWithOptionalNonce(
-                origin, site, &nonce, mojom::AncestorChainBit::kSameSite),
+                origin, site, &nonce, mojom::AncestorChainBit::kCrossSite),
             origin,
             absl::nullopt,
         },
         // Change in nonce key updated with new origin.
         {
             blink::StorageKey::CreateWithOptionalNonce(
-                origin, site, &nonce, mojom::AncestorChainBit::kSameSite),
+                origin, site, &nonce, mojom::AncestorChainBit::kCrossSite),
             other_origin,
             blink::StorageKey::CreateWithOptionalNonce(
                 other_origin, other_site, &nonce,
-                mojom::AncestorChainBit::kSameSite),
+                mojom::AncestorChainBit::kCrossSite),
         },
     };
 
@@ -1253,20 +1253,20 @@ TEST_F(StorageKeyTest, FromWireReturnValue) {
       // Passing cases:
       {o1, site1, site1, absl::nullopt, AncestorChainBit::kSameSite,
        AncestorChainBit::kSameSite, true},
-      {o1, site1, site1, nonce1, AncestorChainBit::kSameSite,
-       AncestorChainBit::kSameSite, true},
+      {o1, site1, site1, nonce1, AncestorChainBit::kCrossSite,
+       AncestorChainBit::kCrossSite, true},
       {o1, site1, site2, absl::nullopt, AncestorChainBit::kSameSite,
        AncestorChainBit::kCrossSite, true},
       {o1, site1, site1, absl::nullopt, AncestorChainBit::kSameSite,
        AncestorChainBit::kCrossSite, true},
-      {o1, site1, site1, nonce1, AncestorChainBit::kSameSite,
-       AncestorChainBit::kSameSite, true},
+      {o1, site1, site1, nonce1, AncestorChainBit::kCrossSite,
+       AncestorChainBit::kCrossSite, true},
       {opaque, site1, site1, absl::nullopt, AncestorChainBit::kCrossSite,
        AncestorChainBit::kCrossSite, true},
       {o1, site1, opaque_site, absl::nullopt, AncestorChainBit::kSameSite,
-       AncestorChainBit::kSameSite, true},
-      {o1, opaque_site, opaque_site, absl::nullopt, AncestorChainBit::kSameSite,
-       AncestorChainBit::kSameSite, true},
+       AncestorChainBit::kCrossSite, true},
+      {o1, opaque_site, opaque_site, absl::nullopt,
+       AncestorChainBit::kCrossSite, AncestorChainBit::kCrossSite, true},
       // Failing cases:
       // If a 3p key is indicated, the *if_third_party_enabled pieces should
       // match their counterparts.
@@ -1284,18 +1284,18 @@ TEST_F(StorageKeyTest, FromWireReturnValue) {
        AncestorChainBit::kSameSite, false},
       // If there is a nonce, all other values must indicate same-site to
       // origin.
-      {o1, site2, site2, nonce1, AncestorChainBit::kCrossSite,
-       AncestorChainBit::kCrossSite, false},
-      {o1, site1, site1, nonce1, AncestorChainBit::kCrossSite,
-       AncestorChainBit::kCrossSite, false},
+      {o1, site2, site2, nonce1, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, false},
+      {o1, site1, site1, nonce1, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, false},
       {o1, site1, site1, nonce1, AncestorChainBit::kSameSite,
        AncestorChainBit::kCrossSite, false},
       // If the top_level_site* is opaque, the ancestor_chain_bit* must be
-      // same-site.
-      {o1, site1, opaque_site, absl::nullopt, AncestorChainBit::kSameSite,
-       AncestorChainBit::kCrossSite, false},
-      {o1, opaque_site, opaque_site, absl::nullopt,
-       AncestorChainBit::kCrossSite, AncestorChainBit::kCrossSite, false},
+      // cross-site.
+      {o1, site1, opaque_site, absl::nullopt, AncestorChainBit::kCrossSite,
+       AncestorChainBit::kSameSite, false},
+      {o1, opaque_site, opaque_site, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, false},
   };
 
   const StorageKey starting_key;
@@ -1376,7 +1376,7 @@ TEST_F(StorageKeyTest, CreateFromOriginAndIsolationInfo) {
                 absl::nullopt, nullptr),
             blink::StorageKey::CreateWithOptionalNonce(
                 origin, opaque_site, nullptr,
-                mojom::AncestorChainBit::kSameSite),
+                mojom::AncestorChainBit::kCrossSite),
         },
         // Nonce context.
         {
@@ -1386,7 +1386,7 @@ TEST_F(StorageKeyTest, CreateFromOriginAndIsolationInfo) {
                 other_origin, net::SiteForCookies::FromOrigin(other_origin),
                 absl::nullopt, &nonce),
             blink::StorageKey::CreateWithOptionalNonce(
-                origin, site, &nonce, mojom::AncestorChainBit::kSameSite),
+                origin, site, &nonce, mojom::AncestorChainBit::kCrossSite),
         },
     };
 

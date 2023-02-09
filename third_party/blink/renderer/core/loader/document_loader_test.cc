@@ -610,7 +610,7 @@ TEST_P(DocumentLoaderTest, StorageKeyFromNavigationParams) {
   auto nonce = base::UnguessableToken::Create();
   StorageKey storage_key_to_commit = StorageKey::CreateWithOptionalNonce(
       origin, net::SchemefulSite(origin), &nonce,
-      mojom::AncestorChainBit::kSameSite);
+      mojom::AncestorChainBit::kCrossSite);
   params->storage_key = storage_key_to_commit;
 
   LocalFrame* local_frame =

@@ -1454,21 +1454,21 @@ NavigationRequest::CreateForSynchronousRendererCommit(
   url::Origin top_level_origin =
       render_frame_host->ComputeTopFrameOrigin(origin);
   // If the `nonce` is set the `top_level_site` must be the same as `origin` and
-  // the `ancestor_chain_bit` must be kSameSite.
+  // the `ancestor_chain_bit` must be kCrossSite.
   // TODO(https://crbug.com/1410254): Cleanup this logic.
   if (nonce) {
     navigation_request->commit_params_->storage_key =
         blink::StorageKey::CreateWithOptionalNonce(
             origin, net::SchemefulSite(origin), base::OptionalToPtr(nonce),
-            blink::mojom::AncestorChainBit::kSameSite);
+            blink::mojom::AncestorChainBit::kCrossSite);
   } else {
     net::SchemefulSite top_level_site(top_level_origin);
     navigation_request->commit_params_->storage_key =
         blink::StorageKey::CreateWithOptionalNonce(
             origin, top_level_site, nullptr,
-            ((render_frame_host->ComputeSiteForCookies().IsNull() ||
-              net::SchemefulSite(origin) != top_level_site) &&
-             !top_level_site.opaque())
+            render_frame_host->ComputeSiteForCookies().IsNull() ||
+                    net::SchemefulSite(origin) != top_level_site ||
+                    top_level_site.opaque()
                 ? blink::mojom::AncestorChainBit::kCrossSite
                 : blink::mojom::AncestorChainBit::kSameSite);
   }

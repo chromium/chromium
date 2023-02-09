@@ -41,7 +41,7 @@ class PLATFORM_EXPORT BlinkStorageKey {
   // `origin` must not be null. `origin` can be opaque.
   // `nonce` can be null to create a key without a nonce.
   // `ancestor_chain_bit` must not be null, if it cannot be determined, default
-  // to kSameSite.
+  // to kCrossSite.
   BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
                   const BlinkSchemefulSite& top_level_site,
                   const base::UnguessableToken* nonce,
@@ -149,7 +149,7 @@ class PLATFORM_EXPORT BlinkStorageKey {
   BlinkSchemefulSite top_level_site_if_third_party_enabled_ = top_level_site_;
   absl::optional<base::UnguessableToken> nonce_;
   mojom::blink::AncestorChainBit ancestor_chain_bit_{
-      mojom::blink::AncestorChainBit::kSameSite};
+      mojom::blink::AncestorChainBit::kCrossSite};
   // Stores the value `ancestor_chain_bit_` would have had if
   // `kThirdPartyStoragePartitioning` were enabled. This isn't used in
   // serialization or comparison.

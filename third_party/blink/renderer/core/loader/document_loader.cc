@@ -2359,13 +2359,11 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   }
 
   // If `security_origin` does not match `top_level_site` we must ensure
-  // `ancestor_chain_bit` is kCrossSite as long as the top level site isn't
-  // opaque.
+  // `ancestor_chain_bit` is kCrossSite.
   // TODO(https://crbug.com/1410254): Cleanup this logic.
   mojom::blink::AncestorChainBit ancestor_chain_bit =
       storage_key_with_3psp.GetAncestorChainBit();
-  if (!top_level_site.IsOpaque() &&
-      BlinkSchemefulSite(security_origin) != top_level_site) {
+  if (BlinkSchemefulSite(security_origin) != top_level_site) {
     ancestor_chain_bit = mojom::blink::AncestorChainBit::kCrossSite;
   }
 

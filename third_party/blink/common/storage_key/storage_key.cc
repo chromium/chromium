@@ -257,7 +257,7 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
       // is safe.
       return StorageKey(key_origin, net::SchemefulSite(key_origin),
                         &nonce.value(),
-                        blink::mojom::AncestorChainBit::kSameSite);
+                        blink::mojom::AncestorChainBit::kCrossSite);
     }
     case EncodedAttribute::kTopLevelSiteOpaqueNonceHigh: {
       // An opaque `top_level_site` is serialized.
@@ -351,7 +351,7 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
           key_origin,
           net::SchemefulSite(url::Origin(url::Origin::Nonce(site_nonce.value()),
                                          tuple_precursor)),
-          nullptr, blink::mojom::AncestorChainBit::kSameSite);
+          nullptr, blink::mojom::AncestorChainBit::kCrossSite);
     }
     default: {
       // Malformed input case. We saw a separator that we don't understand
@@ -401,7 +401,7 @@ StorageKey StorageKey::CreateForTesting(
     const net::SchemefulSite& top_level_site) {
   return StorageKey(
       origin, top_level_site, nullptr,
-      (top_level_site == net::SchemefulSite(origin) || top_level_site.opaque())
+      (top_level_site == net::SchemefulSite(origin) && !top_level_site.opaque())
           ? blink::mojom::AncestorChainBit::kSameSite
           : blink::mojom::AncestorChainBit::kCrossSite);
 }
@@ -418,8 +418,9 @@ bool StorageKey::FromWire(
     StorageKey& out) {
   // If this key's "normal" members indicate a 3p key, then the
   // *_if_third_party_enabled counterparts must match them.
-  if (top_level_site != net::SchemefulSite(origin) ||
-      ancestor_chain_bit != blink::mojom::AncestorChainBit::kSameSite) {
+  if (!origin.opaque() &&
+      (top_level_site != net::SchemefulSite(origin) ||
+       ancestor_chain_bit != blink::mojom::AncestorChainBit::kSameSite)) {
     if (top_level_site != top_level_site_if_third_party_enabled) {
       return false;
     }
@@ -429,27 +430,17 @@ bool StorageKey::FromWire(
   }
 
   // If top_level_site* is cross-site to origin, then ancestor_chain_bit* must
-  // indicate that. An opaque top_level_site* must have a same-site
+  // indicate that. An opaque top_level_site* must have a cross-site
   // ancestor_chain_bit*.
   if (top_level_site != net::SchemefulSite(origin)) {
-    if (!top_level_site.opaque() &&
-        ancestor_chain_bit != blink::mojom::AncestorChainBit::kCrossSite) {
-      return false;
-    } else if (top_level_site.opaque() &&
-               ancestor_chain_bit !=
-                   blink::mojom::AncestorChainBit::kSameSite) {
+    if (ancestor_chain_bit != blink::mojom::AncestorChainBit::kCrossSite) {
       return false;
     }
   }
 
   if (top_level_site_if_third_party_enabled != net::SchemefulSite(origin)) {
-    if (!top_level_site_if_third_party_enabled.opaque() &&
-        ancestor_chain_bit_if_third_party_enabled !=
-            blink::mojom::AncestorChainBit::kCrossSite) {
-      return false;
-    } else if (top_level_site_if_third_party_enabled.opaque() &&
-               ancestor_chain_bit_if_third_party_enabled !=
-                   blink::mojom::AncestorChainBit::kSameSite) {
+    if (ancestor_chain_bit_if_third_party_enabled !=
+        blink::mojom::AncestorChainBit::kCrossSite) {
       return false;
     }
   }
@@ -464,12 +455,12 @@ bool StorageKey::FromWire(
       return false;
     }
 
-    if (ancestor_chain_bit != blink::mojom::AncestorChainBit::kSameSite) {
+    if (ancestor_chain_bit != blink::mojom::AncestorChainBit::kCrossSite) {
       return false;
     }
 
     if (ancestor_chain_bit_if_third_party_enabled !=
-        blink::mojom::AncestorChainBit::kSameSite) {
+        blink::mojom::AncestorChainBit::kCrossSite) {
       return false;
     }
   }
@@ -498,9 +489,9 @@ StorageKey StorageKey::CreateWithNonceForTesting(
     const url::Origin& origin,
     const base::UnguessableToken& nonce) {
   // The AncestorChainBit is not applicable to StorageKeys with a non-empty
-  // nonce, so they are initialized to be kSameSite.
+  // nonce, so they are initialized to be kCrossSite.
   return StorageKey(origin, net::SchemefulSite(origin), &nonce,
-                    blink::mojom::AncestorChainBit::kSameSite);
+                    blink::mojom::AncestorChainBit::kCrossSite);
 }
 
 // static
@@ -517,7 +508,7 @@ StorageKey StorageKey::CreateFromOriginAndIsolationInfo(
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info) {
   blink::mojom::AncestorChainBit ancestor_chain_bit =
-      blink::mojom::AncestorChainBit::kSameSite;
+      blink::mojom::AncestorChainBit::kCrossSite;
   net::SchemefulSite top_level_site =
       net::SchemefulSite(isolation_info.top_frame_origin().value());
 
@@ -526,12 +517,12 @@ StorageKey StorageKey::CreateFromOriginAndIsolationInfo(
     // as that's an invariant.
     top_level_site = net::SchemefulSite(origin);
   } else if (!top_level_site.opaque() &&
-             (net::SchemefulSite(origin) != top_level_site ||
-              isolation_info.site_for_cookies().IsNull())) {
-    // If the top_level_site is opaque the ancestor chain bit will be SameSite.
-    // Otherwise if the top level site doesn't match the new origin or the
-    // site for cookies is empty it must be CrossSite.
-    ancestor_chain_bit = blink::mojom::AncestorChainBit::kCrossSite;
+             net::SchemefulSite(origin) == top_level_site &&
+             !isolation_info.site_for_cookies().IsNull()) {
+    // If the top_level_site is opaque the ancestor chain bit will be CrossSite.
+    // Otherwise if the top level site matches the new origin and the
+    // site for cookies isn't empty it must be SameSite.
+    ancestor_chain_bit = blink::mojom::AncestorChainBit::kSameSite;
   }
   return CreateWithOptionalNonce(origin, top_level_site,
                                  base::OptionalToPtr(isolation_info.nonce()),
@@ -546,14 +537,9 @@ StorageKey StorageKey::WithOrigin(const url::Origin& origin) const {
     // If the nonce is set we have to update the top level site to match origin
     // as that's an invariant.
     top_level_site = net::SchemefulSite(origin);
-  } else if (!top_level_site_.opaque() &&
-             ancestor_chain_bit_ !=
-                 blink::mojom::AncestorChainBit::kCrossSite &&
-             net::SchemefulSite(origin) != top_level_site_) {
-    // If the top_level_site is opaque the ancestor chain bit doesn't need to be
-    // recalculated as it will be SameSite. If the ancestor chain bit is already
-    // CrossSite it should stay that way. Otherwise if the top level site
-    // doesn't match the new origin it needs to be updated to CrossSite.
+  } else if (net::SchemefulSite(origin) != top_level_site_) {
+    // If the top level site doesn't match the new origin the ancestor chain
+    // bit needs to be updated to CrossSite.
     ancestor_chain_bit = blink::mojom::AncestorChainBit::kCrossSite;
   }
   return CreateWithOptionalNonce(
@@ -572,6 +558,8 @@ StorageKey::StorageKey(const url::Origin& origin,
       nonce_(base::OptionalFromPtr(nonce)),
       ancestor_chain_bit_(IsThirdPartyStoragePartitioningEnabled()
                               ? ancestor_chain_bit
+                          : (nonce || origin.opaque())
+                              ? blink::mojom::AncestorChainBit::kCrossSite
                               : blink::mojom::AncestorChainBit::kSameSite),
       ancestor_chain_bit_if_third_party_enabled_(ancestor_chain_bit) {
 #if DCHECK_IS_ON()
@@ -582,12 +570,12 @@ StorageKey::StorageKey(const url::Origin& origin,
     // mistaken reliance on what is supposed to be an invariant.
     DCHECK(!nonce->is_empty());
     DCHECK_EQ(top_level_site, net::SchemefulSite(origin));
-    DCHECK_EQ(ancestor_chain_bit, blink::mojom::AncestorChainBit::kSameSite);
+    DCHECK_EQ(ancestor_chain_bit, blink::mojom::AncestorChainBit::kCrossSite);
   } else if (top_level_site.opaque()) {
     // If we're setting an opaque `top_level_site`, the `ancestor_chain_bit`
-    // must be kSameSite. We don't serialize that information so have to check
+    // must be kCrossSite. We don't serialize that information so have to check
     // to prevent mistaken reliance on what is supposed to be an invariant.
-    DCHECK_EQ(ancestor_chain_bit, blink::mojom::AncestorChainBit::kSameSite);
+    DCHECK_EQ(ancestor_chain_bit, blink::mojom::AncestorChainBit::kCrossSite);
   } else if (top_level_site != net::SchemefulSite(origin)) {
     // If `top_level_site` doesn't match `origin` then we must be making a
     // third-party StorageKey and `ancestor_chain_bit` must be kCrossSite.
@@ -601,7 +589,7 @@ std::string StorageKey::Serialize() const {
   DCHECK(!origin_.opaque());
 
   // If the storage key has a nonce, implying the top_level_site is the same as
-  // origin and ancestor_chain_bit is kSameSite, then we need to serialize the
+  // origin and ancestor_chain_bit is kCrossSite, then we need to serialize the
   // key to fit the following scheme:
   //
   // Case 0: <StorageKey `key`.origin> + "/" + "^1" + <StorageKey
@@ -638,7 +626,7 @@ std::string StorageKey::Serialize() const {
   // <StorageKey `key`.origin> + "/" + "^0" + <StorageKey `key`.top_level_site>
   //
   // Case 4: If the top_level_site is opaque (implying ancestor_chain_bit is
-  // kSameSite):
+  // kCrossSite):
   //
   // <StorageKey `key`.origin> + "/" + ^4" + <StorageKey
   // `key`.top_level_site.nonce.High64Bits> + "^5" + <StorageKey

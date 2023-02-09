@@ -36,24 +36,22 @@ namespace blink {
 //
 // A key is a third-party key if its origin is not in its top-level site (or if
 // its ancestor chain bit is `kCrossSite`; see below); otherwise it is a
-// first-party key.
+// first-party key and the ancestor chain bit is `kSameSite`.
 //
 // A corner-case is a first-party origin embedded in a third-party origin, such
 // as https://a.com embedded in https://b.com in https://a.com. The inner
 // `a.com` frame can be controlled by `b.com`, and is thus considered
 // third-party. The ancestor chain bit tracks this status.
 //
-// TODO(https://crbug.com/1410254): Use kCrossSite for this case.
 // Storage keys can also optionally have a nonce. Keys with different nonces are
 // considered distinct, and distinct from a key with no nonce. This is used to
 // implement iframe credentialless and other forms of storage partitioning.
 // Keys with a nonce disregard the top level site and ancestor chain bit. For
-// consistency we set them to the origin's site and `kSameSite` respectively.
+// consistency we set them to the origin's site and `kCrossSite` respectively.
 //
-// TODO(https://crbug.com/1410254): Use kCrossSite for this case.
 // Storage keys might have an opaque top level site (for example, if an
 // iframe is embedded in a data url). These storage keys always have a
-// `kSameSite` ancestor chain bit as it provides no additional distinctiveness.
+// `kCrossSite` ancestor chain bit as it provides no additional distinctiveness.
 //
 // Storage keys might have a top level site and origin that don't match. These
 // storage keys always have a `kCrossSite` ancestor chain bit.
@@ -73,20 +71,22 @@ class BLINK_COMMON_EXPORT StorageKey {
       : StorageKey(origin,
                    net::SchemefulSite(origin),
                    nullptr,
-                   blink::mojom::AncestorChainBit::kSameSite) {}
+                   origin.opaque()
+                       ? blink::mojom::AncestorChainBit::kCrossSite
+                       : blink::mojom::AncestorChainBit::kSameSite) {}
 
   // This function does not take a top-level site as the nonce makes it globally
   // unique anyway. Implementation wise however, the top-level site is set to
   // the `origin`'s site. The AncestorChainBit is not applicable to StorageKeys
-  // with a non-empty nonce so they are initialized to kSameSite.
+  // with a non-empty nonce so they are initialized to kCrossSite.
   static StorageKey CreateWithNonceForTesting(
       const url::Origin& origin,
       const base::UnguessableToken& nonce);
 
   // Callers may specify an optional `nonce` by passing nullptr.
   // If the `nonce` isn't null, `top_level_site` must be the same as `origin`
-  // and `ancestor_chain_bit` must be kSameSite. If `top_level_site` is opaque,
-  // `ancestor_chain_bit` must be `kSameSite`, otherwise if `top_level_site`
+  // and `ancestor_chain_bit` must be kCrossSite. If `top_level_site` is opaque,
+  // `ancestor_chain_bit` must be `kCrossSite`, otherwise if `top_level_site`
   // doesn't match `origin` `ancestor_chain_bit` must be `kCrossSite`.
   static StorageKey CreateWithOptionalNonce(
       const url::Origin& origin,
@@ -197,8 +197,7 @@ class BLINK_COMMON_EXPORT StorageKey {
   // `IsThirdPartyContext` returns true if the StorageKey was created with a
   // nonce or has an AncestorChainBit value of kCrossSite.
   bool IsThirdPartyContext() const {
-    return nonce_ ||
-           ancestor_chain_bit_ == blink::mojom::AncestorChainBit::kCrossSite ||
+    return ancestor_chain_bit_ == blink::mojom::AncestorChainBit::kCrossSite ||
            net::SchemefulSite(origin_) != top_level_site_;
   }
   bool IsFirstPartyContext() const { return !IsThirdPartyContext(); }
@@ -344,7 +343,7 @@ class BLINK_COMMON_EXPORT StorageKey {
   // cross-site with the current frame. kSameSite if entire ancestor
   // chain is same-site with the current frame. Used by service workers.
   blink::mojom::AncestorChainBit ancestor_chain_bit_{
-      blink::mojom::AncestorChainBit::kSameSite};
+      blink::mojom::AncestorChainBit::kCrossSite};
 
   // Stores the value `ancestor_chain_bit_` would have had if
   // `kThirdPartyStoragePartitioning` were enabled. This isn't used in

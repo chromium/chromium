@@ -4102,12 +4102,12 @@ blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
     const url::Origin& new_rfh_origin,
     const base::UnguessableToken* nonce) {
   // If the nonce is set the `top_level_site` must be the same as
-  // `new_rfh_origin` and the `ancestor_chain_bit` must be kSameSite.
+  // `new_rfh_origin` and the `ancestor_chain_bit` must be kCrossSite.
   // TODO(https://crbug.com/1410254): Cleanup this logic.
   if (nonce) {
     return blink::StorageKey::CreateWithOptionalNonce(
         new_rfh_origin, net::SchemefulSite(new_rfh_origin), nonce,
-        blink::mojom::AncestorChainBit::kSameSite);
+        blink::mojom::AncestorChainBit::kCrossSite);
   }
 
   std::vector<RenderFrameHostImpl*> ancestor_chain;
@@ -4150,7 +4150,7 @@ blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
 
   // Compute the AncestorChainBit. It represents whether every ancestors are
   // all same-site or not. If `top_level_site` is opaque the bit must be
-  // kSameSite as this is the default value (which won't be serialized).
+  // kCrossSite as this is the default value (which won't be serialized).
   blink::mojom::AncestorChainBit ancestor_chain_bit =
       blink::mojom::AncestorChainBit::kSameSite;
   if (!top_level_site.opaque()) {
@@ -4160,6 +4160,8 @@ blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
         break;
       }
     }
+  } else {
+    ancestor_chain_bit = blink::mojom::AncestorChainBit::kCrossSite;
   }
 
   // TODO(https://crbug.com/1410254): Cleanup this logic.
