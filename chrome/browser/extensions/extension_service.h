@@ -182,6 +182,7 @@ class ExtensionService : public ExtensionServiceInterface,
   ExtensionService(Profile* profile,
                    const base::CommandLine* command_line,
                    const base::FilePath& install_directory,
+                   const base::FilePath& unpacked_install_directory,
                    ExtensionPrefs* extension_prefs,
                    Blocklist* blocklist,
                    bool autoupdate_enabled,
@@ -425,6 +426,9 @@ class ExtensionService : public ExtensionServiceInterface,
   bool extensions_enabled() const { return extensions_enabled_; }
 
   const base::FilePath& install_directory() const { return install_directory_; }
+  const base::FilePath& unpacked_install_directory() const {
+    return unpacked_install_directory_;
+  }
 
   const ExtensionSet* delayed_installs() const { return &delayed_installs_; }
 
@@ -676,6 +680,10 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // The full path to the directory where extensions are installed.
   base::FilePath install_directory_;
+
+  // The full path to the directory where unpacked (e.g. from .zip files)
+  // extensions are installed.
+  base::FilePath unpacked_install_directory_;
 
   // Whether or not extensions are enabled.
   bool extensions_enabled_ = true;

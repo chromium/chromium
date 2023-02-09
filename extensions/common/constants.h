@@ -56,6 +56,10 @@ EXTENSIONS_EXPORT extern const base::FilePath::CharType
 // installed to.
 EXTENSIONS_EXPORT extern const char kInstallDirectoryName[];
 
+// The name of the directory inside the profile where unpacked (e.g. from .zip
+// file) extensions are installed to.
+EXTENSIONS_EXPORT extern const char kUnpackedInstallDirectoryName[];
+
 // The name of a temporary directory to install an extension into for
 // validation before finalizing install.
 EXTENSIONS_EXPORT extern const char kTempExtensionName[];

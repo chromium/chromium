@@ -75,14 +75,25 @@ ExtensionService* TestExtensionSystem::CreateExtensionService(
     const base::FilePath& install_directory,
     bool autoupdate_enabled,
     bool extensions_enabled) {
+  return CreateExtensionService(command_line, install_directory,
+                                base::FilePath(), autoupdate_enabled,
+                                extensions_enabled);
+}
+
+ExtensionService* TestExtensionSystem::CreateExtensionService(
+    const base::CommandLine* command_line,
+    const base::FilePath& install_directory,
+    const base::FilePath& unpacked_install_directory,
+    bool autoupdate_enabled,
+    bool extensions_enabled) {
   management_policy_ = std::make_unique<ManagementPolicy>();
   management_policy_->RegisterProviders(
       ExtensionManagementFactory::GetForBrowserContext(profile_)
           ->GetProviders());
   extension_service_ = std::make_unique<ExtensionService>(
-      profile_, command_line, install_directory, ExtensionPrefs::Get(profile_),
-      Blocklist::Get(profile_), autoupdate_enabled, extensions_enabled,
-      &ready_);
+      profile_, command_line, install_directory, unpacked_install_directory,
+      ExtensionPrefs::Get(profile_), Blocklist::Get(profile_),
+      autoupdate_enabled, extensions_enabled, &ready_);
 
   unzip::SetUnzipperLaunchOverrideForTesting(
       base::BindRepeating(&unzip::LaunchInProcessUnzipper));

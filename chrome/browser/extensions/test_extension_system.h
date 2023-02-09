@@ -55,6 +55,15 @@ class TestExtensionSystem : public ExtensionSystem {
       bool autoupdate_enabled,
       bool enable_extensions = true);
 
+  // Similar to the above, but also allows specifying unpacked install directory
+  // if needed.
+  ExtensionService* CreateExtensionService(
+      const base::CommandLine* command_line,
+      const base::FilePath& install_directory,
+      const base::FilePath& unpacked_install_directory,
+      bool autoupdate_enabled,
+      bool enable_extensions = true);
+
   void CreateSocketManager();
 
   // Creates a UserScriptManager initialized with the testing profile,

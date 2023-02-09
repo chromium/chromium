@@ -35,6 +35,7 @@ const base::FilePath::CharType kIndexedRulesetDirectory[] =
     FILE_PATH_LITERAL("generated_indexed_rulesets");
 
 const char kInstallDirectoryName[] = "Extensions";
+const char kUnpackedInstallDirectoryName[] = "UnpackedExtensions";
 
 const char kTempExtensionName[] = "CRX_INSTALL";
 

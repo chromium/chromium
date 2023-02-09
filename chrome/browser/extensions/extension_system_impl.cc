@@ -214,6 +214,8 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
   extension_service_ = std::make_unique<ExtensionService>(
       profile_, base::CommandLine::ForCurrentProcess(),
       profile_->GetPath().AppendASCII(extensions::kInstallDirectoryName),
+      profile_->GetPath().AppendASCII(
+          extensions::kUnpackedInstallDirectoryName),
       ExtensionPrefs::Get(profile_), Blocklist::Get(profile_),
       autoupdate_enabled, extensions_enabled, &ready_);
 
