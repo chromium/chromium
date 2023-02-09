@@ -1,0 +1,9 @@
+buganizer {
+  # ChromeOS > Software > Assistive
+  component_id: 905229
+}
+
+buganizer_public {
+  # ChromeOS Public Tracker > UI > Assistive
+  component_id: 1246073
+}
