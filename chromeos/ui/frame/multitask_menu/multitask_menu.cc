@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "chromeos/ui/base/display_util.h"
-#include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "chromeos/ui/wm/window_util.h"
@@ -44,26 +43,13 @@ MultitaskMenu::MultitaskMenu(views::View* anchor,
 
   RegisterWindowClosingCallback(std::move(close_callback));
 
-  // Check the model to see which buttons we should show. Since this menu is
-  // triggered from the maximize button on the frame, it should have a frame
-  // header, and can be maximized and therefore fullscreened. The exception is
-  // in tests, where we show all the buttons.
   uint8_t buttons = MultitaskMenuView::kFullscreen;
-  auto* frame_header = FrameHeader::Get(parent_widget);
-  const CaptionButtonModel* caption_button_model =
-      frame_header ? frame_header->GetCaptionButtonModel() : nullptr;
 
-  if (!caption_button_model ||
-      caption_button_model->IsVisible(
-          views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED)) {
+  if (SnapController::Get()->CanSnap(parent_window())) {
     buttons |= MultitaskMenuView::kHalfSplit;
     buttons |= MultitaskMenuView::kPartialSplit;
   }
 
-  // The frame caption button to float/unfloat is only shown with the ash dev
-  // flag on, or in tablet mode when a window is floated. The multitask menu
-  // float button is shown whenever a window can be floated, so linking with the
-  // model does not work here.
   if (chromeos::wm::CanFloatWindow(parent_window())) {
     buttons |= MultitaskMenuView::kFloat;
   }
