@@ -231,6 +231,7 @@ message TrainingOutputs {
   message TriggerConfig {
     // Describes how the training outputs are collected.
     enum DecisionType {
+      // By default considered as PERIODIC type.
       UNKNOWN = 0;
       // The on demand scheduler will trigger training data collection when the
       // client asks for a model execution with input context.

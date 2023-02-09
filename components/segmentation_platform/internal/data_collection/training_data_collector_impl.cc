@@ -497,8 +497,10 @@ TrainingDataCollectorImpl::ComputeDecisionTiming(
   const auto& training_config =
       info.model_metadata().training_outputs().trigger_config();
   auto type = training_config.decision_type();
-  bool is_periodic = (type == proto::TrainingOutputs::TriggerConfig::PERIODIC);
   base::Time current_time = clock_->Now();
+
+  // Default for unset decision type is periodic type.
+  bool is_periodic = (type != proto::TrainingOutputs::TriggerConfig::ONDEMAND);
 
   // Check for delay triggers in the config.
   absl::optional<uint64_t> delay_sec;
@@ -557,8 +559,8 @@ base::Time TrainingDataCollectorImpl::ComputeObservationTiming(
   const auto& training_config =
       info.model_metadata().training_outputs().trigger_config();
   base::Time current_time = clock_->Now();
-  bool is_periodic = (training_config.decision_type() ==
-                      proto::TrainingOutputs::TriggerConfig::PERIODIC);
+  bool is_periodic = (training_config.decision_type() !=
+                      proto::TrainingOutputs::TriggerConfig::ONDEMAND);
   bool flexible_observation_period =
       training_config.use_flexible_observation_time();
 
