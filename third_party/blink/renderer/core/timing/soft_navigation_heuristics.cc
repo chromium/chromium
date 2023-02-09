@@ -217,7 +217,7 @@ void SoftNavigationHeuristics::ResetPaintsIfNeeded(LocalFrame* frame,
         PaintTiming::From(*document).ResetFirstPaintAndFCP();
       }
       DCHECK(frame->View());
-      frame->View()->GetPaintTimingDetector().StartRecordingLCP();
+      frame->View()->GetPaintTimingDetector().RestartRecordingLCP();
     }
     did_reset_paints_ = true;
   }

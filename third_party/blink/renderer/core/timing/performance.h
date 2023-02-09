@@ -168,7 +168,8 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   // getEntriesByType will only return all entries for existing types in
   // PerformanceEntry.IsValidTimelineEntryType.
   PerformanceEntryVector getBufferedEntriesByType(
-      const AtomicString& entry_type);
+      const AtomicString& entry_type,
+      bool include_triggered_by_soft_navigation = false);
 
   // Get performance entries of the current frame by type, and optionally,
   // nested same-origin iframes.
@@ -206,9 +207,11 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
 
   void NotifyNavigationTimingToObservers();
 
-  void AddFirstPaintTiming(base::TimeTicks start_time);
+  void AddFirstPaintTiming(base::TimeTicks start_time,
+                           bool is_triggered_by_soft_navigation);
 
-  void AddFirstContentfulPaintTiming(base::TimeTicks start_time);
+  void AddFirstContentfulPaintTiming(base::TimeTicks start_time,
+                                     bool is_triggered_by_soft_navigation);
 
   bool IsElementTimingBufferFull() const;
   void AddElementTimingBuffer(PerformanceElementTiming&);
@@ -321,7 +324,8 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
 
  private:
   void AddPaintTiming(PerformancePaintTiming::PaintType,
-                      base::TimeTicks start_time);
+                      base::TimeTicks start_time,
+                      bool is_triggered_by_soft_navigation);
 
   PerformanceMeasure* MeasureInternal(
       ScriptState* script_state,
@@ -342,7 +346,8 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
 
   PerformanceEntryVector getEntriesByTypeInternal(
       PerformanceEntry::EntryType type,
-      const AtomicString& maybe_name = g_null_atom);
+      const AtomicString& maybe_name = g_null_atom,
+      bool include_triggered_by_soft_navigation = false);
 
   void MeasureMemoryExperimentTimerFired(TimerBase*);
 

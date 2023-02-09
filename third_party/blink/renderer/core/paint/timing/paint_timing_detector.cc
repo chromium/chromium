@@ -261,10 +261,11 @@ bool PaintTimingDetector::NeedToNotifyInputOrScroll() const {
          image_paint_timing_detector_;
 }
 
-void PaintTimingDetector::StartRecordingLCP() {
+void PaintTimingDetector::RestartRecordingLCP() {
   text_paint_timing_detector_->RestartRecordingLargestTextPaint();
   image_paint_timing_detector_->RestartRecordingLargestImagePaint();
   first_input_or_scroll_notified_timestamp_ = base::TimeTicks();
+  lcp_was_restarted_ = true;
 }
 
 LargestContentfulPaintCalculator*
@@ -488,7 +489,8 @@ void PaintTimingDetector::UpdateLargestContentfulPaintCandidate() {
   }
 
   lcp_calculator->UpdateWebExposedLargestContentfulPaintIfNeeded(
-      largest_text_record, largest_image_record);
+      largest_text_record, largest_image_record,
+      /*is_triggered_by_soft_navigation=*/lcp_was_restarted_);
 }
 
 void PaintTimingDetector::ReportIgnoredContent() {

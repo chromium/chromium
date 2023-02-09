@@ -126,6 +126,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     first_contentful_paint_presentation_ = base::TimeTicks();
     first_image_paint_ = base::TimeTicks();
     first_image_paint_presentation_ = base::TimeTicks();
+    first_paints_reset_ = true;
   }
 
   // FirstImagePaint returns the first time that image content was painted.
@@ -248,6 +249,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   base::TimeTicks first_meaningful_paint_presentation_;
   base::TimeTicks first_meaningful_paint_candidate_;
   base::TimeTicks first_eligible_to_paint_;
+  bool first_paints_reset_ = false;
 
   base::TimeTicks last_portal_activated_presentation_;
 

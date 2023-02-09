@@ -166,6 +166,24 @@ inline bool CheckName(const PerformanceEntry* entry,
   return entry->name() == maybe_name;
 }
 
+// |output_entries| either gets reassigned to or is appended to.
+// Therefore, it must point to a valid PerformanceEntryVector.
+void FilterEntriesTriggeredBySoftNavigationIfNeeded(
+    PerformanceEntryVector& input_entries,
+    PerformanceEntryVector** output_entries,
+    bool include_soft_navigation_observations) {
+  if (include_soft_navigation_observations) {
+    *output_entries = &input_entries;
+  } else {
+    DCHECK(output_entries && *output_entries);
+    std::copy_if(input_entries.begin(), input_entries.end(),
+                 std::back_inserter(**output_entries),
+                 [&](const PerformanceEntry* entry) {
+                   return !entry->IsTriggeredBySoftNavigation();
+                 });
+  }
+}
+
 }  // namespace
 
 PerformanceEntryVector MergePerformanceEntryVectors(
@@ -410,10 +428,12 @@ PerformanceEntryVector Performance::GetEntriesForCurrentFrame(
 }
 
 PerformanceEntryVector Performance::getBufferedEntriesByType(
-    const AtomicString& entry_type) {
+    const AtomicString& entry_type,
+    bool include_soft_navigation_observations) {
   PerformanceEntry::EntryType type =
       PerformanceEntry::ToEntryTypeEnum(entry_type);
-  return getEntriesByTypeInternal(type);
+  return getEntriesByTypeInternal(type, /*maybe_name=*/g_null_atom,
+                                  include_soft_navigation_observations);
 }
 
 PerformanceEntryVector Performance::getEntriesByType(
@@ -441,12 +461,13 @@ PerformanceEntryVector Performance::GetEntriesByTypeForCurrentFrame(
 
 PerformanceEntryVector Performance::getEntriesByTypeInternal(
     PerformanceEntry::EntryType type,
-    const AtomicString& maybe_name) {
+    const AtomicString& maybe_name,
+    bool include_soft_navigation_observations) {
   // This vector may be used by any cases below which require local storage.
   // Cases which refer to pre-existing vectors may simply set `entries` instead.
   PerformanceEntryVector entries_storage;
 
-  const PerformanceEntryVector* entries = &entries_storage;
+  PerformanceEntryVector* entries = &entries_storage;
   bool already_filtered_by_name = false;
   switch (type) {
     case PerformanceEntry::kResource:
@@ -505,7 +526,9 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
       UseCounter::Count(GetExecutionContext(),
                         WebFeature::kPaintTimingRequested);
 
-      entries = &paint_entries_timing_;
+      FilterEntriesTriggeredBySoftNavigationIfNeeded(
+          paint_entries_timing_, &entries,
+          include_soft_navigation_observations);
       break;
     }
 
@@ -522,7 +545,9 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
       break;
 
     case PerformanceEntry::kLargestContentfulPaint:
-      entries = &largest_contentful_paint_buffer_;
+      FilterEntriesTriggeredBySoftNavigationIfNeeded(
+          largest_contentful_paint_buffer_, &entries,
+          include_soft_navigation_observations);
       break;
 
     case PerformanceEntry::kVisibilityState:
@@ -787,20 +812,26 @@ void Performance::AddSoftNavigationToPerformanceTimeline(
   }
 }
 
-void Performance::AddFirstPaintTiming(base::TimeTicks start_time) {
-  AddPaintTiming(PerformancePaintTiming::PaintType::kFirstPaint, start_time);
+void Performance::AddFirstPaintTiming(base::TimeTicks start_time,
+                                      bool is_triggered_by_soft_navigation) {
+  AddPaintTiming(PerformancePaintTiming::PaintType::kFirstPaint, start_time,
+                 is_triggered_by_soft_navigation);
 }
 
-void Performance::AddFirstContentfulPaintTiming(base::TimeTicks start_time) {
+void Performance::AddFirstContentfulPaintTiming(
+    base::TimeTicks start_time,
+    bool is_triggered_by_soft_navigation) {
   AddPaintTiming(PerformancePaintTiming::PaintType::kFirstContentfulPaint,
-                 start_time);
+                 start_time, is_triggered_by_soft_navigation);
 }
 
 void Performance::AddPaintTiming(PerformancePaintTiming::PaintType type,
-                                 base::TimeTicks start_time) {
+                                 base::TimeTicks start_time,
+                                 bool is_triggered_by_soft_navigation) {
   PerformanceEntry* entry = MakeGarbageCollected<PerformancePaintTiming>(
       type, MonotonicTimeToDOMHighResTimeStamp(start_time),
-      DynamicTo<LocalDOMWindow>(GetExecutionContext()));
+      DynamicTo<LocalDOMWindow>(GetExecutionContext()),
+      is_triggered_by_soft_navigation);
   DCHECK((type == PerformancePaintTiming::PaintType::kFirstPaint) ||
          (type == PerformancePaintTiming::PaintType::kFirstContentfulPaint));
   if (paint_entries_timing_.size() < kDefaultPaintEntriesBufferSize) {
@@ -1085,6 +1116,8 @@ void Performance::NotifyObserversOfEntry(PerformanceEntry& entry) const {
   bool observer_found = false;
   for (auto& observer : observers_) {
     if (observer->FilterOptions() & entry.EntryTypeEnum() &&
+        (!entry.IsTriggeredBySoftNavigation() ||
+         observer->IncludeSoftNavigationObservations()) &&
         observer->CanObserve(entry)) {
       observer->EnqueuePerformanceEntry(entry);
       observer_found = true;

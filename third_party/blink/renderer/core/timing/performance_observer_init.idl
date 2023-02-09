@@ -9,4 +9,5 @@ dictionary PerformanceObserverInit {
     DOMString type;
     boolean buffered = false;
     DOMHighResTimeStamp durationThreshold;
+    boolean includeSoftNavigationObservations = false;
 };

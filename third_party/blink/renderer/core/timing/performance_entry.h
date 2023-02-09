@@ -131,17 +131,23 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   virtual mojom::blink::PerformanceMarkOrMeasurePtr
   ToMojoPerformanceMarkOrMeasure();
 
+  bool IsTriggeredBySoftNavigation() const {
+    return is_triggered_by_soft_navigation_;
+  }
+
   void Trace(Visitor*) const override;
 
  protected:
   PerformanceEntry(const AtomicString& name,
                    double start_time,
                    double finish_time,
-                   DOMWindow* source);
+                   DOMWindow* source,
+                   bool is_triggered_by_soft_navigation = false);
   PerformanceEntry(double duration,
                    const AtomicString& name,
                    double start_time,
-                   DOMWindow* source);
+                   DOMWindow* source,
+                   bool is_triggered_by_soft_navigation = false);
 
   virtual void BuildJSONValue(V8ObjectBuilder&) const;
 
@@ -156,6 +162,7 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   // source_ will be null if the PerformanceEntry did not originate from a
   // Window context.
   const Member<DOMWindow> source_;
+  const bool is_triggered_by_soft_navigation_;
 };
 
 }  // namespace blink

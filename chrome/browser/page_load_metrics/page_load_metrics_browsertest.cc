@@ -2651,7 +2651,8 @@ class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
         await new Promise(
           resolve => {
             (new PerformanceObserver(()=>resolve())).observe(
-              {type: 'largest-contentful-paint'})});
+              {type: 'largest-contentful-paint',
+               includeSoftNavigationObservations: true})});
       })();
     )";
 
@@ -2663,7 +2664,8 @@ class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
               list => {
                 const entries = list.getEntries();
                 resolve(entries[entries.length - 1]);
-              })).observe({type: 'largest-contentful-paint', buffered: true})});
+              })).observe({type: 'largest-contentful-paint', buffered: true,
+                           includeSoftNavigationObservations: true})});
         return last_lcp_entry.startTime;
       })();
     )";

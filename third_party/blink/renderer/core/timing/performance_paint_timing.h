@@ -16,7 +16,10 @@ class CORE_EXPORT PerformancePaintTiming final : public PerformanceEntry {
  public:
   enum class PaintType { kFirstPaint, kFirstContentfulPaint };
 
-  PerformancePaintTiming(PaintType, double start_time, DOMWindow* source);
+  PerformancePaintTiming(PaintType,
+                         double start_time,
+                         DOMWindow* source,
+                         bool is_triggered_by_soft_navigation);
   ~PerformancePaintTiming() override;
 
   const AtomicString& entryType() const override;

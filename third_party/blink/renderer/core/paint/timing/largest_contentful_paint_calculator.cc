@@ -29,24 +29,28 @@ LargestContentfulPaintCalculator::LargestContentfulPaintCalculator(
 void LargestContentfulPaintCalculator::
     UpdateWebExposedLargestContentfulPaintIfNeeded(
         const TextRecord* largest_text,
-        const ImageRecord* largest_image) {
+        const ImageRecord* largest_image,
+        bool is_triggered_by_soft_navigation) {
   uint64_t text_size = largest_text ? largest_text->recorded_size : 0u;
   uint64_t image_size = largest_image ? largest_image->recorded_size : 0u;
   if (image_size > text_size) {
     if (image_size > largest_reported_size_ &&
         largest_image->paint_time > base::TimeTicks()) {
-      UpdateWebExposedLargestContentfulImage(largest_image);
+      UpdateWebExposedLargestContentfulImage(largest_image,
+                                             is_triggered_by_soft_navigation);
     }
   } else {
     if (text_size > largest_reported_size_ &&
         largest_text->paint_time > base::TimeTicks()) {
-      UpdateWebExposedLargestContentfulText(*largest_text);
+      UpdateWebExposedLargestContentfulText(*largest_text,
+                                            is_triggered_by_soft_navigation);
     }
   }
 }
 
 void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
-    const ImageRecord* largest_image) {
+    const ImageRecord* largest_image,
+    bool is_triggered_by_soft_navigation) {
   DCHECK(window_performance_);
   DCHECK(largest_image);
   const MediaTiming* media_timing = largest_image->media_timing;
@@ -108,7 +112,8 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
       /*first_animated_frame_time=*/
       expose_paint_time_to_api ? largest_image->first_animated_frame_time
                                : base::TimeTicks(),
-      /*id=*/image_id, /*url=*/image_url, /*element=*/image_element);
+      /*id=*/image_id, /*url=*/image_url, /*element=*/image_element,
+      is_triggered_by_soft_navigation);
 
   // TODO: update trace value with animated frame data
   if (LocalDOMWindow* window = window_performance_->DomWindow()) {
@@ -125,7 +130,8 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
 }
 
 void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulText(
-    const TextRecord& largest_text) {
+    const TextRecord& largest_text,
+    bool is_triggered_by_soft_navigation) {
   DCHECK(window_performance_);
   // |node_| could be null and |largest_text| should be ignored in this
   // case. This can happen when the largest-text gets removed too fast and does
@@ -146,7 +152,8 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulText(
       /*paint_size=*/largest_text.recorded_size,
       /*load_time=*/base::TimeTicks(),
       /*first_animated_frame_time=*/base::TimeTicks(), /*id=*/text_id,
-      /*url=*/g_empty_string, /*element=*/text_element);
+      /*url=*/g_empty_string, /*element=*/text_element,
+      is_triggered_by_soft_navigation);
 
   if (LocalDOMWindow* window = window_performance_->DomWindow()) {
     TRACE_EVENT_MARK_WITH_TIMESTAMP2(kTraceCategories, kLCPCandidate,

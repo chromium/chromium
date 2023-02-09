@@ -197,11 +197,14 @@ void PerformanceObserver::observe(const PerformanceObserverInit* observer_init,
       }
       return;
     }
+    include_soft_navigation_observations_ =
+        observer_init->includeSoftNavigationObservations();
     if (observer_init->buffered()) {
       // Append all entries of this type to the current performance_entries_
       // to be returned on the next callback.
       performance_entries_.AppendVector(performance_->getBufferedEntriesByType(
-          AtomicString(observer_init->type())));
+          AtomicString(observer_init->type()),
+          include_soft_navigation_observations_));
       std::sort(performance_entries_.begin(), performance_entries_.end(),
                 PerformanceEntry::StartTimeCompareLessThan);
       is_buffered = true;

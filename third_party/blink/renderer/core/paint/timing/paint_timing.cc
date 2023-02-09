@@ -333,8 +333,11 @@ void PaintTiming::SetFirstPaintPresentation(base::TimeTicks stamp) {
   probe::PaintTiming(GetSupplementable(), "firstPaint",
                      first_paint_presentation_.since_origin().InSecondsF());
   WindowPerformance* performance = GetPerformanceInstance(GetFrame());
-  if (performance)
-    performance->AddFirstPaintTiming(first_paint_presentation_);
+  if (performance) {
+    performance->AddFirstPaintTiming(
+        first_paint_presentation_,
+        /*is_triggered_by_soft_navigation=*/first_paints_reset_);
+  }
   NotifyPaintTimingChanged();
 }
 
@@ -357,7 +360,8 @@ void PaintTiming::SetFirstContentfulPaintPresentation(base::TimeTicks stamp) {
   WindowPerformance* performance = GetPerformanceInstance(GetFrame());
   if (performance) {
     performance->AddFirstContentfulPaintTiming(
-        first_contentful_paint_presentation_);
+        first_contentful_paint_presentation_,
+        /*is_triggered_by_soft_navigation=*/first_paints_reset_);
   }
   // For soft navigations, we just want to report a performance entry, but not
   // trigger any of the other FCP observers.

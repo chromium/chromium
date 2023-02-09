@@ -48,7 +48,8 @@ static base::AtomicSequenceNumber index_seq;
 PerformanceEntry::PerformanceEntry(const AtomicString& name,
                                    double start_time,
                                    double finish_time,
-                                   DOMWindow* source)
+                                   DOMWindow* source,
+                                   bool is_triggered_by_soft_navigation)
     : duration_(finish_time - start_time),
       name_(name),
       start_time_(start_time),
@@ -56,12 +57,14 @@ PerformanceEntry::PerformanceEntry(const AtomicString& name,
       navigation_id_(DynamicTo<LocalDOMWindow>(source)
                          ? DynamicTo<LocalDOMWindow>(source)->GetNavigationId()
                          : kNavigationIdDefaultValue),
-      source_(source) {}
+      source_(source),
+      is_triggered_by_soft_navigation_(is_triggered_by_soft_navigation) {}
 
 PerformanceEntry::PerformanceEntry(double duration,
                                    const AtomicString& name,
                                    double start_time,
-                                   DOMWindow* source)
+                                   DOMWindow* source,
+                                   bool is_triggered_by_soft_navigation)
     : duration_(duration),
       name_(name),
       start_time_(start_time),
@@ -69,7 +72,8 @@ PerformanceEntry::PerformanceEntry(double duration,
       navigation_id_(DynamicTo<LocalDOMWindow>(source)
                          ? DynamicTo<LocalDOMWindow>(source)->GetNavigationId()
                          : kNavigationIdDefaultValue),
-      source_(source) {
+      source_(source),
+      is_triggered_by_soft_navigation_(is_triggered_by_soft_navigation) {
   DCHECK_GE(duration_, 0.0);
 }
 

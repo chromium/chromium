@@ -160,7 +160,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
       base::TimeTicks first_animated_frame_time,
       const AtomicString& id,
       const String& url,
-      Element*);
+      Element*,
+      bool is_triggered_by_soft_navigation);
 
   void Trace(Visitor*) const override;
 

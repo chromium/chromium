@@ -716,7 +716,8 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
     base::TimeTicks first_animated_frame_time,
     const AtomicString& id,
     const String& url,
-    Element* element) {
+    Element* element,
+    bool is_triggered_by_soft_navigation) {
   DOMHighResTimeStamp start_timestamp =
       MonotonicTimeToDOMHighResTimeStamp(start_time);
   base::TimeDelta render_timestamp = MonotonicTimeToTimeDelta(render_time);
@@ -726,9 +727,11 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
   // TODO(yoav): Should we modify start to represent the animated frame?
   auto* entry = MakeGarbageCollected<LargestContentfulPaint>(
       start_timestamp, render_timestamp, paint_size, load_timestamp,
-      first_animated_frame_timestamp, id, url, element, DomWindow());
-  if (HasObserverFor(PerformanceEntry::kLargestContentfulPaint))
+      first_animated_frame_timestamp, id, url, element, DomWindow(),
+      is_triggered_by_soft_navigation);
+  if (HasObserverFor(PerformanceEntry::kLargestContentfulPaint)) {
     NotifyObserversOfEntry(*entry);
+  }
   AddLargestContentfulPaint(entry);
   if (HTMLImageElement* image_element = DynamicTo<HTMLImageElement>(element)) {
     image_element->SetIsLCPElement();
