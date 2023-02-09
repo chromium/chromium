@@ -61,12 +61,6 @@ if (!limit_android_deps) {
     sources = [ "util/org/chromium/gms/shadows/ShadowChromiumPlayServicesAvailability.java" ]
     deps = [ ":chromium_play_services_availability_java" ]
   }
-
-  # TODO(crbug.com/1412135): Remove the following java_group once all deps have
-  # been updated to //third_party/kotlin_stdlib:kotlin_stdlib_java.
-  java_group("org_jetbrains_kotlin_kotlin_stdlib_java") {
-    deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
-  }
 }
 
 # TODO(crbug.com/1366370) Remove this once all depencencies are updated to
