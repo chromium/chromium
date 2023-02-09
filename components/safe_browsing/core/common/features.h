@@ -205,6 +205,13 @@ BASE_DECLARE_FEATURE(kSevenZipEvaluationEnabled);
 // default and control groups of the experiment.
 BASE_DECLARE_FEATURE(kSimplifiedUrlDisplay);
 
+// Controls whether the download inspection timeout is applied over the entire
+// request, or just the network communication.
+BASE_DECLARE_FEATURE(kStrictDownloadTimeout);
+
+// Specifies the duration of the timeout, in milliseconds.
+extern const base::FeatureParam<int> kStrictDownloadTimeoutMilliseconds;
+
 // Controls the daily quota for the suspicious site trigger.
 BASE_DECLARE_FEATURE(kSuspiciousSiteTriggerQuotaFeature);
 

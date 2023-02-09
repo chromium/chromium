@@ -724,6 +724,14 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
   }
 }
 
+base::TimeDelta DownloadProtectionService::GetDownloadRequestTimeout() const {
+  if (base::FeatureList::IsEnabled(kStrictDownloadTimeout)) {
+    return base::Milliseconds(kStrictDownloadTimeoutMilliseconds.Get());
+  }
+
+  return base::Milliseconds(download_request_timeout_ms_);
+}
+
 bool DownloadProtectionService::MaybeBeginFeedbackForDownload(
     Profile* profile,
     download::DownloadItem* download,

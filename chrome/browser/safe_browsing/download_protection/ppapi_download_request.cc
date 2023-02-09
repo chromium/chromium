@@ -123,7 +123,7 @@ void PPAPIDownloadRequest::Start() {
       FROM_HERE,
       base::BindOnce(&PPAPIDownloadRequest::OnRequestTimedOut,
                      weakptr_factory_.GetWeakPtr()),
-      base::Milliseconds(service_->download_request_timeout_ms()));
+      service_->GetDownloadRequestTimeout());
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,

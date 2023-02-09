@@ -146,9 +146,7 @@ class DownloadProtectionService {
   bool enabled() const { return enabled_; }
 
   // Returns the timeout that is used by CheckClientDownload().
-  int64_t download_request_timeout_ms() const {
-    return download_request_timeout_ms_;
-  }
+  base::TimeDelta GetDownloadRequestTimeout() const;
 
   // Checks the user permissions, and submits the downloaded file if
   // appropriate. Returns whether the submission was successful.

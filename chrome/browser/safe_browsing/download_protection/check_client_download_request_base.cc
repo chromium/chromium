@@ -124,6 +124,12 @@ void CheckClientDownloadRequestBase::Start() {
   DVLOG(2) << "Starting SafeBrowsing download check for: " << source_url_;
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  if (base::FeatureList::IsEnabled(kStrictDownloadTimeout)) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&CheckClientDownloadRequestBase::StartTimeout,
+                                  GetWeakPtr()));
+  }
+
   if (IsAllowlistedByPolicy()) {
     FinishRequest(DownloadCheckResult::ALLOWLISTED_BY_POLICY,
                   REASON_ALLOWLISTED_URL);
@@ -303,12 +309,14 @@ void CheckClientDownloadRequestBase::OnRequestBuilt(
     return;
   }
 
-  // We wait until after the file checks finish to start the timeout, as
-  // windows can cause permissions errors if the timeout fired while we were
-  // checking the file signature and we tried to complete the download.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&CheckClientDownloadRequestBase::StartTimeout,
-                                GetWeakPtr()));
+  if (!base::FeatureList::IsEnabled(kStrictDownloadTimeout)) {
+    // We wait until after the file checks finish to start the timeout, as
+    // windows can cause permissions errors if the timeout fired while we were
+    // checking the file signature and we tried to complete the download.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&CheckClientDownloadRequestBase::StartTimeout,
+                                  GetWeakPtr()));
+  }
 
   if (!pingback_enabled_) {
     FinishRequest(DownloadCheckResult::UNKNOWN, REASON_PING_DISABLED);
@@ -334,7 +342,7 @@ void CheckClientDownloadRequestBase::StartTimeout() {
       DownloadCheckResult::UNKNOWN, REASON_REQUEST_CANCELED));
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE, timeout_closure_.callback(),
-      base::Milliseconds(service_->download_request_timeout_ms()));
+      service_->GetDownloadRequestTimeout());
 }
 
 void CheckClientDownloadRequestBase::OnGotAccessToken(

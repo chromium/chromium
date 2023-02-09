@@ -202,6 +202,14 @@ BASE_FEATURE(kSimplifiedUrlDisplay,
              "SimplifiedUrlDisplay",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kStrictDownloadTimeout,
+             "SafeBrowsingStrictDownloadtimeout",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<int> kStrictDownloadTimeoutMilliseconds{
+    &kStrictDownloadTimeout, "TimeoutMilliseconds",
+    /*default_value=*/7000};
+
 BASE_FEATURE(kSuspiciousSiteTriggerQuotaFeature,
              "SafeBrowsingSuspiciousSiteTriggerQuota",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -274,6 +282,7 @@ constexpr struct {
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},
     {&kSevenZipEvaluationEnabled, true},
     {&kSimplifiedUrlDisplay, true},
+    {&kStrictDownloadTimeout, true},
     {&kSuspiciousSiteTriggerQuotaFeature, true},
     {&kTailoredSecurityDesktopNotice, true},
     {&kTailoredSecurityIntegration, true},
