@@ -70,8 +70,6 @@ NSString* GetSyncErrorDescriptionForSyncSetupService(
       // syncer::AlwaysEncryptedUserTypes().
       return l10n_util::GetNSString(
           IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_FIX_RECOVERABILITY_DEGRADED_FOR_PASSWORDS);
-    case SyncSetupService::kSyncServiceServiceUnavailable:
-    case SyncSetupService::kSyncServiceCouldNotConnect:
     case SyncSetupService::kSyncServiceUnrecoverableError:
       return l10n_util::GetNSString(IDS_IOS_SYNC_STATUS_UNRECOVERABLE_ERROR);
   }
@@ -93,10 +91,6 @@ NSString* GetSyncErrorMessageForBrowserState(ChromeBrowserState* browserState) {
     case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
     case SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded:
       return GetSyncErrorDescriptionForSyncSetupService(syncSetupService);
-    case SyncSetupService::kSyncServiceServiceUnavailable:
-      return l10n_util::GetNSString(IDS_SYNC_SERVICE_UNAVAILABLE);
-    case SyncSetupService::kSyncServiceCouldNotConnect:
-      return l10n_util::GetNSString(IDS_IOS_SYNC_ERROR_COULD_NOT_CONNECT);
     case SyncSetupService::kSyncServiceUnrecoverableError:
       return l10n_util::GetNSString(IDS_IOS_SYNC_ERROR_UNRECOVERABLE);
   }
@@ -120,8 +114,6 @@ NSString* GetSyncErrorButtonTitleForBrowserState(
     case SyncSetupService::kSyncServiceUnrecoverableError:
       return l10n_util::GetNSString(IDS_IOS_SYNC_SIGN_IN_AGAIN_BUTTON);
     case SyncSetupService::kNoSyncServiceError:
-    case SyncSetupService::kSyncServiceServiceUnavailable:
-    case SyncSetupService::kSyncServiceCouldNotConnect:
       return nil;
   }
 }
@@ -136,8 +128,6 @@ SyncSetupService::SyncServiceState GetSyncStateForBrowserState(
 
 bool ShouldShowSyncSettings(SyncSetupService::SyncServiceState syncState) {
   switch (syncState) {
-    case SyncSetupService::kSyncServiceCouldNotConnect:
-    case SyncSetupService::kSyncServiceServiceUnavailable:
     case SyncSetupService::kSyncServiceUnrecoverableError:
     case SyncSetupService::kNoSyncServiceError:
       return true;
@@ -168,24 +158,17 @@ bool DisplaySyncErrors(ChromeBrowserState* browser_state,
   if (syncSetupService->HasUncommittedChanges())
     return false;
 
-  SyncSetupService::SyncServiceState errorState =
-      syncSetupService->GetSyncServiceState();
-  if (IsTransientSyncError(errorState))
-    return false;
-
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
   if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync))
     return false;
+
   // Logs when an infobar is shown to user. See crbug/265352.
   InfobarSyncError loggedErrorState;
-  switch (errorState) {
+  switch (syncSetupService->GetSyncServiceState()) {
     case SyncSetupService::kNoSyncServiceError:
-    case SyncSetupService::kSyncServiceCouldNotConnect:
-    case SyncSetupService::kSyncServiceServiceUnavailable:
-      loggedErrorState = kMaxValue;
-      NOTREACHED();
-      break;
+      // Not an actual error, no need to do anything.
+      return false;
     case SyncSetupService::kSyncServiceSignInNeedsUpdate:
       loggedErrorState = SYNC_SIGN_IN_NEEDS_UPDATE;
       break;
@@ -210,19 +193,4 @@ bool DisplaySyncErrors(ChromeBrowserState* browser_state,
   DCHECK(infoBarManager);
   return SyncErrorInfoBarDelegate::Create(infoBarManager, browser_state,
                                           presenter);
-}
-
-bool IsTransientSyncError(SyncSetupService::SyncServiceState errorState) {
-  switch (errorState) {
-    case SyncSetupService::kNoSyncServiceError:
-    case SyncSetupService::kSyncServiceCouldNotConnect:
-    case SyncSetupService::kSyncServiceServiceUnavailable:
-      return true;
-    case SyncSetupService::kSyncServiceSignInNeedsUpdate:
-    case SyncSetupService::kSyncServiceNeedsPassphrase:
-    case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
-    case SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded:
-    case SyncSetupService::kSyncServiceUnrecoverableError:
-      return false;
-  }
 }

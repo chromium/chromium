@@ -3261,9 +3261,6 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_SYNC_ENTER_PASSPHRASE_TITLE" desc="Title for the dialog where the user enters the passphrase.">
         Enter Passphrase
       </message>
-      <message name="IDS_IOS_SYNC_ERROR_COULD_NOT_CONNECT" desc="The error message to display when the sync server is unavailable. [Length: 100em, can be multiple lines] [iOS only]">
-        Could not connect to the server.
-      </message>
       <message name="IDS_IOS_SYNC_ERROR_DESCRIPTION" desc="The error message to display when a generic error prevents sync from starting.">
         Sync Isn't Working.
       </message>

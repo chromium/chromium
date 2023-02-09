@@ -496,8 +496,6 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
   switch (self.syncSetupService->GetSyncServiceState()) {
     case SyncSetupService::kSyncServiceUnrecoverableError:
     case SyncSetupService::kSyncServiceSignInNeedsUpdate:
-    case SyncSetupService::kSyncServiceCouldNotConnect:
-    case SyncSetupService::kSyncServiceServiceUnavailable:
       return YES;
     case SyncSetupService::kNoSyncServiceError:
     case SyncSetupService::kSyncServiceNeedsPassphrase:
@@ -843,8 +841,6 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
           SyncTrustedVaultRecoverabilityDegradedErrorItemType);
     case SyncSetupService::kSyncServiceUnrecoverableError:
     case SyncSetupService::kNoSyncServiceError:
-    case SyncSetupService::kSyncServiceCouldNotConnect:
-    case SyncSetupService::kSyncServiceServiceUnavailable:
       return absl::nullopt;
   }
   NOTREACHED();
