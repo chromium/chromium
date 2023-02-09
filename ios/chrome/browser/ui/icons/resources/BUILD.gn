@@ -198,6 +198,36 @@ symbolset("shield") {
   ]
 }
 
+symbolset("cloud_slash") {
+  sources = [
+    "cloud_slash.symbolset/Contents.json",
+    "cloud_slash.symbolset/cloud.slash.cr.svg",
+  ]
+}
+
+imageset("legacy_cloud_slash") {
+  sources = [
+    "legacy_cloud_slash.imageset/Contents.json",
+    "legacy_cloud_slash.imageset/legacy_cloud_slash@2x.png",
+    "legacy_cloud_slash.imageset/legacy_cloud_slash@3x.png",
+  ]
+}
+
+symbolset("cloud_and_arrow_up") {
+  sources = [
+    "cloud_and_arrow_up.symbolset/Contents.json",
+    "cloud_and_arrow_up.symbolset/cloud.and.arrow.up.cr.svg",
+  ]
+}
+
+imageset("legacy_cloud_and_arrow_up") {
+  sources = [
+    "legacy_cloud_and_arrow_up.imageset/Contents.json",
+    "legacy_cloud_and_arrow_up.imageset/legacy_cloud_and_arrow_up@2x.png",
+    "legacy_cloud_and_arrow_up.imageset/legacy_cloud_and_arrow_up@3x.png",
+  ]
+}
+
 imageset("tab_grid_new_tab_button_ios14") {
   sources = [
     "tab_grid_new_tab_button_ios14.imageset/Contents.json",

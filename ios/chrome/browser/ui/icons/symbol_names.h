@@ -22,6 +22,7 @@ extern NSString* const kSafetyCheckSymbol;
 extern NSString* const kGoogleIconSymbol;
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 extern NSString* const kArrowClockWiseSymbol;
+extern NSString* const kIncognitoSymbol;
 extern NSString* const kSquareNumberSymbol;
 extern NSString* const kTranslateSymbol;
 extern NSString* const kCameraSymbol;
@@ -46,7 +47,8 @@ extern NSString* const kDownTrendSymbol;
 extern NSString* const kGoogleShieldSymbol;
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 extern NSString* const kShieldSymbol;
-extern NSString* const kIncognitoSymbol;
+extern NSString* const kCloudSlashSymbol;
+extern NSString* const kCloudAndArrowUpSymbol;
 
 // Custom symbol names which can be configured with a color palette. iOS 15+
 // only.
