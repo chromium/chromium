@@ -932,7 +932,8 @@ export class FileGrid extends Grid {
       return;
     }
 
-    const {syncStatus, progress} = metadata;
+    const {syncStatus} = metadata;
+    let progress = metadata.progress ?? 0;
     const inlineStatus = li.querySelector('.inline-status');
 
     if (!syncStatus || !inlineStatus) {
@@ -941,12 +942,14 @@ export class FileGrid extends Grid {
 
     switch (syncStatus) {
       case chrome.fileManagerPrivate.SyncStatus.QUEUED:
+      case chrome.fileManagerPrivate.SyncStatus.ERROR:
+        progress = 0;
         inlineStatus.setAttribute('aria-label', str('QUEUED_LABEL'));
         break;
       case chrome.fileManagerPrivate.SyncStatus.IN_PROGRESS:
         inlineStatus.setAttribute(
             'aria-label',
-            `${str('IN_PROGRESS_LABEL')} - %${(progress * 100).toFixed()}`);
+            `${str('IN_PROGRESS_LABEL')} - ${(progress * 100).toFixed(0)}%`);
         break;
       default:
         break;
@@ -954,7 +957,7 @@ export class FileGrid extends Grid {
 
     li.setAttribute('data-sync-status', syncStatus);
     inlineStatus.querySelector('.progress')
-        .setAttribute('progress', (progress || 0).toFixed(2));
+        .setAttribute('progress', progress.toFixed(2));
   }
 
   /**

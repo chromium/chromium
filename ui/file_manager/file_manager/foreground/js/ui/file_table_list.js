@@ -541,16 +541,19 @@ filelist.updateListItemExternalProps = (li, externalProps, isTeamDriveRoot) => {
     inlineStatus.setAttribute(
         'aria-label', externalProps.pinned ? str('OFFLINE_COLUMN_LABEL') : '');
 
-    const {syncStatus, progress} = externalProps;
+    const {syncStatus} = externalProps;
+    let progress = externalProps.progress ?? 0;
     if (util.isInlineSyncStatusEnabled() && syncStatus) {
       switch (syncStatus) {
         case chrome.fileManagerPrivate.SyncStatus.QUEUED:
+        case chrome.fileManagerPrivate.SyncStatus.ERROR:
+          progress = 0;
           inlineStatus.setAttribute('aria-label', str('QUEUED_LABEL'));
           break;
         case chrome.fileManagerPrivate.SyncStatus.IN_PROGRESS:
           inlineStatus.setAttribute(
               'aria-label',
-              `${str('IN_PROGRESS_LABEL')} - %${(progress * 100).toFixed()}`);
+              `${str('IN_PROGRESS_LABEL')} - ${(progress * 100).toFixed(0)}%`);
           break;
         default:
           break;
@@ -558,7 +561,7 @@ filelist.updateListItemExternalProps = (li, externalProps, isTeamDriveRoot) => {
 
       li.setAttribute('data-sync-status', syncStatus);
       li.querySelector('.progress')
-          .setAttribute('progress', (progress || 0).toFixed(2));
+          .setAttribute('progress', progress.toFixed(2));
     }
   }
 };
