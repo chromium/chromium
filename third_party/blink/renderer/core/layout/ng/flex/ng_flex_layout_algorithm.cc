@@ -134,7 +134,6 @@ bool ContainsNonWhitespace(const LayoutBox* box) {
 
 NGFlexLayoutAlgorithm::NGFlexLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params,
-    DevtoolsFlexInfo* layout_info_for_devtools,
     const HashMap<wtf_size_t, LayoutUnit>* cross_size_adjustments)
     : NGLayoutAlgorithm(params),
       is_column_(Style().ResolvedIsColumnFlexDirection()),
@@ -1065,7 +1064,6 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::Layout() {
 const NGLayoutResult*
 NGFlexLayoutAlgorithm::RelayoutIgnoringChildScrollbarChanges() {
   DCHECK(!ignore_child_scrollbar_changes_);
-  DCHECK(!layout_info_for_devtools_);
   NGLayoutAlgorithmParams params(
       Node(), container_builder_.InitialFragmentGeometry(), ConstraintSpace(),
       BreakToken(), /* early_break */ nullptr);
@@ -2666,7 +2664,7 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::RelayoutWithNewRowSizes() {
       Node(), container_builder_.InitialFragmentGeometry(), ConstraintSpace(),
       BreakToken(), early_break_, additional_early_breaks_);
   NGFlexLayoutAlgorithm algorithm_with_row_cross_sizes(
-      params, layout_info_for_devtools_.get(), &row_cross_size_updates_);
+      params, &row_cross_size_updates_);
   auto& new_builder = algorithm_with_row_cross_sizes.container_builder_;
   new_builder.SetBoxType(container_builder_.BoxType());
   algorithm_with_row_cross_sizes.ignore_child_scrollbar_changes_ =

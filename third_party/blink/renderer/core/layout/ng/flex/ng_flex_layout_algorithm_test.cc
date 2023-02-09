@@ -18,6 +18,10 @@ class NGFlexLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
  protected:
   const DevtoolsFlexInfo* LayoutForDevtools(const String& body_content) {
     SetBodyInnerHTML(body_content);
+    return LayoutForDevtools();
+  }
+
+  const DevtoolsFlexInfo* LayoutForDevtools() {
     LayoutObject* generic_flex = GetLayoutObjectByElementId("flexbox");
     EXPECT_NE(generic_flex, nullptr);
     LayoutNGFlexibleBox* ng_flex = DynamicTo<LayoutNGFlexibleBox>(generic_flex);
@@ -221,6 +225,30 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsFragmentedItemDoesntCrash) {
   )HTML");
   // We don't currently set DevtoolsFlexInfo when fragmenting.
   DCHECK(!devtools);
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsAutoScrollbar) {
+  // Pass if we get a devtools info object and don't crash.
+  const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
+    <style>
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+    </style>
+    <div id="flexbox" style="display:flex; height:100px;">
+      <div style="overflow:auto; width:100px;">
+        <div id="inner" style="height:200px;"></div>
+      </div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(devtools);
+
+  // Make the inner child short enough to eliminate the need for a scrollbar.
+  Element* inner = GetDocument().getElementById("inner");
+  inner->SetInlineStyleProperty(CSSPropertyID::kHeight, "50px");
+
+  devtools = LayoutForDevtools();
+  EXPECT_TRUE(devtools);
 }
 
 TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUma1) {
