@@ -2190,6 +2190,8 @@ CrasAudioHandler::ClientType CrasAudioHandler::ConvertClientTypeStringToEnum(
     return ClientType::ARC;
   } else if (client_type_str == "CRAS_CLIENT_TYPE_BOREALIS") {
     return ClientType::VM_BOREALIS;
+  } else if (client_type_str == "CRAS_CLIENT_TYPE_LACROS") {
+    return ClientType::LACROS;
   } else {
     return ClientType::UNKNOWN;
   }
@@ -2203,8 +2205,10 @@ void CrasAudioHandler::HandleGetNumberOfInputStreamsWithPermission(
   }
   number_of_input_streams_with_permission_.clear();
   for (const auto& it : *num_input_streams) {
-    number_of_input_streams_with_permission_[ConvertClientTypeStringToEnum(
-        it.first)] = it.second;
+    CrasAudioHandler::ClientType type = ConvertClientTypeStringToEnum(it.first);
+    if (type != ClientType::UNKNOWN) {
+      number_of_input_streams_with_permission_[type] = it.second;
+    }
   }
 }
 
