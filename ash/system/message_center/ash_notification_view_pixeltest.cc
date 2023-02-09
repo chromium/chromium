@@ -12,6 +12,7 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/models/image_model.h"
 #include "ui/message_center/views/message_popup_view.h"
@@ -32,6 +33,31 @@ constexpr char kShortTitleScreenshot[] = "ash_notification_short_title";
 constexpr char kMediumTitleScreenshot[] =
     "ash_notification_multiline_medium_title";
 constexpr char kLongTitleScreenshot[] = "ash_notification_multiline_long_title";
+
+// The types of the primary display size.
+enum class DisplayType {
+  // The display size is the default one.
+  kNormal,
+
+  // The display's height is much greater than its width.
+  kUltraHeight,
+
+  // The display's width is much greater than its height.
+  kUltraWidth,
+};
+
+// Returns the name of `type`.
+std::string GetDisplayTypeName(DisplayType type) {
+  std::string display_type_name;
+  switch (type) {
+    case DisplayType::kNormal:
+      return "normal";
+    case DisplayType::kUltraWidth:
+      return "ultra_width";
+    case DisplayType::kUltraHeight:
+      return "ultra_height";
+  }
+}
 
 }  // namespace
 
@@ -102,11 +128,24 @@ TEST_P(AshNotificationViewTitlePixelTest, NotificationTitleTest) {
 }
 
 class ScreenCaptureNotificationPixelTest
-    : public AshNotificationViewPixelTestBase {
+    : public AshNotificationViewPixelTestBase,
+      public testing::WithParamInterface<DisplayType> {
  public:
   // AshNotificationViewPixelTestBase:
   void SetUp() override {
     AshNotificationViewPixelTestBase::SetUp();
+
+    // Change the display size depending on the test param.
+    switch (GetParam()) {
+      case DisplayType::kNormal:
+        break;
+      case DisplayType::kUltraWidth:
+        UpdateDisplay("1200x600");
+        break;
+      case DisplayType::kUltraHeight:
+        UpdateDisplay("600x1200");
+        break;
+    }
 
     // Create windows so that the screenshot has more contents.
     window1_ = CreateAppWindow(/*bounds_in_screen=*/gfx::Rect(200, 200));
@@ -127,8 +166,14 @@ class ScreenCaptureNotificationPixelTest
   std::unique_ptr<aura::Window> window2_;
 };
 
+INSTANTIATE_TEST_SUITE_P(DisplaySize,
+                         ScreenCaptureNotificationPixelTest,
+                         testing::ValuesIn({DisplayType::kNormal,
+                                            DisplayType::kUltraWidth,
+                                            DisplayType::kUltraHeight}));
+
 // Verifies the notification popup of a full screenshot.
-TEST_F(ScreenCaptureNotificationPixelTest, VerifyPopup) {
+TEST_P(ScreenCaptureNotificationPixelTest, VerifyPopup) {
   // Take a full screenshot then wait for the file path to the saved image.
   ash::CaptureModeController* controller = StartCaptureSession(
       CaptureModeSource::kFullscreen, CaptureModeType::kImage);
@@ -145,8 +190,9 @@ TEST_F(ScreenCaptureNotificationPixelTest, VerifyPopup) {
       capture_mode_util::GetScreenCaptureNotificationIdForPath(image_file_path);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screen_capture_popup_notification", /*revision_number=*/0,
-      test_api()->GetPopupViewForId(notification_id)));
+      base::StrCat({"screen_capture_popup_notification_",
+                    GetDisplayTypeName(GetParam())}),
+      /*revision_number=*/0, test_api()->GetPopupViewForId(notification_id)));
 }
 
 }  // namespace ash
