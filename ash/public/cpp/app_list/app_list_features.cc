@@ -28,7 +28,7 @@ BASE_FEATURE(kSearchResultInlineIcon,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kQuickActionShowBubbleLauncher,
              "QuickActionShowBubbleLauncher",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDynamicSearchUpdateAnimation,
              "DynamicSearchUpdateAnimation",
              base::FEATURE_ENABLED_BY_DEFAULT);
