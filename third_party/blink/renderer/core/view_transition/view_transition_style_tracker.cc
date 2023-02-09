@@ -476,6 +476,7 @@ bool ViewTransitionStyleTracker::Capture() {
   if (old_root_data_) {
     old_root_data_->snapshot_id =
         viz::ViewTransitionElementResourceId::Generate();
+    capture_resource_ids_.push_back(old_root_data_->snapshot_id);
   }
   for (const auto& root_name : AllRootTags())
     transition_names.push_front(root_name);
