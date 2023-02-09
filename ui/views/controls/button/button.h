@@ -142,13 +142,6 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   // will also set the state of |this| to STATE_DISABLED.
   void SetState(ButtonState state);
 
-  // Starts throbbing. See HoverAnimation for a description of cycles_til_stop.
-  // This method does nothing if |animate_on_state_change_| is false.
-  void StartThrobbing(int cycles_til_stop);
-
-  // Stops throbbing immediately.
-  void StopThrobbing();
-
   // Set how long the hover animation will last for.
   void SetAnimationDuration(base::TimeDelta duration);
 
@@ -317,9 +310,6 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   // Should we animate when the state changes?
   bool animate_on_state_change_ = false;
-
-  // Is the hover animation running because StartThrob was invoked?
-  bool is_throbbing_ = false;
 
   // Mouse event flags which can trigger button actions.
   int triggerable_event_flags_ = ui::EF_LEFT_MOUSE_BUTTON;

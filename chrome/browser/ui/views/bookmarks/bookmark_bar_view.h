@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
-#include "chrome/browser/ui/bookmarks/bookmark_bubble_observer.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_observer.h"
@@ -52,7 +51,6 @@ class FontList;
 }
 
 namespace views {
-class Button;
 class MenuButton;
 class MenuItemView;
 class LabelButton;
@@ -70,8 +68,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
                         public views::ContextMenuController,
                         public views::DragController,
                         public views::AnimationDelegateViews,
-                        public BookmarkMenuControllerObserver,
-                        public bookmarks::BookmarkBubbleObserver {
+                        public BookmarkMenuControllerObserver {
  public:
   class ButtonSeparatorView;
 
@@ -139,11 +136,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // Returns the drop MenuItemView, or NULL if a menu isn't showing.
   views::MenuItemView* GetDropMenu();
 
-  // If a button is currently throbbing, it is stopped. If immediate is true
-  // the throb stops immediately, otherwise it stops after a couple more
-  // throbs.
-  void StopThrobbing(bool immediate);
-
   // Returns the tooltip text for the specified url and title. The returned
   // text is clipped to fit |max_tooltip_width|.
   //
@@ -185,10 +177,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // BookmarkMenuControllerObserver:
   void BookmarkMenuControllerDeleted(
       BookmarkMenuController* controller) override;
-
-  // bookmarks::BookmarkBubbleObserver:
-  void OnBookmarkBubbleShown(const bookmarks::BookmarkNode* node) override;
-  void OnBookmarkBubbleHidden() override;
 
   // bookmarks::BookmarkModelObserver:
   void BookmarkModelLoaded(bookmarks::BookmarkModel* model,
@@ -328,19 +316,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void WriteBookmarkDragData(const bookmarks::BookmarkNode* node,
                              ui::OSExchangeData* data);
 
-  // This determines which view should throb and starts it
-  // throbbing (e.g when the bookmark bubble is showing).
-  // If |overflow_only| is true, start throbbing only if |node| is hidden in
-  // the overflow menu.
-  void StartThrobbing(const bookmarks::BookmarkNode* node, bool overflow_only);
-
-  // Returns the view to throb when a node is removed. |parent| is the parent of
-  // the node that was removed, and |old_index| the index of the node that was
-  // removed.
-  views::Button* DetermineViewToThrobFromRemove(
-      const bookmarks::BookmarkNode* parent,
-      size_t old_index);
-
   // Sets/updates the colors and icons for all the child objects in the
   // bookmarks bar.
   void UpdateAppearanceForTheme();
@@ -444,11 +419,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   // Animation controlling showing and hiding of the bar.
   gfx::SlideAnimation size_animation_{this};
-
-  // If the bookmark bubble is showing, this is the visible ancestor of the URL.
-  // The visible ancestor is either the |other_bookmarks_button_|,
-  // |overflow_button_| or a button on the bar.
-  raw_ptr<views::Button> throbbing_view_ = nullptr;
 
   BookmarkBar::State bookmark_bar_state_ = BookmarkBar::SHOW;
 

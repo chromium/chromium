@@ -13,7 +13,6 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/bookmarks/bookmark_bubble_observer.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/recently_used_folders_combo_model.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -58,14 +57,10 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBookmarkFolder);
 class BookmarkBubbleView::BookmarkBubbleDelegate
     : public ui::DialogModelDelegate {
  public:
-  BookmarkBubbleDelegate(bookmarks::BookmarkBubbleObserver* observer,
-                         std::unique_ptr<BubbleSyncPromoDelegate> delegate,
+  BookmarkBubbleDelegate(std::unique_ptr<BubbleSyncPromoDelegate> delegate,
                          Profile* profile,
                          const GURL& url)
-      : observer_(observer),
-        delegate_(std::move(delegate)),
-        profile_(profile),
-        url_(url) {}
+      : delegate_(std::move(delegate)), profile_(profile), url_(url) {}
 
   void RemoveBookmark() {
     base::RecordAction(UserMetricsAction("BookmarkBubble_Unstar"));
@@ -82,8 +77,6 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
     if (should_apply_edits_)
       ApplyEdits();
     bookmark_bubble_ = nullptr;
-    if (observer_)
-      observer_->OnBookmarkBubbleHidden();
   }
 
   void OnEditButton(const ui::Event& event) {
@@ -160,7 +153,6 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
   BubbleSyncPromoDelegate* delegate() { return delegate_.get(); }
 
  private:
-  const raw_ptr<bookmarks::BookmarkBubbleObserver> observer_;
   std::unique_ptr<BubbleSyncPromoDelegate> delegate_;
   const raw_ptr<Profile> profile_;
   const GURL url_;
@@ -173,7 +165,6 @@ void BookmarkBubbleView::ShowBubble(
     views::View* anchor_view,
     content::WebContents* web_contents,
     views::Button* highlighted_button,
-    bookmarks::BookmarkBubbleObserver* observer,
     std::unique_ptr<BubbleSyncPromoDelegate> delegate,
     Profile* profile,
     const GURL& url,
@@ -189,7 +180,7 @@ void BookmarkBubbleView::ShowBubble(
       bookmark_model->GetMostRecentlyAddedUserNodeForURL(url);
 
   auto bubble_delegate_unique = std::make_unique<BookmarkBubbleDelegate>(
-      observer, std::move(delegate), profile, url);
+      std::move(delegate), profile, url);
   BookmarkBubbleDelegate* bubble_delegate = bubble_delegate_unique.get();
 
   auto dialog_model_builder =
@@ -283,12 +274,6 @@ void BookmarkBubbleView::ShowBubble(
   views::Widget* const widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
   widget->Show();
-
-  if (observer) {
-    observer->OnBookmarkBubbleShown(
-        BookmarkModelFactory::GetForBrowserContext(profile)
-            ->GetMostRecentlyAddedUserNodeForURL(url));
-  }
 }
 
 // static

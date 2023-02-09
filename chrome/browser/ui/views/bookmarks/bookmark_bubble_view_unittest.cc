@@ -111,7 +111,7 @@ class BookmarkBubbleViewTest : public BrowserWithTestWindowTest {
     BookmarkBubbleView::ShowBubble(
         anchor_widget_->GetContentsView(),
         browser()->tab_strip_model()->GetActiveWebContents(), nullptr, nullptr,
-        nullptr, profile(), GURL(kTestBookmarkURL), true);
+        profile(), GURL(kTestBookmarkURL), true);
   }
 
   PriceTrackingView* GetPriceTrackingView() {

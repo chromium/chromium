@@ -12,10 +12,6 @@
 class GURL;
 class Profile;
 
-namespace bookmarks {
-class BookmarkBubbleObserver;
-}
-
 namespace content {
 class WebContents;
 }  // namespace content
@@ -36,7 +32,6 @@ class BookmarkBubbleView {
   static void ShowBubble(views::View* anchor_view,
                          content::WebContents* web_contents,
                          views::Button* highlighted_button,
-                         bookmarks::BookmarkBubbleObserver* observer,
                          std::unique_ptr<BubbleSyncPromoDelegate> delegate,
                          Profile* profile,
                          const GURL& url,

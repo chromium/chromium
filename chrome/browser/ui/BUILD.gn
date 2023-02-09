@@ -959,7 +959,6 @@ static_library("ui") {
       "bluetooth/chrome_bluetooth_chooser_controller.cc",
       "bluetooth/chrome_bluetooth_chooser_controller.h",
       "bookmarks/bookmark_bar.h",
-      "bookmarks/bookmark_bubble_observer.h",
       "bookmarks/bookmark_context_menu_controller.cc",
       "bookmarks/bookmark_context_menu_controller.h",
       "bookmarks/bookmark_drag_drop.cc",

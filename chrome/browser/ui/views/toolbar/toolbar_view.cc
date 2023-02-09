@@ -487,10 +487,7 @@ void ToolbarView::ShowIntentPickerBubble(
       initiating_origin, std::move(callback));
 }
 
-void ToolbarView::ShowBookmarkBubble(
-    const GURL& url,
-    bool already_bookmarked,
-    bookmarks::BookmarkBubbleObserver* observer) {
+void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
   views::View* const anchor_view = location_bar();
   PageActionIconView* const bookmark_star_icon =
       GetPageActionIconView(PageActionIconType::kBookmarkStar);
@@ -500,9 +497,9 @@ void ToolbarView::ShowBookmarkBubble(
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   delegate = std::make_unique<BookmarkBubbleSignInDelegate>(profile);
 #endif
-  BookmarkBubbleView::ShowBubble(
-      anchor_view, GetWebContents(), bookmark_star_icon, observer,
-      std::move(delegate), profile, url, already_bookmarked);
+  BookmarkBubbleView::ShowBubble(anchor_view, GetWebContents(),
+                                 bookmark_star_icon, std::move(delegate),
+                                 profile, url, already_bookmarked);
 }
 
 ExtensionsToolbarButton* ToolbarView::GetExtensionsButton() const {

@@ -55,10 +55,6 @@ class ReloadButton;
 class ToolbarButton;
 class AvatarToolbarButtonBrowserTest;
 
-namespace bookmarks {
-class BookmarkBubbleObserver;
-}
-
 namespace media_router {
 class CastToolbarButton;
 }
@@ -134,9 +130,7 @@ class ToolbarView : public views::AccessiblePaneView,
       IntentPickerResponse callback);
 
   // Shows a bookmark bubble and anchors it appropriately.
-  void ShowBookmarkBubble(const GURL& url,
-                          bool already_bookmarked,
-                          bookmarks::BookmarkBubbleObserver* observer);
+  void ShowBookmarkBubble(const GURL& url, bool already_bookmarked);
 
   // Accessors.
   Browser* browser() const { return browser_; }
