@@ -111,6 +111,7 @@ suite('CategoriesTest', () => {
     const event = await eventPromise;
     assertTrue(!!event);
     assertEquals(1, handler.getCallCount('chooseLocalCustomBackground'));
+    assertEquals(1, handler.getCallCount('setDefaultColor'));
   });
 
   test('clicking Chrome Web Store tile opens Chrome Web Store', async () => {
