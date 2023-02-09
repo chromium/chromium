@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.app.Activity;
 import android.view.View;
@@ -279,7 +279,7 @@ public final class TranslateMessageSecondaryMenuTest {
 
         // Since the native pointer was cleared, there should have been no calls to any native
         // methods.
-        verifyZeroInteractions(mMockJni);
+        verifyNoMoreInteractions(mMockJni);
     }
 
     /**

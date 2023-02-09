@@ -20,7 +20,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -807,7 +807,7 @@ public class TabGridDialogMediatorUnitTest {
         // Animation source view should not be specified.
         assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
         assertThat(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE), equalTo(false));
-        verifyZeroInteractions(mDialogController);
+        verifyNoMoreInteractions(mDialogController);
     }
 
     @Test
@@ -836,7 +836,7 @@ public class TabGridDialogMediatorUnitTest {
         // Animation source view should not be specified.
         assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
         assertThat(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE), equalTo(false));
-        verifyZeroInteractions(mDialogController);
+        verifyNoMoreInteractions(mDialogController);
     }
 
     @Test
@@ -1003,7 +1003,7 @@ public class TabGridDialogMediatorUnitTest {
 
         mMediator.onReset(null);
 
-        verifyZeroInteractions(mDialogController);
+        verifyNoMoreInteractions(mDialogController);
     }
 
     @Test

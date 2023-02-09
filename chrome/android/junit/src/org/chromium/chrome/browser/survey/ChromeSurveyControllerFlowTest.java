@@ -10,7 +10,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 import android.app.Activity;
 import android.content.Context;
@@ -427,7 +426,7 @@ public class ChromeSurveyControllerFlowTest {
         // Simulate an expired survey.
         mTestSurveyController.isSurveyExpired = true;
         mTestSurveyController.onDownloadSuccessRunnable.run();
-        verifyZeroInteractions(mMessageDispatcher);
+        verifyNoMoreInteractions(mMessageDispatcher);
         Assert.assertEquals("showSurvey should not be called.", 0,
                 mTestSurveyController.showSurveyIfAvailableCallback.getCallCount());
     }

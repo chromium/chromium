@@ -12,7 +12,6 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 import androidx.test.filters.MediumTest;
 
@@ -51,7 +50,7 @@ public final class CachingUmaRecorderTest {
 
         cachingUmaRecorder.setDelegate(mUmaRecorder);
 
-        verifyZeroInteractions(mUmaRecorder);
+        verifyNoMoreInteractions(mUmaRecorder);
     }
 
     @Test
@@ -236,7 +235,7 @@ public final class CachingUmaRecorderTest {
         cachingUmaRecorder.setDelegate(new NoopUmaRecorder());
         cachingUmaRecorder.recordSparseHistogram("CachingUmaRecorderTest.stopOldDelegation", 72);
 
-        verifyZeroInteractions(mUmaRecorder);
+        verifyNoMoreInteractions(mUmaRecorder);
     }
 
     @Test
@@ -293,7 +292,7 @@ public final class CachingUmaRecorderTest {
 
         recordingThread.join();
         swappingThread.join();
-        verifyZeroInteractions(mUmaRecorder);
+        verifyNoMoreInteractions(mUmaRecorder);
     }
 
     @SuppressWarnings("ThreadPriorityCheck")
@@ -403,7 +402,7 @@ public final class CachingUmaRecorderTest {
             thread.join();
         }
         cachingRecorder.setDelegate(mUmaRecorder);
-        verifyZeroInteractions(mUmaRecorder);
+        verifyNoMoreInteractions(mUmaRecorder);
         for (int i = 0; i < numThreads; i++) {
             int actualSamples = 0;
             for (HistogramTestingUmaRecorder recorder : testingRecorders) {
@@ -512,7 +511,7 @@ public final class CachingUmaRecorderTest {
             thread.join();
         }
         cachingRecorder.setDelegate(mUmaRecorder);
-        verifyZeroInteractions(mUmaRecorder);
+        verifyNoMoreInteractions(mUmaRecorder);
         for (int i = 0; i < numThreads; i++) {
             int actualSamples = 0;
             for (UserActionTestingUmaRecorder recorder : testingRecorders) {
@@ -586,7 +585,7 @@ public final class CachingUmaRecorderTest {
         // Ensure a callback added later is also added correctly.
         Callback<String> testCallback3 = (result) -> {};
         cachingRecorder.addUserActionCallbackForTesting(testCallback3);
-        verifyZeroInteractions(delegate1);
+        verifyNoMoreInteractions(delegate1);
         verify(delegate2).addUserActionCallbackForTesting(testCallback3);
     }
 }

@@ -239,7 +239,7 @@ public class EnterpriseInfoImplTest {
     @SmallTest
     public void testGetManagedStateForNative() {
         EnterpriseInfo.getManagedStateForNative();
-        Mockito.verifyZeroInteractions(mNatives);
+        Mockito.verifyNoMoreInteractions(mNatives);
 
         getEnterpriseInfoImpl().setCacheResult(new EnterpriseInfo.OwnedState(true, false));
         getEnterpriseInfoImpl().onEnterpriseInfoResultAvailable();

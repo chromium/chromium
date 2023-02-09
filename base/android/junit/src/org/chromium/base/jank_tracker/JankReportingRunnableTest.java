@@ -6,7 +6,6 @@ package org.chromium.base.jank_tracker;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -87,6 +86,6 @@ public class JankReportingRunnableTest {
         verify(metricsStore).stopTrackingScenario(JankScenario.TAB_SWITCHER);
 
         // Native shouldn't be called when there are no measurements.
-        verifyZeroInteractions(mNativeMock);
+        verifyNoMoreInteractions(mNativeMock);
     }
 }

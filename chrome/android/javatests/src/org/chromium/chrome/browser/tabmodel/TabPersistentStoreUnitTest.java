@@ -13,7 +13,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.text.TextUtils;
@@ -213,7 +213,7 @@ public class TabPersistentStoreUnitTest {
                 new TabRestoreDetails(1, 0, false, UrlConstants.NTP_URL, false);
         mPersistentStore.restoreTab(emptyNtpDetails, null, null, false);
 
-        verifyZeroInteractions(mNormalTabCreator);
+        verifyNoMoreInteractions(mNormalTabCreator);
     }
 
     @Test
@@ -330,7 +330,7 @@ public class TabPersistentStoreUnitTest {
                 new TabRestoreDetails(1, 0, true, UrlConstants.NTP_URL, false);
         mPersistentStore.restoreTab(emptyNtpDetails, null, null, false);
 
-        verifyZeroInteractions(mIncognitoTabCreator);
+        verifyNoMoreInteractions(mIncognitoTabCreator);
     }
 
     @Test
@@ -345,7 +345,7 @@ public class TabPersistentStoreUnitTest {
                 new TabRestoreDetails(1, 0, true, UrlConstants.NTP_URL, false);
         mPersistentStore.restoreTab(emptyNtpDetails, null, null, true);
 
-        verifyZeroInteractions(mIncognitoTabCreator);
+        verifyNoMoreInteractions(mIncognitoTabCreator);
     }
 
     @Test

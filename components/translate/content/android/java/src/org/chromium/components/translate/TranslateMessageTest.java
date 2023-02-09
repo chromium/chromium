@@ -9,7 +9,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 import android.app.Activity;
 import android.content.Context;
@@ -277,7 +276,7 @@ public final class TranslateMessageTest {
         Assert.assertNull(translateMessage.handleSecondaryMenuItemClicked(
                 new TranslateMessage.MenuItem("More languages", "", false, 2, "")));
 
-        verifyZeroInteractions(mMockJni);
+        verifyNoMoreInteractions(mMockJni);
     }
 
     @Test

@@ -8,7 +8,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 import androidx.test.filters.SmallTest;
 
@@ -69,6 +68,6 @@ public class TopToolbarInteractabilityManagerTest {
     @SmallTest
     public void testDelegateNotInvoked_WhenEnablingNewTabButton_BeforeDisabling() {
         mTopToolbarInteractabilityManager.enableNewTabButton(/*clientToken=*/1234);
-        verifyZeroInteractions(mDelegate);
+        verifyNoMoreInteractions(mDelegate);
     }
 }

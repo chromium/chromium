@@ -11,7 +11,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -337,7 +336,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
         mNativeInitObserver.onFinishNativeInitialization();
 
         verify(mTabModelSelectorMock, times(1)).isTabStateInitialized();
-        verifyZeroInteractions(mUnblockDrawRunnableMock);
+        verifyNoMoreInteractions(mUnblockDrawRunnableMock);
     }
 
     @Test
@@ -347,7 +346,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
         mTabModelSelectorObserver.onTabStateInitialized();
 
         verify(mTabModelSelectorMock, times(1)).isTabStateInitialized();
-        verifyZeroInteractions(mUnblockDrawRunnableMock);
+        verifyNoMoreInteractions(mUnblockDrawRunnableMock);
     }
 
     @Test

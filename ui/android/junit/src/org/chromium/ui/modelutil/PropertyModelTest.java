@@ -206,7 +206,7 @@ public class PropertyModelTest {
         model.set(INT_PROPERTY_A, -1);
         model.set(OBJECT_PROPERTY_A, obj);
 
-        Mockito.verifyZeroInteractions(observer);
+        Mockito.verifyNoMoreInteractions(observer);
     }
 
     @Test

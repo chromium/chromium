@@ -6,7 +6,7 @@ package org.chromium.components.browser_ui.client_certificate;
 
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.content.ActivityNotFoundException;
 import android.security.KeyChainAliasCallback;
@@ -58,6 +58,6 @@ public class SSLClientCertificateRequestTest {
                 mKeyChainMock, mCallbackMock, mFailureDialogMock);
 
         verify(mKeyChainMock).choosePrivateKeyAlias();
-        verifyZeroInteractions(mFailureDialogMock);
+        verifyNoMoreInteractions(mFailureDialogMock);
     }
 }

@@ -5,7 +5,7 @@
 package org.chromium.base.jank_tracker;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.view.FrameMetrics;
@@ -37,7 +37,7 @@ public class FrameMetricsListenerTest {
         // By default metrics shouldn't be logged.
         Assert.assertEquals(
                 0, store.stopTrackingScenario(JankScenario.PERIODIC_REPORTING).durationsNs.length);
-        verifyZeroInteractions(frameMetrics);
+        verifyNoMoreInteractions(frameMetrics);
     }
 
     @Test

@@ -106,7 +106,7 @@ public class UrlBarMediatorUnitTest {
         Assert.assertFalse(mMediator.setUrlBarData(data1, UrlBar.ScrollType.SCROLL_TO_TLD, 4));
         Assert.assertFalse(mMediator.setUrlBarData(data2, UrlBar.ScrollType.SCROLL_TO_TLD, 4));
 
-        Mockito.verifyZeroInteractions(observer);
+        Mockito.verifyNoMoreInteractions(observer);
     }
 
     @Test

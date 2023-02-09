@@ -11,7 +11,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -58,7 +58,7 @@ public class ExternalAuthUtilsTest {
         when(mExternalAuthUtils.checkGooglePlayServicesAvailable(mContext))
                 .thenReturn(ConnectionResult.SUCCESS);
         assertTrue(mExternalAuthUtils.canUseGooglePlayServices(mUserRecoverableErrorHandler));
-        verifyZeroInteractions(mUserRecoverableErrorHandler);
+        verifyNoMoreInteractions(mUserRecoverableErrorHandler);
 
         // Verifying stubs can be an anti-pattern but here it is important to
         // test that the real method canUseGooglePlayServices did invoke these
@@ -77,7 +77,7 @@ public class ExternalAuthUtilsTest {
         when(mExternalAuthUtils.checkGooglePlayServicesAvailable(mContext)).thenReturn(ERR);
         when(mExternalAuthUtils.isUserRecoverableError(ERR)).thenReturn(false); // Non-recoverable
         assertFalse(mExternalAuthUtils.canUseGooglePlayServices(mUserRecoverableErrorHandler));
-        verifyZeroInteractions(mUserRecoverableErrorHandler);
+        verifyNoMoreInteractions(mUserRecoverableErrorHandler);
 
         // Verifying stubs can be an anti-pattern but here it is important to
         // test that the real method canUseGooglePlayServices did invoke these

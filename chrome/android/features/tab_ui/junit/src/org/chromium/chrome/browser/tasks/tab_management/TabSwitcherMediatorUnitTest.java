@@ -22,7 +22,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -365,7 +364,7 @@ public class TabSwitcherMediatorUnitTest {
     @Test
     public void beforeHideTabSwitcherView_NullController() {
         mMediator.prepareHideTabSwitcherView();
-        verifyZeroInteractions(mTabGridDialogController);
+        verifyNoMoreInteractions(mTabGridDialogController);
     }
 
     @Test

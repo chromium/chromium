@@ -125,9 +125,9 @@ public class ComposedBrowserControlsVisibilityDelegateTest {
         Mockito.verify(callback).onResult(BrowserControlsState.HIDDEN);
 
         mDelegate2.set(BrowserControlsState.HIDDEN);
-        Mockito.verifyZeroInteractions(callback);
+        Mockito.verifyNoMoreInteractions(callback);
         mDelegate2.set(BrowserControlsState.BOTH);
-        Mockito.verifyZeroInteractions(callback);
+        Mockito.verifyNoMoreInteractions(callback);
         mDelegate3.set(BrowserControlsState.BOTH);
         Mockito.verify(callback).onResult(BrowserControlsState.BOTH);
     }

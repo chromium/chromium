@@ -9,7 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -372,7 +372,7 @@ public final class ShareSheetBottomSheetContentTest {
         ImageView toggleView =
                 shareSheetBottomSheetContent.getContentView().findViewById(R.id.link_toggle_view);
         assertEquals(View.VISIBLE, toggleView.getVisibility());
-        verifyZeroInteractions(mFeatureEngagementTracker);
+        verifyNoMoreInteractions(mFeatureEngagementTracker);
     }
 
     @Test

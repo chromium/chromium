@@ -16,7 +16,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.accounts.Account;
@@ -216,7 +216,7 @@ public class HttpNegotiateAuthenticatorTest {
         b.putParcelable(AccountManager.KEY_INTENT, new Intent());
 
         authenticator.new GetTokenCallback(requestData).run(makeFuture(b));
-        verifyZeroInteractions(sMockAccountManager);
+        verifyNoMoreInteractions(sMockAccountManager);
 
         // Verify that the broadcast receiver is registered
         Intent intent = new Intent(AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION);
