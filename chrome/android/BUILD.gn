@@ -3057,12 +3057,21 @@ if (current_toolchain == default_toolchain) {
     never_incremental = true
     modules = [ "test_dummy" ]
     extra_args = _bundle_smoke_test_extra_args
-    if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
-      apk_under_test = "//chrome/android:trichrome_chrome_64_bundle_apks"
-      additional_apks = [ "//chrome/android:trichrome_library_64_apk" ]
-      if (!is_java_debug) {
-        proguard_mapping_path =
-            "$root_build_dir/apks/TrichromeChrome64.aab.mapping"
+    if (android_64bit_target_cpu) {
+      if (skip_secondary_abi_for_cq) {
+        apk_under_test = "//chrome/android:trichrome_chrome_64_bundle_apks"
+        additional_apks = [ "//chrome/android:trichrome_library_64_apk" ]
+        if (!is_java_debug) {
+          proguard_mapping_path =
+              "$root_build_dir/apks/TrichromeChrome64.aab.mapping"
+        }
+      } else {
+        apk_under_test = "//chrome/android:trichrome_chrome_64_32_bundle_apks"
+        additional_apks = [ "//chrome/android:trichrome_library_64_32_apk" ]
+        if (!is_java_debug) {
+          proguard_mapping_path =
+              "$root_build_dir/apks/TrichromeChrome6432.aab.mapping"
+        }
       }
     } else {
       apk_under_test = "//chrome/android:trichrome_chrome_bundle_apks"
