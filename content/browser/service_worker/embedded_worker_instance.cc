@@ -574,11 +574,9 @@ void EmbeddedWorkerInstance::SendStartWorker(
   instance_host_receiver_.Bind(
       params->instance_host.InitWithNewEndpointAndPassReceiver());
 
-  content_settings_ =
-      base::SequenceBound<ServiceWorkerContentSettingsProxyImpl>(
-          GetUIThreadTaskRunner({}), params->script_url,
-          scoped_refptr<ServiceWorkerContextWrapper>(context_->wrapper()),
-          params->content_settings_proxy.InitWithNewPipeAndPassReceiver());
+  content_settings_ = std::make_unique<ServiceWorkerContentSettingsProxyImpl>(
+      params->script_url, base::WrapRefCounted(context_->wrapper()),
+      params->content_settings_proxy.InitWithNewPipeAndPassReceiver());
 
   const bool is_script_streaming = !params->installed_scripts_info.is_null();
   inflight_start_info_->start_worker_sent_time = base::TimeTicks::Now();

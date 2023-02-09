@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/threading/sequence_bound.h"
 #include "base/unguessable_token.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
@@ -375,9 +374,7 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   ServiceWorkerMetrics::StartSituation start_situation_ =
       ServiceWorkerMetrics::StartSituation::UNKNOWN;
 
-  // TODO(crbug.com/824858): Remove SequenceBound when the core is the UI
-  // thread.
-  base::SequenceBound<ServiceWorkerContentSettingsProxyImpl> content_settings_;
+  std::unique_ptr<ServiceWorkerContentSettingsProxyImpl> content_settings_;
 
   mojo::SelfOwnedReceiverRef<network::mojom::URLLoaderFactory>
       script_loader_factory_;
