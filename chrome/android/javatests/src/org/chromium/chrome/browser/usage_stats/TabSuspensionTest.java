@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.usage_stats;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.Mockito.doReturn;
 
 import android.content.Context;

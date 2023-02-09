@@ -69,7 +69,7 @@ public class FindInPageDirectActionHandlerTest {
         TabModelSelector mockTabModelSelector = mock(TabModelSelector.class);
         when(mockTabModelSelector.getCurrentTab()).thenReturn(mockTab);
 
-        when(mMockedReporter.addDirectAction(org.mockito.Matchers.anyString()))
+        when(mMockedReporter.addDirectAction(org.mockito.ArgumentMatchers.anyString()))
                 .thenReturn(new FakeDirectActionDefinition("unused"));
         mHandler =
                 new FindInPageDirectActionHandler(mockTabModelSelector, mMockedFindToolbarManager);

@@ -4,7 +4,7 @@
 
 package org.chromium.url;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 
 import androidx.test.filters.SmallTest;

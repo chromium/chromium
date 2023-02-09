@@ -5,7 +5,7 @@
 package org.chromium.chrome.test.pagecontroller.utils;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.argThat;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.test.pagecontroller.utils.TestUtils.matchesByDepth;
