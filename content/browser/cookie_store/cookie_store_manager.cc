@@ -11,6 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "content/browser/cookie_store/cookie_change_subscriptions.pb.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
@@ -625,9 +626,11 @@ void CookieStoreManager::BindReceiverForFrame(
 
   StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
       render_process_host->GetStoragePartition());
+
+  RenderFrameHostImpl* render_frame_host_impl =
+      static_cast<RenderFrameHostImpl*>(render_frame_host);
   storage_partition->GetCookieStoreManager()->BindReceiver(
-      std::move(receiver),
-      blink::StorageKey(render_frame_host->GetLastCommittedOrigin()));
+      std::move(receiver), render_frame_host_impl->storage_key());
 }
 
 // static
