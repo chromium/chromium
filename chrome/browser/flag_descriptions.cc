@@ -1611,6 +1611,13 @@ const char kCastStreamingVp9Description[] =
     "Offers the VP9 video codec when negotiating Cast Streaming, and uses VP9 "
     "if selected for the session.";
 
+const char kCastEnableStreamingWithHiDPIName[] =
+    "HiDPI tab capture support for Cast Streaming";
+const char kCastEnableStreamingWithHiDPIDescription[] =
+    "Enables HiDPI tab capture during Cast Streaming mirroring sessions. May "
+    "reduce performance on some platforms and also improve quality of video "
+    "frames.";
+
 const char kGpuRasterizationName[] = "GPU rasterization";
 const char kGpuRasterizationDescription[] = "Use GPU to rasterize web content.";
 

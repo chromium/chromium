@@ -172,6 +172,10 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
     return params.enable_face_detection;
   }
 
+  static bool is_high_dpi_enabled(const media::VideoCaptureParams& params) {
+    return params.is_high_dpi_enabled;
+  }
+
   static bool Read(media::mojom::VideoCaptureParamsDataView data,
                    media::VideoCaptureParams* out);
 };

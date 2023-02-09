@@ -58277,6 +58277,7 @@ from previous Chrome versions.
   <int value="-1861278695" label="BulkTabRestore:enabled"/>
   <int value="-1860481724" label="ChromeHomeExpandButton:enabled"/>
   <int value="-1860477300" label="DefaultStyleSheetsEarlyInit:disabled"/>
+  <int value="-1860459751" label="CastEnableStreamingWithHiDPI:disabled"/>
   <int value="-1860342103" label="UseDnsHttpsSvcbAlpn:disabled"/>
   <int value="-1859437916"
       label="enable-experimental-accessibility-dictation-offline"/>
@@ -61465,6 +61466,7 @@ from previous Chrome versions.
   <int value="-50050190" label="PaintHoldingCrossOrigin:enabled"/>
   <int value="-50021298" label="ash-adjustable-large-cursor"/>
   <int value="-49441721" label="NtpModulesRedesigned:enabled"/>
+  <int value="-49124128" label="CastEnableStreamingWithHiDPI:enabled"/>
   <int value="-48920737" label="enable-smooth-scrolling"/>
   <int value="-47034052" label="StoreHoursAndroid:enabled"/>
   <int value="-46847847" label="EstablishGpuChannelAsync:disabled"/>

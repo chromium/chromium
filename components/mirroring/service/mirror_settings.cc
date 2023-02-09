@@ -151,6 +151,9 @@ media::VideoCaptureParams MirrorSettings::GetVideoCaptureParams() {
   } else {
     params.resolution_change_policy = ResolutionChangePolicy::ANY_WITHIN_LIMIT;
   }
+  params.is_high_dpi_enabled =
+      base::FeatureList::IsEnabled(features::kCastEnableStreamingWithHiDPI);
+
   DCHECK(params.IsValid());
   return params;
 }

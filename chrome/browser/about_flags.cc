@@ -4300,6 +4300,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCastStreamingVp9Description, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kCastStreamingVp9)},
 
+    {"enable-cast-streaming-with-hidpi",
+     flag_descriptions::kCastEnableStreamingWithHiDPIName,
+     flag_descriptions::kCastEnableStreamingWithHiDPIDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(mirroring::features::kCastEnableStreamingWithHiDPI)},
+
     {"enable-os-integration-sub-managers",
      flag_descriptions::kEnableOsIntegrationSubManagersName,
      flag_descriptions::kEnableOsIntegrationSubManagersDescription, kOsDesktop,

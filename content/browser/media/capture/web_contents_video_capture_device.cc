@@ -104,7 +104,8 @@ WebContentsVideoCaptureDevice::WebContentsVideoCaptureDevice() = default;
 void WebContentsVideoCaptureDevice::WillStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   tracker_.AsyncCall(&WebContentsFrameTracker::WillStartCapturingWebContents)
-      .WithArgs(capture_params().SuggestConstraints().max_frame_size);
+      .WithArgs(capture_params().SuggestConstraints().max_frame_size,
+                capture_params().is_high_dpi_enabled);
 }
 
 void WebContentsVideoCaptureDevice::DidStop() {

@@ -79,7 +79,8 @@ class CONTENT_EXPORT WebContentsFrameTracker final
 
   ~WebContentsFrameTracker() override;
 
-  void WillStartCapturingWebContents(const gfx::Size& capture_size);
+  void WillStartCapturingWebContents(const gfx::Size& capture_size,
+                                     bool is_high_dpi_enabled);
   void DidStopCapturingWebContents();
 
   void SetCapturedContentSize(const gfx::Size& content_size);
@@ -233,6 +234,10 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // so the |current_content_size| passed into |CalculatePreferredScaleFactor|
   // may differ from this value.
   gfx::Size capture_size_;
+
+  // When false, effectively disables HiDPI capture mode by making
+  // CalculatePreferredScaleFactor always return 1.0f.
+  bool is_high_dpi_enabled_ = true;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

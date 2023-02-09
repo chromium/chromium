@@ -888,6 +888,9 @@ extern const char kCastStreamingHardwareVp8Description[];
 extern const char kCastStreamingVp9Name[];
 extern const char kCastStreamingVp9Description[];
 
+extern const char kCastEnableStreamingWithHiDPIName[];
+extern const char kCastEnableStreamingWithHiDPIDescription[];
+
 extern const char kContextualPageActionsName[];
 extern const char kContextualPageActionsDescription[];
 

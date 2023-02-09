@@ -167,7 +167,8 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&WebContentsFrameTracker::WillStartCapturingWebContents,
-                       base::Unretained(tracker_.get()), capture_size));
+                       base::Unretained(tracker_.get()), capture_size,
+                       true /* is_high_dpi_enabled */));
   }
 
   void StopTrackerOnUIThread() {

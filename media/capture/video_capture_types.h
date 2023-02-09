@@ -327,7 +327,8 @@ struct CAPTURE_EXPORT VideoCaptureParams {
   bool operator==(const VideoCaptureParams& other) const {
     return requested_format == other.requested_format &&
            resolution_change_policy == other.resolution_change_policy &&
-           power_line_frequency == other.power_line_frequency;
+           power_line_frequency == other.power_line_frequency &&
+           is_high_dpi_enabled == other.is_high_dpi_enabled;
   }
 
   // Requests a resolution and format at which the capture will occur.
@@ -345,7 +346,11 @@ struct CAPTURE_EXPORT VideoCaptureParams {
   // allowing the driver to apply appropriate settings for optimal
   // exposures around the face area. Currently only applicable on
   // Android platform with Camera2 driver support.
-  bool enable_face_detection;
+  bool enable_face_detection = false;
+
+  // Flag indicating whether HiDPI mode should be enabled for tab capture
+  // sessions.
+  bool is_high_dpi_enabled = true;
 };
 
 CAPTURE_EXPORT std::ostream& operator<<(

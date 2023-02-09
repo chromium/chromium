@@ -304,6 +304,10 @@ struct VideoCaptureParams {
   ResolutionChangePolicy resolution_change_policy;
   PowerLineFrequency power_line_frequency;
   bool enable_face_detection;
+
+  // TODO(https://crbug.com/1412589): remove this once HiDPI is enabled for
+  // all video capture sessions.
+  [MinVersion=1] bool is_high_dpi_enabled;
 };
 
 [Stable, RenamedFrom="media.mojom.VideoFrameFeedback"]

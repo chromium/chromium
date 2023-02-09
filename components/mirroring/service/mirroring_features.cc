@@ -23,5 +23,13 @@ BASE_FEATURE(kCastDisableModelNameCheck,
              "CastDisableModelNameCheck",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// This flag enables HiDPI capture during Cast Streaming mirroring sessions.
+//
+// This feature is enabled by the Chrome command line flag
+// --enable-cast-streaming-with-hidpi.
+BASE_FEATURE(kCastEnableStreamingWithHiDPI,
+             "CastEnableStreamingWithHiDPI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace mirroring
