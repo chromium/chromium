@@ -613,28 +613,19 @@ export class TestPaymentsManager extends TestBrowserProxy implements
    */
   assertExpectations(expected: PaymentsManagerExpectations) {
     assertEquals(
-        expected.requestedCreditCards, this.getCallCount('getCreditCardList'),
-        'requestedCreditCards mismatch');
+        expected.requestedCreditCards, this.getCallCount('getCreditCardList'));
     assertEquals(
         expected.listeningCreditCards,
         this.getCallCount('setPersonalDataManagerListener') -
-            this.getCallCount('removePersonalDataManagerListener'),
-        'listeningCreditCards mismatch');
+            this.getCallCount('removePersonalDataManagerListener'));
     assertEquals(
-        expected.removedCreditCards, this.getCallCount('removeCreditCard'),
-        'removedCreditCards mismatch');
+        expected.removedCreditCards, this.getCallCount('removeCreditCard'));
     assertEquals(
         expected.clearedCachedCreditCards,
-        this.getCallCount('clearCachedCreditCard'),
-        'clearedCachedCreditCards mismatch');
+        this.getCallCount('clearCachedCreditCard'));
     assertEquals(
-        expected.addedVirtualCards, this.getCallCount('addVirtualCard'),
-        'addedVirtualCards mismatch');
-    assertEquals(
-        expected.requestedIbans, this.getCallCount('getIbanList'),
-        'requestedIbans mismatch');
-    assertEquals(
-        expected.removedIbans, this.getCallCount('removeIban'),
-        'removedIbans mismatch');
+        expected.addedVirtualCards, this.getCallCount('addVirtualCard'));
+    assertEquals(expected.requestedIbans, this.getCallCount('getIbanList'));
+    assertEquals(expected.removedIbans, this.getCallCount('removeIban'));
   }
 }
