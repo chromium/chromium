@@ -1029,21 +1029,23 @@ void PinManager::OnMetadataForModifiedFile(
   DCHECK(metadata);
   const mojom::FileMetadata& md = *metadata;
   DCHECK_EQ(id, Id(md.stable_id));
-  VLOG(2) << "Got metadata of modified " << id << " " << Quote(path) << ": "
-          << Quote(md);
 
   const Files::iterator it = files_to_track_.find(id);
   if (it == files_to_track_.end()) {
-    LOG(ERROR) << "Not tracked: " << id << " " << Quote(path);
+    VLOG(1) << "Ignored metadata of untracked " << id << " " << Quote(path)
+            << ": " << Quote(md);
     return;
   }
 
   DCHECK_EQ(it->first, id);
   const File& file = it->second;
+  VLOG(2) << "Got metadata of modified " << id << " " << Quote(path) << ": "
+          << Quote(md);
 
   if (!md.pinned) {
     if (!file.pinned) {
-      VLOG(1) << "To be pinned: " << id << " " << Quote(path);
+      VLOG(1) << "Modified " << id << " " << Quote(path)
+              << " is still scheduled to be pinned";
       DCHECK(files_to_pin_.contains(id));
       return;
     }
