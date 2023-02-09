@@ -225,12 +225,13 @@ using base::SysNSStringToUTF16;
 
 // Updates password details and sets it to a consumer.
 - (void)fetchPasswordWith:
-    (const std::vector<password_manager::CredentialUIEntry>&)credentials {
+    (const std::vector<password_manager::CredentialUIEntry>&)
+        insecureCredentials {
   NSMutableArray<PasswordDetails*>* passwords = [NSMutableArray array];
   for (password_manager::CredentialUIEntry credential : _credentials) {
     PasswordDetails* password =
         [[PasswordDetails alloc] initWithCredential:credential];
-    password.compromised = base::Contains(credentials, credential);
+    password.compromised = base::Contains(insecureCredentials, credential);
     [passwords addObject:password];
   }
   [self.consumer setPasswords:passwords andTitle:_displayName];
