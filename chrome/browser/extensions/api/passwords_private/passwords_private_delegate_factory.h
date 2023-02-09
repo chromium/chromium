@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_PASSWORDS_PRIVATE_DELEGATE_FACTORY_H_
 #define CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_PASSWORDS_PRIVATE_DELEGATE_FACTORY_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/keyed_service/core/keyed_service.h"
 
 namespace context {
 class BrowserContext;
@@ -15,10 +17,42 @@ class BrowserContext;
 namespace extensions {
 class PasswordsPrivateDelegate;
 
+// Wrapper class around PasswordsPrivateDelegate to control it's lifespan. If
+// the new PasswordManagerUI is enabled callers have to hold scoped_refptr of
+// PasswordsPrivateDelegate so the object can be released when no longer needed.
+// If the feature is disabled this class always holds a
+// scoped_refptr of PasswordsPrivateDelegate meaning it will live as long as
+// BrowserContext lives.
+class PasswordsPrivateDelegateProxy : public KeyedService {
+ public:
+  explicit PasswordsPrivateDelegateProxy(
+      content::BrowserContext* browser_context);
+
+  // Should be used only for testing.
+  PasswordsPrivateDelegateProxy(
+      content::BrowserContext* browser_context,
+      scoped_refptr<PasswordsPrivateDelegate> delegate);
+  ~PasswordsPrivateDelegateProxy() override;
+
+  scoped_refptr<PasswordsPrivateDelegate> GetOrCreateDelegate();
+  scoped_refptr<PasswordsPrivateDelegate> GetDelegate();
+
+ private:
+  // KeyedService
+  void Shutdown() override;
+
+  content::BrowserContext* browser_context_ = nullptr;
+  base::WeakPtr<PasswordsPrivateDelegate> weak_instance_;
+  // TODO(crbug.com/1412348): Remove this after the feature is enabled by
+  // default.
+  scoped_refptr<PasswordsPrivateDelegate> scoped_instance_;
+};
+
 // Factory for creating PasswordPrivateDelegates.
+// TODO(crbug.com/1412348): Replace with KeyedServiceFactory.
 class PasswordsPrivateDelegateFactory : public ProfileKeyedServiceFactory {
  public:
-  static PasswordsPrivateDelegate* GetForBrowserContext(
+  static scoped_refptr<PasswordsPrivateDelegate> GetForBrowserContext(
       content::BrowserContext* browser_context,
       bool create);
 

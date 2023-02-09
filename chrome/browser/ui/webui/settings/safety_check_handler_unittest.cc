@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -236,6 +237,8 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
   }
 
  private:
+  ~TestPasswordsDelegate() override = default;
+
   raw_ptr<password_manager::BulkLeakCheckService> leak_service_ = nullptr;
   int leaked_password_count_ = 0;
   int muted_leaked_password_count_ = 0;
@@ -323,7 +326,7 @@ class SafetyCheckHandlerTest : public testing::Test {
   raw_ptr<safety_check::TestUpdateCheckHelper> update_helper_ = nullptr;
   raw_ptr<TestVersionUpdater> version_updater_ = nullptr;
   std::unique_ptr<password_manager::BulkLeakCheckService> test_leak_service_;
-  TestPasswordsDelegate test_passwords_delegate_;
+  scoped_refptr<TestPasswordsDelegate> test_passwords_delegate_;
   raw_ptr<extensions::ExtensionPrefs> test_extension_prefs_ = nullptr;
   TestSafetyCheckExtensionService test_extension_service_;
   content::TestWebUI test_web_ui_;
@@ -348,13 +351,14 @@ void SafetyCheckHandlerTest::SetUp() {
   version_updater_ = version_updater.get();
   test_leak_service_ = std::make_unique<password_manager::BulkLeakCheckService>(
       nullptr, nullptr);
-  test_passwords_delegate_.SetBulkLeakCheckService(test_leak_service_.get());
+  test_passwords_delegate_ = base::MakeRefCounted<TestPasswordsDelegate>();
+  test_passwords_delegate_->SetBulkLeakCheckService(test_leak_service_.get());
   test_web_ui_.set_web_contents(web_contents_.get());
   test_extension_prefs_ = extensions::ExtensionPrefs::Get(profile_.get());
   auto timestamp_delegate = std::make_unique<TestTimestampDelegate>();
   safety_check_ = std::make_unique<TestingSafetyCheckHandler>(
       std::move(update_helper), std::move(version_updater),
-      test_leak_service_.get(), &test_passwords_delegate_,
+      test_leak_service_.get(), test_passwords_delegate_.get(),
       test_extension_prefs_, &test_extension_service_,
       std::move(timestamp_delegate));
   test_web_ui_.ClearTrackedCalls();
@@ -365,7 +369,7 @@ void SafetyCheckHandlerTest::SetUp() {
 }
 
 void SafetyCheckHandlerTest::TearDown() {
-  test_passwords_delegate_.TearDown();
+  test_passwords_delegate_->TearDown();
 }
 
 const base::Value::Dict*
@@ -818,7 +822,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_StartedTwice) {
 
 TEST_F(SafetyCheckHandlerTest, CheckPasswords_ObserverNotifiedTwice) {
   safety_check_->PerformSafetyCheck();
-  EXPECT_TRUE(test_passwords_delegate_.StartPasswordCheckTriggered());
+  EXPECT_TRUE(test_passwords_delegate_->StartPasswordCheckTriggered());
   static_cast<password_manager::BulkLeakCheckService::Observer*>(
       safety_check_.get())
       ->OnStateChanged(
@@ -860,7 +864,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_StaleSafeThenCompromised) {
   // First, a "running" change of state.
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kRunning);
-  test_passwords_delegate_.SetPasswordCheckState(
+  test_passwords_delegate_->SetPasswordCheckState(
       extensions::api::passwords_private::PASSWORD_CHECK_STATE_RUNNING);
   EXPECT_TRUE(GetSafetyCheckStatusChangedWithDataIfExists(
       kPasswords,
@@ -873,15 +877,15 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_StaleSafeThenCompromised) {
   // The service goes idle, but the disk still has a stale "safe" state.
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kIdle);
-  test_passwords_delegate_.SetPasswordCheckState(
+  test_passwords_delegate_->SetPasswordCheckState(
       extensions::api::passwords_private::PASSWORD_CHECK_STATE_IDLE);
   const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
       kPasswords, static_cast<int>(SafetyCheckHandler::PasswordsStatus::kSafe));
   EXPECT_TRUE(event);
   // An InsecureCredentialsManager callback fires once the compromised passwords
   // get written to disk.
-  test_passwords_delegate_.SetNumLeakedCredentials(kCompromised);
-  test_passwords_delegate_.InvokeOnCompromisedCredentialsChanged();
+  test_passwords_delegate_->SetNumLeakedCredentials(kCompromised);
+  test_passwords_delegate_->InvokeOnCompromisedCredentialsChanged();
   const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
       kPasswords,
       static_cast<int>(SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
@@ -895,22 +899,22 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_SafeStateThenMoreEvents) {
   // Running state.
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kRunning);
-  test_passwords_delegate_.SetPasswordCheckState(
+  test_passwords_delegate_->SetPasswordCheckState(
       extensions::api::passwords_private::PASSWORD_CHECK_STATE_RUNNING);
   EXPECT_TRUE(GetSafetyCheckStatusChangedWithDataIfExists(
       kPasswords,
       static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking)));
 
   // Previous safe state got loaded.
-  test_passwords_delegate_.SetNumLeakedCredentials(0);
-  test_passwords_delegate_.InvokeOnCompromisedCredentialsChanged();
+  test_passwords_delegate_->SetNumLeakedCredentials(0);
+  test_passwords_delegate_->InvokeOnCompromisedCredentialsChanged();
   // The event should get ignored, since the state is still running.
   const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
       kPasswords, static_cast<int>(SafetyCheckHandler::PasswordsStatus::kSafe));
   EXPECT_FALSE(event);
 
   // The check is completed with another safe state.
-  test_passwords_delegate_.SetPasswordCheckState(
+  test_passwords_delegate_->SetPasswordCheckState(
       extensions::api::passwords_private::PASSWORD_CHECK_STATE_IDLE);
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kIdle);
@@ -921,8 +925,8 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_SafeStateThenMoreEvents) {
 
   // After some time, some compromises were discovered (unrelated to SC).
   constexpr int kCompromised = 7;
-  test_passwords_delegate_.SetNumLeakedCredentials(kCompromised);
-  test_passwords_delegate_.InvokeOnCompromisedCredentialsChanged();
+  test_passwords_delegate_->SetNumLeakedCredentials(kCompromised);
+  test_passwords_delegate_->InvokeOnCompromisedCredentialsChanged();
   // The new event should get ignored, since the safe state was final.
   const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
       kPasswords,
@@ -932,7 +936,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_SafeStateThenMoreEvents) {
 
 TEST_F(SafetyCheckHandlerTest, CheckPasswords_OnlyLeakedExist) {
   constexpr int kLeaked = 7;
-  test_passwords_delegate_.SetNumLeakedCredentials(kLeaked);
+  test_passwords_delegate_->SetNumLeakedCredentials(kLeaked);
   safety_check_->PerformSafetyCheck();
   // First, a "running" change of state.
   test_leak_service_->set_state_and_notify(
@@ -956,7 +960,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_OnlyLeakedExist) {
 
 TEST_F(SafetyCheckHandlerTest, CheckPasswords_OnlyPhishedExist) {
   constexpr int kPhished = 7;
-  test_passwords_delegate_.SetNumPhishedCredentials(kPhished);
+  test_passwords_delegate_->SetNumPhishedCredentials(kPhished);
   safety_check_->PerformSafetyCheck();
   // First, a "running" change of state.
   test_leak_service_->set_state_and_notify(
@@ -980,8 +984,8 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_OnlyPhishedExist) {
 
 TEST_F(SafetyCheckHandlerTest, CheckPasswords_LeakedAndPhishedExist) {
   constexpr int kLeaked = 7, kPhished = 7;
-  test_passwords_delegate_.SetNumLeakedCredentials(kLeaked);
-  test_passwords_delegate_.SetNumPhishedCredentials(kPhished);
+  test_passwords_delegate_->SetNumLeakedCredentials(kLeaked);
+  test_passwords_delegate_->SetNumPhishedCredentials(kPhished);
   safety_check_->PerformSafetyCheck();
   // First, a "running" change of state.
   test_leak_service_->set_state_and_notify(
@@ -1006,8 +1010,8 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_LeakedAndPhishedExist) {
 TEST_F(SafetyCheckHandlerTest, CheckPasswords_CompromisedAndWeakExist) {
   constexpr int kCompromised = 7;
   constexpr int kWeak = 13;
-  test_passwords_delegate_.SetNumLeakedCredentials(kCompromised);
-  test_passwords_delegate_.SetNumWeakCredentials(kWeak);
+  test_passwords_delegate_->SetNumLeakedCredentials(kCompromised);
+  test_passwords_delegate_->SetNumWeakCredentials(kWeak);
   safety_check_->PerformSafetyCheck();
   // First, a "running" change of state.
   test_leak_service_->set_state_and_notify(
@@ -1032,7 +1036,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_CompromisedAndWeakExist) {
 
 TEST_F(SafetyCheckHandlerTest, CheckPasswords_OnlyWeakExist) {
   constexpr int kWeak = 13;
-  test_passwords_delegate_.SetNumWeakCredentials(kWeak);
+  test_passwords_delegate_->SetNumWeakCredentials(kWeak);
   safety_check_->PerformSafetyCheck();
   // First, a "running" change of state.
   test_leak_service_->set_state_and_notify(
@@ -1056,7 +1060,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_OnlyWeakExist) {
 
 TEST_F(SafetyCheckHandlerTest, CheckPasswords_Error) {
   safety_check_->PerformSafetyCheck();
-  EXPECT_TRUE(test_passwords_delegate_.StartPasswordCheckTriggered());
+  EXPECT_TRUE(test_passwords_delegate_->StartPasswordCheckTriggered());
   static_cast<password_manager::BulkLeakCheckService::Observer*>(
       safety_check_.get())
       ->OnStateChanged(
@@ -1076,7 +1080,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Error) {
 TEST_F(SafetyCheckHandlerTest, CheckPasswords_MutedCompromisedExist) {
   constexpr int kCompromised = 7;
   constexpr int kMuted = 3;
-  test_passwords_delegate_.SetNumLeakedCredentials(kCompromised, kMuted);
+  test_passwords_delegate_->SetNumLeakedCredentials(kCompromised, kMuted);
   safety_check_->PerformSafetyCheck();
   // First, a "running" change of state.
   test_leak_service_->set_state_and_notify(
@@ -1100,7 +1104,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_MutedCompromisedExist) {
 
 TEST_F(SafetyCheckHandlerTest, CheckPasswords_AllMutedCompromisedCredentials) {
   constexpr int kCompromised = 7;
-  test_passwords_delegate_.SetNumLeakedCredentials(kCompromised, kCompromised);
+  test_passwords_delegate_->SetNumLeakedCredentials(kCompromised, kCompromised);
   safety_check_->PerformSafetyCheck();
   // First, a "running" change of state.
   test_leak_service_->set_state_and_notify(
@@ -1121,7 +1125,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_AllMutedCompromisedCredentials) {
 
 TEST_F(SafetyCheckHandlerTest, CheckPasswords_Error_FutureEventsIgnored) {
   safety_check_->PerformSafetyCheck();
-  EXPECT_TRUE(test_passwords_delegate_.StartPasswordCheckTriggered());
+  EXPECT_TRUE(test_passwords_delegate_->StartPasswordCheckTriggered());
   static_cast<password_manager::BulkLeakCheckService::Observer*>(
       safety_check_.get())
       ->OnStateChanged(
@@ -1147,8 +1151,8 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Error_FutureEventsIgnored) {
       ->OnStateChanged(password_manager::BulkLeakCheckService::State::kIdle);
   // An InsecureCredentialsManager callback fires once the compromised passwords
   // get written to disk.
-  test_passwords_delegate_.SetNumLeakedCredentials(kCompromised);
-  test_passwords_delegate_.InvokeOnCompromisedCredentialsChanged();
+  test_passwords_delegate_->SetNumLeakedCredentials(kCompromised);
+  test_passwords_delegate_->InvokeOnCompromisedCredentialsChanged();
   const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
       kPasswords,
       static_cast<int>(SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
@@ -1159,7 +1163,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Error_FutureEventsIgnored) {
 
 TEST_F(SafetyCheckHandlerTest, CheckPasswords_FeatureUnavailable) {
   safety_check_->PerformSafetyCheck();
-  EXPECT_TRUE(test_passwords_delegate_.StartPasswordCheckTriggered());
+  EXPECT_TRUE(test_passwords_delegate_->StartPasswordCheckTriggered());
   static_cast<password_manager::BulkLeakCheckService::Observer*>(
       safety_check_.get())
       ->OnStateChanged(
@@ -1176,9 +1180,9 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_FeatureUnavailable) {
 }
 
 TEST_F(SafetyCheckHandlerTest, CheckPasswords_RunningOneCompromised) {
-  test_passwords_delegate_.SetNumLeakedCredentials(1);
+  test_passwords_delegate_->SetNumLeakedCredentials(1);
   safety_check_->PerformSafetyCheck();
-  EXPECT_TRUE(test_passwords_delegate_.StartPasswordCheckTriggered());
+  EXPECT_TRUE(test_passwords_delegate_->StartPasswordCheckTriggered());
   static_cast<password_manager::BulkLeakCheckService::Observer*>(
       safety_check_.get())
       ->OnStateChanged(password_manager::BulkLeakCheckService::State::kIdle);
@@ -1193,8 +1197,8 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_RunningOneCompromised) {
 }
 
 TEST_F(SafetyCheckHandlerTest, CheckPasswords_NoPasswords) {
-  test_passwords_delegate_.ClearSavedPasswordsList();
-  test_passwords_delegate_.SetStartPasswordCheckState(
+  test_passwords_delegate_->ClearSavedPasswordsList();
+  test_passwords_delegate_->SetStartPasswordCheckState(
       password_manager::BulkLeakCheckService::State::kIdle);
   safety_check_->PerformSafetyCheck();
   const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
@@ -1213,9 +1217,9 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Progress) {
   auto credential = password_manager::LeakCheckCredential(u"test", u"test");
   auto is_leaked = password_manager::IsLeaked(false);
   safety_check_->PerformSafetyCheck();
-  test_passwords_delegate_.SetPasswordCheckState(
+  test_passwords_delegate_->SetPasswordCheckState(
       extensions::api::passwords_private::PASSWORD_CHECK_STATE_RUNNING);
-  test_passwords_delegate_.SetProgress(1, 3);
+  test_passwords_delegate_->SetProgress(1, 3);
   static_cast<password_manager::BulkLeakCheckService::Observer*>(
       safety_check_.get())
       ->OnCredentialDone(credential, is_leaked);
@@ -1225,7 +1229,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Progress) {
   EXPECT_TRUE(event);
   VerifyDisplayString(event, u"Checking passwords (1 of 3)…");
 
-  test_passwords_delegate_.SetProgress(2, 3);
+  test_passwords_delegate_->SetProgress(2, 3);
   static_cast<password_manager::BulkLeakCheckService::Observer*>(
       safety_check_.get())
       ->OnCredentialDone(credential, is_leaked);
@@ -1237,9 +1241,9 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Progress) {
 
   // Final update comes after status change, so no new progress message should
   // be present.
-  test_passwords_delegate_.SetPasswordCheckState(
+  test_passwords_delegate_->SetPasswordCheckState(
       extensions::api::passwords_private::PASSWORD_CHECK_STATE_IDLE);
-  test_passwords_delegate_.SetProgress(3, 3);
+  test_passwords_delegate_->SetProgress(3, 3);
   static_cast<password_manager::BulkLeakCheckService::Observer*>(
       safety_check_.get())
       ->OnCredentialDone(credential, is_leaked);

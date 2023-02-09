@@ -19,7 +19,6 @@ namespace extensions {
 class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
  public:
   TestPasswordsPrivateDelegate();
-  ~TestPasswordsPrivateDelegate() override;
 
   // PasswordsPrivateDelegate implementation.
   void GetSavedPasswordsList(UiEntriesCallback callback) override;
@@ -133,6 +132,9 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   bool get_add_shortcut_dialog_shown() const {
     return add_shortcut_dialog_shown_;
   }
+
+ protected:
+  ~TestPasswordsPrivateDelegate() override;
 
  private:
   void SendSavedPasswordsList();

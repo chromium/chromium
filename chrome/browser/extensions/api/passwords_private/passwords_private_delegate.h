@@ -11,9 +11,10 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/common/extensions/api/passwords_private.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/ui/export_progress_status.h"
 #include "components/password_manager/core/browser/ui/import_results.h"
@@ -30,7 +31,9 @@ namespace extensions {
 // Delegate used by the chrome.passwordsPrivate API to facilitate working with
 // saved passwords and password exceptions (reading, adding, changing, removing,
 // import/export) and to notify listeners when these values have changed.
-class PasswordsPrivateDelegate : public KeyedService {
+class PasswordsPrivateDelegate
+    : public base::SupportsWeakPtr<PasswordsPrivateDelegate>,
+      public base::RefCounted<PasswordsPrivateDelegate> {
  public:
   using ImportResultsCallback =
       base::OnceCallback<void(const api::passwords_private::ImportResults&)>;
@@ -40,8 +43,6 @@ class PasswordsPrivateDelegate : public KeyedService {
 
   using StartPasswordCheckCallback =
       base::OnceCallback<void(password_manager::BulkLeakCheckService::State)>;
-
-  ~PasswordsPrivateDelegate() override = default;
 
   // Gets the saved passwords list.
   using UiEntries = std::vector<api::passwords_private::PasswordUiEntry>;
@@ -230,6 +231,11 @@ class PasswordsPrivateDelegate : public KeyedService {
 
   // Triggers a dialog for installing the shortcut for PasswordManager page.
   virtual void ShowAddShortcutDialog(content::WebContents* web_contents) = 0;
+
+ protected:
+  virtual ~PasswordsPrivateDelegate() = default;
+
+  friend class base::RefCounted<PasswordsPrivateDelegate>;
 };
 
 }  // namespace extensions

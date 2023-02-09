@@ -51,8 +51,6 @@ class PasswordsPrivateDelegateImpl
   PasswordsPrivateDelegateImpl& operator=(const PasswordsPrivateDelegateImpl&) =
       delete;
 
-  ~PasswordsPrivateDelegateImpl() override;
-
   // PasswordsPrivateDelegate implementation.
   void GetSavedPasswordsList(UiEntriesCallback callback) override;
   CredentialsGroups GetCredentialGroups() override;
@@ -116,9 +114,6 @@ class PasswordsPrivateDelegateImpl
       content::WebContents* web_contents) override;
   void ShowAddShortcutDialog(content::WebContents* web_contents) override;
 
-  // KeyedService overrides:
-  void Shutdown() override;
-
 #if defined(UNIT_TEST)
   int GetIdForCredential(
       const password_manager::CredentialUIEntry& credential) {
@@ -140,6 +135,8 @@ class PasswordsPrivateDelegateImpl
 #endif  // defined(UNIT_TEST)
 
  private:
+  ~PasswordsPrivateDelegateImpl() override;
+
   // password_manager::SavedPasswordsPresenter::Observer implementation.
   void OnSavedPasswordsChanged() override;
 

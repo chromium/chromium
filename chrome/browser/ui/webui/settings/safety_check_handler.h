@@ -253,7 +253,7 @@ class SafetyCheckHandler
       nullptr;
   raw_ptr<password_manager::InsecureCredentialsManager>
       insecure_credentials_manager_ = nullptr;
-  raw_ptr<extensions::PasswordsPrivateDelegate> passwords_delegate_ = nullptr;
+  scoped_refptr<extensions::PasswordsPrivateDelegate> passwords_delegate_;
   raw_ptr<extensions::ExtensionPrefs> extension_prefs_ = nullptr;
   raw_ptr<extensions::ExtensionServiceInterface> extension_service_ = nullptr;
   base::ScopedObservation<

@@ -861,12 +861,6 @@ void PasswordsPrivateDelegateImpl::OnAccountStorageOptInStateChanged() {
   }
 }
 
-void PasswordsPrivateDelegateImpl::Shutdown() {
-  password_account_storage_settings_watcher_.reset();
-  password_manager_porter_.reset();
-  biometric_authenticator_.reset();
-}
-
 void PasswordsPrivateDelegateImpl::OnReauthCompleted() {
   biometric_authenticator_.reset();
 }

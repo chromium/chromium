@@ -49,15 +49,17 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
-    s_test_delegate_ = static_cast<TestPasswordsPrivateDelegate*>(
-        PasswordsPrivateDelegateFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile(),
-            base::BindRepeating([](content::BrowserContext* context) {
-              return std::unique_ptr<KeyedService>(
-                  new TestPasswordsPrivateDelegate());
-            })));
-    s_test_delegate_->SetProfile(profile());
+    test_delegate_ = base::MakeRefCounted<TestPasswordsPrivateDelegate>();
+    PasswordsPrivateDelegateFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&PasswordsPrivateApiTest::Create,
+                                       base::Unretained(this)));
+    test_delegate_->SetProfile(profile());
     content::RunAllPendingInMessageLoop();
+  }
+
+  std::unique_ptr<KeyedService> Create(content::BrowserContext* context) {
+    return std::make_unique<PasswordsPrivateDelegateProxy>(context,
+                                                           test_delegate_);
   }
 
  protected:
@@ -69,67 +71,66 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
   }
 
   bool importPasswordsWasTriggered() {
-    return s_test_delegate_->ImportPasswordsTriggered();
+    return test_delegate_->ImportPasswordsTriggered();
   }
 
   bool exportPasswordsWasTriggered() {
-    return s_test_delegate_->ExportPasswordsTriggered();
+    return test_delegate_->ExportPasswordsTriggered();
   }
 
   bool cancelExportPasswordsWasTriggered() {
-    return s_test_delegate_->CancelExportPasswordsTriggered();
+    return test_delegate_->CancelExportPasswordsTriggered();
   }
 
   bool start_password_check_triggered() {
-    return s_test_delegate_->StartPasswordCheckTriggered();
+    return test_delegate_->StartPasswordCheckTriggered();
   }
 
   bool stop_password_check_triggered() {
-    return s_test_delegate_->StopPasswordCheckTriggered();
+    return test_delegate_->StopPasswordCheckTriggered();
   }
 
   void set_start_password_check_state(
       password_manager::BulkLeakCheckService::State state) {
-    s_test_delegate_->SetStartPasswordCheckState(state);
+    test_delegate_->SetStartPasswordCheckState(state);
   }
 
   bool IsOptedInForAccountStorage() {
-    return s_test_delegate_->IsOptedInForAccountStorage();
+    return test_delegate_->IsOptedInForAccountStorage();
   }
 
   void SetOptedInForAccountStorage(bool opted_in) {
-    s_test_delegate_->SetAccountStorageOptIn(opted_in, nullptr);
+    test_delegate_->SetAccountStorageOptIn(opted_in, nullptr);
   }
 
-  void ResetPlaintextPassword() { s_test_delegate_->ResetPlaintextPassword(); }
+  void ResetPlaintextPassword() { test_delegate_->ResetPlaintextPassword(); }
 
   void AddCompromisedCredential(int id) {
-    s_test_delegate_->AddCompromisedCredential(id);
+    test_delegate_->AddCompromisedCredential(id);
   }
 
   void SetIsAccountStoreDefault(bool is_default) {
-    s_test_delegate_->SetIsAccountStoreDefault(is_default);
+    test_delegate_->SetIsAccountStoreDefault(is_default);
   }
 
   const std::string& last_change_flow_url() {
-    return s_test_delegate_->last_change_flow_url();
+    return test_delegate_->last_change_flow_url();
   }
 
   const std::vector<int>& last_moved_passwords() const {
-    return s_test_delegate_->last_moved_passwords();
+    return test_delegate_->last_moved_passwords();
   }
 
   bool get_authenticator_interaction_status() const {
-    return s_test_delegate_->get_authenticator_interaction_status();
+    return test_delegate_->get_authenticator_interaction_status();
   }
 
   bool get_add_shortcut_dialog_shown() const {
-    return s_test_delegate_->get_add_shortcut_dialog_shown();
+    return test_delegate_->get_add_shortcut_dialog_shown();
   }
 
  private:
-  raw_ptr<TestPasswordsPrivateDelegate, DanglingUntriaged> s_test_delegate_ =
-      nullptr;
+  scoped_refptr<TestPasswordsPrivateDelegate> test_delegate_;
 };
 
 }  // namespace

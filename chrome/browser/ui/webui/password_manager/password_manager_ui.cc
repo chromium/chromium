@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
+#include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
@@ -252,12 +254,17 @@ PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
   // Set up the chrome://password-manager/ source.
   Profile* profile = Profile::FromWebUI(web_ui);
+  passwords_private_delegate_ =
+      extensions::PasswordsPrivateDelegateFactory::GetForBrowserContext(profile,
+                                                                        true);
   auto* source = CreateAndAddPasswordsUIHTMLSource(profile, web_ui);
   AddPluralStrings(web_ui);
   ManagedUIHandler::Initialize(web_ui, source);
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));
 }
+
+PasswordManagerUI::~PasswordManagerUI() = default;
 
 // static
 base::RefCountedMemory* PasswordManagerUI::GetFaviconResourceBytes(
