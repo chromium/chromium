@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_UNIFIED_FEATURE_TILE_H_
 
 #include "ash/ash_export.h"
+#include "ash/style/icon_button.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
@@ -115,6 +116,7 @@ class ASH_EXPORT FeatureTile : public views::Button {
   views::Label* label_ = nullptr;
   views::Label* sub_label_ = nullptr;
   views::LabelButton* drill_in_button_ = nullptr;
+  IconButton* drill_in_arrow_ = nullptr;
 
   // Whether this button is togglable.
   bool is_togglable_ = false;
@@ -125,8 +127,8 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // The type of the feature tile that determines how it lays out its view.
   TileType type_;
 
-  // Used to set the drill-in button enabled state when the button state
-  // changes.
+  // Used to update tile colors and to set the drill-in button enabled state
+  // when the button state changes.
   base::CallbackListSubscription enabled_changed_subscription_;
 
   base::WeakPtrFactory<FeatureTile> weak_ptr_factory_{this};

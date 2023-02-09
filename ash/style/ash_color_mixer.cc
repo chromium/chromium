@@ -401,7 +401,8 @@ void ReverseMapSysColors(ui::ColorMixer& mixer, bool dark_mode) {
   mixer[cros_tokens::kCrosSysSystemOnNegativeContainer] = {
       kColorAshTextColorPrimary};
   mixer[cros_tokens::kCrosSysSystemOnPrimaryContainer] = {
-      kColorAshTextColorPrimary};
+      dark_mode ? ui::ColorTransform(gfx::kGoogleGrey900)
+                : ui::ColorTransform(kColorAshTextColorPrimary)};
 
   mixer[cros_tokens::kCrosSysSystemNegativeContainer] = {gfx::kGoogleRed300};
   mixer[cros_tokens::kCrosSysPositive] = {cros_tokens::kColorPositive};
