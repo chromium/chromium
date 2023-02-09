@@ -976,6 +976,11 @@ void NativeWidgetNSWindowBridge::SetCanGoForward(bool can_go_forward) {
 
 void NativeWidgetNSWindowBridge::OnWindowWillClose() {
   fullscreen_controller_.OnWindowWillClose();
+  // Immersive full screen needs to be disabled synchronously when the window
+  // is closing. So disable it right away, rather than waiting for the browser
+  // process to signal us to disable immersive fullscreen after being informed
+  // of the window closing.
+  DisableImmersiveFullscreen();
 
   [window_ setCommandHandler:nil];
   [window_ setCommandDispatcherDelegate:nil];
