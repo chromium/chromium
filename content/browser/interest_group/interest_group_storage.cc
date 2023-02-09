@@ -2479,7 +2479,9 @@ bool InterestGroupStorage::InitializeSchema() {
           return false;
         }
 
-        meta_table.SetVersionNumber(kCurrentVersionNumber);
+        if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {
+          return false;
+        }
     }
     return transaction.Commit();
   }

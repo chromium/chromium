@@ -128,10 +128,9 @@ bool UpgradeAggregationServiceStorageSqlSchema(sql::Database& db,
   if (!db.Execute(kReportingOriginIndexSql))
     return false;
 
-  meta_table.SetVersionNumber(
-      AggregationServiceStorageSql::kCurrentVersionNumber);
-
-  return transaction.Commit();
+  return meta_table.SetVersionNumber(
+             AggregationServiceStorageSql::kCurrentVersionNumber) &&
+         transaction.Commit();
 }
 
 void RecordInitializationStatus(
