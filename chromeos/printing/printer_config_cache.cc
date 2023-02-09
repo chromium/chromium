@@ -30,19 +30,26 @@ namespace chromeos {
 namespace {
 
 // Defines the serving root in which all PPDs and PPD metadata reside.
-const char kServingRoot[] =
+constexpr char kServingRoot[] =
     "https://printerconfigurations.googleusercontent.com/"
     "chromeos_printing/";
+constexpr char kLocalhostRoot[] = "http://localhost:7002/";
 
 // Prepends the serving root to |name|, returning the result.
-std::string PrependServingRoot(const std::string& name) {
+std::string PrependServingRoot(const std::string& name,
+                               bool use_localhost_as_root) {
+  if (use_localhost_as_root) {
+    return base::StrCat({base::StringPiece(kLocalhostRoot), name});
+  }
   return base::StrCat({base::StringPiece(kServingRoot), name});
 }
 
 // Accepts a relative |path| to a value in the Chrome OS Printing
 // serving root) and returns a resource request to satisfy the same.
-std::unique_ptr<network::ResourceRequest> FormRequest(const std::string& path) {
-  GURL full_url(PrependServingRoot(path));
+std::unique_ptr<network::ResourceRequest> FormRequest(
+    const std::string& path,
+    bool use_localhost_as_root) {
+  GURL full_url(PrependServingRoot(path, use_localhost_as_root));
   if (!full_url.is_valid()) {
     return nullptr;
   }
@@ -78,9 +85,11 @@ class PrinterConfigCacheImpl : public PrinterConfigCache {
   explicit PrinterConfigCacheImpl(
       const base::Clock* clock,
       base::RepeatingCallback<network::mojom::URLLoaderFactory*()>
-          loader_factory_dispenser)
+          loader_factory_dispenser,
+      bool use_localhost_as_root)
       : clock_(clock),
         loader_factory_dispenser_(std::move(loader_factory_dispenser)),
+        use_localhost_as_root_(use_localhost_as_root),
         weak_factory_(this) {}
 
   ~PrinterConfigCacheImpl() override {
@@ -154,7 +163,7 @@ class PrinterConfigCacheImpl : public PrinterConfigCache {
 
     std::unique_ptr<FetchContext> context = std::move(fetch_queue_.front());
     fetch_queue_.pop();
-    auto request = FormRequest(context->key);
+    auto request = FormRequest(context->key, use_localhost_as_root_);
 
     // Create traffic annotation tag.
     net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -264,6 +273,9 @@ class PrinterConfigCacheImpl : public PrinterConfigCache {
   // TryToStartNetworkedFetch() and FinishNetworkedFetch() methods.
   std::unique_ptr<network::SimpleURLLoader> fetcher_;
 
+  // Determines the address of the server.
+  const bool use_localhost_as_root_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Dispenses weak pointers to our |fetcher_|. This is necessary
@@ -276,9 +288,10 @@ class PrinterConfigCacheImpl : public PrinterConfigCache {
 std::unique_ptr<PrinterConfigCache> PrinterConfigCache::Create(
     const base::Clock* clock,
     base::RepeatingCallback<network::mojom::URLLoaderFactory*()>
-        loader_factory_dispenser) {
+        loader_factory_dispenser,
+    bool use_localhost_as_root) {
   return std::make_unique<PrinterConfigCacheImpl>(
-      clock, std::move(loader_factory_dispenser));
+      clock, std::move(loader_factory_dispenser), use_localhost_as_root);
 }
 
 }  // namespace chromeos

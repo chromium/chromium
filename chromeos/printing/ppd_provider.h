@@ -98,21 +98,6 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) PpdProvider
     PPD_TOO_LARGE,
   };
 
-  // Construction-time options.  Everything in this structure should have
-  // a sane default.
-  struct Options {
-    Options() {}
-
-    // Any results from PpdCache older than this are treated as
-    // non-authoritative -- PpdProvider will attempt to re-resolve from the
-    // network anyways and only use the cache results if the network is
-    // unavailable.
-    base::TimeDelta cache_staleness_age = base::Days(14);
-
-    // Root of the ppd serving hierarchy.
-    std::string ppd_server_root = "https://www.gstatic.com/chromeos_printing";
-  };
-
   // Defines the limitations on when we show a particular PPD
   // Not to be confused with the new Restrictions struct used in the
   // v3 PpdProvider, defined in ppd_metadata_parser.h

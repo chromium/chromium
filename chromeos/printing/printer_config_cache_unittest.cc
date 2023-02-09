@@ -83,7 +83,8 @@ class PrinterConfigCacheTest : public ::testing::Test {
             base::BindLambdaForTesting([&]() {
               return reinterpret_cast<network::mojom::URLLoaderFactory*>(
                   &loader_factory_);
-            }))) {}
+            }),
+            /*use_localhost_as_root=*/false)) {}
 
   // Sets up the default responses to dispense.
   void SetUp() override {

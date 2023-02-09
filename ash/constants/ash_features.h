@@ -441,7 +441,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kPhoneHubPingOnBubbleOpen);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kPreferConstantFrameRate);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kPrintingPpdChannel);
-enum class PrintingPpdChannel { kProduction, kStaging, kDev };
+enum class PrintingPpdChannel { kProduction, kStaging, kDev, kLocalhost };
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<PrintingPpdChannel> kPrintingPpdChannelParam;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kPrivacyIndicators);

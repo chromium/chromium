@@ -18,7 +18,7 @@
 
 namespace chromeos {
 
-enum class PpdIndexChannel { kProduction, kStaging, kDev };
+enum class PpdIndexChannel { kProduction, kStaging, kDev, kLocalhost };
 
 // A PpdMetadataManager is the class responsible for fetching and
 // parsing PPD metadata to answer high-level queries about metadata.

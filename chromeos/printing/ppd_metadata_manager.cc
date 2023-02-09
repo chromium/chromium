@@ -29,6 +29,7 @@
 #include "chromeos/printing/ppd_metadata_parser.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_config_cache.h"
+#include "ppd_metadata_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
@@ -426,6 +427,8 @@ class PpdMetadataPathSpecifier {
   // Defines the containing directory of all metadata in the serving root.
   const char* MetadataParentDirectory() const {
     switch (channel_) {
+      case PpdIndexChannel::kLocalhost:
+        [[fallthrough]];
       case PpdIndexChannel::kProduction:
         return "metadata_v3";
       case PpdIndexChannel::kStaging:

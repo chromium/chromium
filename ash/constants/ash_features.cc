@@ -5,7 +5,6 @@
 #include "ash/constants/ash_features.h"
 
 #include "ash/constants/ash_switches.h"
-#include "ash_features.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -1580,7 +1579,8 @@ const base::FeatureParam<PrintingPpdChannel>::Option
     printing_ppd_channel_options[] = {
         {PrintingPpdChannel::kProduction, "production"},
         {PrintingPpdChannel::kStaging, "staging"},
-        {PrintingPpdChannel::kDev, "dev"}};
+        {PrintingPpdChannel::kDev, "dev"},
+        {PrintingPpdChannel::kLocalhost, "localhost"}};
 const base::FeatureParam<PrintingPpdChannel> kPrintingPpdChannelParam{
     &kPrintingPpdChannel, "channel", PrintingPpdChannel::kProduction,
     &printing_ppd_channel_options};
