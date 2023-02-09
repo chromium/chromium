@@ -11165,6 +11165,22 @@
             ]
         }
     ],
+    "SuggestionsTruncationIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MultilineFadeTruncatingLabel",
+                        "OmniboxMultilineSearchSuggest"
+                    ]
+                }
+            ]
+        }
+    ],
     "SuppressToolbarCaptures": [
         {
             "platforms": [
