@@ -1138,6 +1138,51 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
     BanRule(
+      r'/\bstd::aligned_alloc\b',
+      (
+        'std::aligned_alloc() is not yet approved for use (crbug.com/1412818).',
+        ' Use base::AlignedAlloc() instead.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
+    ),
+    BanRule(
+      r'/\bstd::invoke\b',
+      (
+        'std::invoke() is not yet approved for use (crbug.com/1412520). Use ',
+        'base::invoke() instead.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
+    ),
+    BanRule(
+      r'/\bstd::not_fn\b',
+      (
+        'std::not_fn() is not yet approved for use (crbug.com/1412529). Use ',
+        'base::not_fn() instead.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
+    ),
+    BanRule(
+      r'/\bstd::string_view\b',
+      (
+        'std::string_view is not yet approved for use (crbug.com/691162). Use ',
+        'base::StringPiece instead.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
+    ),
+    BanRule(
+      r'/\bstd::u16string_view\b',
+      (
+        'std::u16string_view is not yet approved for use (crbug.com/691162). ',
+        'Use base::StringPiece16 instead.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
+    ),
+    BanRule(
       r'/\bRunMessageLoop\b',
       (
           'RunMessageLoop is deprecated, use RunLoop instead.',

@@ -7,7 +7,6 @@ include_rules = [
   "+components/gwp_asan/buildflags/buildflags.h",
   "+components/gwp_asan/crash_handler/crash_handler.h",
   "+content/public/common/content_descriptors.h",
-  "+third_party/abseil-cpp/absl/base/internal/raw_logging.h",
   "+third_party/crashpad",
   "+third_party/lss/linux_syscall_support.h",
 ]
