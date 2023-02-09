@@ -62,7 +62,7 @@ class TestInterestGroupBuilder {
       absl::optional<std::string> user_bidding_signals);
   TestInterestGroupBuilder& SetAds(
       absl::optional<std::vector<InterestGroup::Ad>> ads);
-  TestInterestGroupBuilder& SetAdComponentss(
+  TestInterestGroupBuilder& SetAdComponents(
       absl::optional<std::vector<InterestGroup::Ad>> ad_components);
 
  private:

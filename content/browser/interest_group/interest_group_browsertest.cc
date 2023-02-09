@@ -5637,7 +5637,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                   "a.test", "/interest_group/trusted_bidding_signals.json"))
               .SetTrustedBiddingSignalsKeys({{"key1"}})
               .SetAds({{{ad_url, R"({"ad":"metadata","here":[1,2]})"}}})
-              .SetAdComponentss(
+              .SetAdComponents(
                   {{{component_url, R"({"ad":"component metadata"})"}}})
               .Build()));
 

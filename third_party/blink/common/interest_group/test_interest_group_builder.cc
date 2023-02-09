@@ -151,7 +151,7 @@ TestInterestGroupBuilder& TestInterestGroupBuilder::SetAds(
   return *this;
 }
 
-TestInterestGroupBuilder& TestInterestGroupBuilder::SetAdComponentss(
+TestInterestGroupBuilder& TestInterestGroupBuilder::SetAdComponents(
     absl::optional<std::vector<InterestGroup::Ad>> ad_components) {
   interest_group_.ad_components = std::move(ad_components);
   return *this;
