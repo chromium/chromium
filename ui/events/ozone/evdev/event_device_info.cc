@@ -238,6 +238,7 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x1038, 0x185a},  // SteelSeries Aerox 9 WL (Wired)
     {0x1050, 0x0010},  // Yubico.com Yubikey
     {0x1050, 0x0407},  // Yubico.com Yubikey 4 OTP+U2F+CCID
+    {0x12cf, 0x0490},  // Acer Cestus 325
     {0x1532, 0x007a},  // Razer Viper Ultimate (Wired)
     {0x1532, 0x007b},  // Razer Viper Ultimate (Wireless)
     {0x1532, 0x009a},  // Razer Pro Click Mini (Dongle)
