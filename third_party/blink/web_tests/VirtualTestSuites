@@ -427,8 +427,7 @@
     "bases": ["fast/scrolling/scrollbars"],
     "args": ["--enable-features=WindowsScrollingPersonality",
              "--enable-threaded-compositing",
-             "--enable-prefer-compositing-to-lcd-text",
-             "--disable-features=CompositorThreadedScrollbarScrolling"],
+             "--enable-prefer-compositing-to-lcd-text"],
     "expires": "Jul 1, 2023"
   },
   {
