@@ -457,14 +457,28 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest, SingleLockWithCancelCall) {
                         static_cast<int>(KeyboardLockMethods::kCancelLock), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest, LockCalledBeforeFullscreen) {
+// TODO(crbug.com/1414160): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_LockCalledBeforeFullscreen DISABLED_LockCalledBeforeFullscreen
+#else
+#define MAYBE_LockCalledBeforeFullscreen LockCalledBeforeFullscreen
+#endif
+IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
+                       MAYBE_LockCalledBeforeFullscreen) {
   GURL url_for_test = https_fullscreen_frame();
   NavigateToTestURL(url_for_test);
   RequestKeyboardLock(FROM_HERE);
   EnterFullscreen(FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest, LockCalledAfterFullscreen) {
+// TODO(crbug.com/1414160): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_LockCalledAfterFullscreen DISABLED_LockCalledAfterFullscreen
+#else
+#define MAYBE_LockCalledAfterFullscreen LockCalledAfterFullscreen
+#endif
+IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
+                       MAYBE_LockCalledAfterFullscreen) {
   GURL url_for_test = https_fullscreen_frame();
   NavigateToTestURL(url_for_test);
   EnterFullscreen(FROM_HERE);
@@ -496,8 +510,15 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
                         static_cast<int>(KeyboardLockMethods::kCancelLock), 4);
 }
 
+// TODO(crbug.com/1414160): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_LockAndCancelCyclingInFullscreen \
+  DISABLED_LockAndCancelCyclingInFullscreen
+#else
+#define MAYBE_LockAndCancelCyclingInFullscreen LockAndCancelCyclingInFullscreen
+#endif
 IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
-                       LockAndCancelCyclingInFullscreen) {
+                       MAYBE_LockAndCancelCyclingInFullscreen) {
   GURL url_for_test = https_fullscreen_frame();
   NavigateToTestURL(url_for_test);
 
@@ -515,7 +536,13 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
   CancelKeyboardLock(FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest, CancelInFullscreen) {
+// TODO(crbug.com/1414160): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_CancelInFullscreen DISABLED_CancelInFullscreen
+#else
+#define MAYBE_CancelInFullscreen CancelInFullscreen
+#endif
+IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest, MAYBE_CancelInFullscreen) {
   GURL url_for_test = https_fullscreen_frame();
   NavigateToTestURL(url_for_test);
 
@@ -525,7 +552,15 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest, CancelInFullscreen) {
   ExitFullscreen(FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest, EnterAndExitFullscreenCycling) {
+// TODO(crbug.com/1414160): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_EnterAndExitFullscreenCycling \
+  DISABLED_EnterAndExitFullscreenCycling
+#else
+#define MAYBE_EnterAndExitFullscreenCycling EnterAndExitFullscreenCycling
+#endif
+IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
+                       MAYBE_EnterAndExitFullscreenCycling) {
   GURL url_for_test = https_fullscreen_frame();
   NavigateToTestURL(url_for_test);
 
@@ -552,7 +587,14 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest, GainAndLoseFocusInWindowMode) {
   BlurContent(FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest, EnterFullscreenWithoutFocus) {
+// TODO(crbug.com/1414160): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_EnterFullscreenWithoutFocus DISABLED_EnterFullscreenWithoutFocus
+#else
+#define MAYBE_EnterFullscreenWithoutFocus EnterFullscreenWithoutFocus
+#endif
+IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
+                       MAYBE_EnterFullscreenWithoutFocus) {
   GURL url_for_test = https_fullscreen_frame();
   NavigateToTestURL(url_for_test);
 
@@ -566,8 +608,16 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest, EnterFullscreenWithoutFocus) {
   FocusContent(FROM_HERE);
 }
 
+// TODO(crbug.com/1414160): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_GainAndLoseFocusCyclingInFullscreen \
+  DISABLED_GainAndLoseFocusCyclingInFullscreen
+#else
+#define MAYBE_GainAndLoseFocusCyclingInFullscreen \
+  GainAndLoseFocusCyclingInFullscreen
+#endif
 IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
-                       GainAndLoseFocusCyclingInFullscreen) {
+                       MAYBE_GainAndLoseFocusCyclingInFullscreen) {
   GURL url_for_test = https_fullscreen_frame();
   NavigateToTestURL(url_for_test);
 
@@ -689,8 +739,16 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
   ASSERT_FALSE(web_contents()->GetKeyboardLockWidget());
 }
 
+// TODO(crbug.com/1414160): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_KeyboardUnlockedWhenNavigatingToSameUrl \
+  DISABLED_KeyboardUnlockedWhenNavigatingToSameUrl
+#else
+#define MAYBE_KeyboardUnlockedWhenNavigatingToSameUrl \
+  KeyboardUnlockedWhenNavigatingToSameUrl
+#endif
 IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
-                       KeyboardUnlockedWhenNavigatingToSameUrl) {
+                       MAYBE_KeyboardUnlockedWhenNavigatingToSameUrl) {
   GURL url_for_test = https_fullscreen_frame();
   NavigateToTestURL(url_for_test);
   EnterFullscreen(FROM_HERE);
@@ -705,8 +763,16 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
   ASSERT_FALSE(web_contents()->GetRenderWidgetHostView()->IsKeyboardLocked());
 }
 
+// TODO(crbug.com/1414160): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_KeyboardUnlockedWhenNavigatingAway \
+  DISABLED_KeyboardUnlockedWhenNavigatingAway
+#else
+#define MAYBE_KeyboardUnlockedWhenNavigatingAway \
+  KeyboardUnlockedWhenNavigatingAway
+#endif
 IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
-                       KeyboardUnlockedWhenNavigatingAway) {
+                       MAYBE_KeyboardUnlockedWhenNavigatingAway) {
   GURL first_url_for_test = https_fullscreen_frame();
   NavigateToTestURL(first_url_for_test);
   EnterFullscreen(FROM_HERE);
@@ -722,8 +788,16 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
   ASSERT_FALSE(web_contents()->GetRenderWidgetHostView()->IsKeyboardLocked());
 }
 
+// TODO(crbug.com/1414160): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_KeyboardRemainsLockedWhenIframeNavigates \
+  DISABLED_KeyboardRemainsLockedWhenIframeNavigates
+#else
+#define MAYBE_KeyboardRemainsLockedWhenIframeNavigates \
+  KeyboardRemainsLockedWhenIframeNavigates
+#endif
 IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
-                       KeyboardRemainsLockedWhenIframeNavigates) {
+                       MAYBE_KeyboardRemainsLockedWhenIframeNavigates) {
   NavigateToTestURL(https_cross_site_frame());
   EnterFullscreen(FROM_HERE);
   RequestKeyboardLock(FROM_HERE);
@@ -768,8 +842,16 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
   ASSERT_TRUE(web_contents()->GetRenderWidgetHostView()->IsKeyboardLocked());
 }
 
+// TODO(crbug.com/1414160): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_CrossOriginIFrameReceivesInputWhenFocused \
+  DISABLED_CrossOriginIFrameReceivesInputWhenFocused
+#else
+#define MAYBE_CrossOriginIFrameReceivesInputWhenFocused \
+  CrossOriginIFrameReceivesInputWhenFocused
+#endif
 IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
-                       CrossOriginIFrameReceivesInputWhenFocused) {
+                       MAYBE_CrossOriginIFrameReceivesInputWhenFocused) {
   NavigateToTestURL(https_cross_site_frame());
   EnterFullscreen(FROM_HERE);
   RequestKeyboardLock(FROM_HERE);
@@ -801,8 +883,16 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
   ASSERT_TRUE(web_contents()->GetRenderWidgetHostView()->IsKeyboardLocked());
 }
 
+// TODO(crbug.com/1414160): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_LockRequestBeforeCrossOriginIFrameIsFullscreen \
+  DISABLED_LockRequestBeforeCrossOriginIFrameIsFullscreen
+#else
+#define MAYBE_LockRequestBeforeCrossOriginIFrameIsFullscreen \
+  LockRequestBeforeCrossOriginIFrameIsFullscreen
+#endif
 IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
-                       LockRequestBeforeCrossOriginIFrameIsFullscreen) {
+                       MAYBE_LockRequestBeforeCrossOriginIFrameIsFullscreen) {
   // If the main frame trusts the child frame by granting it the allowfullscreen
   // permission, then we will allow keyboard lock to be activated when the child
   // frame activates fullscreen.
@@ -827,8 +917,16 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
   ASSERT_TRUE(web_contents()->GetRenderWidgetHostView()->IsKeyboardLocked());
 }
 
+// TODO(crbug.com/1414160): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_LockRequestWhileCrossOriginIFrameIsFullscreen \
+  DISABLED_LockRequestWhileCrossOriginIFrameIsFullscreen
+#else
+#define MAYBE_LockRequestWhileCrossOriginIFrameIsFullscreen \
+  LockRequestWhileCrossOriginIFrameIsFullscreen
+#endif
 IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
-                       LockRequestWhileCrossOriginIFrameIsFullscreen) {
+                       MAYBE_LockRequestWhileCrossOriginIFrameIsFullscreen) {
   // If the main frame trusts the child frame by granting it the allowfullscreen
   // permission, then we will allow keyboard lock to be activated when the child
   // frame activates fullscreen.
