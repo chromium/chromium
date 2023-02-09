@@ -455,6 +455,7 @@
       'mac11-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
       'mac12-arm64-wpt-content-shell-fyi-rel': 'mac_arm64_release_bot_reclient',
       'mac12-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
+      'mac13-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
       'win-annotator-rel': 'release_bot_reclient',
       'win-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64_reclient',
       'win-backuprefptr-x86-fyi-rel': 'release_trybot_backuprefptr_x86_reclient',
