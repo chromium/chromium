@@ -28,7 +28,7 @@ import org.chromium.ui.base.ViewUtils;
  * This is a base class for the Touch to Fill View classes.
  */
 public abstract class TouchToFillViewBase implements BottomSheetContent {
-    private static final int MAX_FULLY_VISIBLE_CREDENTIAL_COUNT = 2;
+    private static final int MAX_FULLY_VISIBLE_CREDENTIAL_COUNT = 3;
 
     private final BottomSheetController mBottomSheetController;
     private final RelativeLayout mContentView;
