@@ -49,4 +49,9 @@ export class AbstractEarcons {
   set enabled(value) {
     LocalStorage.set('earcons', value);
   }
+
+  /**
+   * Toggle the current enabled state and announces the new state to the user.
+   */
+  toggle() {}
 }

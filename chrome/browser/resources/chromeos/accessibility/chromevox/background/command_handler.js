@@ -137,7 +137,7 @@ export class CommandHandler extends CommandHandlerInterface {
         ChromeVoxState.instance.isReadingContinuously = false;
         return false;
       case Command.TOGGLE_EARCONS:
-        this.toggleEarcons_();
+        ChromeVox.earcons.toggle();
         return false;
       case Command.CYCLE_TYPING_ECHO:
         this.cycleTypingEcho_();
@@ -1673,14 +1673,6 @@ export class CommandHandler extends CommandHandlerInterface {
     BrailleBackground.instance.getTranslatorManager().refresh(
         SettingsManager.getString(brailleTableType));
     new Output().format(output).go();
-  }
-
-  /** @private */
-  toggleEarcons_() {
-    ChromeVox.earcons.enabled = !ChromeVox.earcons.enabled;
-    const announce = ChromeVox.earcons.enabled ? Msgs.getMsg('earcons_on') :
-                                                 Msgs.getMsg('earcons_off');
-    ChromeVox.tts.speak(announce, QueueMode.FLUSH, Personality.ANNOTATION);
   }
 
   /** @private */

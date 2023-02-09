@@ -9,9 +9,12 @@
 
 import {EarconId} from '../common/earcon_id.js';
 import {LogType} from '../common/log_types.js';
+import {Msgs} from '../common/msgs.js';
 import {SettingsManager} from '../common/settings_manager.js';
+import {Personality, QueueMode} from '../common/tts_types.js';
 
 import {AbstractEarcons} from './abstract_earcons.js';
+import {ChromeVox} from './chromevox.js';
 import {ChromeVoxRange} from './chromevox_range.js';
 import {EarconEngine} from './earcon_engine.js';
 import {LogStore} from './logging/log_store.js';
@@ -76,15 +79,21 @@ export class Earcons extends AbstractEarcons {
     this.engine_.playEarcon(earcon);
   }
 
-  /**
-   * @override
-   */
+  /** @override */
   cancelEarcon(earcon) {
     switch (earcon) {
       case EarconId.PAGE_START_LOADING:
         this.engine_.cancelProgress();
         break;
     }
+  }
+
+  /** @override */
+  toggle() {
+    this.enabled = !this.enabled;
+    const announce =
+        this.enabled ? Msgs.getMsg('earcons_on') : Msgs.getMsg('earcons_off');
+    ChromeVox.tts.speak(announce, QueueMode.FLUSH, Personality.ANNOTATION);
   }
 
   /**
