@@ -169,6 +169,16 @@ DeviceActivityController::DeviceActivityController(
 
   DCHECK(local_state);
   DCHECK(!g_ash_device_activity_controller);
+
+  // Halt if device channel is unknown/testimage channel.
+  if (chrome_passed_device_params.chromeos_channel ==
+      version_info::Channel::UNKNOWN) {
+    LOG(ERROR) << "Halt - Client should enter device active reporting logic. "
+               << "Unknown and test image channels should not be counted as "
+               << "legitimate device counts.";
+    return;
+  }
+
   g_ash_device_activity_controller = this;
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
