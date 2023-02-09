@@ -1241,7 +1241,6 @@ SimpleURLLoaderImpl::SimpleURLLoaderImpl(
       annotation_tag_(annotation_tag),
       created_from_(created_from),
       request_state_(std::make_unique<RequestState>()),
-      final_url_(resource_request_->url),
       timeout_timer_(timeout_tick_clock_) {
   // Allow creation and use on different threads.
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -1667,6 +1666,8 @@ void SimpleURLLoaderImpl::StartRequest(
   DCHECK(resource_request_);
   DCHECK(url_loader_factory);
 
+  final_url_ = resource_request_->url;
+
   if (on_upload_progress_callback_)
     resource_request_->enable_upload_progress = true;
 
@@ -1792,7 +1793,9 @@ void SimpleURLLoaderImpl::OnReceiveRedirect(
   if (on_redirect_callback_) {
     base::WeakPtr<SimpleURLLoaderImpl> weak_this =
         weak_ptr_factory_.GetWeakPtr();
-    on_redirect_callback_.Run(redirect_info, *response_head, &removed_headers);
+    GURL url_before_redirect = final_url_;
+    on_redirect_callback_.Run(url_before_redirect, redirect_info,
+                              *response_head, &removed_headers);
     // If deleted by the callback, bail now.
     if (!weak_this)
       return;

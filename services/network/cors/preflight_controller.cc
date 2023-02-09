@@ -474,7 +474,8 @@ class PreflightController::PreflightLoader final {
   }
 
  private:
-  void HandleRedirect(const net::RedirectInfo& redirect_info,
+  void HandleRedirect(const GURL& url_before_redirect,
+                      const net::RedirectInfo& redirect_info,
                       const network::mojom::URLResponseHead& response_head,
                       std::vector<std::string>* to_be_removed_headers) {
     if (devtools_observer_ && *devtools_observer_) {

@@ -46,7 +46,8 @@ class CONTENT_EXPORT ModuleScriptDownloader {
  private:
   void OnBodyReceived(std::unique_ptr<std::string> body);
 
-  void OnRedirect(const net::RedirectInfo& redirect_info,
+  void OnRedirect(const GURL& url_before_redirect,
+                  const net::RedirectInfo& redirect_info,
                   const network::mojom::URLResponseHead& response_head,
                   std::vector<std::string>* removed_headers);
 

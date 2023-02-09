@@ -147,6 +147,7 @@ void CommonNameMismatchHandler::OnSimpleLoaderHandler(
 }
 
 void CommonNameMismatchHandler::OnSimpleLoaderRedirect(
+    const GURL& url_before_redirect,
     const net::RedirectInfo& redirect_info,
     const network::mojom::URLResponseHead& response_head,
     std::vector<std::string>* to_be_removed_headers) {

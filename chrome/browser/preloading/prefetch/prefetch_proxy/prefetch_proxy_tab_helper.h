@@ -390,6 +390,7 @@ class PrefetchProxyTabHelper
   // Called when |loader| encounters a redirect.
   void OnPrefetchRedirect(network::SimpleURLLoader* loader,
                           const GURL& original_url,
+                          const GURL& url_before_redirect,
                           const net::RedirectInfo& redirect_info,
                           const network::mojom::URLResponseHead& response_head,
                           std::vector<std::string>* removed_headers);

@@ -95,7 +95,8 @@ class DialURLFetcher {
   void ProcessResponse(std::unique_ptr<std::string> response);
 
   // Invokes the error callback due to redirect, and aborts the request.
-  void ReportRedirectError(const net::RedirectInfo& redirect_info,
+  void ReportRedirectError(const GURL& url_before_redirect,
+                           const net::RedirectInfo& redirect_info,
                            const network::mojom::URLResponseHead& response_head,
                            std::vector<std::string>* to_be_removed_headers);
 

@@ -153,6 +153,7 @@ void ModuleScriptDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
 }
 
 void ModuleScriptDownloader::OnRedirect(
+    const GURL& url_before_redirect,
     const net::RedirectInfo& redirect_info,
     const network::mojom::URLResponseHead& response_head,
     std::vector<std::string>* removed_headers) {

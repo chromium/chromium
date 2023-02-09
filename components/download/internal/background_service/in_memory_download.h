@@ -211,7 +211,8 @@ class InMemoryDownloadImpl : public network::SimpleURLLoaderStreamConsumer,
   void SendRequest();
 
   // Called when the server redirects to another URL.
-  void OnRedirect(const net::RedirectInfo& redirect_info,
+  void OnRedirect(const GURL& url_before_redirect,
+                  const net::RedirectInfo& redirect_info,
                   const network::mojom::URLResponseHead& response_head,
                   std::vector<std::string>* to_be_removed_headers);
 

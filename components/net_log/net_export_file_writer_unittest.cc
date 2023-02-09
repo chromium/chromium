@@ -769,7 +769,7 @@ TEST_F(NetExportFileWriterTest, StartWithNetworkContextActive) {
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
   base::RunLoop run_loop, run_loop2;
   simple_loader->SetOnRedirectCallback(base::BindRepeating(
-      [](base::RepeatingClosure notify_log,
+      [](base::RepeatingClosure notify_log, const GURL& url_before_redirect,
          const net::RedirectInfo& redirect_info,
          const network::mojom::URLResponseHead& response_head,
          std::vector<std::string>* to_be_removed_headers) { notify_log.Run(); },

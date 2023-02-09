@@ -95,9 +95,11 @@ class PaymentManifestDownloaderTestBase : public testing::Test {
     redirect_info.status_code = redirect_code;
     redirect_info.new_url = new_url;
     std::vector<std::string> to_be_removed_headers;
+    // This is irrelevant.
+    GURL url_before_redirect;
 
     downloader_->OnURLLoaderRedirect(
-        downloader_->GetLoaderForTesting(), redirect_info,
+        downloader_->GetLoaderForTesting(), url_before_redirect, redirect_info,
         network::mojom::URLResponseHead(), &to_be_removed_headers);
   }
 

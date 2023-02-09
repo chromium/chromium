@@ -74,7 +74,8 @@ class DetachedResourceRequest {
 
   static void Start(std::unique_ptr<DetachedResourceRequest> request,
                     content::BrowserContext* browser_context);
-  void OnRedirectCallback(const net::RedirectInfo& redirect_info,
+  void OnRedirectCallback(const GURL& url_before_redirect,
+                          const net::RedirectInfo& redirect_info,
                           const network::mojom::URLResponseHead& response_head,
                           std::vector<std::string>* to_be_removed_headers);
   void OnResponseCallback(std::unique_ptr<std::string> response_body);

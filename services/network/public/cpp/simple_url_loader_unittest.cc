@@ -65,6 +65,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
 #include "services/network/test/test_network_context_client.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -75,6 +76,8 @@
 
 namespace network {
 namespace {
+
+using ::testing::ElementsAre;
 
 // Server path that returns a response containing as many a's as are specified
 // in the query part of the URL.
@@ -856,25 +859,30 @@ TEST_P(SimpleURLLoaderTest, RedirectData) {
 
 // Make sure OnRedirectCallback is invoked on a redirect.
 TEST_P(SimpleURLLoaderTest, OnRedirectCallback) {
+  const GURL kInitialURL = test_server_.GetURL(
+      "/server-redirect?" + test_server_.GetURL("/echo").spec());
   std::unique_ptr<SimpleLoaderTestHelper> test_helper =
-      CreateHelperForURL(test_server_.GetURL(
-          "/server-redirect?" + test_server_.GetURL("/echo").spec()));
+      CreateHelperForURL(kInitialURL);
 
   int num_redirects = 0;
   net::RedirectInfo redirect_info;
   network::mojom::URLResponseHeadPtr response_head;
+  GURL url_before_redirect;
   test_helper->simple_url_loader()->SetOnRedirectCallback(base::BindRepeating(
-      [](int* num_redirects, net::RedirectInfo* redirect_info_ptr,
+      [](int* num_redirects, GURL* url_before_redirect_ptr,
+         net::RedirectInfo* redirect_info_ptr,
          network::mojom::URLResponseHeadPtr* response_head_ptr,
+         const GURL& url_before_redirect,
          const net::RedirectInfo& redirect_info,
          const network::mojom::URLResponseHead& response_head,
          std::vector<std::string>* to_be_removed_headers) {
         ++*num_redirects;
+        *url_before_redirect_ptr = url_before_redirect;
         *redirect_info_ptr = redirect_info;
         *response_head_ptr = response_head.Clone();
       },
-      base::Unretained(&num_redirects), base::Unretained(&redirect_info),
-      base::Unretained(&response_head)));
+      base::Unretained(&num_redirects), base::Unretained(&url_before_redirect),
+      base::Unretained(&redirect_info), base::Unretained(&response_head)));
 
   test_helper->StartSimpleLoaderAndWait(url_loader_factory_.get());
 
@@ -884,6 +892,7 @@ TEST_P(SimpleURLLoaderTest, OnRedirectCallback) {
   }
 
   EXPECT_EQ(1, num_redirects);
+  EXPECT_EQ(kInitialURL, url_before_redirect);
   EXPECT_EQ(test_server_.GetURL("/echo"), redirect_info.new_url);
   ASSERT_TRUE(response_head->headers);
   EXPECT_EQ(301, response_head->headers->response_code());
@@ -891,18 +900,25 @@ TEST_P(SimpleURLLoaderTest, OnRedirectCallback) {
 
 // Make sure OnRedirectCallback is invoked on each redirect.
 TEST_P(SimpleURLLoaderTest, OnRedirectCallbackTwoRedirects) {
+  const GURL kRedirectURL = test_server_.GetURL(
+      "/server-redirect?" + test_server_.GetURL("/echo").spec());
+  const GURL kInitialURL =
+      test_server_.GetURL("/server-redirect?" + kRedirectURL.spec());
   std::unique_ptr<SimpleLoaderTestHelper> test_helper =
-      CreateHelperForURL(test_server_.GetURL(
-          "/server-redirect?" +
-          test_server_
-              .GetURL("/server-redirect?" + test_server_.GetURL("/echo").spec())
-              .spec()));
+      CreateHelperForURL(kInitialURL);
   int num_redirects = 0;
+  std::vector<GURL> urls_before_redirect;
   test_helper->simple_url_loader()->SetOnRedirectCallback(base::BindRepeating(
-      [](int* num_redirects, const net::RedirectInfo& redirect_info,
+      [](int* num_redirects, std::vector<GURL>* urls_before_redirect,
+         const GURL& url_before_redirect,
+         const net::RedirectInfo& redirect_info,
          const network::mojom::URLResponseHead& response_head,
-         std::vector<std::string>* to_be_removed_headers) { ++*num_redirects; },
-      base::Unretained(&num_redirects)));
+         std::vector<std::string>* to_be_removed_headers) {
+        ++*num_redirects;
+        urls_before_redirect->push_back(url_before_redirect);
+      },
+      base::Unretained(&num_redirects),
+      base::Unretained(&urls_before_redirect)));
 
   test_helper->StartSimpleLoaderAndWait(url_loader_factory_.get());
 
@@ -912,6 +928,7 @@ TEST_P(SimpleURLLoaderTest, OnRedirectCallbackTwoRedirects) {
   }
 
   EXPECT_EQ(2, num_redirects);
+  EXPECT_THAT(urls_before_redirect, ElementsAre(kInitialURL, kRedirectURL));
 }
 
 TEST_P(SimpleURLLoaderTest, DeleteInOnRedirectCallback) {
@@ -924,13 +941,15 @@ TEST_P(SimpleURLLoaderTest, DeleteInOnRedirectCallback) {
   unowned_test_helper->simple_url_loader()->SetOnRedirectCallback(
       base::BindRepeating(
           [](std::unique_ptr<SimpleLoaderTestHelper> test_helper,
-             base::RunLoop* run_loop, const net::RedirectInfo& redirect_info,
+             base::RunLoop* run_loop, const GURL& url_before_redirect,
+             const net::RedirectInfo& redirect_info,
              const network::mojom::URLResponseHead& response_head,
              std::vector<std::string>* to_be_removed_headers) {
             test_helper.reset();
             // Access the parameters to trigger a memory error if they have been
             // deleted. (ASAN build should catch it)
             EXPECT_FALSE(response_head.request_start.is_null());
+            EXPECT_TRUE(url_before_redirect.is_valid());
             EXPECT_FALSE(redirect_info.new_url.is_empty());
             EXPECT_NE(to_be_removed_headers, nullptr);
 
@@ -954,7 +973,8 @@ TEST_P(SimpleURLLoaderTest, UploadShortStringWithRedirect) {
 
   int num_redirects = 0;
   test_helper->simple_url_loader()->SetOnRedirectCallback(base::BindRepeating(
-      [](int* num_redirects, const net::RedirectInfo& redirect_info,
+      [](int* num_redirects, const GURL& url_before_redirect,
+         const net::RedirectInfo& redirect_info,
          const network::mojom::URLResponseHead& response_head,
          std::vector<std::string>* to_be_removed_headers) { ++*num_redirects; },
       base::Unretained(&num_redirects)));
@@ -985,7 +1005,8 @@ TEST_P(SimpleURLLoaderTest, UploadLongStringWithRedirect) {
 
   int num_redirects = 0;
   test_helper->simple_url_loader()->SetOnRedirectCallback(base::BindRepeating(
-      [](int* num_redirects, const net::RedirectInfo& redirect_info,
+      [](int* num_redirects, const GURL& url_before_redirect,
+         const net::RedirectInfo& redirect_info,
          const network::mojom::URLResponseHead& response_head,
          std::vector<std::string>* to_be_removed_headers) { ++*num_redirects; },
       base::Unretained(&num_redirects)));
@@ -1020,7 +1041,8 @@ TEST_P(SimpleURLLoaderTest,
 
   int num_redirects = 0;
   test_helper->simple_url_loader()->SetOnRedirectCallback(base::BindRepeating(
-      [](int* num_redirects, const net::RedirectInfo& redirect_info,
+      [](int* num_redirects, const GURL& url_before_redirect,
+         const net::RedirectInfo& redirect_info,
          const network::mojom::URLResponseHead& response_head,
          std::vector<std::string>* to_be_removed_headers) {
         ++*num_redirects;
@@ -1057,7 +1079,8 @@ TEST_P(SimpleURLLoaderTest,
 
   int num_redirects = 0;
   test_helper->simple_url_loader()->SetOnRedirectCallback(base::BindRepeating(
-      [](int* num_redirects, const net::RedirectInfo& redirect_info,
+      [](int* num_redirects, const GURL& url_before_redirect,
+         const net::RedirectInfo& redirect_info,
          const network::mojom::URLResponseHead& response_head,
          std::vector<std::string>* to_be_removed_headers) {
         ++*num_redirects;
@@ -2939,16 +2962,23 @@ TEST_P(SimpleURLLoaderTest, RetryAfterRedirect) {
        TestLoaderEvent::kBodyBufferClosed, TestLoaderEvent::kResponseComplete});
 
   int num_redirects = 0;
+  std::vector<GURL> urls_before_redirect;
 
   std::unique_ptr<SimpleLoaderTestHelper> test_helper =
       CreateHelperForURL(kInitialURL);
   test_helper->simple_url_loader()->SetRetryOptions(
       1, SimpleURLLoader::RETRY_ON_5XX);
   test_helper->simple_url_loader()->SetOnRedirectCallback(base::BindRepeating(
-      [](int* num_redirects, const net::RedirectInfo& redirect_info,
+      [](int* num_redirects, std::vector<GURL>* urls_before_redirect,
+         const GURL& url_before_redirect,
+         const net::RedirectInfo& redirect_info,
          const network::mojom::URLResponseHead& response_head,
-         std::vector<std::string>* to_be_removed_headers) { ++*num_redirects; },
-      base::Unretained(&num_redirects)));
+         std::vector<std::string>* to_be_removed_headers) {
+        ++*num_redirects;
+        urls_before_redirect->push_back(url_before_redirect);
+      },
+      base::Unretained(&num_redirects),
+      base::Unretained(&urls_before_redirect)));
   loader_factory.RunTest(test_helper.get());
 
   EXPECT_EQ(200, test_helper->GetResponseCode());
@@ -2960,6 +2990,8 @@ TEST_P(SimpleURLLoaderTest, RetryAfterRedirect) {
   for (const auto& url : loader_factory.requested_urls()) {
     EXPECT_EQ(kInitialURL, url);
   }
+
+  EXPECT_THAT(urls_before_redirect, ElementsAre(kInitialURL, kInitialURL));
 
   if (GetParam() == SimpleLoaderTestHelper::DownloadType::AS_STREAM)
     EXPECT_EQ(1, test_helper->download_as_stream_retries());

@@ -353,8 +353,14 @@ CreateSimpleURLLoaderWithVariationsHeader(
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
       network::SimpleURLLoader::Create(std::move(request), annotation_tag);
   if (variations_headers_added) {
-    simple_url_loader->SetOnRedirectCallback(
-        base::BindRepeating(&RemoveVariationsHeaderIfNeeded));
+    simple_url_loader->SetOnRedirectCallback(base::BindRepeating(
+        [](const GURL& url_before_redirect,
+           const net::RedirectInfo& redirect_info,
+           const network::mojom::URLResponseHead& response_head,
+           std::vector<std::string>* to_be_removed_headers) {
+          RemoveVariationsHeaderIfNeeded(redirect_info, response_head,
+                                         to_be_removed_headers);
+        }));
   }
   return simple_url_loader;
 }

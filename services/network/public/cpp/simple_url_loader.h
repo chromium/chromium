@@ -115,10 +115,12 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
 
   // Callback used when a redirect is being followed. It is safe to delete the
   // SimpleURLLoader during the callback.
+  // |url_before_redirect| is the url before redirect that sent the response.
   // |removed_headers| is used to set variations headers that need to be
   // removed for requests when a redirect to a non-Google URL occurs.
   using OnRedirectCallback =
-      base::RepeatingCallback<void(const net::RedirectInfo& redirect_info,
+      base::RepeatingCallback<void(const GURL& url_before_redirect,
+                                   const net::RedirectInfo& redirect_info,
                                    const mojom::URLResponseHead& response_head,
                                    std::vector<std::string>* removed_headers)>;
 

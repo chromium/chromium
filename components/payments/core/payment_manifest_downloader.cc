@@ -158,6 +158,7 @@ PaymentManifestDownloader::Download::~Download() = default;
 
 void PaymentManifestDownloader::OnURLLoaderRedirect(
     network::SimpleURLLoader* url_loader,
+    const GURL& url_before_redirect,
     const net::RedirectInfo& redirect_info,
     const network::mojom::URLResponseHead& response_head,
     std::vector<std::string>* to_be_removed_headers) {

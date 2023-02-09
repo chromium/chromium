@@ -378,7 +378,8 @@ class Job {
   void Cancel();
 
  private:
-  void OnReceivedRedirect(const net::RedirectInfo& redirect_info,
+  void OnReceivedRedirect(const GURL& url_before_redirect,
+                          const net::RedirectInfo& redirect_info,
                           const network::mojom::URLResponseHead& response_head,
                           std::vector<std::string>* removed_headers);
   void OnResponseStarted(const GURL& final_url,
@@ -549,6 +550,7 @@ void Job::Cancel() {
 }
 
 void Job::OnReceivedRedirect(
+    const GURL& url_before_redirect,
     const net::RedirectInfo& redirect_info,
     const network::mojom::URLResponseHead& response_head,
     std::vector<std::string>* removed_headers) {
