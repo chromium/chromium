@@ -33,6 +33,7 @@ class GmailMouseScroll2018Page(KeyDesktopMoveCasesPage):
   BASE_NAME = 'gmail_move'
   YEAR = '2018'
   URL = 'https://mail.google.com/mail/'
+  EXTRA_BROWSER_ARGUMENTS = ['--allow-browser-signin=false']
 
   def __init__(self,
                page_set,
@@ -55,7 +56,7 @@ class GmailMouseScroll2018Page(KeyDesktopMoveCasesPage):
 
   def RunNavigateSteps(self, action_runner):
     if self.wpr_mode == wpr_modes.WPR_OFF:
-      google_login.ManualLoginGoogleAccount(action_runner)
+      self._url = google_login.GetLoginUrl(self.URL)
     else:
       google_login.NewLoginGoogleAccount(action_runner, 'googletest')
     super(GmailMouseScroll2018Page, self).RunNavigateSteps(action_runner)

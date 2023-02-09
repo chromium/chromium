@@ -5,6 +5,8 @@ from page_sets.login_helpers import login_utils
 
 from page_sets.helpers import override_online
 
+import subprocess
+
 # Selectors for the email, password, and next buttons for google login flow.
 # Use multiple selectors to allow for different versions of the site.
 _EMAIL_SELECTOR = ','.join([
@@ -94,16 +96,29 @@ def NewLoginGoogleAccount(action_runner,
   action_runner.WaitForElement(text='Google Account')
 
 
-def ManualLoginGoogleAccount(action_runner):
+def GetLoginUrl(target_url, test_account_email='browserperftester@gmail.com'):
+  """ Get a login url for the provided OTA account for the target url"""
 
-  action_runner.Navigate(
-      'https://accounts.google.com/ServiceLogin?continue='
-      'https%3A%2F%2Faccounts.google.com%2FManageAccount',
-      override_online.ALWAYS_ONLINE)
+  cmd = [
+      "stubby --proto2 call blade:identity-testaccount-service-prod " +
+      "TestaccountService.GetTestAccountLoginUrl " +
+      "'email:\"%s\" " % test_account_email +
+      "client_id { client_id_enum: CHROME_DESKTOP} " +
+      "target_url:\"%s\"' --field login_url" % target_url
+  ]
 
-  # Wait until either the email or password input is visible.
-  action_runner.WaitForJavaScriptCondition('{{ @a }} || {{ @b }}',
-                                           a=_EMAIL_INPUT_VISIBLE_CONDITION,
-                                           b=_PASSWORD_INPUT_VISIBLE_CONDITION)
-
-  action_runner.WaitForElement(text='Google Account')
+  process = None
+  try:
+    # Invoke stubby to get a login url for the account
+    process = subprocess.run(cmd,
+                             stdout=subprocess.PIPE,
+                             shell=True,
+                             text=True,
+                             check=True)
+    login_url = process.stdout
+    return login_url[1:-2]
+  except subprocess.CalledProcessError:
+    # The stubby execution prints the error details during invocation itself
+    print('Error while obtaining LoginUrl for test account.' +
+          'Please look at the logs above for details')
+    raise

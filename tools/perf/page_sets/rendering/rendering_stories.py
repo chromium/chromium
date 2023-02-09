@@ -44,6 +44,9 @@ class RenderingStorySet(story.StorySet):
         continue
 
       required_args = []
+      if story_class.EXTRA_BROWSER_ARGUMENTS:
+        required_args += story_class.EXTRA_BROWSER_ARGUMENTS
+
       name_suffix = ''
       if (story_class.TAGS and
           story_tags.USE_FAKE_CAMERA_DEVICE in story_class.TAGS):

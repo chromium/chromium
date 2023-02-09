@@ -44,6 +44,9 @@ class SystemHealthStorySet(story.StorySet):
 
     for story_class in IterAllSystemHealthStoryClasses():
       if IncludeStory(story_class):
+        if platform == 'mobile':
+          # Extra browser args are disabled in the mobile platform
+          story_class.EXTRA_BROWSER_ARGUMENTS = []
         self.AddStory(story_class(self, take_memory_measurement))
 
   def GetAbridgedStorySetTagFilter(self):

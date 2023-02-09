@@ -1506,8 +1506,9 @@ class _GmailBrowsingStory(system_health_story.SystemHealthStory):
 
   def __init__(self, story_set, take_memory_measurement,
                events_and_measures_reported):
-    super(_GmailBrowsingStory, self).__init__(story_set,
-                                              take_memory_measurement)
+    super(_GmailBrowsingStory,
+          self).__init__(story_set, take_memory_measurement,
+                         '--allow-browser-signin=false')
     self.script_to_evaluate_on_commit = js_template.Render(
         '''{{@events_and_measures_reported_by_page}}
         {{@performance_mark_and_measure}}''',
@@ -1516,20 +1517,20 @@ class _GmailBrowsingStory(system_health_story.SystemHealthStory):
 
   def _Login(self, action_runner):
     if self.wpr_mode == wpr_modes.WPR_OFF:
-      google_login.ManualLoginGoogleAccount(action_runner)
+      self._url = google_login.GetLoginUrl(self.URL)
     else:
       google_login.NewLoginGoogleAccount(action_runner, 'googletest')
 
-    # Navigating to http://mail.google.com immediately leads to an infinite
-    # redirection loop due to a bug in WPR (see
-    # https://bugs.chromium.org/p/chromium/issues/detail?id=1036791). We
-    # therefore first navigate to a dummy sub-URL to set up the session and
-    # hit the resulting redirection loop. Afterwards, we can safely navigate
-    # to http://mail.google.com.
-    action_runner.tab.WaitForDocumentReadyStateToBeComplete()
-    action_runner.Navigate(
-        'https://mail.google.com/mail/mu/mp/872/trigger_redirection_loop')
-    action_runner.tab.WaitForDocumentReadyStateToBeComplete()
+      # Navigating to http://mail.google.com immediately leads to an infinite
+      # redirection loop due to a bug in WPR (see
+      # https://bugs.chromium.org/p/chromium/issues/detail?id=1036791). We
+      # therefore first navigate to a dummy sub-URL to set up the session and
+      # hit the resulting redirection loop. Afterwards, we can safely navigate
+      # to http://mail.google.com.
+      action_runner.tab.WaitForDocumentReadyStateToBeComplete()
+      action_runner.Navigate(
+          'https://mail.google.com/mail/mu/mp/872/trigger_redirection_loop')
+      action_runner.tab.WaitForDocumentReadyStateToBeComplete()
 
 
 class GmailLabelClickStory2020(_GmailBrowsingStory):
