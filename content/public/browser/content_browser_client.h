@@ -875,6 +875,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool IsAttributionReportingOperationAllowed(
       content::BrowserContext* browser_context,
       AttributionReportingOperation operation,
+      content::RenderFrameHost* rfh,
       const url::Origin* source_origin,
       const url::Origin* destination_origin,
       const url::Origin* reporting_origin);

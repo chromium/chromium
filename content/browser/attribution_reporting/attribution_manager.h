@@ -33,6 +33,8 @@ class StorableSource;
 class StoredSource;
 class WebContents;
 
+struct GlobalRenderFrameHostId;
+
 // Interface that mediates data flow between the network, storage layer, and
 // blink.
 class AttributionManager : public AttributionDataModel {
@@ -52,11 +54,13 @@ class AttributionManager : public AttributionDataModel {
 
   // Persists the given |source| to storage. Called when a navigation
   // originating from a source tag finishes.
-  virtual void HandleSource(StorableSource source) = 0;
+  virtual void HandleSource(StorableSource source,
+                            GlobalRenderFrameHostId render_frame_id) = 0;
 
   // Process a newly registered trigger. Will create and log any new
   // reports to storage.
-  virtual void HandleTrigger(AttributionTrigger trigger) = 0;
+  virtual void HandleTrigger(AttributionTrigger trigger,
+                             GlobalRenderFrameHostId render_frame_id) = 0;
 
   // Get all sources that are currently stored in this partition. Used for
   // populating WebUI.

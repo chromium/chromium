@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   EXPECT_CALL(browser_client,
               IsAttributionReportingOperationAllowed(
                   _, ContentBrowserClient::AttributionReportingOperation::kAny,
-                  IsNull(), IsNull(), IsNull()))
+                  _, IsNull(), IsNull(), IsNull()))
       .WillRepeatedly(Return(false));
 
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));

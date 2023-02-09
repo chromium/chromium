@@ -19,6 +19,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/navigation_simulator_impl.h"
@@ -72,7 +73,8 @@ class MockDataHostManager : public AttributionDataHostManager {
       (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
        SuitableOrigin context_origin,
        bool is_within_fenced_frame,
-       RegistrationType),
+       RegistrationType,
+       GlobalRenderFrameHostId),
       (override));
 
   MOCK_METHOD(
@@ -91,7 +93,8 @@ class MockDataHostManager : public AttributionDataHostManager {
                const SuitableOrigin& source_origin,
                AttributionInputEvent input_event,
                AttributionNavigationType,
-               bool is_within_fenced_frame),
+               bool is_within_fenced_frame,
+               GlobalRenderFrameHostId),
               (override));
 
   MOCK_METHOD(void,
@@ -99,7 +102,8 @@ class MockDataHostManager : public AttributionDataHostManager {
               (const blink::AttributionSrcToken& attribution_src_token,
                const SuitableOrigin& source_origin,
                AttributionNavigationType,
-               bool is_within_fenced_frame),
+               bool is_within_fenced_frame,
+               GlobalRenderFrameHostId),
               (override));
 
   MOCK_METHOD(
@@ -119,7 +123,8 @@ class MockDataHostManager : public AttributionDataHostManager {
               (BeaconId beacon_id,
                SuitableOrigin source_origin,
                bool is_within_fenced_frame,
-               absl::optional<AttributionInputEvent> input_event),
+               absl::optional<AttributionInputEvent> input_event,
+               GlobalRenderFrameHostId),
               (override));
 
   MOCK_METHOD(void,
@@ -211,7 +216,7 @@ TEST_F(AttributionHostTest, ValidAttributionSrc_ForwardedToManager) {
                   impression.attribution_src_token,
                   *SuitableOrigin::Deserialize("https://secure_impression.com"),
                   impression.nav_type,
-                  /*is_within_fenced_frame=*/false));
+                  /*is_within_fenced_frame=*/false, main_rfh()->GetGlobalId()));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
@@ -399,10 +404,11 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(kOriginTrustworthyChecksTestCases));
 
 TEST_F(AttributionHostTest, DataHost_RegisteredWithContext) {
-  EXPECT_CALL(*mock_data_host_manager(),
-              RegisterDataHost(
-                  _, *SuitableOrigin::Deserialize("https://top.example"),
-                  /*is_within_fenced_frame=*/false, RegistrationType::kSource));
+  EXPECT_CALL(
+      *mock_data_host_manager(),
+      RegisterDataHost(_, *SuitableOrigin::Deserialize("https://top.example"),
+                       /*is_within_fenced_frame=*/false,
+                       RegistrationType::kSource, main_rfh()->GetGlobalId()));
 
   contents()->NavigateAndCommit(GURL("https://top.example"));
   SetCurrentTargetFrameForTesting(main_rfh());
@@ -484,10 +490,11 @@ TEST_F(AttributionHostTest, DuplicateAttributionSrcToken_BadMessage) {
 }
 
 TEST_F(AttributionHostTest, DataHostInSubframe_ContextIsOutermostFrame) {
-  EXPECT_CALL(*mock_data_host_manager(),
-              RegisterDataHost(
-                  _, *SuitableOrigin::Deserialize("https://top.example"),
-                  /*is_within_fenced_frame=*/false, RegistrationType::kSource));
+  EXPECT_CALL(
+      *mock_data_host_manager(),
+      RegisterDataHost(_, *SuitableOrigin::Deserialize("https://top.example"),
+                       /*is_within_fenced_frame=*/false,
+                       RegistrationType::kSource, main_rfh()->GetGlobalId()));
 
   contents()->NavigateAndCommit(GURL("https://top.example"));
 
@@ -539,10 +546,11 @@ TEST_F(AttributionHostTest,
 }
 
 TEST_F(AttributionHostTest, DataHost_RegisteredWithFencedFrame) {
-  EXPECT_CALL(*mock_data_host_manager(),
-              RegisterDataHost(
-                  _, *SuitableOrigin::Deserialize("https://top.example"),
-                  /*is_within_fenced_frame=*/true, RegistrationType::kSource));
+  EXPECT_CALL(
+      *mock_data_host_manager(),
+      RegisterDataHost(_, *SuitableOrigin::Deserialize("https://top.example"),
+                       /*is_within_fenced_frame=*/true,
+                       RegistrationType::kSource, main_rfh()->GetGlobalId()));
 
   contents()->NavigateAndCommit(GURL("https://top.example"));
   RenderFrameHost* fenced_frame =
@@ -580,19 +588,20 @@ TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconStarted) {
   NavigationBeaconId navigation_id(123);
 
   for (const auto& test_case : kTestCases) {
+    contents()->NavigateAndCommit(GURL(test_case.source_origin));
     if (test_case.expected_valid) {
-      EXPECT_CALL(*mock_data_host_manager(),
-                  NotifyFencedFrameReportingBeaconStarted(
-                      VariantWith<NavigationBeaconId>(navigation_id),
-                      *SuitableOrigin::Deserialize(test_case.source_origin),
-                      /*is_within_fenced_frame=*/true, _));
+      EXPECT_CALL(
+          *mock_data_host_manager(),
+          NotifyFencedFrameReportingBeaconStarted(
+              VariantWith<NavigationBeaconId>(navigation_id),
+              *SuitableOrigin::Deserialize(test_case.source_origin),
+              /*is_within_fenced_frame=*/true, _, main_rfh()->GetGlobalId()));
     } else {
       EXPECT_CALL(*mock_data_host_manager(),
                   NotifyFencedFrameReportingBeaconStarted)
           .Times(0);
     }
 
-    contents()->NavigateAndCommit(GURL(test_case.source_origin));
     RenderFrameHost* fenced_frame =
         RenderFrameHostTester::For(main_rfh())
             ->AppendFencedFrame(blink::mojom::FencedFrameMode::kOpaqueAds);

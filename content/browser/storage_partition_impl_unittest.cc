@@ -64,6 +64,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/generated_code_cache_settings.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/content_features.h"
@@ -1822,8 +1823,9 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForOrigin) {
 
   base::Time now = base::Time::Now();
   auto source = SourceBuilder(now).SetExpiry(base::Days(2)).Build();
-  attribution_manager->HandleSource(source);
-  attribution_manager->HandleTrigger(DefaultTrigger());
+  attribution_manager->HandleSource(source, GlobalRenderFrameHostId());
+  attribution_manager->HandleTrigger(DefaultTrigger(),
+                                     GlobalRenderFrameHostId());
 
   base::RunLoop run_loop;
   partition->ClearData(
@@ -1843,8 +1845,9 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataWrongMask) {
 
   base::Time now = base::Time::Now();
   auto source = SourceBuilder(now).SetExpiry(base::Days(2)).Build();
-  attribution_manager->HandleSource(source);
-  attribution_manager->HandleTrigger(DefaultTrigger());
+  attribution_manager->HandleSource(source, GlobalRenderFrameHostId());
+  attribution_manager->HandleTrigger(DefaultTrigger(),
+                                     GlobalRenderFrameHostId());
 
   EXPECT_FALSE(GetAttributionReportsForTesting(attribution_manager).empty());
 
@@ -1873,7 +1876,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearAllData) {
                       .SetReportingOrigin(origin)
                       .SetDestinationOrigin(origin)
                       .Build();
-    attribution_manager->HandleSource(source);
+    attribution_manager->HandleSource(source, GlobalRenderFrameHostId());
   }
   base::RunLoop run_loop;
   partition->ClearData(
@@ -1903,11 +1906,13 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
                                           .SetReportingOrigin(reporter)
                                           .SetDestinationOrigin(conv)
                                           .SetExpiry(base::Days(2))
-                                          .Build());
+                                          .Build(),
+                                      GlobalRenderFrameHostId());
     attribution_manager->HandleTrigger(TriggerBuilder()
                                            .SetDestinationOrigin(conv)
                                            .SetReportingOrigin(reporter)
-                                           .Build());
+                                           .Build(),
+                                       GlobalRenderFrameHostId());
   }
 
   EXPECT_EQ(5u, GetAttributionReportsForTesting(attribution_manager).size());

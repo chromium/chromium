@@ -243,8 +243,8 @@ void AttributionInternalsHandlerImpl::IsAttributionReportingEnabled(
       GetContentClient()->browser()->IsAttributionReportingOperationAllowed(
           contents->GetBrowserContext(),
           ContentBrowserClient::AttributionReportingOperation::kAny,
-          /*source_origin=*/nullptr, /*destination_origin=*/nullptr,
-          /*reporting_origin=*/nullptr);
+          /*rfh=*/nullptr, /*source_origin=*/nullptr,
+          /*destination_origin=*/nullptr, /*reporting_origin=*/nullptr);
   bool debug_mode = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kAttributionReportingDebugMode);
   std::move(callback).Run(attribution_reporting_enabled, debug_mode);

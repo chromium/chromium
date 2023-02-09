@@ -269,6 +269,7 @@
 #include "components/translate/core/common/translate_switches.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_switches.h"
+#include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_context.h"
@@ -3286,6 +3287,7 @@ bool ChromeContentBrowserClient::IsInterestGroupAPIAllowed(
 bool ChromeContentBrowserClient::IsAttributionReportingOperationAllowed(
     content::BrowserContext* browser_context,
     AttributionReportingOperation operation,
+    content::RenderFrameHost* rfh,
     const url::Origin* source_origin,
     const url::Origin* destination_origin,
     const url::Origin* reporting_origin) {
@@ -3297,13 +3299,37 @@ bool ChromeContentBrowserClient::IsAttributionReportingOperationAllowed(
     return false;
 
   switch (operation) {
-    case AttributionReportingOperation::kSource:
+    case AttributionReportingOperation::kSource: {
+      DCHECK(source_origin);
+      DCHECK(reporting_origin);
+      bool allowed = privacy_sandbox_settings->IsAttributionReportingAllowed(
+          *source_origin, *reporting_origin);
+      if (rfh) {
+        content_settings::PageSpecificContentSettings::BrowsingDataAccessed(
+            rfh, content::AttributionDataModel::DataKey(*reporting_origin),
+            BrowsingDataModel::StorageType::kAttributionReporting,
+            /*blocked=*/!allowed);
+      }
+      return allowed;
+    }
     case AttributionReportingOperation::kSourceVerboseDebugReport:
       DCHECK(source_origin);
       DCHECK(reporting_origin);
       return privacy_sandbox_settings->IsAttributionReportingAllowed(
           *source_origin, *reporting_origin);
-    case AttributionReportingOperation::kTrigger:
+    case AttributionReportingOperation::kTrigger: {
+      DCHECK(destination_origin);
+      DCHECK(reporting_origin);
+      bool allowed = privacy_sandbox_settings->IsAttributionReportingAllowed(
+          *destination_origin, *reporting_origin);
+      if (rfh) {
+        content_settings::PageSpecificContentSettings::BrowsingDataAccessed(
+            rfh, content::AttributionDataModel::DataKey(*reporting_origin),
+            BrowsingDataModel::StorageType::kAttributionReporting,
+            /*blocked=*/!allowed);
+      }
+      return allowed;
+    }
     case AttributionReportingOperation::kTriggerVerboseDebugReport:
       DCHECK(destination_origin);
       DCHECK(reporting_origin);

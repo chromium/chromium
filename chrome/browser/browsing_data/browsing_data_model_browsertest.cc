@@ -19,6 +19,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
+#include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
@@ -372,4 +373,52 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                                 data_key,
                                 {BrowsingDataModel::StorageType::kInterestGroup,
                                  /*storage_size=*/0, /*cookie_count=*/0}}});
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
+                       AttributionReportingAccessReportedCorrectly) {
+  const GURL kTestCases[] = {
+      https_test_server()->GetURL(
+          "a.test", "/attribution_reporting/register_source_headers.html"),
+      https_test_server()->GetURL(
+          "a.test", "/attribution_reporting/register_trigger_headers.html")};
+
+  for (const auto& register_url : kTestCases) {
+    // Navigate to test page.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+    auto* content_settings =
+        content_settings::PageSpecificContentSettings::GetForFrame(
+            web_contents()->GetPrimaryMainFrame());
+
+    // Validate that the allowed browsing data model is empty.
+    auto* allowed_browsing_data_model =
+        content_settings->allowed_browsing_data_model();
+    ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
+
+    // Register a source.
+    ASSERT_TRUE(ExecJs(web_contents(), content::JsReplace(R"(
+      const img = document.createElement('img');
+      img.attributionSrc = $1;)",
+                                                          register_url))
+    );
+
+    while (std::distance(allowed_browsing_data_model->begin(),
+                         allowed_browsing_data_model->end()) != 1) {
+      base::RunLoop run_loop;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+      run_loop.Run();
+    }
+
+    // Validate that an attribution reporting datakey is reported to the
+    // browsing data model.
+    url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+    content::AttributionDataModel::DataKey data_key{testOrigin};
+    ValidateBrowsingDataEntries(
+        allowed_browsing_data_model,
+        {{kTestHost,
+          data_key,
+          {BrowsingDataModel::StorageType::kAttributionReporting,
+           /*storage_size=*/0, /*cookie_count=*/0}}});
+  }
 }

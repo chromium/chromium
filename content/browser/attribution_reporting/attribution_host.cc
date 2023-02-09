@@ -28,6 +28,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -80,6 +81,7 @@ struct AttributionHost::NavigationInfo {
   SuitableOrigin source_origin;
   AttributionInputEvent input_event;
   bool is_within_fenced_frame;
+  GlobalRenderFrameHostId initiator_root_frame_id;
 };
 
 AttributionHost::AttributionHost(WebContents* web_contents)
@@ -137,6 +139,10 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
+  RenderFrameHostImpl* initiator_root_frame =
+      initiator_frame_host->GetOutermostMainFrame();
+  DCHECK(initiator_root_frame);
+
   // Look up the initiator root's origin which will be used as the impression
   // origin. This works because we won't update the origin for the initiator RFH
   // until we receive confirmation from the renderer that it has committed.
@@ -145,8 +151,7 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   // processed after a navigation commit in the initiator RFH, so reading the
   // origin off is safe at the start of the navigation.
   absl::optional<SuitableOrigin> initiator_root_frame_origin =
-      SuitableOrigin::Create(initiator_frame_host->GetOutermostMainFrame()
-                                 ->GetLastCommittedOrigin());
+      SuitableOrigin::Create(initiator_root_frame->GetLastCommittedOrigin());
 
   if (!initiator_root_frame_origin) {
     return;
@@ -154,14 +159,16 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
 
   navigation_info_map_.emplace(
       navigation_handle->GetNavigationId(),
-      NavigationInfo{.source_origin = std::move(*initiator_root_frame_origin),
-                     .input_event = AttributionHost::FromWebContents(
-                                        WebContents::FromRenderFrameHost(
-                                            initiator_frame_host))
-                                        ->GetMostRecentNavigationInputEvent(),
+      NavigationInfo{
+          .source_origin = std::move(*initiator_root_frame_origin),
+          .input_event =
+              AttributionHost::FromWebContents(
+                  WebContents::FromRenderFrameHost(initiator_frame_host))
+                  ->GetMostRecentNavigationInputEvent(),
 
-                     .is_within_fenced_frame =
-                         initiator_frame_host->IsNestedWithinFencedFrame()});
+          .is_within_fenced_frame =
+              initiator_frame_host->IsNestedWithinFencedFrame(),
+          .initiator_root_frame_id = initiator_root_frame->GetGlobalId()});
 }
 
 void AttributionHost::DidRedirectNavigation(
@@ -213,7 +220,7 @@ void AttributionHost::DidRedirectNavigation(
       navigation_handle->GetImpression()->attribution_src_token,
       std::move(source_header), std::move(*reporting_origin),
       it->second.source_origin, it->second.input_event, impression->nav_type,
-      it->second.is_within_fenced_frame);
+      it->second.is_within_fenced_frame, it->second.initiator_root_frame_id);
 }
 
 void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
@@ -282,7 +289,8 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
   data_host_manager->NotifyNavigationForDataHost(
       impression->attribution_src_token, source_origin, impression->nav_type,
-      navigation_info.is_within_fenced_frame);
+      navigation_info.is_within_fenced_frame,
+      navigation_info.initiator_root_frame_id);
 }
 
 void AttributionHost::MaybeNotifyFailedSourceNavigation(
@@ -376,10 +384,18 @@ void AttributionHost::RegisterDataHost(
     return;
   }
 
+  RenderFrameHostImpl* render_frame_host =
+      static_cast<RenderFrameHostImpl*>(receivers_.GetCurrentTargetFrame());
+  DCHECK(render_frame_host);
+
+  RenderFrameHostImpl* root_frame_host =
+      render_frame_host->GetOutermostMainFrame();
+  DCHECK(root_frame_host);
+
   data_host_manager->RegisterDataHost(
       std::move(data_host), std::move(*top_frame_origin),
-      receivers_.GetCurrentTargetFrame()->IsNestedWithinFencedFrame(),
-      registration_type);
+      render_frame_host->IsNestedWithinFencedFrame(), registration_type,
+      root_frame_host->GetGlobalId());
 }
 
 void AttributionHost::RegisterNavigationDataHost(
@@ -446,9 +462,12 @@ void AttributionHost::NotifyFencedFrameReportingBeaconStarted(
     return;
   }
 
+  RenderFrameHostImpl* initiator_root_frame =
+      initiator_frame_host->GetOutermostMainFrame();
+  DCHECK(initiator_root_frame);
+
   absl::optional<SuitableOrigin> initiator_root_frame_origin =
-      SuitableOrigin::Create(initiator_frame_host->GetOutermostMainFrame()
-                                 ->GetLastCommittedOrigin());
+      SuitableOrigin::Create(initiator_root_frame->GetLastCommittedOrigin());
 
   if (!initiator_root_frame_origin) {
     return;
@@ -463,7 +482,8 @@ void AttributionHost::NotifyFencedFrameReportingBeaconStarted(
 
   data_host_manager->NotifyFencedFrameReportingBeaconStarted(
       beacon_id, std::move(*initiator_root_frame_origin),
-      initiator_frame_host->IsNestedWithinFencedFrame(), input_event);
+      initiator_frame_host->IsNestedWithinFencedFrame(), input_event,
+      initiator_root_frame->GetGlobalId());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AttributionHost);

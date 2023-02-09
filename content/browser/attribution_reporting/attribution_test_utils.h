@@ -98,6 +98,7 @@ class MockAttributionReportingContentBrowserClientBase : public SuperClass {
               IsAttributionReportingOperationAllowed,
               (content::BrowserContext * browser_context,
                ContentBrowserClient::AttributionReportingOperation operation,
+               content::RenderFrameHost* rfh,
                const url::Origin* source_origin,
                const url::Origin* destination_origin,
                const url::Origin* reporting_origin),
@@ -258,9 +259,16 @@ class MockAttributionManager : public AttributionManager {
   ~MockAttributionManager() override;
 
   // AttributionManager:
-  MOCK_METHOD(void, HandleSource, (StorableSource source), (override));
+  MOCK_METHOD(void,
+              HandleSource,
+              (StorableSource source, GlobalRenderFrameHostId render_frame_id),
+              (override));
 
-  MOCK_METHOD(void, HandleTrigger, (AttributionTrigger trigger), (override));
+  MOCK_METHOD(void,
+              HandleTrigger,
+              (AttributionTrigger trigger,
+               GlobalRenderFrameHostId render_frame_id),
+              (override));
 
   MOCK_METHOD(void,
               GetActiveSourcesForWebUI,

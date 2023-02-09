@@ -30,6 +30,7 @@
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "content/public/browser/global_routing_id.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/trigger_attestation.h"
@@ -111,13 +112,15 @@ class AttributionDataHostManagerImpl::ReceiverContext {
                   base::TimeTicks register_time,
                   bool is_within_fenced_frame,
                   absl::optional<AttributionInputEvent> input_event,
-                  absl::optional<AttributionNavigationType> nav_type)
+                  absl::optional<AttributionNavigationType> nav_type,
+                  GlobalRenderFrameHostId render_frame_id)
       : context_origin_(std::move(context_origin)),
         registration_type_(registration_type),
         register_time_(register_time),
         is_within_fenced_frame_(is_within_fenced_frame),
         input_event_(input_event),
-        nav_type_(nav_type) {
+        nav_type_(nav_type),
+        render_frame_id_(render_frame_id) {
     DCHECK(!nav_type_ || registration_type_ == RegistrationType::kSource);
   }
 
@@ -148,6 +151,8 @@ class AttributionDataHostManagerImpl::ReceiverContext {
     return nav_type_;
   }
 
+  GlobalRenderFrameHostId render_frame_id() const { return render_frame_id_; }
+
   void IncrementNumDataRegistered() { ++num_data_registered_; }
 
  private:
@@ -173,6 +178,10 @@ class AttributionDataHostManagerImpl::ReceiverContext {
 
   // Logically const.
   absl::optional<AttributionNavigationType> nav_type_;
+
+  // The ID of the topmost render frame host.
+  // Logically const.
+  GlobalRenderFrameHostId render_frame_id_;
 };
 
 struct AttributionDataHostManagerImpl::DelayedTrigger {
@@ -180,6 +189,8 @@ struct AttributionDataHostManagerImpl::DelayedTrigger {
   base::TimeTicks delay_until;
 
   AttributionTrigger trigger;
+
+  GlobalRenderFrameHostId render_frame_id;
 
   base::TimeDelta TimeUntil() const {
     return delay_until - base::TimeTicks::Now();
@@ -224,6 +235,8 @@ struct AttributionDataHostManagerImpl::NavigationRedirectSourceRegistrations {
   // Whether the navigation is initiated within a fenced frame. Will not
   // change over the course of the redirect chain.
   bool is_within_fenced_frame;
+
+  GlobalRenderFrameHostId render_frame_id;
 };
 
 struct AttributionDataHostManagerImpl::BeaconSourceRegistrations {
@@ -255,6 +268,8 @@ struct AttributionDataHostManagerImpl::BeaconSourceRegistrations {
 
   // Input event associated with the navigation.
   absl::optional<AttributionInputEvent> input_event;
+
+  GlobalRenderFrameHostId render_frame_id;
 };
 
 AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
@@ -273,13 +288,14 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
     SuitableOrigin context_origin,
     bool is_within_fenced_frame,
-    RegistrationType registration_type) {
+    RegistrationType registration_type,
+    GlobalRenderFrameHostId render_frame_id) {
   receivers_.Add(this, std::move(data_host),
                  ReceiverContext(std::move(context_origin), registration_type,
                                  /*register_time=*/base::TimeTicks::Now(),
                                  is_within_fenced_frame,
                                  /*input_event=*/absl::nullopt,
-                                 /*nav_type=*/absl::nullopt));
+                                 /*nav_type=*/absl::nullopt, render_frame_id));
 
   switch (registration_type) {
     case RegistrationType::kSourceOrTrigger:
@@ -318,7 +334,8 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
     const SuitableOrigin& source_origin,
     AttributionInputEvent input_event,
     AttributionNavigationType nav_type,
-    bool is_within_fenced_frame) {
+    bool is_within_fenced_frame,
+    GlobalRenderFrameHostId render_frame_id) {
   // Avoid costly isolated JSON parsing below if the header is obviously
   // invalid.
   if (header_value.empty()) {
@@ -335,7 +352,8 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
           .register_time = base::TimeTicks::Now(),
           .input_event = input_event,
           .nav_type = nav_type,
-          .is_within_fenced_frame = is_within_fenced_frame});
+          .is_within_fenced_frame = is_within_fenced_frame,
+          .render_frame_id = render_frame_id});
   DCHECK(!it->second.navigation_complete);
 
   // Treat ongoing redirect registrations within a chain as a data host for the
@@ -359,7 +377,8 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
     const blink::AttributionSrcToken& attribution_src_token,
     const SuitableOrigin& source_origin,
     AttributionNavigationType nav_type,
-    bool is_within_fenced_frame) {
+    bool is_within_fenced_frame,
+    GlobalRenderFrameHostId render_frame_id) {
   auto it = navigation_data_host_map_.find(attribution_src_token);
 
   if (it != navigation_data_host_map_.end()) {
@@ -367,7 +386,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
         this, std::move(it->second.data_host),
         ReceiverContext(source_origin, RegistrationType::kSource,
                         it->second.register_time, is_within_fenced_frame,
-                        it->second.input_event, nav_type));
+                        it->second.input_event, nav_type, render_frame_id));
 
     navigation_data_host_map_.erase(it);
     RecordNavigationDataHostStatus(NavigationDataHostStatus::kProcessed);
@@ -445,7 +464,8 @@ void AttributionDataHostManagerImpl::NotifyNavigationSuccess(
   registrations.navigation_complete = true;
 
   for (StorableSource& source : registrations.sources) {
-    attribution_manager_->HandleSource(std::move(source));
+    attribution_manager_->HandleSource(std::move(source),
+                                       registrations.render_frame_id);
   }
   registrations.sources.clear();
 
@@ -485,7 +505,8 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
       StorableSource(std::move(reporting_origin), std::move(data),
                      /*source_time=*/base::Time::Now(),
                      /*source_origin=*/context.context_origin(), source_type,
-                     context.is_within_fenced_frame()));
+                     context.is_within_fenced_frame()),
+      context.render_frame_id());
 }
 
 void AttributionDataHostManagerImpl::TriggerDataAvailable(
@@ -525,7 +546,8 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   if (data_hosts_in_source_mode_ == 0) {
     DCHECK(delayed_triggers_.empty());
     RecordTriggerQueueEvent(TriggerQueueEvent::kSkippedQueue);
-    attribution_manager_->HandleTrigger(std::move(trigger));
+    attribution_manager_->HandleTrigger(std::move(trigger),
+                                        context.render_frame_id());
     return;
   }
 
@@ -548,6 +570,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   delayed_triggers_.emplace_back(DelayedTrigger{
       .delay_until = base::TimeTicks::Now() + delay,
       .trigger = std::move(trigger),
+      .render_frame_id = context.render_frame_id(),
   });
   RecordTriggerQueueEvent(TriggerQueueEvent::kEnqueued);
 
@@ -569,7 +592,8 @@ void AttributionDataHostManagerImpl::ProcessDelayedTrigger() {
   delayed_triggers_.pop_front();
   DCHECK_LE(delayed_trigger.delay_until, base::TimeTicks::Now());
 
-  attribution_manager_->HandleTrigger(std::move(delayed_trigger.trigger));
+  attribution_manager_->HandleTrigger(std::move(delayed_trigger.trigger),
+                                      delayed_trigger.render_frame_id);
   RecordTriggerQueueEvent(TriggerQueueEvent::kProcessedWithDelay);
   delayed_trigger.RecordDelay();
 
@@ -638,7 +662,8 @@ void AttributionDataHostManagerImpl::OnSourceEligibleDataHostFinished(
                 "synchronously to avoid blocking for too long.");
 
   for (auto& delayed_trigger : delayed_triggers_) {
-    attribution_manager_->HandleTrigger(std::move(delayed_trigger.trigger));
+    attribution_manager_->HandleTrigger(std::move(delayed_trigger.trigger),
+                                        delayed_trigger.render_frame_id);
     RecordTriggerQueueEvent(TriggerQueueEvent::kFlushed);
     delayed_trigger.RecordDelay();
   }
@@ -672,7 +697,8 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
     base::UmaHistogramEnumeration(
         "Conversions.SourceRegistration.NavigationType.Foreground",
         registrations.nav_type);
-    attribution_manager_->HandleSource(std::move(*source));
+    attribution_manager_->HandleSource(std::move(*source),
+                                       registrations.render_frame_id);
   }
 
   if (registrations.pending_source_data == 0u &&
@@ -688,7 +714,8 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconStarted(
     BeaconId beacon_id,
     SuitableOrigin source_origin,
     bool is_within_fenced_frame,
-    absl::optional<AttributionInputEvent> input_event) {
+    absl::optional<AttributionInputEvent> input_event,
+    GlobalRenderFrameHostId render_frame_id) {
   bool is_navigation = absl::holds_alternative<NavigationBeaconId>(beacon_id);
   DCHECK_EQ(is_navigation, input_event.has_value());
 
@@ -696,7 +723,8 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconStarted(
       beacon_id, BeaconSourceRegistrations{
                      .source_origin = std::move(source_origin),
                      .is_within_fenced_frame = is_within_fenced_frame,
-                     .input_event = input_event});
+                     .input_event = input_event,
+                     .render_frame_id = render_frame_id});
 
   if (!inserted) {
     return;
@@ -795,7 +823,8 @@ void AttributionDataHostManagerImpl::OnBeaconSourceParsed(
 
   if (source.has_value()) {
     if (registrations.navigation_complete.value_or(true)) {
-      attribution_manager_->HandleSource(std::move(*source));
+      attribution_manager_->HandleSource(std::move(*source),
+                                         registrations.render_frame_id);
     } else {
       registrations.sources.push_back(std::move(*source));
     }

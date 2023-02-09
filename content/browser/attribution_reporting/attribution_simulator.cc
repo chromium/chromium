@@ -49,6 +49,7 @@
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -267,13 +268,14 @@ class AttributionEventHandler : public AttributionObserver {
   // For use with `absl::visit()`.
   void operator()(AttributionSource source) {
     fake_cookie_checker_->set_debug_cookie_set(source.debug_permission);
-    manager_->HandleSource(std::move(source.source));
+    manager_->HandleSource(std::move(source.source), GlobalRenderFrameHostId());
   }
 
   // For use with `absl::visit()`.
   void operator()(AttributionTriggerAndTime trigger) {
     fake_cookie_checker_->set_debug_cookie_set(trigger.debug_permission);
-    manager_->HandleTrigger(std::move(trigger.trigger));
+    manager_->HandleTrigger(std::move(trigger.trigger),
+                            GlobalRenderFrameHostId());
   }
 
   base::Value::Dict TakeOutput() {

@@ -58,6 +58,7 @@ class CreateReportResult;
 class StoragePartitionImpl;
 class StoredSource;
 
+struct GlobalRenderFrameHostId;
 struct SendResult;
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAttributionVerboseDebugReporting);
@@ -140,8 +141,10 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void AddObserver(AttributionObserver* observer) override;
   void RemoveObserver(AttributionObserver* observer) override;
   AttributionDataHostManager* GetDataHostManager() override;
-  void HandleSource(StorableSource source) override;
-  void HandleTrigger(AttributionTrigger trigger) override;
+  void HandleSource(StorableSource source,
+                    GlobalRenderFrameHostId render_frame_id) override;
+  void HandleTrigger(AttributionTrigger trigger,
+                     GlobalRenderFrameHostId render_frame_id) override;
   void GetActiveSourcesForWebUI(
       base::OnceCallback<void(std::vector<StoredSource>)> callback) override;
   void GetPendingReportsForInternalUse(
@@ -182,6 +185,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   using ReportSentCallback = AttributionReportSender::ReportSentCallback;
   using SourceOrTrigger = absl::variant<StorableSource, AttributionTrigger>;
 
+  struct SourceOrTriggerRFH;
+
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
       const base::FilePath& user_data_directory,
@@ -193,7 +198,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       std::unique_ptr<AttributionDataHostManager> data_host_manager,
       scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner);
 
-  void MaybeEnqueueEvent(SourceOrTrigger event);
+  void MaybeEnqueueEvent(SourceOrTriggerRFH event);
   void ProcessEvents();
   void ProcessNextEvent(bool is_debug_cookie_set);
   void StoreSource(StorableSource source,
@@ -269,7 +274,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   // the simulator currently depends on. We may be able to loosen this
   // requirement in the future so that there are conceptually separate queues
   // per <source origin, destination origin, reporting origin>.
-  base::circular_deque<SourceOrTrigger> pending_events_;
+  base::circular_deque<SourceOrTriggerRFH> pending_events_;
 
   // Controls the maximum size of `pending_events_` to avoid unbounded memory
   // growth with adversarial input.

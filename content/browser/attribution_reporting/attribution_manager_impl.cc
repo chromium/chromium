@@ -61,6 +61,8 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
@@ -303,18 +305,24 @@ std::unique_ptr<AttributionStorageDelegate> MakeStorageDelegate() {
 bool IsOperationAllowed(
     StoragePartitionImpl* storage_partition,
     ContentBrowserClient::AttributionReportingOperation operation,
+    content::RenderFrameHost* rfh,
     const url::Origin* source_origin,
     const url::Origin* destination_origin,
     const url::Origin* reporting_origin) {
   DCHECK(storage_partition);
   return GetContentClient()->browser()->IsAttributionReportingOperationAllowed(
-      storage_partition->browser_context(), operation, source_origin,
+      storage_partition->browser_context(), operation, rfh, source_origin,
       destination_origin, reporting_origin);
 }
 
 bool g_run_in_memory = false;
 
 }  // namespace
+
+struct AttributionManagerImpl::SourceOrTriggerRFH {
+  SourceOrTrigger source_or_trigger;
+  GlobalRenderFrameHostId rfh_id;
+};
 
 BASE_FEATURE(kAttributionVerboseDebugReporting,
              "AttributionVerboseDebugReporting",
@@ -382,7 +390,8 @@ bool AttributionManagerImpl::IsReportAllowed(
   return IsOperationAllowed(
       storage_partition_.get(),
       ContentBrowserClient::AttributionReportingOperation::kReport,
-      &*common_info.source_origin(), &*report.attribution_info().context_origin,
+      /*rfh=*/nullptr, &*common_info.source_origin(),
+      &*report.attribution_info().context_origin,
       &*common_info.reporting_origin());
 }
 
@@ -502,8 +511,11 @@ AttributionDataHostManager* AttributionManagerImpl::GetDataHostManager() {
   return data_host_manager_.get();
 }
 
-void AttributionManagerImpl::HandleSource(StorableSource source) {
-  MaybeEnqueueEvent(std::move(source));
+void AttributionManagerImpl::HandleSource(
+    StorableSource source,
+    GlobalRenderFrameHostId render_frame_id) {
+  MaybeEnqueueEvent(SourceOrTriggerRFH{.source_or_trigger = std::move(source),
+                                       .rfh_id = render_frame_id});
 }
 
 void AttributionManagerImpl::StoreSource(
@@ -535,8 +547,11 @@ void AttributionManagerImpl::OnSourceStored(
   MaybeSendVerboseDebugReport(source, is_debug_cookie_set, result);
 }
 
-void AttributionManagerImpl::HandleTrigger(AttributionTrigger trigger) {
-  MaybeEnqueueEvent(std::move(trigger));
+void AttributionManagerImpl::HandleTrigger(
+    AttributionTrigger trigger,
+    GlobalRenderFrameHostId render_frame_id) {
+  MaybeEnqueueEvent(SourceOrTriggerRFH{.source_or_trigger = std::move(trigger),
+                                       .rfh_id = render_frame_id});
 }
 
 void AttributionManagerImpl::StoreTrigger(
@@ -550,7 +565,7 @@ void AttributionManagerImpl::StoreTrigger(
                            cleared_debug_key, is_debug_cookie_set));
 }
 
-void AttributionManagerImpl::MaybeEnqueueEvent(SourceOrTrigger event) {
+void AttributionManagerImpl::MaybeEnqueueEvent(SourceOrTriggerRFH event) {
   const size_t size_before_push = pending_events_.size();
 
   // Avoid unbounded memory growth with adversarial input.
@@ -591,7 +606,7 @@ void AttributionManagerImpl::ProcessEvents() {
                          : nullptr;
             },
         },
-        pending_events_.front());
+        pending_events_.front().source_or_trigger);
     if (cookie_origin) {
       cookie_checker_->IsDebugCookieSet(
           *cookie_origin,
@@ -614,7 +629,7 @@ void AttributionManagerImpl::ProcessEvents() {
 void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
   DCHECK(!pending_events_.empty());
 
-  SourceOrTrigger event = std::move(pending_events_.front());
+  SourceOrTriggerRFH event = std::move(pending_events_.front());
   pending_events_.pop_front();
 
   absl::visit(
@@ -625,6 +640,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
             bool allowed = IsOperationAllowed(
                 this->storage_partition_.get(),
                 ContentBrowserClient::AttributionReportingOperation::kSource,
+                RenderFrameHost::FromID(event.rfh_id),
                 &*common_info.source_origin(),
                 /*destination_origin=*/nullptr,
                 &*common_info.reporting_origin());
@@ -654,6 +670,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
             bool allowed = IsOperationAllowed(
                 this->storage_partition_.get(),
                 ContentBrowserClient::AttributionReportingOperation::kTrigger,
+                RenderFrameHost::FromID(event.rfh_id),
                 /*source_origin=*/nullptr, &*trigger.destination_origin(),
                 &*trigger.reporting_origin());
             RecordRegisterConversionAllowed(allowed);
@@ -679,7 +696,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
                                is_debug_cookie_set);
           },
       },
-      std::move(event));
+      std::move(event.source_or_trigger));
 }
 
 void AttributionManagerImpl::OnReportStored(
@@ -1083,6 +1100,7 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
   if (!IsOperationAllowed(storage_partition_.get(),
                           ContentBrowserClient::AttributionReportingOperation::
                               kSourceVerboseDebugReport,
+                          /*rfh=*/nullptr,
                           &*source.common_info().source_origin(),
                           /*destination_origin=*/nullptr,
                           &*source.common_info().reporting_origin())) {
@@ -1109,6 +1127,7 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
   if (!IsOperationAllowed(storage_partition_.get(),
                           ContentBrowserClient::AttributionReportingOperation::
                               kTriggerVerboseDebugReport,
+                          /*rfh=*/nullptr,
                           /*source_origin=*/nullptr,
                           &*trigger.destination_origin(),
                           &*trigger.reporting_origin())) {
