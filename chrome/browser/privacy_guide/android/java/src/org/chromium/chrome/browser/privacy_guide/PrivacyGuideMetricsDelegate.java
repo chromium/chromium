@@ -191,6 +191,10 @@ class PrivacyGuideMetricsDelegate {
                 mInitialCookiesControlMode = PrivacyGuideUtils.getCookieControlsMode();
                 break;
             }
+            case PrivacyGuideFragment.FragmentType.WELCOME:
+            case PrivacyGuideFragment.FragmentType.DONE:
+                // The Welcome and Done cards don't store/update any state.
+                break;
             default:
                 assert false : "Unexpected fragmentType " + fragmentType;
         }
@@ -204,6 +208,9 @@ class PrivacyGuideMetricsDelegate {
      */
     void recordMetricsOnNextForCard(@PrivacyGuideFragment.FragmentType int fragmentType) {
         switch (fragmentType) {
+            case PrivacyGuideFragment.FragmentType.WELCOME:
+                recordMetricsForWelcomeCard();
+                break;
             case PrivacyGuideFragment.FragmentType.MSBB: {
                 recordMetricsOnNextForMSBBCard();
                 break;
@@ -221,6 +228,7 @@ class PrivacyGuideMetricsDelegate {
                 break;
             }
             default:
+                // The Done card does not have a next button and we won't support a case for it
                 assert false : "Unexpected fragmentType " + fragmentType;
         }
     }
@@ -322,7 +330,8 @@ class PrivacyGuideMetricsDelegate {
                 break;
             }
             default:
-                // The MSBB card doesn't have a back button, and so we won't support a case for it.
+                // The Welcome, MSBB and Done cards don't have a back button, and so we won't
+                // support a case for it.
                 assert false : "Unexpected fragmentType " + fragmentType;
         }
     }

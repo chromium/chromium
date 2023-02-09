@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -42,8 +43,9 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
 
     private Set<Integer> getFragmentTypesToDisplay(StepDisplayHandler displayHandler) {
         Set<Integer> fragmentTypesToDisplay = new HashSet<>();
+        fragmentTypesToDisplay.addAll(Arrays.asList(PrivacyGuideFragment.FragmentType.WELCOME,
+                PrivacyGuideFragment.FragmentType.MSBB, PrivacyGuideFragment.FragmentType.DONE));
 
-        fragmentTypesToDisplay.add(PrivacyGuideFragment.FragmentType.MSBB);
         if (displayHandler.shouldDisplayHistorySync()) {
             fragmentTypesToDisplay.add(PrivacyGuideFragment.FragmentType.HISTORY_SYNC);
         }
@@ -62,6 +64,8 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
         @PrivacyGuideFragment.FragmentType
         int fragmentType = getFragmentType(position);
         switch (fragmentType) {
+            case PrivacyGuideFragment.FragmentType.WELCOME:
+                return new WelcomeFragment();
             case PrivacyGuideFragment.FragmentType.MSBB:
                 return new MSBBFragment();
             case PrivacyGuideFragment.FragmentType.HISTORY_SYNC:
@@ -70,6 +74,8 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
                 return new SafeBrowsingFragment();
             case PrivacyGuideFragment.FragmentType.COOKIES:
                 return new CookiesFragment();
+            case PrivacyGuideFragment.FragmentType.DONE:
+                return new DoneFragment();
         }
         return null;
     }

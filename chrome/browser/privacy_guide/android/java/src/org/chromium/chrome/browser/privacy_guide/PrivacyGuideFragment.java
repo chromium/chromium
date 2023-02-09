@@ -11,7 +11,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -38,24 +37,30 @@ public class PrivacyGuideFragment extends Fragment {
      * The types of fragments supported. Each fragment corresponds to a step in the privacy guide.
      */
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({FragmentType.MSBB, FragmentType.HISTORY_SYNC, FragmentType.SAFE_BROWSING,
-            FragmentType.COOKIES})
+    @IntDef({FragmentType.WELCOME, FragmentType.MSBB, FragmentType.HISTORY_SYNC,
+            FragmentType.SAFE_BROWSING, FragmentType.COOKIES, FragmentType.DONE})
     @interface FragmentType {
-        int MSBB = 0;
-        int HISTORY_SYNC = 1;
-        int SAFE_BROWSING = 2;
-        int COOKIES = 3;
-        int MAX_VALUE = COOKIES;
+        int WELCOME = 0;
+        int MSBB = 1;
+        int HISTORY_SYNC = 2;
+        int SAFE_BROWSING = 3;
+        int COOKIES = 4;
+        int DONE = 5;
+        int MAX_VALUE = DONE;
     }
 
     private BottomSheetController mBottomSheetController;
     private PrivacyGuidePagerAdapter mPagerAdapter;
     private View mView;
     private ViewPager2 mViewPager;
+    private TabLayout mTabLayout;
+    private ButtonCompat mStartButton;
     private ButtonCompat mNextButton;
     private ButtonCompat mBackButton;
     private ButtonCompat mFinishButton;
+    private ButtonCompat mDoneButton;
     private PrivacyGuideMetricsDelegate mPrivacyGuideMetricsDelegate;
+    private NavbarVisibilityDelegate mNavbarVisibilityDelegate;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,48 +74,24 @@ public class PrivacyGuideFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         modifyAppBar();
-
-        mView = inflater.inflate(R.layout.privacy_guide_fragment, container, false);
-        displayWelcomePage();
-
-        return mView;
-    }
-
-    private void modifyAppBar() {
-        AppCompatActivity settingsActivity = (AppCompatActivity) getActivity();
-        settingsActivity.setTitle(R.string.prefs_privacy_guide_title);
-        settingsActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-    }
-
-    private void displayWelcomePage() {
-        FrameLayout content = mView.findViewById(R.id.fragment_content);
-        content.removeAllViews();
-        getLayoutInflater().inflate(R.layout.privacy_guide_welcome, content);
-
-        ButtonCompat welcomeButton = (ButtonCompat) mView.findViewById(R.id.start_button);
-        welcomeButton.setOnClickListener((View v) -> displayMainFlow());
-    }
-
-    private void displayMainFlow() {
-        // Record that the user clicked the next button on the welcome card
-        PrivacyGuideMetricsDelegate.recordMetricsForWelcomeCard();
-        FrameLayout content = mView.findViewById(R.id.fragment_content);
-        content.removeAllViews();
-        getLayoutInflater().inflate(R.layout.privacy_guide_steps, content);
+        mView = inflater.inflate(R.layout.privacy_guide_steps, container, false);
 
         mViewPager = (ViewPager2) mView.findViewById(R.id.review_viewpager);
         mPagerAdapter = new PrivacyGuidePagerAdapter(this, new StepDisplayHandlerImpl());
+        mNavbarVisibilityDelegate = new NavbarVisibilityDelegate(mPagerAdapter.getItemCount());
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setUserInputEnabled(false);
 
-        // Record the initial state of the first card
-        mPrivacyGuideMetricsDelegate.setInitialStateForCard(
-                mPagerAdapter.getFragmentType(mViewPager.getCurrentItem()));
-
-        TabLayout tabLayout = mView.findViewById(R.id.tab_layout);
-        new TabLayoutMediator(tabLayout, mViewPager, (tab, position) -> {
+        mTabLayout = mView.findViewById(R.id.tab_layout);
+        new TabLayoutMediator(mTabLayout, mViewPager, (tab, position) -> {
             tab.view.setClickable(false);
+            if (position == 0 || position == mPagerAdapter.getItemCount() - 1) {
+                tab.view.setVisibility(View.GONE);
+            }
         }).attach();
+
+        mStartButton = (ButtonCompat) mView.findViewById(R.id.start_button);
+        mStartButton.setOnClickListener((View v) -> nextStep());
 
         mNextButton = (ButtonCompat) mView.findViewById(R.id.next_button);
         mNextButton.setOnClickListener((View v) -> nextStep());
@@ -119,61 +100,76 @@ public class PrivacyGuideFragment extends Fragment {
         mBackButton.setOnClickListener((View v) -> previousStep());
 
         mFinishButton = (ButtonCompat) mView.findViewById(R.id.finish_button);
-        mFinishButton.setOnClickListener((View v) -> displayDonePage());
-    }
+        mFinishButton.setOnClickListener((View v) -> nextStep());
 
-    private void displayDonePage() {
-        // Record metrics when the user clicks the next button on the final card
-        mPrivacyGuideMetricsDelegate.recordMetricsOnNextForCard(
-                mPagerAdapter.getFragmentType(mViewPager.getCurrentItem()));
-
-        FrameLayout content = mView.findViewById(R.id.fragment_content);
-        content.removeAllViews();
-        getLayoutInflater().inflate(R.layout.privacy_guide_done, content);
-
-        ButtonCompat doneButton = (ButtonCompat) mView.findViewById(R.id.done_button);
-        doneButton.setOnClickListener((View v) -> {
+        mDoneButton = (ButtonCompat) mView.findViewById(R.id.done_button);
+        mDoneButton.setOnClickListener((View v) -> {
             PrivacyGuideMetricsDelegate.recordMetricsForDoneButton();
             getActivity().onBackPressed();
         });
+
+        return mView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateButtonVisibility();
+    }
+
+    private void modifyAppBar() {
+        AppCompatActivity settingsActivity = (AppCompatActivity) getActivity();
+        settingsActivity.setTitle(R.string.prefs_privacy_guide_title);
+        settingsActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
     }
 
     private void nextStep() {
         int currentIdx = mViewPager.getCurrentItem();
         int nextIdx = currentIdx + 1;
-        if (nextIdx < mPagerAdapter.getItemCount()) {
-            mViewPager.setCurrentItem(nextIdx);
-        }
-        mBackButton.setVisibility(View.VISIBLE);
-        if (nextIdx + 1 == mPagerAdapter.getItemCount()) {
-            mNextButton.setVisibility(View.GONE);
-            mFinishButton.setVisibility(View.VISIBLE);
-        }
 
-        // Record metrics when the user clicks the next button
-        mPrivacyGuideMetricsDelegate.recordMetricsOnNextForCard(
-                mPagerAdapter.getFragmentType(currentIdx));
-        // Record the initial state of the next card
-        mPrivacyGuideMetricsDelegate.setInitialStateForCard(mPagerAdapter.getFragmentType(nextIdx));
+        mViewPager.setCurrentItem(nextIdx);
+        updateButtonVisibility();
+        recordMetricsOnButtonPress(currentIdx, nextIdx);
     }
 
     private void previousStep() {
-        mFinishButton.setVisibility(View.GONE);
         int currentIdx = mViewPager.getCurrentItem();
         int prevIdx = currentIdx - 1;
-        if (prevIdx >= 0) {
-            mViewPager.setCurrentItem(prevIdx);
-        }
-        mNextButton.setVisibility(View.VISIBLE);
-        if (prevIdx == 0) {
-            mBackButton.setVisibility(View.INVISIBLE);
+
+        mViewPager.setCurrentItem(prevIdx);
+        updateButtonVisibility();
+        recordMetricsOnButtonPress(currentIdx, prevIdx);
+    }
+
+    private void updateButtonVisibility() {
+        int currentIdx = mViewPager.getCurrentItem();
+
+        mStartButton.setVisibility(mNavbarVisibilityDelegate.getStartButtonVisibility(currentIdx));
+        mNextButton.setVisibility(mNavbarVisibilityDelegate.getNextButtonVisibility(currentIdx));
+        mBackButton.setVisibility(mNavbarVisibilityDelegate.getBackButtonVisibility(currentIdx));
+        mFinishButton.setVisibility(
+                mNavbarVisibilityDelegate.getFinishButtonVisibility(currentIdx));
+        mDoneButton.setVisibility(mNavbarVisibilityDelegate.getDoneButtonVisibility(currentIdx));
+
+        mTabLayout.setVisibility(
+                mNavbarVisibilityDelegate.getProgressIndicatorVisibility(currentIdx));
+    }
+
+    private void recordMetricsOnButtonPress(int currentStepIdx, int followingStepIdx) {
+        assert currentStepIdx != followingStepIdx : "currentStepIdx is equal to followingStepIdx";
+
+        // Record metrics when the user clicks the next/back button
+        if (currentStepIdx > followingStepIdx) {
+            PrivacyGuideMetricsDelegate.recordMetricsOnBackForCard(
+                    mPagerAdapter.getFragmentType(currentStepIdx));
+        } else {
+            mPrivacyGuideMetricsDelegate.recordMetricsOnNextForCard(
+                    mPagerAdapter.getFragmentType(currentStepIdx));
         }
 
-        // Record metrics when the user clicks the back button
-        PrivacyGuideMetricsDelegate.recordMetricsOnBackForCard(
-                mPagerAdapter.getFragmentType(currentIdx));
-        // Record the initial state of the previous card
-        mPrivacyGuideMetricsDelegate.setInitialStateForCard(mPagerAdapter.getFragmentType(prevIdx));
+        // Record the initial state of the next/previous card
+        mPrivacyGuideMetricsDelegate.setInitialStateForCard(
+                mPagerAdapter.getFragmentType(followingStepIdx));
     }
 
     @Override

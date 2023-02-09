@@ -4,72 +4,40 @@ Copyright 2021 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/welcome_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <ScrollView
-        android:id="@+id/scroll_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <LinearLayout
-            android:id="@+id/welcome_main_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:animateLayoutChanges="true"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/image"
-                android:layout_marginVertical="32dp"
-                android:layout_height="@dimen/privacy_guide_illustration_height"
-                android:layout_width="@dimen/privacy_guide_illustration_width"
-                android:importantForAccessibility="no"
-                app:srcCompat="@drawable/privacy_guide_illustration" />
-
-            <TextView
-                android:id="@+id/welcome_title"
-                android:layout_margin="16dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/privacy_guide_welcome_title"
-                style="@style/TextAppearance.Headline.Primary" />
-
-            <TextView
-                android:id="@+id/welcome_description"
-                android:layout_margin="16dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/privacy_guide_welcome_description"
-                style="@style/TextAppearance.TextLarge.Secondary" />
-
-        </LinearLayout>
-
-    </ScrollView>
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="8dp"
-        android:gravity="bottom|center">
+        android:animateLayoutChanges="true"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
-        <org.chromium.ui.widget.ButtonCompat
-            android:id="@+id/start_button"
-            android:focusable="true"
-            android:layout_width="match_parent"
+        <ImageView
+            android:layout_marginVertical="32dp"
+            android:layout_height="@dimen/privacy_guide_illustration_height"
+            android:layout_width="@dimen/privacy_guide_illustration_width"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/privacy_guide_illustration" />
+
+        <TextView
+            android:layout_margin="16dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:text="@string/privacy_guide_start_button"
-            style="@style/FilledButton.Flat" />
+            android:text="@string/privacy_guide_welcome_title"
+            style="@style/TextAppearance.Headline.Primary" />
+
+        <TextView
+            android:layout_margin="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/privacy_guide_welcome_description"
+            style="@style/TextAppearance.TextLarge.Secondary" />
+
     </LinearLayout>
 
-</LinearLayout>
+</ScrollView>

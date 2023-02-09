@@ -91,6 +91,7 @@ public class PrivacyGuideMetricsDelegateTest {
         when(mNativeMock.isUrlKeyedAnonymizedDataCollectionEnabled(mProfile))
                 .thenReturn(initialMSBBState, finalMSBBState);
     }
+
     private void mockSafeBrowsingState(@SafeBrowsingState int initialSafeBrowsingState,
             @SafeBrowsingState int finalSafeBrowsingState) {
         when(mSafeBrowsingNativeMock.getSafeBrowsingState())
@@ -418,6 +419,25 @@ public class PrivacyGuideMetricsDelegateTest {
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.COOKIES_NEXT_BUTTON));
+    }
+
+    @Test
+    @SmallTest
+    public void testWelcome_nextClickUserAction() {
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.WELCOME);
+        assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.NextClickWelcome"));
+    }
+
+    @Test
+    @SmallTest
+    public void testWelcome_nextNavigationHistogram() {
+        assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.WELCOME_NEXT_BUTTON));
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.WELCOME);
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.WELCOME_NEXT_BUTTON));
     }
 
     @Test

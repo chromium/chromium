@@ -7,8 +7,10 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/privacy_guide/CookiesFragment.java",
+    "java/src/org/chromium/chrome/browser/privacy_guide/DoneFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/HistorySyncFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/MSBBFragment.java",
+    "java/src/org/chromium/chrome/browser/privacy_guide/NavbarVisibilityDelegate.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideBottomSheetView.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideExplanationHeading.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideExplanationItem.java",
@@ -19,6 +21,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/privacy_guide/SafeBrowsingFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/StepDisplayHandler.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/StepDisplayHandlerImpl.java",
+    "java/src/org/chromium/chrome/browser/privacy_guide/WelcomeFragment.java",
   ]
   deps = [
     ":java_resources",
@@ -126,7 +129,6 @@ android_resources("java_resources") {
     "java/res/layout/privacy_guide_done.xml",
     "java/res/layout/privacy_guide_explanation_heading.xml",
     "java/res/layout/privacy_guide_explanation_item.xml",
-    "java/res/layout/privacy_guide_fragment.xml",
     "java/res/layout/privacy_guide_history_sync_step.xml",
     "java/res/layout/privacy_guide_msbb_step.xml",
     "java/res/layout/privacy_guide_sb_enhanced_explanation.xml",
