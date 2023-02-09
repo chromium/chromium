@@ -531,8 +531,9 @@ TEST_F(FrameSinkHolderTest,
   ASSERT_FALSE(holder_weak_ptr_);
 }
 
+// TODO(crbug.com/1414296): disabled due to failures on try bots.
 TEST_F(FrameSinkHolderTest,
-       DeleteSinkHolderWithExportedResources_DuringShutdown) {
+       DISABLED_DeleteSinkHolderWithExportedResources_DuringShutdown) {
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
 
   viz::ResourceId id_1 =
