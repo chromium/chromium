@@ -303,7 +303,7 @@ void StartServerOnHandlerThread(
           "%d\n%s", ip_address->port(), browser_guid.c_str());
       if (base::WriteFile(path, port_target_string.c_str(),
                           static_cast<int>(port_target_string.length())) < 0) {
-        LOG(ERROR) << "Error writing DevTools active port to file";
+        PLOG(ERROR) << "Error writing DevTools active port to file " << path;
       }
     }
   } else {
