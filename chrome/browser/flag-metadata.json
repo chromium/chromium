@@ -5507,7 +5507,7 @@
     // This flag is used by ChromeOS for some accessibility users.
     // TODO(b/172341945): Fix this asap.
     "name": "overscroll-history-navigation",
-    "owners": [ "mohsen", "jinsukkim" ],
+    "owners": [ "jinsukkim" ],
     "expiry_milestone": 118
   },
   {

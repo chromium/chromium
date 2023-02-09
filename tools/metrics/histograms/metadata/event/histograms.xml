@@ -1887,7 +1887,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
-  <owner>mohsen@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -1908,7 +1908,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency2"
     units="microseconds" expires_after="2024-01-16">
-  <owner>mohsen@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     When a user performs a scroll using touchscreen, a sequence of touch-move
@@ -1930,7 +1930,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="EventLatency.GestureScrollUpdate.{NonTouchscreenScrollInputType}.TotalLatency{Version}"
     units="microseconds" expires_after="2024-01-16">
-  <owner>mohsen@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks total latency of {NonTouchscreenScrollInputType}
@@ -1954,7 +1954,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="EventLatency.TotalLatency" units="microseconds"
     expires_after="2024-01-16">
-  <owner>mohsen@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks total latency of all event types, from when the user input causing
@@ -1968,7 +1968,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="EventLatency.{NonGsuScrollEventType}.{ScrollInputType}.TotalLatency{Version}"
     units="microseconds" expires_after="2024-01-16">
-  <owner>mohsen@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks total latency of {ScrollInputType} {NonGsuScrollEventType}, from when
@@ -2001,7 +2001,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="EventLatency.{NonScrollPinchEventType}.TotalLatency"
     units="microseconds" expires_after="2024-01-16">
-  <owner>mohsen@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks total latency of {NonScrollPinchEventType}, from when the user input
@@ -2036,7 +2036,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="EventLatency.{PinchEventType}.{PinchInputType}.TotalLatency"
     units="microseconds" expires_after="2024-01-16">
-  <owner>mohsen@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks total latency of {PinchInputType} {PinchEventType}, from when the
@@ -2060,7 +2060,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="EventLatency.{ScrollEventType}.TotalLatency{Version}"
     units="microseconds" expires_after="2024-01-16">
-  <owner>mohsen@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks total latency of {ScrollEventType}, from when the user input causing

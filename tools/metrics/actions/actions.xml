@@ -25493,7 +25493,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Overscroll_Cancelled.Reload">
-  <owner>mohsen@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <description>
     When vertical overscroll corresponding to the RELOAD navigation is cancelled
     - either because the user performed an interfering action such as pressing a
@@ -25517,7 +25517,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Overscroll_Navigated.Reload">
-  <owner>mohsen@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <description>
     When vertical overscroll initiates a RELOAD navigation in the browser.
   </description>

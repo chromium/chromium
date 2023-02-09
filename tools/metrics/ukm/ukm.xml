@@ -7519,8 +7519,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Graphics.Smoothness.EventLatency">
-  <owner>mohsen@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <summary>
     Tracks the duration of stages in the rendering pipeline when processing a
     single frame in response to an input event. To meet UKM goals for data
@@ -8347,7 +8346,7 @@ be describing additional metrics about the same event.
 
 <event name="Graphics.Smoothness.Latency">
   <owner>animations-dev@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>schenney@chromium.org</owner>
   <summary>
     Tracks the duration of stages in the rendering pipeline while processing a
@@ -8871,7 +8870,7 @@ be describing additional metrics about the same event.
 <event name="Graphics.Smoothness.NormalizedPercentDroppedFrames"
     singular="True">
   <owner>animations-dev@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <summary>
     Measures various normalizations for the smoothness metric. The metric is
     measured by counting dropped frames, and various normalization strategies
@@ -9327,7 +9326,7 @@ be describing additional metrics about the same event.
 
 <event name="Graphics.Smoothness.PercentDroppedFrames">
   <owner>animations-dev@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <summary>
     Tracks the percent of dropped frames for a particular sequence of frames
     such as during scroll or animation. PercentDroppedFrames is measured by
@@ -9656,7 +9655,7 @@ be describing additional metrics about the same event.
     Deprecated 02/2020.
   </obsolete>
   <owner>animations-dev@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <summary>
     As of 2020-02-12, this is deprecated in favor of
     Graphics.Smoothness.PercentDroppedFrames.
