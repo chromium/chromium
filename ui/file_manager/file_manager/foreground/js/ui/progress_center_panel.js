@@ -405,6 +405,7 @@ export class ProgressCenterPanel {
             donePanelItem.secondaryText = item.isDestinationDrive ?
                 str('READY_TO_SYNC_MY_DRIVE') :
                 str('COMPLETE_LABEL');
+            donePanelItem.fadeSecondaryText = item.isDestinationDrive;
             donePanelItem.signalCallback = (signal) => {
               if (signal === 'dismiss') {
                 this.feedbackHost_.removePanelItem(donePanelItem);

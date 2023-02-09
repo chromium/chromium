@@ -477,6 +477,22 @@ export class PanelItem extends HTMLElement {
   }
 
   /**
+   * @param {boolean} shouldFade Whether the secondary text should be displayed
+   *     with a faded color to avoid drawing too much attention to it.
+   */
+  set fadeSecondaryText(shouldFade) {
+    this.toggleAttribute('fade-secondary-text', shouldFade);
+  }
+
+  /**
+   * @return {boolean} Whether the secondary text should be displayed with a
+   *     faded color to avoid drawing too much attention to it.
+   */
+  get fadeSecondaryText() {
+    return !!this.getAttribute('fade-secondary-text');
+  }
+
+  /**
    * Setter to set the panel type.
    * @param {number} type Enum value for the panel type.
    */
