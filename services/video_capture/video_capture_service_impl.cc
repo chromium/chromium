@@ -154,12 +154,6 @@ void VideoCaptureServiceImpl::ConnectToVideoSourceProvider(
   video_source_provider_->AddClient(std::move(receiver));
 }
 
-void VideoCaptureServiceImpl::SetRetryCount(int32_t count) {
-#if BUILDFLAG(IS_MAC)
-  media::VideoCaptureDeviceFactoryMac::SetGetDevicesInfoRetryCount(count);
-#endif
-}
-
 void VideoCaptureServiceImpl::BindControlsForTesting(
     mojo::PendingReceiver<mojom::TestingControls> receiver) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<TestingControlsImpl>(),

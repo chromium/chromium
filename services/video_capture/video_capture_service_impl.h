@@ -53,7 +53,6 @@ class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void ConnectToVideoSourceProvider(
       mojo::PendingReceiver<mojom::VideoSourceProvider> receiver) override;
-  void SetRetryCount(int32_t count) override;
   void BindControlsForTesting(
       mojo::PendingReceiver<mojom::TestingControls> receiver) override;
 #if BUILDFLAG(IS_WIN)

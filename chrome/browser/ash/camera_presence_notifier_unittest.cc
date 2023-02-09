@@ -66,8 +66,6 @@ class FakeVideoCaptureService
     fake_provider_.Bind(std::move(receiver));
   }
 
-  void SetRetryCount(int32_t count) override {}
-
   void BindControlsForTesting(
       mojo::PendingReceiver<video_capture::mojom::TestingControls> receiver)
       override {}

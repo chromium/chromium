@@ -24,10 +24,6 @@ RefCountedVideoSourceProvider::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void RefCountedVideoSourceProvider::SetRetryCount(int32_t count) {
-  GetVideoCaptureService().SetRetryCount(count);
-}
-
 void RefCountedVideoSourceProvider::ReleaseProviderForTesting() {
   source_provider_.reset();
 }

@@ -62,10 +62,6 @@ interface VideoCaptureService  {
   // Current API. Supports multiple clients per source.
   ConnectToVideoSourceProvider(pending_receiver<VideoSourceProvider> receiver);
 
-  // Sets a retry count that is used by the service for logging UMA events in
-  // the context of investigation for https://crbug.com/643068.
-  SetRetryCount(int32 count);
-
   // Binds a test-only interface for use by unit tests.
   BindControlsForTesting(pending_receiver<TestingControls> receiver);
 

@@ -971,6 +971,14 @@ BASE_FEATURE(kRenderAccessibilityHostDeserializationOffMainThread,
 BASE_FEATURE(kRenderDocument,
              "RenderDocument",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables retrying to obtain list of available cameras after restarting the
+// video capture service if a previous attempt failed, which could be caused
+// by a service crash.
+BASE_FEATURE(kRetryGetVideoCaptureDeviceInfos,
+             "RetryGetVideoCaptureDeviceInfos",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables skipping the early call to CommitPending when navigating away from a
 // crashed frame.
 BASE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame,
@@ -1530,13 +1538,6 @@ BASE_FEATURE(kMacSyscallSandbox,
 // occlusion notifications.
 BASE_FEATURE(kMacWebContentsOcclusion,
              "MacWebContentsOcclusion",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables retrying to obtain list of available cameras on Macbooks after
-// restarting the video capture service if a previous attempt delivered zero
-// cameras.
-BASE_FEATURE(kRetryGetVideoCaptureDeviceInfos,
-             "RetryGetVideoCaptureDeviceInfos",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_MAC)

@@ -23,9 +23,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryMac
 
   ~VideoCaptureDeviceFactoryMac() override;
 
-  static void SetGetDevicesInfoRetryCount(int count);
-  static int GetGetDevicesInfoRetryCount();
-
   VideoCaptureErrorOrDevice CreateDevice(
       const VideoCaptureDeviceDescriptor& device_descriptor) override;
   void GetDevicesInfo(GetDevicesInfoCallback callback) override;

@@ -35,7 +35,6 @@ class CONTENT_EXPORT RefCountedVideoSourceProvider
     return source_provider_;
   }
 
-  void SetRetryCount(int32_t count);
   void ReleaseProviderForTesting();
 
  private:

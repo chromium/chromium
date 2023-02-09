@@ -52,7 +52,6 @@ class MockVideoCaptureService
   MOCK_METHOD1(DoConnectToVideoSourceProvider,
                void(mojo::PendingReceiver<
                     video_capture::mojom::VideoSourceProvider> receiver));
-  MOCK_METHOD1(SetRetryCount, void(int32_t));
 
 #if BUILDFLAG(IS_WIN)
   MOCK_METHOD1(OnGpuInfoUpdate, void(const CHROME_LUID&));

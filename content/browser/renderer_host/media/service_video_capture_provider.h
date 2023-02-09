@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_SERVICE_VIDEO_CAPTURE_PROVIDER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_SERVICE_VIDEO_CAPTURE_PROVIDER_H_
 
+#include <vector>
+
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -69,17 +71,12 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   [[nodiscard]] scoped_refptr<RefCountedVideoSourceProvider>
   LazyConnectToService();
 
-  void GetDeviceInfosAsyncForRetry(GetDeviceInfosCallback result_callback,
-                                   int retry_count);
+  void GetDeviceInfosAsyncForRetry();
   void OnDeviceInfosReceived(
       scoped_refptr<RefCountedVideoSourceProvider> service_connection,
-      GetDeviceInfosCallback result_callback,
-      int retry_count,
       const std::vector<media::VideoCaptureDeviceInfo>& infos);
   void OnDeviceInfosRequestDropped(
-      scoped_refptr<RefCountedVideoSourceProvider> service_connection,
-      GetDeviceInfosCallback result_callback,
-      int retry_count);
+      scoped_refptr<RefCountedVideoSourceProvider> service_connection);
   void OnLostConnectionToSourceProvider();
   void OnServiceConnectionClosed(ReasonForDisconnect reason);
 
@@ -94,10 +91,8 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   base::TimeTicks time_of_last_connect_;
   base::TimeTicks time_of_last_uninitialize_;
 
-#if BUILDFLAG(IS_MAC)
-  GetDeviceInfosCallback stashed_result_callback_for_retry_;
-  int stashed_retry_count_;
-#endif
+  std::vector<GetDeviceInfosCallback> get_device_infos_pending_callbacks_;
+  bool get_device_infos_retried_ = false;
 
   // We own this but it must operate on the UI thread.
   class ServiceProcessObserver;

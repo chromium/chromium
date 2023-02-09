@@ -8,11 +8,14 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/trace_event/common/trace_event_common.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/renderer_host/media/service_video_capture_device_launcher.h"
 #include "content/browser/renderer_host/media/virtual_video_capture_devices_changed_observer.h"
+#include "content/browser/video_capture_service_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/gpu_data_manager.h"
@@ -29,13 +32,6 @@
 #include "content/public/browser/chromeos/delegate_to_browser_gpu_service_accelerator_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/string_util.h"
-#include "base/trace_event/common/trace_event_common.h"
-#endif
-
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -45,10 +41,6 @@ CreateAcceleratorFactory() {
       content::DelegateToBrowserGpuServiceAcceleratorFactory>();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_MAC)
-static const int kMaxRetriesForGetDeviceInfos = 1;
-#endif
 
 }  // anonymous namespace
 
@@ -88,8 +80,10 @@ class ServiceVideoCaptureProvider::ServiceProcessObserver
   }
 
   void OnServiceProcessCrashed(const ServiceProcessInfo& info) override {
-    if (info.IsService<video_capture::mojom::VideoCaptureService>())
+    if (info.IsService<video_capture::mojom::VideoCaptureService>()) {
+      LOG(WARNING) << "Detected crash of video capture service";
       io_task_runner_->PostTask(FROM_HERE, base::BindOnce(stop_callback_));
+    }
   }
 
   const scoped_refptr<base::TaskRunner> io_task_runner_;
@@ -148,7 +142,9 @@ void ServiceVideoCaptureProvider::GetDeviceInfosAsync(
     GetDeviceInfosCallback result_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   emit_log_message_cb_.Run("ServiceVideoCaptureProvider::GetDeviceInfosAsync");
-  GetDeviceInfosAsyncForRetry(std::move(result_callback), 0);
+  get_device_infos_retried_ = false;
+  get_device_infos_pending_callbacks_.push_back(std::move(result_callback));
+  GetDeviceInfosAsyncForRetry();
 }
 
 std::unique_ptr<VideoCaptureDeviceLauncher>
@@ -177,17 +173,15 @@ void ServiceVideoCaptureProvider::OnServiceStarted() {
 }
 
 void ServiceVideoCaptureProvider::OnServiceStopped() {
-#if BUILDFLAG(IS_MAC)
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  if (stashed_result_callback_for_retry_) {
+  if (!get_device_infos_pending_callbacks_.empty()) {
+    // The service stopped during a device info query.
     TRACE_EVENT_INSTANT0(
         TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
         "Video capture service has shut down. Retrying GetDeviceInfos.",
         TRACE_EVENT_SCOPE_PROCESS);
-    GetDeviceInfosAsyncForRetry(std::move(stashed_result_callback_for_retry_),
-                                stashed_retry_count_ + 1);
+    GetDeviceInfosAsyncForRetry();
   }
-#endif
 }
 
 void ServiceVideoCaptureProvider::OnLauncherConnectingToSourceProvider(
@@ -235,6 +229,13 @@ ServiceVideoCaptureProvider::LazyConnectToService() {
 #endif
 
   mojo::Remote<video_capture::mojom::VideoSourceProvider> source_provider;
+#if BUILDFLAG(IS_MAC)
+  if (get_device_infos_retried_) {
+    // If the service crashed once during a device info query, enable the
+    // safe-mode VideoCaptureService.
+    EnableVideoCaptureServiceSafeMode();
+  }
+#endif
   GetVideoCaptureService().ConnectToVideoSourceProvider(
       source_provider.BindNewPipeAndPassReceiver());
   source_provider.set_disconnect_handler(base::BindOnce(
@@ -249,64 +250,55 @@ ServiceVideoCaptureProvider::LazyConnectToService() {
   return result;
 }
 
-void ServiceVideoCaptureProvider::GetDeviceInfosAsyncForRetry(
-    GetDeviceInfosCallback result_callback,
-    int retry_count) {
+void ServiceVideoCaptureProvider::GetDeviceInfosAsyncForRetry() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   auto service_connection = LazyConnectToService();
-  service_connection->SetRetryCount(retry_count);
-  // Make sure that |result_callback| gets invoked with an empty result in case
+  // Make sure that the callback gets invoked with an empty result in case
   // that the service drops the request.
-  auto split_callback = base::SplitOnceCallback(std::move(result_callback));
   service_connection->source_provider()->GetSourceInfos(
       mojo::WrapCallbackWithDropHandler(
           base::BindOnce(&ServiceVideoCaptureProvider::OnDeviceInfosReceived,
-                         weak_ptr_factory_.GetWeakPtr(), service_connection,
-                         std::move(split_callback.first), retry_count),
+                         weak_ptr_factory_.GetWeakPtr(), service_connection),
           base::BindOnce(
               &ServiceVideoCaptureProvider::OnDeviceInfosRequestDropped,
-              weak_ptr_factory_.GetWeakPtr(), service_connection,
-              std::move(split_callback.second), retry_count)));
+              weak_ptr_factory_.GetWeakPtr(), service_connection)));
 }
 
 void ServiceVideoCaptureProvider::OnDeviceInfosReceived(
     scoped_refptr<RefCountedVideoSourceProvider> service_connection,
-    GetDeviceInfosCallback result_callback,
-    int retry_count,
     const std::vector<media::VideoCaptureDeviceInfo>& infos) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-#if BUILDFLAG(IS_MAC)
-  std::string model = base::mac::GetModelIdentifier();
-  if (base::FeatureList::IsEnabled(
-          features::kRetryGetVideoCaptureDeviceInfos) &&
-      base::StartsWith(model, "MacBook",
-                       base::CompareCase::INSENSITIVE_ASCII)) {
-    if (infos.empty() && retry_count < kMaxRetriesForGetDeviceInfos &&
-        !stashed_result_callback_for_retry_) {
-      TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-                           "Waiting for video capture service to shut down.",
-                           TRACE_EVENT_SCOPE_PROCESS);
-      stashed_result_callback_for_retry_ = std::move(result_callback);
-      stashed_retry_count_ = retry_count;
-
-      // We may try again once |OnServiceStopped()| is invoked via our
-      // ServiceProcessHost observer.
-      return;
-    }
+  for (GetDeviceInfosCallback& callback : get_device_infos_pending_callbacks_) {
+    std::move(callback).Run(media::mojom::DeviceEnumerationResult::kSuccess,
+                            infos);
   }
-#endif
-  std::move(result_callback)
-      .Run(media::mojom::DeviceEnumerationResult::kSuccess, infos);
+  get_device_infos_pending_callbacks_.clear();
 }
 
 void ServiceVideoCaptureProvider::OnDeviceInfosRequestDropped(
-    scoped_refptr<RefCountedVideoSourceProvider> service_connection,
-    GetDeviceInfosCallback result_callback,
-    int retry_count) {
+    scoped_refptr<RefCountedVideoSourceProvider> service_connection) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  std::move(result_callback)
-      .Run(media::mojom::DeviceEnumerationResult::kErrorCaptureServiceCrash,
-           std::vector<media::VideoCaptureDeviceInfo>());
+  if (base::FeatureList::IsEnabled(
+          features::kRetryGetVideoCaptureDeviceInfos)) {
+    if (!get_device_infos_retried_) {
+      get_device_infos_retried_ = true;
+      // Do nothing, OnServiceStopped will retry the query automatically when
+      // the service has been torn down.
+      return;
+    }
+    LOG(WARNING) << "Too many GetDeviceInfos() retries";
+    emit_log_message_cb_.Run(
+        "ServiceVideoCaptureProvider::OnDeviceInfosRequestDropped: Too many "
+        "retries");
+  }
+
+  // After too many retries, we just return an empty list
+  for (GetDeviceInfosCallback& callback : get_device_infos_pending_callbacks_) {
+    std::move(callback).Run(
+        media::mojom::DeviceEnumerationResult::kErrorCaptureServiceCrash,
+        std::vector<media::VideoCaptureDeviceInfo>());
+  }
+  get_device_infos_pending_callbacks_.clear();
 }
 
 void ServiceVideoCaptureProvider::OnLostConnectionToSourceProvider() {
