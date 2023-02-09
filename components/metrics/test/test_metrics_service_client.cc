@@ -79,8 +79,9 @@ std::unique_ptr<MetricsLogUploader> TestMetricsServiceClient::CreateUploader(
     base::StringPiece mime_type,
     MetricsLogUploader::MetricServiceType service_type,
     const MetricsLogUploader::UploadCallback& on_upload_complete) {
-  uploader_ = new TestMetricsLogUploader(on_upload_complete);
-  return std::unique_ptr<MetricsLogUploader>(uploader_);
+  auto uploader = std::make_unique<TestMetricsLogUploader>(on_upload_complete);
+  uploader_ = uploader->AsWeakPtr();
+  return uploader;
 }
 
 base::TimeDelta TestMetricsServiceClient::GetStandardUploadInterval() {

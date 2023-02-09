@@ -62,7 +62,7 @@ class TestMetricsServiceClient : public MetricsServiceClient {
 
   const std::string& get_client_id() const { return client_id_; }
   // Returns a weak ref to the last created uploader.
-  TestMetricsLogUploader* uploader() { return uploader_; }
+  TestMetricsLogUploader* uploader() { return uploader_.get(); }
   void set_version_string(const std::string& str) { version_string_ = str; }
   void set_product(int32_t product) { product_ = product; }
   void set_reporting_is_managed(bool managed) {
@@ -100,7 +100,7 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   std::set<uint64_t> allowed_user_ids_;
 
   // A weak ref to the last created TestMetricsLogUploader.
-  raw_ptr<TestMetricsLogUploader> uploader_ = nullptr;
+  base::WeakPtr<TestMetricsLogUploader> uploader_ = nullptr;
 };
 
 }  // namespace metrics
