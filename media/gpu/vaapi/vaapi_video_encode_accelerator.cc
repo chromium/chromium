@@ -87,6 +87,7 @@ std::unique_ptr<ScopedVASurface> CreateScopedSurface(
 struct VaapiVideoEncodeAccelerator::InputFrameRef {
   InputFrameRef(scoped_refptr<VideoFrame> frame, bool force_keyframe)
       : frame(frame), force_keyframe(force_keyframe) {}
+  // If |frame| is nullptr, the InputFrameRef indicates the Flush request.
   const scoped_refptr<VideoFrame> frame;
   const bool force_keyframe;
 };
@@ -550,8 +551,7 @@ void VaapiVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
     }
   }
 
-  input_queue_.push(
-      std::make_unique<InputFrameRef>(std::move(frame), force_keyframe));
+  input_queue_.emplace(std::move(frame), force_keyframe);
   EncodePendingInputs();
 }
 
@@ -856,8 +856,8 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
   TRACE_EVENT1("media,gpu", "VAVEA::EncodePendingInputs",
                "pending input frames", input_queue_.size());
   while (state_ == kEncoding && !input_queue_.empty()) {
-    std::unique_ptr<InputFrameRef>& input_frame = input_queue_.front();
-    if (!input_frame) {
+    const InputFrameRef& input_frame = input_queue_.front();
+    if (!input_frame.frame) {
       // If this is a flush (null) frame, don't create/submit a new encode
       // result for it, but forward a null result to the
       // |pending_encode_results_| queue.
@@ -874,7 +874,7 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
     std::vector<scoped_refptr<VASurface>> reconstructed_surfaces;
     if (native_input_mode_) {
       if (!CreateSurfacesForGpuMemoryBufferEncoding(
-              *input_frame->frame, spatial_layer_resolutions, &input_surfaces,
+              *input_frame.frame, spatial_layer_resolutions, &input_surfaces,
               &reconstructed_surfaces)) {
         return;
       }
@@ -882,7 +882,7 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
       DCHECK_EQ(num_spatial_layers, 1u);
       input_surfaces.resize(1u);
       reconstructed_surfaces.resize(1u);
-      if (!CreateSurfacesForShmemEncoding(*input_frame->frame,
+      if (!CreateSurfacesForShmemEncoding(*input_frame.frame,
                                           &input_surfaces[0],
                                           &reconstructed_surfaces[0])) {
         return;
@@ -896,8 +896,8 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
       std::unique_ptr<EncodeJob> job;
       TRACE_EVENT0("media,gpu", "VAVEA::FromCreateEncodeJobToReturn");
       const bool force_key =
-          (spatial_idx == 0 ? input_frame->force_keyframe : false);
-      job = CreateEncodeJob(force_key, input_frame->frame->timestamp(),
+          (spatial_idx == 0 ? input_frame.force_keyframe : false);
+      job = CreateEncodeJob(force_key, input_frame.frame->timestamp(),
                             *input_surfaces[spatial_idx],
                             std::move(reconstructed_surfaces[spatial_idx]));
       if (!job)
@@ -928,7 +928,7 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
       }
     }
 
-    // Invalidates |input_frame| here; it notifies a client |input_frame->frame|
+    // Invalidates |input_frame| here; it notifies a client |input_frame.frame|
     // can be reused for the future encoding.
     // If the frame is copied (|native_input_mode_| == false), it is clearly
     // safe to release |input_frame|. If the frame is imported
@@ -936,7 +936,6 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
     // blocked on DMA_BUF_IOCTL_SYNC because a VA-API driver protects the buffer
     // through a DRM driver until encoding is complete, that is, vaMapBuffer()
     // on a coded buffer returns.
-    input_frame.reset();
     input_queue_.pop();
 
     TryToReturnBitstreamBuffers();
@@ -1036,8 +1035,8 @@ void VaapiVideoEncodeAccelerator::FlushTask(FlushCallback flush_callback) {
   }
   flush_callback_ = std::move(flush_callback);
 
-  // Insert an null job to indicate a flush command.
-  input_queue_.push(std::unique_ptr<InputFrameRef>(nullptr));
+  // Insert InputFrameRef whose frame is nullptr to indicate a flush command.
+  input_queue_.emplace(nullptr, false);
   EncodePendingInputs();
 }
 
@@ -1087,8 +1086,7 @@ void VaapiVideoEncodeAccelerator::DestroyTask() {
   while (!available_bitstream_buffers_.empty())
     available_bitstream_buffers_.pop();
 
-  while (!input_queue_.empty())
-    input_queue_.pop();
+  input_queue_ = {};
 
   // Note ScopedVABuffer owned by EncodeResults must be destroyed before
   // |vaapi_wrapper_| is destroyed to ensure VADisplay is valid on the

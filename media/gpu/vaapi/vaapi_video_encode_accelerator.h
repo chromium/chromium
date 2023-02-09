@@ -284,7 +284,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   EncodeSurfacesCountMap encode_surfaces_count_;
 
   // Queue of input frames to be encoded.
-  base::queue<std::unique_ptr<InputFrameRef>> input_queue_;
+  base::queue<InputFrameRef> input_queue_;
 
   // BitstreamBuffers mapped, ready to be filled with encoded stream data.
   base::queue<std::unique_ptr<BitstreamBufferRef>> available_bitstream_buffers_;
