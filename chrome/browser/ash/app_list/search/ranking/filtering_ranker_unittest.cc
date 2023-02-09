@@ -15,7 +15,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace app_list::test {
-
 namespace {
 
 using testing::UnorderedElementsAre;
@@ -105,24 +104,28 @@ TEST_F(FilteringRankerTest, FilterOmniboxResults) {
   ResultsMap results;
 
   results[web] = MakeOmniboxResults(
-      {"a", "b", "c", "d", "e"}, {web, web, tab, web, web},
+      {"a", "b", "c", "d", "e", "f"}, {web, web, tab, web, web, web},
       {AnswerType::kFinance, AnswerType::kTranslation, AnswerType::kUnset,
-       AnswerType::kDictionary, AnswerType::kCalculator});
+       AnswerType::kDictionary, AnswerType::kCalculator,
+       AnswerType::kDefaultAnswer});
 
   FilteringRanker ranker;
   CategoriesList categories;
 
   // Start with a query that is one character too short.
+  ASSERT_GT(kMinQueryLengthForCommonAnswers, 0u);
   ranker.Start(std::u16string(kMinQueryLengthForCommonAnswers - 1, 'a'),
                results, categories);
   ranker.UpdateResultRanks(results, ProviderType::kOmnibox);
 
   // All results except dictionary and translate answers are allowed.
+  ASSERT_EQ(results[web].size(), 6u);
   EXPECT_FALSE(results[web][0]->scoring().filtered());
   EXPECT_TRUE(results[web][1]->scoring().filtered());
   EXPECT_FALSE(results[web][2]->scoring().filtered());
   EXPECT_TRUE(results[web][3]->scoring().filtered());
   EXPECT_FALSE(results[web][4]->scoring().filtered());
+  EXPECT_TRUE(results[web][5]->scoring().filtered());
 }
 
 }  // namespace app_list::test
