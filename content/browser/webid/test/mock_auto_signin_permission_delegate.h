@@ -22,7 +22,8 @@ class MockAutoSigninPermissionDelegate
   MockAutoSigninPermissionDelegate& operator=(
       const MockAutoSigninPermissionDelegate&) = delete;
 
-  MOCK_METHOD0(HasAutoSigninPermission, bool());
+  MOCK_METHOD1(HasAutoSigninPermission, bool(const url::Origin&));
+  MOCK_METHOD1(RecordDisplayAndEmbargo, void(const url::Origin&));
 };
 
 }  // namespace content

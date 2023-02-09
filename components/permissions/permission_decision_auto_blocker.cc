@@ -41,6 +41,12 @@ constexpr base::TimeDelta kFederatedIdentityApiEmbargoDurationDismiss[] = {
     base::Hours(2) /* 1st dismissal */, base::Days(1) /* 2nd dismissal */,
     base::Days(7), base::Days(28)};
 
+// The duration that an origin will stay under embargo for the
+// FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION permission due to an auto sign-in
+// prompt being displayed recently.
+constexpr base::TimeDelta kFederatedIdentityAutoSigninEmbargoDuration =
+    base::Minutes(10);
+
 // The number of times that users may explicitly dismiss a permission prompt
 // from an origin before it is automatically blocked.
 int g_dismissals_before_block = kDefaultDismissalsBeforeBlock;
@@ -70,6 +76,12 @@ int g_ignore_embargo_days = kDefaultEmbargoDays;
 std::string GetStringForContentType(ContentSettingsType content_type) {
   if (content_type == ContentSettingsType::FEDERATED_IDENTITY_API)
     return "FederatedIdentityApi";
+
+  if (content_type ==
+      ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION) {
+    return "FederatedIdentityAutoSignin";
+  }
+
   return PermissionUtil::GetPermissionString(content_type);
 }
 
@@ -144,6 +156,12 @@ base::TimeDelta GetEmbargoDurationForContentSettingsType(
             std::size(kFederatedIdentityApiEmbargoDurationDismiss) - 1));
     return kFederatedIdentityApiEmbargoDurationDismiss[duration_index];
   }
+
+  if (permission ==
+      ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION) {
+    return kFederatedIdentityAutoSigninEmbargoDuration;
+  }
+
   return base::Days(g_dismissal_embargo_days);
 }
 
@@ -208,10 +226,16 @@ const char PermissionDecisionAutoBlocker::kPermissionIgnoreEmbargoKey[] =
     "ignore_embargo_days";
 
 // static
+const char PermissionDecisionAutoBlocker::kPermissionDisplayEmbargoKey[] =
+    "display_embargo_minutes";
+
+// static
 bool PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
     ContentSettingsType content_setting) {
   return PermissionUtil::IsPermission(content_setting) ||
-         content_setting == ContentSettingsType::FEDERATED_IDENTITY_API;
+         content_setting == ContentSettingsType::FEDERATED_IDENTITY_API ||
+         content_setting ==
+             ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION;
 }
 
 // static
@@ -244,6 +268,14 @@ PermissionDecisionAutoBlocker::GetEmbargoResult(
                      base::Days(g_ignore_embargo_days))) {
     return PermissionResult(CONTENT_SETTING_BLOCK,
                             PermissionStatusSource::MULTIPLE_IGNORES);
+  }
+
+  if (IsUnderEmbargo(permission_dict, features::kBlockRepeatedAutoSigninPrompts,
+                     kPermissionDisplayEmbargoKey, current_time,
+                     GetEmbargoDurationForContentSettingsType(
+                         permission, /*dismiss_count=*/0))) {
+    return PermissionResult(CONTENT_SETTING_BLOCK,
+                            PermissionStatusSource::RECENT_DISPLAY);
   }
 
   return absl::nullopt;
@@ -441,6 +473,18 @@ bool PermissionDecisionAutoBlocker::RecordIgnoreAndEmbargo(
     }
   }
 
+  return false;
+}
+
+bool PermissionDecisionAutoBlocker::RecordDisplayAndEmbargo(
+    const GURL& url,
+    ContentSettingsType permission) {
+  DCHECK_EQ(permission,
+            ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION);
+  if (base::FeatureList::IsEnabled(features::kBlockRepeatedAutoSigninPrompts)) {
+    PlaceUnderEmbargo(url, permission, kPermissionDisplayEmbargoKey);
+    return true;
+  }
   return false;
 }
 

@@ -7,6 +7,10 @@
 
 #include "content/common/content_export.h"
 
+namespace url {
+class Origin;
+}
+
 namespace content {
 
 // Delegate interface for the FedCM implementation to query whether the FedCM
@@ -16,8 +20,15 @@ class CONTENT_EXPORT FederatedIdentityAutoSigninPermissionContextDelegate {
   FederatedIdentityAutoSigninPermissionContextDelegate() = default;
   virtual ~FederatedIdentityAutoSigninPermissionContextDelegate() = default;
 
-  // Returns the permission status of the FedCM API's auto sign-in feature.
-  virtual bool HasAutoSigninPermission() = 0;
+  // Returns the permission status of the FedCM API's auto sign-in feature for
+  // the passed-in |relying_party_embedder|.
+  virtual bool HasAutoSigninPermission(
+      const url::Origin& relying_party_embedder) = 0;
+
+  // Records that an auto sign-in prompt was displayed to the user and places
+  // the permission under embargo for the passed-in |relying_party_embedder|.
+  virtual void RecordDisplayAndEmbargo(
+      const url::Origin& relying_party_embedder) = 0;
 };
 
 }  // namespace content

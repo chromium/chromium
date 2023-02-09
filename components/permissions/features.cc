@@ -20,6 +20,12 @@ BASE_FEATURE(kBlockPromptsIfIgnoredOften,
              "BlockPromptsIfIgnoredOften",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Once the user has auto signed-in, automatically block subsequent auto sign-in
+// prompts within the next 10 minutes.
+BASE_FEATURE(kBlockRepeatedAutoSigninPrompts,
+             "BlockRepeatedAutoSigninPrompts",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Once the user declines a notification permission prompt in a WebContents,
 // automatically dismiss subsequent prompts in the same WebContents, from any
 // origin, until the next user-initiated navigation.

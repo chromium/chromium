@@ -75,6 +75,10 @@ const char kPermissionBlockedRepeatedIgnoresMessage[] =
     "information.";
 #endif
 
+const char kPermissionBlockedRecentDisplayMessage[] =
+    "%s permission has been blocked as the prompt has already been displayed "
+    "to the user recently.";
+
 const char kPermissionBlockedPermissionsPolicyMessage[] =
     "%s permission has been blocked because of a permissions policy applied to"
     " the current document. See https://goo.gl/EuHzyv for more details.";
@@ -175,6 +179,10 @@ void PermissionContextBase::RequestPermission(
       case PermissionStatusSource::FEATURE_POLICY:
         LogPermissionBlockedMessage(rfh,
                                     kPermissionBlockedPermissionsPolicyMessage,
+                                    content_settings_type_);
+        break;
+      case PermissionStatusSource::RECENT_DISPLAY:
+        LogPermissionBlockedMessage(rfh, kPermissionBlockedRecentDisplayMessage,
                                     content_settings_type_);
         break;
       case PermissionStatusSource::PORTAL:

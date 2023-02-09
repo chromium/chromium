@@ -630,6 +630,16 @@ class TestPermissionDelegate : public NiceMock<MockPermissionDelegate> {
   }
 };
 
+class TestAutoSigninPermissionDelegate
+    : public MockAutoSigninPermissionDelegate {
+ public:
+  std::set<url::Origin> embargoed_origins_;
+
+  void RecordDisplayAndEmbargo(const url::Origin& origin) override {
+    embargoed_origins_.insert(origin);
+  }
+};
+
 }  // namespace
 
 class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
@@ -644,15 +654,15 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     test_api_permission_delegate_ =
         std::make_unique<TestApiPermissionDelegate>();
     test_permission_delegate_ = std::make_unique<TestPermissionDelegate>();
-    mock_auto_signin_permission_delegate_ =
-        std::make_unique<NiceMock<MockAutoSigninPermissionDelegate>>();
+    test_auto_signin_permission_delegate_ =
+        std::make_unique<TestAutoSigninPermissionDelegate>();
 
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL(kRpUrl), ui::PAGE_TRANSITION_LINK);
 
     federated_auth_request_impl_ = &FederatedAuthRequestImpl::CreateForTesting(
         *main_test_rfh(), test_api_permission_delegate_.get(),
-        mock_auto_signin_permission_delegate_.get(),
+        test_auto_signin_permission_delegate_.get(),
         test_permission_delegate_.get(),
         request_remote_.BindNewPipeAndPassReceiver());
 
@@ -987,8 +997,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
   std::unique_ptr<TestApiPermissionDelegate> test_api_permission_delegate_;
   std::unique_ptr<TestPermissionDelegate> test_permission_delegate_;
-  std::unique_ptr<NiceMock<MockAutoSigninPermissionDelegate>>
-      mock_auto_signin_permission_delegate_;
+  std::unique_ptr<TestAutoSigninPermissionDelegate>
+      test_auto_signin_permission_delegate_;
 
   AuthRequestCallbackHelper auth_helper_;
 
@@ -1303,6 +1313,44 @@ TEST_F(FederatedAuthRequestImplTest,
   EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
 }
 
+// Test that auto sign-in permission is not embargoed upon explicit sign-in.
+TEST_F(FederatedAuthRequestImplTest, ExplicitSigninEmbargo) {
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+  EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
+  EXPECT_TRUE(
+      test_auto_signin_permission_delegate_->embargoed_origins_.empty());
+}
+
+// Test that auto sign-in permission is embargoed upon successful auto sign-in.
+TEST_F(FederatedAuthRequestImplTest, AutoSigninEmbargo) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAutoReauthn);
+
+  // Pretend the sharing permission has been granted for this account.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), kAccountId))
+      .Times(2)
+      .WillRepeatedly(Return(true));
+
+  // Pretend the auto sign-in permission has been granted.
+  EXPECT_CALL(*test_auto_signin_permission_delegate_,
+              HasAutoSigninPermission(OriginFromString(kRpUrl)))
+      .WillOnce(Return(true));
+
+  RequestParameters request_parameters = kDefaultRequestParameters;
+  request_parameters.prefer_auto_sign_in = true;
+  RunAuthTest(request_parameters, kExpectationSuccess, kConfigurationValid);
+
+  ASSERT_EQ(displayed_accounts().size(), 1u);
+  EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignIn);
+  EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kAuto);
+  EXPECT_TRUE(test_auto_signin_permission_delegate_->embargoed_origins_.count(
+      OriginFromString(kRpUrl)));
+}
+
 // Test that auto sign-in with a single account where the account is a returning
 // user sets the sign-in mode to auto.
 TEST_F(FederatedAuthRequestImplTest,
@@ -1319,7 +1367,8 @@ TEST_F(FederatedAuthRequestImplTest,
       .WillRepeatedly(Return(true));
 
   // Pretend the auto sign-in permission has been granted.
-  EXPECT_CALL(*mock_auto_signin_permission_delegate_, HasAutoSigninPermission())
+  EXPECT_CALL(*test_auto_signin_permission_delegate_,
+              HasAutoSigninPermission(OriginFromString(kRpUrl)))
       .WillOnce(Return(true));
 
   for (const auto& idp_info : kConfigurationValid.idp_info) {
@@ -1364,7 +1413,8 @@ TEST_F(FederatedAuthRequestImplTest,
       .WillOnce(Return(false));
 
   // Pretend the auto sign-in permission has been granted.
-  EXPECT_CALL(*mock_auto_signin_permission_delegate_, HasAutoSigninPermission())
+  EXPECT_CALL(*test_auto_signin_permission_delegate_,
+              HasAutoSigninPermission(OriginFromString(kRpUrl)))
       .WillOnce(Return(true));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
@@ -1411,7 +1461,8 @@ TEST_F(FederatedAuthRequestImplTest,
       .WillOnce(Return(false));
 
   // Pretend the auto sign-in permission has been granted.
-  EXPECT_CALL(*mock_auto_signin_permission_delegate_, HasAutoSigninPermission())
+  EXPECT_CALL(*test_auto_signin_permission_delegate_,
+              HasAutoSigninPermission(OriginFromString(kRpUrl)))
       .WillOnce(Return(true));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
@@ -1442,7 +1493,8 @@ TEST_F(FederatedAuthRequestImplTest, AutoSigninForZeroReturningUsers) {
       .WillOnce(Return(false));
 
   // Pretend the auto sign-in permission has been granted.
-  EXPECT_CALL(*mock_auto_signin_permission_delegate_, HasAutoSigninPermission())
+  EXPECT_CALL(*test_auto_signin_permission_delegate_,
+              HasAutoSigninPermission(OriginFromString(kRpUrl)))
       .WillOnce(Return(true));
 
   for (const auto& idp_info : kConfigurationValid.idp_info) {
@@ -1495,7 +1547,8 @@ TEST_F(FederatedAuthRequestImplTest, AutoSigninBrowserNotObservedSigninBefore) {
       .WillRepeatedly(Return(false));
 
   // Pretend the auto sign-in permission has been granted.
-  EXPECT_CALL(*mock_auto_signin_permission_delegate_, HasAutoSigninPermission())
+  EXPECT_CALL(*test_auto_signin_permission_delegate_,
+              HasAutoSigninPermission(OriginFromString(kRpUrl)))
       .WillOnce(Return(true));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
@@ -1520,7 +1573,8 @@ TEST_F(FederatedAuthRequestImplTest, AutoSigninForFirstTimeUser) {
   list.InitAndEnableFeature(features::kFedCmAutoReauthn);
 
   // Pretend the auto sign-in permission has been granted.
-  EXPECT_CALL(*mock_auto_signin_permission_delegate_, HasAutoSigninPermission())
+  EXPECT_CALL(*test_auto_signin_permission_delegate_,
+              HasAutoSigninPermission(OriginFromString(kRpUrl)))
       .WillOnce(Return(true));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
@@ -1547,7 +1601,8 @@ TEST_F(FederatedAuthRequestImplTest,
       .WillOnce(Return(true));
 
   // Pretend the auto sign-in permission has been blocked for this account.
-  EXPECT_CALL(*mock_auto_signin_permission_delegate_, HasAutoSigninPermission())
+  EXPECT_CALL(*test_auto_signin_permission_delegate_,
+              HasAutoSigninPermission(OriginFromString(kRpUrl)))
       .WillOnce(Return(false));
 
   RequestParameters request_parameters = kDefaultRequestParameters;

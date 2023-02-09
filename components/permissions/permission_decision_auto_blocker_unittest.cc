@@ -823,6 +823,27 @@ void CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
   EXPECT_FALSE(result.has_value());
 }
 
+// Checks that embargo on federated identity auto sign-in permission is lifted
+// only after the passed-in |time_delta| has elapsed.
+void CheckFederatedIdentityAutoSigninEmbargoLiftedAfterTimeElapsing(
+    PermissionDecisionAutoBlocker* autoblocker,
+    base::SimpleTestClock* clock,
+    const GURL& url,
+    base::TimeDelta time_delta) {
+  ASSERT_LT(base::Minutes(1), time_delta);
+
+  clock->Advance(time_delta - base::Minutes(1));
+  absl::optional<PermissionResult> result = autoblocker->GetEmbargoResult(
+      url, ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION);
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, result->content_setting);
+  EXPECT_EQ(PermissionStatusSource::RECENT_DISPLAY, result->source);
+
+  clock->Advance(base::Minutes(2));
+  result = autoblocker->GetEmbargoResult(
+      url, ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION);
+  EXPECT_FALSE(result.has_value());
+}
+
 }  // namespace
 
 TEST_F(PermissionDecisionAutoBlockerUnitTest,
@@ -875,6 +896,22 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest,
       url, ContentSettingsType::FEDERATED_IDENTITY_API, false));
   CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
       autoblocker(), clock(), url, base::Hours(2));
+}
+
+TEST_F(PermissionDecisionAutoBlockerUnitTest,
+       TestLogoutFederatedIdentityAutoSigninBackoff) {
+  GURL url("https://www.google.com");
+  clock()->SetNow(base::Time::Now());
+
+  absl::optional<PermissionResult> result = autoblocker()->GetEmbargoResult(
+      url, ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION);
+  EXPECT_FALSE(result.has_value());
+
+  // 10 minute embargo
+  EXPECT_TRUE(autoblocker()->RecordDisplayAndEmbargo(
+      url, ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION));
+  CheckFederatedIdentityAutoSigninEmbargoLiftedAfterTimeElapsing(
+      autoblocker(), clock(), url, base::Minutes(10));
 }
 
 TEST_F(PermissionDecisionAutoBlockerUnitTest,

@@ -129,6 +129,11 @@ class PermissionDecisionAutoBlocker : public KeyedService {
                               ContentSettingsType permission,
                               bool ignored_prompt_was_quiet);
 
+  // Records that a prompt was displayed for |permission|. If
+  // features::kBlockRepeatedAutoSigninPrompts is enabled, it will place |url|
+  // under embargo for |permission|.
+  bool RecordDisplayAndEmbargo(const GURL& url, ContentSettingsType permission);
+
   // Clears any existing embargo status for |url|, |permission|. For
   // permissions embargoed under repeated dismissals, this means a prompt will
   // be shown to the user on next permission request. Clears dismiss and
@@ -171,6 +176,7 @@ class PermissionDecisionAutoBlocker : public KeyedService {
   static const char kPromptIgnoreCountWithQuietUiKey[];
   static const char kPermissionDismissalEmbargoKey[];
   static const char kPermissionIgnoreEmbargoKey[];
+  static const char kPermissionDisplayEmbargoKey[];
 
   raw_ptr<HostContentSettingsMap> settings_map_;
 

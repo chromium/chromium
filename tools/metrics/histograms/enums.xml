@@ -80715,6 +80715,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1" label="BLACKLISTED"/>
   <int value="2" label="REPEATED_DISMISSALS"/>
   <int value="3" label="REPEATED_IGNORES"/>
+  <int value="4" label="RECENT_DISPLAY"/>
 </enum>
 
 <enum name="PermissionPredictionSource">

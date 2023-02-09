@@ -119,6 +119,7 @@ enum class PermissionEmbargoStatus {
   // Removed: PERMISSIONS_BLACKLISTING = 1,
   REPEATED_DISMISSALS = 2,
   REPEATED_IGNORES = 3,
+  RECENT_DISPLAY = 4,
 
   // Keep this at the end.
   NUM,

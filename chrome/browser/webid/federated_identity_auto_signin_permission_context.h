@@ -13,6 +13,10 @@ namespace content {
 class BrowserContext;
 }
 
+namespace permissions {
+class PermissionDecisionAutoBlocker;
+}
+
 // Context for storing user permission to use the browser FedCM API's auto
 // sign-in feature.
 class FederatedIdentityAutoSigninPermissionContext
@@ -30,10 +34,15 @@ class FederatedIdentityAutoSigninPermissionContext
       const FederatedIdentityAutoSigninPermissionContext&) = delete;
 
   // content::FederatedIdentityAutoSigninPermissionContextDelegate:
-  bool HasAutoSigninPermission() override;
+  bool HasAutoSigninPermission(
+      const url::Origin& relying_party_embedder) override;
+  void RecordDisplayAndEmbargo(
+      const url::Origin& relying_party_embedder) override;
 
  private:
   const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
+  const raw_ptr<permissions::PermissionDecisionAutoBlocker, DanglingUntriaged>
+      permission_autoblocker_;
 };
 
 #endif  // CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION_CONTEXT_H_

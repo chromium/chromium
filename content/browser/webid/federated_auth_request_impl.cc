@@ -919,7 +919,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
   bool maybe_proceed_with_auto_signin =
       prefer_auto_signin && IsFedCmAutoReauthnEnabled() &&
-      auto_signin_permission_delegate_->HasAutoSigninPermission();
+      auto_signin_permission_delegate_->HasAutoSigninPermission(
+          GetEmbeddingOrigin());
 
   if (maybe_proceed_with_auto_signin) {
     const IdentityProviderData* auto_signin_idp = nullptr;
@@ -936,6 +937,11 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       idp.accounts = {account};
       idp_data_for_display = {idp};
     }
+
+    // Embargo auto sign-in to mitigate a deadloop where an auto signed-in user
+    // gets re-auto signed-in soon after logging out of the active session.
+    auto_signin_permission_delegate_->RecordDisplayAndEmbargo(
+        GetEmbeddingOrigin());
   }
 
   // TODO(crbug.com/1408520): opt-out affordance is not included in the origin

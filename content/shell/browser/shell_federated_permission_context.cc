@@ -34,9 +34,13 @@ bool ShellFederatedPermissionContext::ShouldCompleteRequestImmediately() const {
 }
 
 // FederatedIdentityAutoSigninPermissionContextDelegate
-bool ShellFederatedPermissionContext::HasAutoSigninPermission() {
+bool ShellFederatedPermissionContext::HasAutoSigninPermission(
+    const url::Origin& relying_party_embedder) {
   return auto_signin_permission_;
 }
+
+void ShellFederatedPermissionContext::RecordDisplayAndEmbargo(
+    const url::Origin& relying_party_embedder) {}
 
 void ShellFederatedPermissionContext::AddIdpSigninStatusObserver(
     IdpSigninStatusObserver* observer) {}

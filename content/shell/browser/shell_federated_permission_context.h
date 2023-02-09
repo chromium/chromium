@@ -40,7 +40,10 @@ class ShellFederatedPermissionContext
   bool ShouldCompleteRequestImmediately() const override;
 
   // FederatedIdentityAutoSigninPermissionContextDelegate
-  bool HasAutoSigninPermission() override;
+  bool HasAutoSigninPermission(
+      const url::Origin& relying_party_embedder) override;
+  void RecordDisplayAndEmbargo(
+      const url::Origin& relying_party_embedder) override;
 
   // FederatedIdentityPermissionContextDelegate
   void AddIdpSigninStatusObserver(IdpSigninStatusObserver* observer) override;

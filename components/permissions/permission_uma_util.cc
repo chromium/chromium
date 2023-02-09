@@ -486,6 +486,10 @@ void PermissionUmaUtil::RecordEmbargoPromptSuppressionFromSource(
       PermissionUmaUtil::RecordEmbargoPromptSuppression(
           PermissionEmbargoStatus::REPEATED_IGNORES);
       break;
+    case PermissionStatusSource::RECENT_DISPLAY:
+      PermissionUmaUtil::RecordEmbargoPromptSuppression(
+          PermissionEmbargoStatus::RECENT_DISPLAY);
+      break;
     case PermissionStatusSource::UNSPECIFIED:
     case PermissionStatusSource::KILL_SWITCH:
     case PermissionStatusSource::INSECURE_ORIGIN:

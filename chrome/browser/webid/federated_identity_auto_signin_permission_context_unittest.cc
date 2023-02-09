@@ -11,6 +11,8 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 class FederatedIdentityAutoSigninPermissionContextTest : public testing::Test {
  public:
@@ -35,10 +37,10 @@ class FederatedIdentityAutoSigninPermissionContextTest : public testing::Test {
   base::raw_ptr<FederatedIdentityAutoSigninPermissionContext> context_;
   base::raw_ptr<HostContentSettingsMap> host_content_settings_map_;
 
-  ContentSetting GetContentSetting() {
-    return host_content_settings_map_->GetDefaultContentSetting(
-        ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION,
-        nullptr);
+  ContentSetting GetContentSetting(const GURL& rp_url) {
+    return host_content_settings_map_->GetContentSetting(
+        rp_url, rp_url,
+        ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION);
   }
 
  private:
@@ -49,5 +51,22 @@ class FederatedIdentityAutoSigninPermissionContextTest : public testing::Test {
 // Test that FedCM auto sign-in is opt-in by default.
 TEST_F(FederatedIdentityAutoSigninPermissionContextTest,
        AutoSigninEnabledByDefault) {
-  EXPECT_EQ(true, context_->HasAutoSigninPermission());
+  GURL rp_url("https://rp.com");
+  EXPECT_EQ(true,
+            context_->HasAutoSigninPermission(url::Origin::Create(rp_url)));
+}
+
+// Test that
+// FederatedIdentityAutoSigninPermissionContext::RecordDisplayAndEmbargo()
+// blocks the permission if it is enabled.
+TEST_F(FederatedIdentityAutoSigninPermissionContextTest, EnabledEmbargo) {
+  GURL rp_url("https://rp.com");
+  host_content_settings_map_->SetDefaultContentSetting(
+      ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION,
+      CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetContentSetting(rp_url));
+
+  // Embargoing `rp_url` should block the content setting for `rp_url`.
+  context_->RecordDisplayAndEmbargo(url::Origin::Create(rp_url));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, GetContentSetting(rp_url));
 }
