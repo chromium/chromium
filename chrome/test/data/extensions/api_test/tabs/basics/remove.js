@@ -12,15 +12,10 @@ function resolveOnStorageChanged(resolve) {
 }
 
 var secondTabId;
-const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
-
-loadScript.then(async function() {
 chrome.test.runTests([
   function createSecondTab() {
     // Create and switch to a second tab that has an unload handler.
-    chrome.tabs.create({index: 1, active: true,
-                        url: pageUrl('unload-storage-1')},
+    chrome.tabs.create({index: 1, active: true, url: 'unload-storage-1.html'},
       (tab) => {
         secondTabId = tab.id;
         assertTrue(tab.active);
@@ -47,4 +42,4 @@ chrome.test.runTests([
 
     Promise.all([onStoragePromise, removePromise]).then(chrome.test.succeed);
   }
-])});
+]);

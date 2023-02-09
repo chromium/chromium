@@ -33,10 +33,6 @@ function createTab(createParams) {
   });
 }
 
-const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
-
-loadScript.then(async function() {
 chrome.test.runTests([
   function getFirstTabId() {
     chrome.tabs.query({ windowId: chrome.windows.WINDOW_ID_CURRENT },
@@ -49,14 +45,14 @@ chrome.test.runTests([
   },
   function createTabs() {
     // Create a second tab that has an unload handler.
-    createTab({index: 1, active: false, url: pageUrl('unload-storage-1')})
+    createTab({index: 1, active: false, url: 'unload-storage-1.html'})
       .then((tab) => {
         secondTabId = tab.id;
         assertFalse(tab.active);
         assertEq(1, tab.index);
         // Create and switch to a third tab that has an unload handler.
         return createTab(
-            {index: 2, active: true, url: pageUrl('unload-storage-2')});
+          {index: 2, active: true, url: 'unload-storage-2.html'});
       }).then((tab) => {
         thirdTabId = tab.id;
         assertTrue(tab.active);
@@ -93,4 +89,4 @@ chrome.test.runTests([
     Promise.all([onStorageChangedPromise1, onStorageChangedPromise2,
                  removePromise]).then(chrome.test.succeed);
   }
-])});
+]);

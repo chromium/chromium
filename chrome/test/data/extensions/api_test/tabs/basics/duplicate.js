@@ -5,10 +5,6 @@
 var firstTabId;
 var firstWindowId;
 
-const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
-
-loadScript.then(async function() {
 chrome.test.runTests([
   function setupWindow() {
     createWindow([pageUrl("a")], {},
@@ -55,4 +51,4 @@ chrome.test.runTests([
     });
   }
  */
-])});
+]);

@@ -4,13 +4,9 @@
 
 var testTabId_;
 
-const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
-
-loadScript.then(async function() {
 chrome.test.runTests([
-  function createTab() {
-    chrome.tabs.create({}, pass(function(tab) {
+  function setupWindow() {
+    chrome.tabs.getCurrent(pass(function(tab) {
       testTabId_ = tab.id;
     }));
   },
@@ -76,4 +72,4 @@ chrome.test.runTests([
     chrome.tabs.update(testTabId_, {muted: false});
   }
 
-])});
+]);
