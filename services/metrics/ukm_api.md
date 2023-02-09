@@ -270,9 +270,19 @@ If the event name in the XML contains a period (`.`), it is replaced with an und
 
 To avoid having UKM report becoming unbounded in size, an upper limit is placed on the number of events recorded for each event type. Events that are recorded too frequently may be subject to downsampling (see go/ukm-sampling). As a rule of thumb, it is recommended that most entries be recorded at most once per 100 pageloads on average to limit data volume.
 
-### Local Testing
+## Local Testing
 
-Build Chromium and run it with '--force-enable-metrics-reporting --metrics-upload-interval=N'. You may want some small N if you are interested in seeing behavior when UKM reports are emitted. Trigger your event locally and check chrome://ukm to make sure the data was recorded correctly.
+Build Chromium and run it with flags `--force-enable-metrics-reporting --metrics-upload-interval=N`. The first flag overrides metrics collection to be ON. The second flag means that locally collected metrics will be populated in a UKM report and uploaded every `N` seconds; You may want some small `N` if you are interested in seeing this behavior.
+
+Then in the browser, go to `chrome://settings/syncSetup` and toggle "Make searches and browsing better" to be ON.
+
+You should now be seeing "Metrics Collection is ENABLED. MSBB consent is ENABLED" at the top of the `chrome://ukm` debugging page:
+
+![UKM Debugging UI](./ukm-debug-ui.png)
+
+If you want to test Extension- or App-related UKMs, toggle the corresponding sync consent in `chrome://settings/syncSetup/advanced`.
+
+Trigger your event locally, refresh `chrome://ukm`, then double-check that your events are recorded correctly.
 
 ## Unit Testing
 
