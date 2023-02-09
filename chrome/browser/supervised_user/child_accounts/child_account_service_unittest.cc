@@ -169,13 +169,13 @@ TEST_F(ChildAccountServiceTest, FieldsAreClearedForNonChildAccounts) {
                        "http://profile.url/marge/image");
 
   OnGetFamilyMembersSuccess(members);
-  for (const char* property : supervised_users::kCustodianInfoPrefs) {
+  for (const char* property : supervised_user::kCustodianInfoPrefs) {
     EXPECT_THAT(profile_->GetPrefs()->GetString(property), Not(IsEmpty()));
   }
 
   members.clear();
   OnGetFamilyMembersSuccess(members);
-  for (const char* property : supervised_users::kCustodianInfoPrefs) {
+  for (const char* property : supervised_user::kCustodianInfoPrefs) {
     EXPECT_THAT(profile_->GetPrefs()->GetString(property), IsEmpty());
   }
 }

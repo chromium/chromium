@@ -233,7 +233,7 @@ void FamilyInfoFetcher::OnAccessTokenFetchComplete(
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,
-      base::StringPrintf(supervised_users::kAuthorizationHeaderFormat,
+      base::StringPrintf(supervised_user::kAuthorizationHeaderFormat,
                          access_token_.c_str()));
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);

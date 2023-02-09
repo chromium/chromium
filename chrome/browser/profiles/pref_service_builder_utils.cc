@@ -95,7 +95,7 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService(
     SimpleFactoryKey* key,
     const base::FilePath& path,
     bool async_prefs) {
-  supervised_users::SupervisedUserSettingsService* supervised_user_settings =
+  supervised_user::SupervisedUserSettingsService* supervised_user_settings =
       nullptr;
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   supervised_user_settings =

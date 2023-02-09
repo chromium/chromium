@@ -261,7 +261,7 @@ void KidsChromeManagementClient::OnAccessTokenFetchComplete(
 
   req->resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,
-      base::StringPrintf(supervised_users::kAuthorizationHeaderFormat,
+      base::StringPrintf(supervised_user::kAuthorizationHeaderFormat,
                          token_info.token.c_str()));
 
   std::string request_data;

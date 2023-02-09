@@ -13,13 +13,13 @@
 
 class SimpleFactoryKey;
 
-namespace supervised_users {
+namespace supervised_user {
 class SupervisedUserSettingsService;
-}  // namespace supervised_users
+}  // namespace supervised_user
 
 class SupervisedUserSettingsServiceFactory : public SimpleKeyedServiceFactory {
  public:
-  static supervised_users::SupervisedUserSettingsService* GetForKey(
+  static supervised_user::SupervisedUserSettingsService* GetForKey(
       SimpleFactoryKey* key);
 
   static SupervisedUserSettingsServiceFactory* GetInstance();

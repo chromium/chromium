@@ -217,7 +217,7 @@ void ChildAccountServiceImpl::SetIsChildAccount(bool is_child_account) {
   if (profile_->IsChild() != is_child_account) {
     if (is_child_account) {
       profile_->GetPrefs()->SetString(prefs::kSupervisedUserId,
-                                      supervised_users::kChildAccountSUID);
+                                      supervised_user::kChildAccountSUID);
     } else {
       profile_->GetPrefs()->ClearPref(prefs::kSupervisedUserId);
 
@@ -324,7 +324,7 @@ void ChildAccountServiceImpl::OnAccountsInCookieUpdated(
 }
 
 void ChildAccountServiceImpl::StartFetchingFamilyInfo() {
-  if (supervised_users::IsKidsManagementServiceEnabled()) {
+  if (supervised_user::IsKidsManagementServiceEnabled()) {
     list_family_members_fetcher_ = FetchListFamilyMembers(
         *identity_manager_, profile_->GetURLLoaderFactory(),
         KidsManagementService::GetEndpointUrl(),

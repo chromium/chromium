@@ -502,7 +502,7 @@ SupervisedUserURLFilter::GetDefaultFilteringBehavior() const {
 }
 
 void SupervisedUserURLFilter::SetDenylist(
-    const supervised_users::SupervisedUserDenylist* denylist) {
+    const supervised_user::SupervisedUserDenylist* denylist) {
   denylist_ = denylist;
 }
 

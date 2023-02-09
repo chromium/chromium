@@ -141,7 +141,7 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   entry->SetAvatarIconIndex(avatar_id);
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   entry->SetSupervisedUserId(is_supervised_profile
-                                 ? ::supervised_users::kChildAccountSUID
+                                 ? ::supervised_user::kChildAccountSUID
                                  : std::string());
 #endif
   entry->SetLocalProfileName(user_name, entry->IsUsingDefaultName());

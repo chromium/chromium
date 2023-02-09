@@ -6,7 +6,7 @@
 
 #include "components/supervised_user/core/common/pref_names.h"
 
-namespace supervised_users {
+namespace supervised_user {
 
 const char kAuthorizationHeaderFormat[] = "Bearer %s";
 const char kCameraMicDisabled[] = "CameraMicDisabled";
@@ -44,4 +44,4 @@ const char* const kCustodianInfoPrefs[] = {
 const base::FilePath::CharType kSupervisedUserSettingsFilename[] =
     FILE_PATH_LITERAL("Managed Mode Settings");
 
-}  // namespace supervised_users
+}  // namespace supervised_user

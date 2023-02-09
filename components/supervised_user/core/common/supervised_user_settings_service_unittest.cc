@@ -23,7 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace supervised_users {
+namespace supervised_user {
 
 const char kAtomicItemName[] = "X-Wombat";
 const char kSettingsName[] = "TestingSetting";
@@ -222,12 +222,12 @@ TEST_F(SupervisedUserSettingsServiceTest, NotifyForWebsiteApprovals) {
   syncer::SyncData dataForAllowedHost =
       SupervisedUserSettingsService::CreateSyncDataForSetting(
           SupervisedUserSettingsService::MakeSplitSettingKey(
-              supervised_users::kContentPackManualBehaviorHosts, "allowedhost"),
+              supervised_user::kContentPackManualBehaviorHosts, "allowedhost"),
           base::Value(true));
   syncer::SyncData dataForBlockedHost =
       SupervisedUserSettingsService::CreateSyncDataForSetting(
           SupervisedUserSettingsService::MakeSplitSettingKey(
-              supervised_users::kContentPackManualBehaviorHosts, "blockedhost"),
+              supervised_user::kContentPackManualBehaviorHosts, "blockedhost"),
           base::Value(false));
 
   syncer::SyncChangeList change_list;
@@ -433,4 +433,4 @@ TEST_F(SupervisedUserSettingsServiceTest, RecordLocalWebsiteApproval) {
                        "ContentPackManualBehaviorHosts:youtube.com");
 }
 
-}  // namespace supervised_users
+}  // namespace supervised_user

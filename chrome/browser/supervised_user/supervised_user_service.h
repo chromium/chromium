@@ -44,9 +44,9 @@ class Profile;
 class SupervisedUserServiceObserver;
 class SupervisedUserURLFilter;
 
-namespace supervised_users {
+namespace supervised_user {
 class SupervisedUserSettingsService;
-}  // namespace supervised_users
+}  // namespace supervised_user
 
 namespace base {
 class FilePath;
@@ -321,7 +321,7 @@ class SupervisedUserService : public KeyedService,
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Returns the SupervisedUserSettingsService associated with |profile_|.
-  supervised_users::SupervisedUserSettingsService* GetSettingsService();
+  supervised_user::SupervisedUserSettingsService* GetSettingsService();
 
   // Returns the PrefService associated with |profile_|.
   PrefService* GetPrefService();
@@ -397,7 +397,7 @@ class SupervisedUserService : public KeyedService,
     LOADED
   } denylist_state_;
 
-  supervised_users::SupervisedUserDenylist denylist_;
+  supervised_user::SupervisedUserDenylist denylist_;
   std::unique_ptr<FileDownloader> denylist_downloader_;
 
   // Manages local and remote web approvals.

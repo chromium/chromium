@@ -67,7 +67,7 @@ void OnNotificationClick(const GURL& url) {
 
 WebsiteApprovalNotifier::WebsiteApprovalNotifier(Profile* profile)
     : profile_(profile) {
-  supervised_users::SupervisedUserSettingsService* settings_service =
+  supervised_user::SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForKey(
           profile_->GetProfileKey());
   website_approval_subscription_ =

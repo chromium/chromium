@@ -252,7 +252,7 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
   FireWebUIListener("basic-info-received", result);
 
   // Trigger retrieval of the user settings
-  supervised_users::SupervisedUserSettingsService* settings_service =
+  supervised_user::SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
   user_settings_subscription_ =
       settings_service->SubscribeForSettingsChange(base::BindRepeating(

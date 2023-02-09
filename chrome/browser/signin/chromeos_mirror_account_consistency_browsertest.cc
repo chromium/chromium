@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsMirrorAccountConsistencyTest,
   signin::WaitForRefreshTokensLoaded(
       IdentityManagerFactory::GetForProfile(profile));
 
-  supervised_users::SupervisedUserSettingsService*
+  supervised_user::SupervisedUserSettingsService*
       supervised_user_settings_service =
           SupervisedUserSettingsServiceFactory::GetForKey(
               profile->GetProfileKey());

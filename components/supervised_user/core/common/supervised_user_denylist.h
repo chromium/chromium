@@ -21,7 +21,7 @@ class FilePath;
 
 class GURL;
 
-namespace supervised_users {
+namespace supervised_user {
 
 // Compact list of (SHA1 hashes of) blocked hosts.
 // Checking for URLs is thread-safe, loading is not.
@@ -61,6 +61,6 @@ class SupervisedUserDenylist {
   base::WeakPtrFactory<SupervisedUserDenylist> weak_ptr_factory_{this};
 };
 
-}  // namespace supervised_users
+}  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_DENYLIST_H_

@@ -42,31 +42,31 @@ struct SupervisedUserSettingsPrefMappingEntry {
 
 SupervisedUserSettingsPrefMappingEntry kSupervisedUserSettingsPrefMapping[] = {
     {
-        supervised_users::kContentPackDefaultFilteringBehavior,
+        supervised_user::kContentPackDefaultFilteringBehavior,
         prefs::kDefaultSupervisedUserFilteringBehavior,
     },
     {
-        supervised_users::kContentPackManualBehaviorHosts,
+        supervised_user::kContentPackManualBehaviorHosts,
         prefs::kSupervisedUserManualHosts,
     },
     {
-        supervised_users::kContentPackManualBehaviorURLs,
+        supervised_user::kContentPackManualBehaviorURLs,
         prefs::kSupervisedUserManualURLs,
     },
     {
-        supervised_users::kForceSafeSearch,
+        supervised_user::kForceSafeSearch,
         prefs::kForceGoogleSafeSearch,
     },
     {
-        supervised_users::kSafeSitesEnabled,
+        supervised_user::kSafeSitesEnabled,
         prefs::kSupervisedUserSafeSites,
     },
     {
-        supervised_users::kSigninAllowed,
+        supervised_user::kSigninAllowed,
         prefs::kSigninAllowed,
     },
     {
-        supervised_users::kUserName,
+        supervised_user::kUserName,
         prefs::kProfileName,
     },
 };
@@ -74,7 +74,7 @@ SupervisedUserSettingsPrefMappingEntry kSupervisedUserSettingsPrefMapping[] = {
 }  // namespace
 
 SupervisedUserPrefStore::SupervisedUserPrefStore(
-    supervised_users::SupervisedUserSettingsService*
+    supervised_user::SupervisedUserSettingsService*
         supervised_user_settings_service) {
   user_settings_subscription_ =
       supervised_user_settings_service->SubscribeForSettingsChange(
@@ -149,7 +149,7 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
     {
       // Allow history deletion for supervised accounts on supported platforms.
       bool allow_history_deletion = base::FeatureList::IsEnabled(
-          supervised_users::kAllowHistoryDeletionForChildAccounts);
+          supervised_user::kAllowHistoryDeletionForChildAccounts);
       prefs_->SetBoolean(prefs::kAllowDeletingBrowserHistory,
                          allow_history_deletion);
       // Incognito is disabled for supervised users across platforms.
@@ -165,7 +165,7 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
       // of |kSupervisedUserSettingsPrefMapping|, but this can't be done for
       // |prefs::kForceYouTubeRestrict| because it is an int, not a bool.
       bool force_safe_search =
-          settings.FindBool(supervised_users::kForceSafeSearch).value_or(true);
+          settings.FindBool(supervised_user::kForceSafeSearch).value_or(true);
       prefs_->SetInteger(
           prefs::kForceYouTubeRestrict,
           force_safe_search ? safe_search_util::YOUTUBE_RESTRICT_MODERATE
@@ -179,7 +179,7 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
       // "Permissions for sites, apps and extensions" setting, like geolocation
       // being disallowed.
       bool permissions_disallowed =
-          settings.FindBool(supervised_users::kGeolocationDisabled)
+          settings.FindBool(supervised_user::kGeolocationDisabled)
               .value_or(true);
       prefs_->SetBoolean(prefs::kSupervisedUserExtensionsMayRequestPermissions,
                          !permissions_disallowed);

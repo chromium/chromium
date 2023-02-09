@@ -231,7 +231,7 @@ class SupervisedUserNavigationThrottleTest
  private:
   void SetManualFilterForHost(const std::string& host, bool allowlist) {
     Profile* profile = browser()->profile();
-    supervised_users::SupervisedUserSettingsService* settings_service =
+    supervised_user::SupervisedUserSettingsService* settings_service =
         SupervisedUserSettingsServiceFactory::GetForKey(
             profile->GetProfileKey());
 
@@ -240,13 +240,13 @@ class SupervisedUserNavigationThrottleTest
     base::Value::Dict dict_to_insert;
 
     if (const base::Value::Dict* dict_value = local_settings.FindDict(
-            supervised_users::kContentPackManualBehaviorHosts)) {
+            supervised_user::kContentPackManualBehaviorHosts)) {
       dict_to_insert = dict_value->Clone();
     }
 
     dict_to_insert.Set(host, allowlist);
     settings_service->SetLocalSetting(
-        supervised_users::kContentPackManualBehaviorHosts,
+        supervised_user::kContentPackManualBehaviorHosts,
         std::move(dict_to_insert));
   }
 
@@ -319,12 +319,12 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
                        NoNavigationObserverBlock) {
   Profile* profile = browser()->profile();
-  supervised_users::SupervisedUserSettingsService*
+  supervised_user::SupervisedUserSettingsService*
       supervised_user_settings_service =
           SupervisedUserSettingsServiceFactory::GetForKey(
               profile->GetProfileKey());
   supervised_user_settings_service->SetLocalSetting(
-      supervised_users::kContentPackDefaultFilteringBehavior,
+      supervised_user::kContentPackDefaultFilteringBehavior,
       base::Value(SupervisedUserURLFilter::BLOCK));
 
   std::unique_ptr<WebContents> web_contents(
@@ -521,7 +521,7 @@ bool SupervisedUserIframeFilterTest::IsLocalApprovalsButtonBeingShown(
 
 void SupervisedUserIframeFilterTest::CheckPreferredApprovalButton(
     int frame_id) {
-  if (supervised_users::IsLocalWebApprovalThePreferredButton()) {
+  if (supervised_user::IsLocalWebApprovalThePreferredButton()) {
     std::string command =
         "domAutomationController.send("
         "(document.getElementById('local-approvals-button').classList.contains("
@@ -605,22 +605,21 @@ void SupervisedUserIframeFilterTest::InitFeatures() {
   std::vector<base::test::FeatureRef> disabled_features;
   if (IsWebFilterInterstitialRefreshEnabled()) {
     enabled_features_and_params.emplace_back(
-        supervised_users::kWebFilterInterstitialRefresh,
+        supervised_user::kWebFilterInterstitialRefresh,
         base::FieldTrialParams());
   } else {
-    disabled_features.push_back(
-        supervised_users::kWebFilterInterstitialRefresh);
+    disabled_features.push_back(supervised_user::kWebFilterInterstitialRefresh);
   }
   if (IsLocalWebApprovalsEnabled()) {
     base::FieldTrialParams params;
     params["preferred_button"] =
         IsLocalWebApprovalsPreferred()
-            ? supervised_users::kLocalWebApprovalsPreferredButtonLocal
-            : supervised_users::kLocalWebApprovalsPreferredButtonRemote;
+            ? supervised_user::kLocalWebApprovalsPreferredButtonLocal
+            : supervised_user::kLocalWebApprovalsPreferredButtonRemote;
     enabled_features_and_params.emplace_back(
-        supervised_users::kLocalWebApprovals, params);
+        supervised_user::kLocalWebApprovals, params);
   } else {
-    disabled_features.push_back(supervised_users::kLocalWebApprovals);
+    disabled_features.push_back(supervised_user::kLocalWebApprovals);
   }
   scoped_feature_list_.InitWithFeaturesAndParameters(
       enabled_features_and_params, disabled_features);

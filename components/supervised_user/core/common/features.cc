@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-namespace supervised_users {
+namespace supervised_user {
 
 // Enables refreshed version of the website filter interstitial that is shown to
 // Family Link users when the navigate to the blocked website.
@@ -91,4 +91,4 @@ bool IsKidsManagementServiceEnabled() {
   return base::FeatureList::IsEnabled(kEnableKidsManagementService);
 }
 
-}  // namespace supervised_users
+}  // namespace supervised_user

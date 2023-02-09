@@ -991,7 +991,7 @@ IN_PROC_BROWSER_TEST_P(ChildProfileTransitionBrowserTest, PRE_Transition) {
   ASSERT_TRUE(profile);
   EXPECT_EQ(is_child_profile_expected, profile->IsChild());
   EXPECT_EQ(profile->GetPrefs()->GetString(prefs::kSupervisedUserId),
-            is_child_profile_expected ? supervised_users::kChildAccountSUID
+            is_child_profile_expected ? supervised_user::kChildAccountSUID
                                       : std::string());
 
   // Check stored profile attributes.
@@ -1008,7 +1008,7 @@ IN_PROC_BROWSER_TEST_P(ChildProfileTransitionBrowserTest, Transition) {
   ASSERT_TRUE(profile);
   EXPECT_EQ(is_child_profile_expected, profile->IsChild());
   EXPECT_EQ(profile->GetPrefs()->GetString(prefs::kSupervisedUserId),
-            is_child_profile_expected ? supervised_users::kChildAccountSUID
+            is_child_profile_expected ? supervised_user::kChildAccountSUID
                                       : std::string());
 
   // Check stored profile attributes.

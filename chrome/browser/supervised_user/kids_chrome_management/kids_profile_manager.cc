@@ -51,7 +51,7 @@ bool KidsProfileManager::IsChildAccount() const {
 void KidsProfileManager::UpdateChildAccountStatus(bool is_child_account) {
   if (IsChildAccount() != is_child_account) {
     if (is_child_account) {
-      supervised_user_id_.Set(StringPiece(supervised_users::kChildAccountSUID));
+      supervised_user_id_.Set(StringPiece(supervised_user::kChildAccountSUID));
     } else {
       supervised_user_id_.Clear();
       primary_custodian_.Clear();

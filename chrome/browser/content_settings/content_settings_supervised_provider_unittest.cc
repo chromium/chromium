@@ -28,7 +28,7 @@ class SupervisedUserProviderTest : public ::testing::Test {
   void TearDown() override;
 
  protected:
-  supervised_users::SupervisedUserSettingsService service_;
+  supervised_user::SupervisedUserSettingsService service_;
   scoped_refptr<TestingPrefStore> pref_store_;
   std::unique_ptr<SupervisedProvider> provider_;
   content_settings::MockObserver mock_observer_;
@@ -57,7 +57,7 @@ TEST_F(SupervisedUserProviderTest, GeolocationTest) {
   // Disable the default geolocation setting.
   EXPECT_CALL(mock_observer_,
               OnContentSettingChanged(_, _, ContentSettingsType::GEOLOCATION));
-  service_.SetLocalSetting(supervised_users::kGeolocationDisabled,
+  service_.SetLocalSetting(supervised_user::kGeolocationDisabled,
                            base::Value(true));
 
   rule_iterator =
@@ -73,7 +73,7 @@ TEST_F(SupervisedUserProviderTest, GeolocationTest) {
   // Re-enable the default geolocation setting.
   EXPECT_CALL(mock_observer_,
               OnContentSettingChanged(_, _, ContentSettingsType::GEOLOCATION));
-  service_.SetLocalSetting(supervised_users::kGeolocationDisabled,
+  service_.SetLocalSetting(supervised_user::kGeolocationDisabled,
                            base::Value(false));
 
   rule_iterator =
@@ -96,7 +96,7 @@ TEST_F(SupervisedUserProviderTest, CookiesTest) {
   // Re-enable the default cookie setting.
   EXPECT_CALL(mock_observer_,
               OnContentSettingChanged(_, _, ContentSettingsType::COOKIES));
-  service_.SetLocalSetting(supervised_users::kCookiesAlwaysAllowed,
+  service_.SetLocalSetting(supervised_user::kCookiesAlwaysAllowed,
                            base::Value(false));
 
   rule_iterator =
@@ -118,7 +118,7 @@ TEST_F(SupervisedUserProviderTest, CameraMicTest) {
       OnContentSettingChanged(_, _, ContentSettingsType::MEDIASTREAM_CAMERA));
   EXPECT_CALL(mock_observer_, OnContentSettingChanged(
                                   _, _, ContentSettingsType::MEDIASTREAM_MIC));
-  service_.SetLocalSetting(supervised_users::kCameraMicDisabled,
+  service_.SetLocalSetting(supervised_user::kCameraMicDisabled,
                            base::Value(true));
 
   rule_iterator = provider_->GetRuleIterator(
@@ -147,7 +147,7 @@ TEST_F(SupervisedUserProviderTest, CameraMicTest) {
       OnContentSettingChanged(_, _, ContentSettingsType::MEDIASTREAM_CAMERA));
   EXPECT_CALL(mock_observer_, OnContentSettingChanged(
                                   _, _, ContentSettingsType::MEDIASTREAM_MIC));
-  service_.SetLocalSetting(supervised_users::kCameraMicDisabled,
+  service_.SetLocalSetting(supervised_user::kCameraMicDisabled,
                            base::Value(false));
 
   rule_iterator = provider_->GetRuleIterator(

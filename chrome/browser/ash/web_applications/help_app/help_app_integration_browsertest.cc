@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
       std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
   base::UserActionTester user_action_tester;
   profile()->GetPrefs()->SetString(prefs::kSupervisedUserId,
-                                   supervised_users::kChildAccountSUID);
+                                   supervised_user::kChildAccountSUID);
   profile()->GetPrefs()->SetInteger(
       prefs::kHelpAppNotificationLastShownMilestone, 20);
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(

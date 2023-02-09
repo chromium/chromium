@@ -430,7 +430,7 @@ bool ProfileAttributesEntry::IsSupervised() const {
 
 bool ProfileAttributesEntry::IsChild() const {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  return GetSupervisedUserId() == supervised_users::kChildAccountSUID;
+  return GetSupervisedUserId() == supervised_user::kChildAccountSUID;
 #else
   return false;
 #endif

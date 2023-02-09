@@ -24,9 +24,9 @@ namespace base {
 class TaskRunner;
 }
 
-namespace supervised_users {
+namespace supervised_user {
 class SupervisedUserDenylist;
-}  // namespace supervised_users
+}  // namespace supervised_user
 
 namespace content {
 class WebContents;
@@ -198,7 +198,7 @@ class SupervisedUserURLFilter {
   FilteringBehavior GetDefaultFilteringBehavior() const;
 
   // Sets the static denylist of blocked hosts.
-  void SetDenylist(const supervised_users::SupervisedUserDenylist* denylist);
+  void SetDenylist(const supervised_user::SupervisedUserDenylist* denylist);
   // Returns whether the static denylist is set up.
   bool HasDenylist() const;
 
@@ -276,7 +276,7 @@ class SupervisedUserURLFilter {
   std::map<std::string, bool> host_map_;
 
   // Not owned.
-  raw_ptr<const supervised_users::SupervisedUserDenylist> denylist_;
+  raw_ptr<const supervised_user::SupervisedUserDenylist> denylist_;
 
   std::unique_ptr<safe_search_api::URLChecker> async_url_checker_;
 

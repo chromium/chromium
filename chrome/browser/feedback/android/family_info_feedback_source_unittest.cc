@@ -117,8 +117,8 @@ class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
 
   FamilyInfoFetcher::FamilyMemberRole role_;
   raw_ptr<SupervisedUserService> supervised_user_service_;
-  supervised_users::SupervisedUserDenylist deny_list_ =
-      supervised_users::SupervisedUserDenylist();
+  supervised_user::SupervisedUserDenylist deny_list_ =
+      supervised_user::SupervisedUserDenylist();
 
  private:
   // Creates a Java instance of FamilyInfoFeedbackSource.

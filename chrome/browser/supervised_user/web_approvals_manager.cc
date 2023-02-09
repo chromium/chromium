@@ -156,7 +156,7 @@ void WebApprovalsManager::RequestLocalApproval(
     const gfx::ImageSkia& favicon,
     ApprovalRequestInitiatedCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  supervised_users::SupervisedUserSettingsService* settings_service =
+  supervised_user::SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForKey(
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
               ->GetProfileKey());
@@ -168,7 +168,7 @@ void WebApprovalsManager::RequestLocalApproval(
           base::TimeTicks::Now()));
   std::move(callback).Run(true);
 #elif BUILDFLAG(IS_ANDROID)
-  supervised_users::SupervisedUserSettingsService* settings_service =
+  supervised_user::SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForKey(
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
               ->GetProfileKey());
@@ -252,7 +252,7 @@ void WebApprovalsManager::OnRemoteApprovalRequestIssued(
 }
 
 void WebApprovalsManager::CompleteLocalApprovalRequest(
-    supervised_users::SupervisedUserSettingsService* settings_service,
+    supervised_user::SupervisedUserSettingsService* settings_service,
     const GURL& url,
     base::TimeTicks start_time,
     WebApprovalsManager::LocalApprovalResult approval_result) {
@@ -274,7 +274,7 @@ void WebApprovalsManager::CompleteLocalApprovalRequest(
 
 #if BUILDFLAG(IS_ANDROID)
 void WebApprovalsManager::OnLocalApprovalRequestCompletedAndroid(
-    supervised_users::SupervisedUserSettingsService* settings_service,
+    supervised_user::SupervisedUserSettingsService* settings_service,
     const GURL& url,
     base::TimeTicks start_time,
     AndroidLocalWebApprovalFlowOutcome request_outcome) {
@@ -286,7 +286,7 @@ void WebApprovalsManager::OnLocalApprovalRequestCompletedAndroid(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void WebApprovalsManager::OnLocalApprovalRequestCompletedChromeOS(
-    supervised_users::SupervisedUserSettingsService* settings_service,
+    supervised_user::SupervisedUserSettingsService* settings_service,
     const GURL& url,
     base::TimeTicks start_time,
     crosapi::mojom::ParentAccessResultPtr result) {

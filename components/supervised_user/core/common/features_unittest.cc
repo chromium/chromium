@@ -9,7 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace supervised_users {
+namespace supervised_user {
 
 // Tests supervised user features configurations.
 class FeaturesTest : public testing::Test {
@@ -68,4 +68,4 @@ TEST_F(LocalWebApprovalsFeatureTest,
 }
 #endif
 
-}  // namespace supervised_users
+}  // namespace supervised_user

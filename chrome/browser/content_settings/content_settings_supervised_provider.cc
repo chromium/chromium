@@ -24,22 +24,22 @@ struct ContentSettingsFromSupervisedSettingsEntry {
 const ContentSettingsFromSupervisedSettingsEntry
     kContentSettingsFromSupervisedSettingsMap[] = {
         {
-            supervised_users::kGeolocationDisabled,
+            supervised_user::kGeolocationDisabled,
             ContentSettingsType::GEOLOCATION,
             CONTENT_SETTING_BLOCK,
         },
         {
-            supervised_users::kCameraMicDisabled,
+            supervised_user::kCameraMicDisabled,
             ContentSettingsType::MEDIASTREAM_CAMERA,
             CONTENT_SETTING_BLOCK,
         },
         {
-            supervised_users::kCameraMicDisabled,
+            supervised_user::kCameraMicDisabled,
             ContentSettingsType::MEDIASTREAM_MIC,
             CONTENT_SETTING_BLOCK,
         },
         {
-            supervised_users::kCookiesAlwaysAllowed,
+            supervised_user::kCookiesAlwaysAllowed,
             ContentSettingsType::COOKIES,
             CONTENT_SETTING_ALLOW,
         }};
@@ -49,7 +49,7 @@ const ContentSettingsFromSupervisedSettingsEntry
 namespace content_settings {
 
 SupervisedProvider::SupervisedProvider(
-    supervised_users::SupervisedUserSettingsService*
+    supervised_user::SupervisedUserSettingsService*
         supervised_user_settings_service) {
   // The SupervisedProvider is owned by the HostContentSettingsMap which
   // DependsOn the SupervisedUserSettingsService (through their factories).

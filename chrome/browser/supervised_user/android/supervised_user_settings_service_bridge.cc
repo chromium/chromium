@@ -20,11 +20,11 @@ void JNI_SupervisedUserSettingsBridge_SetFilteringBehavior(
     const JavaParamRef<jobject>& j_profile,
     jint setting) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
-  supervised_users::SupervisedUserSettingsService*
+  supervised_user::SupervisedUserSettingsService*
       supervised_user_settings_service =
           SupervisedUserSettingsServiceFactory::GetForKey(
               profile->GetProfileKey());
   supervised_user_settings_service->SetLocalSetting(
-      supervised_users::kContentPackDefaultFilteringBehavior,
+      supervised_user::kContentPackDefaultFilteringBehavior,
       base::Value(setting));
 }

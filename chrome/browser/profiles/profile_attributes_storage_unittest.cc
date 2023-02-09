@@ -329,7 +329,7 @@ TEST_F(ProfileAttributesStorageTest, AddProfiles) {
     std::string supervised_user_id;
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     if (i == 3u)
-      supervised_user_id = supervised_users::kChildAccountSUID;
+      supervised_user_id = supervised_user::kChildAccountSUID;
 #endif
 
     ProfileAttributesInitParams params;
@@ -1064,7 +1064,7 @@ TEST_F(ProfileAttributesStorageTest, SupervisedUsersAccessors) {
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   EXPECT_CALL(observer(), OnProfileSupervisedUserIdChanged(path)).Times(1);
-  entry->SetSupervisedUserId(supervised_users::kChildAccountSUID);
+  entry->SetSupervisedUserId(supervised_user::kChildAccountSUID);
   VerifyAndResetCallExpectations();
   ASSERT_TRUE(entry->IsSupervised());
   ASSERT_TRUE(entry->IsChild());
@@ -1092,7 +1092,7 @@ TEST_F(ProfileAttributesStorageTest, CreateSupervisedTestingProfile) {
     bool is_supervised = entry->GetName() == supervised_user_name;
     EXPECT_EQ(is_supervised, entry->IsSupervised());
     std::string supervised_user_id =
-        is_supervised ? supervised_users::kChildAccountSUID : "";
+        is_supervised ? supervised_user::kChildAccountSUID : "";
     EXPECT_EQ(supervised_user_id, entry->GetSupervisedUserId());
   }
 }

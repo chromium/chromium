@@ -558,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   // Set up child user profile.
   Profile* profile = browser()->profile();
   browser()->profile()->GetPrefs()->SetString(
-      prefs::kSupervisedUserId, supervised_users::kChildAccountSUID);
+      prefs::kSupervisedUserId, supervised_user::kChildAccountSUID);
 
   // Block access to http://www.google.com/ in the URL filter.
   SupervisedUserService* supervised_user_service =

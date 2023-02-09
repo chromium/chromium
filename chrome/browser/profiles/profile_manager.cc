@@ -330,7 +330,7 @@ void UpdateSupervisedUserPref(Profile* profile, bool is_child) {
   DCHECK(profile);
   if (is_child) {
     profile->GetPrefs()->SetString(prefs::kSupervisedUserId,
-                                   supervised_users::kChildAccountSUID);
+                                   supervised_user::kChildAccountSUID);
   } else {
     profile->GetPrefs()->ClearPref(prefs::kSupervisedUserId);
   }

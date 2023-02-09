@@ -6796,7 +6796,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
     {"enable-local-web-approvals", flag_descriptions::kLocalWebApprovalsName,
      flag_descriptions::kLocalWebApprovalsDescription, kOsCrOS | kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(supervised_users::kLocalWebApprovals,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(supervised_user::kLocalWebApprovals,
                                     kLocalWebApprovalsVariations,
                                     "LocalWebApprovals")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
@@ -6806,7 +6806,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebFilterInterstitialRefreshName,
      flag_descriptions::kWebFilterInterstitialRefreshDescription,
      kOsCrOS | kOsAndroid,
-     FEATURE_VALUE_TYPE(supervised_users::kWebFilterInterstitialRefresh)},
+     FEATURE_VALUE_TYPE(supervised_user::kWebFilterInterstitialRefresh)},
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
     {"notification-scheduler", flag_descriptions::kNotificationSchedulerName,

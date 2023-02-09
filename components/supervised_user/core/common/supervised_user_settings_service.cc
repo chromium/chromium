@@ -27,7 +27,7 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/managed_user_setting_specifics.pb.h"
 
-namespace supervised_users {
+namespace supervised_user {
 
 using base::JSONReader;
 using base::UserMetricsAction;
@@ -59,7 +59,7 @@ bool SyncChangeIsNewWebsiteApproval(const std::string& name,
                                     base::Value* old_value,
                                     base::Value* new_value) {
   bool is_host_permission_change =
-      base::StartsWith(name, supervised_users::kContentPackManualBehaviorHosts,
+      base::StartsWith(name, supervised_user::kContentPackManualBehaviorHosts,
                        base::CompareCase::INSENSITIVE_ASCII);
   if (!is_host_permission_change) {
     return false;
@@ -97,7 +97,7 @@ void SupervisedUserSettingsService::Init(
     base::SequencedTaskRunner* sequenced_task_runner,
     bool load_synchronously) {
   base::FilePath path =
-      profile_path.Append(supervised_users::kSupervisedUserSettingsFilename);
+      profile_path.Append(supervised_user::kSupervisedUserSettingsFilename);
   PersistentPrefStore* store = new JsonPrefStore(
       path, std::unique_ptr<PrefFilter>(), sequenced_task_runner);
   Init(store);
@@ -137,7 +137,7 @@ void SupervisedUserSettingsService::RecordLocalWebsiteApproval(
     const std::string& host) {
   // Write the sync setting.
   std::string setting_key = MakeSplitSettingKey(
-      supervised_users::kContentPackManualBehaviorHosts, host);
+      supervised_user::kContentPackManualBehaviorHosts, host);
   SaveItem(setting_key, std::make_unique<base::Value>(true));
 
   // Now notify subscribers of the updates.
@@ -155,18 +155,18 @@ void SupervisedUserSettingsService::SetActive(bool active) {
 
   if (active_) {
     // Child account supervised users must be signed in.
-    SetLocalSetting(supervised_users::kSigninAllowed, base::Value(true));
+    SetLocalSetting(supervised_user::kSigninAllowed, base::Value(true));
 
     // Always allow cookies, to avoid website compatibility issues.
-    SetLocalSetting(supervised_users::kCookiesAlwaysAllowed, base::Value(true));
+    SetLocalSetting(supervised_user::kCookiesAlwaysAllowed, base::Value(true));
 
     // SafeSearch and GeolocationDisabled are controlled at the account level,
     // so don't override them client-side.
   } else {
-    RemoveLocalSetting(supervised_users::kSigninAllowed);
-    RemoveLocalSetting(supervised_users::kCookiesAlwaysAllowed);
-    RemoveLocalSetting(supervised_users::kForceSafeSearch);
-    RemoveLocalSetting(supervised_users::kGeolocationDisabled);
+    RemoveLocalSetting(supervised_user::kSigninAllowed);
+    RemoveLocalSetting(supervised_user::kCookiesAlwaysAllowed);
+    RemoveLocalSetting(supervised_user::kForceSafeSearch);
+    RemoveLocalSetting(supervised_user::kGeolocationDisabled);
   }
 
   InformSubscribers();
@@ -546,4 +546,4 @@ void SupervisedUserSettingsService::InformSubscribers() {
   settings_callback_list_.Notify(std::move(settings));
 }
 
-}  // namespace supervised_users
+}  // namespace supervised_user

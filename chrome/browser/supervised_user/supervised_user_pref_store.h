@@ -20,16 +20,16 @@ class Value;
 
 class PrefValueMap;
 
-namespace supervised_users {
+namespace supervised_user {
 class SupervisedUserSettingsService;
-}  // namespace supervised_users
+}  // namespace supervised_user
 
 // A PrefStore that gets its values from supervised user settings via the
 // SupervisedUserSettingsService passed in at construction.
 class SupervisedUserPrefStore : public PrefStore {
  public:
   explicit SupervisedUserPrefStore(
-      supervised_users::SupervisedUserSettingsService*
+      supervised_user::SupervisedUserSettingsService*
           supervised_user_settings_service);
 
   // PrefStore overrides:

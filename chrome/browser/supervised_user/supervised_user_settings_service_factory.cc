@@ -9,9 +9,9 @@
 #include "components/supervised_user/core/common/supervised_user_settings_service.h"
 
 // static
-supervised_users::SupervisedUserSettingsService*
+supervised_user::SupervisedUserSettingsService*
 SupervisedUserSettingsServiceFactory::GetForKey(SimpleFactoryKey* key) {
-  return static_cast<supervised_users::SupervisedUserSettingsService*>(
+  return static_cast<supervised_user::SupervisedUserSettingsService*>(
       GetInstance()->GetServiceForKey(key, true));
 }
 
@@ -31,7 +31,7 @@ SupervisedUserSettingsServiceFactory::
 std::unique_ptr<KeyedService>
 SupervisedUserSettingsServiceFactory::BuildServiceInstanceFor(
     SimpleFactoryKey* key) const {
-  return std::make_unique<supervised_users::SupervisedUserSettingsService>();
+  return std::make_unique<supervised_user::SupervisedUserSettingsService>();
 }
 
 SimpleFactoryKey* SupervisedUserSettingsServiceFactory::GetKeyToUse(

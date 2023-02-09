@@ -94,7 +94,7 @@ class MockPermissionRequestCreator : public PermissionRequestCreator {
 };
 
 class MockSupervisedUserSettingsService
-    : public supervised_users::SupervisedUserSettingsService {
+    : public supervised_user::SupervisedUserSettingsService {
  public:
   MOCK_METHOD1(RecordLocalWebsiteApproval, void(const std::string& host));
 };

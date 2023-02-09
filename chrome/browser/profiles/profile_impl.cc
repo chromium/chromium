@@ -1067,7 +1067,7 @@ const Profile* ProfileImpl::GetOriginalProfile() const {
 bool ProfileImpl::IsChild() const {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   return GetPrefs()->GetString(prefs::kSupervisedUserId) ==
-         supervised_users::kChildAccountSUID;
+         supervised_user::kChildAccountSUID;
 #else
   return false;
 #endif

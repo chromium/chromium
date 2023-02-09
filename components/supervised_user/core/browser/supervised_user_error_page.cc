@@ -95,14 +95,14 @@ std::string BuildHtml(bool allow_access_requests,
   strings.Set("alreadySentRemoteRequest", already_sent_remote_request);
   strings.Set("isMainFrame", is_main_frame);
   bool web_filter_interstitial_refresh_enabled =
-      supervised_users::IsWebFilterInterstitialRefreshEnabled();
+      supervised_user::IsWebFilterInterstitialRefreshEnabled();
   bool local_web_approvals_enabled =
-      supervised_users::IsLocalWebApprovalsEnabled();
+      supervised_user::IsLocalWebApprovalsEnabled();
   strings.Set("isWebFilterInterstitialRefreshEnabled",
               web_filter_interstitial_refresh_enabled);
   strings.Set("isLocalWebApprovalsEnabled", local_web_approvals_enabled);
   strings.Set("isLocalWebApprovalsPreferred",
-              supervised_users::IsLocalWebApprovalThePreferredButton());
+              supervised_user::IsLocalWebApprovalThePreferredButton());
   bool is_automatically_blocked = ReasonIsAutomatic(reason);
 
   std::string block_header;

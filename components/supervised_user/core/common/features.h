@@ -7,7 +7,7 @@
 
 #include "base/feature_list.h"
 
-namespace supervised_users {
+namespace supervised_user {
 
 BASE_DECLARE_FEATURE(kWebFilterInterstitialRefresh);
 
@@ -35,6 +35,6 @@ bool IsLocalWebApprovalThePreferredButton();
 // Returns whether to use the new Api for fetching.
 bool IsKidsManagementServiceEnabled();
 
-}  // namespace supervised_users
+}  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_FEATURES_H_

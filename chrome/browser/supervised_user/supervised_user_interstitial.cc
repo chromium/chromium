@@ -186,7 +186,7 @@ SupervisedUserInterstitial::SupervisedUserInterstitial(
       frame_id_(frame_id),
       interstitial_navigation_id_(interstitial_navigation_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (supervised_users::IsLocalWebApprovalsEnabled()) {
+  if (supervised_user::IsLocalWebApprovalsEnabled()) {
     favicon_handler_ = std::make_unique<SupervisedUserFaviconRequestHandler>(
         url_.GetWithEmptyPath(),
         LargeIconServiceFactory::GetForBrowserContext(profile_));

@@ -150,7 +150,7 @@ scoped_refptr<RefcountedKeyedService>
           false));
 #endif // BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  supervised_users::SupervisedUserSettingsService* supervised_service =
+  supervised_user::SupervisedUserSettingsService* supervised_service =
       SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
   // This may be null in testing.
   if (supervised_service) {

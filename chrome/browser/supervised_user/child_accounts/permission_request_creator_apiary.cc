@@ -210,7 +210,7 @@ void PermissionRequestCreatorApiary::OnAccessTokenFetchComplete(
   resource_request->method = "POST";
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,
-      base::StringPrintf(supervised_users::kAuthorizationHeaderFormat,
+      base::StringPrintf(supervised_user::kAuthorizationHeaderFormat,
                          token_info.token.c_str()));
   (*it)->simple_url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);

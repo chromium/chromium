@@ -138,7 +138,7 @@ void SupervisedUserService::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kDefaultSupervisedUserFilteringBehavior,
                                 SupervisedUserURLFilter::ALLOW);
   registry->RegisterBooleanPref(prefs::kSupervisedUserSafeSites, true);
-  for (const char* pref : supervised_users::kCustodianInfoPrefs) {
+  for (const char* pref : supervised_user::kCustodianInfoPrefs) {
     registry->RegisterStringPref(pref, std::string());
   }
 }
@@ -314,7 +314,7 @@ void SupervisedUserService::
   // currently set indirectly by setting geolocation requests. Update Kids
   // Management server to set a new bit for extension permissions and update
   // this setter function.
-  GetSettingsService()->SetLocalSetting(supervised_users::kGeolocationDisabled,
+  GetSettingsService()->SetLocalSetting(supervised_user::kGeolocationDisabled,
                                         base::Value(!enabled));
   profile_->GetPrefs()->SetBoolean(
       prefs::kSupervisedUserExtensionsMayRequestPermissions, enabled);
@@ -410,7 +410,7 @@ void SupervisedUserService::SetActive(bool active) {
         prefs::kSupervisedUserManualURLs,
         base::BindRepeating(&SupervisedUserService::UpdateManualURLs,
                             base::Unretained(this)));
-    for (const char* pref : supervised_users::kCustodianInfoPrefs) {
+    for (const char* pref : supervised_user::kCustodianInfoPrefs) {
       pref_change_registrar_.Add(
           pref,
           base::BindRepeating(&SupervisedUserService::OnCustodianInfoChanged,
@@ -445,7 +445,7 @@ void SupervisedUserService::SetActive(bool active) {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
     pref_change_registrar_.Remove(prefs::kSupervisedUserManualHosts);
     pref_change_registrar_.Remove(prefs::kSupervisedUserManualURLs);
-    for (const char* pref : supervised_users::kCustodianInfoPrefs) {
+    for (const char* pref : supervised_user::kCustodianInfoPrefs) {
       pref_change_registrar_.Remove(pref);
     }
 
@@ -466,7 +466,7 @@ void SupervisedUserService::OnCustodianInfoChanged() {
     observer.OnCustodianInfoChanged();
 }
 
-supervised_users::SupervisedUserSettingsService*
+supervised_user::SupervisedUserSettingsService*
 SupervisedUserService::GetSettingsService() {
   return SupervisedUserSettingsServiceFactory::GetForKey(
       profile_->GetProfileKey());

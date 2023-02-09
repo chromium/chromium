@@ -301,7 +301,7 @@ void TestingProfile::Init(bool is_supervised_profile) {
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   if (!IsOffTheRecord()) {
-    supervised_users::SupervisedUserSettingsService* settings_service =
+    supervised_user::SupervisedUserSettingsService* settings_service =
         SupervisedUserSettingsServiceFactory::GetForKey(key_.get());
     supervised_user_pref_store_ = new TestingPrefStore();
     settings_service->Init(supervised_user_pref_store_.get());
@@ -666,7 +666,7 @@ const Profile* TestingProfile::GetOriginalProfile() const {
 void TestingProfile::SetIsSupervisedProfile() {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   GetPrefs()->SetString(prefs::kSupervisedUserId,
-                        supervised_users::kChildAccountSUID);
+                        supervised_user::kChildAccountSUID);
 #else
   NOTREACHED() << "Supervised users are not enabled";
 #endif
@@ -675,7 +675,7 @@ void TestingProfile::SetIsSupervisedProfile() {
 bool TestingProfile::IsChild() const {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   return GetPrefs()->GetString(prefs::kSupervisedUserId) ==
-         supervised_users::kChildAccountSUID;
+         supervised_user::kChildAccountSUID;
 #else
   return false;
 #endif

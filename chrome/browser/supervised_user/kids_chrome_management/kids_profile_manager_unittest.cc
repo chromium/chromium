@@ -71,7 +71,7 @@ TEST_F(KidsProfileManagerTest, SetChildAccountStatusOnUnsupervisedProfile) {
 
   EXPECT_TRUE(under_test.IsChildAccountStatusKnown());
   EXPECT_EQ(pref_service()->GetString(prefs::kSupervisedUserId),
-            supervised_users::kChildAccountSUID);
+            supervised_user::kChildAccountSUID);
 }
 
 // For a supervised profile, checks if unsetting it as child account clears

@@ -795,8 +795,8 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckNotOmitted) {
       temp_dir_.GetPath().AppendASCII("Supervised");
   auto supervised_profile =
       std::make_unique<TestingProfile>(supervised_path, nullptr);
-  supervised_profile->GetPrefs()->SetString(
-      prefs::kSupervisedUserId, supervised_users::kChildAccountSUID);
+  supervised_profile->GetPrefs()->SetString(prefs::kSupervisedUserId,
+                                            supervised_user::kChildAccountSUID);
 
   // RegisterTestingProfile adds the profile to the attributes storage and takes
   // ownership.
@@ -1101,7 +1101,7 @@ TEST_F(ProfileManagerTest, InitProfileForChildOnFirstSignIn) {
       profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),
       static_cast<int>(arc::ArcManagementTransition::NO_TRANSITION));
   EXPECT_EQ(profile->GetPrefs()->GetString(prefs::kSupervisedUserId),
-            supervised_users::kChildAccountSUID);
+            supervised_user::kChildAccountSUID);
 }
 
 TEST_F(ProfileManagerTest, InitProfileForRegularToChildTransition) {
@@ -1114,7 +1114,7 @@ TEST_F(ProfileManagerTest, InitProfileForRegularToChildTransition) {
       profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),
       static_cast<int>(arc::ArcManagementTransition::REGULAR_TO_CHILD));
   EXPECT_EQ(profile->GetPrefs()->GetString(prefs::kSupervisedUserId),
-            supervised_users::kChildAccountSUID);
+            supervised_user::kChildAccountSUID);
 }
 
 TEST_F(ProfileManagerTest, InitProfileForChildToRegularTransition) {
@@ -1202,7 +1202,7 @@ TEST_F(ProfileManagerTest, InitProfileForChildUserForFirstSignInOnNewVersion) {
       profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),
       static_cast<int>(arc::ArcManagementTransition::NO_TRANSITION));
   EXPECT_EQ(profile->GetPrefs()->GetString(prefs::kSupervisedUserId),
-            supervised_users::kChildAccountSUID);
+            supervised_user::kChildAccountSUID);
 }
 
 #endif
@@ -2340,7 +2340,7 @@ TEST_F(ProfileManagerTest, ChildSession) {
 
   ASSERT_TRUE(profile);
   EXPECT_EQ(profile->GetPrefs()->GetString(prefs::kSupervisedUserId),
-            supervised_users::kChildAccountSUID);
+            supervised_user::kChildAccountSUID);
   EXPECT_TRUE(profile->IsChild());
 }
 #endif

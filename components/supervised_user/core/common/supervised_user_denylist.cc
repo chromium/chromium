@@ -15,7 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "url/gurl.h"
 
-namespace supervised_users {
+namespace supervised_user {
 
 namespace {
 
@@ -95,4 +95,4 @@ void SupervisedUserDenylist::OnReadFromFileCompleted(
   }
 }
 
-}  // namespace supervised_users
+}  // namespace supervised_user

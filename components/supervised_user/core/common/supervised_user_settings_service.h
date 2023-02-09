@@ -27,7 +27,7 @@ class FilePath;
 class SequencedTaskRunner;
 }  // namespace base
 
-namespace supervised_users {
+namespace supervised_user {
 
 // This class syncs supervised user settings from a server, which are mapped to
 // preferences. The downloaded settings are persisted in a PrefStore (which is
@@ -220,6 +220,6 @@ class SupervisedUserSettingsService : public KeyedService,
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
 };
 
-}  // namespace supervised_users
+}  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_SETTINGS_SERVICE_H_

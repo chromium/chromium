@@ -86,7 +86,7 @@ DeviceAccountInfo GetGaiaDeviceAccountInfo() {
 }
 
 DeviceAccountInfo GetChildDeviceAccountInfo() {
-  return {supervised_users::kChildAccountSUID /*id*/,
+  return {supervised_user::kChildAccountSUID /*id*/,
           "child@example.com" /*email*/,
           "child" /*fullName*/,
           "Family Link" /*organization*/,
