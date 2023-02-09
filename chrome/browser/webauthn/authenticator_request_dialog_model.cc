@@ -31,6 +31,7 @@
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -303,7 +304,9 @@ void AuthenticatorRequestDialogModel::
          current_step() == Step::kPreSelectAccount ||
          current_step() == Step::kSelectAccount ||
          current_step() == Step::kMechanismSelection ||
-         current_step() == Step::kNotStarted);
+         current_step() == Step::kConditionalMediation ||
+         current_step() == Step::kNotStarted)
+      << "Invalid step " << static_cast<int>(current_step());
 
 #if BUILDFLAG(IS_MAC)
   if (transport_availability()->ble_access_denied) {
@@ -1067,26 +1070,34 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
     bool prefer_native_api) {
   const bool is_get_assertion = transport_availability_.request_type ==
                                 device::FidoRequestType::kGetAssertion;
+  const bool is_passkey_request =
+      ((is_get_assertion && transport_availability_.has_empty_allow_list) ||
+       (!is_get_assertion && resident_key_requirement() !=
+                                 device::ResidentKeyRequirement::kDiscouraged));
   // priority_transport contains the transport that should be activated
   // immediately, if this is a getAssertion.
   absl::optional<AuthenticatorTransport> priority_transport;
 
-  const bool show_create_passkey_step =
-      !is_get_assertion && kShowCreatePlatformPasskeyStep;
-  if (base::Contains(transport_availability_.available_transports,
-                     AuthenticatorTransport::kInternal) &&
-      (transport_availability_.has_platform_authenticator_credential ==
-           device::FidoRequestHandlerBase::RecognizedCredential::
-               kHasRecognizedCredential ||
-       show_create_passkey_step) &&
-      !use_conditional_mediation_) {
-    priority_transport = AuthenticatorTransport::kInternal;
-  }
-
   std::vector<AuthenticatorTransport> transports_to_list_if_active;
-  if (!use_conditional_mediation_) {
+  if (!use_conditional_mediation_ &&
+      base::Contains(transport_availability_.available_transports,
+                     AuthenticatorTransport::kInternal)) {
     // Conditional requests offer platform credentials through the autofill UI.
     transports_to_list_if_active.push_back(AuthenticatorTransport::kInternal);
+    bool make_credential_prefer_internal =
+        !is_get_assertion && kShowCreatePlatformPasskeyStep;
+    if (base::FeatureList::IsEnabled(device::kWebAuthPasskeysUI)) {
+      // Do not prefer the internal authenticator for passkeys requests if the
+      // QR-code first flow is enabled.
+      make_credential_prefer_internal =
+          make_credential_prefer_internal && !is_passkey_request;
+    }
+    if (transport_availability_.has_platform_authenticator_credential ==
+            device::FidoRequestHandlerBase::RecognizedCredential::
+                kHasRecognizedCredential ||
+        make_credential_prefer_internal) {
+      priority_transport = AuthenticatorTransport::kInternal;
+    }
   }
   transports_to_list_if_active.push_back(
       AuthenticatorTransport::kUsbHumanInterfaceDevice);
@@ -1133,18 +1144,18 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
     const std::u16string desc = l10n_util::GetStringUTF16(
         IDS_WEBAUTHN_TRANSPORT_POPUP_DIFFERENT_AUTHENTICATOR_WIN);
     // Prefer going straight to Windows native UI for requests that are not
-    // clearly passkeys related, i.e. getAssertion with a non-empty allow list
-    // and makeCredential with rk=false except for:
+    // clearly passkeys related, or where a platform credential may satisfy the
+    // request, except for:
     //  - conditional UI
     //  - "legacy" caBLE (caBLEv1 and server-link caBLEv2 on a.g.c)
     bool is_legacy_cable =
         cable_ui_type_ && cable_ui_type_ != CableUIType::CABLE_V2_2ND_FACTOR;
     bool win_api_should_be_priority =
         !use_conditional_mediation_ && !is_legacy_cable &&
-        ((is_get_assertion && !transport_availability_.has_empty_allow_list) ||
-         (!is_get_assertion &&
-          resident_key_requirement() ==
-              device::ResidentKeyRequirement::kDiscouraged));
+        (!is_passkey_request ||
+         transport_availability_.has_platform_authenticator_credential ==
+             device::FidoRequestHandlerBase::RecognizedCredential::
+                 kHasRecognizedCredential);
     mechanisms_.emplace_back(
         Mechanism::WindowsAPI(/*unused*/ true), desc, desc,
         GetTransportIcon(AuthenticatorTransport::kUsbHumanInterfaceDevice),
@@ -1188,25 +1199,25 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
   }
 
   if (include_add_phone_option) {
-    // If there's no other priority mechanism, and no phones, jump directly to
-    // showing a QR code.
+    // If there's no other priority mechanism, no phones, no platform
+    // credentials, and this is a passkey request, jump directly to showing a QR
+    // code.
     bool is_priority = false;
     if (base::FeatureList::IsEnabled(device::kWebAuthPasskeysUI)) {
-      if (base::ranges::any_of(mechanisms_,
-                               [](const Mechanism& m) { return m.priority; })) {
-        LOG(ERROR) << "Not jumping to QR because of other priority";
-      } else if (!paired_phone_names().empty()) {
-        LOG(ERROR) << "Not jumping to QR because linked phones exist";
-      } else if (!is_get_assertion) {
-        LOG(ERROR)
-            << "Not jumping to QR because this is not a getAssertion request";
-      } else if (!transport_availability_.has_empty_allow_list) {
-        LOG(ERROR) << "Not jumping to QR because of non-empty allow list";
-      } else {
-        is_priority = true;
-      }
+      // On Windows<=10, we cannot tell in advance if the platform authenticator
+      // can fulfill a get assertion request. In that case, don't jump to the QR
+      // code.
+      bool platform_authenticator_could_fulfill_get_assertion =
+          is_get_assertion && !use_conditional_mediation_ &&
+          transport_availability_.has_platform_authenticator_credential !=
+              device::FidoRequestHandlerBase::RecognizedCredential::
+                  kNoRecognizedCredential;
+      is_priority =
+          !base::ranges::any_of(
+              mechanisms_, [](const Mechanism& m) { return m.priority; }) &&
+          paired_phone_names().empty() && is_passkey_request &&
+          !platform_authenticator_could_fulfill_get_assertion;
     }
-
     const std::u16string label =
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_PASSKEY_DIFFERENT_DEVICE_LABEL);
     mechanisms_.emplace_back(
