@@ -8003,6 +8003,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TUTORIAL_GENERIC_SUCCESS_TITLE" desc="The title of the generic success step in the user education tutorials">
         Nicely Done!
       </message>
+
+      <!-- Tab Group Tutorial Strings -->
       <if expr="use_titlecase">
         <message name="IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP" desc="The description of the add tab step in the tab group tutorial">
           Right-click on a tab and select "Add Tab To New Group"
@@ -8054,6 +8056,26 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_TUTORIAL_SIDE_PANEL_READING_LIST_SUCCESS_BODY" desc="The description of the body text in the 'success' step in side panel reading list tutorial">
         Try using the side panel for bookmarks, journeys, and more
+      </message>
+
+      <!-- Customize Chrome Tutorial Strings -->
+      <message name="IDS_TUTORIAL_CUSTOMIZE_CHROME_OPEN_SIDE_PANEL" desc="The description of the 'open side panel' step in customize chrome tutorial">
+        Customize Chrome to give your browser a new look
+      </message>
+      <message name="IDS_TUTORIAL_CUSTOMIZE_CHROME_CHANGE_THEME" desc="The description of the 'change theme' step in customize chrome tutorial">
+        Click “Change theme” to explore themes inspired by artists, nature and more
+      </message>
+      <message name="IDS_TUTORIAL_CUSTOMIZE_CHROME_SELECT_COLLECTION" desc="The description of the 'select collection' step in customize chrome tutorial">
+        Select a collection
+      </message>
+      <message name="IDS_TUTORIAL_CUSTOMIZE_CHROME_APPLY_THEME" desc="The description of the 'apply theme' step in customize chrome tutorial">
+        Choose an image to apply the theme instantly
+      </message>
+      <message name="IDS_TUTORIAL_CUSTOMIZE_CHROME_CLICK_BACK_ARROW" desc="The description of the 'click back arrow' step in customize chrome tutorial">
+        Click the back arrow to explore other options
+      </message>
+      <message name="IDS_TUTORIAL_CUSTOMIZE_CHROME_SUCCESS_BODY" desc="The description of the body text in the 'success' step in customize chrome tutorial">
+        That’s it! You can now give your browser a new look at any time.
       </message>
 
       <!-- Browser Hung Plugin Detector -->
