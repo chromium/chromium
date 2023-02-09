@@ -7003,3 +7003,6 @@ crbug.com/1412910 [ Mac ] virtual/view-transition/external/wpt/css/css-view-tran
 
 # Sheriff 2023-02-07
 crbug.com/1413770 wpt_internal/storage/estimate-usage-details-filesystem.https.tentative.any.worker.html [ Failure Pass ]
+
+# Sheriff 2023-02-09
+crbug.com/1414105 [ Win ] virtual/gpu/fast/canvas/OffscreenCanvas-filter-in-worker.html [ Failure Pass ]
