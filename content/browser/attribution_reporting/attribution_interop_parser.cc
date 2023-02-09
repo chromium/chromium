@@ -4,73 +4,35 @@
 
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
 
-#include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "base/check.h"
-#include "base/functional/function_ref.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_parser_test_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 namespace content {
 namespace {
 
 class AttributionInteropParser {
  public:
-  AttributionInteropParser() = default;
-
-  // Converts interop test input to simulator input format.
-  base::expected<base::Value::Dict, std::string> SimulatorInputFromInteropInput(
-      base::Value::Dict) &&;
-
   [[nodiscard]] std::string ParseConfig(const base::Value::Dict&,
                                         AttributionConfig&,
                                         bool required) &&;
 
  private:
-  bool has_error() const { return error_manager_.has_error(); }
-
   [[nodiscard]] std::unique_ptr<AttributionParserErrorManager::ScopedContext>
   PushContext(AttributionParserErrorManager::Context context);
 
   AttributionParserErrorManager::ErrorWriter Error();
-
-  void MoveDictValues(base::Value::Dict& in, base::Value::Dict& out);
-
-  void MoveValue(base::Value::Dict& in,
-                 base::StringPiece in_key,
-                 base::Value::Dict& out,
-                 absl::optional<base::StringPiece> out_key_opt = absl::nullopt);
-
-  bool EnsureDictionary(const base::Value* value);
-
-  absl::optional<std::string> ExtractString(base::Value::Dict& dict,
-                                            base::StringPiece key);
-
-  void ParseList(base::Value* values,
-                 base::FunctionRef<void(base::Value)> callback,
-                 size_t expected_size = 0);
-
-  // Returns `attribution_src_url` in the request if exists.
-  absl::optional<std::string> ParseRequest(base::Value::Dict& in,
-                                           base::Value::Dict& out);
-
-  void ParseResponse(base::Value::Dict& in,
-                     base::Value::Dict& out,
-                     const std::string& attribution_src_url);
-
-  base::Value::List ParseEvents(base::Value::Dict& dict, base::StringPiece key);
 
   // Returns true if `key` is present in `dict` and the integer is parsed
   // successfully.
@@ -146,229 +108,6 @@ AttributionInteropParser::PushContext(
 
 AttributionParserErrorManager::ErrorWriter AttributionInteropParser::Error() {
   return error_manager_.Error();
-}
-
-void AttributionInteropParser::MoveDictValues(base::Value::Dict& in,
-                                              base::Value::Dict& out) {
-  for (auto [key, value] : in) {
-    auto context = PushContext(key);
-    if (out.contains(key)) {
-      *Error() << "must not be present";
-      return;
-    }
-    out.Set(key, std::move(value));
-  }
-}
-
-void AttributionInteropParser::MoveValue(
-    base::Value::Dict& in,
-    base::StringPiece in_key,
-    base::Value::Dict& out,
-    absl::optional<base::StringPiece> out_key_opt) {
-  auto context = PushContext(in_key);
-
-  base::Value* value = in.Find(in_key);
-  if (!value) {
-    *Error() << "must be present";
-    return;
-  }
-
-  base::StringPiece out_key = out_key_opt.value_or(in_key);
-  DCHECK(!out.contains(out_key));
-  out.Set(out_key, std::move(*value));
-}
-
-bool AttributionInteropParser::EnsureDictionary(const base::Value* value) {
-  if (!value) {
-    *Error() << "must be present";
-    return false;
-  }
-
-  if (!value->is_dict()) {
-    *Error() << "must be a dictionary";
-    return false;
-  }
-
-  return true;
-}
-
-absl::optional<std::string> AttributionInteropParser::ExtractString(
-    base::Value::Dict& dict,
-    base::StringPiece key) {
-  auto context = PushContext(key);
-
-  absl::optional<base::Value> value = dict.Extract(key);
-  if (!value) {
-    *Error() << "must be present";
-    return absl::nullopt;
-  }
-
-  if (std::string* str = value->GetIfString()) {
-    return std::move(*str);
-  }
-
-  *Error() << "must be a string";
-  return absl::nullopt;
-}
-
-void AttributionInteropParser::ParseList(
-    base::Value* values,
-    base::FunctionRef<void(base::Value)> parse_element,
-    size_t expected_size) {
-  if (!values) {
-    *Error() << "must be present";
-    return;
-  }
-
-  base::Value::List* list = values->GetIfList();
-  if (!list) {
-    *Error() << "must be a list";
-    return;
-  }
-
-  if (expected_size > 0 && list->size() != expected_size) {
-    *Error() << "must have size " << expected_size;
-    return;
-  }
-
-  size_t index = 0;
-  for (auto& value : values->GetList()) {
-    auto context = PushContext(index);
-    parse_element(std::move(value));
-    index++;
-  }
-}
-
-absl::optional<std::string> AttributionInteropParser::ParseRequest(
-    base::Value::Dict& in,
-    base::Value::Dict& out) {
-  static constexpr char kKey[] = "registration_request";
-
-  auto context = PushContext(kKey);
-
-  base::Value* request = in.Find(kKey);
-  if (!EnsureDictionary(request)) {
-    return absl::nullopt;
-  }
-
-  absl::optional<std::string> str =
-      ExtractString(request->GetDict(), "attribution_src_url");
-
-  MoveDictValues(request->GetDict(), out);
-
-  return str;
-}
-
-void AttributionInteropParser::ParseResponse(
-    base::Value::Dict& in,
-    base::Value::Dict& out,
-    const std::string& attribution_src_url) {
-  static constexpr char kKey[] = "responses";
-
-  auto context = PushContext(kKey);
-
-  ParseList(
-      in.Find(kKey),
-      [&](base::Value value) {
-        if (!EnsureDictionary(&value)) {
-          return;
-        }
-
-        static constexpr char kKeyUrl[] = "url";
-        if (absl::optional<std::string> url =
-                ExtractString(value.GetDict(), kKeyUrl);
-            url && *url != attribution_src_url) {
-          auto inner_context = PushContext(kKeyUrl);
-          *Error() << "must match " << attribution_src_url;
-        }
-
-        static constexpr char kKeyDebugPermission[] = "debug_permission";
-        if (value.GetDict().contains(kKeyDebugPermission)) {
-          MoveValue(value.GetDict(), kKeyDebugPermission, out);
-        }
-
-        static constexpr char kKeyResponse[] = "response";
-        auto inner_context = PushContext(kKeyResponse);
-        base::Value* response = value.GetDict().Find(kKeyResponse);
-        if (!EnsureDictionary(response)) {
-          return;
-        }
-
-        MoveDictValues(response->GetDict(), out);
-      },
-      /*expected_size=*/1);
-}
-
-base::Value::List AttributionInteropParser::ParseEvents(base::Value::Dict& dict,
-                                                        base::StringPiece key) {
-  auto context = PushContext(key);
-
-  base::Value::List results;
-
-  ParseList(dict.Find(key),
-            [&](base::Value value) {
-              if (!EnsureDictionary(&value)) {
-                return;
-              }
-
-              static constexpr char kKeyReportingOrigin[] = "reporting_origin";
-
-              base::Value::Dict dict;
-              MoveValue(value.GetDict(), "timestamp", dict);
-
-              // Placeholder so that it errors out if request or response
-              // contains this field.
-              dict.Set(kKeyReportingOrigin, "");
-
-              absl::optional<std::string> attribution_src_url =
-                  ParseRequest(value.GetDict(), dict);
-
-              if (has_error()) {
-                return;
-              }
-
-              DCHECK(attribution_src_url);
-
-              ParseResponse(value.GetDict(), dict, *attribution_src_url);
-
-              if (has_error()) {
-                return;
-              }
-
-              dict.Set(
-                  kKeyReportingOrigin,
-                  url::Origin::Create(GURL(std::move(*attribution_src_url)))
-                      .Serialize());
-
-              results.Append(std::move(dict));
-            });
-
-  return results;
-}
-
-base::expected<base::Value::Dict, std::string>
-AttributionInteropParser::SimulatorInputFromInteropInput(
-    base::Value::Dict input) && {
-  static constexpr char kKey[] = "input";
-
-  auto context = PushContext(kKey);
-
-  base::Value* dict = input.Find(kKey);
-  if (!EnsureDictionary(dict)) {
-    return base::unexpected(std::move(error_manager_).TakeError());
-  }
-
-  base::Value::List sources = ParseEvents(dict->GetDict(), "sources");
-  base::Value::List triggers = ParseEvents(dict->GetDict(), "triggers");
-
-  if (has_error()) {
-    return base::unexpected(std::move(error_manager_).TakeError());
-  }
-
-  base::Value::Dict result;
-  result.Set("sources", std::move(sources));
-  result.Set("triggers", std::move(triggers));
-  return result;
 }
 
 void AttributionInteropParser::ParseRandomizedResponseRate(
@@ -475,12 +214,6 @@ std::string AttributionInteropParser::ParseConfig(const base::Value::Dict& dict,
 }
 
 }  // namespace
-
-base::expected<base::Value::Dict, std::string>
-AttributionSimulatorInputFromInteropInput(base::Value::Dict input) {
-  return AttributionInteropParser().SimulatorInputFromInteropInput(
-      std::move(input));
-}
 
 base::expected<AttributionConfig, std::string> ParseAttributionConfig(
     const base::Value::Dict& dict) {

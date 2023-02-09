@@ -14,13 +14,6 @@ namespace content {
 
 struct AttributionConfig;
 
-// See //content/test/data/attribution_reporting/simulator/README.md and
-// //content/test/data/attribution_reporting/interop/README.md for the input
-// and output JSON schema.
-
-base::expected<base::Value::Dict, std::string>
-    AttributionSimulatorInputFromInteropInput(base::Value::Dict);
-
 base::expected<AttributionConfig, std::string> ParseAttributionConfig(
     const base::Value::Dict&);
 

@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_header_utils.h"
@@ -36,6 +37,10 @@ namespace {
 
 using ::attribution_reporting::SuitableOrigin;
 
+constexpr char kAttributionSrcUrlKey[] = "attribution_src_url";
+constexpr char kRegistrationRequestKey[] = "registration_request";
+constexpr char kResponseKey[] = "response";
+constexpr char kResponsesKey[] = "responses";
 constexpr char kTimestampKey[] = "timestamp";
 
 class AttributionSimulatorInputParser {
@@ -59,15 +64,17 @@ class AttributionSimulatorInputParser {
     static constexpr char kKeySources[] = "sources";
     if (base::Value* sources = input.Find(kKeySources)) {
       auto context = PushContext(kKeySources);
-      ParseList(std::move(*sources),
-                [&](base::Value source) { ParseSource(std::move(source)); });
+      ParseListOfDicts(sources, [&](base::Value::Dict source) {
+        ParseSource(std::move(source));
+      });
     }
 
     static constexpr char kKeyTriggers[] = "triggers";
     if (base::Value* triggers = input.Find(kKeyTriggers)) {
       auto context = PushContext(kKeyTriggers);
-      ParseList(std::move(*triggers),
-                [&](base::Value trigger) { ParseTrigger(std::move(trigger)); });
+      ParseListOfDicts(triggers, [&](base::Value::Dict trigger) {
+        ParseTrigger(std::move(trigger));
+      });
     }
 
     if (has_error()) {
@@ -94,102 +101,161 @@ class AttributionSimulatorInputParser {
 
   bool has_error() const { return error_manager_.has_error(); }
 
-  void ParseList(base::Value values,
-                 base::FunctionRef<void(base::Value)> parse_element) {
-    if (!values.is_list()) {
+  void ParseListOfDicts(
+      base::Value* values,
+      base::FunctionRef<void(base::Value::Dict)> parse_element,
+      size_t expected_size = 0) {
+    if (!values) {
+      *Error() << "must be present";
+      return;
+    }
+
+    base::Value::List* list = values->GetIfList();
+    if (!list) {
       *Error() << "must be a list";
       return;
     }
 
+    if (expected_size > 0 && list->size() != expected_size) {
+      *Error() << "must have size " << expected_size;
+      return;
+    }
+
     size_t index = 0;
-    for (auto& value : values.GetList()) {
+    for (auto& value : *list) {
       auto index_context = PushContext(index);
-      parse_element(std::move(value));
+      if (!EnsureDictionary(&value)) {
+        return;
+      }
+      parse_element(std::move(value).TakeDict());
       index++;
     }
   }
 
-  void ParseSource(base::Value source) {
-    if (!EnsureDictionary(source)) {
-      return;
-    }
-
-    base::Value::Dict& source_dict = source.GetDict();
-
-    base::Time source_time = ParseTime(source_dict, kTimestampKey);
-    absl::optional<SuitableOrigin> source_origin =
-        ParseOrigin(source_dict, "source_origin");
-    absl::optional<SuitableOrigin> reporting_origin =
-        ParseOrigin(source_dict, "reporting_origin");
-    absl::optional<AttributionSourceType> source_type =
-        ParseSourceType(source_dict);
-    bool debug_permission = ParseDebugPermission(source_dict);
-
+  void VerifyReportingOrigin(const base::Value::Dict& dict,
+                             const SuitableOrigin& reporting_origin) {
+    static constexpr char kUrlKey[] = "url";
+    absl::optional<SuitableOrigin> origin = ParseOrigin(dict, kUrlKey);
     if (has_error()) {
       return;
     }
-
-    ParseAttributionEvent(
-        source_dict, "Attribution-Reporting-Register-Source",
-        [&](base::Value::Dict dict) {
-          base::expected<StorableSource,
-                         attribution_reporting::mojom::SourceRegistrationError>
-              storable_source = ParseSourceRegistration(
-                  std::move(dict), source_time, std::move(*reporting_origin),
-                  std::move(*source_origin), *source_type,
-                  /*is_within_fenced_frame=*/false);
-
-          if (!storable_source.has_value()) {
-            *Error() << storable_source.error();
-            return;
-          }
-
-          events_.push_back(AttributionSource{
-              .source = std::move(*storable_source),
-              .debug_permission = debug_permission,
-          });
-        });
+    if (*origin != reporting_origin) {
+      auto context = PushContext(kUrlKey);
+      *Error() << "must match " << reporting_origin.Serialize();
+    }
   }
 
-  void ParseTrigger(base::Value trigger) {
-    if (!EnsureDictionary(trigger)) {
-      return;
-    }
+  void ParseSource(base::Value::Dict source_dict) {
+    base::Time source_time = ParseTime(source_dict, kTimestampKey);
 
-    base::Value::Dict& trigger_dict = trigger.GetDict();
+    absl::optional<SuitableOrigin> source_origin;
+    absl::optional<SuitableOrigin> reporting_origin;
+    absl::optional<AttributionSourceType> source_type;
 
-    base::Time trigger_time = ParseTime(trigger_dict, kTimestampKey);
-    absl::optional<SuitableOrigin> reporting_origin =
-        ParseOrigin(trigger_dict, "reporting_origin");
-    absl::optional<SuitableOrigin> destination_origin =
-        ParseOrigin(trigger_dict, "destination_origin");
-    bool debug_permission = ParseDebugPermission(trigger_dict);
+    ParseDict(source_dict, kRegistrationRequestKey,
+              [&](base::Value::Dict dict) {
+                source_origin = ParseOrigin(dict, "source_origin");
+                reporting_origin = ParseOrigin(dict, kAttributionSrcUrlKey);
+                source_type = ParseSourceType(dict);
+              });
 
     if (has_error()) {
       return;
     }
 
-    ParseAttributionEvent(
-        trigger_dict, "Attribution-Reporting-Register-Trigger",
+    auto context = PushContext(kResponsesKey);
+    ParseListOfDicts(
+        source_dict.Find(kResponsesKey),
         [&](base::Value::Dict dict) {
-          auto trigger_registration =
-              attribution_reporting::TriggerRegistration::Parse(
-                  std::move(dict));
-          if (!trigger_registration.has_value()) {
-            *Error() << trigger_registration.error();
+          VerifyReportingOrigin(dict, *reporting_origin);
+
+          bool debug_permission = ParseDebugPermission(dict);
+
+          if (has_error()) {
             return;
           }
 
-          events_.push_back(AttributionTriggerAndTime{
-              .trigger = AttributionTrigger(std::move(*reporting_origin),
-                                            std::move(*trigger_registration),
-                                            std::move(*destination_origin),
-                                            /*attestation=*/absl::nullopt,
-                                            /*is_within_fenced_frame=*/false),
-              .time = trigger_time,
-              .debug_permission = debug_permission,
+          ParseDict(dict, kResponseKey, [&](base::Value::Dict response_dict) {
+            ParseDict(
+                response_dict, "Attribution-Reporting-Register-Source",
+                [&](base::Value::Dict registration_dict) {
+                  base::expected<
+                      StorableSource,
+                      attribution_reporting::mojom::SourceRegistrationError>
+                      storable_source = ParseSourceRegistration(
+                          std::move(registration_dict), source_time,
+                          std::move(*reporting_origin),
+                          std::move(*source_origin), *source_type,
+                          /*is_within_fenced_frame=*/false);
+
+                  if (!storable_source.has_value()) {
+                    *Error() << storable_source.error();
+                    return;
+                  }
+
+                  events_.push_back(AttributionSource{
+                      .source = std::move(*storable_source),
+                      .debug_permission = debug_permission,
+                  });
+                });
           });
-        });
+        },
+        /*expected_size=*/1);
+  }
+
+  void ParseTrigger(base::Value::Dict trigger_dict) {
+    base::Time trigger_time = ParseTime(trigger_dict, kTimestampKey);
+
+    absl::optional<SuitableOrigin> destination_origin;
+    absl::optional<SuitableOrigin> reporting_origin;
+
+    ParseDict(trigger_dict, kRegistrationRequestKey,
+              [&](base::Value::Dict dict) {
+                destination_origin = ParseOrigin(dict, "destination_origin");
+                reporting_origin = ParseOrigin(dict, kAttributionSrcUrlKey);
+              });
+
+    if (has_error()) {
+      return;
+    }
+
+    auto context = PushContext(kResponsesKey);
+    ParseListOfDicts(
+        trigger_dict.Find(kResponsesKey),
+        [&](base::Value::Dict dict) {
+          VerifyReportingOrigin(dict, *reporting_origin);
+
+          bool debug_permission = ParseDebugPermission(dict);
+
+          if (has_error()) {
+            return;
+          }
+
+          ParseDict(dict, kResponseKey, [&](base::Value::Dict response_dict) {
+            ParseDict(response_dict, "Attribution-Reporting-Register-Trigger",
+                      [&](base::Value::Dict registration_dict) {
+                        auto trigger_registration =
+                            attribution_reporting::TriggerRegistration::Parse(
+                                std::move(registration_dict));
+                        if (!trigger_registration.has_value()) {
+                          *Error() << trigger_registration.error();
+                          return;
+                        }
+
+                        events_.push_back(AttributionTriggerAndTime{
+                            .trigger = AttributionTrigger(
+                                std::move(*reporting_origin),
+                                std::move(*trigger_registration),
+                                std::move(*destination_origin),
+                                /*attestation=*/absl::nullopt,
+                                /*is_within_fenced_frame=*/false),
+                            .time = trigger_time,
+                            .debug_permission = debug_permission,
+                        });
+                      });
+          });
+        },
+        /*expected_size=*/1);
   }
 
   absl::optional<SuitableOrigin> ParseOrigin(const base::Value::Dict& dict,
@@ -273,19 +339,13 @@ class AttributionSimulatorInputParser {
     return source_type;
   }
 
-  bool ParseAttributionEvent(
-      base::Value::Dict& value,
-      base::StringPiece key,
-      base::FunctionRef<void(base::Value::Dict)> parse_dict) {
+  bool ParseDict(base::Value::Dict& value,
+                 base::StringPiece key,
+                 base::FunctionRef<void(base::Value::Dict)> parse_dict) {
     auto context = PushContext(key);
 
     base::Value* dict = value.Find(key);
-    if (!dict) {
-      *Error() << "must be present";
-      return false;
-    }
-
-    if (!EnsureDictionary(*dict)) {
+    if (!EnsureDictionary(dict)) {
       return false;
     }
 
@@ -293,8 +353,13 @@ class AttributionSimulatorInputParser {
     return true;
   }
 
-  bool EnsureDictionary(const base::Value& value) {
-    if (!value.is_dict()) {
+  bool EnsureDictionary(const base::Value* value) {
+    if (!value) {
+      *Error() << "must be present";
+      return false;
+    }
+
+    if (!value->is_dict()) {
       *Error() << "must be a dictionary";
       return false;
     }

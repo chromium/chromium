@@ -34,6 +34,9 @@ using AttributionSimulationEvent =
 
 using AttributionSimulationEvents = std::vector<AttributionSimulationEvent>;
 
+// See //content/test/data/attribution_reporting/interop/README.md for the
+// schema.
+
 base::expected<AttributionSimulationEvents, std::string>
 ParseAttributionSimulationInput(base::Value::Dict input,
                                 base::Time offset_time);

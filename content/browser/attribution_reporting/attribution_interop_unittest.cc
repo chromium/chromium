@@ -17,6 +17,7 @@
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
 #include "content/browser/attribution_reporting/attribution_simulator.h"
+#include "content/browser/attribution_reporting/attribution_simulator_input_parser.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -90,14 +91,15 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
     ASSERT_EQ("", MergeAttributionConfig(api_config->GetDict(), config));
   }
 
+  absl::optional<base::Value> input = dict.Extract("input");
+  ASSERT_TRUE(input && input->is_dict());
+
+  auto actual_output =
+      RunAttributionSimulation(std::move(*input).TakeDict(), config);
+  ASSERT_TRUE(actual_output.has_value()) << actual_output.error();
+
   absl::optional<base::Value> expected_output = dict.Extract("output");
   ASSERT_TRUE(expected_output.has_value());
-
-  auto input = AttributionSimulatorInputFromInteropInput(std::move(dict));
-  ASSERT_TRUE(input.has_value()) << input.error();
-
-  auto actual_output = RunAttributionSimulation(std::move(*input), config);
-  ASSERT_TRUE(actual_output.has_value()) << actual_output.error();
 
   EXPECT_THAT(*actual_output, base::test::IsJson(*expected_output));
 }
