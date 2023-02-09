@@ -1243,7 +1243,16 @@ void DriveIntegrationService::OnGetOfflineItemsPage(
   }
 
   for (auto& result : *results) {
-    total_size += result->metadata->size;
+    if (!result->metadata) {
+      continue;
+    }
+    // We only want to show storage used by Drive that a user can action (i.e.
+    // files that can be unpinned). This should exclude files that DriveFS
+    // implicitly caches as users can't remove these files.
+    const drivefs::mojom::FileMetadata& metadata = *result->metadata;
+    if (metadata.available_offline && metadata.pinned) {
+      total_size += result->metadata->size;
+    }
   }
 
   auto* raw_search_query = search_query.get();

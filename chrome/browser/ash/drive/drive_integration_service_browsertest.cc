@@ -592,6 +592,10 @@ class FakeSearchQueryImpl : public drivefs::mojom::SearchQuery {
       qi2->metadata->capabilities = drivefs::mojom::Capabilities::New();
       qi1->metadata->size = 50;
       qi2->metadata->size = 25;
+      qi1->metadata->available_offline = true;
+      qi2->metadata->available_offline = true;
+      qi1->metadata->pinned = true;
+      qi2->metadata->pinned = true;
       page.emplace_back(std::move(qi1));
       page.emplace_back(std::move(qi2));
     }
