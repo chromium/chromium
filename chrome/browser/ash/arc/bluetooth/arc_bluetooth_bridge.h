@@ -418,7 +418,7 @@ class ArcBluetoothBridge
   // is got by BluetoothAdapter::GetDevices(), which includes all devices have
   // been discovered (not necessarily paired or connected) but not yet expired.
   // This function should be called when Bluetooth service in Android is ready.
-  void SendCachedDevices() const;
+  virtual void SendCachedDevices() const;
 
   std::vector<mojom::BluetoothPropertyPtr> GetDeviceProperties(
       mojom::BluetoothPropertyType type,

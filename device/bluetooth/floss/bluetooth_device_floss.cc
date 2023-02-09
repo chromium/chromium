@@ -530,55 +530,57 @@ bool BluetoothDeviceFloss::IsBondedImpl() const {
 
 void BluetoothDeviceFloss::OnGetRemoteType(
     DBusResult<FlossAdapterClient::BluetoothDeviceType> ret) {
-  TriggerInitDevicePropertiesCallback();
-  if (!ret.has_value()) {
+  if (ret.has_value()) {
+    switch (*ret) {
+      case FlossAdapterClient::BluetoothDeviceType::kBle:
+        transport_ = device::BluetoothTransport::BLUETOOTH_TRANSPORT_LE;
+        break;
+      case FlossAdapterClient::BluetoothDeviceType::kDual:
+        transport_ = device::BluetoothTransport::BLUETOOTH_TRANSPORT_DUAL;
+        break;
+      // Default to BrEdr. ARC++ for example doesn't know how to translate the
+      // Invalid state.
+      case FlossAdapterClient::BluetoothDeviceType::kBredr:
+        [[fallthrough]];
+      default:
+        transport_ = device::BluetoothTransport::BLUETOOTH_TRANSPORT_CLASSIC;
+        break;
+    }
+  } else {
     BLUETOOTH_LOG(ERROR) << "GetRemoteType() failed: " << ret.error();
-    return;
   }
 
-  switch (*ret) {
-    case FlossAdapterClient::BluetoothDeviceType::kBredr:
-      transport_ = device::BluetoothTransport::BLUETOOTH_TRANSPORT_CLASSIC;
-      break;
-    case FlossAdapterClient::BluetoothDeviceType::kBle:
-      transport_ = device::BluetoothTransport::BLUETOOTH_TRANSPORT_LE;
-      break;
-    case FlossAdapterClient::BluetoothDeviceType::kDual:
-      transport_ = device::BluetoothTransport::BLUETOOTH_TRANSPORT_DUAL;
-      break;
-    default:
-      transport_ = device::BluetoothTransport::BLUETOOTH_TRANSPORT_INVALID;
-  }
+  TriggerInitDevicePropertiesCallback();
 }
 
 void BluetoothDeviceFloss::OnGetRemoteClass(DBusResult<uint32_t> ret) {
-  TriggerInitDevicePropertiesCallback();
-  if (!ret.has_value()) {
+  if (ret.has_value()) {
+    cod_ = *ret;
+  } else {
     BLUETOOTH_LOG(ERROR) << "GetRemoteClass() failed: " << ret.error();
-    return;
   }
 
-  cod_ = *ret;
+  TriggerInitDevicePropertiesCallback();
 }
 
 void BluetoothDeviceFloss::OnGetRemoteAppearance(DBusResult<uint16_t> ret) {
-  TriggerInitDevicePropertiesCallback();
-  if (!ret.has_value()) {
+  if (ret.has_value()) {
+    appearance_ = *ret;
+  } else {
     BLUETOOTH_LOG(ERROR) << "OnGetRemoteAppearance() failed: " << ret.error();
-    return;
   }
 
-  appearance_ = *ret;
+  TriggerInitDevicePropertiesCallback();
 }
 
 void BluetoothDeviceFloss::OnGetRemoteUuids(DBusResult<UUIDList> ret) {
-  TriggerInitDevicePropertiesCallback();
-  if (!ret.has_value()) {
+  if (ret.has_value()) {
+    device_uuids_.ReplaceServiceUUIDs(*ret);
+  } else {
     BLUETOOTH_LOG(ERROR) << "GetRemoteUuids() failed: " << ret.error();
-    return;
   }
 
-  device_uuids_.ReplaceServiceUUIDs(*ret);
+  TriggerInitDevicePropertiesCallback();
 }
 
 void BluetoothDeviceFloss::OnConnectAllEnabledProfiles(DBusResult<Void> ret) {
@@ -644,6 +646,11 @@ void BluetoothDeviceFloss::OnConnectToServiceError(
 
 void BluetoothDeviceFloss::InitializeDeviceProperties(
     base::OnceClosure callback) {
+  // If a property read is already active, don't re-run it.
+  if (property_reads_triggered_) {
+    return;
+  }
+
   property_reads_triggered_ = true;
   pending_callback_on_init_props_ = std::move(callback);
   // This must be incremented when adding more properties below
@@ -671,6 +678,8 @@ void BluetoothDeviceFloss::InitializeDeviceProperties(
 
 void BluetoothDeviceFloss::TriggerInitDevicePropertiesCallback() {
   if (--num_pending_properties_ == 0 && pending_callback_on_init_props_) {
+    property_reads_completed_ = true;
+    property_reads_triggered_ = false;
     std::move(*pending_callback_on_init_props_).Run();
     pending_callback_on_init_props_ = absl::nullopt;
   }

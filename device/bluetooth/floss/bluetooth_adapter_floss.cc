@@ -71,12 +71,15 @@ BluetoothDeviceFloss::ConnectErrorCode BtifStatusToConnectErrorCode(
   }
 }
 
-bool DeviceHasReadProperties(device::BluetoothDevice* device) {
+bool DeviceNeedsToReadProperties(device::BluetoothDevice* device) {
   if (device) {
-    return static_cast<BluetoothDeviceFloss*>(device)->HasReadProperties();
+    BluetoothDeviceFloss* floss_device =
+        static_cast<BluetoothDeviceFloss*>(device);
+    return !(floss_device->HasReadProperties() ||
+             floss_device->IsReadingProperties());
   }
 
-  return false;
+  return true;
 }
 
 }  // namespace
@@ -648,7 +651,7 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
   if (!base::Contains(devices_, canonical_address)) {
     new_device_ptr = device_floss.get();
     devices_.emplace(canonical_address, std::move(device_floss));
-  } else if (!DeviceHasReadProperties(devices_[canonical_address].get())) {
+  } else if (DeviceNeedsToReadProperties(devices_[canonical_address].get())) {
     new_device_ptr =
         static_cast<BluetoothDeviceFloss*>(devices_[canonical_address].get());
   }

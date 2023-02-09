@@ -22,6 +22,9 @@ class ArcFlossBridge : public ArcBluetoothBridge {
   ArcFlossBridge(const ArcFlossBridge&) = delete;
   ArcFlossBridge& operator=(const ArcFlossBridge&) = delete;
 
+  // ArcBluetoothBridge overrides
+  void SendCachedDevices() const override;
+
   // Bluetooth Mojo host interface - Bluetooth SDP functions
   void GetSdpRecords(mojom::BluetoothAddressPtr remote_addr,
                      const device::BluetoothUUID& target_uuid) override;
