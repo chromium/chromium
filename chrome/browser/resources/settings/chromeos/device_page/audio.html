@@ -78,7 +78,7 @@
           <template is="dom-repeat"
               items="[[audioSystemProperties_.outputDevices]]">
             <option value="[[item.id]]" selected="[[item.isActive]]">
-              [[item.displayName]]
+              [[getDeviceName_(item)]]
             </option>
           </template>
         </select>
@@ -134,7 +134,7 @@
           <template is="dom-repeat"
               items="[[audioSystemProperties_.inputDevices]]">
             <option value="[[item.id]]" selected="[[item.isActive]]">
-              [[item.displayName]]
+              [[getDeviceName_(item)]]
             </option>
           </template>
         </select>

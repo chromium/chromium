@@ -2475,6 +2475,33 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_AUDIO_INPUT_NOISE_CANCELLATION_TITLE" desc="In Device Settings, the title of the noise cancellation toggle under the input section in audio settings subpage." translateable="false">
     Noise Cancellation
   </message>
+  <message name="IDS_SETTINGS_AUDIO_DEVICE_FRONT_MIC_LABEL" desc="In Device Settings, the label used for the front microphone.">
+    Front microphone
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_DEVICE_HEADPHONE_LABEL" desc="In Device Settings, the label used for the audio headphone.">
+    Headphones
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_DEVICE_INTERNAL_SPEAKERS_LABEL" desc="In Device Settings, the label used for the internal audio speaker.">
+    Speaker (internal)
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_DEVICE_INTERNAL_MIC_LABEL" desc="In Device Settings, the label used for the internal microphone.">
+    Microphone (internal)
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_DEVICE_REAR_MIC_LABEL" desc="In Device Settings, the label used for the rear microphone.">
+    Rear microphone
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_DEVICE_USB_LABEL" desc="In Device Settings, the label used for the USB audio device.">
+    <ph name="device_name">$1<ex>Headphone</ex></ph> (USB)
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_DEVICE_BLUETOOTH_LABEL" desc="In Device Settings, the label used for the bluetooth audio device.">
+    <ph name="device_name">$1<ex>Headphone</ex></ph> (Bluetooth)
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_DEVICE_HDMI_LABEL" desc="In Device Settings, the label used for the HDMI audio device.">
+    <ph name="device_name">$1<ex>Speaker</ex></ph> (HDMI/DP)
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_DEVICE_MIC_JACK_LABEL" desc="In Device Settings, the label used for the mic jack device.">
+    Mic jack
+  </message>
 
   <!-- Device pointer page (OS settings) -->
   <message name="IDS_SETTINGS_MOUSE_TITLE" desc="In Device Settings, the title of the mouse settings subpage.">

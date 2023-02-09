@@ -19,7 +19,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AudioDevice, AudioEffectState, AudioSystemProperties, AudioSystemPropertiesObserverReceiver, MuteState} from '../../mojom-webui/audio/cros_audio_config.mojom-webui.js';
+import {AudioDevice, AudioDeviceType, AudioEffectState, AudioSystemProperties, AudioSystemPropertiesObserverReceiver, MuteState} from '../../mojom-webui/audio/cros_audio_config.mojom-webui.js';
 import {routes} from '../os_route.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
@@ -282,6 +282,33 @@ class SettingsAudioElement extends SettingsAudioElementBase {
   protected shouldDisableInputGainControls(): boolean {
     return this.audioSystemProperties_.inputMuteState ===
         MuteState.kMutedExternally;
+  }
+
+  /** Translates the device name if applicable. */
+  private getDeviceName_(audioDevice: AudioDevice): string {
+    switch (audioDevice.deviceType) {
+      case AudioDeviceType.kHeadphone:
+        return this.i18n('audioDeviceHeadphoneLabel');
+      case AudioDeviceType.kMic:
+        return this.i18n('audioDeviceMicJackLabel');
+      case AudioDeviceType.kUsb:
+        return this.i18n('audioDeviceUsbLabel', audioDevice.displayName);
+      case AudioDeviceType.kBluetooth:
+      case AudioDeviceType.kBluetoothNbMic:
+        return this.i18n('audioDeviceBluetoothLabel', audioDevice.displayName);
+      case AudioDeviceType.kHdmi:
+        return this.i18n('audioDeviceHdmiLabel', audioDevice.displayName);
+      case AudioDeviceType.kInternalSpeaker:
+        return this.i18n('audioDeviceInternalSpeakersLabel');
+      case AudioDeviceType.kInternalMic:
+        return this.i18n('audioDeviceInternalMicLabel');
+      case AudioDeviceType.kFrontMic:
+        return this.i18n('audioDeviceFrontMicLabel');
+      case AudioDeviceType.kRearMic:
+        return this.i18n('audioDeviceRearMicLabel');
+      default:
+        return audioDevice.displayName;
+    }
   }
 }
 
