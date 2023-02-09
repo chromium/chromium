@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_SIMULATOR_INPUT_PARSER_H_
-#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_SIMULATOR_INPUT_PARSER_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_SIMULATOR_PARSER_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_SIMULATOR_PARSER_H_
 
 #include <string>
 #include <vector>
@@ -17,6 +17,8 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
+
+struct AttributionConfig;
 
 struct AttributionTriggerAndTime {
   AttributionTrigger trigger;
@@ -41,6 +43,13 @@ base::expected<AttributionSimulationEvents, std::string>
 ParseAttributionSimulationInput(base::Value::Dict input,
                                 base::Time offset_time);
 
+base::expected<AttributionConfig, std::string> ParseAttributionConfig(
+    const base::Value::Dict&);
+
+// Returns a non-empty string on failure.
+[[nodiscard]] std::string MergeAttributionConfig(const base::Value::Dict&,
+                                                 AttributionConfig&);
+
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_SIMULATOR_INPUT_PARSER_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_SIMULATOR_PARSER_H_
