@@ -452,6 +452,13 @@ void ScreenAIService::ExtractMainContentInternal(
     const ukm::SourceId& ukm_source_id,
     std::vector<int32_t>* content_node_ids) {
   DCHECK(content_node_ids);
+  DCHECK(content_node_ids->empty());
+
+  // Early return if input is empty.
+  if (snapshot.nodes.empty()) {
+    return;
+  }
+
   std::string serialized_snapshot = SnapshotToViewHierarchy(snapshot);
 
   int32_t* node_ids = nullptr;
@@ -463,7 +470,6 @@ void ScreenAIService::ExtractMainContentInternal(
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
   if (!success) {
     VLOG(1) << "Screen2x did not return main content.";
-    DCHECK(content_node_ids->empty());
     RecordMetrics(ukm_source_id, ukm::UkmRecorder::Get(), elapsed_time,
                   /* success= */ false);
     return;
@@ -474,9 +480,7 @@ void ScreenAIService::ExtractMainContentInternal(
   delete[] node_ids;
   node_ids = nullptr;
 
-  VLOG(2) << "Screen2x returned " << content_node_ids->size() << " node ids:";
-  for (int32_t i : *content_node_ids)
-    VLOG(2) << i;
+  VLOG(2) << "Screen2x returned " << content_node_ids->size() << " node ids.";
   RecordMetrics(ukm_source_id, ukm::UkmRecorder::Get(), elapsed_time,
                 /* success= */ true);
 }

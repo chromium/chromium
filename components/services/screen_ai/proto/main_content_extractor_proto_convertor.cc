@@ -308,6 +308,8 @@ void AddSubTree(const ui::AXTree& tree,
 namespace screen_ai {
 
 std::string SnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot) {
+  DCHECK(!snapshot.nodes.empty());
+
   // Deserialize the snapshot.
   ui::AXTree tree(snapshot);
 
