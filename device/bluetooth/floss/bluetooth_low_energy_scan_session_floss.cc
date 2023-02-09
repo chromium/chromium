@@ -85,8 +85,10 @@ BluetoothLowEnergyScanSessionFloss::GetFlossScanFilter() {
   filter.rssi_high_threshold = filter_->device_found_rssi_threshold();
   filter.rssi_low_threshold = filter_->device_lost_rssi_threshold();
   filter.rssi_low_timeout = filter_->device_lost_timeout().InSeconds();
-  filter.rssi_sampling_period =
-      filter_->rssi_sampling_period().value().InMilliseconds() / 100;
+  if (filter_->rssi_sampling_period().has_value()) {
+    filter.rssi_sampling_period =
+        filter_->rssi_sampling_period().value().InMilliseconds() / 100;
+  }
 
   for (auto& pattern : filter_->patterns()) {
     ScanFilterPattern p;
