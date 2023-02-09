@@ -1,0 +1,10 @@
+CONSOLE DEBUG: Preload triggered for 127.0.0.1/linkHeader/script
+CONSOLE DEBUG: Preload triggered for 127.0.0.1/linkHeader/image
+CONSOLE DEBUG: Preload triggered for 127.0.0.1/linkHeader/font
+CONSOLE DEBUG: Preload triggered for 127.0.0.1/linkHeader/stylesheet
+CONSOLE DEBUG: Preload triggered for 127.0.0.1/linkHeader/fetch
+CONSOLE DEBUG: Preload triggered for 127.0.0.1/linkHeader/script_auto with fetchpriority hint 'auto'
+CONSOLE DEBUG: Preload triggered for 127.0.0.1/linkHeader/script_low with fetchpriority hint 'low'
+CONSOLE DEBUG: Preload triggered for 127.0.0.1/linkHeader/image_high with fetchpriority hint 'high'
+CONSOLE DEBUG: Preload triggered for 127.0.0.1/linkHeader/image_invalid with fetchpriority hint 'auto'
+This test checks if a Link header triggered preloads with the correct fetchpriority hint value.

@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "services/network/public/mojom/request_priority.mojom";
 import "url/mojom/url.mojom";
 
 // Represents subset of possible values for `rel` attribute of the Link header.
@@ -52,6 +53,8 @@ struct LinkHeader {
   LinkAsAttribute as = LinkAsAttribute.kUnspecified;
   // The parsed value of `crossorigin` attribute.
   CrossOriginAttribute cross_origin = CrossOriginAttribute.kUnspecified;
+  // The parsed value of `fetchpriority` attribute.
+  FetchPriorityAttribute fetch_priority = FetchPriorityAttribute.kAuto;
   // The `type` attribute. This is null when `type` attribute is not specified.
   string? mime_type;
 };

@@ -13,6 +13,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
+#include "net/base/request_priority.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -125,6 +126,7 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
       network::mojom::NetworkContext* network_context);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(NavigationEarlyHintsManagerTest, PreloadPriority);
   class PreloadURLLoaderClient;
 
   struct PreconnectEntry;
@@ -145,6 +147,9 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   bool ShouldHandleResourceHints(const network::mojom::LinkHeaderPtr& link);
 
   void OnPreloadComplete(const GURL& url, const PreloadedResource& result);
+
+  static net::RequestPriority CalculateRequestPriority(
+      const network::mojom::LinkHeaderPtr& link);
 
   const raw_ref<BrowserContext> browser_context_;
   const raw_ref<StoragePartition> storage_partition_;

@@ -127,6 +127,7 @@ class NavigationEarlyHintsManagerTest : public testing::Test {
         GURL(kPreloadPath), network::mojom::LinkRelAttribute::kPreload,
         network::mojom::LinkAsAttribute::kScript,
         network::mojom::CrossOriginAttribute::kUnspecified,
+        network::mojom::FetchPriorityAttribute::kAuto,
         /*mime_type=*/absl::nullopt);
     auto hints = network::mojom::EarlyHints::New();
     hints->headers = network::mojom::ParsedHeaders::New();
@@ -151,6 +152,15 @@ class NavigationEarlyHintsManagerTest : public testing::Test {
         }));
     loop.Run();
     return result;
+  }
+
+  network::mojom::LinkHeaderPtr CreateLinkHeader(
+      network::mojom::LinkAsAttribute as,
+      network::mojom::FetchPriorityAttribute fetch_priority) {
+    return network::mojom::LinkHeader::New(
+        GURL(kPreloadPath), network::mojom::LinkRelAttribute::kPreload, as,
+        network::mojom::CrossOriginAttribute::kUnspecified, fetch_priority,
+        /*mime_type=*/absl::nullopt);
   }
 
  private:
@@ -250,6 +260,7 @@ TEST_F(NavigationEarlyHintsManagerTest, PreloadSchemeIsUnsupported) {
       GURL("file:///"), network::mojom::LinkRelAttribute::kPreload,
       network::mojom::LinkAsAttribute::kUnspecified,
       network::mojom::CrossOriginAttribute::kUnspecified,
+      network::mojom::FetchPriorityAttribute::kAuto,
       /*mime_type=*/absl::nullopt);
   auto hints = network::mojom::EarlyHints::New();
   hints->headers = network::mojom::ParsedHeaders::New();
@@ -268,6 +279,7 @@ TEST_F(NavigationEarlyHintsManagerTest, SinglePreconnect) {
       preconnect_url, network::mojom::LinkRelAttribute::kPreconnect,
       network::mojom::LinkAsAttribute::kUnspecified,
       network::mojom::CrossOriginAttribute::kUnspecified,
+      network::mojom::FetchPriorityAttribute::kAuto,
       /*mime_type=*/absl::nullopt);
   auto hints = network::mojom::EarlyHints::New();
   hints->headers = network::mojom::ParsedHeaders::New();
@@ -298,21 +310,25 @@ TEST_F(NavigationEarlyHintsManagerTest, MultiplePreconnects) {
       preconnect_url1, network::mojom::LinkRelAttribute::kPreconnect,
       network::mojom::LinkAsAttribute::kUnspecified,
       network::mojom::CrossOriginAttribute::kUnspecified,
+      network::mojom::FetchPriorityAttribute::kAuto,
       /*mime_type=*/absl::nullopt));
   hints->headers->link_headers.push_back(network::mojom::LinkHeader::New(
       preconnect_url1, network::mojom::LinkRelAttribute::kPreconnect,
       network::mojom::LinkAsAttribute::kUnspecified,
       network::mojom::CrossOriginAttribute::kUnspecified,
+      network::mojom::FetchPriorityAttribute::kAuto,
       /*mime_type=*/absl::nullopt));
   hints->headers->link_headers.push_back(network::mojom::LinkHeader::New(
       preconnect_url1, network::mojom::LinkRelAttribute::kPreconnect,
       network::mojom::LinkAsAttribute::kUnspecified,
       network::mojom::CrossOriginAttribute::kAnonymous,
+      network::mojom::FetchPriorityAttribute::kAuto,
       /*mime_type=*/absl::nullopt));
   hints->headers->link_headers.push_back(network::mojom::LinkHeader::New(
       preconnect_url2, network::mojom::LinkRelAttribute::kPreconnect,
       network::mojom::LinkAsAttribute::kUnspecified,
       network::mojom::CrossOriginAttribute::kAnonymous,
+      network::mojom::FetchPriorityAttribute::kAuto,
       /*mime_type=*/absl::nullopt));
 
   early_hints_manager().HandleEarlyHints(std::move(hints),
@@ -341,6 +357,7 @@ TEST_F(NavigationEarlyHintsManagerTest, InvalidPreconnectLink) {
       preconnect_url, network::mojom::LinkRelAttribute::kPreconnect,
       network::mojom::LinkAsAttribute::kUnspecified,
       network::mojom::CrossOriginAttribute::kUnspecified,
+      network::mojom::FetchPriorityAttribute::kAuto,
       /*mime_type=*/absl::nullopt);
   auto hints = network::mojom::EarlyHints::New();
   hints->headers = network::mojom::ParsedHeaders::New();
@@ -352,6 +369,52 @@ TEST_F(NavigationEarlyHintsManagerTest, InvalidPreconnectLink) {
   std::vector<PreconnectRequest>& requests =
       fake_network_context().preconnect_requests();
   EXPECT_TRUE(requests.empty());
+}
+
+TEST_F(NavigationEarlyHintsManagerTest, PreloadPriority) {
+  // Auto priority based on content type
+  EXPECT_EQ(early_hints_manager().CalculateRequestPriority(CreateLinkHeader(
+                network::mojom::LinkAsAttribute::kStyleSheet,
+                network::mojom::FetchPriorityAttribute::kAuto)),
+            net::HIGHEST);
+  EXPECT_EQ(early_hints_manager().CalculateRequestPriority(CreateLinkHeader(
+                network::mojom::LinkAsAttribute::kFont,
+                network::mojom::FetchPriorityAttribute::kAuto)),
+            net::HIGHEST);
+  EXPECT_EQ(early_hints_manager().CalculateRequestPriority(CreateLinkHeader(
+                network::mojom::LinkAsAttribute::kScript,
+                network::mojom::FetchPriorityAttribute::kAuto)),
+            net::MEDIUM);
+  EXPECT_EQ(early_hints_manager().CalculateRequestPriority(CreateLinkHeader(
+                network::mojom::LinkAsAttribute::kImage,
+                network::mojom::FetchPriorityAttribute::kAuto)),
+            net::LOWEST);
+  EXPECT_EQ(early_hints_manager().CalculateRequestPriority(CreateLinkHeader(
+                network::mojom::LinkAsAttribute::kFetch,
+                network::mojom::FetchPriorityAttribute::kAuto)),
+            net::LOWEST);
+  EXPECT_EQ(early_hints_manager().CalculateRequestPriority(CreateLinkHeader(
+                network::mojom::LinkAsAttribute::kUnspecified,
+                network::mojom::FetchPriorityAttribute::kAuto)),
+            net::IDLE);
+
+  // Explicit priority from fetchpriority link attribute
+  EXPECT_EQ(early_hints_manager().CalculateRequestPriority(CreateLinkHeader(
+                network::mojom::LinkAsAttribute::kImage,
+                network::mojom::FetchPriorityAttribute::kHigh)),
+            net::MEDIUM);
+  EXPECT_EQ(early_hints_manager().CalculateRequestPriority(
+                CreateLinkHeader(network::mojom::LinkAsAttribute::kStyleSheet,
+                                 network::mojom::FetchPriorityAttribute::kLow)),
+            net::LOWEST);
+  EXPECT_EQ(early_hints_manager().CalculateRequestPriority(CreateLinkHeader(
+                network::mojom::LinkAsAttribute::kStyleSheet,
+                network::mojom::FetchPriorityAttribute::kHigh)),
+            net::HIGHEST);
+  EXPECT_EQ(early_hints_manager().CalculateRequestPriority(CreateLinkHeader(
+                network::mojom::LinkAsAttribute::kFont,
+                network::mojom::FetchPriorityAttribute::kHigh)),
+            net::HIGHEST);
 }
 
 }  // namespace content

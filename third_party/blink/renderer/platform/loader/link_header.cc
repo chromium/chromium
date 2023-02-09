@@ -65,40 +65,47 @@ static LinkHeader::LinkParameterName ParameterNameFromString(
     return LinkHeader::kLinkParameterBlocking;
   }
 
+  if (base::EqualsCaseInsensitiveASCII(name, "fetchpriority")) {
+    return LinkHeader::kLinkParameterFetchPriority;
+  }
+
   return LinkHeader::kLinkParameterUnknown;
 }
 
 void LinkHeader::SetValue(LinkParameterName name, const String& value) {
-  if (name == kLinkParameterRel && !rel_)
+  if (name == kLinkParameterRel && !rel_) {
     rel_ = value.DeprecatedLower();
-  else if (name == kLinkParameterAnchor)
+  } else if (name == kLinkParameterAnchor) {
     anchor_ = value;
-  else if (name == kLinkParameterCrossOrigin)
+  } else if (name == kLinkParameterCrossOrigin) {
     cross_origin_ = value;
-  else if (name == kLinkParameterAs)
+  } else if (name == kLinkParameterAs) {
     as_ = value.DeprecatedLower();
-  else if (name == kLinkParameterType)
+  } else if (name == kLinkParameterType) {
     mime_type_ = value.DeprecatedLower();
-  else if (name == kLinkParameterMedia)
+  } else if (name == kLinkParameterMedia) {
     media_ = value.DeprecatedLower();
-  else if (name == kLinkParameterNonce)
+  } else if (name == kLinkParameterNonce) {
     nonce_ = value;
-  else if (name == kLinkParameterIntegrity)
+  } else if (name == kLinkParameterIntegrity) {
     integrity_ = value;
-  else if (name == kLinkParameterImageSrcset)
+  } else if (name == kLinkParameterImageSrcset) {
     image_srcset_ = value;
-  else if (name == kLinkParameterImageSizes)
+  } else if (name == kLinkParameterImageSizes) {
     image_sizes_ = value;
-  else if (name == kLinkParameterHeaderIntegrity)
+  } else if (name == kLinkParameterHeaderIntegrity) {
     header_integrity_ = value;
-  else if (name == kLinkParameterVariants)
+  } else if (name == kLinkParameterVariants) {
     variants_ = value;
-  else if (name == kLinkParameterVariantKey)
+  } else if (name == kLinkParameterVariantKey) {
     variant_key_ = value;
-  else if (name == kLinkParameterBlocking)
+  } else if (name == kLinkParameterBlocking) {
     blocking_ = value;
-  else if (name == kLinkParameterReferrerPolicy)
+  } else if (name == kLinkParameterReferrerPolicy) {
     referrer_policy_ = value;
+  } else if (name == kLinkParameterFetchPriority) {
+    fetch_priority_ = value;
+  }
 }
 
 template <typename Iterator>

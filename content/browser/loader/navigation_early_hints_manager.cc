@@ -159,28 +159,6 @@ LinkAsAttributeToRequestDestination(const network::mojom::LinkHeaderPtr& link) {
   }
 }
 
-// Used to determine a priority for a speculative subresource request.
-// TODO(crbug.com/671310): This is almost the same as GetRequestPriority() in
-// loading_predictor_tab_helper.cc and the purpose is the same. Consider merging
-// them if the logic starts to be more mature.
-net::RequestPriority CalculateRequestPriority(
-    const network::mojom::LinkHeaderPtr& link) {
-  switch (link->as) {
-    case network::mojom::LinkAsAttribute::kFont:
-    case network::mojom::LinkAsAttribute::kStyleSheet:
-      return net::HIGHEST;
-    case network::mojom::LinkAsAttribute::kScript:
-      return net::MEDIUM;
-    case network::mojom::LinkAsAttribute::kImage:
-    case network::mojom::LinkAsAttribute::kFetch:
-      return net::LOWEST;
-    case network::mojom::LinkAsAttribute::kUnspecified:
-      return net::IDLE;
-  }
-  NOTREACHED();
-  return net::IDLE;
-}
-
 network::mojom::RequestMode CalculateRequestMode(
     const network::mojom::LinkHeaderPtr& link) {
   if (link->rel == network::mojom::LinkRelAttribute::kModulePreload) {
@@ -601,6 +579,44 @@ void NavigationEarlyHintsManager::OnPreloadComplete(
 
   // TODO(crbug.com/671310): Consider to delete `this` when there is no inflight
   // preloads.
+}
+
+// Used to determine a priority for a speculative subresource request.
+// TODO(crbug.com/671310): This is almost the same as GetRequestPriority() in
+// loading_predictor_tab_helper.cc and the purpose is the same. Consider merging
+// them if the logic starts to be more mature.
+net::RequestPriority NavigationEarlyHintsManager::CalculateRequestPriority(
+    const network::mojom::LinkHeaderPtr& link) {
+  // When fetchPriority is explicitly specified for preload, independent of
+  // most content types, the blink priority matches the fetchpriority value.
+  // In net priority terms that maps to MEDIUM for "high" LOWEST for "low".
+  // https://web.dev/priority-hints/#browser-priority-and-fetchpriority
+  switch (link->fetch_priority) {
+    case network::mojom::FetchPriorityAttribute::kHigh:
+      switch (link->as) {
+        case network::mojom::LinkAsAttribute::kFont:
+        case network::mojom::LinkAsAttribute::kStyleSheet:
+          return net::HIGHEST;
+        default:
+          return net::MEDIUM;
+      }
+    case network::mojom::FetchPriorityAttribute::kLow:
+      return net::LOWEST;
+    case network::mojom::FetchPriorityAttribute::kAuto:
+      switch (link->as) {
+        case network::mojom::LinkAsAttribute::kFont:
+        case network::mojom::LinkAsAttribute::kStyleSheet:
+          return net::HIGHEST;
+        case network::mojom::LinkAsAttribute::kScript:
+          return net::MEDIUM;
+        case network::mojom::LinkAsAttribute::kImage:
+        case network::mojom::LinkAsAttribute::kFetch:
+          return net::LOWEST;
+        case network::mojom::LinkAsAttribute::kUnspecified:
+          return net::IDLE;
+      }
+  }
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace content

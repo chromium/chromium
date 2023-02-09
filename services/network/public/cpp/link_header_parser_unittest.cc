@@ -174,6 +174,30 @@ TEST(LinkHeaderParserTest, CrossOriginAttribute) {
             mojom::CrossOriginAttribute::kUseCredentials);
 }
 
+TEST(LinkHeaderParserTest, FetchPriorityAttribute) {
+  auto headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
+  headers->AddHeader("link", "</default>; rel=preload");
+  headers->AddHeader("link", "</auto>; rel=preload; fetchpriority=auto");
+  headers->AddHeader("link", "</high>; rel=preload; fetchpriority=high");
+  headers->AddHeader("link", "</low>; rel=preload; fetchpriority=low");
+  headers->AddHeader("link", "</invalid>; rel=preload; fetchpriority=invalid");
+
+  std::vector<mojom::LinkHeaderPtr> parsed_headers =
+      ParseLinkHeaders(*headers, kBaseUrl);
+  ASSERT_EQ(parsed_headers.size(), 5UL);
+  EXPECT_EQ(parsed_headers[0]->fetch_priority,
+            mojom::FetchPriorityAttribute::kAuto);
+  EXPECT_EQ(parsed_headers[1]->fetch_priority,
+            mojom::FetchPriorityAttribute::kAuto);
+  EXPECT_EQ(parsed_headers[2]->fetch_priority,
+            mojom::FetchPriorityAttribute::kHigh);
+  EXPECT_EQ(parsed_headers[3]->fetch_priority,
+            mojom::FetchPriorityAttribute::kLow);
+  EXPECT_EQ(parsed_headers[4]->fetch_priority,
+            mojom::FetchPriorityAttribute::kAuto);
+}
+
 TEST(LinkHeaderParserTest, TwoHeaders) {
   auto headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
@@ -205,10 +229,12 @@ TEST(LinkHeaderParserTest, TwoHeaders) {
 TEST(LinkHeaderParserTest, UpperCaseCharacters) {
   auto headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
-  headers->AddHeader("link", "</image.jpg>; REL=preload; as=IMAGE");
+  headers->AddHeader("link",
+                     "</image.jpg>; REL=preload; as=IMAGE; fetchpriority=HIGH");
   headers->AddHeader("link",
                      "<https://cross.example.com/font.woff2>; rel=PRELOAD; "
-                     "AS=font; CROSSORIGIN=USE-CREDENTIALS; TYPE=font/woff2");
+                     "AS=font; CROSSORIGIN=USE-CREDENTIALS; TYPE=font/woff2; "
+                     "FETCHPRIORITY=low");
 
   std::vector<mojom::LinkHeaderPtr> parsed_headers =
       ParseLinkHeaders(*headers, kBaseUrl);
@@ -217,6 +243,8 @@ TEST(LinkHeaderParserTest, UpperCaseCharacters) {
   EXPECT_EQ(parsed_headers[0]->href, kBaseUrl.Resolve("/image.jpg"));
   EXPECT_EQ(parsed_headers[0]->rel, mojom::LinkRelAttribute::kPreload);
   EXPECT_EQ(parsed_headers[0]->as, mojom::LinkAsAttribute::kImage);
+  EXPECT_EQ(parsed_headers[0]->fetch_priority,
+            mojom::FetchPriorityAttribute::kHigh);
 
   EXPECT_EQ(parsed_headers[1]->href,
             GURL("https://cross.example.com/font.woff2"));
@@ -225,6 +253,8 @@ TEST(LinkHeaderParserTest, UpperCaseCharacters) {
   EXPECT_EQ(parsed_headers[1]->cross_origin,
             mojom::CrossOriginAttribute::kUseCredentials);
   EXPECT_EQ(parsed_headers[1]->mime_type, "font/woff2");
+  EXPECT_EQ(parsed_headers[1]->fetch_priority,
+            mojom::FetchPriorityAttribute::kLow);
 }
 
 }  // namespace network

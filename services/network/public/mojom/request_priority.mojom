@@ -5,6 +5,8 @@
 module network.mojom;
 
 // This enum corresponds to net::RequestPriority. See its comments for details.
+// It also corresponds to the "internal priority" of a fetch.
+// https://fetch.spec.whatwg.org/#request-internal-priority
 enum RequestPriority {
   kThrottled = 0,
   kIdle,
@@ -12,4 +14,12 @@ enum RequestPriority {
   kLow,
   kMedium,
   kHighest
+};
+
+// Represents possible values for the fetch `priority` attribute.
+// https://fetch.spec.whatwg.org/#enumdef-requestpriority
+enum FetchPriorityAttribute {
+  kLow,
+  kAuto,
+  kHigh,
 };

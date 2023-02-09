@@ -228,6 +228,7 @@ blink::LinkHeaderPtr ConvertToBlink(const LinkHeaderPtr& in) {
       static_cast<blink::LinkRelAttribute>(in->rel),
       static_cast<blink::LinkAsAttribute>(in->as),
       static_cast<blink::CrossOriginAttribute>(in->cross_origin),
+      static_cast<blink::FetchPriorityAttribute>(in->fetch_priority),
       ConvertToBlink(in->mime_type));
 }
 
