@@ -16,6 +16,7 @@
  *    </settings-section>
  */
 
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -58,12 +59,22 @@ export class SettingsSectionElement extends PolymerElement {
         value: false,
         reflectToAttribute: true,
       },
+
+      /**
+       * When this attribute is enabled, a send feedback button will be shown
+       * that emits a 'send-feedback' event.
+       */
+      showSendFeedbackButton: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   section: string;
   pageTitle: string;
   hiddenBySearch: boolean;
+  showSendFeedbackButton: boolean;
 
   /**
    * Get the value to which to set the aria-hidden attribute of the section
@@ -78,6 +89,11 @@ export class SettingsSectionElement extends PolymerElement {
 
   override focus() {
     this.shadowRoot!.querySelector<HTMLElement>('.title')!.focus();
+  }
+
+  private onSendFeedbackClick_() {
+    this.dispatchEvent(
+        new CustomEvent('send-feedback', {bubbles: true, composed: true}));
   }
 }
 

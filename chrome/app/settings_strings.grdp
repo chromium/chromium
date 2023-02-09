@@ -16,6 +16,9 @@
   <message name="IDS_SETTINGS_OPENS_IN_NEW_TAB" desc="ARIA (accessibility) label describing a link which opens in a new tab.">
     Opens in new tab
   </message>
+  <message name="IDS_SETTINGS_SEND_FEEDBACK_ROLE_DESCRIPTION" desc="Accessibility role description for the send feedback button at the top right of a settings section. Spoken by screen readers when focusing the button but not visually rendered.">
+    Send feedback button
+  </message>
 
   <if expr="not chromeos_ash">
     <message name="IDS_RELAUNCH_CONFIRMATION_DIALOG_BODY" desc="The body of the modal dialog that we show when users click on relaunch and they have open Incognito windows. The dialog serves to warn the users about losing their Incognito windows if they proceed with the relaunch.">

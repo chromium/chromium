@@ -916,6 +916,7 @@ TEST_F('CrSettingsMenuTest', 'All', function() {
  ['SearchEngines', 'search_engines_page_test.js'],
  ['SearchPage', 'search_page_test.js'],
  ['Search', 'search_settings_test.js'],
+ ['Section', 'settings_section_test.js'],
  ['SecurityKeysBioEnrollment', 'security_keys_bio_enrollment_test.js'],
  [
    'SecurityKeysCredentialManagement',

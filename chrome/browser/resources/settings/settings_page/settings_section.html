@@ -6,6 +6,12 @@
         position: relative;
       }
 
+      #header {
+        display: flex;
+        justify-content: space-between;
+        padding-inline-end: var(--cr-section-padding);
+      }
+
       #header .title {
         color: var(--cr-primary-text-color);
         font-size: 108%;
@@ -16,6 +22,11 @@
         outline: none;
         padding-bottom: 4px;
         padding-top: 8px;
+      }
+
+      #feedback {
+        margin-bottom: 12px;
+        margin-top: var(--cr-section-vertical-margin);
       }
 
       :host(:not(.expanded)) #card {
@@ -40,8 +51,15 @@
       }
     </style>
     <div id="header">
-      <h2 class="title" tabindex="-1"
+      <h2 id="title" class="title" tabindex="-1"
           aria-hidden$="[[getTitleHiddenStatus_(pageTitle)]]">[[pageTitle]]</h2>
+      <template is="dom-if" if="[[showSendFeedbackButton]]">
+        <cr-icon-button id="feedback" iron-icon="settings:feedback" dir="ltr"
+            aria-labelledby="title"
+            aria-roledescription="$i18n{sendFeedbackButton}"
+            on-click="onSendFeedbackClick_">
+        </cr-icon-button>
+      </template>
     </div>
     <div id="card">
       <slot></slot>
