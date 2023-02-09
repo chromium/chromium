@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
@@ -37,6 +38,7 @@
 namespace cc::slim {
 
 class FrameSinkImplClient;
+class TestFrameSinkImpl;
 
 // Slim implementation of FrameSink.
 // * Owns mojo interfaces to viz and responsible for submitting frames and
@@ -44,9 +46,10 @@ class FrameSinkImplClient;
 // * Owns ContextProvider.
 // * Listen and respond to context loss or GPU process crashes.
 // * Manage uploading UIResource.
-class FrameSinkImpl : public FrameSink,
-                      public viz::ContextLostObserver,
-                      public viz::mojom::CompositorFrameSinkClient {
+class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
+    : public FrameSink,
+      public viz::ContextLostObserver,
+      public viz::mojom::CompositorFrameSinkClient {
  public:
   ~FrameSinkImpl() override;
 
@@ -55,9 +58,9 @@ class FrameSinkImpl : public FrameSink,
   }
   void SetLocalSurfaceId(const viz::LocalSurfaceId& local_surface_id);
 
-  // Called by LayerTree.
-  bool BindToClient(FrameSinkImplClient* client);
-  void SetNeedsBeginFrame(bool needs_begin_frame);
+  // Called by LayerTree. Virtual for testing.
+  virtual bool BindToClient(FrameSinkImplClient* client);
+  virtual void SetNeedsBeginFrame(bool needs_begin_frame);
   void UploadUIResource(cc::UIResourceId resource_id,
                         cc::UIResourceBitmap resource_bitmap);
   void MarkUIResourceForDeletion(cc::UIResourceId resource_id);
@@ -80,6 +83,7 @@ class FrameSinkImpl : public FrameSink,
 
  private:
   friend class FrameSink;
+  friend class TestFrameSinkImpl;
 
   struct UploadedUIResource {
     UploadedUIResource();

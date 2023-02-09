@@ -7,13 +7,19 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "cc/slim/features.h"
 #include "cc/slim/layer_tree_cc_wrapper.h"
+#include "cc/slim/layer_tree_impl.h"
 
 namespace cc::slim {
 
 // static
 std::unique_ptr<LayerTree> LayerTree::Create(InitParams params) {
-  return base::WrapUnique<LayerTree>(new LayerTreeCcWrapper(std::move(params)));
+  if (!features::IsSlimCompositorEnabled()) {
+    return base::WrapUnique<LayerTree>(
+        new LayerTreeCcWrapper(std::move(params)));
+  }
+  return base::WrapUnique<LayerTree>(new LayerTreeImpl(params.client));
 }
 
 LayerTree::InitParams::InitParams() = default;

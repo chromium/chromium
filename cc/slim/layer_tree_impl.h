@@ -1,0 +1,137 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CC_SLIM_LAYER_TREE_IMPL_H_
+#define CC_SLIM_LAYER_TREE_IMPL_H_
+
+#include <cstdint>
+#include <memory>
+#include <utility>
+#include <vector>
+
+#include "base/component_export.h"
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "cc/resources/ui_resource_manager.h"
+#include "cc/slim/frame_sink_impl_client.h"
+#include "cc/slim/layer_tree.h"
+#include "components/viz/common/frame_sinks/copy_output_request.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
+#include "components/viz/common/surfaces/surface_range.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/overlay_transform.h"
+#include "ui/gfx/presentation_feedback.h"
+
+namespace cc {
+class UIResourceManager;
+}  // namespace cc
+
+namespace cc::slim {
+
+class FrameSinkImpl;
+class TestLayerTreeImpl;
+
+// Slim implementation of LayerTree.
+class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
+                                                public FrameSinkImplClient {
+ public:
+  ~LayerTreeImpl() override;
+
+  // LayerTree.
+  cc::UIResourceManager* GetUIResourceManager() override;
+  void SetViewportRectAndScale(
+      const gfx::Rect& device_viewport_rect,
+      float device_scale_factor,
+      const viz::LocalSurfaceId& local_surface_id) override;
+  void set_background_color(SkColor4f color) override;
+  void SetVisible(bool visible) override;
+  bool IsVisible() const override;
+  void RequestPresentationTimeForNextFrame(
+      PresentationCallback callback) override;
+  void RequestSuccessfulPresentationTimeForNextFrame(
+      SuccessfulCallback callback) override;
+  void set_display_transform_hint(gfx::OverlayTransform hint) override;
+  void RequestCopyOfOutput(
+      std::unique_ptr<viz::CopyOutputRequest> request) override;
+  base::OnceClosure DeferBeginFrame() override;
+  void UpdateTopControlsVisibleHeight(float height) override;
+  void SetNeedsAnimate() override;
+  void SetNeedsRedraw() override;
+  const scoped_refptr<Layer>& root() const override;
+  void SetRoot(scoped_refptr<Layer> root) override;
+  void SetFrameSink(std::unique_ptr<FrameSink> sink) override;
+  void ReleaseLayerTreeFrameSink() override;
+
+  // FrameSinkImplClient.
+  bool BeginFrame(const viz::BeginFrameArgs& args,
+                  viz::CompositorFrame& out_frame,
+                  base::flat_set<viz::ResourceId>& out_resource_ids,
+                  viz::HitTestRegionList& out_hit_test_region_list) override;
+  void DidReceiveCompositorFrameAck() override;
+  void DidSubmitCompositorFrame() override;
+  void DidPresentCompositorFrame(
+      uint32_t frame_token,
+      const viz::FrameTimingDetails& details) override;
+  void DidLoseLayerTreeFrameSink() override;
+
+  // Internal methods called by Layers.
+  void NotifyTreeChanged();
+  void NotifyPropertyChanged();
+
+ private:
+  friend class LayerTree;
+  friend class TestLayerTreeImpl;
+
+  explicit LayerTreeImpl(LayerTreeClient* client);
+
+  // Request a new frame sink from the client if a new frame sink is needed and
+  // there isn't already a pending request.
+  void MaybeRequestFrameSink();
+  // Matches `DeferBeginFrame` that reduces number of outstanding requests to
+  // defer (ie stop) BeginFrames to the client.
+  void ReleaseDeferBeginFrame();
+  void UpdateNeedsBeginFrame();
+  void SetClientNeedsOneBeginFrame();
+  // Call this whenever there are tree or layer changes that needs to be
+  // submitted in a CompositorFrame.
+  void SetNeedsDraw();
+  bool NeedsBeginFrames() const;
+
+  const raw_ptr<LayerTreeClient> client_;
+  scoped_refptr<Layer> root_;
+  std::unique_ptr<FrameSinkImpl> frame_sink_;
+
+  cc::UIResourceManager ui_resource_manager_;
+
+  viz::LocalSurfaceId local_surface_id_;
+
+  bool frame_sink_request_pending_ = false;
+  // Indicates there is an `UpdateNeedsBeginFrame` call pending in the current
+  // task lower in the stack frame. This is to prevent unnecessary back and
+  // forth flips.
+  bool update_needs_begin_frame_pending_ = false;
+  // Set when client requests a begin frame viz `SetNeedsAnimate` or
+  // `SetNeedsRedraw`.
+  bool client_needs_one_begin_frame_ = false;
+  // Set to indicate there are layer or tree changes that's not yet submitted
+  // in a CompositorFrame.
+  bool needs_draw_ = false;
+  bool visible_ = false;
+  uint32_t num_defer_begin_frame_ = 0u;
+
+  gfx::Rect device_viewport_rect_;
+  float device_scale_factor_ = 1.0f;
+  SkColor4f background_color_ = SkColors::kWhite;
+  absl::optional<float> top_controls_visible_height_;
+
+  base::WeakPtrFactory<LayerTreeImpl> weak_factory_{this};
+};
+
+}  // namespace cc::slim
+
+#endif  // CC_SLIM_LAYER_TREE_IMPL_H_

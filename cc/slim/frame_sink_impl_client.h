@@ -18,15 +18,28 @@ class FrameSinkImplClient {
  public:
   virtual ~FrameSinkImplClient() = default;
 
+  // Notification for the client to generate a CompositorFrame.
+  // Client can either return false in which case the output params are ignored.
+  // Otherwise client needs to populate the output parameters.
+  // Client should update `SetNeedsBeginFrame` if the state changes as the
+  // result of this call.
   virtual bool BeginFrame(const viz::BeginFrameArgs& args,
                           viz::CompositorFrame& out_frame,
                           base::flat_set<viz::ResourceId>& out_resource_ids,
                           viz::HitTestRegionList& out_hit_test_region_list) = 0;
+  // Notification that the previous CompositorFrame given to
+  // SubmitCompositorFrame() has been processed and that another frame
+  // can be submitted.
   virtual void DidReceiveCompositorFrameAck() = 0;
+  // Called when a frame is submitted. This should normally match with
+  // `DidReceiveCompositorFrameAck` except when sink is lost.
   virtual void DidSubmitCompositorFrame() = 0;
+  // Provide information on a presented frame.
   virtual void DidPresentCompositorFrame(
       uint32_t frame_token,
       const viz::FrameTimingDetails& details) = 0;
+  // FrameSink is lost. Some normally expected callbacks such as
+  // `DidReceiveCompositorFrameAck` will not happen after this.
   virtual void DidLoseLayerTreeFrameSink() = 0;
 };
 

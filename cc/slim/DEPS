@@ -16,8 +16,12 @@ include_rules = [
   "+cc/resources/ui_resource_request.h",
 ]
 
-# Allowed while slim wraps cc.
 specific_include_rules = {
+  "test_frame_sink_impl.cc": [
+    "+components/viz/test/test_context_provider.h",
+  ],
+
+  # Allowed while slim wraps cc.
   "frame_sink_cc_wrapper.cc": [
     "+cc/mojo_embedder/async_layer_tree_frame_sink.h",
   ],

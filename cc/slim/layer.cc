@@ -18,6 +18,7 @@
 #include "cc/paint/filter_operations.h"
 #include "cc/slim/features.h"
 #include "cc/slim/layer_tree.h"
+#include "cc/slim/layer_tree_impl.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 
@@ -153,8 +154,8 @@ void Layer::RemoveFromParentSlim() {
   SetLayerTree(nullptr);
   base::EraseIf(parent_->children_,
                 [&](auto& ptr) { return ptr.get() == this; });
+  parent_->NotifyTreeChanged();
   parent_ = nullptr;
-  NotifyTreeChanged();
 }
 
 void Layer::RemoveAllChildren() {
@@ -379,14 +380,14 @@ void Layer::NotifyTreeChanged() {
     return;
   }
   if (layer_tree_) {
-    // TODO(crbug.com/1408128): Implement.
+    static_cast<LayerTreeImpl*>(layer_tree_)->NotifyTreeChanged();
   }
 }
 
 void Layer::NotifyPropertyChanged() {
   DCHECK(!cc_layer());
   if (layer_tree_) {
-    // TODO(crbug.com/1408128): Implement.
+    static_cast<LayerTreeImpl*>(layer_tree_)->NotifyPropertyChanged();
   }
 }
 
