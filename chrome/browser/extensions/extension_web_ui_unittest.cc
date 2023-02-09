@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -215,9 +216,9 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
   const base::Value::List* newtab_overrides = overrides.FindList("newtab");
   ASSERT_TRUE(newtab_overrides);
   ASSERT_EQ(1u, newtab_overrides->size());
-  const base::Value& override_dict = (*newtab_overrides)[0];
-  EXPECT_EQ(newtab_url.spec(), override_dict.FindKey("entry")->GetString());
-  EXPECT_TRUE(override_dict.FindKey("active")->GetBool());
+  const base::Value::Dict& override_dict = (*newtab_overrides)[0].GetDict();
+  EXPECT_EQ(newtab_url.spec(), CHECK_DEREF(override_dict.FindString("entry")));
+  EXPECT_TRUE(override_dict.FindBool("active").value_or(false));
 }
 
 TEST_F(ExtensionWebUITest, TestFaviconAlwaysAvailable) {
