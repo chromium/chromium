@@ -239,6 +239,35 @@ TEST_F(PointerEventManagerTest, PointerCancelsOfAllTypes) {
   ASSERT_EQ(callback->numTypePenReceived(), 1);
 }
 
+// Tests that user activation in not triggered if Blink receives a pointerup
+// event after a gesture scroll has started.  On a page w/o either pointer or
+// touch event listeners, WidgetInputHandlerManager dispatches a kPointerup
+// event to Blink after dispatching kPointerCausedUaAction to mark an
+// ongoing scroll, see https://crbug.com/1313076.
+TEST_F(PointerEventManagerTest, NoUserActivationWithPointerUpAfterCancel) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(
+      "<body style='padding: 0px; width: 400px; height: 400px;'></body>");
+
+  ASSERT_FALSE(
+      WebView().MainFrameWidget()->LocalRoot()->HasTransientUserActivation());
+
+  WebView().MainFrameWidget()->HandleInputEvent(WebCoalescedInputEvent(
+      CreateTestPointerEvent(WebInputEvent::Type::kPointerCausedUaAction,
+                             WebPointerProperties::PointerType::kTouch),
+      {}, {}, ui::LatencyInfo()));
+
+  WebView().MainFrameWidget()->HandleInputEvent(WebCoalescedInputEvent(
+      CreateTestPointerEvent(WebInputEvent::Type::kPointerUp,
+                             WebPointerProperties::PointerType::kTouch),
+      {}, {}, ui::LatencyInfo()));
+
+  ASSERT_FALSE(
+      WebView().MainFrameWidget()->LocalRoot()->HasTransientUserActivation());
+}
+
 TEST_F(PointerEventManagerTest, PointerCancelForNonExistentid) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");

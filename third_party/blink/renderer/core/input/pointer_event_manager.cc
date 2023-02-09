@@ -677,12 +677,6 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
     return WebInputEventResult::kHandledSystem;
   }
 
-  if (!event.hovering) {
-    if (!touch_event_manager_->IsAnyTouchActive()) {
-      non_hovering_pointers_canceled_ = false;
-    }
-  }
-
   // The rest of this function does not handle hovering
   // (i.e. mouse like) events yet.
 
@@ -741,6 +735,9 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
         mojom::blink::UserActivationNotificationType::kInteraction);
   }
 
+  if (!event.hovering && !IsAnyTouchActive()) {
+    non_hovering_pointers_canceled_ = false;
+  }
   Node* pointerdown_node = nullptr;
   if (event.GetType() == WebInputEvent::Type::kPointerDown) {
     pointerdown_node =
