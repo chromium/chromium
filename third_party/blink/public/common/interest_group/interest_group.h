@@ -163,6 +163,7 @@ If modifying InterestGroup fields, make sure to also modify:
 * interest_group_types.mojom
 * validate_blink_interest_group.cc
 * validate_blink_interest_group_test.cc
+* test_interest_group_builder[.h/.cc]
 * interest_group_mojom_traits[.h/.cc/.test].
 * bidder_worklet.cc (to pass the InterestGroup to generateBid()).
 
