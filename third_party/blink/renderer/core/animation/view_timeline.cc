@@ -31,13 +31,13 @@ using InsetValueSequence =
 
 namespace {
 
-double ComputeOffset(LayoutBox* subject,
-                     LayoutBox* source,
+double ComputeOffset(Element* source_element,
+                     LayoutBox* subject_layout,
+                     LayoutBox* source_layout,
                      ScrollOrientation physical_orientation) {
-  Element* source_element = DynamicTo<Element>(source->GetNode());
   MapCoordinatesFlags flags = kIgnoreScrollOffset;
-  gfx::PointF point = gfx::PointF(
-      subject->LocalToAncestorPoint(PhysicalOffset(), source, flags));
+  gfx::PointF point = gfx::PointF(subject_layout->LocalToAncestorPoint(
+      PhysicalOffset(), source_layout, flags));
 
   // We can not call the regular clientLeft/Top functions here, because we
   // may reach this function during style resolution, and clientLeft/Top
@@ -294,14 +294,17 @@ absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
   LayoutBox* layout_box = subject()->GetLayoutBox();
   DCHECK(layout_box);
   Element* source = SourceInternal();
+  Node* resolved_source = ResolvedSource();
   DCHECK(source);
-  LayoutBox* source_layout = source->GetLayoutBox();
+  DCHECK(resolved_source);
+  LayoutBox* source_layout = resolved_source->GetLayoutBox();
   DCHECK(source_layout);
 
   LayoutUnit viewport_size;
 
   target_offset_ =
-      ComputeOffset(layout_box, source_layout, physical_orientation);
+      ComputeOffset(source, layout_box, source_layout, physical_orientation);
+
   if (physical_orientation == kHorizontalScroll) {
     target_size_ = layout_box->Size().Width().ToDouble();
     viewport_size = scrollable_area->LayoutContentRect().Width();
