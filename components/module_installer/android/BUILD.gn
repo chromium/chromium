@@ -32,10 +32,11 @@ android_library("module_installer_java") {
   ]
 
   deps = [
+    "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
     "//base:jni_java",
     "//components/crash/android:java",
-    "//third_party/android_deps:com_google_android_play_core_java",
+    "//third_party/android_deps:playcore_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 
@@ -58,10 +59,11 @@ robolectric_binary("module_installer_junit_tests") {
   ]
   deps = [
     ":module_installer_java",
+    "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//third_party/android_deps:com_google_android_play_core_java",
+    "//third_party/android_deps:playcore_java",
     "//third_party/hamcrest:hamcrest_java",
   ]
 }

@@ -15,6 +15,8 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.play.core.splitinstall.SplitInstallException;
 import com.google.android.play.core.splitinstall.SplitInstallManager;
 import com.google.android.play.core.splitinstall.SplitInstallRequest;
@@ -22,8 +24,6 @@ import com.google.android.play.core.splitinstall.SplitInstallSessionState;
 import com.google.android.play.core.splitinstall.SplitInstallStateUpdatedListener;
 import com.google.android.play.core.splitinstall.model.SplitInstallErrorCode;
 import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus;
-import com.google.android.play.core.tasks.OnFailureListener;
-import com.google.android.play.core.tasks.Task;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -210,6 +210,7 @@ public class SplitCompatEngineTest {
     }
 
     @Test
+    @SuppressWarnings("DoNotMockAutoValue")
     public void whenInstalled_verifyListenerAndLogger() {
         // Arrange.
         String moduleName1 = "whenInstalled_verifyListenerAndLogger1";
@@ -244,6 +245,7 @@ public class SplitCompatEngineTest {
     }
 
     @Test
+    @SuppressWarnings("DoNotMockAutoValue")
     public void whenFailureToInstall_verifyListenerAndLogger() {
         // Arrange.
         String moduleName1 = "whenFailureToInstall_verifyListenerAndLogger1";
@@ -281,6 +283,7 @@ public class SplitCompatEngineTest {
     }
 
     @Test
+    @SuppressWarnings("DoNotMockAutoValue")
     public void whenNotInstalledOrFailed_verifyStatusLogged() {
         // Arrange.
         String moduleName = "whenNotInstalledOrFailed_verifyStatusLogged";
