@@ -83,4 +83,19 @@ suite('FakeInputDeviceSettings', function() {
     return provider.getConnectedTouchpadSettings().then(
         result => assertDeepEquals(updatedFirstTouchpad, result[0]));
   });
+
+  test('setPointingStickSettings', () => {
+    provider.setFakePointingSticks(fakePointingSticks);
+    // Update the first point stick settings with the second point stick
+    // settings.
+    const updatedFirstPointingStick = {
+      ...fakePointingSticks[0],
+      settings: {...fakePointingSticks[1].settings},
+    };
+    provider.setPointingStickSettings(
+        updatedFirstPointingStick.id, updatedFirstPointingStick.settings);
+    // Verify if the first point stick settings are updated.
+    return provider.getConnectedPointingStickSettings().then(
+        result => assertDeepEquals(updatedFirstPointingStick, result[0]));
+  });
 });

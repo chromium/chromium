@@ -146,4 +146,5 @@ export interface InputDeviceSettingsProviderInterface {
   setKeyboardSettings(id: number, settings: KeyboardSettings): void;
   setMouseSettings(id: number, settings: MouseSettings): void;
   setTouchpadSettings(id: number, settings: TouchpadSettings): void;
+  setPointingStickSettings(id: number, settings: PointingStickSettings): void;
 }
