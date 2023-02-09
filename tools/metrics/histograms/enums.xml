@@ -59383,6 +59383,7 @@ from previous Chrome versions.
   <int value="-1259901957" label="VrBrowserKeyboard:disabled"/>
   <int value="-1259809702" label="Enable16Desks:enabled"/>
   <int value="-1259627326" label="AllowRepeatedUpdates:disabled"/>
+  <int value="-1259375364" label="SearchInShortcutsApp:disabled"/>
   <int value="-1258141852" label="ScrollUnification:enabled"/>
   <int value="-1257822114" label="ContextMenuPopupForAllScreenSizes:disabled"/>
   <int value="-1256823053" label="WebRtcHWVP9Encoding:enabled"/>
@@ -63975,6 +63976,7 @@ from previous Chrome versions.
   <int value="1371344350" label="MediaSessionWebRTC:disabled"/>
   <int value="1371907429" label="enable-wallet-card-import"/>
   <int value="1372680885" label="enable-mtp-write-support"/>
+  <int value="1372927890" label="SearchInShortcutsApp:enabled"/>
   <int value="1373777956" label="disable-threaded-gpu-rasterization"/>
   <int value="1374350431" label="WebViewEmptyComponentLoaderPolicy:enabled"/>
   <int value="1375165388" label="LazyFrameLoading:enabled"/>

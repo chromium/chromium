@@ -1098,6 +1098,11 @@ extern const char kEnableShortcutCustomizationName[] =
 extern const char kEnableShortcutCustomizationDescription[] =
     "Enable customization of shortcuts in the new shortcuts app.";
 
+extern const char kEnableSearchInShortcutsAppName[] =
+    "Enable search in new shortcuts app";
+extern const char kEnableSearchInShortcutsAppDescription[] =
+    "Enable searching for shortcuts in the new shortcuts app.";
+
 const char kEnableInputDeviceSettingsSplitName[] =
     "Enable input device settings split";
 const char kEnableInputDeviceSettingsSplitDescription[] =

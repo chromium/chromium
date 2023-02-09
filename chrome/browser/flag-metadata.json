@@ -3037,6 +3037,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "enable-search-in-shortcuts-app",
+    "owners": [ "jimmyxgong", "zentaro", "cros-peripherals@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-search-resumption-module",
     "owners": ["clank-start","hanxi"],
     "expiry_milestone": 120

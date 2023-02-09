@@ -1474,6 +1474,10 @@ BASE_FEATURE(kOnlyShowNewShortcutsApp,
              "OnlyShowNewShortcutsApp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSearchInShortcutsApp,
+             "SearchInShortcutsApp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the feedback tool new UX on ChromeOS.
 // This tool under development will be rolled out via Finch.
 // Enabling this flag will use the new feedback tool instead of the current
@@ -3169,6 +3173,10 @@ bool ShouldGuestOsFileTasksUseAppService() {
 
 bool ShouldOnlyShowNewShortcutApp() {
   return base::FeatureList::IsEnabled(kOnlyShowNewShortcutsApp);
+}
+
+bool IsSearchInShortcutsAppEnabled() {
+  return base::FeatureList::IsEnabled(kSearchInShortcutsApp);
 }
 
 bool ShouldShowPlayStoreInDemoMode() {

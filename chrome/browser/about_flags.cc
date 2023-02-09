@@ -6638,6 +6638,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableShortcutCustomizationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kShortcutCustomization)},
 
+    {"enable-search-in-shortcuts-app",
+     flag_descriptions::kEnableSearchInShortcutsAppName,
+     flag_descriptions::kEnableSearchInShortcutsAppDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kSearchInShortcutsApp)},
+
     {"enable-input-device-settings-split",
      flag_descriptions::kEnableInputDeviceSettingsSplitName,
      flag_descriptions::kEnableInputDeviceSettingsSplitDescription, kOsCrOS,
