@@ -2,13 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <utility>
+
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_service_user_test_base.h"
 #include "chrome/test/base/testing_profile.h"
+#include "content/public/test/browser_task_environment.h"
 
 namespace extensions {
 
 ExtensionServiceUserTestBase::ExtensionServiceUserTestBase() = default;
 ExtensionServiceUserTestBase::~ExtensionServiceUserTestBase() = default;
+ExtensionServiceUserTestBase::ExtensionServiceUserTestBase(
+    std::unique_ptr<content::BrowserTaskEnvironment> task_environment)
+    : ExtensionServiceTestBase(std::move(task_environment)) {}
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ExtensionServiceUserTestBase::SetUp() {
@@ -21,7 +30,6 @@ void ExtensionServiceUserTestBase::SetUp() {
 
 void ExtensionServiceUserTestBase::TearDown() {
   ExtensionServiceTestBase::TearDown();
-  profile_.reset();
   scoped_user_manager_.reset();
 }
 
@@ -34,13 +42,12 @@ void ExtensionServiceUserTestBase::LoginChromeOSAshUser(
   ASSERT_TRUE(GetFakeUserManager()->IsUserLoggedIn());
   ASSERT_TRUE(user == GetFakeUserManager()->GetActiveUser());
 }
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ExtensionServiceUserTestBase::MaybeSetUpTestUser(bool is_guest) {
-  profile_->SetGuestSession(is_guest);
+  testing_profile()->SetGuestSession(is_guest);
 
-  ASSERT_EQ(is_guest, profile_->IsGuestSession());
+  ASSERT_EQ(is_guest, testing_profile()->IsGuestSession());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   user_manager::User* user;

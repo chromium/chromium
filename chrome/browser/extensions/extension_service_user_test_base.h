@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_SERVICE_USER_TEST_BASE_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_SERVICE_USER_TEST_BASE_H_
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -35,14 +36,18 @@ class ExtensionServiceUserTestBase : public ExtensionServiceTestBase {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // If browser/lacros: set the profile for the test as a guest if `is_guest` is
-  // `true`. If ChromeOS Ash: do the above, but also login a
+  // If browser/lacros: set the testing profile for the test as a guest if
+  // `is_guest` is `true`. If ChromeOS Ash: do the above, but also login a
   // `user_manager::User` and set it to be a guest account if `is_guest` is
   // `true`.
   void MaybeSetUpTestUser(bool is_guest);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
  protected:
+  // Alternatively, a subclass may pass a BrowserTaskEnvironment directly.
+  explicit ExtensionServiceUserTestBase(
+      std::unique_ptr<content::BrowserTaskEnvironment> task_environment);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   AccountId account_id_;
 
  private:

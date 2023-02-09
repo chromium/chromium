@@ -85,9 +85,8 @@ class InstalledLoaderUnitTest : public ExtensionServiceUserTestBase {
 
   void RunHostPermissionsMetricsTest(HostPermissionsMetricsTestParams params);
 
-  void RunIncrementedHistogramsTest(
-      Profile* profile,
-      int incremented_histograms_expected_total_count);
+  void RunEmitUserHistogramsTest(int nonuser_expected_total_count,
+                                 int user_expected_total_count);
 };
 
 const Extension* InstalledLoaderUnitTest::AddExtension(
@@ -149,22 +148,28 @@ void InstalledLoaderUnitTest::RunHostPermissionsMetricsTest(
   }
 }
 
-void InstalledLoaderUnitTest::RunIncrementedHistogramsTest(
-    Profile* profile,
-    int incremented_histograms_expected_total_count) {
+// Test that certain histograms are emitted for user and non-user profiles
+// (users for ChromeOS Ash).
+void InstalledLoaderUnitTest::RunEmitUserHistogramsTest(
+    int nonuser_expected_total_count,
+    int user_expected_total_count) {
   base::HistogramTester histograms;
   InstalledLoader loader(service());
-  loader.RecordExtensionsIncrementedMetricsForTesting(profile);
+  loader.RecordExtensionsIncrementedMetricsForTesting(testing_profile());
 
+  histograms.ExpectTotalCount("Extensions.LoadAllTime2", 1);
   histograms.ExpectTotalCount("Extensions.LoadAll", 1);
   histograms.ExpectTotalCount("Extensions.Disabled", 1);
   histograms.ExpectTotalCount("Extensions.ManifestVersion", 1);
-  histograms.ExpectTotalCount("Extensions.LoadAll2",
-                              incremented_histograms_expected_total_count);
+  histograms.ExpectTotalCount("Extensions.LoadAllTime2.NonUser",
+                              nonuser_expected_total_count);
+  histograms.ExpectTotalCount("Extensions.LoadAllTime2.User",
+                              user_expected_total_count);
+  histograms.ExpectTotalCount("Extensions.LoadAll2", user_expected_total_count);
   histograms.ExpectTotalCount("Extensions.Disabled2",
-                              incremented_histograms_expected_total_count);
+                              user_expected_total_count);
   histograms.ExpectTotalCount("Extensions.ManifestVersion2",
-                              incremented_histograms_expected_total_count);
+                              user_expected_total_count);
 }
 
 TEST_F(InstalledLoaderUnitTest,
@@ -423,26 +428,24 @@ TEST_F(InstalledLoaderUnitTest,
 // metrics being modified.
 // Tests that some histograms that only emit for profiles that can use
 // non-component extensions emit as expected.
-TEST_F(InstalledLoaderUnitTest,
-       IncrementedMetrics_IncrementedEmitForRegularProfile) {
+TEST_F(InstalledLoaderUnitTest, UserMetrics_UserMetricsEmitForRegularUser) {
   ASSERT_TRUE(AddExtension({"<all_urls>"}, kManifestInternal));
   ASSERT_NO_FATAL_FAILURE(MaybeSetUpTestUser(/*is_guest=*/false));
 
-  RunIncrementedHistogramsTest(
-      testing_profile(),
-      /*incremented_histograms_expected_total_count=*/1);
+  RunEmitUserHistogramsTest(
+      /*nonuser_expected_total_count=*/0,
+      /*user_expected_total_count=*/1);
 }
 
 // Tests that some histograms that only emit for profiles that can use
 // non-component extensions do not emit as expected.
-TEST_F(InstalledLoaderUnitTest,
-       IncrementedMetrics_IncrementedDoNotEmitForGuestProfile) {
+TEST_F(InstalledLoaderUnitTest, UserMetrics_UserMetricsDoNotEmitForGuestUser) {
   ASSERT_TRUE(AddExtension({"<all_urls>"}, kManifestInternal));
   ASSERT_NO_FATAL_FAILURE(MaybeSetUpTestUser(/*is_guest=*/true));
 
-  RunIncrementedHistogramsTest(
-      testing_profile(),
-      /*incremented_histograms_expected_total_count=*/0);
+  RunEmitUserHistogramsTest(
+      /*nonuser_expected_total_count=*/1,
+      /*user_expected_total_count=*/0);
 }
 
 }  // namespace extensions

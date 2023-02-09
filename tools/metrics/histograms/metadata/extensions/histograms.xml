@@ -2675,11 +2675,47 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.InstallType" enum="ExtensionType"
+    expires_after="2023-04-30">
+  <obsolete>
+    Histogram is in the process of being removed in favor of its new versions
+    (Extensions.InstallType.User and Extensions.InstallType.Nonuser) that emit
+    only on profile open for &quot;user&quot; profiles (profiles where people
+    can install extensions, specifically profiles that can have non-component
+    extensions installed).
+  </obsolete>
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <summary>
+    Installs grouped by Extension::HistogramType emitted once per extension
+    install.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.InstallType.NonUser" enum="ExtensionType"
     expires_after="never">
 <!-- expires-never: Monitoring extension usage. -->
 
   <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>Installs grouped by Extension::HistogramType.</summary>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Installs grouped by Extension::HistogramType for non-&quot;user
+    profiles&quot; (profiles where people cannot install extensions,
+    specifically profiles that can only have component extensions installed).
+    Emitted once per extension install.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.InstallType.User" enum="ExtensionType"
+    expires_after="never">
+<!-- expires-never: Monitoring extension usage. -->
+
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Installs grouped by Extension::HistogramType for &quot;user profiles&quot;
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed). Emitted once per extension
+    install.
+  </summary>
 </histogram>
 
 <histogram name="Extensions.IsRenderedIconSufficientlyVisibleTime"
@@ -2717,9 +2753,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.LoadAllComponentTime" units="ms"
-    expires_after="never">
-<!-- expires-never: Monitoring extension usage. -->
-
+    expires_after="2023-04-30">
+  <obsolete>
+    Histogram is in the process of being removed in favor of its new versions
+    (Extensions.LoadAllComponentTime.NonUser and
+    Extensions.LoadAllComponentTime.User) that emit only on profile open for
+    &quot;user&quot; profiles (profiles where people can install extensions,
+    specifically profiles that can have non-component extensions installed).
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     Time taken to load all component extensions at profile open. This happens as
@@ -2728,14 +2769,81 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.LoadAllTime2" units="ms" expires_after="never">
-<!-- expires-never: Monitoring core extensions system performance. -->
+<histogram name="Extensions.LoadAllComponentTime.NonUser" units="ms"
+    expires_after="never">
+<!-- expires-never: Monitoring extension usage. -->
 
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Time taken to load all component extensions at profile open for
+    non-&quot;user profiles&quot; (profiles where people cannot install
+    extensions, specifically profiles that can only have component extensions
+    installed). This happens as part of the total initialization time of
+    ExtensionService, measured in Extensions.ExtensionServiceInitTime. Emitted
+    once per profile open.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.LoadAllComponentTime.User" units="ms"
+    expires_after="never">
+<!-- expires-never: Monitoring extension usage. -->
+
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Time taken to load all component extensions at profile open for &quot;user
+    profiles&quot; (profiles where people can install extensions, specifically
+    profiles that can have non-component extensions installed). This happens as
+    part of the total initialization time of ExtensionService, measured in
+    Extensions.ExtensionServiceInitTime. Emitted once per profile open.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.LoadAllTime2" units="ms" expires_after="2023-04-30">
+  <obsolete>
+    Histogram is in the process of being removed in favor of its new versions
+    (Extensions.LoadAllTime2.NonUser and Extensions.LoadAllTime2.User) that emit
+    only on profile open for &quot;user&quot; profiles (profiles where people
+    can install extensions, specifically profiles that can have non-component
+    extensions installed).
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     Time taken to load all non-component extensions at profile open and record
     metrics. This happens as part of the total initialization time of
     ExtensionService, measured in Extensions.ExtensionServiceInitTime.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.LoadAllTime2.NonUser" units="ms"
+    expires_after="never">
+<!-- expires-never: Monitoring core extensions system performance. -->
+
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Time taken to load all non-component extensions at profile open and record
+    metrics for non-&quot;user profiles&quot; (profiles where people cannot
+    install extensions, specifically profiles that can only have component
+    extensions installed). This happens as part of the total initialization time
+    of ExtensionService, measured in Extensions.ExtensionServiceInitTime.
+    Emitted once per profile open.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.LoadAllTime2.User" units="ms" expires_after="never">
+<!-- expires-never: Monitoring core extensions system performance. -->
+
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Time taken to load all non-component extensions at profile open and record
+    metrics for &quot;user profiles&quot; (profiles where people can install
+    extensions, specifically profiles that can have non-component extensions
+    installed). This happens as part of the total initialization time of
+    ExtensionService, measured in Extensions.ExtensionServiceInitTime. Emitted
+    once per profile open.
   </summary>
 </histogram>
 

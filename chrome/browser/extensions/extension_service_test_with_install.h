@@ -11,7 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/extensions/extension_service_user_test_base.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
@@ -28,9 +28,9 @@ class BrowserTaskEnvironment;
 
 namespace extensions {
 
-// An enhancement of ExtensionServiceTestBase that provides helpers to install,
-// update, and uninstall extensions.
-class ExtensionServiceTestWithInstall : public ExtensionServiceTestBase,
+// An enhancement of ExtensionServiceUserTestBase that provides helpers to
+// install, update, and uninstall extensions.
+class ExtensionServiceTestWithInstall : public ExtensionServiceUserTestBase,
                                         public ExtensionRegistryObserver {
  public:
   ExtensionServiceTestWithInstall();

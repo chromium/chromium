@@ -370,6 +370,8 @@ content::BrowserContext* ExtensionServiceTestBase::browser_context() {
 }
 
 Profile* ExtensionServiceTestBase::profile() {
+// TODO(crbug.com/1414225): Refactor this convenience upstream to test callers.
+// Possibly just BuiltInAppTest.BuildGuestMode.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (profile_->IsGuestSession())
     return profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);

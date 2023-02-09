@@ -34,6 +34,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -735,6 +736,30 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
     ASSERT_FALSE(IsBlocked(extension_id));
   }
 
+  // Test that certain histograms are emitted for user and non-user profiles
+  // (users for ChromeOS Ash).
+  void RunEmitUserHistogramsTest(int nonuser_expected_total_count,
+                                 int user_expected_total_count) {
+    base::HistogramTester histograms;
+    TestExtensionDir good_extension_dir;
+    good_extension_dir.WriteManifest(
+        R"({
+           "name": "Good Extension",
+           "version": "0.1",
+           "manifest_version": 2
+         })");
+
+    ChromeTestExtensionLoader loader(testing_profile());
+    loader.set_pack_extension(false);
+    loader.LoadExtension(good_extension_dir.UnpackedPath());
+
+    histograms.ExpectTotalCount("Extensions.InstallType", 1);
+    histograms.ExpectTotalCount("Extensions.InstallType.NonUser",
+                                nonuser_expected_total_count);
+    histograms.ExpectTotalCount("Extensions.InstallType.User",
+                                user_expected_total_count);
+  }
+
   const base::Value::Dict* GetExtensionPref(const std::string& extension_id) {
     const base::Value::Dict& dict =
         profile()->GetPrefs()->GetDict(pref_names::kExtensions);
@@ -1269,6 +1294,26 @@ TEST_F(ExtensionServiceTest, InstallExtension) {
 
   // TODO(erikkay): add more tests for many of the failure cases.
   // TODO(erikkay): add tests for upgrade cases.
+}
+
+TEST_F(ExtensionServiceTest, InstallExtension_EmitUserHistograms) {
+  InitializeEmptyExtensionService();
+
+  ASSERT_NO_FATAL_FAILURE(MaybeSetUpTestUser(
+      /*is_guest=*/false));
+  RunEmitUserHistogramsTest(
+      /*nonuser_expected_total_count=*/0,
+      /*user_expected_total_count=*/1);
+}
+
+TEST_F(ExtensionServiceTest, InstallExtension_NonUserEmitHistograms) {
+  InitializeEmptyExtensionService();
+
+  ASSERT_NO_FATAL_FAILURE(MaybeSetUpTestUser(
+      /*is_guest=*/true));
+  RunEmitUserHistogramsTest(
+      /*nonuser_expected_total_count=*/1,
+      /*user_expected_total_count=*/0);
 }
 
 // Test that correct notifications are sent to ExtensionRegistryObserver on

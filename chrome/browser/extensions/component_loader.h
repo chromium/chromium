@@ -129,6 +129,9 @@ class ComponentLoader {
     ignore_allowlist_for_testing_ = value;
   }
 
+  // Allows setting the profile used by the loader for testing purposes.
+  void set_profile_for_testing(Profile* profile) { profile_ = profile; }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ComponentLoaderTest, ParseManifest);
 

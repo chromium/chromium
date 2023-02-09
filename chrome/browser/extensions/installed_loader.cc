@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -371,10 +372,9 @@ void InstalledLoader::LoadAllExtensions(Profile* profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT0("browser,startup", "InstalledLoader::LoadAllExtensions");
 
-  bool should_record_incremented_metrics =
+  bool is_user_profile =
       profile_util::ProfileCanUseNonComponentExtensions(profile);
-
-  SCOPED_UMA_HISTOGRAM_TIMER("Extensions.LoadAllTime2");
+  const base::TimeTicks load_start_time = base::TimeTicks::Now();
 
   std::unique_ptr<ExtensionPrefs::ExtensionsInfo> extensions_info(
       extension_prefs_->GetInstalledExtensionsInfo());
@@ -428,14 +428,23 @@ void InstalledLoader::LoadAllExtensions(Profile* profile) {
                            extension_registry_->enabled_extensions().size());
   UMA_HISTOGRAM_COUNTS_100("Extensions.Disabled",
                            extension_registry_->disabled_extensions().size());
-  if (should_record_incremented_metrics) {
+  if (is_user_profile) {
     UMA_HISTOGRAM_COUNTS_100("Extensions.LoadAll2",
                              extension_registry_->enabled_extensions().size());
     UMA_HISTOGRAM_COUNTS_100("Extensions.Disabled2",
                              extension_registry_->disabled_extensions().size());
   }
 
-  RecordExtensionsMetrics(profile, should_record_incremented_metrics);
+  RecordExtensionsMetrics(profile, is_user_profile);
+
+  const base::TimeDelta load_all_time =
+      base::TimeTicks::Now() - load_start_time;
+  UMA_HISTOGRAM_TIMES("Extensions.LoadAllTime2", load_all_time);
+  if (is_user_profile) {
+    UMA_HISTOGRAM_TIMES("Extensions.LoadAllTime2.User", load_all_time);
+  } else {
+    UMA_HISTOGRAM_TIMES("Extensions.LoadAllTime2.NonUser", load_all_time);
+  }
 }
 
 void InstalledLoader::RecordExtensionsMetricsForTesting() {
