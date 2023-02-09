@@ -269,14 +269,6 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   [_headerView addSubview:faviconContainerView];
 
   faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-  faviconContainerView.backgroundColor = UIColor.whiteColor;
-
-  faviconContainerView.layer.borderColor =
-      GetInterfaceStyleDarkColor([UIColor colorNamed:kSeparatorColor]).CGColor;
-  faviconContainerView.layer.borderWidth = kPinnedCellFaviconBorderWidth;
-  faviconContainerView.layer.cornerRadius =
-      kPinnedCellFaviconContainerCornerRadius;
-  faviconContainerView.layer.masksToBounds = YES;
 
   [NSLayoutConstraint activateConstraints:@[
     [faviconContainerView.leadingAnchor
@@ -298,10 +290,11 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   UIImageView* faviconView = [[UIImageView alloc] init];
   [_faviconContainerView addSubview:faviconView];
 
-  faviconView.layer.cornerRadius = kPinnedCellFaviconCornerRadius;
   faviconView.translatesAutoresizingMaskIntoConstraints = NO;
-  faviconView.contentMode = UIViewContentModeScaleAspectFit;
+  faviconView.contentMode = UIViewContentModeScaleAspectFill;
   faviconView.clipsToBounds = YES;
+  faviconView.layer.cornerRadius = kPinnedCellFaviconCornerRadius;
+  faviconView.layer.masksToBounds = YES;
 
   [NSLayoutConstraint activateConstraints:@[
     [faviconView.widthAnchor constraintEqualToConstant:kPinnedCellFaviconWidth],
