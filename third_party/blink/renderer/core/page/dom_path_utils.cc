@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/page/dom_path_utils.h"
 
 #include <set>
+#include <sstream>
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/css/dom_window_css.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
@@ -15,9 +16,9 @@ using namespace std;
 
 namespace blink {
 
-std::string DomPathUtils::cssPath(Node* node, bool optimized) {
+std::string DomPathUtils::GetCssSelector(Node* node, bool optimized) {
     std::string path;
-    if (!node->IsElementNode()) {
+    if (!node || !node->IsElementNode()) {
         return path;
     }
     std::vector<Step*> steps;
@@ -53,6 +54,11 @@ std::vector<std::string> DomPathUtils::prefixedElementClassNames(Element* node) 
         return names;
     }
 
+    istringstream ss(classAttribute);
+    string name;
+    while(ss >> name) {
+    	names.push_back("$" + name);
+    }
     return names;
 }
 

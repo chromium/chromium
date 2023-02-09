@@ -21,7 +21,7 @@ public:
             this->optimized = optimized;
         }
     };
-    std::string cssPath(Node* node, bool optimized);
+    std::string GetCssSelector(Node* node, bool optimized);
 private:
     std::vector<std::string> prefixedElementClassNames(Element* node);
     std::string idSelector(std::string& id);

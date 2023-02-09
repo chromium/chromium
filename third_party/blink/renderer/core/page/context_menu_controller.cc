@@ -483,9 +483,12 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   data.link_url = result.AbsoluteLinkURL();
 
   DomPathUtils dom_path_utils;
-  std::string css_selector = dom_path_utils.cssPath(result.InnerNode(), true);
+  std::string css_selector = dom_path_utils.GetCssSelector(result.InnerNode(), true);
   data.css_selector = css_selector;
-  LOG(ERROR) << "ContextMenuController::ShowContextMenu css_selector=" << css_selector;
+
+  if (css_selector.empty() && result.InnerNode()) {
+    data.parent_css_selector = dom_path_utils.GetCssSelector(result.InnerNode()->parentNode(), true);
+  }
   auto* html_element = DynamicTo<HTMLElement>(result.InnerNode());
   if (html_element) {
     data.title_text = html_element->title().Utf8();
@@ -493,22 +496,12 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     data.class_attribute = html_element->GetClassAttribute().Utf8();
     data.id_attribute = html_element->GetIdAttribute().Utf8();
     data.tag_name = html_element->tagName().Utf8();
-    LOG(ERROR) << "ContextMenuController:111-- html_element->OuterHTMLAsString=" << html_element->outerHTML().Utf8();
-    LOG(ERROR) << "ContextMenuController:111-- html_element->InnerHTMLAsString=" << html_element->innerHTML().Utf8();
-    LOG(ERROR) << "ContextMenuController:111--class_attribute=" << data.class_attribute;
-    LOG(ERROR) << "ContextMenuController:111-id_attribute=" << data.id_attribute;
-    LOG(ERROR) << "ContextMenuController:111-tag_name=" << data.tag_name;
 
     auto* parent_element = DynamicTo<HTMLElement>(html_element->parentElement());
     if (parent_element) {
       data.parent_class_attribute = parent_element->GetClassAttribute().Utf8();
       data.parent_id_attribute = parent_element->GetIdAttribute().Utf8();
       data.parent_tag_name = parent_element->tagName().Utf8();
-      LOG(ERROR) << "ContextMenuController:parent111--class_attribute=" << data.parent_class_attribute;
-      LOG(ERROR) << "ContextMenuController:parent111--id_attribute=" << data.parent_id_attribute;
-      LOG(ERROR) << "ContextMenuController:parent111--tag_name=" << data.parent_tag_name;
-      LOG(ERROR) << "ContextMenuController:parent111-- parent_element->OuterHTMLAsString=" << parent_element->outerHTML().Utf8();
-      LOG(ERROR) << "ContextMenuController:parent111-- parent_element->InnerHTMLAsString=" << parent_element->innerHTML().Utf8();
     }
   }
   if (!result.AbsoluteMediaURL().IsEmpty() ||

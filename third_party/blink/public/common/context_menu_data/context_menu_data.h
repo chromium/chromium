@@ -68,6 +68,8 @@ struct ContextMenuData {
 
   std::string css_selector;
 
+  std::string parent_css_selector;
+
   std::string class_attribute;
 
   std::string id_attribute;

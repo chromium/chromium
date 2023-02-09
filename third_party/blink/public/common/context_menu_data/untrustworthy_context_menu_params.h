@@ -138,6 +138,8 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
 
   std::u16string css_selector;
 
+  std::u16string parent_css_selector;
+
   std::u16string class_attribute;
 
   std::u16string id_attribute;

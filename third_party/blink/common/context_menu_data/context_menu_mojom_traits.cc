@@ -33,7 +33,9 @@ bool StructTraits<blink::mojom::UntrustworthyContextMenuParamsDataView,
       !data.ReadSourceType(&out->source_type) ||
       !data.ReadInputFieldType(&out->input_field_type) ||
       !data.ReadSelectionRect(&out->selection_rect) ||
-      !data.ReadCssSelector(&out->css_selector))
+      !data.ReadCssSelector(&out->css_selector) ||
+      !data.ReadParentCssSelector(&out->parent_css_selector)
+      )
     return false;
 
   out->x = data.x();

@@ -310,18 +310,25 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
         if (mTab != null && mTab.getWebContents() != null) {
             String pageUrl = params.getPageUrl().getSpec();
             String srcUrl = params.getSrcUrl().getSpec();
-
-            ArkLogger.e(this, "onMarkAds cssSelector=" + params.getCssSelector());
-            if (!TextUtils.isEmpty(params.getCssSelector())) {
-                String js = AdblockPlusHelper.getAdblockJs(params.getCssSelector());
-                ArkLogger.e(this, "onMarkAds js=" + js);
-                mTab.getWebContents().evaluateJavaScript(js, null);
+            
+            if (!markAd(params.getCssSelector())) {
+                markAd(params.getParentCssSelector());
             }
 
             markAd(pageUrl, params.getTagName(), params.getIdAttribute(), params.getClassAttribute(), srcUrl);
             markAd(pageUrl, params.getParentTagName(), params.getParentIdAttribute(),
                     params.getParentClassAttribute(), srcUrl);
         }
+    }
+
+    private boolean markAd(String cssSelector) {
+        if (!TextUtils.isEmpty(cssSelector)) {
+            String js = AdblockPlusHelper.getAdblockJs(cssSelector);
+            ArkLogger.e(this, "onMarkAds js=" + js);
+            mTab.getWebContents().evaluateJavaScript(js, null);
+            return true;
+        }
+        return false;
     }
 
     private void markAd(String pageUrl, String tag, String id, String classAttribute, String srcUrl) {

@@ -168,6 +168,11 @@ struct BLINK_COMMON_EXPORT
     return r.css_selector;
   }
 
+    static const std::u16string& parent_css_selector(
+        const blink::UntrustworthyContextMenuParams& r) {
+      return r.parent_css_selector;
+    }
+
   static bool Read(blink::mojom::UntrustworthyContextMenuParamsDataView r,
                    blink::UntrustworthyContextMenuParams* out);
 };

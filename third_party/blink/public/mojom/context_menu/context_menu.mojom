@@ -193,6 +193,8 @@ struct UntrustworthyContextMenuParams {
   bool opened_from_highlight;
 
   mojo_base.mojom.String16 css_selector;
+
+  mojo_base.mojom.String16 parent_css_selector;
 };
 
 // Defines methods for Context menu to commnicate from the renderer to the

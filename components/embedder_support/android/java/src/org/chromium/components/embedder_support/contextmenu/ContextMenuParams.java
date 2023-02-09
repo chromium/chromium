@@ -43,6 +43,7 @@ public class ContextMenuParams {
     private final boolean mOpenedFromHighlight;
 
     private final String mCssSelector;
+    private final String mParentCssSelector;
     private final String mClassAttribute;
     private final String mIdAttribute;
     private final String mTagName;
@@ -185,6 +186,10 @@ public class ContextMenuParams {
         return mCssSelector;
     }
 
+    public String getParentCssSelector() {
+        return mParentCssSelector;
+    }
+
     public String getClassAttribute() {
         return mClassAttribute;
     }
@@ -214,7 +219,8 @@ public class ContextMenuParams {
             GURL linkUrl, String linkText, GURL unfilteredLinkUrl, GURL srcUrl, String titleText,
             Referrer referrer, boolean canSaveMedia, int triggeringTouchXDp, int triggeringTouchYDp,
             @MenuSourceType int sourceType, boolean openedFromHighlight,
-            String cssSelector, String classAttribute, String idAttribute, String tagName,
+            String cssSelector, String parentCssSelector,
+            String classAttribute, String idAttribute, String tagName,
             String parentClassAttribute, String parentIdAttribute, String parentTagName) {
         mNativePtr = nativePtr;
         mPageUrl = pageUrl;
@@ -235,6 +241,7 @@ public class ContextMenuParams {
         mOpenedFromHighlight = openedFromHighlight;
 
         mCssSelector = cssSelector;
+        mParentCssSelector = parentCssSelector;
         mClassAttribute = classAttribute;
         mIdAttribute = idAttribute;
         mTagName  = tagName;
@@ -264,6 +271,7 @@ public class ContextMenuParams {
                 ", mSourceType=" + mSourceType +
                 ", mOpenedFromHighlight=" + mOpenedFromHighlight +
                 ", mCssSelector='" + mCssSelector + '\'' +
+                ", mParentCssSelector='" + mParentCssSelector + '\'' +
                 ", mClassAttribute='" + mClassAttribute + '\'' +
                 ", mIdAttribute='" + mIdAttribute + '\'' +
                 ", mTagName='" + mTagName + '\'' +
@@ -278,7 +286,8 @@ public class ContextMenuParams {
             GURL pageUrl, GURL linkUrl, String linkText, GURL unfilteredLinkUrl, GURL srcUrl,
             String titleText, GURL sanitizedReferrer, int referrerPolicy, boolean canSaveMedia,
             int triggeringTouchXDp, int triggeringTouchYDp, @MenuSourceType int sourceType,
-            boolean openedFromHighlight, String cssSelector, String classAttribute, String idAttribute, String tagName,
+            boolean openedFromHighlight, String cssSelector, String parentCssSelector,
+            String classAttribute, String idAttribute, String tagName,
             String parentClassAttribute, String parentIdAttribute, String parentTagName) {
         // TODO(https://crbug.com/783819): Convert Referrer to use GURL.
         Referrer referrer = sanitizedReferrer.isEmpty()
@@ -287,7 +296,7 @@ public class ContextMenuParams {
         return new ContextMenuParams(nativePtr, mediaType, pageUrl, linkUrl, linkText,
                 unfilteredLinkUrl, srcUrl, titleText, referrer, canSaveMedia, triggeringTouchXDp,
                 triggeringTouchYDp, sourceType, openedFromHighlight,
-                cssSelector, classAttribute, idAttribute, tagName,
+                cssSelector, parentCssSelector, classAttribute, idAttribute, tagName,
                 parentClassAttribute, parentIdAttribute, parentTagName);
     }
 }

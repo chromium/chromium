@@ -77,6 +77,7 @@ void UntrustworthyContextMenuParams::Assign(
   selection_start_offset = other.selection_start_offset;
   opened_from_highlight = other.opened_from_highlight;
   css_selector = other.css_selector;
+  parent_css_selector = other.parent_css_selector;
 }
 
 UntrustworthyContextMenuParams::~UntrustworthyContextMenuParams() = default;

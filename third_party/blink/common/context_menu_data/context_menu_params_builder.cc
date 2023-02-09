@@ -64,6 +64,7 @@ UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
   params.suggested_filename = base::UTF8ToUTF16(data.suggested_filename);
   params.input_field_type = data.input_field_type;
   params.opened_from_highlight = data.opened_from_highlight;
+  params.parent_css_selector = base::UTF8ToUTF16(data.parent_css_selector);
   params.css_selector = base::UTF8ToUTF16(data.css_selector);
   params.class_attribute = base::UTF8ToUTF16(data.class_attribute);
   params.id_attribute = base::UTF8ToUTF16(data.id_attribute);
