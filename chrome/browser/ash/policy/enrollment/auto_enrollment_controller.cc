@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
 
 #include <memory>
 
@@ -51,7 +51,7 @@
 // reports.
 #define LOG_DETERMINATION() LOG(WARNING)
 
-namespace ash {
+namespace policy {
 namespace {
 
 const int kMaxRequestStateKeysTries = 10;
@@ -84,8 +84,9 @@ using SystemClockSyncCallback = base::OnceCallback<void(
 // interval. Returns 0 if the argument doesn't exist or isn't an int value.
 int GetSanitizedArg(const std::string& switch_name) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switch_name))
+  if (!command_line->HasSwitch(switch_name)) {
     return 0;
+  }
   std::string value = command_line->GetSwitchValueASCII(switch_name);
   int int_value;
   if (!base::StringToInt(value, &int_value)) {
@@ -98,41 +99,40 @@ int GetSanitizedArg(const std::string& switch_name) {
                << "Using 0";
     return 0;
   }
-  if (int_value > policy::AutoEnrollmentClient::kMaximumPower) {
+  if (int_value > AutoEnrollmentClient::kMaximumPower) {
     LOG(ERROR) << "Switch \"" << switch_name << "\" can't be greater than "
-               << policy::AutoEnrollmentClient::kMaximumPower << ". Using "
-               << policy::AutoEnrollmentClient::kMaximumPower << ".";
-    return policy::AutoEnrollmentClient::kMaximumPower;
+               << AutoEnrollmentClient::kMaximumPower << ". Using "
+               << AutoEnrollmentClient::kMaximumPower << ".";
+    return AutoEnrollmentClient::kMaximumPower;
   }
   return int_value;
 }
 
-std::string AutoEnrollmentStateToString(policy::AutoEnrollmentState state) {
+std::string AutoEnrollmentStateToString(AutoEnrollmentState state) {
   switch (state) {
-    case policy::AutoEnrollmentState::kIdle:
+    case AutoEnrollmentState::kIdle:
       return "Not started";
-    case policy::AutoEnrollmentState::kPending:
+    case AutoEnrollmentState::kPending:
       return "Pending";
-    case policy::AutoEnrollmentState::kConnectionError:
+    case AutoEnrollmentState::kConnectionError:
       return "Connection error";
-    case policy::AutoEnrollmentState::kServerError:
+    case AutoEnrollmentState::kServerError:
       return "Server error";
-    case policy::AutoEnrollmentState::kEnrollment:
+    case AutoEnrollmentState::kEnrollment:
       return "Enrollment";
-    case policy::AutoEnrollmentState::kNoEnrollment:
+    case AutoEnrollmentState::kNoEnrollment:
       return "No enrollment";
-    case policy::AutoEnrollmentState::kDisabled:
+    case AutoEnrollmentState::kDisabled:
       return "Device disabled";
   }
 }
 
 // Schedules immediate initialization of the `DeviceManagementService` and
 // returns it.
-policy::DeviceManagementService* InitializeAndGetDeviceManagementService() {
-  policy::BrowserPolicyConnectorAsh* connector =
+DeviceManagementService* InitializeAndGetDeviceManagementService() {
+  BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  policy::DeviceManagementService* service =
-      connector->device_management_service();
+  DeviceManagementService* service = connector->device_management_service();
   service->ScheduleInitialization(0);
   return service;
 }
@@ -167,23 +167,23 @@ AutoEnrollmentController::AutoEnrollmentController()
     : psm_rlwe_client_factory_(
           base::BindRepeating(&policy::psm::RlweClientImpl::Create)) {}
 
-AutoEnrollmentController::~AutoEnrollmentController() {}
+AutoEnrollmentController::~AutoEnrollmentController() = default;
 
 void AutoEnrollmentController::Start() {
   LOG(WARNING) << "Starting auto-enrollment controller.";
   switch (state_) {
-    case policy::AutoEnrollmentState::kPending:
+    case AutoEnrollmentState::kPending:
       // Abort re-start if the check is still running.
       return;
-    case policy::AutoEnrollmentState::kNoEnrollment:
-    case policy::AutoEnrollmentState::kEnrollment:
-    case policy::AutoEnrollmentState::kDisabled:
+    case AutoEnrollmentState::kNoEnrollment:
+    case AutoEnrollmentState::kEnrollment:
+    case AutoEnrollmentState::kDisabled:
       // Abort re-start when there's already a final decision.
       return;
 
-    case policy::AutoEnrollmentState::kIdle:
-    case policy::AutoEnrollmentState::kConnectionError:
-    case policy::AutoEnrollmentState::kServerError:
+    case AutoEnrollmentState::kIdle:
+    case AutoEnrollmentState::kConnectionError:
+    case AutoEnrollmentState::kServerError:
       // Continue (re-)start.
       break;
   }
@@ -208,53 +208,54 @@ void AutoEnrollmentController::Start() {
 
 void AutoEnrollmentController::StartWithSystemClockSyncState() {
   auto_enrollment_check_type_ =
-      policy::AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
           IsSystemClockSynchronized(system_clock_sync_state_),
-          system::StatisticsProvider::GetInstance());
+          ash::system::StatisticsProvider::GetInstance());
   if (auto_enrollment_check_type_ ==
-      policy::AutoEnrollmentTypeChecker::CheckType::kNone) {
-    UpdateState(policy::AutoEnrollmentState::kNoEnrollment);
+      AutoEnrollmentTypeChecker::CheckType::kNone) {
+    UpdateState(AutoEnrollmentState::kNoEnrollment);
     return;
   }
   // If waiting for system clock synchronization has been triggered, wait until
   // it finishes (this function will be called again when a result is
   // available).
-  if (system_clock_sync_state_ == SystemClockSyncState::kWaitingForSync)
+  if (system_clock_sync_state_ == SystemClockSyncState::kWaitingForSync) {
     return;
+  }
 
-  if (auto_enrollment_check_type_ ==
-      policy::AutoEnrollmentTypeChecker::CheckType::
-          kUnknownDueToMissingSystemClockSync) {
+  if (auto_enrollment_check_type_ == AutoEnrollmentTypeChecker::CheckType::
+                                         kUnknownDueToMissingSystemClockSync) {
     DCHECK_EQ(system_clock_sync_state_, SystemClockSyncState::kCanWaitForSync);
     system_clock_sync_state_ = SystemClockSyncState::kWaitingForSync;
 
     // Set state before waiting for the system clock sync, because
     // `WaitForSystemClockSync` may invoke its callback synchronously if the
     // system clock sync status is already known.
-    UpdateState(policy::AutoEnrollmentState::kPending);
+    UpdateState(AutoEnrollmentState::kPending);
 
     // Use `client_start_weak_factory_` so the callback is not invoked if
     // `Timeout` has been called in the meantime (after `kSafeguardTimeout`).
     system_clock_sync_observation_ =
-        SystemClockSyncObservation::WaitForSystemClockSync(
-            SystemClockClient::Get(), kSystemClockSyncWaitTimeout,
+        ash::SystemClockSyncObservation::WaitForSystemClockSync(
+            ash::SystemClockClient::Get(), kSystemClockSyncWaitTimeout,
             base::BindOnce(&AutoEnrollmentController::OnSystemClockSyncResult,
                            client_start_weak_factory_.GetWeakPtr()));
     return;
   }
 
   // Start by checking if the device has already been owned.
-  UpdateState(policy::AutoEnrollmentState::kPending);
-  DeviceSettingsService::Get()->GetOwnershipStatusAsync(
+  UpdateState(AutoEnrollmentState::kPending);
+  ash::DeviceSettingsService::Get()->GetOwnershipStatusAsync(
       base::BindOnce(&AutoEnrollmentController::OnOwnershipStatusCheckDone,
                      client_start_weak_factory_.GetWeakPtr()));
 }
 
 void AutoEnrollmentController::Retry() {
-  if (client_)
+  if (client_) {
     client_->Retry();
-  else
+  } else {
     Start();
+  }
 }
 
 base::CallbackListSubscription
@@ -270,20 +271,20 @@ void AutoEnrollmentController::SetRlweClientFactoryForTesting(
 }
 
 void AutoEnrollmentController::SetAutoEnrollmentClientFactoryForTesting(
-    policy::AutoEnrollmentClient::Factory* auto_enrollment_client_factory) {
+    AutoEnrollmentClient::Factory* auto_enrollment_client_factory) {
   CHECK_IS_TEST();
   testing_auto_enrollment_client_factory_ = auto_enrollment_client_factory;
 }
 
 void AutoEnrollmentController::OnOwnershipStatusCheckDone(
-    DeviceSettingsService::OwnershipStatus status) {
+    ash::DeviceSettingsService::OwnershipStatus status) {
   switch (status) {
-    case DeviceSettingsService::OWNERSHIP_NONE:
+    case ash::DeviceSettingsService::OWNERSHIP_NONE:
       switch (auto_enrollment_check_type_) {
-        case policy::AutoEnrollmentTypeChecker::CheckType::
+        case AutoEnrollmentTypeChecker::CheckType::
             kForcedReEnrollmentExplicitlyRequired:
           // [[fallthrough]];
-        case policy::AutoEnrollmentTypeChecker::CheckType::
+        case AutoEnrollmentTypeChecker::CheckType::
             kForcedReEnrollmentImplicitlyRequired:
           ++request_state_keys_tries_;
           // For FRE, request state keys first.
@@ -294,14 +295,13 @@ void AutoEnrollmentController::OnOwnershipStatusCheckDone(
                   base::BindOnce(&AutoEnrollmentController::StartClientForFRE,
                                  client_start_weak_factory_.GetWeakPtr()));
           break;
-        case policy::AutoEnrollmentTypeChecker::CheckType::
-            kInitialStateDetermination:
+        case AutoEnrollmentTypeChecker::CheckType::kInitialStateDetermination:
           StartClientForInitialEnrollment();
           break;
-        case policy::AutoEnrollmentTypeChecker::CheckType::
+        case AutoEnrollmentTypeChecker::CheckType::
             kUnknownDueToMissingSystemClockSync:
           // [[fallthrough]];
-        case policy::AutoEnrollmentTypeChecker::CheckType::kNone:
+        case AutoEnrollmentTypeChecker::CheckType::kNone:
           // The ownership check is only triggered if
           // `auto_enrollment_check_type_` indicates that an auto-enrollment
           // check should be done.
@@ -309,13 +309,13 @@ void AutoEnrollmentController::OnOwnershipStatusCheckDone(
           break;
       }
       return;
-    case DeviceSettingsService::OWNERSHIP_TAKEN:
+    case ash::DeviceSettingsService::OWNERSHIP_TAKEN:
       LOG(WARNING) << "Device already owned, skipping auto-enrollment check.";
-      UpdateState(policy::AutoEnrollmentState::kNoEnrollment);
+      UpdateState(AutoEnrollmentState::kNoEnrollment);
       return;
-    case DeviceSettingsService::OWNERSHIP_UNKNOWN:
+    case ash::DeviceSettingsService::OWNERSHIP_UNKNOWN:
       LOG(ERROR) << "Ownership unknown, skipping auto-enrollment check.";
-      UpdateState(policy::AutoEnrollmentState::kNoEnrollment);
+      UpdateState(AutoEnrollmentState::kNoEnrollment);
       return;
   }
 }
@@ -325,11 +325,12 @@ void AutoEnrollmentController::StartClientForFRE(
   if (state_keys.empty()) {
     LOG(ERROR) << "No state keys available.";
     if (auto_enrollment_check_type_ ==
-        policy::AutoEnrollmentTypeChecker::CheckType::
+        AutoEnrollmentTypeChecker::CheckType::
             kForcedReEnrollmentExplicitlyRequired) {
       if (request_state_keys_tries_ >= kMaxRequestStateKeysTries) {
-        if (safeguard_timer_.IsRunning())
+        if (safeguard_timer_.IsRunning()) {
           safeguard_timer_.Stop();
+        }
         Timeout();
         return;
       }
@@ -343,18 +344,17 @@ void AutoEnrollmentController::StartClientForFRE(
               base::BindOnce(&AutoEnrollmentController::StartClientForFRE,
                              client_start_weak_factory_.GetWeakPtr()));
     } else {
-      UpdateState(policy::AutoEnrollmentState::kNoEnrollment);
+      UpdateState(AutoEnrollmentState::kNoEnrollment);
     }
     return;
   }
 
-  policy::DeviceManagementService* service =
-      InitializeAndGetDeviceManagementService();
+  DeviceManagementService* service = InitializeAndGetDeviceManagementService();
 
   int power_initial =
-      GetSanitizedArg(switches::kEnterpriseEnrollmentInitialModulus);
+      GetSanitizedArg(ash::switches::kEnterpriseEnrollmentInitialModulus);
   int power_limit =
-      GetSanitizedArg(switches::kEnterpriseEnrollmentModulusLimit);
+      GetSanitizedArg(ash::switches::kEnterpriseEnrollmentModulusLimit);
   if (power_initial > power_limit) {
     LOG(ERROR) << "Initial auto-enrollment modulus is larger than the limit, "
                   "clamping to the limit.";
@@ -390,20 +390,19 @@ void AutoEnrollmentController::OnSystemClockSyncResult(
   if (system_clock_sync_state_ == SystemClockSyncState::kSynchronized) {
     StartWithSystemClockSyncState();
   } else {
-    UpdateState(policy::AutoEnrollmentState::kConnectionError);
+    UpdateState(AutoEnrollmentState::kConnectionError);
   }
 }
 
 void AutoEnrollmentController::StartClientForInitialEnrollment() {
-  policy::DeviceManagementService* service =
-      InitializeAndGetDeviceManagementService();
+  DeviceManagementService* service = InitializeAndGetDeviceManagementService();
 
-  system::StatisticsProvider* provider =
-      system::StatisticsProvider::GetInstance();
+  ash::system::StatisticsProvider* provider =
+      ash::system::StatisticsProvider::GetInstance();
   const absl::optional<base::StringPiece> serial_number =
       provider->GetMachineID();
   const absl::optional<base::StringPiece> rlz_brand_code =
-      provider->GetMachineStatistic(system::kRlzBrandCodeKey);
+      provider->GetMachineStatistic(ash::system::kRlzBrandCodeKey);
   // The Initial State Determination should not be started if the serial number
   // or brand code are missing. This is ensured in
   // `GetInitialStateDeterminationRequirement`.
@@ -412,7 +411,7 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
   CHECK(rlz_brand_code);
   CHECK(!rlz_brand_code->empty());
 
-  const auto plaintext_id = policy::psm::ConstructRlweId();
+  const auto plaintext_id = psm::ConstructRlweId();
   // TODO(b/259661300): Remove copy of `serial_number` and `rlz_brand_code`
   // once `CreateForInitialEnrollment` uses StringPiece arguments.
   client_ = GetAutoEnrollmentClientFactory()->CreateForInitialEnrollment(
@@ -422,7 +421,7 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
       std::string(serial_number.value()), std::string(rlz_brand_code.value()),
-      std::make_unique<policy::psm::RlweDmserverClientImpl>(
+      std::make_unique<psm::RlweDmserverClientImpl>(
           service,
           g_browser_process->system_network_context_manager()
               ->GetSharedURLLoaderFactory(),
@@ -432,22 +431,21 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
   client_->Start();
 }
 
-void AutoEnrollmentController::UpdateState(
-    policy::AutoEnrollmentState new_state) {
+void AutoEnrollmentController::UpdateState(AutoEnrollmentState new_state) {
   LOG(WARNING) << "New auto-enrollment state: "
                << AutoEnrollmentStateToString(new_state);
   state_ = new_state;
 
   // Stop the safeguard timer once a result comes in.
   switch (state_) {
-    case policy::AutoEnrollmentState::kIdle:
-    case policy::AutoEnrollmentState::kPending:
+    case AutoEnrollmentState::kIdle:
+    case AutoEnrollmentState::kPending:
       break;
-    case policy::AutoEnrollmentState::kConnectionError:
-    case policy::AutoEnrollmentState::kServerError:
-    case policy::AutoEnrollmentState::kEnrollment:
-    case policy::AutoEnrollmentState::kNoEnrollment:
-    case policy::AutoEnrollmentState::kDisabled:
+    case AutoEnrollmentState::kConnectionError:
+    case AutoEnrollmentState::kServerError:
+    case AutoEnrollmentState::kEnrollment:
+    case AutoEnrollmentState::kNoEnrollment:
+    case AutoEnrollmentState::kDisabled:
       safeguard_timer_.Stop();
       ReportTimeoutUMA(
           AutoEnrollmentControllerTimeoutReport::kTimeoutCancelled);
@@ -457,16 +455,16 @@ void AutoEnrollmentController::UpdateState(
   // Device disabling mode is relying on device state stored in install
   // attributes. In case that file is corrupted, this should prevent device
   // re-enabling.
-  if (state_ == policy::AutoEnrollmentState::kDisabled) {
-    policy::DeviceMode device_mode = InstallAttributes::Get()->GetMode();
-    if (device_mode == policy::DeviceMode::DEVICE_MODE_PENDING ||
-        device_mode == policy::DeviceMode::DEVICE_MODE_NOT_SET) {
-      DeviceSettingsService::Get()->SetDeviceMode(
-          policy::DeviceMode::DEVICE_MODE_ENTERPRISE);
+  if (state_ == AutoEnrollmentState::kDisabled) {
+    DeviceMode device_mode = ash::InstallAttributes::Get()->GetMode();
+    if (device_mode == DeviceMode::DEVICE_MODE_PENDING ||
+        device_mode == DeviceMode::DEVICE_MODE_NOT_SET) {
+      ash::DeviceSettingsService::Get()->SetDeviceMode(
+          DeviceMode::DEVICE_MODE_ENTERPRISE);
     }
   }
 
-  if (state_ == policy::AutoEnrollmentState::kNoEnrollment) {
+  if (state_ == AutoEnrollmentState::kNoEnrollment) {
     StartCleanupForcedReEnrollment();
   } else {
     progress_callbacks_.Notify(state_);
@@ -476,14 +474,15 @@ void AutoEnrollmentController::UpdateState(
 void AutoEnrollmentController::StartCleanupForcedReEnrollment() {
   // D-Bus services may not be available yet, so we call
   // WaitForServiceToBeAvailable. See https://crbug.com/841627.
-  InstallAttributesClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
-      &AutoEnrollmentController::StartRemoveFirmwareManagementParameters,
-      weak_ptr_factory_.GetWeakPtr()));
+  ash::InstallAttributesClient::Get()->WaitForServiceToBeAvailable(
+      base::BindOnce(
+          &AutoEnrollmentController::StartRemoveFirmwareManagementParameters,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AutoEnrollmentController::StartRemoveFirmwareManagementParameters(
     bool service_is_ready) {
-  DCHECK_EQ(policy::AutoEnrollmentState::kNoEnrollment, state_);
+  DCHECK_EQ(AutoEnrollmentState::kNoEnrollment, state_);
   if (!service_is_ready) {
     LOG(ERROR) << "Failed waiting for cryptohome D-Bus service availability.";
     progress_callbacks_.Notify(state_);
@@ -491,7 +490,7 @@ void AutoEnrollmentController::StartRemoveFirmwareManagementParameters(
   }
 
   user_data_auth::RemoveFirmwareManagementParametersRequest request;
-  InstallAttributesClient::Get()->RemoveFirmwareManagementParameters(
+  ash::InstallAttributesClient::Get()->RemoveFirmwareManagementParameters(
       request,
       base::BindOnce(
           &AutoEnrollmentController::OnFirmwareManagementParametersRemoved,
@@ -509,14 +508,14 @@ void AutoEnrollmentController::OnFirmwareManagementParametersRemoved(
 
   // D-Bus services may not be available yet, so we call
   // WaitForServiceToBeAvailable. See https://crbug.com/841627.
-  SessionManagerClient::Get()->WaitForServiceToBeAvailable(
+  ash::SessionManagerClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(&AutoEnrollmentController::StartClearForcedReEnrollmentVpd,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AutoEnrollmentController::StartClearForcedReEnrollmentVpd(
     bool service_is_ready) {
-  DCHECK_EQ(policy::AutoEnrollmentState::kNoEnrollment, state_);
+  DCHECK_EQ(AutoEnrollmentState::kNoEnrollment, state_);
   if (!service_is_ready) {
     LOG(ERROR)
         << "Failed waiting for session_manager D-Bus service availability.";
@@ -524,14 +523,15 @@ void AutoEnrollmentController::StartClearForcedReEnrollmentVpd(
     return;
   }
 
-  SessionManagerClient::Get()->ClearForcedReEnrollmentVpd(
+  ash::SessionManagerClient::Get()->ClearForcedReEnrollmentVpd(
       base::BindOnce(&AutoEnrollmentController::OnForcedReEnrollmentVpdCleared,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AutoEnrollmentController::OnForcedReEnrollmentVpdCleared(bool reply) {
-  if (!reply)
+  if (!reply) {
     LOG(ERROR) << "Failed to clear forced re-enrollment flags in RW VPD.";
+  }
 
   progress_callbacks_.Notify(state_);
 }
@@ -545,20 +545,20 @@ void AutoEnrollmentController::Timeout() {
   // REQUIRED case as well.
   if (client_start_weak_factory_.HasWeakPtrs() &&
       auto_enrollment_check_type_ !=
-          policy::AutoEnrollmentTypeChecker::CheckType::
+          AutoEnrollmentTypeChecker::CheckType::
               kForcedReEnrollmentExplicitlyRequired) {
     // If the callbacks to check ownership status or state keys are still
     // pending, there's a bug in the code running on the device. No use in
     // retrying anything, need to fix that bug.
     LOG(ERROR) << "Failed to start auto-enrollment check, fix the code!";
-    UpdateState(policy::AutoEnrollmentState::kNoEnrollment);
+    UpdateState(AutoEnrollmentState::kNoEnrollment);
     ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport::kTimeout);
   } else {
     // This can actually happen in some cases, for example when state key
     // generation is waiting for time sync or the server just doesn't reply and
     // keeps the connection open.
     LOG(ERROR) << "AutoEnrollmentClient didn't complete within time limit.";
-    UpdateState(policy::AutoEnrollmentState::kConnectionError);
+    UpdateState(AutoEnrollmentState::kConnectionError);
     ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport::kTimeoutFRE);
   }
 
@@ -568,14 +568,15 @@ void AutoEnrollmentController::Timeout() {
   client_start_weak_factory_.InvalidateWeakPtrs();
 }
 
-policy::AutoEnrollmentClient::Factory*
+AutoEnrollmentClient::Factory*
 AutoEnrollmentController::GetAutoEnrollmentClientFactory() {
-  static base::NoDestructor<policy::AutoEnrollmentClientImpl::FactoryImpl>
+  static base::NoDestructor<AutoEnrollmentClientImpl::FactoryImpl>
       default_factory;
-  if (testing_auto_enrollment_client_factory_)
+  if (testing_auto_enrollment_client_factory_) {
     return testing_auto_enrollment_client_factory_;
+  }
 
   return default_factory.get();
 }
 
-}  // namespace ash
+}  // namespace policy

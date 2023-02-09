@@ -2727,9 +2727,11 @@ void WizardController::NotifyScreenChanged() {
     obs.OnCurrentScreenChanged(current_screen_);
 }
 
-AutoEnrollmentController* WizardController::GetAutoEnrollmentController() {
+policy::AutoEnrollmentController*
+WizardController::GetAutoEnrollmentController() {
   if (!auto_enrollment_controller_)
-    auto_enrollment_controller_ = std::make_unique<AutoEnrollmentController>();
+    auto_enrollment_controller_ =
+        std::make_unique<policy::AutoEnrollmentController>();
   return auto_enrollment_controller_.get();
 }
 

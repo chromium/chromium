@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_AUTO_ENROLLMENT_CONTROLLER_H_
-#define CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_AUTO_ENROLLMENT_CONTROLLER_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_AUTO_ENROLLMENT_CONTROLLER_H_
+#define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_AUTO_ENROLLMENT_CONTROLLER_H_
 
 #include <memory>
 #include <string>
@@ -21,8 +21,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
-
 class SystemClockSyncObservation;
+}
+
+namespace policy {
 
 // Drives the forced re-enrollment check (for historical reasons called
 // auto-enrollment check), running an AutoEnrollmentClient if appropriate to
@@ -30,9 +32,9 @@ class SystemClockSyncObservation;
 class AutoEnrollmentController {
  public:
   using ProgressCallbackList =
-      base::RepeatingCallbackList<void(policy::AutoEnrollmentState)>;
+      base::RepeatingCallbackList<void(AutoEnrollmentState)>;
   using RlweClientFactory =
-      base::RepeatingCallback<std::unique_ptr<policy::psm::RlweClient>(
+      base::RepeatingCallback<std::unique_ptr<psm::RlweClient>(
           const private_membership::rlwe::RlwePlaintextId&)>;
 
   // State of the system clock.
@@ -66,12 +68,11 @@ class AutoEnrollmentController {
   base::CallbackListSubscription RegisterProgressCallback(
       const ProgressCallbackList::CallbackType& callback);
 
-  policy::AutoEnrollmentState state() const { return state_; }
+  AutoEnrollmentState state() const { return state_; }
 
   // Returns the auto-enrollment check type performed by this client.
   // The returned value will be `CheckType::kNone` before calling `Start()`.
-  policy::AutoEnrollmentTypeChecker::CheckType auto_enrollment_check_type()
-      const {
+  AutoEnrollmentTypeChecker::CheckType auto_enrollment_check_type() const {
     return auto_enrollment_check_type_;
   }
 
@@ -85,7 +86,7 @@ class AutoEnrollmentController {
   // valid while this `AutoEnrollmentController` is using it.
   // To use the default factory again, call with nullptr.
   void SetAutoEnrollmentClientFactoryForTesting(
-      policy::AutoEnrollmentClient::Factory* auto_enrollment_client_factory);
+      AutoEnrollmentClient::Factory* auto_enrollment_client_factory);
 
  private:
   // Determines the FRE and Initial Enrollment requirement and starts initial
@@ -96,7 +97,7 @@ class AutoEnrollmentController {
 
   // Callback for the ownership status check.
   void OnOwnershipStatusCheckDone(
-      DeviceSettingsService::OwnershipStatus status);
+      ash::DeviceSettingsService::OwnershipStatus status);
 
   // Starts the auto-enrollment client for forced re-enrollment.
   void StartClientForFRE(const std::vector<std::string>& state_keys);
@@ -109,7 +110,7 @@ class AutoEnrollmentController {
   void StartClientForInitialEnrollment();
 
   // Sets `state_` and notifies `progress_callbacks_`.
-  void UpdateState(policy::AutoEnrollmentState state);
+  void UpdateState(AutoEnrollmentState state);
 
   // Clears everything that needs to be cleared at OOBE if
   // the device gets the response that forced re-enrollment is not required.
@@ -156,22 +157,22 @@ class AutoEnrollmentController {
 
   // Returns the factory that should be used to construct a new
   // `AutoEnrollmentClient`.
-  policy::AutoEnrollmentClient::Factory* GetAutoEnrollmentClientFactory();
+  AutoEnrollmentClient::Factory* GetAutoEnrollmentClientFactory();
 
   // Unowned pointer. If not nullptr, this will be used to create the `client_`.
   // It can be set using `SetAutoEnrollmentClientFactoryForTesting`.
-  policy::AutoEnrollmentClient::Factory*
-      testing_auto_enrollment_client_factory_ = nullptr;
+  AutoEnrollmentClient::Factory* testing_auto_enrollment_client_factory_ =
+      nullptr;
 
   // Constructs the PSM RLWE client. It will either create a fake or real
   // implementation of the client.
   // It is only used for PSM during creating the client for initial enrollment.
   RlweClientFactory psm_rlwe_client_factory_;
 
-  policy::AutoEnrollmentState state_ = policy::AutoEnrollmentState::kIdle;
+  AutoEnrollmentState state_ = AutoEnrollmentState::kIdle;
   ProgressCallbackList progress_callbacks_;
 
-  std::unique_ptr<policy::AutoEnrollmentClient> client_;
+  std::unique_ptr<AutoEnrollmentClient> client_;
 
   // This timer acts as a belt-and-suspenders safety for the case where one of
   // the asynchronous steps required to make the auto-enrollment decision
@@ -185,11 +186,12 @@ class AutoEnrollmentController {
 
   // Which type of auto-enrollment check is being performed by this
   // `AutoEnrollmentClient`.
-  policy::AutoEnrollmentTypeChecker::CheckType auto_enrollment_check_type_ =
-      policy::AutoEnrollmentTypeChecker::CheckType::kNone;
+  AutoEnrollmentTypeChecker::CheckType auto_enrollment_check_type_ =
+      AutoEnrollmentTypeChecker::CheckType::kNone;
 
   // Utility for waiting until the system clock has been synchronized.
-  std::unique_ptr<SystemClockSyncObservation> system_clock_sync_observation_;
+  std::unique_ptr<ash::SystemClockSyncObservation>
+      system_clock_sync_observation_;
 
   // Current system clock sync state. This is only modified in
   // `OnSystemClockSyncResult` after `system_clock_sync_wait_requested_` has
@@ -206,6 +208,6 @@ class AutoEnrollmentController {
   base::WeakPtrFactory<AutoEnrollmentController> weak_ptr_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_AUTO_ENROLLMENT_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_AUTO_ENROLLMENT_CONTROLLER_H_

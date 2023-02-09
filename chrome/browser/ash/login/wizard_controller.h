@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/login/choobe_flow_controller.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen.h"
-#include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screen_manager.h"
@@ -68,6 +67,7 @@
 #include "chrome/browser/ash/login/screens/update_screen.h"
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "components/account_id/account_id.h"
@@ -265,7 +265,7 @@ class WizardController : public OobeUI::Observer {
 
   // Allows tests to call `GetAutoEnrollmentController` without making those
   // tests friend classes with access to everything.
-  AutoEnrollmentController* GetAutoEnrollmentControllerForTesting() {
+  policy::AutoEnrollmentController* GetAutoEnrollmentControllerForTesting() {
     return GetAutoEnrollmentController();
   }
 
@@ -493,14 +493,14 @@ class WizardController : public OobeUI::Observer {
 
   // Returns auto enrollment controller (lazily initializes one if it doesn't
   // exist already).
-  AutoEnrollmentController* GetAutoEnrollmentController();
+  policy::AutoEnrollmentController* GetAutoEnrollmentController();
 
   // Requests owning TPM for branded builds with --tpm-is-dynamic switch unset.
   // When --tpm-is-dynamic switch is set, pre-enrollment TPM check relies on
   // the TPM being un-owned until enrollment. b/187429309
   void MaybeTakeTPMOwnership();
 
-  std::unique_ptr<AutoEnrollmentController> auto_enrollment_controller_;
+  std::unique_ptr<policy::AutoEnrollmentController> auto_enrollment_controller_;
   std::unique_ptr<ChoobeFlowController> choobe_flow_controller_;
   std::unique_ptr<ScreenManager> screen_manager_;
 
