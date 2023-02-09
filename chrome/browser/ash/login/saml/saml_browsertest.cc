@@ -1737,6 +1737,29 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, TestLockMediaPermission) {
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE));
 }
 
+// Pushes DeviceLoginScreenLocales into the device policy.
+class SAMLLocalesTest : public SamlTestBase {
+ public:
+  constexpr static char kLoginLocale[] = "de";
+  SAMLLocalesTest() {
+    device_state_.SetState(
+        DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED);
+    auto policy_update = device_state_.RequestDevicePolicyUpdate();
+    em::ChromeDeviceSettingsProto& proto(*policy_update->policy_payload());
+    *proto.mutable_login_screen_locales()->add_login_screen_locales() =
+        kLoginLocale;
+  }
+};
+
+// Tests that DeviceLoginLocales policy propagates to the 3rd-party IdP.
+IN_PROC_BROWSER_TEST_F(SAMLLocalesTest, PropagatesToIdp) {
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
+  StartSamlAndWaitForIdpPageLoad(
+      saml_test_users::kFirstUserCorpExampleComEmail);
+
+  SigninFrameJS().ExpectEQ("navigator.language", std::string(kLoginLocale));
+}
+
 class SAMLPasswordAttributesTest : public SAMLPolicyTest,
                                    public testing::WithParamInterface<bool> {
  public:
