@@ -96,6 +96,11 @@ class OsIntegrationTestOverride
                              const AppId& app_id,
                              const std::string& app_name);
 
+  bool IsFileExtensionHandled(Profile* profile,
+                              const AppId& app_id,
+                              std::string app_name,
+                              std::string file_extension);
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // Reads the icon color for a specific shortcut created
   absl::optional<SkColor> GetShortcutIconTopLeftColor(
