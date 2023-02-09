@@ -1998,30 +1998,6 @@ template("mojom") {
   # TypeScript.
   if (generate_mojom_closure_libraries &&
       (!defined(invoker.cpp_only) || !invoker.cpp_only) && generate_legacy_js) {
-    js_library_target_name = "${target_name}_js_library"
-    if (sources_list != []) {
-      js_library(js_library_target_name) {
-        extra_public_deps = [ ":$generator_js_target_name" ]
-        sources = []
-        foreach(base_path, output_file_base_paths) {
-          sources += [ "$root_gen_dir/${base_path}-lite.js" ]
-        }
-        externs_list = [
-          "${externs_path}/mojo_core.js",
-          "${externs_path}/pending.js",
-        ]
-
-        deps = []
-        foreach(d, all_deps) {
-          full_name = get_label_info(d, "label_no_toolchain")
-          deps += [ "${full_name}_js_library" ]
-        }
-      }
-    } else {
-      group(js_library_target_name) {
-      }
-    }
-
     js_library_for_compile_target_name = "${target_name}_js_library_for_compile"
     if (sources_list != []) {
       js_library(js_library_for_compile_target_name) {
