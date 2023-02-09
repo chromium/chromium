@@ -43,11 +43,6 @@ namespace {
 // icons.
 absl::optional<bool> g_icons_supported_by_os_override;
 
-base::RepeatingCallback<void(bool)>& GetOsIntegrationCallback() {
-  static base::NoDestructor<base::RepeatingCallback<void(bool)>> instance;
-  return *instance;
-}
-
 }  // namespace
 
 WebAppFileHandlerManager::WebAppFileHandlerManager(Profile* profile)
@@ -64,12 +59,6 @@ void WebAppFileHandlerManager::Start() {
 }
 
 // static
-void WebAppFileHandlerManager::DisableOsIntegrationForTesting(
-    const base::RepeatingCallback<void(bool)>& set_os_integration) {
-  GetOsIntegrationCallback() = set_os_integration;
-}
-
-// static
 void WebAppFileHandlerManager::SetIconsSupportedByOsForTesting(bool value) {
   g_icons_supported_by_os_override = value;
 }
@@ -79,8 +68,7 @@ void WebAppFileHandlerManager::EnableAndRegisterOsFileHandlers(
     ResultCallback callback) {
   SetOsIntegrationState(app_id, OsIntegrationState::kEnabled);
 
-  if (GetOsIntegrationCallback()) {
-    GetOsIntegrationCallback().Run(true);
+  if (IsDisabledForTesting()) {
     std::move(callback).Run(Result::kOk);
     return;
   }
@@ -113,8 +101,7 @@ void WebAppFileHandlerManager::DisableAndUnregisterOsFileHandlers(
 
   SetOsIntegrationState(app_id, OsIntegrationState::kDisabled);
 
-  if (GetOsIntegrationCallback()) {
-    GetOsIntegrationCallback().Run(false);
+  if (IsDisabledForTesting()) {
     std::move(callback).Run(Result::kOk);
     return;
   }
@@ -152,6 +139,10 @@ const apps::FileHandlers* WebAppFileHandlerManager::GetAllFileHandlers(
   return web_app && !web_app->file_handlers().empty()
              ? &web_app->file_handlers()
              : nullptr;
+}
+
+bool WebAppFileHandlerManager::IsDisabledForTesting() {
+  return false;
 }
 
 WebAppFileHandlerManager::LaunchInfos

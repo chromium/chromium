@@ -30,14 +30,6 @@ class WebAppFileHandlerManager {
   void SetSubsystems(WebAppSyncBridge* sync_bridge);
   void Start();
 
-  // Disables OS integrations, such as shortcut creation on Linux or modifying
-  // the registry on Windows, to prevent side effects while testing.
-  // `set_os_integration` will be invoked every time OS integration would have
-  // been toggled with a boolean that is true for enabled. Note: When disabled,
-  // file handling integration will not work on most operating systems.
-  static void DisableOsIntegrationForTesting(
-      const base::RepeatingCallback<void(bool)>& set_os_integration);
-
   // Called by tests to enable file handling icon infrastructure on a platform
   // independently of whether it's needed or used in production. Note that the
   // feature flag must also separately be enabled.
@@ -81,6 +73,8 @@ class WebAppFileHandlerManager {
   // `virtual` for testing.
   virtual const apps::FileHandlers* GetAllFileHandlers(
       const AppId& app_id) const;
+
+  virtual bool IsDisabledForTesting();
 
  private:
   // Sets whether `app_id` should have its File Handling abilities surfaces in

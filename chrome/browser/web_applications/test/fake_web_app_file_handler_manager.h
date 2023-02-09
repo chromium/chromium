@@ -30,6 +30,8 @@ class FakeWebAppFileHandlerManager : public WebAppFileHandlerManager {
   const apps::FileHandlers* GetAllFileHandlers(
       const AppId& app_id) const override;
 
+  bool IsDisabledForTesting() override;
+
   using AcceptMap = std::map<std::string, base::flat_set<std::string>>;
   // Installs a file handler for |app_id| with the action url |handler|,
   // accepting all mimetypes and extensions in |accepts|.
