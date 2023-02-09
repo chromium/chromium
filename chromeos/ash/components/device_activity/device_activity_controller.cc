@@ -101,6 +101,8 @@ void DeviceActivityController::RegisterPrefs(PrefRegistrySimple* registry) {
       prefs::kDeviceActiveLastKnown28DayActivePingTimestamp, unix_epoch);
   registry->RegisterTimePref(
       prefs::kDeviceActiveChurnCohortMonthlyPingTimestamp, unix_epoch);
+  registry->RegisterIntegerPref(prefs::kDeviceActiveLastKnownChurnActiveStatus,
+                                0);
 }
 
 // static
@@ -248,10 +250,10 @@ void DeviceActivityController::OnMachineStatisticsLoaded(
       std::make_unique<PsmDelegateImpl>()));
 
   da_client_network_ = std::make_unique<DeviceActivityClient>(
-      NetworkHandler::Get()->network_state_handler(), url_loader_factory,
-      std::make_unique<base::RepeatingTimer>(), kFresnelBaseUrl,
-      google_apis::GetFresnelAPIKey(), std::move(use_cases),
-      chrome_first_run_time_);
+      local_state, NetworkHandler::Get()->network_state_handler(),
+      url_loader_factory, std::make_unique<base::RepeatingTimer>(),
+      kFresnelBaseUrl, google_apis::GetFresnelAPIKey(), chrome_first_run_time_,
+      std::move(use_cases));
 }
 
 void DeviceActivityController::Stop() {

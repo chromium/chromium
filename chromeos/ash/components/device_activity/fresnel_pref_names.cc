@@ -18,4 +18,11 @@ const char kDeviceActiveLastKnown28DayActivePingTimestamp[] =
 const char kDeviceActiveChurnCohortMonthlyPingTimestamp[] =
     "device_active.last_known_churn_cohort_monthly_ping_timestamp";
 
+// Int representing the 28 bit Active Status used for the churn use case.
+// The first 10 bits represent number months from 01/01/2000 to current month.
+// Remaining 18 bits represents past 18 months when device was active from
+// current month.
+const char kDeviceActiveLastKnownChurnActiveStatus[] =
+    "device_active.last_known_churn_active_status";
+
 }  // namespace ash::prefs

@@ -510,10 +510,10 @@ class DeviceActivityClientTest : public testing::Test {
     }
 
     device_activity_client_ = std::make_unique<DeviceActivityClient>(
-        network_state_test_helper_->network_state_handler(),
+        &local_state_, network_state_test_helper_->network_state_handler(),
         test_shared_loader_factory_,
         std::make_unique<base::MockRepeatingTimer>(), kTestFresnelBaseUrl,
-        kFakeFresnelApiKey, std::move(use_cases), base::Time());
+        kFakeFresnelApiKey, base::Time(), std::move(use_cases));
   }
 
   void SimulateLocalStateOnPowerwash() {

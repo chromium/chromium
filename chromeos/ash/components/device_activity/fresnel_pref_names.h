@@ -19,6 +19,8 @@ COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 extern const char kDeviceActiveLastKnown28DayActivePingTimestamp[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 extern const char kDeviceActiveChurnCohortMonthlyPingTimestamp[];
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
+extern const char kDeviceActiveLastKnownChurnActiveStatus[];
 
 }  // namespace ash::prefs
 

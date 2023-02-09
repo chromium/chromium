@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "chromeos/ash/components/device_activity/device_active_use_case.h"
+#include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
 #include "chromeos/ash/components/device_activity/fresnel_service.pb.h"
 // TODO(https://crbug.com/1269900): Migrate to use SFUL library.
 #include "base/metrics/histogram_functions.h"
@@ -15,6 +16,7 @@
 #include "chromeos/ash/components/dbus/system_clock/system_clock_sync_observation.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -299,19 +301,21 @@ void DeviceActivityClient::RecordDeviceActivityMethodCalled(
 }
 
 DeviceActivityClient::DeviceActivityClient(
+    PrefService* local_state,
     NetworkStateHandler* handler,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<base::RepeatingTimer> report_timer,
     const std::string& fresnel_base_url,
     const std::string& api_key,
-    std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases,
-    base::Time chrome_first_run_time)
-    : chrome_first_run_time_(chrome_first_run_time),
+    base::Time chrome_first_run_time,
+    std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases)
+    : local_state_(local_state),
       network_state_handler_(handler),
       url_loader_factory_(url_loader_factory),
       report_timer_(std::move(report_timer)),
       fresnel_base_url_(fresnel_base_url),
       api_key_(api_key),
+      chrome_first_run_time_(chrome_first_run_time),
       use_cases_(std::move(use_cases)) {
   RecordDeviceActivityMethodCalled(DeviceActivityClient::DeviceActivityMethod::
                                        kDeviceActivityClientConstructor);
@@ -325,6 +329,21 @@ DeviceActivityClient::DeviceActivityClient(
                        &DeviceActivityClient::ReportingTriggeredByTimer);
 
   network_state_handler_observer_.Observe(network_state_handler_);
+
+  // Check if active status is set in local state. If not set, we attempt to
+  // restore from preserved file.  If set, we initialize the
+  // |churn_active_status_| object. If both layers of caching is empty, we
+  // perform check membership requests on the cohort requests (contains active
+  // status objects) to determine the last known churn_active_status.
+  int churn_active_status =
+      local_state_->GetInteger(prefs::kDeviceActiveLastKnownChurnActiveStatus);
+  if (churn_active_status == 0) {
+    LOG(ERROR) << "Active status is not set in the local state.";
+    LOG(ERROR) << "Initializing |churn_active_status_| as new object.";
+    SetChurnActiveStatus(0);
+  } else {
+    SetChurnActiveStatus(churn_active_status);
+  }
 
   // Send DBus method to read preserved files for last ping timestamps.
   GetLastPingDatesStatus();
@@ -446,14 +465,25 @@ void DeviceActivityClient::OnGetLastPingDatesStatusFetched(
     // 1. Iterate FileContent for the active_statuses and update use case
     // timestamps.
     for (auto& status : response.active_status()) {
-      std::string last_ping_pt_date = status.last_ping_date();
+      // One of last_ping_date and period_status is set in ActiveStatus proto.
       base::Time last_ping_time;
+      if (status.has_last_ping_date()) {
+        std::string last_ping_pt_date = status.last_ping_date();
 
-      bool success =
-          base::Time::FromUTCString(last_ping_pt_date.c_str(), &last_ping_time);
+        bool success = base::Time::FromUTCString(last_ping_pt_date.c_str(),
+                                                 &last_ping_time);
 
-      if (!success)
-        continue;
+        if (!success) {
+          continue;
+        }
+      }
+
+      // TODO(hirthanan): Get/Set period status for churn observation status in
+      // future CL.
+      private_computing::ChurnObservationStatus period_status;
+      if (status.has_period_status()) {
+        period_status = status.period_status();
+      }
 
       DeviceActiveUseCase* device_active_use_case_ptr;
 
@@ -472,6 +502,11 @@ void DeviceActivityClient::OnGetLastPingDatesStatusFetched(
             CROS_FRESNEL_CHURN_MONTHLY_COHORT:
           device_active_use_case_ptr = GetUseCasePtr(
               psm_rlwe::RlweUseCase::CROS_FRESNEL_CHURN_MONTHLY_COHORT);
+          break;
+        case private_computing::PrivateComputingUseCase::
+            CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION:
+          device_active_use_case_ptr = GetUseCasePtr(
+              psm_rlwe::RlweUseCase::CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION);
           break;
         default:
           LOG(ERROR) << "PSM use case is not supported yet.";
@@ -542,7 +577,12 @@ ChurnActiveStatus* DeviceActivityClient::GetChurnActiveStatus() {
 
 void DeviceActivityClient::SetChurnActiveStatus(int value) {
   DCHECK(!churn_active_status_);
-  churn_active_status_ = std::make_unique<ChurnActiveStatus>(value);
+
+  if (churn_active_status_ == nullptr) {
+    churn_active_status_ = std::make_unique<ChurnActiveStatus>(value);
+  } else {
+    LOG(ERROR) << "Churn Active Status object is already set.";
+  }
 }
 
 void DeviceActivityClient::ReportingTriggeredByTimer() {
