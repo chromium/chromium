@@ -50,9 +50,9 @@ TEST_F(WebDisallowTransitionScopeTest, TestDisallowTransition) {
   {
     // Illegal transition.
     WebDisallowTransitionScope disallow(&web_doc);
-    EXPECT_DEATH(core_doc->Lifecycle().EnsureStateAtMost(
-                     DocumentLifecycle::kVisualUpdatePending),
-                 "Cannot rewind document lifecycle");
+    EXPECT_DEATH_IF_SUPPORTED(core_doc->Lifecycle().EnsureStateAtMost(
+                                  DocumentLifecycle::kVisualUpdatePending),
+                              "Cannot rewind document lifecycle");
   }
 
   // Legal transition.
