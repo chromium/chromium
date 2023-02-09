@@ -124,8 +124,8 @@ void TabStripSceneLayer::FinishBuildingFrame(
 
 void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
                                              const JavaParamRef<jobject>& jobj,
-                                             jfloat width,
-                                             jfloat height,
+                                             jint width,
+                                             jint height,
                                              jfloat y_offset,
                                              jboolean should_readd_background,
                                              jint background_color) {
@@ -158,8 +158,8 @@ void TabStripSceneLayer::UpdateStripScrim(JNIEnv* env,
                                           const JavaParamRef<jobject>& jobj,
                                           jfloat x,
                                           jfloat y,
-                                          jfloat width,
-                                          jfloat height,
+                                          jint width,
+                                          jint height,
                                           jint color,
                                           jfloat alpha) {
   if (alpha == 0.f) {

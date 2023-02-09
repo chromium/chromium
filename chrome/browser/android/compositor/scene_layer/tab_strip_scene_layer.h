@@ -52,8 +52,8 @@ class TabStripSceneLayer : public SceneLayer {
 
   void UpdateTabStripLayer(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& jobj,
-                           jfloat width,
-                           jfloat height,
+                           jint width,
+                           jint height,
                            jfloat y_offset,
                            jboolean should_readd_background,
                            jint background_color);
@@ -62,8 +62,8 @@ class TabStripSceneLayer : public SceneLayer {
                         const base::android::JavaParamRef<jobject>& jobj,
                         jfloat x,
                         jfloat y,
-                        jfloat width,
-                        jfloat height,
+                        jint width,
+                        jint height,
                         jint color,
                         jfloat alpha);
 
