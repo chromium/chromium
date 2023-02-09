@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
@@ -470,6 +471,24 @@ bool PaintTiming::IsLCPMouseoverDispatchedRecently() const {
 }
 
 void PaintTiming::SetLCPMouseoverDispatched() {
+  {
+    // TODO(https://crbug.com/1288027): Code in this scope is added for
+    // debugging purposes only. Remove it once we have a clearer picture on
+    // heuristic failures.
+    static constexpr base::TimeDelta kRecencyDelta = base::Milliseconds(500);
+    LocalFrame* frame = GetFrame();
+    if (frame && RuntimeEnabledFeatures::LCPMouseoverHeuristicsEnabled() &&
+        (lcp_mouse_over_dispatch_time_.is_null() ||
+         (clock_->NowTicks() - lcp_mouse_over_dispatch_time_) >=
+             kRecencyDelta)) {
+      if (Document* document = frame->GetDocument()) {
+        document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kVerbose,
+            "Mouseover event over an LCP image happened."));
+      }
+    }
+  }
   lcp_mouse_over_dispatch_time_ = clock_->NowTicks();
 }
 

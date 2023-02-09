@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -574,6 +575,15 @@ bool ImageRecordsManager::RecordFirstPaintAndReturnIsPending(
   }
   if (RuntimeEnabledFeatures::LCPMouseoverHeuristicsEnabled() &&
       is_loaded_after_mouseover) {
+    // TODO(https://crbug.com/1288027): Remove this debugging info once we have
+    // a clearer picture on heuristic failures.
+    if (Document* document = frame_view_->GetFrame().GetDocument()) {
+      document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kOther,
+          mojom::blink::ConsoleMessageLevel::kVerbose,
+          "Not emitting an LCP image entry, because it was loaded due to a "
+          "mouseover."));
+    }
     return false;
   }
 
