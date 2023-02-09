@@ -56,4 +56,17 @@ suite('FakeInputDeviceSettings', function() {
     return provider.getConnectedKeyboardSettings().then(
         result => assertDeepEquals(updatedFirstKeyboard, result[0]));
   });
+
+  test('setMouseSettings', () => {
+    provider.setFakeMice(fakeMice);
+    // Update the first mouse settings with the second mouse settings.
+    const updatedFirstMouse = {
+      ...fakeMice[0],
+      settings: {...fakeMice[1].settings},
+    };
+    provider.setMouseSettings(updatedFirstMouse.id, updatedFirstMouse.settings);
+    // Verify if the first mouse settings are updated.
+    return provider.getConnectedMouseSettings().then(
+        result => assertDeepEquals(updatedFirstMouse, result[0]));
+  });
 });

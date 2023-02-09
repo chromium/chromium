@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, Mouse, MouseObserverInterface, PointingStick, PointingStickObserverInterface, Touchpad, TouchpadObserverInterface} from './input_device_settings_types.js';
+import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, Touchpad, TouchpadObserverInterface} from './input_device_settings_types.js';
 
 /**
  * @fileoverview
@@ -124,6 +124,16 @@ export class FakeInputDeviceSettingsProvider implements
       }
     }
     this.methods.setResult('fakeKeyboards', keyboards);
+  }
+
+  setMouseSettings(id: number, settings: MouseSettings): void {
+    const mice = this.methods.getResult('fakeMice');
+    for (const mouse of mice) {
+      if (mouse.id === id) {
+        mouse.settings = settings;
+      }
+    }
+    this.methods.setResult('fakeMice', mice);
   }
 
   observeKeyboardSettings(_observer: KeyboardObserverInterface): void {

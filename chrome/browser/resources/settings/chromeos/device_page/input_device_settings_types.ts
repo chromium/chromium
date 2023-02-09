@@ -144,4 +144,5 @@ export interface InputDeviceSettingsProviderInterface {
   observePointingStickSettings(observer: PointingStickObserverInterface): void;
   getConnectedPointingStickSettings(): Promise<PointingStick[]>;
   setKeyboardSettings(id: number, settings: KeyboardSettings): void;
+  setMouseSettings(id: number, settings: MouseSettings): void;
 }
