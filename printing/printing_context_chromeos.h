@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "printing/backend/cups_connection.h"
-#include "printing/backend/cups_deleters.h"
+#include "printing/backend/cups_ipp_helper.h"
 #include "printing/backend/cups_printer.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/printing_context.h"
@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextChromeos
 
   const std::unique_ptr<CupsConnection> connection_;
   std::unique_ptr<CupsPrinter> printer_;
-  std::vector<ScopedCupsOption> cups_options_;
+  ScopedIppPtr ipp_options_;
   bool send_user_info_ = false;
   std::string username_;
 };
@@ -67,8 +67,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextChromeos
 // This has the side effect of recording UMA for advanced attributes usage,
 // so only call once per job.
 COMPONENT_EXPORT(PRINTING)
-std::vector<ScopedCupsOption> SettingsToCupsOptions(
-    const PrintSettings& settings);
+ScopedIppPtr SettingsToIPPOptions(const PrintSettings& settings);
 
 }  // namespace printing
 

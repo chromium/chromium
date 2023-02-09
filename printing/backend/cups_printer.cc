@@ -15,9 +15,11 @@
 #include "build/build_config.h"
 #include "printing/backend/cups_connection.h"
 #include "printing/backend/cups_ipp_constants.h"
+#include "printing/backend/cups_ipp_helper.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/print_job_constants.h"
+#include "url/gurl.h"
 
 namespace printing {
 
@@ -27,6 +29,11 @@ class CupsPrinterImpl : public CupsPrinter {
       : cups_http_(http), destination_(std::move(dest)) {
     DCHECK(cups_http_);
     DCHECK(destination_);
+
+    printer_uri_ = cupsGetOption(kCUPSOptPrinterUriSupported,
+                                 destination_.get()->num_options,
+                                 destination_.get()->options);
+    resource_path_ = std::string(GURL(printer_uri_).path_piece());
   }
 
   CupsPrinterImpl(const CupsPrinterImpl&) = delete;
@@ -172,40 +179,56 @@ class CupsPrinterImpl : public CupsPrinter {
   ipp_status_t CreateJob(int* job_id,
                          const std::string& title,
                          const std::string& username,
-                         const std::vector<cups_option_t>& options) override {
-    DCHECK(dest_info_) << "Verify availability before starting a print job";
+                         ipp_t* attributes) override {
+    ScopedIppPtr request = CreateRequest(IPP_OP_CREATE_JOB, username);
 
-    cups_option_t* data = const_cast<cups_option_t*>(
-        options.data());  // createDestJob will not modify the data
-    if (!username.empty())
-      cupsSetUser(username.c_str());
+    if (!title.empty()) {
+      ippAddString(request.get(), IPP_TAG_OPERATION, IPP_TAG_NAME, kIppJobName,
+                   nullptr, title.c_str());
+    }
 
-    ipp_status_t create_status = cupsCreateDestJob(
-        cups_http_, destination_.get(), dest_info_.get(), job_id,
-        title.empty() ? nullptr : title.c_str(), options.size(), data);
-    cupsSetUser(nullptr);  // reset to default username ("anonymous")
-    return create_status;
+    CopyAttributeGroup(request.get(), attributes, IPP_TAG_OPERATION);
+    CopyAttributeGroup(request.get(), attributes, IPP_TAG_JOB);
+    // We would also copy subscription attributes here if we actually used
+    // any. We don't, though.
+
+    // cupsDoRequest() takes ownership of the request and frees it for us.
+    ScopedIppPtr response = WrapIpp(
+        cupsDoRequest(cups_http_, request.release(), resource_path_.c_str()));
+
+    ipp_attribute_t* attr =
+        ippFindAttribute(response.get(), kIppJobId, IPP_TAG_INTEGER);
+    *job_id = ippGetInteger(attr, 0);
+
+    return ippGetStatusCode(response.get());
   }
 
   bool StartDocument(int job_id,
                      const std::string& docname,
                      bool last_document,
                      const std::string& username,
-                     const std::vector<cups_option_t>& options) override {
-    DCHECK(dest_info_);
+                     ipp_t* attributes) override {
     DCHECK(job_id);
-    if (!username.empty())
-      cupsSetUser(username.c_str());
+    ScopedIppPtr request = CreateRequest(IPP_OP_SEND_DOCUMENT, username);
 
-    cups_option_t* data = const_cast<cups_option_t*>(
-        options.data());  // createStartDestDocument will not modify the data
-    http_status_t start_doc_status = cupsStartDestDocument(
-        cups_http_, destination_.get(), dest_info_.get(), job_id,
-        docname.empty() ? nullptr : docname.c_str(), CUPS_FORMAT_PDF,
-        options.size(), data, last_document ? 1 : 0);
+    ippAddInteger(request.get(), IPP_TAG_OPERATION, IPP_TAG_INTEGER, kIppJobId,
+                  job_id);
+    ippAddBoolean(request.get(), IPP_TAG_OPERATION, kIppLastDocument,
+                  static_cast<char>(last_document));
+    ippAddString(request.get(), IPP_TAG_OPERATION, IPP_TAG_MIMETYPE,
+                 kIppDocumentFormat, nullptr, CUPS_FORMAT_PDF);
+    if (!docname.empty()) {
+      ippAddString(request.get(), IPP_TAG_OPERATION, IPP_TAG_NAME,
+                   kIppDocumentName, nullptr, docname.c_str());
+    }
 
-    cupsSetUser(nullptr);  // reset to default username ("anonymous")
-    return start_doc_status == HTTP_CONTINUE;
+    CopyAttributeGroup(request.get(), attributes, IPP_TAG_OPERATION);
+    CopyAttributeGroup(request.get(), attributes, IPP_TAG_DOCUMENT);
+
+    http_status_t status =
+        cupsSendRequest(cups_http_, request.get(), resource_path_.c_str(),
+                        CUPS_LENGTH_VARIABLE);
+    return status == HTTP_CONTINUE;
   }
 
   bool StreamData(const std::vector<char>& buffer) override {
@@ -215,24 +238,22 @@ class CupsPrinterImpl : public CupsPrinter {
   }
 
   bool FinishDocument() override {
-    DCHECK(dest_info_);
-
-    ipp_status_t status = cupsFinishDestDocument(cups_http_, destination_.get(),
-                                                 dest_info_.get());
-
+    ScopedIppPtr response =
+        WrapIpp(cupsGetResponse(cups_http_, resource_path_.c_str()));
+    ipp_status_t status = ippGetStatusCode(response.get());
     return status == IPP_STATUS_OK;
   }
 
   ipp_status_t CloseJob(int job_id, const std::string& username) override {
-    DCHECK(dest_info_);
     DCHECK(job_id);
-    if (!username.empty())
-      cupsSetUser(username.c_str());
+    ScopedIppPtr request = CreateRequest(IPP_OP_CLOSE_JOB, username);
 
-    ipp_status_t result = cupsCloseDestJob(cups_http_, destination_.get(),
-                                           dest_info_.get(), job_id);
-    cupsSetUser(nullptr);  // reset to default username ("anonymous")
-    return result;
+    ippAddInteger(request.get(), IPP_TAG_OPERATION, IPP_TAG_INTEGER, kIppJobId,
+                  job_id);
+
+    ScopedIppPtr response = WrapIpp(
+        cupsDoRequest(cups_http_, request.release(), resource_path_.c_str()));
+    return ippGetStatusCode(response.get());
   }
 
   bool CancelJob(int job_id) override {
@@ -258,6 +279,29 @@ class CupsPrinterImpl : public CupsPrinter {
   }
 
  private:
+  // internal helper function to initialize an IPP request
+  ScopedIppPtr CreateRequest(ipp_op_t op, const std::string& username) {
+    const char* c_username = username.empty() ? cupsUser() : username.c_str();
+
+    ipp_t* request = ippNewRequest(op);
+    ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_URI, kIppPrinterUri,
+                 nullptr, printer_uri_.c_str());
+    ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_NAME,
+                 kIppRequestingUserName, nullptr, c_username);
+
+    return WrapIpp(request);
+  }
+
+  // internal helper function to copy attributes to an IPP request
+  void CopyAttributeGroup(ipp_t* request, ipp_t* attributes, ipp_tag_t group) {
+    for (ipp_attribute_t* attr = ippFirstAttribute(attributes); attr;
+         attr = ippNextAttribute(attributes)) {
+      if (ippGetGroupTag(attr) == group) {
+        ippCopyAttribute(request, attr, 0);
+      }
+    }
+  }
+
   // http connection owned by the CupsConnection which created this object
   const raw_ptr<http_t> cups_http_;
 
@@ -266,6 +310,12 @@ class CupsPrinterImpl : public CupsPrinter {
 
   // opaque object containing printer attributes and options
   mutable ScopedDestInfo dest_info_;
+
+  // uri used to connect to this printer
+  std::string printer_uri_;
+
+  // resource path used to connect to this printer
+  std::string resource_path_;
 };
 
 std::unique_ptr<CupsPrinter> CupsPrinter::Create(http_t* http,

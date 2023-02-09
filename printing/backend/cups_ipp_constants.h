@@ -10,16 +10,24 @@
 
 namespace printing {
 
-// property names
+// operation attributes
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppDocumentFormat[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppDocumentName[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppJobId[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppJobName[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppLastDocument[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppPin[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppPinEncryption[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppPrinterUri[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppRequestingUserName[];
+
+// job attributes
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppCollate[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppCopies[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppColor[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppMedia[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppDuplex[];
-COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppRequestingUserName[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppResolution[];
-COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppPin[];
-COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppPinEncryption[];
 
 // collation values
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCollated[];

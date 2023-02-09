@@ -5,11 +5,9 @@
 #ifndef PRINTING_CLIENT_INFO_HELPERS_H_
 #define PRINTING_CLIENT_INFO_HELPERS_H_
 
-#include <string>
-
+#include <cstddef>
 #include "base/component_export.h"
 #include "printing/mojom/print.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
 
@@ -19,15 +17,13 @@ inline constexpr size_t kClientInfoMaxPatchesLength = 255;
 inline constexpr size_t kClientInfoMaxStringVersionLength = 127;
 inline constexpr size_t kClientInfoMaxVersionLength = 64;
 
-// Returns the string representation of `client_info` in a format suitable for
-// use as a `cups_option_t` value, or absl::nullopt if `client_info` is invalid.
-// `client_info` represents one value of the 'client-info' multi-valued IPP
-// attribute. `client_info` is considered valid if all string members match the
-// regex [a-zA-Z0-9_.-]* and do not exceed the maximum length specified for the
-// respective IPP member attribute.
+// Returns true if all members of `client_info` are valid.
+// String members are considered valid if they match the regex [a-zA-Z0-9_.-]*
+// and do not exceed the maximum length specified for the respective IPP member
+// attribute. The `client_type` member is valid if it is equal to one of the
+// enum values defined for the `client-type` IPP attribute.
 COMPONENT_EXPORT(PRINTING)
-absl::optional<std::string> ClientInfoCollectionToCupsOptionValue(
-    const mojom::IppClientInfo& client_info);
+bool ValidateClientInfoItem(const mojom::IppClientInfo& client_info);
 
 }  // namespace printing
 

@@ -94,18 +94,19 @@ class COMPONENT_EXPORT(PRINT_BACKEND) CupsPrinter : public CupsOptionProvider {
   virtual ipp_status_t CreateJob(int* job_id,
                                  const std::string& title,
                                  const std::string& username,
-                                 const std::vector<cups_option_t>& options) = 0;
+                                 ipp_t* attributes) = 0;
 
   // Add a document to a print job.  `job_id` must be non-zero and refer to a
   // job started with CreateJob.  `docname` will be displayed in print status
   // if not empty.  `last_doc` should be true if this is the last document for
-  // this print job.  `username` is not sent if empty.  `options` should be IPP
-  // key value pairs for the Send-Document operation.
+  // this print job.  `username` is not sent if empty.  `attributes` should
+  // contain IPP operation and document attributes for the Send-Document
+  // operation.
   virtual bool StartDocument(int job_id,
                              const std::string& docname,
                              bool last_doc,
                              const std::string& username,
-                             const std::vector<cups_option_t>& options) = 0;
+                             ipp_t* attributes) = 0;
 
   // Add data to the current document started by StartDocument.  Calling this
   // without a started document will fail.

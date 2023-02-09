@@ -78,34 +78,69 @@ class PrintingContextTest : public testing::Test,
     printing_context_->UpdatePrintSettingsFromPOD(std::move(settings));
   }
 
-  void TestCupsOptionValue(const char* option_name,
-                           const char* expected_option_value) const {
-    DCHECK(option_name);
-    auto cups_options = SettingsToCupsOptions(settings_);
-    const char* ret = nullptr;
-    for (const auto& option : cups_options) {
-      EXPECT_TRUE(option->name);
-      EXPECT_TRUE(option->value);
-      if (option->name && !strcmp(option_name, option->name)) {
+  ipp_attribute_t* GetAttribute(ipp_t* attributes,
+                                const char* attr_name) const {
+    DCHECK(attr_name);
+    ipp_attribute_t* ret = nullptr;
+    for (ipp_attribute_t* attr = ippFirstAttribute(attributes); attr;
+         attr = ippNextAttribute(attributes)) {
+      const char* name = ippGetName(attr);
+      if (name && !strcmp(attr_name, name)) {
         EXPECT_EQ(nullptr, ret)
-            << "Multiple options with name " << option_name << " found.";
-        ret = option->value;
+            << "Multiple attributes with name " << attr_name << " found.";
+        ret = attr;
       }
     }
-    EXPECT_STREQ(expected_option_value, ret);
+    EXPECT_TRUE(ret);
+    return ret;
   }
 
-  absl::optional<std::string> GetCupsOptionValue(
-      const char* option_name) const {
-    DCHECK(option_name);
-    auto cups_options = SettingsToCupsOptions(settings_);
-    absl::optional<std::string> ret;
-    for (const auto& option : cups_options) {
-      if (option->name && !strcmp(option_name, option->name)) {
-        ret = std::string(option->value);
-      }
-    }
-    return ret;
+  void TestStringOptionValue(const char* attr_name,
+                             const char* expected_value) const {
+    auto attributes = SettingsToIPPOptions(settings_);
+    auto* attr = GetAttribute(attributes.get(), attr_name);
+    EXPECT_STREQ(expected_value, ippGetString(attr, 0, nullptr));
+  }
+
+  void TestIntegerOptionValue(const char* attr_name, int expected_value) const {
+    auto attributes = SettingsToIPPOptions(settings_);
+    auto* attr = GetAttribute(attributes.get(), attr_name);
+    EXPECT_EQ(expected_value, ippGetInteger(attr, 0));
+  }
+
+  void TestOctetStringOptionValue(const char* attr_name,
+                                  base::span<const char> expected_value) const {
+    auto attributes = SettingsToIPPOptions(settings_);
+    auto* attr = GetAttribute(attributes.get(), attr_name);
+    int length;
+    void* value = ippGetOctetString(attr, 0, &length);
+    ASSERT_EQ(expected_value.size(), static_cast<size_t>(length));
+    ASSERT_TRUE(value);
+    EXPECT_EQ(0, memcmp(expected_value.data(), value, expected_value.size()));
+  }
+
+  void TestResolutionOptionValue(const char* attr_name,
+                                 int expected_x_res,
+                                 int expected_y_res) const {
+    auto attributes = SettingsToIPPOptions(settings_);
+    auto* attr = GetAttribute(attributes.get(), attr_name);
+    ipp_res_t unit;
+    int y_res;
+    int x_res = ippGetResolution(attr, 0, &y_res, &unit);
+    EXPECT_EQ(unit, IPP_RES_PER_INCH);
+    EXPECT_EQ(expected_x_res, x_res);
+    EXPECT_EQ(expected_y_res, y_res);
+  }
+
+  bool HasAttribute(const char* attr_name) const {
+    auto attributes = SettingsToIPPOptions(settings_);
+    return !!ippFindAttribute(attributes.get(), attr_name, IPP_TAG_ZERO);
+  }
+
+  int GetAttrValueCount(const char* attr_name) const {
+    auto attributes = SettingsToIPPOptions(settings_);
+    auto* attr = GetAttribute(attributes.get(), attr_name);
+    return ippGetCount(attr);
   }
 
   TestPrintSettings settings_;
@@ -118,59 +153,59 @@ class PrintingContextTest : public testing::Test,
   raw_ptr<MockCupsPrinter> printer_;
 };
 
-TEST_F(PrintingContextTest, SettingsToCupsOptions_Color) {
+TEST_F(PrintingContextTest, SettingsToIPPOptions_Color) {
   settings_.set_color(mojom::ColorModel::kGray);
-  TestCupsOptionValue(kIppColor, "monochrome");
+  TestStringOptionValue(kIppColor, "monochrome");
   settings_.set_color(mojom::ColorModel::kColor);
-  TestCupsOptionValue(kIppColor, "color");
+  TestStringOptionValue(kIppColor, "color");
 }
 
-TEST_F(PrintingContextTest, SettingsToCupsOptions_Duplex) {
+TEST_F(PrintingContextTest, SettingsToIPPOptions_Duplex) {
   settings_.set_duplex_mode(mojom::DuplexMode::kSimplex);
-  TestCupsOptionValue(kIppDuplex, "one-sided");
+  TestStringOptionValue(kIppDuplex, "one-sided");
   settings_.set_duplex_mode(mojom::DuplexMode::kLongEdge);
-  TestCupsOptionValue(kIppDuplex, "two-sided-long-edge");
+  TestStringOptionValue(kIppDuplex, "two-sided-long-edge");
   settings_.set_duplex_mode(mojom::DuplexMode::kShortEdge);
-  TestCupsOptionValue(kIppDuplex, "two-sided-short-edge");
+  TestStringOptionValue(kIppDuplex, "two-sided-short-edge");
 }
 
-TEST_F(PrintingContextTest, SettingsToCupsOptions_Media) {
-  TestCupsOptionValue(kIppMedia, "");
+TEST_F(PrintingContextTest, SettingsToIPPOptions_Media) {
+  TestStringOptionValue(kIppMedia, "");
   settings_.set_requested_media(
       {gfx::Size(297000, 420000), "iso_a3_297x420mm"});
-  TestCupsOptionValue(kIppMedia, "iso_a3_297x420mm");
+  TestStringOptionValue(kIppMedia, "iso_a3_297x420mm");
 }
 
-TEST_F(PrintingContextTest, SettingsToCupsOptions_Copies) {
+TEST_F(PrintingContextTest, SettingsToIPPOptions_Copies) {
   settings_.set_copies(3);
-  TestCupsOptionValue(kIppCopies, "3");
+  TestIntegerOptionValue(kIppCopies, 3);
 }
 
-TEST_F(PrintingContextTest, SettingsToCupsOptions_Collate) {
-  TestCupsOptionValue(kIppCollate, "separate-documents-uncollated-copies");
+TEST_F(PrintingContextTest, SettingsToIPPOptions_Collate) {
+  TestStringOptionValue(kIppCollate, "separate-documents-uncollated-copies");
   settings_.set_collate(true);
-  TestCupsOptionValue(kIppCollate, "separate-documents-collated-copies");
+  TestStringOptionValue(kIppCollate, "separate-documents-collated-copies");
 }
 
-TEST_F(PrintingContextTest, SettingsToCupsOptions_Pin) {
-  TestCupsOptionValue(kIppPin, nullptr);
+TEST_F(PrintingContextTest, SettingsToIPPOptions_Pin) {
+  EXPECT_FALSE(HasAttribute(kIppPin));
   settings_.set_pin_value("1234");
-  TestCupsOptionValue(kIppPin, "1234");
+  TestOctetStringOptionValue(kIppPin, base::make_span("1234", 4u));
 }
 
-TEST_F(PrintingContextTest, SettingsToCupsOptions_Resolution) {
-  TestCupsOptionValue(kIppResolution, nullptr);
+TEST_F(PrintingContextTest, SettingsToIPPOptions_Resolution) {
+  EXPECT_FALSE(HasAttribute(kIppResolution));
   settings_.set_dpi_xy(0, 300);
-  TestCupsOptionValue(kIppResolution, nullptr);
+  EXPECT_FALSE(HasAttribute(kIppResolution));
   settings_.set_dpi_xy(300, 0);
-  TestCupsOptionValue(kIppResolution, nullptr);
+  EXPECT_FALSE(HasAttribute(kIppResolution));
   settings_.set_dpi(600);
-  TestCupsOptionValue(kIppResolution, "600dpi");
+  TestResolutionOptionValue(kIppResolution, 600, 600);
   settings_.set_dpi_xy(600, 1200);
-  TestCupsOptionValue(kIppResolution, "600x1200dpi");
+  TestResolutionOptionValue(kIppResolution, 600, 1200);
 }
 
-TEST_F(PrintingContextTest, SettingsToCupsOptions_SendUserInfo_Secure) {
+TEST_F(PrintingContextTest, SettingsToIPPOptions_SendUserInfo_Secure) {
   ipp_status_t status = ipp_status_t::IPP_STATUS_OK;
   std::u16string document_name = kDocumentName16;
   SetDefaultSettings(/*send_user_info=*/true, "ipps://test-uri");
@@ -194,7 +229,7 @@ TEST_F(PrintingContextTest, SettingsToCupsOptions_SendUserInfo_Secure) {
   EXPECT_EQ(start_document_username, kUsername);
 }
 
-TEST_F(PrintingContextTest, SettingsToCupsOptions_SendUserInfo_Insecure) {
+TEST_F(PrintingContextTest, SettingsToIPPOptions_SendUserInfo_Insecure) {
   ipp_status_t status = ipp_status_t::IPP_STATUS_OK;
   std::u16string document_name = kDocumentName16;
   std::string default_username = "chronos";
@@ -220,7 +255,7 @@ TEST_F(PrintingContextTest, SettingsToCupsOptions_SendUserInfo_Insecure) {
   EXPECT_EQ(start_document_username, default_username);
 }
 
-TEST_F(PrintingContextTest, SettingsToCupsOptions_DoNotSendUserInfo) {
+TEST_F(PrintingContextTest, SettingsToIPPOptions_DoNotSendUserInfo) {
   ipp_status_t status = ipp_status_t::IPP_STATUS_OK;
   std::u16string document_name = kDocumentName16;
   SetDefaultSettings(/*send_user_info=*/false, "ipps://test-uri");
@@ -244,7 +279,41 @@ TEST_F(PrintingContextTest, SettingsToCupsOptions_DoNotSendUserInfo) {
   EXPECT_EQ(start_document_username, "");
 }
 
-TEST_F(PrintingContextTest, SettingsToCupsOptionsClientInfo) {
+TEST_F(PrintingContextTest, SettingsToIPPOptionsClientInfo) {
+  mojom::IppClientInfo client_info(
+      mojom::IppClientInfo::ClientType::kOperatingSystem, "a-", "B_", "1.",
+      "a.1-B_");
+  settings_.set_client_infos({client_info});
+
+  auto attributes = SettingsToIPPOptions(settings_);
+  auto* attr = ippFindAttribute(attributes.get(), kIppClientInfo,
+                                IPP_TAG_BEGIN_COLLECTION);
+  auto* client_info_collection = ippGetCollection(attr, 0);
+
+  attr = ippFindAttribute(client_info_collection, kIppClientName, IPP_TAG_NAME);
+  EXPECT_STREQ("a-", ippGetString(attr, 0, nullptr));
+
+  attr = ippFindAttribute(client_info_collection, kIppClientType, IPP_TAG_ENUM);
+  EXPECT_EQ(4, ippGetInteger(attr, 0));
+
+  attr =
+      ippFindAttribute(client_info_collection, kIppClientPatches, IPP_TAG_TEXT);
+  EXPECT_STREQ("B_", ippGetString(attr, 0, nullptr));
+
+  attr = ippFindAttribute(client_info_collection, kIppClientStringVersion,
+                          IPP_TAG_TEXT);
+  EXPECT_STREQ("1.", ippGetString(attr, 0, nullptr));
+
+  attr = ippFindAttribute(client_info_collection, kIppClientVersion,
+                          IPP_TAG_STRING);
+  int length;
+  void* version = ippGetOctetString(attr, 0, &length);
+  ASSERT_TRUE(version);
+  EXPECT_EQ(6, length);
+  EXPECT_EQ(0, memcmp("a.1-B_", version, 6));
+}
+
+TEST_F(PrintingContextTest, SettingsToIPPOptionsClientInfoSomeValid) {
   mojom::IppClientInfo valid_client_info(
       mojom::IppClientInfo::ClientType::kOperatingSystem, "aB.1-_", "aB.1-_",
       "aB.1-_", "aB.1-_");
@@ -253,28 +322,22 @@ TEST_F(PrintingContextTest, SettingsToCupsOptionsClientInfo) {
       "aB.1-_", "aB.1-_");
   settings_.set_client_infos(
       {valid_client_info, invalid_client_info, valid_client_info});
-  absl::optional<std::string> option_val = GetCupsOptionValue(kIppClientInfo);
-  ASSERT_TRUE(option_val.has_value());
 
-  // Check that the invalid item is skipped in the CUPS option string.
-  size_t client_info_item_count =
-      base::SplitString(option_val.value(), ",", base::KEEP_WHITESPACE,
-                        base::SPLIT_WANT_ALL)
-          .size();
-  EXPECT_EQ(client_info_item_count, 2u);
+  // Check that the invalid item is skipped in the client-info collection.
+  EXPECT_EQ(GetAttrValueCount(kIppClientInfo), 2);
 }
 
-TEST_F(PrintingContextTest, SettingsToCupsOptionsClientInfoEmpty) {
+TEST_F(PrintingContextTest, SettingsToIPPOptionsClientInfoEmpty) {
   settings_.set_client_infos({});
-  absl::optional<std::string> option_val = GetCupsOptionValue(kIppClientInfo);
-  EXPECT_FALSE(option_val.has_value());
+  EXPECT_FALSE(HasAttribute(kIppClientInfo));
 
   mojom::IppClientInfo invalid_client_info(
       mojom::IppClientInfo::ClientType::kOther, "$", " ", "{}", absl::nullopt);
 
   settings_.set_client_infos({invalid_client_info});
-  EXPECT_FALSE(GetCupsOptionValue(kIppClientInfo).has_value());
+  EXPECT_FALSE(HasAttribute(kIppClientInfo));
 }
+
 }  // namespace
 
 }  // namespace printing

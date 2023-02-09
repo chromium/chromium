@@ -25,3 +25,4 @@ const char kCUPSOptPrinterLocation[] = "printer-location";
 const char kCUPSOptPrinterMakeAndModel[] = "printer-make-and-model";
 const char kCUPSOptPrinterState[] = "printer-state";
 const char kCUPSOptPrinterType[] = "printer-type";
+const char kCUPSOptPrinterUriSupported[] = "printer-uri-supported";

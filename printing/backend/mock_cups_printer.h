@@ -27,13 +27,13 @@ class MockCupsPrinter : public CupsPrinter {
                ipp_status_t(int* job_id,
                             const std::string& title,
                             const std::string& username,
-                            const std::vector<cups_option_t>& options));
+                            ipp_t* attributes));
   MOCK_METHOD5(StartDocument,
                bool(int job_id,
                     const std::string& docname,
                     bool last_doc,
                     const std::string& username,
-                    const std::vector<cups_option_t>& options));
+                    ipp_t* attributes));
   MOCK_METHOD1(StreamData, bool(const std::vector<char>& buffer));
   MOCK_METHOD0(FinishDocument, bool());
   MOCK_METHOD2(CloseJob, ipp_status_t(int job_id, const std::string& username));

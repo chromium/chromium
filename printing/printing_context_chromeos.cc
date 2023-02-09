@@ -46,37 +46,54 @@ bool IsUriSecure(base::StringPiece uri) {
          base::StartsWith(uri, "usb:") || base::StartsWith(uri, "ippusb:");
 }
 
-// Returns the string representation of `client_infos` in a format suitable to
-// be used as a `cups_option_t` value.
-// `client_infos` represents the 'client-info' IPP attribute. Each item in
-// `client_infos` represents one collection in 'client-info'.
+// Populates the 'client-info' attribute of the IPP collection `options`. Each
+// item in `client_infos` represents one collection in 'client-info'.
 // Invalid 'client-info' items will be dropped.
-std::string ClientInfoToCupsOptionValue(
-    const std::vector<mojom::IppClientInfo>& client_infos) {
-  // String representation for each client-info item.
-  std::vector<std::string> option_values;
+void EncodeClientInfo(const std::vector<mojom::IppClientInfo>& client_infos,
+                      ipp_t* options) {
+  std::vector<ScopedIppPtr> option_values;
+  std::vector<const ipp_t*> raw_option_values;
   option_values.reserve(client_infos.size());
+  raw_option_values.reserve(client_infos.size());
+
   for (const mojom::IppClientInfo& client_info : client_infos) {
-    if (auto option_value =
-            ClientInfoCollectionToCupsOptionValue(client_info)) {
-      option_values.emplace_back(option_value.value());
-    } else {
+    if (!ValidateClientInfoItem(client_info)) {
       LOG(WARNING) << "Invalid client-info item skipped";
+      continue;
+    }
+
+    // Create a temporary collection object owned by this function.
+    ipp_t* collection = ippNew();
+    option_values.emplace_back(WrapIpp(collection));
+    raw_option_values.emplace_back(collection);
+
+    ippAddString(collection, IPP_TAG_ZERO, IPP_TAG_NAME, kIppClientName,
+                 nullptr, client_info.client_name.c_str());
+    ippAddInteger(collection, IPP_TAG_ZERO, IPP_TAG_ENUM, kIppClientType,
+                  static_cast<int>(client_info.client_type));
+    ippAddString(collection, IPP_TAG_ZERO, IPP_TAG_TEXT,
+                 kIppClientStringVersion, nullptr,
+                 client_info.client_string_version.c_str());
+
+    if (client_info.client_version.has_value()) {
+      ippAddOctetString(collection, IPP_TAG_ZERO, kIppClientVersion,
+                        client_info.client_version.value().data(),
+                        client_info.client_version.value().size());
+    }
+
+    if (client_info.client_patches.has_value()) {
+      ippAddString(collection, IPP_TAG_ZERO, IPP_TAG_TEXT, kIppClientPatches,
+                   nullptr, client_info.client_patches.value().c_str());
     }
   }
-  return base::JoinString(option_values, ",");
-}
 
-ScopedCupsOption ConstructOption(std::string name, std::string value) {
-  // ScopedCupsOption frees the name and value buffers on deletion
-  cups_option_t* cups_option = nullptr;
-  int num_options = 0;
-  // Use cupsAddOption so that the pair of malloc and free are used.
-  num_options =
-      cupsAddOption(name.c_str(), value.c_str(), num_options, &cups_option);
-  DCHECK(cups_option);
-  DCHECK_EQ(num_options, 1);
-  return ScopedCupsOption(cups_option);
+  if (raw_option_values.empty()) {
+    return;
+  }
+
+  // Now add the client-info list to the options.
+  ippAddCollections(options, IPP_TAG_OPERATION, kIppClientInfo,
+                    raw_option_values.size(), raw_option_values.data());
 }
 
 std::string GetCollateString(bool collate) {
@@ -137,8 +154,10 @@ void SetPrintableArea(PrintSettings* settings,
 
 }  // namespace
 
-std::vector<ScopedCupsOption> SettingsToCupsOptions(
-    const PrintSettings& settings) {
+ScopedIppPtr SettingsToIPPOptions(const PrintSettings& settings) {
+  ScopedIppPtr scoped_options = WrapIpp(ippNew());
+  ipp_t* options = scoped_options.get();
+
   const char* sides = nullptr;
   switch (settings.duplex_mode()) {
     case mojom::DuplexMode::kSimplex:
@@ -154,33 +173,36 @@ std::vector<ScopedCupsOption> SettingsToCupsOptions(
       NOTREACHED();
   }
 
-  std::vector<ScopedCupsOption> options;
-  options.push_back(
-      ConstructOption(kIppColor,
-                      GetIppColorModelForModel(settings.color())));  // color
-  options.push_back(ConstructOption(kIppDuplex, sides));  // duplexing
-  options.push_back(
-      ConstructOption(kIppMedia,
-                      settings.requested_media().vendor_id));  // paper size
-  options.push_back(
-      ConstructOption(kIppCopies,
-                      base::NumberToString(settings.copies())));  // copies
-  options.push_back(
-      ConstructOption(kIppCollate,
-                      GetCollateString(settings.collate())));  // collate
+  // duplexing
+  ippAddString(options, IPP_TAG_JOB, IPP_TAG_KEYWORD, kIppDuplex, nullptr,
+               sides);
+  // color
+  ippAddString(options, IPP_TAG_JOB, IPP_TAG_KEYWORD, kIppColor, nullptr,
+               GetIppColorModelForModel(settings.color()).c_str());
+  // paper size
+  ippAddString(options, IPP_TAG_JOB, IPP_TAG_KEYWORD, kIppMedia, nullptr,
+               settings.requested_media().vendor_id.c_str());
+  // copies
+  ippAddInteger(options, IPP_TAG_JOB, IPP_TAG_INTEGER, kIppCopies,
+                settings.copies());
+  // collate
+  ippAddString(options, IPP_TAG_JOB, IPP_TAG_KEYWORD, kIppCollate, nullptr,
+               GetCollateString(settings.collate()).c_str());
+
   if (!settings.pin_value().empty()) {
-    options.push_back(ConstructOption(kIppPin, settings.pin_value()));
-    options.push_back(ConstructOption(kIppPinEncryption, kPinEncryptionNone));
+    ippAddOctetString(options, IPP_TAG_OPERATION, kIppPin,
+                      settings.pin_value().data(), settings.pin_value().size());
+    ippAddString(options, IPP_TAG_OPERATION, IPP_TAG_KEYWORD, kIppPinEncryption,
+                 nullptr, kPinEncryptionNone);
   }
 
+  // resolution
   if (settings.dpi_horizontal() > 0 && settings.dpi_vertical() > 0) {
-    std::string dpi = base::NumberToString(settings.dpi_horizontal());
-    if (settings.dpi_horizontal() != settings.dpi_vertical())
-      dpi += "x" + base::NumberToString(settings.dpi_vertical());
-    options.push_back(ConstructOption(kIppResolution, dpi + "dpi"));
+    ippAddResolution(options, IPP_TAG_JOB, kIppResolution, IPP_RES_PER_INCH,
+                     settings.dpi_horizontal(), settings.dpi_vertical());
   }
 
-  std::map<std::string, std::vector<std::string>> multival;
+  std::map<std::string, std::vector<int>> multival;
   for (const auto& setting : settings.advanced_settings()) {
     const std::string& key = setting.first;
     const std::string& value = setting.second.GetString();
@@ -191,36 +213,39 @@ std::vector<ScopedCupsOption> SettingsToCupsOptions(
     size_t pos = key.find('/');
     if (pos == std::string::npos) {
       // Regular value.
-      options.push_back(ConstructOption(key, value));
+      ippAddString(options, IPP_TAG_JOB, IPP_TAG_KEYWORD, key.c_str(), nullptr,
+                   value.c_str());
       continue;
     }
     // Store selected enum values.
-    if (value == kOptionTrue)
-      multival[key.substr(0, pos)].push_back(key.substr(pos + 1));
+    if (value == kOptionTrue) {
+      std::string option_name = key.substr(0, pos);
+      std::string enum_string = key.substr(pos + 1);
+      int enum_value = ippEnumValue(option_name.c_str(), enum_string.c_str());
+      DCHECK_NE(enum_value, -1);
+      multival[option_name].push_back(enum_value);
+    }
   }
 
-  // Pass multivalue enums as comma-separated lists.
+  // Add multivalue enum options.
   for (const auto& it : multival) {
-    options.push_back(
-        ConstructOption(it.first, base::JoinString(it.second, ",")));
+    ippAddIntegers(options, IPP_TAG_JOB, IPP_TAG_ENUM, it.first.c_str(),
+                   it.second.size(), it.second.data());
   }
 
   // OAuth access token
   if (!settings.oauth_token().empty()) {
-    options.push_back(ConstructOption(kSettingChromeOSAccessOAuthToken,
-                                      settings.oauth_token()));
+    ippAddString(options, IPP_TAG_JOB, IPP_TAG_NAME,
+                 kSettingChromeOSAccessOAuthToken, nullptr,
+                 settings.oauth_token().c_str());
   }
 
   // IPP client-info attribute.
   if (!settings.client_infos().empty()) {
-    std::string option_value =
-        ClientInfoToCupsOptionValue(settings.client_infos());
-    if (!option_value.empty()) {
-      options.push_back(ConstructOption(kIppClientInfo, option_value));
-    }
+    EncodeClientInfo(settings.client_infos(), options);
   }
 
-  return options;
+  return scoped_options;
 }
 
 // static
@@ -247,12 +272,15 @@ PrintingContextChromeos::CreateForTesting(
 
 PrintingContextChromeos::PrintingContextChromeos(Delegate* delegate)
     : PrintingContext(delegate),
-      connection_(CupsConnection::Create(GURL(), HTTP_ENCRYPT_NEVER, true)) {}
+      connection_(CupsConnection::Create(GURL(), HTTP_ENCRYPT_NEVER, true)),
+      ipp_options_(WrapIpp(nullptr)) {}
 
 PrintingContextChromeos::PrintingContextChromeos(
     Delegate* delegate,
     std::unique_ptr<CupsConnection> connection)
-    : PrintingContext(delegate), connection_(std::move(connection)) {}
+    : PrintingContext(delegate),
+      connection_(std::move(connection)),
+      ipp_options_(WrapIpp(nullptr)) {}
 
 PrintingContextChromeos::~PrintingContextChromeos() {
   ReleaseContext();
@@ -362,7 +390,7 @@ mojom::ResultCode PrintingContextChromeos::UpdatePrinterSettings(
   CupsPrinter::CupsMediaMargins margins =
       printer_->GetMediaMarginsByName(media.vendor_id);
   SetPrintableArea(settings_.get(), media, margins);
-  cups_options_ = SettingsToCupsOptions(*settings_);
+  ipp_options_ = SettingsToIPPOptions(*settings_);
   send_user_info_ = settings_->send_user_info();
   if (send_user_info_) {
     DCHECK(printer_);
@@ -404,18 +432,8 @@ mojom::ResultCode PrintingContextChromeos::NewDocument(
                          : kDocumentNamePlaceholder;
   }
 
-  std::vector<cups_option_t> options;
-  for (const ScopedCupsOption& option : cups_options_) {
-    if (printer_->CheckOptionSupported(option->name, option->value)) {
-      options.push_back(*(option.get()));
-    } else {
-      DVLOG(1) << "Unsupported option skipped " << option->name << ", "
-               << option->value;
-    }
-  }
-
-  ipp_status_t create_status =
-      printer_->CreateJob(&job_id_, converted_name, username_, options);
+  ipp_status_t create_status = printer_->CreateJob(
+      &job_id_, converted_name, username_, ipp_options_.get());
 
   if (job_id_ == 0) {
     DLOG(WARNING) << "Creating cups job failed"
@@ -425,7 +443,7 @@ mojom::ResultCode PrintingContextChromeos::NewDocument(
 
   // we only send one document, so it's always the last one
   if (!printer_->StartDocument(job_id_, converted_name, true, username_,
-                               options)) {
+                               ipp_options_.get())) {
     LOG(ERROR) << "Starting document failed";
     return OnError();
   }
