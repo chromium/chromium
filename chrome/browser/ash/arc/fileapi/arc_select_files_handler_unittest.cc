@@ -208,8 +208,8 @@ TEST_F(ArcSelectFilesHandlerTest, SelectFiles_FileTypeInfo) {
   expected_file_type_info.allowed_paths =
       SelectFileDialog::FileTypeInfo::ANY_PATH;
   std::vector<base::FilePath::StringType> extensions;
-  extensions.push_back("text");
   extensions.push_back("txt");
+  extensions.push_back("text");
   expected_file_type_info.extensions.push_back(extensions);
 
   EXPECT_CALL(
@@ -234,8 +234,8 @@ TEST_F(ArcSelectFilesHandlerTest, SelectFiles_FileTypeInfo_UnknownExtension) {
   expected_file_type_info.allowed_paths =
       SelectFileDialog::FileTypeInfo::ANY_PATH;
   std::vector<base::FilePath::StringType> extensions;
-  extensions.push_back("text");
   extensions.push_back("txt");
+  extensions.push_back("text");
   expected_file_type_info.extensions.push_back(extensions);
   // include_all_files should be enabled when there is unknown MIME type.
   expected_file_type_info.include_all_files = true;

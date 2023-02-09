@@ -153,16 +153,16 @@ void BuildFileTypeInfo(const mojom::SelectFilesRequestPtr& request,
                        ui::SelectFileDialog::FileTypeInfo* file_type_info) {
   file_type_info->allowed_paths = ui::SelectFileDialog::FileTypeInfo::ANY_PATH;
   for (const std::string& mime_type : request->mime_types) {
-    std::vector<base::FilePath::StringType> extensions;
-    net::GetExtensionsForMimeType(mime_type, &extensions);
+    const std::vector<base::FilePath::StringType> extensions =
+        GetExtensionsForArcMimeType(mime_type);
     if (!extensions.empty()) {
       file_type_info->extensions.push_back(extensions);
     }
 
-    // Enable "Select from all files" option if GetExtensionsForMimeType
+    // Enable "Select from all files" option if GetExtensionsForArcMimeType
     // can't find any matching extensions or specified MIME type contains an
-    // asterisk. This is because some extensions used in Android (e.g. .DNG) are
-    // not covered by GetExtensionsForMimeType. (crbug.com/1034874)
+    // asterisk. This is to support extensions that are not covered by
+    // GetExtensionsForArcMimeType. (crbug.com/1034874)
     if (extensions.empty() ||
         base::EndsWith(mime_type, "/*", base::CompareCase::SENSITIVE)) {
       file_type_info->include_all_files = true;
