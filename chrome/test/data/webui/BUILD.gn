@@ -15,10 +15,13 @@ import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/typescript/ts_definitions.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
+
+if (is_chromeos_ash) {
+  import("//tools/typescript/ts_definitions.gni")
+}
 
 if (include_js_tests) {
   js2gtest("interactive_ui_tests_js_webui") {
@@ -375,19 +378,18 @@ if (is_chromeos_ash) {
   }
 }
 
-generate_definitions_js_files = [ "mojo_webui_test_support.js" ]
 if (is_chromeos_ash) {
-  generate_definitions_js_files += [ "chromeos/test_store.js" ]
-}
+  generate_definitions_js_files = [ "chromeos/test_store.js" ]
 
-ts_definitions("generate_definitions") {
-  root_dir = "./"
-  out_dir = "$target_gen_dir/tsc"
-  js_files = generate_definitions_js_files
-  visibility = [ ":build_ts" ]
+  ts_definitions("generate_definitions") {
+    root_dir = "./"
+    out_dir = "$target_gen_dir/tsc"
+    js_files = generate_definitions_js_files
+    visibility = [ ":build_ts" ]
 
-  if (is_chromeos_ash) {
-    extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
+    if (is_chromeos_ash) {
+      extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
+    }
   }
 }
 
@@ -408,6 +410,7 @@ ts_library("build_ts") {
     "mock_timer.ts",
     "mock_timer_test.ts",
     "mocked_metrics_reporter.ts",
+    "mojo_webui_test_support.js",
     "polymer_test_util.ts",
     "test_browser_proxy.ts",
     "test_mock.ts",
@@ -424,10 +427,10 @@ ts_library("build_ts") {
   }
 
   deps = [ "//ui/webui/resources/js:build_ts" ]
-  extra_deps = [ ":generate_definitions" ]
   if (is_chromeos_ash) {
-    extra_deps += [
+    extra_deps = [
       ":copy_checked_in_dts_files",
+      ":generate_definitions",
       "//ash/webui/common/resources:generate_definitions",
     ]
   }
@@ -437,17 +440,17 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/metrics_private.d.ts",
   ]
 
-  # Checked-in .d.ts files.
   if (is_chromeos_ash) {
+    # Checked-in .d.ts files.
     foreach(_file, checked_in_dts_files) {
       definitions += [ "$target_gen_dir/tsc/$_file" ]
     }
-  }
 
-  # Auto-generated .d.ts files.
-  foreach(_file, generate_definitions_js_files) {
-    definitions +=
-        [ "$target_gen_dir/tsc/" + string_replace(_file, ".js", ".d.ts") ]
+    # Auto-generated .d.ts files.
+    foreach(_file, generate_definitions_js_files) {
+      definitions +=
+          [ "$target_gen_dir/tsc/" + string_replace(_file, ".js", ".d.ts") ]
+    }
   }
 }
 
@@ -460,7 +463,6 @@ generate_grd("build_grd") {
   input_files_base_dir = rebase_path(".", "//")
   input_files = [
     "mocha_adapter.js",
-    "mojo_webui_test_support.js",
     "usb_internals_test.js",
 
     "invalidations/invalidations_test.js",

@@ -4,6 +4,7 @@
     "typeRoots": [
         "./../../../../third_party/node/node_modules/@types"
     ],
-    "types": ["chai", "mocha", "trusted-types"]
+    "types": ["chai", "mocha", "trusted-types"],
+    "allowJs": true
   }
 }

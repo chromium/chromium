@@ -5,6 +5,8 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/node/node.gni")
 
+assert(is_chromeos_ash)
+
 template("ts_definitions") {
   node(target_name) {
     script = "//tools/typescript/ts_definitions.py"
