@@ -254,6 +254,16 @@
       "use_remoteexec": true
     }
   },
+  "Windows Cross deterministic": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_remoteexec": true
+    }
+  },
   "ios-simulator reclient scandeps test": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
