@@ -51,4 +51,7 @@ extern const CGFloat kPinnedCellSelectionRingPadding;
 extern const CGFloat kPinnedCellVerticalLayoutInsets;
 extern const CGFloat kPinnedCellHorizontalLayoutInsets;
 
+// Pinned cell title label fader dimensions.
+extern const CGFloat kPinnedCellFaderGradientWidth;
+
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_PINNED_TABS_PINNED_TABS_CONSTANTS_H_

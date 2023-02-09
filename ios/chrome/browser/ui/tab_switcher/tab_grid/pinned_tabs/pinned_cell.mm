@@ -12,7 +12,9 @@
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_animation.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/gradient_view.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -76,6 +78,8 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 // a `header` since there are no top and bottom parts (bars) in the pinned
 // cell.
 @property(nonatomic, weak) UIView* headerView;
+// Gradient view that fades out the trailing part of the title label.
+@property(nonatomic, weak) UIView* titleLabelFader;
 // Snapshot view's top constraint.
 @property(nonatomic, strong) NSLayoutConstraint* snapshotViewTopConstraint;
 // Header view's height constraint.
@@ -87,6 +91,10 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   UIView* _faviconContainerView;
   // View for displaying the favicon.
   UIImageView* _faviconView;
+  // Title label's fader leading constraint.
+  NSLayoutConstraint* _titleLabelFaderLeadingConstraint;
+  // Title label's fader trailing constraint.
+  NSLayoutConstraint* _titleLabelFaderTrailingConstraint;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -107,6 +115,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
     [self setupFaviconContainerView];
     [self setupFaviconView];
     [self setupTitleLabel];
+    [self setupTitleLabelFader];
   }
   return self;
 }
@@ -149,6 +158,8 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 - (void)setTitle:(NSString*)title {
   _titleLabel.text = [title copy];
   self.accessibilityLabel = [title copy];
+
+  [self updateTitleLabelFaderAppearance];
 }
 
 - (UIDragPreviewParameters*)dragPreviewParameters {
@@ -255,7 +266,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 // Sets up the `_faviconContainerView` view.
 - (void)setupFaviconContainerView {
   UIView* faviconContainerView = [[UIView alloc] init];
-  [self.contentView addSubview:faviconContainerView];
+  [_headerView addSubview:faviconContainerView];
 
   faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   faviconContainerView.backgroundColor = UIColor.whiteColor;
@@ -307,24 +318,110 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 // Sets up the title label.
 - (void)setupTitleLabel {
   UILabel* titleLabel = [[UILabel alloc] init];
+  titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  titleLabel.lineBreakMode = NSLineBreakByClipping;
   titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   titleLabel.textColor =
       GetInterfaceStyleDarkColor([UIColor colorNamed:kTextPrimaryColor]);
-  [self.contentView addSubview:titleLabel];
 
-  titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  [_headerView addSubview:titleLabel];
+
   [NSLayoutConstraint activateConstraints:@[
     [titleLabel.leadingAnchor
         constraintEqualToAnchor:_faviconContainerView.trailingAnchor
                        constant:kPinnedCellTitleLeadingPadding],
     [titleLabel.trailingAnchor
-        constraintLessThanOrEqualToAnchor:_headerView.trailingAnchor
-                                 constant:-kPinnedCellHorizontalPadding],
+        constraintEqualToAnchor:_headerView.trailingAnchor
+                       constant:-kPinnedCellHorizontalPadding],
+    [titleLabel.heightAnchor
+        constraintLessThanOrEqualToAnchor:_headerView.heightAnchor],
     [titleLabel.centerYAnchor
         constraintEqualToAnchor:_faviconContainerView.centerYAnchor],
   ]];
 
   _titleLabel = titleLabel;
+}
+
+// Sets up the gradient view that fades out the title label.
+- (void)setupTitleLabelFader {
+  UIColor* backgroundColor = GetInterfaceStyleDarkColor(
+      [UIColor colorNamed:kSecondaryBackgroundColor]);
+
+  UIColor* transparentColor = [backgroundColor colorWithAlphaComponent:0.0f];
+  UIColor* opaqueColor = [backgroundColor colorWithAlphaComponent:1.0f];
+
+  GradientView* gradientView =
+      [[GradientView alloc] initWithStartColor:transparentColor
+                                      endColor:opaqueColor
+                                    startPoint:CGPointMake(0.0f, 0.5f)
+                                      endPoint:CGPointMake(1.0f, 0.5f)];
+  gradientView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_headerView addSubview:gradientView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [gradientView.widthAnchor
+        constraintEqualToConstant:kPinnedCellFaderGradientWidth],
+    [gradientView.heightAnchor
+        constraintEqualToAnchor:_titleLabel.heightAnchor],
+    [gradientView.centerYAnchor
+        constraintEqualToAnchor:_titleLabel.centerYAnchor],
+  ]];
+
+  _titleLabelFaderLeadingConstraint = [gradientView.leadingAnchor
+      constraintEqualToAnchor:_titleLabel.leadingAnchor];
+  _titleLabelFaderTrailingConstraint = [gradientView.trailingAnchor
+      constraintEqualToAnchor:_titleLabel.trailingAnchor];
+
+  _titleLabelFader = gradientView;
+
+  [self updateTitleLabelFaderAppearance];
+}
+
+// Updates the position and direction of the gradient view that fades out the
+// title label.
+- (void)updateTitleLabelFaderAppearance {
+  NSTextAlignment titleTextAligment = [self determineTitleTextAlignment];
+
+  if (UseRTLLayout()) {
+    if (titleTextAligment == NSTextAlignmentLeft) {
+      [_titleLabelFader setTransform:CGAffineTransformMakeScale(1, 1)];
+      _titleLabelFaderTrailingConstraint.active = NO;
+      _titleLabelFaderLeadingConstraint.active = YES;
+    } else {
+      [_titleLabelFader setTransform:CGAffineTransformMakeScale(-1, 1)];
+      _titleLabelFaderLeadingConstraint.active = NO;
+      _titleLabelFaderTrailingConstraint.active = YES;
+    }
+  } else {
+    if (titleTextAligment == NSTextAlignmentLeft) {
+      [_titleLabelFader setTransform:CGAffineTransformMakeScale(1, 1)];
+      _titleLabelFaderLeadingConstraint.active = NO;
+      _titleLabelFaderTrailingConstraint.active = YES;
+    } else {
+      [_titleLabelFader setTransform:CGAffineTransformMakeScale(-1, 1)];
+      _titleLabelFaderTrailingConstraint.active = NO;
+      _titleLabelFaderLeadingConstraint.active = YES;
+    }
+  }
+}
+
+// Determines the aligment of the title text.
+- (NSTextAlignment)determineTitleTextAlignment {
+  return [self bestAlignmentForText:_titleLabel.text];
+}
+
+// Returns the aligment of the provided `text`.
+- (NSTextAlignment)bestAlignmentForText:(NSString*)text {
+  if (text.length) {
+    NSString* lang = CFBridgingRelease(CFStringTokenizerCopyBestStringLanguage(
+        (CFStringRef)text, CFRangeMake(0, text.length)));
+
+    if ([NSLocale characterDirectionForLanguage:lang] ==
+        NSLocaleLanguageDirectionRightToLeft) {
+      return NSTextAlignmentRight;
+    }
+  }
+  return NSTextAlignmentLeft;
 }
 
 @end
@@ -483,6 +580,8 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   self.headerView.backgroundColor =
       [UIColor colorNamed:kSecondaryBackgroundColor];
   self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+
+  self.titleLabelFader.hidden = YES;
 }
 
 // Common logic for the cell animation preparation.

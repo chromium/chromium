@@ -52,3 +52,6 @@ const CGFloat kPinnedCellSelectionRingPadding =
 // Pinned cell collection view layout constraints.
 const CGFloat kPinnedCellVerticalLayoutInsets = 16.0f;
 const CGFloat kPinnedCellHorizontalLayoutInsets = 16.0f;
+
+// Pinned cell title label fader dimensions.
+const CGFloat kPinnedCellFaderGradientWidth = 16.0f;
