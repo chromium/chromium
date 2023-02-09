@@ -1,0 +1,5 @@
+team_email: "follow-dev@chromium.org"
+monorail {
+  # TODO(ellyjones): migrate this to UI>Browser>Follow or something.
+  component: "UI>Browser>Sharing"
+}
