@@ -50,9 +50,13 @@ void LacrosInitializeFeatureListDependentDBus() {
 
 void LacrosShutdownDBus() {
   // Shut down D-Bus clients in reverse order of initialization.
-  if (floss::features::IsFlossEnabled()) {
+
+  // FeatureList is no longer available at this stage. Relying on the actual
+  // Bluetooth DBUS manager properties rather than feature flags.
+  if (floss::FlossDBusManager::IsInitialized()) {
     floss::FlossDBusManager::Shutdown();
-  } else {
+  }
+  if (bluez::BluezDBusManager::IsInitialized()) {
     bluez::BluezDBusManager::Shutdown();
   }
 
