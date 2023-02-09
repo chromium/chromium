@@ -341,6 +341,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
   if (header_value.empty()) {
     attribution_manager_->NotifyFailedSourceRegistration(
         header_value, source_origin, reporting_origin,
+        AttributionSourceType::kNavigation,
         SourceRegistrationError::kInvalidJson);
     return;
   }
@@ -855,7 +856,8 @@ AttributionDataHostManagerImpl::ParseStorableSource(
 
   if (!source.has_value()) {
     attribution_manager_->NotifyFailedSourceRegistration(
-        header_value, source_origin, reporting_origin, source.error());
+        header_value, source_origin, reporting_origin, source_type,
+        source.error());
     attribution_reporting::RecordSourceRegistrationError(source.error());
     return absl::nullopt;
   }

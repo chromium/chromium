@@ -304,6 +304,7 @@ class MockAttributionManager : public AttributionManager {
               (const std::string& header_value,
                const attribution_reporting::SuitableOrigin& source_origin,
                const attribution_reporting::SuitableOrigin& reporting_origin,
+               AttributionSourceType,
                attribution_reporting::mojom::SourceRegistrationError),
               (override));
 
@@ -340,6 +341,7 @@ class MockAttributionManager : public AttributionManager {
       const std::string& header_value,
       const attribution_reporting::SuitableOrigin& source_origin,
       const attribution_reporting::SuitableOrigin& reporting_origin,
+      AttributionSourceType,
       attribution_reporting::mojom::SourceRegistrationError);
   void NotifyDebugReportSent(const AttributionDebugReport&,
                              int status,

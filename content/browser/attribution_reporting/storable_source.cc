@@ -6,14 +6,17 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <utility>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
+#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -33,35 +36,34 @@ StorableSource::StorableSource(
     attribution_reporting::SuitableOrigin source_origin,
     AttributionSourceType source_type,
     bool is_within_fenced_frame)
-    : StorableSource(
-          CommonSourceInfo(
-              reg.source_event_id,
-              std::move(source_origin),
-              std::move(reg.destination),
-              std::move(reporting_origin),
-              source_time,
-              CommonSourceInfo::GetExpiryTime(reg.expiry,
-                                              source_time,
-                                              source_type),
-              reg.event_report_window
-                  ? absl::make_optional(
-                        CommonSourceInfo::GetExpiryTime(reg.event_report_window,
-                                                        source_time,
-                                                        source_type))
-                  : absl::nullopt,
-              reg.aggregatable_report_window
-                  ? absl::make_optional(CommonSourceInfo::GetExpiryTime(
-                        reg.aggregatable_report_window,
-                        source_time,
-                        source_type))
-                  : absl::nullopt,
-              source_type,
-              reg.priority,
-              std::move(reg.filter_data),
-              reg.debug_key,
-              std::move(reg.aggregation_keys)),
-          is_within_fenced_frame,
-          reg.debug_reporting) {}
+    : registration_json_(
+          SerializeAttributionJson(reg.ToJson(), /*pretty_print=*/true)),
+      common_info_(
+          reg.source_event_id,
+          std::move(source_origin),
+          std::move(reg.destination),
+          std::move(reporting_origin),
+          source_time,
+          CommonSourceInfo::GetExpiryTime(reg.expiry, source_time, source_type),
+          reg.event_report_window
+              ? absl::make_optional(
+                    CommonSourceInfo::GetExpiryTime(reg.event_report_window,
+                                                    source_time,
+                                                    source_type))
+              : absl::nullopt,
+          reg.aggregatable_report_window
+              ? absl::make_optional(CommonSourceInfo::GetExpiryTime(
+                    reg.aggregatable_report_window,
+                    source_time,
+                    source_type))
+              : absl::nullopt,
+          source_type,
+          reg.priority,
+          std::move(reg.filter_data),
+          reg.debug_key,
+          std::move(reg.aggregation_keys)),
+      is_within_fenced_frame_(is_within_fenced_frame),
+      debug_reporting_(reg.debug_reporting) {}
 
 StorableSource::~StorableSource() = default;
 

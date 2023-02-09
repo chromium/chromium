@@ -24,21 +24,28 @@ found in the LICENSE file.
 </header>
 <main>
   <cr-tab-box hidden>
-    <div id="sources-tab" slot="tab">Sources</div>
-    <div id="triggers-tab" slot="tab">Triggers</div>
+    <div id="sources-tab" slot="tab">Active Sources</div>
+    <div id="source-registrations-tab" slot="tab">Source Registrations</div>
+    <div id="triggers-tab" slot="tab">Trigger Registrations</div>
     <div id="event-level-reports-tab" slot="tab">Event-Level Reports</div>
     <div id="aggregatable-reports-tab" slot="tab">Aggregatable Reports</div>
-    <div id="logs-tab" slot="tab">Logs</div>
     <div id="debug-reports-tab" slot="tab">Verbose Debug Reports</div>
     <div slot="panel">
-      <h2>Sources</h2>
+      <h2>Active Sources</h2>
       <div class="content">
         <attribution-internals-table id="sourceTable">
         </attribution-internals-table>
       </div>
     </div>
     <div slot="panel">
-      <h2>Triggers</h2>
+      <h2>Source Registrations</h2>
+      <div class="content">
+        <attribution-internals-table id="sourceRegistrationTable">
+        </attribution-internals-table>
+      </div>
+    </div>
+    <div slot="panel">
+      <h2>Trigger Registrations</h2>
       <div class="content">
         <attribution-internals-table id="triggerTable">
         </attribution-internals-table>
@@ -63,13 +70,6 @@ found in the LICENSE file.
           <label id="show-debug-aggregatable-reports"><input type="checkbox" checked>Show Attribution-Success Debug Reports<span></span></label>
         </div>
         <attribution-internals-table id="aggregatableReportTable">
-        </attribution-internals-table>
-      </div>
-    </div>
-    <div slot="panel">
-      <h2>Logs</h2>
-      <div class="content">
-        <attribution-internals-table id="logTable">
         </attribution-internals-table>
       </div>
     </div>

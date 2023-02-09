@@ -1081,11 +1081,13 @@ void AttributionManagerImpl::NotifyFailedSourceRegistration(
     const std::string& header_value,
     const attribution_reporting::SuitableOrigin& source_origin,
     const attribution_reporting::SuitableOrigin& reporting_origin,
+    attribution_reporting::mojom::SourceType source_type,
     attribution_reporting::mojom::SourceRegistrationError error) {
   base::Time source_time = base::Time::Now();
   for (auto& observer : observers_) {
     observer.OnFailedSourceRegistration(header_value, source_time,
-                                        source_origin, reporting_origin, error);
+                                        source_origin, reporting_origin,
+                                        source_type, error);
   }
 }
 

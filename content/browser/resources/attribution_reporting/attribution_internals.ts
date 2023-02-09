@@ -9,7 +9,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
 import {TriggerAttestation} from './attribution.mojom-webui.js';
-import {FailedSourceRegistration, Handler, HandlerInterface, ObserverInterface, ObserverReceiver, ReportID, WebUIDebugReport, WebUIReport, WebUISource, WebUISource_Attributability, WebUISource_DebugReporting, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
+import {Handler, HandlerInterface, ObserverInterface, ObserverReceiver, ReportID, WebUIDebugReport, WebUIRegistration, WebUIReport, WebUISource, WebUISource_Attributability, WebUISourceRegistration, WebUISourceRegistration_Status, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
 import {ReportType} from './attribution_reporting.mojom-webui.js';
 import {SourceRegistrationError} from './source_registration_error.mojom-webui.js';
@@ -124,34 +124,6 @@ function renderDL<T>(td: HTMLElement, row: T, cols: Array<Column<T>>) {
   });
 
   td.appendChild(dl);
-}
-
-function renderA(td: HTMLElement, text: string, href: string) {
-  const a = td.ownerDocument.createElement('a');
-  a.href = href;
-  a.target = '_blank';
-  a.innerText = text;
-  td.appendChild(a);
-}
-
-class LogMetadataColumn implements Column<Log> {
-  renderHeader(th: HTMLElement) {
-    th.innerText = 'Metadata';
-  }
-
-  render(td: HTMLElement, row: Log) {
-    row.renderMetadata(td);
-  }
-}
-
-class LogDescriptionColumn implements Column<Log> {
-  renderHeader(th: HTMLElement) {
-    th.innerText = 'Description';
-  }
-
-  render(td: HTMLElement, row: Log) {
-    row.renderDescription(td);
-  }
 }
 
 const debugPathPattern: RegExp =
@@ -272,7 +244,6 @@ class Source {
   status: string;
   aggregatableBudgetConsumed: bigint;
   aggregatableDedupKeys: bigint[];
-  debugReportingEnabled: string;
 
   constructor(mojo: WebUISource) {
     this.sourceEventId = mojo.sourceEventId;
@@ -290,26 +261,16 @@ class Source {
     this.filterData = JSON.stringify(mojo.filterData, null, ' ');
     this.aggregationKeys =
         JSON.stringify(mojo.aggregationKeys, bigintReplacer, ' ');
-
-    if (mojo.debugKey?.debugKey !== undefined) {
-      this.debugKey = mojo.debugKey.debugKey.toString();
-    } else if (mojo.debugKey?.clearedDebugKey !== undefined) {
-      this.debugKey = `Cleared (was ${mojo.debugKey.clearedDebugKey})`;
-    } else {
-      this.debugKey = '';
-    }
-
+    this.debugKey = mojo.debugKey ? `${mojo.debugKey.value}` : '';
     this.dedupKeys = mojo.dedupKeys;
     this.aggregatableBudgetConsumed = mojo.aggregatableBudgetConsumed;
     this.aggregatableDedupKeys = mojo.aggregatableDedupKeys;
     this.status = attributabilityToText(mojo.attributability);
-    this.debugReportingEnabled = sourceDebugReportingToText(mojo.debugReportingEnabled);
   }
 }
 
 class SourceTableModel extends TableModel<Source> {
   private storedSources: Source[] = [];
-  private unstoredSources: Source[] = [];
 
   constructor() {
     super(
@@ -342,8 +303,6 @@ class SourceTableModel extends TableModel<Source> {
           new ListColumn<Source, bigint>('Dedup Keys', (e) => e.dedupKeys),
           new ListColumn<Source, bigint>(
               'Aggregatable Dedup Keys', (e) => e.aggregatableDedupKeys),
-          new ValueColumn<Source, string>(
-              'Verbose Debug Reporting', (e) => e.debugReportingEnabled),
         ],
         5,  // Sort by source registration time by default.
         'No sources.',
@@ -351,7 +310,7 @@ class SourceTableModel extends TableModel<Source> {
   }
 
   override getRows() {
-    return this.unstoredSources.concat(this.storedSources);
+    return this.storedSources;
   }
 
   setStoredSources(storedSources: Source[]) {
@@ -359,41 +318,80 @@ class SourceTableModel extends TableModel<Source> {
     this.notifyRowsChanged();
   }
 
-  addUnstoredSource(source: Source) {
-    // Prevent the page from consuming ever more memory if the user leaves the
-    // page open for a long time.
-    if (this.unstoredSources.length >= 1000) {
-      this.unstoredSources = [];
-    }
-
-    this.unstoredSources.push(source);
-    this.notifyRowsChanged();
-  }
-
   clear() {
     this.storedSources = [];
-    this.unstoredSources = [];
     this.notifyRowsChanged();
   }
 }
 
-class Trigger {
-  triggerTime: Date;
-  destinationOrigin: string;
-  reportingOrigin: string;
-  registrationJson: string;
-  clearedDebugKey: string;
-  eventLevelStatus: string;
-  aggregatableStatus: string;
-  attestation?: TriggerAttestation;
+class Registration {
+  readonly time: Date;
+  readonly contextOrigin: string;
+  readonly reportingOrigin: string;
+  readonly registrationJson: string;
+  readonly clearedDebugKey: string;
 
-  constructor(mojo: WebUITrigger) {
-    this.triggerTime = new Date(mojo.triggerTime);
-    this.destinationOrigin = originToText(mojo.destinationOrigin);
+  constructor(mojo: WebUIRegistration) {
+    this.time = new Date(mojo.time);
+    this.contextOrigin = originToText(mojo.contextOrigin);
     this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.registrationJson = mojo.registrationJson;
     this.clearedDebugKey =
         mojo.clearedDebugKey ? `${mojo.clearedDebugKey.value}` : '';
+  }
+}
+
+function registrationTableColumns<T extends Registration>(
+    contextOriginTitle: string): Array<Column<T>> {
+  return [
+    new DateColumn<T>('Time', (e) => e.time),
+    new ValueColumn<T, string>(contextOriginTitle, (e) => e.contextOrigin),
+    new ValueColumn<T, string>('Reporting Origin', (e) => e.reportingOrigin),
+    new CodeColumn<T>('Registration JSON', (e) => e.registrationJson),
+    new ValueColumn<T, string>('Cleared Debug Key', (e) => e.clearedDebugKey),
+  ];
+}
+
+class RegistrationTableModel<T extends Registration> extends TableModel<T> {
+  private registrations: T[] = [];
+
+  constructor(contextOriginTitle: string, cols: Array<Column<T>>) {
+    super(
+        registrationTableColumns<T>(contextOriginTitle).concat(cols),
+        0,  // Sort by time by default.
+        'No registrations.',
+    );
+  }
+
+  override getRows() {
+    return this.registrations;
+  }
+
+  addRegistration(registration: T) {
+    // Prevent the page from consuming ever more memory if the user leaves the
+    // page open for a long time.
+    if (this.registrations.length >= 1000) {
+      this.registrations = [];
+    }
+
+    this.registrations.push(registration);
+    this.notifyRowsChanged();
+  }
+
+  clear() {
+    this.registrations = [];
+    this.notifyRowsChanged();
+  }
+}
+
+
+class Trigger extends Registration {
+  readonly eventLevelStatus: string;
+  readonly aggregatableStatus: string;
+  readonly attestation?: TriggerAttestation;
+
+  constructor(mojo: WebUITrigger) {
+    super(mojo.registration);
     this.eventLevelStatus = triggerStatusToText(mojo.eventLevelStatus);
     this.aggregatableStatus = triggerStatusToText(mojo.aggregatableStatus);
     this.attestation = mojo.attestation;
@@ -418,50 +416,36 @@ class AttestationColumn implements Column<Trigger> {
   }
 }
 
-class TriggerTableModel extends TableModel<Trigger> {
-  private triggers: Trigger[] = [];
-
+class TriggerTableModel extends RegistrationTableModel<Trigger> {
   constructor() {
-    super(
-        [
-          new DateColumn<Trigger>('Trigger Time', (e) => e.triggerTime),
-          new ValueColumn<Trigger, string>(
-              'Event-Level Status', (e) => e.eventLevelStatus),
-          new ValueColumn<Trigger, string>(
-              'Aggregatable Status', (e) => e.aggregatableStatus),
-          new ValueColumn<Trigger, string>(
-              'Destination', (e) => e.destinationOrigin),
-          new ValueColumn<Trigger, string>(
-              'Reporting Origin', (e) => e.reportingOrigin),
-          new CodeColumn<Trigger>(
-              'Registration JSON', (e) => e.registrationJson),
-          new ValueColumn<Trigger, string>(
-              'Cleared Debug Key', (e) => e.clearedDebugKey),
-          new AttestationColumn(),
-        ],
-        0,  // Sort by trigger time by default.
-        'No triggers.',
-    );
+    super('Destination', [
+      new ValueColumn<Trigger, string>(
+          'Event-Level Status', (e) => e.eventLevelStatus),
+      new ValueColumn<Trigger, string>(
+          'Aggregatable Status', (e) => e.aggregatableStatus),
+      new AttestationColumn(),
+    ]);
   }
+}
 
-  override getRows() {
-    return this.triggers;
+class SourceRegistration extends Registration {
+  readonly type: string;
+  readonly status: string;
+
+  constructor(mojo: WebUISourceRegistration) {
+    super(mojo.registration);
+    this.type = sourceTypeToText(mojo.type);
+    this.status = sourceRegistrationStatusToText(mojo.status, mojo.jsonError);
   }
+}
 
-  addTrigger(trigger: Trigger) {
-    // Prevent the page from consuming ever more memory if the user leaves the
-    // page open for a long time.
-    if (this.triggers.length >= 1000) {
-      this.triggers = [];
-    }
-
-    this.triggers.push(trigger);
-    this.notifyRowsChanged();
-  }
-
-  clear() {
-    this.triggers = [];
-    this.notifyRowsChanged();
+class SourceRegistrationTableModel extends
+    RegistrationTableModel<SourceRegistration> {
+  constructor() {
+    super('Source Origin', [
+      new ValueColumn<SourceRegistration, string>('Type', (e) => e.type),
+      new ValueColumn<SourceRegistration, string>('Status', (e) => e.status),
+    ]);
   }
 }
 
@@ -777,158 +761,46 @@ class DebugReportTableModel extends TableModel<DebugReport> {
   }
 }
 
-abstract class Log {
-  readonly timestamp: Date;
-  readonly reportingOrigin: string;
-
-  constructor(mojo: {time: number, reportingOrigin: Origin}) {
-    this.timestamp = new Date(mojo.time);
-    this.reportingOrigin = originToText(mojo.reportingOrigin);
-  }
-
-  abstract renderDescription(td: HTMLElement): void;
-
-  abstract renderMetadata(td: HTMLElement): void;
-}
-
-const FAILED_SOURCE_REGISTRATION_COLS:
-    Array<Column<FailedSourceRegistrationLog>> = [
-      new ValueColumn<FailedSourceRegistrationLog, string>(
-          'Failure Reason', e => e.failureReason),
-      new ValueColumn<FailedSourceRegistrationLog, string>(
-          'Source Origin', e => e.sourceOrigin),
-      new ValueColumn<FailedSourceRegistrationLog, string>(
-          'Reporting Origin', e => e.reportingOrigin),
-      new CodeColumn<FailedSourceRegistrationLog>(
-          'Attribution-Reporting-Register-Source Header', e => e.headerValue),
-    ];
-
-class FailedSourceRegistrationLog extends Log {
-  readonly sourceOrigin: string;
-  readonly failureReason: string;
-  readonly headerValue: string;
-
-  constructor(mojo: FailedSourceRegistration) {
-    super(mojo);
-
-    this.sourceOrigin = originToText(mojo.sourceOrigin);
-
-    switch (mojo.error) {
-      case SourceRegistrationError.kInvalidJson:
-        this.failureReason = 'invalid JSON';
-        break;
-      case SourceRegistrationError.kRootWrongType:
-        this.failureReason =
-            'root JSON value has wrong type (must be a dictionary)';
-        break;
-      case SourceRegistrationError.kDestinationMissing:
-        this.failureReason = 'destination missing';
-        break;
-      case SourceRegistrationError.kDestinationWrongType:
-        this.failureReason = 'destination has wrong type (must be a string)';
-        break;
-      case SourceRegistrationError.kDestinationUntrustworthy:
-        this.failureReason = 'destination not potentially trustworthy';
-        break;
-      case SourceRegistrationError.kFilterDataWrongType:
-        this.failureReason =
-            'filter_data has wrong type (must be a dictionary)';
-        break;
-      case SourceRegistrationError.kFilterDataTooManyKeys:
-        this.failureReason = 'filter_data has too many keys';
-        break;
-      case SourceRegistrationError.kFilterDataHasSourceTypeKey:
-        this.failureReason = 'filter_data must not have a source_type key';
-        break;
-      case SourceRegistrationError.kFilterDataKeyTooLong:
-        this.failureReason = 'filter_data key too long';
-        break;
-      case SourceRegistrationError.kFilterDataListWrongType:
-        this.failureReason =
-            'filter_data value has wrong type (must be a list)';
-        break;
-      case SourceRegistrationError.kFilterDataListTooLong:
-        this.failureReason = 'filter_data list too long';
-        break;
-      case SourceRegistrationError.kFilterDataValueWrongType:
-        this.failureReason =
-            'filter_data list value has wrong type (must be a string)';
-        break;
-      case SourceRegistrationError.kFilterDataValueTooLong:
-        this.failureReason = 'filter_data list value too long';
-        break;
-      case SourceRegistrationError.kAggregationKeysWrongType:
-        this.failureReason =
-            'aggregation_keys has wrong type (must be a dictionary)';
-        break;
-      case SourceRegistrationError.kAggregationKeysTooManyKeys:
-        this.failureReason = 'aggregation_keys has too many keys';
-        break;
-      case SourceRegistrationError.kAggregationKeysKeyTooLong:
-        this.failureReason = 'aggregation_keys key too long';
-        break;
-      case SourceRegistrationError.kAggregationKeysValueWrongType:
-        this.failureReason =
-            'aggregation_keys value has wrong type (must be a string)';
-        break;
-      case SourceRegistrationError.kAggregationKeysValueWrongFormat:
-        this.failureReason =
-            'aggregation_keys value must be a base-16 integer starting with 0x';
-        break;
-      default:
-        this.failureReason = 'unknown error';
-        break;
-    }
-
-    this.headerValue = mojo.headerValue;
-  }
-
-  renderDescription(td: HTMLElement) {
-    renderA(
-        td,
-        'Failed Source Registration',
-        'https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#registering-attribution-sources',
-    );
-  }
-
-  renderMetadata(td: HTMLElement) {
-    renderDL(td, this, FAILED_SOURCE_REGISTRATION_COLS);
-  }
-}
-
-class LogTableModel extends TableModel<Log> {
-  private logs: Log[] = [];
-
-  constructor() {
-    super(
-        [
-          new DateColumn<Log>('Timestamp', (e) => e.timestamp),
-          new LogDescriptionColumn(),
-          new LogMetadataColumn(),
-        ],
-        0,  // Sort by time by default.
-        'No logs.',
-    );
-  }
-
-  override getRows() {
-    return this.logs;
-  }
-
-  addLog(log: Log) {
-    // Prevent the page from consuming ever more memory if the user leaves the
-    // page open for a long time.
-    if (this.logs.length >= 1000) {
-      this.logs = [];
-    }
-
-    this.logs.push(log);
-    this.notifyRowsChanged();
-  }
-
-  clear() {
-    this.logs = [];
-    this.notifyRowsChanged();
+function sourceRegistrationErrorToText(error: SourceRegistrationError) {
+  switch (error) {
+    case SourceRegistrationError.kInvalidJson:
+      return 'invalid syntax';
+    case SourceRegistrationError.kRootWrongType:
+      return 'root JSON value has wrong type (must be a dictionary)';
+    case SourceRegistrationError.kDestinationMissing:
+      return 'destination missing';
+    case SourceRegistrationError.kDestinationWrongType:
+      return 'destination has wrong type (must be a string)';
+    case SourceRegistrationError.kDestinationUntrustworthy:
+      return 'destination not potentially trustworthy';
+    case SourceRegistrationError.kFilterDataWrongType:
+      return 'filter_data has wrong type (must be a dictionary)';
+    case SourceRegistrationError.kFilterDataTooManyKeys:
+      return 'filter_data has too many keys';
+    case SourceRegistrationError.kFilterDataHasSourceTypeKey:
+      return 'filter_data must not have a source_type key';
+    case SourceRegistrationError.kFilterDataKeyTooLong:
+      return 'filter_data key too long';
+    case SourceRegistrationError.kFilterDataListWrongType:
+      return 'filter_data value has wrong type (must be a list)';
+    case SourceRegistrationError.kFilterDataListTooLong:
+      return 'filter_data list too long';
+    case SourceRegistrationError.kFilterDataValueWrongType:
+      return 'filter_data list value has wrong type (must be a string)';
+    case SourceRegistrationError.kFilterDataValueTooLong:
+      return 'filter_data list value too long';
+    case SourceRegistrationError.kAggregationKeysWrongType:
+      return 'aggregation_keys has wrong type (must be a dictionary)';
+    case SourceRegistrationError.kAggregationKeysTooManyKeys:
+      return 'aggregation_keys has too many keys';
+    case SourceRegistrationError.kAggregationKeysKeyTooLong:
+      return 'aggregation_keys key too long';
+    case SourceRegistrationError.kAggregationKeysValueWrongType:
+      return 'aggregation_keys value has wrong type (must be a string)';
+    case SourceRegistrationError.kAggregationKeysValueWrongFormat:
+      return 'aggregation_keys value must be a base-16 integer starting with 0x';
+    default:
+      return 'unknown error';
   }
 }
 
@@ -980,18 +852,32 @@ function attributabilityToText(attributability: WebUISource_Attributability):
       return 'Unattributable: noised with fake reports';
     case WebUISource_Attributability.kReachedEventLevelAttributionLimit:
       return 'Attributable: reached event-level attribution limit';
-    case WebUISource_Attributability.kInternalError:
-      return 'Rejected: internal error';
-    case WebUISource_Attributability.kInsufficientSourceCapacity:
-      return 'Rejected: insufficient source capacity';
-    case WebUISource_Attributability.kInsufficientUniqueDestinationCapacity:
-      return 'Rejected: insufficient unique destination capacity';
-    case WebUISource_Attributability.kExcessiveReportingOrigins:
-      return 'Rejected: excessive reporting origins';
-    case WebUISource_Attributability.kProhibitedByBrowserPolicy:
-      return 'Rejected: prohibited by browser policy';
     default:
       return attributability.toString();
+  }
+}
+
+function sourceRegistrationStatusToText(
+    status: WebUISourceRegistration_Status,
+    jsonError: SourceRegistrationError): string {
+  switch (status) {
+    case WebUISourceRegistration_Status.kSuccess:
+      return 'Success';
+    case WebUISourceRegistration_Status.kInvalidJson:
+      return `Rejected: invalid JSON: ${
+          sourceRegistrationErrorToText(jsonError)}`;
+    case WebUISourceRegistration_Status.kInternalError:
+      return 'Rejected: internal error';
+    case WebUISourceRegistration_Status.kInsufficientSourceCapacity:
+      return 'Rejected: insufficient source capacity';
+    case WebUISourceRegistration_Status.kInsufficientUniqueDestinationCapacity:
+      return 'Rejected: insufficient unique destination capacity';
+    case WebUISourceRegistration_Status.kExcessiveReportingOrigins:
+      return 'Rejected: excessive reporting origins';
+    case WebUISourceRegistration_Status.kProhibitedByBrowserPolicy:
+      return 'Rejected: prohibited by browser policy';
+    default:
+      return status.toString();
   }
 }
 
@@ -1036,24 +922,11 @@ function triggerStatusToText(status: WebUITrigger_Status): string {
   }
 }
 
-function sourceDebugReportingToText(debugReporting: WebUISource_DebugReporting): string {
-  switch (debugReporting) {
-    case WebUISource_DebugReporting.kDisabled:
-      return 'Disabled';
-    case WebUISource_DebugReporting.kEnabled:
-      return 'Enabled';
-    case WebUISource_DebugReporting.kNotApplicable:
-      return 'N/A';
-    default:
-      return debugReporting.toString();
-  }
-}
-
 class AttributionInternals implements ObserverInterface {
   private readonly sources = new SourceTableModel();
+  private readonly sourceRegistrations = new SourceRegistrationTableModel();
   private readonly triggers = new TriggerTableModel();
   private readonly debugReports = new DebugReportTableModel();
-  private readonly logs = new LogTableModel();
   private readonly eventLevelReports: EventLevelReportTableModel;
   private readonly aggregatableReports: AggregatableAttributionReportTableModel;
 
@@ -1076,6 +949,10 @@ class AttributionInternals implements ObserverInterface {
         this.sources, document.querySelector<HTMLElement>('#sources-tab')!);
 
     installUnreadIndicator(
+        this.sourceRegistrations,
+        document.querySelector<HTMLElement>('#source-registrations-tab')!);
+
+    installUnreadIndicator(
         this.triggers, document.querySelector<HTMLElement>('#triggers-tab')!);
 
     installUnreadIndicator(
@@ -1087,15 +964,16 @@ class AttributionInternals implements ObserverInterface {
         document.querySelector<HTMLElement>('#aggregatable-reports-tab')!);
 
     installUnreadIndicator(
-        this.logs, document.querySelector<HTMLElement>('#logs-tab')!);
-
-    installUnreadIndicator(
         this.debugReports,
         document.querySelector<HTMLElement>('#debug-reports-tab')!);
 
     document
         .querySelector<AttributionInternalsTableElement<Source>>(
             '#sourceTable')!.setModel(this.sources);
+
+    document
+        .querySelector<AttributionInternalsTableElement<SourceRegistration>>(
+            '#sourceRegistrationTable')!.setModel(this.sourceRegistrations);
 
     document
         .querySelector<AttributionInternalsTableElement<Trigger>>(
@@ -1109,9 +987,6 @@ class AttributionInternals implements ObserverInterface {
         .querySelector<
             AttributionInternalsTableElement<AggregatableAttributionReport>>(
             '#aggregatableReportTable')!.setModel(this.aggregatableReports);
-
-    document.querySelector<AttributionInternalsTableElement<Log>>(
-                '#logTable')!.setModel(this.logs);
 
     document
         .querySelector<AttributionInternalsTableElement<DebugReport>>(
@@ -1129,10 +1004,6 @@ class AttributionInternals implements ObserverInterface {
     this.updateReports(reportType);
   }
 
-  onSourceRejected(mojo: WebUISource) {
-    this.sources.addUnstoredSource(new Source(mojo));
-  }
-
   onReportSent(mojo: WebUIReport) {
     this.addSentOrDroppedReport(mojo);
   }
@@ -1145,12 +1016,12 @@ class AttributionInternals implements ObserverInterface {
     this.addSentOrDroppedReport(mojo);
   }
 
-  onTriggerHandled(mojo: WebUITrigger) {
-    this.triggers.addTrigger(new Trigger(mojo));
+  onSourceHandled(mojo: WebUISourceRegistration) {
+    this.sourceRegistrations.addRegistration(new SourceRegistration(mojo));
   }
 
-  onFailedSourceRegistration(mojo: FailedSourceRegistration) {
-    this.logs.addLog(new FailedSourceRegistrationLog(mojo));
+  onTriggerHandled(mojo: WebUITrigger) {
+    this.triggers.addRegistration(new Trigger(mojo));
   }
 
   private addSentOrDroppedReport(mojo: WebUIReport) {
@@ -1162,7 +1033,6 @@ class AttributionInternals implements ObserverInterface {
     }
   }
 
-
   /**
    * Deletes all data stored by the conversions backend.
    * onReportsChanged and onSourcesChanged will be called
@@ -1171,10 +1041,10 @@ class AttributionInternals implements ObserverInterface {
    */
   clearStorage() {
     this.sources.clear();
+    this.sourceRegistrations.clear();
     this.triggers.clear();
     this.eventLevelReports.clear();
     this.aggregatableReports.clear();
-    this.logs.clear();
     this.debugReports.clear();
     this.remote.clearStorage();
   }

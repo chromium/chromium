@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 
 namespace attribution_reporting {
@@ -66,6 +67,7 @@ class AttributionObserver : public base::CheckedObserver {
       base::Time source_time,
       const attribution_reporting::SuitableOrigin& source_origin,
       const attribution_reporting::SuitableOrigin& reporting_origin,
+      AttributionSourceType,
       attribution_reporting::mojom::SourceRegistrationError) {}
 };
 

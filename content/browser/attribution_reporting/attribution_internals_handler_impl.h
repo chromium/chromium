@@ -92,6 +92,7 @@ class AttributionInternalsHandlerImpl
       base::Time source_time,
       const attribution_reporting::SuitableOrigin& source_origin,
       const attribution_reporting::SuitableOrigin& reporting_origin,
+      AttributionSourceType,
       attribution_reporting::mojom::SourceRegistrationError) override;
 
   void OnObserverDisconnected(mojo::RemoteSetElementId);

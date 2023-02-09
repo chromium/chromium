@@ -818,6 +818,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   EXPECT_CALL(mock_manager_, NotifyFailedSourceRegistration(
                                  "!!!invalid json", source_site, reporter,
+                                 AttributionSourceType::kNavigation,
                                  SourceRegistrationError::kInvalidJson));
 
   const blink::AttributionSrcToken attribution_src_token;
@@ -1651,6 +1652,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   EXPECT_CALL(mock_manager_, NotifyFailedSourceRegistration(
                                  "!!!invalid json", source_origin,
                                  *SuitableOrigin::Create(reporting_origin),
+                                 AttributionSourceType::kNavigation,
                                  SourceRegistrationError::kInvalidJson))
       .Times(2);
 

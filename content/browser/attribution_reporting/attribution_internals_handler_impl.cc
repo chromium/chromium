@@ -32,6 +32,7 @@
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -57,8 +58,6 @@ namespace {
 
 using Attributability =
     ::attribution_internals::mojom::WebUISource::Attributability;
-using SourceDebugReporting =
-    ::attribution_internals::mojom::WebUISource::DebugReporting;
 
 using Empty = ::attribution_internals::mojom::Empty;
 using ReportStatus = ::attribution_internals::mojom::ReportStatus;
@@ -67,43 +66,29 @@ using ReportStatusPtr = ::attribution_internals::mojom::ReportStatusPtr;
 using ::attribution_internals::mojom::WebUIDebugReport;
 
 attribution_internals::mojom::WebUISourcePtr WebUISource(
-    const CommonSourceInfo& source,
-    Attributability attributability,
-    const std::vector<uint64_t>& dedup_keys,
-    int64_t aggregatable_budget_consumed,
-    const std::vector<uint64_t>& aggregatable_dedup_keys,
-    SourceDebugReporting debug_reporting_enabled,
-    absl::optional<uint64_t> cleared_debug_key) {
-  DCHECK_GE(aggregatable_budget_consumed, 0);
-
-  attribution_internals::mojom::SourceDebugKeyPtr debug_key =
-      cleared_debug_key
-          ? attribution_internals::mojom::SourceDebugKey::NewClearedDebugKey(
-                *cleared_debug_key)
-          : (source.debug_key()
-                 ? attribution_internals::mojom::SourceDebugKey::NewDebugKey(
-                       *source.debug_key())
-                 : nullptr);
-
+    const StoredSource& source,
+    Attributability attributability) {
+  const CommonSourceInfo& common_info = source.common_info();
   return attribution_internals::mojom::WebUISource::New(
-      source.source_event_id(), source.source_origin(),
-      std::vector<net::SchemefulSite>(source.destination_sites().begin(),
-                                      source.destination_sites().end()),
-      source.reporting_origin(), source.source_time().ToJsTime(),
-      source.expiry_time().ToJsTime(),
-      source.event_report_window_time().ToJsTime(),
-      source.aggregatable_report_window_time().ToJsTime(), source.source_type(),
-      source.priority(), std::move(debug_key), dedup_keys,
-      source.filter_data().filter_values(),
+      common_info.source_event_id(), common_info.source_origin(),
+      std::vector<net::SchemefulSite>(common_info.destination_sites().begin(),
+                                      common_info.destination_sites().end()),
+      common_info.reporting_origin(), common_info.source_time().ToJsTime(),
+      common_info.expiry_time().ToJsTime(),
+      common_info.event_report_window_time().ToJsTime(),
+      common_info.aggregatable_report_window_time().ToJsTime(),
+      common_info.source_type(), common_info.priority(),
+      common_info.debug_key(), source.dedup_keys(),
+      common_info.filter_data().filter_values(),
       base::MakeFlatMap<std::string, std::string>(
-          source.aggregation_keys().keys(), {},
+          common_info.aggregation_keys().keys(), {},
           [](const auto& key) {
             return std::make_pair(
                 key.first,
                 attribution_reporting::HexEncodeAggregationKey(key.second));
           }),
-      aggregatable_budget_consumed, aggregatable_dedup_keys,
-      debug_reporting_enabled, attributability);
+      source.aggregatable_budget_consumed(), source.aggregatable_dedup_keys(),
+      attributability);
 }
 
 void ForwardSourcesToWebUI(
@@ -141,11 +126,7 @@ void ForwardSourcesToWebUI(
       }
     }
 
-    web_ui_sources.push_back(WebUISource(
-        source.common_info(), attributability, source.dedup_keys(),
-        source.aggregatable_budget_consumed(), source.aggregatable_dedup_keys(),
-        SourceDebugReporting::kNotApplicable,
-        /*cleared_debug_key=*/absl::nullopt));
+    web_ui_sources.push_back(WebUISource(source, attributability));
   }
 
   std::move(web_ui_callback).Run(std::move(web_ui_sources));
@@ -329,42 +310,64 @@ void AttributionInternalsHandlerImpl::OnReportsChanged(
   }
 }
 
+namespace {
+
+using WebUISourceRegistration =
+    ::attribution_internals::mojom::WebUISourceRegistration;
+using WebUISourceRegistrationStatus =
+    ::attribution_internals::mojom::WebUISourceRegistration::Status;
+
+WebUISourceRegistrationStatus GetSourceRegistrationStatus(
+    StorableSource::Result result) {
+  switch (result) {
+    case StorableSource::Result::kSuccess:
+    case StorableSource::Result::kSuccessNoised:
+      return WebUISourceRegistrationStatus::kSuccess;
+    case StorableSource::Result::kInternalError:
+      return WebUISourceRegistrationStatus::kInternalError;
+    case StorableSource::Result::kInsufficientSourceCapacity:
+      return WebUISourceRegistrationStatus::kInsufficientSourceCapacity;
+    case StorableSource::Result::kInsufficientUniqueDestinationCapacity:
+      return WebUISourceRegistrationStatus::
+          kInsufficientUniqueDestinationCapacity;
+    case StorableSource::Result::kExcessiveReportingOrigins:
+      return WebUISourceRegistrationStatus::kExcessiveReportingOrigins;
+    case StorableSource::Result::kProhibitedByBrowserPolicy:
+      return WebUISourceRegistrationStatus::kProhibitedByBrowserPolicy;
+  }
+}
+
+attribution_internals::mojom::WebUIRegistrationPtr GetRegistration(
+    base::Time time,
+    const attribution_reporting::SuitableOrigin& context_origin,
+    const attribution_reporting::SuitableOrigin& reporting_origin,
+    std::string registration_json,
+    absl::optional<uint64_t> cleared_debug_key) {
+  auto reg = attribution_internals::mojom::WebUIRegistration::New();
+  reg->time = time.ToJsTime();
+  reg->context_origin = context_origin;
+  reg->reporting_origin = reporting_origin;
+  reg->registration_json = std::move(registration_json);
+  reg->cleared_debug_key = cleared_debug_key;
+  return reg;
+}
+
+}  // namespace
+
 void AttributionInternalsHandlerImpl::OnSourceHandled(
     const StorableSource& source,
     absl::optional<uint64_t> cleared_debug_key,
     StorableSource::Result result) {
-  Attributability attributability;
-  switch (result) {
-    case StorableSource::Result::kSuccess:
-    case StorableSource::Result::kSuccessNoised:
-      return;
-    case StorableSource::Result::kInternalError:
-      attributability = Attributability::kInternalError;
-      break;
-    case StorableSource::Result::kInsufficientSourceCapacity:
-      attributability = Attributability::kInsufficientSourceCapacity;
-      break;
-    case StorableSource::Result::kInsufficientUniqueDestinationCapacity:
-      attributability = Attributability::kInsufficientUniqueDestinationCapacity;
-      break;
-    case StorableSource::Result::kExcessiveReportingOrigins:
-      attributability = Attributability::kExcessiveReportingOrigins;
-      break;
-    case StorableSource::Result::kProhibitedByBrowserPolicy:
-      attributability = Attributability::kProhibitedByBrowserPolicy;
-      break;
-  }
-
-  auto web_ui_source =
-      WebUISource(source.common_info(), attributability, /*dedup_keys=*/{},
-                  /*aggregatable_budget_consumed=*/0,
-                  /*aggregatable_dedup_keys=*/{},
-                  source.debug_reporting() ? SourceDebugReporting::kEnabled
-                                           : SourceDebugReporting::kDisabled,
-                  cleared_debug_key);
+  auto web_ui_source = WebUISourceRegistration::New();
+  web_ui_source->registration = GetRegistration(
+      source.common_info().source_time(), source.common_info().source_origin(),
+      source.common_info().reporting_origin(), source.registration_json(),
+      cleared_debug_key);
+  web_ui_source->type = source.common_info().source_type();
+  web_ui_source->status = GetSourceRegistrationStatus(result);
 
   for (auto& observer : observers_) {
-    observer->OnSourceRejected(web_ui_source.Clone());
+    observer->OnSourceHandled(web_ui_source.Clone());
   }
 }
 
@@ -427,17 +430,18 @@ void AttributionInternalsHandlerImpl::OnFailedSourceRegistration(
     base::Time source_time,
     const attribution_reporting::SuitableOrigin& source_origin,
     const attribution_reporting::SuitableOrigin& reporting_origin,
+    AttributionSourceType source_type,
     attribution_reporting::mojom::SourceRegistrationError error) {
-  auto web_ui_log =
-      attribution_internals::mojom::FailedSourceRegistration::New();
-  web_ui_log->header_value = header_value;
-  web_ui_log->time = source_time.ToJsTime();
-  web_ui_log->source_origin = source_origin;
-  web_ui_log->reporting_origin = reporting_origin;
-  web_ui_log->error = error;
+  auto web_ui_source = WebUISourceRegistration::New();
+  web_ui_source->registration = GetRegistration(
+      source_time, source_origin, reporting_origin, header_value,
+      /*cleared_debug_key=*/absl::nullopt);
+  web_ui_source->type = source_type;
+  web_ui_source->status = WebUISourceRegistrationStatus::kInvalidJson;
+  web_ui_source->json_error = error;
 
   for (auto& observer : observers_) {
-    observer->OnFailedSourceRegistration(web_ui_log->Clone());
+    observer->OnSourceHandled(web_ui_source.Clone());
   }
 }
 
@@ -525,16 +529,12 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
       trigger.registration();
 
   auto web_ui_trigger = attribution_internals::mojom::WebUITrigger::New();
-  web_ui_trigger->trigger_time = result.trigger_time().ToJsTime();
-  web_ui_trigger->destination_origin = trigger.destination_origin();
-  web_ui_trigger->reporting_origin = trigger.reporting_origin();
-  web_ui_trigger->registration_json =
-      SerializeAttributionJson(registration.ToJson(),
-                               /*pretty_print=*/true);
-  web_ui_trigger->cleared_debug_key =
-      cleared_debug_key ? attribution_internals::mojom::TriggerDebugKey::New(
-                              *cleared_debug_key)
-                        : nullptr;
+  web_ui_trigger->registration =
+      GetRegistration(result.trigger_time(), trigger.destination_origin(),
+                      trigger.reporting_origin(),
+                      SerializeAttributionJson(registration.ToJson(),
+                                               /*pretty_print=*/true),
+                      cleared_debug_key);
   web_ui_trigger->event_level_status =
       GetWebUITriggerStatus(result.event_level_status());
   web_ui_trigger->aggregatable_status =

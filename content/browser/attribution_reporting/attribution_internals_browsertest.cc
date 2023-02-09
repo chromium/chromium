@@ -295,7 +295,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               .SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
               .BuildStored()}));
 
-  // This shouldn't result in a row, as registration succeeded.
   manager()->NotifySourceHandled(SourceBuilder(now).Build(),
                                  StorableSource::Result::kSuccess);
 
@@ -312,14 +311,19 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       StorableSource::Result::kInsufficientUniqueDestinationCapacity);
 
   manager()->NotifySourceHandled(
-      SourceBuilder(now + base::Hours(7)).SetDebugReporting(true).Build(),
+      SourceBuilder(now + base::Hours(7))
+          .SetSourceType(AttributionSourceType::kEvent)
+          .Build(),
       StorableSource::Result::kExcessiveReportingOrigins);
 
   static constexpr char kScript[] = R"(
     const table = document.querySelector('#sourceTable')
         .shadowRoot.querySelector('tbody');
+    const regTable = document.querySelector('#sourceRegistrationTable')
+        .shadowRoot.querySelector('tbody');
     const obs = new MutationObserver((_, obs) => {
-      if (table.children.length === 8 &&
+      if (table.children.length === 4 &&
+          regTable.children.length === 5 &&
           table.children[0].children[3]?.children[0]?.children.length === 2 &&
           table.children[0].children[3]?.children[0]?.children[0]?.innerText === 'https://a.test' &&
           table.children[0].children[3]?.children[0]?.children[1]?.innerText === 'https://b.test' &&
@@ -337,7 +341,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[1].children[13]?.innerText === '1300 / 65536' &&
           table.children[0].children[14]?.innerText === '19' &&
           table.children[1].children[14]?.innerText === '' &&
-          table.children[4].children[14]?.innerText === 'Cleared (was 987)' &&
           table.children[0].children[15]?.innerText === '' &&
           table.children[1].children[15]?.children[0]?.children[0]?.innerText === '13' &&
           table.children[1].children[15]?.children[0]?.children[1]?.innerText === '17' &&
@@ -347,14 +350,16 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[0].children[1]?.innerText === 'Unattributable: noised with no reports' &&
           table.children[1].children[1]?.innerText === 'Attributable' &&
           table.children[2].children[1]?.innerText === 'Attributable: reached event-level attribution limit' &&
-          table.children[3].children[1]?.innerText === 'Rejected: internal error' &&
-          table.children[4].children[1]?.innerText === 'Rejected: insufficient source capacity' &&
-          table.children[5].children[1]?.innerText === 'Rejected: insufficient unique destination capacity' &&
-          table.children[6].children[1]?.innerText === 'Rejected: excessive reporting origins' &&
-          table.children[7].children[1]?.innerText === 'Unattributable: noised with fake reports' &&
-          table.children[0].children[17]?.innerText === 'N/A' &&
-          table.children[5].children[17]?.innerText === 'Disabled' &&
-          table.children[6].children[17]?.innerText === 'Enabled') {
+          table.children[3].children[1]?.innerText === 'Unattributable: noised with fake reports' &&
+          regTable.children[0].children[4]?.innerText === '' &&
+          regTable.children[0].children[6]?.innerText === 'Success' &&
+          regTable.children[1].children[6]?.innerText === 'Rejected: internal error' &&
+          regTable.children[2].children[6]?.innerText === 'Rejected: insufficient source capacity' &&
+          regTable.children[2].children[4]?.innerText === '987' &&
+          regTable.children[3].children[5]?.innerText === 'Navigation' &&
+          regTable.children[3].children[6]?.innerText === 'Rejected: insufficient unique destination capacity' &&
+          regTable.children[4].children[5]?.innerText === 'Event' &&
+          regTable.children[4].children[6]?.innerText === 'Rejected: excessive reporting origins') {
         obs.disconnect();
         document.title = $3;
       }
@@ -374,24 +379,17 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   static constexpr char kScript[] = R"(
-    const table = document.querySelector('#logTable')
+    const table = document.querySelector('#sourceRegistrationTable')
         .shadowRoot.querySelector('tbody');
-
-    const description = '<a href="https://github.com/WICG/attribution-report' +
-                        'ing-api/blob/main/EVENT.md#registering-attribution-' +
-                        'sources" target="_blank">Failed Source Registration' +
-                        '</a>';
-    const metadata = '<dl><dt>Failure Reason</dt><dd>invalid JSON</dd>' +
-                     '<dt>Source Origin</dt><dd>https://b.test</dd>' +
-                     '<dt>Reporting Origin</dt><dd>https://a.test</dd>' +
-                     '<dt>Attribution-Reporting-Register-Source Header</dt>'+
-                     '<dd><pre><code>!</code></pre></dd></dl>';
 
     const obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
-          table.children[0].children[1]?.innerHTML === description &&
-          table.children[0].children[2]?.innerHTML === metadata
-      ) {
+          table.children[0].children[1]?.innerText === 'https://b.test' &&
+          table.children[0].children[2]?.innerText === 'https://a.test' &&
+          table.children[0].children[3]?.innerText === '!' &&
+          table.children[0].children[4]?.innerText === '' &&
+          table.children[0].children[5]?.innerText === 'Event' &&
+          table.children[0].children[6]?.innerText === 'Rejected: invalid JSON: invalid syntax') {
         obs.disconnect();
         document.title = $1;
       }
@@ -405,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   manager()->NotifySourceRegistrationFailure(
       "!", *SuitableOrigin::Deserialize("https://b.test"),
       *SuitableOrigin::Deserialize("https://a.test"),
-      SourceRegistrationError::kInvalidJson);
+      AttributionSourceType::kEvent, SourceRegistrationError::kInvalidJson);
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 
@@ -761,15 +759,19 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   static constexpr char kScript[] = R"(
     const table = document.querySelector('#sourceTable')
         .shadowRoot.querySelector('tbody');
+    const regTable = document.querySelector('#sourceRegistrationTable')
+        .shadowRoot.querySelector('tbody');
     const obs = new MutationObserver((_, obs) => {
-      if (table.children.length === 2 &&
+      if (table.children.length === 1 &&
+          regTable.children.length === 1 &&
           table.children[0].children[0]?.innerText === '5' &&
-          table.children[1].children[0]?.innerText === '6') {
+          regTable.children[0].children[6]?.innerText === 'Rejected: internal error') {
         obs.disconnect();
         document.title = $1;
       }
     });
     obs.observe(table, {childList: true, subtree: true, characterData: true});
+    obs.observe(regTable, {childList: true, subtree: true, characterData: true});
   )";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
@@ -784,14 +786,19 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   static constexpr char kObserveEmptySourcesTableScript[] = R"(
     const table = document.querySelector('#sourceTable')
         .shadowRoot.querySelector('tbody');
+    const regTable = document.querySelector('#sourceRegistrationTable')
+        .shadowRoot.querySelector('tbody');
     const obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
-          table.children[0].children[0]?.innerText === 'No sources.') {
+          regTable.children.length === 1 &&
+          table.children[0].children[0]?.innerText === 'No sources.' &&
+          regTable.children[0].children[0]?.innerText === 'No registrations.') {
         obs.disconnect();
         document.title = $1;
       }
     });
     obs.observe(table, {childList: true, subtree: true, characterData: true});
+    obs.observe(regTable, {childList: true, subtree: true, characterData: true});
   )";
   ASSERT_TRUE(
       ExecJsInWebUI(JsReplace(kObserveEmptySourcesTableScript, kDeleteTitle)));
@@ -1049,14 +1056,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         .shadowRoot.querySelector('tbody');
     const obs = new MutationObserver((_, obs) => {
       if (table.children.length === 2 &&
-          table.children[0].children[1]?.innerText === 'Success: Report stored' &&
-          table.children[0].children[2]?.innerText === 'Success: Report stored' &&
-          table.children[0].children[3]?.innerText === 'https://d.test' &&
-          table.children[0].children[4]?.innerText === 'https://r.test' &&
-          table.children[0].children[5]?.innerText.includes('{') &&
-          table.children[0].children[6]?.innerText === '' &&
-          table.children[0].children[7]?.innerText === '' &&
-          table.children[1].children[6]?.innerText === '123' &&
+          table.children[0].children[5]?.innerText === 'Success: Report stored' &&
+          table.children[0].children[6]?.innerText === 'Success: Report stored' &&
+          table.children[0].children[1]?.innerText === 'https://d.test' &&
+          table.children[0].children[2]?.innerText === 'https://r.test' &&
+          table.children[0].children[3]?.innerText.includes('{') &&
+          table.children[0].children[4]?.innerText === '' &&
+          table.children[1].children[4]?.innerText === '123' &&
           table.children[1].children[7]?.innerHTML === expectedAttestation) {
         obs.disconnect();
         document.title = $1;

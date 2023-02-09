@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORABLE_SOURCE_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORABLE_SOURCE_H_
 
+#include <string>
+
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/common/content_export.h"
@@ -67,7 +69,21 @@ class CONTENT_EXPORT StorableSource {
 
   bool debug_reporting() const { return debug_reporting_; }
 
+  const std::string& registration_json() const { return registration_json_; }
+
  private:
+  // Contains serialized JSON corresponding to the
+  // `attribution_reporting::SourceRegistration` that was used to create this
+  // `StorableSource` for display in the internals UI. May be empty in tests.
+  //
+  // We use a string instead of a `base::Value` to allow `StorableSource` to be
+  // copied, which `base::Value` cannot.
+  //
+  // TODO(apaseltiner): Remove this field along with `common_info_` and
+  // `debug_reporting_` and instead embed a field of type
+  // `attribution_reporting::SourceRegistration`.
+  std::string registration_json_;
+
   CommonSourceInfo common_info_;
 
   // Whether the source is registered within a fenced frame tree.

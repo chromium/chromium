@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/attribution_reporting/os_support.mojom-forward.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
+#include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
@@ -86,6 +87,7 @@ class AttributionManager : public AttributionDataModel {
       const std::string& header_value,
       const attribution_reporting::SuitableOrigin& source_origin,
       const attribution_reporting::SuitableOrigin& reporting_origin,
+      attribution_reporting::mojom::SourceType,
       attribution_reporting::mojom::SourceRegistrationError) = 0;
 
   // Deletes all data in storage for storage keys matching `filter`, between
