@@ -865,6 +865,10 @@ void TestDecompose(bool construct_three) {
 }
 
 TEST(Table, Decompose) {
+  if (SwisstableGenerationsEnabled()) {
+    GTEST_SKIP() << "Generations being enabled causes extra rehashes.";
+  }
+
   TestDecompose<DecomposeHash, DecomposeEq>(false);
 
   struct TransparentHashIntOverload {
@@ -903,6 +907,10 @@ struct Modulo1000HashTable
 
 // Test that rehash with no resize happen in case of many deleted slots.
 TEST(Table, RehashWithNoResize) {
+  if (SwisstableGenerationsEnabled()) {
+    GTEST_SKIP() << "Generations being enabled causes extra rehashes.";
+  }
+
   Modulo1000HashTable t;
   // Adding the same length (and the same hash) strings
   // to have at least kMinFullGroups groups
@@ -996,6 +1004,10 @@ TEST(Table, EnsureNonQuadraticAsInRust) {
 }
 
 TEST(Table, ClearBug) {
+  if (SwisstableGenerationsEnabled()) {
+    GTEST_SKIP() << "Generations being enabled causes extra rehashes.";
+  }
+
   IntTable t;
   constexpr size_t capacity = container_internal::Group::kWidth - 1;
   constexpr size_t max_size = capacity / 2 + 1;
@@ -2316,6 +2328,25 @@ TEST(Table, ReservedGrowthUpdatesWhenTableDoesntGrow) {
   t.insert(200);
   // `it` shouldn't have been invalidated.
   EXPECT_EQ(*it, 0);
+}
+
+TEST(Table, InvalidReferenceUseCrashesWithSanitizers) {
+  if (!SwisstableGenerationsEnabled()) GTEST_SKIP() << "Generations disabled.";
+#ifdef ABSL_HAVE_MEMORY_SANITIZER
+  GTEST_SKIP() << "MSan fails to detect some of these rehashes.";
+#endif
+
+  IntTable t;
+  t.insert(0);
+  // Rehashing is guaranteed on every insertion while capacity is less than
+  // RehashProbabilityConstant().
+  int64_t i = 0;
+  while (t.capacity() <= RehashProbabilityConstant()) {
+    // ptr will become invalidated on rehash.
+    const int64_t* ptr = &*t.begin();
+    t.insert(++i);
+    EXPECT_DEATH_IF_SUPPORTED(std::cout << *ptr, "heap-use-after-free") << i;
+  }
 }
 
 }  // namespace

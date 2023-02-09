@@ -749,6 +749,15 @@ using Group = GroupAArch64Impl;
 using Group = GroupPortableImpl;
 #endif
 
+// When there is an insertion with no reserved growth, we rehash with
+// probability `min(1, RehashProbabilityConstant() / capacity())`. Using a
+// constant divided by capacity ensures that inserting N elements is still O(N)
+// in the average case. Using the constant 16 means that we expect to rehash ~8
+// times more often than when generations are disabled. We are adding expected
+// rehash_probability * #insertions/capacity_growth = 16/capacity * ((7/8 -
+// 7/16) * capacity)/capacity_growth = ~7 extra rehashes per capacity growth.
+inline size_t RehashProbabilityConstant() { return 16; }
+
 class CommonFieldsGenerationInfoEnabled {
   // A sentinel value for reserved_growth_ indicating that we just ran out of
   // reserved growth on the last insertion. When reserve is called and then
@@ -769,12 +778,10 @@ class CommonFieldsGenerationInfoEnabled {
 
   // Whether we should rehash on insert in order to detect bugs of using invalid
   // references. We rehash on the first insertion after reserved_growth_ reaches
-  // 0 after a call to reserve.
-  // TODO(b/254649633): we could potentially do a rehash with low probability
+  // 0 after a call to reserve. We also do a rehash with low probability
   // whenever reserved_growth_ is zero.
-  bool should_rehash_for_bug_detection_on_insert() const {
-    return reserved_growth_ == kReservedGrowthJustRanOut;
-  }
+  bool should_rehash_for_bug_detection_on_insert(const ctrl_t* ctrl,
+                                                 size_t capacity) const;
   void maybe_increment_generation_on_insert() {
     if (reserved_growth_ == kReservedGrowthJustRanOut) reserved_growth_ = 0;
 
@@ -820,7 +827,9 @@ class CommonFieldsGenerationInfoDisabled {
   CommonFieldsGenerationInfoDisabled& operator=(
       CommonFieldsGenerationInfoDisabled&&) = default;
 
-  bool should_rehash_for_bug_detection_on_insert() const { return false; }
+  bool should_rehash_for_bug_detection_on_insert(const ctrl_t*, size_t) const {
+    return false;
+  }
   void maybe_increment_generation_on_insert() {}
   void reset_reserved_growth(size_t, size_t) {}
   size_t reserved_growth() const { return 0; }
@@ -905,6 +914,10 @@ class CommonFields : public CommonFieldsGenerationInfo {
     return compressed_tuple_.template get<1>();
   }
 
+  bool should_rehash_for_bug_detection_on_insert() const {
+    return CommonFieldsGenerationInfo::
+        should_rehash_for_bug_detection_on_insert(control_, capacity_);
+  }
   void reset_reserved_growth(size_t reservation) {
     CommonFieldsGenerationInfo::reset_reserved_growth(reservation, size_);
   }
@@ -1106,10 +1119,12 @@ struct FindInfo {
 inline bool is_small(size_t capacity) { return capacity < Group::kWidth - 1; }
 
 // Begins a probing operation on `common.control`, using `hash`.
-inline probe_seq<Group::kWidth> probe(const CommonFields& common, size_t hash) {
-  const ctrl_t* ctrl = common.control_;
-  const size_t capacity = common.capacity_;
+inline probe_seq<Group::kWidth> probe(const ctrl_t* ctrl, const size_t capacity,
+                                      size_t hash) {
   return probe_seq<Group::kWidth>(H1(hash, ctrl), capacity);
+}
+inline probe_seq<Group::kWidth> probe(const CommonFields& common, size_t hash) {
+  return probe(common.control_, common.capacity_, hash);
 }
 
 // Probes an array of control bits using a probe sequence derived from `hash`,

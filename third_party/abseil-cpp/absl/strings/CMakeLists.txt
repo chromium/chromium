@@ -745,6 +745,7 @@ absl_cc_library(
     absl::raw_logging_internal
     absl::stacktrace
     absl::synchronization
+    absl::time
 )
 
 absl_cc_test(

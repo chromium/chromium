@@ -131,7 +131,7 @@ void PrefetchToLocalCacheNta(const void* addr);
 //    return ptr;
 //  }
 //
-void PrefetchToLocalCacheforWrite(const void* addr);
+void PrefetchToLocalCacheForWrite(const void* addr);
 
 #if ABSL_HAVE_BUILTIN(__builtin_prefetch) || defined(__GNUC__)
 
@@ -156,7 +156,7 @@ inline void PrefetchToLocalCacheForWrite(const void* addr) {
 #if defined(__x86_64__)
   asm("prefetchw (%0)" : : "r"(addr));
 #else
-  __builtin_prefetch(addr, 1, 0);
+  __builtin_prefetch(addr, 1, 3);
 #endif
 }
 

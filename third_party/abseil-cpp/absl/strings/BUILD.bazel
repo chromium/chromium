@@ -513,6 +513,7 @@ cc_library(
         "//absl/container:inlined_vector",
         "//absl/debugging:stacktrace",
         "//absl/synchronization",
+        "//absl/time",
         "//absl/types:span",
     ],
 )

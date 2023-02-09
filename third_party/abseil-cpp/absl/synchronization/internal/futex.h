@@ -110,35 +110,10 @@ class FutexImpl {
     return 0;
   }
 
-  static int WaitBitsetAbsoluteTimeout(std::atomic<int32_t> *v, int32_t val,
-                                       int32_t bits,
-                                       const struct timespec *abstime) {
-    // NOLINTNEXTLINE(runtime/int)
-    long err = syscall(SYS_futex, reinterpret_cast<int32_t*>(v),
-                       FUTEX_WAIT_BITSET | FUTEX_PRIVATE_FLAG, val, abstime,
-                       nullptr, bits);
-    if (ABSL_PREDICT_FALSE(err != 0)) {
-      return -errno;
-    }
-    return 0;
-  }
-
   static int Wake(std::atomic<int32_t> *v, int32_t count) {
     // NOLINTNEXTLINE(runtime/int)
     long err = syscall(SYS_futex, reinterpret_cast<int32_t*>(v),
                        FUTEX_WAKE | FUTEX_PRIVATE_FLAG, count);
-    if (ABSL_PREDICT_FALSE(err < 0)) {
-      return -errno;
-    }
-    return 0;
-  }
-
-  // FUTEX_WAKE_BITSET
-  static int WakeBitset(std::atomic<int32_t> *v, int32_t count, int32_t bits) {
-    // NOLINTNEXTLINE(runtime/int)
-    long err = syscall(SYS_futex, reinterpret_cast<int32_t*>(v),
-                       FUTEX_WAKE_BITSET | FUTEX_PRIVATE_FLAG, count, nullptr,
-                       nullptr, bits);
     if (ABSL_PREDICT_FALSE(err < 0)) {
       return -errno;
     }

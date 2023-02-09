@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <array>
 #include <bitset>
+#include <cstdint>
 #include <cstring>
 #include <deque>
 #include <forward_list>
@@ -1241,14 +1242,24 @@ TEST(HashTest, DoesNotUseImplicitConversionsToBool) {
 
 TEST(HashOf, MatchesHashForSingleArgument) {
   std::string s = "forty two";
-  int i = 42;
   double d = 42.0;
   std::tuple<int, int> t{4, 2};
+  int i = 42;
+  int neg_i = -42;
+  int16_t i16 = 42;
+  int16_t neg_i16 = -42;
+  int8_t i8 = 42;
+  int8_t neg_i8 = -42;
 
   EXPECT_EQ(absl::HashOf(s), absl::Hash<std::string>{}(s));
-  EXPECT_EQ(absl::HashOf(i), absl::Hash<int>{}(i));
   EXPECT_EQ(absl::HashOf(d), absl::Hash<double>{}(d));
   EXPECT_EQ(absl::HashOf(t), (absl::Hash<std::tuple<int, int>>{}(t)));
+  EXPECT_EQ(absl::HashOf(i), absl::Hash<int>{}(i));
+  EXPECT_EQ(absl::HashOf(neg_i), absl::Hash<int>{}(neg_i));
+  EXPECT_EQ(absl::HashOf(i16), absl::Hash<int16_t>{}(i16));
+  EXPECT_EQ(absl::HashOf(neg_i16), absl::Hash<int16_t>{}(neg_i16));
+  EXPECT_EQ(absl::HashOf(i8), absl::Hash<int8_t>{}(i8));
+  EXPECT_EQ(absl::HashOf(neg_i8), absl::Hash<int8_t>{}(neg_i8));
 }
 
 TEST(HashOf, MatchesHashOfTupleForMultipleArguments) {

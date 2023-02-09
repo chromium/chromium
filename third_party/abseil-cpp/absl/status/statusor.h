@@ -584,7 +584,7 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
   // Reconstructs the inner value T in-place using the provided args, using the
   // T(args...) constructor. Returns reference to the reconstructed `T`.
   template <typename... Args>
-  T& emplace(Args&&... args) {
+  T& emplace(Args&&... args) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (ok()) {
       this->Clear();
       this->MakeValue(std::forward<Args>(args)...);
@@ -600,7 +600,8 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
       absl::enable_if_t<
           std::is_constructible<T, std::initializer_list<U>&, Args&&...>::value,
           int> = 0>
-  T& emplace(std::initializer_list<U> ilist, Args&&... args) {
+  T& emplace(std::initializer_list<U> ilist,
+             Args&&... args) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (ok()) {
       this->Clear();
       this->MakeValue(ilist, std::forward<Args>(args)...);

@@ -17,6 +17,7 @@
 
 // This file is a no-op if the required LowLevelAlloc support is missing.
 #include "absl/base/internal/low_level_alloc.h"
+#include "absl/synchronization/internal/waiter.h"
 #ifndef ABSL_LOW_LEVEL_ALLOC_MISSING
 
 #include <string.h>
@@ -71,6 +72,9 @@ static intptr_t RoundUp(intptr_t addr, intptr_t align) {
 
 void OneTimeInitThreadIdentity(base_internal::ThreadIdentity* identity) {
   PerThreadSem::Init(identity);
+  identity->ticker.store(0, std::memory_order_relaxed);
+  identity->wait_start.store(0, std::memory_order_relaxed);
+  identity->is_idle.store(false, std::memory_order_relaxed);
 }
 
 static void ResetThreadIdentityBetweenReuse(
