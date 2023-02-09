@@ -80,10 +80,9 @@ void LayoutSVGInlineText::StyleDidChange(StyleDifference diff,
   LayoutText::StyleDidChange(diff, old_style);
   UpdateScaledFont();
 
-  bool new_preserves = StyleRef().WhiteSpace() == EWhiteSpace::kPre;
-  bool old_preserves =
-      old_style && old_style->WhiteSpace() == EWhiteSpace::kPre;
-  if (old_preserves != new_preserves) {
+  const bool new_collapse = StyleRef().CollapseWhiteSpace();
+  const bool old_collapse = old_style && old_style->CollapseWhiteSpace();
+  if (old_collapse != new_collapse) {
     ForceSetText(OriginalText());
     return;
   }
