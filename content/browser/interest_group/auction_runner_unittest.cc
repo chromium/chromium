@@ -1413,7 +1413,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     abortable_ad_auction_.reset();
     auction_runner_ = AuctionRunner::CreateAndStart(
         auction_worklet_manager_.get(), interest_group_manager_.get(),
-        std::move(auction_config), frame_origin_, GetClientSecurityState(),
+        /*attribution_data_host_manager=*/nullptr, std::move(auction_config),
+        frame_origin_, GetClientSecurityState(),
         dummy_report_shared_url_loader_factory_,
         IsInterestGroupApiAllowedCallback(),
         abortable_ad_auction_.BindNewPipeAndPassReceiver(),

@@ -75,6 +75,7 @@ InterestGroupAuctionReporter::WinningBidInfo::~WinningBidInfo() = default;
 InterestGroupAuctionReporter::InterestGroupAuctionReporter(
     InterestGroupManagerImpl* interest_group_manager,
     AuctionWorkletManager* auction_worklet_manager,
+    AttributionDataHostManager* attribution_data_host_manager,
     std::unique_ptr<blink::AuctionConfig> auction_config,
     const url::Origin& frame_origin,
     network::mojom::ClientSecurityStatePtr client_security_state,
@@ -110,7 +111,8 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
       private_aggregation_requests_non_reserved_(
           std::move(private_aggregation_requests_non_reserved)),
       fenced_frame_reporter_(
-          FencedFrameReporter::CreateForFledge(url_loader_factory_)) {
+          FencedFrameReporter::CreateForFledge(url_loader_factory_,
+                                               attribution_data_host_manager)) {
   DCHECK(interest_group_manager_);
   DCHECK(auction_worklet_manager_);
   DCHECK(url_loader_factory_);

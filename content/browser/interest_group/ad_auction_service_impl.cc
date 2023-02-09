@@ -16,6 +16,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
@@ -284,8 +285,11 @@ void AdAuctionServiceImpl::RunAdAuction(
   }
 
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
-      &auction_worklet_manager_, &GetInterestGroupManager(), config, origin(),
-      GetClientSecurityState(), GetRefCountedTrustedURLLoaderFactory(),
+      &auction_worklet_manager_, &GetInterestGroupManager(),
+      AttributionDataHostManager::FromBrowserContext(
+          render_frame_host().GetBrowserContext()),
+      config, origin(), GetClientSecurityState(),
+      GetRefCountedTrustedURLLoaderFactory(),
       base::BindRepeating(&AdAuctionServiceImpl::IsInterestGroupAPIAllowed,
                           base::Unretained(this)),
       std::move(abort_receiver),

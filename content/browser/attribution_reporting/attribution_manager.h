@@ -29,6 +29,7 @@ namespace content {
 class AttributionDataHostManager;
 class AttributionObserver;
 class AttributionTrigger;
+class BrowserContext;
 class BrowsingDataFilterBuilder;
 class StorableSource;
 class StoredSource;
@@ -41,6 +42,8 @@ struct GlobalRenderFrameHostId;
 class AttributionManager : public AttributionDataModel {
  public:
   static AttributionManager* FromWebContents(WebContents* web_contents);
+
+  static AttributionManager* FromBrowserContext(BrowserContext*);
 
   static attribution_reporting::mojom::OsSupport GetOsSupport();
 

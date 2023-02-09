@@ -8,8 +8,10 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/types/pass_key.h"
+#include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -18,6 +20,9 @@
 #include "url/origin.h"
 
 namespace content {
+
+class AttributionDataHostManager;
+class RenderFrameHostImpl;
 
 // Class that receives report events from fenced frames, and uses a
 // per-destination-type maps of events to URLs to send reports. The maps may be
@@ -30,14 +35,18 @@ class CONTENT_EXPORT FencedFrameReporter
 
   FencedFrameReporter(
       base::PassKey<FencedFrameReporter> pass_key,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      AttributionDataHostManager* attribution_data_host_manager);
 
   // Creates a FencedFrameReporter that only maps kSharedStorageSelectUrl
   // destinations, using the passed in map.
   //
   // `url_loader_factory` is used to send all reports, and must not be null.
+  // `attribution_data_host_manager` is used to notify Attribution Reporting API
+  // for the beacons.
   static scoped_refptr<FencedFrameReporter> CreateForSharedStorage(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      AttributionDataHostManager* attribution_data_host_manager,
       ReportingUrlMap reporting_url_map);
 
   // Creates a FencedFrameReporter that maps FLEDGE ReportingDestination types
@@ -46,8 +55,11 @@ class CONTENT_EXPORT FencedFrameReporter
   // the corresponding mappings are passed in via OnUrlMappingReady().
   //
   // `url_loader_factory` is used to send all reports, and must not be null.
+  // `attribution_data_host_manager` is used to notify Attribution Reporting API
+  // for the beacons.
   static scoped_refptr<FencedFrameReporter> CreateForFledge(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      AttributionDataHostManager* attribution_data_host_manager);
 
   // Called when a mapping for reports of type `reporting_destination` is ready.
   // The reporter must currently be considering maps of type
@@ -93,7 +105,7 @@ class CONTENT_EXPORT FencedFrameReporter
       const std::string& event_type,
       const std::string& event_data,
       blink::FencedFrame::ReportingDestination reporting_destination,
-      const url::Origin& request_initiator,
+      RenderFrameHostImpl* request_initiator_frame,
       std::string& error_message);
 
   // Stores the payload that will be sent as part of the
@@ -116,11 +128,21 @@ class CONTENT_EXPORT FencedFrameReporter
   struct PendingEvent {
     PendingEvent(const std::string& type,
                  const std::string& data,
-                 const url::Origin& request_initiator);
+                 const url::Origin& request_initiator,
+                 BeaconId beacon_id);
+
+    PendingEvent(const PendingEvent&);
+    PendingEvent(PendingEvent&&);
+
+    PendingEvent& operator=(const PendingEvent&);
+    PendingEvent& operator=(PendingEvent&&);
+
+    ~PendingEvent();
 
     std::string type;
     std::string data;
     url::Origin request_initiator;
+    BeaconId beacon_id;
   };
 
   // The per-blink::FencedFrame::ReportingDestination reporting information.
@@ -152,6 +174,7 @@ class CONTENT_EXPORT FencedFrameReporter
       const std::string& event_data,
       blink::FencedFrame::ReportingDestination reporting_destination,
       const url::Origin& request_initiator,
+      BeaconId beacon_id,
       std::string& error_message);
 
   // Used by FencedFrameURLMappingTestPeer.
@@ -162,6 +185,10 @@ class CONTENT_EXPORT FencedFrameReporter
   }
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // Bound to the lifetime of the browser context. Could be null in Incognito
+  // mode or in test.
+  raw_ptr<AttributionDataHostManager> attribution_data_host_manager_;
 
   base::flat_map<blink::FencedFrame::ReportingDestination,
                  ReportingDestinationInfo>

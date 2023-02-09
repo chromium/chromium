@@ -43,6 +43,7 @@ struct AuctionConfig;
 
 namespace content {
 
+class AttributionDataHostManager;
 class InterestGroupManagerImpl;
 
 // An InterestGroupAuction Handles running an auction, or a component auction.
@@ -436,7 +437,8 @@ class CONTENT_EXPORT InterestGroupAuction
       const url::Origin& frame_origin,
       network::mojom::ClientSecurityStatePtr client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      blink::InterestGroupSet interest_groups_that_bid);
+      blink::InterestGroupSet interest_groups_that_bid,
+      AttributionDataHostManager* attribution_data_host_manager);
 
   // Called by AuctionRunner (for component auctions, indirectly via
   // NotifyComponentConfigPromisesResolved) when all promises relevant to this

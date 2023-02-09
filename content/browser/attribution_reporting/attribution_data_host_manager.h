@@ -9,8 +9,10 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "components/attribution_reporting/registration_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -31,14 +33,20 @@ class Origin;
 
 namespace content {
 
+class BrowserContext;
+
 struct AttributionInputEvent;
 struct GlobalRenderFrameHostId;
 
 // Interface responsible for coordinating `AttributionDataHost`s received from
 // the renderer.
-class AttributionDataHostManager {
+class CONTENT_EXPORT AttributionDataHostManager
+    : public base::SupportsWeakPtr<AttributionDataHostManager> {
  public:
-  virtual ~AttributionDataHostManager() = default;
+  static AttributionDataHostManager* FromBrowserContext(BrowserContext*);
+
+  AttributionDataHostManager();
+  virtual ~AttributionDataHostManager();
 
   // Registers a new data host with the browser process for the given context
   // origin. This is only called for events which are not associated with a
@@ -113,7 +121,11 @@ class AttributionDataHostManager {
   // Notifies the manager that a beacon has been sent.
   virtual void NotifyFencedFrameReportingBeaconSent(BeaconId beacon_id) = 0;
 
-  // Notifies the manager that a beacon data has been received.
+  // Notifies the manager whenever a response has been received to a beacon HTTP
+  // request. Must be invoked for each redirect received, as well as the final
+  // response. `reporting_origin` is the origin that sent `headers` that may
+  // contain attribution source registration. `is_final_response` indicates
+  // whether this is a redirect or a final response.
   virtual void NotifyFencedFrameReportingBeaconData(
       BeaconId beacon_id,
       url::Origin reporting_origin,

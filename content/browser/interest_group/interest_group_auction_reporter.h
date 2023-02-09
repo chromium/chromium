@@ -40,6 +40,7 @@ struct AuctionConfig;
 
 namespace content {
 
+class AttributionDataHostManager;
 class AuctionWorkletManager;
 class InterestGroupManagerImpl;
 
@@ -120,6 +121,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // All passed in raw pointers, including those in *BidInfo fields must outlive
   // the created InterestGroupAuctionReporter.
   //
+  // `attribution_data_host_manager` is needed to create `FencedFrameReporter`
+  // and could be null in Incognito mode or in test.
+  //
   // `frame_origin` is the origin of the frame that ran the auction.
   //
   // `client_security_state` is the ClientSecurityState of the frame.
@@ -134,6 +138,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   InterestGroupAuctionReporter(
       InterestGroupManagerImpl* interest_group_manager,
       AuctionWorkletManager* auction_worklet_manager,
+      AttributionDataHostManager* attribution_data_host_manager,
       std::unique_ptr<blink::AuctionConfig> auction_config,
       const url::Origin& frame_origin,
       network::mojom::ClientSecurityStatePtr client_security_state,

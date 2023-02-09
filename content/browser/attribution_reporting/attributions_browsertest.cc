@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include "build/build_config.h"
+#include <string>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -17,30 +19,42 @@
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/attribution_reporting/os_support.mojom.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
+#include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/fenced_frame/fenced_frame_reporter.h"
+#include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/page_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
+#include "content/test/fenced_frame_test_utils.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -52,7 +66,9 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
@@ -1644,6 +1660,212 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
                                                register_trigger_url)));
 
   expected_report.WaitForReport();
+}
+
+class AttributionsFencedFrameBrowserTest : public AttributionsBrowserTest {
+ public:
+  AttributionsFencedFrameBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{blink::features::kFencedFrames, {}},
+                              {features::kPrivacySandboxAdsAPIsOverride, {}}},
+        /*disabled_features=*/{});
+  }
+
+  FrameTreeNode* AddFencedFrame(
+      FrameTreeNode* root,
+      const GURL& fenced_frame_url,
+      scoped_refptr<FencedFrameReporter> fenced_frame_reporter) {
+    static constexpr char kAddFencedFrameScript[] = R"({
+        var f = document.createElement('fencedframe');
+        f.mode = 'opaque-ads';
+        document.body.appendChild(f);
+    })";
+    EXPECT_TRUE(ExecJs(root, kAddFencedFrameScript));
+
+    EXPECT_EQ(1U, root->child_count());
+    FrameTreeNode* fenced_frame_root_node =
+        GetFencedFrameRootNode(root->child_at(0));
+    EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
+    EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
+
+    // Get the urn mapping object.
+    FencedFrameURLMapping& url_mapping =
+        root->current_frame_host()->GetPage().fenced_frame_urls_map();
+
+    // Add url and its reporting metadata to fenced frame url mapping.
+    auto urn_uuid = AddAndVerifyFencedFrameURL(
+        &url_mapping, fenced_frame_url, std::move(fenced_frame_reporter));
+
+    TestFrameNavigationObserver observer(
+        fenced_frame_root_node->current_frame_host());
+
+    // Navigate the fenced frame.
+    EXPECT_TRUE(ExecJs(root, JsReplace("f.src = $1;", urn_uuid)));
+
+    observer.WaitForCommit();
+
+    return fenced_frame_root_node;
+  }
+
+  scoped_refptr<FencedFrameReporter> CreateFencedFrameReporter() {
+    return FencedFrameReporter::CreateForFledge(
+        web_contents()
+            ->GetPrimaryMainFrame()
+            ->GetStoragePartition()
+            ->GetURLLoaderFactoryForBrowserProcess(),
+        AttributionDataHostManager::FromBrowserContext(
+            web_contents()->GetBrowserContext()));
+  }
+
+ private:
+  GURL AddAndVerifyFencedFrameURL(
+      FencedFrameURLMapping* fenced_frame_url_mapping,
+      const GURL& https_url,
+      scoped_refptr<FencedFrameReporter> fenced_frame_reporter) {
+    absl::optional<GURL> urn_uuid =
+        fenced_frame_url_mapping->AddFencedFrameURLForTesting(
+            https_url, std::move(fenced_frame_reporter));
+    EXPECT_TRUE(urn_uuid.has_value());
+    EXPECT_TRUE(urn_uuid->is_valid());
+    return urn_uuid.value();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
+                       ReportEvent_ReportSent) {
+  // Expected reports must be registered before the server starts.
+  ExpectedReportWaiter expected_report(
+      GURL("https://a.test/.well-known/attribution-reporting/"
+           "report-event-attribution"),
+      /*attribution_destination=*/"https://a.test",
+      /*source_event_id=*/"5", /*source_type=*/"event",
+      /*trigger_data=*/"1", https_server());
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url =
+      https_server()->GetURL("a.test", "/page_with_impression_creator.html");
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  GURL fenced_frame_url(
+      https_server()->GetURL("a.test", "/page_with_impression_creator.html"));
+
+  GURL reporting_url = https_server()->GetURL(
+      "a.test", "/register_source_headers_trigger_same_origin.html");
+
+  scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
+      CreateFencedFrameReporter();
+  // Set valid reporting metadata for buyer.
+  fenced_frame_reporter->OnUrlMappingReady(
+      blink::FencedFrame::ReportingDestination::kBuyer,
+      {{"click", reporting_url}});
+
+  FrameTreeNode* fenced_frame_root_node =
+      AddFencedFrame(root, fenced_frame_url, std::move(fenced_frame_reporter));
+
+  // Perform the reportEvent call, with a unique body.
+  ASSERT_TRUE(ExecJs(fenced_frame_root_node, R"(
+        window.fence.reportEvent({
+          eventType: 'click',
+          eventData: 'this is a click',
+          destination: ['buyer'],
+        });
+      )"));
+
+  ASSERT_TRUE(ExecJs(root, JsReplace("createAttributionSrcImg($1);",
+                                     https_server()->GetURL(
+                                         "a.test",
+                                         "/attribution_reporting/"
+                                         "register_trigger_headers.html"))));
+
+  expected_report.WaitForReport();
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
+                       ReportEventRedirect_BothReportsSent) {
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server(), "/register_source_redirect");
+
+  // Expected reports must be registered before the server starts.
+  ExpectedReportWaiter expected_report(
+      GURL("https://a.test/.well-known/attribution-reporting/"
+           "report-event-attribution"),
+      /*attribution_destination=*/"https://a.test",
+      /*source_event_id=*/"1", /*source_type=*/"event",
+      /*trigger_data=*/"1", https_server());
+
+  ExpectedReportWaiter expected_report2(
+      GURL("https://b.test/.well-known/attribution-reporting/"
+           "report-event-attribution"),
+      /*attribution_destination=*/"https://a.test",
+      /*source_event_id=*/"5", /*source_type=*/"event",
+      /*trigger_data=*/"1", https_server());
+
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url =
+      https_server()->GetURL("a.test", "/page_with_impression_creator.html");
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  GURL fenced_frame_url(
+      https_server()->GetURL("a.test", "/page_with_impression_creator.html"));
+
+  GURL reporting_url =
+      https_server()->GetURL("a.test", "/register_source_redirect");
+
+  scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
+      CreateFencedFrameReporter();
+  // Set valid reporting metadata for buyer.
+  fenced_frame_reporter->OnUrlMappingReady(
+      blink::FencedFrame::ReportingDestination::kBuyer,
+      {{"click", reporting_url}});
+
+  FrameTreeNode* fenced_frame_root_node =
+      AddFencedFrame(root, fenced_frame_url, std::move(fenced_frame_reporter));
+
+  // Perform the reportEvent call, with a unique body. "this is a click");
+  ASSERT_TRUE(ExecJs(fenced_frame_root_node, R"(
+        window.fence.reportEvent({
+          eventType: 'click',
+          eventData: 'this is a click',
+          destination: ['buyer'],
+        });
+      )"));
+
+  register_response->WaitForRequest();
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
+  http_response->AddCustomHeader(
+      kAttributionReportingRegisterSourceHeader,
+      R"({"source_event_id":"1","destination":"https://a.test"})");
+
+  http_response->AddCustomHeader(
+      "Location",
+      https_server()
+          ->GetURL("b.test",
+                   "/register_source_headers_trigger_same_origin.html")
+          .spec());
+  register_response->Send(http_response->ToResponseString());
+  register_response->Done();
+
+  GURL register_trigger_url = https_server()->GetURL(
+      "a.test", "/attribution_reporting/register_trigger_headers.html");
+  ASSERT_TRUE(ExecJs(
+      root, JsReplace("createAttributionSrcImg($1);", register_trigger_url)));
+  expected_report.WaitForReport();
+
+  GURL register_trigger_url2 = https_server()->GetURL(
+      "b.test", "/attribution_reporting/register_trigger_headers.html");
+  ASSERT_TRUE(ExecJs(
+      root, JsReplace("createAttributionSrcImg($1);", register_trigger_url2)));
+  expected_report2.WaitForReport();
 }
 
 }  // namespace content

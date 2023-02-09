@@ -32,6 +32,7 @@ struct AuctionConfig;
 
 namespace content {
 
+class AttributionDataHostManager;
 class InterestGroupAuctionReporter;
 class InterestGroupManagerImpl;
 
@@ -105,8 +106,10 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // Creates an entire FLEDGE auction. Single-use object.
   //
   // Arguments:
-  // `auction_worklet_manager` and `interest_group_manager` must remain valid
-  //  until the  AuctionRunner is destroyed.
+  // `auction_worklet_manager`, `interest_group_manager` and
+  // `attribution_data_host_manager` must remain valid
+  //  until the  AuctionRunner is destroyed. `attribution_data_host_manager`
+  //  could be null in Incognito mode or in test.
   //
   // `auction_config` is the configuration provided by client JavaScript in
   //  the renderer in order to initiate the auction.
@@ -134,6 +137,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   static std::unique_ptr<AuctionRunner> CreateAndStart(
       AuctionWorkletManager* auction_worklet_manager,
       InterestGroupManagerImpl* interest_group_manager,
+      AttributionDataHostManager* attribution_data_host_manager,
       const blink::AuctionConfig& auction_config,
       const url::Origin& frame_origin,
       network::mojom::ClientSecurityStatePtr client_security_state,
@@ -183,6 +187,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   AuctionRunner(
       AuctionWorkletManager* auction_worklet_manager,
       InterestGroupManagerImpl* interest_group_manager,
+      AttributionDataHostManager* attribution_data_host_manager,
       auction_worklet::mojom::KAnonymityBidMode kanon_mode,
       const blink::AuctionConfig& auction_config,
       const url::Origin& frame_origin,
@@ -226,6 +231,10 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       blink::AuctionConfig* config);
 
   const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
+
+  // Needed to create `FencedFrameReporter`. Bound to the life time of the
+  // browser context. Could be null in Incognito mode or in test.
+  const raw_ptr<AttributionDataHostManager> attribution_data_host_manager_;
 
   const url::Origin frame_origin_;
 

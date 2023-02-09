@@ -7794,7 +7794,7 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
   std::string error_message;
   if (!fenced_frame_properties->fenced_frame_reporter_->SendReport(
           event_type, event_data, destination,
-          /*request_initiator=*/GetLastCommittedOrigin(), error_message)) {
+          /*request_initiator_frame=*/this, error_message)) {
     AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
                         error_message);
   }

@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/back_forward_cache_browsertest.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
@@ -4639,7 +4640,9 @@ class FencedFrameReportEventBrowserTest
         web_contents()
             ->GetPrimaryMainFrame()
             ->GetStoragePartition()
-            ->GetURLLoaderFactoryForBrowserProcess());
+            ->GetURLLoaderFactoryForBrowserProcess(),
+        AttributionDataHostManager::FromBrowserContext(
+            web_contents()->GetBrowserContext()));
   }
 
   // A helper function for specifying reportEvent tests. Each step consists of a
