@@ -7,6 +7,10 @@
 # BGRA_8888 support is poor in Android emulator.
 -GLTextureImageBackingFactoryWithReadbackTest.ReadbackToMemory/BGRA_8888
 
+# Skia access for RGBA_F16 is broken in this emulator, see
+# https://crbug.com/1414446 for details.
+-GLTextureImageBackingFactoryWithFormatTest.Basic/RGBA_F16
+
 # Something is broken on android-pie-x86-rel with Skia and these formats, see
 # https://crbug.com/1411266 for details.
 -WrappedSkImageBackingFactoryTest.*/ALPHA_8
