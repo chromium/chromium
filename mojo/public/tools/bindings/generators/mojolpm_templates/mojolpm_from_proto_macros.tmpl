@@ -74,34 +74,28 @@ bool FromProto(
     const {{type}}& input,
     std::vector<{{mojom_type}}>& output) {
   bool result = true;
-  size_t i = 0;
 
-  output.resize(input.values_size());
-
+  output.reserve(input.values_size());
   for (const auto& entry : input.values()) {
-{%-   if kind.kind|is_nullable_kind %}
     {{mojom_type}} value;
+{%-   if kind.kind|is_nullable_kind %}
     {{mojom_maybe_type}} maybe_value;
     if (FromProto(entry.value(), maybe_value)) {
       value = std::move(maybe_value);
     }
-    output[i++] = std::move(value);
 {%-   elif kind.kind|is_map_kind or kind.kind|is_array_kind %}
-    {{mojom_type}} values;
-    result = FromProto(entry, values);
+    result = FromProto(entry, value);
     if (!result) {
       break;
     }
-    output[i++] = std::move(values);
 {%-   else %}
-    {{mojom_type}} value;
     result = FromProto(entry.value(), value);
     if (!result) {
       break;
     }
-    output[i++] = std::move(value);
 {%-   endif %}
-  }
+    output.emplace_back(std::move(value));
+}
 
   return result;
 }{{"\n"-}}
