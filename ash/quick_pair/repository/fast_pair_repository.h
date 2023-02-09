@@ -20,10 +20,6 @@ class DeviceImageInfo;
 }  // namespace bluetooth_config
 }  // namespace chromeos
 
-namespace device {
-class BluetoothDevice;
-}  // namespace device
-
 namespace ash {
 namespace quick_pair {
 
@@ -117,9 +113,9 @@ class FastPairRepository {
   // disk, if model ID is not already persisted.
   virtual bool PersistDeviceImages(scoped_refptr<Device> device) = 0;
 
-  // Evicts the images and device ID belonging to |device| from
-  // disk, if model ID is not in use by other device IDs.
-  virtual bool EvictDeviceImages(const device::BluetoothDevice* device) = 0;
+  // Evicts the images and mac address record for |mac_address| from
+  // disk, if model ID is not in use by other mac addresses.
+  virtual bool EvictDeviceImages(const std::string& mac_address) = 0;
 
   // Returns device images belonging to |device_id|, if found.
   virtual absl::optional<bluetooth_config::DeviceImageInfo> GetImagesForDevice(

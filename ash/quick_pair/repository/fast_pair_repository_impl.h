@@ -23,7 +23,6 @@ class DeviceImageInfo;
 
 namespace device {
 class BluetoothAdapter;
-class BluetoothDevice;
 }  // namespace device
 
 namespace nearby {
@@ -83,7 +82,7 @@ class FastPairRepositoryImpl : public FastPairRepository,
   absl::optional<std::string> GetDeviceDisplayNameFromCache(
       std::vector<uint8_t> account_key) override;
   bool PersistDeviceImages(scoped_refptr<Device> device) override;
-  bool EvictDeviceImages(const device::BluetoothDevice* device) override;
+  bool EvictDeviceImages(const std::string& mac_address) override;
   absl::optional<bluetooth_config::DeviceImageInfo> GetImagesForDevice(
       const std::string& device_id) override;
   void CheckOptInStatus(CheckOptInStatusCallback callback) override;

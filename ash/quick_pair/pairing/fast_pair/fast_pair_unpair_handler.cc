@@ -20,18 +20,10 @@ FastPairUnpairHandler::FastPairUnpairHandler(
 
 FastPairUnpairHandler::~FastPairUnpairHandler() = default;
 
+// TODO(235117226): Consider removing this file.
 void FastPairUnpairHandler::DeviceRemoved(device::BluetoothAdapter* adapter,
                                           device::BluetoothDevice* device) {
-  // TODO(b/235117226): Move this logic to FastPairDelegate implementation for
-  // better consistency.
-  if (!device || !adapter || device->IsPaired())
-    return;
-
-  if (FastPairRepository::Get()->EvictDeviceImages(device)) {
-    QP_LOG(VERBOSE) << __func__
-                    << ": Repository evicted device images for device = "
-                    << device->GetAddress();
-  }
+  return;
 }
 
 }  // namespace quick_pair

@@ -34,6 +34,7 @@ void FastPairBluetoothConfigDelegate::ForgetDevice(
     const std::string& mac_address) {
   FastPairRepository::Get()->DeleteAssociatedDevice(mac_address,
                                                     base::DoNothing());
+  FastPairRepository::Get()->EvictDeviceImages(mac_address);
 }
 
 void FastPairBluetoothConfigDelegate::SetAdapterStateController(

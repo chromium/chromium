@@ -841,12 +841,10 @@ bool FastPairRepositoryImpl::PersistDeviceImages(scoped_refptr<Device> device) {
   return device_image_store_->PersistDeviceImages(device->metadata_id());
 }
 
-bool FastPairRepositoryImpl::EvictDeviceImages(
-    const device::BluetoothDevice* device) {
-  const std::string mac_address = device->GetAddress();
+bool FastPairRepositoryImpl::EvictDeviceImages(const std::string& mac_address) {
   QP_LOG(VERBOSE) << __func__
                   << ": Evicting mac address to model ID record for: "
-                  << device->GetAddress();
+                  << mac_address;
 
   // TODO(235117226): Remove the records associated with the BLE address.
   absl::optional<const std::string> hex_model_id =

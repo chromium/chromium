@@ -148,8 +148,7 @@ bool FakeFastPairRepository::PersistDeviceImages(scoped_refptr<Device> device) {
 }
 
 // Unimplemented.
-bool FakeFastPairRepository::EvictDeviceImages(
-    const device::BluetoothDevice* device) {
+bool FakeFastPairRepository::EvictDeviceImages(const std::string& mac_address) {
   return true;
 }
 

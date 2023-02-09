@@ -908,7 +908,7 @@ TEST_F(FastPairRepositoryImplTest, EvictDeviceImages) {
       device_address_map_->GetModelIdForMacAddress(kTestClassicAddress1));
   ASSERT_TRUE(device_image_store_->GetImagesForDeviceModel(kValidModelId));
 
-  fast_pair_repository_->EvictDeviceImages(&classic_bluetooth_device_);
+  fast_pair_repository_->EvictDeviceImages(kTestClassicAddress1);
   base::RunLoop().RunUntilIdle();
 
   device_address_map_->RefreshCacheForTest();
