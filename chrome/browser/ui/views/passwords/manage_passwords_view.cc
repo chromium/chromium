@@ -42,6 +42,7 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -111,6 +112,41 @@ std::unique_ptr<views::View> CreateDetailsRow(
   action_button->SetTooltipText(action_button_tooltip_text);
   row->AddChildView(CreateWrappedView(std::move(action_button)));
   return row;
+}
+
+std::unique_ptr<views::View> CreatePasswordLabelWithEyeIconView(
+    std::unique_ptr<views::Label> password_label) {
+  auto password_label_with_eye_icon_view =
+      std::make_unique<views::BoxLayoutView>();
+  auto* password_label_ptr = password_label_with_eye_icon_view->AddChildView(
+      std::move(password_label));
+  password_label_ptr->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kScaleToMaximum));
+
+  auto* eye_icon = password_label_with_eye_icon_view->AddChildView(
+      std::make_unique<views::ToggleImageButton>(
+          views::Button::PressedCallback()));
+  eye_icon->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_SHOW_PASSWORD));
+  eye_icon->SetToggledTooltipText(
+      l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_HIDE_PASSWORD));
+  eye_icon->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+  views::SetImageFromVectorIconWithColorId(
+      eye_icon, views::kEyeIcon, ui::kColorIcon, ui::kColorIconDisabled);
+  views::SetToggledImageFromVectorIconWithColorId(
+      eye_icon, views::kEyeCrossedIcon, ui::kColorIcon, ui::kColorIconDisabled);
+
+  eye_icon->SetCallback(base::BindRepeating(
+      [](views::ToggleImageButton* toggle_button,
+         views::Label* password_label) {
+        password_label->SetObscured(!password_label->GetObscured());
+        toggle_button->SetToggled(!toggle_button->GetToggled());
+      },
+      eye_icon, password_label_ptr));
+
+  return password_label_with_eye_icon_view;
 }
 
 std::unique_ptr<views::Label> CreateNoteLabel(
@@ -323,11 +359,13 @@ std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordDetailsView()
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_COPY_USERNAME),
       base::BindRepeating(&WriteToClipboard,
                           currently_selected_password_->username_value)));
-
-  // TODO(crbug.com/1408790): Add a key icon to the password field to reveal the
-  // password.
+  std::unique_ptr<views::Label> password_label =
+      CreatePasswordLabel(*currently_selected_password_);
   container_view->AddChildView(CreateDetailsRow(
-      kKeyIcon, CreatePasswordLabel(*currently_selected_password_),
+      kKeyIcon,
+      currently_selected_password_->federation_origin.opaque()
+          ? CreatePasswordLabelWithEyeIconView(std::move(password_label))
+          : std::move(password_label),
       vector_icons::kContentCopyIcon,
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_COPY_PASSWORD),
       base::BindRepeating(&WriteToClipboard,
