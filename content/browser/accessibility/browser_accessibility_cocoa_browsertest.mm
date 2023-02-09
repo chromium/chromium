@@ -555,6 +555,56 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
+                       TestAXHeadersShouldOnlyIncludeColHeaders) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLoadComplete);
+
+  GURL url(
+      R"HTML(data:text/html,
+      <table aria-label="Population per country">
+        <thead style=display:block>
+          <tr>
+            <th aria-label="Country">Country</th>
+            <th aria-label="Population">Population</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td role=rowheader>Canada</td>
+            <td>37</td>
+          </tr>
+          <tr>
+            <td role=rowheader>USA</td>
+            <td>331</td>
+          </tr>
+        </tbody>
+      </table>
+  )HTML");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  BrowserAccessibility* table = FindNode(ax::mojom::Role::kTable);
+  base::scoped_nsobject<BrowserAccessibilityCocoa> table_obj(
+      [table->GetNativeViewAccessible() retain]);
+
+  EXPECT_NSEQ(@"AXTable", [table_obj role]);
+  EXPECT_NSEQ(@"Population per country", [table_obj accessibilityLabel]);
+  base::scoped_nsobject<BrowserAccessibilityCocoa> table_header(
+      [[table_obj header] retain]);
+
+  NSArray* children = [table_header children];
+  EXPECT_EQ(2U, [children count]);
+
+  EXPECT_NSEQ(@"AXCell", [children[0] role]);
+  EXPECT_NSEQ(@"Country", [children[0] accessibilityLabel]);
+
+  EXPECT_NSEQ(@"AXCell", [children[1] role]);
+  EXPECT_NSEQ(@"Population", [children[1] accessibilityLabel]);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
                        TestTreeContextMenuEvent) {
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                          ui::kAXModeComplete,

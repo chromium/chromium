@@ -565,7 +565,6 @@ class AX_EXPORT AXNode final {
   absl::optional<int> GetTableAriaColCount() const;
   absl::optional<int> GetTableAriaRowCount() const;
   absl::optional<int> GetTableCellCount() const;
-  absl::optional<bool> GetTableHasColumnOrRowHeaderNode() const;
   AXNode* GetTableCaption() const;
   AXNode* GetTableCellFromIndex(int index) const;
   AXNode* GetTableCellFromCoords(int row_index, int col_index) const;

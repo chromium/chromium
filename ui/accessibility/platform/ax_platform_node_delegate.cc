@@ -961,13 +961,6 @@ absl::optional<int> AXPlatformNodeDelegate::GetTableAriaRowCount() const {
   return aria_row_count;
 }
 
-absl::optional<bool> AXPlatformNodeDelegate::GetTableHasColumnOrRowHeaderNode()
-    const {
-  if (node_)
-    return node_->GetTableHasColumnOrRowHeaderNode();
-  return absl::nullopt;
-}
-
 std::vector<int32_t> AXPlatformNodeDelegate::GetColHeaderNodeIds() const {
   if (node_)
     return node_->GetTableColHeaderNodeIds();

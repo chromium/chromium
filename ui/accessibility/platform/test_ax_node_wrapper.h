@@ -116,7 +116,6 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegate {
   absl::optional<int> GetTableAriaColCount() const override;
   absl::optional<int> GetTableAriaRowCount() const override;
   absl::optional<int> GetTableCellCount() const override;
-  absl::optional<bool> GetTableHasColumnOrRowHeaderNode() const override;
   std::vector<int32_t> GetColHeaderNodeIds() const override;
   std::vector<int32_t> GetColHeaderNodeIds(int col_index) const override;
   std::vector<int32_t> GetRowHeaderNodeIds() const override;

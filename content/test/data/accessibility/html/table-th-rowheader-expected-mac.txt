@@ -21,7 +21,3 @@ AXWebArea AXTitle='Table example - th rowheader'
 ++++++AXCell AXColumnIndexRange={loc: 1, len: 1} AXRowHeaderUIElements=[:9] AXRowIndexRange={loc: 1, len: 1}
 ++++++++AXStaticText AXValue='Smith'
 ++++AXGroup
-++++++AXCell AXColumnIndexRange={loc: 0, len: 1} AXRowIndexRange={loc: 0, len: 1}
-++++++++AXStaticText AXValue='Firstname'
-++++++AXCell AXColumnIndexRange={loc: 0, len: 1} AXRowIndexRange={loc: 1, len: 1}
-++++++++AXStaticText AXValue='Lastname'

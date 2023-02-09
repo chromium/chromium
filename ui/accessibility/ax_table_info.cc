@@ -154,8 +154,8 @@ void AXTableInfo::Invalidate() {
 
 void AXTableInfo::ClearVectors() {
   col_headers.clear();
+  all_col_headers.clear();
   row_headers.clear();
-  all_headers.clear();
   cell_ids.clear();
   unique_cell_ids.clear();
   cell_data_vector.clear();
@@ -377,7 +377,7 @@ void AXTableInfo::BuildCellAndHeaderVectorsFromCellData() {
             continue;
           }
           col_headers[c].push_back(cell->id());
-          all_headers.push_back(cell->id());
+          all_col_headers.push_back(cell->id());
         } else if (cell->GetRole() == ax::mojom::Role::kRowHeader) {
           // If this is a row header spanning horizontally, we'll encounter this
           // cell multiple times as we scan across the row.
@@ -387,7 +387,6 @@ void AXTableInfo::BuildCellAndHeaderVectorsFromCellData() {
             continue;
           }
           row_headers[r].push_back(cell->id());
-          all_headers.push_back(cell->id());
         }
       }
     }
@@ -446,11 +445,13 @@ void AXTableInfo::UpdateExtraMacNodes() {
     for (size_t i = 0; i < col_count; i++)
       UpdateExtraMacColumnNodeAttributes(i);
 
-    // Update the table header container to contain all headers.
+    // Update the table header container to contain all column headers. Row
+    // headers should not be included, according to the Core-AAM 1.2 about the
+    // table role.
     AXNodeData data = extra_mac_nodes[col_count]->data();
     data.intlist_attributes.clear();
     data.AddIntListAttribute(ax::mojom::IntListAttribute::kIndirectChildIds,
-                             all_headers);
+                             all_col_headers);
     extra_mac_nodes[col_count]->SetData(data);
 
   }  // tree_update_in_progress.

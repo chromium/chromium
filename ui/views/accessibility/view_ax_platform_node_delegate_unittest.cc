@@ -931,7 +931,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, FocusOnMenuClose) {
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTableTest, TableHasHeader) {
-  EXPECT_TRUE(table_accessibility()->GetTableHasColumnOrRowHeaderNode());
+  EXPECT_TRUE(table_accessibility()->TableHasColumnOrRowHeaderNodeForTesting());
   EXPECT_EQ(size_t{4}, table_accessibility()->GetColHeaderNodeIds().size());
   EXPECT_TRUE(table_accessibility()->GetColHeaderNodeIds(5).empty());
 }

@@ -714,13 +714,6 @@ const ui::AXUniqueId& ViewAXPlatformNodeDelegate::GetUniqueId() const {
   return ViewAccessibility::GetUniqueId();
 }
 
-absl::optional<bool>
-ViewAXPlatformNodeDelegate::GetTableHasColumnOrRowHeaderNode() const {
-  if (!GetAncestorTableView())
-    return false;
-  return !GetAncestorTableView()->visible_columns().empty();
-}
-
 std::vector<int32_t> ViewAXPlatformNodeDelegate::GetColHeaderNodeIds() const {
   std::vector<int32_t> col_header_ids;
   if (!virtual_children().empty()) {
@@ -846,6 +839,14 @@ void ViewAXPlatformNodeDelegate::GetViewsInGroupForSet(
             return view_accessibility.IsIgnored();
           }),
       views_in_group->end());
+}
+
+bool ViewAXPlatformNodeDelegate::TableHasColumnOrRowHeaderNodeForTesting()
+    const {
+  if (!GetAncestorTableView()) {
+    return false;
+  }
+  return !GetAncestorTableView()->visible_columns().empty();
 }
 
 ViewAXPlatformNodeDelegate::ChildWidgetsResult

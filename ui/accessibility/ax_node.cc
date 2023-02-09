@@ -1318,15 +1318,6 @@ absl::optional<int> AXNode::GetTableCellCount() const {
   return static_cast<int>(table_info->unique_cell_ids.size());
 }
 
-absl::optional<bool> AXNode::GetTableHasColumnOrRowHeaderNode() const {
-  DCHECK(!tree_->GetTreeUpdateInProgressState());
-  const AXTableInfo* table_info = GetAncestorTableInfo();
-  if (!table_info)
-    return absl::nullopt;
-
-  return !table_info->all_headers.empty();
-}
-
 AXNode* AXNode::GetTableCellFromIndex(int index) const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();

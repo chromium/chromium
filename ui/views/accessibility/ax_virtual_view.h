@@ -160,7 +160,6 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegate {
   bool IsOffscreen() const override;
   const ui::AXUniqueId& GetUniqueId() const override;
   gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent() override;
-  absl::optional<bool> GetTableHasColumnOrRowHeaderNode() const override;
   std::vector<int32_t> GetColHeaderNodeIds() const override;
   std::vector<int32_t> GetColHeaderNodeIds(int col_index) const override;
   absl::optional<int32_t> GetCellId(int row_index,

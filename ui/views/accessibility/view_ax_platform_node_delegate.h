@@ -22,6 +22,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/table/table_view.h"
+#include "ui/views/views_export.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace ui {
@@ -40,8 +41,9 @@ class View;
 // |ViewAXPlatformNodeDelegate| to interface with the native accessibility
 // toolkit. This class owns the |AXPlatformNode|, which implements those native
 // APIs.
-class ViewAXPlatformNodeDelegate : public ViewAccessibility,
-                                   public ui::AXPlatformNodeDelegate {
+class VIEWS_EXPORT ViewAXPlatformNodeDelegate
+    : public ViewAccessibility,
+      public ui::AXPlatformNodeDelegate {
  public:
   ViewAXPlatformNodeDelegate(const ViewAXPlatformNodeDelegate&) = delete;
   ViewAXPlatformNodeDelegate& operator=(const ViewAXPlatformNodeDelegate&) =
@@ -103,7 +105,6 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
 
   // Also in |ViewAccessibility|.
   const ui::AXUniqueId& GetUniqueId() const override;
-  absl::optional<bool> GetTableHasColumnOrRowHeaderNode() const override;
   std::vector<int32_t> GetColHeaderNodeIds() const override;
   std::vector<int32_t> GetColHeaderNodeIds(int col_index) const override;
   absl::optional<int32_t> GetCellId(int row_index,
@@ -112,6 +113,8 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
   bool IsOrderedSet() const override;
   absl::optional<int> GetPosInSet() const override;
   absl::optional<int> GetSetSize() const override;
+
+  bool TableHasColumnOrRowHeaderNodeForTesting() const;
 
  protected:
   explicit ViewAXPlatformNodeDelegate(View* view);

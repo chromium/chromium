@@ -440,10 +440,6 @@ gfx::AcceleratedWidget AXVirtualView::GetTargetForNativeAccessibilityEvent() {
   return gfx::kNullAcceleratedWidget;
 }
 
-absl::optional<bool> AXVirtualView::GetTableHasColumnOrRowHeaderNode() const {
-  return GetDelegate()->GetTableHasColumnOrRowHeaderNode();
-}
-
 std::vector<int32_t> AXVirtualView::GetColHeaderNodeIds() const {
   return GetDelegate()->GetColHeaderNodeIds();
 }

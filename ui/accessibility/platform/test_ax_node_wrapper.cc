@@ -486,11 +486,6 @@ absl::optional<int> TestAXNodeWrapper::GetTableCellCount() const {
   return node_->GetTableCellCount();
 }
 
-absl::optional<bool> TestAXNodeWrapper::GetTableHasColumnOrRowHeaderNode()
-    const {
-  return node_->GetTableHasColumnOrRowHeaderNode();
-}
-
 std::vector<AXNodeID> TestAXNodeWrapper::GetColHeaderNodeIds() const {
   return node_->GetTableColHeaderNodeIds();
 }
