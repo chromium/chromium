@@ -144,7 +144,7 @@ class AX_EXPORT AXTreeObserver : public base::CheckedObserver {
   // map entry that corresponds to that tree. The observers maintained in the
   // observers list of that AXTree might need to be notified of that change to
   // remove themselves from the list, if needed.
-  virtual void OnTreeManagerWillBeRemoved(AXTree* tree) {}
+  virtual void OnTreeManagerWillBeRemoved(AXTreeID previous_tree_id) {}
 
   enum ChangeType {
     NODE_CREATED,
