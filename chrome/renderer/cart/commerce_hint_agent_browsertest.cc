@@ -1801,6 +1801,21 @@ IN_PROC_BROWSER_TEST_F(CommerceHintDOMBasedHeuristicsTest,
   WaitForUmaCount("Commerce.Carts.AddToCartButtonDetection", 3);
 }
 
+IN_PROC_BROWSER_TEST_F(CommerceHintDOMBasedHeuristicsTest,
+                       TestAddToCartPattern) {
+  NavigateToURL("https://www.guitarcenter.com/product-page.html");
+  // Focus on an AddToCart button and then send AddToCart requests.
+  EXPECT_EQ(nullptr,
+            content::EvalJs(web_contents(), "focusElement(\"buttonOne\")"));
+  SendXHR("/wp-admin/admin-ajax.php", "{\"sku\": \"123\", \"quantity\":1");
+
+#if !BUILDFLAG(IS_ANDROID)
+  WaitForCartCount(kExpectedExampleFallbackCart);
+#endif
+  WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 1);
+  WaitForUmaCount("Commerce.Carts.AddToCartButtonDetection", 1);
+}
+
 class CommerceHintDOMBasedHeuristicsSkipTest : public CommerceHintAgentTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {

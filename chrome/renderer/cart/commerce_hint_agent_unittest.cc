@@ -44,12 +44,27 @@ const char* kAddToCart[] = {
   "isQuickAddToCartButton=true", // costco.com
 };
 
+const char* kAddToCartWithDOMBasedHeuristics[] = {
+  "{\"productId\":\"123\",\"quantity\":14}",
+  "{\"productId\":\"123\",\"quantity\":\"151\"}",
+  "{\"Quantity\":\"2\"}",
+  "{\"cart_quantity\":\"23\"}",
+  "{\"product_quantity\":76}",
+};
+
 const char* kNotAddToCart[] = {
   "misadd-to-cart",
   "add_to_cartoon",
   "_add_to_basketball",
   "cart/address",
   "golfcart/add",
+};
+
+const char* kNotAddToCartWithDOMBasedHeuristics[] = {
+  "{\"productName\":\"quantity_calculator\"}",
+  "quantity=1",
+  "{\"product_quantity\":ab}",
+  "{\"quality\":\"2\"}",
 };
 
 const char* kVisitCart[] = {
@@ -822,6 +837,17 @@ TEST_F(CommerceHintAgentUnitTest, IsAddToCart) {
 #endif
       {{"add-to-cart-pattern", "foo"}});
   EXPECT_FALSE(CommerceHintAgent::IsAddToCart("request_bar"));
+}
+
+TEST_F(CommerceHintAgentUnitTest, IsAddToCartForDomBasedHeuristics) {
+  for (auto* str : kAddToCartWithDOMBasedHeuristics) {
+    EXPECT_TRUE(CommerceHintAgent::IsAddToCartForDomBasedHeuristics(str))
+        << str;
+  }
+  for (auto* str : kNotAddToCartWithDOMBasedHeuristics) {
+    EXPECT_FALSE(CommerceHintAgent::IsAddToCartForDomBasedHeuristics(str))
+        << str;
+  }
 }
 
 TEST_F(CommerceHintAgentUnitTest, IsAddToCart_SkipLengthLimit) {

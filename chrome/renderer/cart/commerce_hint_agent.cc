@@ -202,6 +202,10 @@ constexpr base::FeatureParam<std::string> kCouponProductIdPatternMapping{
     // Empty JSON string.
     ""};
 
+constexpr base::FeatureParam<std::string> kDOMBasedAddToCartRequestPattern{
+    &commerce::kChromeCartDomBasedHeuristics, "add-to-cart-request-pattern",
+    "(cart|product)?[\"|_|-]quantity\":[\"]?[\\d]+"};
+
 std::string eTLDPlusOne(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
@@ -360,6 +364,14 @@ const re2::RE2& GetAddToCartPattern() {
   return *instance;
 }
 
+const re2::RE2& GetDOMBasedAddToCartPattern() {
+  re2::RE2::Options options;
+  options.set_case_sensitive(false);
+  static base::NoDestructor<re2::RE2> instance(
+      kDOMBasedAddToCartRequestPattern.Get(), options);
+  return *instance;
+}
+
 const std::map<std::string, std::string>& GetPurchaseURLPatternMapping() {
   static base::NoDestructor<std::map<std::string, std::string>> pattern_map([] {
     base::Value json(
@@ -499,7 +511,8 @@ const std::map<std::string, std::string>& GetSkipAddToCartMapping() {
 }
 
 bool DetectAddToCart(content::RenderFrame* render_frame,
-                     const blink::WebURLRequest& request) {
+                     const blink::WebURLRequest& request,
+                     bool should_use_dom_based_heuristics) {
   blink::WebLocalFrame* frame = render_frame->GetWebFrame();
   const GURL& navigation_url(frame->GetDocument().Url());
   const GURL& url = request.Url();
@@ -583,7 +596,14 @@ bool DetectAddToCart(content::RenderFrame* render_frame,
     // Per-site skipping length limit when checking request text.
     bool skip_length_limit = navigation_url.DomainIs("otterbox.com");
 
-    if (CommerceHintAgent::IsAddToCart(str, skip_length_limit)) {
+    bool is_add_to_cart_request =
+        CommerceHintAgent::IsAddToCart(str, skip_length_limit);
+    if (should_use_dom_based_heuristics && !is_add_to_cart_request) {
+      is_add_to_cart_request =
+          CommerceHintAgent::IsAddToCartForDomBasedHeuristics(str);
+    }
+
+    if (is_add_to_cart_request) {
       std::string product_id;
       if (commerce::IsPartnerMerchant(url)) {
         GetProductIdFromRequest(str.substr(0, kLengthLimit), &product_id);
@@ -686,6 +706,12 @@ bool CommerceHintAgent::IsAddToCart(base::StringPiece str,
                                     bool skip_length_limit) {
   return PartialMatch(skip_length_limit ? str : str.substr(0, kLengthLimit),
                       GetAddToCartPattern());
+}
+
+bool CommerceHintAgent::IsAddToCartForDomBasedHeuristics(
+    base::StringPiece str) {
+  return PartialMatch(str.substr(0, kLengthLimit),
+                      GetDOMBasedAddToCartPattern());
 }
 
 // TODO(crbug.com/1310422): Remove below two APIs and move all related unit
@@ -986,8 +1012,9 @@ void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
   // DidStartNavigation(). Some sites use GET requests though, so special-case
   // them here.
   GURL request_url = request.Url();
+  bool should_use_dom_based_heuristics = ShouldUseDOMBasedHeuristics();
   bool add_to_cart_active = true;
-  if (ShouldUseDOMBasedHeuristics()) {
+  if (should_use_dom_based_heuristics) {
     add_to_cart_active = base::Time::Now() - add_to_cart_focus_time_ <
                          commerce::kAddToCartButtonActiveTime.Get();
   }
@@ -995,7 +1022,8 @@ void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
        request_url.DomainIs(kEbayDomain) ||
        url.DomainIs(kElectronicExpressDomain)) &&
       add_to_cart_active) {
-    bool is_add_to_cart = DetectAddToCart(render_frame(), request);
+    bool is_add_to_cart = DetectAddToCart(render_frame(), request,
+                                          should_use_dom_based_heuristics);
     OnWillSendRequest(render_frame(), is_add_to_cart);
   }
 

@@ -41,6 +41,10 @@ class CommerceHintAgent
   // crop the string to under length limit when matching.
   static bool IsAddToCart(base::StringPiece str,
                           bool skip_length_limit = false);
+  // Whether the string from XHR form contents matches the add-to-cart
+  // heuristics. This should only be used when DOM-based AddToCart heuristics
+  // are enabled.
+  static bool IsAddToCartForDomBasedHeuristics(base::StringPiece str);
   // Whether the main frame URL is a shopping cart.
   static bool IsVisitCart(const GURL& main_frame_url);
   // Whether the main frame URL is a checkout page.
