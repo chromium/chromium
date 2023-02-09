@@ -21,6 +21,7 @@
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
@@ -241,6 +242,53 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
 }
 
 TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
+       ImplicitGrant_CrossSiteFrameQueryStillAsk) {
+  // First, grant the permission based on FPS membership.
+  TopLevelStorageAccessPermissionContext permission_context(profile());
+  permissions::PermissionRequestID fake_id = CreateFakeID();
+
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  DCHECK(settings_map);
+
+  // Check no `SessionModel::NonRestorableUserSession` setting exists yet.
+  ContentSettingsForOneType non_restorable_grants;
+  settings_map->GetSettingsForOneType(
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
+      content_settings::SessionModel::NonRestorableUserSession);
+  ASSERT_EQ(0u, non_restorable_grants.size());
+
+  base::test::TestFuture<ContentSetting> future;
+  permission_context.DecidePermissionForTesting(
+      fake_id, GetRequesterURL(), GetTopLevelURL(),
+      /*user_gesture=*/true, future.GetCallback());
+
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, future.Get());
+
+  // Check the `SessionModel::NonRestorableUserSession` settings granted by FPS.
+  settings_map->GetSettingsForOneType(
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
+      content_settings::SessionModel::NonRestorableUserSession);
+  EXPECT_EQ(1u, non_restorable_grants.size());
+
+  // Next, set up a cross-site frame.
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
+  content::RenderFrameHost* navigated_subframe =
+      content::NavigationSimulator::NavigateAndCommitFromDocument(
+          GetDummyEmbeddingUrl(), subframe);
+
+  // Even though the permission is granted, queries from cross-site frames
+  // should return the default value.
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            permission_context
+                .GetPermissionStatus(navigated_subframe, GetRequesterURL(),
+                                     GetTopLevelURL())
+                .content_setting);
+}
+
+TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
        ImplicitGrant_AutodeniedOutsideFPS) {
   TopLevelStorageAccessPermissionContext permission_context(profile());
   permissions::PermissionRequestID fake_id = CreateFakeID();
@@ -274,6 +322,47 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
       ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
       content_settings::SessionModel::NonRestorableUserSession);
   EXPECT_EQ(0u, non_restorable_grants.size());
+}
+
+TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
+       ImplicitGrant_DenialQueryStillAsk) {
+  TopLevelStorageAccessPermissionContext permission_context(profile());
+  permissions::PermissionRequestID fake_id = CreateFakeID();
+
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  DCHECK(settings_map);
+
+  // Check no `SessionModel::NonRestorableUserSession` setting exists yet.
+  ContentSettingsForOneType non_restorable_grants;
+  settings_map->GetSettingsForOneType(
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
+      content_settings::SessionModel::NonRestorableUserSession);
+  ASSERT_EQ(0u, non_restorable_grants.size());
+
+  base::test::TestFuture<ContentSetting> future;
+  permission_context.DecidePermissionForTesting(
+      fake_id, GetRequesterURL(), GetDummyEmbeddingUrl(),
+      /*user_gesture=*/true, future.GetCallback());
+
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
+
+  // Check the `SessionModel::NonRestorableUserSession` settings.
+  // None were granted, and implicit denials are not currently persisted, which
+  // preserves the default `ASK` setting.
+  settings_map->GetSettingsForOneType(
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
+      content_settings::SessionModel::NonRestorableUserSession);
+  EXPECT_EQ(0u, non_restorable_grants.size());
+
+  // The permission denial should not be exposed via query. Note that the block
+  // setting is not persisted anyway with the current implementation; this is a
+  // forward-looking test.
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            permission_context
+                .GetPermissionStatus(/*render_frame_host=*/nullptr,
+                                     GetRequesterURL(), GetDummyEmbeddingUrl())
+                .content_setting);
 }
 
 class TopLevelStorageAccessPermissionContextAPIFirstPartySetsDisabledTest

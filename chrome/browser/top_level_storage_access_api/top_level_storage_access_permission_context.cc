@@ -28,6 +28,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "net/base/features.h"
+#include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/same_party_context.h"
@@ -146,8 +147,26 @@ TopLevelStorageAccessPermissionContext::GetPermissionStatusInternal(
     return CONTENT_SETTING_BLOCK;
   }
 
-  return PermissionContextBase::GetPermissionStatusInternal(
+  if (render_frame_host && !render_frame_host->IsInPrimaryMainFrame()) {
+    net::SchemefulSite top_level_site(
+        render_frame_host->GetMainFrame()->GetLastCommittedURL());
+    net::SchemefulSite current_site(render_frame_host->GetLastCommittedURL());
+    if (top_level_site != current_site) {
+      // Cross-site frames cannot receive real answers.
+      return CONTENT_SETTING_ASK;
+    }
+  }
+
+  ContentSetting setting = PermissionContextBase::GetPermissionStatusInternal(
       render_frame_host, requesting_origin, embedding_origin);
+
+  // Although the current implementation does not persist rejected permissions,
+  // the spec calls for avoiding exposure of rejections to prevent any attempt
+  // at retaliating against users who would reject a prompt.
+  if (setting == CONTENT_SETTING_BLOCK) {
+    return CONTENT_SETTING_ASK;
+  }
+  return setting;
 }
 
 void TopLevelStorageAccessPermissionContext::NotifyPermissionSet(
