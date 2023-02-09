@@ -13,7 +13,6 @@
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/converting_audio_fifo.h"
 #include "media/base/encoder_status.h"
-#include "media/base/media_util.h"
 #include "media/base/timestamp_constants.h"
 #include "media/formats/mp4/es_descriptor.h"
 
@@ -145,7 +144,6 @@ void AudioToolboxAudioEncoder::Initialize(const Options& options,
   AudioStreamBasicDescription output_format = {};
   sample_rate_ = output_format.mSampleRate = options.sample_rate;
   channel_count_ = output_format.mChannelsPerFrame = options.channels;
-  options_ = options;
   GenerateOutputFormat(options, output_format);
 
   if (!CreateEncoder(options, output_format)) {
@@ -301,12 +299,15 @@ void AudioToolboxAudioEncoder::DoEncode(AudioBus* input_bus) {
   input_data.flushing = is_flushing;
 
   do {
-    temp_output_buf_.resize(max_packet_size_);
+    // Note: This doesn't zero initialize the buffer.
+    // FIXME: This greedily allocates, we should preserve the buffer for the
+    // next call if we don't fill it.
+    std::unique_ptr<uint8_t[]> packet_buffer(new uint8_t[max_packet_size_]);
 
     AudioBufferList output_buffer_list = {};
     output_buffer_list.mNumberBuffers = 1;
     output_buffer_list.mBuffers[0].mNumberChannels = channel_count_;
-    output_buffer_list.mBuffers[0].mData = temp_output_buf_.data();
+    output_buffer_list.mBuffers[0].mData = packet_buffer.get();
     output_buffer_list.mBuffers[0].mDataByteSize = max_packet_size_;
 
     // Encodes |num_packets| into |packet_buffer| by calling the
@@ -334,53 +335,23 @@ void AudioToolboxAudioEncoder::DoEncode(AudioBus* input_bus) {
     }
 
     DCHECK_LE(packet_description.mDataByteSize, max_packet_size_);
-    temp_output_buf_.resize(packet_description.mDataByteSize);
 
     // All AAC-LC packets are 1024 frames in size. Note: If other AAC profiles
     // are added later, this value must be updated.
     auto num_frames = kAacFramesPerBuffer * num_packets;
     DVLOG(1) << __func__ << ": Output: num_frames=" << num_frames;
 
-    bool adts_conversion_ok = true;
-    auto format = options_.aac.value_or(AacOptions()).format;
-    absl::optional<CodecDescription> desc;
-    if (timestamp_helper_->frame_count() == 0) {
-      if (format == media::AudioEncoder::AacOutputFormat::AAC) {
-        desc = codec_desc_;
-      } else {
-        NullMediaLog log;
-        adts_conversion_ok = aac_config_parser_.Parse(codec_desc_, &log);
-      }
-    }
-
-    if (format == media::AudioEncoder::AacOutputFormat::ADTS) {
-      int header_size;
-      // TODO(https://crbug.com/1407013) Refactor AAC::ConvertEsdsToADTS() to
-      // work with more flexible buffers and not only with an std::vector.
-      // This will allow us to save extra memcpy-s that we are forced to do in
-      // this code.
-      adts_conversion_ok =
-          aac_config_parser_.ConvertEsdsToADTS(&temp_output_buf_, &header_size);
-    }
-    if (!adts_conversion_ok) {
-      OSSTATUS_DLOG(ERROR, result) << "Conversion to ADTS failed";
-      std::move(current_done_cb_)
-          .Run(EncoderStatus::Codes::kEncoderFailedEncode);
-      return;
-    }
-
-    std::unique_ptr<uint8_t[]> packet_buffer(
-        new uint8_t[temp_output_buf_.size()]);
-    std::memcpy(packet_buffer.get(), temp_output_buf_.data(),
-                temp_output_buf_.size());
-
     EncodedAudioBuffer encoded_buffer(
         AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
                         ChannelLayoutConfig::Guess(channel_count_),
                         sample_rate_, num_frames),
-        std::move(packet_buffer), temp_output_buf_.size(),
+        std::move(packet_buffer), packet_description.mDataByteSize,
         base::TimeTicks() + timestamp_helper_->GetTimestamp(),
         timestamp_helper_->GetFrameDuration(num_frames));
+
+    absl::optional<CodecDescription> desc;
+    if (timestamp_helper_->frame_count() == 0)
+      desc = codec_desc_;
 
     timestamp_helper_->AddFrames(num_frames);
     output_cb_.Run(std::move(encoded_buffer), desc);
