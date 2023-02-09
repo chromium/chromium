@@ -7,8 +7,10 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/color/chrome_color_mixer.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -77,7 +79,7 @@ void ConfigureInkDropForToolbar(views::Button* host) {
   views::InkDrop::Get(host)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InkDrop::Get(host)->SetVisibleOpacity(kToolbarInkDropVisibleOpacity);
   views::InkDrop::Get(host)->SetHighlightOpacity(
-      kToolbarInkDropHighlightVisibleOpacity);
+      kToolbarInkDropHighlightVisibleAlpha / float{SK_AlphaOPAQUE});
   views::InkDrop::Get(host)->SetBaseColorCallback(
       base::BindRepeating(&GetToolbarInkDropBaseColor, host));
 }

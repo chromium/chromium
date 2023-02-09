@@ -15,7 +15,6 @@ class View;
 }  // namespace views
 
 constexpr float kToolbarInkDropVisibleOpacity = 0.06f;
-constexpr float kToolbarInkDropHighlightVisibleOpacity = 0.08f;
 
 // Creates insets for a host view so that when insetting from the host view
 // the resulting mask or inkdrop has the desired inkdrop size.
