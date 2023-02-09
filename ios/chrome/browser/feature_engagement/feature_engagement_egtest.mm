@@ -7,6 +7,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/feature_engagement/feature_engagement_app_interface.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
@@ -94,6 +97,12 @@ id<GREYMatcher> LongPressTipBubble() {
 id<GREYMatcher> DefaultSiteViewTip() {
   return grey_accessibilityLabel(
       l10n_util::GetNSStringWithFixup(IDS_IOS_DEFAULT_PAGE_MODE_TIP));
+}
+
+// Matcher for the Feed Header tip.
+id<GREYMatcher> FeedHeaderTip() {
+  return grey_accessibilityLabel(
+      l10n_util::GetNSStringWithFixup(IDS_IOS_DISCOVER_FEED_HEADER_IPH));
 }
 
 // Opens the TabGrid and then opens a new tab.
@@ -548,6 +557,39 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
       assertWithMatcher:grey_nil()];
 }
 
+// Verifies that the feed header IPH appears with the signed-out feed header.
+- (void)testSignedOutFeedHeaderTipDidShow {
+  // IPH is not visible until an NTP is opened.
+  [[EarlGrey selectElementWithMatcher:FeedHeaderTip()]
+      assertWithMatcher:grey_nil()];
+
+  GREYAssert([FeatureEngagementAppInterface enableFeedHeaderTipTriggering],
+             @"Feature Engagement tracker did not load");
+
+  // Open an NTP and check that IPH bubble appears.
+  [ChromeEarlGrey openNewTab];
+  [[EarlGrey selectElementWithMatcher:FeedHeaderTip()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Verifies that the feed header IPH appears with the signed-in feed header.
+- (void)testSignedInFeedHeaderTipDidShow {
+  // IPH is not visible until an NTP is opened.
+  [[EarlGrey selectElementWithMatcher:FeedHeaderTip()]
+      assertWithMatcher:grey_nil()];
+
+  // Sign in to see signed-in feed header.
+  [self signInThroughSettingsMenu];
+
+  GREYAssert([FeatureEngagementAppInterface enableFeedHeaderTipTriggering],
+             @"Feature Engagement tracker did not load");
+
+  // Open an NTP and check that IPH bubble appears.
+  [ChromeEarlGrey openNewTab];
+  [[EarlGrey selectElementWithMatcher:FeedHeaderTip()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 #pragma mark - Helpers
 
 // Toggles the page mode from Mobile to Desktop and then back to Mobile.
@@ -571,6 +613,21 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
       performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
+}
+
+// Opens the settings menu, signs in using a fake identity, and closes the menu.
+- (void)signInThroughSettingsMenu {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::PrimarySignInButton()]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionUp, 150)
+      onElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+      performAction:grey_tap()];
+  [SigninEarlGreyUI tapSigninConfirmationDialog];
+  [ChromeEarlGrey waitForMatcher:chrome_test_util::SettingsAccountButton()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
 }
 
