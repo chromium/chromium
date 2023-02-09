@@ -1002,7 +1002,6 @@ component("base") {
       "memory/madv_free_discardable_memory_posix.h",
       "message_loop/watchable_io_message_pump_posix.cc",
       "message_loop/watchable_io_message_pump_posix.h",
-      "native_library_posix.cc",
       "posix/eintr_wrapper.h",
       "posix/file_descriptor_shuffle.cc",
       "posix/file_descriptor_shuffle.h",
@@ -1011,15 +1010,9 @@ component("base") {
       "posix/safe_strerror.cc",
       "posix/safe_strerror.h",
       "process/process_handle_posix.cc",
-      "profiler/module_cache_posix.cc",
       "strings/string_util_posix.h",
-      "strings/sys_string_conversions_posix.cc",
       "synchronization/condition_variable_posix.cc",
       "synchronization/lock_impl_posix.cc",
-      "synchronization/waitable_event_posix.cc",
-      "synchronization/waitable_event_watcher_posix.cc",
-      "threading/platform_thread_internal_posix.cc",
-      "threading/platform_thread_internal_posix.h",
       "threading/platform_thread_posix.cc",
       "threading/thread_local_storage_posix.cc",
       "time/time_conversion_posix.cc",
@@ -1594,10 +1587,8 @@ component("base") {
       "memory/madv_free_discardable_memory_posix.cc",
       "memory/madv_free_discardable_memory_posix.h",
       "native_library.cc",
-      "native_library_posix.cc",
       "path_service.cc",
       "process/process_metrics.cc",
-      "profiler/module_cache_posix.cc",
       "system/sys_info.cc",
       "task/thread_pool/initialization_util.cc",
       "task/thread_pool/initialization_util.h",
@@ -1669,9 +1660,11 @@ component("base") {
 
     if (is_posix && !is_apple) {
       sources += [
+        "native_library_posix.cc",
         "posix/can_lower_nice_to.cc",
         "posix/can_lower_nice_to.h",
         "process/launch_posix.cc",
+        "profiler/module_cache_posix.cc",
         "profiler/stack_base_address_posix.cc",
         "profiler/stack_base_address_posix.h",
         "profiler/stack_copier_signal.cc",
@@ -2054,14 +2047,6 @@ component("base") {
 
   # Mac or iOS.
   if (is_apple) {
-    sources -= [
-      "native_library_posix.cc",
-      "profiler/module_cache_posix.cc",
-      "strings/sys_string_conversions_posix.cc",
-      "synchronization/waitable_event_posix.cc",
-      "synchronization/waitable_event_watcher_posix.cc",
-      "threading/platform_thread_internal_posix.cc",
-    ]
     sources += [
       "file_version_info_mac.h",
       "file_version_info_mac.mm",
@@ -2260,6 +2245,11 @@ component("base") {
 
   if (is_posix && !is_apple) {
     sources += [
+      "strings/sys_string_conversions_posix.cc",
+      "synchronization/waitable_event_posix.cc",
+      "synchronization/waitable_event_watcher_posix.cc",
+      "threading/platform_thread_internal_posix.cc",
+      "threading/platform_thread_internal_posix.h",
       "time/time_exploded_posix.cc",
       "time/time_now_posix.cc",
     ]
