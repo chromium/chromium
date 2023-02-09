@@ -543,7 +543,7 @@ class SettingsInternetDetailPageElement extends
   }
 
   /**
-   * RouteObserverBehavior override
+   * RouteObserverMixin override
    */
   override currentRouteChanged(route: Route, oldRoute?: Route): void {
     if (route !== routes.NETWORK_DETAIL) {

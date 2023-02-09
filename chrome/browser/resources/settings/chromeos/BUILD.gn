@@ -289,7 +289,6 @@ js_type_check("closure_compile_local_module") {
     ":os_route",
     ":os_settings",
     ":os_settings_routes",
-    ":route_observer_behavior",
     ":router",
   ]
 }
@@ -333,12 +332,5 @@ js_library("os_settings_routes") {
   deps = [
     ":router",
     "//ash/webui/common/resources:load_time_data.m",
-  ]
-}
-
-js_library("route_observer_behavior") {
-  deps = [
-    ":router",
-    "//ash/webui/common/resources:assert",
   ]
 }

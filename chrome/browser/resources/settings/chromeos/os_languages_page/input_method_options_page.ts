@@ -161,7 +161,7 @@ class SettingsInputMethodOptionsPageElement extends
   private optionSections_: Section[];
 
   /**
-   * Overrides RouteObserverBehavior.
+   * RouteObserverMixin override
    */
   override async currentRouteChanged(route: Route): Promise<void> {
     if (route !== routes.OS_LANGUAGES_INPUT_METHOD_OPTIONS) {

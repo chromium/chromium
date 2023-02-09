@@ -130,7 +130,7 @@ class OsSyncControlsElement extends OsSyncControlsElementBase {
   }
 
   /**
-   * RouteObserverBehavior
+   * RouteObserverMixin override
    */
   override currentRouteChanged(newRoute: Route, oldRoute: Route): void {
     if (newRoute === routes.OS_SYNC) {

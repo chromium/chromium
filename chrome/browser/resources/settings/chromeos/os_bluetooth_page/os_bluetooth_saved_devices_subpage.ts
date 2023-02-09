@@ -119,7 +119,7 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
   }
 
   /**
-   * RouteObserverBehaviorInterface override
+   * RouteObserverMixin override
    */
   override currentRouteChanged(route: Route): void {
     // If we're navigating to the Saved Devices page, fetch the devices.

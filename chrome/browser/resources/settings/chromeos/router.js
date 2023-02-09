@@ -14,6 +14,15 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
  */
 export let MinimumRoutes;
 
+/** @interface */
+export class RouteObserver {
+  /**
+   * @param {!Route} newRoute
+   * @param {!Route=} opt_oldRoute
+   */
+  currentRouteChanged(newRoute, opt_oldRoute) {}
+}
+
 /** Class for navigable routes. */
 export class Route {
   /**
@@ -174,17 +183,17 @@ export class Router {
     /** @private {boolean}*/
     this.initializeRouteFromUrlCalled_ = false;
 
-    /** @private {!Set<Object>} */
+    /** @private {!Set<RouteObserver>} */
     this.routeObservers_ = new Set();
   }
 
-  /** @param {Object} observer */
+  /** @param {RouteObserver} observer */
   addObserver(observer) {
     assert(!this.routeObservers_.has(observer));
     this.routeObservers_.add(observer);
   }
 
-  /** @param {Object} observer */
+  /** @param {RouteObserver} observer */
   removeObserver(observer) {
     assert(this.routeObservers_.delete(observer));
   }

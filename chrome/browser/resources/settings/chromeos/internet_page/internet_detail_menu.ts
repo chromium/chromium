@@ -133,7 +133,7 @@ class SettingsInternetDetailMenuElement extends
   }
 
   /**
-   * RouteObserverBehavior override
+   * RouteObserverMixin override
    */
   override currentRouteChanged(route: Route) {
     this.eSimNetworkState_ = null;

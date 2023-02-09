@@ -441,7 +441,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   }
 
   /**
-   * RouteObserverBehavior
+   * RouteObserverMixin override
    */
   override currentRouteChanged(route: Route, oldRoute?: Route): void {
     if (route === routes.INTERNET_NETWORKS) {

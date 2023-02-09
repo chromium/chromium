@@ -134,7 +134,7 @@ class SettingsInternetKnownNetworksPageElement extends
   }
 
   /**
-   * RouteObserverBehavior override
+   * RouteObserverMixin override
    */
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.

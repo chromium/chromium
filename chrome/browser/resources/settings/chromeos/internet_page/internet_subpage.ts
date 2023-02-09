@@ -323,7 +323,7 @@ class SettingsInternetSubpageElement extends
   }
 
   /**
-   * RouteObserverBehavior override
+   * RouteObserverMixin override
    */
   override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
     if (newRoute !== routes.INTERNET_NETWORKS) {

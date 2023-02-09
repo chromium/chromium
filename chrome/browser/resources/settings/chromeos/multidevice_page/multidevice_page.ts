@@ -230,7 +230,7 @@ class SettingsMultidevicePageElement extends
   }
 
   /**
-   * Overridden from RouteObserverBehavior.
+   * RouteObserverMixin override
    */
   override currentRouteChanged(route: Route): void {
     this.leaveNestedPageIfNoHostIsSet_();

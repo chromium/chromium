@@ -130,7 +130,7 @@ class SettingsBluetoothDevicesSubpageElement extends
   }
 
   /**
-   * RouteObserverBehaviorInterface override
+   * RouteObserverMixin override
    */
   override currentRouteChanged(route: Route, oldRoute?: Route) {
     // If we're navigating to a device's detail page, save the id of the device.
