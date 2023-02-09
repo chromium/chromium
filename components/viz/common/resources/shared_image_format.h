@@ -222,7 +222,7 @@ inline constexpr SharedImageFormat kBGR_565 =
     SharedImageFormat::SinglePlane(ResourceFormat::BGR_565);
 inline constexpr SharedImageFormat kETC1 =
     SharedImageFormat::SinglePlane(ResourceFormat::ETC1);
-inline constexpr SharedImageFormat kRED_8 =
+inline constexpr SharedImageFormat kR_8 =
     SharedImageFormat::SinglePlane(ResourceFormat::RED_8);
 inline constexpr SharedImageFormat kRG_88 =
     SharedImageFormat::SinglePlane(ResourceFormat::RG_88);
@@ -230,9 +230,9 @@ inline constexpr SharedImageFormat kLUMINANCE_F16 =
     SharedImageFormat::SinglePlane(ResourceFormat::LUMINANCE_F16);
 inline constexpr SharedImageFormat kRGBA_F16 =
     SharedImageFormat::SinglePlane(ResourceFormat::RGBA_F16);
-inline constexpr SharedImageFormat kR16_EXT =
+inline constexpr SharedImageFormat kR_16 =
     SharedImageFormat::SinglePlane(ResourceFormat::R16_EXT);
-inline constexpr SharedImageFormat kRG16_EXT =
+inline constexpr SharedImageFormat kRG_1616 =
     SharedImageFormat::SinglePlane(ResourceFormat::RG16_EXT);
 inline constexpr SharedImageFormat kRGBX_8888 =
     SharedImageFormat::SinglePlane(ResourceFormat::RGBX_8888);

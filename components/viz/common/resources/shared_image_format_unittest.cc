@@ -117,7 +117,7 @@ TEST_F(SharedImageFormatTest, SinglePlaneRGBA_8888) {
 }
 
 TEST_F(SharedImageFormatTest, SinglePlaneRED_8) {
-  auto format = SinglePlaneFormat::kRED_8;
+  auto format = SinglePlaneFormat::kR_8;
   EXPECT_EQ(1, format.NumberOfPlanes());
 
   // 1 byte per pixel.

@@ -35,7 +35,7 @@ GLTextureImageBackingFactory::GLTextureImageBackingFactory(
   // If RED_8 and RG_88 are supported then YUV formats should also work.
   // TODO(crbug.com/1406253): Verify if P010 support is also needed here for
   // software GpuMemoryBuffers.
-  auto r_iter = supported_formats_.find(viz::SinglePlaneFormat::kRED_8);
+  auto r_iter = supported_formats_.find(viz::SinglePlaneFormat::kR_8);
   auto rg_iter = supported_formats_.find(viz::SinglePlaneFormat::kRG_88);
   if (r_iter != supported_formats_.end() &&
       rg_iter != supported_formats_.end()) {

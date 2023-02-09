@@ -243,7 +243,7 @@ std::string TestParamToString(
 // TODO(kylechar): Add RGBA_F16 where it works.
 const auto kFormats =
     ::testing::Values(viz::SinglePlaneFormat::kALPHA_8,
-                      viz::SinglePlaneFormat::kRED_8,
+                      viz::SinglePlaneFormat::kR_8,
                       viz::SinglePlaneFormat::kRG_88,
                       viz::SinglePlaneFormat::kRGBA_4444,
                       viz::SinglePlaneFormat::kRGB_565,

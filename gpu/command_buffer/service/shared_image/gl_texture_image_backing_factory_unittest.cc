@@ -178,11 +178,11 @@ class GLTextureImageBackingFactoryTestBase : public testing::Test {
         return false;
       }
       return supports_r_rg_;
-    } else if (format == viz::SinglePlaneFormat::kRED_8 ||
+    } else if (format == viz::SinglePlaneFormat::kR_8 ||
                format == viz::SinglePlaneFormat::kRG_88) {
       return supports_r_rg_;
-    } else if (format == viz::SinglePlaneFormat::kR16_EXT ||
-               format == viz::SinglePlaneFormat::kRG16_EXT) {
+    } else if (format == viz::SinglePlaneFormat::kR_16 ||
+               format == viz::SinglePlaneFormat::kRG_1616) {
       return supports_rg16_;
     } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
       return supports_rgba_f16_;
@@ -705,7 +705,7 @@ const auto kInitialDataFormats =
                       viz::SinglePlaneFormat::kRGBA_8888,
                       viz::SinglePlaneFormat::kBGRA_8888,
                       viz::SinglePlaneFormat::kRGBA_4444,
-                      viz::SinglePlaneFormat::kRED_8,
+                      viz::SinglePlaneFormat::kR_8,
                       viz::SinglePlaneFormat::kRG_88,
                       viz::SinglePlaneFormat::kBGRA_1010102,
                       viz::SinglePlaneFormat::kRGBA_1010102);
@@ -719,14 +719,14 @@ const auto kSharedImageFormats =
     ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,
                       viz::SinglePlaneFormat::kBGRA_8888,
                       viz::SinglePlaneFormat::kRGBA_4444,
-                      viz::SinglePlaneFormat::kRED_8,
+                      viz::SinglePlaneFormat::kR_8,
                       viz::SinglePlaneFormat::kRG_88,
                       viz::SinglePlaneFormat::kBGRA_1010102,
                       viz::SinglePlaneFormat::kRGBA_1010102,
                       viz::SinglePlaneFormat::kRGBX_8888,
                       viz::SinglePlaneFormat::kBGRX_8888,
-                      viz::SinglePlaneFormat::kR16_EXT,
-                      viz::SinglePlaneFormat::kRG16_EXT,
+                      viz::SinglePlaneFormat::kR_16,
+                      viz::SinglePlaneFormat::kRG_1616,
                       viz::SinglePlaneFormat::kRGBA_F16,
                       viz::MultiPlaneFormat::kYUV_420_BIPLANAR,
                       viz::MultiPlaneFormat::kYVU_420);
@@ -743,7 +743,7 @@ INSTANTIATE_TEST_SUITE_P(,
 const auto kReadbackFormats =
     ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,
                       viz::SinglePlaneFormat::kBGRA_8888,
-                      viz::SinglePlaneFormat::kRED_8,
+                      viz::SinglePlaneFormat::kR_8,
                       viz::SinglePlaneFormat::kRG_88,
                       viz::SinglePlaneFormat::kRGBX_8888,
                       viz::SinglePlaneFormat::kBGRX_8888,

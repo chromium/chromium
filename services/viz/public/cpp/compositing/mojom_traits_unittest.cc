@@ -1205,7 +1205,7 @@ TEST_F(StructTraitsTest, TransferableResource) {
 }
 
 TEST_F(StructTraitsTest, SharedImageFormatWithSinglePlane) {
-  SharedImageFormat input = SinglePlaneFormat::kRED_8;
+  SharedImageFormat input = SinglePlaneFormat::kR_8;
   SharedImageFormat output;
   mojo::test::SerializeAndDeserialize<mojom::SharedImageFormat>(input, output);
   EXPECT_EQ(input, output);
