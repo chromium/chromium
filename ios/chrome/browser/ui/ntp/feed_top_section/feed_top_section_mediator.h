@@ -27,7 +27,7 @@ class ChromeBrowserState;
 - (instancetype)init NS_UNAVAILABLE;
 
 // The mediator handling the interactions of the signin promo.
-@property(nonatomic, strong) SigninPromoViewMediator* signinPromoMediator;
+@property(nonatomic, weak) SigninPromoViewMediator* signinPromoMediator;
 
 // Delegate for NTP related actions.
 @property(nonatomic, weak) id<NewTabPageDelegate> ntpDelegate;
