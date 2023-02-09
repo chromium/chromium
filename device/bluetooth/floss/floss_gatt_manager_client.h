@@ -278,9 +278,17 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattServerObserver
                                                 int32_t handle,
                                                 std::vector<uint8_t> value) {}
 
+  // Executes a write transaction for a given remote device.
+  virtual void GattServerExecuteWrite(std::string address,
+                                      int32_t request_id,
+                                      bool execute_write) {}
+
   // A server sent out a notification.
   virtual void GattServerNotificationSent(std::string address,
                                           GattStatus status) {}
+
+  // The MTU for a given device connection has changed.
+  virtual void GattServerMtuChanged(std::string address, int32_t mtu) {}
 
   // A remote device changed the PHY.
   virtual void GattServerPhyUpdate(std::string address,
@@ -293,6 +301,21 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattServerObserver
                                  LePhy tx_phy,
                                  LePhy rx_phy,
                                  GattStatus status) {}
+
+  // A given connection has been updated.
+  virtual void GattServerConnectionUpdate(std::string address,
+                                          int32_t interval,
+                                          int32_t latency,
+                                          int32_t timeout,
+                                          GattStatus status) {}
+
+  // Subrate connection parameters have been updated.
+  virtual void GattServerSubrateChange(std::string address,
+                                       int32_t subrate_factor,
+                                       int32_t latency,
+                                       int32_t continuation_num,
+                                       int32_t timeout,
+                                       GattStatus status) {}
 };
 
 class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
@@ -404,6 +427,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
                                           const int32_t timeout,
                                           const uint16_t min_ce_len,
                                           const uint16_t max_ce_len);
+
+  // Unregister a GATT server.
+  virtual void UnregisterServer(ResponseCallback<Void> callback);
 
   // Create a GATT server connection to a remote device on given transport.
   virtual void ServerConnect(ResponseCallback<Void> callback,
@@ -543,8 +569,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
                                         bool needs_response,
                                         int32_t handle,
                                         std::vector<uint8_t> value) override;
+  void GattServerExecuteWrite(std::string address,
+                              int32_t request_id,
+                              bool execute_write) override;
   void GattServerNotificationSent(std::string address,
                                   GattStatus status) override;
+  void GattServerMtuChanged(std::string address, int32_t mtu) override;
   void GattServerPhyUpdate(std::string address,
                            LePhy tx_phy,
                            LePhy rx_phy,
@@ -553,6 +583,17 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
                          LePhy tx_phy,
                          LePhy rx_phy,
                          GattStatus status) override;
+  void GattServerConnectionUpdate(std::string address,
+                                  int32_t interval,
+                                  int32_t latency,
+                                  int32_t timeout,
+                                  GattStatus status) override;
+  void GattServerSubrateChange(std::string address,
+                               int32_t subrate_factor,
+                               int32_t latency,
+                               int32_t continuation_num,
+                               int32_t timeout,
+                               GattStatus status) override;
 
   // Managed by FlossDBusManager - we keep local pointer to access object proxy.
   base::raw_ptr<dbus::Bus> bus_ = nullptr;

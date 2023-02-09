@@ -414,6 +414,11 @@ void FlossGattManagerClient::UpdateConnectionParameters(
                        latency, timeout, min_ce_len, max_ce_len);
 }
 
+void FlossGattManagerClient::UnregisterServer(ResponseCallback<Void> callback) {
+  CallGattMethod<Void>(std::move(callback), gatt::kUnregisterServer,
+                       server_id_);
+}
+
 void FlossGattManagerClient::ServerConnect(
     ResponseCallback<Void> callback,
     const std::string& remote_device,
@@ -563,12 +568,27 @@ void FlossGattManagerClient::Init(dbus::Bus* bus,
       gatt::kOnServerDescriptorWriteRequest,
       &FlossGattServerObserver::GattServerDescriptorWriteRequest);
   gatt_server_exported_callback_manager_.AddMethod(
+      gatt::kOnExecuteWrite, &FlossGattServerObserver::GattServerExecuteWrite);
+  gatt_server_exported_callback_manager_.AddMethod(
       gatt::kOnServerNotificationSent,
       &FlossGattServerObserver::GattServerNotificationSent);
   gatt_server_exported_callback_manager_.AddMethod(
       gatt::kOnPhyUpdate, &FlossGattServerObserver::GattServerPhyUpdate);
   gatt_server_exported_callback_manager_.AddMethod(
       gatt::kOnPhyRead, &FlossGattServerObserver::GattServerPhyRead);
+  gatt_server_exported_callback_manager_.AddMethod(
+      gatt::kOnServerMtuChanged,
+      &FlossGattServerObserver::GattServerMtuChanged);
+  gatt_server_exported_callback_manager_.AddMethod(
+      gatt::kOnPhyUpdate, &FlossGattServerObserver::GattServerPhyUpdate);
+  gatt_server_exported_callback_manager_.AddMethod(
+      gatt::kOnPhyRead, &FlossGattServerObserver::GattServerPhyRead);
+  gatt_server_exported_callback_manager_.AddMethod(
+      gatt::kOnConnectionUpdated,
+      &FlossGattServerObserver::GattServerConnectionUpdate);
+  gatt_server_exported_callback_manager_.AddMethod(
+      gatt::kOnServerSubrateChange,
+      &FlossGattServerObserver::GattServerSubrateChange);
 
   // Export callbacks.
   if (!gatt_client_exported_callback_manager_.ExportCallback(
@@ -854,10 +874,25 @@ void FlossGattManagerClient::GattServerDescriptorWriteRequest(
   }
 }
 
+void FlossGattManagerClient::GattServerExecuteWrite(std::string address,
+                                                    int32_t request_id,
+                                                    bool execute_write) {
+  for (auto& observer : gatt_server_observers_) {
+    observer.GattServerExecuteWrite(address, request_id, execute_write);
+  }
+}
+
 void FlossGattManagerClient::GattServerNotificationSent(std::string address,
                                                         GattStatus status) {
   for (auto& observer : gatt_server_observers_) {
     observer.GattServerNotificationSent(address, status);
+  }
+}
+
+void FlossGattManagerClient::GattServerMtuChanged(std::string address,
+                                                  int32_t mtu) {
+  for (auto& observer : gatt_server_observers_) {
+    observer.GattServerMtuChanged(address, mtu);
   }
 }
 
@@ -876,6 +911,29 @@ void FlossGattManagerClient::GattServerPhyRead(std::string address,
                                                GattStatus status) {
   for (auto& observer : gatt_server_observers_) {
     observer.GattServerPhyRead(address, tx_phy, rx_phy, status);
+  }
+}
+
+void FlossGattManagerClient::GattServerConnectionUpdate(std::string address,
+                                                        int32_t interval,
+                                                        int32_t latency,
+                                                        int32_t timeout,
+                                                        GattStatus status) {
+  for (auto& observer : gatt_server_observers_) {
+    observer.GattServerConnectionUpdate(address, interval, latency, timeout,
+                                        status);
+  }
+}
+
+void FlossGattManagerClient::GattServerSubrateChange(std::string address,
+                                                     int32_t subrate_factor,
+                                                     int32_t latency,
+                                                     int32_t continuation_num,
+                                                     int32_t timeout,
+                                                     GattStatus status) {
+  for (auto& observer : gatt_server_observers_) {
+    observer.GattServerSubrateChange(address, subrate_factor, latency,
+                                     continuation_num, timeout, status);
   }
 }
 

@@ -198,6 +198,8 @@ const char kOnServerCharacteristicWriteRequest[] =
     "OnServerCharacteristicWriteRequest";
 const char kOnServerDescriptorWriteRequest[] = "OnServerDescriptorWriteRequest";
 const char kOnServerNotificationSent[] = "OnNotificationSent";
+const char kOnServerMtuChanged[] = "OnMtuChanged";
+const char kOnServerSubrateChange[] = "OnSubrateChange";
 }  // namespace gatt
 
 namespace advertiser {

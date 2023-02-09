@@ -195,6 +195,8 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnServerDescriptorReadRequest[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnServerCharacteristicWriteRequest[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnServerDescriptorWriteRequest[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnServerNotificationSent[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnServerMtuChanged[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnServerSubrateChange[];
 }  // namespace gatt
    //
 namespace advertiser {
