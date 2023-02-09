@@ -77,7 +77,7 @@ class AutofillDataModel : public FormGroup {
 
   // Compares two data models according to their ranking score. The score uses
   // a combination of use count and days since last use to determine the
-  // relevance of the profile. |comparison_time_| allows consistent sorting
+  // relevance of the profile. `comparison_time_` allows consistent sorting
   // throughout the comparisons. A greater ranking score corresponds to a higher
   // ranking on the suggestion list.
   bool HasGreaterRankingThan(const AutofillDataModel* other,

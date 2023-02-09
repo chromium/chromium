@@ -180,12 +180,15 @@ int32_t NormalizingIterator::GetNextChar() {
 
 // Sorts |profiles| by ranking score.
 void SortProfilesByRankingScore(std::vector<AutofillProfile*>* profiles) {
+  // TODO(crbug.com/1411114): Remove code duplication for sorting profiles.
   base::Time comparison_time = AutofillClock::Now();
-  std::sort(
-      profiles->begin(), profiles->end(),
-      [comparison_time](const AutofillProfile* a, const AutofillProfile* b) {
-        return a->HasGreaterRankingThan(b, comparison_time);
-      });
+  if (profiles->size() > 1) {
+    std::sort(
+        profiles->begin(), profiles->end(),
+        [comparison_time](const AutofillProfile* a, const AutofillProfile* b) {
+          return a->HasGreaterRankingThan(b, comparison_time);
+        });
+  }
 }
 
 }  // namespace
@@ -826,15 +829,18 @@ std::string AutofillProfileComparator::MergeProfile(
   // non verified profiles get deduped among themselves before reaching the
   // verified profiles.
   // TODO(crbug.com/620521): Remove the check for verified from the sort.
+  // TODO(crbug.com/1411114): Remove code duplication for sorting profiles.
   base::Time comparison_time = AutofillClock::Now();
-  std::sort(
-      existing_profile_copies.begin(), existing_profile_copies.end(),
-      [comparison_time](const AutofillProfile& a, const AutofillProfile& b) {
-        if (a.IsVerified() != b.IsVerified())
-          return !a.IsVerified();
-        return a.HasGreaterRankingThan(&b, comparison_time);
-      });
-
+  if (existing_profile_copies.size() > 1) {
+    std::sort(
+        existing_profile_copies.begin(), existing_profile_copies.end(),
+        [comparison_time](const AutofillProfile& a, const AutofillProfile& b) {
+          if (a.IsVerified() != b.IsVerified()) {
+            return !a.IsVerified();
+          }
+          return a.HasGreaterRankingThan(&b, comparison_time);
+        });
+  }
   // Set to true if |existing_profile_copies| already contains an equivalent
   // profile.
   bool matching_profile_found = false;

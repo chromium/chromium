@@ -1340,14 +1340,16 @@ std::vector<AutofillProfile*> PersonalDataManager::GetProfilesToSuggest()
   // Suggest `kAccount` and `kLocalOrSyncable` profiles.
   std::vector<AutofillProfile*> profiles = GetProfiles();
 
-  // Rank the suggestions by ranking score.
-  const base::Time comparison_time = AutofillClock::Now();
-  std::sort(
-      profiles.begin(), profiles.end(),
-      [comparison_time](const AutofillProfile* a, const AutofillProfile* b) {
-        return a->HasGreaterRankingThan(b, comparison_time);
-      });
-
+  // TODO(crbug.com/1411114): Remove code duplication for sorting profiles.
+  if (profiles.size() > 1) {
+    // Rank the suggestions by ranking score.
+    const base::Time comparison_time = AutofillClock::Now();
+    std::sort(
+        profiles.begin(), profiles.end(),
+        [comparison_time](const AutofillProfile* a, const AutofillProfile* b) {
+          return a->HasGreaterRankingThan(b, comparison_time);
+        });
+  }
   return profiles;
 }
 
@@ -1473,14 +1475,18 @@ const std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest()
   // Rank the cards by ranking score (see AutofillDataModel for details). All
   // expired cards should be suggested last, also by ranking score.
   base::Time comparison_time = AutofillClock::Now();
-  std::stable_sort(cards_to_suggest.begin(), cards_to_suggest.end(),
-                   [comparison_time](const CreditCard* a, const CreditCard* b) {
-                     bool a_is_expired = a->IsExpired(comparison_time);
-                     if (a_is_expired != b->IsExpired(comparison_time))
-                       return !a_is_expired;
+  if (cards_to_suggest.size() > 1) {
+    std::stable_sort(
+        cards_to_suggest.begin(), cards_to_suggest.end(),
+        [comparison_time](const CreditCard* a, const CreditCard* b) {
+          const bool a_is_expired = a->IsExpired(comparison_time);
+          if (a_is_expired != b->IsExpired(comparison_time)) {
+            return !a_is_expired;
+          }
 
-                     return a->HasGreaterRankingThan(b, comparison_time);
-                   });
+          return a->HasGreaterRankingThan(b, comparison_time);
+        });
+  }
 
   return cards_to_suggest;
 }
