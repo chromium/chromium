@@ -3332,6 +3332,9 @@ extern const char kProductivityLauncherDescription[];
 extern const char kProductivityLauncherImageSearchName[];
 extern const char kProductivityLauncherImageSearchDescription[];
 
+extern const char kLauncherChatName[];
+extern const char kLauncherChatDescription[];
+
 extern const char kProjectorName[];
 extern const char kProjectorDescription[];
 
