@@ -90,9 +90,8 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
     FileUtilService service(remote.InitWithNewPipeAndPassReceiver());
     base::RunLoop run_loop;
     ResultsGetter results_getter(run_loop.QuitClosure(), results);
-    std::unique_ptr<SandboxedZipAnalyzer, base::OnTaskRunnerDeleter> analyzer =
-        SandboxedZipAnalyzer::CreateAnalyzer(
-            file_path, results_getter.GetCallback(), std::move(remote));
+    scoped_refptr<SandboxedZipAnalyzer> analyzer(new SandboxedZipAnalyzer(
+        file_path, results_getter.GetCallback(), std::move(remote)));
     analyzer->Start();
     run_loop.Run();
   }

@@ -15,6 +15,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_rar_analyzer.h"
+#include "chrome/services/file_util/public/cpp/sandboxed_zip_analyzer.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -153,8 +154,7 @@ FileAnalysisRequest::FileAnalysisRequest(
       tag_settings_(analysis_settings.tags),
       path_(std::move(path)),
       file_name_(std::move(file_name)),
-      delay_opening_file_(delay_opening_file),
-      zip_analyzer_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
+      delay_opening_file_(delay_opening_file) {
   set_filename(path_.AsUTF8Unsafe());
   cached_data_.mime_type = std::move(mime_type);
 }
@@ -218,13 +218,13 @@ void FileAnalysisRequest::OnGotFileData(
   base::FilePath::StringType ext(file_name_.FinalExtension());
   std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
   if (IsZipFile(ext, mime_type)) {
-    zip_analyzer_ = SandboxedZipAnalyzer::CreateAnalyzer(
+    auto analyzer = base::MakeRefCounted<SandboxedZipAnalyzer>(
         path_,
         base::BindOnce(&FileAnalysisRequest::OnCheckedForEncryption,
                        weakptr_factory_.GetWeakPtr(),
                        std::move(result_and_data.second)),
         LaunchFileUtilService());
-    zip_analyzer_->Start();
+    analyzer->Start();
   } else if (IsRarFile(ext, mime_type)) {
     auto analyzer = base::MakeRefCounted<SandboxedRarAnalyzer>(
         path_,

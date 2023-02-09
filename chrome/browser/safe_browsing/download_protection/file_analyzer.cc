@@ -71,8 +71,7 @@ FileAnalyzer::Results::Results(const FileAnalyzer::Results& other) = default;
 
 FileAnalyzer::FileAnalyzer(
     scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor)
-    : binary_feature_extractor_(binary_feature_extractor),
-      zip_analyzer_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
+    : binary_feature_extractor_(binary_feature_extractor) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -146,8 +145,9 @@ void FileAnalyzer::OnFileAnalysisFinished(FileAnalyzer::Results results) {
 void FileAnalyzer::StartExtractZipFeatures() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // We give the zip analyzer a weak pointer to this object.
-  zip_analyzer_ = SandboxedZipAnalyzer::CreateAnalyzer(
+  // We give the zip analyzer a weak pointer to this object.  Since the
+  // analyzer is refcounted, it might outlive the request.
+  zip_analyzer_ = new SandboxedZipAnalyzer(
       tmp_path_,
       base::BindOnce(&FileAnalyzer::OnZipAnalysisFinished,
                      weakptr_factory_.GetWeakPtr()),

@@ -15,23 +15,40 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace {
+SandboxedZipAnalyzer::SandboxedZipAnalyzer(
+    const base::FilePath& zip_file,
+    ResultCallback callback,
+    mojo::PendingRemote<chrome::mojom::FileUtilService> service)
+    : RefCountedDeleteOnSequence(content::GetUIThreadTaskRunner({})),
+      file_path_(zip_file),
+      callback_(std::move(callback)),
+      service_(std::move(service)) {
+  DCHECK(callback_);
+  service_->BindSafeArchiveAnalyzer(
+      remote_analyzer_.BindNewPipeAndPassReceiver());
+  remote_analyzer_.set_disconnect_handler(base::BindOnce(
+      &SandboxedZipAnalyzer::AnalyzeFileDone, base::Unretained(this),
+      safe_browsing::ArchiveAnalyzerResults()));
+}
 
-// Prepares the file and temporary file for analysis, then returns the results
-// with either `success_callback` or `failure_callback` on the UI thread.
-void PrepareFileToAnalyze(
-    base::FilePath file_path,
-    base::OnceCallback<void(base::File, base::File)> success_callback,
-    base::OnceCallback<void(safe_browsing::ArchiveAnalysisResult)>
-        failure_callback) {
-  base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+void SandboxedZipAnalyzer::Start() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&SandboxedZipAnalyzer::PrepareFileToAnalyze, this));
+}
+
+SandboxedZipAnalyzer::~SandboxedZipAnalyzer() = default;
+
+void SandboxedZipAnalyzer::PrepareFileToAnalyze() {
+  base::File file(file_path_, base::File::FLAG_OPEN | base::File::FLAG_READ);
 
   if (!file.IsValid()) {
-    DLOG(ERROR) << "Could not open file: " << file_path.value();
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(failure_callback),
-                       safe_browsing::ArchiveAnalysisResult::kFailedToOpen));
+    DLOG(ERROR) << "Could not open file: " << file_path_.value();
+    ReportFileFailure(safe_browsing::ArchiveAnalysisResult::kFailedToOpen);
     return;
   }
 
@@ -46,67 +63,18 @@ void PrepareFileToAnalyze(
 
   if (!temp_file.IsValid()) {
     DLOG(ERROR) << "Could not open temp file: " << temp_path.value();
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(failure_callback),
-            safe_browsing::ArchiveAnalysisResult::kFailedToOpenTempFile));
+    ReportFileFailure(
+        safe_browsing::ArchiveAnalysisResult::kFailedToOpenTempFile);
     return;
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(success_callback), std::move(file),
-                                std::move(temp_file)));
+      FROM_HERE, base::BindOnce(&SandboxedZipAnalyzer::AnalyzeFile, this,
+                                std::move(file), std::move(temp_file)));
 }
-
-}  // namespace
-
-// static
-std::unique_ptr<SandboxedZipAnalyzer, base::OnTaskRunnerDeleter>
-SandboxedZipAnalyzer::CreateAnalyzer(
-    const base::FilePath& zip_file,
-    ResultCallback callback,
-    mojo::PendingRemote<chrome::mojom::FileUtilService> service) {
-  return std::unique_ptr<SandboxedZipAnalyzer, base::OnTaskRunnerDeleter>(
-      new SandboxedZipAnalyzer(zip_file, std::move(callback),
-                               std::move(service)),
-      base::OnTaskRunnerDeleter(content::GetUIThreadTaskRunner({})));
-}
-
-SandboxedZipAnalyzer::SandboxedZipAnalyzer(
-    const base::FilePath& zip_file,
-    ResultCallback callback,
-    mojo::PendingRemote<chrome::mojom::FileUtilService> service)
-    : file_path_(zip_file),
-      callback_(std::move(callback)),
-      service_(std::move(service)) {
-  DCHECK(callback_);
-  service_->BindSafeArchiveAnalyzer(
-      remote_analyzer_.BindNewPipeAndPassReceiver());
-  remote_analyzer_.set_disconnect_handler(
-      base::BindOnce(&SandboxedZipAnalyzer::AnalyzeFileDone, GetWeakPtr(),
-                     safe_browsing::ArchiveAnalyzerResults()));
-}
-
-void SandboxedZipAnalyzer::Start() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(
-          &PrepareFileToAnalyze, file_path_,
-          base::BindOnce(&SandboxedZipAnalyzer::AnalyzeFile, GetWeakPtr()),
-          base::BindOnce(&SandboxedZipAnalyzer::ReportFileFailure,
-                         GetWeakPtr())));
-}
-
-SandboxedZipAnalyzer::~SandboxedZipAnalyzer() = default;
 
 void SandboxedZipAnalyzer::ReportFileFailure(
     safe_browsing::ArchiveAnalysisResult reason) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (callback_) {
     safe_browsing::ArchiveAnalyzerResults results;
     results.analysis_result = reason;
@@ -121,7 +89,7 @@ void SandboxedZipAnalyzer::AnalyzeFile(base::File file, base::File temp_file) {
   if (remote_analyzer_) {
     remote_analyzer_->AnalyzeZipFile(
         std::move(file), std::move(temp_file),
-        base::BindOnce(&SandboxedZipAnalyzer::AnalyzeFileDone, GetWeakPtr()));
+        base::BindOnce(&SandboxedZipAnalyzer::AnalyzeFileDone, this));
   } else {
     AnalyzeFileDone(safe_browsing::ArchiveAnalyzerResults());
   }
@@ -135,8 +103,4 @@ void SandboxedZipAnalyzer::AnalyzeFileDone(
   if (callback_) {
     std::move(callback_).Run(results);
   }
-}
-
-base::WeakPtr<SandboxedZipAnalyzer> SandboxedZipAnalyzer::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
 }
