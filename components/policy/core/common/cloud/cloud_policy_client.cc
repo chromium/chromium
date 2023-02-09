@@ -551,7 +551,7 @@ void CloudPolicyClient::FetchRobotAuthCodes(
 
 void CloudPolicyClient::UploadEnterpriseMachineCertificate(
     const std::string& certificate_data,
-    CloudPolicyClient::StatusCallback callback) {
+    CloudPolicyClient::ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   UploadCertificate(certificate_data,
@@ -561,7 +561,7 @@ void CloudPolicyClient::UploadEnterpriseMachineCertificate(
 
 void CloudPolicyClient::UploadEnterpriseEnrollmentCertificate(
     const std::string& certificate_data,
-    CloudPolicyClient::StatusCallback callback) {
+    CloudPolicyClient::ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   UploadCertificate(
@@ -572,7 +572,7 @@ void CloudPolicyClient::UploadEnterpriseEnrollmentCertificate(
 
 void CloudPolicyClient::UploadEnterpriseEnrollmentId(
     const std::string& enrollment_id,
-    CloudPolicyClient::StatusCallback callback) {
+    CloudPolicyClient::ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::unique_ptr<DMServerJobConfiguration> config =
@@ -1023,7 +1023,7 @@ void CloudPolicyClient::SetURLLoaderFactoryForTesting(
 void CloudPolicyClient::UploadCertificate(
     const std::string& certificate_data,
     em::DeviceCertUploadRequest::CertificateType certificate_type,
-    CloudPolicyClient::StatusCallback callback) {
+    CloudPolicyClient::ResultCallback callback) {
   std::unique_ptr<DMServerJobConfiguration> config =
       CreateCertUploadJobConfiguration(std::move(callback));
   PrepareCertUploadRequest(config.get(), certificate_data, certificate_type);
@@ -1044,7 +1044,7 @@ void CloudPolicyClient::PrepareCertUploadRequest(
 
 std::unique_ptr<DMServerJobConfiguration>
 CloudPolicyClient::CreateCertUploadJobConfiguration(
-    CloudPolicyClient::StatusCallback callback) {
+    CloudPolicyClient::ResultCallback callback) {
   CHECK(is_registered());
   return std::make_unique<DMServerJobConfiguration>(
       service_,
@@ -1220,19 +1220,18 @@ void CloudPolicyClient::OnPolicyFetchCompleted(DMServerJobResult result) {
 }
 
 void CloudPolicyClient::OnCertificateUploadCompleted(
-    CloudPolicyClient::StatusCallback callback,
+    CloudPolicyClient::ResultCallback callback,
     DMServerJobResult result) {
-  bool success = true;
   last_dm_status_ = result.dm_status;
   if (result.dm_status != DM_STATUS_SUCCESS) {
-    success = false;
     NotifyClientError();
-  } else if (!result.response.has_cert_upload_response()) {
+  } else if (result.dm_status == DM_STATUS_SUCCESS &&
+             !result.response.has_cert_upload_response()) {
     LOG_POLICY(WARNING, CBCM_ENROLLMENT)
         << "Empty upload certificate response.";
-    success = false;
+    result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
   }
-  std::move(callback).Run(success);
+  std::move(callback).Run(CloudPolicyClient::Result(result.dm_status));
   RemoveJob(result.job);
 }
 

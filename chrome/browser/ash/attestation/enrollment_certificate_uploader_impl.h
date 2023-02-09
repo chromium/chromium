@@ -14,10 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
-
-namespace policy {
-class CloudPolicyClient;
-}  // namespace policy
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 
 namespace ash {
 namespace attestation {
@@ -79,9 +76,8 @@ class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
   // upload.
   void UploadCertificateIfNeeded(const std::string& pem_certificate_chain);
 
-  // Called when a certificate upload operation completes. On success, |status|
-  // will be true.
-  void OnUploadComplete(bool status);
+  // Called when a certificate upload operation completes.
+  void OnUploadComplete(policy::CloudPolicyClient::Result result);
 
   // Reschedules certificate upload from |Start()| checkpoint and returns true.
   // If |retry_limit_| is exceeded, does not reschedule and returns false.

@@ -305,7 +305,7 @@ class POLICY_EXPORT CloudPolicyClient {
   // will be called when the operation completes.
   virtual void UploadEnterpriseMachineCertificate(
       const std::string& certificate_data,
-      StatusCallback callback);
+      ResultCallback callback);
 
   // Upload an enrollment certificate to the server.  Like FetchPolicy, this
   // method requires that the client is in a registered state.
@@ -313,14 +313,14 @@ class POLICY_EXPORT CloudPolicyClient {
   // server.  The |callback| will be called when the operation completes.
   virtual void UploadEnterpriseEnrollmentCertificate(
       const std::string& certificate_data,
-      StatusCallback callback);
+      ResultCallback callback);
 
   // Upload an enrollment identifier to the server. Like FetchPolicy, this
   // method requires that the client is in a registered state.
   // |enrollment_id| must hold an enrollment identifier. The |callback| will be
   // called when the operation completes.
   virtual void UploadEnterpriseEnrollmentId(const std::string& enrollment_id,
-                                            StatusCallback callback);
+                                            ResultCallback callback);
 
   // Uploads status to the server. The client must be in a registered state.
   // Only non-null statuses will be included in the upload status request. The
@@ -604,7 +604,7 @@ class POLICY_EXPORT CloudPolicyClient {
       const std::string& certificate_data,
       enterprise_management::DeviceCertUploadRequest::CertificateType
           certificate_type,
-      StatusCallback callback);
+      ResultCallback callback);
 
   // This is called when a RegisterWithCertiifcate request has been signed.
   void OnRegisterWithCertificateRequestSigned(
@@ -623,7 +623,7 @@ class POLICY_EXPORT CloudPolicyClient {
                                       DMServerJobResult result);
 
   // Callback for certificate upload requests.
-  void OnCertificateUploadCompleted(StatusCallback callback,
+  void OnCertificateUploadCompleted(ResultCallback callback,
                                     DMServerJobResult result);
 
   // Callback for several types of status/report upload requests.
@@ -778,7 +778,7 @@ class POLICY_EXPORT CloudPolicyClient {
 
   // Creates a job config to upload a certificate.
   std::unique_ptr<DMServerJobConfiguration> CreateCertUploadJobConfiguration(
-      CloudPolicyClient::StatusCallback callback);
+      CloudPolicyClient::ResultCallback callback);
 
   // Creates a job config to upload a report.
   std::unique_ptr<DMServerJobConfiguration> CreateReportUploadJobConfiguration(

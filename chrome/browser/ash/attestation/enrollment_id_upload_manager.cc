@@ -188,11 +188,11 @@ void EnrollmentIdUploadManager::RescheduleGetEnrollmentId() {
 
 void EnrollmentIdUploadManager::OnUploadComplete(
     const std::string& enrollment_id,
-    bool status) {
+    policy::CloudPolicyClient::Result result) {
   const std::string& printable_enrollment_id = base::ToLowerASCII(
       base::HexEncode(enrollment_id.data(), enrollment_id.size()));
 
-  if (!status) {
+  if (!result.IsSuccess()) {
     LOG(ERROR) << "Failed to upload Enrollment Identifier \""
                << printable_enrollment_id << "\" to DMServer.";
     RunCallbacks(/*status=*/false);

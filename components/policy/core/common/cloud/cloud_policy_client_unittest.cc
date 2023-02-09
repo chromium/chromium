@@ -1300,10 +1300,12 @@ TEST_F(CloudPolicyClientTest, UploadEnterpriseMachineCertificate) {
   RegisterClient();
 
   ExpectAndCaptureJob(GetUploadCertificateResponse());
-  EXPECT_CALL(status_callback_observer_, OnCallbackComplete(true)).Times(1);
-  CloudPolicyClient::StatusCallback callback =
-      base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
-                     base::Unretained(&status_callback_observer_));
+  EXPECT_CALL(result_callback_observer_,
+              OnCallbackComplete(CloudPolicyClient::Result(DM_STATUS_SUCCESS)))
+      .Times(1);
+  CloudPolicyClient::ResultCallback callback =
+      base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
+                     base::Unretained(&result_callback_observer_));
   client_->UploadEnterpriseMachineCertificate(kMachineCertificate,
                                               std::move(callback));
   base::RunLoop().RunUntilIdle();
@@ -1318,10 +1320,12 @@ TEST_F(CloudPolicyClientTest, UploadEnterpriseEnrollmentCertificate) {
   RegisterClient();
 
   ExpectAndCaptureJob(GetUploadCertificateResponse());
-  EXPECT_CALL(status_callback_observer_, OnCallbackComplete(true)).Times(1);
-  CloudPolicyClient::StatusCallback callback =
-      base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
-                     base::Unretained(&status_callback_observer_));
+  EXPECT_CALL(result_callback_observer_,
+              OnCallbackComplete(CloudPolicyClient::Result(DM_STATUS_SUCCESS)))
+      .Times(1);
+  CloudPolicyClient::ResultCallback callback =
+      base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
+                     base::Unretained(&result_callback_observer_));
   client_->UploadEnterpriseEnrollmentCertificate(kEnrollmentCertificate,
                                                  std::move(callback));
   base::RunLoop().RunUntilIdle();
@@ -1339,10 +1343,13 @@ TEST_F(CloudPolicyClientTest, UploadEnterpriseMachineCertificateEmpty) {
       GetUploadCertificateResponse();
   upload_certificate_response.clear_cert_upload_response();
   ExpectAndCaptureJob(upload_certificate_response);
-  EXPECT_CALL(status_callback_observer_, OnCallbackComplete(false)).Times(1);
-  CloudPolicyClient::StatusCallback callback =
-      base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
-                     base::Unretained(&status_callback_observer_));
+  EXPECT_CALL(result_callback_observer_,
+              OnCallbackComplete(
+                  CloudPolicyClient::Result(DM_STATUS_RESPONSE_DECODING_ERROR)))
+      .Times(1);
+  CloudPolicyClient::ResultCallback callback =
+      base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
+                     base::Unretained(&result_callback_observer_));
   client_->UploadEnterpriseMachineCertificate(kMachineCertificate,
                                               std::move(callback));
   base::RunLoop().RunUntilIdle();
@@ -1360,10 +1367,13 @@ TEST_F(CloudPolicyClientTest, UploadEnterpriseEnrollmentCertificateEmpty) {
       GetUploadCertificateResponse();
   upload_certificate_response.clear_cert_upload_response();
   ExpectAndCaptureJob(upload_certificate_response);
-  EXPECT_CALL(status_callback_observer_, OnCallbackComplete(false)).Times(1);
-  CloudPolicyClient::StatusCallback callback =
-      base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
-                     base::Unretained(&status_callback_observer_));
+  EXPECT_CALL(result_callback_observer_,
+              OnCallbackComplete(
+                  CloudPolicyClient::Result(DM_STATUS_RESPONSE_DECODING_ERROR)))
+      .Times(1);
+  CloudPolicyClient::ResultCallback callback =
+      base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
+                     base::Unretained(&result_callback_observer_));
   client_->UploadEnterpriseEnrollmentCertificate(kEnrollmentCertificate,
                                                  std::move(callback));
   base::RunLoop().RunUntilIdle();
@@ -1378,16 +1388,19 @@ TEST_F(CloudPolicyClientTest, UploadCertificateFailure) {
   RegisterClient();
 
   DeviceManagementService::JobConfiguration::JobType job_type;
-  EXPECT_CALL(status_callback_observer_, OnCallbackComplete(false)).Times(1);
+  EXPECT_CALL(
+      result_callback_observer_,
+      OnCallbackComplete(CloudPolicyClient::Result(DM_STATUS_REQUEST_FAILED)))
+      .Times(1);
   EXPECT_CALL(job_creation_handler_, OnJobCreation)
       .WillOnce(DoAll(
           service_.CaptureJobType(&job_type),
           service_.SendJobResponseAsync(
               net::ERR_FAILED, DeviceManagementService::kInvalidArgument)));
   EXPECT_CALL(observer_, OnClientError);
-  CloudPolicyClient::StatusCallback callback =
-      base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
-                     base::Unretained(&status_callback_observer_));
+  CloudPolicyClient::ResultCallback callback =
+      base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
+                     base::Unretained(&result_callback_observer_));
   client_->UploadEnterpriseMachineCertificate(kMachineCertificate,
                                               std::move(callback));
   base::RunLoop().RunUntilIdle();
@@ -1404,10 +1417,12 @@ TEST_F(CloudPolicyClientTest, UploadEnterpriseEnrollmentId) {
       kEnrollmentId);
 
   ExpectAndCaptureJob(GetUploadCertificateResponse());
-  EXPECT_CALL(status_callback_observer_, OnCallbackComplete(true)).Times(1);
-  CloudPolicyClient::StatusCallback callback =
-      base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
-                     base::Unretained(&status_callback_observer_));
+  EXPECT_CALL(result_callback_observer_,
+              OnCallbackComplete(CloudPolicyClient::Result(DM_STATUS_SUCCESS)))
+      .Times(1);
+  CloudPolicyClient::ResultCallback callback =
+      base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
+                     base::Unretained(&result_callback_observer_));
   client_->UploadEnterpriseEnrollmentId(kEnrollmentId, std::move(callback));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UPLOAD_CERTIFICATE,
@@ -2146,18 +2161,17 @@ TEST_F(CloudPolicyClientTest, MultipleActiveRequests) {
 
   // Expect two calls on our upload observer, one for the status upload and
   // one for the certificate upload.
-  CloudPolicyClient::StatusCallback callback2 =
-      base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
-                     base::Unretained(&status_callback_observer_));
+  CloudPolicyClient::ResultCallback callback2 =
+      base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
+                     base::Unretained(&result_callback_observer_));
   client_->UploadEnterpriseMachineCertificate(kMachineCertificate,
                                               std::move(callback2));
   EXPECT_EQ(2, client_->GetActiveRequestCountForTest());
 
   // Now satisfy both active jobs.
-  EXPECT_CALL(status_callback_observer_, OnCallbackComplete(true)).Times(1);
   EXPECT_CALL(result_callback_observer_,
               OnCallbackComplete(CloudPolicyClient::Result(DM_STATUS_SUCCESS)))
-      .Times(1);
+      .Times(2);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UPLOAD_STATUS,
             upload_type);

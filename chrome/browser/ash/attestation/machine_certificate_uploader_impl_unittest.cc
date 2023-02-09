@@ -62,9 +62,11 @@ void CertCallbackNotAvailableFailure(
       base::BindOnce(std::move(callback), ATTESTATION_NOT_AVAILABLE, ""));
 }
 
-void StatusCallbackSuccess(policy::CloudPolicyClient::StatusCallback callback) {
+void ResultCallbackSuccess(policy::CloudPolicyClient::ResultCallback callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), policy::CloudPolicyClient::Result(
+                                              policy::DM_STATUS_SUCCESS)));
 }
 
 class CallbackObserver {
@@ -167,7 +169,7 @@ class MachineCertificateUploaderTestBase : public ::testing::Test {
       EXPECT_CALL(policy_client_,
                   UploadEnterpriseMachineCertificate(
                       new_key ? kFakeCertificate : certificate, _))
-          .WillOnce(WithArgs<1>(Invoke(StatusCallbackSuccess)));
+          .WillOnce(WithArgs<1>(Invoke(ResultCallbackSuccess)));
     }
 
     // Setup expected key generations.  Again use WillOnce().  Key generation is

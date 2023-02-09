@@ -57,14 +57,18 @@ void CertCallbackBadRequestFailure(CertCallback callback) {
                                 ATTESTATION_SERVER_BAD_REQUEST_FAILURE, ""));
 }
 
-void StatusCallbackFailure(policy::CloudPolicyClient::StatusCallback callback) {
+void ResultCallbackFailure(policy::CloudPolicyClient::ResultCallback callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), false));
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                policy::CloudPolicyClient::Result(
+                                    policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
 }
 
-void StatusCallbackSuccess(policy::CloudPolicyClient::StatusCallback callback) {
+void ResultCallbackSuccess(policy::CloudPolicyClient::ResultCallback callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), policy::CloudPolicyClient::Result(
+                                              policy::DM_STATUS_SUCCESS)));
 }
 
 }  // namespace
@@ -176,7 +180,7 @@ TEST_F(EnrollmentCertificateUploaderTest, UploadCertificateFailure) {
     EXPECT_CALL(policy_client_,
                 UploadEnterpriseEnrollmentCertificate(valid_certificate, _))
         .Times(1)
-        .WillOnce(WithArgs<1>(Invoke(StatusCallbackFailure)));
+        .WillOnce(WithArgs<1>(Invoke(ResultCallbackFailure)));
   }
 
   Run(/*expected_status=*/CertStatus::kFailedToUpload);
@@ -200,9 +204,9 @@ TEST_F(EnrollmentCertificateUploaderTest,
               UploadEnterpriseEnrollmentCertificate(valid_certificate, _))
       .Times(1)
       .WillOnce(WithArgs<1>(
-          Invoke([this](policy::CloudPolicyClient::StatusCallback callback) {
+          Invoke([this](policy::CloudPolicyClient::ResultCallback callback) {
             policy_client_.SetDMToken("");
-            StatusCallbackFailure(std::move(callback));
+            ResultCallbackFailure(std::move(callback));
           })));
 
   EXPECT_CALL(attestation_flow_,
@@ -272,7 +276,7 @@ TEST_F(EnrollmentCertificateUploaderTest, UploadValidCertificate) {
   EXPECT_CALL(policy_client_,
               UploadEnterpriseEnrollmentCertificate(valid_certificate, _))
       .Times(1)
-      .WillOnce(WithArgs<1>(Invoke(StatusCallbackSuccess)));
+      .WillOnce(WithArgs<1>(Invoke(ResultCallbackSuccess)));
 
   Run(/*expected_status=*/CertStatus::kSuccess);
 }
@@ -305,7 +309,7 @@ TEST_F(EnrollmentCertificateUploaderTest,
   EXPECT_CALL(policy_client_,
               UploadEnterpriseEnrollmentCertificate(valid_certificate, _))
       .Times(1)
-      .WillOnce(WithArgs<1>(Invoke(StatusCallbackSuccess)));
+      .WillOnce(WithArgs<1>(Invoke(ResultCallbackSuccess)));
 
   Run(/*expected_status=*/CertStatus::kSuccess);
 }
@@ -338,7 +342,7 @@ TEST_F(EnrollmentCertificateUploaderTest,
   EXPECT_CALL(policy_client_,
               UploadEnterpriseEnrollmentCertificate(valid_certificate, _))
       .Times(1)
-      .WillOnce(WithArgs<1>(Invoke(StatusCallbackFailure)));
+      .WillOnce(WithArgs<1>(Invoke(ResultCallbackFailure)));
   // After upload failure, shall fetch existing certificate.
   for (int i = 0; i < kRetryLimit; ++i) {
     // Cannot use Times(kRetryLimit) because of expected sequence.
@@ -353,7 +357,7 @@ TEST_F(EnrollmentCertificateUploaderTest,
     EXPECT_CALL(policy_client_,
                 UploadEnterpriseEnrollmentCertificate(valid_certificate, _))
         .Times(1)
-        .WillOnce(WithArgs<1>(Invoke(StatusCallbackFailure)));
+        .WillOnce(WithArgs<1>(Invoke(ResultCallbackFailure)));
   }
 
   Run(/*expected_status=*/CertStatus::kFailedToUpload);
@@ -378,7 +382,7 @@ TEST_F(EnrollmentCertificateUploaderTest,
     EXPECT_CALL(policy_client_,
                 UploadEnterpriseEnrollmentCertificate(empty_certificate, _))
         .Times(1)
-        .WillOnce(WithArgs<1>(Invoke(StatusCallbackFailure)));
+        .WillOnce(WithArgs<1>(Invoke(ResultCallbackFailure)));
   }
 
   Run(/*expected_status=*/CertStatus::kFailedToUpload);
@@ -399,7 +403,7 @@ TEST_F(EnrollmentCertificateUploaderTest, UploadValidCertificateOnlyOnce) {
   EXPECT_CALL(policy_client_,
               UploadEnterpriseEnrollmentCertificate(valid_certificate, _))
       .Times(1)
-      .WillOnce(WithArgs<1>(Invoke(StatusCallbackSuccess)));
+      .WillOnce(WithArgs<1>(Invoke(ResultCallbackSuccess)));
 
   Run(/*expected_status=*/CertStatus::kSuccess);
 

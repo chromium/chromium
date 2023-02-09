@@ -233,8 +233,9 @@ void MachineCertificateUploaderImpl::CheckIfUploaded(
   UploadCertificate(reply.certificate());
 }
 
-void MachineCertificateUploaderImpl::OnUploadComplete(bool status) {
-  if (status) {
+void MachineCertificateUploaderImpl::OnUploadComplete(
+    policy::CloudPolicyClient::Result result) {
+  if (result.IsSuccess()) {
     VLOG(1) << "Enterprise Machine Certificate uploaded to DMServer.";
     ::attestation::GetKeyInfoRequest request;
     request.set_username("");
@@ -243,7 +244,7 @@ void MachineCertificateUploaderImpl::OnUploadComplete(bool status) {
         request, base::BindOnce(&MachineCertificateUploaderImpl::MarkAsUploaded,
                                 weak_factory_.GetWeakPtr()));
   }
-  certificate_uploaded_ = status;
+  certificate_uploaded_ = result.IsSuccess();
   RunCallbacks(certificate_uploaded_.value());
 }
 

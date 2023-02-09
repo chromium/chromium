@@ -37,9 +37,11 @@ using ::testing::WithArgs;
 
 constexpr int kRetryLimit = 3;
 
-void StatusCallbackSuccess(policy::CloudPolicyClient::StatusCallback callback) {
+void ResultCallbackSuccess(policy::CloudPolicyClient::ResultCallback callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), policy::CloudPolicyClient::Result(
+                                              policy::DM_STATUS_SUCCESS)));
 }
 
 }  // namespace
@@ -107,7 +109,7 @@ class EnrollmentIdUploadManagerTest : public DeviceSettingsTestBase {
     }
     EXPECT_CALL(policy_client_, UploadEnterpriseEnrollmentId(enrollment_id_, _))
         .Times(times)
-        .WillRepeatedly(WithArgs<1>(Invoke(StatusCallbackSuccess)));
+        .WillRepeatedly(WithArgs<1>(Invoke(ResultCallbackSuccess)));
   }
 
   void SetUpDevicePolicy(bool enrollment_id_needed) {
