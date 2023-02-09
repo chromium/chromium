@@ -70,8 +70,9 @@ void SearchController::Initialize() {
       std::make_unique<SearchMetricsManager>(profile_, notifier_);
   session_metrics_manager_ =
       std::make_unique<SearchSessionMetricsManager>(profile_, notifier_);
-  federated_metrics_manager_ = std::make_unique<FederatedMetricsManager>(
-      notifier_, federated_service_controller_);
+  federated_metrics_manager_ =
+      std::make_unique<federated::FederatedMetricsManager>(
+          notifier_, federated_service_controller_);
   app_search_data_source_ = std::make_unique<AppSearchDataSource>(
       profile_, list_controller_, base::DefaultClock::GetInstance());
 }

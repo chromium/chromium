@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/system/federated/federated_service_controller.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,7 +15,6 @@
 #include "base/threading/thread.h"
 #include "chrome/browser/ash/app_list/app_list_notifier_impl.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
-#include "chrome/browser/ash/app_list/search/search_metrics_util.h"
 #include "chrome/browser/ash/app_list/search/test/search_metrics_test_util.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller.h"
 #include "chromeos/ash/components/dbus/federated/federated_client.h"
@@ -30,6 +30,7 @@ using ash::FederatedClient;
 using ash::federated::FakeServiceConnectionImpl;
 using ash::federated::ScopedFakeServiceConnectionForTest;
 using ash::federated::ServiceConnection;
+using federated::FederatedMetricsManager;
 
 class TestFederatedServiceController
     : public ash::federated::FederatedServiceController {
@@ -104,30 +105,75 @@ class FederatedMetricsManagerTest : public testing::Test {
 };
 
 TEST_F(FederatedMetricsManagerTest, OnAbandon) {
-  // TODO(b/262611120): After a FederatedMetricsManager histogram is added,
-  // expect an error log (corresponding to class being constructed with a null
-  // AppListNotifier).
-
   Location location = Location::kList;
   std::vector<Result> shown_results;
   metrics_manager_->OnAbandon(location, shown_results, u"fake_query");
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester()->ExpectUniqueSample(
+      app_list::federated::kHistogramInitStatus,
+      app_list::federated::FederatedMetricsManager::InitStatus::kOk, 1);
+
+  histogram_tester()->ExpectUniqueSample(
+      app_list::federated::kHistogramAction,
+      app_list::federated::FederatedMetricsManager::Action::kAbandon, 1);
+
+  histogram_tester()->ExpectUniqueSample(
+      app_list::federated::kHistogramReportStatus,
+      app_list::federated::FederatedMetricsManager::ReportStatus::kOk, 1);
 
   // TODO(b/262611120): Check contents of logged example, once this
   // functionality is available.
 }
 
 TEST_F(FederatedMetricsManagerTest, OnLaunch) {
-  // TODO(b/262611120): After a FederatedMetricsManager histogram is added,
-  // expect an error log (corresponding to class being constructed with a null
-  // AppListNotifier).
-
   Location location = Location::kList;
   std::vector<Result> shown_results;
   Result launched_result = CreateFakeResult(Type::EXTENSION_APP, "fake_id");
   metrics_manager_->OnLaunch(location, launched_result, shown_results,
                              u"fake_query");
+  base::RunLoop().RunUntilIdle();
 
+  histogram_tester()->ExpectUniqueSample(
+      app_list::federated::kHistogramInitStatus,
+      app_list::federated::FederatedMetricsManager::InitStatus::kOk, 1);
+
+  histogram_tester()->ExpectUniqueSample(
+      app_list::federated::kHistogramAction,
+      app_list::federated::FederatedMetricsManager::Action::kLaunch, 1);
+
+  histogram_tester()->ExpectUniqueSample(
+      app_list::federated::kHistogramReportStatus,
+      app_list::federated::FederatedMetricsManager::ReportStatus::kOk, 1);
   // TODO(b/262611120): Check contents of logged example, once this
+  // functionality is available.
+}
+
+TEST_F(FederatedMetricsManagerTest, ZeroState) {
+  Location location = Location::kList;
+  std::vector<Result> shown_results;
+  Result launched_result = CreateFakeResult(Type::EXTENSION_APP, "fake_id");
+
+  // Simulate a series of user actions in zero state search. An empty query
+  // indicates zero state search.
+  std::u16string empty_query = u"";
+  metrics_manager_->OnAbandon(location, shown_results, empty_query);
+  metrics_manager_->OnLaunch(location, launched_result, shown_results,
+                             empty_query);
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester()->ExpectUniqueSample(
+      app_list::federated::kHistogramInitStatus,
+      app_list::federated::FederatedMetricsManager::InitStatus::kOk, 1);
+
+  // Zero state search should not trigger any logging on user action.
+  histogram_tester()->ExpectTotalCount(app_list::federated::kHistogramAction,
+                                       0);
+  histogram_tester()->ExpectTotalCount(
+      app_list::federated::kHistogramReportStatus, 0);
+
+  // Do not expect that any examples were logged to the federated service.
+  // TODO(b/262611120): Check contents of federated service storage, once this
   // functionality is available.
 }
 

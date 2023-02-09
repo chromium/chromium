@@ -207,7 +207,8 @@ class SearchController {
 
   std::unique_ptr<SearchMetricsManager> metrics_manager_;
   std::unique_ptr<SearchSessionMetricsManager> session_metrics_manager_;
-  std::unique_ptr<FederatedMetricsManager> federated_metrics_manager_;
+  std::unique_ptr<federated::FederatedMetricsManager>
+      federated_metrics_manager_;
 
   std::unique_ptr<AppSearchDataSource> app_search_data_source_;
 

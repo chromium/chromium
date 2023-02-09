@@ -5,16 +5,16 @@
 #include "chrome/browser/ash/app_list/search/federated_metrics_manager.h"
 
 #include "ash/shell.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
-#include "chrome/browser/ash/app_list/search/search_metrics_util.h"
 #include "chromeos/ash/services/federated/public/cpp/federated_example_util.h"
 #include "chromeos/ash/services/federated/public/mojom/example.mojom.h"
 #include "chromeos/ash/services/federated/public/mojom/federated_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace app_list {
+namespace app_list::federated {
 
 namespace {
 
@@ -24,15 +24,27 @@ using chromeos::federated::mojom::ExamplePtr;
 using chromeos::federated::mojom::Features;
 
 constexpr char kClientName[] = "launcher_query_analytics_v1";
-// TODO(b/262611120): Consider shortening these, for potential bandwidth
-// conservation.
-constexpr char kExamplePrefixOnAbandon[] = "ABANDON_";
-constexpr char kExamplePrefixOnLaunch[] = "LAUNCH_";
+
+// Prefixes are short, for bandwidth conservation.
+constexpr char kExamplePrefixOnAbandon[] = "A_";
+constexpr char kExamplePrefixOnLaunch[] = "L_";
 
 bool IsLoggingEnabled() {
   // TODO(b/262611120): Also check user metrics opt-in/out, any other relevant
   // federated flags, etc.
   return search_features::IsLauncherQueryFederatedAnalyticsPHHEnabled();
+}
+
+void LogAction(FederatedMetricsManager::Action action) {
+  base::UmaHistogramEnumeration(kHistogramAction, action);
+}
+
+void LogInitStatus(FederatedMetricsManager::InitStatus status) {
+  base::UmaHistogramEnumeration(kHistogramInitStatus, status);
+}
+
+void LogReportStatus(FederatedMetricsManager::ReportStatus status) {
+  base::UmaHistogramEnumeration(kHistogramReportStatus, status);
 }
 
 ExamplePtr CreateExamplePtr(const std::string& example_str) {
@@ -61,20 +73,24 @@ FederatedMetricsManager::FederatedMetricsManager(
   }
 
   if (!notifier) {
-    // TODO(b/262611120): Metrics (missing notifier).
+    LogInitStatus(InitStatus::kMissingNotifier);
     return;
   }
 
   if (!controller_) {
-    // TODO(b/262611120): Metrics (missing controller).
+    LogInitStatus(InitStatus::kMissingController);
+    return;
   }
 
-  observation_.Observe(notifier);
   TryToBindFederatedServiceIfNecessary();
-
   if (!federated_service_.is_bound() || !federated_service_.is_connected()) {
-    // TODO(b/262611120): Metrics (failed connection).
+    LogInitStatus(InitStatus::kFederatedConnectionFailedToEstablish);
+    return;
   }
+
+  // Observe notifier only after all init checks have suceeded.
+  observation_.Observe(notifier);
+  LogInitStatus(InitStatus::kOk);
 }
 
 FederatedMetricsManager::~FederatedMetricsManager() = default;
@@ -82,10 +98,10 @@ FederatedMetricsManager::~FederatedMetricsManager() = default;
 void FederatedMetricsManager::OnAbandon(Location location,
                                         const std::vector<Result>& results,
                                         const std::u16string& query) {
-  if (!IsLoggingEnabled()) {
+  if (!IsLoggingEnabled() || query.empty()) {
     return;
   }
-  // TODO(b/262611120): Metrics (count abandons).
+  LogAction(Action::kAbandon);
   LogExample(CreateExampleString(kExamplePrefixOnAbandon, query));
 }
 
@@ -93,10 +109,10 @@ void FederatedMetricsManager::OnLaunch(Location location,
                                        const Result& launched,
                                        const std::vector<Result>& shown,
                                        const std::u16string& query) {
-  if (!IsLoggingEnabled()) {
+  if (!IsLoggingEnabled() || query.empty()) {
     return;
   }
-  // TODO(b/262611120): Metrics (count launches).
+  LogAction(Action::kLaunch);
   LogExample(CreateExampleString(kExamplePrefixOnLaunch, query));
 }
 
@@ -121,12 +137,17 @@ void FederatedMetricsManager::LogExample(const std::string& example_str) {
   }
 
   TryToBindFederatedServiceIfNecessary();
-  if (IsFederatedServiceAvailable() && federated_service_.is_connected()) {
+
+  if (!IsFederatedServiceAvailable()) {
+    LogReportStatus(ReportStatus::kFederatedServiceNotAvailable);
+  } else if (!federated_service_.is_connected()) {
+    LogReportStatus(ReportStatus::kFederatedServiceNotConnected);
+  } else {
+    // Federated service available and connected.
     ExamplePtr example = CreateExamplePtr(example_str);
     federated_service_->ReportExample(kClientName, std::move(example));
-  } else {
-    // TODO(b/262611120): Error handling.
+    LogReportStatus(ReportStatus::kOk);
   }
 }
 
-}  // namespace app_list
+}  // namespace app_list::federated
