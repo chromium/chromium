@@ -74,6 +74,31 @@ BASE_FEATURE(kAutofillAssociateForms,
 const base::FeatureParam<base::TimeDelta> kAutofillAssociateFormsTTL{
     &kAutofillAssociateForms, "associate_forms_ttl", base::Minutes(5)};
 
+// Testing tool that collects metrics during a run of the captured site tests
+// and dumps the collected metrics into a specified output directory.
+// For each test, a file named {test-name}.txt is created. It contains all the
+// collected metrics in the following format.
+// histogram-name-1
+// bucket value
+// ...
+// histogram-name-2
+// ...
+// The set of metrics can be restricted using
+// `kAutofillCapturedSiteTestsMetricsScraperMetricNames`.
+// It is helpful in conjunction with `tools/captured_sites/metrics-scraper.py`.
+BASE_FEATURE(kAutofillCapturedSiteTestsMetricsScraper,
+             "AutofillCapturedSiteTestsMetricsScraper",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Name of the directory to write the results into.
+const base::FeatureParam<std::string>
+    kAutofillCapturedSiteTestsMetricsScraperOutputDir{
+        &kAutofillCapturedSiteTestsMetricsScraper, "output_dir", "/tmp/"};
+// A regex matching the histogram names that should be dumped. If not specified,
+// the metrics of all histograms dumped.
+const base::FeatureParam<std::string>
+    kAutofillCapturedSiteTestsMetricsScraperHistogramRegex{
+        &kAutofillCapturedSiteTestsMetricsScraper, "histogram_regex", ""};
+
 // If enabled, Autofill will not apply updates to address profiles based on data
 // extracted from submitted forms. This feature is mostly for debugging and
 // testing purposes and is not supposed to be launched.

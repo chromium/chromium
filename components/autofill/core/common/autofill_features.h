@@ -32,6 +32,14 @@ BASE_DECLARE_FEATURE(kAutofillAllowDuplicateFormSubmissions);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAllowNonHttpActivation);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillAssociateForms);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillCapturedSiteTestsMetricsScraper);
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<std::string>
+    kAutofillCapturedSiteTestsMetricsScraperOutputDir;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<std::string>
+    kAutofillCapturedSiteTestsMetricsScraperHistogramRegex;
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillDisableProfileUpdates);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillDisableSilentProfileUpdates);

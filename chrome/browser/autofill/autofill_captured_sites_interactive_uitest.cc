@@ -3,16 +3,23 @@
 // found in the LICENSE file.
 
 #include <map>
+#include <sstream>
 #include <string>
 
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/guid.h"
+#include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_base.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -38,7 +45,9 @@
 #include "components/autofill/core/browser/geo/state_names.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/variations_switches.h"
@@ -53,6 +62,8 @@ using captured_sites_test_utils::CapturedSiteParams;
 using captured_sites_test_utils::GetCapturedSites;
 using captured_sites_test_utils::TestRecipeReplayer;
 using captured_sites_test_utils::WebPageReplayServerWrapper;
+
+namespace autofill {
 
 namespace {
 
@@ -74,9 +85,66 @@ base::FilePath GetReplayFilesRootDirectory() {
   }
 }
 
-}  // namespace
+// Implements the `kAutofillCapturedSiteTestsMetricsScraper` testing feature.
+class MetricsScraper {
+ public:
+  // Creates a MetricsScraper if the Finch flag is enabled.
+  static std::unique_ptr<MetricsScraper> MaybeCreate(const std::string& test) {
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillCapturedSiteTestsMetricsScraper)) {
+      return nullptr;
+    }
+    const std::string& output_dir =
+        features::kAutofillCapturedSiteTestsMetricsScraperOutputDir.Get();
+    const std::string& histogram_regex =
+        features::kAutofillCapturedSiteTestsMetricsScraperHistogramRegex.Get();
+    return base::WrapUnique(new MetricsScraper(
+        base::FilePath::FromASCII(output_dir).AppendASCII(test + ".txt"),
+        base::UTF8ToUTF16(histogram_regex)));
+  }
 
-namespace autofill {
+  // Writes all samples of all histograms matching `histogram_regex_` into
+  // `output_file_`.
+  void ScrapeMetrics() const {
+    // Combine metrics from different processes.
+    ::metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+    // Get all relevant histogram names. Since `GetHistograms()` doesn't
+    // guarantee order, the results are sorted for easier comparisons across
+    // runs.
+    std::vector<std::string> histogram_names;
+    for (base::HistogramBase* histogram :
+         base::StatisticsRecorder::GetHistograms()) {
+      const std::string& name = histogram->histogram_name();
+      if (MatchesRegex(base::UTF8ToUTF16(name), *histogram_regex_)) {
+        histogram_names.push_back(name);
+      }
+    }
+    base::ranges::sort(histogram_names);
+
+    // Output the samples of all `histogram_names` to `output_file`.
+    std::stringstream output;
+    for (const std::string& name : histogram_names) {
+      output << name << std::endl;
+      for (const base::Bucket& bucket : histogram_tester_.GetAllSamples(name)) {
+        output << bucket.min << " " << bucket.count << std::endl;
+      }
+    }
+    base::WriteFile(output_file_, output.str());
+  }
+
+ private:
+  MetricsScraper(const base::FilePath& output_file,
+                 base::StringPiece16 histogram_regex)
+      : output_file_(output_file),
+        histogram_regex_(CompileRegex(histogram_regex)) {}
+
+  const base::FilePath output_file_;
+  const std::unique_ptr<const icu::RegexPattern> histogram_regex_;
+  const base::HistogramTester histogram_tester_;
+};
+
+}  // namespace
 
 class AutofillCapturedSitesInteractiveTest
     : public AutofillUiTest,
@@ -213,9 +281,14 @@ class AutofillCapturedSitesInteractiveTest
             GetParam().capture_file_path,
             test::ServerCacheReplayer::kOptionFailOnInvalidJsonRecord |
                 test::ServerCacheReplayer::kOptionSplitRequestsByForm)));
+
+    metrics_scraper_ = MetricsScraper::MaybeCreate(GetParam().site_name);
   }
 
   void TearDownOnMainThread() override {
+    if (metrics_scraper_) {
+      metrics_scraper_->ScrapeMetrics();
+    }
     recipe_replayer()->Cleanup();
     // Need to delete the URL loader and its underlying interceptor on the main
     // thread. Will result in a fatal crash otherwise. The pointer has its
@@ -305,8 +378,8 @@ class AutofillCapturedSitesInteractiveTest
           std::make_unique<captured_sites_test_utils::ProfileDataController>();
 
   base::test::ScopedFeatureList feature_list_;
-
   std::unique_ptr<test::ServerUrlLoader> server_url_loader_;
+  std::unique_ptr<MetricsScraper> metrics_scraper_;
 };
 
 IN_PROC_BROWSER_TEST_P(AutofillCapturedSitesInteractiveTest, Recipe) {
