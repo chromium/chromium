@@ -441,16 +441,14 @@ void SubstringSetMatcher::AhoCorasickNode::SetEdge(uint32_t label,
   }
 
   if (num_free_edges_ == 0) {
-    // We are out of space, so double our capacity. This can either be
-    // because we are converting from inline to heap storage, or because
-    // we are increasing the size of our heap storage.
+    // We are out of space, so double our capacity (unless that would cause
+    // num_free_edges_ to overflow). This can either be because we are
+    // converting from inline to heap storage, or because we are increasing the
+    // size of our heap storage.
     unsigned old_capacity =
         edges_capacity_ == 0 ? kNumInlineEdges : edges_capacity_;
-    unsigned new_capacity = old_capacity * 2;
+    unsigned new_capacity = std::min(old_capacity * 2, kEmptyLabel + 1);
     DCHECK_EQ(0u, new_capacity % 4);
-    // TODO(pkasting): The header claims this condition holds, but I don't
-    // understand why.  If you do, please comment.
-    DCHECK_LE(new_capacity, kEmptyLabel + 1);
     AhoCorasickEdge* new_edges = new AhoCorasickEdge[new_capacity];
     memcpy(new_edges, edges(), sizeof(AhoCorasickEdge) * old_capacity);
     for (unsigned edge_idx = old_capacity; edge_idx < new_capacity;
