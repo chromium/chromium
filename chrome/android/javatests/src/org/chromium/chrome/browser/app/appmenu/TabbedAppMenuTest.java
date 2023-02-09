@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.app.appmenu;
 
+import static org.junit.Assert.assertEquals;
+
 import android.content.res.Configuration;
 import android.support.test.InstrumentationRegistry;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ListView;
 
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -136,11 +139,11 @@ public class TabbedAppMenuTest {
     @Feature({"Browser", "Main"})
     public void testKeyboardMenuBoundaries() {
         moveToBoundary(false, true);
-        Assert.assertEquals(getCount() - 1, getCurrentFocusedRow());
+        assertEquals(getCount() - 1, getCurrentFocusedRow());
         moveToBoundary(true, true);
-        Assert.assertEquals(0, getCurrentFocusedRow());
+        assertEquals(0, getCurrentFocusedRow());
         moveToBoundary(false, true);
-        Assert.assertEquals(getCount() - 1, getCurrentFocusedRow());
+        assertEquals(getCount() - 1, getCurrentFocusedRow());
     }
 
     /**
@@ -161,7 +164,7 @@ public class TabbedAppMenuTest {
     @Feature({"Browser", "Main"})
     public void testKeyboardEnterAfterMovePastTopItem() {
         moveToBoundary(true, true);
-        Assert.assertEquals(0, getCurrentFocusedRow());
+        assertEquals(0, getCurrentFocusedRow());
         hitEnterAndAssertAppMenuDismissed();
     }
 
@@ -174,7 +177,7 @@ public class TabbedAppMenuTest {
     @Feature({"Browser", "Main"})
     public void testKeyboardEnterAfterMovePastBottomItem() {
         moveToBoundary(false, true);
-        Assert.assertEquals(getCount() - 1, getCurrentFocusedRow());
+        assertEquals(getCount() - 1, getCurrentFocusedRow());
         hitEnterAndAssertAppMenuDismissed();
     }
 
@@ -190,7 +193,7 @@ public class TabbedAppMenuTest {
                 mActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
         showAppMenuAndAssertMenuShown();
         moveToBoundary(true, false);
-        Assert.assertEquals(0, getCurrentFocusedRow());
+        assertEquals(0, getCurrentFocusedRow());
         hitEnterAndAssertAppMenuDismissed();
     }
 
@@ -205,7 +208,7 @@ public class TabbedAppMenuTest {
                 mActivityTestRule.getActivity(), Configuration.ORIENTATION_PORTRAIT);
         showAppMenuAndAssertMenuShown();
         moveToBoundary(true, false);
-        Assert.assertEquals(0, getCurrentFocusedRow());
+        assertEquals(0, getCurrentFocusedRow());
         hitEnterAndAssertAppMenuDismissed();
     }
 
@@ -252,7 +255,7 @@ public class TabbedAppMenuTest {
                 mActivityTestRule.getAppMenuCoordinator(), R.id.bookmark_this_page_id);
         Assert.assertFalse("Bookmark item should not be checked.",
                 bookmarkStarPropertyModel.get(AppMenuItemProperties.CHECKED));
-        Assert.assertEquals("Incorrect content description.",
+        assertEquals("Incorrect content description.",
                 mActivityTestRule.getActivity().getString(R.string.menu_bookmark),
                 bookmarkStarPropertyModel.get(AppMenuItemProperties.TITLE_CONDENSED));
         mRenderTestRule.render(getListView().getChildAt(0), "rounded_corner_icon_row");
@@ -266,7 +269,7 @@ public class TabbedAppMenuTest {
                 mActivityTestRule.getAppMenuCoordinator(), R.id.bookmark_this_page_id);
         Assert.assertTrue("Bookmark item should be checked.",
                 bookmarkStarPropertyModel.get(AppMenuItemProperties.CHECKED));
-        Assert.assertEquals("Incorrect content description for bookmarked page.",
+        assertEquals("Incorrect content description for bookmarked page.",
                 mActivityTestRule.getActivity().getString(R.string.edit_bookmark),
                 bookmarkStarPropertyModel.get(AppMenuItemProperties.TITLE_CONDENSED));
         mRenderTestRule.render(
@@ -424,7 +427,7 @@ public class TabbedAppMenuTest {
 
         PropertyModel bookmarkStarPropertyModel = AppMenuTestSupport.getMenuItemPropertyModel(
                 mActivityTestRule.getAppMenuCoordinator(), R.id.edit_bookmark_menu_id);
-        Assert.assertEquals("Add Bookmark item should be tint blue.",
+        assertEquals("Add Bookmark item should be tint blue.",
                 R.color.default_icon_color_accent1_tint_list,
                 bookmarkStarPropertyModel.get(AppMenuItemProperties.ICON_COLOR_RES));
 
@@ -435,6 +438,41 @@ public class TabbedAppMenuTest {
                 getListView().getChildAt(editBookmarkMenuItemIndex), "edit_bookmark_list_item");
 
         AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(null);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Browser", "Main", "QuickDelete", "RenderTest"})
+    @EnableFeatures({ChromeFeatureList.QUICK_DELETE_FOR_ANDROID})
+    public void testQuickDeleteMenu_Shown() throws IOException {
+        showAppMenuAndAssertMenuShown();
+        int quickDeletePosition = AppMenuTestSupport.findIndexOfMenuItemById(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id);
+        mRenderTestRule.render(getListView().getChildAt(quickDeletePosition), "quick_delete");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Browser", "Main", "QuickDelete"})
+    @EnableFeatures({ChromeFeatureList.QUICK_DELETE_FOR_ANDROID})
+    public void testQuickDeleteMenu_NotShownInIncognito() throws IOException {
+        mActivityTestRule.newIncognitoTabFromMenu();
+
+        showAppMenuAndAssertMenuShown();
+        assertEquals(-1,
+                AppMenuTestSupport.findIndexOfMenuItemById(
+                        mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Browser", "Main", "QuickDelete"})
+    @DisableFeatures({ChromeFeatureList.QUICK_DELETE_FOR_ANDROID})
+    public void testQuickDeleteMenu_NotShown() throws IOException {
+        showAppMenuAndAssertMenuShown();
+        assertEquals(-1,
+                AppMenuTestSupport.findIndexOfMenuItemById(
+                        mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id));
     }
 
     private void showAppMenuAndAssertMenuShown() {

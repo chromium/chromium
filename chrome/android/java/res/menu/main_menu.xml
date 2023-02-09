@@ -60,6 +60,9 @@ found in the LICENSE file.
         <item android:id="@+id/open_history_menu_id"
             android:title="@string/menu_history"
             android:icon="@drawable/ic_history_googblue_24dp" />
+        <item android:id="@+id/quick_delete_menu_id"
+            android:title="@string/menu_quick_delete"
+            android:icon="@drawable/quick_delete_trash_bin_icon_24dp"/>
         <item android:id="@+id/downloads_menu_id"
             android:title="@string/menu_downloads"
             android:icon="@drawable/infobar_download_complete" />
@@ -172,6 +175,9 @@ found in the LICENSE file.
         <item android:id="@+id/close_all_incognito_tabs_menu_id"
             android:title="@string/menu_close_all_incognito_tabs"
             android:icon="@drawable/btn_close_white" />
+        <item android:id="@id/quick_delete_menu_id"
+            android:title="@string/menu_quick_delete"
+            android:icon="@drawable/quick_delete_trash_bin_icon_24dp"/>
         <item android:id="@+id/menu_group_tabs"
             android:title="@string/menu_group_tabs"
             android:icon="@drawable/ic_widgets" />

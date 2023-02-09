@@ -130,6 +130,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.read_later.ReadingListBackPressHandler;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
@@ -2242,6 +2243,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             TabModel currentModel = mTabModelSelector.getCurrentModel();
             if (!currentModel.isIncognito()) currentModel.openMostRecentlyClosedEntry();
             RecordUserAction.record("MobileTabClosedUndoShortCut");
+        } else if (id == R.id.quick_delete_menu_id
+                && QuickDeleteController.isQuickDeleteEnabled()) {
+            assert !mTabModelSelector.getCurrentModel().isIncognito()
+                : "Quick delete is not supported in Incognito.";
+            // TODO(crbug.com/1412087): Get/Create the quick delete controller and tell it to show
+            // the dialog.
         } else {
             return super.onMenuOrKeyboardAction(id, fromMenu);
         }

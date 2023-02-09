@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -569,6 +570,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         boolean isMenuSelectTabsVisible = false;
         boolean isMenuGroupTabsEnabled = false;
         boolean isMenuGroupTabsVisible = false;
+
         if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
             isMenuSelectTabsVisible = isTabSelectionEditorContext;
             isMenuSelectTabsEnabled = !isIncognitoReauthShowing && isMenuSelectTabsVisible
@@ -647,6 +649,13 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 item.setVisible(isIncognito && isOverviewModeMenu);
                 item.setEnabled(hasIncognitoTabs);
             }
+            if (item.getItemId() == R.id.quick_delete_menu_id) {
+                boolean isQuickDeleteEnabled =
+                        !isIncognito && QuickDeleteController.isQuickDeleteEnabled();
+                item.setVisible(isQuickDeleteEnabled);
+                item.setEnabled(isQuickDeleteEnabled);
+            }
+
             // This needs to be done after the visibility of the item is set.
             if (item.getItemId() == R.id.divider_line_id) {
                 if (!hasItemBetweenDividers) {
