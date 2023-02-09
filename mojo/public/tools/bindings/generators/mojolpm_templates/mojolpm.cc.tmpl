@@ -344,9 +344,9 @@ bool HandleCall(uint32_t instance_id,
 {%-         set kind = param.kind %}
 {%-         set param_mojom_type = kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
 {%-         set param_maybe_mojom_type = kind|cpp_wrapper_type(add_same_module_namespaces=true, ignore_nullable=True) %}
-  {{param_mojom_type}} local_{{name}} = mojo::DefaultConstructTraits::CreateInstance<{{param_mojom_type}}>();
+  {{param_mojom_type}} local_{{name}} = ::mojo::DefaultConstructTraits::CreateInstance<{{param_mojom_type}}>();
 {%-         if kind|is_nullable_kind %}
-  {{param_maybe_mojom_type}} local_maybe_{{name}} = mojo::DefaultConstructTraits::CreateInstance<{{param_maybe_mojom_type}}>();
+  {{param_maybe_mojom_type}} local_maybe_{{name}} = ::mojo::DefaultConstructTraits::CreateInstance<{{param_maybe_mojom_type}}>();
 {%-         endif %}
 {%-       endfor %}
 
@@ -416,9 +416,9 @@ bool HandleResponse(
 {%-           set kind = param.kind %}
 {%-           set param_mojom_type = kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
 {%-           set param_maybe_mojom_type = kind|cpp_wrapper_type(add_same_module_namespaces=true, ignore_nullable=True) %}
-  {{param_mojom_type}} local_{{name}} = mojo::DefaultConstructTraits::CreateInstance<{{param_mojom_type}}>();
+  {{param_mojom_type}} local_{{name}} = ::mojo::DefaultConstructTraits::CreateInstance<{{param_mojom_type}}>();
 {%-           if kind|is_nullable_kind %}
-  {{param_maybe_mojom_type}} local_maybe_{{name}} = mojo::DefaultConstructTraits::CreateInstance<{{param_maybe_mojom_type}}>();
+  {{param_maybe_mojom_type}} local_maybe_{{name}} = ::mojo::DefaultConstructTraits::CreateInstance<{{param_maybe_mojom_type}}>();
 {%-           endif %}
 {%-         endfor %}
 

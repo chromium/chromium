@@ -15,8 +15,8 @@ struct StructTraits<{{dataview_type}}, {{struct_type}}> {
 {%-       set field_maybe_mojom_type = kind|cpp_wrapper_type(add_same_module_namespaces=true, ignore_nullable=true) %}
   static {{field_mojom_type}} {{field.name}}(
       const {{struct_type}}& input) {
-    {{field_mojom_type}} maybe_local_{{name}} = mojo::DefaultConstructTraits::CreateInstance<{{field_mojom_type}}>();
-    {{field_maybe_mojom_type}} local_{{name}} = mojo::DefaultConstructTraits::CreateInstance<{{field_maybe_mojom_type}}>();
+    {{field_mojom_type}} maybe_local_{{name}} = ::mojo::DefaultConstructTraits::CreateInstance<{{field_mojom_type}}>();
+    {{field_maybe_mojom_type}} local_{{name}} = ::mojo::DefaultConstructTraits::CreateInstance<{{field_maybe_mojom_type}}>();
     if (input.has_m_{{name}}() && mojolpm::FromProto(
       input.m_{{name}}(),
       local_{{name}})) {
@@ -28,7 +28,7 @@ struct StructTraits<{{dataview_type}}, {{struct_type}}> {
 {%-       set field_mojom_type = kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
   static {{field_mojom_type}} {{field.name}}(
       const {{struct_type}}& input) {
-    {{field_mojom_type}} local_{{name}} = mojo::DefaultConstructTraits::CreateInstance<{{field_mojom_type}}>();
+    {{field_mojom_type}} local_{{name}} = ::mojo::DefaultConstructTraits::CreateInstance<{{field_mojom_type}}>();
     (void) mojolpm::FromProto(
       input.m_{{name}}(),
       local_{{name}});
@@ -69,8 +69,8 @@ struct UnionTraits<{{dataview_type}}, {{union_type}}> {
 {%-       set field_maybe_mojom_type = kind|cpp_wrapper_type(add_same_module_namespaces=true, ignore_nullable=true) %}
   static {{field_mojom_type}} {{field.name}}(
       const {{union_type}}& input) {
-    {{field_mojom_type}} maybe_local_{{name}} = mojo::DefaultConstructTraits::CreateInstance<{{field_mojom_type}}>();
-    {{field_maybe_mojom_type}} local_{{name}} = mojo::DefaultConstructTraits::CreateInstance<{{field_maybe_mojom_type}}>();
+    {{field_mojom_type}} maybe_local_{{name}} = ::mojo::DefaultConstructTraits::CreateInstance<{{field_mojom_type}}>();
+    {{field_maybe_mojom_type}} local_{{name}} = ::mojo::DefaultConstructTraits::CreateInstance<{{field_maybe_mojom_type}}>();
     if (mojolpm::FromProto(
       input.m_{{name}}(),
       local_{{name}})) {
@@ -82,7 +82,7 @@ struct UnionTraits<{{dataview_type}}, {{union_type}}> {
 {%-       set field_mojom_type = kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
   static {{field_mojom_type}} {{field.name}}(
       const {{union_type}}& input) {
-    {{field_mojom_type}} local_{{name}} = mojo::DefaultConstructTraits::CreateInstance<{{field_mojom_type}}>();
+    {{field_mojom_type}} local_{{name}} = ::mojo::DefaultConstructTraits::CreateInstance<{{field_mojom_type}}>();
     (void) mojolpm::FromProto(
       input.m_{{name}}(),
       local_{{name}});
