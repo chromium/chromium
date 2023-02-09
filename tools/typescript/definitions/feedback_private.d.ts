@@ -46,6 +46,8 @@ declare namespace chrome {
       fromAssistant?: boolean;
       includeBluetoothLogs?: boolean;
       showQuestionnaire?: boolean;
+      fromAutofill?: boolean;
+      autofillMetadata?: string;
     }
 
     enum Status {

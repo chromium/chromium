@@ -68,6 +68,11 @@ void FeedbackHandler::RegisterMessages() {
       base::BindRepeating(&FeedbackHandler::HandleShowBluetoothLogsInfo,
                           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  web_ui()->RegisterMessageCallback(
+      "showAutofillMetadataInfo",
+      base::BindRepeating(&FeedbackHandler::HandleShowAutofillMetadataInfo,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "showSystemInfo",
       base::BindRepeating(&FeedbackHandler::HandleShowSystemInfo,
@@ -97,6 +102,11 @@ void FeedbackHandler::HandleShowBluetoothLogsInfo(
                 /*can_resize=*/false, /*can_minimize=*/false);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+void FeedbackHandler::HandleShowAutofillMetadataInfo(
+    const base::Value::List& args) {
+  // TODO(crbug.com/1407646): Introduce autofill metadata child page.
+}
 
 void FeedbackHandler::HandleShowSystemInfo(const base::Value::List& args) {
   ShowChildPage(Profile::FromWebUI(web_ui()), dialog_,

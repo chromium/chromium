@@ -20,12 +20,14 @@ let feedbackInfo: chrome.feedbackPrivate.FeedbackInfo = {
   assistantDebugInfoAllowed: false,
   attachedFile: undefined,
   attachedFileBlobUuid: undefined,
+  autofillMetadata: '',
   categoryTag: undefined,
   description: '...',
   descriptionPlaceholder: undefined,
   email: undefined,
   flow: chrome.feedbackPrivate.FeedbackFlow.REGULAR,
   fromAssistant: false,
+  fromAutofill: false,
   includeBluetoothLogs: false,
   pageUrl: undefined,
   sendHistograms: undefined,
@@ -96,6 +98,10 @@ class FeedbackHelper {
 
   showMetrics() {
     chrome.send('showMetrics');
+  }
+
+  showAutofillMetadataInfo() {
+    chrome.send('showAutofillMetadataInfo');
   }
 }
 
@@ -418,6 +424,7 @@ function sendReport(): boolean {
   feedbackInfo.email =
       getRequiredElement<HTMLSelectElement>('user-email-drop-down').value;
 
+  // TODO(crbug.com/1407646): Send autofill metadata if checkbox is checked.
   let useSystemInfo = false;
   let useHistograms = false;
   const checkbox = $<HTMLInputElement>('sys-info-checkbox');
@@ -556,6 +563,13 @@ function initialize() {
       getRequiredElement('assistant-checkbox-container').hidden = false;
     }
 
+    if ($('autofill-checkbox-container') != null &&
+        feedbackInfo.flow ===
+            chrome.feedbackPrivate.FeedbackFlow.GOOGLE_INTERNAL &&
+        feedbackInfo.fromAutofill) {
+      getRequiredElement('autofill-checkbox-container').hidden = false;
+    }
+
     getRequiredElement('description-text').textContent =
         feedbackInfo.description;
     if (feedbackInfo.descriptionPlaceholder) {
@@ -640,6 +654,22 @@ function initialize() {
       getRequiredElement('performance-info-link').onclick = openSlowTraceWindow;
     }
     // </if>
+
+    const autofillMetadataUrlElement = $('autofill-metadata-url');
+
+    if (autofillMetadataUrlElement) {
+      // Opens a new window showing the full anonymized system+app
+      // information.
+      autofillMetadataUrlElement.onclick = function(e) {
+        e.preventDefault();
+
+        feedbackHelper.showAutofillMetadataInfo();
+      };
+
+      autofillMetadataUrlElement.onauxclick = function(e) {
+        e.preventDefault();
+      };
+    }
 
     const sysInfoUrlElement = $('sys-info-url');
     if (sysInfoUrlElement) {
