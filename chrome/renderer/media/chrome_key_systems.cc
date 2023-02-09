@@ -190,8 +190,9 @@ SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability,
   // For compatibility with older CDMs different profiles are only used
   // with some video codecs.
   for (const auto& [codec, video_codec_info] : capability.video_codecs) {
-    if (requires_clear_lead_support && !video_codec_info.supports_clear_lead)
+    if (requires_clear_lead_support && !video_codec_info.supports_clear_lead) {
       continue;
+    }
     switch (codec) {
       case media::VideoCodec::kVP8:
         supported_codecs |= media::EME_CODEC_VP8;
@@ -274,8 +275,9 @@ bool CanSupportPersistentLicense() {
 base::flat_set<CdmSessionType> UpdatePersistentLicenseSupport(
     const base::flat_set<CdmSessionType> session_types) {
   auto updated_session_types = session_types;
-  if (!CanSupportPersistentLicense())
+  if (!CanSupportPersistentLicense()) {
     updated_session_types.erase(CdmSessionType::kPersistentLicense);
+  }
   return updated_session_types;
 }
 
@@ -422,8 +424,8 @@ void AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
             hw_secure_codecs_clear_lead_support_not_required,
             hw_secure_encryption_schemes, hw_secure_session_types,
             max_experimental_audio_robustness,
-            max_experimental_video_robustness,
-            persistent_state_support, distinctive_identifier_support);
+            max_experimental_video_robustness, persistent_state_support,
+            distinctive_identifier_support);
     experimental_key_system_info->set_experimental();
 
     key_systems->emplace_back(std::move(experimental_key_system_info));
@@ -445,6 +447,37 @@ void AddExternalClearKey(
   // TODO(xhwang): Actually use `capability` to determine capabilities.
   key_systems->push_back(std::make_unique<cdm::ExternalClearKeySystemInfo>());
 }
+
+#if BUILDFLAG(IS_WIN)
+void AddMediaFoundationClearKey(
+    const media::mojom::KeySystemCapabilityPtr& /*capability*/,
+    KeySystemInfos* key_systems) {
+  DVLOG(1) << __func__;
+
+  if (!base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting)) {
+    DLOG(ERROR) << "ExternalClearKey supported despite not enabled.";
+    return;
+  }
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  key_systems->push_back(std::make_unique<cdm::ExternalClearKeySystemInfo>(
+      media::kMediaFoundationClearKeyKeySystem, std::vector<std::string>(),
+      // MediaFoundation Clear Key Key System uses Windows Media Foundation's
+      // decoders and H264 is always supported. VideoCodec::kH264 is an
+      // EME_CODEC_AVC1.
+      media::EME_CODEC_AVC1,
+      // On Windows, MediaFoundation Clear Key CDM requires identifier,
+      // persistent state and HW secure codecs. We pretent to require these for
+      // testing purposes.
+      media::EmeConfig{
+          .identifier = media::EmeConfigRuleState::kRequired,
+          .persistence = media::EmeConfigRuleState::kRequired,
+          .hw_secure_codecs = media::EmeConfigRuleState::kRequired},
+      media::EmeFeatureSupport::ALWAYS_ENABLED,
+      media::EmeFeatureSupport::ALWAYS_ENABLED));
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
 void AddAndroidPlatformKeySystem(
@@ -506,6 +539,13 @@ void OnKeySystemSupportUpdated(
       AddExternalClearKey(capability, &key_systems);
       continue;
     }
+
+#if BUILDFLAG(IS_WIN)
+    if (key_system == media::kMediaFoundationClearKeyKeySystem) {
+      AddMediaFoundationClearKey(capability, &key_systems);
+      continue;
+    }
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
     AddAndroidPlatformKeySystem(key_system, capability, &key_systems);

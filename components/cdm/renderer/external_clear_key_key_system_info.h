@@ -6,6 +6,7 @@
 #define COMPONENTS_CDM_RENDERER_EXTERNAL_CLEAR_KEY_KEY_SYSTEM_INFO_H_
 
 #include <string>
+#include <vector>
 
 #include "build/build_config.h"
 #include "media/base/key_system_info.h"
@@ -18,6 +19,13 @@ namespace cdm {
 class ExternalClearKeySystemInfo : public media::KeySystemInfo {
  public:
   ExternalClearKeySystemInfo();
+  ExternalClearKeySystemInfo(
+      const std::string& key_system,
+      std::vector<std::string> excluded_key_systems,
+      media::SupportedCodecs codecs,
+      media::EmeConfig::Rule eme_config_rule,
+      media::EmeFeatureSupport persistent_state_support,
+      media::EmeFeatureSupport distinctive_identifier_support);
   ~ExternalClearKeySystemInfo() override;
 
   std::string GetBaseKeySystemName() const override;
@@ -27,6 +35,7 @@ class ExternalClearKeySystemInfo : public media::KeySystemInfo {
   media::EmeConfig::Rule GetEncryptionSchemeConfigRule(
       media::EncryptionScheme encryption_scheme) const override;
   media::SupportedCodecs GetSupportedCodecs() const override;
+  media::SupportedCodecs GetSupportedHwSecureCodecs() const override;
   media::EmeConfig::Rule GetRobustnessConfigRule(
       const std::string& key_system,
       media::EmeMediaType media_type,
@@ -35,6 +44,17 @@ class ExternalClearKeySystemInfo : public media::KeySystemInfo {
   media::EmeConfig::Rule GetPersistentLicenseSessionSupport() const override;
   media::EmeFeatureSupport GetPersistentStateSupport() const override;
   media::EmeFeatureSupport GetDistinctiveIdentifierSupport() const override;
+
+ private:
+  const std::string key_system_ = std::string();
+  const std::vector<std::string> excluded_key_systems_ = {};
+  const media::SupportedCodecs codecs_ = media::EME_CODEC_NONE;
+  const media::EmeConfig::Rule eme_config_rule_ =
+      media::EmeConfig::UnsupportedRule();
+  const media::EmeFeatureSupport persistent_state_support_ =
+      media::EmeFeatureSupport::NOT_SUPPORTED;
+  const media::EmeFeatureSupport distinctive_identifier_support_ =
+      media::EmeFeatureSupport::NOT_SUPPORTED;
 };
 
 }  // namespace cdm

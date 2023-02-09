@@ -230,6 +230,10 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaCapabilitiesWithParameters);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaCastOverlayButton);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaEngagementBypassAutoplayPolicies);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaEngagementHTTPSOnly);
+#if BUILDFLAG(IS_WIN)
+MEDIA_EXPORT extern const base::FeatureParam<std::string>
+    kMediaFoundationClearKeyCdmPathForTesting;
+#endif  // BUILDFLAG(IS_WIN)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaLearningExperiment);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaLearningFramework);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaLearningSmoothnessExperiment);

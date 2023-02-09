@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/media/clear_key_cdm_test_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -36,10 +37,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-#include "chrome/browser/media/library_cdm_test_helper.h"
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
 #error This file needs to be updated to run on Android.

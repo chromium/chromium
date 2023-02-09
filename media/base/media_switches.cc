@@ -782,6 +782,12 @@ BASE_FEATURE(kExternalClearKeyForTesting,
              "ExternalClearKeyForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_WIN)
+// Specifies the path to the MediaFoundation Clear Key CDM for testing.
+const base::FeatureParam<std::string> kMediaFoundationClearKeyCdmPathForTesting{
+    &kExternalClearKeyForTesting, "media_foundation_cdm_path", ""};
+#endif  // BUILDFLAG(IS_WIN)
+
 // Enables the Live Caption feature on supported devices.
 BASE_FEATURE(kLiveCaption, "LiveCaption", base::FEATURE_ENABLED_BY_DEFAULT);
 

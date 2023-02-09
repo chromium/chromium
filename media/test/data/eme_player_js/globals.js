@@ -40,6 +40,7 @@ var UNIT_TEST_RESULT_HEADER = 'UNIT_TEST_RESULT';
 var WIDEVINE_KEYSYSTEM = 'com.widevine.alpha';
 var CLEARKEY = 'org.w3.clearkey';
 var EXTERNAL_CLEARKEY = 'org.chromium.externalclearkey';
+var MEDIAFOUNDATION_CLEARKEY = 'org.chromium.externalclearkey.mediafoundation';
 var MESSAGE_TYPE_TEST_KEYSYSTEM =
     'org.chromium.externalclearkey.messagetypetest';
 var FILE_IO_TEST_KEYSYSTEM = 'org.chromium.externalclearkey.fileiotest';
@@ -56,7 +57,8 @@ var STORAGE_ID_TEST_KEYSYSTEM = 'org.chromium.externalclearkey.storageidtest';
 var KEY_SYSTEMS = {
   'Widevine': WIDEVINE_KEYSYSTEM,
   'Clearkey': CLEARKEY,
-  'External Clearkey': EXTERNAL_CLEARKEY
+  'External Clearkey': EXTERNAL_CLEARKEY,
+  'MediaFoundation Clearkey': MEDIAFOUNDATION_CLEARKEY
 };
 
 var CONFIG_CHANGE_TYPE = {
@@ -72,7 +74,8 @@ var MEDIA_TYPES = {
   'WebM - Video Only': 'video/webm; codecs="vp8"',
   'WebM - Audio Only': 'video/webm; codecs="vorbis"',
   'MP4 - Video Only': 'video/mp4; codecs="avc1.4D000C"',
-  'MP4 - Audio Only': 'audio/mp4; codecs="mp4a.40.2"'
+  'MP4 - Audio Only': 'audio/mp4; codecs="mp4a.40.2"',
+  'MP4 - Video Only': 'video/mp4; codecs="avc1.64001E"'
 };
 
 // Global document elements ID's.

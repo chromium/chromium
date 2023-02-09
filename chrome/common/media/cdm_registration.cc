@@ -81,15 +81,17 @@ std::unique_ptr<content::CdmInfo> CreateCdmInfoFromWidevineDirectory(
   auto cdm_library_path =
       media::GetPlatformSpecificDirectory(cdm_base_path)
           .Append(base::GetNativeLibraryName(kWidevineCdmLibraryName));
-  if (!base::PathExists(cdm_library_path))
+  if (!base::PathExists(cdm_library_path)) {
     return nullptr;
+  }
 
   // Manifest should be at the top level.
   auto manifest_path = cdm_base_path.Append(FILE_PATH_LITERAL("manifest.json"));
   base::Version version;
   media::CdmCapability capability;
-  if (!ParseCdmManifestFromPath(manifest_path, &version, &capability))
+  if (!ParseCdmManifestFromPath(manifest_path, &version, &capability)) {
     return nullptr;
+  }
 
   return CreateWidevineCdmInfo(version, cdm_library_path,
                                std::move(capability));
@@ -135,8 +137,9 @@ content::CdmInfo* GetComponentUpdatedWidevine() {
   static base::NoDestructor<std::unique_ptr<content::CdmInfo>> s_cdm_info(
       []() -> std::unique_ptr<content::CdmInfo> {
         auto install_dir = GetLatestComponentUpdatedWidevineCdmDirectory();
-        if (install_dir.empty())
+        if (install_dir.empty()) {
           return nullptr;
+        }
 
         return CreateCdmInfoFromWidevineDirectory(install_dir);
       }());
@@ -282,8 +285,9 @@ void AddExternalClearKey(std::vector<content::CdmInfo>* cdms) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   base::FilePath clear_key_cdm_path =
       command_line->GetSwitchValuePath(switches::kClearKeyCdmPathForTesting);
-  if (clear_key_cdm_path.empty() || !base::PathExists(clear_key_cdm_path))
+  if (clear_key_cdm_path.empty() || !base::PathExists(clear_key_cdm_path)) {
     return;
+  }
 
   // Supported codecs are hard-coded in ExternalClearKeySystemInfo.
   media::CdmCapability capability(
@@ -309,6 +313,34 @@ void AddExternalClearKey(std::vector<content::CdmInfo>* cdms) {
       media::kClearKeyCdmType, base::Version("0.1.0.0"), clear_key_cdm_path));
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+#if BUILDFLAG(IS_WIN)
+void AddMediaFoundationClearKey(std::vector<content::CdmInfo>* cdms) {
+  if (!base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting)) {
+    return;
+  }
+
+  // Register MediaFoundation Clear Key CDM if specified in feature list.
+  base::FilePath clear_key_cdm_path = base::FilePath::FromASCII(
+      media::kMediaFoundationClearKeyCdmPathForTesting.Get());
+  if (clear_key_cdm_path.empty() || !base::PathExists(clear_key_cdm_path)) {
+    return;
+  }
+
+  // Supported codecs are hard-coded in ExternalClearKeySystemInfo.
+  media::CdmCapability capability(
+      {}, {}, {media::EncryptionScheme::kCenc, media::EncryptionScheme::kCbcs},
+      {media::CdmSessionType::kTemporary});
+
+  cdms->push_back(
+      content::CdmInfo(media::kMediaFoundationClearKeyKeySystem,
+                       Robustness::kHardwareSecure, capability,
+                       /*supports_sub_key_systems=*/false,
+                       media::kMediaFoundationClearKeyCdmDisplayName,
+                       media::kMediaFoundationClearKeyCdmType,
+                       base::Version("0.1.0.0"), clear_key_cdm_path));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
 void AddOtherAndroidKeySystems(std::vector<content::CdmInfo>* cdms) {
@@ -351,6 +383,10 @@ void RegisterCdmInfo(std::vector<content::CdmInfo>* cdms) {
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   AddExternalClearKey(cdms);
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  AddMediaFoundationClearKey(cdms);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

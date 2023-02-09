@@ -8083,10 +8083,10 @@ static_library("test_support") {
     ]
   }
 
-  if (enable_library_cdms) {
+  if (enable_library_cdms || is_win) {
     sources += [
-      "media/library_cdm_test_helper.cc",
-      "media/library_cdm_test_helper.h",
+      "media/clear_key_cdm_test_helper.cc",
+      "media/clear_key_cdm_test_helper.h",
     ]
     deps += [ "//media/cdm:cdm_paths" ]
   }

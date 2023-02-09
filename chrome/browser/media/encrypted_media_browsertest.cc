@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "chrome/browser/media/clear_key_cdm_test_helper.h"
 #include "chrome/browser/media/media_browsertest.h"
 #include "chrome/browser/media/test_license_server.h"
 #include "chrome/browser/media/wv_test_license_server_config.h"
@@ -41,11 +42,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
-#endif
-
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-#include "chrome/browser/media/library_cdm_test_helper.h"
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 const char kExternalClearKeyInitializeFailKeySystem[] =
@@ -100,13 +97,24 @@ enum class PlayCount { ONCE, TWICE };
 // Base class for encrypted media tests.
 class EncryptedMediaTestBase : public MediaBrowserTest {
  public:
-  bool IsExternalClearKey(const std::string& key_system) {
+  bool RequiresClearKeyCdm(const std::string& key_system) {
     if (key_system == media::kExternalClearKeyKeySystem) {
       return true;
+    }
+    // Treat `media::kMediaFoundationClearKeyKeySystem` as a separate key system
+    // only for Windows
+    if (key_system == media::kMediaFoundationClearKeyKeySystem) {
+      return false;
     }
     std::string prefix = std::string(media::kExternalClearKeyKeySystem) + '.';
     return key_system.substr(0, prefix.size()) == prefix;
   }
+
+#if BUILDFLAG(IS_WIN)
+  bool IsMediaFoundationClearKey(const std::string& key_system) {
+    return (key_system == media::kMediaFoundationClearKeyKeySystem);
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_WIDEVINE)
   bool IsWidevine(const std::string& key_system) {
@@ -291,18 +299,29 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
     }
 
     // TODO(crbug.com/1243903): WhatsNewUI might be causing timeouts.
-    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features = {
         features::kChromeWhatsNewUI};
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-    if (IsExternalClearKey(key_system)) {
+    if (RequiresClearKeyCdm(key_system)) {
       RegisterClearKeyCdm(command_line);
-      enabled_features.push_back(media::kExternalClearKeyForTesting);
+      enabled_features.push_back({media::kExternalClearKeyForTesting, {}});
     }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+#if BUILDFLAG(IS_WIN)
+    if (IsMediaFoundationClearKey(key_system)) {
+      RegisterMediaFoundationClearKeyCdm(enabled_features);
+      // TODO(crbug.com/1412485): Remove this line so that real hardware
+      // capabilities can be checked.
+      command_line->AppendSwitchASCII(
+          switches::kOverrideHardwareSecureCodecsForTesting, "avc1");
+    }
+#endif  // BUILDFLAG(IS_WIN)
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

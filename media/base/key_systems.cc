@@ -233,7 +233,8 @@ static bool IsPotentiallySupportedKeySystem(const std::string& key_system) {
     return true;
   }
 
-  // External Clear Key is known and supports suffixes for testing.
+  // External or MediaFoundation Clear Key is known and supports suffixes for
+  // testing.
   if (IsExternalClearKey(key_system))
     return true;
 
@@ -264,6 +265,7 @@ static bool CanBlock(const KeySystemInfo& properties) {
       IsExternalClearKey(properties.GetBaseKeySystemName())) {
     return true;
   }
+
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   // When library CDMs are enabled, we are either using AesDecryptor, or using
   // the library CDM hosted in a sandboxed process. In both cases distinctive

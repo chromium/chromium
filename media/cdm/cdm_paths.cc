@@ -15,8 +15,9 @@ base::FilePath GetPlatformSpecificDirectory(
     const base::FilePath& cdm_base_path) {
   // CDM_PLATFORM_SPECIFIC_PATH is specified in cdm_paths.gni.
   const std::string kPlatformSpecific = BUILDFLAG(CDM_PLATFORM_SPECIFIC_PATH);
-  if (kPlatformSpecific.empty())
+  if (kPlatformSpecific.empty()) {
     return base::FilePath();
+  }
 
   return cdm_base_path.AppendASCII(kPlatformSpecific).NormalizePathSeparators();
 }

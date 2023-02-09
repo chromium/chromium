@@ -311,6 +311,7 @@ PlayerUtils.createPlayer = function(video, testConfig) {
         return WidevinePlayer;
       case CLEARKEY:
       case EXTERNAL_CLEARKEY:
+      case MEDIAFOUNDATION_CLEARKEY:
       case MESSAGE_TYPE_TEST_KEYSYSTEM:
       case CRASH_TEST_KEYSYSTEM:
         return ClearKeyPlayer;

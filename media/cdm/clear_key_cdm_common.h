@@ -25,6 +25,10 @@ inline constexpr char kExternalClearKeyKeySystem[] =
 // - media/test/data/eme_player_js/player_utils.js
 // - CreateCdmInstance() in clear_key_cdm.cc
 
+// MediaFoundation Clear Key key system only for testing.
+inline constexpr char kMediaFoundationClearKeyKeySystem[] =
+    "org.chromium.externalclearkey.mediafoundation";
+
 // A sub key system that is invalid for testing purpose.
 inline constexpr char kExternalClearKeyInvalidKeySystem[] =
     "org.chromium.externalclearkey.invalid";
@@ -79,6 +83,16 @@ inline constexpr char kClearKeyCdmBaseDirectory[] =
 inline constexpr char kClearKeyCdmDisplayName[] = "Clear Key CDM";
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
+#if BUILDFLAG(IS_WIN)
+// Name of the MediaFoundation ClearKey CDM library.
+inline constexpr char kMediaFoundationClearKeyCdmLibraryName[] =
+    "MediaFoundation.ClearKey.CDM";
+
+// Display name for MediaFoundation Clear Key CDM.
+inline constexpr char kMediaFoundationClearKeyCdmDisplayName[] =
+    "Media Foundation Clear Key CDM";
+#endif  // BUILDFLAG(IS_WIN)
+
 // The default GUID for Clear Key Cdm.
 const CdmType kClearKeyCdmType{0x3a2e0fadde4bd1b7ull, 0xcb90df3e240d1694ull};
 
@@ -86,6 +100,12 @@ const CdmType kClearKeyCdmType{0x3a2e0fadde4bd1b7ull, 0xcb90df3e240d1694ull};
 // CDMs in the system.
 const CdmType kClearKeyCdmDifferentCdmType{0xc3914773474bdb02ull,
                                            0x8e8de4d84d3ca030ull};
+
+#if BUILDFLAG(IS_WIN)
+// The default GUID for MediaFoundation Clear Key Cdm.
+const CdmType kMediaFoundationClearKeyCdmType{0xbec8776b734d80faull,
+                                              0xdff8375bb3cb3df8ull};
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace media
 

@@ -20,6 +20,7 @@
 #include "chrome/browser/browsing_data/counters/site_data_counting_helper.h"
 #include "chrome/browser/browsing_data/local_data_container.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
+#include "chrome/browser/media/clear_key_cdm_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
@@ -43,7 +44,6 @@
 #include "base/threading/platform_thread.h"
 #endif
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/media/library_cdm_test_helper.h"
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
