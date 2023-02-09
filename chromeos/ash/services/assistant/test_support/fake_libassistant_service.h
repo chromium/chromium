@@ -76,6 +76,8 @@ class FakeLibassistantService
       mojo::PendingRemote<libassistant::mojom::AuthenticationStateObserver>
           observer) override {}
 
+  void FlushForTesting();
+
  private:
   mojo::Receiver<libassistant::mojom::LibassistantService> receiver_;
 

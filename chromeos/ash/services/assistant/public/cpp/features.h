@@ -46,10 +46,6 @@ BASE_DECLARE_FEATURE(kEnablePowerManager);
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 BASE_DECLARE_FEATURE(kEnableLibAssistantBetaBackend);
 
-// Enables the sandbox of LibAssistant service.
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-BASE_DECLARE_FEATURE(kEnableLibAssistantSandbox);
-
 // Enables the LibAssistantV2 APIs and related features.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 BASE_DECLARE_FEATURE(kEnableLibAssistantV2);

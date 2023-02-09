@@ -11,13 +11,16 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/assistant/assistant_manager_service_impl.h"
 #include "chromeos/ash/services/assistant/libassistant_service_host.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/public/mojom/service_controller.mojom.h"
 
 namespace ash::assistant {
 
 AssistantHost::AssistantHost(AssistantManagerServiceImpl* service)
     : service_(service) {
-  background_thread_.Start();
+  if (!assistant::features::IsLibAssistantSandboxEnabled()) {
+    background_thread_.Start();
+  }
 }
 
 AssistantHost::~AssistantHost() {
@@ -36,20 +39,25 @@ void AssistantHost::StartLibassistantService(LibassistantServiceHost* host) {
 }
 
 void AssistantHost::LaunchLibassistantService() {
-  // A Mojom service runs on the thread where its receiver was bound.
-  // So to make |libassistant_service_| run on the background thread, we must
-  // create it on the background thread, as it binds its receiver in its
-  // constructor.
-  background_task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &AssistantHost::LaunchLibassistantServiceOnBackgroundThread,
-          // This is safe because we own the background thread,
-          // so when we're deleted the background thread is stopped.
-          base::Unretained(this),
-          // |libassistant_service_| runs on the current thread, so must
-          // be bound here and not on the background thread.
-          libassistant_service_.BindNewPipeAndPassReceiver()));
+  if (assistant::features::IsLibAssistantSandboxEnabled()) {
+    libassistant_service_host_->Launch(
+        libassistant_service_.BindNewPipeAndPassReceiver());
+  } else {
+    // A Mojom service runs on the thread where its receiver was bound.
+    // So to make |libassistant_service_| run on the background thread, we must
+    // create it on the background thread, as it binds its receiver in its
+    // constructor.
+    background_task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &AssistantHost::LaunchLibassistantServiceOnBackgroundThread,
+            // This is safe because we own the background thread,
+            // so when we're deleted the background thread is stopped.
+            base::Unretained(this),
+            // |libassistant_service_| runs on the current thread, so must
+            // be bound here and not on the background thread.
+            libassistant_service_.BindNewPipeAndPassReceiver()));
+  }
 
   libassistant_service_.set_disconnect_handler(base::BindOnce(
       &AssistantHost::OnRemoteDisconnected, base::Unretained(this)));
@@ -65,12 +73,17 @@ void AssistantHost::LaunchLibassistantServiceOnBackgroundThread(
 void AssistantHost::StopLibassistantService() {
   ResetRemote();
 
-  // |libassistant_service_| is launched on the background thread, so we have to
-  // stop it there as well.
-  background_task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AssistantHost::StopLibassistantServiceOnBackgroundThread,
-                     base::Unretained(this)));
+  if (assistant::features::IsLibAssistantSandboxEnabled()) {
+    libassistant_service_host_->Stop();
+  } else {
+    // |libassistant_service_| is launched on the background thread, so we have
+    // to stop it there as well.
+    background_task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &AssistantHost::StopLibassistantServiceOnBackgroundThread,
+            base::Unretained(this)));
+  }
 }
 
 void AssistantHost::StopLibassistantServiceOnBackgroundThread() {

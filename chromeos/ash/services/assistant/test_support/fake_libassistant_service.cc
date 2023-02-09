@@ -80,4 +80,10 @@ void FakeLibassistantService::Bind(
       std::move(speaker_id_enrollment_controller);
 }
 
+void FakeLibassistantService::FlushForTesting() {
+  if (receiver_.is_bound()) {
+    receiver_.FlushForTesting();
+  }
+}
+
 }  // namespace ash::assistant

@@ -212,7 +212,10 @@ class AssistantManagerServiceImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void FlushForTesting() { background_thread().FlushForTesting(); }
+  void FlushForTesting() {
+    libassistant_service_.FlushForTesting();
+    background_thread().FlushForTesting();
+  }
 
   // Adds a state observer mock, and add the expectation for the fact that it
   // auto-fires the observer.
