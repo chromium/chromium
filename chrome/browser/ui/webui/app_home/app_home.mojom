@@ -74,7 +74,7 @@ interface PageHandler {
   // `source` is the launch source used for metrics reporting,
   // see `AppLaunchBucket` in extension_constants.h for more detail.
   // `click_event` is used for determining launch container for apps.
-  LaunchApp(string app_id, int32 source, ClickEvent? click_event);
+  LaunchApp(string app_id, ClickEvent? click_event);
   // Used to set the Run On OS Login Modes from the frontend of an app.
   SetRunOnOsLoginMode(string app_id, RunOnOsLoginMode run_on_os_login_mode);
   // Open the deprecated apps dialog.
@@ -94,6 +94,4 @@ interface Page {
   AddApp(AppInfo app_info);
   // Inform frontend that an app is uninstalled.
   RemoveApp(AppInfo app_info);
-  // Inform frontend that an extension app is enabled.
-  EnableExtensionApp(string extension_app_id);
 };

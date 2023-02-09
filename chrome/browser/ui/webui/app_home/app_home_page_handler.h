@@ -10,12 +10,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
+#include "chrome/browser/ui/webui/app_home/app_home.mojom-shared.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/constants.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -95,7 +97,6 @@ class AppHomePageHandler
   void CreateAppShortcut(const std::string& app_id,
                          CreateAppShortcutCallback callback) override;
   void LaunchApp(const std::string& app_id,
-                 int source,
                  app_home::mojom::ClickEventPtr click_event) override;
   void SetRunOnOsLoginMode(
       const std::string& app_id,
@@ -127,7 +128,7 @@ class AppHomePageHandler
 
   void InstallOsHooks(const web_app::AppId& app_id, web_app::AppLock* lock);
   void LaunchAppInternal(const std::string& app_id,
-                         int source,
+                         extension_misc::AppLaunchBucket bucket,
                          app_home::mojom::ClickEventPtr click_event,
                          bool force_launch_deprecated_apps);
   void ShowWebAppSettings(const std::string& app_id);

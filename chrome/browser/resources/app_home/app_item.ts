@@ -5,7 +5,7 @@
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AppInfo, RunOnOsLoginMode} from './app_home.mojom-webui.js';
+import {AppInfo, ClickEvent, RunOnOsLoginMode} from './app_home.mojom-webui.js';
 import {AppHomeUserAction, recordUserAction} from './app_home_utils.js';
 import {getTemplate} from './app_item.html.js';
 import {BrowserProxy} from './browser_proxy.js';
@@ -14,6 +14,7 @@ import {UserDisplayMode} from './user_display_mode.mojom-webui.js';
 export interface AppItemElement {
   $: {
     menu: CrActionMenuElement,
+    iconContainer: HTMLElement,
   };
 }
 
@@ -37,6 +38,8 @@ export class AppItemElement extends PolymerElement {
   override ready() {
     super.ready();
     this.addEventListener('contextmenu', this.handleContextMenu_);
+    this.addEventListener('click', this.handleClick_);
+    this.addEventListener('auxclick', this.handleClick_);
   }
 
   closeContextMenu() {
@@ -54,6 +57,33 @@ export class AppItemElement extends PolymerElement {
 
     this.$.menu.showAtPosition({top: e.clientY, left: e.clientX});
     recordUserAction(AppHomeUserAction.CONTEXT_MENU_TRIGGERED);
+
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  private handleClick_(e: MouseEvent) {
+    // We want to capture left-click `0` and aux-click `1` (aka
+    // middle-mouse-button click). Other clicks (right-click, etc) should not
+    // trigger a launch.
+    if (e.button > 1) {
+      return;
+    }
+
+    const iconDiv = this.$.iconContainer;
+    iconDiv.classList.remove('launch');
+    // Trigger reflow to reset the animation to the beginning.
+    void iconDiv.offsetWidth;
+    iconDiv.classList.add('launch');
+
+    const clickEvent: ClickEvent = {
+      button: e.button,
+      altKey: e.altKey,
+      ctrlKey: e.ctrlKey,
+      metaKey: e.metaKey,
+      shiftKey: e.shiftKey,
+    };
+    BrowserProxy.getInstance().handler.launchApp(this.appInfo.id, clickEvent);
 
     e.preventDefault();
     e.stopPropagation();

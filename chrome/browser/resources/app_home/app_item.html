@@ -20,6 +20,10 @@
   width: 64px;
 }
 
+.icon-container:active {
+  animation: prepare-launch 50ms 1 forwards;
+}
+
 .text-container {
   font-size: 13px;
   height: 20px;
@@ -50,11 +54,36 @@ cr-checkbox::part(label-container) {
   position: fixed;
 }
 
+.launch {
+  animation: launch 50ms 1 forwards;
+}
+
+@keyframes launch {
+  0% {
+    transform: scale(0.8);
+  }
+  99% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes prepare-launch {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0.8);
+  }
+}
+
 </style>
 
-<div class="icon-container">
+<div class="icon-container" id="iconContainer">
   <img src="[[getIconUrl_(appInfo)]]" class="icon-image"
-  alt="[[appInfo.name]]" aria-hidden="true"></img>
+  alt="[[appInfo.name]]" aria-hidden="true" draggable="false"></img>
 </div>
 <div class="text-container" aria-hidden="true">[[appInfo.name]]</div>
 

@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
+#include "chrome/browser/ui/webui/app_home/app_home.mojom-shared.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
@@ -43,6 +44,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/webapps/browser/uninstall_result_code.h"
@@ -121,7 +123,7 @@ Browser* AppHomePageHandler::GetCurrentBrowser() {
 
 void AppHomePageHandler::LaunchAppInternal(
     const std::string& app_id,
-    int source,
+    extension_misc::AppLaunchBucket launch_bucket,
     app_home::mojom::ClickEventPtr click_event,
     bool force_launch_deprecated_apps) {
   if (!force_launch_deprecated_apps &&
@@ -132,22 +134,19 @@ void AppHomePageHandler::LaunchAppInternal(
           ->ShowDeprecatedAppsDialog(
               app_id, deprecated_app_ids_, web_ui_->GetWebContents(),
               base::BindOnce(&AppHomePageHandler::LaunchAppInternal,
-                             weak_ptr_factory_.GetWeakPtr(), app_id, source,
-                             std::move(click_event), true));
+                             weak_ptr_factory_.GetWeakPtr(), app_id,
+                             launch_bucket, std::move(click_event), true));
       return;
     } else {
       TabDialogs::FromWebContents(web_ui_->GetWebContents())
           ->ShowForceInstalledDeprecatedAppsDialog(
               app_id, web_ui_->GetWebContents(),
               base::BindOnce(&AppHomePageHandler::LaunchAppInternal,
-                             weak_ptr_factory_.GetWeakPtr(), app_id, source,
-                             std::move(click_event), true));
+                             weak_ptr_factory_.GetWeakPtr(), app_id,
+                             launch_bucket, std::move(click_event), true));
       return;
     }
   }
-
-  extension_misc::AppLaunchBucket launch_bucket =
-      static_cast<extension_misc::AppLaunchBucket>(source);
 
   extensions::Manifest::Type type;
   GURL full_launch_url;
@@ -537,11 +536,11 @@ void AppHomePageHandler::PromptToEnableExtensionApp(
 }
 
 void AppHomePageHandler::ExtensionEnableFlowFinished() {
-  // We bounce this off the NTP so the browser can update the apps icon.
+  // Reload the page so the browser can update the apps icon.
   // If we don't launch the app asynchronously, then the app's disabled
   // icon disappears but isn't replaced by the enabled icon, making a poor
   // visual experience.
-  page_->EnableExtensionApp(extension_enable_flow_->extension_id());
+  web_ui_->GetWebContents()->ReloadFocusedFrame();
 
   extension_enable_flow_.reset();
   ResetExtensionDialogState();
@@ -635,9 +634,9 @@ void AppHomePageHandler::CreateAppShortcut(const std::string& app_id,
 }
 
 void AppHomePageHandler::LaunchApp(const std::string& app_id,
-                                   int source,
                                    app_home::mojom::ClickEventPtr click_event) {
-  LaunchAppInternal(app_id, source, std::move(click_event), false);
+  LaunchAppInternal(app_id, extension_misc::APP_LAUNCH_NTP_APPS_MAXIMIZED,
+                    std::move(click_event), false);
 }
 
 void AppHomePageHandler::SetRunOnOsLoginMode(

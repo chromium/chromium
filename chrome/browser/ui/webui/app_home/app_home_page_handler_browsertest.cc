@@ -508,7 +508,7 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, HandleLaunchDeprecatedApp) {
 
   auto waiter = views::NamedWidgetShownWaiter(
       views::test::AnyWidgetTestPasskey{}, "DeprecatedAppsDialogView");
-  page_handler->LaunchApp(extension->id(), 2, nullptr);
+  page_handler->LaunchApp(extension->id(), nullptr);
   // Launch deprecated app will show deprecated apps dialog view.
   EXPECT_NE(waiter.WaitIfNeededAndGet(), nullptr);
 }

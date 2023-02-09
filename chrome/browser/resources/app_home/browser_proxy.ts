@@ -26,10 +26,6 @@ export class BrowserProxy {
   static setInstance(obj: BrowserProxy) {
     instance = obj;
   }
-
-  registerAppEnableEvent(callback: Function) {
-    this.callbackRouter.enableExtensionApp.addListener(callback);
-  }
 }
 
 let instance: BrowserProxy|null = null;

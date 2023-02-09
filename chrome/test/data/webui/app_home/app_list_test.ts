@@ -517,6 +517,29 @@ suite('AppListTest', () => {
             AppHomeUserAction.INSTALL_APP_LOCALLY));
   });
 
+  test('click launch launches app', async () => {
+    const appItem = appListElement.shadowRoot!.querySelectorAll('app-item')[1];
+    assertTrue(!!appItem);
+
+    const mouseEvent: MouseEvent = new MouseEvent('click', {
+      button: 0,
+      altKey: false,
+      ctrlKey: false,
+      metaKey: false,
+      shiftKey: false,
+    });
+
+    appItem.dispatchEvent(mouseEvent);
+    const [appId, clickEvent] =
+        await testBrowserProxy.fakeHandler.whenCalled('launchApp');
+    assertEquals(appId, apps.appList[1]!.id);
+    assertEquals(clickEvent.button, mouseEvent.button);
+    assertEquals(clickEvent.altKey, mouseEvent.altKey);
+    assertEquals(clickEvent.ctrlKey, mouseEvent.ctrlKey);
+    assertEquals(clickEvent.metaKey, mouseEvent.metaKey);
+    assertEquals(clickEvent.shiftKey, mouseEvent.shiftKey);
+  });
+
   test(
       'context menu right click opens corresponding menu for different app',
       () => {

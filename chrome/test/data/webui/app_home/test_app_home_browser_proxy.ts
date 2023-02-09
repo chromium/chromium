@@ -21,6 +21,7 @@ export class FakePageHandler extends TestBrowserProxy implements
       'showAppSettings',
       'createAppShortcut',
       'installAppLocally',
+      'launchApp',
     ]);
     this.apps_ = apps;
     this.callbackRouterRemote_ = callbackRouterRemote;
@@ -43,7 +44,10 @@ export class FakePageHandler extends TestBrowserProxy implements
     return Promise.resolve();
   }
 
-  launchApp(_appId: string, _source: number, _clickEvent: ClickEvent) {}
+  launchApp(appId: string, clickEvent: ClickEvent) {
+    this.methodCalled('launchApp', appId, clickEvent);
+    return Promise.resolve();
+  }
 
   setRunOnOsLoginMode(appId: string, runOnOsLoginMode: RunOnOsLoginMode) {
     for (const app of this.apps_.appList) {
@@ -94,6 +98,4 @@ export class TestAppHomeBrowserProxy implements BrowserProxy {
     this.fakeHandler = new FakePageHandler(app, this.callbackRouterRemote);
     this.handler = this.fakeHandler;
   }
-
-  registerAppEnableEvent(_callback: Function) {}
 }
