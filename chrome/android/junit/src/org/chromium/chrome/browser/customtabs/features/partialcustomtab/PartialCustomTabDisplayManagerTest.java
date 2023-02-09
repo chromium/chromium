@@ -66,13 +66,17 @@ public class PartialCustomTabDisplayManagerTest {
     }
 
     @Test
-    public void create_FullSize_NoFlagsSet() {
-        // TODO(crbug.com/1411917) To be implemented once prerequisite work is completed
+    public void create_FullSize_HeightNotSetWidthNotSet() {
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(0, 0);
+        assertEquals("Full-Size PCCT should be created", PartialCustomTabType.FULL_SIZE,
+                displayManager.getActiveStrategyType());
     }
 
     @Test
     public void create_SideSheet_WidthSetHeightNot_BelowBreakpoint() {
-        // TODO(crbug.com/1411917) To be implemented once prerequisite work is completed
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(0, 100);
+        assertEquals("Full-Size PCCT should be created", PartialCustomTabType.FULL_SIZE,
+                displayManager.getActiveStrategyType());
     }
 
     @Test

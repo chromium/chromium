@@ -6,10 +6,7 @@ package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.app.Activity;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
@@ -18,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AccelerateInterpolator;
 
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
@@ -26,8 +22,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
-import org.chromium.chrome.browser.tab.Tab;
 
 /**
  * CustomTabHeightStrategy for Partial Custom Tab Side-Sheet implementation. An instance of this
@@ -38,8 +32,6 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     private final @Px int mUnclampedInitialWidth;
     private final boolean mShowMaximizeButton;
 
-    private ValueAnimator mAnimator;
-    private Runnable mPostAnimationRunnable;
     private boolean mIsMaximized;
 
     public PartialCustomTabSideSheetStrategy(Activity activity, @Px int initialWidth,
@@ -77,26 +69,6 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     @Override
     public void onShowSoftInput(Runnable softKeyboardRunnable) {
         softKeyboardRunnable.run();
-    }
-
-    @Override
-    public void handleCloseAnimation(Runnable finishRunnable) {
-        if (mFinishRunnable != null) return;
-
-        mFinishRunnable = finishRunnable;
-
-        Window window = mActivity.getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        WindowManager.LayoutParams attrs = window.getAttributes();
-
-        startAnimation(attrs.y, mHeight, (animator) -> {}, this::onCloseAnimationEnd);
-    }
-
-    private void onCloseAnimationEnd() {
-        assert mFinishRunnable != null;
-
-        mFinishRunnable.run();
-        mFinishRunnable = null;
     }
 
     private void configureLayoutBeyondScreen(boolean enable) {
@@ -229,32 +201,8 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         mVersionCompat.setImeStateCallback(null);
     }
 
-    private void setupAnimator() {
-        mAnimator = new ValueAnimator();
-        mAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {}
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mPostAnimationRunnable.run();
-            }
-        });
-
-        int animTime = mActivity.getResources().getInteger(android.R.integer.config_mediumAnimTime);
-        mAnimator.setDuration(animTime);
-        mAnimator.setInterpolator(new AccelerateInterpolator());
-    }
-
-    private void startAnimation(
-            int start, int end, AnimatorUpdateListener updateListener, Runnable endRunnable) {
-        mAnimator.removeAllUpdateListeners();
-        mAnimator.addUpdateListener(updateListener);
-        mPostAnimationRunnable = endRunnable;
-        mAnimator.setIntValues(start, end);
-        mAnimator.start();
-    }
-
-    private void initializeSize() {
+    @Override
+    protected void initializeSize() {
         initializeHeight();
         mHeight = mDisplayHeight - mStatusbarHeight - mNavbarHeight;
 
@@ -274,30 +222,6 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         attrs.x = mVersionCompat.getDisplayWidth() - attrs.width;
         attrs.gravity = Gravity.TOP | Gravity.START;
         mActivity.getWindow().setAttributes(attrs);
-    }
-
-    // FullscreenManager.Observer implementation
-
-    @Override
-    public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
-        WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
-        attrs.height = MATCH_PARENT;
-        attrs.width = MATCH_PARENT;
-        attrs.y = 0;
-        attrs.x = 0;
-        mActivity.getWindow().setAttributes(attrs);
-        mOnResizedCallback.onResized(
-                mVersionCompat.getDisplayHeight(), mVersionCompat.getDisplayWidth());
-    }
-
-    @Override
-    public void onExitFullscreen(Tab tab) {
-        // |mNavbarHeight| is zero now. Post the task instead.
-        new Handler().post(() -> {
-            initializeSize();
-            var attrs = mActivity.getWindow().getAttributes();
-            mOnResizedCallback.onResized(attrs.height, attrs.width);
-        });
     }
 
     private int calculateWidth(int unclampedWidth) {

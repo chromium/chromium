@@ -11,6 +11,10 @@ import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialC
 
 import java.util.function.BooleanSupplier;
 
+/**
+ * The factory implementation for creating Partial Custom Tab handle strategies that will be applied
+ * to partial custom tabs for which resizing by dragging is supported.
+ */
 public class PartialCustomTabHandleStrategyFactory {
     public PartialCustomTabHandleStrategy create(@PartialCustomTabType int type, Context context,
             BooleanSupplier isFullHeight, Supplier<Integer> status,
@@ -20,7 +24,8 @@ public class PartialCustomTabHandleStrategyFactory {
                 return new PartialCustomTabHandleStrategy(
                         context, isFullHeight, status, dragEventCallback);
             }
-            case PartialCustomTabType.SIDE_SHEET: {
+            case PartialCustomTabType.SIDE_SHEET:
+            case PartialCustomTabType.FULL_SIZE: {
                 return null;
             }
             default: {

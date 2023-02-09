@@ -483,6 +483,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/CustomTabHeightStrategy.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabBaseStrategy.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabDisplayManager.java",
+  "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabFullSizeStrategy.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabHandleStrategy.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabHandleStrategyFactory.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabHeightStrategy.java",

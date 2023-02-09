@@ -4,16 +4,23 @@
 
 package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
+import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -24,7 +31,9 @@ import org.chromium.base.SysUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.ViewUtils;
 
 import java.lang.annotation.Retention;
@@ -78,6 +87,9 @@ public abstract class PartialCustomTabBaseStrategy
     // Note: Do not use anywhere except in |onConfigurationChanged| as it might not be up-to-date.
     protected boolean mIsInMultiWindowMode;
     protected int mOrientation;
+
+    private ValueAnimator mAnimator;
+    private Runnable mPostAnimationRunnable;
 
     private BooleanSupplier mIsFullscreen;
 
@@ -143,6 +155,10 @@ public abstract class PartialCustomTabBaseStrategy
         roundCorners(coordinatorView, toolbar, toolbarCornerRadius);
     }
 
+    public void onShowSoftInput(Runnable softKeyboardRunnable) {
+        softKeyboardRunnable.run();
+    }
+
     public void onConfigurationChanged(int orientation) {
         boolean isInMultiWindow = MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
         int displayHeight = mVersionCompat.getDisplayHeight();
@@ -167,10 +183,32 @@ public abstract class PartialCustomTabBaseStrategy
         }
     }
 
+    // FullscreenManager.Observer implementation
+
+    @Override
+    public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
+        WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
+        attrs.height = MATCH_PARENT;
+        attrs.width = MATCH_PARENT;
+        attrs.y = 0;
+        attrs.x = 0;
+        mActivity.getWindow().setAttributes(attrs);
+        mOnResizedCallback.onResized(
+                mVersionCompat.getDisplayHeight(), mVersionCompat.getDisplayWidth());
+    }
+
+    @Override
+    public void onExitFullscreen(Tab tab) {
+        // |mNavbarHeight| is zero now. Post the task instead.
+        new Handler().post(() -> {
+            initializeSize();
+            var attrs = mActivity.getWindow().getAttributes();
+            mOnResizedCallback.onResized(attrs.height, attrs.width);
+        });
+    }
+
     @PartialCustomTabType
     public abstract int getStrategyType();
-
-    public abstract void onShowSoftInput(Runnable softKeyboardRunnable);
 
     protected abstract void updatePosition();
 
@@ -212,6 +250,8 @@ public abstract class PartialCustomTabBaseStrategy
         mNavbarHeight = mVersionCompat.getNavbarHeight();
         mStatusbarHeight = mVersionCompat.getStatusbarHeight();
     }
+
+    protected void initializeSize() {}
 
     protected void updateDragBarVisibility(int dragHandlebarVisibility) {
         View dragBar = mActivity.findViewById(R.id.drag_bar);
@@ -281,6 +321,51 @@ public abstract class PartialCustomTabBaseStrategy
 
     protected boolean isFullscreen() {
         return mIsFullscreen.getAsBoolean();
+    }
+
+    protected void setupAnimator() {
+        mAnimator = new ValueAnimator();
+        mAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {}
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mPostAnimationRunnable.run();
+            }
+        });
+
+        int animTime = mActivity.getResources().getInteger(android.R.integer.config_mediumAnimTime);
+        mAnimator.setDuration(animTime);
+        mAnimator.setInterpolator(new AccelerateInterpolator());
+    }
+
+    protected void startAnimation(int start, int end,
+            ValueAnimator.AnimatorUpdateListener updateListener, Runnable endRunnable) {
+        mAnimator.removeAllUpdateListeners();
+        mAnimator.addUpdateListener(updateListener);
+        mPostAnimationRunnable = endRunnable;
+        mAnimator.setIntValues(start, end);
+        mAnimator.start();
+    }
+
+    @Override
+    public void handleCloseAnimation(Runnable finishRunnable) {
+        if (mFinishRunnable != null) return;
+
+        mFinishRunnable = finishRunnable;
+
+        Window window = mActivity.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        WindowManager.LayoutParams attrs = window.getAttributes();
+
+        startAnimation(attrs.y, mHeight, (animator) -> {}, this::onCloseAnimationEnd);
+    }
+
+    protected void onCloseAnimationEnd() {
+        assert mFinishRunnable != null;
+
+        mFinishRunnable.run();
+        mFinishRunnable = null;
     }
 
     @VisibleForTesting

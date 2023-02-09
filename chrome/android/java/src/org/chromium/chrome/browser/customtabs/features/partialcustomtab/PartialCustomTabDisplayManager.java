@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 
 /**
  * Class responsible for how the Partial Chrome Custom Tabs are displayed on the screen.
@@ -105,6 +106,8 @@ public class PartialCustomTabDisplayManager
                 mStrategy.onToolbarInitialized(
                         mToolbarCoordinatorView, mCustomTabToolbar, mToolbarCornerRadius);
                 mStrategy.onPostInflationStartup();
+                // TODO(http://crbug.com/1406107): Creating a new strategy type is basically a
+                // resize so we need to make sure to call #onActivityResized here as well
             }, CREATE_STRATEGY_DELAY_CONFIG_CHANGE_MS);
         } else {
             // If the type of PCCT strategy did not change we can just call into the equivalent
@@ -185,8 +188,13 @@ public class PartialCustomTabDisplayManager
     }
 
     private @PartialCustomTabType int calculatePartialCustomTabType() {
-        int displayWidthDp = mVersionCompat.getDisplayWidthDp();
+        // TODO(crbug.com/1407227) Until we are able to handle multi-window case for both
+        // bottom-sheet and side-sheet we will display a full-size PCCT.
+        if (MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity)) {
+            return PartialCustomTabType.FULL_SIZE;
+        }
 
+        int displayWidthDp = mVersionCompat.getDisplayWidthDp();
         if (mUnclampedInitialWidth == 0 && mUnclampedInitialHeight == 0) {
             return PartialCustomTabType.FULL_SIZE;
         }
@@ -221,6 +229,11 @@ public class PartialCustomTabDisplayManager
                 return new PartialCustomTabSideSheetStrategy(mActivity, mUnclampedInitialWidth,
                         mOnResizedCallback, mFullscreenManager, mIsTablet, mInteractWithBackground,
                         mShowMaximizeButton, maximized, mHandleStrategyFactory);
+            }
+            case PartialCustomTabType.FULL_SIZE: {
+                return new PartialCustomTabFullSizeStrategy(mActivity, mOnResizedCallback,
+                        mFullscreenManager, mIsTablet, mInteractWithBackground,
+                        mHandleStrategyFactory);
             }
             default: {
                 assert false : "Partial Custom Tab type not supported: " + type;
