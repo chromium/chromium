@@ -51,6 +51,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 
+import java.net.HttpURLConnection;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -98,8 +99,9 @@ public class AwMetricsIntegrationTest {
             // MetricsUploadService to avoid unexpected failures due to service connections, IPCs
             // ... etc in tests as testing the service behaviour is outside the scope of these
             // integeration tests.
-            AndroidMetricsLogUploader.setUploader((byte[] data) -> {
+            AndroidMetricsLogUploader.setConsumer((byte[] data) -> {
                 PlatformServiceBridge.getInstance().logMetrics(data, true);
+                return HttpURLConnection.HTTP_OK;
             });
 
             // Need to configure the metrics delay first, because

@@ -800,6 +800,7 @@ android_library("common_java") {
     "//build/android:build_java",
     "//cc/base:cc_base_java",
     "//components/autofill/android:autofill_features_java",
+    "//components/embedder_support/android/metrics:java",
     "//components/feature_engagement/public:public_java",
     "//components/metrics:metrics_java",
     "//components/network_session_configurator/android:network_session_configurator_java",

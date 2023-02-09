@@ -101,7 +101,14 @@ public abstract class PlatformServiceBridge {
      * @param data uncompressed, serialized UMA proto.
      * @param useDefaultUploadQos whether to use an experimental change that increases upload
      *         frequency
-     * @return Status code of the logging operation.
+     * @return Status code of the logging operation. The status codes are:
+     * - Success cache (went to the devices cache): -1
+     * - Success: 0
+     * - Internal error: 8
+     * - Interrupted: 14
+     * - Timeout: 15
+     * - Cancelled: 16
+     * - API not connected (probably means the API is not available on device): 17
      */
     public int logMetricsBlocking(byte[] data, boolean useDefaultUploadQos) {
         // TODO(crbug.com/1248039): remove this once downstream implementation lands.

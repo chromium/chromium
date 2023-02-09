@@ -19,9 +19,12 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class MetricsTestPlatformServiceBridge extends PlatformServiceBridge {
     private final BlockingQueue<byte[]> mQueue;
+    private int mStatus;
 
     public MetricsTestPlatformServiceBridge() {
         mQueue = new LinkedBlockingQueue<>();
+        // Default the status code to success
+        mStatus = 0;
     }
 
     @Override
@@ -38,6 +41,19 @@ public class MetricsTestPlatformServiceBridge extends PlatformServiceBridge {
     @Override
     public void logMetrics(byte[] data, boolean useDefaultUploadQos) {
         mQueue.add(data);
+    }
+
+    @Override
+    public int logMetricsBlocking(byte[] data, boolean useDefaultUploadQos) {
+        logMetrics(data, useDefaultUploadQos);
+        return mStatus;
+    }
+
+    /**
+     * This method can be used to set the status code to return from the {@link logMetricsBlocking}.
+     */
+    public void setLogMetricsBlockingStatus(int status) {
+        mStatus = status;
     }
 
     /**

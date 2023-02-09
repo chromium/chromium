@@ -13,9 +13,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.components.metrics.AndroidMetricsLogConsumer;
 import org.chromium.components.metrics.AndroidMetricsLogUploader;
-
-import java.util.function.Consumer;
 
 /**
  * This class manages functionality related to Google Mobile Services (i.e. GMS).
@@ -30,10 +29,12 @@ public abstract class GmsBridge {
     private static final Object sHandlerLock = new Object();
 
     protected GmsBridge() {
-        AndroidMetricsLogUploader.setUploader(new Consumer<byte[]>() {
+        AndroidMetricsLogUploader.setConsumer(new AndroidMetricsLogConsumer() {
             @Override
-            public void accept(byte[] data) {
+            public int log(byte[] data) {
                 logMetrics(data);
+                // Just pass 200 (HTTP OK) and pretend everything is peachy.
+                return 200;
             }
         });
     }

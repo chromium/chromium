@@ -4,6 +4,11 @@
 
 package org.chromium.android_webview.test;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -17,18 +22,27 @@ import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.metrics.AwMetricsLogUploader;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
 
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Instrumentation tests MetricsUploadService. These tests are not batched to make sure all unbinded
  * services are properly killed between tests.
  */
 @RunWith(AwJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class AwMetricsLogUploaderTest {
     private static final ChromeUserMetricsExtension SAMPLE_TEST_METRICS_LOG =
             ChromeUserMetricsExtension.newBuilder().setClientId(123456789L).build();
+    private static final ChromeUserMetricsExtension EMPTY_TEST_METRICS_LOG =
+            ChromeUserMetricsExtension.newBuilder().build();
 
     private MetricsTestPlatformServiceBridge mPlatformServiceBridge;
 
@@ -45,9 +59,10 @@ public class AwMetricsLogUploaderTest {
     @MediumTest
     @Test
     public void testSendingData_withPreBinding() throws Throwable {
-        AwMetricsLogUploader uploader = new AwMetricsLogUploader();
+        AwMetricsLogUploader uploader = new AwMetricsLogUploader(/* waitForResults= */ true);
         uploader.initialize();
-        uploader.accept(SAMPLE_TEST_METRICS_LOG.toByteArray());
+        int status = uploader.log(SAMPLE_TEST_METRICS_LOG.toByteArray());
+        Assert.assertEquals(HttpURLConnection.HTTP_OK, status);
 
         ChromeUserMetricsExtension receivedLog = mPlatformServiceBridge.waitForNextMetricsLog();
         Assert.assertEquals(SAMPLE_TEST_METRICS_LOG, receivedLog);
@@ -56,23 +71,78 @@ public class AwMetricsLogUploaderTest {
     @MediumTest
     @Test
     public void testSendingData_withoutPreBinding() throws Throwable {
-        AwMetricsLogUploader uploader = new AwMetricsLogUploader();
-        uploader.accept(SAMPLE_TEST_METRICS_LOG.toByteArray());
+        AwMetricsLogUploader uploader = new AwMetricsLogUploader(/* waitForResults= */ true);
+        int status = uploader.log(SAMPLE_TEST_METRICS_LOG.toByteArray());
+        Assert.assertEquals(HttpURLConnection.HTTP_OK, status);
         ChromeUserMetricsExtension receivedLog = mPlatformServiceBridge.waitForNextMetricsLog();
         Assert.assertEquals(SAMPLE_TEST_METRICS_LOG, receivedLog);
     }
 
     @MediumTest
     @Test
+    public void testSendingDataException_whenCancellationException() throws Throwable {
+        testSendingDataException(new CancellationException(), HttpURLConnection.HTTP_GONE);
+    }
+
+    @MediumTest
+    @Test
+    public void testSendingDataException_whenInterruptedException() throws Throwable {
+        testSendingDataException(new InterruptedException(), HttpURLConnection.HTTP_UNAVAILABLE);
+    }
+
+    @MediumTest
+    @Test
+    public void testSendingDataException_whenExecutionException() throws Throwable {
+        testSendingDataException(
+                new ExecutionException("", null), HttpURLConnection.HTTP_BAD_REQUEST);
+    }
+
+    @MediumTest
+    @Test
+    public void testSendingDataException_whenTimesOut() throws Throwable {
+        testSendingDataException(new TimeoutException(), HttpURLConnection.HTTP_CLIENT_TIMEOUT);
+    }
+
+    private void testSendingDataException(Throwable exceptionThrown, int expectedStatus)
+            throws Throwable {
+        // When the AwMetricsLogUploader attempts to wait for log results, an exception of our
+        // choosing will be thrown.
+        final CompletableFuture<Integer> mockedResultsFuture = mock(CompletableFuture.class);
+        when(mockedResultsFuture.get(anyLong(), any())).thenAnswer(invocation -> {
+            throw exceptionThrown;
+        });
+
+        AwMetricsLogUploader uploader = new AwMetricsLogUploader(/* waitForResults= */ true);
+        int status = uploader.log(SAMPLE_TEST_METRICS_LOG.toByteArray(), mockedResultsFuture);
+
+        Assert.assertEquals(expectedStatus, status);
+    }
+
+    @MediumTest
+    @Test
+    public void testSendingData_platformStatusCodeIgnored_ifNotWaitingForResults()
+            throws Throwable {
+        // Returning a non 0 status code to simulate a failure.
+        // We should still get a success code since this code is not waiting for this.
+        mPlatformServiceBridge.setLogMetricsBlockingStatus(1);
+
+        AwMetricsLogUploader uploader = new AwMetricsLogUploader(/* waitForResults= */ false);
+        int status = uploader.log(SAMPLE_TEST_METRICS_LOG.toByteArray());
+        Assert.assertEquals(HttpURLConnection.HTTP_OK, status);
+    }
+
+    @MediumTest
+    @Test
     public void testSendingMultipleLogs() throws Throwable {
-        AwMetricsLogUploader uploader = new AwMetricsLogUploader();
+        AwMetricsLogUploader uploader = new AwMetricsLogUploader(/* waitForResults= */ true);
         uploader.initialize();
 
         final int numberOfLogs = 5;
         ChromeUserMetricsExtension[] expectedLogs = new ChromeUserMetricsExtension[numberOfLogs];
         for (int i = 0; i < numberOfLogs; i++) {
             expectedLogs[i] = ChromeUserMetricsExtension.newBuilder().setClientId(i + 1).build();
-            uploader.accept(expectedLogs[i].toByteArray());
+            int status = uploader.log(expectedLogs[i].toByteArray());
+            Assert.assertEquals(HttpURLConnection.HTTP_OK, status);
         }
 
         ArrayList<ChromeUserMetricsExtension> receivedLogs = new ArrayList<>();

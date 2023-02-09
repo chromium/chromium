@@ -14,6 +14,8 @@ static_library("metrics") {
     "android_metrics_log_uploader.h",
     "android_metrics_service_client.cc",
     "android_metrics_service_client.h",
+    "features.cc",
+    "features.h",
     "memory_metrics_logger.cc",
     "memory_metrics_logger.h",
   ]
@@ -42,8 +44,16 @@ java_cpp_enum("java_enum_srcjar") {
   sources = [ "android_metrics_service_client.h" ]
 }
 
+java_cpp_features("java_features_srcjar") {
+  # External code should depend on ":java" instead.
+  visibility = [ ":*" ]
+  sources = [ "features.cc" ]
+  template = "java_templates/AndroidMetricsFeatures.java.tmpl"
+}
+
 android_library("java") {
   sources = [
+    "java/src/org/chromium/components/metrics/AndroidMetricsLogConsumer.java",
     "java/src/org/chromium/components/metrics/AndroidMetricsLogUploader.java",
     "java/src/org/chromium/components/metrics/AndroidMetricsServiceClient.java",
   ]
@@ -53,7 +63,10 @@ android_library("java") {
     "//base:jni_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-  srcjar_deps = [ ":java_enum_srcjar" ]
+  srcjar_deps = [
+    ":java_enum_srcjar",
+    ":java_features_srcjar",
+  ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 

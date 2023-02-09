@@ -34,6 +34,9 @@ class AndroidMetricsLogUploader : public MetricsLogUploader {
 
  private:
   const MetricsLogUploader::UploadCallback on_upload_complete_;
+  base::WeakPtrFactory<AndroidMetricsLogUploader> weak_factory_{this};
+
+  void OnUploadComplete(const int32_t status);
 };
 
 }  // namespace metrics

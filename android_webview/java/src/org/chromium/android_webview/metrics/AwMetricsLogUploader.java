@@ -12,6 +12,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.common.services.IMetricsUploadService;
@@ -21,23 +22,36 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.components.metrics.AndroidMetricsLogConsumer;
 
+import java.net.HttpURLConnection;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 
 /**
- * A custom WebView AndroidMetricsLogUploader. It
+ * A custom WebView AndroidMetricsLogConsumer. It
  * sends metrics logs to the nonembedded {@link
  * org.chromium.android_webview.services.MetricsUploadService} which then uploads them accordingly
  * depending on the platform implementation.
  */
-public class AwMetricsLogUploader implements Consumer<byte[]> {
+public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
     private static final String TAG = "AwMetricsLogUploader";
+    private static final long SEND_DATA_TIMEOUT_MS = 2_000;
 
     private final InitialMetricsServiceConnection mInitialConnection;
+    private final boolean mWaitForResults;
 
-    public AwMetricsLogUploader() {
+    /**
+     * @param waitForResults Whether logging should wait for a status for the platform or return
+     * early.
+     */
+    public AwMetricsLogUploader(boolean waitForResults) {
         mInitialConnection = new InitialMetricsServiceConnection();
+        mWaitForResults = waitForResults;
     }
 
     // A service connection that is used to establish an initial connection to the
@@ -57,7 +71,7 @@ public class AwMetricsLogUploader implements Consumer<byte[]> {
             boolean bindingResult = bindToMetricsUploadService(this);
             mBound.set(bindingResult);
             if (!bindingResult) {
-                Log.w(TAG, "Failed to intially bind to MetricsUploadService");
+                Log.w(TAG, "Failed to initially bind to MetricsUploadService");
             }
         }
 
@@ -77,9 +91,12 @@ public class AwMetricsLogUploader implements Consumer<byte[]> {
     // MetricsUploadService. It closes the connection after sending the metrics log.
     private static class MetricsLogUploaderServiceConnection implements ServiceConnection {
         private final @NonNull byte[] mData;
+        private final CompletableFuture<Integer> mResult;
 
-        public MetricsLogUploaderServiceConnection(@NonNull byte[] data) {
+        public MetricsLogUploaderServiceConnection(
+                @NonNull byte[] data, @NonNull CompletableFuture<Integer> resultFuture) {
             mData = data;
+            mResult = resultFuture;
         }
 
         @Override
@@ -91,9 +108,11 @@ public class AwMetricsLogUploader implements Consumer<byte[]> {
                 IMetricsUploadService uploadService =
                         IMetricsUploadService.Stub.asInterface(service);
                 try {
-                    uploadService.uploadMetricsLog(mData);
+                    int status = uploadService.uploadMetricsLog(mData);
+                    mResult.complete(status);
                 } catch (RemoteException e) {
                     Log.d(TAG, "Failed to send serialized metrics data to service", e);
+                    mResult.complete(HttpURLConnection.HTTP_INTERNAL_ERROR);
                 } finally {
                     ContextUtils.getApplicationContext().unbindService(this);
                 }
@@ -103,8 +122,35 @@ public class AwMetricsLogUploader implements Consumer<byte[]> {
         @Override
         public void onServiceDisconnected(ComponentName name) {}
 
-        public void sendData() {
+        public int sendData(boolean waitForResults) {
             bindToMetricsUploadService(this);
+            if (!waitForResults) {
+                return HttpURLConnection.HTTP_OK;
+            }
+            // The logs could have still been sent by the service even if we haven't gotten a
+            // response here so our choice is to either drop the logs or allow for duplication.
+            try {
+                return mResult.get(SEND_DATA_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            } catch (CancellationException e) {
+                Log.e(TAG, "Request to send data cancelled", e);
+                // If the future was cancelled, we will treat this as a situation to retry.
+                return HttpURLConnection.HTTP_GONE;
+            } catch (InterruptedException e) {
+                Log.e(TAG, "Request to send data interrupted while waiting", e);
+                return HttpURLConnection.HTTP_UNAVAILABLE;
+            } catch (ExecutionException e) {
+                Log.e(TAG, "Request to send data completed with exception", e);
+                // In this case the request hit the server so we will treat this as a discarded log.
+                // The Chromium metrics service will drop http 400s.
+                return HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (TimeoutException e) {
+                Log.e(TAG, "Failed to receive response from upload service in time", e);
+                // We decided to allow for duplication because there is quite a long time out so not
+                // receiving a response for this long probably means there was an issue with
+                // logging. This code path could also be called if the service connection has a
+                // failure.
+                return HttpURLConnection.HTTP_CLIENT_TIMEOUT;
+            }
         }
     }
 
@@ -122,11 +168,19 @@ public class AwMetricsLogUploader implements Consumer<byte[]> {
      * @param data serialized ChromeUserMetricsExtension proto message.
      */
     @Override
-    public void accept(@NonNull byte[] data) {
-        (new MetricsLogUploaderServiceConnection(data)).sendData();
+    public int log(@NonNull byte[] data) {
+        return log(data, new CompletableFuture());
+    }
+
+    @VisibleForTesting
+    public int log(@NonNull byte[] data, @NonNull CompletableFuture<Integer> resultFuture) {
+        MetricsLogUploaderServiceConnection connection =
+                new MetricsLogUploaderServiceConnection(data, resultFuture);
+        int status = connection.sendData(mWaitForResults);
         // Unbind the initial connection if it's still bound, since a new connection is now bound to
         // the service.
         mInitialConnection.unbind();
+        return status;
     }
 
     /**

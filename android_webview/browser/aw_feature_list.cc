@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
+#include "components/embedder_support/android/metrics/features.h"
 #include "components/safe_browsing/core/common/features.h"
 
 using base::android::ConvertJavaStringToUTF8;
@@ -34,6 +35,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewXRequestedWithHeaderManifestAllowList,
     &features::kWebViewRestrictSensitiveContent,
     &features::kWebViewUmaUploadQualityOfServiceSetToDefault,
+    &metrics::kAndroidMetricsAsyncMetricLogging,
 };
 
 const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {

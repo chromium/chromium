@@ -7,14 +7,12 @@ package org.chromium.components.metrics;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 
-import java.util.function.Consumer;
-
 /**
  * Passes UMA logs from native to a java uploader.
  */
 @JNINamespace("metrics")
 public class AndroidMetricsLogUploader {
-    private static volatile Consumer<byte[]> sUploader;
+    private static volatile AndroidMetricsLogConsumer sConsumer;
 
     /**
      * Configures the consumer of logs data submitted via uploadLog, should be called once during
@@ -22,16 +20,25 @@ public class AndroidMetricsLogUploader {
      *
      * @param uploader The consumer of logs data submitted via uploadLog.
      */
-    public static void setUploader(Consumer<byte[]> uploader) {
-        sUploader = uploader;
+    public static void setConsumer(AndroidMetricsLogConsumer consumer) {
+        sConsumer = consumer;
     }
 
-    // TODO(crbug.com/1264425): return status code of the logging operation.
     @CalledByNative
-    public static void uploadLog(byte[] data) {
-        final Consumer<byte[]> uploader = sUploader;
-        if (uploader != null) {
-            uploader.accept(data);
+    public static int uploadLog(byte[] data, boolean asyncMetricLoggingFeature) {
+        final AndroidMetricsLogConsumer consumer = sConsumer;
+        if (asyncMetricLoggingFeature) {
+            assert consumer != null : "The consumer for android metrics logging was not set";
+            return consumer.log(data);
+        } else {
+            if (consumer != null) {
+                return consumer.log(data);
+            }
+            // If we end up not having an uploader yet
+            // it means metric reporting has been attempted too early
+            // so return Http Not Found (404) to indicate the resource
+            // does not exist yet.
+            return 404;
         }
     }
 }

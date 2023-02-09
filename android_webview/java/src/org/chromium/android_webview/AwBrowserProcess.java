@@ -52,6 +52,7 @@ import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.component_updater.ComponentLoaderPolicyBridge;
 import org.chromium.components.component_updater.EmbeddedComponentLoader;
+import org.chromium.components.metrics.AndroidMetricsFeatures;
 import org.chromium.components.metrics.AndroidMetricsLogUploader;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.policy.CombinedPolicyProvider;
@@ -61,6 +62,7 @@ import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -493,17 +495,20 @@ public final class AwBrowserProcess {
      */
     public static void initializeMetricsLogUploader() {
         if (AwFeatureList.isEnabled(AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE)) {
-            AwMetricsLogUploader uploader = new AwMetricsLogUploader();
+            boolean waitForResults = AwFeatureList.isEnabled(
+                    AndroidMetricsFeatures.ANDROID_METRICS_ASYNC_METRIC_LOGGING);
+            AwMetricsLogUploader uploader = new AwMetricsLogUploader(waitForResults);
             // Open a connection during startup while connecting to other services such as
             // ComponentsProviderService and VariationSeedServer to try to avoid spinning the
             // nonembedded ":webview_service" twice.
             uploader.initialize();
-            AndroidMetricsLogUploader.setUploader(uploader);
+            AndroidMetricsLogUploader.setConsumer(uploader);
         } else {
             boolean useDefaultUploadQos = AwFeatureList.isEnabled(
                     AwFeatures.WEBVIEW_UMA_UPLOAD_QUALITY_OF_SERVICE_SET_TO_DEFAULT);
-            AndroidMetricsLogUploader.setUploader((byte[] data) -> {
+            AndroidMetricsLogUploader.setConsumer((byte[] data) -> {
                 PlatformServiceBridge.getInstance().logMetrics(data, useDefaultUploadQos);
+                return HttpURLConnection.HTTP_OK;
             });
         }
     }
