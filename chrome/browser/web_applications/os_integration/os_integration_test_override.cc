@@ -28,7 +28,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
-#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -40,9 +39,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
-#include "net/base/filename_util.h"
 #import "skia/ext/skia_utils_mac.h"
 #endif
 
@@ -51,13 +48,8 @@
 
 #include <shellapi.h>
 #include "base/command_line.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_split.h"
-#include "base/win/registry.h"
 #include "base/win/shortcut.h"
-#include "chrome/browser/web_applications/os_integration/web_app_handler_registration_utils_win.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/installer/util/shell_util.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/gfx/icon_util.h"
 #endif
@@ -100,23 +92,6 @@ base::FilePath GetShortcutProfile(base::FilePath shortcut_path) {
         shortcut_cmd_line.GetSwitchValuePath(switches::kProfileDirectory);
   }
   return shortcut_profile;
-}
-
-std::vector<std::wstring> GetFileExtensionsForProgId(
-    const std::wstring& file_handler_prog_id) {
-  const std::wstring prog_id_path =
-      base::StrCat({ShellUtil::kRegClasses, L"\\", file_handler_prog_id});
-
-  // Get list of handled file extensions from value FileExtensions at
-  // HKEY_CURRENT_USER\Software\Classes\<file_handler_prog_id>.
-  base::win::RegKey file_extensions_key(HKEY_CURRENT_USER, prog_id_path.c_str(),
-                                        KEY_QUERY_VALUE);
-  std::wstring handled_file_extensions;
-  DCHECK_EQ(file_extensions_key.ReadValue(L"FileExtensions",
-                                          &handled_file_extensions),
-            ERROR_SUCCESS);
-  return base::SplitString(handled_file_extensions, std::wstring(L";"),
-                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 }
 #endif
 
@@ -189,63 +164,6 @@ bool OsIntegrationTestOverride::IsRunOnOsLoginEnabled(
   NOTREACHED() << "Not implemented on ChromeOS/Fuchsia ";
   return true;
 #endif
-}
-
-bool OsIntegrationTestOverride::IsFileExtensionHandled(
-    Profile* profile,
-    const AppId& app_id,
-    std::string app_name,
-    std::string file_extension) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  bool is_file_handled = false;
-#if BUILDFLAG(IS_WIN)
-  const std::wstring prog_id = GetProgIdForApp(profile->GetPath(), app_id);
-  const std::vector<std::wstring> file_handler_prog_ids =
-      ShellUtil::GetFileHandlerProgIdsForAppId(prog_id);
-
-  base::win::RegKey key;
-  std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-  for (const auto& file_handler_prog_id : file_handler_prog_ids) {
-    const std::vector<std::wstring> supported_file_extensions =
-        GetFileExtensionsForProgId(file_handler_prog_id);
-    std::wstring extension = converter.from_bytes(file_extension);
-    if (base::Contains(supported_file_extensions, extension)) {
-      const std::wstring reg_key = std::wstring(ShellUtil::kRegClasses) +
-                                   base::FilePath::kSeparators[0] + extension +
-                                   base::FilePath::kSeparators[0] +
-                                   ShellUtil::kRegOpenWithProgids;
-      DCHECK_EQ(ERROR_SUCCESS,
-                key.Open(HKEY_CURRENT_USER, reg_key.data(), KEY_READ));
-      return key.HasValue(file_handler_prog_id.data());
-    }
-  }
-#elif BUILDFLAG(IS_MAC)
-  const base::FilePath test_file_path =
-      chrome_apps_folder().AppendASCII("test" + file_extension);
-  const base::File test_file(
-      test_file_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  const GURL test_file_url = net::FilePathToFileURL(test_file_path);
-  base::FilePath app_path =
-      GetShortcutPath(profile, chrome_apps_folder(), app_id, app_name);
-  is_file_handled =
-      shell_integration::CanApplicationHandleURL(app_path, test_file_url);
-#elif BUILDFLAG(IS_LINUX)
-  for (const LinuxFileRegistration& command : linux_file_registration()) {
-    if (base::Contains(command.xdg_command, app_id) &&
-        base::Contains(command.xdg_command,
-                       profile->GetPath().BaseName().value())) {
-      if (base::StartsWith(command.xdg_command, "xdg-mime install")) {
-        is_file_handled = base::Contains(command.file_contents,
-                                         "\"*" + file_extension + "\"");
-      } else {
-        DCHECK(base::StartsWith(command.xdg_command, "xdg-mime uninstall"))
-            << command.xdg_command;
-        is_file_handled = false;
-      }
-    }
-  }
-#endif
-  return is_file_handled;
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
