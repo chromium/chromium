@@ -62,9 +62,11 @@ WebStateImpl::RealizedWebState::RealizedWebState(WebStateImpl* owner)
 WebStateImpl::RealizedWebState::~RealizedWebState() = default;
 
 void WebStateImpl::RealizedWebState::Init(const CreateParams& params,
-                                          CRWSessionStorage* session_storage) {
+                                          CRWSessionStorage* session_storage,
+                                          FaviconStatus favicon_status) {
   created_with_opener_ = params.created_with_opener;
   navigation_manager_ = std::make_unique<NavigationManagerImpl>();
+  favicon_status_ = std::move(favicon_status);
 
   navigation_manager_->SetDelegate(this);
   navigation_manager_->SetBrowserState(params.browser_state);
@@ -691,16 +693,17 @@ bool WebStateImpl::RealizedWebState::IsWebPageInFullscreenMode() const {
 }
 
 const FaviconStatus& WebStateImpl::RealizedWebState::GetFaviconStatus() const {
-  static const FaviconStatus missing_favicon_status;
   NavigationItem* item = navigation_manager_->GetLastCommittedItem();
-  return item ? item->GetFaviconStatus() : missing_favicon_status;
+  return item ? item->GetFaviconStatus() : favicon_status_;
 }
 
 void WebStateImpl::RealizedWebState::SetFaviconStatus(
     const FaviconStatus& favicon_status) {
   NavigationItem* item = navigation_manager_->GetLastCommittedItem();
-  if (item)
+  if (item) {
     item->SetFaviconStatus(favicon_status);
+    favicon_status_ = FaviconStatus{};
+  }
 }
 
 int WebStateImpl::RealizedWebState::GetNavigationItemCount() const {

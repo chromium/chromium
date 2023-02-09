@@ -99,7 +99,7 @@ WebStateImpl::WebStateImpl(const CreateParams& params,
     saved_ = std::make_unique<SerializedData>(this, params, session_storage);
   } else {
     pimpl_ = std::make_unique<RealizedWebState>(this);
-    pimpl_->Init(params, session_storage);
+    pimpl_->Init(params, session_storage, FaviconStatus{});
   }
 
   // Send creation event.
@@ -388,8 +388,7 @@ WebState* WebStateImpl::ForceRealized() {
     // Perform the initialisation of the RealizedWebState. No outside
     // code should be able to observe the WebStateImpl with both `saved_`
     // and `pimpl_` set.
-    pimpl_->Init(params, session_storage);
-    pimpl_->SetFaviconStatus(favicon_status);
+    pimpl_->Init(params, session_storage, std::move(favicon_status));
 
     // Notify all observers that the WebState has become realized.
     for (auto& observer : observers_)
