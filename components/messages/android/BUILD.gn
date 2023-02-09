@@ -37,6 +37,24 @@ android_library("java") {
   srcjar_deps = [ ":message_enums_java" ]
 }
 
+android_library("unit_device_javatests") {
+  testonly = true
+  sources =
+      [ "java/src/org/chromium/components/messages/MessageContainerTest.java" ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+  ]
+}
+
 android_resources("java_resources") {
   sources = [ "java/res/values/dimens.xml" ]
   deps = [

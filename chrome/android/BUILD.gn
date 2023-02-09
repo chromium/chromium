@@ -2769,6 +2769,7 @@ if (current_toolchain == default_toolchain) {
       "//components/external_intents/android:unit_device_javatests",
       "//components/infobars/android:unit_device_javatests",
       "//components/installedapp/android:unit_device_javatests",
+      "//components/messages/android:unit_device_javatests",
       "//components/messages/android/internal:unit_device_javatests",
       "//components/payments/content/android:unit_device_javatests",
       "//components/signin/public/android:unit_device_javatests",

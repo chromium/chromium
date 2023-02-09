@@ -31,24 +31,44 @@ public class MessageContainer extends FrameLayout {
         void onA11yDismiss();
     }
 
+    class MessageContainerA11yDelegateProxy extends AccessibilityDelegate {
+        private int mFocusedView;
+
+        @Override
+        public void onInitializeAccessibilityEvent(
+                @NonNull View host, @NonNull AccessibilityEvent event) {
+            handleEvent(event);
+            super.onInitializeAccessibilityEvent(host, event);
+        }
+
+        @Override
+        public boolean onRequestSendAccessibilityEvent(
+                @NonNull ViewGroup host, @NonNull View child, @NonNull AccessibilityEvent event) {
+            handleEvent(event);
+            return super.onRequestSendAccessibilityEvent(host, child, event);
+        }
+
+        private void handleEvent(@NonNull AccessibilityEvent event) {
+            if (mA11yDelegate == null) return;
+            if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
+                assert mFocusedView == 0 : "No other view should be focused";
+                mFocusedView++;
+                mA11yDelegate.onA11yFocused();
+            } else if (event.getEventType()
+                    == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED) {
+                assert mFocusedView == 1 : "One view must be focused";
+                mFocusedView--;
+                mA11yDelegate.onA11yFocusCleared();
+            }
+        }
+    }
+
     private MessageContainerA11yDelegate mA11yDelegate;
     private boolean mIsInitializingLayout;
 
     public MessageContainer(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        setAccessibilityDelegate(new AccessibilityDelegate() {
-            @Override
-            public void onInitializeAccessibilityEvent(
-                    @NonNull View host, @NonNull AccessibilityEvent event) {
-                if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
-                    if (mA11yDelegate != null) mA11yDelegate.onA11yFocused();
-                } else if (event.getEventType()
-                        == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED) {
-                    if (mA11yDelegate != null) mA11yDelegate.onA11yFocusCleared();
-                }
-                super.onInitializeAccessibilityEvent(host, event);
-            }
-        });
+        setAccessibilityDelegate(new MessageContainerA11yDelegateProxy());
         ViewCompat.replaceAccessibilityAction(
                 this, AccessibilityActionCompat.ACTION_DISMISS, null, (v, c) -> {
                     if (mA11yDelegate != null) {
