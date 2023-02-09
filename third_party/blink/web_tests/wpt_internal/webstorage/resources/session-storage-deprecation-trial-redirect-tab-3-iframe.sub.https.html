@@ -1,0 +1,13 @@
+<!doctype html>
+<meta charset="utf-8">
+<script>
+// Step 9 (wpt_internal/webstorage/session-storage-deprecation-trial-redirect.sub.https.html)
+setTimeout(() => {
+  // TODO(crbug.com/1330349): There seems to be a bug where session storage is not read unless we wait a few milliseconds.
+  if (sessionStorage.getItem("test") == "DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning") {
+    window.top.postMessage("success", "*");
+  } else {
+    window.top.postMessage("failure", "*");
+  }
+}, "1000");
+</script>
