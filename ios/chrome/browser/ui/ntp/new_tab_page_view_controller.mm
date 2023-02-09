@@ -203,13 +203,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   DCHECK(self.identityDiscButton);
 }
 
-- (void)viewWillLayoutSubviews {
-  [super viewWillLayoutSubviews];
-
-  [self updateNTPLayout];
-  [self.headerController updateConstraints];
-}
-
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
@@ -225,6 +218,22 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
+
+  // `-feedLayoutDidEndUpdates` handles the need to either scroll to the top of
+  // go back to a previous scroll state when the feed is enabled. This handles
+  // the instance when the feed is not enabled.
+  // `-viewWillAppear:` is not the suitable place for this as long as the user
+  // can open a new tab while an NTP is currently visible. `-viewWillAppear:` is
+  // called before the offset can be saved, so `-setContentOffsetToTop` will
+  // reset any scrolled position.
+  if (!self.feedVisible) {
+    if (self.hasSavedOffsetFromPreviousScrollState) {
+      [self setContentOffset:self.savedScrollOffset];
+      self.hasSavedOffsetFromPreviousScrollState = NO;
+    } else {
+      [self setContentOffsetToTop];
+    }
+  }
 
   // Updates omnibox to ensure that the dimensions are correct when navigating
   // back to the NTP.
@@ -458,10 +467,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   [self updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
   // Ensure initial fake omnibox layout.
   [self updateFakeOmniboxForScrollPosition];
-
-  if (!self.viewDidAppear && !self.hasSavedOffsetFromPreviousScrollState) {
-    [self setContentOffsetToTop];
-  }
 }
 
 - (void)resetViewHierarchy {
@@ -512,10 +517,14 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
 - (void)feedLayoutDidEndUpdates {
   [self updateFeedInsetsForMinimumHeight];
-  // Update saved scroll state after updating insets
+  // Updating insets can influence contentOffset, so update saved scroll state
+  // after it. This handles what the starting offset be with the feed enabled,
+  // `-viewWillAppear:` handles when the feed is not enabled.
   if (self.hasSavedOffsetFromPreviousScrollState) {
     [self setContentOffset:self.savedScrollOffset];
     self.hasSavedOffsetFromPreviousScrollState = NO;
+  } else {
+    [self setContentOffsetToTop];
   }
   [self updateStickyElements];
 }
