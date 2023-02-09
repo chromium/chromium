@@ -49,6 +49,7 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptSymbolAsWeakMapKey);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptChangeArrayByCopy);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptRabGsab);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptStringIsWellFormed);
+GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptRegExpUnicodeSets);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTailCall);
 
 }  // namespace features

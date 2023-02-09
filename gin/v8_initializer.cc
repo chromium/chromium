@@ -344,6 +344,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kJavaScriptStringIsWellFormed,
                          "--harmony-string-is-well-formed",
                          "--no-harmony-string-is-well-formed");
+  SetV8FlagsIfOverridden(features::kJavaScriptRegExpUnicodeSets,
+                         "--harmony-regexp-unicode-sets",
+                         "--no-harmony-regexp-unicode-sets");
 
   if (IsolateHolder::kStrictMode == mode) {
     SetV8Flags("--use_strict");

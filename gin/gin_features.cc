@@ -165,6 +165,11 @@ BASE_FEATURE(kJavaScriptStringIsWellFormed,
              "JavaScriptStringIsWellFormed",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the JavaScript RegExp Unicode set notation proposal.
+BASE_FEATURE(kJavaScriptRegExpUnicodeSets,
+             "JavaScriptRegExpUnicodeSets",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // WebAssembly features.
 
 // Enable support for the WebAssembly tail-call proposal:
