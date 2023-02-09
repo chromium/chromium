@@ -14,7 +14,7 @@
 namespace app_list::test {
 namespace {
 
-constexpr float kEps = 1e-3f;
+constexpr double kEps = 1e-3;
 
 // Helper function that check if the results' multiplier is right.
 void ExpectKeywordMultiplier(const ResultsMap& results,
@@ -25,7 +25,7 @@ void ExpectKeywordMultiplier(const ResultsMap& results,
     return;
   }
 
-  for (auto& result : it->second) {
+  for (const auto& result : it->second) {
     EXPECT_NEAR(result->scoring().keyword_multiplier(), keyword_multiplier,
                 kEps);
   }
@@ -40,79 +40,79 @@ class KeywordRankerTest : public RankerTestBase {};
 // Test the input query does not contains keyword that match any providers.
 TEST_F(KeywordRankerTest, NoMatchedKeywords) {
   // Simulate a query starting.
-  ResultsMap results_1;
-  CategoriesList categories_1;
+  ResultsMap results;
+  CategoriesList categories;
 
   // Input the results scores and UpdateResultRanks.
-  results_1[ResultType::kInstalledApp] =
+  results[ResultType::kInstalledApp] =
       MakeScoredResults({"app_a", "app_b"}, {0.7, 0.5});
   KeywordRanker ranker;
-  ranker.Start(u"ABC", results_1, categories_1);
-  ranker.UpdateResultRanks(results_1, ProviderType::kInstalledApp);
+  ranker.Start(u"ABC", results, categories);
+  ranker.UpdateResultRanks(results, ProviderType::kInstalledApp);
 
   // Check the number of result and the keyword_multiplier of the result.
-  ASSERT_EQ(results_1[ResultType::kInstalledApp].size(), 2u);
+  ASSERT_EQ(results[ResultType::kInstalledApp].size(), 2u);
 
-  // As no detection of keywords for this result type,
-  // therefore the keyword multiplier is down-weighted.
-  ExpectKeywordMultiplier(results_1, ResultType::kInstalledApp, 1.0);
+  // As no detection of keywords for this result type, therefore the keyword
+  // multiplier is down-weighted.
+  ExpectKeywordMultiplier(results, ResultType::kInstalledApp, 1.0);
 }
 
 // Test the input query only match one provider.
 TEST_F(KeywordRankerTest, OneMatchedKeyword) {
   // Simulate a query starting.
-  ResultsMap results_1;
-  CategoriesList categories_1;
+  ResultsMap results;
+  CategoriesList categories;
 
   // Input the results scores and UpdateResultRanks.
-  results_1[ResultType::kInstalledApp] =
+  results[ResultType::kInstalledApp] =
       MakeScoredResults({"app_a", "app_b"}, {0.7, 0.5});
-  results_1[ResultType::kHelpApp] =
+  results[ResultType::kHelpApp] =
       MakeScoredResults({"help_a", "help_b"}, {0.7, 0.5});
 
   KeywordRanker ranker;
-  ranker.Start(u"explore", results_1, categories_1);
-  ranker.UpdateResultRanks(results_1, ProviderType::kInstalledApp);
-  ranker.UpdateResultRanks(results_1, ProviderType::kHelpApp);
+  ranker.Start(u"explore", results, categories);
+  ranker.UpdateResultRanks(results, ProviderType::kInstalledApp);
+  ranker.UpdateResultRanks(results, ProviderType::kHelpApp);
 
   // Check the number of result and the keyword_multiplier of the result.
-  ASSERT_EQ(results_1.size(), 2u);
-  ASSERT_EQ(results_1[ResultType::kInstalledApp].size(), 2u);
-  ASSERT_EQ(results_1[ResultType::kHelpApp].size(), 2u);
+  ASSERT_EQ(results.size(), 2u);
+  ASSERT_EQ(results[ResultType::kInstalledApp].size(), 2u);
+  ASSERT_EQ(results[ResultType::kHelpApp].size(), 2u);
 
-  ExpectKeywordMultiplier(results_1, ResultType::kInstalledApp, 1.0);
-  ExpectKeywordMultiplier(results_1, ResultType::kHelpApp, 1.5);
+  ExpectKeywordMultiplier(results, ResultType::kInstalledApp, 1.0);
+  ExpectKeywordMultiplier(results, ResultType::kHelpApp, 1.25);
 }
 
 // Test the input query match multiple provider.
 TEST_F(KeywordRankerTest, KeywordMatchesMultipleProviders) {
   // Simulate a query starting.
-  ResultsMap results_1;
-  CategoriesList categories_1;
+  ResultsMap results;
+  CategoriesList categories;
 
   // Input the results scores and UpdateResultRanks.
-  results_1[ResultType::kInstalledApp] =
+  results[ResultType::kInstalledApp] =
       MakeScoredResults({"app_a", "app_b"}, {0.7, 0.5});
-  results_1[ResultType::kFileSearch] =
+  results[ResultType::kFileSearch] =
       MakeScoredResults({"local_a", "local_b"}, {0.7, 0.5});
-  results_1[ResultType::kDriveSearch] =
+  results[ResultType::kDriveSearch] =
       MakeScoredResults({"drive_a", "drive_b"}, {0.7, 0.5});
 
   KeywordRanker ranker;
-  ranker.Start(u"file", results_1, categories_1);
-  ranker.UpdateResultRanks(results_1, ProviderType::kInstalledApp);
-  ranker.UpdateResultRanks(results_1, ProviderType::kFileSearch);
-  ranker.UpdateResultRanks(results_1, ProviderType::kDriveSearch);
+  ranker.Start(u"file", results, categories);
+  ranker.UpdateResultRanks(results, ProviderType::kInstalledApp);
+  ranker.UpdateResultRanks(results, ProviderType::kFileSearch);
+  ranker.UpdateResultRanks(results, ProviderType::kDriveSearch);
 
   // Check the number of result and the keyword_multiplier of the result.
-  ASSERT_EQ(results_1.size(), 3u);
-  ASSERT_EQ(results_1[ResultType::kInstalledApp].size(), 2u);
-  ASSERT_EQ(results_1[ResultType::kFileSearch].size(), 2u);
-  ASSERT_EQ(results_1[ResultType::kDriveSearch].size(), 2u);
+  ASSERT_EQ(results.size(), 3u);
+  ASSERT_EQ(results[ResultType::kInstalledApp].size(), 2u);
+  ASSERT_EQ(results[ResultType::kFileSearch].size(), 2u);
+  ASSERT_EQ(results[ResultType::kDriveSearch].size(), 2u);
 
-  ExpectKeywordMultiplier(results_1, ResultType::kInstalledApp, 1.0);
-  ExpectKeywordMultiplier(results_1, ResultType::kFileSearch, 1.5);
-  ExpectKeywordMultiplier(results_1, ResultType::kDriveSearch, 1.5);
+  ExpectKeywordMultiplier(results, ResultType::kInstalledApp, 1.0);
+  ExpectKeywordMultiplier(results, ResultType::kFileSearch, 1.25);
+  ExpectKeywordMultiplier(results, ResultType::kDriveSearch, 1.25);
 }
 
 /*********************** Fuzzy String Matching Tests ***********************/
@@ -120,122 +120,232 @@ TEST_F(KeywordRankerTest, KeywordMatchesMultipleProviders) {
 // Test that when the input query fuzzy matched one provider's keyword.
 TEST_F(KeywordRankerTest, OneTokenMatchOneProvider) {
   // Simulate a query starting.
-  ResultsMap results_1;
-  CategoriesList categories_1;
+  ResultsMap results;
+  CategoriesList categories;
 
   // Input the results scores and UpdateResultRanks.
-  results_1[ResultType::kOmnibox] = MakeScoredResults({"omnibox_a"}, {0.7});
-  results_1[ResultType::kFileSearch] =
+  results[ResultType::kOmnibox] = MakeScoredResults({"omnibox_a"}, {0.7});
+  results[ResultType::kFileSearch] =
       MakeScoredResults({"local_a", "local_b"}, {0.7, 0.5});
 
   KeywordRanker ranker;
-  ranker.Start(u"seach", results_1, categories_1);
-  ranker.UpdateResultRanks(results_1, ProviderType::kOmnibox);
-  ranker.UpdateResultRanks(results_1, ProviderType::kFileSearch);
+  ranker.Start(u"seach", results, categories);
+  ranker.UpdateResultRanks(results, ProviderType::kOmnibox);
+  ranker.UpdateResultRanks(results, ProviderType::kFileSearch);
 
   // Check the number of result and the keyword_multiplier of the result.
-  ASSERT_EQ(results_1.size(), 2u);
-  ASSERT_EQ(results_1[ResultType::kOmnibox].size(), 1u);
-  ASSERT_EQ(results_1[ResultType::kFileSearch].size(), 2u);
+  ASSERT_EQ(results.size(), 2u);
+  ASSERT_EQ(results[ResultType::kOmnibox].size(), 1u);
+  ASSERT_EQ(results[ResultType::kFileSearch].size(), 2u);
 
-  // Since fuzzy matching, kOmnibox keyword_multiplier will be
-  // more than 1 but less than 1.5.
-  ExpectKeywordMultiplier(results_1, ResultType::kOmnibox, 1.399);
-  ExpectKeywordMultiplier(results_1, ResultType::kFileSearch, 1.0);
+  // Since fuzzy matching, kOmnibox keyword_multiplier will be more than 1 but
+  // less than 1.25.
+  ExpectKeywordMultiplier(results, ResultType::kOmnibox, 1.199);
+  ExpectKeywordMultiplier(results, ResultType::kFileSearch, 1.0);
 }
 
-// Test that when one provider have multiple matched token, it will take
-// the max score.
+// Test that when one provider have multiple matched token, it will take the max
+// score.
 TEST_F(KeywordRankerTest, MultipleTokensMatchOneProvider) {
   // Simulate a query starting.
-  ResultsMap results_1;
-  CategoriesList categories_1;
+  ResultsMap results;
+  CategoriesList categories;
 
   // Input the results scores and UpdateResultRanks.
-  results_1[ResultType::kOmnibox] = MakeScoredResults({"omnibox_a"}, {0.7});
-  results_1[ResultType::kFileSearch] =
+  results[ResultType::kOmnibox] = MakeScoredResults({"omnibox_a"}, {0.7});
+  results[ResultType::kFileSearch] =
       MakeScoredResults({"local_a", "local_b"}, {0.7, 0.5});
 
   KeywordRanker ranker;
-  ranker.Start(u"seach search", results_1, categories_1);
-  ranker.UpdateResultRanks(results_1, ProviderType::kOmnibox);
-  ranker.UpdateResultRanks(results_1, ProviderType::kFileSearch);
+  ranker.Start(u"seach search", results, categories);
+  ranker.UpdateResultRanks(results, ProviderType::kOmnibox);
+  ranker.UpdateResultRanks(results, ProviderType::kFileSearch);
 
   // Check the number of result and the keyword_multiplier of the result.
-  ASSERT_EQ(results_1.size(), 2u);
-  ASSERT_EQ(results_1[ResultType::kOmnibox].size(), 1u);
-  ASSERT_EQ(results_1[ResultType::kFileSearch].size(), 2u);
+  ASSERT_EQ(results.size(), 2u);
+  ASSERT_EQ(results[ResultType::kOmnibox].size(), 1u);
+  ASSERT_EQ(results[ResultType::kFileSearch].size(), 2u);
 
-  // Since there exist exact match, therefore kOmnibox's
-  // keyword_multiplier will be 1.5.
-  ExpectKeywordMultiplier(results_1, ResultType::kOmnibox, 1.5);
-  ExpectKeywordMultiplier(results_1, ResultType::kFileSearch, 1.0);
+  // Since there exist exact match, therefore kOmnibox's keyword_multiplier will
+  // be 1.25.
+  ExpectKeywordMultiplier(results, ResultType::kOmnibox, 1.25);
+  ExpectKeywordMultiplier(results, ResultType::kFileSearch, 1.0);
 }
 
 // Test that the one token fuzzy matched multiple providers.
 TEST_F(KeywordRankerTest, OneTokenMatchMultipleProviders) {
   // Simulate a query starting.
-  ResultsMap results_1;
-  CategoriesList categories_1;
+  ResultsMap results;
+  CategoriesList categories;
 
   // Input the results scores and UpdateResultRanks.
-  results_1[ResultType::kInstalledApp] =
+  results[ResultType::kInstalledApp] =
       MakeScoredResults({"app_a", "app_b"}, {0.7, 0.5});
-  results_1[ResultType::kFileSearch] =
+  results[ResultType::kFileSearch] =
       MakeScoredResults({"local_a", "local_b"}, {0.7, 0.5});
-  results_1[ResultType::kDriveSearch] =
+  results[ResultType::kDriveSearch] =
       MakeScoredResults({"drive_a", "drive_b"}, {0.7, 0.5});
 
   KeywordRanker ranker;
-  ranker.Start(u"fil", results_1, categories_1);
-  ranker.UpdateResultRanks(results_1, ProviderType::kInstalledApp);
-  ranker.UpdateResultRanks(results_1, ProviderType::kFileSearch);
-  ranker.UpdateResultRanks(results_1, ProviderType::kDriveSearch);
+  ranker.Start(u"fil", results, categories);
+  ranker.UpdateResultRanks(results, ProviderType::kInstalledApp);
+  ranker.UpdateResultRanks(results, ProviderType::kFileSearch);
+  ranker.UpdateResultRanks(results, ProviderType::kDriveSearch);
 
   // Check the number of result and the keyword_multiplier of the result.
-  ASSERT_EQ(results_1.size(), 3u);
-  ASSERT_EQ(results_1[ResultType::kInstalledApp].size(), 2u);
-  ASSERT_EQ(results_1[ResultType::kFileSearch].size(), 2u);
-  ASSERT_EQ(results_1[ResultType::kDriveSearch].size(), 2u);
+  ASSERT_EQ(results.size(), 3u);
+  ASSERT_EQ(results[ResultType::kInstalledApp].size(), 2u);
+  ASSERT_EQ(results[ResultType::kFileSearch].size(), 2u);
+  ASSERT_EQ(results[ResultType::kDriveSearch].size(), 2u);
 
   // The misspell of "file" will affect both kFileSearch and kDriveSearch.
-  ExpectKeywordMultiplier(results_1, ResultType::kInstalledApp, 1.0);
-  ExpectKeywordMultiplier(results_1, ResultType::kFileSearch, 1.424);
-  ExpectKeywordMultiplier(results_1, ResultType::kDriveSearch, 1.424);
+  ExpectKeywordMultiplier(results, ResultType::kInstalledApp, 1.0);
+  ExpectKeywordMultiplier(results, ResultType::kFileSearch, 1.212);
+  ExpectKeywordMultiplier(results, ResultType::kDriveSearch, 1.212);
 }
 
 // Test that multiple tokens fuzzy matched/exact matched multiple providers.
 TEST_F(KeywordRankerTest, MultipleTokensMatchMultipleProviders) {
   // Simulate a query starting.
-  ResultsMap results_1;
-  CategoriesList categories_1;
+  ResultsMap results;
+  CategoriesList categories;
 
   // Input the results scores and UpdateResultRanks.
-  results_1[ResultType::kInstalledApp] =
+  results[ResultType::kInstalledApp] =
       MakeScoredResults({"app_a", "app_b"}, {0.7, 0.5});
-  results_1[ResultType::kFileSearch] =
+  results[ResultType::kFileSearch] =
       MakeScoredResults({"local_a", "local_b"}, {0.7, 0.5});
-  results_1[ResultType::kDriveSearch] =
+  results[ResultType::kDriveSearch] =
       MakeScoredResults({"drive_a", "drive_b"}, {0.7, 0.5});
 
   KeywordRanker ranker;
-  ranker.Start(u"fil drive app", results_1, categories_1);
-  ranker.UpdateResultRanks(results_1, ProviderType::kInstalledApp);
-  ranker.UpdateResultRanks(results_1, ProviderType::kFileSearch);
-  ranker.UpdateResultRanks(results_1, ProviderType::kDriveSearch);
+  ranker.Start(u"fil drive app", results, categories);
+  ranker.UpdateResultRanks(results, ProviderType::kInstalledApp);
+  ranker.UpdateResultRanks(results, ProviderType::kFileSearch);
+  ranker.UpdateResultRanks(results, ProviderType::kDriveSearch);
 
   // Check the number of result and the keyword_multiplier of the result.
-  ASSERT_EQ(results_1.size(), 3u);
-  ASSERT_EQ(results_1[ResultType::kInstalledApp].size(), 2u);
-  ASSERT_EQ(results_1[ResultType::kFileSearch].size(), 2u);
-  ASSERT_EQ(results_1[ResultType::kDriveSearch].size(), 2u);
+  ASSERT_EQ(results.size(), 3u);
+  ASSERT_EQ(results[ResultType::kInstalledApp].size(), 2u);
+  ASSERT_EQ(results[ResultType::kFileSearch].size(), 2u);
+  ASSERT_EQ(results[ResultType::kDriveSearch].size(), 2u);
 
   // The misspell of "file" will affect both kFileSearch and kDriveSearch.
   // However, token "drive" is exact match for kDriveSearch, hence kDriveSearch
   // will have a higher keyword_multiplier.
-  ExpectKeywordMultiplier(results_1, ResultType::kInstalledApp, 1.5);
-  ExpectKeywordMultiplier(results_1, ResultType::kFileSearch, 1.424);
-  ExpectKeywordMultiplier(results_1, ResultType::kDriveSearch, 1.5);
+  ExpectKeywordMultiplier(results, ResultType::kInstalledApp, 1.25);
+  ExpectKeywordMultiplier(results, ResultType::kFileSearch, 1.212);
+  ExpectKeywordMultiplier(results, ResultType::kDriveSearch, 1.25);
+}
+
+/*********************** Train Tests ***********************/
+
+// Test Train() by checking if the keyword_multiplier_ has been boosted up to a
+// certain number as the boost_factor_ increased.
+TEST_F(KeywordRankerTest, TestTrainBoostFactorIncrease) {
+  // Simulate a query starting.
+  ResultsMap results;
+  CategoriesList categories;
+
+  // Input the results scores and UpdateResultRanks.
+  results[ResultType::kInstalledApp] =
+      MakeScoredResults({"app_a", "app_b"}, {0.7, 0.5});
+  results[ResultType::kFileSearch] =
+      MakeScoredResults({"local_a", "local_b"}, {0.7, 0.5});
+
+  KeywordRanker ranker;
+  ranker.Start(u"app", results, categories);
+
+  // Set the ftrl score of each result from the providers.
+  SetFtrlScore(results, ProviderType::kInstalledApp, {0.7, 0.5});
+  SetFtrlScore(results, ProviderType::kFileSearch, {0.7, 0.5});
+
+  ranker.UpdateResultRanks(results, ProviderType::kInstalledApp);
+  ranker.UpdateResultRanks(results, ProviderType::kFileSearch);
+
+  // Check the number of results and the keyword_multiplier of the results.
+  ASSERT_EQ(results.size(), 2u);
+  ASSERT_EQ(results[ResultType::kInstalledApp].size(), 2u);
+  ASSERT_EQ(results[ResultType::kFileSearch].size(), 2u);
+
+  // Only kInstalledApp's keyword matched in the input. Train() does not happen
+  // yet.
+  ExpectKeywordMultiplier(results, ResultType::kInstalledApp, 1.25);
+  ExpectKeywordMultiplier(results, ResultType::kFileSearch, 1.0);
+
+  // Train with a boosted result being selected. There are 2 results which score
+  // higher than the selected result. Out of the 2 results only 1 is
+  // non-boosting. The boost_factor_ will be increase by half of itself.
+  ranker.Train(MakeLaunchData("app_b"));
+  Wait();
+
+  ranker.Start(u"app", results, categories);
+  ranker.UpdateResultRanks(results, ProviderType::kInstalledApp);
+  ranker.UpdateResultRanks(results, ProviderType::kFileSearch);
+
+  // Check the number of result and the keyword_multiplier of the result.
+  ASSERT_EQ(results.size(), 2u);
+  ASSERT_EQ(results[ResultType::kInstalledApp].size(), 2u);
+  ASSERT_EQ(results[ResultType::kFileSearch].size(), 2u);
+
+  // Since boost factor being boost up, keyword_multiplier_ should be higher
+  // too. That is 1.25 + (0.5 - 0.25)*0.5 = 1.375.
+  ExpectKeywordMultiplier(results, ResultType::kInstalledApp, 1.375);
+  ExpectKeywordMultiplier(results, ResultType::kFileSearch, 1.0);
+}
+
+// Test Train() by checking if the keyword_multiplier_ has been decreased to a
+// certain number as the boost_factor_ decreased.
+TEST_F(KeywordRankerTest, TestTrainBoostFactorDecrease) {
+  // Simulate a query starting.
+  ResultsMap results;
+  CategoriesList categories;
+
+  // Input the results scores and UpdateResultRanks.
+  results[ResultType::kInstalledApp] =
+      MakeScoredResults({"app_a", "app_b"}, {0.7, 0.4});
+  results[ResultType::kFileSearch] =
+      MakeScoredResults({"local_a", "local_b"}, {0.7, 0.5});
+
+  KeywordRanker ranker;
+  ranker.Start(u"app", results, categories);
+
+  // Set the ftrl score of each result from the providers.
+  SetFtrlScore(results, ProviderType::kInstalledApp, {0.7, 0.4});
+  SetFtrlScore(results, ProviderType::kFileSearch, {0.7, 0.5});
+
+  ranker.UpdateResultRanks(results, ProviderType::kInstalledApp);
+  ranker.UpdateResultRanks(results, ProviderType::kFileSearch);
+
+  // Check the number of results and the keyword_multiplier of the results.
+  ASSERT_EQ(results.size(), 2u);
+  ASSERT_EQ(results[ResultType::kInstalledApp].size(), 2u);
+  ASSERT_EQ(results[ResultType::kFileSearch].size(), 2u);
+
+  // Only kInstalledApp's keyword matched in the input. Train() does not happen
+  // yet.
+  ExpectKeywordMultiplier(results, ResultType::kInstalledApp, 1.25);
+  ExpectKeywordMultiplier(results, ResultType::kFileSearch, 1.0);
+
+  // Train with a non boosted result being selected. There are 2 results which
+  // score higher than the selected result. Out of the 2 results only 1 is
+  // boosting. The boost_factor_ will be decrease by half of itself.
+  ranker.Train(MakeLaunchData("local_b"));
+  Wait();
+
+  ranker.Start(u"app", results, categories);
+  ranker.UpdateResultRanks(results, ProviderType::kInstalledApp);
+  ranker.UpdateResultRanks(results, ProviderType::kFileSearch);
+
+  // Check the number of result and the keyword_multiplier of the result.
+  ASSERT_EQ(results.size(), 2u);
+  ASSERT_EQ(results[ResultType::kInstalledApp].size(), 2u);
+  ASSERT_EQ(results[ResultType::kFileSearch].size(), 2u);
+
+  // Since boost factor being boost up, keyword_multiplier_ should be higher
+  // too. That is 1.25 - 0.25*0.5 = 1.125.
+  ExpectKeywordMultiplier(results, ResultType::kInstalledApp, 1.125);
+  ExpectKeywordMultiplier(results, ResultType::kFileSearch, 1.0);
 }
 
 }  // namespace app_list::test

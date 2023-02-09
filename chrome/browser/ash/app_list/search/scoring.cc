@@ -27,6 +27,8 @@ double Scoring::FinalScore() const {
   if (filtered_ && !override_filter_for_test_) {
     return -1.0;
   }
+
+  // Keyword Ranker's Train() depends on the calculation of Final Score.
   if (search_features::IsLauncherKeywordExtractionScoringEnabled()) {
     double ftrl_score_after_ranking =
         tanh(kKeywordScale * ftrl_result_score_ * keyword_multiplier_);
