@@ -41,7 +41,8 @@ class UserEducationInternalsPageHandlerImpl
 
   // mojom::user_education_internals::UserEducationInternalsPageHandler:
   void GetTutorials(GetTutorialsCallback callback) override;
-  void StartTutorial(const std::string& tutorial_id) override;
+  void StartTutorial(const std::string& tutorial_id,
+                     StartTutorialCallback callback) override;
 
   void GetFeaturePromos(GetFeaturePromosCallback callback) override;
   void ShowFeaturePromo(const std::string& title,

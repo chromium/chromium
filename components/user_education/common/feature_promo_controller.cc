@@ -394,7 +394,7 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
           spec.custom_action_callback(), spec.custom_action_is_default(),
           spec.custom_action_dismiss_string_id());
       break;
-    case FeaturePromoSpecification::PromoType::kUnspecifiied:
+    case FeaturePromoSpecification::PromoType::kUnspecified:
     case FeaturePromoSpecification::PromoType::kToast:
     case FeaturePromoSpecification::PromoType::kLegacy:
       break;

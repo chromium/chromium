@@ -4,9 +4,25 @@
 
 module mojom.user_education_internals;
 
+// Common feature block for both tutorials and IPH promos.
 struct FeaturePromoDemoPageInfo {
+  // The title of the promo, to be presented to the user.
   string display_title;
+  // The description of the promo, to be presented to the user.
   string display_description;
+  // The actual key used to trigger the promo if it is chosen by the user.
+  string internal_name;
+  // The type of tutorial or IPH (e.g. "Toast", "Snooze", etc.)
+  string type;
+  // The timestamp at which the tutorial was added; will be presented as a
+  // date only.
+  int64 added_timestamp_ms;
+  // The list of supported platforms as text strings. (This mirrors the use on
+  // the flags page.)
+  array<string> supported_platforms;
+  // A list of human-readable instructions on how to set the browser up so that
+  // the tutorial or IPH can be run.
+  array<string> instructions;
 };
 
 // Provides access to browser-side user education data for
@@ -14,16 +30,17 @@ struct FeaturePromoDemoPageInfo {
 interface UserEducationInternalsPageHandler {
   // Get the list of all available tutorials. Only needs to be called once
   // since the browser-side list is static and does not change.
-  GetTutorials() => (array<string> tutorial_ids);
+  GetTutorials() => (array<FeaturePromoDemoPageInfo> tutorial_infos);
 
-  // Start a tutorial listed in the `GetTutorials` result.
-  StartTutorial(string tutorial_id);
+  // Start a tutorial listed in the `GetTutorials` result; the resulting string
+  // is an error message or empty string if no error occurred.
+  StartTutorial(string tutorial_id) => (string error_message);
 
   // Get the list of all available feature promos.
   GetFeaturePromos() => (array<FeaturePromoDemoPageInfo> feature_promos);
 
   // Start an feature promo from the list of available feature promos using the
-  // string title the resulting string is an error message or empty string if no
-  // error occurred.
+  // string title; the resulting string is an error message or empty string if
+  // no error occurred.
   ShowFeaturePromo(string title) => (string error_message);
 };

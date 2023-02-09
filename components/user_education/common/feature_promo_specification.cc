@@ -86,7 +86,7 @@ FeaturePromoSpecification::FeaturePromoSpecification(
       bubble_body_string_id_(bubble_body_string_id),
       demo_page_info_(DemoPageInfo(feature ? feature->name : std::string())),
       custom_action_dismiss_string_id_(IDS_PROMO_DISMISS_BUTTON) {
-  DCHECK_NE(promo_type, PromoType::kUnspecifiied);
+  DCHECK_NE(promo_type, PromoType::kUnspecified);
   DCHECK(bubble_body_string_id_);
 }
 
@@ -157,14 +157,14 @@ FeaturePromoSpecification FeaturePromoSpecification::CreateForLegacyPromo(
 
 FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleTitleText(
     int title_text_string_id) {
-  DCHECK_NE(promo_type_, PromoType::kUnspecifiied);
+  DCHECK_NE(promo_type_, PromoType::kUnspecified);
   bubble_title_text_ = l10n_util::GetStringUTF16(title_text_string_id);
   return *this;
 }
 
 FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleIcon(
     const gfx::VectorIcon* bubble_icon) {
-  DCHECK_NE(promo_type_, PromoType::kUnspecifiied);
+  DCHECK_NE(promo_type_, PromoType::kUnspecified);
   bubble_icon_ = bubble_icon;
   return *this;
 }
