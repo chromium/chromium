@@ -42547,6 +42547,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="28" label="Quick Office"/>
   <int value="29" label="Settings Search"/>
   <int value="30" label="Autofill Context Menu"/>
+  <int value="31" label="Unknown Feedback Source From Lacros"/>
 </enum>
 
 <enum name="FeedContentOrder">

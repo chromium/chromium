@@ -7,12 +7,18 @@ module crosapi.mojom;
 import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
 
+// The feedback sources supported for invoking feedback report from Lacros.
+// Note: When you add a new value, please add a test case accordingly in:
+// chrome/browser/feedback/show_feedback_page_lacros_browertest.cc.
 [Stable, Extensible]
 enum LacrosFeedbackSource {
   kLacrosBrowserCommand = 0,
   kLacrosSettingsAboutPage = 1,
   [Default, MinVersion=1] kUnknown = 2,
   [MinVersion=1] kLacrosAutofillContextMenu = 3,
+  [MinVersion=2] kLacrosSadTabPage = 4,
+  [MinVersion=2] kLacrosChromeLabs = 5,
+  [MinVersion=2] kLacrosQuickAnswers = 6,
 };
 
 [Stable]

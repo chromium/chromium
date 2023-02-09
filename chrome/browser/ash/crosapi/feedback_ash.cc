@@ -20,9 +20,14 @@ chrome::FeedbackSource FromMojo(mojom::LacrosFeedbackSource source) {
       return chrome::kFeedbackSourceMdSettingsAboutPage;
     case mojom::LacrosFeedbackSource::kLacrosAutofillContextMenu:
       return chrome::kFeedbackSourceAutofillContextMenu;
+    case mojom::LacrosFeedbackSource::kLacrosSadTabPage:
+      return chrome::kFeedbackSourceSadTabPage;
+    case mojom::LacrosFeedbackSource::kLacrosChromeLabs:
+      return chrome::kFeedbackSourceChromeLabs;
+    case mojom::LacrosFeedbackSource::kLacrosQuickAnswers:
+      return chrome::kFeedbackSourceQuickAnswers;
     case mojom::LacrosFeedbackSource::kUnknown:
-      NOTREACHED() << "FromMojo is called by unknown Lacros source";
-      return chrome::kFeedbackSourceBrowserCommand;
+      return chrome::kFeedbackSourceUnknownLacrosSource;
   }
 }
 
