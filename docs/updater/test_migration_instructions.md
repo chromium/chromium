@@ -79,10 +79,10 @@ running:
 To remove Chromium Updater from your system, run:
 
 On macOS, and with a per-user updater, run:
-`~/Library/Google/GoogleUpdater/*/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --uninstall && rm -rf ~/Library/Google/GoogleSoftwareUpdate`
+`~/Library/Application\ Support/Google/GoogleUpdater/*/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --uninstall && rm -rf ~/Library/Google/GoogleSoftwareUpdate`
 
 On macOS, and with a system-wide updater, run:
-`sudo /Library/Google/GoogleUpdater/*/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --uninstall --system && sudo rm -rf /Library/Google/GoogleSoftwareUpdate`
+`sudo /Library/Application\ Support/Google/GoogleUpdater/*/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --uninstall --system && sudo rm -rf /Library/Google/GoogleSoftwareUpdate`
 
 On Windows, and with a per-user updater, run `%LOCALAPPDATA%\Google\GoogleUpdater\*\updater.exe --uninstall`, then use `regedit.exe` to open the key
 `HKEY_CURRENT_USER\SOFTWARE\Google\Update\ClientState\{430FD4D0-B729-4F61-AA34-91526481799D}\cohort`
