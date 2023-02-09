@@ -14,6 +14,10 @@
 #include <sys/types.h>
 #include <time.h>
 
+#if BUILDFLAG(IS_IOS)
+#include <errno.h>
+#endif
+
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/numerics/safe_conversions.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time_override.h"
@@ -84,29 +88,17 @@ int64_t MachTimeToMicroseconds(uint64_t mach_time) {
 // unspecified starting point.
 int64_t ComputeCurrentTicks() {
 #if BUILDFLAG(IS_IOS)
-  // iOS 10 supports clock_gettime(CLOCK_MONOTONIC, ...), which is
-  // around 15 times faster than sysctl() call. Use it if possible;
-  // otherwise, fall back to sysctl().
-  if (__builtin_available(iOS 10, *)) {
-    struct timespec tp;
-    if (clock_gettime(CLOCK_MONOTONIC, &tp) == 0) {
-      return (int64_t)tp.tv_sec * 1000000 + tp.tv_nsec / 1000;
-    }
-  }
+  struct timespec tp;
+  // clock_gettime() returns 0 on success and -1 on failure. Failure can only
+  // happen because of bad arguments (unsupported clock type or timespec
+  // pointer out of accessible address space). Here it is known that neither
+  // can happen since the timespec parameter is stack allocated right above and
+  // `CLOCK_MONOTONIC` is supported on all versions of iOS that Chrome is
+  // supported on.
+  int res = clock_gettime(CLOCK_MONOTONIC, &tp);
+  PA_DCHECK(0 == res) << "Failed clock_gettime, errno: " << errno;
 
-  // On iOS mach_absolute_time stops while the device is sleeping. Instead use
-  // now - KERN_BOOTTIME to get a time difference that is not impacted by clock
-  // changes. KERN_BOOTTIME will be updated by the system whenever the system
-  // clock change.
-  struct timeval boottime;
-  int mib[2] = {CTL_KERN, KERN_BOOTTIME};
-  size_t size = sizeof(boottime);
-  int kr = sysctl(mib, std::size(mib), &boottime, &size, nullptr, 0);
-  PA_DCHECK(KERN_SUCCESS == kr);
-  TimeDelta time_difference =
-      subtle::TimeNowIgnoringOverride() -
-      (Time::FromTimeT(boottime.tv_sec) + Microseconds(boottime.tv_usec));
-  return time_difference.InMicroseconds();
+  return (int64_t)tp.tv_sec * 1000000 + tp.tv_nsec / 1000;
 #else
   // mach_absolute_time is it when it comes to ticks on the Mac.  Other calls
   // with less precision (such as TickCount) just call through to
