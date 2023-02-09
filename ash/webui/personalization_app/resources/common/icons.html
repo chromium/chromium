@@ -10,9 +10,17 @@
            circle {
              fill: white;
            }
+           :host-context(body.jelly-enabled) circle {
+            fill: var(--cros-sys-on_primary);
+           }
            @media (prefers-color-scheme: dark) {
              circle {
                fill: black;
+             }
+             :host-context(body.jelly-enabled) circle {
+              /* When Jelly is enabled, the fill is the same for light and dark
+               * mode. */
+              fill: var(--cros-sys-on_primary);
              }
            }
            path {
