@@ -2310,6 +2310,9 @@ extern const char kStartSurfaceRefactorDescription[];
 extern const char kStrictSiteIsolationName[];
 extern const char kStrictSiteIsolationDescription[];
 
+extern const char kStylusRichGesturesName[];
+extern const char kStylusRichGesturesDescription[];
+
 extern const char kTabGroupsForTabletsName[];
 extern const char kTabGroupsForTabletsDescription[];
 

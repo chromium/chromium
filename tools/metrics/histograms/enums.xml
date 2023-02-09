@@ -57731,6 +57731,7 @@ from previous Chrome versions.
   <int value="-2138883960" label="AutofillRejectCompanyBirthyearName:disabled"/>
   <int value="-2138128164" label="FeedbackOnContinueSectionRemove:enabled"/>
   <int value="-2136173537" label="QuickAnswers:enabled"/>
+  <int value="-2135013329" label="StylusRichGestures:disabled"/>
   <int value="-2134886830" label="ChromeWideEchoCancellation:disabled"/>
   <int value="-2134511704" label="CommerceCoupons:enabled"/>
   <int value="-2134333982" label="ShowArcFilesApp:enabled"/>
@@ -64647,6 +64648,7 @@ from previous Chrome versions.
   <int value="1789795039"
       label="AllowDefaultWebAppMigrationForChromeOsManagedUsers:disabled"/>
   <int value="1790111294" label="CustomizeChromeColorExtraction:enabled"/>
+  <int value="1790384966" label="StylusRichGestures:enabled"/>
   <int value="1792609232" label="NTPShortcuts:enabled"/>
   <int value="1793023585"
       label="ClickToCallContextMenuForSelectedText:disabled"/>

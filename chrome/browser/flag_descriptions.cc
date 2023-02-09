@@ -4040,6 +4040,11 @@ const char kStrictSiteIsolationDescription[] =
     "#site-isolation-trial-opt-out for how to disable site isolation for "
     "testing.";
 
+const char kStylusRichGesturesName[] = "Stylus rich gestures";
+const char kStylusRichGesturesDescription[] =
+    "Enable rich gestures for stylus which can be used to modify text in "
+    "editable web content.";
+
 const char kTabGroupsForTabletsName[] = "Tab groups on tablets";
 const char kTabGroupsForTabletsDescription[] = "Enable tab groups on tablets.";
 

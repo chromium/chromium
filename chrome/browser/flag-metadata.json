@@ -6546,6 +6546,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "stylus-rich-gestures",
+    "owners": ["alexmitra@google.com"],
+    "expiry_milestone": 117
+  },
+  {
     "name": "suggestions-scrolling-ipad",
     "owners": [ "christianxu", "bling-flags@google.com" ],
     "expiry_milestone": 120

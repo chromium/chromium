@@ -9300,6 +9300,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kSystemLiveCaption)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"stylus-rich-gestures", flag_descriptions::kStylusRichGesturesName,
+     flag_descriptions::kStylusRichGesturesDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kStylusRichGestures)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

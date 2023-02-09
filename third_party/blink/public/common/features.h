@@ -749,6 +749,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // value as before.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEarlyExitOnNoopClassOrStyleChange);
 
+// Stylus gestures for editable web content.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStylusRichGestures);
+
 // Stylus handwriting recognition to text input feature.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStylusWritingToInput);
 

@@ -376,6 +376,9 @@ public final class ProductionSupportedFlagList {
                     "Enables downloading TrustTokenKeyCommitmentsComponent by the component"
                             + " updater downloading service in nonembedded WebView."
                             + " See https://crbug.com/1170468."),
+            Flag.baseFeature(BlinkFeatures.STYLUS_RICH_GESTURES,
+                    "When enabled, stylus input can be used to draw rich gestures which "
+                            + "affect text in editable web content."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
