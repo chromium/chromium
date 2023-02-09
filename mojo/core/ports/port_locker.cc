@@ -48,7 +48,7 @@ PortLocker::PortLocker(const PortRef** port_refs, size_t num_ports)
 #if DCHECK_IS_ON()
   UpdateTLS(nullptr, this);
 #endif
-  recordreplay::Assert("[RUN-1217]-1310 PortLocker::PortLocker %d", num_ports);
+  // recordreplay::Assert("[RUN-1217]-1310 PortLocker::PortLocker %d", num_ports);
 
   // Sort the ports by address to lock them in a globally consistent order.
   std::sort(
