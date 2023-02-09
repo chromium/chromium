@@ -17,23 +17,37 @@ const scriptPolicy: TrustedTypePolicy =
       createScript: () => '',
     });
 
-/** @return Whether a test module was loaded. */
-export function loadTestModule(): boolean {
+/**
+ * @return Whether a test module was loaded.
+ *   - In case where a module was not specified, returns false (used for
+ *     providing a way for UIs to wait for any test initialization, if run
+ *     within the context of a test).
+ *   - In case where loading failed (either incorrect URL or incorrect "host="
+ *     parameter) a rejected Promise is returned.
+ */
+export function loadTestModule(): Promise<boolean> {
   const params = new URLSearchParams(window.location.search);
   const module = params.get('module');
   if (!module) {
-    return false;
+    return Promise.resolve(false);
   }
 
   const host = params.get('host') || 'webui-test';
   if (host !== 'test' && host !== 'webui-test') {
-    return false;
+    return Promise.reject(new Error(`Invalid host=${host} parameter`));
   }
 
-  const script = document.createElement('script');
-  script.type = 'module';
-  script.src = scriptPolicy.createScriptURL(`chrome://${host}/${module}`) as
-      unknown as string;
-  document.body.appendChild(script);
-  return true;
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.type = 'module';
+    const src = `chrome://${host}/${module}`;
+    script.src = scriptPolicy.createScriptURL(src) as unknown as string;
+    script.onerror = function() {
+      reject(new Error(`test_loader_util: Failed to load ${src}`));
+    };
+    script.onload = function() {
+      resolve(true);
+    };
+    document.body.appendChild(script);
+  });
 }

@@ -194,7 +194,7 @@ function updateDetailedStatus(newDetails) {
  * Function that notifies the InvalidationsMessageHandler that the UI is
  * ready to receive real-time notifications.
  */
-function onLoadWork() {
+async function onLoadWork() {
   addWebUiListener('handlers-updated', handlers => updateHandlers(handlers));
   addWebUiListener(
       'state-updated',
@@ -210,7 +210,8 @@ function onLoadWork() {
     cachedDetails = {};
     chrome.send('requestDetailedStatus');
   };
-  if (loadTestModule()) {
+
+  if (await loadTestModule()) {
     return;
   }
   chrome.send('doneLoading');

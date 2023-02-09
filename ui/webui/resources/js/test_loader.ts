@@ -17,8 +17,8 @@
 
 import {loadTestModule} from './test_loader_util.js';
 
-const loaded = loadTestModule();
-
-if (!loaded) {
-  throw new Error('Failed to load test module');
-}
+loadTestModule().then(loaded => {
+  if (!loaded) {
+    throw new Error('Failed to load test module');
+  }
+});
