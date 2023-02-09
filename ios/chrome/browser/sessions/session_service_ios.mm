@@ -22,7 +22,6 @@
 #import "base/threading/scoped_blocking_call.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/sessions/scene_util.h"
-#import "ios/chrome/browser/sessions/session_features.h"
 #import "ios/chrome/browser/sessions/session_ios.h"
 #import "ios/chrome/browser/sessions/session_ios_factory.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
@@ -226,14 +225,13 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
         for (NSString* path : paths) {
           if (![fileManager fileExistsAtPath:path])
             continue;
-          [self deleteSessionPaths:path keepFiles:@[]];
+          [self deleteSessionPaths:path];
         }
       }),
       std::move(callback));
 }
 
-- (void)deleteSessionPaths:(NSString*)sessionPath
-                 keepFiles:(NSArray*)keepFiles {
+- (void)deleteSessionPaths:(NSString*)sessionPath {
   NSFileManager* fileManager = [NSFileManager defaultManager];
   NSString* directory = [sessionPath stringByDeletingLastPathComponent];
   NSString* sessionFilename = [sessionPath lastPathComponent];
@@ -251,8 +249,7 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
                  << base::SysNSStringToUTF8([error description]);
   }
   for (NSString* filename : fileList) {
-    if (![filename hasPrefix:sessionFilename] ||
-        [keepFiles containsObject:filename]) {
+    if (![filename hasPrefix:sessionFilename]) {
       continue;
     }
     NSString* filepath = [directory stringByAppendingPathComponent:filename];
@@ -290,10 +287,6 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
     NSData* sessionData = [NSKeyedArchiver archivedDataWithRootObject:session
                                                 requiringSecureCoding:NO
                                                                 error:&error];
-    NSDictionary* tabContentsById = nil;
-    if (sessions::ShouldSaveSessionTabsToSeparateFiles()) {
-      tabContentsById = [session sessionTabContents];
-    }
     UmaHistogramTimes("Session.WebStates.ArchivedDataWithRootObjectTime",
                       base::TimeTicks::Now() - start_time);
     if (!sessionData || error) {
@@ -312,7 +305,6 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 
     _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
                             [self performSaveSessionData:sessionData
-                                             tabContents:tabContentsById
                                              sessionPath:sessionPath];
                           }));
   } @catch (NSException* exception) {
@@ -328,14 +320,12 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 @implementation SessionServiceIOS (SubClassing)
 
 - (void)performSaveSessionData:(NSData*)sessionData
-                   tabContents:(NSDictionary*)tabContents
                    sessionPath:(NSString*)sessionPath {
   base::ScopedBlockingCall scoped_blocking_call(
             FROM_HERE, base::BlockingType::MAY_BLOCK);
 
   NSFileManager* fileManager = [NSFileManager defaultManager];
   NSString* directory = [sessionPath stringByDeletingLastPathComponent];
-  NSString* sessionFilename = [sessionPath lastPathComponent];
 
   NSError* error = nil;
   BOOL isDirectory = NO;
@@ -362,33 +352,6 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
   NSDataWritingOptions options =
       NSDataWritingAtomic |
       NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication;
-
-  NSMutableArray* filesToKeep =
-      [NSMutableArray arrayWithArray:@[ sessionFilename ]];
-  if (sessions::ShouldSaveSessionTabsToSeparateFiles()) {
-    for (NSString* sessionId : tabContents) {
-      [filesToKeep
-          addObject:[SessionServiceIOS filePathForTabID:sessionId
-                                            sessionPath:sessionFilename]];
-    }
-  }
-
-  [self deleteSessionPaths:sessionPath keepFiles:filesToKeep];
-  if (sessions::ShouldSaveSessionTabsToSeparateFiles()) {
-    for (NSString* existingTab : tabContents) {
-      NSData* data = tabContents[existingTab];
-      NSString* filepath = [SessionServiceIOS filePathForTabID:existingTab
-                                                   sessionPath:sessionPath];
-      if (data.length) {
-        if (![data writeToFile:filepath options:options error:&error]) {
-          NOTREACHED() << "Error writing session file: "
-                       << base::SysNSStringToUTF8(filepath) << ": "
-                       << base::SysNSStringToUTF8([error description]);
-          return;
-        }
-      }
-    }
-  }
 
   base::TimeTicks start_time = base::TimeTicks::Now();
   if (![sessionData writeToFile:sessionPath options:options error:&error]) {

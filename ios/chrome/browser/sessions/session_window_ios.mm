@@ -9,7 +9,6 @@
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/sessions/NSCoder+Compatibility.h"
-#import "ios/chrome/browser/sessions/session_features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -71,31 +70,21 @@ BOOL IsIndexValidForSessionCount(NSUInteger index, NSUInteger session_count) {
 @implementation SessionWindowIOS
 
 @synthesize sessions = _sessions;
-@synthesize sessionsSummary = _sessionsSummary;
-@synthesize tabContents = _tabContents;
 @synthesize selectedIndex = _selectedIndex;
 
 - (instancetype)init {
-  return [self initWithSessions:@[]
-                sessionsSummary:@[]
-                    tabContents:@{}
-                  selectedIndex:NSNotFound];
+  return [self initWithSessions:@[] selectedIndex:NSNotFound];
 }
 
 #pragma mark - Public
 
 - (instancetype)initWithSessions:(NSArray<CRWSessionStorage*>*)sessions
-                 sessionsSummary:(NSArray<NSString*>*)sessionsSummary
-                     tabContents:(NSDictionary<NSString*, NSData*>*)tabContents
                    selectedIndex:(NSUInteger)selectedIndex {
   DCHECK(sessions);
   DCHECK(IsIndexValidForSessionCount(selectedIndex, [sessions count]));
-  DCHECK(!sessionsSummary || sessionsSummary.count == sessions.count);
   self = [super init];
   if (self) {
     _sessions = [sessions copy];
-    _sessionsSummary = [sessionsSummary copy];
-    _tabContents = [tabContents copy];
     _selectedIndex = selectedIndex;
   }
   return self;
@@ -121,18 +110,12 @@ BOOL IsIndexValidForSessionCount(NSUInteger index, NSUInteger session_count) {
     }
   }
 
-  return [self initWithSessions:sessions
-                sessionsSummary:nil
-                    tabContents:nil
-                  selectedIndex:selectedIndex];
+  return [self initWithSessions:sessions selectedIndex:selectedIndex];
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
   [aCoder cr_encodeIndex:_selectedIndex forKey:kSelectedIndexKey];
   [aCoder encodeObject:_sessions forKey:kSessionsKey];
-  if (sessions::ShouldSaveSessionTabsToSeparateFiles() && _sessionsSummary) {
-    [aCoder encodeObject:_sessionsSummary forKey:kSessionsSummaryKey];
-  }
 }
 
 #pragma mark - Debugging

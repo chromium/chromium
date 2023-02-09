@@ -63,7 +63,6 @@ source_set("flags") {
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/screen_time:buildflags",
-    "//ios/chrome/browser/sessions:features",
     "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/text_selection:text_selection_utils",
     "//ios/chrome/browser/ui:feature_flags",

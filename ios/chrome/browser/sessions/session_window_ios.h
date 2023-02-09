@@ -37,19 +37,11 @@
 // the `sessions` and `selectedIndex` properties. `selectedIndex` must be a
 // valid indice in `sessions` or NSNotFound if `sessions` is empty.
 - (instancetype)initWithSessions:(NSArray<CRWSessionStorage*>*)sessions
-                 sessionsSummary:(NSArray<SessionSummary*>*)sessionsSummary
-                     tabContents:(NSDictionary<NSString*, NSData*>*)tabContents
                    selectedIndex:(NSUInteger)selectedIndex
     NS_DESIGNATED_INITIALIZER;
 
 // The serialized session objects. May be empty but never nil.
 @property(nonatomic, readonly) NSArray<CRWSessionStorage*>* sessions;
-
-// Contains basic data about each tab.
-@property(nonatomic, readonly) NSArray<SessionSummary*>* sessionsSummary;
-
-// Contains the serialized data for each tab.
-@property(nonatomic, readonly) NSDictionary<NSString*, NSData*>* tabContents;
 
 // The currently selected session. NSNotFound if the sessionWindow contains
 // no sessions; otherwise a valid index in `sessions`.

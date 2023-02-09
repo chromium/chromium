@@ -77,7 +77,6 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/screen_time/screen_time_buildflags.h"
-#import "ios/chrome/browser/sessions/session_features.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/text_selection/text_selection_util.h"
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
@@ -831,11 +830,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMediaPermissionsControlName,
      flag_descriptions::kMediaPermissionsControlDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kMediaPermissionsControl)},
-    {"enable-save-session-tabs-in-separate-files",
-     flag_descriptions::kSaveSessionTabsToSeparateFilesName,
-     flag_descriptions::kSaveSessionTabsToSeparateFilesDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(sessions::kSaveSessionTabsToSeparateFiles)},
     {"use-sf-symbols", flag_descriptions::kUseSFSymbolsName,
      flag_descriptions::kUseSFSymbolsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kUseSFSymbols)},

@@ -26,8 +26,6 @@ CRWSessionStorage* CreateSessionForTest(BOOL has_opener) {
 SessionWindowIOS* CreateSessionWindowForTest(NSUInteger selectedIndex) {
   return [[SessionWindowIOS alloc]
       initWithSessions:@[ CreateSessionForTest(YES), CreateSessionForTest(NO) ]
-       sessionsSummary:nil
-           tabContents:nil
          selectedIndex:selectedIndex];
 }
 

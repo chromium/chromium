@@ -645,10 +645,6 @@ extern const char kSafeBrowsingAvailableDescription[];
 extern const char kSafeBrowsingRealTimeLookupName[];
 extern const char kSafeBrowsingRealTimeLookupDescription[];
 
-// Title and description for the flag to enable saving one file per webstate.
-extern const char kSaveSessionTabsToSeparateFilesName[];
-extern const char kSaveSessionTabsToSeparateFilesDescription[];
-
 // Title and description for the flag to enable integration with the ScreenTime
 // system.
 extern const char kScreenTimeIntegrationName[];

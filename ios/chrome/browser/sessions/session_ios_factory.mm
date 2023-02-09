@@ -20,7 +20,6 @@
 
 @implementation SessionIOSFactory {
   WebStateList* _webStateList;
-  NSMutableSet<NSString*>* _dirtyWebStates;
 }
 
 #pragma mark - Initialization
@@ -29,7 +28,6 @@
   if (self = [super init]) {
     DCHECK(webStateList);
     _webStateList = webStateList;
-    _dirtyWebStates = [[NSMutableSet alloc] init];
   }
   return self;
 }
@@ -48,15 +46,8 @@
   // TODO(crbug.com/661986): This could get expensive especially since this
   // window may never be saved (if another call comes in before the delay).
   SessionIOS* session = [[SessionIOS alloc]
-      initWithWindows:@[ SerializeWebStateList(_webStateList,
-                                               _dirtyWebStates) ]];
-  [_dirtyWebStates removeAllObjects];
+      initWithWindows:@[ SerializeWebStateList(_webStateList) ]];
   return session;
-}
-
-- (void)markWebStateDirty:(web::WebState*)webState {
-  NSString* webStateID = webState->GetStableIdentifier();
-  [_dirtyWebStates addObject:webStateID];
 }
 
 #pragma mark - Private

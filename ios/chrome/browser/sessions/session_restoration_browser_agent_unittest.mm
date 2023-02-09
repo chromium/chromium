@@ -133,8 +133,6 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
       [sessions addObject:session_storage];
     }
     return [[SessionWindowIOS alloc] initWithSessions:sessions
-                                      sessionsSummary:nil
-                                          tabContents:nil
                                         selectedIndex:selected_index];
   }
 
@@ -189,8 +187,6 @@ TEST_F(SessionRestorationBrowserAgentTest, RestoreEmptySessions) {
     [sessions addObject:session_storage];
   }
   SessionWindowIOS* window = [[SessionWindowIOS alloc] initWithSessions:sessions
-                                                        sessionsSummary:nil
-                                                            tabContents:nil
                                                           selectedIndex:2];
 
   session_restoration_agent_->RestoreSessionWindow(window);

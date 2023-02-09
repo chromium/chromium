@@ -14,7 +14,6 @@
 #import "base/functional/callback.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/sessions/session_features.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -62,8 +61,7 @@ WebStateListRemovingIndexes GetIndexOfWebStatesToDrop(
 }
 }  // namespace
 
-SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list,
-                                        NSSet* web_states_to_serialize) {
+SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list) {
   const WebStateListRemovingIndexes removing_indexes =
       GetIndexOfWebStatesToDrop(web_state_list);
 
@@ -72,14 +70,6 @@ SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list,
 
   NSMutableArray<CRWSessionStorage*>* serialized_session =
       [NSMutableArray arrayWithCapacity:web_state_to_save_count];
-  NSMutableArray<SessionSummary*>* serialized_session_summary = nil;
-  NSMutableDictionary<NSString*, NSData*>* serialized_tab_contents = nil;
-  if (sessions::ShouldSaveSessionTabsToSeparateFiles()) {
-    serialized_session_summary =
-        [NSMutableArray arrayWithCapacity:web_state_to_save_count];
-    serialized_tab_contents =
-        [NSMutableDictionary dictionaryWithCapacity:web_state_to_save_count];
-  }
 
   for (int index = 0; index < web_state_list->count(); ++index) {
     if (removing_indexes.Contains(index)) {
@@ -115,36 +105,6 @@ SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list,
 
     CRWSessionStorage* session_storage = web_state->BuildSessionStorage();
     [serialized_session addObject:session_storage];
-    if (sessions::ShouldSaveSessionTabsToSeparateFiles()) {
-      NSString* web_state_id = web_state->GetStableIdentifier();
-      NSURL* url = net::NSURLWithGURL(web_state->GetVisibleURL());
-      NSString* title = base::SysUTF16ToNSString(web_state->GetTitle());
-      SessionSummary* summary =
-          [[SessionSummary alloc] initWithURL:url
-                                        title:title
-                             stableIdentifier:web_state_id];
-      [serialized_session_summary addObject:summary];
-
-      if (!web_states_to_serialize ||
-          [web_states_to_serialize containsObject:web_state_id]) {
-        NSError* error = nil;
-        NSData* data =
-            [NSKeyedArchiver archivedDataWithRootObject:session_storage
-                                  requiringSecureCoding:NO
-                                                  error:&error];
-        if (!data || error) {
-          DLOG(WARNING) << "Error serializing session : "
-                        << base::SysNSStringToUTF8(web_state_id) << ": "
-                        << base::SysNSStringToUTF8([error description]);
-          serialized_tab_contents[web_state_id] = [NSData data];
-        } else {
-          serialized_tab_contents[web_state_id] = data;
-        }
-
-      } else {
-        serialized_tab_contents[web_state_id] = [NSData data];
-      }
-    }
   }
 
   WebStateListOrderController order_controller(*web_state_list);
@@ -155,15 +115,8 @@ SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list,
                                  ? static_cast<NSUInteger>(active_index)
                                  : static_cast<NSUInteger>(NSNotFound);
 
-  return [[SessionWindowIOS alloc]
-      initWithSessions:[serialized_session copy]
-       sessionsSummary:[serialized_session_summary copy]
-           tabContents:[serialized_tab_contents copy]
-         selectedIndex:selectedIndex];
-}
-
-SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list) {
-  return SerializeWebStateList(web_state_list, nil);
+  return [[SessionWindowIOS alloc] initWithSessions:[serialized_session copy]
+                                      selectedIndex:selectedIndex];
 }
 
 void DeserializeWebStateList(WebStateList* web_state_list,

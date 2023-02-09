@@ -3032,11 +3032,6 @@
     "expiry_milestone": 118
   },
   {
-    "name": "enable-save-session-tabs-in-separate-files",
-    "owners": [ "olivierrobin", "sdefresne", "bling-flags@google.com" ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "enable-seamless-refresh-rate-switching",
     "owners": [ "ddavenport", "chromeos-gfx-display@google.com" ],
     "expiry_milestone": 112

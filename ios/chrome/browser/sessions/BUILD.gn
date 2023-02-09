@@ -2,15 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("features") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "session_features.h",
-    "session_features.mm",
-  ]
-  deps = [ "//base" ]
-}
-
 source_set("sessions") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -25,7 +16,6 @@ source_set("sessions") {
   ]
   public_deps = [ "//components/sessions" ]
   deps = [
-    ":features",
     ":scene_util",
     ":serialisation",
     "//base",
@@ -108,7 +98,6 @@ source_set("session_service") {
     "session_service_ios.mm",
   ]
   deps = [
-    ":features",
     ":scene_util",
     ":serialisation",
     "//base",
@@ -131,7 +120,6 @@ source_set("serialisation") {
     "session_window_ios.mm",
   ]
   deps = [
-    ":features",
     "//base",
     "//components/sessions",
     "//ios/chrome/browser/browser_state",
@@ -193,7 +181,6 @@ source_set("unit_tests") {
     "session_window_ios_unittest.mm",
   ]
   deps = [
-    ":features",
     ":resources_unit_tests",
     ":restoration_agent",
     ":restoration_observer",

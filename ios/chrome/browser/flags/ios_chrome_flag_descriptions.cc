@@ -735,11 +735,6 @@ const char kSafeBrowsingRealTimeLookupDescription[] =
     "When enabled, navigation URLs are checked using real-time queries to Safe "
     "Browsing servers, subject to an opt-in preference.";
 
-const char kSaveSessionTabsToSeparateFilesName[] =
-    "Enable save tabs to separate files";
-const char kSaveSessionTabsToSeparateFilesDescription[] =
-    "When enabled, each Tab is saved in a separate file.";
-
 const char kScreenTimeIntegrationName[] = "Enables ScreenTime Integration";
 const char kScreenTimeIntegrationDescription[] =
     "Enables integration with ScreenTime in iOS 14.0 and above.";

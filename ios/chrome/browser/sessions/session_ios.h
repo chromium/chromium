@@ -19,11 +19,6 @@
 // The serialized SessionWindowIOS objects. May be empty but never nil.
 @property(nonatomic, readonly) NSArray<SessionWindowIOS*>* sessionWindows;
 
-// A dictionary containing the content of every tab in the session.
-// The key is the WebState stable identifier.
-// Only available if kSaveSessionTabsToSeparateFiles is enabled.
-- (NSDictionary*)sessionTabContents;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_SESSION_IOS_H_
