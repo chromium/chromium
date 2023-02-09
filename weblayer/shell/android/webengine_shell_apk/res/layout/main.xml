@@ -22,7 +22,8 @@ found in the LICENSE file.
         android:id="@+id/url_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textUri" />
+        android:inputType="textUri"
+        android:selectAllOnFocus="true" />
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="match_parent"

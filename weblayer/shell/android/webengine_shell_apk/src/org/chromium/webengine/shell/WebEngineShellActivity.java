@@ -7,7 +7,9 @@ package org.chromium.webengine.shell;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -206,8 +208,17 @@ public class WebEngineShellActivity extends AppCompatActivity {
         urlBar.setOnEditorActionListener(new OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                String query = v.getText().toString();
-                mTabManager.getActiveTab().getNavigationController().navigate(query);
+                Uri query = Uri.parse(v.getText().toString());
+                if (query.isAbsolute()) {
+                    mTabManager.getActiveTab().getNavigationController().navigate(
+                            query.normalizeScheme().toString());
+                } else if (Patterns.DOMAIN_NAME.matcher(query.toString()).matches()) {
+                    mTabManager.getActiveTab().getNavigationController().navigate(
+                            "https://" + query);
+                } else {
+                    activeTab.getNavigationController().navigate("https://www.google.com/search?q="
+                            + Uri.encode(v.getText().toString()));
+                }
                 // Hides keyboard on Enter key pressed
                 InputMethodManager imm =
                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
