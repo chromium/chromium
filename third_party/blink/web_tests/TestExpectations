@@ -7006,3 +7006,6 @@ crbug.com/1413770 wpt_internal/storage/estimate-usage-details-filesystem.https.t
 
 # Sheriff 2023-02-09
 crbug.com/1414105 [ Win ] virtual/gpu/fast/canvas/OffscreenCanvas-filter-in-worker.html [ Failure Pass ]
+# Only fails on WebKit Linux Leak but there's not way to limit to
+# that. Test is newly added, so disabling for Linux.
+crbug.com/1414274 [ Linux ] wpt_internal/webstorage/session-storage-deprecation-trial-redirect.sub.https.html [ Failure Pass ]
