@@ -255,12 +255,14 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
   NGAnchorEvaluatorImpl() = default;
 
   NGAnchorEvaluatorImpl(const NGLogicalAnchorQuery& anchor_query,
+                        const ScopedCSSName* default_anchor_specifier,
                         const LayoutObject* implicit_anchor,
                         const WritingModeConverter& container_converter,
                         WritingDirectionMode self_writing_direction,
                         const PhysicalOffset& offset_to_padding_box,
                         bool is_in_top_layer)
       : anchor_query_(&anchor_query),
+        default_anchor_specifier_(default_anchor_specifier),
         implicit_anchor_(implicit_anchor),
         container_converter_(container_converter),
         self_writing_direction_(self_writing_direction),
@@ -272,6 +274,7 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
   // This constructor takes |NGLogicalAnchorQueryMap| and |containing_block|
   // instead of |NGLogicalAnchorQuery|.
   NGAnchorEvaluatorImpl(const NGLogicalAnchorQueryMap& anchor_queries,
+                        const ScopedCSSName* default_anchor_specifier,
                         const LayoutObject* implicit_anchor,
                         const LayoutObject& containing_block,
                         const WritingModeConverter& container_converter,
@@ -279,6 +282,7 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
                         const PhysicalOffset& offset_to_padding_box,
                         bool is_in_top_layer)
       : anchor_queries_(&anchor_queries),
+        default_anchor_specifier_(default_anchor_specifier),
         implicit_anchor_(implicit_anchor),
         containing_block_(&containing_block),
         container_converter_(container_converter),
@@ -309,6 +313,8 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
 
  private:
   const NGLogicalAnchorQuery* AnchorQuery() const;
+  const NGLogicalAnchorReference* ResolveAnchorReference(
+      const ScopedCSSName* anchor_name) const;
 
   absl::optional<LayoutUnit> EvaluateAnchor(const ScopedCSSName* anchor_name,
                                             AnchorValue anchor_value,
@@ -319,6 +325,7 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
 
   mutable const NGLogicalAnchorQuery* anchor_query_ = nullptr;
   const NGLogicalAnchorQueryMap* anchor_queries_ = nullptr;
+  const ScopedCSSName* default_anchor_specifier_ = nullptr;
   const LayoutObject* implicit_anchor_ = nullptr;
   const LayoutObject* containing_block_ = nullptr;
   const WritingModeConverter container_converter_{

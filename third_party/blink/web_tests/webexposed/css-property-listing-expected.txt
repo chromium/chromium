@@ -57,6 +57,7 @@ All changes to this list should go through Blink's feature review process: http:
     align-self
     alignment-baseline
     all
+    anchor-default
     anchor-name
     anchor-scroll
     animation-composition

@@ -14,7 +14,7 @@ PASS 'webkitTransform' in document.body.style is true
 PASS 'WebkitTransform' in document.body.style is true
 PASS 'bogus-random-String' in document.body.style is false
 PASS 'cssText' in document.body.style is true
-PASS The CSS property order is correct
+FAIL The 'filter' property was not enumerated
 PASS successfullyParsed is true
 
 TEST COMPLETE

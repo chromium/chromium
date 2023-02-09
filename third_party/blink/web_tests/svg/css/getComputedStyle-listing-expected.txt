@@ -50,6 +50,7 @@ align-content: normal
 align-items: normal
 align-self: auto
 alignment-baseline: auto
+anchor-default: implicit
 anchor-name: none
 anchor-scroll: none
 animation-composition: replace

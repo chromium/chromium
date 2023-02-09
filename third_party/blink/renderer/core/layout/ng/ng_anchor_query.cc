@@ -350,6 +350,7 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::Evaluate(
     const CalculationExpressionNode& node) const {
   DCHECK(node.IsAnchorQuery());
   const auto& anchor_query = To<CalculationExpressionAnchorQueryNode>(node);
+  // TODO(xiaochengh): Handle the 'implicit' keyword anchor spec.
   switch (anchor_query.Type()) {
     case AnchorQueryType::kAnchor:
       return EvaluateAnchor(anchor_query.AnchorName(),
@@ -361,24 +362,38 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::Evaluate(
   }
 }
 
+const NGLogicalAnchorReference* NGAnchorEvaluatorImpl::ResolveAnchorReference(
+    const ScopedCSSName* anchor_name) const {
+  if (!anchor_name && !default_anchor_specifier_ && !implicit_anchor_) {
+    return nullptr;
+  }
+  const NGLogicalAnchorQuery* anchor_query = AnchorQuery();
+  if (!anchor_query) {
+    return nullptr;
+  }
+  if (anchor_name) {
+    return anchor_query->AnchorReference(anchor_name, is_in_top_layer_);
+  }
+  if (default_anchor_specifier_) {
+    return anchor_query->AnchorReference(default_anchor_specifier_,
+                                         is_in_top_layer_);
+  }
+  return anchor_query->AnchorReference(implicit_anchor_, is_in_top_layer_);
+}
+
 absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchor(
     const ScopedCSSName* anchor_name,
     AnchorValue anchor_value,
     float percentage) const {
   has_anchor_functions_ = true;
-  if (!anchor_name && !implicit_anchor_)
-    return absl::nullopt;
-  const NGLogicalAnchorQuery* anchor_query = AnchorQuery();
-  if (!anchor_query)
-    return absl::nullopt;
   const NGLogicalAnchorReference* anchor_reference =
-      anchor_name
-          ? anchor_query->AnchorReference(anchor_name, is_in_top_layer_)
-          : anchor_query->AnchorReference(implicit_anchor_, is_in_top_layer_);
-  if (!anchor_reference)
+      ResolveAnchorReference(anchor_name);
+  if (!anchor_reference) {
     return absl::nullopt;
+  }
 
-  return anchor_query->EvaluateAnchor(
+  DCHECK(AnchorQuery());
+  return AnchorQuery()->EvaluateAnchor(
       *anchor_reference, anchor_value, percentage, available_size_,
       container_converter_, self_writing_direction_, offset_to_padding_box_,
       is_y_axis_, is_right_or_bottom_);
@@ -388,21 +403,16 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchorSize(
     const ScopedCSSName* anchor_name,
     AnchorSizeValue anchor_size_value) const {
   has_anchor_functions_ = true;
-  if (!anchor_name && !implicit_anchor_)
-    return absl::nullopt;
-  const NGLogicalAnchorQuery* anchor_query = AnchorQuery();
-  if (!anchor_query)
-    return absl::nullopt;
   const NGLogicalAnchorReference* anchor_reference =
-      anchor_name
-          ? anchor_query->AnchorReference(anchor_name, is_in_top_layer_)
-          : anchor_query->AnchorReference(implicit_anchor_, is_in_top_layer_);
-  if (!anchor_reference)
+      ResolveAnchorReference(anchor_name);
+  if (!anchor_reference) {
     return absl::nullopt;
+  }
 
-  return anchor_query->EvaluateSize(*anchor_reference, anchor_size_value,
-                                    container_converter_.GetWritingMode(),
-                                    self_writing_direction_.GetWritingMode());
+  DCHECK(AnchorQuery());
+  return AnchorQuery()->EvaluateSize(*anchor_reference, anchor_size_value,
+                                     container_converter_.GetWritingMode(),
+                                     self_writing_direction_.GetWritingMode());
 }
 
 void NGLogicalAnchorReference::Trace(Visitor* visitor) const {

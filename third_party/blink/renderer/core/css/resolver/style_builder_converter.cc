@@ -1678,6 +1678,19 @@ ScopedCSSName* StyleBuilderConverter::ConvertNoneOrCustomIdent(
                                              custom_ident.GetTreeScope());
 }
 
+ScopedCSSName* StyleBuilderConverter::ConvertAnchorDefault(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  DCHECK(value.IsScopedValue());
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kImplicit);
+    return nullptr;
+  }
+  const CSSCustomIdentValue& custom_ident = To<CSSCustomIdentValue>(value);
+  return MakeGarbageCollected<ScopedCSSName>(custom_ident.Value(),
+                                             custom_ident.GetTreeScope());
+}
+
 AnchorScrollValue* StyleBuilderConverter::ConvertAnchorScroll(
     StyleResolverState& state,
     const CSSValue& value) {
