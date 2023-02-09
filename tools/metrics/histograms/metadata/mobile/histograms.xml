@@ -394,6 +394,7 @@ chromium-metrics-reviews@google.com.
   <owner>ellyjones@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <owner>chrome-with-friends-robots@google.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     Tracks which sharing entry point was triggered. To view the outcome of these
     sharing scenarios, take a look at their actions' histogram (the format is

@@ -1207,6 +1207,7 @@ chromium-metrics-reviews@google.com.
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     The number of times users used the omnibox to go somewhere.
 

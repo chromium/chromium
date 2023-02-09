@@ -1481,6 +1481,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-07-02">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
     load event is fired, for main frame documents.
@@ -2808,6 +2809,7 @@ chromium-metrics-reviews@google.com.
   <owner>ksakamoto@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time from navigation start to first &quot;contentful&quot; paint. This
     metric does not include all page loads. If you need all page loads, add

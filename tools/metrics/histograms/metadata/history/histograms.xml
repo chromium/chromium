@@ -1795,6 +1795,7 @@ chromium-metrics-reviews@google.com.
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     Number of unique domains visited by the user within a calendar day in user's
     local timezone. For each regular profile (not incognito, guest, system,

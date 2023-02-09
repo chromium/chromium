@@ -658,6 +658,7 @@ chromium-metrics-reviews@google.com.
   <owner>jonross@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time between the input event timestamp and the frame presentation time
     on a tab switch. Recorded based on the destination tab state when the tab

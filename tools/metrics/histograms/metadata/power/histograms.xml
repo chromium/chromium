@@ -1503,6 +1503,7 @@ chromium-metrics-reviews@google.com.
   <owner>khokhlov@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Periodically samples the battery capacity drained while Chrome is a
     foreground app and the device is on battery power {DarkeningType}. Sampled

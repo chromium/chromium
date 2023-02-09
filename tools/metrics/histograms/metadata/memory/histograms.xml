@@ -402,6 +402,7 @@ chromium-metrics-reviews@google.com.
 
   <owner>erikchen@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     A rough estimate of the private memory footprint of the browser process.
 
@@ -1324,6 +1325,7 @@ chromium-metrics-reviews@google.com.
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     A rough estimate of the private memory footprint of the gpu process.
 
@@ -2320,6 +2322,7 @@ chromium-metrics-reviews@google.com.
   <owner>ssid@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     A rough estimate of the private memory footprint of the renderer process.
 
@@ -2539,6 +2542,7 @@ chromium-metrics-reviews@google.com.
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     A rough estimate of the private memory footprint of all processes.
 

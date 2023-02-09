@@ -299,6 +299,7 @@ chromium-metrics-reviews@google.com.
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Collects various counters related to stability. The majority of them are
     crash types.

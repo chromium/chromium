@@ -27,6 +27,7 @@ chromium-metrics-reviews@google.com.
   <owner>ellyjones@chromium.org</owner>
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     The UI surface that started any share attempt. Android only.
 
@@ -39,6 +40,7 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
   <owner>kristipark@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     The UI surface that started any share attempt. Desktop only.
 
