@@ -507,7 +507,8 @@ void CopyOrMoveIOTaskImpl::CopyOrMoveFile(
 
   // If the base names are not the same, then the destination url exists and
   // we must resolve the file name conflict.  If the user's previous resolve
-  // was 'ApplyToAll', use it to automatically resolve the conflict.
+  // was 'ApplyToAll', |conflict_resolve_| contains 'keepboth' or 'replace'.
+  // Use it to automatically resolve the conflict (no need to ask the UI).
   if (!conflict_resolve_.empty()) {
     ResumeParams params;
     params.conflict_resolve = conflict_resolve_;
