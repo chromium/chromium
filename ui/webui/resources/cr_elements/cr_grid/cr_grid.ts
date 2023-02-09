@@ -30,9 +30,11 @@ export class CrGridElement extends PolymerElement {
         type: Number,
         observer: 'onColumnsChange_',
       },
+      disableArrowNavigation: Boolean,
     };
   }
 
+  disableArrowNavigation: boolean = false;
   columns: number = 1;
 
   private onColumnsChange_() {
@@ -40,7 +42,8 @@ export class CrGridElement extends PolymerElement {
   }
 
   private onKeyDown_(e: KeyboardEvent) {
-    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+    if (!this.disableArrowNavigation &&
+        ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
       e.preventDefault();
       const items =
           (this.$.items.assignedElements() as HTMLElement[]).filter(el => {
