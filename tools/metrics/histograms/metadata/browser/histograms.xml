@@ -182,6 +182,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.ERP.ResponsePayloadSize" units="bytes"
+    expires_after="2023-11-17">
+  <owner>xuhong@chromium.org</owner>
+  <owner>lbaraz@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    The size of ERP's response payload as a JSON string when upload is
+    successful. Updated every time when an upload succeeds AND at least one hour
+    has passed since the last update AND 9 more uploads have succeeded since the
+    last update.
+  </summary>
+</histogram>
+
+<histogram name="Browser.ERP.SingleRequestPayloadSize" units="bytes"
+    expires_after="2024-02-10">
+  <owner>xuhong@chromium.org</owner>
+  <owner>lbaraz@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    The size of ERP's request payload as a JSON string when upload is
+    successful. Updated every time when an upload succeeds.
+  </summary>
+</histogram>
+
 <histogram name="Browser.ERP.StorageQueueGenerationIdReset" enum="Boolean"
     expires_after="2024-01-31">
   <owner>vshenvi@google.com</owner>
@@ -205,23 +229,6 @@ chromium-metrics-reviews@google.com.
     Would only be true. Recorded whenever an unusual timestamp is encountered
     when enqueuing a record, which will be rejected.
   </summary>
-</histogram>
-
-<histogram name="Browser.ERP.{Param}PayloadSize" units="bytes"
-    expires_after="2023-11-17">
-  <owner>xuhong@chromium.org</owner>
-  <owner>lbaraz@chromium.org</owner>
-  <owner>cros-reporting-team@google.com</owner>
-  <summary>
-    The size of ERP's {Param} payload as a JSON string when upload is
-    successful. Updated every time when an upload succeeds AND at least one hour
-    has passed since the last update AND 9 more uploads have succeeded since the
-    last update.
-  </summary>
-  <token key="Param">
-    <variant name="Request" summary="request"/>
-    <variant name="Response" summary="response"/>
-  </token>
 </histogram>
 
 <histogram name="Browser.ERP.{Param}PayloadSizePerHour" units="KiB"

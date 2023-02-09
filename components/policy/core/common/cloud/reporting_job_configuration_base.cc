@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -175,6 +176,11 @@ std::string ReportingJobConfigurationBase::GetPayload() {
 
   std::string payload_string;
   base::JSONWriter::Write(payload_, &payload_string);
+
+  // Record UMA request payload size
+  base::UmaHistogramCounts1M("Browser.ERP.SingleRequestPayloadSize",
+                             payload_string.size());
+
   return payload_string;
 }
 
@@ -236,10 +242,11 @@ void ReportingJobConfigurationBase::OnURLLoadComplete(
       default:
         // Handle all unknown 5xx HTTP error codes as temporary and any other
         // unknown error as one that needs more time to recover.
-        if (response_code >= 500 && response_code <= 599)
+        if (response_code >= 500 && response_code <= 599) {
           status = DM_STATUS_TEMPORARY_UNAVAILABLE;
-        else
+        } else {
           status = DM_STATUS_HTTP_STATUS_ERROR;
+        }
         break;
     }
   }

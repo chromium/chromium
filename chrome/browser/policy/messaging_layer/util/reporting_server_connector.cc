@@ -117,20 +117,11 @@ class PayloadSizeUmaReporter {
   // Reports to UMA.
   void Report() {
     DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
-    DCHECK_GE(request_payload_size_, 0);
     DCHECK_GE(response_payload_size_, 0);
 
     last_reported_time_ = base::Time::Now();
-    base::UmaHistogramCounts1M("Browser.ERP.RequestPayloadSize",
-                               request_payload_size_);
     base::UmaHistogramCounts1M("Browser.ERP.ResponsePayloadSize",
                                response_payload_size_);
-  }
-
-  // Updates request payload size.
-  void UpdateRequestPayloadSize(int request_payload_size) {
-    DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
-    request_payload_size_ = request_payload_size;
   }
 
   // Updates response payload size.
@@ -147,9 +138,6 @@ class PayloadSizeUmaReporter {
   // |ShouldReport|, both of which of all instances of this class should only be
   // called in the same sequence.
   static base::Time last_reported_time_;
-
-  // Request payload size. Negative means not set yet.
-  int request_payload_size_ = -1;
 
   // Response payload size. Negative means not set yet.
   int response_payload_size_ = -1;
@@ -265,8 +253,6 @@ void ReportingServerConnector::UploadEncryptedReport(
               // Let UMA report the request and response payload sizes.
               if (PayloadSizeUmaReporter::ShouldReport()) {
                 PayloadSizeUmaReporter payload_size_uma_reporter;
-                payload_size_uma_reporter.UpdateRequestPayloadSize(
-                    request_payload_size.value());
                 payload_size_uma_reporter.UpdateResponsePayloadSize(
                     response_payload_size);
                 payload_size_uma_reporter.Report();
