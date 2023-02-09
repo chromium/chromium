@@ -1543,6 +1543,7 @@ void LayoutMultiColumnFlowThread::ComputeLogicalHeight(
 
 void LayoutMultiColumnFlowThread::UpdateLogicalWidth() {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
   LayoutUnit column_width;
   CalculateColumnCountAndWidth(column_width, column_count_);
   SetLogicalWidth(column_width);
