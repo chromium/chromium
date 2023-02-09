@@ -2746,16 +2746,17 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
               false);
     }
   }
-
-  if (GetDocument().GetPage()) {
-    GetDocument().GetPage()->GetPointerLockController().ElementRemoved(this);
+  Document& document = GetDocument();
+  Page* page = document.GetPage();
+  if (page) {
+    page->GetPointerLockController().ElementRemoved(this);
   }
 
-  GetDocument().UnobserveForIntrinsicSize(this);
+  document.UnobserveForIntrinsicSize(this);
 
   SetSavedLayerScrollOffset(ScrollOffset());
 
-  if (insertion_point.IsInTreeScope() && GetTreeScope() == GetDocument()) {
+  if (insertion_point.IsInTreeScope() && GetTreeScope() == document) {
     const AtomicString& id_value = GetIdAttribute();
     if (!id_value.IsNull()) {
       UpdateId(insertion_point.GetTreeScope(), id_value, g_null_atom);
@@ -2770,8 +2771,8 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   ContainerNode::RemovedFrom(insertion_point);
 
   if (was_in_document) {
-    if (this == GetDocument().CssTarget()) {
-      GetDocument().SetCSSTarget(nullptr);
+    if (this == document.CssTarget()) {
+      document.SetCSSTarget(nullptr);
     }
 
     if (GetCustomElementState() == CustomElementState::kCustom) {
@@ -2779,11 +2780,11 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
     }
   }
 
-  GetDocument().GetRootScrollerController().ElementRemoved(*this);
+  document.GetRootScrollerController().ElementRemoved(*this);
 
   if (IsInTopLayer()) {
     Fullscreen::ElementRemoved(*this);
-    GetDocument().RemoveFromTopLayerImmediately(this);
+    document.RemoveFromTopLayerImmediately(this);
   }
 
   ClearElementFlag(ElementFlags::kIsInCanvasSubtree);
@@ -2800,14 +2801,15 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
 
     NodeRareData* node_data = RareData();
     node_data->InvalidateAssociatedAnimationEffects();
-
-    if (was_in_document && data->IntersectionObserverData()) {
-      data->IntersectionObserverData()->ComputeIntersectionsForTarget(
-          IntersectionObservation::kExplicitRootObserversNeedUpdate |
-          IntersectionObservation::kImplicitRootObserversNeedUpdate |
-          IntersectionObservation::kIgnoreDelay);
-      data->IntersectionObserverData()->StopTrackingWithController(
-          GetDocument().EnsureIntersectionObserverController());
+    if (was_in_document) {
+      if (auto* observer_data = data->IntersectionObserverData()) {
+        observer_data->ComputeIntersectionsForTarget(
+            IntersectionObservation::kExplicitRootObserversNeedUpdate |
+            IntersectionObservation::kImplicitRootObserversNeedUpdate |
+            IntersectionObservation::kIgnoreDelay);
+        observer_data->StopTrackingWithController(
+            document.EnsureIntersectionObserverController());
+      }
     }
 
     if (auto* context = data->GetDisplayLockContext()) {
@@ -2822,7 +2824,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
     }
   }
 
-  if (auto* const frame = GetDocument().GetFrame()) {
+  if (auto* const frame = document.GetFrame()) {
     if (UNLIKELY(HasUndoStack())) {
       frame->GetEditor().GetUndoStack().ElementRemoved(this);
     }
