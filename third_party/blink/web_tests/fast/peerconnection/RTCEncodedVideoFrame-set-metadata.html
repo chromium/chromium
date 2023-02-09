@@ -122,4 +122,17 @@ promise_test(async t => {
   }
 }, "setMetadata() allows changes when AllowRTCEncodedVideoFrameSetMetadataAllFields is enabled");
 
+promise_test(async t => {
+  const senderReader = await setupLoopbackWithCodecAndGetReader(t, 'VP8');
+  const result = await senderReader.read();
+  const originalFrame = result.value;
+
+  const metadata = originalFrame.getMetadata();
+  const cloneFrame = originalFrame.clone();
+
+  metadata.frameId = undefined;
+
+  cloneFrame.setMetadata(metadata);
+}, "setMetadata() allows metadata with no generic dependency descriptor - ie no frameId");
+
 </script>

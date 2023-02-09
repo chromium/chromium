@@ -123,6 +123,9 @@ webrtc::VideoFrameType VideoFrameTypeFromRTCEncodedVideoFrameType(
 bool IsAllowedCodecSpecificsVP8Change(
     const RTCCodecSpecificsVP8* original_vp8_specifics,
     const RTCCodecSpecificsVP8* vp8_specifics) {
+  if ((original_vp8_specifics == nullptr) != (vp8_specifics == nullptr)) {
+    return false;
+  }
   return vp8_specifics->beginningOfPartition() ==
              original_vp8_specifics->beginningOfPartition() &&
          vp8_specifics->keyIdx() == original_vp8_specifics->keyIdx() &&
@@ -153,14 +156,16 @@ void SetCodecSpecificsVP8(webrtc::VideoFrameMetadata& webrtc_metadata,
     return;
   }
   RTCCodecSpecificsVP8* original_vp8_specifics =
-      original_metadata->codecSpecifics();
+      original_metadata->hasCodecSpecifics()
+          ? original_metadata->codecSpecifics()
+          : nullptr;
   if (!IsAllowedCodecSpecificsVP8Change(original_vp8_specifics,
                                         vp8_specifics) &&
       !base::FeatureList::IsEnabled(
           kAllowRTCEncodedVideoFrameSetMetadataAllFields)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
-        "Invalid modification of RTCEncodedVideoFrameMetadata.");
+        "Invalid modification of RTCCodecSpecificsVP8.");
     return;
   }
   webrtc::RTPVideoHeaderVP8 webrtc_vp8_specifics;
@@ -181,7 +186,10 @@ bool IsAllowedSetMetadataChange(
     const RTCEncodedVideoFrameMetadata* metadata) {
   return metadata->contributingSources() ==
              original_metadata->contributingSources() &&
-         metadata->frameId() == original_metadata->frameId() &&
+         (metadata->hasFrameId() == original_metadata->hasFrameId() &&
+          (metadata->hasFrameId()
+               ? metadata->frameId() == original_metadata->frameId()
+               : true)) &&
          metadata->height() == original_metadata->height() &&
          metadata->isLastFrameInPicture() ==
              original_metadata->isLastFrameInPicture() &&
@@ -263,7 +271,8 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
     if (!codec.empty()) {
       metadata->setCodec(codec);
     } else {
-      LOG(ERROR) << "Unrecognized RTCVideoCodecType.";
+      LOG(ERROR) << "Unrecognized RTCVideoCodecType "
+                 << webrtc_metadata->GetCodec();
     }
     switch (webrtc_metadata->GetCodec()) {
       case webrtc::VideoCodecType::kVideoCodecVP8: {
@@ -285,7 +294,8 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
       }
       default:
         // TODO(https://crbug.com/webrtc/14709): Support more codecs.
-        LOG(ERROR) << "Unsupported RTCCodecSpecifics.";
+        LOG(ERROR) << "Unsupported RTCCodecSpecifics "
+                   << webrtc_metadata->GetCodec();
         break;
     }
 
@@ -303,9 +313,9 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
 
 void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
                                        ExceptionState& exception_state) {
-  if (!metadata->hasFrameId() || !metadata->hasDependencies() ||
-      !metadata->hasWidth() || !metadata->hasHeight() ||
-      !metadata->hasSpatialIndex() || !metadata->hasTemporalIndex() ||
+  if (!metadata->hasDependencies() || !metadata->hasWidth() ||
+      !metadata->hasHeight() || !metadata->hasSpatialIndex() ||
+      !metadata->hasTemporalIndex() ||
       !metadata->hasDecodeTargetIndications() ||
       !metadata->hasIsLastFrameInPicture() || !metadata->hasSimulcastIdx() ||
       !metadata->hasCodec() || !metadata->hasCodecSpecifics() ||
@@ -341,8 +351,9 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
   // Initialize the new metadata from original_metadata to account for fields
   // not part of RTCEncodedVideoFrameMetadata.
   webrtc::VideoFrameMetadata webrtc_metadata = *original_webrtc_metadata;
-  // TODO(https://crbug.com/webrtc/14709): Also set RTP related metadata.
-  webrtc_metadata.SetFrameId(metadata->frameId());
+  if (metadata->hasFrameId()) {
+    webrtc_metadata.SetFrameId(metadata->frameId());
+  }
   webrtc_metadata.SetFrameDependencies(metadata->dependencies());
   webrtc_metadata.SetWidth(metadata->width());
   webrtc_metadata.SetHeight(metadata->height());
