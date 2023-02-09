@@ -16,10 +16,6 @@ void LogWscAvResponse(const device_signals::WscAvProductsResponse& response);
 
 // Logs UMA metrics related to the number of items and errors contained in
 // `response`.
-void LogWmiAvResponse(const device_signals::WmiAvProductsResponse& response);
-
-// Logs UMA metrics related to the number of items and errors contained in
-// `response`.
 void LogWmiHotfixResponse(const device_signals::WmiHotfixesResponse& response);
 
 }  // namespace system_signals

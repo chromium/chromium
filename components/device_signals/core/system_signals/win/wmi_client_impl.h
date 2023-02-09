@@ -25,7 +25,6 @@ class WmiClientImpl : public WmiClient {
   ~WmiClientImpl() override;
 
   // WmiClient:
-  WmiAvProductsResponse GetAntiVirusProducts() override;
   WmiHotfixesResponse GetInstalledHotfixes() override;
 
  private:
@@ -37,27 +36,6 @@ class WmiClientImpl : public WmiClient {
 
   RunWmiQueryCallback run_query_callback_;
 };
-
-// Type shared in an internal namespace to allow for reuse in unit tests without
-// duplication.
-namespace internal {
-// This is an undocumented structure returned from querying the "productState"
-// uint32 from the AntiVirusProduct in WMI.
-// http://neophob.com/2010/03/wmi-query-windows-securitycenter2/ gives a good
-// summary and testing was also done with a variety of AV products to determine
-// these values as accurately as possible.
-#pragma pack(push)
-#pragma pack(1)
-struct PRODUCT_STATE {
-  uint8_t unknown_1 : 4;
-  uint8_t definition_state : 4;  // 1 = Out of date, 0 = Up to date.
-  uint8_t unknown_2 : 4;
-  uint8_t security_state : 4;  //  0 = Inactive, 1 = Active, 2 = Snoozed.
-  uint8_t security_provider;   // matches WSC_SECURITY_PROVIDER in wscapi.h.
-  uint8_t unknown_3;
-};
-#pragma pack(pop)
-}  // namespace internal
 
 }  // namespace device_signals
 

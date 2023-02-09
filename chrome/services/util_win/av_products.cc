@@ -7,7 +7,6 @@
 #include <iwscapi.h>
 #include <objbase.h>
 #include <stddef.h>
-#include <wbemidl.h>
 #include <windows.h>
 #include <wrl/client.h>
 #include <wscapi.h>
@@ -30,28 +29,10 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/com_init_util.h"
 #include "base/win/scoped_bstr.h"
-#include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
 #include "components/variations/hashing.h"
 
 namespace {
-
-// This is an undocumented structure returned from querying the "productState"
-// uint32 from the AntiVirusProduct in WMI.
-// http://neophob.com/2010/03/wmi-query-windows-securitycenter2/ gives a good
-// summary and testing was also done with a variety of AV products to determine
-// these values as accurately as possible.
-#pragma pack(push)
-#pragma pack(1)
-struct PRODUCT_STATE {
-  uint8_t unknown_1 : 4;
-  uint8_t definition_state : 4;  // 1 = Out of date, 0 = Up to date.
-  uint8_t unknown_2 : 4;
-  uint8_t security_state : 4;  //  0 = Inactive, 1 = Active, 2 = Snoozed.
-  uint8_t security_provider;   // matches WSC_SECURITY_PROVIDER in wscapi.h.
-  uint8_t unknown_3;
-};
-#pragma pack(pop)
 
 // Filter any part of a product string that looks like it might be a version
 // number. Returns true if the part should be removed from the product name.
@@ -202,142 +183,6 @@ internal::ResultCode FillAntiVirusProductsFromWSC(
       return internal::ResultCode::kFailedToGetRemediationPath;
     std::wstring path_str(remediation_path.Get(), remediation_path.Length());
     remediation_path.Release();
-
-    std::string product_version;
-    // Not a failure if the product version cannot be read from the file on
-    // disk.
-    if (GetProductVersion(&path_str, &product_version)) {
-      if (report_full_names)
-        av_product.set_product_version(product_version);
-      av_product.set_product_version_hash(
-          variations::HashName(product_version));
-    }
-
-    result_list.push_back(av_product);
-  }
-
-  *products = std::move(result_list);
-
-  return internal::ResultCode::kSuccess;
-}
-
-internal::ResultCode FillAntiVirusProductsFromWMI(
-    bool report_full_names,
-    std::vector<AvProduct>* products) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  std::vector<AvProduct> result_list;
-
-  Microsoft::WRL::ComPtr<IWbemLocator> wmi_locator;
-  HRESULT hr =
-      ::CoCreateInstance(CLSID_WbemLocator, nullptr, CLSCTX_INPROC_SERVER,
-                         IID_PPV_ARGS(&wmi_locator));
-  if (FAILED(hr))
-    return internal::ResultCode::kFailedToCreateInstance;
-
-  Microsoft::WRL::ComPtr<IWbemServices> wmi_services;
-  hr = wmi_locator->ConnectServer(
-      base::win::ScopedBstr(L"ROOT\\SecurityCenter2").Get(), nullptr, nullptr,
-      nullptr, 0, nullptr, nullptr, &wmi_services);
-  if (FAILED(hr))
-    return internal::ResultCode::kFailedToConnectToWMI;
-
-  hr = ::CoSetProxyBlanket(wmi_services.Get(), RPC_C_AUTHN_WINNT,
-                           RPC_C_AUTHZ_NONE, nullptr, RPC_C_AUTHN_LEVEL_CALL,
-                           RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, EOAC_NONE);
-  if (FAILED(hr))
-    return internal::ResultCode::kFailedToSetSecurityBlanket;
-
-  // This interface is available on Windows Vista and above, and is officially
-  // undocumented.
-  base::win::ScopedBstr query_language(L"WQL");
-  base::win::ScopedBstr query(L"SELECT * FROM AntiVirusProduct");
-  Microsoft::WRL::ComPtr<IEnumWbemClassObject> enumerator;
-
-  hr = wmi_services->ExecQuery(
-      query_language.Get(), query.Get(),
-      WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, nullptr,
-      &enumerator);
-  if (FAILED(hr))
-    return internal::ResultCode::kFailedToExecWMIQuery;
-
-  // Iterate over the results of the WMI query. Each result will be an
-  // AntiVirusProduct instance.
-  while (true) {
-    Microsoft::WRL::ComPtr<IWbemClassObject> class_object;
-    ULONG items_returned = 0;
-    hr = enumerator->Next(WBEM_INFINITE, 1, &class_object, &items_returned);
-    if (FAILED(hr))
-      return internal::ResultCode::kFailedToIterateResults;
-
-    if (hr == WBEM_S_FALSE || items_returned == 0)
-      break;
-
-    AvProduct av_product;
-    av_product.set_product_state(
-        metrics::SystemProfileProto::AntiVirusState::
-            SystemProfileProto_AntiVirusState_STATE_ON);
-
-    // See definition of PRODUCT_STATE structure above for how this is being
-    // used.
-    base::win::ScopedVariant product_state;
-    hr = class_object->Get(L"productState", 0, product_state.Receive(), 0, 0);
-
-    if (FAILED(hr) || product_state.type() != VT_I4)
-      return internal::ResultCode::kFailedToGetProductState;
-
-    LONG state_val = V_I4(product_state.ptr());
-    PRODUCT_STATE product_state_struct;
-    std::copy(reinterpret_cast<const char*>(&state_val),
-              reinterpret_cast<const char*>(&state_val) + sizeof state_val,
-              reinterpret_cast<char*>(&product_state_struct));
-    // Map the values from product_state_struct to the proto values.
-    switch (product_state_struct.security_state) {
-      case 0:
-        av_product.set_product_state(
-            metrics::SystemProfileProto::AntiVirusState::
-                SystemProfileProto_AntiVirusState_STATE_OFF);
-        break;
-      case 1:
-        av_product.set_product_state(
-            metrics::SystemProfileProto::AntiVirusState::
-                SystemProfileProto_AntiVirusState_STATE_ON);
-        break;
-      case 2:
-        av_product.set_product_state(
-            metrics::SystemProfileProto::AntiVirusState::
-                SystemProfileProto_AntiVirusState_STATE_SNOOZED);
-        break;
-      default:
-        // unknown state.
-        return internal::ResultCode::kProductStateInvalid;
-    }
-
-    base::win::ScopedVariant display_name;
-    hr = class_object->Get(L"displayName", 0, display_name.Receive(), 0, 0);
-
-    if (FAILED(hr) || display_name.type() != VT_BSTR)
-      return internal::ResultCode::kFailedToGetProductName;
-
-    // Owned by ScopedVariant.
-    BSTR temp_bstr = V_BSTR(display_name.ptr());
-    std::string name = internal::TrimVersionOfAvProductName(base::SysWideToUTF8(
-        std::wstring(temp_bstr, ::SysStringLen(temp_bstr))));
-
-    if (report_full_names)
-      av_product.set_product_name(name);
-    av_product.set_product_name_hash(variations::HashName(name));
-
-    base::win::ScopedVariant exe_path;
-    hr = class_object->Get(L"pathToSignedProductExe", 0, exe_path.Receive(), 0,
-                           0);
-
-    if (FAILED(hr) || exe_path.type() != VT_BSTR)
-      return internal::ResultCode::kFailedToGetRemediationPath;
-
-    temp_bstr = V_BSTR(exe_path.ptr());
-    std::wstring path_str(temp_bstr, ::SysStringLen(temp_bstr));
 
     std::string product_version;
     // Not a failure if the product version cannot be read from the file on
@@ -517,13 +362,7 @@ std::vector<AvProduct> GetAntiVirusProducts(bool report_full_names) {
   if (os_info->version_type() == base::win::SUITE_SERVER) {
     result = internal::ResultCode::kWSCNotAvailable;
   } else {
-    // The WSC interface is preferred here as it's fully documented, but only
-    // available on Windows 8 and above, so instead use the undocumented WMI
-    // interface on Windows 7 and below.
-    if (os_info->version() >= base::win::Version::WIN8)
-      result = FillAntiVirusProductsFromWSC(report_full_names, &av_products);
-    else
-      result = FillAntiVirusProductsFromWMI(report_full_names, &av_products);
+    result = FillAntiVirusProductsFromWSC(report_full_names, &av_products);
   }
 
   MaybeAddUnregisteredAntiVirusProducts(report_full_names, &av_products);
