@@ -96,6 +96,7 @@ constexpr CGFloat kPreferredCornerRadius = 20;
   alertScreen.secondaryActionString = secondaryActionString;
   alertScreen.tertiaryActionString = tertiaryActionString;
   alertScreen.image = image;
+  alertScreen.actionHandler = self.actionHandler;
   self.alertScreen = alertScreen;
 }
 

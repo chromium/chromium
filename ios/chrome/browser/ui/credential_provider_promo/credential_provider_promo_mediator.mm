@@ -9,7 +9,11 @@
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
-#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_constants.h"
+#import "ios/chrome/browser/promos_manager/constants.h"
+#import "ios/chrome/browser/promos_manager/features.h"
+#import "ios/chrome/browser/promos_manager/promos_manager.h"
+#import "ios/chrome/browser/ui/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_consumer.h"
 #import "ios/chrome/grit/ios_google_chrome_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
@@ -26,22 +30,25 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 
 @interface CredentialProviderPromoMediator ()
 
-// The main consumer for this mediator.
-@property(nonatomic, weak) id<CredentialProviderPromoConsumer> consumer;
-
 // The PrefService used by this mediator.
 @property(nonatomic, assign) PrefService* prefService;
+
+// Indicates whether the 'first step' or 'learn more' version of the promo is
+// being presented.
+@property(nonatomic, assign) CredentialProviderPromoContext promoContext;
+
+// The PromosManager is used to register the promo.
+@property(nonatomic, assign) PromosManager* promosManager;
 
 @end
 
 @implementation CredentialProviderPromoMediator
 
-- (instancetype)initWithConsumer:(id<CredentialProviderPromoConsumer>)consumer
-                     prefService:(PrefService*)prefService {
-  self = [super init];
-  if (self) {
-    _consumer = consumer;
+- (instancetype)initWithPromosManager:(PromosManager*)promosManager
+                          prefService:(PrefService*)prefService {
+  if (self = [super init]) {
     _prefService = prefService;
+    _promosManager = promosManager;
   }
   return self;
 }
@@ -53,37 +60,56 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
              self.prefService);
 }
 
-- (void)configureConsumerWithTrigger:(CredentialProviderPromoTrigger)trigger {
+- (void)configureConsumerWithTrigger:(CredentialProviderPromoTrigger)trigger
+                             context:(CredentialProviderPromoContext)context {
   CredentialProviderPromoSource source;
-  CredentialProviderPromoContext context =
-      CredentialProviderPromoContext::kFirstStep;
+  self.promoContext = context;
   switch (trigger) {
     case CredentialProviderPromoTrigger::PasswordCopied:
       source = CredentialProviderPromoSource::kPasswordCopied;
-      [self setAnimationWithContext:context];
+      [self setAnimation];
       break;
     case CredentialProviderPromoTrigger::PasswordSaved:
       source = CredentialProviderPromoSource::kPasswordSaved;
+      if (self.promoContext == CredentialProviderPromoContext::kLearnMore) {
+        [self setAnimation];
+      }
       break;
     case CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword:
       source = CredentialProviderPromoSource::kAutofillUsed;
+      if (self.promoContext == CredentialProviderPromoContext::kLearnMore) {
+        [self setAnimation];
+      }
       break;
     case CredentialProviderPromoTrigger::RemindMeLater:
+      // TODO(crbug.com/1392116): show the same promo that was shown when
+      // 'remind me later' was selected
       source = CredentialProviderPromoSource::kRemindLaterSelected;
+      [self setAnimation];
       break;
   }
 
-  [self setTextAndImageWithContext:context source:source];
+  [self setTextAndImageWithSource:source];
+}
+
+- (void)registerPromoWithPromosManager {
+  if (!self.promosManager || !IsFullscreenPromosManagerEnabled()) {
+    return;
+  }
+  // TODO(crbug.com/1392116): register the promo with a 24 hour delay.
+  self.promosManager->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::CredentialProviderExtension);
 }
 
 #pragma mark - Private
 
 // Sets the animation to the consumer that corresponds to the value of
-// `context`. Depending on the value of `context`, either the 'first step' or
-// 'learn more' animation path is set.
-- (void)setAnimationWithContext:(CredentialProviderPromoContext)context {
+// promoContext. Depending on the value of promoContext, either the 'first step'
+// or 'learn more' animation path is set.
+- (void)setAnimation {
+  DCHECK(self.consumer);
   NSString* animationName;
-  if (context == CredentialProviderPromoContext::kFirstStep) {
+  if (self.promoContext == CredentialProviderPromoContext::kFirstStep) {
     animationName = kFirstStepAnimation;
   } else {
     animationName = kLearnMoreAnimation;
@@ -94,9 +120,9 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 }
 
 // Sets the text and image to the consumer. The text set depends on the value of
-// `context`. When `source` is kPasswordCopied, no image is set.
-- (void)setTextAndImageWithContext:(CredentialProviderPromoContext)context
-                            source:(CredentialProviderPromoSource)source {
+// promoContext. When `source` is kPasswordCopied, no image is set.
+- (void)setTextAndImageWithSource:(CredentialProviderPromoSource)source {
+  DCHECK(self.consumer);
   NSString* titleString;
   NSString* subtitleString;
   NSString* primaryActionString;
@@ -106,7 +132,7 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
   NSString* tertiaryActionString =
       l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_REMIND_ME_LATER);
 
-  if (context == CredentialProviderPromoContext::kFirstStep) {
+  if (self.promoContext == CredentialProviderPromoContext::kFirstStep) {
     titleString =
         l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_TITLE);
     subtitleString = l10n_util::GetNSString(
@@ -115,7 +141,8 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
         l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_HOW);
     image = ios::provider::GetBrandedImage(
         ios::provider::BrandedImage::kPasswordSuggestionKey);
-    if (source == CredentialProviderPromoSource::kPasswordCopied) {
+    if (source == CredentialProviderPromoSource::kPasswordCopied ||
+        source == CredentialProviderPromoSource::kRemindLaterSelected) {
       image = nil;
     }
   } else {

@@ -8,11 +8,15 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_consumer.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 // Container view controller for the Credential Provider Extension promo. Can be
 // configured to display the half-sheet or full-screen promo.
 @interface CredentialProviderPromoViewController
     : UIViewController <CredentialProviderPromoConsumer>
+
+// The action handler for interactions in this view controller.
+@property(nonatomic, weak) id<ConfirmationAlertActionHandler> actionHandler;
 
 @end
 

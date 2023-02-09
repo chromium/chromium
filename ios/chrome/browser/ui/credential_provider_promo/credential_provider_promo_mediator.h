@@ -7,17 +7,24 @@
 
 #import <Foundation/Foundation.h>
 
-#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ui/commands/credential_provider_promo_commands.h"
-#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_consumer.h"
+#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_constants.h"
+
+@protocol CredentialProviderPromoConsumer;
+
+class PrefService;
+class PromosManager;
 
 // Manages the state and interactions of the CredentialProviderPromoConsumer.
 @interface CredentialProviderPromoMediator : NSObject
 
-// Designated initializer. Initializes the mediator with the consumer and
-// PrefService.
-- (instancetype)initWithConsumer:(id<CredentialProviderPromoConsumer>)consumer
-                     prefService:(PrefService*)prefService
+// The main consumer for this mediator.
+@property(nonatomic, weak) id<CredentialProviderPromoConsumer> consumer;
+
+// Designated initializer. Initializes the mediator with the
+// PromosManager, presenter, and PrefService.
+- (instancetype)initWithPromosManager:(PromosManager*)promosManager
+                          prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -29,7 +36,11 @@
 - (BOOL)canShowCredentialProviderPromo;
 
 // Configures the consumer.
-- (void)configureConsumerWithTrigger:(CredentialProviderPromoTrigger)trigger;
+- (void)configureConsumerWithTrigger:(CredentialProviderPromoTrigger)trigger
+                             context:(CredentialProviderPromoContext)context;
+
+// Registers the promo for single display.
+- (void)registerPromoWithPromosManager;
 
 @end
 
