@@ -1129,7 +1129,7 @@ bool IsTabHTMLSpanElement(const Node* node) {
   // See crbug.com/590369 for details.
   node->GetDocument().UpdateStyleAndLayoutTree();
   const ComputedStyle* style = node->GetComputedStyle();
-  return style && style->WhiteSpace() == EWhiteSpace::kPre;
+  return style && !style->IsCollapsibleWhiteSpace('\t');
 }
 
 bool IsTabHTMLSpanElementTextNode(const Node* node) {
