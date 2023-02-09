@@ -261,6 +261,11 @@ if (is_android || is_chromeos) {
     # support mapping these names.
     enable_arsc_obfuscation = true
 
+    # Controls whether |strip_unused_resources| is respected. Useful when trying
+    # to analyze APKs using tools that do not support missing resources from
+    # resources.arsc.
+    enable_unused_resource_stripping = is_official_build
+
     # The target to use as the system WebView implementation.
     if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
       system_webview_apk_target = "//android_webview:system_webview_64_apk"

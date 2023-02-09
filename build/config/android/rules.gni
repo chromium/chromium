@@ -2848,8 +2848,9 @@ if (enable_java_templates && is_android) {
       _strip_resource_names =
           defined(invoker.strip_resource_names) &&
           invoker.strip_resource_names && enable_arsc_obfuscation
-      _strip_unused_resources = defined(invoker.strip_unused_resources) &&
-                                invoker.strip_unused_resources
+      _strip_unused_resources =
+          defined(invoker.strip_unused_resources) &&
+          invoker.strip_unused_resources && enable_unused_resource_stripping
       _optimize_resources = _strip_resource_names || _short_resource_paths ||
                             _strip_unused_resources
     }
