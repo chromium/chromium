@@ -102,26 +102,29 @@ const ComputedStyle* StyleHighlightData::CustomHighlight(
   return nullptr;
 }
 
-void StyleHighlightData::SetSelection(scoped_refptr<ComputedStyle>&& style) {
+void StyleHighlightData::SetSelection(
+    scoped_refptr<const ComputedStyle>&& style) {
   selection_ = std::move(style);
 }
 
-void StyleHighlightData::SetTargetText(scoped_refptr<ComputedStyle>&& style) {
+void StyleHighlightData::SetTargetText(
+    scoped_refptr<const ComputedStyle>&& style) {
   target_text_ = std::move(style);
 }
 
 void StyleHighlightData::SetSpellingError(
-    scoped_refptr<ComputedStyle>&& style) {
+    scoped_refptr<const ComputedStyle>&& style) {
   spelling_error_ = std::move(style);
 }
 
-void StyleHighlightData::SetGrammarError(scoped_refptr<ComputedStyle>&& style) {
+void StyleHighlightData::SetGrammarError(
+    scoped_refptr<const ComputedStyle>&& style) {
   grammar_error_ = std::move(style);
 }
 
 void StyleHighlightData::SetCustomHighlight(
     const AtomicString& highlight_name,
-    scoped_refptr<ComputedStyle>&& style) {
+    scoped_refptr<const ComputedStyle>&& style) {
   DCHECK(highlight_name);
   custom_highlights_.Set(highlight_name, std::move(style));
 }

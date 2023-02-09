@@ -103,7 +103,7 @@ bool StyleResolverState::IsInheritedForUnset(
   return property.IsInherited() || UsesHighlightPseudoInheritance();
 }
 
-scoped_refptr<ComputedStyle> StyleResolverState::TakeStyle() {
+scoped_refptr<const ComputedStyle> StyleResolverState::TakeStyle() {
   if (had_no_matched_properties_ &&
       pseudo_request_type_ == StyleRequest::kForRenderer) {
     return nullptr;

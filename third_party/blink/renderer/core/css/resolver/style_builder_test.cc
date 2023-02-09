@@ -127,8 +127,8 @@ TEST_F(StyleBuilderTest, GridTemplateAreasApplyOrder) {
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(&parent_style));
 
-  scoped_refptr<ComputedStyle> style1;
-  scoped_refptr<ComputedStyle> style2;
+  scoped_refptr<const ComputedStyle> style1;
+  scoped_refptr<const ComputedStyle> style2;
 
   // grid-template-areas applied first.
   state.SetStyle(parent_style);

@@ -62,7 +62,7 @@ class CORE_EXPORT FirstLetterPseudoElement final : public PseudoElement {
  private:
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
 
-  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
+  scoped_refptr<const ComputedStyle> CustomStyleForLayoutObject(
       const StyleRecalcContext&) override;
 
   void AttachFirstLetterTextLayoutObjects(LayoutText* first_letter_text);

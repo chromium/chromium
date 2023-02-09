@@ -346,7 +346,7 @@ LayoutObject* FirstLetterPseudoElement::CreateLayoutObject(
   return PseudoElement::CreateLayoutObject(style, legacy);
 }
 
-scoped_refptr<ComputedStyle>
+scoped_refptr<const ComputedStyle>
 FirstLetterPseudoElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   LayoutObject* first_letter_text =

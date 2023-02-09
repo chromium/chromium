@@ -2263,7 +2263,8 @@ void ComputedStyle::GetBorderEdgeInfo(BorderEdge edges[],
                  BorderLeftStyle(), sides_to_include.left);
 }
 
-void ComputedStyle::CopyChildDependentFlagsFrom(const ComputedStyle& other) {
+void ComputedStyle::CopyChildDependentFlagsFrom(
+    const ComputedStyle& other) const {
   if (other.ChildHasExplicitInheritance()) {
     SetChildHasExplicitInheritance();
   }

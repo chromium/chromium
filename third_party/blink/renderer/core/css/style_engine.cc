@@ -3698,7 +3698,8 @@ void StyleEngine::UpdateViewportStyle() {
     return;
   }
 
-  scoped_refptr<ComputedStyle> viewport_style = resolver_->StyleForViewport();
+  scoped_refptr<const ComputedStyle> viewport_style =
+      resolver_->StyleForViewport();
   if (ComputedStyle::ComputeDifference(
           viewport_style.get(), GetDocument().GetLayoutView()->Style()) !=
       ComputedStyle::Difference::kEqual) {

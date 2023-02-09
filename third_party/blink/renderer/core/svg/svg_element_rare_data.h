@@ -115,7 +115,7 @@ class SVGElementRareData final : public GarbageCollected<SVGElementRareData> {
   bool web_animated_attributes_dirty_ : 1;
   HashSet<QualifiedName> web_animated_attributes_;
   Member<MutableCSSPropertyValueSet> animated_smil_style_properties_;
-  scoped_refptr<ComputedStyle> override_computed_style_;
+  scoped_refptr<const ComputedStyle> override_computed_style_;
   // Used by <animateMotion>
   AffineTransform animate_motion_transform_;
 };

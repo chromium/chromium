@@ -36,7 +36,7 @@ class CSSPropertyTest : public PageTestBase {
     return &set->PropertyAt(0).Value();
   }
 
-  scoped_refptr<ComputedStyle> ComputedStyleWithValue(
+  scoped_refptr<const ComputedStyle> ComputedStyleWithValue(
       const CSSProperty& property,
       const CSSValue& value) {
     StyleResolverState state(GetDocument(), *GetDocument().body());

@@ -461,7 +461,7 @@ TEST_F(BackgroundColorPaintDefinitionTest,
   auto* model1 = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
 
   Element* element = GetElementById("target");
-  scoped_refptr<ComputedStyle> style =
+  scoped_refptr<const ComputedStyle> style =
       GetDocument().GetStyleResolver().ResolveStyle(element,
                                                     StyleRecalcContext());
   EXPECT_FALSE(style->HasCurrentBackgroundColorAnimation());
@@ -534,7 +534,7 @@ TEST_F(BackgroundColorPaintDefinitionTest, TriggerRepaintChangedKeyframe) {
   auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
 
   Element* element = GetElementById("target");
-  scoped_refptr<ComputedStyle> style =
+  scoped_refptr<const ComputedStyle> style =
       GetDocument().GetStyleResolver().ResolveStyle(element,
                                                     StyleRecalcContext());
   EXPECT_FALSE(style->HasCurrentBackgroundColorAnimation());

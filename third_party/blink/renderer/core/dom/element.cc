@@ -3064,7 +3064,7 @@ void Element::ReattachLayoutTreeChildren(base::PassKey<StyleEngine>) {
   ClearNeedsReattachLayoutTree();
 }
 
-scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
+scoped_refptr<const ComputedStyle> Element::StyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   DCHECK(GetDocument().InStyleRecalc());
 
@@ -3082,7 +3082,7 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
     element_animations->CssAnimations().ClearPendingUpdate();
   }
 
-  scoped_refptr<ComputedStyle> style =
+  scoped_refptr<const ComputedStyle> style =
       HasCustomStyleCallbacks()
           ? CustomStyleForLayoutObject(style_recalc_context)
           : OriginalStyleForLayoutObject(style_recalc_context);
@@ -3124,7 +3124,7 @@ void Element::AdjustStyle(base::PassKey<StyleAdjuster>,
   AdjustStyle(builder);
 }
 
-scoped_refptr<ComputedStyle> Element::OriginalStyleForLayoutObject(
+scoped_refptr<const ComputedStyle> Element::OriginalStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   return GetDocument().GetStyleResolver().ResolveStyle(this,
                                                        style_recalc_context);
@@ -3402,7 +3402,7 @@ StyleRecalcChange Element::RecalcStyle(
   return sibling_change;
 }
 
-scoped_refptr<ComputedStyle> Element::PropagateInheritedProperties() {
+scoped_refptr<const ComputedStyle> Element::PropagateInheritedProperties() {
   if (IsPseudoElement()) {
     return nullptr;
   }
@@ -3578,7 +3578,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
     new_style_recalc_context.parent_forces_recalc = true;
   }
 
-  scoped_refptr<ComputedStyle> new_style;
+  scoped_refptr<const ComputedStyle> new_style;
   scoped_refptr<const ComputedStyle> old_style = GetComputedStyle();
 
   StyleRecalcChange child_change = change.ForChildren(*this);
@@ -6399,7 +6399,7 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
     if (!element_style) {
       StyleRecalcContext local_style_recalc_context = style_recalc_context;
       local_style_recalc_context.is_ensuring_style = true;
-      scoped_refptr<ComputedStyle> new_style = nullptr;
+      scoped_refptr<const ComputedStyle> new_style = nullptr;
       // TODO(crbug.com/953707): Avoid setting inline style during
       // HTMLImageElement::CustomStyleForLayoutObject.
       if (HasCustomStyleCallbacks() && !IsA<HTMLImageElement>(*this)) {
@@ -6460,7 +6460,7 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
     child_recalc_context.container = this;
   }
 
-  scoped_refptr<ComputedStyle> result =
+  scoped_refptr<const ComputedStyle> result =
       GetDocument().GetStyleResolver().ResolveStyle(this, child_recalc_context,
                                                     style_request);
   DCHECK(result);
@@ -6677,7 +6677,7 @@ void Element::UpdateFirstLetterPseudoElement(
     // RemainingTextLayoutObject should have been cleared from DetachLayoutTree.
     DCHECK(!To<FirstLetterPseudoElement>(element)->RemainingTextLayoutObject());
     DCHECK(text_node_changed);
-    scoped_refptr<ComputedStyle> pseudo_style =
+    scoped_refptr<const ComputedStyle> pseudo_style =
         element->StyleForLayoutObject(style_recalc_context);
     if (PseudoElementLayoutObjectIsNeeded(pseudo_style.get(), this)) {
       element->SetComputedStyle(std::move(pseudo_style));
@@ -6762,7 +6762,7 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
                                            view_transition_name);
   pseudo_element->InsertedInto(*this);
 
-  scoped_refptr<ComputedStyle> pseudo_style =
+  scoped_refptr<const ComputedStyle> pseudo_style =
       pseudo_element->StyleForLayoutObject(style_recalc_context);
   if (!PseudoElementLayoutObjectIsNeeded(pseudo_style.get(), this)) {
     GetElementRareData()->SetPseudoElement(pseudo_id, nullptr,
@@ -6909,7 +6909,7 @@ const ComputedStyle* Element::CachedStyleForPseudoElement(
     return cached;
   }
 
-  scoped_refptr<ComputedStyle> result = UncachedStyleForPseudoElement(
+  scoped_refptr<const ComputedStyle> result = UncachedStyleForPseudoElement(
       StyleRequest(pseudo_id, style, pseudo_argument));
   if (result) {
     return style->AddCachedPseudoElementStyle(std::move(result), pseudo_id,
@@ -6918,7 +6918,7 @@ const ComputedStyle* Element::CachedStyleForPseudoElement(
   return nullptr;
 }
 
-scoped_refptr<ComputedStyle> Element::UncachedStyleForPseudoElement(
+scoped_refptr<const ComputedStyle> Element::UncachedStyleForPseudoElement(
     const StyleRequest& request) {
   // Highlight pseudos are resolved into StyleHighlightData during originating
   // style recalc, where we have the actual StyleRecalcContext.
@@ -6928,7 +6928,7 @@ scoped_refptr<ComputedStyle> Element::UncachedStyleForPseudoElement(
       StyleRecalcContext::FromInclusiveAncestors(*this), request);
 }
 
-scoped_refptr<ComputedStyle> Element::StyleForPseudoElement(
+scoped_refptr<const ComputedStyle> Element::StyleForPseudoElement(
     const StyleRecalcContext& style_recalc_context,
     const StyleRequest& request) {
   const bool is_before_or_after = request.pseudo_id == kPseudoIdBefore ||
@@ -6951,7 +6951,7 @@ scoped_refptr<ComputedStyle> Element::StyleForPseudoElement(
     }
     StyleRequest before_after_request = request;
     before_after_request.layout_parent_override = layout_parent_style;
-    scoped_refptr<ComputedStyle> result =
+    scoped_refptr<const ComputedStyle> result =
         GetDocument().GetStyleResolver().ResolveStyle(
             this, style_recalc_context, before_after_request);
     if (result) {
@@ -6970,7 +6970,7 @@ scoped_refptr<ComputedStyle> Element::StyleForPseudoElement(
         IsPseudoElement() ? To<PseudoElement>(this)->GetPseudoId()
                           : kPseudoIdNone;
     Element* target = IsPseudoElement() ? parentElement() : this;
-    scoped_refptr<ComputedStyle> result =
+    scoped_refptr<const ComputedStyle> result =
         GetDocument().GetStyleResolver().ResolveStyle(
             target, style_recalc_context, first_line_inherited_request);
     if (result) {
@@ -7706,7 +7706,7 @@ void Element::DidRecalcStyle(const StyleRecalcChange) {
   DCHECK(HasCustomStyleCallbacks());
 }
 
-scoped_refptr<ComputedStyle> Element::CustomStyleForLayoutObject(
+scoped_refptr<const ComputedStyle> Element::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   DCHECK(HasCustomStyleCallbacks());
   return OriginalStyleForLayoutObject(style_recalc_context);

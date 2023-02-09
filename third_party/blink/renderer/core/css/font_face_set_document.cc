@@ -200,7 +200,7 @@ bool FontFaceSetDocument::ResolveFontStyle(const String& font_string,
   default_font_description.SetComputedSize(FontFaceSet::kDefaultFontSize);
 
   builder.SetFontDescription(default_font_description);
-  scoped_refptr<ComputedStyle> style = builder.TakeStyle();
+  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
 
   font = GetDocument()->GetStyleEngine().ComputeFont(
       *GetDocument()->documentElement(), *style, *parsed_style);

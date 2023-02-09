@@ -360,7 +360,7 @@ TEST_F(ComputedStyleTest,
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   ComputedStyleBuilder builder(*style);
   builder.SetOverflowX(EOverflow::kHidden);
-  scoped_refptr<ComputedStyle> other = builder.TakeStyle();
+  scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
 
   StyleDifference diff;
   style->UpdatePropertySpecificDifferences(*other, diff);
@@ -1513,18 +1513,18 @@ TEST_F(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
   EXPECT_FALSE(state.StyleBuilder().Transitions());
 }
 
-#define TEST_STYLE_VALUE_NO_DIFF(field_name)                        \
-  {                                                                 \
-    ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();   \
-    ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();   \
-    builder1.Set##field_name(                                       \
-        ComputedStyleInitialValues::Initial##field_name());         \
-    builder2.Set##field_name(                                       \
-        ComputedStyleInitialValues::Initial##field_name());         \
-    scoped_refptr<ComputedStyle> style1 = builder1.TakeStyle();     \
-    scoped_refptr<ComputedStyle> style2 = builder2.TakeStyle();     \
-    auto diff = style1->VisualInvalidationDiff(*document, *style2); \
-    EXPECT_FALSE(diff.HasDifference());                             \
+#define TEST_STYLE_VALUE_NO_DIFF(field_name)                          \
+  {                                                                   \
+    ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();     \
+    ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();     \
+    builder1.Set##field_name(                                         \
+        ComputedStyleInitialValues::Initial##field_name());           \
+    builder2.Set##field_name(                                         \
+        ComputedStyleInitialValues::Initial##field_name());           \
+    scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle(); \
+    scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle(); \
+    auto diff = style1->VisualInvalidationDiff(*document, *style2);   \
+    EXPECT_FALSE(diff.HasDifference());                               \
   }
 
 // Ensures ref-counted values are compared by their values, not by pointers.
@@ -1782,7 +1782,7 @@ TEST_F(ComputedStyleTest, BasicBuilder) {
   builder.SetScrollPaddingLeft(left);
   builder.SetScrollPaddingRight(right);
 
-  scoped_refptr<ComputedStyle> style = builder.TakeStyle();
+  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
 
   EXPECT_NE(left, original->ScrollPaddingLeft());
   EXPECT_NE(right, original->ScrollPaddingRight());
@@ -1801,7 +1801,7 @@ TEST_F(ComputedStyleTest, MoveBuilder) {
 
   EXPECT_FALSE(builder1.TakeStyle());
 
-  scoped_refptr<ComputedStyle> style2 = builder2.TakeStyle();
+  scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
   ASSERT_TRUE(style2);
   EXPECT_EQ(one, style2->ScrollPaddingLeft());
 }
@@ -1817,7 +1817,7 @@ TEST_F(ComputedStyleTest, MoveAssignBuilder) {
 
   EXPECT_FALSE(builder1.TakeStyle());
 
-  scoped_refptr<ComputedStyle> style2 = builder2.TakeStyle();
+  scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
   ASSERT_TRUE(style2);
   EXPECT_EQ(one, style2->ScrollPaddingLeft());
 }

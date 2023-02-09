@@ -200,7 +200,7 @@ PseudoElement::PseudoElement(Element* parent,
   }
 }
 
-scoped_refptr<ComputedStyle> PseudoElement::CustomStyleForLayoutObject(
+scoped_refptr<const ComputedStyle> PseudoElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   Element* parent = ParentOrShadowHostElement();
   return parent->StyleForPseudoElement(
@@ -208,7 +208,7 @@ scoped_refptr<ComputedStyle> PseudoElement::CustomStyleForLayoutObject(
                                          view_transition_name_));
 }
 
-scoped_refptr<ComputedStyle> PseudoElement::LayoutStyleForDisplayContents(
+scoped_refptr<const ComputedStyle> PseudoElement::LayoutStyleForDisplayContents(
     const ComputedStyle& style) {
   // For display:contents we should not generate a box, but we generate a non-
   // observable inline box for pseudo elements to be able to locate the

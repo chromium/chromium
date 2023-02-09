@@ -911,7 +911,7 @@ void StyleResolver::MatchAllRules(StyleResolverState& state,
                              : element.GetTreeScope());
 }
 
-scoped_refptr<ComputedStyle> StyleResolver::StyleForViewport() {
+scoped_refptr<const ComputedStyle> StyleResolver::StyleForViewport() {
   ComputedStyleBuilder builder = InitialStyleBuilderForElement();
 
   builder.SetZIndex(0);
@@ -974,7 +974,7 @@ static void IncrementResolvedStyleCounters(const StyleRequest& style_request,
 // any other properties or elements. (The exceptions can be found in
 // CanReuseBaseComputedStyle().) This is known as the “base computed style
 // optimization”.
-scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
+scoped_refptr<const ComputedStyle> StyleResolver::ResolveStyle(
     Element* element,
     const StyleRecalcContext& style_recalc_context,
     const StyleRequest& style_request) {
@@ -2223,7 +2223,7 @@ FilterOperations StyleResolver::ComputeFilterOperations(
   return style->Filter();
 }
 
-scoped_refptr<ComputedStyle> StyleResolver::StyleForInterpolations(
+scoped_refptr<const ComputedStyle> StyleResolver::StyleForInterpolations(
     Element& element,
     ActiveInterpolationsMap& interpolations) {
   StyleRecalcContext style_recalc_context =
@@ -2249,7 +2249,7 @@ void StyleResolver::ApplyInterpolations(
   cascade.Apply();
 }
 
-scoped_refptr<ComputedStyle>
+scoped_refptr<const ComputedStyle>
 StyleResolver::BeforeChangeStyleForTransitionUpdate(
     Element& element,
     const ComputedStyle& base_style,

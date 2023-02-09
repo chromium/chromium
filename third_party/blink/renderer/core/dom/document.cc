@@ -2800,7 +2800,8 @@ void Document::Initialize() {
   DCHECK(!ax_object_cache_ || this != &AXObjectCacheOwner());
 
   UpdateForcedColors();
-  scoped_refptr<ComputedStyle> style = GetStyleResolver().StyleForViewport();
+  scoped_refptr<const ComputedStyle> style =
+      GetStyleResolver().StyleForViewport();
   layout_view_ = LayoutObjectFactory::CreateView(*this, *style);
   SetLayoutObject(layout_view_);
 

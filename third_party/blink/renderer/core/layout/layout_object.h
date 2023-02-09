@@ -1943,7 +1943,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // from the originating element's style (because we can cache only one
   // version), while the uncached pseudo style can inherit from any style.
   const ComputedStyle* GetCachedPseudoElementStyle(PseudoId) const;
-  scoped_refptr<ComputedStyle> GetUncachedPseudoElementStyle(
+  scoped_refptr<const ComputedStyle> GetUncachedPseudoElementStyle(
       const StyleRequest&) const;
 
   // Returns the ::selection style, which may be stored in StyleCachedData (old

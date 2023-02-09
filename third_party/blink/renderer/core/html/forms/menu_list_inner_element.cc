@@ -17,7 +17,8 @@ MenuListInnerElement::MenuListInnerElement(Document& document)
   SetHasCustomStyleCallbacks();
 }
 
-scoped_refptr<ComputedStyle> MenuListInnerElement::CustomStyleForLayoutObject(
+scoped_refptr<const ComputedStyle>
+MenuListInnerElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   const ComputedStyle& parent_style = OwnerShadowHost()->ComputedStyleRef();
   ComputedStyleBuilder style_builder =

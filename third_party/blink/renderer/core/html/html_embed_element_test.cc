@@ -49,7 +49,7 @@ TEST_F(HTMLEmbedElementTest, FallbackState) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  scoped_refptr<ComputedStyle> initial_style =
+  scoped_refptr<const ComputedStyle> initial_style =
       GetDocument().GetStyleResolver().InitialStyleForElement();
 
   // We should get |true| as a result and don't trigger a DCHECK.
