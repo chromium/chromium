@@ -307,7 +307,10 @@ void GPUDevice::OnDeviceLostError(WGPUDeviceLostReason reason,
                                   const char* message) {
   if (!GetExecutionContext())
     return;
-  AddConsoleWarning(message);
+
+  if (reason != WGPUDeviceLostReason_Destroyed) {
+    AddConsoleWarning(message);
+  }
 
   // Invalidate the adapter given that a device was lost.
   adapter_->invalidate();
