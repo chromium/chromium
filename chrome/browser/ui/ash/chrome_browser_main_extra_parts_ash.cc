@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/game_mode/game_mode_controller.h"
+#include "chrome/browser/ash/geolocation/system_geolocation_source.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
 #include "chrome/browser/ash/night_light/night_light_client.h"
 #include "chrome/browser/ash/policy/display/display_resolution_handler.h"
@@ -79,6 +80,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
@@ -320,6 +322,10 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
 
   // Initialize TabScrubberChromeOS after the Ash Shell has been initialized.
   TabScrubberChromeOS::GetInstance();
+
+  // Create geolocation manager
+  g_browser_process->platform_part()->SetGeolocationManager(
+      ash::SystemGeolocationSource::CreateGeolocationManagerOnAsh());
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
@@ -367,6 +373,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   }
 
   // Initialized in PreProfileInit (which may not get called in some tests).
+  g_browser_process->platform_part()->SetGeolocationManager(nullptr);
   system_tray_client_.reset();
   session_controller_client_.reset();
   ime_controller_client_.reset();

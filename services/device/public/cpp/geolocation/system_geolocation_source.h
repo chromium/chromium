@@ -20,8 +20,11 @@ namespace device {
   (i.e. platforms where we support system-based geolocation permissions)
 #endif
 
-// This interface encapsulates the OS-specific logic that provides the
-// geolocation data on the supported OSs.
+// This interface is used by the Geolocation Manager. It encapsulates the
+// OS-specific logic that provides the geolocation data on the supported OSs. It
+// is supposed to be injected into the Geolocation Manager so that the
+// GeolocationManager implementation can be OS-agnostic, delegating all
+// OS-specific details to the SystemGeolocationSource.
 class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSource {
  public:
   using PermissionUpdateCallback =
@@ -34,9 +37,10 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSource {
 
   virtual ~SystemGeolocationSource() = default;
 
-  // This method accepts a callback. The callback is to be synchronously called
+  // This method accepts a callback. The callback is to be called
   // once to provide the current value and then again always when the permission
-  // changes in the OS.
+  // changes in the OS. The first call may be synchronous or asynchronous.
+  // The subsequent calls are asynchronous.
   virtual void RegisterPermissionUpdateCallback(
       PermissionUpdateCallback callback) = 0;
 

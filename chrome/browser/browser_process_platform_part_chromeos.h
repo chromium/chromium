@@ -24,6 +24,9 @@ class BrowserProcessPlatformPartChromeOS
 
   ~BrowserProcessPlatformPartChromeOS() override;
 
+  device::GeolocationManager* geolocation_manager();
+  void SetGeolocationManager(std::unique_ptr<device::GeolocationManager>);
+
  protected:
   // Returns true if we can restore URLs for `profile`. Restoring URLs should
   // only be allowed for regular signed-in users. This is currently virtual as
@@ -67,6 +70,7 @@ class BrowserProcessPlatformPartChromeOS
     base::CallbackListSubscription on_session_restored_callback_subscription_;
   };
 
+  std::unique_ptr<device::GeolocationManager> geolocation_manager_;
   BrowserRestoreObserver browser_restore_observer_;
 };
 

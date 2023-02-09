@@ -32,6 +32,8 @@ const std::string& GetProfilePrefNameForPref(mojom::PrefPath path) {
       profile_prefpath_to_name({
           {mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
            ash::prefs::kAccessibilitySpokenFeedbackEnabled},
+          {mojom::PrefPath::kGeolocationAllowed,
+           ash::prefs::kUserGeolocationAllowed},
           {mojom::PrefPath::kQuickAnswersEnabled,
            quick_answers::prefs::kQuickAnswersEnabled},
           {mojom::PrefPath::kQuickAnswersConsentStatus,
@@ -239,6 +241,7 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
       return State{local_state_, &local_state_registrar_, false,
                    metrics::prefs::kMetricsReportingEnabled};
     case mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled:
+    case mojom::PrefPath::kGeolocationAllowed:
     case mojom::PrefPath::kQuickAnswersEnabled:
     case mojom::PrefPath::kQuickAnswersConsentStatus:
     case mojom::PrefPath::kQuickAnswersDefinitionEnabled:

@@ -93,6 +93,8 @@ enum PrefPath {
   [MinVersion=7] kDnsOverHttpsTemplatesWithIdentifiers = 32,
   // M109: prefs::kDnsOverHttpsSalt (local state)
   [MinVersion=7] kDnsOverHttpsSalt = 33,
+  // M110: ash::prefs::kUserGeolocationAllowed
+  [MinVersion=8] kGeolocationAllowed = 34,
 };
 
 // Information about who or what is controlling a particular pref. This is used

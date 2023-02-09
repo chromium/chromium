@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_manager_lacros.h"
 #include "chrome/browser/chromeos/tablet_mode/tablet_mode_page_behavior.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/lacros/field_trial_observer.h"
 #include "chrome/browser/lacros/force_installed_tracker_lacros.h"
 #include "chrome/browser/lacros/fullscreen_controller_client_lacros.h"
+#include "chrome/browser/lacros/geolocation/system_geolocation_source_lacros.h"
 #include "chrome/browser/lacros/lacros_extension_apps_controller.h"
 #include "chrome/browser/lacros/lacros_extension_apps_publisher.h"
 #include "chrome/browser/lacros/lacros_file_system_provider.h"
@@ -49,6 +51,7 @@
 #include "chromeos/startup/browser_params_proxy.h"
 #include "components/arc/common/intent_helper/arc_icon_cache_delegate.h"
 #include "extensions/common/features/feature_session_type.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "ui/views/controls/views_text_services_context_menu_chromeos.h"
 
 namespace {
@@ -240,6 +243,10 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
                 crosapi::ViewsTextServicesContextMenuLacros>(menu_model,
                                                              textfield);
           }));
+
+  DCHECK(!g_browser_process->platform_part()->geolocation_manager());
+  g_browser_process->platform_part()->SetGeolocationManager(
+      SystemGeolocationSourceLacros::CreateGeolocationManagerOnLacros());
 }
 
 void ChromeBrowserMainExtraPartsLacros::PostMainMessageLoopRun() {
@@ -249,4 +256,7 @@ void ChromeBrowserMainExtraPartsLacros::PostMainMessageLoopRun() {
   // Must be destroyed before |kiosk_session_service_->app_session_->profile_|
   // is destroyed.
   kiosk_session_service_.reset();
+
+  // Initialized in PreProfileInit.
+  g_browser_process->platform_part()->SetGeolocationManager(nullptr);
 }
