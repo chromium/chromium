@@ -1245,13 +1245,13 @@ export class Panel extends PanelInterface {
   }
 
   /** @private */
-  onPanLeft_() {
-    chrome.extension.getBackgroundPage()['ChromeVox'].braille.panLeft();
+  async onPanLeft_() {
+    await BackgroundBridge.Braille.panLeft();
   }
 
   /** @private */
-  onPanRight_() {
-    chrome.extension.getBackgroundPage()['ChromeVox'].braille.panRight();
+  async onPanRight_() {
+    await BackgroundBridge.Braille.panRight();
   }
 
   /** @private */

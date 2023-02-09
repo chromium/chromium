@@ -30,6 +30,20 @@ BackgroundBridge.Braille = {
         BridgeConstants.Braille.Action.BACK_TRANSLATE, cells);
   },
 
+  /** @return {!Promise} */
+  async panLeft() {
+    return BridgeHelper.sendMessage(
+        BridgeConstants.Braille.TARGET,
+        BridgeConstants.Braille.Action.PAN_LEFT);
+  },
+
+  /** @return {!Promise} */
+  async panRight() {
+    return BridgeHelper.sendMessage(
+        BridgeConstants.Braille.TARGET,
+        BridgeConstants.Braille.Action.PAN_RIGHT);
+  },
+
   /**
    * @param {!string} text The text to write in Braille.
    * @returns {!Promise<boolean>}

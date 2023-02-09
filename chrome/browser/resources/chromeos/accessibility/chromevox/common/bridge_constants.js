@@ -39,6 +39,8 @@ BridgeConstants.Braille = {
   TARGET: 'Braille',
   Action: {
     BACK_TRANSLATE: 'backTranslate',
+    PAN_LEFT: 'panLeft',
+    PAN_RIGHT: 'panRight',
     WRITE: 'write',
   },
 };

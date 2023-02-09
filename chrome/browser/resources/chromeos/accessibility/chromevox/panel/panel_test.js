@@ -37,6 +37,28 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
 
     globalThis.Gesture = chrome.accessibilityPrivate.Gesture;
     globalThis.RoleType = chrome.automation.RoleType;
+
+    const panel = this.getPanel().instance;
+    const original = panel.exec_.bind(panel);
+    panel.exec_ = (command) => {
+      original(command);
+      this.onPanelCommandCalled();
+    };
+  }
+
+  onPanelCommandCalled() {
+    if (this.resolvePanelCommandPromise) {
+      this.resolvePanelCommandPromise();
+    }
+  }
+
+  prepareForPanelCommand() {
+    this.panelCommandPromise =
+        new Promise(resolve => this.resolvePanelCommandPromise = resolve);
+  }
+
+  waitForPanelCommand() {
+    return this.panelCommandPromise;
   }
 
   fireMockEvent(key) {
@@ -331,4 +353,33 @@ AX_TEST_F('ChromeVoxPanelTest', 'PerformDoDefaultAction', async function() {
   this.assertActiveMenuItem('panel_menu_actions', 'Perform default action');
   this.fireMockEvent('Enter')();
   await this.waitForEvent(button, chrome.automation.EventType.CLICKED);
+});
+
+AX_TEST_F('ChromeVoxPanelTest', 'PanVirtualBrailleDisplay', async function() {
+  await this.runWithLoadedTree(this.linksDoc);
+
+  this.prepareForPanelCommand();
+  CommandHandlerInterface.instance.onCommand('toggleBrailleCaptions');
+  this.waitForPanelCommand();
+
+  // Locate the buttons to pan left and pan right in the display.
+  const panelDocument = this.getPanelWindow().document;
+  const panLeftButton = panelDocument.getElementById('braille-pan-left');
+  assertNotNullNorUndefined(panLeftButton);
+  const panRightButton = panelDocument.getElementById('braille-pan-right');
+  assertNotNullNorUndefined(panRightButton);
+
+  // Mock out ChromeVox.braille to confirm that the commands are routed from the
+  // panel context to the background context.
+  let panLeft;
+  let panRight;
+  const panLeftDone = new Promise(resolve => panLeft = resolve);
+  const panRightDone = new Promise(resolve => panRight = resolve);
+  ChromeVox.braille = {panLeft, panRight};
+
+  panLeftButton.click();
+  await panLeftDone;
+
+  panRightButton.click();
+  await panRightDone;
 });
