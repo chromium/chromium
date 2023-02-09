@@ -302,7 +302,13 @@ HEADLESS_PROTOCOL_TEST(Geolocation, "emulation/geolocation-crash.js")
 
 HEADLESS_PROTOCOL_TEST(DragStarted, "input/dragIntercepted.js")
 
-HEADLESS_PROTOCOL_TEST(InputClipboardOps, "input/input-clipboard-ops.js")
+// https://crbug.com/1414190
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_InputClipboardOps DISABLED_InputClipboardOps
+#else
+#define MAYBE_InputClipboardOps InputClipboardOps
+#endif
+HEADLESS_PROTOCOL_TEST(MAYBE_InputClipboardOps, "input/input-clipboard-ops.js")
 
 HEADLESS_PROTOCOL_TEST(ClipboardApiCopyPaste,
                        "input/clipboard-api-copy-paste.js")
