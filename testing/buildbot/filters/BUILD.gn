@@ -177,9 +177,8 @@ source_set("crashpad_tests_filters") {
 source_set("device_unittests_filters") {
   testonly = true
 
-  data = [
-    "//testing/buildbot/filters/android.emulator_12.device_unittests.filter",
-  ]
+  data =
+      [ "//testing/buildbot/filters/android.emulator.device_unittests.filter" ]
 }
 
 source_set("sync_integration_tests_filters") {
@@ -265,7 +264,7 @@ source_set("gl_tests_filters") {
     "//testing/buildbot/filters/android.arm64_proguard_rel.gl_tests.filter",
     "//testing/buildbot/filters/android.emulator.gl_tests.filter",
     "//testing/buildbot/filters/android.emulator_11.gl_tests.filter",
-    "//testing/buildbot/filters/android.emulator_12.gl_tests.filter",
+    "//testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter",
     "//testing/buildbot/filters/android.emulator_n.gl_tests.filter",
     "//testing/buildbot/filters/android.pie_arm64_rel.gl_tests.filter",
     "//testing/buildbot/filters/android.pie_tot.gl_tests.filter",
