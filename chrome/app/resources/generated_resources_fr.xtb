@@ -220,6 +220,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}one{Vous serez automatiquement déconnecté dans # seconde.
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}other{Vous serez automatiquement déconnecté dans # secondes.
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}}</translation>
+<translation id="119330003005586565">Pages lues</translation>
 <translation id="1193927020065025187">Ce site essaie peut-être de vous inciter à autoriser les notifications intrusives</translation>
 <translation id="1195210374336998651">Accéder aux paramètres de l'appli</translation>
 <translation id="1195447618553298278">Erreur inconnue</translation>
@@ -282,6 +283,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1244303850296295656">Erreur au niveau des extensions.</translation>
 <translation id="1245628370644070008">Récupération des données locales</translation>
 <translation id="1246863218384630739">Impossible d'installer <ph name="VM_NAME" />, car l'URL de l'image a renvoyé une erreur <ph name="HTTP_ERROR" />. Veuillez contacter votre administrateur.</translation>
+<translation id="1247372569136754018">Micro (interne)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Notifications non autorisées pour 1 site}one{Notifications non autorisées pour {NUM_SITES} site}other{Notifications non autorisées pour {NUM_SITES} sites}}</translation>
 <translation id="1251366534849411931">Accolade ouvrante attendue : <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Cette action effacera <ph name="TOTAL_USAGE" /> des données stockées par les sites et les applications installées</translation>
@@ -410,6 +412,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Aucun mot de passe compromis}=1{1 mot de passe compromis}one{{NUM_COMPROMISED} mot de passe compromis}other{{NUM_COMPROMISED} mots de passe compromis}}</translation>
 <translation id="1380028686461971526">Se connecter automatiquement au réseau</translation>
 <translation id="1381567580865186407">Les paroles en <ph name="LANGUAGE" /> sont envoyées à Google pour traitement</translation>
+<translation id="1383381142702995121">Gérer cette extension</translation>
 <translation id="1383597849754832576">Impossible de télécharger les fichiers vocaux. Réessayez plus tard.</translation>
 <translation id="1383861834909034572">Ouverture à la fin du téléchargement</translation>
 <translation id="1383876407941801731">Rechercher</translation>
@@ -538,6 +541,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1482626744466814421">Ajouter cet onglet aux favoris…</translation>
 <translation id="1482772681918035149">de modifier les mots de passe</translation>
 <translation id="1483493594462132177">Envoyer</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Le site utilise actuellement le Bluetooth</translation>
 <translation id="1485015260175968628">Elle peut désormais :</translation>
 <translation id="1485141095922496924">Version <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1094,6 +1098,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1965624977906726414">Ne dispose d'aucune autorisation spéciale.</translation>
 <translation id="1966649499058910679">Mettre en évidence les mots à mesure qu'ils sont énoncés</translation>
 <translation id="1967970931040389207">Activer le point d'accès</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">Journaux texte WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Vous naviguerez plus rapidement, car le contenu sera chargé de manière proactive en fonction de la page Web que vous êtes en train de consulter</translation>
 <translation id="197288927597451399">Enregistrer</translation>
@@ -1816,7 +1821,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="25899519884572181">Quitter le mode Lecteur</translation>
 <translation id="2593499352046705383">Avant de commencer, vérifiez que vous avez une copie de sauvegarde de vos données. L'installation de <ph name="DEVICE_OS" /> va écraser les données de votre disque dur. En savoir plus : g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Rechercher sur Google ou saisir une URL</translation>
-<translation id="25957578727513093">Pour accéder à ce site plus rapidement, ajoutez un raccourci au Gestionnaire de mots de passe de Google</translation>
 <translation id="2599048253926156421">Nom d'utilisateur copié dans le presse-papiers</translation>
 <translation id="2602501489742255173">Balayez l'écran vers le haut pour démarrer</translation>
 <translation id="2603115962224169880">Nettoyer l'ordinateur</translation>
@@ -2394,6 +2398,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3103451787721578293">Veuillez indiquer la raison pour laquelle vous importez ces données :</translation>
 <translation id="3105339775057145050">Échec de la dernière mise à jour</translation>
 <translation id="3105796011181310544">Revenir à Google ?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Le site utilise le Bluetooth</translation>
 <translation id="3108931485517391283">Impossible de recevoir le transfert</translation>
 <translation id="3108957152224931571">Couleur de surlignage</translation>
@@ -3035,6 +3040,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="371300529209814631">Précédent/Suivant</translation>
 <translation id="3713047097299026954">Cette clé de sécurité ne contient aucune donnée de connexion</translation>
 <translation id="3713091615825314967">Les mises à jour automatiques sont activées.</translation>
+<translation id="371370241367527062">Micro avant</translation>
 <translation id="3714195043138862580">La gestion de cet appareil de démonstration a été annulée.</translation>
 <translation id="3719826155360621982">Page d'accueil</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3130,6 +3136,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3797900183766075808">&amp;Rechercher "<ph name="SEARCH_TERMS" />" avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Version</translation>
 <translation id="3798632811625902122">L'appareil Bluetooth <ph name="DEVICE" /> demande l'autorisation de s'associer.</translation>
+<translation id="3798670284305777884">Haut-parleur (interne)</translation>
 <translation id="3799128412641261490">Paramètres Switch Access</translation>
 <translation id="3800030395703848668">Afficher les options de liste</translation>
 <translation id="3800806661949714323">Tout afficher (recommandé)</translation>
@@ -4227,6 +4234,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4807098396393229769">Titulaire de la carte</translation>
 <translation id="4808667324955055115">Pop-up bloqués :</translation>
 <translation id="4809079943450490359">Instructions de l'administrateur de votre appareil :</translation>
+<translation id="4809447465126035330">Supprimer</translation>
 <translation id="480990236307250886">Ouvrir la page d'accueil</translation>
 <translation id="4809927044794281115">Thème clair</translation>
 <translation id="4811212958317149293">Recherche automatique du clavier Switch Access</translation>
@@ -5029,6 +5037,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="5558129378926964177">Zoom &amp;avant</translation>
 <translation id="5558247502209241936">Activer l'ouverture de l'appli dans une fenêtre</translation>
+<translation id="5559311991468302423">Supprimer l'adresse</translation>
 <translation id="55601339223879446">Adaptez les dimensions de votre Bureau à l'écran</translation>
 <translation id="5561162485081632007">Il détecte les événements dangereux et vous en informe lorsqu'ils surviennent</translation>
 <translation id="5562781907504170924">Cet onglet est associé à un appareil Bluetooth.</translation>
@@ -5130,6 +5139,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5643620609347735571">Effacer et continuer</translation>
 <translation id="5646376287012673985">Localisation</translation>
 <translation id="5646558797914161501">Homme d'affaires</translation>
+<translation id="5648021990716966815">Connecteur micro</translation>
 <translation id="5648166631817621825">7 derniers jours</translation>
 <translation id="5651308944918885595">Visibilité de l'appareil pour le Partage à proximité</translation>
 <translation id="5653154844073528838">Vous avez <ph name="PRINTER_COUNT" /> imprimantes enregistrées.</translation>
@@ -5519,6 +5529,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6007240208646052708">La recherche vocale n'est pas disponible dans votre langue.</translation>
 <translation id="6010651352520077187">Lorsque cette option est activée, Google Traduction vous propose de traduire les sites dans la langue de votre choix. Il peut aussi traduire automatiquement des sites.</translation>
 <translation id="6011193465932186973">Empreinte digitale</translation>
+<translation id="6011308810877101166">Améliorer les suggestions de recherche</translation>
 <translation id="6011908034087870826">Envoi du lien à l'appareil <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">Afficher des sous-titres pour vos contenus audio et vidéo</translation>
 <translation id="6014293228235665243">Non lu</translation>
@@ -5836,6 +5847,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="630292539633944562">Suggestions d'informations personnelles</translation>
 <translation id="6305607932814307878">Règlement global :</translation>
 <translation id="6305909198255586420">Veuillez l'installer avec votre profil principal</translation>
+<translation id="630750887748244481">L'un de tes parents a désactivé l'option "Autorisations des sites, applications et extensions" pour Chrome. Tu ne peux pas ajouter cette extension.</translation>
 <translation id="6307990684951724544">Système occupé.</translation>
 <translation id="6308493641021088955">Connexion fournie par <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Enregistrer le lie&amp;n sous...</translation>
@@ -6238,6 +6250,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6678717876183468697">URL de requête</translation>
 <translation id="6680442031740878064">Espace disponible : <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Cadence</translation>
+<translation id="6683022854667115063">Casque audio</translation>
 <translation id="6683087162435654533">R&amp;estaurer tous les onglets</translation>
 <translation id="6684827949542560880">Téléchargement de la toute dernière mise à jour</translation>
 <translation id="668599234725812620">Ouvrir Google Play</translation>
@@ -6421,6 +6434,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6839916869147598086">Le processus de connexion a été modifié</translation>
 <translation id="6840155290835956714">Demander avant d'envoyer</translation>
 <translation id="6840184929775541289">N'est pas une autorité de certification</translation>
+<translation id="6840214587087739194">Adresse supprimée</translation>
 <translation id="6841143363521180029">Chiffré</translation>
 <translation id="6841186874966388268">Erreurs</translation>
 <translation id="6842136130964845393">Pour toujours avoir accès à vos mots de passe enregistrés, confirmez votre identité</translation>
@@ -6865,6 +6879,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7255002516883565667">Vous disposez actuellement d'une carte qui ne peut être utilisée qu'avec cet appareil</translation>
 <translation id="7255935316994522020">Appliquer</translation>
 <translation id="7256069762010468647">Le site utilise votre caméra</translation>
+<translation id="7256634071279256947">Micro arrière</translation>
 <translation id="7256710573727326513">Ouvrir dans un onglet</translation>
 <translation id="7257173066616499747">Réseaux Wi-Fi</translation>
 <translation id="725758059478686223">Service d'impression</translation>
@@ -7979,6 +7994,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8251509999076836464">Association à <ph name="DEVICE_NAME" />…</translation>
 <translation id="8251578425305135684">Miniature supprimée</translation>
 <translation id="825238165904109940">Toujours afficher les URL en entier</translation>
+<translation id="8252538334423261825">Impossible d'ajouter l'extension</translation>
 <translation id="8252569384384439529">Importation…</translation>
 <translation id="8253198102038551905">Cliquez sur "+" pour accéder aux propriétés réseau.</translation>
 <translation id="8255212965098517578">Photos, notifications et applis récentes</translation>
@@ -8264,6 +8280,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8525306231823319788">Plein écran</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Ajouter des langues</translation>
+<translation id="8528479410903501741">Enregistrer l'IBAN</translation>
 <translation id="8528962588711550376">Connexion en cours</translation>
 <translation id="8529925957403338845">Échec du partage de connexion</translation>
 <translation id="8531701051932785007">La navigation sécurisée avec protection renforcée est désactivée</translation>

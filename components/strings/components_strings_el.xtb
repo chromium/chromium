@@ -540,6 +540,7 @@
 <translation id="2241693394036365668">Το αρχείο κατέβηκε</translation>
 <translation id="2246264294482514010">10 x 12 ίντσες</translation>
 <translation id="2246480341630108201">Ο γονέας σου δεν έχει δώσει ακόμα την έγκρισή του</translation>
+<translation id="2247789808226901522">Η κάρτα έχει λήξει</translation>
 <translation id="2248949050832152960">Χρήση WebAuthn</translation>
 <translation id="2250931979407627383">Ραφή στο αριστερό άκρο</translation>
 <translation id="225207911366869382">Αυτή η πολιτική έχει καταργηθεί για τη συγκεκριμένη πολιτική.</translation>
@@ -1079,6 +1080,7 @@
 <translation id="3646643500201740985">Μέτρηση της απόδοσης μιας διαφήμισης</translation>
 <translation id="3647286794400715637">Κάθε καταχώριση συμβολοσειράς URL πρέπει να περιέχει μεταξύ 1 και 2 URL.</translation>
 <translation id="3650584904733503804">Επιτυχής επικύρωση</translation>
+<translation id="3650594806107685466">Για να διατηρήσετε ασφαλή την κάρτα σας, εισαγάγετε το CVC που εμφανίζεται στην <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3653033846669030038">Θεματικά πάρκα</translation>
 <translation id="3655241534245626312">Μετάβαση στις ρυθμίσεις άδειας</translation>
 <translation id="3655670868607891010">Αν αυτό το μήνυμα εμφανίζεται συχνά, μπορείτε να βρείτε βοήθεια εδώ <ph name="HELP_LINK" />.</translation>
@@ -2462,6 +2464,7 @@
 <translation id="7112327784801341716">Δεν βλέπετε τα τρέχοντα στοιχεία σας; Επικοινωνήστε με την τράπεζά σας για να γίνει ενημέρωση.</translation>
 <translation id="7118618213916969306">Αναζήτηση URL στο πρόχειρο, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Κλείστε τις άλλες καρτέλες ή τα προγράμματα</translation>
+<translation id="7124354851782353862">Εισαγωγή του CVC</translation>
 <translation id="7129355289156517987">Όταν κλείνετε όλες τις καρτέλες ανώνυμης περιήγησης του Chromium, οι δραστηριότητά σας σε αυτές τις καρτέλες διαγράφεται από αυτήν τη συσκευή:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Δραστηριότητα περιήγησης<ph name="END_LIST_ITEM" />
@@ -2788,6 +2791,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Κανένα}=1{1 εφαρμογή (<ph name="EXAMPLE_APP_1" />)}=2{2 εφαρμογές (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# εφαρμογές (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Αργότερα, ένας ιστότοπος που επισκέπτεστε μπορεί να ζητήσει από το Chrome τα θέματά σας, ώστε να εξατομικεύσει τις διαφημίσεις που βλέπετε. Το Chrome κοινοποιεί έως και 3 θέματα, προστατεύοντας παράλληλα το ιστορικό περιήγησης και την ταυτότητά σας.</translation>
+<translation id="7860345425589240791">Εισαγάγετε τη νέα ημερομηνία λήξης και το CVC που εμφανίζεται στην <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Θέλετε να αποχωρήσετε από τον ιστότοπο;</translation>
 <translation id="7865448901209910068">Βέλτιστη ταχύτητα</translation>
 <translation id="7871445724586827387">Αλλαγή του κωδικού πρόσβασης του Λογαριασμού σας Google</translation>

@@ -226,7 +226,6 @@
 <translation id="2248941474044011069">మీ పాస్‌వర్డ్‌లు Google Password Managerలో సేవ్ కావడానికి ముందు, మీ పరికరంలో ఎన్‌క్రిప్ట్ చేయబడ్డాయి</translation>
 <translation id="2249635629516220541">మీకు యాడ్‌లను చూపడం కోసం సైట్‌లు ఉపయోగించిన సమాచారాన్ని అనుకూలంగా మార్చవచ్చు</translation>
 <translation id="2259659629660284697">పాస్‌వర్డ్‌లను ఎగుమతి చేయండి…</translation>
-<translation id="2276231040576210443">ఏది సింక్ చేయాలనే దాన్ని, మీరు ఎప్పుడైనా <ph name="BEGIN_LINK1" />సెట్టింగ్‌లలో<ph name="END_LINK1" /> ఎంచుకోవచ్చు. Google మీ హిస్టరీ ఆధారంగా Search, ఇతర సర్వీస్‌లను వ్యక్తిగతీకరించవచ్చు.</translation>
 <translation id="2276696007612801991">మీ పాస్‌వర్డ్‌లను చెక్ చేయడానికి Google ఖాతాకు సైన్ ఇన్ చేయండి</translation>
 <translation id="2278052315791335171">ఈ పాస్‌వర్డ్‌ను తొలగించడం వలన <ph name="SITE" />లో మీ ఖాతా తొలగించబడదు</translation>
 <translation id="2286841657746966508">బిల్లింగ్ అడ్రస్‌</translation>
@@ -304,7 +303,6 @@
 <translation id="2669454659051515572">డౌన్‌లోడ్ చేసిన ఫైల్స్‌ను ఈ పరికరాన్ని ఉపయోగించే ఎవరైనా చూడగలరు</translation>
 <translation id="2702516483241149200">కొత్తది: ఈ టెక్స్ట్‌కు స్క్రోల్ చేసే లింక్‌ను షేర్ చేయండి</translation>
 <translation id="2707726405694321444">పేజీని రిఫ్రెష్ చేయండి</translation>
-<translation id="2709516037105925701">ఆటో-ఫిల్</translation>
 <translation id="271033894570825754">కొత్తది</translation>
 <translation id="2711073837061989559">ట్రయల్స్</translation>
 <translation id="2718352093833049315">Wi-Fiలో మాత్రమే</translation>
@@ -396,7 +394,6 @@
 <translation id="3114507951000454849">ఈరోజు వార్తలను చదవండి <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">దీనితో లింక్ చేయబడింది</translation>
 <translation id="3123734510202723619">అనౌన్స్‌మెంట్‌లు</translation>
-<translation id="3130863904455712965">హిస్టరీ, ఇంకా మరెన్నో</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome హోమ్ పేజీ</translation>
 <translation id="3157931365184549694">పునరుద్ధరించు</translation>
@@ -990,7 +987,6 @@
 <translation id="6397616442223433927">తిరిగి ఆన్‌లైన్‌లోకి వచ్చింది</translation>
 <translation id="6401458660421980302">ఈ ట్యాబ్‌ను మరొక పరికరానికి పంపడానికి, అక్కడ Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" />లో <ph name="ERROR_CODE" /></translation>
-<translation id="6403371459378431832">అన్ని పరికరాలలో మీ డేటాను సింక్ చేయండి</translation>
 <translation id="6404511346730675251">బుక్‌మార్క్‌ను ఎడిట్ చేయండి</translation>
 <translation id="6406506848690869874">సింక్</translation>
 <translation id="6407224748847589805">మీ కంప్యూటర్‌కు కనెక్ట్ చేయడం సాధ్యపడదు. మరొక వెరిఫికేషన్ ఆప్షన్‌ను ట్రై చేయండి.</translation>
@@ -1319,7 +1315,6 @@
 <translation id="8037801708772278989">ఇప్పుడే చెక్ చేసింది</translation>
 <translation id="804335162455518893">SD కార్డ్ కనుగొనబడలేదు</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> అజ్ఞాత ట్యాబ్}other{<ph name="TAB_COUNT_NORMAL" /> అజ్ఞాత ట్యాబ్‌లు}}</translation>
-<translation id="8048728378294435881">మీ అంశాలను బ్యాకప్ చేసి, వాటిని ఏ పరికరంలోనైనా ఉపయోగించండి</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB అందుబాటులో ఉంది</translation>
 <translation id="8058655154417507695">గడువు ముగింపు సంవత్సరం</translation>
 <translation id="8058746566562539958">కొత్త Chrome ట్యాబ్‌లో తెరువు</translation>

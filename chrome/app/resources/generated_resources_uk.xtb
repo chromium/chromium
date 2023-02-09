@@ -224,6 +224,7 @@
 Домен <ph name="DOMAIN" /> вимагає, щоб ви не виймали розумну картку.}many{Ви вийдете автоматично через # секунд.
 Домен <ph name="DOMAIN" /> вимагає, щоб ви не виймали розумну картку.}other{Ви вийдете автоматично через # секунди.
 Домен <ph name="DOMAIN" /> вимагає, щоб ви не виймали розумну картку.}}</translation>
+<translation id="119330003005586565">Прочитані сторінки</translation>
 <translation id="1193927020065025187">Цей сайт може оманливим шляхом змусити вас дозволити нав'язливі сповіщення</translation>
 <translation id="1195210374336998651">Перейдіть у налаштування додатка</translation>
 <translation id="1195447618553298278">Невідома помилка.</translation>
@@ -286,6 +287,7 @@
 <translation id="1244303850296295656">Помилка розширення</translation>
 <translation id="1245628370644070008">Відновлення локальних даних</translation>
 <translation id="1246863218384630739">Не вдалося встановити <ph name="VM_NAME" />: URL-адреса зображення повернула код помилки <ph name="HTTP_ERROR" />. Зв’яжіться з адміністратором.</translation>
+<translation id="1247372569136754018">Мікрофон (внутрішній)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Сповіщення заборонено для 1 сайту}one{Сповіщення заборонено для {NUM_SITES} сайту}few{Сповіщення заборонено для {NUM_SITES} сайтів}many{Сповіщення заборонено для {NUM_SITES} сайтів}other{Сповіщення заборонено для {NUM_SITES} сайту}}</translation>
 <translation id="1251366534849411931">Очікується ліва фігурна дужка: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Буде видалено <ph name="TOTAL_USAGE" /> даних, збережених сайтами та встановленими додатками</translation>
@@ -544,6 +546,7 @@
 <translation id="1482626744466814421">Додати цю вкладку до закладок…</translation>
 <translation id="1482772681918035149">змінити паролі</translation>
 <translation id="1483493594462132177">Надіслати</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Сайт використовує Bluetooth</translation>
 <translation id="1485015260175968628">Тепер може:</translation>
 <translation id="1485141095922496924">Версія <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1109,6 +1112,7 @@
 <translation id="1965624977906726414">Спеціальні дозволи не потрібні.</translation>
 <translation id="1966649499058910679">Виділяти кожне слово, яке озвучується</translation>
 <translation id="1967970931040389207">Увімкнути точку доступу</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">Текстові журнали WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Ви будете швидше переглядати веб-сторінки, оскільки контент попередньо завантажується на основі поточної відкритої веб-сторінки</translation>
 <translation id="197288927597451399">Зберегти</translation>
@@ -1834,7 +1838,6 @@
 <translation id="25899519884572181">Вийти з режиму читання</translation>
 <translation id="2593499352046705383">Перш ніж почати, переконайтеся, що ви створили резервну копію даних. Під час встановлення ОС <ph name="DEVICE_OS" /> буде перезаписано всі дані жорсткого диска. Докладніше: g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Пошукайте в Google або введіть URL-адресу</translation>
-<translation id="25957578727513093">Щоб швидше переходити на цю сторінку, додайте її ярлик у Google Менеджер паролів</translation>
 <translation id="2599048253926156421">Ім’я користувача скопійовано в буфер обміну</translation>
 <translation id="2602501489742255173">Гортайте вгору, щоб почати</translation>
 <translation id="2603115962224169880">Очистити комп’ютер</translation>
@@ -2412,6 +2415,7 @@
 <translation id="3103451787721578293">Укажіть причину завантаження цих даних:</translation>
 <translation id="3105339775057145050">Остання невдала спроба оновлення</translation>
 <translation id="3105796011181310544">Знову ввімкнути Google?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Сайт використовує Bluetooth</translation>
 <translation id="3108931485517391283">Не вдалось отримати файл</translation>
 <translation id="3108957152224931571">Колір виділення</translation>
@@ -3053,6 +3057,7 @@
 <translation id="371300529209814631">Уперед/назад</translation>
 <translation id="3713047097299026954">На цьому ключі безпеки немає даних для входу</translation>
 <translation id="3713091615825314967">Автоматичні оновлення ввімкнено.</translation>
+<translation id="371370241367527062">Мікрофон на передній панелі</translation>
 <translation id="3714195043138862580">Цей демо-пристрій деініціалізовано.</translation>
 <translation id="3719826155360621982">Головна сторінка</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3148,6 +3153,7 @@
 <translation id="3797900183766075808">&amp;Шукати "<ph name="SEARCH_TERMS" />" у <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="3798449238516105146">Версія</translation>
 <translation id="3798632811625902122">Пристрою з Bluetooth "<ph name="DEVICE" />" потрібен дозвіл на підключення.</translation>
+<translation id="3798670284305777884">Динамік (внутрішній)</translation>
 <translation id="3799128412641261490">Налаштування кнопкового доступу</translation>
 <translation id="3800030395703848668">Переглянути параметри сортування</translation>
 <translation id="3800806661949714323">Показати всі (рекомендовано)</translation>
@@ -5148,6 +5154,7 @@
 <translation id="5643620609347735571">Видалити та продовжити</translation>
 <translation id="5646376287012673985">Місцезнаходження</translation>
 <translation id="5646558797914161501">Бізнесмен</translation>
+<translation id="5648021990716966815">Гніздо для мікрофона</translation>
 <translation id="5648166631817621825">Останні 7 днів</translation>
 <translation id="5651308944918885595">Видимість для функції "Передавання поблизу"</translation>
 <translation id="5653154844073528838">Збережених принтерів: <ph name="PRINTER_COUNT" />.</translation>
@@ -5536,6 +5543,7 @@
 <translation id="6007240208646052708">Голосовий пошук недоступний вашою мовою.</translation>
 <translation id="6010651352520077187">Якщо цю функцію ввімкнено, Google Перекладач пропонуватиме перекласти сайт на потрібну мову. Переклад сайтів також може здійснюватись автоматично.</translation>
 <translation id="6011193465932186973">Відбиток пальця</translation>
+<translation id="6011308810877101166">Покращувати підказки в пошуку</translation>
 <translation id="6011908034087870826">Посилання надсилається на пристрій "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6013027779243312217">Отримуйте субтитри до аудіо та відео</translation>
 <translation id="6014293228235665243">Непрочитані</translation>
@@ -5853,6 +5861,7 @@
 <translation id="630292539633944562">Підказки з особистою інформацією</translation>
 <translation id="6305607932814307878">Глобальна політика:</translation>
 <translation id="6305909198255586420">Установіть додаток за допомогою основного профілю</translation>
+<translation id="630750887748244481">Хтось із твоїх батьків вимкнув опцію "Дозволи для сайтів, додатків і розширень" у Chrome. Ти не можеш додати це розширення.</translation>
 <translation id="6307990684951724544">Система зайнята</translation>
 <translation id="6308493641021088955">Вхід через розширення "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6308937455967653460">Зберегти посиланн&amp;я як...</translation>
@@ -6259,6 +6268,7 @@
 <translation id="6678717876183468697">URL-адреса пошукового запиту</translation>
 <translation id="6680442031740878064">Доступно: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Оцінити</translation>
+<translation id="6683022854667115063">Навушники</translation>
 <translation id="6683087162435654533">Відновити всі вкладки</translation>
 <translation id="6684827949542560880">Завантажуються останні оновлення</translation>
 <translation id="668599234725812620">Відкрити Google Play</translation>
@@ -6887,6 +6897,7 @@
 <translation id="7255002516883565667">Зараз у вас є одна картка, яку можна використовувати лише на цьому пристрої</translation>
 <translation id="7255935316994522020">Застосувати</translation>
 <translation id="7256069762010468647">Сайт використовує камеру</translation>
+<translation id="7256634071279256947">Мікрофон на задній панелі</translation>
 <translation id="7256710573727326513">Відкрити у вкладці</translation>
 <translation id="7257173066616499747">Мережі Wi-Fi</translation>
 <translation id="725758059478686223">Служба друку</translation>
@@ -8001,6 +8012,7 @@
 <translation id="8251509999076836464">Підключення до пристрою "<ph name="DEVICE_NAME" />"</translation>
 <translation id="8251578425305135684">Ескіз видалено.</translation>
 <translation id="825238165904109940">Завжди показувати повні URL-адреси</translation>
+<translation id="8252538334423261825">Неможливо додати розширення</translation>
 <translation id="8252569384384439529">Завантаження…</translation>
 <translation id="8253198102038551905">Натисніть "+", щоб відобразити властивості мережі</translation>
 <translation id="8255212965098517578">Нещодавні фотографії, сповіщення й додатки</translation>

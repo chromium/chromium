@@ -226,7 +226,6 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="2248941474044011069">Fjalëkalimet enkriptohen në pajisjen tënde para se të ruhen në "Menaxherin e fjalëkalimeve të Google"</translation>
 <translation id="2249635629516220541">Personalizo informacionet e përdorura nga sajtet për të të shfaqur reklama</translation>
 <translation id="2259659629660284697">Eksporto fjalëkalimet…</translation>
-<translation id="2276231040576210443">Mund të zgjedhësh gjithmonë se çfarë do të sinkronizosh te <ph name="BEGIN_LINK1" />cilësimet<ph name="END_LINK1" />. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="2276696007612801991">Identifikohu në "Llogarinë tënde të Google" për të kontrolluar fjalëkalimet e tua</translation>
 <translation id="2278052315791335171">Fshirja e këtij fjalëkalimi nuk do ta fshijë llogarinë tënde në <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adresa e faturimit</translation>
@@ -304,7 +303,6 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="2669454659051515572">Çdo person që e përdor këtë pajisje mund t'i shikojë skedarët e shkarkuar</translation>
 <translation id="2702516483241149200">E re: Ndaj një lidhje që të drejton te ky tekst</translation>
 <translation id="2707726405694321444">Rifresko faqen</translation>
-<translation id="2709516037105925701">Plotëso automatikisht</translation>
 <translation id="271033894570825754">E re</translation>
 <translation id="2711073837061989559">Provat</translation>
 <translation id="2718352093833049315">Vetëm me Wi-Fi</translation>
@@ -396,7 +394,6 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="3114507951000454849">Lexo lajmet e sotme <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">lidhur me</translation>
 <translation id="3123734510202723619">Njoftime</translation>
-<translation id="3130863904455712965">Historiku etj.</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Faqja kryesore e Chrome</translation>
 <translation id="3157931365184549694">Restauro</translation>
@@ -922,6 +919,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="6000203700195075278">Ndiqe përsëri</translation>
 <translation id="6002122790816966947">Pajisjet e tua</translation>
 <translation id="6005538289190791541">Fjalëkalimi i sugjeruar</translation>
+<translation id="6011308810877101166">Përmirëso sugjerimet për kërkimin</translation>
 <translation id="6039379616847168523">Kalo te skeda tjetër</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="604124094241169006">Automatike</translation>
@@ -989,7 +987,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6397616442223433927">Përsëri në linjë</translation>
 <translation id="6401458660421980302">Për ta dërguar këtë skedë te një pajisje tjetër, identifikohu në Chrome në të</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> në <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">Sinkronizo të dhënat e tua në të gjitha pajisjet</translation>
 <translation id="6404511346730675251">Redakto faqeshënuesin</translation>
 <translation id="6406506848690869874">Sinkronizo</translation>
 <translation id="6407224748847589805">Nuk mund të lidhet me kompjuterin tënd. Provo një opsion tjetër verifikimi.</translation>
@@ -1318,7 +1315,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8037801708772278989">Kontrolluar pikërisht tani</translation>
 <translation id="804335162455518893">Karta SD nuk u gjet</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> skedë e fshehtë}other{<ph name="TAB_COUNT_NORMAL" /> skeda të fshehta}}</translation>
-<translation id="8048728378294435881">Rezervo gjërat e tua dhe përdori në çdo pajisje</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB në dispozicion</translation>
 <translation id="8058655154417507695">Viti i skadimit</translation>
 <translation id="8058746566562539958">Hape në një skedë të re të Chrome</translation>
@@ -1452,6 +1448,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8746155870861185046">Shpërndaj theksimin</translation>
 <translation id="8748850008226585750">Përmbajtjet janë të fshehura</translation>
 <translation id="8756969031206844760">Të përditësohet fjalëkalimi?</translation>
+<translation id="8765470054473112089">Kur shkruan në shiritin e adresës ose në kutinë e kërkimit, Chrome i dërgon ato që shkruan te motori i parazgjedhur i kërkimit për të marrë sugjerime më të mira. Kjo është joaktive në modalitetin "e fshehtë".</translation>
 <translation id="8766529642647037772">Të krijohet një lidhje e theksuar si kjo?</translation>
 <translation id="8773160212632396039">Po përpunon kërkesën</translation>
 <translation id="8788265440806329501">Historiku i navigimit është mbyllur</translation>

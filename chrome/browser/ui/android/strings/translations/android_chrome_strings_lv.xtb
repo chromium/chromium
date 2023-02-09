@@ -226,7 +226,6 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="2248941474044011069">Jūsu paroles tiek šifrētas jūsu ierīcē, pirms tās tiek saglabātas Google paroļu pārvaldniekā.</translation>
 <translation id="2249635629516220541">Varat pielāgot informāciju, kas vietnēs tiek izmantota reklāmu rādīšanai</translation>
 <translation id="2259659629660284697">Paroļu eksportēšana…</translation>
-<translation id="2276231040576210443">Jūs jebkurā laikā <ph name="BEGIN_LINK1" />iestatījumos<ph name="END_LINK1" /> varat izvēlēties, ko sinhronizēt. Google var personalizēt pakalpojumu Meklēšana un citus pakalpojumus, ņemot vērā jūsu vēsturi.</translation>
 <translation id="2276696007612801991">Lai pārbaudītu paroles, pierakstieties Google kontā</translation>
 <translation id="2278052315791335171">Izdzēšot šo paroli, netiks dzēsts jūsu konts vietnē <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">Norēķinu adrese</translation>
@@ -304,7 +303,6 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="2669454659051515572">Lejupielādētie faili ir redzami visiem šīs ierīces lietotājiem.</translation>
 <translation id="2702516483241149200">Jaunums: varat kopīgot saiti uz šo tekstu</translation>
 <translation id="2707726405694321444">Atsvaidzināt lapu</translation>
-<translation id="2709516037105925701">Automātiskā aizpilde</translation>
 <translation id="271033894570825754">Jauns</translation>
 <translation id="2711073837061989559">Izmēģinājuma versijas</translation>
 <translation id="2718352093833049315">Tikai Wi-Fi</translation>
@@ -396,7 +394,6 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="3114507951000454849">Lasiet šodienas ziņas <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">saistīta ar šo karti:</translation>
 <translation id="3123734510202723619">Paziņojumi</translation>
-<translation id="3130863904455712965">Vēsture un cits saturs</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome sākumlapa</translation>
 <translation id="3157931365184549694">Atjaunot</translation>
@@ -922,6 +919,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="6000203700195075278">Atsākt sekošanu</translation>
 <translation id="6002122790816966947">Jūsu ierīces</translation>
 <translation id="6005538289190791541">Ieteiktā parole</translation>
+<translation id="6011308810877101166">Uzlabot meklēšanas ieteikumus</translation>
 <translation id="6039379616847168523">Pāriet uz nākamo cilni</translation>
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="604124094241169006">Automātiski</translation>
@@ -989,7 +987,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6397616442223433927">Esat tiešsaistē</translation>
 <translation id="6401458660421980302">Lai nosūtītu šo cilni uz citu ierīci, otrā ierīcē pierakstieties pārlūkā Chrome</translation>
 <translation id="6402652558933147609">Kļūda <ph name="ERROR_CODE" /> vietnē <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">Sinhronizējiet savus datus visās ierīcēs</translation>
 <translation id="6404511346730675251">Rediģēt grāmatzīmi</translation>
 <translation id="6406506848690869874">Sinhronizācija</translation>
 <translation id="6407224748847589805">Nevar izveidot savienojumu ar jūsu datoru. Izmēģiniet citu verifikācijas opciju.</translation>
@@ -1318,7 +1315,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8037801708772278989">Pārbaudīts: tikko</translation>
 <translation id="804335162455518893">SD karte nav atrasta</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognito cilne}zero{<ph name="TAB_COUNT_NORMAL" /> inkognito ciļņu}one{<ph name="TAB_COUNT_NORMAL" /> inkognito cilne}other{<ph name="TAB_COUNT_NORMAL" /> inkognito cilnes}}</translation>
-<translation id="8048728378294435881">Dublējiet savus failus un izmantojiet tos jebkurā ierīcē.</translation>
 <translation id="8051695050440594747">Ir pieejami <ph name="MEGABYTES" /> MB</translation>
 <translation id="8058655154417507695">Derīguma termiņa gads</translation>
 <translation id="8058746566562539958">Atvērt jaunā Chrome cilnē</translation>
@@ -1452,6 +1448,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8746155870861185046">Kopīgot atzīmēto tekstu</translation>
 <translation id="8748850008226585750">Saturs paslēpts</translation>
 <translation id="8756969031206844760">Vai atjaunināt paroli?</translation>
+<translation id="8765470054473112089">Kad rakstāt adreses joslā vai meklēšanas lodziņā, pārlūks Chrome nosūta ierakstīto tekstu jūsu noklusējuma meklētājprogrammai, lai iegūtu labākus ieteikumus. Inkognito režīmā šis iestatījums ir izslēgts.</translation>
 <translation id="8766529642647037772">Vai izveidot līdzīgu izceltu saiti?</translation>
 <translation id="8773160212632396039">Notiek pieprasījuma apstrāde</translation>
 <translation id="8788265440806329501">Navigācijas vēsture ir aizvērta</translation>

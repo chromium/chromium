@@ -280,6 +280,7 @@
 <translation id="1244303850296295656">एक्स्टेन्सन त्रुटि</translation>
 <translation id="1245628370644070008">लोकल डेटा रिकभर गर्ने सुविधा</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> इन्स्टल गर्न सकिएन: इमेजको URL खोल्दा <ph name="HTTP_ERROR" /> नामक त्रुटिको कोड देखियो। कृपया आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
+<translation id="1247372569136754018">माइक्रोफोन (आन्तरिक)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{एउटा साइटलाई सूचना पठाउने अनुमति दिइएको छैन}other{{NUM_SITES} वटा साइटलाई सूचना पठाउने अनुमति दिइएको छैन}}</translation>
 <translation id="1251366534849411931">बायाँ मझौला कोष्ठक हुनु पर्ने हो: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">यस कार्यले साइट तथा इन्स्टल गरिएका एपहरूले भण्डारण गरेको <ph name="TOTAL_USAGE" /> डेटा मेटाउने छ</translation>
@@ -538,6 +539,7 @@
 <translation id="1482626744466814421">यस ट्याबमा पुस्तक चिन्ह लगाउनुहोस्...</translation>
 <translation id="1482772681918035149">पासवर्डहरू बदल्नुहोस्</translation>
 <translation id="1483493594462132177">पठाउनुहोस्</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">साइटले ब्लुटुथ प्रयोग गर्दै छ</translation>
 <translation id="1485015260175968628">यसले अब गर्न सक्छ:</translation>
 <translation id="1485141095922496924">संस्करण <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -626,6 +628,7 @@
 <translation id="1567387640189251553">तपाईंले पछिल्लो पटक आफ्नो पासवर्ड प्रविष्ट गर्नुभएपछि एउटा भिन्न किबोर्ड जडान गरिएको छ। यसले तपाईंका किस्ट्रोकहरू चोर्न खोजिरहेको हुन सक्छ।</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' की '<ph name="ACTION" />' कारबाहीका लागि तोकिसकिएको छ। <ph name="RESPONSE" /> कुनै की थिच्नुहोस्।</translation>
 <translation id="1567993339577891801">JavaScript कन्सोल</translation>
+<translation id="1569466257325986920">तपाईंले अर्को पटक Google खाताको पासवर्ड परिवर्तन गर्नुभयो भने तपाईं Google खातामा साइन इन गरेपछि तपाईंको लोकल डेटा स्वतः रिकभर गरिने छ</translation>
 <translation id="1570604804919108255">सूचनाहरू अनम्युट गरियोस्</translation>
 <translation id="1571304935088121812">प्रयोगकर्ता नामको कपी गर्नुहोस्</translation>
 <translation id="1571738973904005196">यो ट्याब हेर्नुहोस्: <ph name="TAB_ORIGIN" /></translation>
@@ -882,6 +885,7 @@
 <translation id="1781979858217752599">विन्डोमा बजिरहेको अडियो सेयर गर्नुहोस्</translation>
 <translation id="1782101999402987960">तपाईंका एड्मिनले अपडेट गर्न नमिल्ने बनाएका छन्</translation>
 <translation id="1782196717298160133">तपाईंको फोन पत्ता लगाउँदैछ</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{एउटा नोट}other{# वटा नोट}}</translation>
 <translation id="1784707308176068866">कुनै सहयोगी नेटिभ अनुप्रयोगले अनुरोध गर्दा पृष्ठभूमिमा चलाउनुहोस्</translation>
 <translation id="1784849162047402014">यन्त्रको डिस्कमा खाली ठाउँ कम छ</translation>
 <translation id="1787350673646245458">प्रयोगकर्ताको छवि</translation>
@@ -1092,6 +1096,7 @@
 <translation id="1965624977906726414">विषेश अनुमतिहरू छैनन्।</translation>
 <translation id="1966649499058910679">बोल्दै जाँदा हरेक शब्दलाई हाइलाइट गर्दै जानुहोस्</translation>
 <translation id="1967970931040389207">हटस्पट अन गर्नुहोस्</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">WebRTC पाठका लगहरू (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">तपाईंले हालै खोलेको वेबपेजका आधारमा अग्रिम रूपमा सामग्री लोड गरिने भएकाले तपाईं अझ छिटो ब्राउज गर्न सक्नु हुने छ</translation>
 <translation id="197288927597451399">राख्नुहोस्</translation>
@@ -1673,6 +1678,7 @@
 <translation id="2467755475704469005">कुनै डिभाइस भेट्टिएन। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">टचप्याड स्क्रोल हुने गति बढाउने कार्य</translation>
 <translation id="2468205691404969808">तपाईं ती पृष्ठहरूमा नजानुभए तापनि तपाईंका प्राथमिकताहरू सम्झनका लागि कुकीहरूको प्रयोग गर्छ</translation>
+<translation id="2468247643665097563">अर्डर गर्नुहोस्</translation>
 <translation id="2468402215065996499">तामागोची</translation>
 <translation id="2468470085922875120">तपाईंले अनुमान लगाउन कठिन हुने पासवर्डहरू प्रयोग गर्नुभएको छ</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - १ ट्याब}other{<ph name="GROUP_TITLE" /> - # वटा ट्याब}}</translation>
@@ -1814,7 +1820,6 @@
 <translation id="25899519884572181">पाठक मोडबाट बाहिर निस्कनुहोस्</translation>
 <translation id="2593499352046705383">सुरु गर्नुअघि आफ्नो डेटा ब्याकअप गर्न नभुल्नुहोस्। तपाईंले <ph name="DEVICE_OS" /> इन्स्टल गर्नुभयो भने तपाईंको हार्ड ड्राइभमा भएका सबै डेटा ओभरराइट हुने छन्। g.co/flex/InstallGuide मा गई थप जान्नुहोस्।</translation>
 <translation id="2594999711683503743">Google मा खोज्नुहोस् वा URL टाइप गर्नुहोस्</translation>
-<translation id="25957578727513093">तपाईं Google पासवर्ड म्यानेजरमा अझ छिटो पुग्न चाहनुहुन्छ भने यसको सर्टकट हाल्नुहोस्</translation>
 <translation id="2599048253926156421">युजरनेम क्लिपबोर्डमा कपी गरियो</translation>
 <translation id="2602501489742255173">सुरु गर्न माथितिर स्वाइप गर्नुहोस्</translation>
 <translation id="2603115962224169880">कम्प्युटरमा ठाउँ खाली गर्नुहोस्</translation>
@@ -2393,6 +2398,7 @@
 <translation id="3103451787721578293">यो डेटा अपलोड गर्नुको कारण बताउनुहोस्:</translation>
 <translation id="3105339775057145050">पछिल्लो पटक अपडेट गर्न नसकिएको मिति</translation>
 <translation id="3105796011181310544">फेरि Google प्रयोग गर्ने हो?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ब्लुटूथ)</translation>
 <translation id="310671807099593501">साइटले ब्लुटुथ प्रयोग गर्दै छ</translation>
 <translation id="3108931485517391283">प्राप्त गर्न सकिएन</translation>
 <translation id="3108957152224931571">हाइलाइट गर्ने रङ</translation>
@@ -3034,6 +3040,7 @@
 <translation id="371300529209814631">पछाडि/अगाडि जानुहोस्</translation>
 <translation id="3713047097299026954">यो सुरक्षा साँचोमा साइन इन गर्न चाहिने कुनै पनि डेटा छैन</translation>
 <translation id="3713091615825314967">स्वतः अद्यावधिकहरू सक्रिय गरिएका छन्।</translation>
+<translation id="371370241367527062">अगाडिको माइक्रोफोन</translation>
 <translation id="3714195043138862580">यो डेमो यन्त्रलाई प्रयोगबाट हटाइएको छ।</translation>
 <translation id="3719826155360621982">होमपेज</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3129,6 +3136,7 @@
 <translation id="3797900183766075808">'<ph name="SEARCH_TERMS" />' का लागि <ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
 <translation id="3798449238516105146">संस्करण</translation>
 <translation id="3798632811625902122">ब्लुटुथ डिभाइस <ph name="DEVICE" /> ले कनेक्ट गर्ने अनुमति माग्दै छ।</translation>
+<translation id="3798670284305777884">स्पिकर (आन्तरिक)</translation>
 <translation id="3799128412641261490">स्विचमार्फत पहुँच राख्ने सुविधासम्बन्धी सेटिङ</translation>
 <translation id="3800030395703848668">सूचीसम्बन्धी विकल्पहरू हेर्नुहोस्</translation>
 <translation id="3800806661949714323">सबै देखाउनुहोस् (सिफारिस गरिएको)</translation>
@@ -5129,6 +5137,7 @@
 <translation id="5643620609347735571">खाली गरी जारी राख्नुहोस्</translation>
 <translation id="5646376287012673985">लोकेसन</translation>
 <translation id="5646558797914161501">व्यापारी</translation>
+<translation id="5648021990716966815">माइकको ज्याक</translation>
 <translation id="5648166631817621825">पछिल्ला ७ दिन</translation>
 <translation id="5651308944918885595">नजिकैका डिभाइससँग सेयर गर्ने सुविधामा भएको 'भेटिने क्षमता' नामक विकल्प</translation>
 <translation id="5653154844073528838">तपाईंसँग सुरक्षित गरिएका <ph name="PRINTER_COUNT" /> प्रिन्टरहरू छन्।</translation>
@@ -5943,6 +5952,7 @@
 <translation id="6410668567036790476">सर्च इन्जिन थप्नुहोस्</translation>
 <translation id="641469293210305670">अपडेट र एप इन्स्टल गर्नुहोस्</translation>
 <translation id="6414878884710400018">'सिस्टमसम्बन्धी प्राथमिकताहरू' खोल्नुहोस्</translation>
+<translation id="6415816101512323589">आफ्नो डेटा सुरक्षित राख्न लोकल डेटा रिकभर गर्ने सुविधा अन गर्ने हो?</translation>
 <translation id="6415900369006735853">आफ्नो फोनमार्फत इन्टरनेटमा जोडिनुहोस्</translation>
 <translation id="6416743254476733475">आफ्नो कम्प्युटरमा अनुमति दिनुहोस् वा रोक लगाउनुहोस्।</translation>
 <translation id="6417265370957905582">Google सहायक</translation>
@@ -6236,6 +6246,7 @@
 <translation id="6678717876183468697">प्रश्न URL</translation>
 <translation id="6680442031740878064">उपलब्ध खाली ठाउँ: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">मूल्याङ्कन गर्नुहोस्</translation>
+<translation id="6683022854667115063">हेडफोन</translation>
 <translation id="6683087162435654533">सबै ट्याबहरू रिस्टोर गर्नुहोस्</translation>
 <translation id="6684827949542560880">नवीनतम अपडेट डाउनलोड गर्दै</translation>
 <translation id="668599234725812620">Google Play खोल्नुहोस्</translation>
@@ -6864,6 +6875,7 @@
 <translation id="7255002516883565667">यस बेला, तपाईंसँग यस यन्त्रमा मात्र प्रयोग गर्न मिल्ने एउटा कार्ड छ</translation>
 <translation id="7255935316994522020">लागू गर्नुहोस्</translation>
 <translation id="7256069762010468647">साइटले तपाईंको क्यामेरा प्रयोग गर्दै छ</translation>
+<translation id="7256634071279256947">पछाडिको माइक्रोफोन</translation>
 <translation id="7256710573727326513">एउटा ट्याबमा खोल्नुहोस्</translation>
 <translation id="7257173066616499747">Wi-Fi नेटवर्क</translation>
 <translation id="725758059478686223">छपाइसम्बन्धी सेवा</translation>

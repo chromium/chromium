@@ -284,6 +284,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1244303850296295656">Uitbreidingfout</translation>
 <translation id="1245628370644070008">Terugstelling van plaaslike data</translation>
 <translation id="1246863218384630739">Kon nie <ph name="VM_NAME" /> installeer nie: Prent-URL het 'n <ph name="HTTP_ERROR" />-foutkode gewys. Kontak jou administrateur.</translation>
+<translation id="1247372569136754018">Mikrofoon (intern)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Kennisgewings word vir 1 werf nie toegelaat nie}other{Kennisgewings word vir {NUM_SITES} werwe nie toegelaat nie}}</translation>
 <translation id="1251366534849411931">Verwag beginkrulhakie: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Dit sal <ph name="TOTAL_USAGE" /> se data uitvee wat deur werwe en geïnstalleerde programme geberg is</translation>
@@ -542,6 +543,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1482626744466814421">Boekmerk hierdie oortjie …</translation>
 <translation id="1482772681918035149">wysig wagwoorde</translation>
 <translation id="1483493594462132177">Stuur</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Werf gebruik tans Bluetooth</translation>
 <translation id="1485015260175968628">Dit kan nou:</translation>
 <translation id="1485141095922496924">Weergawe <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -630,6 +632,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1567387640189251553">'n Ander sleutelbord is gekoppel sedert jy jou wagwoord laas ingevoer het. Dit kan dalk probeer om jou sleuteldrukke te steel.</translation>
 <translation id="156793199942386351">"<ph name="CURRENTKEY" />" is reeds toegewys aan die handeling "<ph name="ACTION" />". Druk enige sleutel en <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript-konsole</translation>
+<translation id="1569466257325986920">Wanneer jy weer jou Google-rekening se wagwoord verander, sal jou plaaslike data outomaties teruggestel word nadat jy by jou Google-rekening aangemeld het</translation>
 <translation id="1570604804919108255">Ontdemp kennisgewings</translation>
 <translation id="1571304935088121812">Kopieer gebruikernaam</translation>
 <translation id="1571738973904005196">Bekyk oortjie: <ph name="TAB_ORIGIN" /></translation>
@@ -896,6 +899,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1781979858217752599">Deel vensteroudio</translation>
 <translation id="1782101999402987960">Jou administrateur blokkeer opdaterings</translation>
 <translation id="1782196717298160133">Vind tans jou foon</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 nota}other{# notas}}</translation>
 <translation id="1784707308176068866">Laat loop in die agtergrond wanneer dit versoek word deur 'n toestelspesifieke program wat saamwerk</translation>
 <translation id="1784849162047402014">Toestel het min skyfspasie beskikbaar</translation>
 <translation id="1787350673646245458">Gebruikerprent</translation>
@@ -1107,6 +1111,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1965624977906726414">Het geen spesiale toestemmings nie.</translation>
 <translation id="1966649499058910679">Kleurmerk elke woord wanneer dit gesê word</translation>
 <translation id="1967970931040389207">Skakel warmkol aan</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">WebRTC-teksloglêers (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Jy sal vinniger kan blaai omdat inhoud proaktief op grond van jou huidige webbladsybesoek gelaai word</translation>
 <translation id="197288927597451399">Behou</translation>
@@ -1691,6 +1696,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2467755475704469005">Geen toestel bespeur nie. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Raakpaneelrolversnelling</translation>
 <translation id="2468205691404969808">Gebruik webkoekies om jou voorkeure te onthou, selfs al besoek jy nie dié bladsye nie</translation>
+<translation id="2468247643665097563">Volgorde</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470085922875120">Jy gebruik wagwoorde wat moeilik lyk om te raai</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 oortjie}other{<ph name="GROUP_TITLE" /> – # oortjies}}</translation>
@@ -1832,7 +1838,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="25899519884572181">Verlaat lesermodus</translation>
 <translation id="2593499352046705383">Maak seker dat jy 'n rugsteun van jou data het voordat jy begin. As jy <ph name="DEVICE_OS" /> installeer, sal jou hardeskyf vervang word. Kom meer te wete by g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Deursoek Google of tik URL in</translation>
-<translation id="25957578727513093">Voeg ’n kortpad by Google Wagwoordbestuurder om vinniger hierheen te kom</translation>
 <translation id="2599048253926156421">Gebruikernaam is na knipbord gekopieer</translation>
 <translation id="2602501489742255173">Swiep op om te begin</translation>
 <translation id="2603115962224169880">Maak rekenaar skoon</translation>
@@ -2410,6 +2415,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3103451787721578293">Voer asseblief 'n rede in hoekom jy hierdie data oplaai:</translation>
 <translation id="3105339775057145050">Laas onsuksesvol opgedateer</translation>
 <translation id="3105796011181310544">Verander terug na Google?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Werf gebruik tans Bluetooth</translation>
 <translation id="3108931485517391283">Kan nie ontvang nie</translation>
 <translation id="3108957152224931571">Merkkleur</translation>
@@ -3051,6 +3057,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="371300529209814631">Terug/Vorentoe</translation>
 <translation id="3713047097299026954">Hierdie sekuriteitsleutel het geen aanmelddata nie</translation>
 <translation id="3713091615825314967">Outomatiese opdaterings is aangeskakel.</translation>
+<translation id="371370241367527062">Voorste mikrofoon</translation>
 <translation id="3714195043138862580">Hierdie demonstrasietoestel is in 'n verwyderde staat geplaas.</translation>
 <translation id="3719826155360621982">Tuisblad</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3146,6 +3153,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3797900183766075808">&amp;Deursoek <ph name="SEARCH_ENGINE" /> vir "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="3798449238516105146">Weergawe</translation>
 <translation id="3798632811625902122">Bluetooth-toestel <ph name="DEVICE" /> wil toestemming hê om saam te bind.</translation>
+<translation id="3798670284305777884">Luidspreker (intern)</translation>
 <translation id="3799128412641261490">Skakelaartoegang-instellings</translation>
 <translation id="3800030395703848668">Bekyk lysopsies</translation>
 <translation id="3800806661949714323">Wys almal (aanbeveel)</translation>
@@ -5149,6 +5157,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5643620609347735571">Vee uit en gaan voort</translation>
 <translation id="5646376287012673985">Ligging</translation>
 <translation id="5646558797914161501">Sakeman</translation>
+<translation id="5648021990716966815">Mikrofoonsok</translation>
 <translation id="5648166631817621825">Afgelope 7 dae</translation>
 <translation id="5651308944918885595">Nabydeling: opspoorbaarheid</translation>
 <translation id="5653154844073528838">Jy het <ph name="PRINTER_COUNT" /> gestoorde drukkers.</translation>
@@ -5964,6 +5973,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6410668567036790476">Voeg soekenjin by</translation>
 <translation id="641469293210305670">Instelleer opdaterings en programme</translation>
 <translation id="6414878884710400018">Maak stelselvoorkeure oop</translation>
+<translation id="6415816101512323589">Skakel terugstelling van plaaslike data aan om jou data te beskerm?</translation>
 <translation id="6415900369006735853">Koppel aan die internet deur jou foon</translation>
 <translation id="6416743254476733475">Laat dit op jou rekenaar toe of blokkeer dit.</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
@@ -6257,6 +6267,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6678717876183468697">Navraag-URL</translation>
 <translation id="6680442031740878064">Beskikbaar: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Gradeer</translation>
+<translation id="6683022854667115063">Oorfone</translation>
 <translation id="6683087162435654533">Stel alle oortjies terug</translation>
 <translation id="6684827949542560880">Laai tans die jongste opdatering af</translation>
 <translation id="668599234725812620">Maak Google Play oop</translation>
@@ -6885,6 +6896,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7255002516883565667">Jy het op die oomblik een kaart wat net op hierdie toestel gebruik kan word</translation>
 <translation id="7255935316994522020">Doen aansoek</translation>
 <translation id="7256069762010468647">Werf gebruik tans jou kamera</translation>
+<translation id="7256634071279256947">Agterste mikrofoon</translation>
 <translation id="7256710573727326513">Maak in 'n oortjie oop</translation>
 <translation id="7257173066616499747">Wi-Fi-netwerke</translation>
 <translation id="725758059478686223">Drukdiens</translation>

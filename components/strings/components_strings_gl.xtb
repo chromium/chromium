@@ -524,6 +524,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2202627062836089804">reverso da tarxeta</translation>
 <translation id="22081806969704220">Bandexa 3</translation>
 <translation id="2210794033760923560">Cargar informe</translation>
+<translation id="2212579473415663542">Agora este enderezo está gardado na túa Conta de Google (<ph name="ACCOUNT" />). Podes usalo nos produtos de Google con calquera dispositivo.</translation>
 <translation id="2212735316055980242">Política non atopada</translation>
 <translation id="2213606439339815911">Obtendo entradas...</translation>
 <translation id="2213612003795704869">Imprimiuse a páxina</translation>
@@ -1972,6 +1973,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5866898949289125849">Estás vendo unha páxina de ferramentas de programador</translation>
 <translation id="5869405914158311789">Non se pode acceder a este sitio</translation>
 <translation id="5869522115854928033">Contrasinais gardados</translation>
+<translation id="5872692522325383488">Gardouse o IBAN</translation>
 <translation id="5873013647450402046">O teu banco quere confirmar a túa identidade.</translation>
 <translation id="5877831137320480913">Beleza e actividade física</translation>
 <translation id="5884465125445718607">Sobre chinés n.º 6</translation>
@@ -2141,6 +2143,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6300452962057769623">{0,plural, =0{O dispositivo reiniciarase agora}=1{O dispositivo reiniciarase en 1 segundo}other{O dispositivo reiniciarase en # segundos}}</translation>
 <translation id="6301104306974789820">Obter notificacións de seguimento do prezo</translation>
 <translation id="6305205051461490394">Non se pode acceder a <ph name="URL" />.</translation>
+<translation id="6306713302480826305">Este enderezo eliminarase deste dispositivo e do resto de dispositivos nos que teñas a sesión iniciada</translation>
 <translation id="6311165245110979290">Tarxeta virtual dispoñible</translation>
 <translation id="6312113039770857350">A páxina web non está dispoñible</translation>
 <translation id="6316226860534107313">Scooters e ciclomotores</translation>
@@ -3032,6 +3035,7 @@ Detalles adicionais:
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
 <translation id="8474910779563686872">Mostrar detalles do programador</translation>
 <translation id="8479754468255770962">Grampa na parte inferior esquerda</translation>
+<translation id="8483229036294884935">Este enderezo eliminarase da túa Conta de Google (<ph name="ACCOUNT" />)</translation>
 <translation id="8483780878231876732">Para usar tarxetas da túa conta de Google, inicia sesión en Chrome</translation>
 <translation id="8488350697529856933">Aplícase a</translation>
 <translation id="8490137692873530638">Amontoador 10</translation>

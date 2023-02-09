@@ -540,6 +540,7 @@
 <translation id="2241693394036365668">ଫାଇଲ୍ ଡାଉନଲୋଡ୍ କରାଯାଇଛି</translation>
 <translation id="2246264294482514010">10 x 12 ଇଞ୍ଚ</translation>
 <translation id="2246480341630108201">ତୁମ ବାପା କିମ୍ବା ମା ଏପର୍ଯ୍ୟନ୍ତ 'ଏହା ଠିକ୍ ଅଛି' ବୋଲି କହିନାହାଁନ୍ତି</translation>
+<translation id="2247789808226901522">କାର୍ଡର ମିଆଦ ଶେଷ ହୋଇଯାଇଛି</translation>
 <translation id="2248949050832152960">WebAuthn ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2250931979407627383">ବାମ ପଟରେ ଏଜ୍ ଷ୍ଟିଚ୍</translation>
 <translation id="225207911366869382">ଏହି ମୂଲ୍ୟ, ଏହି ନୀତି ପାଇଁ ଅଗ୍ରାହ୍ୟ କରାଯାଇଛି।</translation>
@@ -1075,6 +1076,7 @@
 <translation id="3646643500201740985">କୌଣସି ବିଜ୍ଞାପନ କେତେ ଭଲ ପରଫର୍ମ କରେ ତାହା ମାପିବା</translation>
 <translation id="3647286794400715637">ପ୍ରତ୍ୟେକ URL ଷ୍ଟ୍ରିଙ୍ଗ ଏଣ୍ଟ୍ରି 1ରୁ 2 URL ମଧ୍ୟରେ ରହିବା ଉଚିତ।</translation>
 <translation id="3650584904733503804">ବୈଧକରଣ ସଫଳ ହେଲା</translation>
+<translation id="3650594806107685466">ଆପଣଙ୍କ କାର୍ଡକୁ ସୁରକ୍ଷିତ ରଖିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ <ph name="SIDE_OF_CARD" />ରେ ଥିବା CVC ଲେଖନ୍ତୁ</translation>
 <translation id="3653033846669030038">ଥିମ ପାର୍କଗୁଡ଼ିକ</translation>
 <translation id="3655241534245626312">ଅନୁମତି ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="3655670868607891010">ଯଦି ଆପଣ ଏହାକୁ ବାରମ୍ବାର ଦେଖୁଛନ୍ତି, ତେବେ ଏହି <ph name="HELP_LINK" />କୁ ଦେଖିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -2455,6 +2457,7 @@
 <translation id="7112327784801341716">ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ସୂଚନା ଦେଖାଯାଉନାହିଁ? ଏହାକୁ ଅପଡେଟ କରିବା ପାଇଁ ଆପଣଙ୍କ ବେଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="7118618213916969306">କ୍ଲିପ୍‌ବୋର୍ଡ URL, <ph name="SHORT_URL" />କୁ ଖୋଜନ୍ତୁ</translation>
 <translation id="7119414471315195487">ଅନ୍ୟ ଟାବ୍ କିମ୍ୱା କର୍ଯ୍ୟକ୍ରମଗୁଡ଼ିକ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="7124354851782353862">ଆପଣଙ୍କ CVC ଲେଖନ୍ତୁ</translation>
 <translation id="7129355289156517987">ଆପଣ ଯେତେବେଳେ ଇନକଗ୍ନିଟୋ ମୋଡରେ ଥିବା ସମସ୍ତ Chromium ଟାବକୁ ବନ୍ଦ କରନ୍ତି, ସେହି ଟାବଗୁଡ଼ିକରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପ ଏହି ଡିଭାଇସରୁ ଖାଲି ହୋଇଯାଏ:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />ବ୍ରାଉଜିଂ କାର୍ଯ୍ୟକଳାପ<ph name="END_LIST_ITEM" />
@@ -2781,6 +2784,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{କିଛିନାହିଁ}=1{1ଟି ଆପ୍ (<ph name="EXAMPLE_APP_1" />)}=2{2ଟି ଆପ୍‌ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{#ଟି ଆପ୍‌ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">ପରେ, ଆପଣ ଭିଜିଟ କରୁଥିବା ଏକ ସାଇଟ, ଆପଣ ଦେଖୁଥିବା ବିଜ୍ଞାପନଗୁଡ଼ିକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ Chromeକୁ ଆପଣଙ୍କ ବିଷୟଗୁଡ଼ିକ ସମ୍ପର୍କରେ ପଚାରିପାରେ। Chrome ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ ଏବଂ ପରିଚୟକୁ ସୁରକ୍ଷିତ ରଖିବା ସହିତ 3ଟି ପର୍ଯ୍ଯନ୍ତ ବିଷୟକୁ ସେୟାର କରେ।</translation>
+<translation id="7860345425589240791"><ph name="SIDE_OF_CARD" />ରେ ଥିବା ଆପଣଙ୍କ ନୂଆ ମିଆଦ ଶେଷ ହେବାର ତାରିଖ ଏବଂ CVC ଲେଖନ୍ତୁ</translation>
 <translation id="7862185352068345852">ସାଇଟ୍ ଛାଡ଼ିବେ?</translation>
 <translation id="7865448901209910068">ଉତ୍ତମ ବେଗ</translation>
 <translation id="7871445724586827387">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ପାସୱାର୍ଡ ବଦଳାନ୍ତୁ</translation>

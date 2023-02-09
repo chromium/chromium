@@ -226,7 +226,6 @@
 <translation id="2248941474044011069">Таны нууц үгнүүдийг Google-н Нууц үгний менежерт хадгалахаас нь өмнө төхөөрөмж дээр тань шифрлэдэг</translation>
 <translation id="2249635629516220541">Танд зар харуулахын тулд сайтуудын ашигладаг мэдээллийг өөрчилнө үү</translation>
 <translation id="2259659629660284697">Нууц үгийг экспортлох...</translation>
-<translation id="2276231040576210443">Та синк хийх зүйлээ <ph name="BEGIN_LINK1" />тохиргоо<ph name="END_LINK1" /> хэсгээс хүссэн үедээ сонгох боломжтой. Google таны түүхэд тулгуурлан Хайлт болон бусад үйлчилгээг хувийн болгож магадгүй.</translation>
 <translation id="2276696007612801991">Нууц үгээ шалгахын тулд Google Бүртгэлдээ нэвтэрнэ үү</translation>
 <translation id="2278052315791335171">Энэ нууц үгийг устгаснаар таны бүртгэлийг <ph name="SITE" /> дээрээс устгахгүй</translation>
 <translation id="2286841657746966508">Тооцооны хаяг</translation>
@@ -304,7 +303,6 @@
 <translation id="2669454659051515572">Энэ төхөөрөмжийг ашиглаж байгаа дурын хүн татсан файлуудыг харах боломжтой</translation>
 <translation id="2702516483241149200">Шинэ: энэ текст рүү гүйлгэж очих холбоосыг хуваалцаарай</translation>
 <translation id="2707726405694321444">Хуудсыг дахин шинэчлэх</translation>
-<translation id="2709516037105925701">Автоматаар бөглөх</translation>
 <translation id="271033894570825754">Шинэ</translation>
 <translation id="2711073837061989559">Туршилтын хугацаа</translation>
 <translation id="2718352093833049315">Зөвхөн Wi-Fi-аар</translation>
@@ -396,7 +394,6 @@
 <translation id="3114507951000454849">Өнөөдрийн мэдээг уншаарай <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">дараахтай холбогдсон</translation>
 <translation id="3123734510202723619">Зарлал</translation>
-<translation id="3130863904455712965">Түүх болон бусад</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome-н нүүр хуудас</translation>
 <translation id="3157931365184549694">Дахин сэргээх</translation>
@@ -989,7 +986,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6397616442223433927">Буцаад онлайн боллоо</translation>
 <translation id="6401458660421980302">Энэ табыг өөр төхөөрөмж рүү илгээхийн тулд тэндээс Chrome-д нэвтэрнэ үү</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> дээрх <ph name="ERROR_CODE" /></translation>
-<translation id="6403371459378431832">Өгөгдлөө бүх төхөөрөмж дээр синк хийгээрэй</translation>
 <translation id="6404511346730675251">Хадгалагдсан хуудсыг засах</translation>
 <translation id="6406506848690869874">Sync</translation>
 <translation id="6407224748847589805">Таны компьютертой холбогдож чадсангүй. Баталгаажуулалтын өөр сонголтыг туршиж үзнэ үү.</translation>
@@ -1318,7 +1314,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8037801708772278989">Дөнгөж сая шалгасан</translation>
 <translation id="804335162455518893">SD карт олдсонгүй</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> нууцлалтай таб}other{<ph name="TAB_COUNT_NORMAL" /> нууцлалтай таб}}</translation>
-<translation id="8048728378294435881">Зүйлсээ хуулбарлаж, үүнийг дурын төхөөрөмж дээр ашиглана уу</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> МБ боломжтой</translation>
 <translation id="8058655154417507695">Дуусах он</translation>
 <translation id="8058746566562539958">Chrome-н шинэ табад нээх</translation>

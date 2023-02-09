@@ -282,6 +282,7 @@
 <translation id="1244303850296295656">扩展程序错误</translation>
 <translation id="1245628370644070008">本地数据恢复</translation>
 <translation id="1246863218384630739">无法安装 <ph name="VM_NAME" />：图片网址返回了 <ph name="HTTP_ERROR" /> 错误代码。请与您的管理员联系。</translation>
+<translation id="1247372569136754018">麦克风（内部）</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{1 个网站不得发送通知}other{{NUM_SITES} 个网站不得发送通知}}</translation>
 <translation id="1251366534849411931">缺少左大括号：<ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">此操作会清除网站及安装的应用存储的 <ph name="TOTAL_USAGE" /> 数据</translation>
@@ -537,6 +538,7 @@
 <translation id="1482626744466814421">为此标签页添加书签…</translation>
 <translation id="1482772681918035149">修改密码</translation>
 <translation id="1483493594462132177">发送</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">此网站正在使用蓝牙</translation>
 <translation id="1485015260175968628">该程序现在可以：</translation>
 <translation id="1485141095922496924">版本 <ph name="PRODUCT_VERSION" />（<ph name="PRODUCT_CHANNEL" />）<ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1088,6 +1090,7 @@
 <translation id="1965624977906726414">无需特殊权限。</translation>
 <translation id="1966649499058910679">突出显示每个正被读出的字词</translation>
 <translation id="1967970931040389207">开启热点</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">WebRTC 文本日志 (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">您的浏览速度会更快，因为系统会根据您当前访问的网页主动加载内容</translation>
 <translation id="197288927597451399">保留</translation>
@@ -1809,7 +1812,6 @@
 <translation id="25899519884572181">退出阅读器模式</translation>
 <translation id="2593499352046705383">在开始之前，请确保已备份数据。安装 <ph name="DEVICE_OS" /> 会覆盖您的硬盘。如需了解详情，请访问 g.co/flex/InstallGuide。</translation>
 <translation id="2594999711683503743">使用 Google 执行搜索，或者输入网址</translation>
-<translation id="25957578727513093">若要更快速地访问 Google 密码管理工具，请为它添加快捷方式</translation>
 <translation id="2599048253926156421">用户名已复制到剪贴板</translation>
 <translation id="2602501489742255173">向上滑动即可开始使用</translation>
 <translation id="2603115962224169880">清理计算机</translation>
@@ -2387,6 +2389,7 @@
 <translation id="3103451787721578293">请输入上传此数据的原因：</translation>
 <translation id="3105339775057145050">上次失败的更新</translation>
 <translation id="3105796011181310544">改回 Google？</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" />（蓝牙）</translation>
 <translation id="310671807099593501">该网站正在使用蓝牙</translation>
 <translation id="3108931485517391283">无法接收</translation>
 <translation id="3108957152224931571">突出显示颜色</translation>
@@ -3028,6 +3031,7 @@
 <translation id="371300529209814631">后退/前进</translation>
 <translation id="3713047097299026954">此安全密钥不含任何登录数据</translation>
 <translation id="3713091615825314967">已开启自动更新功能。</translation>
+<translation id="371370241367527062">前置麦克风</translation>
 <translation id="3714195043138862580">此演示设备目前处于“已取消配置”状态。</translation>
 <translation id="3719826155360621982">主页</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3123,6 +3127,7 @@
 <translation id="3797900183766075808">使用<ph name="SEARCH_ENGINE" />搜索“<ph name="SEARCH_TERMS" />”(&amp;S)</translation>
 <translation id="3798449238516105146">版本</translation>
 <translation id="3798632811625902122">蓝牙设备“<ph name="DEVICE" />”希望获得配对许可。</translation>
+<translation id="3798670284305777884">扬声器（内部）</translation>
 <translation id="3799128412641261490">开关控制设置</translation>
 <translation id="3800030395703848668">查看列表选项</translation>
 <translation id="3800806661949714323">显示全部（推荐）</translation>
@@ -5119,6 +5124,7 @@
 <translation id="5643620609347735571">清除并继续</translation>
 <translation id="5646376287012673985">位置信息</translation>
 <translation id="5646558797914161501">商务人士</translation>
+<translation id="5648021990716966815">麦克风耳机插孔</translation>
 <translation id="5648166631817621825">过去 7 天</translation>
 <translation id="5651308944918885595">“附近分享”功能的设备可侦测性</translation>
 <translation id="5653154844073528838">您有 <ph name="PRINTER_COUNT" /> 台已保存的打印机。</translation>
@@ -6226,6 +6232,7 @@
 <translation id="6678717876183468697">查询网址</translation>
 <translation id="6680442031740878064">可用空间：<ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">语速</translation>
+<translation id="6683022854667115063">头戴式耳机</translation>
 <translation id="6683087162435654533">恢复所有标签页(&amp;E)</translation>
 <translation id="6684827949542560880">正在下载最新更新</translation>
 <translation id="668599234725812620">打开 Google Play</translation>
@@ -6854,6 +6861,7 @@
 <translation id="7255002516883565667">此刻，您有 1 张卡只能在这部设备上使用</translation>
 <translation id="7255935316994522020">应用</translation>
 <translation id="7256069762010468647">该网站正在使用您的摄像头</translation>
+<translation id="7256634071279256947">后置麦克风</translation>
 <translation id="7256710573727326513">在标签页中打开</translation>
 <translation id="7257173066616499747">Wi-Fi 网络</translation>
 <translation id="725758059478686223">打印服务</translation>

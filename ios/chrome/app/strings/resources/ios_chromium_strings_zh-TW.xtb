@@ -93,6 +93,7 @@
 <translation id="7045244423563602563">使用你專屬的 Chromium</translation>
 <translation id="7099326575020694068">Chromium 無法在分割模式中使用你的相機</translation>
 <translation id="7118091470949186573">現在你只要在訊息、文件或其他應用程式中輕觸連結，即可使用 Chromium。</translation>
+<translation id="7165402419892018581">選擇使用 Chromium 的自動填入功能</translation>
 <translation id="7175400662502680481">你的密碼因為資料侵害事件遭到外洩，密碼管理員建議你立即變更這組密碼。</translation>
 <translation id="7208566199746267865">Chromium 會將你的所有帳戶同步到網路上，為你節省時間。你可以在「設定」中新增或移除帳戶。</translation>
 <translation id="725427773388857052">Chromium 可確保安全性，例如防範資料侵害事件或封鎖不安全的網站等等。</translation>
@@ -107,6 +108,7 @@
 <translation id="7746854981345936341">Chromium 提示。部分按鈕 (例如 [返回]、[往前] 和 [搜尋]) 現在位於畫面底部。</translation>
 <translation id="7763454117143368771">使用 Chromium 做為預設瀏覽器可保護你免於危險網站的威脅，同時確保你的密碼安全無虞</translation>
 <translation id="7812317783196516890">你已透過 <ph name="DOMAIN" /> 的受管理帳戶登入並正在同步資料，其系統管理員現在可以設定針對該帳戶且可變更 Chromium 行為的使用者政策。</translation>
+<translation id="7859018312476869945">在網址列或搜尋框中輸入時，Chromium 會將你輸入的內容傳送給預設搜尋引擎，提供更符合需求的搜尋建議。這項功能在無痕模式中為關閉狀態。</translation>
 <translation id="786327964234957808">你設定同步處理的帳戶即將從 <ph name="USER_EMAIL1" /> 改為 <ph name="USER_EMAIL2" />。你現有的 Chrome 資料是由 <ph name="DOMAIN" /> 所管理。系統會將你的資料從這個裝置上刪除，但繼續保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="7890287942691234100">開始使用 Chromium 掃描器</translation>
 <translation id="7928628054454574139">只要輕觸其他應用程式中的連結，即可透過 Chromium 開啟</translation>
@@ -116,6 +118,7 @@
 <translation id="8073677936375100957">要清除這個裝置上的 Chromium 資料嗎？</translation>
 <translation id="8240981428553046115">Chromium 無法檢查更新，請稍後再試。</translation>
 <translation id="8409374867500149834">Chromium 提供了最強大的安全防護機制，可避免你誤入有害網站</translation>
+<translation id="8460301378281140593">從 iPhone 的「設定」開啟「密碼選項」，然後選取「Chromium」</translation>
 <translation id="858114650497379505">你可以在 iPhone 上的其他應用程式，使用儲存至密碼管理員的密碼。</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
 <translation id="8603022514504485810">Google 密碼管理工具無法檢查所有密碼，請明天再試。你也可以<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>

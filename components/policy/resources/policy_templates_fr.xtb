@@ -3232,6 +3232,11 @@ Cette règle est une mesure temporaire et sera supprimée dans une future versio
 <translation id="3994043824457743421">Afficher l'annonce d'espace intermédiaire sur la page "Nouvel onglet"</translation>
 <translation id="399433537808390819">Ne pas rendre le mode Bureau unifié accessible à l'utilisateur</translation>
 <translation id="3995880046827722248">Manifest V2 est désactivé</translation>
+<translation id="3996118331995847766">Si <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> est activée, <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> permet de configurer le mode avancé de recharge de la batterie. La batterie de l'appareil ne pourra être rechargée entièrement qu'une seule fois entre <ph name="CHARGE_START_TIME_FIELD_NAME" /> et <ph name="CHARGE_END_TIME_FIELD_NAME" />. En dehors de cette période, la batterie reste dans un état de charge réduit. La valeur de "<ph name="CHARGE_START_TIME_FIELD_NAME" />" doit être inférieure à celle de "<ph name="CHARGE_END_TIME_FIELD_NAME" />".
+
+      Si cette règle n'est pas configurée, le mode avancé de recharge de la batterie est désactivé.
+
+      Les valeurs autorisées dans le champ "<ph name="MINUTE_FIELD_NAME" />" de "<ph name="CHARGE_START_TIME_FIELD_NAME" />" et "<ph name="CHARGE_END_TIME_FIELD_NAME" />" sont 0, 15, 30 et 45.</translation>
 <translation id="3996325823532867220">Cette règle n'est plus compatible, mais la règle associée <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> peut l'être sur certaines plates-formes.
 
       Lorsque ce paramètre est activé, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré.
@@ -3413,6 +3418,19 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
           Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
           Si cette règle n'est pas configurée, la mise en surbrillance du curseur de saisie est initialement désactivée sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment.</translation>
+<translation id="4182348537826882258">Si vous définissez la règle <ph name="URL_BLOCKLIST_POLICY_NAME" />, les pages Web dont les URL sont interdites ne peuvent pas se charger. Les administrateurs peuvent spécifier la liste des formats d'URL à bloquer. Si cette règle n'est pas configurée, aucune URL n'est bloquée dans le navigateur. Vous pouvez définir jusqu'à 1 000 exceptions dans <ph name="URL_ALLOWLIST_POLICY_NAME" />. Découvrez les formats d'URL à respecter (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Remarque : Cette règle ne s'applique pas aux URL JavaScript intégrées dans les pages dont les données sont chargées dynamiquement. Si vous bloquez example.com/abc, example.com pourra toujours la charger à l'aide de XMLHTTPRequest. En outre, cette règle n'empêche pas les pages Web de remplacer l'URL affichée dans l'omnibox par une URL bloquée à l'aide de l'API JavaScript History.
+
+À partir de la version 73 de <ph name="PRODUCT_NAME" />, vous pouvez bloquer les URL javascript://*. Toutefois, cela ne concerne que le code JavaScript saisi dans la barre d'adresse ou, par exemple, les favoris intelligents.
+
+À compter de la version 92 de <ph name="PRODUCT_NAME" />, cette règle est aussi prise en charge en mode sans interface graphique.
+
+Remarque : Bloquer des URL internes chrome://* et chrome-untrusted://* peut entraîner des erreurs inattendues ou être contourné parfois. Au lieu de bloquer certaines URL internes, vérifiez si des règles plus spécifiques sont disponibles. Par exemple :
+
+- Au lieu de bloquer chrome://settings/certificates, utilisez <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
+
+- Au lieu de bloquer chrome-untrusted://crosh, utilisez <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="4183229833636799228">Paramètre par défaut pour le plug-in "<ph name="FLASH_PLUGIN_NAME" />"</translation>
 <translation id="4185868802416355029">Autoriser les extensions gérées à utiliser l'API Enterprise Hardware Platform</translation>
 <translation id="4186244263855283575">Permet de planifier le redémarrage des appareils de manière personnalisée. Une fois la règle définie sur "True", l'appareil redémarrera en fonction du calendrier établi. Pour annuler tout autre redémarrage planifié, cette règle doit être supprimée.
@@ -3507,6 +3525,13 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si plusieurs comptes utilisateur sont configurés sur un appareil géré, la notification ne s'affiche que lorsque cette règle est activée.</translation>
 <translation id="4303167373847512281">Autoriser le mode développeur</translation>
+<translation id="4307116964468610577">La règle prolonge la durée de vie de la batterie d'un système en ne la chargeant entièrement qu'une fois par jour. Le reste de la journée, la batterie est maintenue dans un état de charge réduit qui est mieux adapté au stockage, même lorsque le système est branché sur une source d'alimentation.
+
+      Si <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> est activée et que <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> est configurée, le mode avancé de recharge de la batterie pour la gestion de l'alimentation est activé (si l'appareil le permet). Ce mode permet aux utilisateurs de maximiser les performances de la batterie grâce à un algorithme de recharge standard et à d'autres techniques en dehors des heures de travail. Pendant les heures de travail, le système utilise une option de recharge rapide afin d'atteindre plus vite le niveau de charge complète. Indiquez l'heure à laquelle le système est le plus sollicité chaque jour en précisant l'heure de début et la durée.
+
+      Si cette règle est désactivée ou qu'elle n'est pas configurée, le mode avancé de recharge de la batterie est désactivé.
+
+      Les utilisateurs ne peuvent pas modifier ce paramètre.</translation>
 <translation id="4309091698378414920">Activer la mise en surbrillance du curseur de saisie</translation>
 <translation id="4311195029067684288">Complet</translation>
 <translation id="4311662690937656540">Appliquer les connexions en ligne sur les écrans de connexion et de verrouillage</translation>
@@ -4837,6 +4862,7 @@ Si cette règle n'est pas configurée, aucun domaine ne peut accéder aux URL fi
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, consultez la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="5620392548325769024">Activer l'affichage de la page de bienvenue au premier lancement du navigateur suivant la mise à jour de l'OS</translation>
 <translation id="5621503441067774084">Activer la mise en surbrillance du curseur sur l'écran de connexion</translation>
+<translation id="5622590774455244290">Les applis Android peuvent volontairement choisir de respecter cette liste, mais vous ne pouvez pas les forcer à la suivre.</translation>
 <translation id="5622924058222112599">Activer le processus de déploiement CECPQ2 par défaut</translation>
 <translation id="5623304306796942802">Demander si plusieurs certificats correspondent</translation>
 <translation id="5625771176514429288">Les applis Chrome seront autorisées à s'exécuter sur ces plates-formes.</translation>
@@ -4880,6 +4906,29 @@ Vous pouvez modifier le délai d'inactivité avant l'affichage de l'économiseur
       Si cette règle est définie sur "True", les avertissements d'abandon seront masqués.
       Si cette règle est définie sur "False" ou n'est pas configurée, les avertissements d'abandon seront affichés.</translation>
 <translation id="5666457529647159548">Autoriser les utilisateurs à gérer les certificats client installés.</translation>
+<translation id="5670286392821164294">Cette règle permet de remplacer la liste des ensembles que le navigateur utilise pour les fonctionnalités liées aux ensembles internes.
+
+      Chaque ensemble figurant dans la liste des ensembles internes du navigateur doit respecter les exigences liées aux ensembles internes.
+      Un ensemble interne doit contenir un site principal et au moins un site membre.
+      Un ensemble peut également contenir une liste de sites de services dont il est propriétaire, ainsi qu'un mappage entre un site et toutes ses variantes ccTLD.
+      Consultez la page https://github.com/WICG/first-party-sets pour en savoir plus sur les ensembles internes utilisés par <ph name="PRODUCT_NAME" />.
+
+      Tous les sites d'un ensemble interne doivent être des domaines enregistrables diffusés sur HTTPS. Chaque site d'un ensemble interne doit également être unique. Cela signifie qu'un site ne peut pas être listé plusieurs fois dans un ensemble interne.
+
+      Lorsqu'un dictionnaire vide est attribué à cette règle, le navigateur utilise la liste publique des ensembles internes.
+
+      Pour tous les sites appartenant à un ensemble interne de la liste <ph name="REPLACEMENTS" /> : si un site apparaît également dans un ensemble interne de la liste du navigateur, il sera supprimé de l'ensemble interne du navigateur.
+      L'ensemble interne de la règle sera alors ajouté à la liste des ensembles internes du navigateur.
+
+      Pour tous les sites appartenant à un ensemble interne de la liste <ph name="ADDITIONS" /> : si un site apparaît également dans un ensemble interne de la liste du navigateur, l'ensemble interne du navigateur est alors mis à jour afin de pouvoir ajouter le nouvel ensemble interne à la liste du navigateur. Lorsque la liste du navigateur a été mise à jour, l'ensemble interne de la règle est ajouté à la liste des ensembles internes du navigateur.
+
+      La liste des ensembles internes du navigateur impose qu'aucun site qui y figure ne se trouve dans plusieurs ensembles. Cette condition est également requise pour la liste <ph name="REPLACEMENTS" /> et la liste <ph name="ADDITIONS" />. De la même manière, un site ne peut pas figurer à la fois sur la liste <ph name="REPLACEMENTS" /> et la liste <ph name="ADDITIONS" />.
+
+      Le caractère générique (*) ne peut pas être utilisé comme valeur de la règle, ni dans aucun ensemble interne de ces listes.
+
+      Tous les ensembles fournis par cette règle doivent être des ensembles internes valides. Si ce n'est pas le cas, une erreur est renvoyée.
+
+      Cette règle n'est disponible que sur les instances Windows qui sont associées à un domaine <ph name="MS_AD_NAME" />, les instances Windows 10 Pro ou Windows Enterprise pour lesquelles la gestion d'appareils est activée, ou les instances macOS qui sont gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="567377007899266033">Si cette règle est définie sur "True", des rapports sur les événements critiques d'installation d'extensions déclenchée par des règles sont transmis à Google. Si elle est définie sur "False", aucun événement n'est enregistré. Si elle n'est pas configurée, la valeur par défaut est définie sur "True".</translation>
 <translation id="5676740747107495269">Permet d'afficher les options d'accessibilité dans le menu de la barre d'état système, sur l'écran de connexion</translation>
 <translation id="567832102568869993">Déclenche une action lorsque l'ordinateur est inactif.

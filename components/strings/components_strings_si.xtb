@@ -524,6 +524,7 @@
 <translation id="2202627062836089804">ඔබේ කාඩ්පතෙහි පිටුපස</translation>
 <translation id="22081806969704220">බඳුන 3</translation>
 <translation id="2210794033760923560">වාර්තාව උඩුගත කරන්න</translation>
+<translation id="2212579473415663542">මෙම ලිපිනය ඔබේ Google ගිණුමට (<ph name="ACCOUNT" />) සුරකිනු ලැබේ. ඔබට ඕනෑම උපාංගයක Google නිෂ්පාදන හරහා ලිපිනය භාවිතා කළ හැක.</translation>
 <translation id="2212735316055980242">ප්‍රතිපත්තිය නොමැත</translation>
 <translation id="2213606439339815911">ඇතුළත් කිරීම් ලබමින්...</translation>
 <translation id="2213612003795704869">පිටුව මුද්‍රණය කර ඇත</translation>
@@ -1972,6 +1973,7 @@
 <translation id="5866898949289125849">ඔබ සංවර්ධක මෙවලම් පිටුවක් දකියි</translation>
 <translation id="5869405914158311789">මෙම අඩවියට ළඟා විය නොහැකිය</translation>
 <translation id="5869522115854928033">සුරැකි රහස්වචන</translation>
+<translation id="5872692522325383488">IBAN සුරකින ලදි</translation>
 <translation id="5873013647450402046">ඔබගේ බැංකුවට මේ ඔබ බව තහවුරු කර ගැනීමට අවශ්‍යයි.</translation>
 <translation id="5877831137320480913">රූපාලංකරණ සහ යෝග්‍යතාව</translation>
 <translation id="5884465125445718607">ලියුම් කවරය චීන #6</translation>
@@ -2141,6 +2143,7 @@
 <translation id="6300452962057769623">{0,plural, =0{ඔබගේ උපාංගය දැන් යළි ආරම්භ වනු ඇත}=1{ඔබගේ උපාංගය තත්පර 1කින් යළි ආරම්භ වනු ඇත}one{ඔබගේ උපාංගය තත්පර #කින් යළි ආරම්භ වනු ඇත}other{ඔබගේ උපාංගය තත්පර #කින් යළි ආරම්භ වනු ඇත}}</translation>
 <translation id="6301104306974789820">මිල නිරීක්ෂණ දැනුම්දීම් ලබා ගන්න</translation>
 <translation id="6305205051461490394"><ph name="URL" /> වෙත ළඟා විය නොහැකිය.</translation>
+<translation id="6306713302480826305">මෙම ලිපිනය මෙයින් සහ ඔබේ අනෙකුත් පුරනය වී ඇති උපාංගවලින් මකනු ඇත</translation>
 <translation id="6311165245110979290">අතථ්‍ය කාඩ්පත තිබේ</translation>
 <translation id="6312113039770857350">වෙබ් පිටුව ලබා ගත නොහැකිය</translation>
 <translation id="6316226860534107313">ස්කූටර් සහ මොපෙඩ්</translation>
@@ -3032,6 +3035,7 @@
 <translation id="8473863474539038330">ලිපින සහ තව</translation>
 <translation id="8474910779563686872">සංවර්ධක විස්තර පෙන්වන්න</translation>
 <translation id="8479754468255770962">පහළ වමර ස්ටේපල් කරන්න</translation>
+<translation id="8483229036294884935">මෙම ලිපිනය ඔබේ Google ගිණුමෙන්, <ph name="ACCOUNT" /> මකනු ඇත</translation>
 <translation id="8483780878231876732">ඔබගේ Google ගිණුමෙන් කාඩ්පත් භාවිත කිරීමට, Chrome වෙත පුරන්න</translation>
 <translation id="8488350697529856933">අදාළ වනුයේ</translation>
 <translation id="8490137692873530638">අට්ටිය 10</translation>

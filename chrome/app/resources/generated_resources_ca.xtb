@@ -282,6 +282,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1244303850296295656">Error d'extensió</translation>
 <translation id="1245628370644070008">Recuperació de dades locals</translation>
 <translation id="1246863218384630739">No s'ha pogut instal·lar <ph name="VM_NAME" />: l'URL de la imatge ha tornat el codi d'error <ph name="HTTP_ERROR" />. Contacta amb l'administrador.</translation>
+<translation id="1247372569136754018">Micròfon (intern)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{No es permeten les notificacions per a 1 lloc web}other{No es permeten les notificacions per a {NUM_SITES} llocs web}}</translation>
 <translation id="1251366534849411931">Hi ha d'haver una clau d'obertura: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Amb aquesta acció s'esborraran dades emmagatzemades pels llocs web i per les aplicacions instal·lades (<ph name="TOTAL_USAGE" />)</translation>
@@ -539,6 +540,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1482626744466814421">Afegeix aquesta pestanya a les adreces d'interès...</translation>
 <translation id="1482772681918035149">editar les contrasenyes</translation>
 <translation id="1483493594462132177">Envia</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">El lloc web està utilitzant el Bluetooth</translation>
 <translation id="1485015260175968628">Ara pot:</translation>
 <translation id="1485141095922496924">Versió <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1095,6 +1097,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1965624977906726414">No té permisos especials.</translation>
 <translation id="1966649499058910679">Marca cada paraula a mesura que es digui</translation>
 <translation id="1967970931040389207">Activa el punt d'accés Wi-Fi</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">Registres de text de WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Navegaràs més de pressa perquè el contingut es carrega de forma proactiva en funció de la pàgina web que estiguis visitant</translation>
 <translation id="197288927597451399">Conserva</translation>
@@ -1817,7 +1820,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="25899519884572181">Surt del mode de lector</translation>
 <translation id="2593499352046705383">Abans de començar, assegura't que tinguis una còpia de seguretat de les teves dades. En instal·lar <ph name="DEVICE_OS" />, se sobreescriuran les dades de la unitat de disc dur. Obtén més informació a g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Cerca a Google o escriu l'URL</translation>
-<translation id="25957578727513093">Per accedir aquí més ràpidament, afegeix una drecera al gestor de contrasenyes de Google</translation>
 <translation id="2599048253926156421">El nom d'usuari s'ha copiat al porta-retalls</translation>
 <translation id="2602501489742255173">Llisca cap amunt per començar</translation>
 <translation id="2603115962224169880">Neteja l'ordinador</translation>
@@ -2395,6 +2397,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3103451787721578293">Introdueix un motiu per penjar aquestes dades:</translation>
 <translation id="3105339775057145050">L'última actualització no s'ha pogut fer</translation>
 <translation id="3105796011181310544">Vols tornar a utilitzar Google?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">El lloc web està utilitzant el Bluetooth</translation>
 <translation id="3108931485517391283">No es pot rebre</translation>
 <translation id="3108957152224931571">Color de marcatge</translation>
@@ -3036,6 +3039,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="371300529209814631">Enrere/Endavant</translation>
 <translation id="3713047097299026954">Aquesta clau de seguretat no té dades d'inici de sessió</translation>
 <translation id="3713091615825314967">Les actualitzacions automàtiques estan activades.</translation>
+<translation id="371370241367527062">Micròfon frontal</translation>
 <translation id="3714195043138862580">Aquest dispositiu de demostració s'ha donat de baixa.</translation>
 <translation id="3719826155360621982">Pàgina d'inici</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3131,6 +3135,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3797900183766075808">&amp;Cerca "<ph name="SEARCH_TERMS" />" a <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Versió</translation>
 <translation id="3798632811625902122">El dispositiu Bluetooth <ph name="DEVICE" /> sol·licita permís per vincular-se.</translation>
+<translation id="3798670284305777884">Altaveu (intern)</translation>
 <translation id="3799128412641261490">Configuració d'Accés amb interruptors</translation>
 <translation id="3800030395703848668">Mostra les opcions de la llista</translation>
 <translation id="3800806661949714323">Mostra-ho tot (opció recomanada)</translation>
@@ -5131,6 +5136,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5643620609347735571">Esborra i continua</translation>
 <translation id="5646376287012673985">Ubicació</translation>
 <translation id="5646558797914161501">Home de negocis</translation>
+<translation id="5648021990716966815">Connector per al micròfon</translation>
 <translation id="5648166631817621825">7 darrers dies</translation>
 <translation id="5651308944918885595">Visibilitat de Compartició Nearby</translation>
 <translation id="5653154844073528838">Tens <ph name="PRINTER_COUNT" /> impressores desades.</translation>
@@ -6238,6 +6244,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6678717876183468697">URL de la consulta</translation>
 <translation id="6680442031740878064">Disponible: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocitat</translation>
+<translation id="6683022854667115063">Auriculars</translation>
 <translation id="6683087162435654533">R&amp;estaura totes les pestanyes</translation>
 <translation id="6684827949542560880">S'està baixant l'actualització més recent</translation>
 <translation id="668599234725812620">Obre Google Play</translation>
@@ -6866,6 +6873,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7255002516883565667">En aquest moment tens una targeta que només es pot utilitzar en aquest dispositiu</translation>
 <translation id="7255935316994522020">Aplica</translation>
 <translation id="7256069762010468647">El lloc web està utilitzant la càmera</translation>
+<translation id="7256634071279256947">Micròfon posterior</translation>
 <translation id="7256710573727326513">Obre en una pestanya</translation>
 <translation id="7257173066616499747">Xarxes Wi-Fi</translation>
 <translation id="725758059478686223">Servei d'impressió</translation>

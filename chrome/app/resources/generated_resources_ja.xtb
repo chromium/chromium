@@ -281,6 +281,7 @@
 <translation id="1244303850296295656">拡張機能のエラー</translation>
 <translation id="1245628370644070008">ローカルデータの復元</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> をインストールできませんでした: 画像 URL から <ph name="HTTP_ERROR" /> エラーが返されました。管理者にお問い合わせください。</translation>
+<translation id="1247372569136754018">マイク（内蔵）</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{1 件のサイトで通知をブロックしています}other{{NUM_SITES} 件のサイトで通知をブロックしています}}</translation>
 <translation id="1251366534849411931">開始の中かっこがありません: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">サイトにより保存された <ph name="TOTAL_USAGE" /> のデータとインストールされたアプリが削除されます</translation>
@@ -408,6 +409,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{不正使用されたパスワードはありません}=1{不正使用されたパスワード: 1 件}other{不正使用されたパスワード: {NUM_COMPROMISED} 件}}</translation>
 <translation id="1380028686461971526">自動接続するネットワーク</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> の音声は処理のために Google に送信されます</translation>
+<translation id="1383381142702995121">この拡張機能を管理</translation>
 <translation id="1383597849754832576">読み上げファイルをダウンロードできません。しばらくしてからもう一度お試しください。</translation>
 <translation id="1383861834909034572">ダウンロードが完了したら開きます</translation>
 <translation id="1383876407941801731">検索</translation>
@@ -536,6 +538,7 @@
 <translation id="1482626744466814421">このタブをブックマークに追加...</translation>
 <translation id="1482772681918035149">パスワードを編集</translation>
 <translation id="1483493594462132177">送信</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" />（HDMI / DP）</translation>
 <translation id="1484979925941077974">サイトで Bluetooth が使用されています</translation>
 <translation id="1485015260175968628">次の権限に現在アクセス可能:</translation>
 <translation id="1485141095922496924">バージョン: <ph name="PRODUCT_VERSION" />（<ph name="PRODUCT_CHANNEL" />）<ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1089,6 +1092,7 @@
 <translation id="1965624977906726414">特別な権限はありません。</translation>
 <translation id="1966649499058910679">話されている単語を強調表示する</translation>
 <translation id="1967970931040389207">アクセス ポイントをオンにする</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" />（USB）</translation>
 <translation id="1969654639948595766">WebRTC テキストログ（<ph name="WEBRTC_TEXT_LOG_COUNT" />）</translation>
 <translation id="1972325230031091483">表示中のウェブページに基づいてコンテンツが事前に読み込まれるので、すばやくブラウジングできます</translation>
 <translation id="197288927597451399">保存</translation>
@@ -1808,7 +1812,6 @@
 <translation id="25899519884572181">リーダーモードを終了</translation>
 <translation id="2593499352046705383">開始する前に、データがバックアップされていることを確認してください。<ph name="DEVICE_OS" /> をインストールすると、ハードドライブは上書きされます。詳しくは、g.co/flex/InstallGuide をご覧ください。</translation>
 <translation id="2594999711683503743">Google で検索、または URL を入力</translation>
-<translation id="25957578727513093">このページにすばやくアクセスするには、Google パスワード マネージャーにショートカットを追加してください</translation>
 <translation id="2599048253926156421">ユーザー名をクリップボードにコピーしました</translation>
 <translation id="2602501489742255173">開始するには上にスワイプします</translation>
 <translation id="2603115962224169880">パソコンのクリーンアップ</translation>
@@ -2386,6 +2389,7 @@
 <translation id="3103451787721578293">このデータをアップロードする理由を入力してください。</translation>
 <translation id="3105339775057145050">前回失敗した更新</translation>
 <translation id="3105796011181310544">Google に戻しますか？</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" />（Bluetooth）</translation>
 <translation id="310671807099593501">サイトで Bluetooth が使用されています</translation>
 <translation id="3108931485517391283">受信できません</translation>
 <translation id="3108957152224931571">ハイライトの色</translation>
@@ -3026,6 +3030,7 @@
 <translation id="371300529209814631">戻る / 進む</translation>
 <translation id="3713047097299026954">このセキュリティ キーにはログインデータが保存されていません</translation>
 <translation id="3713091615825314967">自動更新が有効になっています。</translation>
+<translation id="371370241367527062">前方のマイク</translation>
 <translation id="3714195043138862580">このデモデバイスはプロビジョニングを解除されている状態です。</translation>
 <translation id="3719826155360621982">トップページ</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3120,6 +3125,7 @@
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> で「<ph name="SEARCH_TERMS" />」を検索(&amp;S)</translation>
 <translation id="3798449238516105146">バージョン</translation>
 <translation id="3798632811625902122">Bluetooth デバイス <ph name="DEVICE" /> がペア設定の権限をリクエストしています。</translation>
+<translation id="3798670284305777884">スピーカー（内蔵）</translation>
 <translation id="3799128412641261490">スイッチ アクセスの設定</translation>
 <translation id="3800030395703848668">リストのオプションを表示</translation>
 <translation id="3800806661949714323">すべてを表示（推奨）</translation>
@@ -4214,6 +4220,7 @@
 <translation id="4807098396393229769">カード名義人（半角英文字）</translation>
 <translation id="4808667324955055115">ポップアップがブロックされました:</translation>
 <translation id="4809079943450490359">デバイス管理者からの指示:</translation>
+<translation id="4809447465126035330">削除</translation>
 <translation id="480990236307250886">ホームページを開く</translation>
 <translation id="4809927044794281115">ライトモード</translation>
 <translation id="4811212958317149293">スイッチ アクセスのキーボード自動スキャン</translation>
@@ -5014,6 +5021,7 @@
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="5558129378926964177">拡大(&amp;I)</translation>
 <translation id="5558247502209241936">ウィンドウでアプリを開く</translation>
+<translation id="5559311991468302423">アドレスを削除</translation>
 <translation id="55601339223879446">ディスプレイ内のデスクトップの境界線を調整します</translation>
 <translation id="5561162485081632007">危険なイベントの発生を検出して警告します</translation>
 <translation id="5562781907504170924">このタブは Bluetooth デバイスに接続しています。</translation>
@@ -5114,6 +5122,7 @@
 <translation id="5643620609347735571">削除して続行</translation>
 <translation id="5646376287012673985">保存先</translation>
 <translation id="5646558797914161501">ビジネスマン</translation>
+<translation id="5648021990716966815">マイク差込口</translation>
 <translation id="5648166631817621825">過去 7 日間</translation>
 <translation id="5651308944918885595">ニアバイシェアの検出の許可</translation>
 <translation id="5653154844073528838">保存済みのプリンタは <ph name="PRINTER_COUNT" /> 件です。</translation>
@@ -6218,6 +6227,7 @@
 <translation id="6678717876183468697">クエリ URL</translation>
 <translation id="6680442031740878064">空き容量: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">速度</translation>
+<translation id="6683022854667115063">ヘッドフォン</translation>
 <translation id="6683087162435654533">すべてのタブを復元(&amp;E)</translation>
 <translation id="6684827949542560880">最新のアップデートをダウンロードしています</translation>
 <translation id="668599234725812620">Google Play を開く</translation>
@@ -6400,6 +6410,7 @@
 <translation id="6839916869147598086">ログインが変わりました</translation>
 <translation id="6840155290835956714">送信する前に確認する</translation>
 <translation id="6840184929775541289">認証局ではない</translation>
+<translation id="6840214587087739194">住所を削除しました</translation>
 <translation id="6841143363521180029">暗号化されています</translation>
 <translation id="6841186874966388268">エラー</translation>
 <translation id="6842136130964845393">保存したパスワードに常にアクセスできるようにするには、本人確認を行ってください</translation>
@@ -6843,6 +6854,7 @@
 <translation id="7255002516883565667">現在、このデバイスでのみ使用できるカードが 1 つあります</translation>
 <translation id="7255935316994522020">適用</translation>
 <translation id="7256069762010468647">サイトでカメラが使用されています</translation>
+<translation id="7256634071279256947">後方のマイク</translation>
 <translation id="7256710573727326513">タブで開く</translation>
 <translation id="7257173066616499747">Wi-Fi ネットワーク</translation>
 <translation id="725758059478686223">印刷サービス</translation>
@@ -8238,6 +8250,7 @@
 <translation id="8525306231823319788">全画面表示</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">言語を追加</translation>
+<translation id="8528479410903501741">IBAN を保存</translation>
 <translation id="8528962588711550376">ログインしています。</translation>
 <translation id="8529925957403338845">インスタント テザリングの接続に失敗しました</translation>
 <translation id="8531701051932785007">セーフ ブラウジング保護強化機能はオフになっています</translation>

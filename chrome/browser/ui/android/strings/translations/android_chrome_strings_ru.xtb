@@ -226,7 +226,6 @@
 <translation id="2248941474044011069">Ваши пароли шифруются на устройстве и только потом сохраняются в Google Менеджере паролей.</translation>
 <translation id="2249635629516220541">Управление данными, которые используют сайты для показа рекламы</translation>
 <translation id="2259659629660284697">Экспорт паролей…</translation>
-<translation id="2276231040576210443">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK1" />настройках<ph name="END_LINK1" />. Google может персонально настраивать Поиск и другие сервисы на основе вашей истории.</translation>
 <translation id="2276696007612801991">Чтобы проверить пароли, войдите в свой аккаунт Google.</translation>
 <translation id="2278052315791335171">Это не приведет к удалению вашего аккаунта на сайте <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">Платежный адрес</translation>
@@ -304,7 +303,6 @@
 <translation id="2669454659051515572">Скачанные файлы будут доступны всем пользователям этого устройства.</translation>
 <translation id="2702516483241149200">Теперь можно поделиться ссылкой, которая прокручивает страницу до этого текста.</translation>
 <translation id="2707726405694321444">Обновить страницу</translation>
-<translation id="2709516037105925701">Автозаполнение</translation>
 <translation id="271033894570825754">Новый</translation>
 <translation id="2711073837061989559">Эксперименты</translation>
 <translation id="2718352093833049315">Только Wi-Fi</translation>
@@ -396,7 +394,6 @@
 <translation id="3114507951000454849">Будьте в курсе новостей <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">связана с</translation>
 <translation id="3123734510202723619">Оповещения</translation>
-<translation id="3130863904455712965">История и другие данные</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Главная страница Chrome</translation>
 <translation id="3157931365184549694">Восстановить</translation>
@@ -990,7 +987,6 @@
 <translation id="6397616442223433927">Подключение восстановлено</translation>
 <translation id="6401458660421980302">Чтобы отправить вкладку на другое устройство, войдите на нем в Chrome.</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" />: <ph name="VIOLATED_URL" />.</translation>
-<translation id="6403371459378431832">Синхронизируйте данные на всех устройствах</translation>
 <translation id="6404511346730675251">Изменить закладку</translation>
 <translation id="6406506848690869874">Синхронизация</translation>
 <translation id="6407224748847589805">Не удается подключиться к компьютеру. Выберите другой способ подтверждения.</translation>
@@ -1319,7 +1315,6 @@
 <translation id="8037801708772278989">Проверено только что.</translation>
 <translation id="804335162455518893">SD-карта не найдена</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка инкогнито}one{<ph name="TAB_COUNT_NORMAL" /> вкладка инкогнито}few{<ph name="TAB_COUNT_NORMAL" /> вкладки инкогнито}many{<ph name="TAB_COUNT_NORMAL" /> вкладок инкогнито}other{<ph name="TAB_COUNT_NORMAL" /> вкладки инкогнито}}</translation>
-<translation id="8048728378294435881">Создайте резервную копию данных и используйте их на любом устройстве.</translation>
 <translation id="8051695050440594747">Доступно <ph name="MEGABYTES" /> МБ</translation>
 <translation id="8058655154417507695">Год окончания срока действия</translation>
 <translation id="8058746566562539958">Открыть в новой вкладке</translation>

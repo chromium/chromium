@@ -226,7 +226,6 @@ Barcha yoki ayrim saytlar uchun — ochilgan sahifalar tarixi oʻchirilganida �
 <translation id="2248941474044011069">Parollaringiz Google Parollar menejeriga saqlanishidan oldin qurilmangizda shifrlangan</translation>
 <translation id="2249635629516220541">Saytlar reklamalarni koʻrsatish uchun foydalanadigan maʼlumotlarni boshqaring</translation>
 <translation id="2259659629660284697">Parollarni eksport qilish…</translation>
-<translation id="2276231040576210443">Nimani sinxronlashni istalgan vaqtda <ph name="BEGIN_LINK1" />sozlamalar<ph name="END_LINK1" /> orqali tanlash mumkin. Brauzer tarixi asosida Google Qidiruv va boshqa xizmatlarni moslashtirishi mumkin.</translation>
 <translation id="2276696007612801991">Parollaringizni tekshirish uchun Google hisobingizga kiring</translation>
 <translation id="2278052315791335171">Bu parol olib tashlangani bilan <ph name="SITE" /> hisobingiz oʻchib ketmaydi</translation>
 <translation id="2286841657746966508">To‘lov manzili</translation>
@@ -304,7 +303,6 @@ Ishonch tokenlari Internetdagi maxfiylikni oshiradi va shaxsiy maʼlumotlaringiz
 <translation id="2669454659051515572">Bu qurilmaning barcha foydalanuvchilar yuklab olingan fayllarni koʻra oladi</translation>
 <translation id="2702516483241149200">Yangi: bu matnga varaqlaydigan havolani ulashing</translation>
 <translation id="2707726405694321444">Sahifani yangilash</translation>
-<translation id="2709516037105925701">Avtoto‘ldirish</translation>
 <translation id="271033894570825754">Yangi</translation>
 <translation id="2711073837061989559">Sinovlar</translation>
 <translation id="2718352093833049315">Faqat Wi-Fi orqali</translation>
@@ -396,7 +394,6 @@ Ishonch tokenlari Internetdagi maxfiylikni oshiradi va shaxsiy maʼlumotlaringiz
 <translation id="3114507951000454849">Bugungi yangiliklar bilan tanishing <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">ulandi</translation>
 <translation id="3123734510202723619">Xabarnomalar</translation>
-<translation id="3130863904455712965">Tarix va boshqa</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome bosh sahifasi</translation>
 <translation id="3157931365184549694">Qayta tiklash</translation>
@@ -990,7 +987,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6397616442223433927">Yana onlayndasiz</translation>
 <translation id="6401458660421980302">Bu varaqni boshqa qurilmaga yuborish uchun bu yerdan Chrome hisobiga kiring</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" />, <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">Maʼlumotlarni barcha qurilmalarda sinxronlang</translation>
 <translation id="6404511346730675251">Xatcho‘pni tahrirlash</translation>
 <translation id="6406506848690869874">Sinxronlash</translation>
 <translation id="6407224748847589805">Kompyuteringizga ulanmadi Boshqa tasdiqlash usulidan foydalaning.</translation>
@@ -1319,7 +1315,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8037801708772278989">Hozirgina tekshirildi</translation>
 <translation id="804335162455518893">SD karta topilmadi</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ta inkognito varaq}other{<ph name="TAB_COUNT_NORMAL" /> ta inkognito varaq}}</translation>
-<translation id="8048728378294435881">Maʼlumotlaringizni zaxiralang va istalgan qurilmada oching</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB bo‘sh</translation>
 <translation id="8058655154417507695">Muddati tugaydigan yil</translation>
 <translation id="8058746566562539958">Yangi Chrome oynasida ochish</translation>

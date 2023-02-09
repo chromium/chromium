@@ -542,6 +542,7 @@
 <translation id="2241693394036365668">ఫైల్ డౌన్‌లోడ్ చేసినప్పుడు</translation>
 <translation id="2246264294482514010">10 x 12 అంగుళాలు</translation>
 <translation id="2246480341630108201">మీ తల్లి/తండ్రి ఈ సైట్‌ను యాక్సెస్ చేయడానికి ఇంకా అనుమతి ఇవ్వలేదు</translation>
+<translation id="2247789808226901522">కార్డ్ గడువు ముగిసింది</translation>
 <translation id="2248949050832152960">WebAuthnను ఉపయోగించండి</translation>
 <translation id="2250931979407627383">ఎడమవైపు కుట్టిన అంచు</translation>
 <translation id="225207911366869382">ఈ విధానం కోసం ఈ విలువ విస్మరించబడింది.</translation>
@@ -1080,6 +1081,7 @@
 <translation id="3646643500201740985">యాడ్ పనితీరు ఎలా ఉందో అంచనా వేయడం</translation>
 <translation id="3647286794400715637">ప్రతి url స్ట్రింగ్ ఎంట్రీ తప్పనిసరిగా 1 నుండి 2 URLలను కలిగి ఉండాలి.</translation>
 <translation id="3650584904733503804">ప్రామాణీకరణ విజయవంతం అయింది</translation>
+<translation id="3650594806107685466">మీ కార్డ్‌ను సురక్షితంగా ఉంచడంలో సహాయపడటానికి, <ph name="SIDE_OF_CARD" /> ఉన్న CVCని ఎంటర్ చేయండి</translation>
 <translation id="3653033846669030038">థీమ్ పార్క్‌లు</translation>
 <translation id="3655241534245626312">అనుమతి సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="3655670868607891010">మీరు దీన్ని తరచుగా చూస్తుంటే, ఈ <ph name="HELP_LINK" />ని ప్రయత్నించండి.</translation>
@@ -2460,6 +2462,7 @@
 <translation id="7112327784801341716">మీ ప్రస్తుత సమాచారం కనిపించడం లేదా? దాన్ని అప్‌డేట్ చేయడం కోసం మీ బ్యాంక్‌ను సంప్రదించండి.</translation>
 <translation id="7118618213916969306">క్లిప్‌బోర్డ్ URL, <ph name="SHORT_URL" /> కోసం వెతకండి</translation>
 <translation id="7119414471315195487">ఇతర ట్యాబ్‌లు లేదా ప్రోగ్రామ్‌లను మూసివేయండి</translation>
+<translation id="7124354851782353862">మీ CVCని ఎంటర్ చేయండి</translation>
 <translation id="7129355289156517987">మీరు అన్ని Chromium అజ్ఞాత ట్యాబ్‌లను మూసివేసినప్పుడు, ఆ ట్యాబ్‌లలోని మీ యాక్టివిటీ ఈ పరికరం నుండి తీసివేయబడుతుంది:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />బ్రౌజింగ్ యాక్టివిటీ<ph name="END_LIST_ITEM" />
@@ -2786,6 +2789,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{ఏదీ వద్దు}=1{1 యాప్ (<ph name="EXAMPLE_APP_1" />)}=2{2 యాప్‌లు (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# యాప్‌లు (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">మీకు కనిపించే యాడ్‌లను వ్యక్తిగతీకరించడానికి, తర్వాత, మీరు చూసే సైట్ Chromeను మీ టాపిక్‌ల కోసం అడగవచ్చు. మీ బ్రౌజింగ్ హిస్టరీ, గుర్తింపును రక్షిస్తూనే Chrome గరిష్ఠంగా 3 టాపిక్‌లను షేర్ చేస్తుంది.</translation>
+<translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> మీ కొత్త గడువు తేదీ, CVCని ఎంటర్ చేయండి</translation>
 <translation id="7862185352068345852">సైట్ నుండి నిష్క్రమించాలా?</translation>
 <translation id="7865448901209910068">ఉత్తమ వేగం</translation>
 <translation id="7871445724586827387">మీ Google ఖాతా పాస్‌వర్డ్‌ను మార్చండి</translation>

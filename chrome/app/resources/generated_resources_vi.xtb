@@ -284,6 +284,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1244303850296295656">Lỗi tiện ích</translation>
 <translation id="1245628370644070008">Khôi phục dữ liệu cục bộ</translation>
 <translation id="1246863218384630739">Không thể cài đặt <ph name="VM_NAME" />: URL của hình ảnh trả về mã lỗi <ph name="HTTP_ERROR" />. Vui lòng liên hệ với quản trị viên của bạn.</translation>
+<translation id="1247372569136754018">Micrô (bên trong)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Không cho phép thông báo đối với 1 trang web}other{Không cho phép thông báo đối với {NUM_SITES} trang web}}</translation>
 <translation id="1251366534849411931">Thiếu dấu ngoặc nhọn mở: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Thao tác này sẽ xóa <ph name="TOTAL_USAGE" /> dữ liệu lưu trữ trong các trang web và ứng dụng đã cài đặt</translation>
@@ -542,6 +543,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1482626744466814421">Đánh dấu thẻ này...</translation>
 <translation id="1482772681918035149">chỉnh sửa mật khẩu</translation>
 <translation id="1483493594462132177">Gửi</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Trang web đang sử dụng Bluetooth</translation>
 <translation id="1485015260175968628">Tiện ích/ứng dụng giờ đây có thể:</translation>
 <translation id="1485141095922496924">Phiên bản <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1109,6 +1111,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1965624977906726414">Không có đặc quyền.</translation>
 <translation id="1966649499058910679">Làm nổi bật từng từ khi từ được đọc</translation>
 <translation id="1967970931040389207">Bật điểm phát sóng</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">Nhật ký văn bản WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Bạn sẽ duyệt web nhanh hơn vì nội dung được tải chủ động dựa trên trang web bạn đang truy cập</translation>
 <translation id="197288927597451399">Giữ lại</translation>
@@ -1835,7 +1838,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="25899519884572181">Thoát khỏi chế độ đọc</translation>
 <translation id="2593499352046705383">Trước khi bắt đầu, hãy đảm bảo rằng bạn đã sao lưu dữ liệu. Quá trình cài đặt <ph name="DEVICE_OS" /> sẽ ghi đè lên ổ đĩa cứng. Tìm hiểu thêm tại g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Tìm kiếm trên Google hoặc nhập URL</translation>
-<translation id="25957578727513093">Để truy cập nhanh hơn, hãy thêm lối tắt vào Trình quản lý mật khẩu của Google</translation>
 <translation id="2599048253926156421">Đã sao chép tên người dùng vào bảng nhớ tạm</translation>
 <translation id="2602501489742255173">Vuốt lên để bắt đầu</translation>
 <translation id="2603115962224169880">Dọn dẹp máy tính</translation>
@@ -2413,6 +2415,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3103451787721578293">Vui lòng nhập lý do tải dữ liệu này lên:</translation>
 <translation id="3105339775057145050">Lần cập nhật không thành công gần nhất</translation>
 <translation id="3105796011181310544">Chuyển lại về Google?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Trang web đang sử dụng Bluetooth</translation>
 <translation id="3108931485517391283">Không thể nhận</translation>
 <translation id="3108957152224931571">Màu đánh dấu</translation>
@@ -3054,6 +3057,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="371300529209814631">Lùi/Tiến</translation>
 <translation id="3713047097299026954">Khóa bảo mật này không có bất kỳ dữ liệu đăng nhập nào</translation>
 <translation id="3713091615825314967">Tính năng tự động cập nhật đã được bật.</translation>
+<translation id="371370241367527062">Micrô mặt trước</translation>
 <translation id="3714195043138862580">Thiết bị giới thiệu này đã được đặt sang trạng thái hủy cấp phép.</translation>
 <translation id="3719826155360621982">Trang chủ</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3149,6 +3153,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3797900183766075808">&amp;Tìm kiếm trên <ph name="SEARCH_ENGINE" /> cho “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="3798449238516105146">Phiên bản</translation>
 <translation id="3798632811625902122">Thiết bị Bluetooth <ph name="DEVICE" /> muốn có quyền ghép nối.</translation>
+<translation id="3798670284305777884">Loa (bên trong)</translation>
 <translation id="3799128412641261490">Cài đặt tính năng Tiếp cận bằng công tắc</translation>
 <translation id="3800030395703848668">Xem các tuỳ chọn danh sách</translation>
 <translation id="3800806661949714323">Hiển thị tất cả (được đề xuất)</translation>
@@ -5151,6 +5156,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5643620609347735571">Xóa và tiếp tục</translation>
 <translation id="5646376287012673985">Vị trí</translation>
 <translation id="5646558797914161501">Doanh nhân</translation>
+<translation id="5648021990716966815">Giắc cắm micrô</translation>
 <translation id="5648166631817621825">7 ngày qua</translation>
 <translation id="5651308944918885595">Khả năng tìm thấy thiết bị Chia sẻ lân cận</translation>
 <translation id="5653154844073528838">Bạn đã lưu <ph name="PRINTER_COUNT" /> máy in.</translation>
@@ -6260,6 +6266,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6678717876183468697">URL truy vấn</translation>
 <translation id="6680442031740878064">Còn trống: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Tốc độ</translation>
+<translation id="6683022854667115063">Tai nghe</translation>
 <translation id="6683087162435654533">K&amp;hôi phục tất cả các thẻ</translation>
 <translation id="6684827949542560880">Đang tải bản cập nhật mới nhất xuống</translation>
 <translation id="668599234725812620">Mở Google Play</translation>
@@ -6888,6 +6895,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7255002516883565667">Bạn hiện có 1 thẻ chỉ dùng được trên thiết bị này</translation>
 <translation id="7255935316994522020">Áp dụng</translation>
 <translation id="7256069762010468647">Trang web đang sử dụng máy ảnh của bạn</translation>
+<translation id="7256634071279256947">Micrô mặt sau</translation>
 <translation id="7256710573727326513">Mở trong một thẻ</translation>
 <translation id="7257173066616499747">Mạng Wi-Fi</translation>
 <translation id="725758059478686223">Dịch vụ in</translation>

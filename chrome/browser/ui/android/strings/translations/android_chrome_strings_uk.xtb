@@ -226,7 +226,6 @@
 <translation id="2248941474044011069">Ваші паролі шифруються на пристрої, а потім зберігаються в Менеджері паролів Google</translation>
 <translation id="2249635629516220541">Керуйте інформацією, яку сайти використовують для показу реклами</translation>
 <translation id="2259659629660284697">Експортувати паролі…</translation>
-<translation id="2276231040576210443">Ви можете будь-коли вибрати дані для синхронізації в <ph name="BEGIN_LINK1" />налаштуваннях<ph name="END_LINK1" />. Google може персоналізувати Пошук та інші сервіси на основі вашої історії.</translation>
 <translation id="2276696007612801991">Щоб перевірити паролі, увійдіть в обліковий запис Google</translation>
 <translation id="2278052315791335171">Якщо видалити цей пароль, ваш обліковий запис на сайті <ph name="SITE" /> залишиться</translation>
 <translation id="2286841657746966508">Розрахункова адреса</translation>
@@ -304,7 +303,6 @@
 <translation id="2669454659051515572">Усі користувачі цього пристрою можуть бачити завантажені файли</translation>
 <translation id="2702516483241149200">Новинка! Діліться посиланням, яке прокручує сторінку до цього тексту</translation>
 <translation id="2707726405694321444">Оновити сторінку</translation>
-<translation id="2709516037105925701">Автозаповнення</translation>
 <translation id="271033894570825754">Новий</translation>
 <translation id="2711073837061989559">Пробні версії функцій</translation>
 <translation id="2718352093833049315">Лише у Wi-Fi</translation>
@@ -396,7 +394,6 @@
 <translation id="3114507951000454849">Читайте сьогоднішні новини <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">зв’язано з</translation>
 <translation id="3123734510202723619">Оголошення</translation>
-<translation id="3130863904455712965">Історія та інші переваги</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Головна сторінка Chrome</translation>
 <translation id="3157931365184549694">Відновити</translation>
@@ -922,6 +919,7 @@
 <translation id="6000203700195075278">Підписатися знову</translation>
 <translation id="6002122790816966947">Ваші пристрої</translation>
 <translation id="6005538289190791541">Запропонований пароль</translation>
+<translation id="6011308810877101166">Покращувати підказки в пошуку</translation>
 <translation id="6039379616847168523">Перейти до наступної вкладки</translation>
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="604124094241169006">Автоматично</translation>
@@ -989,7 +987,6 @@
 <translation id="6397616442223433927">З'єднання відновлено</translation>
 <translation id="6401458660421980302">Щоб надіслати цю вкладку на інший пристрій, увійдіть на ньому в Chrome</translation>
 <translation id="6402652558933147609">Помилка <ph name="ERROR_CODE" /> на сторінці <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">Синхронізуйте дані на всіх пристроях</translation>
 <translation id="6404511346730675251">Редагувати закладку</translation>
 <translation id="6406506848690869874">Синхронізація</translation>
 <translation id="6407224748847589805">Не вдається підключитися до комп'ютера. Виберіть інший варіант підтвердження.</translation>
@@ -1318,7 +1315,6 @@
 <translation id="8037801708772278989">Щойно перевірено</translation>
 <translation id="804335162455518893">Карту SD не знайдено</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> анонімна вкладка}one{<ph name="TAB_COUNT_NORMAL" /> анонімна вкладка}few{<ph name="TAB_COUNT_NORMAL" /> анонімні вкладки}many{<ph name="TAB_COUNT_NORMAL" /> анонімних вкладок}other{<ph name="TAB_COUNT_NORMAL" /> анонімної вкладки}}</translation>
-<translation id="8048728378294435881">Створюйте резервні копії даних і використовуйте їх на будь-якому пристрої</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> МБ доступно</translation>
 <translation id="8058655154417507695">Рік закінчення терміну дії</translation>
 <translation id="8058746566562539958">Відкрити в новій вкладці Chrome</translation>
@@ -1452,6 +1448,7 @@
 <translation id="8746155870861185046">Поділитися виділеним текстом</translation>
 <translation id="8748850008226585750">Вміст сховано</translation>
 <translation id="8756969031206844760">Оновити пароль?</translation>
+<translation id="8765470054473112089">Коли ви вводите текст в адресному рядку або полі пошуку, Chrome надсилає цей запит у пошукову систему за умовчанням, щоб надати вам кращі підказки. В анонімному режимі цю функцію вимкнено.</translation>
 <translation id="8766529642647037772">Створити виділене посилання, таке як це?</translation>
 <translation id="8773160212632396039">Обробка запиту</translation>
 <translation id="8788265440806329501">Історію навігації закрито</translation>

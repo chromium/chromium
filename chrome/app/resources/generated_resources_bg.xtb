@@ -284,6 +284,7 @@
 <translation id="1244303850296295656">Грешка в разширението</translation>
 <translation id="1245628370644070008">Възстановяване на локални данни</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> не се инсталира: URL адресът на изображението изведе код на грешка <ph name="HTTP_ERROR" />. Моля, обърнете се към администратора си.</translation>
+<translation id="1247372569136754018">Микрофон (вътрешен)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Известията не са разрешени за 1 сайт}other{Известията не са разрешени за {NUM_SITES} сайта}}</translation>
 <translation id="1251366534849411931">Очаква се отваряща фигурна скоба: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Съхраняваните от сайтовете и инсталираните приложения данни в размер на <ph name="TOTAL_USAGE" /> ще бъдат изчистени</translation>
@@ -542,6 +543,7 @@
 <translation id="1482626744466814421">Запазване на отметка към този раздел...</translation>
 <translation id="1482772681918035149">редактиране на паролите</translation>
 <translation id="1483493594462132177">Изпращане</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Сайтът използва Bluetooth</translation>
 <translation id="1485015260175968628">То вече има възможност за:</translation>
 <translation id="1485141095922496924">Версия <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />), <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1103,6 +1105,7 @@
 <translation id="1965624977906726414">Няма специални разрешения.</translation>
 <translation id="1966649499058910679">Открояване на всяка дума, докато се изговаря</translation>
 <translation id="1967970931040389207">Включване на точката за достъп</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">Регистрационни файлове за предаване на текст с WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Ще сърфирате по-бързо, тъй като съдържанието се зарежда предварително въз основа на уеб страницата, на която се намирате в момента</translation>
 <translation id="197288927597451399">Запазване</translation>
@@ -1828,7 +1831,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="25899519884572181">Изход от режима за четене</translation>
 <translation id="2593499352046705383">Преди да започнете, уверете се, че имате резервно копие на данните си. При инсталирането на <ph name="DEVICE_OS" /> твърдият ви диск ще бъде презаписан. Научете повече на адрес g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Потърсете с Google или въведете URL адрес</translation>
-<translation id="25957578727513093">За по-бърз достъп добавете пряк път към Google Мениджър на пароли</translation>
 <translation id="2599048253926156421">Потребителското име е копирано в буферната памет</translation>
 <translation id="2602501489742255173">Прекарайте пръст нагоре, за да започнете</translation>
 <translation id="2603115962224169880">Почистване на компютъра</translation>
@@ -2406,6 +2408,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3103451787721578293">Въведете причина за качването на тези данни:</translation>
 <translation id="3105339775057145050">Последната актуализация не бе успешна</translation>
 <translation id="3105796011181310544">Искате ли да се върнете към Google?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Сайтът използва Bluetooth</translation>
 <translation id="3108931485517391283">Не е възможно получаване</translation>
 <translation id="3108957152224931571">Цвят за открояване</translation>
@@ -3047,6 +3050,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="371300529209814631">Назад/напред</translation>
 <translation id="3713047097299026954">В този ключ за сигурност няма данни за вход</translation>
 <translation id="3713091615825314967">Автоматичните актуализации са включени.</translation>
+<translation id="371370241367527062">Преден микрофон</translation>
 <translation id="3714195043138862580">Обезпечаването на това демонстрационно устройство е отменено.</translation>
 <translation id="3719826155360621982">Начална страница</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3142,6 +3146,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3797900183766075808">&amp;Търсене на „<ph name="SEARCH_TERMS" />“ със: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Версия</translation>
 <translation id="3798632811625902122">Устройството с Bluetooth „<ph name="DEVICE" />“ иска разрешение за сдвояване.</translation>
+<translation id="3798670284305777884">Високоговорител (вътрешен)</translation>
 <translation id="3799128412641261490">Настройки на достъпа с превключване</translation>
 <translation id="3800030395703848668">Преглед на опциите за показване</translation>
 <translation id="3800806661949714323">Показване на всички (препоръчително)</translation>
@@ -5146,6 +5151,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5643620609347735571">Изчистване и продължаване</translation>
 <translation id="5646376287012673985">Местоположение</translation>
 <translation id="5646558797914161501">Бизнесмен</translation>
+<translation id="5648021990716966815">Жак за микрофон</translation>
 <translation id="5648166631817621825">Последните 7 дни</translation>
 <translation id="5651308944918885595">Откриваемост за „Споделяне наблизо“</translation>
 <translation id="5653154844073528838">Имате <ph name="PRINTER_COUNT" /> запазени принтера.</translation>
@@ -6254,6 +6260,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6678717876183468697">URL адрес на заявката</translation>
 <translation id="6680442031740878064">Свободно място: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Скорост</translation>
+<translation id="6683022854667115063">Слушалки</translation>
 <translation id="6683087162435654533">Възстановяване на всички раздели</translation>
 <translation id="6684827949542560880">Изтегля се най-новата актуализация</translation>
 <translation id="668599234725812620">Отваряне на Google Play</translation>
@@ -6882,6 +6889,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7255002516883565667">В момента имате една карта, която може да се използва само на това устройство</translation>
 <translation id="7255935316994522020">Прилагане</translation>
 <translation id="7256069762010468647">Сайтът използва камерата ви</translation>
+<translation id="7256634071279256947">Заден микрофон</translation>
 <translation id="7256710573727326513">Отваряне в раздел</translation>
 <translation id="7257173066616499747">Wi-Fi мрежи</translation>
 <translation id="725758059478686223">Услуга за отпечатване</translation>

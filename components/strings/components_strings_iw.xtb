@@ -524,6 +524,7 @@
 <translation id="2202627062836089804">גב הכרטיס</translation>
 <translation id="22081806969704220">מגש 3</translation>
 <translation id="2210794033760923560">העלאת הדוח</translation>
+<translation id="2212579473415663542">‏הכתובת הזו שמורה בחשבון Google שלך (<ph name="ACCOUNT" />). ניתן להשתמש בכתובת במוצרי Google בכל מכשיר.</translation>
 <translation id="2212735316055980242">לא נמצאה מדיניות</translation>
 <translation id="2213606439339815911">מאחזר רשומות...</translation>
 <translation id="2213612003795704869">הדף מודפס</translation>
@@ -1979,6 +1980,7 @@ Del</translation>
 <translation id="5866898949289125849">הדף המוצג הוא של הכלים למפתחים</translation>
 <translation id="5869405914158311789">לא ניתן לגשת לאתר הזה</translation>
 <translation id="5869522115854928033">סיסמאות שמורות</translation>
+<translation id="5872692522325383488">‏מספר IBAN נשמר</translation>
 <translation id="5873013647450402046">הבנק שלך רוצה לאמת את זהותך.</translation>
 <translation id="5877831137320480913">יופי וכושר גופני</translation>
 <translation id="5884465125445718607">מעטפה – סינית 6</translation>
@@ -2148,6 +2150,7 @@ Del</translation>
 <translation id="6300452962057769623">{0,plural, =0{המכשיר יופעל מחדש עכשיו}=1{המכשיר יופעל מחדש בתוך שנייה}one{המכשיר יופעל מחדש בתוך # שניות}two{המכשיר יופעל מחדש בתוך # שניות}other{המכשיר יופעל מחדש בתוך # שניות}}</translation>
 <translation id="6301104306974789820">קבלת התראות לגבי מעקב אחר מחירים</translation>
 <translation id="6305205051461490394">לא ניתן לגשת אל <ph name="URL" />.</translation>
+<translation id="6306713302480826305">הכתובת הזו תימחק מהמכשיר הזה ומשאר המכשירים שמחוברים לחשבון</translation>
 <translation id="6311165245110979290">יש כרטיס וירטואלי זמין</translation>
 <translation id="6312113039770857350">דף האינטרנט אינו זמין</translation>
 <translation id="6316226860534107313">קטנועים וטוסטוסים</translation>
@@ -3041,6 +3044,7 @@ Del</translation>
 <translation id="8473863474539038330">כתובות ועוד</translation>
 <translation id="8474910779563686872">הצגת פרטי המפתח</translation>
 <translation id="8479754468255770962">סיכת הידוק בפינה השמאלית התחתונה</translation>
+<translation id="8483229036294884935">‏הכתובת הזו תימחק מחשבון Google שלך, <ph name="ACCOUNT" /></translation>
 <translation id="8483780878231876732">‏כדי להשתמש בכרטיסים מחשבון Google, יש להיכנס אל Chrome</translation>
 <translation id="8488350697529856933">חלה על</translation>
 <translation id="8490137692873530638">מערים 10</translation>

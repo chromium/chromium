@@ -284,6 +284,7 @@
 <translation id="1244303850296295656">Өргөтгөлийн алдаа</translation>
 <translation id="1245628370644070008">Орон нутгийн өгөгдлийг сэргээх</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" />-г суулгаж чадсангүй: Зургийн URL <ph name="HTTP_ERROR" /> алдааны кодыг буцаасан. Админтайгаа холбогдоно уу.</translation>
+<translation id="1247372569136754018">Микрофон (дотоод)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Мэдэгдлийг 1 сайтад зөвшөөрөөгүй}other{Мэдэгдлийг {NUM_SITES} сайтад зөвшөөрөөгүй}}</translation>
 <translation id="1251366534849411931">Хээтэй хаалтыг нээхээр хүлээж байсан <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Энэ нь сайтууд болон суулгасан аппуудын хадгалсан <ph name="TOTAL_USAGE" />-н өгөгдлийг арилгана</translation>
@@ -542,6 +543,7 @@
 <translation id="1482626744466814421">Энэ табыг тэмдэглэх...</translation>
 <translation id="1482772681918035149">нууц үгийг засах</translation>
 <translation id="1483493594462132177">Илгээх</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Сайт Bluetooth-г ашиглаж байна</translation>
 <translation id="1485015260175968628">Энэ одоо болно:</translation>
 <translation id="1485141095922496924"><ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /> хувилбар</translation>
@@ -1103,6 +1105,7 @@
 <translation id="1965624977906726414">Ямар ч тусгай зөвшөөрөл байхгүй.</translation>
 <translation id="1966649499058910679">Үг бүрийг хэлэх үед нь тодруулах</translation>
 <translation id="1967970931040389207">Сүлжээний цэгийг асаах</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">WebRTC текст лог (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Контентыг таны одоогийн веб хуудасны зочилсон байдалд тулгуурлан идэвхтэй ачаалсан тул та илүү хурдан үзнэ</translation>
 <translation id="197288927597451399">Хадгал</translation>
@@ -1828,7 +1831,6 @@
 <translation id="25899519884572181">Уншигчийн горимоос гарах</translation>
 <translation id="2593499352046705383">Эхлэхээсээ өмнө өгөгдлөө нөөцөлсөн эсэхээ шалгана уу. <ph name="DEVICE_OS" />-г суулгаснаар таны хатуу дискийг дарж бичнэ. Та g.co/flex/InstallGuide дээрээс нэмэлт мэдээлэл авна уу.</translation>
 <translation id="2594999711683503743">Google-с хайх эсвэл URL бичих</translation>
-<translation id="25957578727513093">Энд илүү шуурхай очихын тулд Google Password Manager-т товчлол нэмнэ үү</translation>
 <translation id="2599048253926156421">Хэрэглэгчийн нэрийг түр санах ойд хуулсан</translation>
 <translation id="2602501489742255173">Эхлүүлэхийн тулд дээш шударна уу</translation>
 <translation id="2603115962224169880">Компьютерийг цэвэрлэх</translation>
@@ -2406,6 +2408,7 @@
 <translation id="3103451787721578293">Энэ өгөгдлийг байршуулах шалтгаан оруулна уу:</translation>
 <translation id="3105339775057145050">Сүүлийн амжилтгүй болсон шинэчлэлт</translation>
 <translation id="3105796011181310544">Google рүү буцааж өөрчлөх үү?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Сайт bluetooth-г ашиглаж байна</translation>
 <translation id="3108931485517391283">Хүлээн авах боломжгүй</translation>
 <translation id="3108957152224931571">Тодруулах өнгө</translation>
@@ -3047,6 +3050,7 @@
 <translation id="371300529209814631">Буцах/Урагшлах</translation>
 <translation id="3713047097299026954">Энэ аюулгүй байдлын түлхүүрт ямар нэгэн нэвтрэх өгөгдөл алга байна</translation>
 <translation id="3713091615825314967">Автомат шинэчлэлтийг асаасан.</translation>
+<translation id="371370241367527062">Урд талын микрофон</translation>
 <translation id="3714195043138862580">Энэ демо төхөөрөмжийн нэвтрэх эрхийг хүчингүй болгосон байна.</translation>
 <translation id="3719826155360621982">Нүүр хуудас</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3142,6 +3146,7 @@
 <translation id="3797900183766075808">&amp;“<ph name="SEARCH_TERMS" />”-д зориулсан <ph name="SEARCH_ENGINE" />-ыг хайх</translation>
 <translation id="3798449238516105146">Хувилбар</translation>
 <translation id="3798632811625902122"><ph name="DEVICE" /> Bluetooth төхөөрөмж хослуулах зөвшөөрөл хүсэж байна.</translation>
+<translation id="3798670284305777884">Чанга яригч (дотоод)</translation>
 <translation id="3799128412641261490">Сэлгүүрийн тохиргоо</translation>
 <translation id="3800030395703848668">Жагсаалтын сонголтыг харах</translation>
 <translation id="3800806661949714323">Бүгдийг харуулах (санал болгосон)</translation>
@@ -5144,6 +5149,7 @@
 <translation id="5643620609347735571">Устгаад үргэлжлүүлэх</translation>
 <translation id="5646376287012673985">Байршил</translation>
 <translation id="5646558797914161501">Ажил хэрэгч хүн</translation>
+<translation id="5648021990716966815">Микрофоны чихэвчний оролт</translation>
 <translation id="5648166631817621825">Сүүлийн 7 хоног</translation>
 <translation id="5651308944918885595">Ойролцоо хуваалцах онцлогийн илрэх байдал</translation>
 <translation id="5653154844073528838">Танд хадгалсан <ph name="PRINTER_COUNT" /> хэвлэгч байна.</translation>
@@ -6251,6 +6257,7 @@
 <translation id="6678717876183468697">Хүсэлтийн URL</translation>
 <translation id="6680442031740878064">Сул зай: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Үнэлэх</translation>
+<translation id="6683022854667115063">Чихэвч</translation>
 <translation id="6683087162435654533">Бүх табыг сэргээх</translation>
 <translation id="6684827949542560880">Хамгийн сүүлийн шинэчлэлтийг татаж байна</translation>
 <translation id="668599234725812620">Google Play-г нээх</translation>
@@ -6879,6 +6886,7 @@
 <translation id="7255002516883565667">Танд одоогоор зөвхөн энэ төхөөрөмж дээр ашиглах боломжтой нэг карт байна</translation>
 <translation id="7255935316994522020">Хэрэглэх</translation>
 <translation id="7256069762010468647">Сайт таны камерыг ашиглаж байна</translation>
+<translation id="7256634071279256947">Арын микрофон</translation>
 <translation id="7256710573727326513">Шинэ цонхонд нээх</translation>
 <translation id="7257173066616499747">Wi-Fi сүлжээ</translation>
 <translation id="725758059478686223">Хэвлэх үйлчилгээ</translation>

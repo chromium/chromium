@@ -524,6 +524,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2202627062836089804">kartes aizmugurē</translation>
 <translation id="22081806969704220">3. paplāte</translation>
 <translation id="2210794033760923560">Augšupielādēt pārskatu</translation>
+<translation id="2212579473415663542">Šī adrese ir saglabāta jūsu Google kontā (<ph name="ACCOUNT" />). Varat izmantot šo adresi Google produktos jebkurā ierīcē.</translation>
 <translation id="2212735316055980242">Politika netika atrasta.</translation>
 <translation id="2213606439339815911">Notiek ierakstu ienešana...</translation>
 <translation id="2213612003795704869">Lapa ir izdrukāta</translation>
@@ -1971,6 +1972,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5866898949289125849">Jūs skatāt izstrādātāja rīku lapu</translation>
 <translation id="5869405914158311789">Šī vietne nav sasniedzama</translation>
 <translation id="5869522115854928033">Saglabātās paroles</translation>
+<translation id="5872692522325383488">IBAN ir saglabāts</translation>
 <translation id="5873013647450402046">Banka vēlas apstiprināt jūsu identitāti</translation>
 <translation id="5877831137320480913">Skaistums un fitness</translation>
 <translation id="5884465125445718607">Ķīniešu aploksne 6</translation>
@@ -2140,6 +2142,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6300452962057769623">{0,plural, =0{Jūsu ierīce tiks restartēta tūlīt}=1{Jūsu ierīce tiks restartēta pēc 1 sekundes}zero{Jūsu ierīce tiks restartēta # sekundēm}one{Jūsu ierīce tiks restartēta # sekundes}other{Jūsu ierīce tiks restartēta # sekundēm}}</translation>
 <translation id="6301104306974789820">Saņemt cenu izsekošanas paziņojumus</translation>
 <translation id="6305205051461490394">Vietne <ph name="URL" /> nav sasniedzama.</translation>
+<translation id="6306713302480826305">Šī adrese tiks dzēsta no šīs ierīces un pārējām jūsu ierīcēm, kurās esat pierakstījies.</translation>
 <translation id="6311165245110979290">Virtuālā karte ir pieejama</translation>
 <translation id="6312113039770857350">Tīmekļa lapa nav pieejama</translation>
 <translation id="6316226860534107313">Motorolleri un mopēdi</translation>
@@ -3031,6 +3034,7 @@ Papildu informācija:
 <translation id="8473863474539038330">Adreses un citus datus</translation>
 <translation id="8474910779563686872">Skatīt informāciju par izstrādātāju</translation>
 <translation id="8479754468255770962">Skavojums apakšējā kreisajā malā</translation>
+<translation id="8483229036294884935">Šī adrese tiks dzēsta no jūsu Google konta (<ph name="ACCOUNT" />).</translation>
 <translation id="8483780878231876732">Lai izmantotu kartes no sava Google konta, pierakstieties pārlūkā Chrome!</translation>
 <translation id="8488350697529856933">Attiecas uz</translation>
 <translation id="8490137692873530638">10. izvades vieta</translation>

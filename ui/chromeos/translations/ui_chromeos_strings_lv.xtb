@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Angļu (ASV), ar Dvorak tastatūru</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> — saimniekdators</translation>
 <translation id="1521655867290435174">Google izklājlapas</translation>
+<translation id="1521795806314479294">Notiek faila “<ph name="FILE_NAME" />” sagatavošana…</translation>
 <translation id="1538729222189715449">Notiek Linux failu atvēršana…</translation>
 <translation id="1547964879613821194">Kanādas angļu</translation>
 <translation id="1556189134700913550">Lietot visiem</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Notiek <ph name="NUMBER_OF_ITEMS" /> vienumu tilpsaspiešana...</translation>
 <translation id="1722687688096767818">Notiek profila pievienošana...</translation>
 <translation id="1726100011689679555">Nosaukumu serveri</translation>
+<translation id="1727562178154619254">Gatavs sinhronizēšanai</translation>
 <translation id="1729953886957086472">Vācu (Vācija)</translation>
 <translation id="1730235522912993863">Ķīniešu, Candže</translation>
 <translation id="1731889557567069540">Nokopēti vienumi: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">Pielāgoti nosaukumu serveri</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, pārvalda jūsu administrators, savienojums</translation>
 <translation id="4470564870223067757">Hangils (2 Set)</translation>
+<translation id="4474142134969976028">Nav atbilstošu rezultātu</translation>
 <translation id="4477002475007461989">Rumāņu</translation>
 <translation id="4477219268485577442">Bulgāru fonētiskā</translation>
 <translation id="4508265954913339219">Aktivizācija neizdevās</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">Izmantojiet nosaukumu, kas nepārsniedz <ph name="MAX_LENGTH" /> rakstzīmes.</translation>
 <translation id="4973970068702235170">Pārvietošana neizdevās; radās neparedzēta kļūda: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japāņu</translation>
+<translation id="4987699874727873250">Angļu (Indija)</translation>
 <translation id="4988205478593450158">Vai tiesām vēlaties dzēst failu <ph name="FILE_NAME" />?</translation>
 <translation id="498902553138568924">Sarkans tauriņš</translation>
 <translation id="4992066212339426712">Ieslēgt skaņu</translation>
@@ -509,6 +513,7 @@
    Atvienojot ierīci lietošanas laikā, var tikt zaudēti dati. Lūdzu, uzgaidiet, līdz tiks pabeigta darbība, un pēc tam atvienojiet ierīci, izmantojot lietotni Faili.</translation>
 <translation id="5163869187418756376">Kopīgošana neizdevās. Pārbaudiet savienojumu un vēlāk mēģiniet vēlreiz.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
+<translation id="5167102019886320507">Notiek <ph name="NUMBER_OF_ITEMS" /> faila(-u) sagatavošana…</translation>
 <translation id="5177526793333269655">Sīktēlu skatījums</translation>
 <translation id="5181896909298187506">Nav nesenu failu</translation>
 <translation id="5194713942430106590">Noklikšķiniet, lai kārtotu kolonnas augošā secībā.</translation>
@@ -813,6 +818,7 @@
 <translation id="7655441028674523381">Ērta piekļuve Google fotoattēliem</translation>
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7665680517722058469">Izmēģiniet citu meklēšanas vaicājumu</translation>
 <translation id="7689532716264131859">Vienumi (<ph name="NUMBER_OF_ITEMS" />) ir pārvietoti uz atkritni.</translation>
 <translation id="7693909743393669729">Formatējot disku, tiks dzēsti visi tajā glabātie dati un tiks noņemti visi esošie nodalījumi, tostarp tie, kas nav redzami. Šo darbību nevar atsaukt.</translation>
 <translation id="7695430100978772476">Nevarēja formatēt disku “<ph name="DRIVE_NAME" />”.</translation>

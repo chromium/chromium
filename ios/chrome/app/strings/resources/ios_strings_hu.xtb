@@ -408,6 +408,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="4038354071007134711">Nincs alkalmazás, amellyel megnyitható ez a fájl.</translation>
 <translation id="4042870976416480368">Keresés az oldalon</translation>
 <translation id="40433179647657191">Létrehozhat és megoszthat az oldal kiemelt részére mutató közvetlen linket.</translation>
+<translation id="4045648459118332842">Egyetlen koppintással hozzáférhet mentett jelszavaihoz bármilyen alkalmazásban</translation>
 <translation id="4049507953662678203">Győződjön meg róla, hogy rendelkezik hálózati kapcsolattal, majd próbálja újra.</translation>
 <translation id="4063300985191096908">Hírcsatorna megnyitása</translation>
 <translation id="408404951701638773">Mostantól egyszerűbb a keresés a keresősávban</translation>
@@ -818,6 +819,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="6869389390665537774">Megtekintheti a felkeresett oldalakat, és törölheti őket az előzmények közül.</translation>
 <translation id="687135068089457384">Beállítások megjelenítése</translation>
 <translation id="6873263987691478642">Osztott nézet</translation>
+<translation id="6873366418270195926">Ha az ár csökken bármelyik webhelyen, Ön értesítést kap majd. A rendszer az oldalt a <ph name="BEGIN_LINK" />Könyvjelzők<ph name="END_LINK" /> közé mentette.</translation>
 <translation id="6882836635272038266">Normál védelem azon webhelyekkel, letöltésekkel és bővítményekkel szemben, amelyekről ismert, hogy veszélyesek.</translation>
 <translation id="6888009575607455378">Biztosan elveti a módosításokat?</translation>
 <translation id="6896758677409633944">Másolás</translation>
@@ -1121,6 +1123,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="952704832371081537">Mégse</translation>
 <translation id="953008885340860025">Kijelentkezett a Chrome-ból</translation>
 <translation id="959066944189734975">Követi a következőt: <ph name="CHANNEL_NAME" /></translation>
+<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Szervezete csak bizonyos fiókokkal engedélyezi a bejelentkezést. A nem engedélyezett fiókokat elrejti a rendszer.</translation>
 <translation id="984509647832111802">A szinkronizálás nem működik.</translation>
 <translation id="988141524645182168">Egyéb eszközök</translation>

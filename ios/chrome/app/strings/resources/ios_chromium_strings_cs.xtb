@@ -62,6 +62,7 @@
 <translation id="4985291216379576555">Chrome nemůže vyhledat dostupné aktualizace, protože jste offline</translation>
 <translation id="4996471330284142407">S prohlížečem Chromium toho stihnete víc – je jednoduchý, bezpečný a rychlejší než kdy dřív.</translation>
 <translation id="4999538639245140991">Protože se odhlašujete z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaše data prohlížeče Chromium z tohoto zařízení budou smazána. V účtu Google vám zůstanou.</translation>
+<translation id="5048795749726991615">Pokud chcete mít uložená hesla snadno k dispozici v jiných aplikacích, používejte Chromium k automatickému vyplňování</translation>
 <translation id="5171868502429358653">Přihlásit se do prohlížeče Chromium</translation>
 <translation id="5224391634244552924">Nemáte žádná uložená hesla. Chromium může hesla zkontrolovat, pouze když si je uložíte.</translation>
 <translation id="5308226104666789935">Chromium nemůže vyhledat dostupné aktualizace</translation>
@@ -91,6 +92,7 @@
 <translation id="7045244423563602563">Přizpůsobení prohlížeče Chromium</translation>
 <translation id="7099326575020694068">Prohlížeč Chromium nemůže používat fotoaparát v režimu Split View.</translation>
 <translation id="7118091470949186573">Nyní můžete Chromium použít pokaždé, když klepnete na odkazy ve zprávách, dokumentech a ostatních aplikacích.</translation>
+<translation id="7165402419892018581">Vyberte Chromium pro automatické vyplňování</translation>
 <translation id="7175400662502680481">Vaše heslo bylo vyzrazeno při porušení zabezpečení údajů. Správce hesel doporučuje ihned ho změnit.</translation>
 <translation id="7208566199746267865">Chromium vám šetří čas tím, že vaše účty přenáší na web. Účty můžete přidat nebo odstranit v Nastavení.</translation>
 <translation id="725427773388857052">Chromium vás pomáhá chránit před porušeními zabezpečení údajů, nebezpečnými weby a dalšími hrozbami.</translation>
@@ -105,6 +107,7 @@
 <translation id="7746854981345936341">Tip pro Chromium. Některá tlačítka, například Zpět, Vpřed a Hledat, jsou teď v dolní části obrazovky.</translation>
 <translation id="7763454117143368771">Používejte Chromium jako výchozí prohlížeč – ochrání vás před nebezpečnými weby a vaše hesla budou v bezpečí</translation>
 <translation id="7812317783196516890">Jste přihlášeni a synchronizujete data pomocí účtu spravovaného v doméně <ph name="DOMAIN" />, jejíž administrátor nyní může v tomto konkrétním účtu nastavit zásady pro uživatele, které mohou chování prohlížeče Chromium změnit.</translation>
+<translation id="7859018312476869945">Při psaní do adresního řádku nebo vyhledávacího pole odesílá Chromium zadaný obsah do výchozího vyhledávače, aby vám mohl nabízet lepší návrhy. V anonymním režimu je tato funkce vypnutá.</translation>
 <translation id="786327964234957808">Přepínáte účet pro synchronizaci z <ph name="USER_EMAIL1" /> na <ph name="USER_EMAIL2" />. Vaše existující data prohlížeče Chromium jsou spravována doménou <ph name="DOMAIN" />. Touto akcí svá data smažete z tohoto zařízení, v účtu <ph name="USER_EMAIL1" /> však vaše data zůstanou.</translation>
 <translation id="7890287942691234100">Začněte používat skener prohlížeče Chromium</translation>
 <translation id="7928628054454574139">Otevřít Chromium při každém klepnutí na odkaz v jiné aplikaci</translation>
@@ -114,6 +117,7 @@
 <translation id="8073677936375100957">Vymazat z tohoto zařízení data prohlížeče Chromium?</translation>
 <translation id="8240981428553046115">Chromium nemůže vyhledat dostupné aktualizace. Zkuste to znovu později.</translation>
 <translation id="8409374867500149834">Máte nejsilnější zabezpečení prohlížeče Chromium proti škodlivým webům</translation>
+<translation id="8460301378281140593">V nastavení iPhonu otevřete Možnosti hesel a vyberte Chromium.</translation>
 <translation id="858114650497379505">Hesla, která jste si uložili do Správce hesel, můžete používat v jiných aplikacích na svém iPhonu.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autoři prohlížeče Chromium. Všechna práva vyhrazena.</translation>
 <translation id="8603022514504485810">Správci hesel Google se nepodařilo zkontrolovat všechna hesla. Zkuste to znovu zítra, případně <ph name="BEGIN_LINK" />hesla zkontrolujte v účtu Google<ph name="END_LINK" />.</translation>

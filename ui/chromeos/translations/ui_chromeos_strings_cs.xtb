@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">angličtina (USA) s klávesnicí Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – hostitelský server</translation>
 <translation id="1521655867290435174">Tabulky Google</translation>
+<translation id="1521795806314479294">Příprava souboru <ph name="FILE_NAME" />…</translation>
 <translation id="1538729222189715449">Otevírání souborů systému Linux...</translation>
 <translation id="1547964879613821194">Kanadská anglická klávesnice</translation>
 <translation id="1556189134700913550">Použít na vše</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Komprimace <ph name="NUMBER_OF_ITEMS" /> položek...</translation>
 <translation id="1722687688096767818">Přidávání profilu…</translation>
 <translation id="1726100011689679555">Jmenné servery</translation>
+<translation id="1727562178154619254">Připraveno k synchronizaci</translation>
 <translation id="1729953886957086472">němčina (Německo)</translation>
 <translation id="1730235522912993863">čínština (Čchang-ťie)</translation>
 <translation id="1731889557567069540">Zkopírované položky: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">Vlastní názvové servery</translation>
 <translation id="4465725236958772856">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, spravováno administrátorem, připojit</translation>
 <translation id="4470564870223067757">Hangul – 2 sady</translation>
+<translation id="4474142134969976028">Dotazu neodpovídají žádné výsledky</translation>
 <translation id="4477002475007461989">rumunština</translation>
 <translation id="4477219268485577442">Bulharská fonetická klávesnice</translation>
 <translation id="4508265954913339219">Aktivace se nezdařila</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">Název nesmí být delší než <ph name="MAX_LENGTH" /> znaků</translation>
 <translation id="4973970068702235170">Komprimace se nezdařila, neočekávaná chyba: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">japonština</translation>
+<translation id="4987699874727873250">Angličtina (Indie)‎</translation>
 <translation id="4988205478593450158">Opravdu soubor <ph name="FILE_NAME" /> chcete odstranit?</translation>
 <translation id="498902553138568924">Červený motýl</translation>
 <translation id="4992066212339426712">Zapnout zvuk</translation>
@@ -509,6 +513,7 @@
    Pokud zařízení odeberete během používání, může dojít ke ztrátě dat. Počkejte prosím na dokončení operace a poté zařízení odpojte pomocí aplikace Soubory.</translation>
 <translation id="5163869187418756376">Sdílení se nezdařilo. Zkontrolujte připojení k síti a zkuste to znovu.</translation>
 <translation id="516592729076796170">Americká klávesnice Dvorak</translation>
+<translation id="5167102019886320507">Příprava <ph name="NUMBER_OF_ITEMS" /> položek…</translation>
 <translation id="5177526793333269655">Zobrazení miniatur</translation>
 <translation id="5181896909298187506">Žádné nedávné soubory</translation>
 <translation id="5194713942430106590">Kliknutím sloupec seřadíte vzestupně.</translation>
@@ -812,6 +817,7 @@
 <translation id="7655441028674523381">Snadný přístup k Fotkám Google</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7663224033570512922">hindština</translation>
+<translation id="7665680517722058469">Zkuste vyhledat něco jiného</translation>
 <translation id="7689532716264131859">Položky (<ph name="NUMBER_OF_ITEMS" />) byly přesunuty do koše</translation>
 <translation id="7693909743393669729">Naformátováním jednotky smažete všechna na ní uložená data a odstraníte všechny stávající oddíly (včetně neviditelných). Tuto akci nelze vrátit zpět.</translation>
 <translation id="7695430100978772476">Disk <ph name="DRIVE_NAME" /> se nepodařilo naformátovat</translation>

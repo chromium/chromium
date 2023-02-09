@@ -285,6 +285,7 @@
 <translation id="1244303850296295656">Грешка на наставка</translation>
 <translation id="1245628370644070008">Враќање на локалните податоци</translation>
 <translation id="1246863218384630739">Не можеше да се инсталира <ph name="VM_NAME" />: се појави грешка со код <ph name="HTTP_ERROR" /> за URL на сликата. Контактирајте со администраторот.</translation>
+<translation id="1247372569136754018">Микрофон (внатрешен)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Известувањата не се дозволени за 1 сајт}one{Известувањата не се дозволени за {NUM_SITES} сајт}other{Известувањата не се дозволени за {NUM_SITES} сајтови}}</translation>
 <translation id="1251366534849411931">Се очекува лева голема заграда: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Ова ќе ги избрише податоците (<ph name="TOTAL_USAGE" />) складирани од сајтовите и инсталираните апликации</translation>
@@ -543,6 +544,7 @@
 <translation id="1482626744466814421">Обележете ја картичкава…</translation>
 <translation id="1482772681918035149">ги измени лозинките</translation>
 <translation id="1483493594462132177">Испрати</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Сајтот користи Bluetooth</translation>
 <translation id="1485015260175968628">Сега може:</translation>
 <translation id="1485141095922496924">Верзија <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1108,6 +1110,7 @@
 <translation id="1965624977906726414">Нема специјални дозволи.</translation>
 <translation id="1966649499058910679">Нагласувај го секој збор додека се изговара</translation>
 <translation id="1967970931040389207">Вклучување на точката на пристап</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">Текстуална евиденција на WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Ќе прелистувате побрзо бидејќи содржините се вчитуваат проактивно според вашата тековна посета на веб-страницата</translation>
 <translation id="197288927597451399">Чувај</translation>
@@ -1833,7 +1836,6 @@
 <translation id="25899519884572181">Излезете од режим на читач</translation>
 <translation id="2593499352046705383">Пред да започнете, уверете се дека имате направено бекап на вашите податоци. Инсталирањето на <ph name="DEVICE_OS" /> ќе го презапише вашиот хард диск. Дознајте повеќе на g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Пребарајте на Google или внесете URL-адреса</translation>
-<translation id="25957578727513093">За побрз пристап дотука, додајте кратенка во Google Password Manager</translation>
 <translation id="2599048253926156421">Корисничкото име е копирано во привремена меморија</translation>
 <translation id="2602501489742255173">Повлечете нагоре за да започнете</translation>
 <translation id="2603115962224169880">Чистење на компјутерот</translation>
@@ -2411,6 +2413,7 @@
 <translation id="3103451787721578293">Внесете причина за прикачување на податоциве:</translation>
 <translation id="3105339775057145050">Последно неуспешно ажурирање</translation>
 <translation id="3105796011181310544">Да се врати на Google?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Сајтот користи Bluetooth</translation>
 <translation id="3108931485517391283">Не може да се прими</translation>
 <translation id="3108957152224931571">Боја за нагласување</translation>
@@ -3052,6 +3055,7 @@
 <translation id="371300529209814631">Назад/Напред</translation>
 <translation id="3713047097299026954">Овој безбедносен клуч нема податоци за најавување</translation>
 <translation id="3713091615825314967">Автоматските ажурирања се вклучени.</translation>
+<translation id="371370241367527062">Преден микрофон</translation>
 <translation id="3714195043138862580">Овој демо-режим е ставен во состојба на оневозможен пристап.</translation>
 <translation id="3719826155360621982">Почетна страница</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3147,6 +3151,7 @@
 <translation id="3797900183766075808">&amp;Пребарај „<ph name="SEARCH_TERMS" />“ на <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Верзија</translation>
 <translation id="3798632811625902122">Уредот со Bluetooth <ph name="DEVICE" /> бара дозвола за спарување.</translation>
+<translation id="3798670284305777884">Звучник (внатрешен)</translation>
 <translation id="3799128412641261490">Поставки за „Пристап со прекинувачи“</translation>
 <translation id="3800030395703848668">Прикажи го списокот со опции</translation>
 <translation id="3800806661949714323">Прикажи ги сите (се препорачува)</translation>
@@ -5149,6 +5154,7 @@
 <translation id="5643620609347735571">Исчисти и продолжи</translation>
 <translation id="5646376287012673985">Локација</translation>
 <translation id="5646558797914161501">Бизнисмен</translation>
+<translation id="5648021990716966815">Приклучок за микрофон</translation>
 <translation id="5648166631817621825">Изминатите 7 дена</translation>
 <translation id="5651308944918885595">Достапност на „Споделување во близина“</translation>
 <translation id="5653154844073528838">Имате <ph name="PRINTER_COUNT" /> зачувани печатачи.</translation>
@@ -6259,6 +6265,7 @@
 <translation id="6678717876183468697">Барај URL</translation>
 <translation id="6680442031740878064">Слободен простор: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Брзина</translation>
+<translation id="6683022854667115063">Слушалки</translation>
 <translation id="6683087162435654533">&amp;Врати ги сите картички</translation>
 <translation id="6684827949542560880">Се презема најновото ажурирање</translation>
 <translation id="668599234725812620">Отвори Google Play</translation>
@@ -6887,6 +6894,7 @@
 <translation id="7255002516883565667">Во моментов имате една картичка што може да се користи само на овој уред</translation>
 <translation id="7255935316994522020">Примени</translation>
 <translation id="7256069762010468647">Сајтот ја користи камерата</translation>
+<translation id="7256634071279256947">Заден микрофон</translation>
 <translation id="7256710573727326513">Отвори во картичка</translation>
 <translation id="7257173066616499747">Wi-Fi мрежи</translation>
 <translation id="725758059478686223">Услуга за печатење</translation>

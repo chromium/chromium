@@ -226,7 +226,6 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="2248941474044011069">Passordene dine krypteres på enheten før de lagres i Google Passordlagring</translation>
 <translation id="2249635629516220541">Tilpass informasjonen som brukes av nettsteder for å vise deg annonser</translation>
 <translation id="2259659629660284697">Eksportér passord</translation>
-<translation id="2276231040576210443">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK1" />innstillingene<ph name="END_LINK1" />. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="2276696007612801991">Logg på Google-kontoen din for å sjekke passordene dine</translation>
 <translation id="2278052315791335171">Sletting av dette passordet sletter ikke kontoen din på <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Faktureringsadresse</translation>
@@ -304,7 +303,6 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="2669454659051515572">Alle som bruker denne enheten, kan se nedlastede filer</translation>
 <translation id="2702516483241149200">Ny: del en link som ruller til denne teksten</translation>
 <translation id="2707726405694321444">Last inn siden på nytt</translation>
-<translation id="2709516037105925701">Autofyll</translation>
 <translation id="271033894570825754">Ny</translation>
 <translation id="2711073837061989559">Prøveprosjekter</translation>
 <translation id="2718352093833049315">Bare når Wifi er på</translation>
@@ -396,7 +394,6 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="3114507951000454849">Les dagens nyheter <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">Tilknyttet til</translation>
 <translation id="3123734510202723619">Kunngjøringer</translation>
-<translation id="3130863904455712965">Logg med mer</translation>
 <translation id="3134784203083076891">»</translation>
 <translation id="314939179385989105">Startsiden for Chrome</translation>
 <translation id="3157931365184549694">Gjenopprett</translation>
@@ -990,7 +987,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6397616442223433927">På nettet igjen</translation>
 <translation id="6401458660421980302">For å sende denne fanen til en annen enhet, logg på Chrome der</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> på <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">Synkroniser dataene dine på alle enheter</translation>
 <translation id="6404511346730675251">Rediger bokmerket</translation>
 <translation id="6406506848690869874">Synkroniser</translation>
 <translation id="6407224748847589805">Kan ikke koble til datamaskinen din. Prøv et annet bekreftelsesalternativ.</translation>
@@ -1319,7 +1315,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8037801708772278989">Sjekket nettopp</translation>
 <translation id="804335162455518893">Finner ikke SD-kort</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognitofane}other{<ph name="TAB_COUNT_NORMAL" /> inkognitofaner}}</translation>
-<translation id="8048728378294435881">Sikkerhetskopier tingene dine og bruk dem på alle enheter</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB tilgjengelig</translation>
 <translation id="8058655154417507695">Utløpsår</translation>
 <translation id="8058746566562539958">Åpne i en ny Chrome-fane</translation>

@@ -226,7 +226,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2248941474044011069">Aðgangsorðin þín eru dulkóðuð í tækinu áður en þau eru vistuð í aðgangsorðastjórnun Google</translation>
 <translation id="2249635629516220541">Sérsníddu upplýsingarnar sem vefsvæði nota til að birta þér auglýsingar</translation>
 <translation id="2259659629660284697">Flytja út aðgangsorð…</translation>
-<translation id="2276231040576210443">Þú getur alltaf valið hvað á að samstilla í <ph name="BEGIN_LINK1" />stillingunum<ph name="END_LINK1" />. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="2276696007612801991">Skráðu þig inn á Google reikninginn þinn til að athuga aðgangsorðin þín</translation>
 <translation id="2278052315791335171">Reikningnum þínum á <ph name="SITE" /> verður ekki eytt þó að þessu aðgangsorði verði eytt</translation>
 <translation id="2286841657746966508">Heimilisfang greiðanda</translation>
@@ -304,7 +303,6 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="2669454659051515572">Allir sem nota þetta tæki geta séð sóttar skrár</translation>
 <translation id="2702516483241149200">Nýtt: Deildu tengli sem flettir að þessum texta</translation>
 <translation id="2707726405694321444">Endurnýja síðu</translation>
-<translation id="2709516037105925701">Sjálfvirk útfylling</translation>
 <translation id="271033894570825754">Nýtt</translation>
 <translation id="2711073837061989559">Prufuútgáfur</translation>
 <translation id="2718352093833049315">Aðeins um Wi-Fi</translation>
@@ -396,7 +394,6 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="3114507951000454849">Lestu fréttir dagsins <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">tengt við</translation>
 <translation id="3123734510202723619">Tilkynningar</translation>
-<translation id="3130863904455712965">Ferill og fleira</translation>
 <translation id="3134784203083076891">“</translation>
 <translation id="314939179385989105">Heimasíða Chrome</translation>
 <translation id="3157931365184549694">Endurheimta</translation>
@@ -990,7 +987,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6397616442223433927">Nettenging komin aftur</translation>
 <translation id="6401458660421980302">Til að senda þennan flipa í annað tæki þarftu að skrá þig þar inn í Chrome</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> á <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">Samstilla gögnin þín í öllum tækjum</translation>
 <translation id="6404511346730675251">Breyta bókamerki</translation>
 <translation id="6406506848690869874">Samstilling</translation>
 <translation id="6407224748847589805">Ekki næst tenging við tölvuna þína. Prófaðu aðra staðfestingaraðferð.</translation>
@@ -1319,7 +1315,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8037801708772278989">Athugað rétt í þessu</translation>
 <translation id="804335162455518893">SD-kort fannst ekki</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> huliðsflipi}one{<ph name="TAB_COUNT_NORMAL" /> huliðsflipi}other{<ph name="TAB_COUNT_NORMAL" /> huliðsflipar}}</translation>
-<translation id="8048728378294435881">Afritaðu efnið þitt og notaðu það í hvaða tæki sem er</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB tiltæk</translation>
 <translation id="8058655154417507695">Gildir til ársins</translation>
 <translation id="8058746566562539958">Opna í nýjum flipa Chrome</translation>

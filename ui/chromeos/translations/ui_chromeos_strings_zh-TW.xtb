@@ -410,6 +410,7 @@
 <translation id="4462159676511157176">自訂名稱伺服器</translation>
 <translation id="4465725236958772856">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，由系統管理員管理，連線</translation>
 <translation id="4470564870223067757">韓文 2 Set</translation>
+<translation id="4474142134969976028">沒有相符的搜尋結果</translation>
 <translation id="4477002475007461989">羅馬尼亞文</translation>
 <translation id="4477219268485577442">保加利亞文 (拼音)</translation>
 <translation id="4508265954913339219">啟用失敗</translation>
@@ -817,6 +818,7 @@
 <translation id="7655441028674523381">輕鬆存取 Google 相簿</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7663224033570512922">北印度文</translation>
+<translation id="7665680517722058469">嘗試搜尋其他字詞</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> 個項目已移至垃圾桶</translation>
 <translation id="7693909743393669729">將硬碟格式化會清除其中儲存的所有資料，並移除所有的現有分割區，包括未顯示的分割區。這項操作無法復原。</translation>
 <translation id="7695430100978772476">無法格式化 <ph name="DRIVE_NAME" /></translation>

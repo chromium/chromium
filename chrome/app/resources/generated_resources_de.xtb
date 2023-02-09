@@ -282,6 +282,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1244303850296295656">Erweiterungsfehler</translation>
 <translation id="1245628370644070008">Wiederherstellung lokaler Daten</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> konnte nicht installiert werden: Die Image-URL hat einen <ph name="HTTP_ERROR" />-Fehlercode zurückgegeben. Bitte wende dich an deinen Administrator.</translation>
+<translation id="1247372569136754018">Mikrofon (intern)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Benachrichtigungen nicht zulässig für 1 Website}other{Benachrichtigungen nicht zulässig für {NUM_SITES} Websites}}</translation>
 <translation id="1251366534849411931">Erwartete öffnende geschweifte Klammer: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Dadurch werden <ph name="TOTAL_USAGE" /> an von Websites oder installierten Apps gespeicherten Daten gelöscht</translation>
@@ -410,6 +411,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Keine gehackten Passwörter}=1{1 gehacktes Passwort}other{{NUM_COMPROMISED} gehackte Passwörter}}</translation>
 <translation id="1380028686461971526">Verbindung mit Netzwerk automatisch herstellen</translation>
 <translation id="1381567580865186407">Sprachaufnahmen auf <ph name="LANGUAGE" /> werden zur Verarbeitung an Google gesendet</translation>
+<translation id="1383381142702995121">Diese Erweiterung verwalten</translation>
 <translation id="1383597849754832576">Sprachdateien können nicht heruntergeladen werden. Versuch es später noch einmal.</translation>
 <translation id="1383861834909034572">Nach Download öffnen</translation>
 <translation id="1383876407941801731">Durchsuchen</translation>
@@ -538,6 +540,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1482626744466814421">Lesezeichen für diesen Tab erstellen…</translation>
 <translation id="1482772681918035149">Passwörter bearbeiten</translation>
 <translation id="1483493594462132177">Senden</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Die Website verwendet Bluetooth</translation>
 <translation id="1485015260175968628">Aktualisierte Berechtigungen:</translation>
 <translation id="1485141095922496924">Version <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1091,6 +1094,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1965624977906726414">Erfordert keine besonderen Berechtigungen</translation>
 <translation id="1966649499058910679">Jedes Wort hervorheben, das gerade gesprochen wird</translation>
 <translation id="1967970931040389207">Hotspot aktivieren</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">WebRTC-Textprotokolle (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Du kannst schneller surfen, da Inhalte basierend auf deinen Seitenaufrufen proaktiv geladen werden</translation>
 <translation id="197288927597451399">Behalten</translation>
@@ -1813,7 +1817,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="25899519884572181">Lesemodus deaktivieren</translation>
 <translation id="2593499352046705383">Erstelle vor der Installation auf jeden Fall ein Back-up deiner Daten. Wenn du <ph name="DEVICE_OS" /> installierst, werden die Daten auf deiner Festplatte überschrieben. Weitere Informationen findest du unter g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Bei Google suchen oder URL eingeben</translation>
-<translation id="25957578727513093">Du kannst eine Verknüpfung zum Google Passwortmanager hinzufügen, um schneller hierher zurückzukehren</translation>
 <translation id="2599048253926156421">Nutzername in Zwischenablage kopiert</translation>
 <translation id="2602501489742255173">Zum Starten nach oben wischen</translation>
 <translation id="2603115962224169880">Computer bereinigen</translation>
@@ -1855,7 +1858,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2634199532920451708">Druckverlauf</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635276683026132559">Signatur</translation>
-<translation id="2637313651144986786">Tabs werden durchsucht…</translation>
+<translation id="2637313651144986786">Tabs suchen…</translation>
 <translation id="2637400434494156704">Falsche PIN. Du hast noch einen Eingabeversuch.</translation>
 <translation id="2638662041295312666">Log-in-Bild</translation>
 <translation id="2640299212685523844">GTK verwenden</translation>
@@ -2391,6 +2394,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3103451787721578293">Bitte gib einen Grund für das Hochladen dieser Daten an:</translation>
 <translation id="3105339775057145050">Letztes fehlgeschlagenes Update</translation>
 <translation id="3105796011181310544">Wieder zu Google wechseln?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Die Website verwendet Bluetooth</translation>
 <translation id="3108931485517391283">Empfang nicht möglich</translation>
 <translation id="3108957152224931571">Hervorhebungsfarbe</translation>
@@ -3032,6 +3036,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="371300529209814631">Zurück/Vor</translation>
 <translation id="3713047097299026954">Auf diesem Sicherheitsschlüssel sind keine Anmeldedaten gespeichert</translation>
 <translation id="3713091615825314967">Automatische Updates sind aktiviert.</translation>
+<translation id="371370241367527062">Mikrofon auf der Vorderseite</translation>
 <translation id="3714195043138862580">Die Bereitstellung dieses Demogeräts wurde aufgehoben.</translation>
 <translation id="3719826155360621982">Startseite</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3127,6 +3132,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> nach "<ph name="SEARCH_TERMS" />" durchsuchen</translation>
 <translation id="3798449238516105146">Version</translation>
 <translation id="3798632811625902122">Das Bluetooth-Gerät „<ph name="DEVICE" />“ bittet um Erlaubnis für Kopplung.</translation>
+<translation id="3798670284305777884">Lautsprecher (intern)</translation>
 <translation id="3799128412641261490">Einstellungen für Schalterzugriff</translation>
 <translation id="3800030395703848668">Sortieroptionen anzeigen</translation>
 <translation id="3800806661949714323">Alle anzeigen (empfohlen)</translation>
@@ -4224,6 +4230,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4807098396393229769">Name auf Karte</translation>
 <translation id="4808667324955055115">Pop-ups blockiert:</translation>
 <translation id="4809079943450490359">Anweisungen des Geräteadministrators:</translation>
+<translation id="4809447465126035330">Löschen</translation>
 <translation id="480990236307250886">Startseite öffnen</translation>
 <translation id="4809927044794281115">Helles Design</translation>
 <translation id="4811212958317149293">Automatischer Scan der Tastatur bei Schalterzugriff</translation>
@@ -5026,6 +5033,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5556459405103347317">Neu laden</translation>
 <translation id="5558129378926964177">Ver&amp;größern</translation>
 <translation id="5558247502209241936">Öffnen der App im Fenster aktivieren</translation>
+<translation id="5559311991468302423">Adresse löschen</translation>
 <translation id="55601339223879446">Die Ränder des Desktops an den Bildschirm anpassen</translation>
 <translation id="5561162485081632007">Erkennt schädliche Ereignisse, sobald diese passieren, und warnt dich entsprechend</translation>
 <translation id="5562781907504170924">Dieser Tab ist mit einem Bluetooth-Gerät verbunden.</translation>
@@ -5124,6 +5132,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5643620609347735571">Löschen und fortfahren</translation>
 <translation id="5646376287012673985">Standort</translation>
 <translation id="5646558797914161501">Geschäftsmann</translation>
+<translation id="5648021990716966815">Mikrofonanschluss</translation>
 <translation id="5648166631817621825">Letzte 7 Tage</translation>
 <translation id="5651308944918885595">Nearby Share-Sichtbarkeit</translation>
 <translation id="5653154844073528838">Du hast <ph name="PRINTER_COUNT" /> gespeicherte Drucker.</translation>
@@ -6231,6 +6240,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6678717876183468697">Abfrage-URL</translation>
 <translation id="6680442031740878064">Verfügbar: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Geschwindigkeit</translation>
+<translation id="6683022854667115063">Kopfhörer</translation>
 <translation id="6683087162435654533">Alle Tabs wi&amp;ederherstellen</translation>
 <translation id="6684827949542560880">Das neueste Update wird heruntergeladen</translation>
 <translation id="668599234725812620">Google Play öffnen</translation>
@@ -6414,6 +6424,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6839916869147598086">Anmeldung hat sich geändert</translation>
 <translation id="6840155290835956714">Vor dem Senden nachfragen</translation>
 <translation id="6840184929775541289">Ist keine Zertifizierungsstelle</translation>
+<translation id="6840214587087739194">Adresse gelöscht</translation>
 <translation id="6841143363521180029">Verschlüsselt</translation>
 <translation id="6841186874966388268">Fehler</translation>
 <translation id="6842136130964845393">Bestätige deine Identität, damit du jederzeit auf deine gespeicherten Passwörter zugreifen kannst</translation>
@@ -6858,6 +6869,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7255002516883565667">Derzeit kann eine deiner Karten nur auf diesem Gerät verwendet werden</translation>
 <translation id="7255935316994522020">Übernehmen</translation>
 <translation id="7256069762010468647">Die Website verwendet deine Kamera</translation>
+<translation id="7256634071279256947">Mikrofon auf der Rückseite</translation>
 <translation id="7256710573727326513">In Tab öffnen</translation>
 <translation id="7257173066616499747">WLANs</translation>
 <translation id="725758059478686223">Druckdienst</translation>
@@ -8258,6 +8270,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8525306231823319788">Vollbildmodus</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Sprachen hinzufügen</translation>
+<translation id="8528479410903501741">IBAN speichern</translation>
 <translation id="8528962588711550376">Anmeldung läuft...</translation>
 <translation id="8529925957403338845">Fehler bei Instant Tethering-Verbindung</translation>
 <translation id="8531701051932785007">Erweitertes Safe Browsing ist deaktiviert</translation>

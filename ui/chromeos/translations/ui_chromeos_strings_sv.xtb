@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">engelska (USA) med Dvorak-tangentbord</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Värd</translation>
 <translation id="1521655867290435174">Google Kalkylark</translation>
+<translation id="1521795806314479294">Förbereder <ph name="FILE_NAME" /> …</translation>
 <translation id="1538729222189715449">Linux-filerna öppnas …</translation>
 <translation id="1547964879613821194">Kanadensisk engelska</translation>
 <translation id="1556189134700913550">Ersätt alla</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> objekt komprimeras ...</translation>
 <translation id="1722687688096767818">Lägger till profil …</translation>
 <translation id="1726100011689679555">Namnservrar</translation>
+<translation id="1727562178154619254">Kan synkroniseras</translation>
 <translation id="1729953886957086472">tyska (Tyskland)</translation>
 <translation id="1730235522912993863">kinesiska (cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> objekt har kopierats.</translation>
@@ -480,6 +482,7 @@
 <translation id="4973523518332075481">Ange ett namn på högst <ph name="MAX_LENGTH" /> tecken</translation>
 <translation id="4973970068702235170">Komprimeringen misslyckades. Oväntat fel: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">japanska</translation>
+<translation id="4987699874727873250">Engelska (Indien)</translation>
 <translation id="4988205478593450158">Vill du ta bort <ph name="FILE_NAME" />?</translation>
 <translation id="498902553138568924">Röd fjäril</translation>
 <translation id="4992066212339426712">Slå på ljudet</translation>
@@ -510,6 +513,7 @@
    Om du tar bort enheten medan den används kan du förlora data. Vänta tills åtgärden är slutförd och koppla sedan från enheten med appen Files.</translation>
 <translation id="5163869187418756376">Delningen misslyckades. Kontrollera anslutningen och försök igen senare.</translation>
 <translation id="516592729076796170">Dvorak för programmerare i USA</translation>
+<translation id="5167102019886320507">Förbereder <ph name="NUMBER_OF_ITEMS" /> objekt …</translation>
 <translation id="5177526793333269655">Miniatyrvy</translation>
 <translation id="5181896909298187506">Inga nya filer</translation>
 <translation id="5194713942430106590">Klicka här om kolumnen ska sorteras i stigande ordning.</translation>

@@ -285,6 +285,7 @@
 <translation id="1244303850296295656">Ошибка расширения</translation>
 <translation id="1245628370644070008">Восстановление локальных данных</translation>
 <translation id="1246863218384630739">Не удалось установить <ph name="VM_NAME" />: URL образа вернул ошибку <ph name="HTTP_ERROR" />. Обратитесь к администратору.</translation>
+<translation id="1247372569136754018">Микрофон (встроенный)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Уведомления запрещены для 1 сайта}one{Уведомления запрещены для {NUM_SITES} сайта}few{Уведомления запрещены для {NUM_SITES} сайтов}many{Уведомления запрещены для {NUM_SITES} сайтов}other{Уведомления запрещены для {NUM_SITES} сайта}}</translation>
 <translation id="1251366534849411931">Отсутствует ожидаемая открывающая фигурная скобка: <ph name="ERROR_LINE" />.</translation>
 <translation id="1251480783646955802">Будут удалены сохраненные данные сайтов и установленных с них приложений (<ph name="TOTAL_USAGE" />).</translation>
@@ -542,6 +543,7 @@
 <translation id="1482626744466814421">Добавить страницу в закладки...</translation>
 <translation id="1482772681918035149">изменить пароли</translation>
 <translation id="1483493594462132177">Отправить</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Сайт использует устройство Bluetooth</translation>
 <translation id="1485015260175968628">Разрешения:</translation>
 <translation id="1485141095922496924">Версия <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />), <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1097,6 +1099,7 @@
 <translation id="1965624977906726414">Без специальных разрешений.</translation>
 <translation id="1966649499058910679">Выделять слова по мере озвучивания</translation>
 <translation id="1967970931040389207">Включить точку доступа</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">Текстовые журналы WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Работа браузера станет быстрее благодаря автоматической загрузке контента с учетом просматриваемой в настоящий момент страницы.</translation>
 <translation id="197288927597451399">Сохранить</translation>
@@ -1819,7 +1822,6 @@
 <translation id="25899519884572181">Выйти из режима чтения</translation>
 <translation id="2593499352046705383">Прежде всего обязательно создайте резервную копию данных. При установке <ph name="DEVICE_OS" /> вся информация на жестком диске будет перезаписана. Подробные сведения приведены на странице g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Введите запрос для поиска в Google или укажите URL</translation>
-<translation id="25957578727513093">Для быстрого доступа добавьте ярлык Google Менеджера паролей.</translation>
 <translation id="2599048253926156421">Имя пользователя скопировано в буфер обмена</translation>
 <translation id="2602501489742255173">Чтобы начать, проведите по экрану вверх.</translation>
 <translation id="2603115962224169880">Удаление вредоносного ПО с компьютера</translation>
@@ -2397,6 +2399,7 @@
 <translation id="3103451787721578293">Укажите причину, по которой вы загружаете эти данные:</translation>
 <translation id="3105339775057145050">Последний сбой при обновлении</translation>
 <translation id="3105796011181310544">Вернуться к Google?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Сайт использует Bluetooth</translation>
 <translation id="3108931485517391283">Не удалось получить файл</translation>
 <translation id="3108957152224931571">Цвет выделения</translation>
@@ -3038,6 +3041,7 @@
 <translation id="371300529209814631">Назад/Вперед</translation>
 <translation id="3713047097299026954">На электронном ключе нет учетных данных.</translation>
 <translation id="3713091615825314967">Автоматическое обновление включено</translation>
+<translation id="371370241367527062">Фронтальный микрофон</translation>
 <translation id="3714195043138862580">Демонстрационное устройство было деинициализировано.</translation>
 <translation id="3719826155360621982">Главная страница</translation>
 <translation id="372062398998492895">Принтеры CUPS</translation>
@@ -3133,6 +3137,7 @@
 <translation id="3797900183766075808">&amp;Найти "<ph name="SEARCH_TERMS" />" в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Версия</translation>
 <translation id="3798632811625902122">Устройству <ph name="DEVICE" /> требуется разрешение на подключение через Bluetooth.</translation>
+<translation id="3798670284305777884">Динамик (встроенный)</translation>
 <translation id="3799128412641261490">Настройки функции Switch Access</translation>
 <translation id="3800030395703848668">Посмотреть параметры сортировки</translation>
 <translation id="3800806661949714323">Показать все (рекомендуется)</translation>
@@ -5134,6 +5139,7 @@
 <translation id="5643620609347735571">Удалить и продолжить</translation>
 <translation id="5646376287012673985">Местоположение</translation>
 <translation id="5646558797914161501">Бизнесмен</translation>
+<translation id="5648021990716966815">Микрофонный разъем</translation>
 <translation id="5648166631817621825">Последние 7 дней</translation>
 <translation id="5651308944918885595">Обмен с окружением: параметры видимости</translation>
 <translation id="5653154844073528838">Сохраненных принтеров: <ph name="PRINTER_COUNT" />.</translation>
@@ -6248,6 +6254,7 @@
 <translation id="6678717876183468697">URL запроса</translation>
 <translation id="6680442031740878064">Доступно: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Скорость речи</translation>
+<translation id="6683022854667115063">Наушники</translation>
 <translation id="6683087162435654533">Восстановить все вкладки</translation>
 <translation id="6684827949542560880">Скачивается последнее обновление</translation>
 <translation id="668599234725812620">Открыть Google Play</translation>
@@ -6876,6 +6883,7 @@
 <translation id="7255002516883565667">Сейчас вашу карту можно использовать только на этом устройстве</translation>
 <translation id="7255935316994522020">Применить</translation>
 <translation id="7256069762010468647">Сайт использует камеру</translation>
+<translation id="7256634071279256947">Основной микрофон</translation>
 <translation id="7256710573727326513">Открыть в новой вкладке</translation>
 <translation id="7257173066616499747">Сети Wi-Fi</translation>
 <translation id="725758059478686223">Сервис печати</translation>

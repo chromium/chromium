@@ -63,6 +63,7 @@
 <translation id="4985291216379576555">Non tes conexión. Chromium non puido buscar actualizacións</translation>
 <translation id="4996471330284142407">Realiza máis tarefas cunha versión de Chromium sinxela, segura e máis rápida que nunca.</translation>
 <translation id="4999538639245140991">Dado que estás pechando sesión nunha conta xestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, eliminaranse os teus datos de Chromium deste dispositivo, pero conservaranse na túa Conta de Google.</translation>
+<translation id="5048795749726991615">Usa Chromium para autocompletar facilmente noutras aplicacións os teus contrasinais gardados</translation>
 <translation id="5171868502429358653">Inicia sesión en Chromium</translation>
 <translation id="5224391634244552924">Non hai contrasinais gardados. Chromium pode comprobar os teus contrasinais cando os gardes.</translation>
 <translation id="5308226104666789935">Chromium non puido buscar actualizacións</translation>
@@ -92,6 +93,7 @@
 <translation id="7045244423563602563">Personaliza Chromium</translation>
 <translation id="7099326575020694068">Chromium non pode usar a cámara no modo Vista dividida</translation>
 <translation id="7118091470949186573">Xa podes utilizar Chromium sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
+<translation id="7165402419892018581">Escolle Chromium para autocompletar</translation>
 <translation id="7175400662502680481">O teu contrasinal púxose en risco debido a unha violación da seguranza dos datos. O xestor de contrasinais recomenda que o cambies de inmediato.</translation>
 <translation id="7208566199746267865">Chromium fai que aforres tempo ao pasar as túas contas á web. Podes engadir ou eliminar contas en Configuración.</translation>
 <translation id="725427773388857052">Chromium pode protexerte contra violacións da seguranza dos datos, sitios web que non son seguros e moito máis.</translation>
@@ -106,6 +108,7 @@
 <translation id="7746854981345936341">Consello sobre Chromium: Agora algúns botóns, como Atrás, Adiante e Buscar, están na parte inferior da pantalla.</translation>
 <translation id="7763454117143368771">Usa Chromium como navegador predeterminado para protexer a túa seguranza contra sitios perigosos e manter a salvo os teus contrasinais</translation>
 <translation id="7812317783196516890">Tes a sesión iniciada e estás sincronizando os teus datos cunha conta xestionada por <ph name="DOMAIN" /> cuxo administrador xa pode definir políticas de usuario específicas para esa conta que poden modificar o comportamento de Chromium.</translation>
+<translation id="7859018312476869945">Cando escribes algo na barra de enderezos ou na caixa de busca, Chromium envíallo ao motor de busca predeterminado para obter mellores suxestións. Esta opción está desactivada no modo de incógnito.</translation>
 <translation id="786327964234957808">Estás cambiando a conta de sincronización <ph name="USER_EMAIL1" /> por <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> xestiona os datos de Chromium actuais. Ao realizar esta acción, eliminaranse os teus datos deste dispositivo, pero conservaranse en <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Comeza a utilizar o escáner de Chromium</translation>
 <translation id="7928628054454574139">Abre Chromium cada vez que toques ligazóns noutras aplicacións</translation>
@@ -115,6 +118,7 @@
 <translation id="8073677936375100957">Queres borrar os teus datos de Chromium deste dispositivo?</translation>
 <translation id="8240981428553046115">Chromium non puido buscar actualizacións. Téntao máis tarde.</translation>
 <translation id="8409374867500149834">Contas coa máxima seguranza de Chromium contra sitios web daniños</translation>
+<translation id="8460301378281140593">Na configuración do teu iPhone, abre Password Options (Opcións de contrasinais) e selecciona Chromium</translation>
 <translation id="858114650497379505">Podes utilizar os contrasinais que gardaches no xestor de contrasinais noutras aplicacións do teu iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" />, os autores de Chromium. Reservados todos os dereitos.</translation>
 <translation id="8603022514504485810">O xestor de contrasinais de Google non puido comprobar todos os contrasinais. Podes tentalo de novo mañá ou ben <ph name="BEGIN_LINK" />comprobar os contrasinais da túa Conta de Google<ph name="END_LINK" />.</translation>

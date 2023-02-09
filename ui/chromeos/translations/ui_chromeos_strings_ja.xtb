@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">英語（アメリカ）（Dvorak）キーボード</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ホスト</translation>
 <translation id="1521655867290435174">Google スプレッドシート</translation>
+<translation id="1521795806314479294"><ph name="FILE_NAME" /> を準備しています...</translation>
 <translation id="1538729222189715449">[Linux ファイル] を開いています...</translation>
 <translation id="1547964879613821194">カナダ英語</translation>
 <translation id="1556189134700913550">すべてに適用</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムを圧縮しています...</translation>
 <translation id="1722687688096767818">プロファイルの追加中...</translation>
 <translation id="1726100011689679555">ネームサーバー</translation>
+<translation id="1727562178154619254">同期の準備ができました</translation>
 <translation id="1729953886957086472">ドイツ語（ドイツ）</translation>
 <translation id="1730235522912993863">中国語（倉頡）</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> 件のアイテムをコピーしました</translation>
@@ -479,6 +481,7 @@
 <translation id="4973523518332075481">名前は <ph name="MAX_LENGTH" /> 文字以内で指定してください</translation>
 <translation id="4973970068702235170">圧縮できませんでした。予期しないエラー: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">日本語</translation>
+<translation id="4987699874727873250">英語（インド）</translation>
 <translation id="4988205478593450158">「<ph name="FILE_NAME" />」を削除してもよろしいですか？</translation>
 <translation id="498902553138568924">赤い蝶</translation>
 <translation id="4992066212339426712">ミュートを解除</translation>
@@ -509,6 +512,7 @@
    使用中のデバイスを取り外すと、データが失われる恐れがあります。操作が完了してから、ファイル アプリを使ってデバイスを取り外してください。</translation>
 <translation id="5163869187418756376">共有できませんでした。接続を確認し、しばらくしてからもう一度お試しください。</translation>
 <translation id="516592729076796170">US Programmer Dvorak 配列</translation>
+<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> 件のアイテムを準備しています...</translation>
 <translation id="5177526793333269655">サムネイル ビュー</translation>
 <translation id="5181896909298187506">最近使用したファイルはありません</translation>
 <translation id="5194713942430106590">クリックすると、列が昇順で並べ替えられます。</translation>

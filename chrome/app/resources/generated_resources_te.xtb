@@ -284,6 +284,7 @@
 <translation id="1244303850296295656">ఎక్స్‌టెన్షన్ ఎర్రర్</translation>
 <translation id="1245628370644070008">స్థానిక డేటా రికవరీ</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" />‌ను ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు: ఇమేజ్ URL <ph name="HTTP_ERROR" /> ఎర్రర్ కోడ్‌ను అందించింది. దయచేసి మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి.</translation>
+<translation id="1247372569136754018">మైక్రోఫోన్ (అంతర్గతం)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{1 సైట్‌లో నోటిఫికేషన్‌లకు అనుమతి లేదు}other{{NUM_SITES} సైట్‌లలో నోటిఫికేషన్‌లకు అనుమతి లేదు}}</translation>
 <translation id="1251366534849411931">తెరిచి ఉన్న వంకర కలుపు ఉండాలి: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">దీని వలన సైట్‌లు, ఇన్‌స్టాల్ చేయబడిన యాప్‌లు స్టోర్ చేసిన <ph name="TOTAL_USAGE" /> డేటా తొలగిపోతుంది.</translation>
@@ -542,6 +543,7 @@
 <translation id="1482626744466814421">ఈ ట్యాబ్‌ను బుక్‌మార్క్ చేయండి...</translation>
 <translation id="1482772681918035149">పాస్‌వర్డ్‌లను ఎడిట్ చేయండి</translation>
 <translation id="1483493594462132177">పంపు</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">బ్లూటూత్‌ను సైట్ ఉపయోగిస్తోంది</translation>
 <translation id="1485015260175968628">ఇప్పుడు ఇది వీటిని చేయగలదు:</translation>
 <translation id="1485141095922496924">వెర్షన్ <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -630,6 +632,7 @@
 <translation id="1567387640189251553">మీరు మీ పాస్‌వర్డ్‌ని చివరిసారిగా నమోదు చేసిన తర్వాత ఒక విభిన్నమైన కీబోర్డ్ కనెక్ట్ చేయబడింది. మీ కీస్ట్రోక్‌లను దొంగిలించడం కోసం ఇది ప్రయత్నిస్తుండవచ్చు.</translation>
 <translation id="156793199942386351">'<ph name="ACTION" />' చర్యకు '<ph name="CURRENTKEY" />' ఇప్పటికే కేటాయించబడింది. <ph name="RESPONSE" /> కోసం ఏదైనా కీని నొక్కండి.</translation>
 <translation id="1567993339577891801">JavaScript కన్సోల్</translation>
+<translation id="1569466257325986920">మరోసారి మీ Google ఖాతా పాస్‌వర్డ్ మారినప్పుడు, మీరు మీ Google ఖాతాకు సైన్ ఇన్ చేసిన తర్వాత మీ లోకల్ డేటా ఆటోమేటిక్‌గా రికవర్ చేయబడుతుంది</translation>
 <translation id="1570604804919108255">నోటిఫికేషన్‌లను అన్‌మ్యూట్ చేయండి</translation>
 <translation id="1571304935088121812">వినియోగదారు పేరును కాపీ చేస్తుంది</translation>
 <translation id="1571738973904005196">ట్యాబ్‌ను చూడండి: <ph name="TAB_ORIGIN" /></translation>
@@ -894,6 +897,7 @@
 <translation id="1781979858217752599">విండో ఆడియోను షేర్ చేయండి</translation>
 <translation id="1782101999402987960">మీ అడ్మినిస్ట్రేటర్ ద్వారా అప్‌డేట్‌లు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="1782196717298160133">మీ ఫోన్‌ను కనుగొంటోంది</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 గమనిక}other{# గమనికలు}}</translation>
 <translation id="1784707308176068866">సహకారం అందించే నేటివ్ అప్లికేషన్ రిక్వెస్ట్ చేసినప్పుడు బ్యాక్‌గ్రౌండ్‌లో అమలు అవుతుంది</translation>
 <translation id="1784849162047402014">పరికరంలో ఖాళీ నిల్వ స్థలం తక్కువగా ఉంది</translation>
 <translation id="1787350673646245458">యూజర్ చిత్రం</translation>
@@ -1105,6 +1109,7 @@
 <translation id="1965624977906726414">ప్రత్యేక అనుమతులు లేవు.</translation>
 <translation id="1966649499058910679">ప్రతి పదాన్ని చదివినప్పుడు దానిని హైలైట్ చేయి</translation>
 <translation id="1967970931040389207">హాట్‌స్పాట్‌ను ఆన్ చేయండి</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">WebRTC వచన లాగ్ లు( <ph name="WEBRTC_TEXT_LOG_COUNT" /> )</translation>
 <translation id="1972325230031091483">మీరు ప్రస్తుతం సందర్శించిన వెబ్‌పేజీ ఆధారంగా కంటెంట్ ముందస్తుగా లోడ్ చేయబడింది, కాబట్టి మీరు వేగంగా బ్రౌజ్ చేయగలరు</translation>
 <translation id="197288927597451399">ఉంచు</translation>
@@ -1689,6 +1694,7 @@
 <translation id="2467755475704469005">ఏ పరికరం గుర్తించబడలేదు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">టచ్‌ప్యాడ్ స్క్రోల్ యాక్సిలరేషన్‌</translation>
 <translation id="2468205691404969808">మీ ప్రాధాన్యతలను గుర్తుంచుకోవడానికి కుక్కీలను ఉపయోగిస్తుంది, మీరు ఆ పేజీలను సందర్శించకపోయినా కూడా అది అమలవుతుంది</translation>
+<translation id="2468247643665097563">ఆర్డర్</translation>
 <translation id="2468402215065996499">టమగోచి</translation>
 <translation id="2468470085922875120">మీరు ఊహించడానికి కష్టంగా కనిపించే పాస్‌వర్డ్‌లను ఉపయోగిస్తున్నారు</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 ట్యాబ్}other{<ph name="GROUP_TITLE" /> - # ట్యాబ్‌లు}}</translation>
@@ -1830,7 +1836,6 @@
 <translation id="25899519884572181">రీడర్ మోడ్ నుండి నిష్క్రమించండి</translation>
 <translation id="2593499352046705383">ప్రారంభించడానికి ముందు, మీరు మీ డేటాను బ్యాకప్ చేశారని నిర్ధారించుకోండి. <ph name="DEVICE_OS" />‌ను ఇన్‌స్టాల్ చేయడం వలన మీ హార్డ్ డ్రైవ్ ఓవర్‌రైట్ అవుతుంది. g.co/flex/InstallGuide లో మరింత తెలుసుకోండి.</translation>
 <translation id="2594999711683503743">Googleలో వెతకండి లేదా URLను టైప్ చేయండి</translation>
-<translation id="25957578727513093">ఇక్కడకు వేగంగా చేరుకోవడానికి, Google Password Managerకి షార్ట్‌కట్‌ని జోడించండి</translation>
 <translation id="2599048253926156421">యూజర్‌నేమ్ క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది</translation>
 <translation id="2602501489742255173">ప్రారంభించడానికి పైకి స్వైప్ చేయండి</translation>
 <translation id="2603115962224169880">కంప్యూటర్‌ నుండి హానికరమైనవి తీసివేయండి</translation>
@@ -2408,6 +2413,7 @@
 <translation id="3103451787721578293">ఈ డేటాను అప్‌లోడ్ చేయడానికి దయచేసి కారణాన్ని ఎంటర్ చేయండి:</translation>
 <translation id="3105339775057145050">చివరి అప్‌డేట్ విజయవంతం కాలేదు</translation>
 <translation id="3105796011181310544">తిరిగి Googleకు మార్చాలా?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (బ్లూటూత్)</translation>
 <translation id="310671807099593501">సైట్ బ్లూటూత్‌ను ఉపయోగిస్తోంది</translation>
 <translation id="3108931485517391283">స్వీకరించడం సాధ్యం కాలేదు</translation>
 <translation id="3108957152224931571">హైలైట్ రంగు</translation>
@@ -3049,6 +3055,7 @@
 <translation id="371300529209814631">వెనుకకు/ముందుకు</translation>
 <translation id="3713047097299026954">ఈ 'సెక్యూరిటీ కీ'లో ఎటువంటి సైన్-ఇన్ డేటా లేదు</translation>
 <translation id="3713091615825314967">ఆటోమేటిక్‌ అప్‌డేట్‌లు ఆన్ చేయబడ్డాయి.</translation>
+<translation id="371370241367527062">ముందువైపు మైక్రోఫోన్</translation>
 <translation id="3714195043138862580">ఈ డెమో పరికరం కేటాయింపు తీసివేత స్థితిలో ఉంచబడింది.</translation>
 <translation id="3719826155360621982">హోమ్‌పేజీ</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3144,6 +3151,7 @@
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” కోసం <ph name="SEARCH_ENGINE" />లో &amp;శోధించండి</translation>
 <translation id="3798449238516105146">వెర్షన్</translation>
 <translation id="3798632811625902122">బ్లూటూత్ పరికరం <ph name="DEVICE" />‌ను పెయిర్ చేయడానికి అనుమతి కావాలి.</translation>
+<translation id="3798670284305777884">స్పీకర్ (అంతర్గతం)</translation>
 <translation id="3799128412641261490">స్విచ్ యాక్సెస్ సెట్టింగ్‌లు</translation>
 <translation id="3800030395703848668">లిస్ట్ ఆప్షన్‌లను చూడండి</translation>
 <translation id="3800806661949714323">అన్నీ చూపు (సిఫార్సు చేయబడింది)</translation>
@@ -5146,6 +5154,7 @@
 <translation id="5643620609347735571">క్లియర్ చేసి కొనసాగించండి</translation>
 <translation id="5646376287012673985">లొకేషన్</translation>
 <translation id="5646558797914161501">వ్యాపారవేత్త</translation>
+<translation id="5648021990716966815">మైక్ జాక్</translation>
 <translation id="5648166631817621825">గత 7 రోజులు</translation>
 <translation id="5651308944918885595">సమీప షేరింగ్ కనిపించగలిగే సామర్థ్యం</translation>
 <translation id="5653154844073528838">మీరు సేవ్ చేయబడిన <ph name="PRINTER_COUNT" /> ప్రింటర్‌లు కలిగి ఉన్నారు.</translation>
@@ -5961,6 +5970,7 @@
 <translation id="6410668567036790476">సెర్చ్ ఇంజిన్‌ను జోడించండి</translation>
 <translation id="641469293210305670">అప్‌డేట్‌లు, యాప్‌లు ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="6414878884710400018">సిస్టమ్ ప్రాధాన్యతలను తెరవండి</translation>
+<translation id="6415816101512323589">మీ డేటాను రక్షించడానికి లోకల్ డేటా రికవరీని ఆన్ చేయాలా?</translation>
 <translation id="6415900369006735853">మీ ఫోన్ ద్వారా ఇంటర్నెట్‌కు కనెక్ట్ అవ్వండి</translation>
 <translation id="6416743254476733475">మీ కంప్యూటర్‌లో అనుమతించండి లేదా బ్లాక్ చేయండి.</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
@@ -6254,6 +6264,7 @@
 <translation id="6678717876183468697">క్వెరీ URL</translation>
 <translation id="6680442031740878064">అందుబాటులో ఉంది: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">రేట్</translation>
+<translation id="6683022854667115063">హెడ్‌ఫోన్స్</translation>
 <translation id="6683087162435654533">అన్ని ట్యాబ్‌లను రీస్టోర్ చేయండి</translation>
 <translation id="6684827949542560880">తాజా అప్‌డేట్‌ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="668599234725812620">Google Playని తెరువు</translation>
@@ -6882,6 +6893,7 @@
 <translation id="7255002516883565667">ప్రస్తుతం, కేవలం ఈ పరికరంలో మాత్రమే ఉపయోగించగల ఒక కార్డ్ మీ వద్ద ఉంది</translation>
 <translation id="7255935316994522020">వర్తింపజేయి</translation>
 <translation id="7256069762010468647">సైట్ మీ కెమెరాను ఉపయోగిస్తోంది</translation>
+<translation id="7256634071279256947">వెనుకవైపు మైక్రోఫోన్</translation>
 <translation id="7256710573727326513">ట్యాబ్‌లో తెరువు</translation>
 <translation id="7257173066616499747">Wi-Fi నెట్‌వర్క్‌లు</translation>
 <translation id="725758059478686223">ప్రింట్ సర్వీసు</translation>

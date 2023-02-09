@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">ਡੀਵੋਰਯੈਕ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਅੰਗਰੇਜ਼ੀ (ਯੂ.ਐੱਸ.)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ਹੋਸਟ</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
+<translation id="1521795806314479294"><ph name="FILE_NAME" /> ਕਾਪੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="1538729222189715449">Linux ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹੀਆਂ ਜਾ ਰਹੀਆਂ ਹਨ...</translation>
 <translation id="1547964879613821194">ਕੈਨੇਡੀਅਨ ਅੰਗਰੇਜ਼ੀ</translation>
 <translation id="1556189134700913550">ਸਾਰਿਆਂ ਤੇ ਲਾਗੂ ਕਰੋ</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਨੂੰ ਜ਼ਿਪ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="1722687688096767818">ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="1726100011689679555">ਨਾਮ ਸਰਵਰ</translation>
+<translation id="1727562178154619254">ਸਿੰਕ ਕਰਨ ਲਈ ਤਿਆਰ ਹੈ</translation>
 <translation id="1729953886957086472">ਜਰਮਨ (ਜਰਮਨੀ)</translation>
 <translation id="1730235522912993863">ਚੀਨੀ ਕੈਂਗਜੀ</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਨੂੰ ਕਾਪੀ ਕੀਤਾ ਗਿਆ।</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">ਨਾਮ ਸਰਵਰ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="4465725236958772856">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="4470564870223067757">Hangul 2 ਸੈਟ</translation>
+<translation id="4474142134969976028">ਕੋਈ ਮੇਲ ਖਾਂਦਾ ਨਤੀਜਾ ਨਹੀਂ</translation>
 <translation id="4477002475007461989">ਰੋਮਾਨੀਆਈ</translation>
 <translation id="4477219268485577442">ਬਲਗੇਰੀਅਨ ਧੁਨੀਆਤਮਿਕ</translation>
 <translation id="4508265954913339219">ਐਕਟੀਵੇਸ਼ਨ ਅਸਫ਼ਲ</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> ਜਾਂ ਇਸ ਤੋਂ ਘੱਟ ਅੱਖਰਾਂ ਵਾਲਾ ਕੋਈ ਨਾਮ ਵਰਤੋ</translation>
 <translation id="4973970068702235170">ਜ਼ਿਪ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ, ਅਣਕਿਆਸੀ ਗੜਬੜ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">ਜਪਾਨੀ</translation>
+<translation id="4987699874727873250">ਅੰਗਰੇਜ਼ੀ (ਭਾਰਤ)</translation>
 <translation id="4988205478593450158">ਕੀ ਤੁਸੀਂ ਪੱਕਾ "<ph name="FILE_NAME" />" ਨੂੰ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="498902553138568924">ਲਾਲ ਤਿਤਲੀ</translation>
 <translation id="4992066212339426712">ਅਨਮਿਊਟ ਕਰੋ</translation>
@@ -509,6 +513,7 @@
    ਡੀਵਾਈਸ ਦੇ ਵਰਤੋਂ ਵਿੱਚ ਹੋਣ ਵੇਲੇ ਇਸਨੂੰ ਹਟਾਉਣ ਨਾਲ ਡਾਟਾ ਨਸ਼ਟ ਹੋ ਸਕਦਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਓਪਰੇਸ਼ਨ ਦੇ ਖ਼ਤਮ ਹੋਣ ਤੱਕ ਉਡੀਕ ਕਰੋ, ਫਿਰ Files ਐਪ ਵਰਤਦੇ ਹੋਏ ਡੀਵਾਈਸ ਨੂੰ ਹਟਾਓ।</translation>
 <translation id="5163869187418756376">ਸਾਂਝਾਕਰਨ ਅਸਫਲ। ਆਪਣੇ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
+<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਕਾਪੀ ਕੀਤੀਆਂ ਜਾ ਰਹੀਆਂ ਹਨ...</translation>
 <translation id="5177526793333269655">ਲਘੂ-ਚਿੱਤਰ ਦ੍ਰਿਸ਼</translation>
 <translation id="5181896909298187506">ਕੋਈ ਹਾਲੀਆ ਫ਼ਾਈਲ ਨਹੀਂ</translation>
 <translation id="5194713942430106590">ਕਾਲਮ ਨੂੰ ਵਧਦੇ ਕ੍ਰਮ ਵਿੱਚ ਕ੍ਰਮ-ਬੱਧ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
@@ -812,6 +817,7 @@
 <translation id="7655441028674523381">Google Photos ਤੱਕ ਆਸਾਨੀ ਨਾਲ ਪਹੁੰਚ ਕਰੋ</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
 <translation id="7663224033570512922">ਹਿੰਦੀ</translation>
+<translation id="7665680517722058469">ਕੋਈ ਹੋਰ ਖੋਜ ਕਰ ਕੇ ਦੇਖੋ</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਨੂੰ ਰੱਦੀ ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ</translation>
 <translation id="7693909743393669729">ਕਿਸੇ ਡਰਾਈਵ ਨੂੰ ਫਾਰਮੈਟ ਕਰਨ ਨਾਲ ਇਸ 'ਤੇ ਸਟੋਰ ਕੀਤਾ ਸਾਰਾ ਡਾਟਾ ਮਿਟ ਜਾਵੇਗਾ ਅਤੇ ਸਾਰੇ ਮੌਜੂਦਾ ਭਾਗ ਹਟ ਜਾਣਗੇ ਜਿਸ ਵਿੱਚ ਉਹ ਭਾਗ ਵੀ ਸ਼ਾਮਲ ਹਨ ਜੋ ਸ਼ਾਇਦ ਦਿਸਦੇ ਨਾ ਹੋਣ। ਇਸ ਕਾਰਵਾਈ ਨੂੰ ਅਣਕੀਤਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> ਨੂੰ ਫਾਰਮੈਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>

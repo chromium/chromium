@@ -410,6 +410,7 @@
 <translation id="4462159676511157176">Імена серверів – персоналізовано</translation>
 <translation id="4465725236958772856">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />. Мережею керує адміністратор. Підключитися</translation>
 <translation id="4470564870223067757">Клавіатура хангул із 2 наборами клавіш</translation>
+<translation id="4474142134969976028">Немає результатів</translation>
 <translation id="4477002475007461989">Румунська</translation>
 <translation id="4477219268485577442">Болгарська (фонетична)</translation>
 <translation id="4508265954913339219">Помилка активації</translation>
@@ -817,6 +818,7 @@
 <translation id="7655441028674523381">Легкий доступ до Google Фото</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7663224033570512922">Гінді</translation>
+<translation id="7665680517722058469">Введіть інший пошуковий запит</translation>
 <translation id="7689532716264131859">Об’єкти (<ph name="NUMBER_OF_ITEMS" />) переміщено в кошик</translation>
 <translation id="7693909743393669729">Якщо відформатувати диск, усі наявні на ньому дані та розділи (зокрема, невидимі) буде видалено. Цю дію не можна відмінити.</translation>
 <translation id="7695430100978772476">Не вдалося відформатувати диск "<ph name="DRIVE_NAME" />"</translation>

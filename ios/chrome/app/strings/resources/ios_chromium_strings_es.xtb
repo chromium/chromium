@@ -63,6 +63,7 @@
 <translation id="4985291216379576555">Sin conexión, Chromium no puede comprobar si hay actualizaciones</translation>
 <translation id="4996471330284142407">Haz más cosas con Chromium: funciona más rápido que nunca y es sencillo y seguro.</translation>
 <translation id="4999538639245140991">Al cerrar sesión en una cuenta gestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, se eliminan tus datos de Chromium en este dispositivo, pero permanecen en tu cuenta de Google.</translation>
+<translation id="5048795749726991615">Para obtener fácilmente tus contraseñas guardadas en tus otras aplicaciones, usa Autocompletar en Chromium</translation>
 <translation id="5171868502429358653">Inicia sesión en Chromium</translation>
 <translation id="5224391634244552924">No hay ninguna contraseña guardada. Chromium puede comprobar tus contraseñas si las guardas.</translation>
 <translation id="5308226104666789935">Chromium no puede comprobar si hay actualizaciones</translation>
@@ -92,6 +93,7 @@
 <translation id="7045244423563602563">Personaliza Chromium a tu gusto</translation>
 <translation id="7099326575020694068">Chromium no puede usar la cámara en el modo Vista dividida</translation>
 <translation id="7118091470949186573">Ahora puedes usar Chromium cada vez que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
+<translation id="7165402419892018581">Elige Chromium para la función Autocompletar</translation>
 <translation id="7175400662502680481">Tu contraseña se ha visto expuesta en una brecha de seguridad de datos. El gestor de contraseñas te recomienda que cambies esa contraseña ahora.</translation>
 <translation id="7208566199746267865">Chromium te permite llevar tus cuentas a la Web para ahorrar tiempo. Puedes añadirlas o quitarlas en los ajustes.</translation>
 <translation id="725427773388857052">Chromium puede ayudarte a protegerte frente a quiebras de seguridad de datos, sitios web no seguros y mucho más.</translation>
@@ -106,6 +108,7 @@
 <translation id="7746854981345936341">Consejo sobre Chromium. Algunos botones ahora se encuentran en la parte inferior de la pantalla, como Atrás, Adelante y Buscar.</translation>
 <translation id="7763454117143368771">Usa Chromium como tu navegador predeterminado para protegerte de sitios peligrosos y mantener a salvo tus contraseñas</translation>
 <translation id="7812317783196516890">Has iniciado sesión y se están sincronizando tus datos con una cuenta gestionada por <ph name="DOMAIN" />, cuyo administrador ahora puede establecer políticas de usuarios específicas de esa cuenta que pueden cambiar el comportamiento de Chromium.</translation>
+<translation id="7859018312476869945">Al escribir en la barra de direcciones o en el cuadro de búsqueda, Chromium envía lo que escribes al buscador predeterminado para que obtengas mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
 <translation id="786327964234957808">Estás cambiando las cuentas de sincronización de <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. Tus datos actuales de Chromium están administrados por <ph name="DOMAIN" />. Tus datos se eliminarán de este dispositivo, pero permanecerán en <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Empezar a usar el escáner de Chromium</translation>
 <translation id="7928628054454574139">Abre Chromium siempre que toques enlaces en otras aplicaciones</translation>
@@ -115,6 +118,7 @@
 <translation id="8073677936375100957">¿Quieres borrar tus datos de Chromium en este dispositivo?</translation>
 <translation id="8240981428553046115">Chromium no ha podido comprobar si hay actualizaciones. Prueba de nuevo más tarde.</translation>
 <translation id="8409374867500149834">Tienes la seguridad más potente de Chromium frente a sitios web dañinos</translation>
+<translation id="8460301378281140593">En los ajustes de tu iPhone, abre las Opciones de contraseñas y selecciona Chromium</translation>
 <translation id="858114650497379505">Puedes usar las contraseñas que has guardado en el gestor de contraseñas en otras aplicaciones de tu iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Los creadores de Chromium. Todos los derechos reservados.</translation>
 <translation id="8603022514504485810">El Gestor de contraseñas de Google no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana o <ph name="BEGIN_LINK" />comprueba las contraseñas en tu cuenta de Google<ph name="END_LINK" />.</translation>

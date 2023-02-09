@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">ஆங்கிலம் (யூஎஸ்) - டிவோரக் கீபோர்டு</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ஹோஸ்ட்</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
+<translation id="1521795806314479294"><ph name="FILE_NAME" /> ஃபைலைத் தயார்செய்கிறது...</translation>
 <translation id="1538729222189715449">Linux ஃபைல்களைத் திறக்கிறது...</translation>
 <translation id="1547964879613821194">கனடியன் ஆங்கிலம்</translation>
 <translation id="1556189134700913550">எல்லாவற்றிற்கும் பயன்படுத்து</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> உள்ளடக்கங்களை ஜிப் செய்கிறது...</translation>
 <translation id="1722687688096767818">சுயவிவரத்தைச் சேர்க்கிறது...</translation>
 <translation id="1726100011689679555">பெயர் சேவையகங்கள்</translation>
+<translation id="1727562178154619254">ஒத்திசைக்கத் தயாராக உள்ளது</translation>
 <translation id="1729953886957086472">ஜெர்மன் (ஜெர்மனி)</translation>
 <translation id="1730235522912993863">சீனம் (கான்ஜி)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ஃபைல்கள் /கோப்பகங்கள் நகலெடுக்கப்பட்டன.</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">பிரத்தியேகப் பெயர் சேவையகங்கள்</translation>
 <translation id="4465725236958772856">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, உங்கள் நிர்வாகி நிர்வகிக்கிறார், இணை</translation>
 <translation id="4470564870223067757">ஹாங்குல் 2 செட்</translation>
+<translation id="4474142134969976028">பொருந்தும் முடிவுகள் இல்லை</translation>
 <translation id="4477002475007461989">ரொமானியன்</translation>
 <translation id="4477219268485577442">பல்கேரியன் ஒலிப்புமுறை</translation>
 <translation id="4508265954913339219">செயலாக்கம் தோல்வியுற்றது</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> அல்லது அதற்குக் குறைவான எழுத்துக்குறிகள் உள்ள பெயரைப் பயன்படுத்தவும்</translation>
 <translation id="4973970068702235170">ஜிப் செய்ய முடியவில்லை, எதிர்பாராத பிழை: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">ஜாப்பனீஸ்</translation>
+<translation id="4987699874727873250">ஆங்கிலம் (இந்தியா)</translation>
 <translation id="4988205478593450158">"<ph name="FILE_NAME" />"ஐ நிச்சயமாக நீக்க விரும்புகிறீர்களா?</translation>
 <translation id="498902553138568924">சிவப்புப் பட்டாம்பூச்சி</translation>
 <translation id="4992066212339426712">ஒலி இயக்கு</translation>
@@ -509,6 +513,7 @@
    பயன்பாட்டில் இருக்கும்போது உங்கள் சாதனத்தை அகற்றுவது தரவு இழப்பை ஏற்படுத்தலாம்.  செயல்முறை முடியும்வரை காத்திருந்து, பின்பு ஃபைல்கள்  பயன்பாட்டைப் பயன்படுத்தி சாதனத்தை வெளியேற்றலாம்.</translation>
 <translation id="5163869187418756376">பகிர்வு தோல்வியடைந்தது. உங்கள் இணைப்பைச் சரிபார்த்து, பிறகு மீண்டும் முயற்சிக்கவும்.</translation>
 <translation id="516592729076796170">US புரோகிராமர் டிவோரக்</translation>
+<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> ஃபைல்களைத் தயார்செய்கிறது...</translation>
 <translation id="5177526793333269655">சிறுபட காட்சி</translation>
 <translation id="5181896909298187506">சமீபத்திய ஃபைல்கள் எதுவுமில்லை</translation>
 <translation id="5194713942430106590">நெடுவரிசையை ஏறுவரிசைப்படுத்த கிளிக் செய்யவும்.</translation>
@@ -813,6 +818,7 @@
 <translation id="7655441028674523381">Google Photosஸை எளிதாக அணுகுங்கள்</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7663224033570512922">இந்தி</translation>
+<translation id="7665680517722058469">வேறு வகையில் தேடவும்</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> ஃபைல்கள் 'நீக்கியவை' ஃபோல்டருக்கு நகர்த்தப்பட்டன</translation>
 <translation id="7693909743393669729">டிரைவை ஃபார்மேட் செய்தால் அதிலுள்ள தரவுகள் அனைத்தும் அழிக்கப்படும். அத்துடன் காட்டப்படாத பார்ட்டிஷன்கள் உட்பட அதிலுள்ள அனைத்துப் பார்ட்டிஷன்களும் அகற்றப்படும். இதைச் செயல்தவிர்க்க முடியாது.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> ஐ ஃபார்மேட் செய்ய முடியவில்லை</translation>

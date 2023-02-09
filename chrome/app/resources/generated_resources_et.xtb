@@ -284,6 +284,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1244303850296295656">Laienduse viga</translation>
 <translation id="1245628370644070008">Kohalike andmete taastamine</translation>
 <translation id="1246863218384630739">Üksust <ph name="VM_NAME" /> ei saanud installida: pildi URL tagastas veakoodi <ph name="HTTP_ERROR" />. Võtke ühendust administraatoriga.</translation>
+<translation id="1247372569136754018">Mikrofon (sisemine)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Märguanded pole 1 saidi puhul lubatud}other{Märguanded pole {NUM_SITES} saidi puhul lubatud}}</translation>
 <translation id="1251366534849411931">Vaja on esimest looksulgu: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">See kustutab <ph name="TOTAL_USAGE" /> ulatuses saitide ja installitud rakenduste salvestatud andmeid</translation>
@@ -542,6 +543,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1482626744466814421">Lisa vaheleht järjehoidjatesse …</translation>
 <translation id="1482772681918035149">muuta paroole</translation>
 <translation id="1483493594462132177">Saada</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Sait kasutab Bluetoothi</translation>
 <translation id="1485015260175968628">See võib nüüd:</translation>
 <translation id="1485141095922496924">Versioon <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1098,6 +1100,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1965624977906726414">Pole erilubasid.</translation>
 <translation id="1966649499058910679">Tõsta iga sõna selle kõnelemisel esile</translation>
 <translation id="1967970931040389207">Lülita kuumkoht sisse</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">WebRTC tekstilogid (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Saate kiiremini sirvida, kuna sisu laaditakse ennetavalt teie praeguse veebilehekülastuse põhjal</translation>
 <translation id="197288927597451399">Jäta alles</translation>
@@ -1823,7 +1826,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="25899519884572181">Lugejarežiimist väljumine</translation>
 <translation id="2593499352046705383">Enne alustamist veenduge, et teil oleks oma andmetest olemas varukoopia. Operatsioonisüsteemi <ph name="DEVICE_OS" /> installimisel kirjutatakse üle kõik teie kõvakettal olevad andmed. Lisateave: g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Otsige Google'ist või sisestage URL</translation>
-<translation id="25957578727513093">Kui soovite edaspidi siia kiiremini jõuda, lisage Google'i paroolihalduri otsetee</translation>
 <translation id="2599048253926156421">Kasutajanimi kopeeriti lõikelauale</translation>
 <translation id="2602501489742255173">Alustamiseks pühkige üles</translation>
 <translation id="2603115962224169880">Puhasta arvuti</translation>
@@ -2401,6 +2403,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3103451787721578293">Sisestage nende andmete üleslaadimise põhjus.</translation>
 <translation id="3105339775057145050">Viimane ebaõnnestunud värskendus</translation>
 <translation id="3105796011181310544">Kas muuta tagasi Google'ile?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Sait kasutab Bluetoothi</translation>
 <translation id="3108931485517391283">Ei saa vastu võtta</translation>
 <translation id="3108957152224931571">Esiletõstu värv</translation>
@@ -3042,6 +3045,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="371300529209814631">Tagasi/edasi</translation>
 <translation id="3713047097299026954">Sellel turvavõtmel ei ole sisselogimisandmeid</translation>
 <translation id="3713091615825314967">Automaatsed värskendused on sisse lülitatud.</translation>
+<translation id="371370241367527062">Eesmine mikrofon</translation>
 <translation id="3714195043138862580">See demoseade on eemaldatud vahenditega režiimis.</translation>
 <translation id="3719826155360621982">Avaleht</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3137,6 +3141,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3797900183766075808">&amp;Otsi otsingumootoriga <ph name="SEARCH_ENGINE" /> terminit „<ph name="SEARCH_TERMS" />”</translation>
 <translation id="3798449238516105146">Versioon</translation>
 <translation id="3798632811625902122">Bluetoothi seade <ph name="DEVICE" /> küsib luba sidumiseks.</translation>
+<translation id="3798670284305777884">Kõlar (sisemine)</translation>
 <translation id="3799128412641261490">Lülitiga juurdepääsu seaded</translation>
 <translation id="3800030395703848668">Kuva loendi valikud</translation>
 <translation id="3800806661949714323">Kuva kõik (soovitatud)</translation>
@@ -5138,6 +5143,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5643620609347735571">Kustuta ja jätka</translation>
 <translation id="5646376287012673985">Asukoht</translation>
 <translation id="5646558797914161501">Ärimees</translation>
+<translation id="5648021990716966815">Mikrofoni pistikupesa</translation>
 <translation id="5648166631817621825">Viimased seitse päeva</translation>
 <translation id="5651308944918885595">Läheduses jagamine – leitavus</translation>
 <translation id="5653154844073528838">Teil on <ph name="PRINTER_COUNT" /> salvestatud printerit.</translation>
@@ -6246,6 +6252,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6678717876183468697">Päringu URL</translation>
 <translation id="6680442031740878064">Saadaval: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Kiirus</translation>
+<translation id="6683022854667115063">Kõrvaklapid</translation>
 <translation id="6683087162435654533">T&amp;aasta kõik vahelehed</translation>
 <translation id="6684827949542560880">Uusima värskenduse allalaadimine</translation>
 <translation id="668599234725812620">Ava Google Play</translation>
@@ -6874,6 +6881,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7255002516883565667">Praegu on teil üks kaart, mida saab kasutada ainult selles seadmes</translation>
 <translation id="7255935316994522020">Rakenda</translation>
 <translation id="7256069762010468647">Sait kasutab teie kaamerat</translation>
+<translation id="7256634071279256947">Tagumine mikrofon</translation>
 <translation id="7256710573727326513">Ava vahekaardil</translation>
 <translation id="7257173066616499747">WiFi-võrgud</translation>
 <translation id="725758059478686223">Printimisteenus</translation>

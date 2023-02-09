@@ -226,7 +226,6 @@
 <translation id="2248941474044011069">ລະຫັດຜ່ານຂອງທ່ານແມ່ນຖືກເຂົ້າລະຫັດໄວ້ຢູ່ອຸປະກອນຂອງທ່ານກ່ອນທີ່ພວກມັນຈະຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="2249635629516220541">ປັບແຕ່ງຂໍ້ມູນທີ່ໃຊ້ໂດຍເວັບໄຊເພື່ອສະແດງໂຄສະນາໃຫ້ທ່ານເຫັນ</translation>
 <translation id="2259659629660284697">ສົ່ງລະຫັດຜ່ານອອກ...</translation>
-<translation id="2276231040576210443">ທ່ານສາມາດເລືອກສິ່ງທີ່ຈະຊິ້ງຂໍ້ມູນໄດ້ໃນ <ph name="BEGIN_LINK1" />ການຕັ້ງຄ່າ<ph name="END_LINK1" />. Google ອາດປັບແຕ່ງການຊອກຫາ ແລະ ບໍລິການອື່ນໆຂອງ Google ໃຫ້ເປັນແບບສ່ວນຕົວໂດຍອ້າງອີງໃສ່ປະຫວັດຂອງທ່ານ.</translation>
 <translation id="2276696007612801991">ເຂົ້າສູ່ລະບົບບັນຊີ Google ຂອງທ່ານເພື່ອກວດລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="2278052315791335171">ການລຶບລະຫັດຜ່ານນີ້ຈະບໍ່ລຶບບັນຊີຂອງທ່ານຢູ່ <ph name="SITE" /> ອອກ</translation>
 <translation id="2286841657746966508">ທີ່ຢູ່ການຮຽກເກັບເງິນ</translation>
@@ -304,7 +303,6 @@
 <translation id="2669454659051515572">ໃຜກໍຕາມທີ່ໃຊ້ອຸປະກອນນີ້ຈະສາມາດເບິ່ງເຫັນໄຟລ໌ທີ່ດາວໂຫຼດແລ້ວໄດ້</translation>
 <translation id="2702516483241149200">ໃໝ່: ແບ່ງປັນລິ້ງທີ່ເລື່ອນຫາຂໍ້ຄວາມນີ້</translation>
 <translation id="2707726405694321444">ຣີ​ເຟ​ຣ​ຊຫນ້າ</translation>
-<translation id="2709516037105925701">ຕື່ມອັດຕະໂນມັດ</translation>
 <translation id="271033894570825754">ໃຫມ່</translation>
 <translation id="2711073837061989559">ການທົດລອງໃຊ້</translation>
 <translation id="2718352093833049315">​ສະເພາະ Wi​-Fi ເທົ່ານັ້ນ</translation>
@@ -396,7 +394,6 @@
 <translation id="3114507951000454849">ອ່ານຂ່າວຂອງມື້ນີ້ <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">ລິ້ງຫາ</translation>
 <translation id="3123734510202723619">ການປະກາດ</translation>
-<translation id="3130863904455712965">ປະຫວັດ ແລະ ອື່ນໆ</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">ໜ້າຫຼັກຂອງ Chrome</translation>
 <translation id="3157931365184549694">ເອົາຄືນມາ</translation>
@@ -990,7 +987,6 @@
 <translation id="6397616442223433927">ກັບມາອອນລາຍ</translation>
 <translation id="6401458660421980302">ເພື່ອສົ່ງແຖບນີ້ໄປຫາອຸປະກອນອື່ນ, ໃຫ້ເຂົ້າສູ່ລະບົບຫາ Chrome ຢູ່ບ່ອນນັ້ນ</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> ໃນ <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">ຊິ້ງຂໍ້ມູນຂອງທ່ານຢູ່ອຸປະກອນທັງໝົດແລ້ວ</translation>
 <translation id="6404511346730675251">ແກ້​ໄຂບຸກມາກສ໌</translation>
 <translation id="6406506848690869874">ຊິງຄ໌</translation>
 <translation id="6407224748847589805">ບໍ່ສາມາດເຊື່ອມຕໍ່ຫາຄອມພິວເຕີຂອງທ່ານໄດ້. ກະລຸນາລອງໃຊ້ຕົວເລືອກການຢັ້ງຢືນອື່ນ.</translation>
@@ -1319,7 +1315,6 @@
 <translation id="8037801708772278989">ຫາກໍກວດແລ້ວຕອນນີ້</translation>
 <translation id="804335162455518893">ບໍ່ພົບແຜ່ນ SD</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນ}other{<ph name="TAB_COUNT_NORMAL" /> ແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນ}}</translation>
-<translation id="8048728378294435881">ສຳຮອງຂໍ້ມູນຂອງທ່ານ ແລະ ໃຊ້ມັນຢູ່ອຸປະກອນໃດກໍໄດ້</translation>
 <translation id="8051695050440594747">ຍັງເຫຼືອ <ph name="MEGABYTES" /> MB</translation>
 <translation id="8058655154417507695">ປີໝົດອາຍຸ</translation>
 <translation id="8058746566562539958">ເປີດໃນແຖບໃໝ່ຂອງ Chrome</translation>

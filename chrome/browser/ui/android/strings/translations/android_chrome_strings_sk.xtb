@@ -226,7 +226,6 @@ Keď odstránite históriu prehliadania (buď celú, alebo pre konkrétny web), 
 <translation id="2248941474044011069">Heslá sú šifrované v zariadení ešte pred ich uložením do správcu hesiel Google</translation>
 <translation id="2249635629516220541">Prispôsobenie informácií, na základe ktorých weby zobrazujú reklamy</translation>
 <translation id="2259659629660284697">Exportovať heslá…</translation>
-<translation id="2276231040576210443">Položky, ktoré chcete synchronizovať, môžete kedykoľvek vybrať v <ph name="BEGIN_LINK1" />nastaveniach<ph name="END_LINK1" />. Google môže prispôsobiť Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
 <translation id="2276696007612801991">Ak si chcete skontrolovať heslá, prihláste sa do svojho účtu Google</translation>
 <translation id="2278052315791335171">Odstránením tohto hesla nevymažete svoj účet na webe <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Fakturačná adresa</translation>
@@ -304,7 +303,6 @@ Tokeny súkromného stavu zlepšujú ochranu súkromia na internete a nedá sa 
 <translation id="2669454659051515572">Stiahnuté súbory uvidia všetci používatelia tohto zariadenia</translation>
 <translation id="2702516483241149200">Novinka: zdieľajte odkaz, ktorý posunie zobrazenie na tento text</translation>
 <translation id="2707726405694321444">Obnoviť stránku</translation>
-<translation id="2709516037105925701">Automatické dopĺňanie</translation>
 <translation id="271033894570825754">Nové</translation>
 <translation id="2711073837061989559">Skúšobné obdobia</translation>
 <translation id="2718352093833049315">Len s Wi‑Fi</translation>
@@ -396,7 +394,6 @@ Tokeny súkromného stavu zlepšujú ochranu súkromia na internete a nedá sa 
 <translation id="3114507951000454849">Prečítajte si dnešné správy <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">prepojená s kartou</translation>
 <translation id="3123734510202723619">Oznámenia</translation>
-<translation id="3130863904455712965">História a ďalšie nastavenia</translation>
 <translation id="3134784203083076891">“</translation>
 <translation id="314939179385989105">Domovská stránky Chromu</translation>
 <translation id="3157931365184549694">Obnoviť</translation>
@@ -990,7 +987,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6397616442223433927">Sme späť online</translation>
 <translation id="6401458660421980302">Ak chcete túto kartu odoslať do iného zariadenia, prihláste sa v ňom do Chromu</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" />: <ph name="ERROR_CODE" /></translation>
-<translation id="6403371459378431832">Synchronizujte údaje vo všetkých zariadeniach</translation>
 <translation id="6404511346730675251">Upraviť záložku</translation>
 <translation id="6406506848690869874">Synchronizácia</translation>
 <translation id="6407224748847589805">K vášmu počítaču sa nedá pripojiť. Skúste inú možnosť overenia.</translation>
@@ -1319,7 +1315,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="8037801708772278989">Kontrola prebehla pred chvíľou</translation>
 <translation id="804335162455518893">SD karta sa nenašla</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta inkognito}few{<ph name="TAB_COUNT_NORMAL" /> karty inkognito}many{<ph name="TAB_COUNT_NORMAL" /> incognito tabs}other{<ph name="TAB_COUNT_NORMAL" /> kariet inkognito}}</translation>
-<translation id="8048728378294435881">Zálohujte svoj obsah a používajte ho v ľubovoľnom zariadení</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB k dispozícii</translation>
 <translation id="8058655154417507695">Rok ukončenia platnosti</translation>
 <translation id="8058746566562539958">Otvoriť v Chrome na novej karte</translation>

@@ -226,7 +226,6 @@
 <translation id="2248941474044011069">Οι κωδικοί πρόσβασης κρυπτογραφούνται στη συσκευή σας προτού αποθηκευτούν στον Διαχειριστή κωδικών πρόσβασης Google</translation>
 <translation id="2249635629516220541">Προσαρμόστε τις πληροφορίες που χρησιμοποιούνται από ιστοτόπους για την προβολή διαφημίσεων</translation>
 <translation id="2259659629660284697">Εξαγωγή κωδικών πρόσβασης…</translation>
-<translation id="2276231040576210443">Μπορείτε πάντα να επιλέξετε τα στοιχεία που θέλετε να συγχρονίσετε στις <ph name="BEGIN_LINK1" />ρυθμίσεις<ph name="END_LINK1" />. Η Google μπορεί να εξατομικεύει την Αναζήτηση και άλλες υπηρεσίες με βάση το ιστορικό σας.</translation>
 <translation id="2276696007612801991">Συνδεθείτε στον Λογαριασμό σας Google για να ελέγξετε τους κωδικούς πρόσβασής σας.</translation>
 <translation id="2278052315791335171">Η κατάργηση αυτού του κωδικού πρόσβασης δεν θα διαγράψει τον λογαριασμό σας στον ιστότοπο <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Διεύθυνση τιμολόγησης</translation>
@@ -304,7 +303,6 @@
 <translation id="2669454659051515572">Όλοι όσοι χρησιμοποιούν αυτήν τη συσκευή θα μπορούν να βλέπουν τα αρχεία που έχετε κατεβάσει</translation>
 <translation id="2702516483241149200">Νέο: Κοινοποιήστε έναν σύνδεσμο που κάνει κύλιση σε αυτό το κείμενο</translation>
 <translation id="2707726405694321444">Ανανέωση σελίδας</translation>
-<translation id="2709516037105925701">Αυτόματη συμπλήρωση</translation>
 <translation id="271033894570825754">Νέο</translation>
 <translation id="2711073837061989559">Δοκιμές</translation>
 <translation id="2718352093833049315">Μόνο σε Wi-Fi</translation>
@@ -396,7 +394,6 @@
 <translation id="3114507951000454849">Διαβάστε τις σημερινές ειδήσεις <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">συνδεδεμένη με</translation>
 <translation id="3123734510202723619">Ανακοινώσεις</translation>
-<translation id="3130863904455712965">Ιστορικό και άλλα</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Αρχική σελίδα του Chrome</translation>
 <translation id="3157931365184549694">Επαναφορά</translation>
@@ -990,7 +987,6 @@
 <translation id="6397616442223433927">Επιστροφή στο διαδίκτυο</translation>
 <translation id="6401458660421980302">Για να στείλετε αυτήν την καρτέλα σε άλλη συσκευή, συνδεθείτε στο Chrome στη συγκεκριμένη συσκευή</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">Συγχρονισμός των δεδομένων σας σε όλες τις συσκευές</translation>
 <translation id="6404511346730675251">Επεξεργασία σελιδοδείκτη</translation>
 <translation id="6406506848690869874">Συγχρονισμός</translation>
 <translation id="6407224748847589805">Δεν είναι δυνατή η σύνδεση στον υπολογιστή σας. Δοκιμάστε διαφορετική επιλογή επαλήθευσης.</translation>
@@ -1319,7 +1315,6 @@
 <translation id="8037801708772278989">Ελέγχθηκε μόλις τώρα</translation>
 <translation id="804335162455518893">Δεν βρέθηκε κάρτα SD</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> καρτέλα ανώνυμης περιήγησης}other{<ph name="TAB_COUNT_NORMAL" /> καρτέλες ανώνυμης περιήγησης}}</translation>
-<translation id="8048728378294435881">Δημιουργήστε αντίγραφα ασφαλείας των δεδομένων σας και χρησιμοποιήστε τα σε οποιαδήποτε συσκευή</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB διαθέσιμα</translation>
 <translation id="8058655154417507695">Έτος λήξης</translation>
 <translation id="8058746566562539958">Άνοιγμα σε νέα καρτέλα Chrome</translation>

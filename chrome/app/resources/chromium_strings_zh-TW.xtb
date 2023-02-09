@@ -321,6 +321,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary 版</translation>
 <translation id="7828947555739565424">這部裝置已有與此帳戶相關聯的 Chromium 設定檔</translation>
 <translation id="7845233973568007926">感謝你安裝本服務。你必須重新啟動電腦，才能使用 <ph name="BUNDLE_NAME" />。</translation>
+<translation id="7859018312476869945">在網址列或搜尋框中輸入時，Chromium 會將你輸入的內容傳送給預設搜尋引擎，提供更符合需求的搜尋建議。這項功能在無痕模式中為關閉狀態。</translation>
 <translation id="7867198900892795913">Chromium 無法更新至最新版本，因此你並未取得最新功能和安全性問題修正。</translation>
 <translation id="7872446069773932638">下載中... 還剩 <ph name="SECONDS" /> 秒</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />你可以透過哪些方式管理資料：<ph name="END_BOLD" />

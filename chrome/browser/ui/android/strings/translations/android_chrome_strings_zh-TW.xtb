@@ -227,7 +227,6 @@
 <translation id="2248941474044011069">系統會先在裝置上將密碼加密，再儲存至 Google 密碼管理員</translation>
 <translation id="2249635629516220541">自訂網站可用來顯示廣告的資訊</translation>
 <translation id="2259659629660284697">匯出密碼…</translation>
-<translation id="2276231040576210443">你隨時可以前往<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />選擇要同步處理的資料。Google 可能會根據你的歷史記錄在 Google 搜尋等其他服務中提供個人化體驗。</translation>
 <translation id="2276696007612801991">登入 Google 帳戶以檢查你的密碼</translation>
 <translation id="2278052315791335171">刪除這組密碼並不會刪除你的 <ph name="SITE" /> 帳戶</translation>
 <translation id="2286841657746966508">帳單地址</translation>
@@ -305,7 +304,6 @@
 <translation id="2669454659051515572">這部裝置的任何使用者都可以看到已下載的檔案</translation>
 <translation id="2702516483241149200">新功能：分享可跳至這段文字的連結</translation>
 <translation id="2707726405694321444">重新整理頁面</translation>
-<translation id="2709516037105925701">自動填入</translation>
 <translation id="271033894570825754">全新</translation>
 <translation id="2711073837061989559">試用</translation>
 <translation id="2718352093833049315">僅限連上 Wi-Fi 網路時</translation>
@@ -397,7 +395,6 @@
 <translation id="3114507951000454849">閱讀今日新聞 <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">已連結到</translation>
 <translation id="3123734510202723619">公告事項</translation>
-<translation id="3130863904455712965">歷史記錄和其他資料</translation>
 <translation id="3134784203083076891">」</translation>
 <translation id="314939179385989105">Chrome 首頁</translation>
 <translation id="3157931365184549694">還原</translation>
@@ -921,6 +918,7 @@
 <translation id="6000203700195075278">重新追蹤</translation>
 <translation id="6002122790816966947">你的裝置</translation>
 <translation id="6005538289190791541">建議的密碼</translation>
+<translation id="6011308810877101166">改善搜尋建議</translation>
 <translation id="6039379616847168523">跳至下一個分頁</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="604124094241169006">自動</translation>
@@ -988,7 +986,6 @@
 <translation id="6397616442223433927">已恢復連線</translation>
 <translation id="6401458660421980302">如要將這個分頁傳送到其他裝置，請在該裝置上登入 Chrome</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> 上發生 <ph name="ERROR_CODE" /> 錯誤</translation>
-<translation id="6403371459378431832">同步處理所有裝置上的資料</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
 <translation id="6406506848690869874">同步</translation>
 <translation id="6407224748847589805">無法連線至你的電腦。請改用其他驗證選項。</translation>
@@ -1317,7 +1314,6 @@
 <translation id="8037801708772278989">剛才已檢查</translation>
 <translation id="804335162455518893">找不到 SD 卡</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個無痕分頁}other{<ph name="TAB_COUNT_NORMAL" /> 個無痕分頁}}</translation>
-<translation id="8048728378294435881">備份資料即可在任何裝置上使用</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB 可用空間</translation>
 <translation id="8058655154417507695">到期年份</translation>
 <translation id="8058746566562539958">在新的 Chrome 分頁中開啟</translation>
@@ -1451,6 +1447,7 @@
 <translation id="8746155870861185046">分享醒目顯示內容</translation>
 <translation id="8748850008226585750">內容已隱藏</translation>
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
+<translation id="8765470054473112089">在網址列或搜尋框中輸入時，Chrome 會將你輸入的內容傳送給預設搜尋引擎，提供更符合需求的搜尋建議。這項功能在無痕模式中為關閉狀態。</translation>
 <translation id="8766529642647037772">要建立類似的醒目顯示連結嗎？</translation>
 <translation id="8773160212632396039">正在處理要求</translation>
 <translation id="8788265440806329501">瀏覽記錄已關閉</translation>

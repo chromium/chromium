@@ -280,6 +280,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1244303850296295656">Artırma xətası</translation>
 <translation id="1245628370644070008">Lokal data bərpası</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> quraşdırılmadı: Şəkil keçidi <ph name="HTTP_ERROR" /> xəta kodu ilə nəticələndi. Administratorunuz ilə əlaqə saxlayın.</translation>
+<translation id="1247372569136754018">Mikrofon (daxili)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{1 sayt üçün bildirişlərə icazə verilmir}other{{NUM_SITES} sayt üçün bildirişlərə icazə verilmir}}</translation>
 <translation id="1251366534849411931">Sol fiqurlu mötərizə gözlənilir: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Bununla saytlar və quraşdırılmış tətbiqlər tərəfindən saxlanılan <ph name="TOTAL_USAGE" /> data silinəcək</translation>
@@ -537,6 +538,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1482626744466814421">Bu tabı əlfəcinlərə əlavə edin...</translation>
 <translation id="1482772681918035149">parolları redaktə edin</translation>
 <translation id="1483493594462132177">Göndərin</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Sayt Bluetooth istifadə edir</translation>
 <translation id="1485015260175968628">İndi bunları bacarır:</translation>
 <translation id="1485141095922496924">Versiya <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1091,6 +1093,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1965624977906726414">Heç bir xüsusi icazə yoxdur.</translation>
 <translation id="1966649499058910679">Hər bir sözü vurğulayın</translation>
 <translation id="1967970931040389207">Hotspotu aktiv edin</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">WebRTC mətn girişləri (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Cari veb səhifə ziyarətinizə əsasən məzmun proaktiv şəkildə yükləndiyinə görə daha sürətli gözdən keçirəcəksiniz</translation>
 <translation id="197288927597451399">Saxlayın</translation>
@@ -1816,7 +1819,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="25899519884572181">Oxucu rejimindən çıxın</translation>
 <translation id="2593499352046705383">Başlamadan əvvəl, datanızın yedəkləndiyinə əmin olun. <ph name="DEVICE_OS" /> quraşdırıldıqda sərt diskinizdəki bütün data əvəzlənəcəkdir. Ətraflı məlumat: g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Google'da axtarın və ya link yazın</translation>
-<translation id="25957578727513093">Buraya daha tez çatmaq üçün Google Parol Menecerinə qısayol əlavə edin</translation>
 <translation id="2599048253926156421">İstifadəçi adı mübadilə buferinə kopyalandı</translation>
 <translation id="2602501489742255173">Başlamaq üçün yuxarı sürüşdürün</translation>
 <translation id="2603115962224169880">Kompüteri təmizləyin</translation>
@@ -2394,6 +2396,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3103451787721578293">Bu məlumatları yükləmək üçün səbəb daxil edin:</translation>
 <translation id="3105339775057145050">Son Uğursuz Güncəlləmə</translation>
 <translation id="3105796011181310544">Google seçiminə qayıtmaq istəyirsiniz?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Sayt bluetooth istifadə edir</translation>
 <translation id="3108931485517391283">Qəbul etmək olmur</translation>
 <translation id="3108957152224931571">Vurğulama rəngi</translation>
@@ -3035,6 +3038,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="371300529209814631">Geri/İrəli</translation>
 <translation id="3713047097299026954">Bu təhlükəsizlik açarında giriş datası yoxdur</translation>
 <translation id="3713091615825314967">Avtomatik güncəlləmələr aktivləşdirildi.</translation>
+<translation id="371370241367527062">Ön mikrofon</translation>
 <translation id="3714195043138862580">Bu demo cihazı serverdə silinib.</translation>
 <translation id="3719826155360621982">Əsas Səhifə</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3130,6 +3134,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” üçün <ph name="SEARCH_ENGINE" /> axtarın</translation>
 <translation id="3798449238516105146">Versiya</translation>
 <translation id="3798632811625902122"><ph name="DEVICE" /> Bluetooth cihazı birləşmək üçün icazə istəyir.</translation>
+<translation id="3798670284305777884">Spiker (daxili)</translation>
 <translation id="3799128412641261490">Düymə ilə giriş ayarları</translation>
 <translation id="3800030395703848668">Siyahı Seçimlərinə Baxın</translation>
 <translation id="3800806661949714323">Hamısını göstərin (tövsiyə olunur)</translation>
@@ -5129,6 +5134,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5643620609347735571">Silin və davam edin</translation>
 <translation id="5646376287012673985">Məkan</translation>
 <translation id="5646558797914161501">Biznesmen</translation>
+<translation id="5648021990716966815">Mikrofon yuvası</translation>
 <translation id="5648166631817621825">Son 7 gün</translation>
 <translation id="5651308944918885595">Yaxınlıqda Paylaşım rejimində kəşf oluna bilmə</translation>
 <translation id="5653154844073528838">Yadda saxlanmış <ph name="PRINTER_COUNT" /> printeriniz var.</translation>
@@ -6235,6 +6241,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6678717876183468697">Sorğu linki</translation>
 <translation id="6680442031740878064">Əlçatandır: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Qiymət</translation>
+<translation id="6683022854667115063">Qulaqlıq</translation>
 <translation id="6683087162435654533">B&amp;ütün Tabları Bərpa Edin</translation>
 <translation id="6684827949542560880">Ən son güncəlləmə endirilir</translation>
 <translation id="668599234725812620">Google Play'i açın</translation>
@@ -6863,6 +6870,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7255002516883565667">Hazırda yalnız bu cihazda istifadə edilə bilən bir kart var</translation>
 <translation id="7255935316994522020">Tətbiq edin</translation>
 <translation id="7256069762010468647">Sayt kameradan istifadə edir</translation>
+<translation id="7256634071279256947">Arxa mikrofon</translation>
 <translation id="7256710573727326513">Paneldə açın</translation>
 <translation id="7257173066616499747">Wi-Fi şəbəkələri</translation>
 <translation id="725758059478686223">Çap Xidməti</translation>

@@ -226,7 +226,6 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="2248941474044011069">Ine-encrypt ang iyong mga password sa device mo bago i-save ang mga ito sa Google Password Manager</translation>
 <translation id="2249635629516220541">I-customize ang impormasyong ginagamit ng mga site para magpakita sa iyo ng mga ad</translation>
 <translation id="2259659629660284697">I-export ang mga password…</translation>
-<translation id="2276231040576210443">Mapipili mo kung ano ang isi-sync anumang oras sa <ph name="BEGIN_LINK1" />mga setting<ph name="END_LINK1" />. Puwedeng i-personalize ng Google ang Search at iba pang mga serbisyo batay sa iyong history.</translation>
 <translation id="2276696007612801991">Mag-sign in sa iyong Google account para masuri ang mga password mo</translation>
 <translation id="2278052315791335171">Kapag na-delete ang password na ito, hindi ide-delete ang iyong account sa <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Billing address</translation>
@@ -304,7 +303,6 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="2669454659051515572">Makikita ng sinumang gumagamit ng device na ito ang mga na-download na file</translation>
 <translation id="2702516483241149200">Bago: magbahagi ng link na nagso-scroll papunta sa text na ito</translation>
 <translation id="2707726405694321444">I-refresh ang page</translation>
-<translation id="2709516037105925701">AutoFill</translation>
 <translation id="271033894570825754">Bago</translation>
 <translation id="2711073837061989559">Mga Trial</translation>
 <translation id="2718352093833049315">Sa Wi-Fi lang</translation>
@@ -396,7 +394,6 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="3114507951000454849">Basahin ang balita ngayong araw <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">naka-link sa</translation>
 <translation id="3123734510202723619">Mga Anunsyo</translation>
-<translation id="3130863904455712965">History at higit pa</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Homepage ng Chrome</translation>
 <translation id="3157931365184549694">Ipanumbalik</translation>
@@ -990,7 +987,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6397616442223433927">Online ulit</translation>
 <translation id="6401458660421980302">Para ipadala ang tab na ito sa ibang device, mag-sign in sa Chrome doon</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> sa <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">I-sync ang iyong data sa lahat ng device</translation>
 <translation id="6404511346730675251">I-edit ang bookmark</translation>
 <translation id="6406506848690869874">Pag-sync</translation>
 <translation id="6407224748847589805">Hindi makakonekta sa iyong computer. Sumubok ng ibang opsyon para sa pag-verify.</translation>
@@ -1319,7 +1315,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8037801708772278989">Kakasuri lang</translation>
 <translation id="804335162455518893">Hindi nakita ang SD card</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab na incognito}one{<ph name="TAB_COUNT_NORMAL" /> tab na incognito}other{<ph name="TAB_COUNT_NORMAL" /> na tab na incognito}}</translation>
-<translation id="8048728378294435881">I-back up ang iyong mga gamit at gamitin ito sa anumang device</translation>
 <translation id="8051695050440594747">Available ang <ph name="MEGABYTES" /> MB</translation>
 <translation id="8058655154417507695">Taon ng pag-expire</translation>
 <translation id="8058746566562539958">Buksan sa bagong tab ng Chrome</translation>

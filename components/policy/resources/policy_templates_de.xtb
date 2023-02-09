@@ -3229,6 +3229,11 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 <translation id="3994043824457743421">Information im mittleren Slot auf der Seite „Neuer Tab“ anzeigen</translation>
 <translation id="399433537808390819">Nutzern keinen Zugriff auf den Unified Desktop-Modus gewähren</translation>
 <translation id="3995880046827722248">Manifest V2 ist deaktiviert</translation>
+<translation id="3996118331995847766">Wenn „<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" />“ aktiviert und „<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />“ konfiguriert ist, kann der intelligente Akkulademodus eingerichtet werden. In diesem Modus lädt der Akku zwischen <ph name="CHARGE_START_TIME_FIELD_NAME" /> und <ph name="CHARGE_END_TIME_FIELD_NAME" /> nur einmal vollständig. Für den Rest des Zeitraums wird er in einem niedrigeren Ladezustand gehalten. Der Wert für <ph name="CHARGE_START_TIME_FIELD_NAME" /> muss kleiner als <ph name="CHARGE_END_TIME_FIELD_NAME" /> sein.
+
+      Wenn die Richtlinie nicht konfiguriert ist, ist der intelligente Akkulademodus immer deaktiviert.
+
+      Zulässige Werte für das Feld „<ph name="MINUTE_FIELD_NAME" />“ in „<ph name="CHARGE_START_TIME_FIELD_NAME" />“ und „<ph name="CHARGE_END_TIME_FIELD_NAME" />“ sind 0, 15, 30 und 45.</translation>
 <translation id="3996325823532867220">Diese Richtlinie wird nicht mehr unterstützt. Die zugehörige Richtlinie <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> wird jedoch möglicherweise auf bestimmten Plattformen unterstützt.
 
       Wenn diese Einstellung aktiviert ist, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate anhand der integrierten Zertifikatsprüfung.
@@ -3410,6 +3415,19 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
           Wenn du diese Richtlinie konfigurierst, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Wird sie nicht konfiguriert, ist die Bedienungshilfe "Textcursor hervorheben" auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
+<translation id="4182348537826882258">Wenn die Richtlinie <ph name="URL_BLOCKLIST_POLICY_NAME" /> konfiguriert ist, wird verhindert, dass Webseiten mit unzulässigen URLs geladen werden. Administratoren können eine Liste mit URL-Mustern angeben, die blockiert werden sollen. Ist die Richtlinie nicht konfiguriert, werden keine URLs im Browser blockiert. In <ph name="URL_ALLOWLIST_POLICY_NAME" /> können bis zu 1.000 Ausnahmen definiert werden. Wie ein URL-Muster formatiert wird, siehst du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Hinweis: Diese Richtlinie gilt nicht für In-Page-JavaScript-URLs mit dynamisch geladenen Daten. Wenn du etwa „beispiel.de/abc“ blockierst, kann „beispiel.de“ diese URL trotzdem über „XMLHTTPRequest“ laden. Außerdem hindert diese Richtlinie Webseiten nicht daran, die in der Omnibox angezeigte URL über die JavaScript History API in eine blockierte URL zu ändern.
+
+Ab Version 73 von <ph name="PRODUCT_NAME" /> kannst du „javascript://*“-URLs blockieren. Das betrifft jedoch nur JavaScript, das in die Adressleiste eingegeben wird, oder beispielsweise Bookmarklets.
+
+Ab Version 92 von <ph name="PRODUCT_NAME" /> wird diese Richtlinie auch im monitorlosen Modus unterstützt.
+
+Hinweis: Wenn interne URLs von „chrome://*“ und „chrome-untrusted://*“ blockiert werden, kann dies zu unerwarteten Fehlern führen oder in einigen Fällen umgangen werden. Statt bestimmte interne URLs zu blockieren, solltest du nachsehen, ob es spezifischere Richtlinien gibt. Beispiel:
+
+– Anstatt „chrome://settings/certificates“ zu blockieren, verwende <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
+
+– Anstatt „chrome-untrusted://crosh“ zu blockieren, verwende <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="4183229833636799228">"<ph name="FLASH_PLUGIN_NAME" />" als Standardeinstellung</translation>
 <translation id="4185868802416355029">Verwaltete Erweiterungen dürfen die Enterprise Hardware Platform API verwenden</translation>
 <translation id="4186244263855283575">Mit dieser Richtlinie kann ein benutzerdefinierter Zeitplan zum Neustart von Geräten festgelegt werden. Wenn sie auf „true“ gesetzt ist, startet das Gerät wie im Zeitplan festgelegt neu. Wenn keine geplanten Neustarts mehr durchgeführt werden sollen, muss die Richtlinie entfernt werden.
@@ -3504,6 +3522,13 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 
       Gibt es auf einem verwalteten Gerät mehrere Nutzerkonten, wird die Benachrichtigung nur angezeigt, wenn diese Richtlinie aktiviert ist.</translation>
 <translation id="4303167373847512281">Entwicklermodus zulassen</translation>
+<translation id="4307116964468610577">Die Richtlinie verlängert die Lebensdauer von Systemakkus, indem sie nur einmal pro Tag vollständig aufgeladen werden. Für den Rest des Tages werden die Akkus in einem niedrigeren Ladezustand gehalten. So werden sie geschont, auch wenn das System an eine Stromquelle angeschlossen ist.
+
+      Wenn „<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />“ konfiguriert und „<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" />“ aktiviert ist, ist der intelligente Akkulademodus immer aktiviert, sofern diese Funktion vom Gerät unterstützt wird. Dieser Modus verwendet außerhalb der Arbeitszeit den Standardladealgorithmus und weitere Verfahren, um die Lebensdauer des Akkus zu maximieren. Während der Arbeitszeit wird dagegen das Schnellladen verwendet. Für jeden Tag wird die Zeit, in der das System am intensivsten genutzt wird, durch einen Startzeitpunkt und eine Dauer angegeben.
+
+      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, ist der intelligente Akkulademodus immer deaktiviert.
+
+      Nutzer können diese Einstellung nicht ändern.</translation>
 <translation id="4309091698378414920">„Caret hervorheben“ aktivieren</translation>
 <translation id="4311195029067684288">Vollständig</translation>
 <translation id="4311662690937656540">Onlineanmeldungen auf dem Anmelde- und Sperrbildschirm erzwingen</translation>
@@ -4822,6 +4847,7 @@ Wenn die Richtlinie nicht konfiguriert ist, können keine Domains auf „file://
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="5620392548325769024">Einblendung der Begrüßungsseite beim ersten Start des Browsers nach einer Aktualisierung des Betriebssystems aktivieren</translation>
 <translation id="5621503441067774084">„Mauszeiger hervorheben“ auf dem Anmeldebildschirm aktivieren</translation>
+<translation id="5622590774455244290">Diese Liste kann auf freiwilliger Basis für Android-Apps übernommen werden. Es ist nicht möglich, die Verwendung zu erzwingen.</translation>
 <translation id="5622924058222112599">Standardmäßigen Einführungsprozess für CECPQ2 aktivieren</translation>
 <translation id="5623304306796942802">Aufforderung, wenn mehrere Zertifikate passen</translation>
 <translation id="5625771176514429288">Chrome-Apps dürfen zukünftig auf diesen Plattformen ausgeführt werden.</translation>

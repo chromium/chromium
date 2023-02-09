@@ -226,7 +226,6 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="2248941474044011069">Hesla jsou před uložením do Správce hesel Google v zařízení zašifrována</translation>
 <translation id="2249635629516220541">Přizpůsobení informací, které weby používají k zobrazování reklam</translation>
 <translation id="2259659629660284697">Exportovat hesla…</translation>
-<translation id="2276231040576210443">Synchronizované položky můžete kdykoliv vybrat v <ph name="BEGIN_LINK1" />nastavení<ph name="END_LINK1" />. Google může personalizovat Vyhledávání a další služby na základě vaší historie.</translation>
 <translation id="2276696007612801991">Pokud chcete zkontrolovat hesla, přihlaste se k účtu Google</translation>
 <translation id="2278052315791335171">Odstraněním tohoto hesla nesmažete svůj účet na webu <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Fakturační adresa</translation>
@@ -304,7 +303,6 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="2669454659051515572">Stažené soubory může vidět kdokoli, kdo používá tohle zařízení</translation>
 <translation id="2702516483241149200">Nové: Sdílení odkazu, který obsah posune na tento text</translation>
 <translation id="2707726405694321444">Obnovit stránku</translation>
-<translation id="2709516037105925701">Automatické vyplňování</translation>
 <translation id="271033894570825754">Nové</translation>
 <translation id="2711073837061989559">Zkušební funkce</translation>
 <translation id="2718352093833049315">Pouze v sítích Wi-Fi</translation>
@@ -396,7 +394,6 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3114507951000454849">Přečtěte si dnešní zprávy <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">propojeno s</translation>
 <translation id="3123734510202723619">Oznámení</translation>
-<translation id="3130863904455712965">Historie a další</translation>
 <translation id="3134784203083076891">“</translation>
 <translation id="314939179385989105">Domovská stránka Chromu</translation>
 <translation id="3157931365184549694">Obnovit</translation>
@@ -922,6 +919,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="6000203700195075278">Znovu sledovat</translation>
 <translation id="6002122790816966947">Vaše zařízení</translation>
 <translation id="6005538289190791541">Navrhované heslo</translation>
+<translation id="6011308810877101166">Vylepšovat návrhy ve vyhledávání</translation>
 <translation id="6039379616847168523">Přejít na další kartu</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="604124094241169006">Automaticky</translation>
@@ -989,7 +987,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6397616442223433927">Opět online</translation>
 <translation id="6401458660421980302">Pokud tuto kartu chcete odeslat do jiného zařízení, přihlaste se na něm do Chromu</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> na webu <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">Synchronizace dat ve všech zařízeních</translation>
 <translation id="6404511346730675251">Upravit záložku</translation>
 <translation id="6406506848690869874">Synchronizace</translation>
 <translation id="6407224748847589805">K počítači se nelze připojit. Zkuste jiný způsob ověření.</translation>
@@ -1318,7 +1315,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8037801708772278989">Zkontrolováno právě teď</translation>
 <translation id="804335162455518893">SD karta nenalezena</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> anonymní karta}few{<ph name="TAB_COUNT_NORMAL" /> anonymní karty}many{<ph name="TAB_COUNT_NORMAL" /> anonymní karty}other{<ph name="TAB_COUNT_NORMAL" /> anonymních karet}}</translation>
-<translation id="8048728378294435881">Zálohujte si data a používejte je na jakémkoli zařízení</translation>
 <translation id="8051695050440594747">K dispozici: <ph name="MEGABYTES" /> MB</translation>
 <translation id="8058655154417507695">Rok vypršení platnosti</translation>
 <translation id="8058746566562539958">Otevřít na nové kartě v Chromu</translation>
@@ -1452,6 +1448,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8746155870861185046">Sdílet zvýraznění</translation>
 <translation id="8748850008226585750">Skrytý obsah</translation>
 <translation id="8756969031206844760">Aktualizovat heslo?</translation>
+<translation id="8765470054473112089">Při psaní do adresního řádku nebo vyhledávacího pole odesílá Chrome zadaný text do výchozího vyhledávače, aby vám mohl nabízet lepší návrhy. V anonymním režimu je tato funkce vypnutá.</translation>
 <translation id="8766529642647037772">Vytvořit zvýrazněný odkaz, jako je tento?</translation>
 <translation id="8773160212632396039">Požadavek se zpracovává</translation>
 <translation id="8788265440806329501">Historie navigace je zavřená</translation>

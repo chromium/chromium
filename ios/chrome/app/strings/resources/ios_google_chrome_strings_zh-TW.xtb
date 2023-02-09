@@ -90,6 +90,7 @@
 <translation id="6709398533399187136">你的密碼因為資料侵害事件遭到外洩，Google 密碼管理員建議你立即變更這組密碼。</translation>
 <translation id="6822673484890854830">Chrome 無法檢查所有密碼，請稍後再試。</translation>
 <translation id="6964931465519938134">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chrome 開啟。</translation>
+<translation id="6975725306479268850">選擇使用 Chrome 的自動填入功能</translation>
 <translation id="701356708427365932">瞭解新版 Chrome 選單</translation>
 <translation id="7059914902409643750">使用你專屬的 Chrome</translation>
 <translation id="7124339256045485976">取得 Chrome 最新版本</translation>
@@ -110,6 +111,7 @@
 <translation id="7754633291442704733">貴機構 <ph name="DOMAIN" /> 將可存取你儲存在這個帳戶中的 Chrome 資料、書籤、歷史記錄、密碼和其他設定。登出帳戶後，系統會清除這部裝置中的資料。不過，你的資料仍會儲存在受管理 Google 帳戶中，並可供貴機構使用。貴機構也可以設定該帳戶專屬的使用者政策，這些政策可以變更 Chrome 的行為。</translation>
 <translation id="7780154209050837198">如要充分運用 Chrome 的各項功能，請透過 Google 帳戶登入 Chrome。</translation>
 <translation id="7855730255114109580">Google Chrome 目前是最新版本</translation>
+<translation id="7939179037291298976">從 iPhone 的「設定」開啟「密碼選項」，然後選取「Chrome」</translation>
 <translation id="8022947259858476807">預設使用 Chrome 來開啟連結、從小工具搜尋，以及自動在其他應用程式中填入密碼</translation>
 <translation id="81358522153858150">Chrome 現在支援受管理帳戶的使用者政策</translation>
 <translation id="8160472928944011082">Chrome 無法更新</translation>
@@ -125,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Google 密碼管理工具無法檢查所有密碼，請明天再試。你也可以<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
 <translation id="8736550665979974340">讓 Google Chrome 保障你的安全</translation>
+<translation id="8765470054473112089">在網址列或搜尋框中輸入時，Chrome 會將你輸入的內容傳送給預設搜尋引擎，提供更符合需求的搜尋建議。這項功能在無痕模式中為關閉狀態。</translation>
 <translation id="8772179140489533211">顯示登入 Chrome 的提示。</translation>
 <translation id="8788269841521769222">你不需要記住這組密碼，系統會將密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理員中</translation>
 <translation id="8857676124663337448">Google 密碼管理工具無法檢查所有密碼，請明天再試。</translation>

@@ -63,6 +63,7 @@
 <translation id="4985291216379576555">Bezsaistē, pārlūkā Chromium nevar pārbaudīt atjauninājumu pieejamību.</translation>
 <translation id="4996471330284142407">Izmantojiet vairāk iespēju vienkāršajā un drošajā pārlūkā Chromium, kas tagad ir vēl ātrāks.</translation>
 <translation id="4999538639245140991">Jūs izrakstāties no konta, kas tiek pārvaldīts domēnā <ph name="SIGNOUT_MANAGED_DOMAIN" />, tādēļ jūsu Chromium dati tiks dzēsti no šīs ierīces. Dati joprojām būs pieejami jūsu Google kontā.</translation>
+<translation id="5048795749726991615">Lai ērti iegūtu savas saglabātās paroles citās lietotnēs, izmantojiet pārlūku Chromium automātiskajai aizpildei.</translation>
 <translation id="5171868502429358653">Pierakstīšanās pārlūkprogrammā Chromium</translation>
 <translation id="5224391634244552924">Nav saglabātu paroļu. Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
 <translation id="5308226104666789935">Pārlūkā Chromium nevar pārbaudīt atjauninājumu pieejamību.</translation>
@@ -92,6 +93,7 @@
 <translation id="7045244423563602563">Pielāgojiet pārlūku Chromium savām vajadzībām</translation>
 <translation id="7099326575020694068">Chromium nevar izmantot kameru dalītā skata režīmā.</translation>
 <translation id="7118091470949186573">Tagad varat izmantot Chromium ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
+<translation id="7165402419892018581">Izvēlieties Chromium automātiskajai aizpildei</translation>
 <translation id="7175400662502680481">Jūsu parole tika atklāta datu aizsardzības pārkāpuma dēļ. Paroļu pārvaldnieks iesaka to nekavējoties nomainīt.</translation>
 <translation id="7208566199746267865">Chromium ietaupa jūsu laiku, pievienojot jūsu kontus tīmeklim. Kontus varat pievienot vai noņemt sadaļā Iestatījumi.</translation>
 <translation id="725427773388857052">Chromium var palīdzēt aizsargāt jūs pret datu pārkāpumiem, nedrošām vietnēm un citiem apdraudējumiem.</translation>
@@ -106,6 +108,7 @@
 <translation id="7746854981345936341">Chromium padoms. Tagad dažas pogas ir ekrāna apakšdaļā, piemēram, Atpakaļ, Pārsūtīt un Meklēt.</translation>
 <translation id="7763454117143368771">Parūpējieties par aizsardzību no bīstamām vietnēm un savu paroļu drošību, izmantojot pārlūku Chromium kā savu noklusējuma pārlūku</translation>
 <translation id="7812317783196516890">Jūs esat pierakstījies domēna <ph name="DOMAIN" /> pārvaldītā kontā un sinhronizējat ar to datus. Tagad šī konta administrators var kontā iestatīt lietotāju politikas, kas var mainīt pārlūka Chromium darbību.</translation>
+<translation id="7859018312476869945">Kad rakstāt adreses joslā vai meklēšanas lodziņā, pārlūks Chromium nosūta ierakstīto tekstu jūsu noklusējuma meklētājprogrammai, lai iegūtu labākus ieteikumus. Inkognito režīmā šis iestatījums ir izslēgts.</translation>
 <translation id="786327964234957808">Jūs pārslēdzat sinhronizējamos kontus no konta <ph name="USER_EMAIL1" /> uz kontu <ph name="USER_EMAIL2" />. Jūsu pašreizējos Chromium datus pārvalda <ph name="DOMAIN" />. Šādi jūsu dati tiks dzēsti no šīs ierīces, bet dati joprojām būs pieejami kontā <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Darba sākšana ar Chromium skeneri</translation>
 <translation id="7928628054454574139">Tiks atvērts pārlūks Chromium ikreiz, kad pieskarsieties saitēm citās lietotnēs.</translation>
@@ -115,6 +118,7 @@
 <translation id="8073677936375100957">Vai dzēst jūsu Chromium datus no šīs ierīces?</translation>
 <translation id="8240981428553046115">Pārlūkā Chromium nevarēja pārbaudīt atjauninājumu pieejamību. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="8409374867500149834">Jūs izmantojat Chromium visaugstāko drošības līmeni pret kaitīgām vietnēm</translation>
+<translation id="8460301378281140593">Sava iPhone tālruņa lietotnē Settings atveriet sadaļu “Password Options” (Paroles opcijas) un atlasiet “Chromium”.</translation>
 <translation id="858114650497379505">Paroļu pārvaldniekā saglabātās paroles varat izmantot citās iPhone tālruņa lietotnēs.</translation>
 <translation id="8586442755830160949">Autortiesības <ph name="YEAR" /> Chromium autori. Visas tiesības paturētas.</translation>
 <translation id="8603022514504485810">Google paroļu pārvaldnieks nevarēja pārbaudīt visas paroles. Mēģiniet vēlreiz rīt vai <ph name="BEGIN_LINK" />pārbaudiet paroles savā Google kontā<ph name="END_LINK" />.</translation>

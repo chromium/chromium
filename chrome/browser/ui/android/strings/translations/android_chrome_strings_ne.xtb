@@ -226,7 +226,6 @@
 <translation id="2248941474044011069">तपाईंका पासवर्डहरू तपाईंको डिभाइसमा इन्क्रिप्ट गरेपछि मात्र Google पासवर्ड म्यानेजरमा सेभ गरिन्छ</translation>
 <translation id="2249635629516220541">साइटहरूले तपाईंलाई विज्ञापन देखाउन प्रयोग गर्ने जानकारी कस्टमाइज गर्नुहोस्</translation>
 <translation id="2259659629660284697">पासवर्डहरू निर्यात गर्नुहोस्…</translation>
-<translation id="2276231040576210443">तपाईं जुनसुकै बेला <ph name="BEGIN_LINK1" />सेटिङ<ph name="END_LINK1" />मा गई आफूले सिंक गर्न चाहेको डेटा छनौट गर्न सक्नुहुन्छ। Google ले तपाईंले गरेका गतिविधिको इतिहासका आधारमा Search र अन्य सेवाहरू पर्सनलाइज गर्न सक्छ।</translation>
 <translation id="2276696007612801991">आफ्ना पासवर्डहरू जाँच गर्न आफ्नो Google खातामा साइन इन गर्नुहोस्</translation>
 <translation id="2278052315791335171">तपाईंले यो पासवर्ड मेटाउनुभयो भने पनि <ph name="SITE" /> मा रहेको तपाईंको खाता मेटिने छैन</translation>
 <translation id="2286841657746966508">बिल पठाउने ठेगाना</translation>
@@ -304,7 +303,6 @@
 <translation id="2669454659051515572">यो डिभाइस प्रयोग गर्ने सबै जना डाउनलोड गरिएका फाइलहरू देख्न सक्छन्</translation>
 <translation id="2702516483241149200">नयाँ: स्क्रोल गरी यो पाठसम्म लैजाने लिंक सेयर गर्नुहोस्</translation>
 <translation id="2707726405694321444">पृष्ठ ताजा गर्नुहोस्</translation>
-<translation id="2709516037105925701">स्वत:भर्नुहोस्</translation>
 <translation id="271033894570825754">नयाँ</translation>
 <translation id="2711073837061989559">ट्रायलहरू</translation>
 <translation id="2718352093833049315">Wi-Fi मा मात्र</translation>
@@ -396,7 +394,6 @@
 <translation id="3114507951000454849">आजको समाचार पढ्नुहोस् <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">लिंक गरिएको कार्ड:</translation>
 <translation id="3123734510202723619">घोषणाहरू</translation>
-<translation id="3130863904455712965">इतिहास र अन्य डेटा</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome को गृहपृष्ठ</translation>
 <translation id="3157931365184549694">पुन: भण्डारण</translation>
@@ -989,7 +986,6 @@
 <translation id="6397616442223433927">यन्त्र फेरि अनलाइन भयो</translation>
 <translation id="6401458660421980302">तपाईं यो ट्याब अर्को डिभाइसमा पठाउन चाहनुहुन्छ भने उक्त डिभाइसमा Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> मा <ph name="ERROR_CODE" /></translation>
-<translation id="6403371459378431832">सबै डिभाइसहरूमा आफ्नो डेटा सिंक गर्नुहोस्</translation>
 <translation id="6404511346730675251">बुकमार्क सम्पादन गर्नुहोस्</translation>
 <translation id="6406506848690869874">समक्रमण</translation>
 <translation id="6407224748847589805">तपाईंको कम्प्युटरमा कनेक्ट गर्न सकिएन। पुष्टि गर्ने अर्को विकल्प प्रयोग गरी हेर्नुहोस्।</translation>
@@ -1318,7 +1314,6 @@
 <translation id="8037801708772278989">भर्खरै जाँच गरिएको</translation>
 <translation id="804335162455518893">SD कार्ड फेला परेन</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> इन्कोग्निटो ट्याब}other{<ph name="TAB_COUNT_NORMAL" /> वटा इन्कोग्निटो ट्याब}}</translation>
-<translation id="8048728378294435881">आफ्नो डेटा ब्याकअप गर्नुहोस् र जुनसुकै डिभाइसमा सो डेटा प्रयोग गर्नुहोस्</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> एम.बि.उपलब्ध छ</translation>
 <translation id="8058655154417507695">म्याद सकिने वर्ष</translation>
 <translation id="8058746566562539958">Chrome को नयाँ ट्याबमा खोल्नुहोस्</translation>

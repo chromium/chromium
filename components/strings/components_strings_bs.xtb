@@ -540,6 +540,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2241693394036365668">Fajl je preuzet</translation>
 <translation id="2246264294482514010">10 x 12 in</translation>
 <translation id="2246480341630108201">Roditelj još uvijek nije odobrio</translation>
+<translation id="2247789808226901522">Kartica je istekla</translation>
 <translation id="2248949050832152960">Koristi mrežnu provjeru autentičnosti</translation>
 <translation id="2250931979407627383">Uvez uz desni rub</translation>
 <translation id="225207911366869382">Ova vrijednost je zastarjela za ovo pravilo.</translation>
@@ -1078,6 +1079,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3646643500201740985">Mjerenje performansi oglasa</translation>
 <translation id="3647286794400715637">Svaki uneseni niz URL-a mora sadržavati između 1 i 2 URL-a.</translation>
 <translation id="3650584904733503804">Potvrda valjanosti je uspjela</translation>
+<translation id="3650594806107685466">Da biste bolje zaštitili svoju karticu, unesite CVC (<ph name="SIDE_OF_CARD" />)</translation>
 <translation id="3653033846669030038">Tematski parkovi</translation>
 <translation id="3655241534245626312">Idi u postavke odobrenja</translation>
 <translation id="3655670868607891010">Ako vam se često prikazuje ova poruka, probajte sljedeće <ph name="HELP_LINK" />.</translation>
@@ -2458,6 +2460,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7112327784801341716">Ne vidite svoje trenutne informacije? Kontaktirajte banku da ih ažurirate.</translation>
 <translation id="7118618213916969306">Traženje URL-a u međumemoriji, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Zatvorite druge kartice ili programe</translation>
+<translation id="7124354851782353862">Unesite svoj CVC</translation>
 <translation id="7129355289156517987">Kada zatvorite sve kartice u anonimnom načinu rada u Chromiumu, vaša aktivnost na tim karticama se briše s ovog uređaja:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />aktivnost pregledanja<ph name="END_LIST_ITEM" />
@@ -2784,6 +2787,7 @@ Dodatni detalji:
 <translation id="7844689747373518809">{COUNT,plural, =0{Ništa}=1{1 aplikacija (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikacije (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# aplikacija (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# aplikacije (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# aplikacija (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Kasnije, web lokacija koju ste posjetili može zatražiti od Chromea vaše teme da personalizira oglase koje vidite. Chrome dijeli najviše 3 teme i štiti vašu historiju pregledanja i vaš identitet.</translation>
+<translation id="7860345425589240791">Unesite novi datum isteka i CVC (<ph name="SIDE_OF_CARD" />)</translation>
 <translation id="7862185352068345852">Napustiti web lokaciju?</translation>
 <translation id="7865448901209910068">Najbolja brzina</translation>
 <translation id="7871445724586827387">Promijenite lozinku za Google račun</translation>

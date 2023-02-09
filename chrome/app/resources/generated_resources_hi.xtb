@@ -222,6 +222,7 @@
 <ph name="DOMAIN" /> के लिए ज़रूरी है कि आप अपना स्मार्ट कार्ड डालकर रखें.}one{आप अगले # सेकंड में अपने-आप साइन आउट हो जाएंगे.
 <ph name="DOMAIN" /> के लिए ज़रूरी है कि आप अपना स्मार्ट कार्ड डालकर रखें.}other{आप अगले # सेकंड में अपने-आप साइन आउट हो जाएंगे.
 <ph name="DOMAIN" /> के लिए ज़रूरी है कि आप अपना स्मार्ट कार्ड डालकर रखें.}}</translation>
+<translation id="119330003005586565">पेज, जो आपने पढ़े हैं</translation>
 <translation id="1193927020065025187">हो सकता है कि यह साइट आपको गुमराह कर रही हो, ताकि आप धोखे से परेशान करने वाली सूचनाओं के लिए अनुमति दें</translation>
 <translation id="1195210374336998651">ऐप्लिकेशन की सेटिंग पर जाएं</translation>
 <translation id="1195447618553298278">अज्ञात गड़बड़ी.</translation>
@@ -284,6 +285,7 @@
 <translation id="1244303850296295656">एक्‍सटेंशन गड़बड़ी</translation>
 <translation id="1245628370644070008">स्थानीय डेटा वापस पाने की सुविधा</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> इंस्टॉल नहीं की जा सकी: इमेज यूआरएल पर <ph name="HTTP_ERROR" /> गड़बड़ी कोड आया. कृपया अपने एडमिन से संपर्क करें.</translation>
+<translation id="1247372569136754018">माइक्रोफ़ोन (आंतरिक)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{1 साइट को सूचनाएं भेजने की अनुमति नहीं है}one{{NUM_SITES} साइट को सूचनाएं भेजने की अनुमति नहीं है}other{{NUM_SITES} साइटों को सूचनाएं भेजने की अनुमति नहीं है}}</translation>
 <translation id="1251366534849411931">शुरुआत में दिखने वाले ज़रूरी कर्ली ब्रेस: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">इससे, साइटों और इंस्टॉल किए गए ऐप्लिकेशन के सेव किए गए कुल डेटा में से <ph name="TOTAL_USAGE" /> डेटा मिट जाएगा</translation>
@@ -412,6 +414,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{कोई भी पासवर्ड हैक या चोरी नहीं हुआ}=1{1 पासवर्ड हैक या चोरी हुआ है}one{{NUM_COMPROMISED} पासवर्ड हैक या चोरी हुआ है}other{{NUM_COMPROMISED} पासवर्ड हैक या चोरी हुए हैं}}</translation>
 <translation id="1380028686461971526">नेटवर्क से अपने-आप कनेक्ट हो</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> स्पीच को प्रोसेसिंग के लिए, Google के पास भेजा जाता है</translation>
+<translation id="1383381142702995121">इस एक्सटेंशन को मैनेज करें</translation>
 <translation id="1383597849754832576">स्पीच फ़ाइलें डाउनलोड नहीं की जा सकतीं. कुछ देर बाद कोशिश करें.</translation>
 <translation id="1383861834909034572">पूरा होने पर खुल रहा है</translation>
 <translation id="1383876407941801731">Search</translation>
@@ -541,6 +544,7 @@
 <translation id="1482626744466814421">इस टैब को बुकमार्क करें...</translation>
 <translation id="1482772681918035149">पासवर्ड में बदलाव करना</translation>
 <translation id="1483493594462132177">भेजें</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">साइट ब्लूटूथ का इस्तेमाल कर रही है</translation>
 <translation id="1485015260175968628">यह अब निम्न कर सकता है:</translation>
 <translation id="1485141095922496924">वर्शन <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1106,6 +1110,7 @@
 <translation id="1965624977906726414">कोई विशेष अनुमति नहीं है.</translation>
 <translation id="1966649499058910679">जैसे-जैसे हर शब्द बोला जाए, उसे हाइलाइट करें</translation>
 <translation id="1967970931040389207">हॉटस्पॉट चालू करें</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">WebRTC लेख लॉग (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">आपको ज़्यादा तेज़ी से ब्राउज़ करने का अनुभव मिलता है, क्योंकि कॉन्टेंट आपके हाल ही में देखे गए वेब पेज के हिसाब से लोड होता है</translation>
 <translation id="197288927597451399">रखें</translation>
@@ -1831,7 +1836,6 @@
 <translation id="25899519884572181">रीडर मोड से बाहर निकलें</translation>
 <translation id="2593499352046705383">शुरू करने से पहले, पक्का करें कि आपने डेटा का बैक अप ले लिया हो. <ph name="DEVICE_OS" /> इंस्टॉल करने से, आपकी हार्ड ड्राइव पर मौजूद पूरा डेटा मिट जाएगा. ज़्यादा जानने के लिए, g.co/flex/InstallGuide पर जाएं.</translation>
 <translation id="2594999711683503743">Google पर खोजें या URL टाइप करें</translation>
-<translation id="25957578727513093">Google Password Manager पर तुरंत पहुंचने के लिए, इसका शॉर्टकट जोड़ें</translation>
 <translation id="2599048253926156421">उपयोगकर्ता नाम को क्लिपबोर्ड पर कॉपी किया गया</translation>
 <translation id="2602501489742255173">शुरू करने के लिए ऊपर की ओर स्वाइप करें</translation>
 <translation id="2603115962224169880">कंप्यूटर साफ़ करें</translation>
@@ -2409,6 +2413,7 @@
 <translation id="3103451787721578293">कृपया इस डेटा को अपलोड करने की वजह बताएं:</translation>
 <translation id="3105339775057145050">पिछला अपडेट, जो पूरा नहीं हो सका</translation>
 <translation id="3105796011181310544">इसे बदलकर फिर से Google करें?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ब्लूटूथ)</translation>
 <translation id="310671807099593501">साइट ब्लूटूथ का इस्तेमाल कर रही है</translation>
 <translation id="3108931485517391283">फ़ाइल नहीं मिल सकी</translation>
 <translation id="3108957152224931571">हाइलाइट करने के लिए रंग</translation>
@@ -3050,6 +3055,7 @@
 <translation id="371300529209814631">पीछे/आगे</translation>
 <translation id="3713047097299026954">इस सुरक्षा कुंजी में साइन इन का कोई डेटा मौजूद नहीं है</translation>
 <translation id="3713091615825314967">ऑटोमैटिक अपडेट चालू हैं.</translation>
+<translation id="371370241367527062">सामने वाला माइक्रोफ़ोन</translation>
 <translation id="3714195043138862580">इस डेमो डिवाइस को इस्तेमाल से बाहर कर दिया गया है.</translation>
 <translation id="3719826155360621982">होमपेज</translation>
 <translation id="372062398998492895">CUPS प्रिंटर</translation>
@@ -3145,6 +3151,7 @@
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” को खोजने के लिए <ph name="SEARCH_ENGINE" /> पर &amp;खोजें</translation>
 <translation id="3798449238516105146">वर्शन</translation>
 <translation id="3798632811625902122">ब्लूटूथ डिवाइस <ph name="DEVICE" /> दूसरे डिवाइस से जुड़ने की अनुमति चाहता है.</translation>
+<translation id="3798670284305777884">स्पीकर (आंतरिक)</translation>
 <translation id="3799128412641261490">ऐक्सेस करने का तरीका बदलने की सेटिंग</translation>
 <translation id="3800030395703848668">सूची में मौजूद विकल्प देखें</translation>
 <translation id="3800806661949714323">सभी दिखाएं (अनुशंंसित)</translation>
@@ -4242,6 +4249,7 @@
 <translation id="4807098396393229769">कार्ड पर नाम</translation>
 <translation id="4808667324955055115">पॉप-अप ब्लॉक किए गए हैं:</translation>
 <translation id="4809079943450490359">आपके डिवाइस के एडमिन से मिले निर्देश:</translation>
+<translation id="4809447465126035330">मिटाएं</translation>
 <translation id="480990236307250886">होम पेज खोलें</translation>
 <translation id="4809927044794281115">हल्के रंग वाली थीम</translation>
 <translation id="4811212958317149293">कीबोर्ड में अपने-आप स्कैन करने की सुविधा को ऐक्सेस करने का तरीका बदलें</translation>
@@ -5044,6 +5052,7 @@
 <translation id="5556459405103347317">फिर लोड करें</translation>
 <translation id="5558129378926964177">ज़ूम &amp;इन करें</translation>
 <translation id="5558247502209241936">ऐप्लिकेशन को विंडो में खोलने की सुविधा चालू करें</translation>
+<translation id="5559311991468302423">पता मिटाएं</translation>
 <translation id="55601339223879446">डिसप्ले के भीतर अपने डेस्कटॉप की सीमाएं समायोजित करें</translation>
 <translation id="5561162485081632007">नुकसान पहुंचाने वाली घटनाएं होने पर उनकी पहचान करता है और उनके बारे में आपको चेतावनी देता है.</translation>
 <translation id="5562781907504170924">यह टैब किसी ब्लूटूथ डिवाइस से कनेक्ट है.</translation>
@@ -5144,6 +5153,7 @@
 <translation id="5643620609347735571">साफ़ करें और जारी रखें</translation>
 <translation id="5646376287012673985">जगह की जानकारी</translation>
 <translation id="5646558797914161501">व्यवसायी</translation>
+<translation id="5648021990716966815">माइक जैक</translation>
 <translation id="5648166631817621825">पिछले 7 दिन</translation>
 <translation id="5651308944918885595">आस-पास शेयर करने की सुविधा और 'खोजने लायक बनाना' सेटिंग</translation>
 <translation id="5653154844073528838">आपके पास <ph name="PRINTER_COUNT" /> सेव किए गए प्रिंटर हैं.</translation>
@@ -5533,6 +5543,7 @@
 <translation id="6007240208646052708">आपकी भाषा में बोलकर खोजने की सुविधा उपलब्ध नहीं है.</translation>
 <translation id="6010651352520077187">इसके चालू होने पर, Google Translate आपकी पसंदीदा भाषा में साइटों का अनुवाद करने के विकल्प दिखाएगा. यह साइटों का अनुवाद अपने-आप भी कर सकता है.</translation>
 <translation id="6011193465932186973">फ़िंगरप्रिंट</translation>
+<translation id="6011308810877101166">खोज से जुड़े सुझावों को बेहतर बनाएं</translation>
 <translation id="6011908034087870826"><ph name="DEVICE_NAME" /> पर लिंक भेजा जा रहा है</translation>
 <translation id="6013027779243312217">अपने ऑडियो और वीडियो के लिए कैप्शन पाएं</translation>
 <translation id="6014293228235665243">नहीं पढ़ा गया</translation>
@@ -5850,6 +5861,7 @@
 <translation id="630292539633944562">निजी जानकारी के सुझाव</translation>
 <translation id="6305607932814307878">वैश्विक नीति:</translation>
 <translation id="6305909198255586420">कृपया अपनी मुख्य प्रोफ़ाइल का इस्तेमाल करके इंस्टॉल करें</translation>
+<translation id="630750887748244481">आपके माता-पिता ने Chrome के लिए, "साइटों, ऐप्लिकेशन, और एक्सटेंशन के लिए अनुमतियां" बंद कर दी हैं. इस एक्सटेंशन को जोड़ने की अनुमति नहीं है.</translation>
 <translation id="6307990684951724544">सिस्‍टम व्‍यस्‍त है</translation>
 <translation id="6308493641021088955">साइन-इन की सुविधा <ph name="EXTENSION_NAME" /> ने दी है</translation>
 <translation id="6308937455967653460">लिंक को इस रूप में सेव करें...</translation>
@@ -6252,6 +6264,7 @@
 <translation id="6678717876183468697">क्वेरी यूआरएल</translation>
 <translation id="6680442031740878064">उपलब्ध: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">दर</translation>
+<translation id="6683022854667115063">हेडफ़ोन</translation>
 <translation id="6683087162435654533">सभी टैब पहले जैसे करें</translation>
 <translation id="6684827949542560880">नए अपडेट को डाउनलोड किया जा रहा है</translation>
 <translation id="668599234725812620">Google Play खोलें</translation>
@@ -6435,6 +6448,7 @@
 <translation id="6839916869147598086">साइन इन बदल गया है</translation>
 <translation id="6840155290835956714">भेजने से पहले पूछें</translation>
 <translation id="6840184929775541289">एक प्रमाणन प्राधिकरण नहीं है</translation>
+<translation id="6840214587087739194">पता मिटाया गया</translation>
 <translation id="6841143363521180029">फ़ाइल को एन्क्रिप्ट (सुरक्षित) किया गया है</translation>
 <translation id="6841186874966388268">त्रुटियां</translation>
 <translation id="6842136130964845393">यह पक्का करने के लिए कि आप हमेशा अपने सेव किए गए पासवर्ड ऐक्सेस सकें, अपनी पहचान की पुष्टि करें</translation>
@@ -6879,6 +6893,7 @@
 <translation id="7255002516883565667">फ़िलहाल आपके पास सिर्फ़ इसी डिवाइस पर इस्तेमाल किया जा सकने वाला एक कार्ड है</translation>
 <translation id="7255935316994522020">लागू करें</translation>
 <translation id="7256069762010468647">साइट आपके कैमरे का इस्तेमाल कर रही है</translation>
+<translation id="7256634071279256947">पीछे वाला माइक्रोफ़ोन</translation>
 <translation id="7256710573727326513">टैब में खोलें</translation>
 <translation id="7257173066616499747">वाई-फ़ाई नेटवर्क</translation>
 <translation id="725758059478686223">प्रिंटिंग सेवा</translation>
@@ -7992,6 +8007,7 @@
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" /> से जोड़ा जा रहा है</translation>
 <translation id="8251578425305135684">थंबनेल निकाला गया.</translation>
 <translation id="825238165904109940">हमेशा पूरे यूआरएल दिखाएं</translation>
+<translation id="8252538334423261825">एक्सटेंशन जोड़ा नहीं जा सकता</translation>
 <translation id="8252569384384439529">अपलोड हो रही है...</translation>
 <translation id="8253198102038551905">नेटवर्क प्रॉपर्टी पाने के लिए '+' बटन पर क्‍लिक करें</translation>
 <translation id="8255212965098517578">हाल ही की फ़ोटो, सूचनाएं, और ऐप्लिकेशन</translation>
@@ -8277,6 +8293,7 @@
 <translation id="8525306231823319788">फ़ुल स्‍क्रीन</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">भाषाएं जोड़ें</translation>
+<translation id="8528479410903501741">IBAN सेव करें</translation>
 <translation id="8528962588711550376">प्रवेश कर रहा है.</translation>
 <translation id="8529925957403338845">इंस्टैंट टेदरिंग कनेक्शन नहीं किया जा सका</translation>
 <translation id="8531701051932785007">बेहतर सुरक्षित ब्राउज़िंग की सुविधा बंद है</translation>

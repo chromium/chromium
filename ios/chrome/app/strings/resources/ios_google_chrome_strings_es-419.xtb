@@ -22,6 +22,7 @@
 <translation id="2347208864470321755">Cuando esté activada esta función, Chrome ofrecerá traducir páginas escritas en otros idiomas con Google Traductor. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome tiene funciones que te ayudan a administrar tus datos de Internet y la rapidez con la que puedes cargar páginas web.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="2444854139071078915">Para obtener fácilmente tus contraseñas guardadas en otras apps, usa la opción para autocompletarlas con Chrome</translation>
 <translation id="2561231791489583059">Usa Chrome como tu navegador predeterminado para protegerte de sitios peligrosos y mantener tus contraseñas seguras</translation>
 <translation id="2574249610672786438">Para ver tus pestañas donde sea que uses Chrome, accede a tu cuenta en todos los dispositivos</translation>
 <translation id="2576431527583832481">¡Chrome mejoró! Hay una nueva versión disponible.</translation>
@@ -89,6 +90,7 @@
 <translation id="6709398533399187136">Tu contraseña quedó expuesta en una violación de la seguridad de los datos. El Administrador de contraseñas de Google te recomienda cambiarla ahora.</translation>
 <translation id="6822673484890854830">Chrome no pudo verificar todas las contraseñas. Vuelve a intentarlo más tarde.</translation>
 <translation id="6964931465519938134">Ahora puedes usar Chrome cada vez que presionas vínculos que aparecen en mensajes, documentos u otras apps.</translation>
+<translation id="6975725306479268850">Elige Chrome para Autocompletar</translation>
 <translation id="701356708427365932">Descubre el nuevo menú de Chrome.</translation>
 <translation id="7059914902409643750">Personaliza Chrome a tu medida</translation>
 <translation id="7124339256045485976">Mantén Chrome actualizado</translation>
@@ -109,6 +111,7 @@
 <translation id="7754633291442704733">Tu organización <ph name="DOMAIN" /> tendrá acceso a tus datos, favoritos, historial, contraseñas y otros parámetros de configuración de Chrome que almacenes en esta cuenta. Cuando salgas, se borrarán tus datos de este dispositivo.  Sin embargo, tus datos permanecerán almacenados en tu Cuenta de Google administrada y estarán disponibles para tu organización. Tu organización también puede establecer políticas del usuario específicas de esa cuenta, que pueden cambiar el comportamiento de Chrome.</translation>
 <translation id="7780154209050837198">Para aprovechar Chrome al máximo, accede al navegador con tu Cuenta de Google.</translation>
 <translation id="7855730255114109580">Google Chrome está actualizado</translation>
+<translation id="7939179037291298976">En la configuración de tu iPhone, abre "Opciones de contraseña" y selecciona "Chrome"</translation>
 <translation id="8022947259858476807">Usa Chrome como tu navegador predeterminado para abrir vínculos, realizar búsquedas desde widgets y autocompletar contraseñas en otras apps</translation>
 <translation id="81358522153858150">Chrome ahora es compatible con las políticas del usuario de tus dispositivos administrados</translation>
 <translation id="8160472928944011082">No se puede actualizar Chrome</translation>
@@ -124,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">El Administrador de contraseñas de Google no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana o <ph name="BEGIN_LINK" />revisa las contraseñas guardadas en tu Cuenta de Google.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Aprovecha la seguridad de Google Chrome</translation>
+<translation id="8765470054473112089">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chrome envía lo que escribes a tu motor de búsqueda predeterminado para obtener mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
 <translation id="8772179140489533211">Muestra mensajes para acceder a Chrome.</translation>
 <translation id="8788269841521769222">No es necesario que recuerdes esta contraseña. Se guardará en el Administrador de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="8857676124663337448">El Administrador de contraseñas de Google no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana.</translation>

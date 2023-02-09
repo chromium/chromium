@@ -1457,6 +1457,26 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
       Jika kebijakan disetel ke Nonaktif, fitur ini tidak akan tersedia.</translation>
 <translation id="2342066287156668839">Aktifkan kuota persisten.</translation>
 <translation id="2345547870894930157">Aktifkan DNS-over-HTTPS tanpa fallback yang tidak aman</translation>
+<translation id="234856189825555040">Kebijakan ini mengontrol apakah plugin <ph name="PEPPER_NAME" /> dapat
+menggunakan dekoder baru, bukan dekoder video lama, untuk berkomunikasi dengan dekoder
+hardware.
+
+Migrasi hanya memengaruhi detail implementasi internal dan seharusnya tidak
+mengubah perilaku apa pun. Namun, kebijakan ini dapat digunakan jika aplikasi
+PPAPI tidak berfungsi seperti yang diharapkan.
+
+Jika kebijakan tidak disetel atau disetel ke Aktif, browser akan menentukan
+implementasi mana yang akan digunakan.
+Jika kebijakan disetel ke Nonaktif, browser akan menggunakan implementasi lama
+hingga kebijakan ini tidak berlaku lagi.
+
+Jika Anda harus menggunakan kebijakan ini, laporkan bug di crbug.com yang menjelaskan
+kasus penggunaan Anda dan CC {andrescj, blundell, pmolinalopez, vasilyt}@chromium.org. Kebijakan ini
+dijadwalkan untuk ditawarkan hingga <ph name="PRODUCT_NAME" /> versi 114, setelah itu
+implementasi lama akan dihapus.
+
+CATATAN: Hanya proses perender yang baru dimulai yang akan menunjukkan perubahan pada
+kebijakan ini saat browser berjalan.</translation>
 <translation id="2349117476121456297">Jika kebijakan ditetapkan ke Benar (True), tombol baris teratas pada keyboard akan bertindak sebagai perintah tombol fungsi. Jika menekan tombol Penelusuran, perilaku tombol tersebut akan kembali menjadi tombol media.
 
       Jika ditetapkan ke Salah (False) atau tidak ditetapkan, default keyboard adalah membuat perintah tombol media. Jika menekan tombol Penelusuran, tombol tersebut akan berubah menjadi tombol fungsi.</translation>
@@ -6228,6 +6248,24 @@ Kebijakan ini akan dihapus dari <ph name="PRODUCT_NAME" /> pada masa mendatang.<
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak ada penggunaan informasi yang dilaporkan.</translation>
 <translation id="6823711520976094072">Jika disetel di bawah 1 MB atau tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan menggunakan ukuran default 256 MiB untuk menyimpan cache aplikasi dan ekstensi yang akan diinstal oleh beberapa pengguna di satu perangkat, sehingga setiap pengguna tidak perlu mendownload ulang satu per satu aplikasi dan ekstensi tersebut.</translation>
+<translation id="6829632070341067746">Kebijakan ini mengontrol pemfaktoran ulang terbaru untuk Graphics3D API dalam plugin PPAPI.
+
+Migrasi hanya memengaruhi detail implementasi internal dan seharusnya tidak
+mengubah perilaku apa pun. Namun, kebijakan ini dapat digunakan jika aplikasi
+PPAPI tidak berfungsi seperti yang diharapkan.
+
+Jika kebijakan tidak disetel atau disetel ke Aktif, browser akan menentukan
+implementasi mana yang akan digunakan.
+Jika kebijakan disetel ke Nonaktif, browser akan menggunakan implementasi lama
+hingga kebijakan berakhir.
+
+Jika Anda harus menggunakan kebijakan ini, laporkan bug di crbug.com yang menjelaskan
+kasus penggunaan Anda dan CC {blundell, vasilyt}@chromium.org. Kebijakan ini dijadwalkan untuk
+ditawarkan hingga <ph name="PRODUCT_NAME" />
+versi 114, setelah itu implementasi lama akan dihapus.
+
+CATATAN: Hanya proses perender yang baru dimulai yang akan menunjukkan perubahan pada
+kebijakan ini saat browser berjalan.</translation>
 <translation id="6833023569065717572">Jika kebijakan disetel ke Benar (True), layar login perangkat akan menggunakan format waktu 24 jam.
 
       Jika kebijakan disetel ke Salah (False), layar login perangkat akan menggunakan format waktu 12 jam.
@@ -6524,6 +6562,14 @@ pemblokiran permintaan semacam itu akan diterapkan.</translation>
 <translation id="7081784525008938771">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna tidak akan dianggap tidak ada aktivitas saat video diputar. Hal ini mencegah tercapainya waktu tunggu penundaan tidak ada aktivitas, penundaan peredupan layar, penundaan penonaktifan layar, dan penundaan penguncian layar, serta mencegah diambilnya tindakan terkait.
 
       Jika kebijakan disetel ke Nonaktif, sistem akan dapat menganggap pengguna tidak ada aktivitas meski terdapat aktivitas video.</translation>
+<translation id="7084631508902923941">Ekstensi yang terhubung ke salah satu origin ini akan tetap berjalan selama port terhubung.
+
+Jika tidak disetel, nilai default kebijakan akan digunakan. Berikut adalah origin aplikasi yang menawarkan SDK yang diketahui tidak menawarkan kemungkinan untuk memulai ulang koneksi tertutup ke status sebelumnya:
+- Smart Card Connector
+- Citrix Receiver (stabil, beta, cadangan)
+- VMware Horizon (stabil, beta)
+
+Jika ditetapkan, daftar nilai default akan diperluas dengan nilai yang baru dikonfigurasi. Entri default dan entri yang disediakan oleh kebijakan akan memberikan pengecualian ke ekstensi yang terhubung, selama port terhubung.</translation>
 <translation id="7086720321892395256">Mengontrol kebijakan pengguna dan perangkat untuk fitur layar privasi.</translation>
 <translation id="7090500018761495290">Mengaktifkan kembali Event.path API hingga M115.</translation>
 <translation id="7090668780328470271">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang tidak dapat meminta izin pengguna untuk mengakses perangkat USB.
@@ -7158,6 +7204,22 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
 
           Nilai kebijakan harus ditentukan dalam milidetik. Nilai dikunci agar kurang dari atau sama dengan penundaan penonaktifan layar (jika ditetapkan) dan penundaan waktu tidak ada aktivitas.</translation>
 <translation id="7680437377926096177">Sembunyikan dialog logout saat jendela terakhir ditutup.</translation>
+<translation id="7682459947751785310">Kebijakan ini dapat digunakan sementara waktu untuk otomatis mengaktifkan dukungan bagi
+PPB_VideoDecoder(Dev) API.
+
+Jika kebijakan tidak disetel atau disetel ke Nonaktif, browser akan menentukan apakah
+API didukung atau tidak.
+Jika kebijakan disetel ke Aktif, API akan didukung.
+
+Kebijakan ini dapat digunakan jika penghapusan dukungan yang sedang berlangsung untuk API ini
+menyebabkan masalah. Jika Anda harus menggunakan kebijakan ini, laporkan bug di crbug.com
+yang menjelaskan kasus penggunaan Anda dan CC {blundell, vasilyt}@chromium.org. Kebijakan ini
+dijadwalkan untuk tersedia hingga <ph name="PRODUCT_NAME" />
+versi 114, setelah itu dukungan untuk API ini direncanakan akan dihapus
+tanpa syarat.
+
+CATATAN: Hanya proses perender yang baru dimulai yang akan menunjukkan perubahan pada
+kebijakan ini saat browser berjalan.</translation>
 <translation id="7683777542468165012">Penyegaran Kebijakan Dinamis</translation>
 <translation id="7687943045976362719">Jika kebijakan ini ditetapkan, jenis konten yang ditentukan akan ditangani oleh <ph name="PRODUCT_FRAME_NAME" />.
 
@@ -7251,6 +7313,7 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
       Jika kebijakan ini dinonaktifkan atau tidak disetel, Aplikasi Chrome mungkin tidak diizinkan berjalan, bergantung pada status peluncuran penghentian.
       Dalam kasus apa pun, Aplikasi Chrome yang diinstal otomatis oleh kebijakan akan terus diizinkan.</translation>
 <translation id="7774768074957326919">Gunakan setelan proxy sistem</translation>
+<translation id="7776848995687565978">Mengonfigurasi daftar origin yang memberikan perpanjangan masa aktif di latar belakang untuk ekstensi yang terhubung.</translation>
 <translation id="777734450201217641">Mengaktifkan pintasan fitur aksesibilitas di layar login.
 
           Jika kebijakan ini ditetapkan ke true, pintasan fitur aksesibilitas akan selalu diaktifkan di layar login.
@@ -8695,6 +8758,52 @@ Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna 
       Kemungkinan rollback aktual juga dapat bergantung pada model perangkat dan patch kerentanan kritis.</translation>
 <translation id="9123464369663964441">Izinkan pengguna menambahkan pengecualian untuk mengizinkan konten campuran</translation>
 <translation id="9124770007620653639">Jangan pernah mengirimkan data keandalan domain ke Google</translation>
+<translation id="9126491667911789829">Menyetel kebijakan akan menentukan daftar aplikasi web yang diinstal otomatis, tanpa interaksi pengguna, dan yang tidak dapat di-uninstal atau dinonaktifkan pengguna.
+
+      Setiap item daftar kebijakan adalah objek yang berisi satu elemen wajib:
+      <ph name="URL_LABEL" /> (URL aplikasi web yang akan diinstal)
+
+      dan 6 elemen opsional:
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (untuk cara aplikasi web terbuka—tab baru adalah default)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      (Berlaku jika Anda ingin membuat pintasan desktop <ph name="LINUX_OS_NAME" /> dan
+      <ph name="MS_WIN_NAME" />).
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (<ph name="PRODUCT_NAME" /> mulai dari versi 90
+      memungkinkan Anda mengganti nama aplikasi jika aplikasi bukan
+      Progressive Web App (PWA), atau mengganti nama aplikasi yang diinstal
+      sementara jika aplikasi adalah PWA, tetapi perlu autentikasi sebelum
+      penginstalan dapat diselesaikan. Jika
+      <ph name="CUSTOM_NAME_LABEL" /> dan
+      <ph name="FALLBACK_APP_NAME_LABEL" /> tersedia,
+      yang kedua akan diabaikan).
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (<ph name="PRODUCT_OS_NAME" />
+      mulai dari versi 99, dan versi 112 di semua sistem operasi lain, memungkinkan Anda
+      secara permanen mengganti nama aplikasi untuk semua aplikasi web dan PWA).
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (<ph name="PRODUCT_OS_NAME" />
+      mulai dari versi 99, dan versi 112 di semua sistem operasi lain, memungkinkan Anda
+      mengganti ikon aplikasi yang diinstal. Ikon harus berbentuk persegi,
+      berukuran maksimal 1 MB, dan dalam salah satu format berikut: jpeg, png, gif, webp, ico.
+      Nilai hash ikon file harus hash SHA256).
+
+      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
+      (<ph name="PRODUCT_NAME" />
+      mulai dari versi 107). Jika diaktifkan, <ph name="URL_LABEL" />
+      yang disediakan akan diinstal sebagai pintasan, seolah-olah dilakukan melalui opsi "Buat Pintasan..."
+      di GUI browser desktop.
+      Perlu diperhatikan bahwa jika diinstal sebagai pintasan, URL tersebut tidak akan diupdate jika
+      manifes pada <ph name="URL_LABEL" /> berubah.
+      Jika dinonaktifkan atau tidak disetel, aplikasi web di
+      <ph name="URL_LABEL" /> yang disediakan akan diinstal secara normal.
+
+      Lihat <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> untuk menyematkan aplikasi ke rak <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9129169595075460149">Jika kebijakan disetel ke Aktif, SafeSearch di Google Penelusuran akan selalu aktif, dan pengguna tidak dapat mengubah setelan ini.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, SafeSearch di Google Penelusuran tidak akan diterapkan.</translation>

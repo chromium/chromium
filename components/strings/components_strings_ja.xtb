@@ -524,6 +524,7 @@
 <translation id="2202627062836089804">カードの裏面</translation>
 <translation id="22081806969704220">トレイ 3</translation>
 <translation id="2210794033760923560">レポートをアップロード</translation>
+<translation id="2212579473415663542">この住所は Google アカウント（<ph name="ACCOUNT" />）に保存されました。住所はすべてのデバイスの各種 Google サービスで使用できます。</translation>
 <translation id="2212735316055980242">ポリシーが見つかりません</translation>
 <translation id="2213606439339815911">エントリを取得しています...</translation>
 <translation id="2213612003795704869">ページが印刷されました</translation>
@@ -1972,6 +1973,7 @@
 <translation id="5866898949289125849">デベロッパー ツール ページを表示しています</translation>
 <translation id="5869405914158311789">このサイトにアクセスできません</translation>
 <translation id="5869522115854928033">保存したパスワード</translation>
+<translation id="5872692522325383488">IBAN を保存しました</translation>
 <translation id="5873013647450402046">ご利用の銀行またはカード発行会社が本人確認を求めています。</translation>
 <translation id="5877831137320480913">美容、フィットネス</translation>
 <translation id="5884465125445718607">中国 #6 封筒</translation>
@@ -2141,6 +2143,7 @@
 <translation id="6300452962057769623">{0,plural, =0{デバイスは今すぐ再起動されます}=1{デバイスは 1 秒後に再起動されます}other{デバイスは # 秒後に再起動されます}}</translation>
 <translation id="6301104306974789820">価格トラッキングの通知を受け取る</translation>
 <translation id="6305205051461490394"><ph name="URL" /> にアクセスできません。</translation>
+<translation id="6306713302480826305">この住所は、このデバイスとログインしている他のデバイスから削除されます</translation>
 <translation id="6311165245110979290">仮想カードを利用できます</translation>
 <translation id="6312113039770857350">ウェブページへのアクセス不可</translation>
 <translation id="6316226860534107313">スクーター、モペッド</translation>
@@ -3032,6 +3035,7 @@
 <translation id="8473863474539038330">住所やその他の情報</translation>
 <translation id="8474910779563686872">デベロッパーの詳細を表示</translation>
 <translation id="8479754468255770962">ステープル（左下）</translation>
+<translation id="8483229036294884935">この住所は Google アカウント（<ph name="ACCOUNT" />）から削除されます</translation>
 <translation id="8483780878231876732">Google アカウントに保存したカードを使用するには Chrome にログインしてください</translation>
 <translation id="8488350697529856933">適用先</translation>
 <translation id="8490137692873530638">スタッカー 10</translation>

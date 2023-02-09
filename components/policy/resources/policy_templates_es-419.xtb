@@ -3244,6 +3244,11 @@ Esta política es una solución temporal y se quitará en algunos momentos impor
 <translation id="3994043824457743421">Mostrar la notificación del espacio del medio en la página Nueva pestaña</translation>
 <translation id="399433537808390819">Hacer que el Modo de escritorio unificado no esté disponible para el usuario</translation>
 <translation id="3995880046827722248">Inhabilitar Manifest v2</translation>
+<translation id="3996118331995847766">Si habilitas <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> y, luego, estableces <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />, podrás configurar un modo avanzado para la carga de la batería. De <ph name="CHARGE_START_TIME_FIELD_NAME" /> a <ph name="CHARGE_END_TIME_FIELD_NAME" />, la batería del dispositivo podrá cargarse completamente una sola vez. Durante el resto del período, las baterías se mantendrán en un estado de carga más bajo. El valor de <ph name="CHARGE_START_TIME_FIELD_NAME" /> debe ser inferior a <ph name="CHARGE_END_TIME_FIELD_NAME" />.
+
+      Si no estableces la política, el modo avanzado para la carga de la batería se mantendrá desactivado.
+
+      Los valores válidos para el campo <ph name="MINUTE_FIELD_NAME" /> en <ph name="CHARGE_START_TIME_FIELD_NAME" /> y <ph name="CHARGE_END_TIME_FIELD_NAME" /> son 0, 15, 30 y 45.</translation>
 <translation id="3996325823532867220">Ya no se admite esta política. Sin embargo, es posible que se admita la política relacionada <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> en determinadas plataformas.
 
       Si habilitas esta configuración, <ph name="PRODUCT_NAME" /> verificará los certificados de servidores mediante el verificador de certificados integrado.
@@ -3425,6 +3430,19 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
           Si la estableces, los usuarios no podrán cambiarla ni anularla.
 
           Si no la estableces, la función para resaltar el signo de intercalación estará inicialmente inhabilitada en la pantalla de acceso, pero el usuario podrá habilitarla en cualquier momento.</translation>
+<translation id="4182348537826882258">Si estableces la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, se detendrá la carga de las páginas web que tengan URLs prohibidas. Los administradores pueden especificar la lista de patrones de URL que se bloquearán. Si no la estableces, no se bloqueará ninguna URL en el navegador. Se pueden definir hasta 1,000 excepciones en <ph name="URL_ALLOWLIST_POLICY_NAME" />. Consulta cómo darle formato a un patrón de URL ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
+
+Nota: Esta política no se aplica a las URLs de JavaScript en la página con datos cargados de forma dinámica. Si bloqueaste example.com/abc, aún podría cargarse con XMLHTTPRequest. Además, esta política no impide que las páginas web actualicen la URL que se muestra en el cuadro multifunción a una bloqueada mediante la API de JavaScript History.
+
+A partir de la versión 73 de <ph name="PRODUCT_NAME" />, puedes bloquear las URLs javascript://*. Sin embargo, esto solo afecta el JavaScript ingresado en la barra de direcciones o, por ejemplo, bookmarklets.
+
+A partir de la versión 92 de <ph name="PRODUCT_NAME" />, esta política también es compatible en el modo sin interfaz gráfica.
+
+Nota: Si bloqueas las URLs internas chrome://* y chrome-untrusted://*, es posible que se produzcan errores inesperados o que se eludan en algunos casos. En lugar de bloquear determinadas URLs internas, consulta si hay más políticas específicas disponibles. Por ejemplo:
+
+- En lugar de bloquear chrome://settings/certificates, usa <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
+
+- En lugar de bloquear chrome-untrusted://crosh, usa <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="4183229833636799228">Configuración predeterminada de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="4185868802416355029">Permitir que las extensiones administradas usen la API de Enterprise Hardware Platform</translation>
 <translation id="4186244263855283575">Permite establecer un cronograma personalizado para reiniciar los dispositivos. Si la política se establece como verdadera, el dispositivo se reiniciará según el cronograma. Para cancelar otros reinicios programados, debe quitarse la política.
@@ -3519,6 +3537,13 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 
       Si hay múltiples cuentas de usuario en un dispositivo administrado, se mostrará la notificación solo cuando esté habilitada la política.</translation>
 <translation id="4303167373847512281">Permitir el modo de desarrollador</translation>
+<translation id="4307116964468610577">La política prolonga la vida útil de las baterías del sistema, ya que las carga a la capacidad máxima solo una vez por día. Durante el resto del día, las baterías se mantienen en un estado de carga más bajo, que es mejor para el almacenamiento, incluso cuando el sistema está conectado a una fuente de alimentación.
+
+      Si estableces <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> y habilitas <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" />, se mantendrá activada la política para administrar la energía en el modo avanzado de carga de la batería (cuando lo admita el dispositivo). Gracias a un algoritmo para la carga estándar y otras técnicas durante las horas en que no se utilice el dispositivo, este modo permite que los usuarios optimicen el estado de la batería. Durante las horas de funcionamiento, el sistema utiliza una carga rápida, la cual permite que la batería se cargue en menos tiempo. Debes especificar el período en que el sistema tendrá más actividad cada día, mediante la hora de inicio y la duración.
+
+      Si inhabilitas la política o no la estableces, se mantendrá desactivado el modo avanzado de carga de la batería.
+
+      Los usuarios no podrán cambiar esta configuración.</translation>
 <translation id="4309091698378414920">Habilitar la función para destacar el signo de intercalación</translation>
 <translation id="4311195029067684288">"Full"</translation>
 <translation id="4311662690937656540">Aplicar de manera forzosa accesos en línea a las pantallas de acceso y de bloqueo</translation>
@@ -4875,6 +4900,7 @@ Si no estableces la política, ningún dominio podrá acceder a las URLs de file
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="5620392548325769024">Habilitar la aparición de la página de bienvenida al iniciar el navegador por primera vez después de la actualización del SO</translation>
 <translation id="5621503441067774084">Habilitar la función para resaltar el cursor en la pantalla de acceso</translation>
+<translation id="5622590774455244290">Las apps para Android pueden elegir cumplir voluntariamente con esta lista y no se les obliga a hacerlo.</translation>
 <translation id="5622924058222112599">Habilitar el proceso de lanzamiento de CECPQ2 predeterminado</translation>
 <translation id="5623304306796942802">Notificar cuando coinciden múltiples certificados</translation>
 <translation id="5625771176514429288">Las Apps de Chrome podrán ejecutarse en estas plataformas.</translation>
@@ -4918,6 +4944,38 @@ El tiempo de espera de inactividad para iniciar el protector de pantalla y el in
       Si estableces esta política como verdadera, se ocultarán las advertencias de baja.
       Si la estableces como falsa o no la estableces, se mostrarán las advertencias de baja.</translation>
 <translation id="5666457529647159548">Permite que los usuarios administren los certificados instalados</translation>
+<translation id="5670286392821164294">Esta política proporciona una forma de anular la lista de conjuntos que el navegador utiliza para las funciones de los conjuntos propios.
+
+      Cada conjunto de la lista de conjuntos propios del navegador debe cumplir los requisitos de un conjunto propio.
+      Un conjunto propio debe contener un sitio principal y uno o más sitios miembros.
+      Un conjunto también puede contener una lista de sitios de servicio de su propiedad, así como un mapa de un sitio a todas sus variantes de ccTLD.
+      Consulta https://github.com/WICG/first-party-sets para obtener más información sobre los conjuntos propios que usa <ph name="PRODUCT_NAME" />.
+
+      Todos los sitios de un conjunto propio deben ser un dominio registrable de HTTPS. Además, cada sitio en un conjunto propio debe ser único.
+      Esto quiere decir que un sitio no puede estar enumerado más de una vez en un conjunto propio.
+
+      Cuando se proporciona un diccionario vacío a la política, el navegador utiliza la lista pública de conjuntos propios.
+
+      Para todos los sitios de un conjunto propio de la lista <ph name="REPLACEMENTS" />, si el sitio también está
+      en un conjunto propio de la lista del navegador, ese sitio se quitará del conjunto propio del navegador.
+      Luego de esto, el conjunto propio de la política se agregará a la lista de conjuntos propios del navegador.
+
+      Para todos los sitios de un conjunto propio de la lista <ph name="ADDITIONS" />, si el sitio también está
+      en un conjunto propio de la lista del navegador, ese conjunto se actualizará para que
+      el nuevo conjunto propio pueda agregarse a la lista del navegador. Una vez que se actualice la lista del navegador,
+      el conjunto propio de la política se agregará a la lista de conjuntos propios del navegador.
+
+      La lista de conjuntos propios del navegador requiere que ningún sitio de la lista esté en
+      más de un conjunto. Este también es un requisito para las listas <ph name="REPLACEMENTS" />
+      y <ph name="ADDITIONS" />. De la misma manera, un sitio no puede estar al mismo tiempo en
+      las listas <ph name="REPLACEMENTS" /> y <ph name="ADDITIONS" />.
+
+      Los comodines (*) no se admiten como valor de la política, ni en ningún conjunto propio en estas listas.
+
+      Todos los conjuntos que brinda esta política deben ser conjuntos propios válidos. De lo contrario, se
+      producirá un error.
+
+      Esta política solo está disponible en instancias de Windows vinculadas a un dominio de <ph name="MS_AD_NAME" />, en instancias de Windows 10 Pro o Enterprise habilitadas para la administración de dispositivos, o en instancias de macOS administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="567377007899266033">Si estableces la política como verdadera, se enviarán a Google los informes sobre los eventos clave de instalación de extensiones que activan la política. Si la estableces como falsa, no se capturará ningún evento. Si no la estableces, se establecerá el valor predeterminado como verdadero.</translation>
 <translation id="5676740747107495269">Muestra las opciones de accesibilidad en el menú de la bandeja del sistema de la pantalla de acceso</translation>
 <translation id="567832102568869993">Activa una acción cuando la computadora está inactiva.

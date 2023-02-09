@@ -524,6 +524,7 @@
 <translation id="2202627062836089804">ਤੁਹਾਡੇ ਕਾਰਡ ਦੇ ਪਿਛਲੇ ਪਾਸੇ</translation>
 <translation id="22081806969704220">ਟ੍ਰੇਅ 3</translation>
 <translation id="2210794033760923560">ਰਿਪੋਰਟ ਨੂੰ ਅੱਪਲੋਡ ਕਰੋ</translation>
+<translation id="2212579473415663542">ਇਹ ਪਤਾ ਤੁਹਾਡੇ Google ਖਾਤੇ (<ph name="ACCOUNT" />) ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ 'ਤੇ ਸਾਰੇ Google ਉਤਪਾਦਾਂ ਵਿੱਚ ਇਸ ਪਤੇ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="2212735316055980242">ਨੀਤੀ ਨਹੀਂ ਮਿਲੀ</translation>
 <translation id="2213606439339815911">ਐਂਟਰੀਆਂ ਪ੍ਰਾਪਤ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="2213612003795704869">ਪੰਨਾ ਪ੍ਰਿੰਟ ਕੀਤਾ ਗਿਆ</translation>
@@ -1969,6 +1970,7 @@
 <translation id="5866898949289125849">ਤੁਸੀਂ ਵਿਕਾਸਕਾਰ ਟੂਲਾਂ ਵਾਲਾ ਪੰਨਾ ਦੇਖ ਰਹੇ ਹੋ</translation>
 <translation id="5869405914158311789">ਇਸ ਸਾਈਟ 'ਤੇ ਪਹੁੰਚਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="5869522115854928033">ਸੁਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ</translation>
+<translation id="5872692522325383488">IBAN ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5873013647450402046">ਤੁਹਾਡਾ ਬੈਂਕ ਤਸਦੀਕ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ ਕਿ ਇਹ ਤੁਸੀਂ ਹੀ ਹੋ।</translation>
 <translation id="5877831137320480913">ਸੁੰਦਰਤਾ ਅਤੇ ਫਿੱਟਨੈੱਸ</translation>
 <translation id="5884465125445718607">ਚੀਨੀ #6 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
@@ -2137,6 +2139,7 @@
 <translation id="6300452962057769623">{0,plural, =0{ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਹੁਣੇ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਵੇਗਾ}=1{ਤੁਹਾਡਾ ਡੀਵਾਈਸ 1 ਸਕਿੰਟ ਵਿੱਚ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਵੇਗਾ}other{ਤੁਹਾਡਾ ਡੀਵਾਈਸ # ਸਕਿੰਟਾਂ ਵਿੱਚ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਵੇਗਾ}}</translation>
 <translation id="6301104306974789820">ਟਰੈਕਿੰਗ ਸੰਬੰਧੀ ਸੂਚਨਾਵਾਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ਪਹੁੰਚਯੋਗ ਨਹੀਂ ਹੈ।</translation>
+<translation id="6306713302480826305">ਇਸ ਡੀਵਾਈਸ ਅਤੇ ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਤੋਂ ਇਹ ਪਤਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="6311165245110979290">ਆਭਾਸੀ ਕਾਰਡ ਉਪਲਬਧ ਹੈ</translation>
 <translation id="6312113039770857350">ਵੈਬਸਫ਼ਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="6316226860534107313">ਸਕੂਟਰ ਅਤੇ ਸਕੂਟਰੀਆਂ</translation>
@@ -3028,6 +3031,7 @@
 <translation id="8473863474539038330">ਪਤੇ ਅਤੇ ਹੋਰ</translation>
 <translation id="8474910779563686872">ਵਿਕਾਸਕਾਰ ਵੇਰਵੇ ਦਿਖਾਓ</translation>
 <translation id="8479754468255770962">ਹੇਠਾਂ ਖੱਬੇ ਪਾਸੇ ਪਿੰਨ</translation>
+<translation id="8483229036294884935">ਤੁਹਾਡੇ Google ਖਾਤੇ, <ph name="ACCOUNT" /> ਤੋਂ ਇਹ ਪਤਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="8483780878231876732">ਆਪਣੇ Google ਖਾਤੇ ਤੋਂ ਕਾਰਡਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ, Chrome ਵਿੱਚ ਸਾਈਨ ਇਨ ਕਰੋ</translation>
 <translation id="8488350697529856933">ਤੇ ਲਾਗੂ ਹੁੰਦਾ ਹੈ</translation>
 <translation id="8490137692873530638">ਸਟੈਕਰ 10</translation>

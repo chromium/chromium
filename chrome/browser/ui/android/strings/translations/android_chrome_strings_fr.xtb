@@ -226,7 +226,6 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="2248941474044011069">Vos mots de passe sont chiffrés sur votre appareil avant d'être enregistrés dans le Gestionnaire de mots de passe Google</translation>
 <translation id="2249635629516220541">Personnaliser les infos utilisées par les sites pour vous présenter des annonces</translation>
 <translation id="2259659629660284697">Exporter les mots de passe…</translation>
-<translation id="2276231040576210443">Vous pouvez toujours choisir quels éléments synchroniser dans les <ph name="BEGIN_LINK1" />paramètres<ph name="END_LINK1" />. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="2276696007612801991">Connectez-vous à votre compte Google pour vérifier vos mots de passe</translation>
 <translation id="2278052315791335171">La suppression de ce mot de passe n'entraînera pas celle de votre compte sur <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adresse de facturation</translation>
@@ -304,7 +303,6 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
 <translation id="2702516483241149200">Nouveau : partagez un lien vers ce texte</translation>
 <translation id="2707726405694321444">Actualiser la page</translation>
-<translation id="2709516037105925701">Saisie automatique</translation>
 <translation id="271033894570825754">Nouveau</translation>
 <translation id="2711073837061989559">Essais</translation>
 <translation id="2718352093833049315">Wi-Fi uniquement</translation>
@@ -396,7 +394,6 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="3114507951000454849">Lisez les actualités du jour <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">associée à</translation>
 <translation id="3123734510202723619">Annonces</translation>
-<translation id="3130863904455712965">Historique et plus</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Page d'accueil de Chrome</translation>
 <translation id="3157931365184549694">Restaurer</translation>
@@ -922,6 +919,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6000203700195075278">Se réabonner</translation>
 <translation id="6002122790816966947">Vos appareils</translation>
 <translation id="6005538289190791541">Mot de passe suggéré</translation>
+<translation id="6011308810877101166">Améliorer les suggestions de recherche</translation>
 <translation id="6039379616847168523">Accéder à l'onglet suivant</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="604124094241169006">Automatique</translation>
@@ -989,7 +987,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6397616442223433927">Connexion rétablie</translation>
 <translation id="6401458660421980302">Pour envoyer cet onglet sur un autre appareil, connectez-vous à Chrome sur cet autre appareil</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> sur <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">Synchroniser vos données sur tous les appareils</translation>
 <translation id="6404511346730675251">Modifier le favori</translation>
 <translation id="6406506848690869874">Synchronisation</translation>
 <translation id="6407224748847589805">Impossible de se connecter à votre ordinateur. Essayez une autre option de validation.</translation>
@@ -1318,7 +1315,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8037801708772278989">Vérification effectuée à l'instant</translation>
 <translation id="804335162455518893">Carte SD introuvable</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet de navigation privée}one{<ph name="TAB_COUNT_NORMAL" /> onglet de navigation privée}other{<ph name="TAB_COUNT_NORMAL" /> onglets de navigation privée}}</translation>
-<translation id="8048728378294435881">Sauvegardez vos données et utilisez-les sur n'importe quel appareil</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> Mo disponibles</translation>
 <translation id="8058655154417507695">Année d'expiration</translation>
 <translation id="8058746566562539958">Ouvrir dans nouvel onglet Chrome</translation>
@@ -1452,6 +1448,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8746155870861185046">Partager le texte en surbrillance</translation>
 <translation id="8748850008226585750">Contenu masqué</translation>
 <translation id="8756969031206844760">Mettre à jour le mot de passe ?</translation>
+<translation id="8765470054473112089">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chrome envoie le contenu saisi à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en navigation privée.</translation>
 <translation id="8766529642647037772">Créer un lien en surbrillance comme celui-ci ?</translation>
 <translation id="8773160212632396039">Traitement de la requête…</translation>
 <translation id="8788265440806329501">Historique de navigation fermé</translation>

@@ -524,6 +524,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2202627062836089804">Rückseite deiner Karte</translation>
 <translation id="22081806969704220">Fach 3</translation>
 <translation id="2210794033760923560">Bericht hochladen</translation>
+<translation id="2212579473415663542">Diese Adresse ist in deinem Google-Konto (<ph name="ACCOUNT" />) gespeichert. Du kannst sie auf deinen Geräten in allen Google-Produkten verwenden.</translation>
 <translation id="2212735316055980242">Richtlinie nicht gefunden</translation>
 <translation id="2213606439339815911">Einträge werden abgerufen...</translation>
 <translation id="2213612003795704869">Seite wird gedruckt</translation>
@@ -1970,6 +1971,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5866898949289125849">Du hast eine Entwicklertools-Seite aufgerufen</translation>
 <translation id="5869405914158311789">Die Website ist nicht erreichbar</translation>
 <translation id="5869522115854928033">Gespeicherte Passwörter</translation>
+<translation id="5872692522325383488">IBAN gespeichert</translation>
 <translation id="5873013647450402046">Deine Bank muss deine Identität bestätigen.</translation>
 <translation id="5877831137320480913">Schönheit und Fitness</translation>
 <translation id="5884465125445718607">Umschlag Chinesisch Nr. 6</translation>
@@ -2139,6 +2141,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6300452962057769623">{0,plural, =0{Dein Gerät startet jetzt neu}=1{Dein Gerät startet in 1 Sekunde neu}other{Dein Gerät startet in # Sekunden neu}}</translation>
 <translation id="6301104306974789820">Benachrichtigungen zur Preisbeobachtung erhalten</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ist nicht erreichbar.</translation>
+<translation id="6306713302480826305">Diese Adresse wird von diesem Gerät und von deinen anderen angemeldeten Geräten gelöscht</translation>
 <translation id="6311165245110979290">Virtuelle Karte verfügbar</translation>
 <translation id="6312113039770857350">Webseite nicht verfügbar</translation>
 <translation id="6316226860534107313">Leichtkrafträder</translation>
@@ -3030,6 +3033,7 @@ Weitere Details:
 <translation id="8473863474539038330">Adressen</translation>
 <translation id="8474910779563686872">Entwicklerdetails anzeigen</translation>
 <translation id="8479754468255770962">Heftklammer unten links</translation>
+<translation id="8483229036294884935">Diese Adresse wird aus deinem Google-Konto (<ph name="ACCOUNT" />) gelöscht</translation>
 <translation id="8483780878231876732">Melde dich in Chrome an, um in deinem Google-Konto gespeicherte Kreditkarten zu verwenden</translation>
 <translation id="8488350697529856933">Gilt für</translation>
 <translation id="8490137692873530638">Stapelfach 10</translation>

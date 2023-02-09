@@ -22,6 +22,7 @@
 <translation id="2347208864470321755">Cando está activada esta función, Chrome ofrece a tradución de páxinas escritas noutros idiomas a través do Tradutor de Google. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome inclúe funcións que che axudan a xestionar os teus datos de Internet e a rapidez coa que podes cargar páxinas web.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="2444854139071078915">Usa Chrome para autocompletar facilmente noutras aplicacións os teus contrasinais gardados</translation>
 <translation id="2561231791489583059">Usa Chrome como navegador predeterminado para protexer a túa seguranza contra sitios perigosos e manter a salvo os teus contrasinais</translation>
 <translation id="2574249610672786438">Para ver as túas pestanas desde calquera dispositivo no que utilices Chrome, inicia sesión en todos eles</translation>
 <translation id="2576431527583832481">Chrome introduciu melloras. Hai dispoñible unha nova versión.</translation>
@@ -89,6 +90,7 @@
 <translation id="6709398533399187136">O teu contrasinal púxose en risco debido a unha violación da seguranza dos datos. O xestor de contrasinais de Google recomenda que o cambies de inmediato.</translation>
 <translation id="6822673484890854830">Chrome non puido comprobar todos os contrasinais. Téntao de novo máis tarde.</translation>
 <translation id="6964931465519938134">Xa podes utilizar Chrome sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
+<translation id="6975725306479268850">Escolle Chrome para autocompletar</translation>
 <translation id="701356708427365932">Coñece o novo menú de Chrome</translation>
 <translation id="7059914902409643750">Personaliza Chrome</translation>
 <translation id="7124339256045485976">Mantén Chrome actualizado</translation>
@@ -109,6 +111,7 @@
 <translation id="7754633291442704733">A túa organización (<ph name="DOMAIN" />) terá acceso aos teus datos de Chrome, así como aos marcadores, ao historial, aos contrasinais e a outras opcións de configuración que almacenes nesta conta. Cando peches sesión, os datos borraranse deste dispositivo.  Non obstante, permanecerán almacenados na túa Conta de Google xestionada e estarán dispoñibles para a túa organización. Esta tamén pode definir políticas de usuario específicas para esa conta que poden modificar o comportamento de Chrome.</translation>
 <translation id="7780154209050837198">Para tirarlle o máximo partido a Chrome, inicia sesión coa túa Conta de Google en Chrome.</translation>
 <translation id="7855730255114109580">Google Chrome está actualizado</translation>
+<translation id="7939179037291298976">Na configuración do teu iPhone, abre Password Options (Opcións de contrasinais) e selecciona Chrome</translation>
 <translation id="8022947259858476807">Usa Chrome de forma predeterminada para abrir ligazóns, realizar buscas desde widgets e autocompletar contrasinais noutras aplicacións</translation>
 <translation id="81358522153858150">Chrome xa admite políticas de usuario para a túa conta xestionada</translation>
 <translation id="8160472928944011082">Non se puido actualizar Chrome</translation>
@@ -124,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">O xestor de contrasinais de Google non puido comprobar todos os contrasinais. Podes tentalo de novo mañá ou ben <ph name="BEGIN_LINK" />comprobar os contrasinais da túa Conta de Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Protexe a túa seguranza con Google Chrome</translation>
+<translation id="8765470054473112089">Cando escribes algo na barra de enderezos ou na caixa de busca, Chrome envíallo ao motor de busca predeterminado para obter mellores suxestións. Esta opción está desactivada no modo de incógnito.</translation>
 <translation id="8772179140489533211">Mostra solicitudes para iniciar sesión en Chrome.</translation>
 <translation id="8788269841521769222">Non terás que lembrar este contrasinal. Gardarase no xestor de contrasinais de Google para <ph name="EMAIL" /></translation>
 <translation id="8857676124663337448">O xestor de contrasinais de Google non puido comprobar todos os contrasinais. Téntao de novo mañá.</translation>

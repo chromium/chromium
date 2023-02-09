@@ -282,6 +282,7 @@
 <translation id="1244303850296295656">Кеңейтім қатесі</translation>
 <translation id="1245628370644070008">Жергілікті деректерді қалпына келтіру</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> орнатылмады: суреттің URL мекенжайы <ph name="HTTP_ERROR" /> қате кодын қайтарды. Әкімшіге хабарласыңыз.</translation>
+<translation id="1247372569136754018">Микрофон (ішкі)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{1 сайтта хабарландырулар рұқсат етілмеді}other{{NUM_SITES} сайтта хабарландырулар рұқсат етілмеді}}</translation>
 <translation id="1251366534849411931">Ирек жақша ашылмаған: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Сайттарда және орнатылған қолданбаларда сақталған <ph name="TOTAL_USAGE" /> дерек өшіріледі.</translation>
@@ -410,6 +411,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Ұрланған құпия сөздер жоқ.}=1{1 құпия сөз ұрланды.}other{{NUM_COMPROMISED} құпия сөз ұрланды.}}</translation>
 <translation id="1380028686461971526">Желіге автоматты қосылу</translation>
 <translation id="1381567580865186407">Мына тілдегі сөз өңдеу үшін Google-ға жіберілді: <ph name="LANGUAGE" />.</translation>
+<translation id="1383381142702995121">Бұл кеңейтімді басқару</translation>
 <translation id="1383597849754832576">Автоматты субтитр файлдары жүктеп алынбады. Кейінірек қайталап көріңіз.</translation>
 <translation id="1383861834909034572">Аяқталғанда ашу</translation>
 <translation id="1383876407941801731">Іздеу</translation>
@@ -538,6 +540,7 @@
 <translation id="1482626744466814421">Осы қойындыға бетбелгі қою…</translation>
 <translation id="1482772681918035149">құпия сөздерді өзгерту</translation>
 <translation id="1483493594462132177">Жіберу</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Сайт Bluetooth функциясын пайдаланып жатыр.</translation>
 <translation id="1485015260175968628">Енді келесі мүмкіндіктерге ие:</translation>
 <translation id="1485141095922496924"><ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /> нұсқасы</translation>
@@ -1093,6 +1096,7 @@
 <translation id="1965624977906726414">Арнайы рұқсаттары жоқ.</translation>
 <translation id="1966649499058910679">Айтылған әр сөзді ерекшелеу</translation>
 <translation id="1967970931040389207">Хотспотты қосу</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">WebRTC мәтіндік журналы (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Кіріп отырған веб-бетке сәйкес контент алдын ала жүктелетіндіктен, шолу барысы жылдамдайды.</translation>
 <translation id="197288927597451399">Сақтау</translation>
@@ -1816,7 +1820,6 @@
 <translation id="25899519884572181">Оқу құралы режимінен шығу</translation>
 <translation id="2593499352046705383">Кіріспес бұрын деректердің сақтық көшірмесі барына көз жеткізіңіз. <ph name="DEVICE_OS" /> орнатылғанда, қатты диск қайта жазылады. Толық мәліметті g.co/flex/InstallGuide сайтынан қараңыз.</translation>
 <translation id="2594999711683503743">Google арқылы іздеңіз немесе URL мекенжайын енгізіңіз</translation>
-<translation id="25957578727513093">Бұл жерге жылдамырақ кіру үшін жылдам пәрменді Google Құпия сөз менеджеріне қосыңыз.</translation>
 <translation id="2599048253926156421">Пайдаланушы аты буферге көшірілді.</translation>
 <translation id="2602501489742255173">Бастау үшін жоғары қарай сырғытыңыз.</translation>
 <translation id="2603115962224169880">Компьютерді тазалау</translation>
@@ -2394,6 +2397,7 @@
 <translation id="3103451787721578293">Деректерді жүктеп салу себебін көрсетіңіз:</translation>
 <translation id="3105339775057145050">Соңғы орындалмаған жаңарту</translation>
 <translation id="3105796011181310544">Google іздеу жүйесіне қайта ораласыз ба?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Сайт Bluetooth функциясын пайдалануда</translation>
 <translation id="3108931485517391283">Қабылдау мүмкін емес.</translation>
 <translation id="3108957152224931571">Ерекшелеу түсі</translation>
@@ -3035,6 +3039,7 @@
 <translation id="371300529209814631">Артқа/Алға</translation>
 <translation id="3713047097299026954">Бұл қауіпсіздік кілтінде аккаунтқа кіру деректері жоқ.</translation>
 <translation id="3713091615825314967">Автоматты жаңарту қосулы.</translation>
+<translation id="371370241367527062">Алдыңғы микрофон</translation>
 <translation id="3714195043138862580">Бұл демо құрылғысының инициализациясынан бас тартылды.</translation>
 <translation id="3719826155360621982">Негізгі бет</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3130,6 +3135,7 @@
 <translation id="3797900183766075808">"<ph name="SEARCH_TERMS" />" сөзін <ph name="SEARCH_ENGINE" /> бойынша &amp;іздеу</translation>
 <translation id="3798449238516105146">Нұсқа</translation>
 <translation id="3798632811625902122">"<ph name="DEVICE" />" Bluetooth құрылғысы жұптасуға рұқсат сұрайды.</translation>
+<translation id="3798670284305777884">Динамик (ішкі)</translation>
 <translation id="3799128412641261490">Switch Access параметрлері</translation>
 <translation id="3800030395703848668">Тізім опцияларын көру</translation>
 <translation id="3800806661949714323">Барлығын көрсету (ұсынылады)</translation>
@@ -4227,6 +4233,7 @@
 <translation id="4807098396393229769">Картадағы ат</translation>
 <translation id="4808667324955055115">Қалқымалы терезелерге тыйым салынған</translation>
 <translation id="4809079943450490359">Құрылғы әкімшісінің нұсқаулары:</translation>
+<translation id="4809447465126035330">Жою</translation>
 <translation id="480990236307250886">Негізгі бетті ашу</translation>
 <translation id="4809927044794281115">Жарық режим</translation>
 <translation id="4811212958317149293">Switch Access арқылы пернетақтаны автоматты түрде іздеу</translation>
@@ -5029,6 +5036,7 @@
 <translation id="5556459405103347317">Қайта жүктеу</translation>
 <translation id="5558129378926964177">Үлкей&amp;ту</translation>
 <translation id="5558247502209241936">Қолданбаны терезеде ашу</translation>
+<translation id="5559311991468302423">Мекенжайды жою</translation>
 <translation id="55601339223879446">Дисплейдегі жұмыс үстелінің жиектерін реттеу</translation>
 <translation id="5561162485081632007">Орын алған қауіпті іс-шараларды анықтайды және хабарлайды.</translation>
 <translation id="5562781907504170924">Бұл қойынды Bluetooth құрылғысына жалғанған.</translation>
@@ -5127,6 +5135,7 @@
 <translation id="5643620609347735571">Өшіру және жалғастыру</translation>
 <translation id="5646376287012673985">Орын</translation>
 <translation id="5646558797914161501">Бизнесмен</translation>
+<translation id="5648021990716966815">Микрофон ұяшығы</translation>
 <translation id="5648166631817621825">Соңғы 7 күн</translation>
 <translation id="5651308944918885595">Nearby Share функциясының көріну мүмкіндігі</translation>
 <translation id="5653154844073528838"><ph name="PRINTER_COUNT" /> принтер сақталған.</translation>
@@ -6235,6 +6244,7 @@
 <translation id="6678717876183468697">Сұрау URL мекенжайы</translation>
 <translation id="6680442031740878064">Бос: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Жылдамдық</translation>
+<translation id="6683022854667115063">Құлақаспап</translation>
 <translation id="6683087162435654533">Барлық қойындыны қалпына келтіру</translation>
 <translation id="6684827949542560880">Соңғы жаңартылған нұсқа жүктеліп жатыр</translation>
 <translation id="668599234725812620">Google Play дүкенін ашу</translation>
@@ -6418,6 +6428,7 @@
 <translation id="6839916869147598086">Аккаунтқа кіру жолы өзгерді</translation>
 <translation id="6840155290835956714">Жіберу алдында рұқсат сұрау</translation>
 <translation id="6840184929775541289">Сертификат беретін орган емес</translation>
+<translation id="6840214587087739194">Мекенжай жойылды.</translation>
 <translation id="6841143363521180029">Шифрланған</translation>
 <translation id="6841186874966388268">Қателер</translation>
 <translation id="6842136130964845393">Сақталған құпия сөздеріңізді әрқашан пайдалана алатыныңызға көз жеткізу үшін, жеке басыңызды растаңыз.</translation>
@@ -6862,6 +6873,7 @@
 <translation id="7255002516883565667">Осы құрылғыда ғана пайдаланылатын бір карта бар</translation>
 <translation id="7255935316994522020">Қолдану</translation>
 <translation id="7256069762010468647">Сайт камераны пайдалануда</translation>
+<translation id="7256634071279256947">Артқы микрофон</translation>
 <translation id="7256710573727326513">Қойындыда ашу</translation>
 <translation id="7257173066616499747">Wi-Fi желілері</translation>
 <translation id="725758059478686223">Басып шығару қызметі</translation>
@@ -8261,6 +8273,7 @@
 <translation id="8525306231823319788">Толық экран</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Тілдерді қосу</translation>
+<translation id="8528479410903501741">IBAN нөмірін сақтау</translation>
 <translation id="8528962588711550376">Кіріп жатырсыз.</translation>
 <translation id="8529925957403338845">Жылдам тетеринг байланысы орнатылмады</translation>
 <translation id="8531701051932785007">Күшейтілген Safe Browsing өшірулі</translation>

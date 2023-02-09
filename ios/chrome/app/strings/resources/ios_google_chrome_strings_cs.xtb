@@ -22,6 +22,7 @@
 <translation id="2347208864470321755">Pokud je tato funkce zapnutá, bude Chrome nabízet překlad stránek v jiných jazycích pomocí Překladače Google. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome obsahuje funkce, které pomáhají spravovat přenosy dat z internetu a umožňují zrychlit načítání webových stránek.
 <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
+<translation id="2444854139071078915">Pokud chcete mít uložená hesla snadno k dispozici v jiných aplikacích, používejte Chrome k automatickému vyplňování</translation>
 <translation id="2561231791489583059">Používejte Chrome jako výchozí prohlížeč – ochrání vás před nebezpečnými weby a vaše hesla budou v bezpečí</translation>
 <translation id="2574249610672786438">Chcete-li mít své karty k dispozici všude, kde používáte Chrome, na všech zařízeních se přihlaste</translation>
 <translation id="2576431527583832481">Chrome je opět o něco lepší. K dispozici je nová verze.</translation>
@@ -89,6 +90,7 @@
 <translation id="6709398533399187136">Vaše heslo bylo vyzrazeno při porušení zabezpečení údajů. Správce hesel Google doporučuje ihned ho změnit.</translation>
 <translation id="6822673484890854830">Chromu se nepodařilo zkontrolovat všechna hesla. Zkuste to později.</translation>
 <translation id="6964931465519938134">Nyní můžete Chrome použít pokaždé, když klepnete na odkazy ve zprávách, dokumentech a ostatních aplikacích.</translation>
+<translation id="6975725306479268850">Vyberte Chrome pro automatické vyplňování</translation>
 <translation id="701356708427365932">Seznamte se s novou nabídkou Chrome</translation>
 <translation id="7059914902409643750">Přizpůsobte si Chrome</translation>
 <translation id="7124339256045485976">Udržují Chrome aktuální</translation>
@@ -109,6 +111,7 @@
 <translation id="7754633291442704733">Vaše organizace <ph name="DOMAIN" /> bude mít přístup k datům, záložkám, historii, heslům a dalším nastavením prohlížeče Chrome, která uložíte do tohoto účtu. Když se odhlásíte, vaše data budou z tohoto zařízení vymazána.  Ve spravovaném účtu Google nicméně vaše data zůstanou uložena a vaše organizace k nim bude mít přístup. Vaše organizace také může v tomto konkrétním účtu nastavit zásady pro uživatele, které mohou chování prohlížeče Chrome změnit.</translation>
 <translation id="7780154209050837198">Pokud z Chromu chcete získat maximum, přihlaste se do něj pomocí účtu Google.</translation>
 <translation id="7855730255114109580">Google Chrome je aktuální</translation>
+<translation id="7939179037291298976">V nastavení iPhonu přejděte na Volby hesel a vyberte Chrome</translation>
 <translation id="8022947259858476807">Používejte Chrome jako výchozí prohlížeč k otevírání odkazů, vyhledávání z widgetů a automatickému vyplňování hesel v jiných aplikacích</translation>
 <translation id="81358522153858150">Chrome nyní podporuje zásady pro uživatele ve spravovaném účtu</translation>
 <translation id="8160472928944011082">Chrome nelze aktualizovat</translation>
@@ -124,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Správci hesel Google se nepodařilo zkontrolovat všechna hesla. Zkuste to znovu zítra, případně <ph name="BEGIN_LINK" />hesla zkontrolujte v účtu Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">S prohlížečem Google Chrome budete v bezpečí</translation>
+<translation id="8765470054473112089">Při psaní do adresního řádku nebo vyhledávacího pole odesílá Chrome zadaný text do výchozího vyhledávače, aby vám mohl nabízet lepší návrhy. V anonymním režimu je tato funkce vypnutá.</translation>
 <translation id="8772179140489533211">Zobrazuje výzvy k přihlášení do Chromu.</translation>
 <translation id="8788269841521769222">Toto heslo si nebudete muset pamatovat. Uloží se do Správce hesel Google pro účet <ph name="EMAIL" />.</translation>
 <translation id="8857676124663337448">Správci hesel Google se nepodařilo zkontrolovat všechna hesla. Zkuste to znovu zítra.</translation>

@@ -524,6 +524,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2202627062836089804">txartelaren atzealdean</translation>
 <translation id="22081806969704220">3. erretilua</translation>
 <translation id="2210794033760923560">Kargatu txostena</translation>
+<translation id="2212579473415663542">Helbidea zure Google-ko kontuan (<ph name="ACCOUNT" />) gorde da. Helbidea Google-ren produktu guztietan erabili ahal izango duzu, eta edozein gailutan.</translation>
 <translation id="2212735316055980242">Ez da gidalerroa aurkitu</translation>
 <translation id="2213606439339815911">Sarrerak eskuratzen…</translation>
 <translation id="2213612003795704869">Orria inprimatu da</translation>
@@ -1968,6 +1969,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5866898949289125849">Garatzaileen tresnen orria ikusten ari zara</translation>
 <translation id="5869405914158311789">Ezin gara konektatu webgunera</translation>
 <translation id="5869522115854928033">Gordetako pasahitzak</translation>
+<translation id="5872692522325383488">Gorde da IBANa</translation>
 <translation id="5873013647450402046">Bankuak zeu zarela berretsi nahi du.</translation>
 <translation id="5877831137320480913">Edertasuna eta fitnessa</translation>
 <translation id="5884465125445718607">Gutun-azal txinatarra 6</translation>
@@ -2136,6 +2138,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6300452962057769623">{0,plural, =0{Orain berrabiaraziko da gailua}=1{1 segundo barru berrabiaraziko da gailua}other{# segundo barru berrabiaraziko da gailua}}</translation>
 <translation id="6301104306974789820">Jaso prezio-jaitsieren jakinarazpenak</translation>
 <translation id="6305205051461490394">Ezin da konektatu <ph name="URL" /> webgunera.</translation>
+<translation id="6306713302480826305">Helbidea gailu honetatik eta saioa hasita daukaten beste gailuetatik ezabatuko da</translation>
 <translation id="6311165245110979290">Txartel birtuala erabilgarri</translation>
 <translation id="6312113039770857350">Ez dago erabilgarri web-orria</translation>
 <translation id="6316226860534107313">Scooter-ak eta ziklomotoreak</translation>
@@ -3027,6 +3030,7 @@ Xehetasun gehiago:
 <translation id="8473863474539038330">Helbideak eta beste</translation>
 <translation id="8474910779563686872">Erakutsi garatzailearen xehetasunak</translation>
 <translation id="8479754468255770962">Grapa bat behean, ezkerretara</translation>
+<translation id="8483229036294884935">Helbidea zure Google-ko kontutik (<ph name="ACCOUNT" />) ezabatuko da</translation>
 <translation id="8483780878231876732">Google-ko kontuko txartelak erabiltzeko, hasi saioa Chrome-n</translation>
 <translation id="8488350697529856933">Honi aplikatzen zaio:</translation>
 <translation id="8490137692873530638">10. pilatzailea</translation>

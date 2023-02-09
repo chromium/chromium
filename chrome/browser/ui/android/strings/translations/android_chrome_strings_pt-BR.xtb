@@ -226,7 +226,6 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="2248941474044011069">Suas senhas são criptografadas no dispositivo antes de serem salvas no Gerenciador de senhas do Google</translation>
 <translation id="2249635629516220541">Personalize as informações usadas pelos sites para mostrar anúncios</translation>
 <translation id="2259659629660284697">Exportar senhas…</translation>
-<translation id="2276231040576210443">Nas <ph name="BEGIN_LINK1" />configurações<ph name="END_LINK1" />, é possível escolher a qualquer momento o que é sincronizado. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="2276696007612801991">Faça login na Conta do Google para verificar suas senhas</translation>
 <translation id="2278052315791335171">A exclusão desta senha não excluirá a conta em <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Endereço de faturamento</translation>
@@ -304,7 +303,6 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os arquivos transferidos por download</translation>
 <translation id="2702516483241149200">Novo: compartilhe um link para este texto</translation>
 <translation id="2707726405694321444">Atualizar página</translation>
-<translation id="2709516037105925701">Preenchimento automático</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2711073837061989559">Testes</translation>
 <translation id="2718352093833049315">Apenas com Wi-Fi</translation>
@@ -396,7 +394,6 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="3114507951000454849">Leia as notícias de hoje <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">vinculado a</translation>
 <translation id="3123734510202723619">Anúncios</translation>
-<translation id="3130863904455712965">Histórico e mais</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Página inicial do Chrome</translation>
 <translation id="3157931365184549694">Restaurar</translation>
@@ -991,7 +988,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6397616442223433927">Conectado novamente</translation>
 <translation id="6401458660421980302">Para enviar esta guia a outro dispositivo, faça login no Chrome no outro aparelho</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> em <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">Sincronize seus dados em todos os dispositivos</translation>
 <translation id="6404511346730675251">Editar favorito</translation>
 <translation id="6406506848690869874">Sincronizar</translation>
 <translation id="6407224748847589805">Não foi possível se conectar ao seu computador. Tente outra opção de verificação.</translation>
@@ -1320,7 +1316,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8037801708772278989">Verificado agora mesmo</translation>
 <translation id="804335162455518893">Cartão SD não encontrado</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> guia anônima}one{<ph name="TAB_COUNT_NORMAL" /> guia anônima}other{<ph name="TAB_COUNT_NORMAL" /> guias anônimas}}</translation>
-<translation id="8048728378294435881">Faça backup e use seus dados em qualquer dispositivo</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB disponíveis</translation>
 <translation id="8058655154417507695">Ano de expiração</translation>
 <translation id="8058746566562539958">Abrir em nova guia do Chrome</translation>

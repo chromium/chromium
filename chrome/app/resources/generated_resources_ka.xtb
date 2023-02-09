@@ -52,6 +52,7 @@
 <translation id="104710386808485638">გსურთ Linux-ის გადატვირთვა?</translation>
 <translation id="1047431265488717055">ბმულის ტე&amp;ქსტის კოპირება</translation>
 <translation id="1048286738600630630">ეკრანები</translation>
+<translation id="1048770690598418849">ახლა შეგიძლიათ გამოტოვოთ და ავტომატურად ვცდით ხელახლა, როცა დაყენებას დაასრულებთ</translation>
 <translation id="1048986595386481879">გამოყოფა დინამიკურად</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{მიმდინარეობს მიღება (<ph name="ATTACHMENTS" />) <ph name="DEVICE_NAME" />-დან}other{მიმდინარეობს მიღება (<ph name="ATTACHMENTS" />) <ph name="DEVICE_NAME" />-დან}}</translation>
 <translation id="1049743911850919806">ინკოგნიტო</translation>
@@ -282,6 +283,7 @@
 <translation id="1244303850296295656">გაფართოების შეცდომა</translation>
 <translation id="1245628370644070008">ადგილობრივი მონაცემების აღდგენა</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" />-ის ინსტალაცია ვერ მოხერხდა: სურათის URL-მა დააბრუნა შეცდომის კოდი <ph name="HTTP_ERROR" />. მიმართეთ თქვენს ადმინისტრატორს.</translation>
+<translation id="1247372569136754018">მიკროფონი (შიდა)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{შეტყობინებების გამოგზავნა არ არის დაშვებული 1 საიტისთვის}other{შეტყობინებების გამოგზავნა არ არის დაშვებული {NUM_SITES} საიტისთვის}}</translation>
 <translation id="1251366534849411931">მოსალოდნელი იყო გამხსნელი ფიგურული ფრჩხილი: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">ამ მოქმედებით გასუფთავდება საიტებისა და დაინსტალირებული აპების მიერ შენახული მონაცემების <ph name="TOTAL_USAGE" /></translation>
@@ -539,6 +541,7 @@
 <translation id="1482626744466814421">ამ ჩანართის სანიშნეებში დამატება…</translation>
 <translation id="1482772681918035149">პაროლების რედაქტირება</translation>
 <translation id="1483493594462132177">გაგზავნა</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">საიტი იყენებს Bluetooth-კავშირს</translation>
 <translation id="1485015260175968628">ახლა შეუძლია შემდეგის გაკეთება:</translation>
 <translation id="1485141095922496924">ვერსია <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1097,6 +1100,7 @@
 <translation id="1965624977906726414">სპეციალური ნებართვები არ არის.</translation>
 <translation id="1966649499058910679">წარმოთქმისას თითოეული სიტყვის გამოყოფა</translation>
 <translation id="1967970931040389207">უსადენო ქსელის ჩართვა</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">WebRTC-ის ტექსტური ჟურნალები (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">ვებს უფრო სწრაფად დაათვალიერებთ, რადგან კონტენტი პროაქტიურად ჩაიტვირთება იმ ვებსაიტის გათვალისწინებით, რომელსაც კონკრეტულ მომენტში ათვალიერებთ</translation>
 <translation id="197288927597451399">შეინახეთ</translation>
@@ -1620,6 +1624,7 @@
 <translation id="2410754283952462441">აირჩიეთ ანგარიში</translation>
 <translation id="241082044617551207">უცნობი დანამატი</translation>
 <translation id="2410940059315936967">საიტს, რომელსაც ეწვევით, შეუძლია სხვა საიტების კონტენტის (მაგალითად, სურათების, რეკლამისა და ტექსტის) ჩაშენება. სხვა საიტების მიერ განსაზღვრულ ქუქი-ჩანაწერებს მესამე მხარის ქუქი-ჩანაწერები ეწოდება.</translation>
+<translation id="2411666601450687801">ვირტუალური მოწყობილობების გამოყენება დაუშვებელია ამ მოწყობილობაზე</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">კლავიატურის ფუნქციური კლავიშები</translation>
 <translation id="2418307627282545839">ყველაფერი კარგად განათებული და მსუბუქი იქნება</translation>
@@ -1820,7 +1825,6 @@
 <translation id="25899519884572181">წამკითხველის რეჟიმიდან გასვლა</translation>
 <translation id="2593499352046705383">დაწყებამდე დარწმუნდით, რომ თქვენი მონაცემების სარეზერვო ასლი გაქვთ შექმნილი. <ph name="DEVICE_OS" />-ის ინსტალაციის შემთხვევაში, თქვენი მყარი დისკი გადაიწერება. დამატებითი ინფორმაცია ხელმისაწვდომია მისამართზე g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">მოიძიეთ Google-ში, ან აკრიფეთ URL</translation>
-<translation id="25957578727513093">აქ სწრაფად რომ დაბრუნდეთ ხოლმე, დაამატეთ Google პაროლების მმართველის მალსახმობი</translation>
 <translation id="2599048253926156421">მომხმარებლის სახელი დაკოპირდა გაცვლის ბუფერში</translation>
 <translation id="2602501489742255173">დასაწყებად გადაფურცლეთ ზემოთ</translation>
 <translation id="2603115962224169880">კომპიუტერის გასუფთავება</translation>
@@ -1882,6 +1886,7 @@
 <translation id="2653659639078652383">გაგზავნა</translation>
 <translation id="265390580714150011">ველის მნიშვნელობა</translation>
 <translation id="2654553774144920065">ბეჭდვის მოთხოვნა</translation>
+<translation id="265748523151262387">იყავით კავშირზე თქვენი ტელეფონის მეშვეობით</translation>
 <translation id="2657612187216250073">მიმთითებელზე მარტივი წვდომის პარამეტრები</translation>
 <translation id="2658941648214598230">გსურთ ორიგინალი კონტენტის ჩვენება?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />ფუნქციები განსხვავდება მოწყობილობების მიხედვით</translation>
@@ -2398,6 +2403,7 @@
 <translation id="3103451787721578293">შეიყვანეთ ამ მონაცემების ატვირთვის მიზეზი:</translation>
 <translation id="3105339775057145050">ბოლო წარუმატებელი განახლება</translation>
 <translation id="3105796011181310544">გსურთ Google-ზე დაბრუნება?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">საიტი იყენებს Bluetooth-კავშირს</translation>
 <translation id="3108931485517391283">მიღება ვერ მოხერხდა</translation>
 <translation id="3108957152224931571">გამოყოფის ფერი</translation>
@@ -3039,6 +3045,7 @@
 <translation id="371300529209814631">უკან/წინ</translation>
 <translation id="3713047097299026954">უსაფრთხოების ამ გასაღებზე სისტემაში შესვლის მონაცემები არ არის</translation>
 <translation id="3713091615825314967">ავტომატური განახლებები ჩართულია.</translation>
+<translation id="371370241367527062">წინა მიკროფონი</translation>
 <translation id="3714195043138862580">ეს დემო-მოწყობილობა გადაყვანილია არა-უზრუნველყოფილ მდგომარეობაში.</translation>
 <translation id="3719826155360621982">საწყისი გვერდი</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3134,6 +3141,7 @@
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" />-ში „<ph name="SEARCH_TERMS" />“-ის &amp;მოძიება</translation>
 <translation id="3798449238516105146">ვერსია</translation>
 <translation id="3798632811625902122">Bluetooth-მოწყობილობა „<ph name="DEVICE" />“ ითხოვს დაწყვილების ნებართვას.</translation>
+<translation id="3798670284305777884">დინამიკი (შიდა)</translation>
 <translation id="3799128412641261490">გადამრთველით წვდომის პარამეტრები</translation>
 <translation id="3800030395703848668">სიის ვარიანტების ნახვა</translation>
 <translation id="3800806661949714323">ყველას ჩვენება (რეკომენდებულია)</translation>
@@ -5135,6 +5143,7 @@
 <translation id="5643620609347735571">გასუფთავება და გაგრძელება</translation>
 <translation id="5646376287012673985">მდებარეობა</translation>
 <translation id="5646558797914161501">ბიზნესმენი</translation>
+<translation id="5648021990716966815">მიკროფონის ჯეკი</translation>
 <translation id="5648166631817621825">ბოლო 7 დღე</translation>
 <translation id="5651308944918885595">მახლობლად გაზიარების აღმოჩენადობა</translation>
 <translation id="5653154844073528838">თქვენ გაქვთ <ph name="PRINTER_COUNT" /> შენახული პრინტერი.</translation>
@@ -5293,6 +5302,7 @@
 <translation id="5801051031414037185">ტელეფონის დაყენება</translation>
 <translation id="5801568494490449797">პარამეტრები</translation>
 <translation id="5804241973901381774">ნებართვები</translation>
+<translation id="5804259315582798390">ადგილობრივი მონაცემების აღდგენა ვერ ჩაირთო</translation>
 <translation id="5805268472388605531">ხანგრძლივად დააჭირეთ კლავიატურის კლავიშებს, რომ იხილოთ აქცენტის ნიშნები და საგანგებო სიმბოლოები</translation>
 <translation id="5805697420284793859">ფანჯრების მმართველი</translation>
 <translation id="5806447147478173900">ნაჩვენები საიტების მიერ გამოყენებული მეხსიერების საერთო მოცულობა: <ph name="TOTAL_USAGE" /></translation>
@@ -6244,6 +6254,7 @@
 <translation id="6678717876183468697">ფრაზის URL</translation>
 <translation id="6680442031740878064">ხელმისაწვდომია: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">სიხშირე</translation>
+<translation id="6683022854667115063">ყურსასმენები</translation>
 <translation id="6683087162435654533">ყველა ჩანართის &amp;აღდგენა</translation>
 <translation id="6684827949542560880">მიმდინარეობს ბოლო განახლების ჩამოტვირთვა</translation>
 <translation id="668599234725812620">Google Play-ს გახსნა</translation>
@@ -6675,6 +6686,7 @@
 <translation id="7047059339731138197">ფონის არჩევა</translation>
 <translation id="7049293980323620022">გსურთ ფაილის შენარჩუნება?</translation>
 <translation id="7050037487872780845">უსადენო ქსელის კონფიგურაცია არასწორია</translation>
+<translation id="7051551856857948729">IBAN-ის მნიშვნელობის დამალვა</translation>
 <translation id="7052237160939977163">ეფექტურობის ტრასირების მონაცემების გაგზავნა</translation>
 <translation id="7053983685419859001">დაბლოკვა</translation>
 <translation id="7055152154916055070">გადამისამართება დაიბლოკა:</translation>
@@ -6872,6 +6884,7 @@
 <translation id="7255002516883565667">ამჟამად თქვენ გაქვთ ერთი ბარათი, რომლის გამოყენებაც შეგიძლიათ მხოლოდ ამ მოწყობილობაზე</translation>
 <translation id="7255935316994522020">გამოყენება</translation>
 <translation id="7256069762010468647">საიტი იყენებს თქვენს კამერას</translation>
+<translation id="7256634071279256947">უკანა მიკროფონი</translation>
 <translation id="7256710573727326513">გახსნა ჩანართზე</translation>
 <translation id="7257173066616499747">Wi-Fi ქსელები</translation>
 <translation id="725758059478686223">ბეჭდვის სერვისი</translation>
@@ -8540,6 +8553,7 @@
 <translation id="8767621466733104912">Chrome-ის ავტომატურად განახლება ყველა მომხმარებლისთვის</translation>
 <translation id="8770406935328356739">გაფართოების ძირეული დირექტორია</translation>
 <translation id="8771300903067484968">საწყისი გვერდის ფონი გადაყენებულია ნაგულისხმევ ფონზე.</translation>
+<translation id="8773280816776735812">IBAN-ის მნიშვნელობის ჩვენება</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" />-ის შენახვა</translation>
 <translation id="8774379074441005279">დაადასტურეთ აღდგენა</translation>
 <translation id="8774934320277480003">ზედა მინდორი</translation>

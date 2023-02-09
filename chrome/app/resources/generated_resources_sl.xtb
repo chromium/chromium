@@ -287,6 +287,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1244303850296295656">Napaka razširitve</translation>
 <translation id="1245628370644070008">Obnovitev lokalnih podatkov</translation>
 <translation id="1246863218384630739">Navideznega računalnika <ph name="VM_NAME" /> ni bilo mogoče namestiti: URL slike je vrnil kodo napake <ph name="HTTP_ERROR" />. Obrnite se na skrbnika.</translation>
+<translation id="1247372569136754018">Mikrofon (vgrajeni)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Obvestila niso dovoljena za 1 spletno mesto.}one{Obvestila niso dovoljena za {NUM_SITES} spletno mesto.}two{Obvestila niso dovoljena za {NUM_SITES} spletni mesti.}few{Obvestila niso dovoljena za {NUM_SITES} spletna mesta.}other{Obvestila niso dovoljena za {NUM_SITES} spletnih mest.}}</translation>
 <translation id="1251366534849411931">Pričakovan zaviti oklepaj: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">S tem boste izbrisali <ph name="TOTAL_USAGE" /> podatkov, ki so jih shranila spletna mesta in nameščene aplikacije.</translation>
@@ -545,6 +546,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1482626744466814421">Dodajanje tega zavihka med zaznamke ...</translation>
 <translation id="1482772681918035149">urejati gesla</translation>
 <translation id="1483493594462132177">Pošlji</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Spletno mesto uporablja Bluetooth</translation>
 <translation id="1485015260175968628">Zdaj lahko:</translation>
 <translation id="1485141095922496924">Različica <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1110,6 +1112,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1965624977906726414">Nima posebnih dovoljenj.</translation>
 <translation id="1966649499058910679">Označi vsako besedo, ko je izgovorjena</translation>
 <translation id="1967970931040389207">Vklopi dostopno točko</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">Besedilni dnevniki WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Brskali boste hitreje, ker se vsebina proaktivno naloži glede na trenutni obisk spletne strani.</translation>
 <translation id="197288927597451399">Obdrži</translation>
@@ -1835,7 +1838,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="25899519884572181">Zapiranje načina bralnika</translation>
 <translation id="2593499352046705383">Preden začnete, morate varnostno kopirati podatke. Z namestitvijo sistema <ph name="DEVICE_OS" /> bodo prepisani vsi podatki na trdem disku. Več o tem: g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Iščite v Google ali vnesite URL</translation>
-<translation id="25957578727513093">Če želite hitreje priti sem, dodajte bližnjico do Googlovega upravitelja gesel.</translation>
 <translation id="2599048253926156421">Uporabniško ime je bilo kopirano v odložišče.</translation>
 <translation id="2602501489742255173">Povlecite navzgor, če želite začeti</translation>
 <translation id="2603115962224169880">Čiščenje računalnika</translation>
@@ -2413,6 +2415,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3103451787721578293">Navedite razlog za nalaganje teh podatkov:</translation>
 <translation id="3105339775057145050">Zadnja neuspešna posodobitev</translation>
 <translation id="3105796011181310544">Želite preklopiti nazaj na Google?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Spletno mesto uporablja Bluetooth</translation>
 <translation id="3108931485517391283">Ni mogoče prejemati</translation>
 <translation id="3108957152224931571">Barva za označevanje</translation>
@@ -3054,6 +3057,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="371300529209814631">Nazaj/naprej</translation>
 <translation id="3713047097299026954">Na tem varnostnem ključu ni shranjenih podatkov za prijavo</translation>
 <translation id="3713091615825314967">Samodejne posodobitve so vklopljene.</translation>
+<translation id="371370241367527062">Sprednji mikrofon</translation>
 <translation id="3714195043138862580">Ta predstavitvena naprava je bila onemogočena za uporabo.</translation>
 <translation id="3719826155360621982">Domača stran</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3149,6 +3153,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3797900183766075808">&amp;V iskalniku <ph name="SEARCH_ENGINE" /> poišči »<ph name="SEARCH_TERMS" />«</translation>
 <translation id="3798449238516105146">Različica</translation>
 <translation id="3798632811625902122">Naprava Bluetooth <ph name="DEVICE" /> želi dovoljenje za seznanitev.</translation>
+<translation id="3798670284305777884">Zvočnik (vgrajeni)</translation>
 <translation id="3799128412641261490">Nastavitve stikalnega dostopa</translation>
 <translation id="3800030395703848668">Prikaz možnosti seznama</translation>
 <translation id="3800806661949714323">Pokaži vse (priporočeno)</translation>
@@ -5153,6 +5158,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5643620609347735571">Počisti in nadaljuj</translation>
 <translation id="5646376287012673985">Lokacija</translation>
 <translation id="5646558797914161501">Poslovnež</translation>
+<translation id="5648021990716966815">Vtič za mikrofon</translation>
 <translation id="5648166631817621825">Zadnjih 7 dni</translation>
 <translation id="5651308944918885595">Vidnost deljenja v bližini</translation>
 <translation id="5653154844073528838">Imate toliko shranjenih tiskalnikov: <ph name="PRINTER_COUNT" />.</translation>
@@ -6267,6 +6273,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6678717876183468697">URL poizvedbe</translation>
 <translation id="6680442031740878064">Na voljo: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Hitrost</translation>
+<translation id="6683022854667115063">Slušalke</translation>
 <translation id="6683087162435654533">O&amp;bnovi vse zavihke</translation>
 <translation id="6684827949542560880">Prenašanje najnovejše posodobitve</translation>
 <translation id="668599234725812620">Odpiranje Googla Play</translation>
@@ -6895,6 +6902,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7255002516883565667">Trenutno je mogoče eno vašo kartico uporabljati samo v tej napravi.</translation>
 <translation id="7255935316994522020">Prijava</translation>
 <translation id="7256069762010468647">Spletno mesto uporablja vašo kamero</translation>
+<translation id="7256634071279256947">Zadnji mikrofon</translation>
 <translation id="7256710573727326513">Odpri na zavihku</translation>
 <translation id="7257173066616499747">Omrežja Wi-Fi</translation>
 <translation id="725758059478686223">Storitev tiskanja</translation>

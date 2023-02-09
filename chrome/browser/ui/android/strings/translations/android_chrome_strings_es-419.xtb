@@ -226,7 +226,6 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="2248941474044011069">Las contraseñas se encriptan en tu dispositivo antes de guardarse en el Administrador de contraseñas de Google</translation>
 <translation id="2249635629516220541">Personaliza la información que usan los sitios para mostrarte anuncios</translation>
 <translation id="2259659629660284697">Exportar contraseñas…</translation>
-<translation id="2276231040576210443">En la <ph name="BEGIN_LINK1" />configuración<ph name="END_LINK1" />, puedes elegir los datos para sincronizar en cualquier momento. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="2276696007612801991">Para verificar las contraseñas, accede a tu Cuenta de Google</translation>
 <translation id="2278052315791335171">Si borras esta contraseña, no se quitará tu cuenta de <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">Dirección de facturación</translation>
@@ -304,7 +303,6 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="2669454659051515572">Cualquier persona que use este dispositivo puede ver los archivos descargados</translation>
 <translation id="2702516483241149200">Nuevo: Comparte un vínculo directo a este texto.</translation>
 <translation id="2707726405694321444">Actualizar página</translation>
-<translation id="2709516037105925701">Autocompletar</translation>
 <translation id="271033894570825754">Nuevo</translation>
 <translation id="2711073837061989559">Pruebas</translation>
 <translation id="2718352093833049315">Solo en Wi-Fi</translation>
@@ -396,7 +394,6 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="3114507951000454849">Lee las noticias de hoy <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">te vinculaste con</translation>
 <translation id="3123734510202723619">Anuncios</translation>
-<translation id="3130863904455712965">Historial y más</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Página principal de Chrome</translation>
 <translation id="3157931365184549694">Restaurar</translation>
@@ -922,6 +919,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="6000203700195075278">Volver a seguir</translation>
 <translation id="6002122790816966947">Tus dispositivos</translation>
 <translation id="6005538289190791541">Contraseña sugerida</translation>
+<translation id="6011308810877101166">Mejorar las sugerencias de búsqueda</translation>
 <translation id="6039379616847168523">Ir a la pestaña siguiente</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="604124094241169006">Automático</translation>
@@ -989,7 +987,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6397616442223433927">De nuevo en línea</translation>
 <translation id="6401458660421980302">Para enviar esta pestaña a otro dispositivo, accede a Chrome allí.</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> de <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">Sincroniza tus datos en todos los dispositivos</translation>
 <translation id="6404511346730675251">Editar marcador</translation>
 <translation id="6406506848690869874">Sincronización</translation>
 <translation id="6407224748847589805">No se puede establecer la conexión con tu computadora. Prueba otra opción de verificación.</translation>
@@ -1318,7 +1315,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8037801708772278989">Se verificó recién</translation>
 <translation id="804335162455518893">No se encontró la tarjeta SD</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestaña de incógnito}other{<ph name="TAB_COUNT_NORMAL" /> pestañas de incógnito}}</translation>
-<translation id="8048728378294435881">Crea una copia de seguridad de tus datos y úsalos en cualquier dispositivo.</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB disponibles</translation>
 <translation id="8058655154417507695">Año de vencimiento</translation>
 <translation id="8058746566562539958">Abrir en una nueva pestaña de Chrome</translation>
@@ -1452,6 +1448,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8746155870861185046">Compartir contenido destacado</translation>
 <translation id="8748850008226585750">Contenidos ocultos</translation>
 <translation id="8756969031206844760">¿Quieres actualizar la contraseña?</translation>
+<translation id="8765470054473112089">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chrome envía lo que escribes a tu motor de búsqueda predeterminado para obtener mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
 <translation id="8766529642647037772">¿Quieres crear un vínculo destacado como este?</translation>
 <translation id="8773160212632396039">Se está procesando la solicitud.</translation>
 <translation id="8788265440806329501">Se cerró el Historial de navegación</translation>

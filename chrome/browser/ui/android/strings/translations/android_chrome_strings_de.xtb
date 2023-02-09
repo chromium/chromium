@@ -226,7 +226,6 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="2248941474044011069">Deine Passwörter werden auf deinem Gerät verschlüsselt, bevor sie im Google Passwortmanager gespeichert werden</translation>
 <translation id="2249635629516220541">Du kannst die Informationen anpassen, die von Websites verwendet werden, um dir Werbung zu präsentieren</translation>
 <translation id="2259659629660284697">Passwörter exportieren…</translation>
-<translation id="2276231040576210443">In den <ph name="BEGIN_LINK1" />Einstellungen<ph name="END_LINK1" /> kannst du auswählen, was synchronisiert werden soll. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="2276696007612801991">Melde dich in deinem Google-Konto an, um deine Passwörter zu prüfen</translation>
 <translation id="2278052315791335171">Durch das Entfernen dieses Passworts wird dein Konto auf <ph name="SITE" /> nicht gelöscht</translation>
 <translation id="2286841657746966508">Rechnungsadresse</translation>
@@ -304,7 +303,6 @@ Private Stake Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="2669454659051515572">Alle Personen, die dieses Gerät nutzen, können heruntergeladene Dateien sehen</translation>
 <translation id="2702516483241149200">Neu: Link teilen, der direkt zu diesem Text führt</translation>
 <translation id="2707726405694321444">Seite aktualisieren</translation>
-<translation id="2709516037105925701">Autofill</translation>
 <translation id="271033894570825754">Neu</translation>
 <translation id="2711073837061989559">Tests</translation>
 <translation id="2718352093833049315">Nur bei WLAN</translation>
@@ -396,7 +394,6 @@ Private Stake Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="3114507951000454849">Nachrichten von heute lesen <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">verknüpft mit</translation>
 <translation id="3123734510202723619">Ankündigungen</translation>
-<translation id="3130863904455712965">Verlauf und mehr</translation>
 <translation id="3134784203083076891">“</translation>
 <translation id="314939179385989105">Chrome-Startseite</translation>
 <translation id="3157931365184549694">Wieder­her­stellen</translation>
@@ -990,7 +987,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6397616442223433927">Wieder online</translation>
 <translation id="6401458660421980302">Wenn du diesen Tab an ein anderes Gerät senden möchtest, melde dich dort in Chrome an</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> auf <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">Daten auf allen Geräten synchronisieren</translation>
 <translation id="6404511346730675251">Lesezeichen bearbeiten</translation>
 <translation id="6406506848690869874">Synchronisierung</translation>
 <translation id="6407224748847589805">Verbindung zum Computer nicht möglich. Versuche es mit einer anderen Bestätigungsoption.</translation>
@@ -1319,7 +1315,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8037801708772278989">Zuletzt geprüft: gerade eben</translation>
 <translation id="804335162455518893">SD-Karte nicht gefunden</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> Inkognitotab}other{<ph name="TAB_COUNT_NORMAL" /> Inkognitotabs}}</translation>
-<translation id="8048728378294435881">Möchtest du deine Daten sichern und auf jedem Gerät verwenden?</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB verfügbar</translation>
 <translation id="8058655154417507695">Ablaufjahr</translation>
 <translation id="8058746566562539958">In neuem Chrome-Tab öffnen</translation>

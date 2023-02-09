@@ -283,6 +283,7 @@
 <translation id="1244303850296295656">የቅጥያ ስህተት</translation>
 <translation id="1245628370644070008">አካባቢያዊ ውሂብን መልሶ ማግኘት</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" />ን መጫን አልተቻለም፦ የምስል ዩአርኤል የ<ph name="HTTP_ERROR" /> የስህተት ኮድን መልሷል። እባክዎ አስተዳዳሪዎን ያነጋግሩ።</translation>
+<translation id="1247372569136754018">ማይክሮፎን (ውስጣዊ)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{ማሳወቂያ ለ1 ጣቢያ አይፈቀድም}one{ማሳወቂያ ለ{NUM_SITES} ጣቢያ አይፈቀድም}other{ማሳወቂያዎች ለ{NUM_SITES} ጣቢያዎች አይፈቀዱም}}</translation>
 <translation id="1251366534849411931">የሚገመት ጠምዛዛ መያዣን መክፈቻ፦ <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">ይህ በጣቢያዎች እና በተጫኑ መተግበሪያዎቹ የተከማቸ <ph name="TOTAL_USAGE" /> ውሂብ ያጠፋል</translation>
@@ -540,6 +541,7 @@
 <translation id="1482626744466814421">ይህን ትር ዕልባት ያድርጉት...</translation>
 <translation id="1482772681918035149">የይለፍ ቃላትን አርትዕ</translation>
 <translation id="1483493594462132177">ላክ</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">ጣቢያ ብሉቱዝን እየተጠቀመ ነው</translation>
 <translation id="1485015260175968628">አሁን እነዚህን ማድረግ ይችላል፦</translation>
 <translation id="1485141095922496924">ስሪት <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1103,6 +1105,7 @@
 <translation id="1965624977906726414">ምንም ልዩ ፍቃዶች የሉትም።</translation>
 <translation id="1966649499058910679">እያንዳንዱ ቃል ሲነገር ማድመቅ</translation>
 <translation id="1967970931040389207">መገናኛ ነጥብን አብራ</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">የWebRTC ጽሁፍ ምዝግብ ማስታወሻዎች (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">አሁን ባለው የድረ-ገጽ ጉብኝትዎ ላይ በመመስረት ይዘቱ በንቃት ስለተጫነ በፍጥነት ያስሱታል</translation>
 <translation id="197288927597451399">አስቀምጥ</translation>
@@ -1826,7 +1829,6 @@
 <translation id="25899519884572181">ከአንባቢ ሁነታ ውጣ</translation>
 <translation id="2593499352046705383">ከመጀመርዎ በፊት የውሂብዎ ምትኬ እንዳለዎት ያረጋግጡ። <ph name="DEVICE_OS" />ን መጫን የእርስዎን ደረቅ አንጻፊ ይደመስሳል። g.co/flex/InstallGuide ላይ የበለጠ ይወቁ።</translation>
 <translation id="2594999711683503743">በGoogle ይፈልጉ ወይም ዩአርኤል ይተይቡ</translation>
-<translation id="25957578727513093">በበለጠ ፍጥነት እዚህ ለመድረስ ወደ Google የይለፍ ቃል አስተዳዳሪ አቋራጭ ያክሉ</translation>
 <translation id="2599048253926156421">የተጠቃሚው ስም ወደ ቅንጥብ ሰሌዳ ተቀድቷል</translation>
 <translation id="2602501489742255173">ለመጀመር በጣት ይጥረጉ</translation>
 <translation id="2603115962224169880">ኮምፒውተርን አጽዳ</translation>
@@ -2404,6 +2406,7 @@
 <translation id="3103451787721578293">እባክዎ ይህን ውሂብ የሚሰቅሉበት ምክንያት ያስገቡ፦</translation>
 <translation id="3105339775057145050">የመጨረሻው ያልተሳካ ዝማኔ</translation>
 <translation id="3105796011181310544">ወደ Google መልሰዉ ይቀይሩ?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ብሉቱዝ)</translation>
 <translation id="310671807099593501">ጣቢያ ብሉቱዝን እየተጠቀመ ነው</translation>
 <translation id="3108931485517391283">መቀበል አልተቻለም።</translation>
 <translation id="3108957152224931571">የማድመቂያ ቀለም</translation>
@@ -3045,6 +3048,7 @@
 <translation id="371300529209814631">ወደ ኋላ/ወደ ፊት</translation>
 <translation id="3713047097299026954">ይህ የደህንነት ቁልፍ ምንም በመለያ መግቢያ ውሂብ የለውም</translation>
 <translation id="3713091615825314967">ራስ-ሰር ዝማኔዎች በርተዋል።</translation>
+<translation id="371370241367527062">የፊት ማይክሮፎን</translation>
 <translation id="3714195043138862580">ይህ የቅንጭብ ማሳያ መሣሪያ ወደ አቅርቦትን ማስወገድ ሁኔታ ተመድቧል።</translation>
 <translation id="3719826155360621982">መነሻ ገጽ</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3140,6 +3144,7 @@
 <translation id="3797900183766075808">«<ph name="SEARCH_TERMS" />»ን በ<ph name="SEARCH_ENGINE" /> ውስጥ &amp;ፈልግ</translation>
 <translation id="3798449238516105146">ስሪት</translation>
 <translation id="3798632811625902122">የብሉቱዝ መሣሪያ <ph name="DEVICE" /> ለመጣመር ፈቃድ ይፈልጋል።</translation>
+<translation id="3798670284305777884">ድምፅ ማጉያ (ውስጣዊ)</translation>
 <translation id="3799128412641261490">የመዳረሻ መቀየሪያ ቅንብሮች</translation>
 <translation id="3800030395703848668">የዝርዝር አማራጮችን አሳይ</translation>
 <translation id="3800806661949714323">ሁሉንም አሳይ (የሚመከር)</translation>
@@ -5139,6 +5144,7 @@
 <translation id="5643620609347735571">አጽዳ እና ቀጥል</translation>
 <translation id="5646376287012673985">አካባቢ</translation>
 <translation id="5646558797914161501">ነጋዴ</translation>
+<translation id="5648021990716966815">የማይክሮፎን መሰኪያ</translation>
 <translation id="5648166631817621825">ያለፉት 7 ቀኖች</translation>
 <translation id="5651308944918885595">የአቅራቢያ አጋራ ተገኝነት</translation>
 <translation id="5653154844073528838">የተቀመጡ <ph name="PRINTER_COUNT" /> አታሚዎች አልዎት።</translation>
@@ -6249,6 +6255,7 @@
 <translation id="6678717876183468697">የጥያቄ ዩአርኤል</translation>
 <translation id="6680442031740878064">ይገኛል፦ <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">ደረጃ ይስጡ</translation>
+<translation id="6683022854667115063">የራስ ላይ ማዳመጫዎች</translation>
 <translation id="6683087162435654533">ሁሉንም ትሮች ወደነበሩበት ይ&amp;መልሱ</translation>
 <translation id="6684827949542560880">የቅርብ ጊዜውን ዝማኔ በማውረድ ላይ</translation>
 <translation id="668599234725812620">Google Playን ይክፈቱ</translation>
@@ -6877,6 +6884,7 @@
 <translation id="7255002516883565667">አሁን ላይ በዚህ መሣሪያ ላይ ጥቅም ላይ ሊውል የሚችል አንድ መሣሪያ ብቻ አልዎት</translation>
 <translation id="7255935316994522020">ተግብር</translation>
 <translation id="7256069762010468647">ጣቢያ የእርስዎን ካሜራ እየተጠቀመ ነው</translation>
+<translation id="7256634071279256947">የኋላ ማይክሮፎን</translation>
 <translation id="7256710573727326513">በትር ውስጥ ክፈት</translation>
 <translation id="7257173066616499747">የWi-Fi አውታረ መረቦች</translation>
 <translation id="725758059478686223">የሕትመት አገልግሎት</translation>

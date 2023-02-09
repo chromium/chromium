@@ -284,6 +284,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1244303850296295656">Extension error</translation>
 <translation id="1245628370644070008">Local data recovery</translation>
 <translation id="1246863218384630739">Couldn't install <ph name="VM_NAME" />: Image URL returned a <ph name="HTTP_ERROR" /> error code. Please contact your administrator.</translation>
+<translation id="1247372569136754018">Microphone (internal)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Notifications not allowed for 1 site}other{Notifications not allowed for {NUM_SITES} sites}}</translation>
 <translation id="1251366534849411931">Expected opening curly bracket: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">This will clear <ph name="TOTAL_USAGE" /> of data stored by sites and installed apps</translation>
@@ -542,6 +543,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1482626744466814421">Bookmark This Tab...</translation>
 <translation id="1482772681918035149">edit passwords</translation>
 <translation id="1483493594462132177">Send</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Site is using Bluetooth</translation>
 <translation id="1485015260175968628">It can now:</translation>
 <translation id="1485141095922496924">Version <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1109,6 +1111,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1965624977906726414">Has no special permissions.</translation>
 <translation id="1966649499058910679">Highlight each word as it is spoken</translation>
 <translation id="1967970931040389207">Turn on hotspot</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">WebRTC text logs (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">You’ll browse faster because content is proactively loaded based on your current web page visit</translation>
 <translation id="197288927597451399">Keep</translation>
@@ -1835,7 +1838,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="25899519884572181">Exit reader mode</translation>
 <translation id="2593499352046705383">Before starting, make sure that you have a backup of your data. Installing <ph name="DEVICE_OS" /> will overwrite your hard drive. Learn more at g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Search Google or type URL</translation>
-<translation id="25957578727513093">To get here quicker, add a shortcut to Google Password Manager</translation>
 <translation id="2599048253926156421">Username copied to clipboard</translation>
 <translation id="2602501489742255173">Swipe up to get started</translation>
 <translation id="2603115962224169880">Clean up computer</translation>
@@ -2413,6 +2415,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3103451787721578293">Please enter a reason for uploading this data:</translation>
 <translation id="3105339775057145050">Last unsuccessful update</translation>
 <translation id="3105796011181310544">Change back to Google?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Site is using Bluetooth</translation>
 <translation id="3108931485517391283">Can't receive</translation>
 <translation id="3108957152224931571">Highlight colour</translation>
@@ -3054,6 +3057,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="371300529209814631">Back/Forward</translation>
 <translation id="3713047097299026954">This security key does not have any sign-in data</translation>
 <translation id="3713091615825314967">Automatic updates are turned on.</translation>
+<translation id="371370241367527062">Front microphone</translation>
 <translation id="3714195043138862580">This demo device has been placed into a deprovisioned state.</translation>
 <translation id="3719826155360621982">Homepage</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3149,6 +3153,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3797900183766075808">&amp;Search <ph name="SEARCH_ENGINE" /> for “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="3798449238516105146">Version</translation>
 <translation id="3798632811625902122">Bluetooth device <ph name="DEVICE" /> would like permission to pair.</translation>
+<translation id="3798670284305777884">Speaker (internal)</translation>
 <translation id="3799128412641261490">Switch Access settings</translation>
 <translation id="3800030395703848668">View list options</translation>
 <translation id="3800806661949714323">Show all (recommended)</translation>
@@ -5151,6 +5156,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5643620609347735571">Clear and continue</translation>
 <translation id="5646376287012673985">Location</translation>
 <translation id="5646558797914161501">Businessman</translation>
+<translation id="5648021990716966815">Mic jack</translation>
 <translation id="5648166631817621825">Last 7 days</translation>
 <translation id="5651308944918885595">Nearby Share discoverability</translation>
 <translation id="5653154844073528838">You have <ph name="PRINTER_COUNT" /> saved printers.</translation>
@@ -6260,6 +6266,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6678717876183468697">Query URL</translation>
 <translation id="6680442031740878064">Available: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Rate</translation>
+<translation id="6683022854667115063">Headphones</translation>
 <translation id="6683087162435654533">R&amp;estore All Tabs</translation>
 <translation id="6684827949542560880">Downloading the latest update</translation>
 <translation id="668599234725812620">Open Google Play</translation>
@@ -6888,6 +6895,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7255002516883565667">At the moment, you have one card that can only be used on this device</translation>
 <translation id="7255935316994522020">Apply</translation>
 <translation id="7256069762010468647">Site is using your camera</translation>
+<translation id="7256634071279256947">Rear microphone</translation>
 <translation id="7256710573727326513">Open in a tab</translation>
 <translation id="7257173066616499747">Wi-Fi networks</translation>
 <translation id="725758059478686223">Printing Service</translation>
@@ -8398,6 +8406,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8634348081024879304">You will no longer be able to use your virtual card with Google Pay. <ph name="BEGIN_LINK" />Learn about virtual cards<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Reloading...</translation>
 <translation id="8636284842992792762">Initialising extensions…</translation>
+<translation id="8636323803535540285">To get here quicker, add a shortcut to <ph name="BRAND" /></translation>
 <translation id="8636500887554457830">Don't allow sites to send pop-ups or use redirects</translation>
 <translation id="8637688295594795546">System update available. Preparing to download…</translation>
 <translation id="8639047128869322042">Checking for harmful software…</translation>

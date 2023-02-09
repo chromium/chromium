@@ -410,6 +410,7 @@
 <translation id="4462159676511157176">Gweinyddion enw personol</translation>
 <translation id="4465725236958772856">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Rheolir gan eich Gweinyddwr, Cysylltu</translation>
 <translation id="4470564870223067757">2 Set Hangul</translation>
+<translation id="4474142134969976028">Dim canlyniadau cyfatebol</translation>
 <translation id="4477002475007461989">Rwmaneg</translation>
 <translation id="4477219268485577442">Seinegol Bwlgareg</translation>
 <translation id="4508265954913339219">Wedi methu â gweithredu</translation>
@@ -816,6 +817,7 @@
 <translation id="7655441028674523381">Cael mynediad at Google Photos yn hawdd</translation>
 <translation id="7658239707568436148">Canslo</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7665680517722058469">Rhowch gynnig ar chwiliad arall</translation>
 <translation id="7689532716264131859">Symudwyd <ph name="NUMBER_OF_ITEMS" /> eitem i'r bin sbwriel</translation>
 <translation id="7693909743393669729">Bydd fformatio gyriant yn dileu'r holl ddata sy'n cael eu storio arno ac yn dileu'r holl raniadau sy'n bodoli, gan gynnwys rhaniadau y mae'n bosib nad ydynt yn weladwy. Ni ellir dadwneud y weithred hon.</translation>
 <translation id="7695430100978772476">Ni ellid fformatio <ph name="DRIVE_NAME" /></translation>

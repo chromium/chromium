@@ -226,7 +226,6 @@ Wanneer jy jou blaaigeskiedenis uitvee — alles of vir ’n spesifieke werf —
 <translation id="2248941474044011069">Jou wagwoorde word op jou toestel geënkripteer voordat hulle in Google Wagwoordbestuurder gestoor word</translation>
 <translation id="2249635629516220541">Pasmaak die inligting wat deur werwe gebruik word om vir jou advertensies te wys</translation>
 <translation id="2259659629660284697">Voer wagwoorde uit …</translation>
-<translation id="2276231040576210443">Jy kan altyd in <ph name="BEGIN_LINK1" />instellings<ph name="END_LINK1" /> kies wat om te sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="2276696007612801991">Meld by jou Google-rekening aan om jou wagwoorde na te gaan</translation>
 <translation id="2278052315791335171">Jou rekening op <ph name="SITE" /> sal nie uitgevee word as hierdie wagwoord uitgevee word nie</translation>
 <translation id="2286841657746966508">Faktureringadres</translation>
@@ -304,7 +303,6 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="2669454659051515572">Enigiemand wat hierdie toestel gebruik, kan afgelaaide lêers sien</translation>
 <translation id="2702516483241149200">Nuut: Deel 'n skakel wat na hierdie teks toe rollees</translation>
 <translation id="2707726405694321444">Herlaai bladsy</translation>
-<translation id="2709516037105925701">Outovul</translation>
 <translation id="271033894570825754">Nuut</translation>
 <translation id="2711073837061989559">Proeflopies</translation>
 <translation id="2718352093833049315">Net met Wi-Fi</translation>
@@ -396,7 +394,6 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="3114507951000454849">Lees vandag se nuus <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">gekoppel met</translation>
 <translation id="3123734510202723619">Aankondigings</translation>
-<translation id="3130863904455712965">Geskiedenis en meer</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome se tuisblad</translation>
 <translation id="3157931365184549694">Stel terug</translation>
@@ -990,7 +987,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6397616442223433927">Weer aanlyn</translation>
 <translation id="6401458660421980302">Om hierdie oortjie na ’n ander toestel toe te stuur, moet jy daar by Chrome aanmeld</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> op <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">Sinkroniseer jou data op alle toestelle</translation>
 <translation id="6404511346730675251">Wysig boekmerk</translation>
 <translation id="6406506848690869874">Sinkronisering</translation>
 <translation id="6407224748847589805">Kan nie jou rekenaar koppel nie. Probeer 'n ander verifikasie-opsie.</translation>
@@ -1319,7 +1315,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8037801708772278989">Sopas nagegaan</translation>
 <translation id="804335162455518893">Kon nie SD-kaart kry nie</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> incognito-oortjie}other{<ph name="TAB_COUNT_NORMAL" /> incognito-oortjies}}</translation>
-<translation id="8048728378294435881">Rugsteun jou goed en gebruik dit op enige toestel</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB beskikbaar</translation>
 <translation id="8058655154417507695">Vervaljaar</translation>
 <translation id="8058746566562539958">Open in nuwe Chrome-oortjie</translation>

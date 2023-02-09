@@ -226,7 +226,6 @@
 <translation id="2248941474044011069">ระบบจะเข้ารหัสให้แก่รหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="2249635629516220541">ปรับแต่งข้อมูลที่เว็บไซต์ใช้เพื่อแสดงโฆษณาแก่คุณ</translation>
 <translation id="2259659629660284697">ส่งออกรหัสผ่าน…</translation>
-<translation id="2276231040576210443">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอใน<ph name="BEGIN_LINK1" />การตั้งค่า<ph name="END_LINK1" /> Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
 <translation id="2276696007612801991">ลงชื่อเข้าใช้บัญชี Google เพื่อตรวจสอบรหัสผ่าน</translation>
 <translation id="2278052315791335171">การลบรหัสผ่านนี้จะไม่ลบบัญชีของคุณใน <ph name="SITE" /></translation>
 <translation id="2286841657746966508">ที่อยู่สำหรับเรียกเก็บเงิน</translation>
@@ -304,7 +303,6 @@
 <translation id="2669454659051515572">ใครก็ตามที่ใช้อุปกรณ์นี้จะเห็นไฟล์ที่ดาวน์โหลด</translation>
 <translation id="2702516483241149200">ใหม่: แชร์ลิงก์ที่เลื่อนมายังข้อความนี้</translation>
 <translation id="2707726405694321444">รีเฟรชหน้า</translation>
-<translation id="2709516037105925701">ป้อนอัตโนมัติ</translation>
 <translation id="271033894570825754">ใหม่</translation>
 <translation id="2711073837061989559">การทดลองใช้</translation>
 <translation id="2718352093833049315">Wi-Fi เท่านั้น</translation>
@@ -396,7 +394,6 @@
 <translation id="3114507951000454849">อ่านข่าววันนี้ <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">ลิงก์กับ</translation>
 <translation id="3123734510202723619">ประกาศ</translation>
-<translation id="3130863904455712965">ประวัติการเข้าชมและอื่นๆ</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">หน้าแรกของ Chrome</translation>
 <translation id="3157931365184549694">คืนค่า</translation>
@@ -990,7 +987,6 @@
 <translation id="6397616442223433927">กลับมาออนไลน์แล้ว</translation>
 <translation id="6401458660421980302">หากต้องการส่งแท็บนี้ไปยังอุปกรณ์อื่น ให้ลงชื่อเข้าใช้ Chrome ในอุปกรณ์นั้น</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> ใน <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">ซิงค์ข้อมูลในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="6404511346730675251">แก้ไขบุ๊กมาร์ก</translation>
 <translation id="6406506848690869874">การซิงค์ข้อมูล</translation>
 <translation id="6407224748847589805">เชื่อมต่อกับคอมพิวเตอร์ไม่ได้ ลองใช้ตัวเลือกการยืนยันอื่น</translation>
@@ -1319,7 +1315,6 @@
 <translation id="8037801708772278989">เพิ่งตรวจสอบเมื่อสักครู่นี้</translation>
 <translation id="804335162455518893">ไม่พบการ์ด SD</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> แท็บที่ไม่ระบุตัวตน}other{<ph name="TAB_COUNT_NORMAL" /> แท็บที่ไม่ระบุตัวตน}}</translation>
-<translation id="8048728378294435881">สำรองข้อมูลและใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
 <translation id="8051695050440594747">สามารถใช้งานได้ <ph name="MEGABYTES" /> MB</translation>
 <translation id="8058655154417507695">ปีที่หมดอายุ</translation>
 <translation id="8058746566562539958">เปิดในแท็บใหม่ของ Chrome</translation>

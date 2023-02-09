@@ -226,7 +226,6 @@
 <translation id="2248941474044011069">Google Сырсөздөрдү башкаргычка сакталганга чейин сырсөздөрүңүз түзмөгүңүздө шифрленет</translation>
 <translation id="2249635629516220541">Жарнамаларды көрсөтүү үчүн сайттар колдонгон маалыматты ыңгайлаштыруу</translation>
 <translation id="2259659629660284697">Сырсөздөрдү экспорттоо…</translation>
-<translation id="2276231040576210443">Эмнени шайкештирүү керек экенин <ph name="BEGIN_LINK1" />жөндөөлөрдөн<ph name="END_LINK1" /> ар дайым тандай аласыз. Google таржымалыңыздын негизинде Издөөнү жана башка кызматтарды жекелештириши мүмкүн.</translation>
 <translation id="2276696007612801991">Сырсөздөрүңүздү текшерүү үчүн Google аккаунтуңузга кириңиз</translation>
 <translation id="2278052315791335171">Бул сырсөздү жок кылуу менен <ph name="SITE" /> аккаунтуңуз өчпөйт</translation>
 <translation id="2286841657746966508">Төлөмдүн дареги</translation>
@@ -300,7 +299,6 @@
 <translation id="2669454659051515572">Бул түзмөктү колдонгондордун баары жүктөлүп алынган файлдарды көрө алышат</translation>
 <translation id="2702516483241149200">Жаңы: Бул текстке сыдырылган шилтемени бөлүшө аласыз</translation>
 <translation id="2707726405694321444">Бетти жаңылоо</translation>
-<translation id="2709516037105925701">Автотолтуруу</translation>
 <translation id="271033894570825754">Жаңы</translation>
 <translation id="2711073837061989559">Сыноо мезгилдери</translation>
 <translation id="2718352093833049315">Wi-Fi'да гана</translation>
@@ -392,7 +390,6 @@
 <translation id="3114507951000454849">Бүгүнкү жаңылыктарды окуңуз <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">төмөнкү карта менен байланыштырылды:</translation>
 <translation id="3123734510202723619">Жарыялар</translation>
-<translation id="3130863904455712965">Таржымал жана башкалар</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Chrome’дун башкы бети</translation>
 <translation id="3157931365184549694">Калыбына келтирүү</translation>
@@ -982,7 +979,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6397616442223433927">Кайрадан онлайн</translation>
 <translation id="6401458660421980302">Бул өтмөктү башка түзмөккө жөнөтүү үчүн ошол түзмөктөн Chrome'го кириңиз</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> – <ph name="ERROR_CODE" /></translation>
-<translation id="6403371459378431832">Бардык түзмөктөрдөгү маалыматты шайкештириңиз</translation>
 <translation id="6404511346730675251">Кыстарманы түзөтүү</translation>
 <translation id="6406506848690869874">Шайкештирүү</translation>
 <translation id="6407224748847589805">Компьютерге туташкан жок. Башка текшерүү жолун колдонуп көрүңүз.</translation>
@@ -1311,7 +1307,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8037801708772278989">Жаңы эле текшерилди</translation>
 <translation id="804335162455518893">SD-карта табылган жок</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> жашыруун өтмөк}other{<ph name="TAB_COUNT_NORMAL" /> жашыруун өтмөк}}</translation>
-<translation id="8048728378294435881">Маалыматтын камдык көчүрмөсүн сактап, башка түзмөктө колдоно аласыз</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" />Мб жеткиликтүү</translation>
 <translation id="8058655154417507695">Мөөнөтү аяктаган жыл</translation>
 <translation id="8058746566562539958">Жаңы Chrome өтмөгүнөн ачуу</translation>

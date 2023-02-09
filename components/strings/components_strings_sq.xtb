@@ -524,6 +524,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2202627062836089804">pjesën e pasme e kartës</translation>
 <translation id="22081806969704220">Tabakaja 3</translation>
 <translation id="2210794033760923560">Ngarko raportin</translation>
+<translation id="2212579473415663542">Kjo adresë është ruajtur në "Llogarinë tënde të Google" (<ph name="ACCOUNT" />). Mund ta përdorësh adresën nëpër produktet e Google në çdo pajisje.</translation>
 <translation id="2212735316055980242">Politika nuk u gjet</translation>
 <translation id="2213606439339815911">Po merr hyrjet...</translation>
 <translation id="2213612003795704869">Faqja u printua</translation>
@@ -1972,6 +1973,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5866898949289125849">Po shikon një faqe të veglave të zhvilluesit</translation>
 <translation id="5869405914158311789">Ky sajt është i paarritshëm</translation>
 <translation id="5869522115854928033">Fjalëkalimet e ruajtura</translation>
+<translation id="5872692522325383488">Numri IBAN u ruajt</translation>
 <translation id="5873013647450402046">Banka jote dëshiron të konfirmojë që je ti.</translation>
 <translation id="5877831137320480913">Estetika dhe fitnesi</translation>
 <translation id="5884465125445718607">Zarf kinez nr. 6</translation>
@@ -2140,6 +2142,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6300452962057769623">{0,plural, =0{Pajisja do të riniset tani}=1{Pajisja do të riniset pas 1 sekonde}other{Pajisja do të riniset pas # sekondash}}</translation>
 <translation id="6301104306974789820">Merr njoftime për monitorimin e çmimeve</translation>
 <translation id="6305205051461490394"><ph name="URL" /> është i paarritshëm.</translation>
+<translation id="6306713302480826305">Kjo adresë do të fshihet nga kjo pajisje dhe nga pajisjet e tjera ku je identifikuar</translation>
 <translation id="6311165245110979290">Karta virtuale është e disponueshme</translation>
 <translation id="6312113039770857350">Faqja e uebit nuk është e disponueshme</translation>
 <translation id="6316226860534107313">Motoçikletat dhe skuterat elektrikë</translation>
@@ -3031,6 +3034,7 @@ Detaje shtesë:
 <translation id="8473863474539038330">Adresat dhe të tjera</translation>
 <translation id="8474910779563686872">Shfaq detajet e zhvilluesit</translation>
 <translation id="8479754468255770962">Kapje me tel poshtë majtas</translation>
+<translation id="8483229036294884935">Kjo adresë do të fshihet nga "Llogaria jote e Google", <ph name="ACCOUNT" /></translation>
 <translation id="8483780878231876732">Për të përdorur kartat nga llogaria jote e Google, identifikohu në Chrome</translation>
 <translation id="8488350697529856933">Zbatohet për</translation>
 <translation id="8490137692873530638">Stivuesi 10</translation>

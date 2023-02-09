@@ -540,6 +540,7 @@
 <translation id="2241693394036365668">已下載檔案</translation>
 <translation id="2246264294482514010">10 x 12 吋</translation>
 <translation id="2246480341630108201">家長尚未核准</translation>
+<translation id="2247789808226901522">信用卡過期</translation>
 <translation id="2248949050832152960">使用 WebAuthn</translation>
 <translation id="2250931979407627383">邊緣釘裝 (左側)</translation>
 <translation id="225207911366869382">這個政策值已不適用。</translation>
@@ -1077,6 +1078,7 @@
 <translation id="3646643500201740985">評估廣告成效</translation>
 <translation id="3647286794400715637">每個網址字串都必須包含 1 至 2 個網址。</translation>
 <translation id="3650584904733503804">驗證成功</translation>
+<translation id="3650594806107685466">為保護信用卡安全，請輸入<ph name="SIDE_OF_CARD" />的 CVC</translation>
 <translation id="3653033846669030038">主題公園</translation>
 <translation id="3655241534245626312">前往權限設定</translation>
 <translation id="3655670868607891010">如果您經常看到這個頁面，請嘗試這些 <ph name="HELP_LINK" />。</translation>
@@ -2457,6 +2459,7 @@
 <translation id="7112327784801341716">目前的資料不正確嗎？請通知銀行更新。</translation>
 <translation id="7118618213916969306">搵剪貼簿網址 <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">關閉其他分頁或程式</translation>
+<translation id="7124354851782353862">輸入 CVC</translation>
 <translation id="7129355289156517987">關閉所有 Chromium 無痕式分頁後，系統會從此裝置上清除您在這些分頁上的活動記錄：
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />瀏覽活動<ph name="END_LIST_ITEM" />
@@ -2783,6 +2786,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{無}=1{1 個應用程式 (<ph name="EXAMPLE_APP_1" />)}=2{2 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />)}other{# 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">您日後瀏覽的網站可向 Chrome 要求取得主題資料，以便向您顯示個人化廣告。Chrome 最多可分享 3 個主題，同時亦會保護您的瀏覽記錄和身分。</translation>
+<translation id="7860345425589240791">輸入<ph name="SIDE_OF_CARD" />的新到期日和 CVC</translation>
 <translation id="7862185352068345852">要離開網站嗎？</translation>
 <translation id="7865448901209910068">最佳速度</translation>
 <translation id="7871445724586827387">變更 Google 帳戶密碼</translation>

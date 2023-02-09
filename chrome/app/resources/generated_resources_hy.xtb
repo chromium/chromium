@@ -220,6 +220,7 @@
 Համաձայն <ph name="DOMAIN" /> տիրույթի կանոնների՝ խելացի քարտը պետք է տեղադրված լինի։}one{Դուք # վայրկյանից ավտոմատ դուրս կգաք համակարգից։
 Համաձայն <ph name="DOMAIN" /> տիրույթի կանոնների՝ խելացի քարտը պետք է տեղադրված լինի։}other{Դուք # վայրկյանից ավտոմատ դուրս կգաք համակարգից։
 Համաձայն <ph name="DOMAIN" /> տիրույթի կանոնների՝ խելացի քարտը պետք է տեղադրված լինի։}}</translation>
+<translation id="119330003005586565">Էջեր, որոնք կարդացել եք</translation>
 <translation id="1193927020065025187">Այս կայքը կարող է խաբեությամբ համոզել ձեզ, որ թույլատրեք ձանձրացնող ծանուցումների ուղարկումը</translation>
 <translation id="1195210374336998651">Անցնել հավելվածի կարգավորումներ</translation>
 <translation id="1195447618553298278">Անհայտ սխալ:</translation>
@@ -283,6 +284,7 @@
 <translation id="1244303850296295656">Ընդլայնման սխալ</translation>
 <translation id="1245628370644070008">Սարքի տվյալների վերականգնում</translation>
 <translation id="1246863218384630739">Չհաջողվեց տեղադրել «<ph name="VM_NAME" />» վիրտուալ մեքենան․ պատկերի URL-ը վերադարձրել է <ph name="HTTP_ERROR" /> սխալի կոդը։ Դիմեք ձեր ադմինիստրատորին։</translation>
+<translation id="1247372569136754018">Խոսափող (ներքին)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Ծանուցումները թույլատրված չեն 1 կայքի համար}one{Ծանուցումները թույլատրված չեն {NUM_SITES} կայքի համար}other{Ծանուցումները թույլատրված չեն {NUM_SITES} կայքի համար}}</translation>
 <translation id="1251366534849411931">Պակասում է բացող ձևավոր փակագիծ՝ <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Կայքերի և տեղադրված հավելվածների կողմից պահված <ph name="TOTAL_USAGE" /> ծավալով տվյալները կջնջվեն։</translation>
@@ -411,6 +413,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Կոտրված գաղտնաբառեր չկան}=1{1 կոտրված գաղտնաբառ}one{{NUM_COMPROMISED} կոտրված գաղտնաբառ}other{{NUM_COMPROMISED} կոտրված գաղտնաբառ}}</translation>
 <translation id="1380028686461971526">Ավտոմատ միանալ ցանցին</translation>
 <translation id="1381567580865186407">Այս լեզվով (<ph name="LANGUAGE" />) խոսքի ձայնագրությունը մշակման համար ուղարկվում է Google-ին</translation>
+<translation id="1383381142702995121">Կառավարել այս ընդլայնումը</translation>
 <translation id="1383597849754832576">Չհաջողվեց ներբեռնել ենթագրերի ֆայլը։ Փորձեք ավելի ուշ։</translation>
 <translation id="1383861834909034572">Ավարտվելուն պես կբացվի</translation>
 <translation id="1383876407941801731">Որոնում</translation>
@@ -539,6 +542,7 @@
 <translation id="1482626744466814421">Էջանշել այս ներդիրը...</translation>
 <translation id="1482772681918035149">փոփոխել գաղտնաբառերը</translation>
 <translation id="1483493594462132177">Ուղարկել</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Կայքն օգտագործում է Bluetooth-ը</translation>
 <translation id="1485015260175968628">Այժմ կարող է.</translation>
 <translation id="1485141095922496924">Տարբերակ <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1095,6 +1099,7 @@
 <translation id="1965624977906726414">Հատուկ թույլտվություններ չունի:</translation>
 <translation id="1966649499058910679">Ընդգծել բառը, երբ այն հնչեցվում է</translation>
 <translation id="1967970931040389207">Միացնել թեժ կետը</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">WebRTC տեքստային մատյաններ (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Դուք ավելի արագ կդիտեք վեբ էջերը, քանի որ բովանդակությունը նախապես բեռնվում է՝ ընթացիկ բացված վեբ էջի հիման վրա։</translation>
 <translation id="197288927597451399">Տեղադրել</translation>
@@ -1817,7 +1822,6 @@
 <translation id="25899519884572181">Դուրս գալ ընթերցման ռեժիմից</translation>
 <translation id="2593499352046705383">Սկսելուց առաջ համոզվեք, որ ձեր տվյալները պահուստավորված են։ <ph name="DEVICE_OS" />-ը տեղադրելու դեպքում կոշտ սկավառակում առկա բոլոր տվյալները կվրագրվեն։ Իմացեք ավելին g.co/flex/InstallGuide էջում։</translation>
 <translation id="2594999711683503743">Որոնեք Google-ում կամ մուտքագրեք հասցեն</translation>
-<translation id="25957578727513093">Արագ բացելու համար դյուրանցում ավելացրեք Google գաղտնաբառերի կառավարչում։</translation>
 <translation id="2599048253926156421">Օգտանունը պատճենվեց սեղմատախտակին</translation>
 <translation id="2602501489742255173">Սկսելու համար մատը սահեցրեք վերև</translation>
 <translation id="2603115962224169880">Մաքրեք համակարգիչը</translation>
@@ -2395,6 +2399,7 @@
 <translation id="3103451787721578293">Նշեք, թե որն է այս տվյալները վերբեռնելու պատճառը՝</translation>
 <translation id="3105339775057145050">Վերջին անհաջող թարմացումը</translation>
 <translation id="3105796011181310544">Վերադառնա՞լ Google-ին</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Կայքն օգտագործում է Bluetooth-ը</translation>
 <translation id="3108931485517391283">Չհաջողվեց ստանալ ֆայլը</translation>
 <translation id="3108957152224931571">Գունանշման գույնը</translation>
@@ -3036,6 +3041,7 @@
 <translation id="371300529209814631">Հետ/առաջ</translation>
 <translation id="3713047097299026954">Անվտանգության այս բանալին մուտքի տվյալներ չունի</translation>
 <translation id="3713091615825314967">Ինքնաթարմացումը միացված է:</translation>
+<translation id="371370241367527062">Առջևի խոսափող</translation>
 <translation id="3714195043138862580">Այս դեմո սարքի տրամադրումը չեղարկվել է։</translation>
 <translation id="3719826155360621982">Գլխավոր էջ</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3131,6 +3137,7 @@
 <translation id="3797900183766075808">&amp;Որոնել «<ph name="SEARCH_TERMS" />»-ը <ph name="SEARCH_ENGINE" />-ում</translation>
 <translation id="3798449238516105146">Տարբերակ</translation>
 <translation id="3798632811625902122">«<ph name="DEVICE" />» Bluetooth սարքը զուգակցման թույլտվություն է խնդրում։</translation>
+<translation id="3798670284305777884">Բարձրախոս (ներքին)</translation>
 <translation id="3799128412641261490">Switch Access-ի կարգավորումներ</translation>
 <translation id="3800030395703848668">Դիտել տեսակավորման պարամետրերը</translation>
 <translation id="3800806661949714323">Ցույց տալ բոլորը (հանձնարարելի)</translation>
@@ -4228,6 +4235,7 @@
 <translation id="4807098396393229769">Քարտապանի անունը</translation>
 <translation id="4808667324955055115">Ելնող պատուհաններն արգելափակված են՝</translation>
 <translation id="4809079943450490359">Հրահանգներ ձեր սարքի ադմինիստրատորի կողմից՝</translation>
+<translation id="4809447465126035330">Ջնջել</translation>
 <translation id="480990236307250886">Բացել գլխավոր էջը</translation>
 <translation id="4809927044794281115">Բաց թեմա</translation>
 <translation id="4811212958317149293">Ստեղնաշարի ավտոմատ սկանավորում Switch Access-ի միջոցով</translation>
@@ -5033,6 +5041,7 @@
 <translation id="5556459405103347317">Վերաբեռնել</translation>
 <translation id="5558129378926964177">Խոշո&amp;րացնել</translation>
 <translation id="5558247502209241936">Միացնել հավելվածի՝ պատուհանում բացումը</translation>
+<translation id="5559311991468302423">Հասցեի ջնջում</translation>
 <translation id="55601339223879446">Կարգավորեք աշխատասեղանի սահմանագծերը տվյալ էկրանում</translation>
 <translation id="5561162485081632007">Հայտնաբերում է վտանգավոր իրադարձություններն ու զգուշացնում դրանց մասին</translation>
 <translation id="5562781907504170924">Այս ներդիրը միացած է Bluetooth սարքի:</translation>
@@ -5131,6 +5140,7 @@
 <translation id="5643620609347735571">Մաքրել և շարունակել</translation>
 <translation id="5646376287012673985">Տեղադրություն</translation>
 <translation id="5646558797914161501">Բիզնեսմեն</translation>
+<translation id="5648021990716966815">Խոսափողի հարակցիչ</translation>
 <translation id="5648166631817621825">Վերջին 7 օրվա</translation>
 <translation id="5651308944918885595">«Փոխանակում մոտակա սարքերի հետ» գործառույթի հայտնաբերելիություն</translation>
 <translation id="5653154844073528838">Դուք ունեք <ph name="PRINTER_COUNT" /> պահված տպիչ։</translation>
@@ -5519,6 +5529,7 @@
 <translation id="6007240208646052708">Ձայնային որոնումը ձեր լեզվով հասանելի չէ:</translation>
 <translation id="6010651352520077187">Երբ այս պարամետրը միացված է, Google Translate-ը կառաջարկի թարգմանել կայքերը ձեր նախընտրած լեզվով։ Այն կարող է նաև ավտոմատ կերպով թարգմանել կայքերը։</translation>
 <translation id="6011193465932186973">Մատնահետք</translation>
+<translation id="6011308810877101166">Բարելավել որոնման առաջարկները</translation>
 <translation id="6011908034087870826">Հղումն ուղարկվում է <ph name="DEVICE_NAME" /> սարքին</translation>
 <translation id="6013027779243312217">Ստացեք ենթագրեր մեդիա բովանդակության համար</translation>
 <translation id="6014293228235665243">Չկարդացված</translation>
@@ -5836,6 +5847,7 @@
 <translation id="630292539633944562">Անձնական տեղեկությունների հուշումներ</translation>
 <translation id="6305607932814307878">Գլոբալ քաղաքականություն՝</translation>
 <translation id="6305909198255586420">Տեղադրեք ձեր հիմնական պրոֆիլի միջոցով</translation>
+<translation id="630750887748244481">Ձեր ծնողն անջատել է «Թույլտվություններ կայքերի, հավելվածների և ընդլայնումների համար» պարամետրը Chrome-ում։ Այս ընդլայնումը չի թույլատրվում ավելացնել։</translation>
 <translation id="6307990684951724544">Համակարգը զբաղված է</translation>
 <translation id="6308493641021088955">Մուտք «<ph name="EXTENSION_NAME" />» ընդլայնման միջոցով</translation>
 <translation id="6308937455967653460">Պահել հղ&amp;ումը որպես…</translation>
@@ -6238,6 +6250,7 @@
 <translation id="6678717876183468697">Հարցման URL-ը</translation>
 <translation id="6680442031740878064">Հասանելի է <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Խոսքի արագությունը</translation>
+<translation id="6683022854667115063">Ականջակալներ</translation>
 <translation id="6683087162435654533">Վերականգնել բոլոր ներդիրները</translation>
 <translation id="6684827949542560880">Ներբեռնվում է վերջին թարմացումը</translation>
 <translation id="668599234725812620">Բացել Google Play-ը</translation>
@@ -6421,6 +6434,7 @@
 <translation id="6839916869147598086">Մուտքի էջը փոխվել է</translation>
 <translation id="6840155290835956714">Հարցնել՝ մինչ ուղարկելը</translation>
 <translation id="6840184929775541289">Հավաստագրման կենտրոն չէ</translation>
+<translation id="6840214587087739194">Հասցեն ջնջվել է</translation>
 <translation id="6841143363521180029">Ֆայլը գաղտնագրված է</translation>
 <translation id="6841186874966388268">Սխալներ</translation>
 <translation id="6842136130964845393">Հաստատեք ձեր ինքնությունը, որպեսզի պահված գաղտնաբառերը միշտ հասանելի լինեն ձեզ</translation>
@@ -6865,6 +6879,7 @@
 <translation id="7255002516883565667">Տվյալ պահին դուք ունեք մի քարտ, որը կարող է օգտագործվել միայն այս սարքում</translation>
 <translation id="7255935316994522020">Կիրառել</translation>
 <translation id="7256069762010468647">Կայքն օգտագործում է ձեր տեսախցիկը</translation>
+<translation id="7256634071279256947">Հետևի խոսափող</translation>
 <translation id="7256710573727326513">Բացել ներդիրով</translation>
 <translation id="7257173066616499747">Wi-Fi ցանցեր</translation>
 <translation id="725758059478686223">Տպման ծառայություն</translation>
@@ -7977,6 +7992,7 @@
 <translation id="8251509999076836464">Զուգակցում «<ph name="DEVICE_NAME" />» սարքի հետ</translation>
 <translation id="8251578425305135684">Մանրապատկերը հեռացվել է:</translation>
 <translation id="825238165904109940">Միշտ ցույց տալ ամբողջական URL-ները</translation>
+<translation id="8252538334423261825">Չհաջողվեց ավելացնել ընդլայնումը</translation>
 <translation id="8252569384384439529">Վերբեռնում...</translation>
 <translation id="8253198102038551905">Ցանցի հատկությունները տեսնելու համար սեղմեք «+»</translation>
 <translation id="8255212965098517578">Նոր լուսանկարներ, ծանուցումներ և հավելվածներ</translation>
@@ -8262,6 +8278,7 @@
 <translation id="8525306231823319788">Լիաէկրան</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Ավելացնել լեզուներ</translation>
+<translation id="8528479410903501741">Պահել IBAN-ը</translation>
 <translation id="8528962588711550376">Մուտք...</translation>
 <translation id="8529925957403338845">Չհաջողվեց մոդեմի ակնթարթային ռեժիմով կապ հաստատել</translation>
 <translation id="8531701051932785007">Բարելավված Ապահով դիտարկումն անջատված է</translation>

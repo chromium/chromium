@@ -220,6 +220,7 @@
 <ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું સ્માર્ટ કાર્ડ દાખલ કરેલું રાખો.}one{તમે ઑટોમૅટિક રીતે # સેકન્ડમાં સાઇન આઉટ થશો.
 <ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું સ્માર્ટ કાર્ડ દાખલ કરેલું રાખો.}other{તમે ઑટોમૅટિક રીતે # સેકન્ડમાં સાઇન આઉટ થશો.
 <ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું સ્માર્ટ કાર્ડ દાખલ કરેલું રાખો.}}</translation>
+<translation id="119330003005586565">તમે વાંચેલાં પેજ</translation>
 <translation id="1193927020065025187">આ સાઇટ તમારી પાસેથી ઘૂસણખોરીવાળાં નોટિફિકેશન માટે મંજૂરી મેળવવાનો છળપૂર્વક પ્રયાસ કરતી હોઈ શકે છે</translation>
 <translation id="1195210374336998651">ઍપ સેટિંગ પર જાઓ</translation>
 <translation id="1195447618553298278">અજ્ઞાત ભૂલ.</translation>
@@ -282,6 +283,7 @@
 <translation id="1244303850296295656">એક્સટેંશન ભૂલ</translation>
 <translation id="1245628370644070008">સ્થાનિક ડેટા રિકવરી</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> ઇન્સ્ટૉલ કરી શક્યાં નહીં: છબીના URL દ્વારા ભૂલનો કોડ <ph name="HTTP_ERROR" /> પરત આપવામાં આવ્યો છે. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
+<translation id="1247372569136754018">માઇક્રોફોન (આંતરિક)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{1 સાઇટને નોટિફિકેશનની મંજૂરી નથી}one{{NUM_SITES} સાઇટને નોટિફિકેશનની મંજૂરી નથી}other{{NUM_SITES} સાઇટને નોટિફિકેશનની મંજૂરી નથી}}</translation>
 <translation id="1251366534849411931">અપેક્ષિત ખુલતો વાંકળિયો કૌંસ: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">આમ કરવાથી સાઇટ અને ઇન્સ્ટૉલ કરેલી ઍપ દ્વારા સ્ટોર કરવામાં આવેલો <ph name="TOTAL_USAGE" /> ડેટા સાફ કરવામાં આવશે</translation>
@@ -410,6 +412,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{ચેડાં કરાયેલો કોઈ પાસવર્ડ નથી}=1{ચેડાં કરાયેલો 1 પાસવર્ડ}one{ચેડાં કરાયેલો {NUM_COMPROMISED} પાસવર્ડ}other{ચેડાં કરાયેલા {NUM_COMPROMISED} પાસવર્ડ}}</translation>
 <translation id="1380028686461971526">નેટવર્ક સાથે ઑટોમૅટિક રીતે કનેક્ટ થાઓ</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> સ્પીચ Googleને પ્રક્રિયા માટે મોકલવામાં આવે છે</translation>
+<translation id="1383381142702995121">આ એક્સ્ટેન્શન મેનેજ કરો</translation>
 <translation id="1383597849754832576">સ્પીચ ફાઇલો ડાઉનલોડ કરી શકાતી નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="1383861834909034572">પૂર્ણ થવા પર ખુલે છે</translation>
 <translation id="1383876407941801731">શોધો</translation>
@@ -538,6 +541,7 @@
 <translation id="1482626744466814421">આ ટૅબને બુકમાર્ક કરો...</translation>
 <translation id="1482772681918035149">પાસવર્ડમાં ફેરફાર કરો</translation>
 <translation id="1483493594462132177">મોકલો</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">સાઇટ બ્લૂટૂથનો ઉપયોગ કરી રહી છે</translation>
 <translation id="1485015260175968628">તે હવે આ કરી શકે છે:</translation>
 <translation id="1485141095922496924">વર્ઝન <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1090,6 +1094,7 @@
 <translation id="1965624977906726414">તેને કોઈ વિશેષ પરવાનગીઓ નથી.</translation>
 <translation id="1966649499058910679">દરેક શબ્દને બોલવાની રીત પ્રમાણે હાઇલાઇટ કરો</translation>
 <translation id="1967970931040389207">હૉટસ્પૉટ ચાલુ કરો</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">WebRTC ટેક્સ્ટ લૉગ (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">વેબપેજની તમારી વર્તમાન મુલાકાતના આધારે કન્ટેન્ટ સક્રિય રીતે લોડ કરવામાં આવતું હોવાને કારણે તમે વધુ ઝડપથી બ્રાઉઝ કરી શકશો</translation>
 <translation id="197288927597451399">Keep</translation>
@@ -1813,7 +1818,6 @@
 <translation id="25899519884572181">રીડર મોડમાંથી બહાર નીકળો</translation>
 <translation id="2593499352046705383">શરૂ કરતા પહેલાં, ખાતરી કરો કે તમારી પાસે તમારા ડેટાનું બૅકઅપ ઉપલબ્ધ છે. <ph name="DEVICE_OS" />ને ઇન્સ્ટૉલ કરવાથી, તમારી હાર્ડ ડ્રાઇવ ઓવરરાઇટ થઈ જશે. g.co/flex/InstallGuide પર વધુ જાણો.</translation>
 <translation id="2594999711683503743">Googleમાં શોધો અથવા URL ટાઇપ કરો</translation>
-<translation id="25957578727513093">અહીં ઝડપથી પહોંચવા માટે, Google Password Managerમાં શૉર્ટકટ ઉમેરો</translation>
 <translation id="2599048253926156421">વપરાશકર્તાનું નામ ક્લિપબોર્ડ પર કૉપિ કર્યું</translation>
 <translation id="2602501489742255173">શરૂ કરવા માટે ઉપર સ્વાઇપ કરો</translation>
 <translation id="2603115962224169880">કમ્પ્યુટર સાફ કરો</translation>
@@ -2391,6 +2395,7 @@
 <translation id="3103451787721578293">કૃપા કરીને આ ડેટા અપલોડ કરવાનું કારણ દાખલ કરો:</translation>
 <translation id="3105339775057145050">નિષ્ફળ રહેલી છેલ્લી અપડેટ</translation>
 <translation id="3105796011181310544">બદલીને પાછા Google પર આવીએ?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">સાઇટ બ્લૂટૂથનો ઉપયોગ કરી રહી છે</translation>
 <translation id="3108931485517391283">પ્રાપ્ત કરી શકાતી નથી</translation>
 <translation id="3108957152224931571">હાઇલાઇટનો રંગ</translation>
@@ -3032,6 +3037,7 @@
 <translation id="371300529209814631">પાછળ/આગળ</translation>
 <translation id="3713047097299026954">આ સુરક્ષા કીમાં કોઈ સાઇન ઇન ડેટા સ્ટોર કરેલો નથી</translation>
 <translation id="3713091615825314967">સ્વચલિત અપડેટ ચાલુ કરેલ છે.</translation>
+<translation id="371370241367527062">આગળનો માઇક્રોફોન</translation>
 <translation id="3714195043138862580">આ ડેમો મોડ જોગવાઈ દૂર કરી સ્થિતિમાં મૂકવામાં આવી છે.</translation>
 <translation id="3719826155360621982">હોમપેજ</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3127,6 +3133,7 @@
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” માટે <ph name="SEARCH_ENGINE" /> માં &amp;શોધ કરો</translation>
 <translation id="3798449238516105146">વર્ઝન</translation>
 <translation id="3798632811625902122">બ્લૂટૂથ ડિવાઇસ <ph name="DEVICE" />ને જોડાણ બનાવવા માટે, પરવાનગી જોઈએ છે.</translation>
+<translation id="3798670284305777884">સ્પીકર (આંતરિક)</translation>
 <translation id="3799128412641261490">સ્વિચ ઍક્સેસનાં સેટિંગ</translation>
 <translation id="3800030395703848668">સૂચિના વિકલ્પો જુઓ</translation>
 <translation id="3800806661949714323">તમામ બતાવો (ભલામણ કરેલ)</translation>
@@ -4224,6 +4231,7 @@
 <translation id="4807098396393229769">કાર્ડ પરનું નામ</translation>
 <translation id="4808667324955055115">પૉપ-અપ બ્લૉક કરેલ છે:</translation>
 <translation id="4809079943450490359">તમારા ડિવાઇસ વ્યવસ્થાપક તરફથી સૂચનાઓ</translation>
+<translation id="4809447465126035330">ડિલીટ કરો</translation>
 <translation id="480990236307250886">હોમ પેજ ખોલો</translation>
 <translation id="4809927044794281115">ઝાંખી થીમ</translation>
 <translation id="4811212958317149293">સ્વિચ ઍક્સેસ કીબોર્ડનું ઑટોમૅટિક રીતે સ્કૅન કરવાનાં સેટિંગ</translation>
@@ -5026,6 +5034,7 @@
 <translation id="5556459405103347317">ફરીથી લોડ કરો</translation>
 <translation id="5558129378926964177">Zoom &amp;In</translation>
 <translation id="5558247502209241936">વિન્ડોમાં શરૂઆતની ઍપ ચાલુ કરો</translation>
+<translation id="5559311991468302423">ઍડ્રેસ ડિલીટ કરો</translation>
 <translation id="55601339223879446">ડિસ્પ્લેની અંદર તમારા ડેસ્કટૉપની સીમાઓ ગોઠવો</translation>
 <translation id="5561162485081632007">જોખમકારક ઇવેન્ટ થતી હોય ત્યારે તેની ભાળ મેળવીને તેના વિશે તમને ચેતવણી આપે છે</translation>
 <translation id="5562781907504170924">આ ટૅબ Bluetooth ડિવાઇસ સાથે કનેક્ટ થયેલ છે.</translation>
@@ -5127,6 +5136,7 @@
 <translation id="5643620609347735571">સાફ કરો અને ચાલુ રાખો</translation>
 <translation id="5646376287012673985">સ્થાન</translation>
 <translation id="5646558797914161501">ઉદ્યોગપતિ</translation>
+<translation id="5648021990716966815">માઇક જેક</translation>
 <translation id="5648166631817621825">છેલ્લા 7 દિવસ</translation>
 <translation id="5651308944918885595">'નજીકના શેર'ની શોધક્ષમતા</translation>
 <translation id="5653154844073528838">તમારી પાસે <ph name="PRINTER_COUNT" /> સાચવેલા પ્રિન્ટર છે.</translation>
@@ -5517,6 +5527,7 @@ USB ડિવાઇસ</translation>
 <translation id="6007240208646052708">વૉઇસ શોધ સેવા તમારી ભાષામાં ઉપલબ્ધ નથી.</translation>
 <translation id="6010651352520077187">ચાલુ હોય ત્યારે, Google Translate તમારી પસંદગીની ભાષામાં સાઇટનો અનુવાદ ઑફર કરશે. તે ઑટોમૅટિક રીતે સાઇટનો અનુવાદ પણ કરી શકે છે.</translation>
 <translation id="6011193465932186973">ફિંગરપ્રિન્ટ</translation>
+<translation id="6011308810877101166">શોધ સંબંધિત સૂચનો બહેતર બનાવો</translation>
 <translation id="6011908034087870826"><ph name="DEVICE_NAME" /> પર લિંક મોકલી રહ્યાં છીએ</translation>
 <translation id="6013027779243312217">તમારા ઑડિયો અને વીડિયો માટે કૅપ્શન મેળવો</translation>
 <translation id="6014293228235665243">વાંચ્યા વગરના</translation>
@@ -5834,6 +5845,7 @@ USB ડિવાઇસ</translation>
 <translation id="630292539633944562">વ્યક્તિગત માહિતીના સૂચનો</translation>
 <translation id="6305607932814307878">વૈશ્વિક પૉલિસી:</translation>
 <translation id="6305909198255586420">કૃપા કરીને તમારી પ્રાથમિક પ્રોફાઇલનો ઉપયોગ કરીને ઇન્સ્ટૉલ કરો</translation>
+<translation id="630750887748244481">તમારા માતાપિતાએ Chrome માટે "સાઇટ, ઍપ અને એક્સ્ટેન્શન માટેની પરવાનગીઓ" બંધ કરી છે. આ એક્સ્ટેન્શન ઉમેરવાની મંજૂરી નથી.</translation>
 <translation id="6307990684951724544">સિસ્ટમ વ્યસ્ત છે</translation>
 <translation id="6308493641021088955"><ph name="EXTENSION_NAME" /> દ્વારા આપવામાં આવેલું સાઇન-ઇન</translation>
 <translation id="6308937455967653460">લિં&amp;કને આ રીતે સાચવો...</translation>
@@ -6236,6 +6248,7 @@ USB ડિવાઇસ</translation>
 <translation id="6678717876183468697">ક્વેરી URL</translation>
 <translation id="6680442031740878064">ઉપલબ્ધ: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">રેટ કરો</translation>
+<translation id="6683022854667115063">હૅડફોન</translation>
 <translation id="6683087162435654533">બધા ટૅબ રિસ્ટોર કરો</translation>
 <translation id="6684827949542560880">નવીનતમ અપડેટ ડાઉનલોડ કરી રહ્યાં છીએ</translation>
 <translation id="668599234725812620">Google Play ખોલો</translation>
@@ -6419,6 +6432,7 @@ USB ડિવાઇસ</translation>
 <translation id="6839916869147598086">સાઇન-ઇન બદલાઈ ગયું છે</translation>
 <translation id="6840155290835956714">મોકલતાં પહેલાં પૂછો</translation>
 <translation id="6840184929775541289">કોઈ પ્રમાણન અધિકારી નથી</translation>
+<translation id="6840214587087739194">ઍડ્રેસ ડિલીટ કર્યું</translation>
 <translation id="6841143363521180029">એન્ક્રિપ્ટેડ</translation>
 <translation id="6841186874966388268">ભૂલો</translation>
 <translation id="6842136130964845393">તમે તમારા સાચવેલા પાસવર્ડ ગમે ત્યારે ઍક્સેસ કરી શકો છો, એની ખાતરી કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
@@ -6863,6 +6877,7 @@ USB ડિવાઇસ</translation>
 <translation id="7255002516883565667">હમણાં, તમારી પાસે એક કાર્ડ છે જેનો માત્ર આ ડિવાઇસ પર ઉપયોગ કરી શકાય છે</translation>
 <translation id="7255935316994522020">લાગુ કરો</translation>
 <translation id="7256069762010468647">સાઇટ તમારા કૅમેરાનો ઉપયોગ કરી રહી છે</translation>
+<translation id="7256634071279256947">પાછળનો માઇક્રોફોન</translation>
 <translation id="7256710573727326513">એક ટેબમાં ખોલો</translation>
 <translation id="7257173066616499747">Wi-Fi નેટવર્ક્સ</translation>
 <translation id="725758059478686223">પ્રિન્ટિંગ સેવા</translation>
@@ -7971,6 +7986,7 @@ USB ડિવાઇસ</translation>
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" />સાથે જોડાણ કરી રહ્યાં છીએ</translation>
 <translation id="8251578425305135684">થંબનેલ દૂર કર્યું.</translation>
 <translation id="825238165904109940">હંમેશાં પૂર્ણ URLs બતાવો</translation>
+<translation id="8252538334423261825">એક્સ્ટેન્શન ઉમેરી શકતાં નથી</translation>
 <translation id="8252569384384439529">અપલોડ કરી રહ્યાં છીએ...</translation>
 <translation id="8253198102038551905">નેટવર્ક ગુણધર્મો મેળવવા માટે '+' ક્લિક કરો</translation>
 <translation id="8255212965098517578">તાજેતરના ફોટા, નોટિફિકેશન અને ઍપ</translation>
@@ -8256,6 +8272,7 @@ USB ડિવાઇસ</translation>
 <translation id="8525306231823319788">પૂર્ણ સ્ક્રીન</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">ભાષાઓ ઉમેરો</translation>
+<translation id="8528479410903501741">IBAN સાચવો</translation>
 <translation id="8528962588711550376">સાઇન ઇન થઈ રહ્યું છે.</translation>
 <translation id="8529925957403338845">ફટાફટ ટિથરિંગ કનેક્શન નિષ્ફળ</translation>
 <translation id="8531701051932785007">Safe Browsingમાં વધારેલી સુરક્ષા બંધ છે</translation>

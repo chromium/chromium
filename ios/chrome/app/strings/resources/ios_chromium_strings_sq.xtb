@@ -63,6 +63,7 @@
 <translation id="4985291216379576555">Jashtë linje. Chromium nuk mund të kontrollojë për përditësime</translation>
 <translation id="4996471330284142407">Bëj më shumë me një Chromium të thjeshtë, të sigurt dhe më të shpejtë se kurrë.</translation>
 <translation id="4999538639245140991">Duke qenë se po del nga një llogari e menaxhuar nga <ph name="SIGNOUT_MANAGED_DOMAIN" />, të dhënat e tua të Chromium do të fshihen nga kjo pajisje. Të dhënat e tua do të mbeten në "Llogarinë tënde të Google".</translation>
+<translation id="5048795749726991615">Për t'i marrë me lehtësi fjalëkalimet e tua të ruajtura në aplikacionet e tjera, përdor Chromium për AutoFill</translation>
 <translation id="5171868502429358653">Identifikohu në Chromium</translation>
 <translation id="5224391634244552924">Nuk ka asnjë fjalëkalim të ruajtur. Chromium mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato.</translation>
 <translation id="5308226104666789935">Chromium nuk mund të kontrollojë për përditësime</translation>
@@ -92,6 +93,7 @@
 <translation id="7045244423563602563">Bëje Chromium tëndin</translation>
 <translation id="7099326575020694068">Chromium nuk mund ta përdorë kamerën tënde në modalitetin e "Pamjes së ndarë"</translation>
 <translation id="7118091470949186573">Tani mund të përdorësh Chromium sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
+<translation id="7165402419892018581">Zgjidh Chromium për AutoFill</translation>
 <translation id="7175400662502680481">Fjalëkalimi yt është ekspozuar në një nxjerrje të paautorizuar të të dhënave. "Menaxheri i fjalëkalimeve" rekomandon ta ndryshosh tani.</translation>
 <translation id="7208566199746267865">Chromium të kursen kohë duke i sjellë llogaritë e tua në ueb. Mund të shtosh ose heqësh llogari te "Cilësimet".</translation>
 <translation id="725427773388857052">Chromium mund të të ndihmojë të qëndrosh i sigurt nga nxjerrjet e paautorizuara të të dhënave, faqet e pasigurta të internetit etj.</translation>
@@ -106,6 +108,7 @@
 <translation id="7746854981345936341">Këshillë për Chromium. Disa butona ndodhen tani në fund të ekranit tënd, si p.sh. "Prapa", "Përpara" dhe "Kërko".</translation>
 <translation id="7763454117143368771">Përdor Chromium si shfletuesin tënd të parazgjedhur për të qenë i mbrojtur nga sajtet e rrezikshme dhe për t'i mbajtur fjalëkalimet e tua të sigurta</translation>
 <translation id="7812317783196516890">Je identifikuar dhe po sinkronizon të dhënat me një llogari të menaxhuar nga <ph name="DOMAIN" />, ku administratori i saj tani mund të caktojë politika përdoruesi specifike për atë llogari që mund të ndryshojnë sjelljen e Chromium.</translation>
+<translation id="7859018312476869945">Kur shkruan në shiritin e adresës ose në kutinë e kërkimit, Chromium i dërgon ato që shkruan te motori i parazgjedhur i kërkimit për të marrë sugjerime më të mira. Kjo është joaktive në modalitetin "e fshehtë".</translation>
 <translation id="786327964234957808">Po i ndërron llogaritë e sinkronizimit nga <ph name="USER_EMAIL1" /> te <ph name="USER_EMAIL2" />. Të dhënat ekzistuese të Chromium po menaxhohen nga <ph name="DOMAIN" />. Kjo do t'i fshijë të dhënat e tua nga kjo pajisje, por të dhënat e tua do të mbeten në <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Fillo të përdorësh skanerin e Chromium</translation>
 <translation id="7928628054454574139">Hap gjithmonë Chromium kur troket te lidhjet në aplikacionet e tjera</translation>
@@ -115,6 +118,7 @@
 <translation id="8073677936375100957">Të pastrohen të dhënat e tua të Chromium nga kjo pajisje?</translation>
 <translation id="8240981428553046115">Chromium nuk mund të kontrollonte për përditësime. Provo përsëri më vonë.</translation>
 <translation id="8409374867500149834">Ti ke sigurinë më të fortë të Chromium kundër sajteve të dëmshme të uebit</translation>
+<translation id="8460301378281140593">Nga Settings në iPhone, hap "Password Options" dhe zgjidh "Chromium"</translation>
 <translation id="858114650497379505">Fjalëkalimet që ke ruajtur në "Menaxherin e fjalëkalimeve" mund t'i përdorësh në aplikacione të tjera në iPhone.</translation>
 <translation id="8586442755830160949">Të drejtat e autorit <ph name="YEAR" /> Autorët e Chromium. Të gjitha të drejtat të rezervuara.</translation>
 <translation id="8603022514504485810">"Menaxheri i fjalëkalimeve i Google" nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo përsëri nesër ose <ph name="BEGIN_LINK" />kontrollo fjalëkalimet në "Llogarinë tënde të Google".<ph name="END_LINK" /></translation>

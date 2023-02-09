@@ -63,6 +63,7 @@
 <translation id="4985291216379576555">Chromium ne parvient pas à rechercher les mises à jour, car vous êtes hors connexion</translation>
 <translation id="4996471330284142407">Soyez plus efficace grâce à Chromium, un navigateur simple, sécurisé et encore plus rapide.</translation>
 <translation id="4999538639245140991">Comme vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chromium seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
+<translation id="5048795749726991615">Pour retrouver facilement vos mots de passe enregistrés dans vos autres applis, utilisez Chromium pour la saisie automatique</translation>
 <translation id="5171868502429358653">Connectez-vous à Chromium</translation>
 <translation id="5224391634244552924">Aucun mot de passe enregistré. Chromium ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
 <translation id="5308226104666789935">Chromium ne parvient pas à rechercher les mises à jour</translation>
@@ -91,6 +92,7 @@
 <translation id="7045244423563602563">Personnalisez Chromium</translation>
 <translation id="7099326575020694068">Chromium ne peut pas utiliser votre appareil photo en mode Vue fractionnée.</translation>
 <translation id="7118091470949186573">Chaque fois que vous appuierez sur des liens figurant dans des messages, des documents et d'autres applications, vous pourrez désormais voir le contenu correspondant dans Chromium.</translation>
+<translation id="7165402419892018581">Sélectionner Chromium pour la saisie automatique</translation>
 <translation id="7175400662502680481">Votre mot de passe a été compromis lors d'une violation des données. Le Gestionnaire de mots de passe vous recommande de le modifier immédiatement.</translation>
 <translation id="7208566199746267865">Chromium vous permet de gagner du temps en connectant vos comptes au Web. Vous pouvez ajouter ou supprimer des comptes dans la section "Paramètres".</translation>
 <translation id="725427773388857052">Chromium peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web dangereux.</translation>
@@ -105,6 +107,7 @@
 <translation id="7746854981345936341">Astuce Chromium. Certains boutons sont désormais affichés en bas de l'écran, tels que "Arrière", "Avant" et "Rechercher".</translation>
 <translation id="7763454117143368771">Utilisez Chromium comme navigateur par défaut pour rester à l'abri des sites dangereux et protéger vos mots de passe</translation>
 <translation id="7812317783196516890">Vous êtes connecté et synchronisez vos données avec un compte géré par <ph name="DOMAIN" /> sur lequel l'administrateur peut maintenant définir des règles relatives aux utilisateurs propres à ce compte et pouvant modifier le comportement de Chromium.</translation>
+<translation id="7859018312476869945">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chromium envoie le contenu saisi à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en navigation privée.</translation>
 <translation id="786327964234957808">Vous changez de compte synchronisé pour passer de <ph name="USER_EMAIL1" /> à <ph name="USER_EMAIL2" />. Vos données Chromium actuelles sont gérées par <ph name="DOMAIN" />. Cette opération entraînera la suppression de vos données de cet appareil, mais celles-ci seront conservées dans le compte <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Commencer à utiliser le lecteur Chromium</translation>
 <translation id="7928628054454574139">Chromium s'ouvrira chaque fois que vous appuierez sur des liens dans d'autres applis</translation>
@@ -114,6 +117,7 @@
 <translation id="8073677936375100957">Supprimer vos données Chromium sur cet appareil ?</translation>
 <translation id="8240981428553046115">Chromium n'est pas parvenu à rechercher les mises à jour. Réessayez plus tard.</translation>
 <translation id="8409374867500149834">Vous disposez du plus haut niveau de sécurité de Chromium contre les sites dangereux</translation>
+<translation id="8460301378281140593">Dans les réglages de votre iPhone, ouvrez "Options de mot de passe", puis sélectionnez "Chromium".</translation>
 <translation id="858114650497379505">Vous pouvez utiliser les mots de passe enregistrés dans le Gestionnaire de mots de passe dans d'autres applis sur votre iPhone.</translation>
 <translation id="8586442755830160949">Copyright Auteurs de Chromium <ph name="YEAR" />. Tous droits réservés.</translation>
 <translation id="8603022514504485810">Le Gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe enregistrés dans votre compte Google<ph name="END_LINK" />.</translation>

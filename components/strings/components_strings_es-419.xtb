@@ -524,6 +524,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2202627062836089804">dorso de tu tarjeta</translation>
 <translation id="22081806969704220">Bandeja 3</translation>
 <translation id="2210794033760923560">Subir informe</translation>
+<translation id="2212579473415663542">Esta dirección está guardada en tu Cuenta de Google (<ph name="ACCOUNT" />). Puedes usar la dirección en todos los productos de Google desde cualquier dispositivo.</translation>
 <translation id="2212735316055980242">No se encontró la política.</translation>
 <translation id="2213606439339815911">Recuperando entradas…</translation>
 <translation id="2213612003795704869">Se imprime la página</translation>
@@ -1973,6 +1974,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5866898949289125849">Estás viendo una página de herramientas para desarrolladores</translation>
 <translation id="5869405914158311789">No se puede acceder a este sitio</translation>
 <translation id="5869522115854928033">Contraseñas almacenadas</translation>
+<translation id="5872692522325383488">Se guardó el IBAN</translation>
 <translation id="5873013647450402046">El banco desea confirmar tu identidad.</translation>
 <translation id="5877831137320480913">Belleza y salud</translation>
 <translation id="5884465125445718607">Sobre chino n.º 6</translation>
@@ -2142,6 +2144,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6300452962057769623">{0,plural, =0{El dispositivo se reiniciará ahora}=1{El dispositivo se reiniciará dentro de 1 segundo}other{El dispositivo se reiniciará dentro de # segundos}}</translation>
 <translation id="6301104306974789820">Recibir notificaciones de seguimiento de precios</translation>
 <translation id="6305205051461490394">No se puede acceder a <ph name="URL" />.</translation>
+<translation id="6306713302480826305">Se borrará esta dirección de este y otros dispositivos en los que accediste a tu cuenta</translation>
 <translation id="6311165245110979290">Tarjeta virtual disponible</translation>
 <translation id="6312113039770857350">Página web no disponible</translation>
 <translation id="6316226860534107313">Ciclomotores y motonetas</translation>
@@ -3033,6 +3036,7 @@ Detalles adicionales:
 <translation id="8473863474539038330">Direcciones y más</translation>
 <translation id="8474910779563686872">Mostrar detalles para desarrolladores</translation>
 <translation id="8479754468255770962">Grapa en la esquina inferior izquierda</translation>
+<translation id="8483229036294884935">Se borrará esta dirección de tu Cuenta de Google, <ph name="ACCOUNT" /></translation>
 <translation id="8483780878231876732">Para usar tarjetas de tu cuenta de Google, accede a tu cuenta en Chrome</translation>
 <translation id="8488350697529856933">Se aplica a</translation>
 <translation id="8490137692873530638">Apilador 10</translation>

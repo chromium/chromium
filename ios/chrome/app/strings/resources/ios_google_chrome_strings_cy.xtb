@@ -90,6 +90,7 @@
 <translation id="6709398533399187136">Datgelwyd eich cyfrinair mewn achos o dor data. Mae Rheolwr Cyfrineiriau Google yn argymell ei newid ar unwaith.</translation>
 <translation id="6822673484890854830">Ni allai Chrome wirio'r holl gyfrineiriau. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="6964931465519938134">Gallwch bellach ddefnyddio Chrome unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
+<translation id="6975725306479268850">Dewiswch Chrome ar gyfer Awtolenwi</translation>
 <translation id="701356708427365932">Dewch i adnabod y ddewislen Chrome newydd</translation>
 <translation id="7059914902409643750">Personoleiddiwch Chrome</translation>
 <translation id="7124339256045485976">Cadwch Chrome yn gyfoes</translation>
@@ -110,6 +111,7 @@
 <translation id="7754633291442704733">Bydd gan <ph name="DOMAIN" /> eich sefydliad fynediad at eich data Chrome, nodau tudalen, hanes, cyfrineiriau a gosodiadau eraill rydych yn eu storio yn y cyfrif hwn. Pan fyddwch yn allgofnodi, bydd eich data yn cael eu clirio o'r ddyfais hon.  Fodd bynnag, bydd eich data yn parhau i gael ei storio yn eich Cyfrif Google a reolir a bydd ar gael i'ch sefydliad. Gall eich sefydliad hefyd osod polisïau defnyddwyr sy'n benodol i'r cyfrif hwnnw a all newid ymddygiad Chrome.</translation>
 <translation id="7780154209050837198">I gael y gorau o Chrome, mewngofnodwch i Chrome â'ch Cyfrif Google.</translation>
 <translation id="7855730255114109580">Mae Google Chrome yn gyfoes</translation>
+<translation id="7939179037291298976">O'ch Gosodiadau iPhone, agorwch "Dewisiadau Cyfrinair" a dewiswch "Chrome"</translation>
 <translation id="8022947259858476807">Defnyddiwch Chrome yn ddiofyn i agor dolenni, chwilio o declynnau, ac awtolenwi cyfrineiriau mewn apiau eraill</translation>
 <translation id="81358522153858150">Mae Chrome bellach yn cefnogi polisïau defnyddwyr ar gyfer eich cyfrif a reolir</translation>
 <translation id="8160472928944011082">Ni all Chrome ddiweddaru</translation>
@@ -125,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Ni allai Rheolwr Cyfrineiriau Google wirio pob cyfrinair. Rhowch gynnig arall arni yfory neu <ph name="BEGIN_LINK" />gwiriwch gyfrineiriau yn eich Cyfrif Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Cadwch yn Ddiogel gyda Google Chrome</translation>
+<translation id="8765470054473112089">Pan fyddwch yn teipio yn y bar cyfeiriad neu'r blwch chwilio, bydd Chrome yn anfon yr hyn rydych yn ei deipio i'ch peiriant chwilio diofyn i gael awgrymiadau gwell. Mae hwn wedi'i ddiffodd yn y modd Anhysbys.</translation>
 <translation id="8772179140489533211">Dangos anogwyr i fewngofnodi i Chrome.</translation>
 <translation id="8788269841521769222">Ni fydd angen i chi gofio'r cyfrinair hwn. Bydd yn cael ei gadw i Reolwr Cyfrineiriau Google ar gyfer <ph name="EMAIL" /></translation>
 <translation id="8857676124663337448">Ni allai Rheolwr Cyfrineiriau Google wirio pob cyfrinair. Rhowch gynnig arall arni yfory.</translation>

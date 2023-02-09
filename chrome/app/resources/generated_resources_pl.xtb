@@ -284,6 +284,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1244303850296295656">Błąd rozszerzenia</translation>
 <translation id="1245628370644070008">Odzyskiwanie danych lokalnych</translation>
 <translation id="1246863218384630739">Nie udało się zainstalować <ph name="VM_NAME" />: adres URL obrazu zwrócił kod błędu <ph name="HTTP_ERROR" />. Skontaktuj się z administratorem.</translation>
+<translation id="1247372569136754018">Mikrofon (wewnętrzny)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{1 witryna nie może wysyłać powiadomień}few{{NUM_SITES} witryny nie mogą wysyłać powiadomień}many{{NUM_SITES} witryn nie może wysyłać powiadomień}other{{NUM_SITES} witryny nie może wysyłać powiadomień}}</translation>
 <translation id="1251366534849411931">Oczekiwany otwierający nawias klamrowy: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Spowoduje to usunięcie <ph name="TOTAL_USAGE" /> danych zapisanych przez strony i zainstalowane aplikacje</translation>
@@ -541,6 +542,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1482626744466814421">Dodaj tę kartę do zakładek...</translation>
 <translation id="1482772681918035149">edytować hasła</translation>
 <translation id="1483493594462132177">Wyślij</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Strona używa Bluetootha</translation>
 <translation id="1485015260175968628">Może teraz:</translation>
 <translation id="1485141095922496924">Wersja <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1093,6 +1095,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1965624977906726414">Nie ma specjalnych uprawnień.</translation>
 <translation id="1966649499058910679">Zaznacz słowo, gdy jest wymawiane</translation>
 <translation id="1967970931040389207">Włączanie hotspota</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">Logi tekstowe WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Przeglądarka będzie działać szybciej dzięki proaktywnemu wczytywaniu stron na podstawie danych o bieżącej wizycie na stronie</translation>
 <translation id="197288927597451399">Zachowaj</translation>
@@ -1804,7 +1807,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="25899519884572181">Zamknij tryb czytnika</translation>
 <translation id="2593499352046705383">Przed rozpoczęciem instalacji sprawdź, czy masz kopię zapasową danych. Instalacja systemu operacyjnego <ph name="DEVICE_OS" /> spowoduje zastąpienie danych na dysku twardym. Więcej informacji znajdziesz na g.co/flex/InstallGuide</translation>
 <translation id="2594999711683503743">Wyszukaj w Google lub wpisz URL</translation>
-<translation id="25957578727513093">Aby móc szybciej otwierać tę stronę, dodaj skrót do Menedżera haseł Google</translation>
 <translation id="2599048253926156421">Nazwa użytkownika została skopiowana do schowka</translation>
 <translation id="2602501489742255173">Przesuń palcem w górę, by rozpocząć</translation>
 <translation id="2603115962224169880">Oczyść komputer</translation>
@@ -2382,6 +2384,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3103451787721578293">Wpisz przyczynę przesłania tych danych:</translation>
 <translation id="3105339775057145050">Ostatnia nieudana aktualizacja</translation>
 <translation id="3105796011181310544">Zmienić z powrotem na Google?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Strona używa Bluetootha</translation>
 <translation id="3108931485517391283">Nie udało się odebrać</translation>
 <translation id="3108957152224931571">Kolor wyróżnienia</translation>
@@ -3023,6 +3026,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="371300529209814631">Wstecz/dalej</translation>
 <translation id="3713047097299026954">Na tym kluczu bezpieczeństwa nie ma żadnych danych logowania</translation>
 <translation id="3713091615825314967">Automatyczne aktualizacje są włączone</translation>
+<translation id="371370241367527062">Przedni mikrofon</translation>
 <translation id="3714195043138862580">To urządzenie demonstracyjne zostało wyrejestrowane.</translation>
 <translation id="3719826155360621982">Strona główna</translation>
 <translation id="372062398998492895">Drukarki CUPS</translation>
@@ -3118,6 +3122,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3797900183766075808">Wy&amp;szukaj „<ph name="SEARCH_TERMS" />” w <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Wersja</translation>
 <translation id="3798632811625902122">Urządzenie Bluetooth <ph name="DEVICE" /> chce się sparować.</translation>
+<translation id="3798670284305777884">Głośnik (wewnętrzny)</translation>
 <translation id="3799128412641261490">Ustawienia funkcji Switch Access</translation>
 <translation id="3800030395703848668">Opcje wyświetlania listy</translation>
 <translation id="3800806661949714323">Pokaż wszystkie (zalecane)</translation>
@@ -5118,6 +5123,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5643620609347735571">Usuń i kontynuuj</translation>
 <translation id="5646376287012673985">Lokalizacja</translation>
 <translation id="5646558797914161501">Biznesmen</translation>
+<translation id="5648021990716966815">Gniazdo mikrofonu</translation>
 <translation id="5648166631817621825">Ostatnie 7 dni</translation>
 <translation id="5651308944918885595">Udostępnianie w pobliżu wykrywalność</translation>
 <translation id="5653154844073528838">Zapisane drukarki: <ph name="PRINTER_COUNT" />.</translation>
@@ -6230,6 +6236,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6678717876183468697">URL zapytania</translation>
 <translation id="6680442031740878064">Dostępne: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Szybkość</translation>
+<translation id="6683022854667115063">Słuchawki</translation>
 <translation id="6683087162435654533">&amp;Przywróć wszystkie karty</translation>
 <translation id="6684827949542560880">Pobieram najnowszą aktualizację</translation>
 <translation id="668599234725812620">Otwórz Google Play</translation>
@@ -6856,6 +6863,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7255002516883565667">Obecnie masz jedną kartę, której można używać tylko na tym urządzeniu</translation>
 <translation id="7255935316994522020">Zastosuj</translation>
 <translation id="7256069762010468647">Strona używa kamery</translation>
+<translation id="7256634071279256947">Tylny mikrofon</translation>
 <translation id="7256710573727326513">Otwórz na karcie</translation>
 <translation id="7257173066616499747">Sieci Wi-Fi</translation>
 <translation id="725758059478686223">Usługa drukowania</translation>

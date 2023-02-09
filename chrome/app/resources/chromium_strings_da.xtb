@@ -322,6 +322,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7828947555739565424">Der findes allerede en Chromium-profil med denne konto på enheden</translation>
 <translation id="7845233973568007926">Tak for installationen. Du skal genstarte computeren, før du bruger <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7859018312476869945">Når du indtaster noget i adresselinjen eller søgefeltet, sender Chromium det, du skriver, til din standardsøgemaskine for at få bedre forslag. Dette er deaktiveret i inkognitotilstand.</translation>
 <translation id="7867198900892795913">Chromium kunne ikke opdatere til den nyeste version, så du går glip af nye funktioner og sikkerhedsrettelser.</translation>
 <translation id="7872446069773932638">Downloader… Der er <ph name="SECONDS" /> sekunder tilbage</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Sådan kan du administrere dine data:<ph name="END_BOLD" /> Vi sletter automatisk de interesser, der er ældre end 4 uger, for at beskytte dine personlige oplysninger Mens du surfer, kan en interesse vises på listen igen. Du kan også fjerne interesser, som du ikke vil have, at Chromium skal tage med i betragtning.</translation>

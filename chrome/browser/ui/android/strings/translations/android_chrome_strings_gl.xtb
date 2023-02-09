@@ -226,7 +226,6 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="2248941474044011069">Os teus contrasinais encríptanse no dispositivo antes de gardarse no xestor de contrasinais de Google</translation>
 <translation id="2249635629516220541">Personaliza a información que usan os sitios para mostrarche anuncios</translation>
 <translation id="2259659629660284697">Exportar contrasinais…</translation>
-<translation id="2276231040576210443">Sempre podes escoller na <ph name="BEGIN_LINK1" />configuración<ph name="END_LINK1" /> o contido que queres sincronizar. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="2276696007612801991">Inicia sesión na túa Conta de Google para comprobar os teus contrasinais</translation>
 <translation id="2278052315791335171">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Enderezo de facturación</translation>
@@ -304,7 +303,6 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="2669454659051515572">Calquera que use este dispositivo pode ver os ficheiros descargados</translation>
 <translation id="2702516483241149200">Novidade: Comparte unha ligazón que leve directamente a este texto</translation>
 <translation id="2707726405694321444">Actualiza páxina</translation>
-<translation id="2709516037105925701">Autocompletar</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2711073837061989559">Probas</translation>
 <translation id="2718352093833049315">Só con wifi</translation>
@@ -396,7 +394,6 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="3114507951000454849">Le as noticias do día <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">vinculouse a</translation>
 <translation id="3123734510202723619">Avisos</translation>
-<translation id="3130863904455712965">Historial e moito máis</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Páxina de inicio de Chrome</translation>
 <translation id="3157931365184549694">Restaurar</translation>
@@ -922,6 +919,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="6000203700195075278">Volver seguir</translation>
 <translation id="6002122790816966947">Os teus dispositivos</translation>
 <translation id="6005538289190791541">Contrasinal suxerido</translation>
+<translation id="6011308810877101166">Mellorar as suxestións de busca</translation>
 <translation id="6039379616847168523">Saltar á seguinte pestana</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="604124094241169006">Automático</translation>
@@ -989,7 +987,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6397616442223433927">De novo en liña</translation>
 <translation id="6401458660421980302">Para enviar esta pestana a outro dispositivo, inicia sesión en Chrome nel</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> o <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">Sincroniza os teus datos en todos os dispositivos</translation>
 <translation id="6404511346730675251">Editar marcador</translation>
 <translation id="6406506848690869874">Sincronización</translation>
 <translation id="6407224748847589805">Non se puido establecer conexión co teu ordenador. Proba con outra opción de verificación.</translation>
@@ -1318,7 +1315,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8037801708772278989">A comprobación realizouse agora mesmo</translation>
 <translation id="804335162455518893">Non se atopou a tarxeta SD</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestana do modo de incógnito}other{<ph name="TAB_COUNT_NORMAL" /> pestanas do modo de incógnito}}</translation>
-<translation id="8048728378294435881">Fai unha copia de seguranza dos teus datos e úsaos en calquera dispositivo</translation>
 <translation id="8051695050440594747">Almacenamento dispoñible: <ph name="MEGABYTES" /> MB</translation>
 <translation id="8058655154417507695">Ano de caducidade</translation>
 <translation id="8058746566562539958">Abrir na pestana de Chrome</translation>
@@ -1452,6 +1448,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8746155870861185046">Compartir texto destacado</translation>
 <translation id="8748850008226585750">Contido oculto</translation>
 <translation id="8756969031206844760">Queres actualizar o contrasinal?</translation>
+<translation id="8765470054473112089">Cando escribes algo na barra de enderezos ou na caixa de busca, Chrome envíallo ao motor de busca predeterminado para obter mellores suxestións. Esta opción está desactivada no modo de incógnito.</translation>
 <translation id="8766529642647037772">Queres crear unha ligazón destacada coma esta?</translation>
 <translation id="8773160212632396039">Procesando solicitude</translation>
 <translation id="8788265440806329501">O historial de navegación está pechado</translation>

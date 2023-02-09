@@ -285,6 +285,7 @@
 <translation id="1244303850296295656">এক্সটেনশ্বনৰ আসোঁৱাহ</translation>
 <translation id="1245628370644070008">স্থানীয় ডেটাৰ পুনৰুদ্ধাৰ</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> ইনষ্টল কৰিব পৰা নগ'ল: প্ৰতিচ্ছবিৰ URL <ph name="HTTP_ERROR" /> আসোঁৱাহ ক'ডটোৰ বাবে ডাউনল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
+<translation id="1247372569136754018">মাইক্ৰফ’ন (আভ্যন্তৰীণ)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{১ টা ছাইটৰ বাবে জাননীৰ অনুমতি দিয়া হোৱা নাই}one{{NUM_SITES} টা ছাইটৰ বাবে জাননীৰ অনুমতি দিয়া হোৱা নাই}other{{NUM_SITES} টা ছাইটৰ বাবে জাননীৰ অনুমতি দিয়া হোৱা নাই}}</translation>
 <translation id="1251366534849411931">প্ৰত্যাশিত প্ৰাৰম্ভিক কার্লী ব্ৰাচ: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">এই কাৰ্যই ছাইটসমূহ আৰু ইনষ্টল হৈ থকা এপ্‌সমূহে ষ্ট’ৰ কৰা <ph name="TOTAL_USAGE" /> ডেটা মচিব</translation>
@@ -543,6 +544,7 @@
 <translation id="1482626744466814421">এই টেবটো বুকমার্ক কৰক...</translation>
 <translation id="1482772681918035149">পাছৱৰ্ড সম্পাদনা কৰক</translation>
 <translation id="1483493594462132177">পঠিয়াওক</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">ছাইটটোৱে ব্লুটুথ ব্যৱহাৰ কৰি আছে</translation>
 <translation id="1485015260175968628">এইটোৱে এতিয়া কৰিব পাৰে:</translation>
 <translation id="1485141095922496924">সংস্কৰণ <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1105,6 +1107,7 @@
 <translation id="1965624977906726414">কোনো বিশেষ অনুমতি নাই।</translation>
 <translation id="1966649499058910679">প্ৰতিটো শব্দ কোৱা হৈছে বুলি হাইলাইট কৰক</translation>
 <translation id="1967970931040389207">হটস্পট অন কৰক</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (ইউএছবি)</translation>
 <translation id="1969654639948595766">WebRTC পাঠ লগ (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">আপোনাৰ বৰ্তমান চোৱা ৱেবপৃষ্ঠাখনৰ ভিত্তিত সমল আগতীয়াকৈ ল’ড কৰা হয় বাবে আপুনি দ্ৰুতভাৱে ব্ৰাউজ কৰিব পাৰিব</translation>
 <translation id="197288927597451399">Keep</translation>
@@ -1830,7 +1833,6 @@
 <translation id="25899519884572181">ৰীডাৰ ম’ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="2593499352046705383">আৰম্ভ কৰাৰ আগতে আপোনাৰ ওচৰত নিজৰ ডেটাৰ এটা বেকআপ থকাটো নিশ্চিত কৰক। <ph name="DEVICE_OS" /> ইনষ্টল কৰিলে আপোনাৰ হাৰ্ড ড্ৰাইভটো অ’ভাৰৰাইট কৰা হ’ব। g.co/flex/InstallGuideত অধিক জানক।</translation>
 <translation id="2594999711683503743">Googleত সন্ধান কৰক বা URL টাইপ কৰক</translation>
-<translation id="25957578727513093">দ্ৰুততাৰে ইয়ালৈ আহিবলৈ, Google Password Managerলৈ এটা শ্বৰ্টকাট যোগ দিয়ক</translation>
 <translation id="2599048253926156421">ব্যৱহাৰকাৰীৰ নাম ক্লিপব’ৰ্ডলৈ প্ৰতিলিপি কৰা হ’ল</translation>
 <translation id="2602501489742255173">আৰম্ভ কৰিবলৈ ওপৰলৈ ছোৱাইপ কৰক</translation>
 <translation id="2603115962224169880">কম্পিউটাৰৰ ডেটা মচক</translation>
@@ -2408,6 +2410,7 @@
 <translation id="3103451787721578293">অনুগ্ৰহ কৰি এই ডেটাখিনি আপল’ড কৰাৰ এটা কাৰণ দিয়ক:</translation>
 <translation id="3105339775057145050">অন্তিম অসফল আপডে’ট</translation>
 <translation id="3105796011181310544">পুনৰ Googleলৈ সলনি কৰিবনে?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ব্লুটুথ)</translation>
 <translation id="310671807099593501">ছাইটটোৱে ব্লুটুথ ব্যৱহাৰ কৰি আছে</translation>
 <translation id="3108931485517391283">লাভ কৰিব নোৱাৰি</translation>
 <translation id="3108957152224931571">হাইলাইটৰ ৰং</translation>
@@ -3049,6 +3052,7 @@
 <translation id="371300529209814631">বেক/ফৰৱাৰ্ড</translation>
 <translation id="3713047097299026954">এই সুৰক্ষাৰ চাবিটোত কোনো ছাইন ইন ডেটা ষ্ট'ৰ কৰি থোৱা নাই।</translation>
 <translation id="3713091615825314967">স্বয়ংক্ৰিয়ভাৱে আপডে’ট হোৱাৰ সুবিধাটো অন কৰা হ’ল।</translation>
+<translation id="371370241367527062">সন্মুখৰ মাইক্ৰ’ফ’ন</translation>
 <translation id="3714195043138862580">এই ডেম' ডিভাইচটো এক্সেছহীন অৱস্থাত ৰখা হৈছে।</translation>
 <translation id="3719826155360621982">গৃহ পৃষ্ঠা</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3144,6 +3148,7 @@
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />”ৰ বাবে <ph name="SEARCH_ENGINE" />ত &amp;সন্ধান কৰক</translation>
 <translation id="3798449238516105146">সংস্কৰণ</translation>
 <translation id="3798632811625902122">ব্লুটুথ ডিভাইচ "<ph name="DEVICE" />"এ পেয়াৰ কৰিবলৈ অনুমতি বিচাৰে।</translation>
+<translation id="3798670284305777884">স্পীকাৰ (আভ্যন্তৰীণ)</translation>
 <translation id="3799128412641261490">ছুইচৰ দ্বাৰা এক্সেছৰ ছেটিংসমূহ</translation>
 <translation id="3800030395703848668">সূচী চোৱাৰ বিকল্প</translation>
 <translation id="3800806661949714323">সকলো দেখুৱাওক (চুপাৰিছ কৰা)</translation>
@@ -5145,6 +5150,7 @@
 <translation id="5643620609347735571">মচক আৰু অব্যাহত ৰাখক</translation>
 <translation id="5646376287012673985">অৱস্থান</translation>
 <translation id="5646558797914161501">ব্যৱসায়ী</translation>
+<translation id="5648021990716966815">মাইকৰ জেক</translation>
 <translation id="5648166631817621825">যোৱা ৭ দিনত</translation>
 <translation id="5651308944918885595">Nearby Shareৰ দৃশ্যমানতাৰ ছেটিং</translation>
 <translation id="5653154844073528838">আপোনাৰ <ph name="PRINTER_COUNT" /> টা ছেভ কৰি থোৱা প্ৰিণ্টাৰ আছে।</translation>
@@ -6255,6 +6261,7 @@
 <translation id="6678717876183468697">কুৱেৰীৰ URL</translation>
 <translation id="6680442031740878064">উপলব্ধ: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">হাৰ</translation>
+<translation id="6683022854667115063">হেডফ’ন</translation>
 <translation id="6683087162435654533">আটাইবোৰ টেব পুনঃস্থাপন কৰক</translation>
 <translation id="6684827949542560880">শেহতীয়া আপডে'টটো ডাউনল’ড কৰি থকা হৈছে</translation>
 <translation id="668599234725812620">Google Play খোলক</translation>
@@ -6883,6 +6890,7 @@
 <translation id="7255002516883565667">এই মুহূৰ্তত আপোনাৰ লগত এখন কাৰ্ডহে আছে যিখন কেৱল এই ডিভাইচটোতহে ব্যৱহাৰ কৰিব পাৰি</translation>
 <translation id="7255935316994522020">প্ৰয়োগ কৰক</translation>
 <translation id="7256069762010468647">ছাইটোৱে আপোনাৰ কেমেৰা ব্যৱহাৰ কৰি আছে</translation>
+<translation id="7256634071279256947">ডিভাইচৰ পিছফালে থকা মাইক্ৰ’ফ’ন</translation>
 <translation id="7256710573727326513">নতুন টেবত খোলক</translation>
 <translation id="7257173066616499747">ৱাই-ফাই নেটৱৰ্কসমূহ</translation>
 <translation id="725758059478686223">প্ৰিণ্টিং সেৱা</translation>

@@ -540,6 +540,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2241693394036365668">Filer lastes ned</translation>
 <translation id="2246264294482514010">10 x 12 tommer</translation>
 <translation id="2246480341630108201">Forelderen din har ikke sagt at det er greit ennå</translation>
+<translation id="2247789808226901522">Kortet er utløpt</translation>
 <translation id="2248949050832152960">Bruk WebAuthn</translation>
 <translation id="2250931979407627383">Kantstifting venstre</translation>
 <translation id="225207911366869382">Denne verdien er foreldet for denne innstillingen.</translation>
@@ -1078,6 +1079,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3646643500201740985">Måling av annonseresultater</translation>
 <translation id="3647286794400715637">Hver nettadresse-strengoppføring må inneholde 1–2 nettadresser.</translation>
 <translation id="3650584904733503804">Valideringen var vellykket</translation>
+<translation id="3650594806107685466">For å beskytte kortet ditt skriver du inn verifiseringskoden på <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3653033846669030038">Fonøyelsesparker</translation>
 <translation id="3655241534245626312">Gå til tillatelsesinnstillingene</translation>
 <translation id="3655670868607891010">Hvis du ser denne meldingen ofte, kan du prøve disse <ph name="HELP_LINK" />.</translation>
@@ -2458,6 +2460,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7112327784801341716">Er ikke informasjonen riktig? Kontakt banken for å oppdatere den.</translation>
 <translation id="7118618213916969306">Søk etter nettadressen <ph name="SHORT_URL" /> på utklippstavlen</translation>
 <translation id="7119414471315195487">Lukk andre faner eller programmer</translation>
+<translation id="7124354851782353862">Skriv inn verifiseringskoden</translation>
 <translation id="7129355289156517987">Når du lukker alle inkognitofaner i Chromium, blir aktiviteten din på de aktuelle fanene fjernet fra enheten:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Nettleseraktivitet<ph name="END_LIST_ITEM" />
@@ -2783,6 +2786,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7844689747373518809">{COUNT,plural, =0{Ingen}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apper (<ph name="EXAMPLE_APP_1" /> og <ph name="EXAMPLE_APP_2" />)}other{# apper (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Senere kan nettsteder du besøker spørre Chrome om emnene du ser, for å gi deg personlig tilpassede annonser. Chrome deler opptil tre emner og beskytter nettleserloggen og identiteten din.</translation>
+<translation id="7860345425589240791">Skriv inn den nye utløpsdatoen og verifiseringskoden på <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Vil du forlate nettstedet?</translation>
 <translation id="7865448901209910068">Beste hastighet</translation>
 <translation id="7871445724586827387">Endre passordet for Google-kontoen din</translation>

@@ -524,6 +524,7 @@
 <translation id="2202627062836089804">адваротным баку карткі</translation>
 <translation id="22081806969704220">Латок 3</translation>
 <translation id="2210794033760923560">Запампаваць справаздачу</translation>
+<translation id="2212579473415663542">Гэты адрас захоўваецца ў вашым Уліковым запісе Google (<ph name="ACCOUNT" />). Вы можаце выкарыстоўваць яго ў розных прадуктах Google на любой прыладзе.</translation>
 <translation id="2212735316055980242">Палітыка не знойдзена</translation>
 <translation id="2213606439339815911">Ідзе атрыманне запісаў...</translation>
 <translation id="2213612003795704869">Старонка надрукавана</translation>
@@ -539,6 +540,7 @@
 <translation id="2241693394036365668">Спампоўваецца файл</translation>
 <translation id="2246264294482514010">10 x 12 цаляў</translation>
 <translation id="2246480341630108201">Твой бацька (твая маці) яшчэ не ўхваліў(-ла) гэты сайт</translation>
+<translation id="2247789808226901522">Тэрмін дзеяння карткі скончыўся</translation>
 <translation id="2248949050832152960">Выкарыстоўваць WebAuthn</translation>
 <translation id="2250931979407627383">Сшыванне па краі злева</translation>
 <translation id="225207911366869382">Гэта састарэлае значэнне для палітыкі.</translation>
@@ -1076,6 +1078,7 @@
 <translation id="3646643500201740985">Ацэнка эфектыўнасці рэкламнай аб'явы</translation>
 <translation id="3647286794400715637">Кожны запіс павінен змяшчаць 1-2 URL-адрасы.</translation>
 <translation id="3650584904733503804">Праверка прайшла паспяхова</translation>
+<translation id="3650594806107685466">У мэтах бяспекі ўвядзіце код CVC, які знаходзіцца на <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3653033846669030038">Паркі атракцыёнаў</translation>
 <translation id="3655241534245626312">Перайсці ў налады дазволаў</translation>
 <translation id="3655670868607891010">Калі вы часта бачыце гэта паведамленне, паспрабуйце наступнае: <ph name="HELP_LINK" />.</translation>
@@ -1971,6 +1974,7 @@
 <translation id="5866898949289125849">Вы праглядаеце старонку інструментаў распрацоўшчыка</translation>
 <translation id="5869405914158311789">Гэты сайт недаступны</translation>
 <translation id="5869522115854928033">Захаваныя паролі</translation>
+<translation id="5872692522325383488">Нумар IBAN захаваны</translation>
 <translation id="5873013647450402046">Ваш банк хоча пацвердзіць, што гэта вы.</translation>
 <translation id="5877831137320480913">Прыгажосць і фітнес</translation>
 <translation id="5884465125445718607">Канверт Chinese № 6</translation>
@@ -2140,6 +2144,7 @@
 <translation id="6300452962057769623">{0,plural, =0{Прылада будзе перазапушчана зараз}=1{Прылада будзе перазапушчана праз 1 секунду}one{Прылада будзе перазапушчана праз # секунду}few{Прылада будзе перазапушчана праз # секунды}many{Прылада будзе перазапушчана праз # секунд}other{Прылада будзе перазапушчана праз # секунды}}</translation>
 <translation id="6301104306974789820">Атрымліваць апавяшчэнні аб змяненні цаны</translation>
 <translation id="6305205051461490394">Сайт <ph name="URL" /> недаступны.</translation>
+<translation id="6306713302480826305">Гэты адрас будзе выдалены з бягучай і іншых прылад, на якіх выкананы ўваход ва ўліковы запіс</translation>
 <translation id="6311165245110979290">Віртуальная картка даступная</translation>
 <translation id="6312113039770857350">Вэб-старонка недаступная</translation>
 <translation id="6316226860534107313">Скутары і мапеды</translation>
@@ -2454,6 +2459,7 @@
 <translation id="7112327784801341716">Не бачыце сваю бягучую інфармацыю? Звярніцеся ў банк, каб абнавіць яе.</translation>
 <translation id="7118618213916969306">Пошук URL-адраса з буфера абмену: <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Закрыйце іншыя ўкладкі або праграмы</translation>
+<translation id="7124354851782353862">Увядзіце код CVC</translation>
 <translation id="7129355289156517987">Пры закрыцці ўсіх укладак, адкрытых у рэжыме інкогніта ў браўзеры Chromium, з гэтай прылады выдаляюцца даныя пра ўсе вашы дзеянні ў гэтых укладках:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />дзеянні ў браўзеры;<ph name="END_LIST_ITEM" />
@@ -2781,6 +2787,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Няма}=1{1 праграма (<ph name="EXAMPLE_APP_1" />)}=2{2 праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# праграма (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}many{# праграм (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">Сайты, якія вы будзеце наведваць пазней, могуць запытваць у браўзера Chrome тэмы, каб персаналізаваць для вас рэкламу. Chrome абагульвае не больш за 3 тэмы. Пры гэтым гісторыя прагляду вамі сайтаў і звесткі, якія маглі б раскрыць вашу асобу, застаюцца пад надзейнай абаронай.</translation>
+<translation id="7860345425589240791">Укажыце новы тэрмін дзеяння і код CVC, які знаходзіцца на <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Закрыць сайт?</translation>
 <translation id="7865448901209910068">Найлепшая хуткасць</translation>
 <translation id="7871445724586827387">Змяніць пароль Уліковага запісу Google</translation>
@@ -3032,6 +3039,7 @@
 <translation id="8473863474539038330">Адрасы і іншае</translation>
 <translation id="8474910779563686872">Паказаць падрабязныя звесткі пра распрацоўшчыка</translation>
 <translation id="8479754468255770962">Скаба знізу злева</translation>
+<translation id="8483229036294884935">Гэты адрас будзе выдалены з вашага Уліковага запісу Google (<ph name="ACCOUNT" />)</translation>
 <translation id="8483780878231876732">Каб выкарыстоўваць карткі з Уліковага запісу Google, увайдзіце ў Chrome</translation>
 <translation id="8488350697529856933">Аб'ект прымянення</translation>
 <translation id="8490137692873530638">Укладчык 10</translation>

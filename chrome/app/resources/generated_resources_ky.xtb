@@ -284,6 +284,7 @@
 <translation id="1244303850296295656">Кеңейтүү катасы</translation>
 <translation id="1245628370644070008">Түзмөктөгү маалыматты калыбына келтирүү</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> орнотулбай койду: Сүрөттүн URL'инде <ph name="HTTP_ERROR" /> ката коду чыкты. Администраторуңузга кайрылыңыз.</translation>
+<translation id="1247372569136754018">Микрофон (ички)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{1 сайттын билдирмелерине тыюу салынды}other{{NUM_SITES} сайттын билдирмелерине тыюу салынды}}</translation>
 <translation id="1251366534849411931">Ачуучу ийри кашаа жетишпейт: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Ушуну менен сайттар менен колдонмолор ээлеп турган <ph name="TOTAL_USAGE" /> орун бошотулат</translation>
@@ -542,6 +543,7 @@
 <translation id="1482626744466814421">Бул өтмөктү кыстарып коюу…</translation>
 <translation id="1482772681918035149">сырсөздөрдү түзөтүү</translation>
 <translation id="1483493594462132177">Жөнтүү</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Сайт Bluetooth'ду колдонууда</translation>
 <translation id="1485015260175968628">Эми бул төмөнкүлөрдү аткара алат:</translation>
 <translation id="1485141095922496924"><ph name="PRODUCT_VERSION" /> версиясы (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1107,6 +1109,7 @@
 <translation id="1965624977906726414">Атайын уруксаттары жок.</translation>
 <translation id="1966649499058910679">Айтылган сөздөрдү бөлүп көрсөтүү</translation>
 <translation id="1967970931040389207">Байланыш түйүнүн күйгүзүү</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">WebRTC текст таржымалдары (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Мазмун учурда ачылып турган веб-баракчанын негизинде жүктөлгөндүктөн, барактарды тезирээк карап чыгасыз</translation>
 <translation id="197288927597451399">Сактоо</translation>
@@ -1832,7 +1835,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="25899519884572181">Окугуч режиминен чыгуу</translation>
 <translation id="2593499352046705383">Баштоодон мурун дайын-даректериңиздин камдык көчүрмөсүн сактап койгонуңузду текшериңиз. <ph name="DEVICE_OS" /> тутумун орнотсоңуз, катуу дискиңиз кайрадан жазылат. Кеңири маалымат: g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Google'дан издеңиз же URL'ди териңиз</translation>
-<translation id="25957578727513093">Бул жерге тезирээк өтүү үчүн Сырсөздөрдү башкаргычтын ыкчам баскычын кошуңуз</translation>
 <translation id="2599048253926156421">Колдонуучунун аты алмашуу буферине көчүрүлдү</translation>
 <translation id="2602501489742255173">Баштоо үчүн, өйдө сүрүп коюңуз</translation>
 <translation id="2603115962224169880">Компьютерди тазалоо</translation>
@@ -2410,6 +2412,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3103451787721578293">Бул маалыматты жүктөө үчүн себепти көрсөтүңүз:</translation>
 <translation id="3105339775057145050">Акыркы жолу жаңыртылбай калган</translation>
 <translation id="3105796011181310544">Google кайтарылсынбы?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Сайт bluetooth'ду колдонууда</translation>
 <translation id="3108931485517391283">Алынбай жатат</translation>
 <translation id="3108957152224931571">Бөлүп көрсөтүү түсү</translation>
@@ -3051,6 +3054,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="371300529209814631">Артка/Алдыга</translation>
 <translation id="3713047097299026954">Бул коопсуздук ачкычында кирүү дайындары жок</translation>
 <translation id="3713091615825314967">Автоматтык жаңыртуулар күйгүзүлгөн.</translation>
+<translation id="371370241367527062">Маңдайкы микрофон</translation>
 <translation id="3714195043138862580">Бул демо түзмөк колдонуудан чыгарылды.</translation>
 <translation id="3719826155360621982">Башкы бет</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3146,6 +3150,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3797900183766075808">&amp;'<ph name="SEARCH_TERMS" />' дегенди <ph name="SEARCH_ENGINE" /> дегенден издөө</translation>
 <translation id="3798449238516105146">Версия</translation>
 <translation id="3798632811625902122"><ph name="DEVICE" /> Bluetooth түзмөгү жупташуу үчүн уруксат сурап жатат.</translation>
+<translation id="3798670284305777884">Катуу сүйлөткүч (ички)</translation>
 <translation id="3799128412641261490">Switch Access параметрлери</translation>
 <translation id="3800030395703848668">Тизменин көрүнүшүнүн параметрлери</translation>
 <translation id="3800806661949714323">Баарын көрсөтүү (сунушталат)</translation>
@@ -5148,6 +5153,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5643620609347735571">Тазалоо жана улантуу</translation>
 <translation id="5646376287012673985">Жайгашкан жер</translation>
 <translation id="5646558797914161501">Ишкер мырза</translation>
+<translation id="5648021990716966815">Микрофондун оюкчасы</translation>
 <translation id="5648166631817621825">Акыркы 7 күн</translation>
 <translation id="5651308944918885595">Nearby Share функциясынын көрүнүү параметрлери</translation>
 <translation id="5653154844073528838">Сакталган <ph name="PRINTER_COUNT" /> принтериңиз бар.</translation>
@@ -6256,6 +6262,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6678717876183468697">Сурам URL'и</translation>
 <translation id="6680442031740878064">Бош орун: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Баалоо</translation>
+<translation id="6683022854667115063">Гарнитура</translation>
 <translation id="6683087162435654533">Бардык өтмөктөрдү калыбына келтирүү</translation>
 <translation id="6684827949542560880">Акыркы жаңыртуу жүктөлүп алынууда</translation>
 <translation id="668599234725812620">Google Play'ди ачуу</translation>
@@ -6884,6 +6891,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7255002516883565667">Учурда бул түзмөктө карталарыңыздын бирин гана колдонууга болот</translation>
 <translation id="7255935316994522020">Колдонуу</translation>
 <translation id="7256069762010468647">Сайт камераңызды колдонууда</translation>
+<translation id="7256634071279256947">Арткы микрофон</translation>
 <translation id="7256710573727326513">Өтмөктө ачуу</translation>
 <translation id="7257173066616499747">Wi-Fi тармактары</translation>
 <translation id="725758059478686223">Басып чыгаруу кызматы</translation>

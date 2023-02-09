@@ -540,6 +540,7 @@
 <translation id="2241693394036365668">Fișierul este descărcat</translation>
 <translation id="2246264294482514010">10 x 12 in</translation>
 <translation id="2246480341630108201">Părintele tău încă nu a spus că este în regulă</translation>
+<translation id="2247789808226901522">Cardul a expirat</translation>
 <translation id="2248949050832152960">Folosește WebAuthn</translation>
 <translation id="2250931979407627383">Broșare pe marginea din stânga</translation>
 <translation id="225207911366869382">Valoarea este învechită pentru această politică.</translation>
@@ -1078,6 +1079,7 @@
 <translation id="3646643500201740985">Măsurarea performanței unui anunț</translation>
 <translation id="3647286794400715637">Fiecare intrare de șir de adrese URL trebuie să conțină una sau două adrese URL.</translation>
 <translation id="3650584904733503804">Validarea a reușit</translation>
+<translation id="3650594806107685466">Introdu codul CVC pe <ph name="SIDE_OF_CARD" /> pentru a-ți menține cardul în siguranță</translation>
 <translation id="3653033846669030038">Parcuri tematice</translation>
 <translation id="3655241534245626312">Accesează setările pentru permisiuni</translation>
 <translation id="3655670868607891010">Dacă această pagină se afișează în mod frecvent, încercați <ph name="HELP_LINK" />.</translation>
@@ -2458,6 +2460,7 @@
 <translation id="7112327784801341716">Nu apar informațiile curente? Contactează-ți banca pentru a le actualiza.</translation>
 <translation id="7118618213916969306">Caută URL-ul din clipboard, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">închide celelalte file sau programe;</translation>
+<translation id="7124354851782353862">Introdu codul CVC</translation>
 <translation id="7129355289156517987">Când închizi toate filele incognito din Chromium, activitatea ta din acele file este ștearsă de pe dispozitiv:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />activitatea de navigare,<ph name="END_LIST_ITEM" />
@@ -2784,6 +2787,7 @@ Detalii suplimentare:
 <translation id="7844689747373518809">{COUNT,plural, =0{Niciuna}=1{O aplicație (<ph name="EXAMPLE_APP_1" />)}=2{Două aplicații (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}few{# aplicații (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# de aplicații (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">Ulterior, un site pe care îl accesezi poate solicita browserului Chrome subiecte, pentru a personaliza anunțurile pe care le vezi. Chrome permite accesul la maximum trei subiecte, protejându-ți istoricul de navigare și identitatea.</translation>
+<translation id="7860345425589240791">Introdu noua dată de expirare și codul CVC pe <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Ieși de pe site?</translation>
 <translation id="7865448901209910068">Viteza optimă</translation>
 <translation id="7871445724586827387">Schimbă parola Contului Google</translation>

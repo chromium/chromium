@@ -285,6 +285,7 @@
 <translation id="1244303850296295656">ವಿಸ್ತರಣೆ ದೋಷ</translation>
 <translation id="1245628370644070008">ಸ್ಥಳೀಯ ಡೇಟಾ ಮರುಪಡೆಯುವಿಕೆ</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: ಚಿತ್ರದ URL <ph name="HTTP_ERROR" /> ದೋಷದ ಕೋಡ್ ಅನ್ನು ಹಿಂತಿರುಗಿಸಿದೆ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
+<translation id="1247372569136754018">ಮೈಕ್ರೊಫೋನ್ (ಆಂತರಿಕ)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{1 ಸೈಟ್‌ಗೆ ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ}one{{NUM_SITES} ಸೈಟ್‌ಗಳಿಗೆ ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ}other{{NUM_SITES} ಸೈಟ್‌ಗಳಿಗೆ ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ}}</translation>
 <translation id="1251366534849411931">ಓಪನಿಂಗ್ ಕರ್ಲಿ ಬ್ರಾಕೆಟ್ ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">ಸೈಟ್‌ಗಳು ಮತ್ತು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿರುವ <ph name="TOTAL_USAGE" /> ಡೇಟಾವನ್ನು ಇದು ತೆರವುಗೊಳಿಸುತ್ತದೆ</translation>
@@ -543,6 +544,7 @@
 <translation id="1482626744466814421">ಈ ಟ್ಯಾಬ್ ಅನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಿ...</translation>
 <translation id="1482772681918035149">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="1483493594462132177">ಕಳುಹಿಸು</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">ಸೈಟ್‌, ಬ್ಲೂಟೂತ್ ಅನ್ನು ಬಳಸುತ್ತಿದೆ</translation>
 <translation id="1485015260175968628">ಇದೀಗ ಸಾಧ್ಯ:</translation>
 <translation id="1485141095922496924">ಆವೃತ್ತಿ <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1100,6 +1102,7 @@
 <translation id="1965624977906726414">ಯಾವುದೇ ವಿಶೇಷ ಅನುಮತಿಗಳನ್ನು ಹೊಂದಿಲ್ಲ.</translation>
 <translation id="1966649499058910679">ಪ್ರತಿ ಪದವನ್ನು ಮಾತನಾಡುವ ರೀತಿಯಲ್ಲೇ ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="1967970931040389207">ಹಾಟ್‌ಸ್ಪಾಟ್ ಆನ್ ಮಾಡಿ</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">WebRTC ಪಠ್ಯ ಲಾಗ್‌ಗಳು (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ವೆಬ್‌ಪುಟದ ಭೇಟಿಯ ಆಧಾರದ ಮೇಲೆ ವಿಷಯವನ್ನು ಪೂರ್ವಭಾವಿಯಾಗಿ ಲೋಡ್ ಮಾಡಿರುವುದರಿಂದ ನೀವು ವೇಗವಾಗಿ ಬ್ರೌಸ್ ಮಾಡುತ್ತೀರಿ</translation>
 <translation id="197288927597451399">ಇರಿಸಿ</translation>
@@ -1825,7 +1828,6 @@
 <translation id="25899519884572181">ರೀಡರ್ ಮೋಡ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="2593499352046705383">ಪ್ರಾರಂಭಿಸುವ ಮೊದಲು, ನಿಮ್ಮ ಡೇಟಾದ ಬ್ಯಾಕಪ್ ನಿಮ್ಮ ಬಳಿ ಇದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ. <ph name="DEVICE_OS" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವುದರಿಂದ ನಿಮ್ಮ ಹಾರ್ಡ್ ಡ್ರೈವ್ ಓವರ್‌ರೈಟ್ ಆಗುತ್ತದೆ. g.co/flex/InstallGuide ನಲ್ಲಿ ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
 <translation id="2594999711683503743">Google ನಲ್ಲಿ ಹುಡುಕಿ ಅಥವಾ URL ಟೈಪ್ ಮಾಡಿ</translation>
-<translation id="25957578727513093">ತ್ವರಿತವಾಗಿ ಇಲ್ಲಿಗೆ ಹೋಗಲು, Google Password Manager ಗೆ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="2599048253926156421">ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="2602501489742255173">ಪ್ರಾರಂಭಿಸಲು ಮೇಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="2603115962224169880">ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ಸ್ವಚ್ಛಗೊಳಿಸಿ</translation>
@@ -2403,6 +2405,7 @@
 <translation id="3103451787721578293">ಈ ಡೇಟಾವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲು ಕಾರಣಗಳನ್ನು ನಮೂದಿಸಿ:</translation>
 <translation id="3105339775057145050">ಕೊನೆಯ ವಿಫಲ ಅಪ್‌ಡೇಟ್‌</translation>
 <translation id="3105796011181310544">Google ಗೆ ಪುನಃ ಬದಲಾಯಿಸುವುದೇ?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ಬ್ಲೂಟೂತ್‌)</translation>
 <translation id="310671807099593501">ಸೈಟ್‌ ಬ್ಲೂಟೂತ್ ಅನ್ನು ಬಳಸುತ್ತಿದೆ</translation>
 <translation id="3108931485517391283">ಫೈಲ್ ಅನ್ನು ಸ್ವೀಕರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="3108957152224931571">ಹೈಲೈಟ್ ಬಣ್ಣ</translation>
@@ -3045,6 +3048,7 @@
 <translation id="371300529209814631">ಹಿಂದೆ ಮಾಡಿ/ಫಾರ್ವರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="3713047097299026954">ಈ ಸುರಕ್ಷತಾ ಕೀ, ಯಾವುದೇ ಸೈನ್-ಇನ್ ಡೇಟಾವನ್ನು ಹೊಂದಿಲ್ಲ</translation>
 <translation id="3713091615825314967">ಸ್ವಯಂಚಾಲಿತ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಆನ್ ಮಾಡಲಾಗಿದೆ.</translation>
+<translation id="371370241367527062">ಮುಂಭಾಗದ ಮೈಕ್ರೊಫೋನ್</translation>
 <translation id="3714195043138862580">ಈ ಡೆಮೊ ಸಾಧನವನ್ನು ಒದಗಿಸಲಾಗದಿರುವ ಸ್ಥಿತಿಯಲ್ಲಿ ಇರಿಸಲಾಗಿದೆ.</translation>
 <translation id="3719826155360621982">ಮುಖಪುಟ</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3140,6 +3144,7 @@
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> ಗಾಗಿ '<ph name="SEARCH_TERMS" />' &amp;ಹುಡುಕಿ</translation>
 <translation id="3798449238516105146">ಆವೃತ್ತಿ</translation>
 <translation id="3798632811625902122"><ph name="DEVICE" /> ಬ್ಲೂಟೂತ್ ಸಾಧನವು ಜೋಡಣೆಗಾಗಿ ಅನುಮತಿಯನ್ನು ಬಯಸುತ್ತಿದೆ.</translation>
+<translation id="3798670284305777884">ಸ್ಪೀಕರ್ (ಆಂತರಿಕ)</translation>
 <translation id="3799128412641261490">ಪ್ರವೇಶದ ವಿಧಾನವನ್ನು ಬದಲಿಸುವ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="3800030395703848668">ಪಟ್ಟಿ ಆಯ್ಕೆಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="3800806661949714323">ಎಲ್ಲಾ ತೋರಿಸು (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
@@ -4119,7 +4124,7 @@
 <translation id="4683947955326903992">ಶೇಕಡಾ <ph name="PERCENTAGE" /> (ಡೀಫಾಲ್ಟ್)</translation>
 <translation id="4684427112815847243">ಪ್ರತಿಯೊಂದನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="4687613760714619596">ಅಪರಿಚಿತ ಸಾಧನ (<ph name="DEVICE_ID" />)</translation>
-<translation id="4687718960473379118">ಸೈಟ್ ಸೂಚಿಸಿದ ಜಾಹೀರಾತುಗಳು</translation>
+<translation id="4687718960473379118">ಸೈಟ್ ಶಿಫಾರಸು ಮಾಡಿದ ಜಾಹೀರಾತುಗಳು</translation>
 <translation id="4688036121858134881">ಸ್ಥಳೀಯ ಲಾಗ್ ಐಡಿ: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" />, ಈ ಸಾಧನವನ್ನು ಹಿಂದಿನ ಆವೃತ್ತಿಯಲ್ಲಿ ಇರಿಸುತ್ತಿದೆ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="4689235506267737042">ನಿಮ್ಮ ಡೆಮೋ ಆದ್ಯತೆಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -5143,6 +5148,7 @@
 <translation id="5643620609347735571">ತೆರವುಗೊಳಿಸಿ ಮತ್ತು ಮುಂದುವರಿಸಿ</translation>
 <translation id="5646376287012673985">ಸ್ಥಳ</translation>
 <translation id="5646558797914161501">ವ್ಯಾಪಾರಿ</translation>
+<translation id="5648021990716966815">ಮೈಕ್ ಜ್ಯಾಕ್</translation>
 <translation id="5648166631817621825">ಕಳೆದ 7 ದಿನಗಳು</translation>
 <translation id="5651308944918885595">Nearby ಶೇರ್ ಪರಿಶೋಧಿಸುವಿಕೆ</translation>
 <translation id="5653154844073528838">ನೀವು <ph name="PRINTER_COUNT" /> ಪ್ರಿಂಟರ್‌ಗಳನ್ನು ಉಳಿಸಿದ್ದೀರಿ.</translation>
@@ -6253,6 +6259,7 @@
 <translation id="6678717876183468697">ಕ್ವೆರಿ URL</translation>
 <translation id="6680442031740878064">ಲಭ್ಯವಿದೆ: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">ದರ</translation>
+<translation id="6683022854667115063">ಹೆಡ್‌ಫೋನ್‌ಗಳು</translation>
 <translation id="6683087162435654533">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="6684827949542560880">ಇತ್ತೀಚಿನ ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="668599234725812620">Google Play ತೆರೆಯಿರಿ</translation>
@@ -6882,6 +6889,7 @@
 <translation id="7255002516883565667">ಸದ್ಯಕ್ಕೆ, ಈ ಸಾಧನದಲ್ಲಿ ಬಳಸಬಹುದಾದ ಒಂದು ಕಾರ್ಡ್‌ ಅನ್ನು ಮಾತ್ರವೇ ನೀವು ಹೊಂದಿದ್ದೀರಿ</translation>
 <translation id="7255935316994522020">ಅನ್ವಯಿಸು</translation>
 <translation id="7256069762010468647">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಸೈಟ್‌ ಬಳಸುತ್ತಿದೆ</translation>
+<translation id="7256634071279256947">ಹಿಂಭಾಗದ ಮೈಕ್ರೊಫೋನ್</translation>
 <translation id="7256710573727326513">ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="7257173066616499747">ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
 <translation id="725758059478686223">ಮುದ್ರಿಸುವ ಸೇವೆ</translation>

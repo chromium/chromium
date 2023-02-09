@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">અંગ્રેજી (યુએસ), Dvorak કીબોર્ડ સાથે</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - હોસ્ટ</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
+<translation id="1521795806314479294"><ph name="FILE_NAME" /> તૈયાર કરી રહ્યાં છીએ...</translation>
 <translation id="1538729222189715449">Linux ફાઇલો ખોલી રહ્યાં છીએ...</translation>
 <translation id="1547964879613821194">કેનેડિયન અંગ્રેજી</translation>
 <translation id="1556189134700913550">બધા પર લાગુ કરો</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> આઇટમને ઝિપ કરી રહ્યું છે...</translation>
 <translation id="1722687688096767818">પ્રોફાઇલ ઉમેરી રહ્યાં છીએ...</translation>
 <translation id="1726100011689679555">નામ સર્વર</translation>
+<translation id="1727562178154619254">સિંક કરવા માટે તૈયાર</translation>
 <translation id="1729953886957086472">જર્મન (જર્મની)</translation>
 <translation id="1730235522912993863">ચાઇનીઝ (કેન્જી)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> આઇટમ કૉપિ કરી.</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">કસ્ટમ નામ સર્વર્સ</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે, કનેક્ટ કરો</translation>
 <translation id="4470564870223067757">હંગુલ 2 સેટ</translation>
+<translation id="4474142134969976028">કોઈ મેળ ખાતું પરિણામ નથી</translation>
 <translation id="4477002475007461989">રોમાનિયન</translation>
 <translation id="4477219268485577442">બલ્ગેરિયન ધ્વન્યાત્મક</translation>
 <translation id="4508265954913339219">સક્રિયતા નિષ્ફળ</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> કે તેથી ઓછા અક્ષરોનું હોય તેવા નામનો ઉપયોગ કરો</translation>
 <translation id="4973970068702235170">ઝિપ કરવાનું નિષ્ફળ, અનપેક્ષિત ભૂલ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">જાપાનીઝ</translation>
+<translation id="4987699874727873250">અંગ્રેજી (ભારત)</translation>
 <translation id="4988205478593450158">શું તમે ખરેખર "<ph name="FILE_NAME" />"ને ડિલીટ કરવા માંગો છો?</translation>
 <translation id="498902553138568924">લાલ પતંગિયું</translation>
 <translation id="4992066212339426712">અનમ્યૂટ કરો</translation>
@@ -509,6 +513,7 @@
        ઉપયોગમાં રહેલા તમારા ડિવાઇસને દૂર કરવાથી ડેટાનું નુકસાન થઈ શકે છે. ક્રિયા પૂર્ણ થાય ત્યાં સુધી કૃપા કરીને રાહ જુઓ, તે પછી Files ઍપનો ઉપયોગ કરીને ડિવાઇસને કાઢી નાખો.</translation>
 <translation id="5163869187418756376">શેરિંગ નિષ્ફળ થયું. તમારું કનેક્શન તપાસો અને થોડીવાર પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="516592729076796170">યુએસ પ્રોગ્રામર ડ્વોરેક</translation>
+<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> આઇટમ તૈયાર કરી રહ્યાં છીએ...</translation>
 <translation id="5177526793333269655">થંબનેલ દૃશ્ય</translation>
 <translation id="5181896909298187506">તાજેતરની કોઈ ફાઇલ નથી</translation>
 <translation id="5194713942430106590">કૉલમને ચઢતા ક્રમમાં સૉર્ટ કરવા માટે ક્લિક કરો.</translation>
@@ -813,6 +818,7 @@
 <translation id="7655441028674523381">Google Photos સરળતાથી ઍક્સેસ કરો</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7663224033570512922">હિન્દી</translation>
+<translation id="7665680517722058469">બીજી શોધ અજમાવી જુઓ</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> આઇટમ ટ્રેશમાં ખસેડી</translation>
 <translation id="7693909743393669729">ડ્રાઇવને ફૉર્મેટ કરવાથી તેના પર સ્ટોર કરેલો બધો ડેટા ભૂંસાઈ જશે અને કદાચ દેખાતા ન હોય તેવા વિભાગો સહિત હાલના બધા વિભાગો કાઢી નખાશે. આ ક્રિયા રદ કરી શકાતી નથી.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" />ને ફોર્મેટ કરી શક્યાં નથી</translation>

@@ -523,6 +523,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2202627062836089804">kartangiz orqasidagi</translation>
 <translation id="22081806969704220">Tarnov 3</translation>
 <translation id="2210794033760923560">Shikoyat yuklash</translation>
+<translation id="2212579473415663542">Bu manzil Google hisobingizga (<ph name="ACCOUNT" />) saqlandi. Bu manzildan har qanday qurilmada Google xizmatlarida foydalanishingiz mumkin.</translation>
 <translation id="2212735316055980242">Bu qoida topilmadi</translation>
 <translation id="2213606439339815911">Yozuvlar chiqarib olinmoqda...</translation>
 <translation id="2213612003795704869">Sahifa chop etildi</translation>
@@ -1967,6 +1968,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5866898949289125849">Dasturchi vositalari sahifasidasiz</translation>
 <translation id="5869405914158311789">Bu saytga ulana olmadik</translation>
 <translation id="5869522115854928033">Saqlab olingan parollar</translation>
+<translation id="5872692522325383488">IBAN saqlandi</translation>
 <translation id="5873013647450402046">Bank shaxsingizni tasdiqlamoqchi.</translation>
 <translation id="5877831137320480913">Goʻzallik va fitnes</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
@@ -2135,6 +2137,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6300452962057769623">{0,plural, =0{Qurilmangiz hozir qayta ishga tushadi}=1{Qurilmangiz 1 soniyadan keyin qayta ishga tushadi}other{Qurilmangiz # soniyadan keyin qayta ishga tushadi}}</translation>
 <translation id="6301104306974789820">Kuzatiladigan narxlar boʻyicha bildirishnomalar olish</translation>
 <translation id="6305205051461490394"><ph name="URL" /> bilan aloqa o‘rnatib bo‘lmadi.</translation>
+<translation id="6306713302480826305">Bu manzil shu va tizimga kirgan qurilmalaringizdan oʻchirib tashlanadi</translation>
 <translation id="6311165245110979290">Virtual karta mavjud</translation>
 <translation id="6312113039770857350">Veb-sahifa mavjud emas</translation>
 <translation id="6316226860534107313">Skuter va mopedlar</translation>
@@ -3026,6 +3029,7 @@ Batafsil axborot:
 <translation id="8473863474539038330">Mazillar va boshqa ma’lumotlar</translation>
 <translation id="8474910779563686872">Dasturchilar uchun tafsilotlarni chiqarish</translation>
 <translation id="8479754468255770962">Quyi chapdan steplerlash</translation>
+<translation id="8483229036294884935">Bu manzil Google hisobingizdan (<ph name="ACCOUNT" />) oʻchirildi</translation>
 <translation id="8483780878231876732">Google hisobingizga biriktirilgan kartalardan foydalanish uchun Chrome hisobiga kiring.</translation>
 <translation id="8488350697529856933">Tatbiq etish obyekti</translation>
 <translation id="8490137692873530638">Taxlovchi 10</translation>

@@ -226,7 +226,6 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="2248941474044011069">Je wachtwoorden worden versleuteld op je apparaat voordat ze worden opgeslagen in Google Wachtwoordmanager</translation>
 <translation id="2249635629516220541">Pas de informatie aan die sites gebruiken om advertenties te laten zien</translation>
 <translation id="2259659629660284697">Wachtwoorden exporteren…</translation>
-<translation id="2276231040576210443">Je kunt altijd in de <ph name="BEGIN_LINK1" />instellingen<ph name="END_LINK1" /> bepalen wat je wilt synchroniseren. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
 <translation id="2276696007612801991">Log in met je Google-account om je wachtwoorden te checken</translation>
 <translation id="2278052315791335171">Als je dit wachtwoord verwijdert, wordt je account op <ph name="SITE" /> niet verwijderd</translation>
 <translation id="2286841657746966508">Factuuradres</translation>
@@ -304,7 +303,6 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="2669454659051515572">Iedereen die dit apparaat gebruikt, kan gedownloade bestanden zien</translation>
 <translation id="2702516483241149200">Nieuw: deel een link die rechtstreeks naar deze tekst scrollt</translation>
 <translation id="2707726405694321444">Pagina vernieuwen</translation>
-<translation id="2709516037105925701">Automatisch invullen</translation>
 <translation id="271033894570825754">Nieuw</translation>
 <translation id="2711073837061989559">Proeven</translation>
 <translation id="2718352093833049315">Alleen via wifi</translation>
@@ -396,7 +394,6 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="3114507951000454849">Lees het nieuws van vandaag <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">gekoppeld aan</translation>
 <translation id="3123734510202723619">Aankondigingen</translation>
-<translation id="3130863904455712965">Geschiedenis en meer</translation>
 <translation id="3134784203083076891">'</translation>
 <translation id="314939179385989105">Homepage van Chrome</translation>
 <translation id="3157931365184549694">Herstellen</translation>
@@ -990,7 +987,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6397616442223433927">Weer online</translation>
 <translation id="6401458660421980302">Als je dit tabblad naar een ander apparaat wilt sturen, log je hier in bij Chrome</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> op <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">Synchroniseer je gegevens op alle apparaten</translation>
 <translation id="6404511346730675251">Bookmark bewerken</translation>
 <translation id="6406506848690869874">Synchronisatie</translation>
 <translation id="6407224748847589805">Kan geen verbinding maken met je computer. Probeer een andere verificatie-optie.</translation>
@@ -1319,7 +1315,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8037801708772278989">Zojuist gecheckt</translation>
 <translation id="804335162455518893">SD-kaart niet gevonden</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> incognitotabblad}other{<ph name="TAB_COUNT_NORMAL" /> incognitotabbladen}}</translation>
-<translation id="8048728378294435881">Maak back-ups van je gegevens en gebruik ze op elk apparaat</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB beschikbaar</translation>
 <translation id="8058655154417507695">Vervaljaar</translation>
 <translation id="8058746566562539958">Openen op nieuw Chrome-tabblad</translation>

@@ -226,7 +226,6 @@
 <translation id="2248941474044011069">Google পাসওয়ার্ড ম্যানেজারে সেভ করার আগে আপনার পাসওয়ার্ড ডিভাইসে এনক্রিপ্ট করা হয়</translation>
 <translation id="2249635629516220541">আপনাকে বিজ্ঞাপন দেখানোর জন্য সাইট দ্বারা ব্যবহার করা তথ্য কাস্টমাইজ করুন</translation>
 <translation id="2259659629660284697">পাসওয়ার্ড এক্সপোর্ট করুন...</translation>
-<translation id="2276231040576210443"><ph name="BEGIN_LINK1" />সেটিংসে<ph name="END_LINK1" /> কোন ধরনের ডেটা সিঙ্ক করা হবে তা আপনি সবসময় বেছে নিতে পারবেন। আপনার ইতিহাসের উপরে ভিত্তি করে, সার্চ ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
 <translation id="2276696007612801991">আপনার পাসওয়ার্ড চেক করতে Google অ্যাকাউন্টে সাইন-ইন করুন</translation>
 <translation id="2278052315791335171">এই পাসওয়ার্ডটি মুছে দিলেও, <ph name="SITE" />-এ আপনার অ্যাকাউন্ট মুছে যাবে না</translation>
 <translation id="2286841657746966508">বিলিং ঠিকানা</translation>
@@ -304,7 +303,6 @@
 <translation id="2669454659051515572">এই ডিভাইস ব্যবহার করছেন এমন যেকেউ ডাউনলোড করা ফাইলগুলি দেখতে পারবেন</translation>
 <translation id="2702516483241149200">নতুন: এই টেক্সট পর্যন্ত স্ক্রোল করতে পারে এমন লিঙ্ক শেয়ার করুন</translation>
 <translation id="2707726405694321444">পৃষ্ঠা রিফ্রেশ করুন</translation>
-<translation id="2709516037105925701">স্বয়ংপূরণ</translation>
 <translation id="271033894570825754">নতুন</translation>
 <translation id="2711073837061989559">ট্রায়াল</translation>
 <translation id="2718352093833049315">শুধুমাত্র ওয়াই-ফাই এ</translation>
@@ -396,7 +394,6 @@
 <translation id="3114507951000454849">আজকের খবর পড়ুন <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">এর সাথে লিঙ্ক করা হয়েছে</translation>
 <translation id="3123734510202723619">ঘোষণা</translation>
-<translation id="3130863904455712965">ইতিহাস ও আরও অনেক কিছু</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome-এর হোমপেজ</translation>
 <translation id="3157931365184549694">পুনরুদ্ধার করুন</translation>
@@ -924,6 +921,7 @@
 <translation id="6000203700195075278">আবার ফলো করুন</translation>
 <translation id="6002122790816966947">আপনার ডিভাইসগুলি</translation>
 <translation id="6005538289190791541">প্রস্তাবিত পাসওয়ার্ড</translation>
+<translation id="6011308810877101166">সার্চ সাজেশন উন্নত করুন</translation>
 <translation id="6039379616847168523">পরবর্তী ট্যাবে চলে যান</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
 <translation id="604124094241169006">স্বয়ংক্রিয়</translation>
@@ -991,7 +989,6 @@
 <translation id="6397616442223433927">আবার অনলাইন হয়েছেন</translation>
 <translation id="6401458660421980302">এই ট্যাবটিকে অন্য ডিভাইসে পাঠাতে, সেখানে Chrome-এ সাইন-ইন করুন</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" />-এ <ph name="ERROR_CODE" /></translation>
-<translation id="6403371459378431832">সব ডিভাইসে আপনার ডেটা সিঙ্ক করুন</translation>
 <translation id="6404511346730675251">বুকমার্ক সম্পাদনা করুন</translation>
 <translation id="6406506848690869874">সিঙ্ক</translation>
 <translation id="6407224748847589805">আপনার কম্পিউটারের সাথে কানেক্ট করা যাচ্ছে না। যাচাইকরণের অন্য একটি বিকল্প ব্যবহার করে দেখুন।</translation>
@@ -1320,7 +1317,6 @@
 <translation id="8037801708772278989">এখনই চেক করা হয়েছে</translation>
 <translation id="804335162455518893">এসডি কার্ড পাওয়া যায়নি</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />টি ছদ্মবেশী ট্যাব}one{<ph name="TAB_COUNT_NORMAL" />টি ছদ্মবেশী ট্যাব}other{<ph name="TAB_COUNT_NORMAL" />টি ছদ্মবেশী ট্যাব}}</translation>
-<translation id="8048728378294435881">আপনার ডেটার ব্যাক-আপ নিন এবং যেকোনও ডিভাইসে তা ব্যবহার করুন</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> এমবি উপলভ্য</translation>
 <translation id="8058655154417507695">মেয়াদ শেষের বছর</translation>
 <translation id="8058746566562539958">নতুন Chrome ট্যাবে খুলুন</translation>
@@ -1454,6 +1450,7 @@
 <translation id="8746155870861185046">হাইলাইট শেয়ার করুন</translation>
 <translation id="8748850008226585750">সামগ্রী লুকানো আছে</translation>
 <translation id="8756969031206844760">পাসওয়ার্ড আপডেট করবেন?</translation>
+<translation id="8765470054473112089">আপনি যখন অ্যাড্রেস বার বা সার্চ বক্সে টাইপ করেন, তখন আরও ভালো পরামর্শ পেতে Chrome আপনি যা টাইপ করেন তা আপনার ডিফল্ট সার্চ ইঞ্জিনে পাঠায়। এটি ছদ্মবেশী মোডে বন্ধ আছে।</translation>
 <translation id="8766529642647037772">এই ধরনের হাইলাইট করা লিঙ্ক তৈরি করতে চান?</translation>
 <translation id="8773160212632396039">অনুরোধ প্রসেস করা হচ্ছে</translation>
 <translation id="8788265440806329501">নেভিগেশনের ইতিহাস বন্ধ করা হয়েছে</translation>

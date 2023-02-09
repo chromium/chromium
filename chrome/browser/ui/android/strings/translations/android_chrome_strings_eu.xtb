@@ -226,7 +226,6 @@ Arakatze-historia ezabatzen duzunean (osorik nahiz webgune zehatz bat), neurketa
 <translation id="2248941474044011069">Pasahitzak gailuan bertan enkriptatzen dira Google-ren Pasahitz-kudeatzailea zerbitzuan gorde aurretik</translation>
 <translation id="2249635629516220541">Pertsonalizatu webguneek iragarkiak erakusteko erabiltzen duten informazioa</translation>
 <translation id="2259659629660284697">Esportatu pasahitzak…</translation>
-<translation id="2276231040576210443">Zer sinkronizatu nahi duzun aukeratzeko, joan <ph name="BEGIN_LINK1" />Ezarpenak<ph name="END_LINK1" /> atalera. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="2276696007612801991">Hasi saioa Google-ko kontuan pasahitzak egiaztatzeko</translation>
 <translation id="2278052315791335171">Pasahitza ezabatzen baduzu ere, ez da ezabatuko <ph name="SITE" /> webguneko kontua</translation>
 <translation id="2286841657746966508">Fakturazio-helbidea</translation>
@@ -304,7 +303,6 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="2669454659051515572">Gailu hau darabilen edonork ikus ditzake deskargatutako fitxategiak</translation>
 <translation id="2702516483241149200">Berria: partekatu testu honetan gora eta behera egiteko esteka bat</translation>
 <translation id="2707726405694321444">Freskatu orria</translation>
-<translation id="2709516037105925701">Betetze automatikoa</translation>
 <translation id="271033894570825754">Berria</translation>
 <translation id="2711073837061989559">Probak</translation>
 <translation id="2718352093833049315">Wifi bidez soilik</translation>
@@ -396,7 +394,6 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="3114507951000454849">Irakurri gaurko albisteak <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">Honekin lotuta:</translation>
 <translation id="3123734510202723619">Iragarpenak</translation>
-<translation id="3130863904455712965">Historia eta beste</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Chrome-ren hasierako pantaila</translation>
 <translation id="3157931365184549694">Leheneratu</translation>
@@ -922,6 +919,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6000203700195075278">Jarraitu berriro</translation>
 <translation id="6002122790816966947">Zure gailuak</translation>
 <translation id="6005538289190791541">Iradokitako pasahitza</translation>
+<translation id="6011308810877101166">Hobetu bilaketa-iradokizunak</translation>
 <translation id="6039379616847168523">Saltatu hurrengo fitxara</translation>
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="604124094241169006">Automatikoa</translation>
@@ -989,7 +987,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6397616442223433927">Konektatu zara berriro</translation>
 <translation id="6401458660421980302">Fitxa beste gailu batera bidaltzeko, hasi saioa Chrome-n bertan</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> (<ph name="VIOLATED_URL" />)</translation>
-<translation id="6403371459378431832">Sinkronizatu datuak gailu guztietan</translation>
 <translation id="6404511346730675251">Editatu laster-marka</translation>
 <translation id="6406506848690869874">Sinkronizazioa</translation>
 <translation id="6407224748847589805">Ezin da konektatu ordenagailura. Probatu beste egiaztapen-aukera bat.</translation>
@@ -1318,7 +1315,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8037801708772278989">Oraintxe bertan egiaztatu da</translation>
 <translation id="804335162455518893">Ez da aurkitu SD txartela</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{Ezkutuko moduko <ph name="TAB_COUNT_ONE" /> fitxa}other{Ezkutuko moduko <ph name="TAB_COUNT_NORMAL" /> fitxa}}</translation>
-<translation id="8048728378294435881">Egin zure gauzen babeskopiak, edozein gailutan erabil ditzazun</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB erabilgarri</translation>
 <translation id="8058655154417507695">Iraungitze-urtea</translation>
 <translation id="8058746566562539958">Ireki Chrome-ko beste fitxa batean</translation>
@@ -1452,6 +1448,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8746155870861185046">Partekatu nabarmendutako edukia</translation>
 <translation id="8748850008226585750">Ezkutatuta dago edukia</translation>
 <translation id="8756969031206844760">Pasahitza eguneratu nahi duzu?</translation>
+<translation id="8765470054473112089">Helbide-barran edo bilaketa-koadroan zerbait idazten duzunean, Chrome-k bilatzaile lehenetsira bidaltzen du, iradokizun hobeak lortzeko. Ezkutuko moduan, aukera hori desaktibatuta dago.</translation>
 <translation id="8766529642647037772">Honelako esteka nabarmendu bat sortu nahi duzu?</translation>
 <translation id="8773160212632396039">Eskaera prozesatzen</translation>
 <translation id="8788265440806329501">Nabigazio-historia itxita dago</translation>

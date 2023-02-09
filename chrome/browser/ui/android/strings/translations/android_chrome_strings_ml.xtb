@@ -226,7 +226,6 @@
 <translation id="2248941474044011069">Google പാസ്‌വേഡ് മാനേജറിലേക്ക് സംരക്ഷിക്കുന്നതിന് മുമ്പ് നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‌വേഡുകൾ എൻക്രിപ്റ്റ് ചെയ്യുന്നു</translation>
 <translation id="2249635629516220541">നിങ്ങളെ പരസ്യം കാണിക്കുന്നതിനായി സൈറ്റുകൾ ഉപയോഗിക്കുന്ന വിവരങ്ങൾ ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="2259659629660284697">പാസ്‌വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യുക...</translation>
-<translation id="2276231040576210443">എന്തൊക്കെ സമന്വയിപ്പിക്കണമെന്ന് നിങ്ങൾക്ക് എല്ലായ്‌പ്പോഴും <ph name="BEGIN_LINK1" />ക്രമീകരണത്തിൽ<ph name="END_LINK1" /> തിരഞ്ഞെടുക്കാം. നിങ്ങളുടെ ചരിത്രത്തെ അടിസ്ഥാനമാക്കി, Search, മറ്റ് സേവനങ്ങൾ എന്നിവ Google വ്യക്തിപരമാക്കിയേക്കാം.</translation>
 <translation id="2276696007612801991">പാസ്‌വേഡുകൾ പരിശോധിക്കാൻ നിങ്ങളുടെ Google അക്കൗണ്ടിലേക്ക് സെെൻ ഇൻ ചെയ്യുക</translation>
 <translation id="2278052315791335171">ഈ പാസ്‌വേഡ് ഇല്ലാതാക്കുന്നത് <ph name="SITE" /> -ലെ നിങ്ങളുടെ അക്കൗണ്ട് ഇല്ലാതാക്കില്ല</translation>
 <translation id="2286841657746966508">ബില്ലിംഗ് വിലാസം</translation>
@@ -304,7 +303,6 @@
 <translation id="2669454659051515572">ഡൗൺലോഡ് ചെയ്യുന്ന ഫയലുകൾ ഈ ഉപകരണം ഉപയോഗിക്കുന്ന എല്ലാവർക്കും കാണാനാകും</translation>
 <translation id="2702516483241149200">പുതിയത്: ഈ ടെക്സ്റ്റിലേക്ക് സ്ക്രോൾ ചെയ്യുന്ന ഒരു ലിങ്ക് പങ്കിടുക</translation>
 <translation id="2707726405694321444">പേജ് റീഫ്രഷ് ചെയ്യുക</translation>
-<translation id="2709516037105925701">സ്വയമേവ പൂരിപ്പിക്കൽ</translation>
 <translation id="271033894570825754">പുതിയത്</translation>
 <translation id="2711073837061989559">ട്രയലുകൾ</translation>
 <translation id="2718352093833049315">Wi-Fi യിൽ മാത്രം</translation>
@@ -396,7 +394,6 @@
 <translation id="3114507951000454849">ഇന്നത്തെ വാർത്തകൾ വായിക്കൂ <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">ഇതുമായി ലിങ്ക് ചെയ്‌തു</translation>
 <translation id="3123734510202723619">അറിയിപ്പുകൾ</translation>
-<translation id="3130863904455712965">ചരിത്രവും മറ്റും</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome-ന്റെ ഹോംപേജ്</translation>
 <translation id="3157931365184549694">പുനഃസ്ഥാപിക്കുക</translation>
@@ -922,6 +919,7 @@
 <translation id="6000203700195075278">വീണ്ടും പിന്തുടരുക</translation>
 <translation id="6002122790816966947">നിങ്ങളുടെ ഉപകരണങ്ങൾ</translation>
 <translation id="6005538289190791541">നിർദ്ദേശിച്ച പാസ്‌വേഡ്</translation>
+<translation id="6011308810877101166">തിരയൽ നിർദ്ദേശങ്ങൾ മെച്ചപ്പെടുത്തുക</translation>
 <translation id="6039379616847168523">അടുത്ത ടാബിലേക്ക് പോകുക</translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
 <translation id="604124094241169006">സ്വയമേവ</translation>
@@ -989,7 +987,6 @@
 <translation id="6397616442223433927">ഓൺലൈനിൽ തിരിച്ചെത്തി</translation>
 <translation id="6401458660421980302">ഈ ടാബ് മറ്റൊരു ഉപകരണത്തിലേക്ക് അയയ്‌ക്കാൻ, അതിലെ Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> -ൽ <ph name="ERROR_CODE" /></translation>
-<translation id="6403371459378431832">എല്ലാ ഉപകരണങ്ങളിലും നിങ്ങളുടെ ഡാറ്റ സമന്വയിപ്പിക്കുക</translation>
 <translation id="6404511346730675251">ബുക്ക്‌മാർക്ക് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6406506848690869874">Sync</translation>
 <translation id="6407224748847589805">നിങ്ങളുടെ കമ്പ്യൂട്ടറിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല. മറ്റൊരു പരിശോധിച്ചുറപ്പിക്കൽ ഓപ്ഷൻ പരീക്ഷിക്കുക.</translation>
@@ -1318,7 +1315,6 @@
 <translation id="8037801708772278989">തൊട്ടുമുമ്പ് പരിശോധിച്ചു</translation>
 <translation id="804335162455518893">SD കാർഡ് കണ്ടെത്തിയില്ല</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> അദൃശ്യ ടാബ്}other{<ph name="TAB_COUNT_NORMAL" /> അദൃശ്യ ടാബുകൾ}}</translation>
-<translation id="8048728378294435881">നിങ്ങളുടെ ഇനങ്ങൾ ബാക്കപ്പ് ചെയ്‌ത്, ഏത് ഉപകരണത്തിലും അവ ഉപയോഗിക്കുക</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB ലഭ്യമാണ്</translation>
 <translation id="8058655154417507695">കാലാവധി കഴിയുന്ന വർഷം</translation>
 <translation id="8058746566562539958">പുതിയ Chrome ടാബിൽ തുറക്കുക</translation>
@@ -1452,6 +1448,7 @@
 <translation id="8746155870861185046">ഹൈലൈറ്റ് പങ്കിടുക</translation>
 <translation id="8748850008226585750">കോൺടാക്‌റ്റുകൾ മറച്ചു</translation>
 <translation id="8756969031206844760">പാസ്‌വേഡ് അപ്‌ഡേറ്റ് ചെയ്യണോ?</translation>
+<translation id="8765470054473112089">നിങ്ങൾ വിലാസ ബാറിലോ സെർച്ച് ബോക്‌സിലോ ടൈപ്പ് ചെയ്യുമ്പോൾ, മികച്ച നിർദ്ദേശങ്ങൾ ലഭിക്കുന്നതിന് ടൈപ്പ് ചെയ്യുന്നതെന്തോ അത് Chrome നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ യന്ത്രത്തിലേക്ക് അയയ്ക്കുന്നു. ഇത് അദൃശ്യ മോഡിൽ ഓഫാണ്.</translation>
 <translation id="8766529642647037772">ഇതുപോലുള്ള ഒരു ഹൈലൈറ്റ് ചെയ്‌ത ലിങ്ക് സൃഷ്‌ടിക്കണോ?</translation>
 <translation id="8773160212632396039">അഭ്യർത്ഥന പ്രോസസ് ചെയ്യുന്നു</translation>
 <translation id="8788265440806329501">നാവിഗേഷന്‍ ചരിത്രം അടച്ചു</translation>

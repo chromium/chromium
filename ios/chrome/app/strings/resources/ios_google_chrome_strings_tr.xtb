@@ -22,6 +22,7 @@
 <translation id="2347208864470321755">Bu özellik açık durumdayken Chrome, diğer dillerde yazılmış sayfaları Google Çeviri'yi kullanarak çevirmeyi teklif eder. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome internet verilerinizi yönetmenize ve web sayfalarını hızlı yükleyebilmenize yardımcı olacak özelliklere sahiptir.
 <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
+<translation id="2444854139071078915">Kayıtlı şifrelerinizi diğer uygulamalarınızda da kolayca görmek amacıyla Otomatik Doldurma için Chrome'u kullanın</translation>
 <translation id="2561231791489583059">Tehlikeli sitelere karşı koruma altında kalmak ve parolalarınızı güvende tutmak için varsayılan tarayıcınız olarak Chrome'u kullanın</translation>
 <translation id="2574249610672786438">Chrome kullandığınız her yerde sekmelerinizi görmek için tüm cihazlarınızda oturum açın.</translation>
 <translation id="2576431527583832481">Chrome daha da iyi hale geldi! Yeni bir sürüm var.</translation>
@@ -89,6 +90,7 @@
 <translation id="6709398533399187136">Şifreniz bir veri ihlali nedeniyle açığa çıktı. Google Şifre Yöneticisi bu şifreyi hemen değiştirmenizi öneriyor.</translation>
 <translation id="6822673484890854830">Chrome, şifrelerin tümünü kontrol edemedi. Daha sonra tekrar deneyin.</translation>
 <translation id="6964931465519938134">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chrome'u kullanabilirsiniz.</translation>
+<translation id="6975725306479268850">Otomatik doldurma için Chrome'u seçin</translation>
 <translation id="701356708427365932">Yeni Chrome menüsünü öğrenin</translation>
 <translation id="7059914902409643750">Chrome'u Kendinize Uyarlayın</translation>
 <translation id="7124339256045485976">Chrome'u güncel tutun</translation>
@@ -109,6 +111,7 @@
 <translation id="7754633291442704733">Chrome verilerinize, yer işaretlerinize, geçmişinize, şifrelerinize ve bu hesapta sakladığınız diğer ayarlara kuruluşunuz <ph name="DOMAIN" /> erişebilir. Oturumunuzu kapattığınızda verileriniz bu cihazdan silinir.  Ancak verileriniz, yönetilen Google Hesabınızda saklanır ve kuruluşunuzun kullanımına açıktır. Kuruluşunuz ayrıca, söz konusu hesaba özel olup Chrome'un davranışını değiştirebilecek kullanıcı politikaları belirleyebilir.</translation>
 <translation id="7780154209050837198">Chrome'dan en iyi şekilde yararlanmak için Google Hesabı'nızla Chrome'da oturum açın.</translation>
 <translation id="7855730255114109580">Google Chrome güncel durumda</translation>
+<translation id="7939179037291298976">iPhone'unuzun Ayarlar bölümünde "Şifre Seçenekleri"ni açıp "Chrome"u seçin</translation>
 <translation id="8022947259858476807">Bağlantıları açmak, widget'lardan arama yapmak ve diğer uygulamalarda şifreleri otomatik doldurmak için varsayılan olarak Chrome'u kullanın</translation>
 <translation id="81358522153858150">Chrome artık yönetilen hesabınız için kullanıcı politikalarını destekliyor</translation>
 <translation id="8160472928944011082">Chrome güncellenemiyor</translation>
@@ -124,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Google Şifre Yöneticisi, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin veya <ph name="BEGIN_LINK" />Google Hesabınızdaki şifreleri kontrol edin<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Google Chrome ile Güvende Kalın</translation>
+<translation id="8765470054473112089">Adres çubuğuna veya arama kutusuna yazdığınızda Chrome, yazdıklarınızı varsayılan arama motorunuza göndererek daha iyi öneriler görmenizi sağlar. Bu ayar Gizli modda kapalıdır.</translation>
 <translation id="8772179140489533211">Chrome'da oturum açmak için istekleri gösterir.</translation>
 <translation id="8788269841521769222">Bu şifreyi hatırlamanız gerekmez. <ph name="EMAIL" /> için Google Şifre Yöneticisi'ne kaydedilir</translation>
 <translation id="8857676124663337448">Google Şifre Yöneticisi, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin.</translation>

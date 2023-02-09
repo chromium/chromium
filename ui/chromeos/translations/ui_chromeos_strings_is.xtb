@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Enska (bandarísk) með Dvorak-lyklaborði</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – hýsill</translation>
 <translation id="1521655867290435174">Google töflureiknar</translation>
+<translation id="1521795806314479294">Undirbýr <ph name="FILE_NAME" />…</translation>
 <translation id="1538729222189715449">Opnar Linux-skrár...</translation>
 <translation id="1547964879613821194">Kanadísk enska</translation>
 <translation id="1556189134700913550">Nota á allt</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Zip-þjappar <ph name="NUMBER_OF_ITEMS" /> atriði...</translation>
 <translation id="1722687688096767818">Bætir prófíl við...</translation>
 <translation id="1726100011689679555">Nafnaþjónar</translation>
+<translation id="1727562178154619254">Tilbúið fyrir samstillingu</translation>
 <translation id="1729953886957086472">Þýska (Þýskaland)</translation>
 <translation id="1730235522912993863">Kínverska Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> atriði afrituð.</translation>
@@ -480,6 +482,7 @@
 <translation id="4973523518332075481">Notaðu nafn sem er <ph name="MAX_LENGTH" /> stafir eða styttra</translation>
 <translation id="4973970068702235170">Zip-þjöppun mistókst, óvænt villa: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japanska</translation>
+<translation id="4987699874727873250">Enska (Indland)</translation>
 <translation id="4988205478593450158">Ertu viss um að þú viljir eyða „<ph name="FILE_NAME" />“?</translation>
 <translation id="498902553138568924">Rautt fiðrildi</translation>
 <translation id="4992066212339426712">Hætta að þagga</translation>
@@ -510,6 +513,7 @@
    Ef tækið er fjarlægt á meðan það er í notkun kunna gögn að tapast. Bíddu þangað til aðgerðinni er lokið og aftengdu síðan tækið úr skráaforritinu.</translation>
 <translation id="5163869187418756376">Mistókst að deila. Athugaðu nettenginguna og reyndu aftur síðar.</translation>
 <translation id="516592729076796170">Bandarískt Dvorak-lyklaborð fyrir forritara</translation>
+<translation id="5167102019886320507">Undirbýr <ph name="NUMBER_OF_ITEMS" /> atriði...</translation>
 <translation id="5177526793333269655">Smámyndayfirlit</translation>
 <translation id="5181896909298187506">Engar nýlegar skrár</translation>
 <translation id="5194713942430106590">Smelltu til að raða dálkinum í hækkandi röð.</translation>

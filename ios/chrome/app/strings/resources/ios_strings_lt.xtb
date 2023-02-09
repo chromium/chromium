@@ -819,6 +819,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6869389390665537774">Galite peržiūrėti puslapius, kuriuose lankėtės, arba išvalyti juos iš istorijos</translation>
 <translation id="687135068089457384">Rodyti nustatymus</translation>
 <translation id="6873263987691478642">Padalytas rodinys</translation>
+<translation id="6873366418270195926">Jei kurioje nors svetainėje sumažės kaina, gausite įspėjimą. Šis puslapis išsaugotas skiltyje <ph name="BEGIN_LINK" />Žymės<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Įprasta apsauga nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi.</translation>
 <translation id="6888009575607455378">Ar tikrai norite atmesti pakeitimus?</translation>
 <translation id="6896758677409633944">Kopijuoti</translation>
@@ -1122,6 +1123,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="952704832371081537">Atšaukti</translation>
 <translation id="953008885340860025">Atsijungta nuo „Chrome“</translation>
 <translation id="959066944189734975">Stebite „<ph name="CHANNEL_NAME" />“</translation>
+<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Organizacijoje leidžiama prisijungti tik naudojant tam tikras paskyras. Neleidžiamos paskyros yra paslėptos.</translation>
 <translation id="984509647832111802">Sinchronizavimas neveikia.</translation>
 <translation id="988141524645182168">Kiti įrenginiai</translation>

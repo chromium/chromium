@@ -282,6 +282,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1244303850296295656">Fout met extensie</translation>
 <translation id="1245628370644070008">Herstel van lokale gegevens</translation>
 <translation id="1246863218384630739">Kan <ph name="VM_NAME" /> niet installeren: image-URL heeft een <ph name="HTTP_ERROR" />-foutcode geretourneerd. Neem contact op met je beheerder.</translation>
+<translation id="1247372569136754018">Microfoon (intern)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Meldingen niet toegestaan voor 1 site}other{Meldingen niet toegestaan voor {NUM_SITES} sites}}</translation>
 <translation id="1251366534849411931">Verwachte openingsaccolade <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Hiermee wis je <ph name="TOTAL_USAGE" /> van de gegevens die zijn opgeslagen door sites en geïnstalleerde apps</translation>
@@ -539,6 +540,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1482626744466814421">Bookmark toevoegen voor dit tabblad…</translation>
 <translation id="1482772681918035149">wachtwoorden bewerken</translation>
 <translation id="1483493594462132177">Verzenden</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Site gebruikt Bluetooth</translation>
 <translation id="1485015260175968628">De app/extensie kan nu het volgende doen:</translation>
 <translation id="1485141095922496924">Versie <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -627,6 +629,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1567387640189251553">Er is een ander toetsenbord aangesloten sinds de laatste keer dat je je wachtwoord hebt ingevoerd. Mogelijk wordt geprobeerd om je toetsaanslagen te stelen.</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' is al toegewezen aan de actie '<ph name="ACTION" />'. Druk op een willekeurige toets om <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript-console</translation>
+<translation id="1569466257325986920">De volgende keer dat het wachtwoord van je Google-account wordt gewijzigd, worden je lokale gegevens automatisch hersteld nadat je bent ingelogd op je Google-account</translation>
 <translation id="1570604804919108255">Negeren van meldingen opheffen</translation>
 <translation id="1571304935088121812">Gebruikersnaam kopiëren</translation>
 <translation id="1571738973904005196">Tabblad bekijken: <ph name="TAB_ORIGIN" /></translation>
@@ -885,6 +888,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1781979858217752599">Audio van venster delen</translation>
 <translation id="1782101999402987960">Je beheerder heeft updates geblokkeerd</translation>
 <translation id="1782196717298160133">Je telefoon zoeken</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 notitie}other{# notities}}</translation>
 <translation id="1784707308176068866">Uitvoeren op de achtergrond wanneer dit wordt gevraagd door een samenwerkende systeemeigen app</translation>
 <translation id="1784849162047402014">Weinig schijfruimte beschikbaar op het apparaat</translation>
 <translation id="1787350673646245458">Gebruikersafbeelding</translation>
@@ -1095,6 +1099,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1965624977906726414">Heeft geen speciale rechten.</translation>
 <translation id="1966649499058910679">Markeer elk woord terwijl het wordt uitgesproken</translation>
 <translation id="1967970931040389207">Hotspot aanzetten</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">WebRTC-tekstlogboeken (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Je browst sneller, omdat content proactief wordt geladen op basis van je huidige webpagina</translation>
 <translation id="197288927597451399">Behouden</translation>
@@ -1676,6 +1681,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2467755475704469005">Geen apparaat waargenomen. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Scrollversnelling touchpad</translation>
 <translation id="2468205691404969808">Maakt gebruik van cookies om je voorkeuren te onthouden, zelfs als je deze pagina's niet bezoekt</translation>
+<translation id="2468247643665097563">Volgorde</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470085922875120">Je gebruikt wachtwoorden die moeilijk te raden zijn</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 tabblad}other{<ph name="GROUP_TITLE" /> - # tabbladen}}</translation>
@@ -1817,7 +1823,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="25899519884572181">Lezermodus afsluiten</translation>
 <translation id="2593499352046705383">Check voordat je begint of je een back-up van je gegevens hebt. Als je <ph name="DEVICE_OS" /> installeert, wordt je harde schijf overschreven. Bekijk meer informatie op g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Zoek op Google of typ een URL</translation>
-<translation id="25957578727513093">Voeg een snelkoppeling naar Google Wachtwoordmanager toe om de service sneller te openen</translation>
 <translation id="2599048253926156421">Gebruikersnaam gekopieerd naar klembord</translation>
 <translation id="2602501489742255173">Swipe omhoog om te beginnen</translation>
 <translation id="2603115962224169880">Computer opruimen</translation>
@@ -2395,6 +2400,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3103451787721578293">Geef een reden op voor het uploaden van deze gegevens:</translation>
 <translation id="3105339775057145050">Laatste mislukte update</translation>
 <translation id="3105796011181310544">Teruggaan naar Google?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Site gebruikt Bluetooth</translation>
 <translation id="3108931485517391283">Kan niet ontvangen</translation>
 <translation id="3108957152224931571">Markeringskleur</translation>
@@ -3036,6 +3042,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="371300529209814631">Terug/vooruit</translation>
 <translation id="3713047097299026954">Deze beveiligingssleutel bevat geen inloggegevens</translation>
 <translation id="3713091615825314967">Automatische updates zijn aangezet.</translation>
+<translation id="371370241367527062">Microfoon aan voorzijde</translation>
 <translation id="3714195043138862580">Dit demoapparaat is uitgeschreven door de beheerder.</translation>
 <translation id="3719826155360621982">Homepage</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3131,6 +3138,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> door&amp;zoeken op '<ph name="SEARCH_TERMS" />'</translation>
 <translation id="3798449238516105146">Versie</translation>
 <translation id="3798632811625902122">Bluetooth-apparaat <ph name="DEVICE" /> wil rechten om te koppelen.</translation>
+<translation id="3798670284305777884">Luidspreker (intern)</translation>
 <translation id="3799128412641261490">Instellingen voor 'Toegang via schakelaar'</translation>
 <translation id="3800030395703848668">Lijstopties bekijken</translation>
 <translation id="3800806661949714323">Alles bekijken (aanbevolen)</translation>
@@ -5128,6 +5136,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5643620609347735571">Wissen en doorgaan</translation>
 <translation id="5646376287012673985">Locatie</translation>
 <translation id="5646558797914161501">Zakenman</translation>
+<translation id="5648021990716966815">Microfoonaansluiting</translation>
 <translation id="5648166631817621825">Afgelopen 7 dagen</translation>
 <translation id="5651308944918885595">Vindbaarheid voor Dichtbij delen</translation>
 <translation id="5653154844073528838">Je hebt <ph name="PRINTER_COUNT" /> opgeslagen printers.</translation>
@@ -5941,6 +5950,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6410668567036790476">Zoekmachine toevoegen</translation>
 <translation id="641469293210305670">Updates en apps installeren</translation>
 <translation id="6414878884710400018">Systeemvoorkeuren openen</translation>
+<translation id="6415816101512323589">Herstel van lokale gegevens aanzetten om je gegevens te beschermen?</translation>
 <translation id="6415900369006735853">Maak verbinding met internet via je telefoon</translation>
 <translation id="6416743254476733475">Toestaan of blokkeren op je computer.</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
@@ -6234,6 +6244,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6678717876183468697">Query-URL</translation>
 <translation id="6680442031740878064">Beschikbaar: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Snelheid</translation>
+<translation id="6683022854667115063">Hoofdtelefoon</translation>
 <translation id="6683087162435654533">Alle tabbladen her&amp;stellen</translation>
 <translation id="6684827949542560880">De nieuwste update downloaden</translation>
 <translation id="668599234725812620">Google Play openen</translation>
@@ -6861,6 +6872,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7255002516883565667">Je hebt momenteel één pas die alleen op dit apparaat kan worden gebruikt</translation>
 <translation id="7255935316994522020">Toepassen</translation>
 <translation id="7256069762010468647">Site gebruikt je camera</translation>
+<translation id="7256634071279256947">Microfoon aan achterzijde</translation>
 <translation id="7256710573727326513">Openen in een tabblad</translation>
 <translation id="7257173066616499747">Wifi-netwerken</translation>
 <translation id="725758059478686223">Afdrukservice</translation>

@@ -282,6 +282,7 @@
 <translation id="1244303850296295656">ایکسٹینشن میں خرابی</translation>
 <translation id="1245628370644070008">مقامی ڈیٹا کی بازیابی</translation>
 <translation id="1246863218384630739">‏<ph name="VM_NAME" /> کو انسٹال نہیں کیا جا سکا: تصویری URL نے <ph name="HTTP_ERROR" /> خرابی کا کوڈ واپس کر دیا۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
+<translation id="1247372569136754018">مائیکروفون (داخلی)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{1 سائٹ کے لیے اطلاعات کی اجازت نہیں ہے}other{{NUM_SITES} سائٹس کے لیے اطلاعات کی اجازت نہیں ہے}}</translation>
 <translation id="1251366534849411931">ابتدائی خمیدہ قوسین کی توقع ہے: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">اس سے سائٹس اور انسٹال کردہ ایپس کا <ph name="TOTAL_USAGE" /> اسٹور کردہ ڈیٹا صاف ہو جائے گا</translation>
@@ -539,6 +540,7 @@
 <translation id="1482626744466814421">اس ٹیب کو بُک مارک کریں...</translation>
 <translation id="1482772681918035149">پاس ورڈز میں ترمیم کریں</translation>
 <translation id="1483493594462132177">بھیجیں</translation>
+<translation id="1484102317210609525">‎<ph name="DEVICE_NAME" /> (HDMI/DP)‎</translation>
 <translation id="1484979925941077974">سائٹ بلوٹوتھ کا استعمال کر رہی ہے</translation>
 <translation id="1485015260175968628">اب ممکن ہے:</translation>
 <translation id="1485141095922496924">ورژن <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1095,6 +1097,7 @@
 <translation id="1965624977906726414">کوئی خصوصی اجازتیں نہیں ہیں۔</translation>
 <translation id="1966649499058910679">بولے جانے پر ہر لفظ کو نمایاں کریں</translation>
 <translation id="1967970931040389207">ہاٹ سپاٹ آن کریں</translation>
+<translation id="1969011864782743497">‎<ph name="DEVICE_NAME" /> (USB)‎</translation>
 <translation id="1969654639948595766">‏WebRTC ٹیکسٹ لاگز (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">آپ تیزی سے براؤز کریں گے کیونکہ مواد آپ کے موجودہ ویب صفحہ کے ملاحظہ کی بنیاد پر فعال طور پر لوڈ ہوتا ہے</translation>
 <translation id="197288927597451399">رکھیں</translation>
@@ -1819,7 +1822,6 @@
 <translation id="25899519884572181">ریڈر وضع سے باہر نکلیں</translation>
 <translation id="2593499352046705383">‏شروع کرنے سے پہلے ، یقینی بنائیں کہ آپ کے پاس اپنے ڈیٹا کا بیک اپ ہے۔ <ph name="DEVICE_OS" /> کو انسٹال کرنے سے آپ کی ہارڈ ڈرائیو اوور رائٹ ہو جائے گی۔ g.co/flex/InstallGuide پر مزید جانیں۔</translation>
 <translation id="2594999711683503743">‏Google پر تلاش کریں یا URL ٹائپ کریں</translation>
-<translation id="25957578727513093">‏یہاں تیزی سے پہنچنے کے لئے، Google پاس ورڈ مینیجر میں ایک شارٹ کٹ شامل کریں</translation>
 <translation id="2599048253926156421">صارف کا نام کلپ بورڈ پر کاپی ہو گیا</translation>
 <translation id="2602501489742255173">شروع کرنے کیلئے اوپر سوائپ کریں</translation>
 <translation id="2603115962224169880">کمپیوٹر صاف کریں</translation>
@@ -2397,6 +2399,7 @@
 <translation id="3103451787721578293">براہ کرم اس ڈیٹا کو اپ لوڈ کرنے کی وجہ درج کریں:</translation>
 <translation id="3105339775057145050">آخری ناکام اپ ڈیٹ</translation>
 <translation id="3105796011181310544">‏Google پر واپس جائیں؟</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوٹوتھ)</translation>
 <translation id="310671807099593501">سائٹ بلوٹوتھ استعمال کر رہی ہے</translation>
 <translation id="3108931485517391283">موصول نہیں کر سکتے</translation>
 <translation id="3108957152224931571">ہائی لائٹ کا رنگ</translation>
@@ -3038,6 +3041,7 @@
 <translation id="371300529209814631">آگے/پیچھے</translation>
 <translation id="3713047097299026954">اس سیکیورٹی کلید میں کوئی بھی سائن ان ڈیٹا نہیں ہے</translation>
 <translation id="3713091615825314967">خود کار اپ ڈیٹس آن ہیں۔</translation>
+<translation id="371370241367527062">سامنے کا مائیکروفون</translation>
 <translation id="3714195043138862580">اس ڈیمو آلہ کو "غیر فراہم کردہ" کی حالت میں رکھ دیا گیا ہے۔</translation>
 <translation id="3719826155360621982">ہوم صفحہ</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3133,6 +3137,7 @@
 <translation id="3797900183766075808">"<ph name="SEARCH_TERMS" />" کو <ph name="SEARCH_ENGINE" /> میں تلاش کریں</translation>
 <translation id="3798449238516105146">ورژن</translation>
 <translation id="3798632811625902122">بلوٹوتھ آلہ <ph name="DEVICE" /> کو جوڑا بنانے کی اجازت درکار ہے۔</translation>
+<translation id="3798670284305777884">اسپیکر (داخلی)</translation>
 <translation id="3799128412641261490">سوئچ رسائی کی ترتیبات</translation>
 <translation id="3800030395703848668">فہرست دیکھنے کے اختیارات</translation>
 <translation id="3800806661949714323">سبھی دکھائیں (تجویز کردہ)</translation>
@@ -5133,6 +5138,7 @@
 <translation id="5643620609347735571">صاف کریں اور جاری رکھیں</translation>
 <translation id="5646376287012673985">مقام</translation>
 <translation id="5646558797914161501">تاجر</translation>
+<translation id="5648021990716966815">مائیک جیک</translation>
 <translation id="5648166631817621825">آخری 7 دن</translation>
 <translation id="5651308944918885595">قریبی آلات کے ساتھ اشتراک کی قابل دریافتگی</translation>
 <translation id="5653154844073528838">آپ کے پاس <ph name="PRINTER_COUNT" /> محفوظ کردہ پرنٹرز ہیں۔</translation>
@@ -6241,6 +6247,7 @@
 <translation id="6678717876183468697">‏استفسار کا URL</translation>
 <translation id="6680442031740878064">دستیاب ہے: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">درجہ بندی کریں</translation>
+<translation id="6683022854667115063">ہیڈ فونز</translation>
 <translation id="6683087162435654533">تمام ٹیبز کو بحال کریں</translation>
 <translation id="6684827949542560880">تازہ ترین اپ ڈیٹ ڈاؤن لوڈ کیا جارہا ہے</translation>
 <translation id="668599234725812620">‏Google Play کھولیں</translation>
@@ -6869,6 +6876,7 @@
 <translation id="7255002516883565667">ابھی، آپ کے پاس ایک ایسا کارڈ ہے جسے صرف اس آلہ پر استعمال کیا جا سکتا ہے</translation>
 <translation id="7255935316994522020">لاگو کریں</translation>
 <translation id="7256069762010468647">سائٹ آپ کا کیمرا استعمال کر رہی ہے</translation>
+<translation id="7256634071279256947">پیچھے کا مائیکروفون</translation>
 <translation id="7256710573727326513">ٹیب میں کھولیں</translation>
 <translation id="7257173066616499747">‏Wi-Fi نیٹ ورکس</translation>
 <translation id="725758059478686223">پرنٹنگ سروس</translation>

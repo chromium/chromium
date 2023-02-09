@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">‏מקלדת Dvorak באנגלית (ארה"ב)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – מארח</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
+<translation id="1521795806314479294"><ph name="FILE_NAME" /> בהכנה…</translation>
 <translation id="1538729222189715449">‏מתבצעת פתיחה של קובצי Linux...</translation>
 <translation id="1547964879613821194">אנגלית קנדית</translation>
 <translation id="1556189134700913550">החלה על הכול</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">מתבצע כיווץ של <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
 <translation id="1722687688096767818">בתהליך הוספת פרופיל…</translation>
 <translation id="1726100011689679555">שרתי שמות</translation>
+<translation id="1727562178154619254">הקבצים מוכנים לסנכרון</translation>
 <translation id="1729953886957086472">גרמנית (גרמניה)</translation>
 <translation id="1730235522912993863">‏סינית Cangjie</translation>
 <translation id="1731889557567069540">הועתקו <ph name="NUMBER_OF_ITEMS" /> פריטים.</translation>
@@ -480,6 +482,7 @@
 <translation id="4973523518332075481">יש להשתמש בשם באורך <ph name="MAX_LENGTH" /> תווים לכל היותר</translation>
 <translation id="4973970068702235170">הכיווץ נכשל, שגיאה לא צפויה: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">יפנית</translation>
+<translation id="4987699874727873250">אנגלית (הודו)</translation>
 <translation id="4988205478593450158">הקובץ "<ph name="FILE_NAME" />" יימחק. להמשיך?</translation>
 <translation id="498902553138568924">פרפר אדום</translation>
 <translation id="4992066212339426712">ביטול השתקה</translation>
@@ -510,6 +513,7 @@
        הסרת המכשיר בעודו בשימוש תגרום לאובדן נתונים. יש להמתין עד לסיום הפעולה, ולאחר מכן לנתק את המכשיר דרך היישום Files.</translation>
 <translation id="5163869187418756376">השיתוף נכשל. כדאי לבדוק את החיבור ולנסות שוב מאוחר יותר.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
+<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> פריטים בהכנה…</translation>
 <translation id="5177526793333269655">תצוגת תמונה ממוזערת</translation>
 <translation id="5181896909298187506">לא פתחת קבצים לאחרונה</translation>
 <translation id="5194713942430106590">יש ללחוץ כדי למיין את העמודה בסדר עולה.</translation>

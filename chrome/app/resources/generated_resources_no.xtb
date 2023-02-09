@@ -284,6 +284,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1244303850296295656">Feil med utvidelse</translation>
 <translation id="1245628370644070008">Gjenoppretting av lokale data</translation>
 <translation id="1246863218384630739">Kunne ikke installere <ph name="VM_NAME" />: Nettadressen til bildet returnerte feilkoden <ph name="HTTP_ERROR" />. Kontakt administratoren din.</translation>
+<translation id="1247372569136754018">Mikrofon (intern)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Varsler er ikke tillatt for 1 nettsted}other{Varsler er ikke tillatt for {NUM_SITES} nettsteder}}</translation>
 <translation id="1251366534849411931">Forventet venstrestilt krøllparentes: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Dette sletter <ph name="TOTAL_USAGE" /> data som er lagret av nettsteder og installerte apper</translation>
@@ -542,6 +543,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1482626744466814421">Bokmerk denne fanen</translation>
 <translation id="1482772681918035149">endre passord</translation>
 <translation id="1483493594462132177">Send</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Nettstedet bruker Bluetooth</translation>
 <translation id="1485015260175968628">Den har allerede følgende tilgang:</translation>
 <translation id="1485141095922496924">Versjon <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -627,6 +629,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1567387640189251553">Et annet tastatur er koblet til etter at du sist skrev inn passordet ditt. Det brukes kanskje til å stjele tastetrykkene dine.</translation>
 <translation id="156793199942386351">«<ph name="CURRENTKEY" />» er allerede tilordnet handlingen «<ph name="ACTION" />» Trykk på en tast for å <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript-konsoll</translation>
+<translation id="1569466257325986920">Neste gang passordet for Google-kontoen endres, gjenopprettes de lokale dataene automatisk når du logger på Google-kontoen</translation>
 <translation id="1570604804919108255">Slutt å ignorere varsler</translation>
 <translation id="1571304935088121812">Kopiér brukernavnet</translation>
 <translation id="1571738973904005196">Vis fanen <ph name="TAB_ORIGIN" /></translation>
@@ -891,6 +894,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1781979858217752599">Del vinduslyd</translation>
 <translation id="1782101999402987960">Administratoren din blokkerer oppdateringer</translation>
 <translation id="1782196717298160133">Finner telefonen din</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 merknad}other{# merknader}}</translation>
 <translation id="1784707308176068866">Kjør i bakgrunnen når et samarbeidende, integrert program spør om det</translation>
 <translation id="1784849162047402014">Det er lite plass på enheten</translation>
 <translation id="1787350673646245458">Brukerbilde</translation>
@@ -1101,6 +1105,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1965624977906726414">Har ingen spesielle tillatelser.</translation>
 <translation id="1966649499058910679">Fremhev enkeltord når de uttales</translation>
 <translation id="1967970931040389207">Slå på wifi-sone</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">WebRTC-tekstlogger (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Du kan surfe raskere, siden innholdet lastes inn proaktivt basert på nettsiden du er på for øyeblikket</translation>
 <translation id="197288927597451399">Behold</translation>
@@ -1685,6 +1690,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2467755475704469005">Fant ingen enheter. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Rulleakselerasjon for styreflaten</translation>
 <translation id="2468205691404969808">Bruker informasjonskapsler til å huske preferansene dine, selv om du ikke går til de sidene</translation>
+<translation id="2468247643665097563">Bestill</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470085922875120">Du bruker passord som virker vanskelige å gjette</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 fane}other{<ph name="GROUP_TITLE" /> – # faner}}</translation>
@@ -1826,7 +1832,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="25899519884572181">Avslutt lesermodus</translation>
 <translation id="2593499352046705383">Før du begynner, må du ta en sikkerhetskopi av dataene dine. Når <ph name="DEVICE_OS" /> installeres, blir harddisken din overskrevet. Finn ut mer på g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Søk på Google, eller skriv inn en nettadresse</translation>
-<translation id="25957578727513093">For å komme hit raskere, legg til en snarvei i Google Passordlagring</translation>
 <translation id="2599048253926156421">Brukernavnet er kopiert til utklippstavlen</translation>
 <translation id="2602501489742255173">Sveip opp for å komme i gang</translation>
 <translation id="2603115962224169880">Rydd opp i datamaskinen</translation>
@@ -2404,6 +2409,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3103451787721578293">Oppgi en årsak til at du laster opp disse dataene:</translation>
 <translation id="3105339775057145050">Siste mislykkede oppdatering</translation>
 <translation id="3105796011181310544">Vil du bytte tilbake til Google?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Nettstedet bruker Bluetooth</translation>
 <translation id="3108931485517391283">Kan ikke motta</translation>
 <translation id="3108957152224931571">Fremhevingsfarge</translation>
@@ -3045,6 +3051,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="371300529209814631">Bakover/forover</translation>
 <translation id="3713047097299026954">Det er ingen påloggingsinformasjon på denne sikkerhetsnøkkelen</translation>
 <translation id="3713091615825314967">Automatiske oppdateringer er slått på.</translation>
+<translation id="371370241367527062">Mikrofon foran</translation>
 <translation id="3714195043138862580">Denne demoenheten er satt i en tilstand uten tilgang og ressurser.</translation>
 <translation id="3719826155360621982">Startside</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3140,6 +3147,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3797900183766075808">&amp;Søk etter «<ph name="SEARCH_TERMS" />» på <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Versjon</translation>
 <translation id="3798632811625902122">Bluetooth-enheten <ph name="DEVICE" /> ber om tillatelse til å koble til.</translation>
+<translation id="3798670284305777884">Høyttaler (intern)</translation>
 <translation id="3799128412641261490">Innstillinger for brytertilgang</translation>
 <translation id="3800030395703848668">Vis listealternativer</translation>
 <translation id="3800806661949714323">Vis alle (anbefales)</translation>
@@ -5138,6 +5146,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5643620609347735571">Slett og fortsett</translation>
 <translation id="5646376287012673985">Posisjon</translation>
 <translation id="5646558797914161501">Forretningsmann</translation>
+<translation id="5648021990716966815">Mikrofonkontakt</translation>
 <translation id="5648166631817621825">Siste 7 dager</translation>
 <translation id="5651308944918885595">Synlighet for nærdeling</translation>
 <translation id="5653154844073528838">Du har <ph name="PRINTER_COUNT" /> lagrede skrivere.</translation>
@@ -5953,6 +5962,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6410668567036790476">Legg til søkemotor</translation>
 <translation id="641469293210305670">Installer oppdateringer og apper</translation>
 <translation id="6414878884710400018">Åpne Systemvalg</translation>
+<translation id="6415816101512323589">Vil du slå på gjenoppretting av lokale data for å beskytte dataene dine?</translation>
 <translation id="6415900369006735853">Koble til internett via telefonen</translation>
 <translation id="6416743254476733475">Tillat eller blokkér på datamaskinen din.</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
@@ -6246,6 +6256,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6678717876183468697">Nettadresse for søk</translation>
 <translation id="6680442031740878064">Tilgjengelig: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Hastighet</translation>
+<translation id="6683022854667115063">Hodetelefoner</translation>
 <translation id="6683087162435654533">Gjenopprett alle faner</translation>
 <translation id="6684827949542560880">Laster ned den nyeste oppdateringen</translation>
 <translation id="668599234725812620">Åpne Google Play</translation>
@@ -6874,6 +6885,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7255002516883565667">Akkurat nå har du ett kort som bare kan brukes på denne enheten</translation>
 <translation id="7255935316994522020">Bruk</translation>
 <translation id="7256069762010468647">Nettstedet bruker kameraet ditt</translation>
+<translation id="7256634071279256947">Mikrofon bak</translation>
 <translation id="7256710573727326513">Åpne i en fane</translation>
 <translation id="7257173066616499747">Wifi-nettverk</translation>
 <translation id="725758059478686223">Utskriftstjeneste</translation>

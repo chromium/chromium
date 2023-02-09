@@ -22,6 +22,7 @@
 <translation id="2347208864470321755">Ja šī funkcija ir ieslēgta, Chrome piedāvā tulkot citās valodās rakstītas lapas, izmantojot Google tulkotāju. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="2427791862912929107">Pārlūkā Chrome ir funkcijas, ko varat izmantot, lai pārvaldītu savus interneta datus un tīmekļa lapu ielādes ātrumu.
 <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
+<translation id="2444854139071078915">Lai ērti iegūtu savas saglabātās paroles citās lietotnēs, izmantojiet pārlūku Chrome automātiskajai aizpildei.</translation>
 <translation id="2561231791489583059">Parūpējieties par aizsardzību no bīstamām vietnēm un savu paroļu drošību, izmantojot pārlūku Chrome kā savu noklusējuma pārlūku</translation>
 <translation id="2574249610672786438">Lai skatītu cilnes no ierīcēm, kurās lietojat pārlūku Chrome, pierakstieties visās savās ierīcēs.</translation>
 <translation id="2576431527583832481">Pārlūkprogramma Chrome ir uzlabota! Ir pieejama jauna versija.</translation>
@@ -89,6 +90,7 @@
 <translation id="6709398533399187136">Jūsu parole tika atklāta datu aizsardzības pārkāpuma dēļ. Google paroļu pārvaldnieks iesaka to tūlīt nomainīt.</translation>
 <translation id="6822673484890854830">Pārlūkprogrammā Chrome nevarēja pārbaudīt visas paroles. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="6964931465519938134">Tagad varat izmantot Chrome ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
+<translation id="6975725306479268850">Izvēlieties Chrome automātiskajai aizpildei</translation>
 <translation id="701356708427365932">Uzziniet vairāk par jauno Chrome izvēlni</translation>
 <translation id="7059914902409643750">Pielāgojiet pārlūku Chrome savām vajadzībām</translation>
 <translation id="7124339256045485976">Jaunākās Chrome iespējas</translation>
@@ -109,6 +111,7 @@
 <translation id="7754633291442704733">Jūsu organizācija (<ph name="DOMAIN" />) varēs piekļūt jūsu Chrome datiem, grāmatzīmēm, vēsturei, parolēm un citiem iestatījumiem, ko glabājat šajā kontā. Izrakstoties jūsu dati tiks dzēsti no šīs ierīces.  Tomēr jūsu dati joprojām tiks glabāti jūsu pārvaldītajā Google kontā un būs pieejami jūsu organizācijai. Jūsu organizācija var kontā iestatīt lietotāju politikas, kas var mainīt Chrome darbību.</translation>
 <translation id="7780154209050837198">Lai pilnvērtīgi izmantotu pārlūku Chrome, pierakstieties tajā, izmantojot savu Google kontu.</translation>
 <translation id="7855730255114109580">Pārlūks Google Chrome ir atjaunināts.</translation>
+<translation id="7939179037291298976">Sava iPhone tālruņa lietotnē Settings atveriet sadaļu “Password Options” (Paroles opcijas) un atlasiet “Chrome”.</translation>
 <translation id="8022947259858476807">Lai atvērtu saites, veiktu meklēšanu logrīkos un automātiski aizpildītu paroles citās lietotnēs, izmantojiet pārlūku Chrome kā noklusējuma pārlūku</translation>
 <translation id="81358522153858150">Pārlūkā Chrome tagad tiek atbalstīta lietotāju politiku izmantošana jūsu pārvaldītajos kontos</translation>
 <translation id="8160472928944011082">Nevar atjaunināt pārlūku Chrome.</translation>
@@ -124,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Google paroļu pārvaldnieks nevarēja pārbaudīt visas paroles. Mēģiniet vēlreiz rīt vai <ph name="BEGIN_LINK" />pārbaudiet paroles savā Google kontā<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Droša pārlūkošana, izmantojot pārlūku Google Chrome</translation>
+<translation id="8765470054473112089">Kad rakstāt adreses joslā vai meklēšanas lodziņā, pārlūks Chrome nosūta ierakstīto tekstu jūsu noklusējuma meklētājprogrammai, lai iegūtu labākus ieteikumus. Inkognito režīmā šis iestatījums ir izslēgts.</translation>
 <translation id="8772179140489533211">Tiek rādīti aicinājumi pierakstīties pārlūkā Chrome.</translation>
 <translation id="8788269841521769222">Jums nebūs jāatceras šī parole. Tā tiks saglabāta konta <ph name="EMAIL" /> Google paroļu pārvaldniekā.</translation>
 <translation id="8857676124663337448">Google paroļu pārvaldnieks nevarēja pārbaudīt visas paroles. Rit mēģiniet vēlreiz.</translation>

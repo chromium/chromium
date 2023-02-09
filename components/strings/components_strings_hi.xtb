@@ -525,6 +525,7 @@
 <translation id="2202627062836089804">अपने कार्ड के पिछले हिस्से</translation>
 <translation id="22081806969704220">ट्रे 3</translation>
 <translation id="2210794033760923560">रिपोर्ट अपलोड करें</translation>
+<translation id="2212579473415663542">यह पता आपके Google खाते (<ph name="ACCOUNT" />) में सेव किया गया है. इस पते को किसी भी डिवाइस पर, Google के सभी प्रॉडक्ट के लिए इस्तेमाल किया जा सकता है.</translation>
 <translation id="2212735316055980242">नीति नहीं मिली</translation>
 <translation id="2213606439339815911">प्रविष्टियां फ़ेच की जा रही हैं...</translation>
 <translation id="2213612003795704869">पेज प्रिंट कर दिया गया</translation>
@@ -1972,6 +1973,7 @@
 <translation id="5866898949289125849">आप डेवलपर के टूल वाला पेज देख रहे हैं</translation>
 <translation id="5869405914158311789">इस साइट तक नहीं पहुंचा जा सकता</translation>
 <translation id="5869522115854928033">सेव किए गए पासवर्ड</translation>
+<translation id="5872692522325383488">IBAN सेव किया गया</translation>
 <translation id="5873013647450402046">बैंक आपकी पहचान की पुष्टि करना चाहता है.</translation>
 <translation id="5877831137320480913">खूबसूरती और फ़िटनेस</translation>
 <translation id="5884465125445718607">चाइनीज़ #6 साइज़ का लिफ़ाफ़ा</translation>
@@ -2141,6 +2143,7 @@
 <translation id="6300452962057769623">{0,plural, =0{आपका डिवाइस अभी रीस्टार्ट होगा}=1{आपका डिवाइस 1 सेकंड में रीस्टार्ट होगा}one{आपका डिवाइस # सेकंड में रीस्टार्ट होगा}other{आपका डिवाइस # सेकंड में रीस्टार्ट होगा}}</translation>
 <translation id="6301104306974789820">आइटम की कीमत ट्रैक करने से जुड़ी सूचनाएं पाएं</translation>
 <translation id="6305205051461490394"><ph name="URL" /> तक नहीं पहुंचा जा सकता.</translation>
+<translation id="6306713302480826305">इस डिवाइस और आपके साइन इन किए हुए अन्य डिवाइसों से यह पता मिटा दिया जाएगा</translation>
 <translation id="6311165245110979290">वर्चुअल कार्ड उपलब्ध है</translation>
 <translation id="6312113039770857350">वेबपेज उपलब्ध नहीं है</translation>
 <translation id="6316226860534107313">स्कूटर और मोपेड</translation>
@@ -3032,6 +3035,7 @@
 <translation id="8473863474539038330">पते वगैरह</translation>
 <translation id="8474910779563686872">डेवलपर की जानकारी दिखाएं</translation>
 <translation id="8479754468255770962">नीचे बाईं ओर स्टेपल</translation>
+<translation id="8483229036294884935">आपके Google खाते, <ph name="ACCOUNT" /> से यह पता मिटा दिया जाएगा</translation>
 <translation id="8483780878231876732">कार्ड का इस्तेमाल अपने Google खाते से करने के लिए, Chrome में साइन करें</translation>
 <translation id="8488350697529856933">इस पर लागू होती है</translation>
 <translation id="8490137692873530638">स्टैकर 10</translation>

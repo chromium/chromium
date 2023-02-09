@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">անգլերեն (ԱՄՆ)՝ Dvorak ստեղնաշարով</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Հոսթ</translation>
 <translation id="1521655867290435174">Google Աղյուսակներ</translation>
+<translation id="1521795806314479294"><ph name="FILE_NAME" /> ֆայլի նախապատրաստում…</translation>
 <translation id="1538729222189715449">Լինուքսի ֆայլերը բացվում են…</translation>
 <translation id="1547964879613821194">Կանադական (անգլիական)</translation>
 <translation id="1556189134700913550">Կիրառել բոլորին</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Արխիվացվում է <ph name="NUMBER_OF_ITEMS" /> տարր…</translation>
 <translation id="1722687688096767818">Պրոֆիլն ավելացվում է…</translation>
 <translation id="1726100011689679555">Անունների սերվերներ</translation>
+<translation id="1727562178154619254">Պատրաստ են համաժամացման</translation>
 <translation id="1729953886957086472">գերմաներեն (Գերմանիա)</translation>
 <translation id="1730235522912993863">չինարեն (ցանցզե)</translation>
 <translation id="1731889557567069540">Պատճենվեց <ph name="NUMBER_OF_ITEMS" /> տարր։</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">Անունների այլ սերվերներ</translation>
 <translation id="4465725236958772856">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, կառավարվում է ձեր ադմինիստրատորի կողմից, կապակցում</translation>
 <translation id="4470564870223067757">Հանգուլ 2 Set</translation>
+<translation id="4474142134969976028">Արդյունքներ չեն գտնվել</translation>
 <translation id="4477002475007461989">ռումիներեն</translation>
 <translation id="4477219268485577442">Բուլղարական հնչյունային</translation>
 <translation id="4508265954913339219">Ակտիվացումը չհաջողվեց</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">Նշեք անուն՝ առավելագույնը <ph name="MAX_LENGTH" /> նիշից</translation>
 <translation id="4973970068702235170">Չհաջողվեց արխիվացնել: Անսպասելի սխալ առաջացավ՝ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">ճապոներեն</translation>
+<translation id="4987699874727873250">անգլերեն (Հնդկաստան)</translation>
 <translation id="4988205478593450158">Ջնջե՞լ «<ph name="FILE_NAME" />» ֆայլը։</translation>
 <translation id="498902553138568924">Կարմիր թիթեռ</translation>
 <translation id="4992066212339426712">Միացնել ձայնը</translation>
@@ -509,6 +513,7 @@
    Եթե սարքը հեռացնեք օգտագործման ընթացքում, կարող եք որոշ տվյալներ կորցնել: Սպասեք մինչև գործողությունն ավարտվի, ապա Ֆայլեր հավելվածի միջոցով անջատեք սարքը:</translation>
 <translation id="5163869187418756376">Համօգտագործումը չհաջողվեց: Ստուգեք ձեր կապակցումը և փորձեք ավելի ուշ:</translation>
 <translation id="516592729076796170">ԱՄՆ ծրագրավորող Դվորակ</translation>
+<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> տարրի նախապատրաստում…</translation>
 <translation id="5177526793333269655">Մանրապատկերի տեսք</translation>
 <translation id="5181896909298187506">Վերջերս բացված ֆայլեր չկան</translation>
 <translation id="5194713942430106590">Սեղմեք՝ սյունակներն ըստ աճման կարգի տեսակավորելու համար։</translation>
@@ -812,6 +817,7 @@
 <translation id="7655441028674523381">Հեշտությամբ մտեք Google Լուսանկարներ</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7663224033570512922">հինդի</translation>
+<translation id="7665680517722058469">Փորձեք այլ հարցում</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> տարր տեղափոխվեց աղբարկղ</translation>
 <translation id="7693909743393669729">Եթե կրիչը ֆորմատավորեք, դրա վրա պահված բոլոր տվյալներն ու բաժինները (այդ թվում՝ անտեսանելի) կջնջվեն։ Գործողությունը հնարավոր չէ հետարկել։</translation>
 <translation id="7695430100978772476">Չհաջողվեց ձևաչափել «<ph name="DRIVE_NAME" />» կրիչը</translation>

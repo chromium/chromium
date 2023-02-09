@@ -668,6 +668,7 @@
 <translation id="5988097621740394599">在分頁上查看降價資訊。</translation>
 <translation id="5988851877894965432">在 Chrome 中開啟網址</translation>
 <translation id="6006672969046233841">新分頁</translation>
+<translation id="6011308810877101166">改善搜尋建議</translation>
 <translation id="6012140227487808125">加密中…</translation>
 <translation id="6021332621416007159">在其他應用程式中開啟...</translation>
 <translation id="6027945736510816438">你是不是要輸入 <ph name="WEBSITE" />？</translation>
@@ -818,6 +819,7 @@
 <translation id="6869389390665537774">系統會顯示造訪過的網頁，你也可以將這些網頁從歷史記錄中清除</translation>
 <translation id="687135068089457384">顯示設定</translation>
 <translation id="6873263987691478642">分割檢視</translation>
+<translation id="6873366418270195926">如果產品在任何網站上降價，系統會透過快訊通知你。這個頁面儲存在<ph name="BEGIN_LINK" />書籤<ph name="END_LINK" />中。</translation>
 <translation id="6882836635272038266">針對已知不安全的網站、下載內容和擴充功能提供標準防護機制。</translation>
 <translation id="6888009575607455378">確定要捨棄變更嗎？</translation>
 <translation id="6896758677409633944">複製</translation>
@@ -887,6 +889,7 @@
 <translation id="746684838091935575">3. 選取 [Chrome]</translation>
 <translation id="7472734401283673885">公司名稱</translation>
 <translation id="7473891865547856676">不用了，謝謝</translation>
+<translation id="7491131399623468277">前往「設定」…</translation>
 <translation id="750493650310597496">已選取 0 個項目</translation>
 <translation id="7508728395076009983">如要鎖定無痕分頁，請設定 Touch ID、Face ID 或密碼。</translation>
 <translation id="7514365320538308">下載</translation>
@@ -1120,6 +1123,7 @@
 <translation id="952704832371081537">取消</translation>
 <translation id="953008885340860025">你已登出 Chrome</translation>
 <translation id="959066944189734975">你正在追蹤「<ph name="CHANNEL_NAME" />」</translation>
+<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">貴機構規定你只能使用特定帳戶登入。系統已隱藏不適用的帳戶。</translation>
 <translation id="984509647832111802">同步功能無法正常運作。</translation>
 <translation id="988141524645182168">其他裝置</translation>

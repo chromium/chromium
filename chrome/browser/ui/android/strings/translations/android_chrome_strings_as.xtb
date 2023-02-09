@@ -226,7 +226,6 @@
 <translation id="2248941474044011069">Google পাছৱৰ্ড পৰিচালকত ছেভ কৰাৰ পূৰ্বে আপোনাৰ ডিভাইচত আপোনাৰ পাছৱৰ্ড এনক্ৰিপ্ট কৰা হয়</translation>
 <translation id="2249635629516220541">আপোনাক বিজ্ঞাপন দেখুৱাবলৈ ছাইটসমূহে ব্যৱহাৰ কৰা তথ্য কাষ্টমাইজ কৰক</translation>
 <translation id="2259659629660284697">পাছৱর্ডসমূহ ৰপ্তানি কৰক…</translation>
-<translation id="2276231040576210443">আপুনি কি ছিংক কৰিব লাগে সেয়া <ph name="BEGIN_LINK1" />ছেটিঙ<ph name="END_LINK1" />লৈ গৈ যেতিয়াই মন যায় তেতিয়াই বাছনি কৰিব পাৰে। Googleএ আপোনাৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Search আৰু অন্য সেৱা ব্যক্তিগতকৰণ কৰিব পাৰে।</translation>
 <translation id="2276696007612801991">আপোনাৰ পাছৱৰ্ডসমূহ পৰীক্ষা কৰিবলৈ আপোনাৰ Google একাউণ্টত ছাইন ইন কৰক</translation>
 <translation id="2278052315791335171">এই পাছৱৰ্ডটো মচাৰ ফলত <ph name="SITE" />ত থকা আপোনাৰ একাউণ্টটো মচি পেলোৱা নহ’ব</translation>
 <translation id="2286841657746966508">বিলিঙৰ ঠিকনা</translation>
@@ -304,7 +303,6 @@
 <translation id="2669454659051515572">এই ডিভাইচটো ব্যৱহাৰ কৰা যিকোনো লোকে ডাউনল’ড কৰা ফাইল চাব পাৰে</translation>
 <translation id="2702516483241149200">নতুন: এই পাঠটোলৈ স্ক্ৰ’ল কৰা এটা লিংক শ্বেয়াৰ কৰা</translation>
 <translation id="2707726405694321444">পৃষ্ঠাটো ৰিফ্ৰেশ্ব কৰক</translation>
-<translation id="2709516037105925701">স্বয়ংপূৰ্তি</translation>
 <translation id="271033894570825754">নতুন</translation>
 <translation id="2711073837061989559">ট্ৰায়েল</translation>
 <translation id="2718352093833049315">কেৱল ৱাই-ফাইত</translation>
@@ -396,7 +394,6 @@
 <translation id="3114507951000454849">আজিৰ বাতৰি পঢ়ক <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">ইয়াৰ সৈতে লিংক কৰা হ’ল</translation>
 <translation id="3123734510202723619">ঘোষণাসমূহ</translation>
-<translation id="3130863904455712965">ইতিহাস আৰু অধিক</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chromeৰ গৃহপৃষ্ঠা</translation>
 <translation id="3157931365184549694">পুনঃস্থাপন কৰক</translation>
@@ -990,7 +987,6 @@
 <translation id="6397616442223433927">আকৌ অনলাইন হৈছে</translation>
 <translation id="6401458660421980302">অন্য এটা ডিভাইচলৈ এই টেবটো পঠিয়াবলৈ, তাত Chromeত ছাইন ইন কৰক</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" />ত <ph name="ERROR_CODE" /></translation>
-<translation id="6403371459378431832">আটাইবোৰ ডিভাইচত আপোনাৰ ডেটা ছিংক কৰক</translation>
 <translation id="6404511346730675251">বুকমার্ক সম্পাদনা কৰক</translation>
 <translation id="6406506848690869874">ছিংক কৰক</translation>
 <translation id="6407224748847589805">আপোনাৰ কম্পিউটাৰৰ সৈতে সংযোগ কৰিব নোৱাৰি। সত্যাপনৰ অন্য এটা বিকল্প ব্যৱহাৰ কৰি চাওক।</translation>
@@ -1319,7 +1315,6 @@
 <translation id="8037801708772278989">এইমাত্ৰ পৰীক্ষা কৰা হৈছে</translation>
 <translation id="804335162455518893">SD কাৰ্ড বিচাৰি পোৱা নগ’ল</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> টা ইনক’গ্নিট’ টেব}one{<ph name="TAB_COUNT_NORMAL" /> টা ইনক’গ্নিট’ টেব}other{<ph name="TAB_COUNT_NORMAL" /> টা ইনক’গ্নিট’ টেব}}</translation>
-<translation id="8048728378294435881">আপোনাৰ বস্তুবোৰৰ বেক আপ লওক আৰু সেইবোৰ যিকোনো ডিভাইচত ব্যৱহাৰ কৰক</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> এম.বি. উপলব্ধ</translation>
 <translation id="8058655154417507695">ম্যাদ উকলা বছৰ</translation>
 <translation id="8058746566562539958">নতুন Chrome টেবত খোলক</translation>

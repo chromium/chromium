@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Ingelesa (AEB), Dvorak teklatuarekin</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Ostalaria</translation>
 <translation id="1521655867290435174">Google Kalkulu-orriak</translation>
+<translation id="1521795806314479294"><ph name="FILE_NAME" /> prestatzen…</translation>
 <translation id="1538729222189715449">Linux fitxategiak irekitzen…</translation>
 <translation id="1547964879613821194">Ingelesa (Kanada)</translation>
 <translation id="1556189134700913550">Aplikatu guztiei</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> elementu konpimatzen…</translation>
 <translation id="1722687688096767818">Profila gehitzen…</translation>
 <translation id="1726100011689679555">Izen-zerbitzariak</translation>
+<translation id="1727562178154619254">Sinkronizatzeko prest</translation>
 <translation id="1729953886957086472">Alemana (Alemania)</translation>
 <translation id="1730235522912993863">Txinatarra (cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementu kopiatu dira.</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">Izen-zerbitzari pertsonalizatuak</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" />. Administratzaileak kudeatua. Konektatu.</translation>
 <translation id="4470564870223067757">2. hangul-karaktere sorta</translation>
+<translation id="4474142134969976028">Ez dago emaitzarik</translation>
 <translation id="4477002475007461989">Errumaniarra</translation>
 <translation id="4477219268485577442">Bulgariar fonetikoa</translation>
 <translation id="4508265954913339219">Ezin izan da aktibatu</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">Erabili <ph name="MAX_LENGTH" /> karaktere edo gutxiago dituen izen bat</translation>
 <translation id="4973970068702235170">Ezin izan da konprimatu ustekabeko errore hau gertatu delako: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japoniarra</translation>
+<translation id="4987699874727873250">Ingelesa (India)</translation>
 <translation id="4988205478593450158">Ziur "<ph name="FILE_NAME" />" ezabatu nahi duzula?</translation>
 <translation id="498902553138568924">Tximeleta gorria</translation>
 <translation id="4992066212339426712">Aktibatu audioa</translation>
@@ -509,6 +513,7 @@
    Gailua erabili bitartean kentzen baduzu, datuak gal ditzakezu. Itxaron eragiketa amaitu arte eta kanporatu gailua Fitxategiak aplikazioa erabilita.</translation>
 <translation id="5163869187418756376">Ezin izan da partekatu. Egiaztatu konektatuta zaudela eta saiatu berriro geroago.</translation>
 <translation id="516592729076796170">AEBko programatzaileen Dvorak teklatua</translation>
+<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> elementu prestatzen…</translation>
 <translation id="5177526793333269655">Irudi txikien ikuspegia</translation>
 <translation id="5181896909298187506">Ez dago azkenaldiko fitxategirik</translation>
 <translation id="5194713942430106590">Egin klik zutabea goranzko ordenan ezartzeko.</translation>
@@ -812,6 +817,7 @@
 <translation id="7655441028674523381">Atzitu erraz Google Argazkiak</translation>
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7663224033570512922">Hindia</translation>
+<translation id="7665680517722058469">Egin beste bilaketa bat</translation>
 <translation id="7689532716264131859">Eraman dira zaborrontzira <ph name="NUMBER_OF_ITEMS" /> elementu</translation>
 <translation id="7693909743393669729">Unitatea formateatuz gero, bertan gordetako datu guztiak ezabatuko dira, eta partizio guztiak kendu, ikusgai ez daudenak barne. Ezin da desegin ekintza.</translation>
 <translation id="7695430100978772476">Ezin izan da formateatu <ph name="DRIVE_NAME" /></translation>

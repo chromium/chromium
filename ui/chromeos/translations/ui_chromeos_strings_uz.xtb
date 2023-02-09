@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Ingliz (AQSH) va Dvorak klaviaturasi</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
+<translation id="1521795806314479294"><ph name="FILE_NAME" /> tayyorlanmoqda...</translation>
 <translation id="1538729222189715449">Linux fayllari ochilmoqda...</translation>
 <translation id="1547964879613821194">Kanada (Ingliz)</translation>
 <translation id="1556189134700913550">Barchasiga qo‘llash</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> ta element arxivlanmoqda...</translation>
 <translation id="1722687688096767818">Profil kiritilmoqda...</translation>
 <translation id="1726100011689679555">Nom serverlari (NS)</translation>
+<translation id="1727562178154619254">Sinxronizatsiya uchun tayyor</translation>
 <translation id="1729953886957086472">Nemis (Germaniya)</translation>
 <translation id="1730235522912993863">Xitoy (Kangji)</translation>
 <translation id="1731889557567069540">Nusxa olindi: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -480,6 +482,7 @@
 <translation id="4973523518332075481">Nom <ph name="MAX_LENGTH" /> yoki undan kam belgilardan iborat bo‘lishi zarur</translation>
 <translation id="4973970068702235170">Arxivlashda kutilmagan xatolik yuz berdi: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Yapon</translation>
+<translation id="4987699874727873250">Ingliz (Hindiston)</translation>
 <translation id="4988205478593450158">“<ph name="FILE_NAME" />” fayli oʻchirib tashlansinmi?</translation>
 <translation id="498902553138568924">Qizil kapalak</translation>
 <translation id="4992066212339426712">Ovozni yoqish</translation>
@@ -510,6 +513,7 @@
 Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. Aks holda ba’zi ma’lumotlar o‘chib ketishi mumkin.</translation>
 <translation id="5163869187418756376">Ulashish amalga oshmadi. Ulanishni tekshirib ko‘rib, qayta urining.</translation>
 <translation id="516592729076796170">Dasturchilar uchun Dvorak klaviaturasi</translation>
+<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> ta fayl tayyorlanmoqda...</translation>
 <translation id="5177526793333269655">Kichiklashtirilgan rasmlar</translation>
 <translation id="5181896909298187506">Oxirgi fayllar yoʻq</translation>
 <translation id="5194713942430106590">Ustundagi fayllar roʻyxatini oʻsish boʻyicha tartiblash.</translation>

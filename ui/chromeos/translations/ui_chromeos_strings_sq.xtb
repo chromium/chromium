@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Anglisht (SHBA) me tastierë Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - pritësi</translation>
 <translation id="1521655867290435174">Fletët e Google</translation>
+<translation id="1521795806314479294"><ph name="FILE_NAME" /> po përgatitet...</translation>
 <translation id="1538729222189715449">Po hapen skedarët e Linux...</translation>
 <translation id="1547964879613821194">Anglishte kanadeze</translation>
 <translation id="1556189134700913550">Zbatoje për të gjitha</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Po ngjesh <ph name="NUMBER_OF_ITEMS" /> artikuj...</translation>
 <translation id="1722687688096767818">Po shton profilin...</translation>
 <translation id="1726100011689679555">Serverët e emrave</translation>
+<translation id="1727562178154619254">Gati për të sinkronizuar</translation>
 <translation id="1729953886957086472">Gjermanisht (Gjermani)</translation>
 <translation id="1730235522912993863">Kinezisht Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> artikuj të kopjuar.</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">Serverët e personalizuar të emrit</translation>
 <translation id="4465725236958772856">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, menaxhuar nga administratori yt, lidhu</translation>
 <translation id="4470564870223067757">Paketa hangul 2</translation>
+<translation id="4474142134969976028">Nuk përputhet asnjë rezultat</translation>
 <translation id="4477002475007461989">Rumanisht</translation>
 <translation id="4477219268485577442">Tastierë fonetike bullgare</translation>
 <translation id="4508265954913339219">Aktivizimi dështoi</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">Përdor një emër që është <ph name="MAX_LENGTH" /> karaktere i gjatë ose më pak</translation>
 <translation id="4973970068702235170">Ngjeshja dështoi, gabim i papritur: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japonisht</translation>
+<translation id="4987699874727873250">Anglisht (Indi)</translation>
 <translation id="4988205478593450158">Je i sigurt se dëshiron të fshish "<ph name="FILE_NAME" />"?</translation>
 <translation id="498902553138568924">Flutur e kuqe</translation>
 <translation id="4992066212339426712">Aktivizo zërin</translation>
@@ -509,6 +513,7 @@
    Heqja e pajisjes kur është në përdorim mund të shkaktojë humbje të të dhënave. Prit deri sa të përfundojë operacioni dhe më pas nxirre pajisjen duke përdorur aplikacionin "Skedarët".</translation>
 <translation id="5163869187418756376">Ndarja dështoi. Kontrollo lidhjen dhe provo përsëri më vonë.</translation>
 <translation id="516592729076796170">Amerikane Dvorak për programues</translation>
+<translation id="5167102019886320507">Po përgatiten <ph name="NUMBER_OF_ITEMS" /> artikuj...</translation>
 <translation id="5177526793333269655">Pamje miniaturë</translation>
 <translation id="5181896909298187506">Nuk ka skedarë të fundit</translation>
 <translation id="5194713942430106590">Kliko për të renditur kolonën në rend ngjitës.</translation>
@@ -812,6 +817,7 @@
 <translation id="7655441028674523381">Qasu me lehtësi në "Fotografitë e Google"</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7663224033570512922">Hindisht</translation>
+<translation id="7665680517722058469">Provo një kërkim tjetër</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> artikuj u zhvendosën te koshi</translation>
 <translation id="7693909743393669729">Formatimi i një disku do të spastrojë të gjitha të dhënat e ruajtura në të dhe do të heqë të gjitha ndarjet ekzistuese, duke përfshirë ndarjet që mund të mos jenë të dukshme. Ky veprim nuk mund të zhbëhet.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> nuk mund të formatohej</translation>

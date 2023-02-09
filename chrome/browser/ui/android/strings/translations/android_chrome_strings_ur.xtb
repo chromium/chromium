@@ -226,7 +226,6 @@
 <translation id="2248941474044011069">‏آپ کے پاس ورڈز Google پاس ورڈ مینیجر میں محفوظ ہونے سے پہلے آپ کے آلے پر مرموز ہو جاتے ہیں</translation>
 <translation id="2249635629516220541">سائٹس کے ذریعے استعمال کردہ معلومات کو حسب ضرورت بنائیں تاکہ آپ کو اشتہارات دکھایا جا سکے</translation>
 <translation id="2259659629660284697">پاسورڈز برآمد کریں…</translation>
-<translation id="2276231040576210443">‏آپ کسی بھی وقت اس بات کا انتخاب کر سکتے ہیں کہ <ph name="BEGIN_LINK1" />ترتیبات<ph name="END_LINK1" /> میں کس چیز کی مطابقت پذیری کرنی ہے۔ Google آپ کی سرگزشت کی بنیاد پر تلاش اور دیگر سروسز کو ذاتی نوعیت کا بنا سکتا ہے۔</translation>
 <translation id="2276696007612801991">‏اپنے پاس ورڈز چیک کرنے کے لئے اپنے Google اکاؤنٹ میں سائن ان کریں</translation>
 <translation id="2278052315791335171">اس پاس ورڈ کو حذف کرنے سے آپ کا اکاؤنٹ <ph name="SITE" /> سے حذف نہیں ہوگا</translation>
 <translation id="2286841657746966508">بلنگ پتہ</translation>
@@ -304,7 +303,6 @@
 <translation id="2669454659051515572">اس آلے کا استعمال کرنے والا کوئی بھی شخص ڈاؤن لوڈ کردہ فائلز کو دیکھ سکتا ہے</translation>
 <translation id="2702516483241149200">نیا: اس ٹیکسٹ کو اسکرول کرنے والے لنک کا اشتراک کریں</translation>
 <translation id="2707726405694321444">صفحہ ریفریش کریں</translation>
-<translation id="2709516037105925701">آٹو فل</translation>
 <translation id="271033894570825754">نیا</translation>
 <translation id="2711073837061989559">ٹرائلز</translation>
 <translation id="2718352093833049315">‏صرف Wi-Fi پر</translation>
@@ -396,7 +394,6 @@
 <translation id="3114507951000454849">آج کی خبریں پڑھیں <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">اس کے ساتھ لنک کیا گيا</translation>
 <translation id="3123734510202723619">اعلانات</translation>
-<translation id="3130863904455712965">سرگزشت اور مزید</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">‏Chrome کا ہوم پیج</translation>
 <translation id="3157931365184549694">بحال کریں</translation>
@@ -990,7 +987,6 @@
 <translation id="6397616442223433927">نیٹ ورک کنکشن بحال ہو گیا</translation>
 <translation id="6401458660421980302">‏اس ٹیب کو کسی اور آلے میں بھیجنے کے لیے وہاں Chrome میں سائن ان کریں</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> پر <ph name="ERROR_CODE" /></translation>
-<translation id="6403371459378431832">تمام آلات پر اپنے ڈیٹا کی مطابقت پذیری کریں</translation>
 <translation id="6404511346730675251">بک مارک میں ترمیم کریں</translation>
 <translation id="6406506848690869874">مطابقت پذیر بنائیں</translation>
 <translation id="6407224748847589805">آپ کے کمپیوٹر سے منسلک نہیں ہو سکا۔ توثیق کا دوسرا اختیار آزمائیں۔</translation>
@@ -1319,7 +1315,6 @@
 <translation id="8037801708772278989">ابھی چیک کیا گيا</translation>
 <translation id="804335162455518893">‏SD کارڈ نہیں ملا</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> پوشیدگی ٹیب}other{<ph name="TAB_COUNT_NORMAL" /> پوشیدگی ٹیبز}}</translation>
-<translation id="8048728378294435881">اپنے ڈیٹا کا بیک اپ لیں اور اسے کسی بھی آلے پر استعمال کریں</translation>
 <translation id="8051695050440594747">‏<ph name="MEGABYTES" /> MB دستیاب ہے</translation>
 <translation id="8058655154417507695">میعاد کے اختتام کا سال</translation>
 <translation id="8058746566562539958">‏نئے Chrome ٹیب میں کھولیں</translation>

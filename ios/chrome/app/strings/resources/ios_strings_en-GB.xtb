@@ -819,6 +819,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6869389390665537774">You can see the pages that you've visited or clear them from your history</translation>
 <translation id="687135068089457384">Show settings</translation>
 <translation id="6873263987691478642">Split view</translation>
+<translation id="6873366418270195926">You'll get an alert if the price drops on any site. This page is saved in <ph name="BEGIN_LINK" />Bookmarks<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Standard protection against websites, downloads and extensions that are known to be dangerous.</translation>
 <translation id="6888009575607455378">Are you sure that you want to discard your changes?</translation>
 <translation id="6896758677409633944">Copy</translation>
@@ -1122,6 +1123,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="952704832371081537">Cancel</translation>
 <translation id="953008885340860025">Chrome is signed out</translation>
 <translation id="959066944189734975">You're following <ph name="CHANNEL_NAME" /></translation>
+<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Your organisation allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden.</translation>
 <translation id="984509647832111802">Sync isn't working.</translation>
 <translation id="988141524645182168">Other devices</translation>

@@ -221,6 +221,7 @@
 <translation id="1192706927100816598">{0,plural, =1{तुम्हाला # सेकंदाने आपोआप साइन आउट केले जाईल.
 <ph name="DOMAIN" /> ला तुम्ही तुमचे स्मार्ट कार्ड घालून ठेवणे आवश्यक आहे.}other{तुम्हाला # सेकंदांनी आपोआप साइन आउट केले जाईल.
 <ph name="DOMAIN" /> ला तुम्ही तुमचे स्मार्ट कार्ड घालून ठेवणे आवश्यक आहे.}}</translation>
+<translation id="119330003005586565">तुम्ही वाचलेली पेज</translation>
 <translation id="1193927020065025187">ही साइट कदाचित तुम्हाला फसवून अनाहूत सूचनांना अनुमती द्यायला लावण्याचा प्रयत्न करत आहे</translation>
 <translation id="1195210374336998651">अ‍ॅप सेटिंग्जवर जा</translation>
 <translation id="1195447618553298278">अज्ञात एरर.</translation>
@@ -283,6 +284,7 @@
 <translation id="1244303850296295656">एक्स्टेंशन एरर</translation>
 <translation id="1245628370644070008">स्थानिक डेटा रिकव्हरी</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> इंस्टॉल करता आली नाही: इमेज URL ने <ph name="HTTP_ERROR" /> हा एरर कोड दाखवला. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
+<translation id="1247372569136754018">मायक्रोफोन (अंतर्गत)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{एका साइटसाठी सूचनांना अनुमती नाही}other{{NUM_SITES} साइटसाठी सूचनांना अनुमती नाही}}</translation>
 <translation id="1251366534849411931">अपेक्षित खुला महिरपी कंस: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">हे साइट आणि इंस्टॉल केलेल्या ॲप्सनी स्टोअर केलेला <ph name="TOTAL_USAGE" /> डेटा साफ करेल</translation>
@@ -541,6 +543,7 @@
 <translation id="1482626744466814421">हा टॅब बुकमार्क करा…</translation>
 <translation id="1482772681918035149">पासवर्ड संपादित करा</translation>
 <translation id="1483493594462132177">पाठवा</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">साइट ब्लूटूथ वापरत आहे</translation>
 <translation id="1485015260175968628">ते आता करू शकते:</translation>
 <translation id="1485141095922496924">आवृत्ती <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1105,6 +1108,7 @@
 <translation id="1965624977906726414">यास विशेष परवानग्या नाहीत.</translation>
 <translation id="1966649499058910679">प्रत्येक शब्द तो बोलला जात असताना हायलाइट करा</translation>
 <translation id="1967970931040389207">हॉटस्पॉट सुरू करा</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">WebRTC मजकूर लॉग (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">तुम्हाला आणखी जलद ब्राउझ करता येईल कारण तुमच्या सध्याच्या वेबपेज भेटीच्या आधारावर आशय प्रोॲक्टिव्हपणे लोड केला जातो</translation>
 <translation id="197288927597451399">ठेवा</translation>
@@ -1830,7 +1834,6 @@
 <translation id="25899519884572181">वाचक मोडमधून बाहेर पडा</translation>
 <translation id="2593499352046705383">सुरुवात करण्यापूर्वी, तुम्ही तुमच्या सर्व डेटाचा बॅकअप घेतला आहे याची खात्री करा. <ph name="DEVICE_OS" /> हे इंस्टॉल केल्याने, तुमची हार्ड ड्राइव्ह ओव्हरराइट होईल. g.co/flex/InstallGuide येथे अधिक जाणून घ्या.</translation>
 <translation id="2594999711683503743">Google वर शोधा किंवा URL टाइप करा</translation>
-<translation id="25957578727513093">येथे झटपट येण्यासाठी, Google Password Manager मध्ये शॉर्टकट जोडा</translation>
 <translation id="2599048253926156421">वापरकर्ता नाव क्लिपबोर्डवर कॉपी केले</translation>
 <translation id="2602501489742255173">सुरू करण्यासाठी वर स्वाइप करा</translation>
 <translation id="2603115962224169880">काँप्युटर साफ करा</translation>
@@ -2408,6 +2411,7 @@
 <translation id="3103451787721578293">कृपया हा डेटा अपलोड करण्यासाठीचे कारण एंटर करा:</translation>
 <translation id="3105339775057145050">शेवटचे अयशस्वी अपडेट</translation>
 <translation id="3105796011181310544">Google वर परत बदलायचे आहे का?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ब्लूटूथ)</translation>
 <translation id="310671807099593501">साइट ब्लूटूथ वापरत आहे</translation>
 <translation id="3108931485517391283">मिळवू शकत नाही</translation>
 <translation id="3108957152224931571">हायलाइटचा रंग</translation>
@@ -3049,6 +3053,7 @@
 <translation id="371300529209814631">मागे/पुढे</translation>
 <translation id="3713047097299026954">या सिक्युरिटी कीमध्ये कोणताही साइन इन डेटा नाही</translation>
 <translation id="3713091615825314967">स्वयंचलित अपडेट सुरू केली आहेत.</translation>
+<translation id="371370241367527062">समोरील मायक्रोफोन</translation>
 <translation id="3714195043138862580">हे डेमो डिव्हाइस अधिकार काढून घेतलेल्या स्थितीमध्ये ठेवले गेले आहे.</translation>
 <translation id="3719826155360621982">होम पेज</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3144,6 +3149,7 @@
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” साठी <ph name="SEARCH_ENGINE" /> &amp;शोधा</translation>
 <translation id="3798449238516105146">आवृत्ती</translation>
 <translation id="3798632811625902122"><ph name="DEVICE" /> Bluetooth डिव्हाइसला पेअर करण्यासाठी परवानगी हवी आहे.</translation>
+<translation id="3798670284305777884">स्पीकर (अंतर्गत)</translation>
 <translation id="3799128412641261490">स्विच अ‍ॅक्सेस सेटिंग्ज</translation>
 <translation id="3800030395703848668">सूची पर्याय पहा</translation>
 <translation id="3800806661949714323">सर्व दर्शवा (शिफारस केलेले)</translation>
@@ -5144,6 +5150,7 @@
 <translation id="5643620609347735571">साफ करा आणि सुरू ठेवा</translation>
 <translation id="5646376287012673985">स्थान</translation>
 <translation id="5646558797914161501">व्यवसायी</translation>
+<translation id="5648021990716966815">माइक जॅक</translation>
 <translation id="5648166631817621825">अखेरच्या 7 दिवसांमधील</translation>
 <translation id="5651308944918885595">Nearby सह शेअरिंग ची शोधसुलभता</translation>
 <translation id="5653154844073528838">तुमच्याकडे <ph name="PRINTER_COUNT" /> सेव्ह केलेली प्रिंटर आहेत.</translation>
@@ -5534,6 +5541,7 @@
 <translation id="6007240208646052708">तुमच्या भाषेमध्ये व्हॉइस शोध उपलब्ध नाही.</translation>
 <translation id="6010651352520077187">सुरू असताना, Google Translate हे तुमच्या आवडीच्या भाषेत साइटचे भाषांतर करण्याची सुविधा देईल. हे आपोआप साइटचे भाषांतरदेखील करू शकते.</translation>
 <translation id="6011193465932186973">फिंगरप्रिंट</translation>
+<translation id="6011308810877101166">शोध सूचनांमध्ये सुधारणा करा</translation>
 <translation id="6011908034087870826"><ph name="DEVICE_NAME" /> ला लिंक पाठवत आहे</translation>
 <translation id="6013027779243312217">तुमच्या ऑडिओ आणि व्हिडिओसाठी कॅप्शन मिळवा</translation>
 <translation id="6014293228235665243">न वाचलेले</translation>
@@ -5851,6 +5859,7 @@
 <translation id="630292539633944562">वैयक्तिक माहिती सूचना</translation>
 <translation id="6305607932814307878">जागतिक धोरण:</translation>
 <translation id="6305909198255586420">कृपया तुमची प्राथमिक प्रोफाइल वापरून इंस्टॉल करा</translation>
+<translation id="630750887748244481">तुमच्या पालकांनी Chrome साठी "साइट, अ‍ॅप्स आणि एक्स्टेंशनकरिता परवानग्या" बंद केल्या आहेत. हे एक्स्टेंशन जोडण्याची अनुमती नाही.</translation>
 <translation id="6307990684951724544">सिस्‍टीम व्यस्त</translation>
 <translation id="6308493641021088955"><ph name="EXTENSION_NAME" /> ने पुरवलेले साइन इन</translation>
 <translation id="6308937455967653460">या फॉरमॅटमध्ये लिंक सेव्ह करा...</translation>
@@ -6251,6 +6260,7 @@
 <translation id="6678717876183468697">क्वेरी URL</translation>
 <translation id="6680442031740878064">उपलब्ध: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">रेट करा</translation>
+<translation id="6683022854667115063">हेडफोन</translation>
 <translation id="6683087162435654533">सर्व टॅब रिस्टोअर करा</translation>
 <translation id="6684827949542560880">नवीनतम अपडेट डाउनलोड करत आहे</translation>
 <translation id="668599234725812620">Google Play उघडा</translation>
@@ -6879,6 +6889,7 @@
 <translation id="7255002516883565667">सध्या तुमच्याकडे एक कार्ड आहे जे फक्त या डिव्हाइसवर वापरले जाऊ शकते</translation>
 <translation id="7255935316994522020">लागू करा</translation>
 <translation id="7256069762010468647">साइट तुमचा कॅमेरा वापरत आहे</translation>
+<translation id="7256634071279256947">मागील मायक्रोफोन</translation>
 <translation id="7256710573727326513">टॅबमध्ये उघडा</translation>
 <translation id="7257173066616499747">वाय-फाय नेटवर्क</translation>
 <translation id="725758059478686223">प्रिंटिंग सेवा</translation>
@@ -7991,6 +8002,7 @@
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" /> सोबत पेअर करत आहे</translation>
 <translation id="8251578425305135684">थंबनेल काढली.</translation>
 <translation id="825238165904109940">नेहमी पूर्ण URL दाखवा</translation>
+<translation id="8252538334423261825">एक्स्टेंशन जोडू शकत नाही</translation>
 <translation id="8252569384384439529">अपलोड करत आहे…</translation>
 <translation id="8253198102038551905">नेटवर्क गुणधर्म मिळविण्यासाठी '+' क्लिक करा</translation>
 <translation id="8255212965098517578">अलीकडील फोटो, सूचना आणि अ‍ॅप्स</translation>

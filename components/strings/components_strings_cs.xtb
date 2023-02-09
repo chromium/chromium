@@ -524,6 +524,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2202627062836089804">zadní strana karty</translation>
 <translation id="22081806969704220">Přihrádka 3</translation>
 <translation id="2210794033760923560">Nahrát přehled</translation>
+<translation id="2212579473415663542">Tato adresa je uložena ve vašem účtu Google (<ph name="ACCOUNT" />). Můžete ji používat ve všech službách Google na všech zařízeních.</translation>
 <translation id="2212735316055980242">Zásada nebyla nalezena</translation>
 <translation id="2213606439339815911">Načítání záznamů...</translation>
 <translation id="2213612003795704869">Stránka je vytisknuta</translation>
@@ -1970,6 +1971,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5866898949289125849">Prohlížíte si stránku nástrojů pro vývojáře</translation>
 <translation id="5869405914158311789">Tento web není dostupný</translation>
 <translation id="5869522115854928033">Uložená hesla</translation>
+<translation id="5872692522325383488">Číslo IBAN bylo uloženo</translation>
 <translation id="5873013647450402046">Banka chce potvrdit vaši totožnost.</translation>
 <translation id="5877831137320480913">Krása a fitness</translation>
 <translation id="5884465125445718607">Obálka čínská č. 6</translation>
@@ -2138,6 +2140,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6300452962057769623">{0,plural, =0{Zařízení se teď restartuje}=1{Zařízení se za 1 sekundu restartuje}few{Zařízení se za # sekundy restartuje}many{Zařízení se za # sekundy restartuje}other{Zařízení se za # sekund restartuje}}</translation>
 <translation id="6301104306974789820">Dostávat oznámení o sledování cen</translation>
 <translation id="6305205051461490394">Web <ph name="URL" /> není dostupný.</translation>
+<translation id="6306713302480826305">Tato adresa bude smazána z tohoto i z vašich dalších přihlášených zařízení</translation>
 <translation id="6311165245110979290">Virtuální karta je k dispozici</translation>
 <translation id="6312113039770857350">Webová stránka není k dispozici</translation>
 <translation id="6316226860534107313">Skútry a mopedy</translation>
@@ -3030,6 +3033,7 @@ Další podrobnosti:
 <translation id="8473863474539038330">Adresy a další</translation>
 <translation id="8474910779563686872">Zobrazit podrobnosti pro vývojáře</translation>
 <translation id="8479754468255770962">Sponka vlevo dole</translation>
+<translation id="8483229036294884935">Tato adresa bude smazána z vašeho účtu Google (<ph name="ACCOUNT" />)</translation>
 <translation id="8483780878231876732">Chcete-li používat karty z účtu Google, přihlaste se do Chromu.</translation>
 <translation id="8488350697529856933">Platí pro</translation>
 <translation id="8490137692873530638">Stohovač 10</translation>

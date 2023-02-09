@@ -524,6 +524,7 @@
 <translation id="2202627062836089804">ձեր քարտի հետևի կողմում</translation>
 <translation id="22081806969704220">Դարակ 3</translation>
 <translation id="2210794033760923560">Վերբեռնել զեկույցը</translation>
+<translation id="2212579473415663542">Այս հասցեն պահվում է ձեր Google գաշվում (<ph name="ACCOUNT" />)։ Դուք կարող եք հասցեն օգտագործել ցանկացած սարքից՝ Google-ի արտադրանքներում։</translation>
 <translation id="2212735316055980242">Կանոնը չգտնվեց</translation>
 <translation id="2213606439339815911">Գրառումները քաշվում են…</translation>
 <translation id="2213612003795704869">Էջը տպված է</translation>
@@ -1973,6 +1974,7 @@
 <translation id="5866898949289125849">Դուք դիտում եք ծրագրավորողի գործիքների էջը</translation>
 <translation id="5869405914158311789">Կայքն անհասանելի է</translation>
 <translation id="5869522115854928033">Պահված գաղտնաբառեր</translation>
+<translation id="5872692522325383488">IBAN-ը պահվել է</translation>
 <translation id="5873013647450402046">Ձեր բանկը պետք է հաստատի ձեր ինքնությունը։</translation>
 <translation id="5877831137320480913">Գեղեցկություն և ֆիթնես</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
@@ -2142,6 +2144,7 @@
 <translation id="6300452962057769623">{0,plural, =0{Սարքը հիմա կվերագործարկվի}=1{Սարքը կվերագործարկվի 1 վայրկյանից}one{Սարքը կվերագործարկվի # վայրկյանից}other{Սարքը կվերագործարկվի # վայրկյանից}}</translation>
 <translation id="6301104306974789820">Ստանալ ծանուցումներ գների հետագծման մասին</translation>
 <translation id="6305205051461490394"><ph name="URL" />-ն անհասանելի է:</translation>
+<translation id="6306713302480826305">Հասցեն կհեռացվի այս և ձեր մյուս սարքերից, որոնցում մտել եք հաշիվ</translation>
 <translation id="6311165245110979290">Հասանելի է վիրտուալ քարտ</translation>
 <translation id="6312113039770857350">Կայքէջն անհասանելի է</translation>
 <translation id="6316226860534107313">Մոտոցիկլետներ և մոպեդներ</translation>
@@ -3033,6 +3036,7 @@
 <translation id="8473863474539038330">Հասցեներ և այլ տեղեկություններ</translation>
 <translation id="8474910779563686872">Ցուցադրել մշակողի տվյալները</translation>
 <translation id="8479754468255770962">Ամրակ ներքևի ձախ կողմում</translation>
+<translation id="8483229036294884935">Այս հասցեն կհեռացվի ձեր Google հաշվից, <ph name="ACCOUNT" /></translation>
 <translation id="8483780878231876732">Google հաշվի քարտերն օգտագործելու համար Chrome-ում մուտք գործեք ձեր հաշիվ</translation>
 <translation id="8488350697529856933">Վերաբերում է՝</translation>
 <translation id="8490137692873530638">Շեղջիչ 10</translation>

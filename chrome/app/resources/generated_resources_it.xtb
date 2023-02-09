@@ -282,6 +282,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1244303850296295656">Errore delle estensioni</translation>
 <translation id="1245628370644070008">Ripristino dei dati locali</translation>
 <translation id="1246863218384630739">Impossibile installare <ph name="VM_NAME" />: l'URL dell'immagine ha restituito un codice di errore <ph name="HTTP_ERROR" />. Contatta l'amministratore.</translation>
+<translation id="1247372569136754018">Microfono (interno)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Notifiche non consentite per 1 sito}other{Notifiche non consentite per {NUM_SITES} siti}}</translation>
 <translation id="1251366534849411931">Parentesi graffa aperta prevista: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Verranno cancellati <ph name="TOTAL_USAGE" /> di dati memorizzati da siti e app installate</translation>
@@ -539,6 +540,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1482626744466814421">Aggiungi questa scheda ai preferiti…</translation>
 <translation id="1482772681918035149">modificare le password</translation>
 <translation id="1483493594462132177">Invia</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Il sito usa il Bluetooth</translation>
 <translation id="1485015260175968628">Ora può:</translation>
 <translation id="1485141095922496924">Versione <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -627,6 +629,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1567387640189251553">È stata collegata una tastiera diversa dall'ultimo inserimento della password. Potrebbe essere un tentativo di rubare i tasti premuti.</translation>
 <translation id="156793199942386351">Il tasto "'<ph name="CURRENTKEY" />" è già stato assegnato all'azione "<ph name="ACTION" />". Premi un tasto qualsiasi per <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Console JavaScript</translation>
+<translation id="1569466257325986920">La prossima volta che cambierai la password del tuo Account Google, i tuoi dati locali verranno recuperati automaticamente dopo che avrai eseguito l'accesso all'account</translation>
 <translation id="1570604804919108255">Riattiva audio notifiche</translation>
 <translation id="1571304935088121812">Copia nome utente</translation>
 <translation id="1571738973904005196">Visualizza la scheda <ph name="TAB_ORIGIN" /></translation>
@@ -885,6 +888,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1781979858217752599">Condividi audio finestra</translation>
 <translation id="1782101999402987960">Gli aggiornamenti sono stati bloccati dall'amministratore</translation>
 <translation id="1782196717298160133">Ricerca del tuo telefono</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 nota}other{# note}}</translation>
 <translation id="1784707308176068866">Esegui in background quando richiesto da un'applicazione nativa interoperativa</translation>
 <translation id="1784849162047402014">Spazio insufficiente sul disco del dispositivo</translation>
 <translation id="1787350673646245458">Immagine dell'utente</translation>
@@ -1095,6 +1099,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1965624977906726414">Non ha autorizzazioni speciali.</translation>
 <translation id="1966649499058910679">Evidenzia ogni parola mentre viene pronunciata</translation>
 <translation id="1967970931040389207">Attiva l'hotspot</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">Log di testo WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Navigherai più velocemente perché i contenuti vengono caricati in modo proattivo in base alla pagina web che stai visitando</translation>
 <translation id="197288927597451399">Conserva</translation>
@@ -1676,6 +1681,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2467755475704469005">Nessun dispositivo rilevato. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Accelerazione di scorrimento del touchpad</translation>
 <translation id="2468205691404969808">Utilizza i cookie per memorizzare le tue preferenze, anche se non visiti quelle pagine</translation>
+<translation id="2468247643665097563">Ordina</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470085922875120">Stai utilizzando password che sembrano difficili da indovinare</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 scheda}other{<ph name="GROUP_TITLE" /> - # schede}}</translation>
@@ -1817,7 +1823,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="25899519884572181">Esci dalla modalità Reader</translation>
 <translation id="2593499352046705383">Prima di iniziare, assicurati di avere una copia di backup dei tuoi dati. L'installazione di <ph name="DEVICE_OS" /> comporterà la sovrascrittura del disco rigido. Scopri di più all'indirizzo g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Cerca su Google o digita un URL</translation>
-<translation id="25957578727513093">Per accedere più rapidamente a Gestore delle password di Google, aggiungi una scorciatoia</translation>
 <translation id="2599048253926156421">Nome utente copiato negli appunti</translation>
 <translation id="2602501489742255173">Scorri verso l'alto per iniziare</translation>
 <translation id="2603115962224169880">Pulisci il computer</translation>
@@ -2395,6 +2400,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3103451787721578293">Inserisci un motivo per il caricamento di questi dati:</translation>
 <translation id="3105339775057145050">Ultimo aggiornamento non riuscito</translation>
 <translation id="3105796011181310544">Tornare a Google?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Il sito sta usando il Bluetooth</translation>
 <translation id="3108931485517391283">Impossibile ricevere</translation>
 <translation id="3108957152224931571">Colore di evidenziazione</translation>
@@ -3036,6 +3042,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="371300529209814631">Indietro/Avanti</translation>
 <translation id="3713047097299026954">Nessun dato di accesso memorizzato sul token di sicurezza</translation>
 <translation id="3713091615825314967">Gli aggiornamenti automatici sono attivi.</translation>
+<translation id="371370241367527062">Microfono anteriore</translation>
 <translation id="3714195043138862580">Lo stato del dispositivo per le demo è stato impostato su "Deprovisioning effettuato".</translation>
 <translation id="3719826155360621982">Home page</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3131,6 +3138,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3797900183766075808">&amp;Cerca "<ph name="SEARCH_TERMS" />" su <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Versione</translation>
 <translation id="3798632811625902122">Il dispositivo Bluetooth <ph name="DEVICE" /> chiede l'autorizzazione per essere accoppiato.</translation>
+<translation id="3798670284305777884">Altoparlante (interno)</translation>
 <translation id="3799128412641261490">Impostazioni Switch Access</translation>
 <translation id="3800030395703848668">Visualizza opzioni elenco</translation>
 <translation id="3800806661949714323">Mostra tutto (opzione consigliata)</translation>
@@ -5130,6 +5138,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5643620609347735571">Cancella e continua</translation>
 <translation id="5646376287012673985">Posizione</translation>
 <translation id="5646558797914161501">Uomo d'affari</translation>
+<translation id="5648021990716966815">Jack per microfono</translation>
 <translation id="5648166631817621825">Ultima settimana</translation>
 <translation id="5651308944918885595">Rilevabilità Condivisione nelle vicinanze</translation>
 <translation id="5653154844073528838">Hai <ph name="PRINTER_COUNT" /> stampanti salvate.</translation>
@@ -5944,6 +5953,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6410668567036790476">Aggiungi motore di ricerca</translation>
 <translation id="641469293210305670">Installa aggiornamenti e app</translation>
 <translation id="6414878884710400018">Apri le Preferenze di sistema</translation>
+<translation id="6415816101512323589">Vuoi attivare il recupero dei dati locali per proteggere i tuoi dati?</translation>
 <translation id="6415900369006735853">Connettiti a Internet tramite il telefono</translation>
 <translation id="6416743254476733475">Consenti o blocca sul tuo computer.</translation>
 <translation id="6417265370957905582">Assistente Google</translation>
@@ -6237,6 +6247,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6678717876183468697">URL query</translation>
 <translation id="6680442031740878064">Disponibile: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocità</translation>
+<translation id="6683022854667115063">Cuffie</translation>
 <translation id="6683087162435654533">Ripristina tutt&amp;e le schede</translation>
 <translation id="6684827949542560880">Download dell'ultimo aggiornamento</translation>
 <translation id="668599234725812620">Apri Google Play</translation>
@@ -6865,6 +6876,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7255002516883565667">Al momento hai una carta che può essere utilizzata solo su questo dispositivo.</translation>
 <translation id="7255935316994522020">Applica</translation>
 <translation id="7256069762010468647">Il sito sta usando la videocamera</translation>
+<translation id="7256634071279256947">Microfono posteriore</translation>
 <translation id="7256710573727326513">Apri in una scheda</translation>
 <translation id="7257173066616499747">Reti Wi-Fi</translation>
 <translation id="725758059478686223">Servizio di stampa</translation>

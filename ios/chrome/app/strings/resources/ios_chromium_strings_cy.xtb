@@ -93,6 +93,7 @@
 <translation id="7045244423563602563">Personoleiddiwch Chromium</translation>
 <translation id="7099326575020694068">Ni all Chromium ddefnyddio'ch camera yn y modd Gwedd Hollt</translation>
 <translation id="7118091470949186573">Gallwch bellach ddefnyddio Chromium unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
+<translation id="7165402419892018581">Dewiswch Chromium ar gyfer Awtolenwi</translation>
 <translation id="7175400662502680481">Datgelwyd eich cyfrinair mewn achos o dor data. Mae Rheolwr Cyfrineiriau yn argymell ei newid ar unwaith.</translation>
 <translation id="7208566199746267865">Mae Chromium yn arbed amser i chi drwy ddod â'ch cyfrifon i'r we. Gallwch ychwanegu neu dynnu cyfrifon yn y Gosodiadau.</translation>
 <translation id="725427773388857052">Gall Chromium helpu i'ch cadw'n ddiogel rhag toriadau data, gwefannau anniogel a rhagor.</translation>
@@ -107,6 +108,7 @@
 <translation id="7746854981345936341">Awgrym Chromium. Mae rhai botymau bellach ar waelod eich sgrîn, megis Back, Forward, a Search.</translation>
 <translation id="7763454117143368771">Defnyddiwch Chromium fel eich porwr diofyn i gadw yn ddiogel rhag gwefannau peryglus ac i gadw eich cyfrineiriau'n ddiogel</translation>
 <translation id="7812317783196516890">Rydych wedi mewngofnodi ac yn cysoni'ch data â chyfrif a reolir gan <ph name="DOMAIN" /> lle gall ei weinyddwr bellach osod polisïau defnyddwyr sy'n benodol i'r cyfrif hwnnw a all newid ymddygiad Chromium.</translation>
+<translation id="7859018312476869945">Pan fyddwch yn teipio yn y bar cyfeiriad neu'r blwch chwilio, bydd Chromium yn anfon yr hyn rydych yn ei deipio i'ch peiriant chwilio diofyn i gael awgrymiadau gwell. Mae hwn wedi'i ddiffodd yn y modd Anhysbys.</translation>
 <translation id="786327964234957808">Rydych yn newid cyfrifon cysoni o <ph name="USER_EMAIL1" /> i <ph name="USER_EMAIL2" />. Mae eich data Chromium presennol yn cael eu rheoli gan <ph name="DOMAIN" />. Bydd hyn yn dileu eich data o'r ddyfais hon, ond bydd eich data yn aros yn <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Dechrau defnyddio sganiwr Chromium</translation>
 <translation id="7928628054454574139">Agor Chromium unrhyw bryd y byddwch yn tapio dolenni mewn apiau eraill</translation>
@@ -116,6 +118,7 @@
 <translation id="8073677936375100957">Clirio'ch data Chromium o'r ddyfais hon?</translation>
 <translation id="8240981428553046115">Ni allai Chromium wirio am ddiweddariadau. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="8409374867500149834">Mae gennych ddiogelwch cryfaf Chromium yn erbyn gwefannau niweidiol</translation>
+<translation id="8460301378281140593">O'ch Gosodiadau iPhone, agorwch "Dewisiadau Cyfrinair" a dewiswch "Chromium"</translation>
 <translation id="858114650497379505">Gallwch ddefnyddio'r cyfrineiriau a gadwyd gennych i'r Rheolwr Cyfrineiriau mewn apiau eraill ar eich iPhone.</translation>
 <translation id="8586442755830160949">Hawlfraint <ph name="YEAR" /> Awduron Chromium. Cedwir Pob Hawl.</translation>
 <translation id="8603022514504485810">Ni allai Rheolwr Cyfrineiriau Google wirio pob cyfrinair. Rhowch gynnig arall arni yfory neu <ph name="BEGIN_LINK" />gwiriwch gyfrineiriau yn eich Cyfrif Google<ph name="END_LINK" />.</translation>

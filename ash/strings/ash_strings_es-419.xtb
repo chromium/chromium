@@ -379,7 +379,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3047761520276763270">Intenta decir:</translation>
 <translation id="3051189971848907985">Se está cambiando el nombre del perfil. Espera unos minutos.</translation>
 <translation id="3055162170959710888">Hoy usaste este dispositivo durante <ph name="USED_TIME" /></translation>
-<translation id="3062298103034426069">No es compatible</translation>
+<translation id="3062298103034426069">No compatible</translation>
 <translation id="3068711042108640621">Biblioteca a la izquierda</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Expandir menú</translation>
@@ -914,6 +914,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5867606971598166637">El administrador del sistema está supervisando las pantallas</translation>
 <translation id="5876666360658629066">Ingresa el código parental</translation>
 <translation id="5881540930187678962">Configura Phone Hub más tarde</translation>
+<translation id="5881663018261910378">Desactivado</translation>
 <translation id="5887954372087850114">Se asignó la ventana <ph name="WINDOW_TITLE" /> al escritorio <ph name="DESK_TITLE" /> y se anuló la asignación al resto de los escritorios</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="589817443623831496">Búsqueda puntual</translation>

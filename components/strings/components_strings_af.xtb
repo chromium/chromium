@@ -540,6 +540,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2241693394036365668">Lêer is afgelaai</translation>
 <translation id="2246264294482514010">10x12 dm.</translation>
 <translation id="2246480341630108201">Jou ouer het nog nie gesê dat dit OK is nie</translation>
+<translation id="2247789808226901522">Kaart het verval</translation>
 <translation id="2248949050832152960">Gerbruik WebAuthn</translation>
 <translation id="2250931979407627383">Randhegting links</translation>
 <translation id="225207911366869382">Hierdie waarde is vir hierdie beleid opgeskort.</translation>
@@ -1078,6 +1079,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3646643500201740985">Meet hoe goed ’n advertensie vaar</translation>
 <translation id="3647286794400715637">Elke URL-stringinskrywing moet 1 tot 2 URL'e bevat.</translation>
 <translation id="3650584904733503804">Stawing suksesvol</translation>
+<translation id="3650594806107685466">Voer die CVC op die <ph name="SIDE_OF_CARD" /> in om te help om jou kaart veilig te hou</translation>
 <translation id="3653033846669030038">Temaparke</translation>
 <translation id="3655241534245626312">Gaan na toestemminginstellings</translation>
 <translation id="3655670868607891010">As jy dit gereeld sien, probeer hierdie <ph name="HELP_LINK" />.</translation>
@@ -2458,6 +2460,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7112327784801341716">Sien jy nie jou huidige inligting nie? Kontak jou bank om dit op te dateer.</translation>
 <translation id="7118618213916969306">Soek vir knipbord-URL, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Maak ander oortjies of programme toe</translation>
+<translation id="7124354851782353862">Voer jou CVC in</translation>
 <translation id="7129355289156517987">Jou aktiwiteit in oortjies word op hierdie toestel uitgevee wanneer jy alle Incognito-oortjies in Chromium toemaak:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Blaai-aktiwiteit<ph name="END_LIST_ITEM" />
@@ -2784,6 +2787,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7844689747373518809">{COUNT,plural, =0{Geen}=1{1 program (<ph name="EXAMPLE_APP_1" />)}=2{2 programme (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# programme (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">’n Werf wat jy besoek, kan Chrome later vir jou onderwerpe vra om die advertensies wat jy sien, te personaliseer. Chrome deel tot 3 onderwerpe terwyl dit jou blaaigeskiedenis en identiteit beskerm.</translation>
+<translation id="7860345425589240791">Voer jou nuwe vervaldatum en CVC op die <ph name="SIDE_OF_CARD" /> in</translation>
 <translation id="7862185352068345852">Verlaat werf?</translation>
 <translation id="7865448901209910068">Beste spoed</translation>
 <translation id="7871445724586827387">Verander jou Google-rekeningwagwoord</translation>

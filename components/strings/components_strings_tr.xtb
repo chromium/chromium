@@ -524,6 +524,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2202627062836089804">kartınızın arkasında</translation>
 <translation id="22081806969704220">Tepsi 3</translation>
 <translation id="2210794033760923560">Rapor yükle</translation>
+<translation id="2212579473415663542">Bu adres Google Hesabınıza (<ph name="ACCOUNT" />) kaydedildi. Herhangi bir cihazdaki Google ürünlerinde bu adresi kullanabilirsiniz.</translation>
 <translation id="2212735316055980242">Politika bulunamadı</translation>
 <translation id="2213606439339815911">Girişler getiriliyor...</translation>
 <translation id="2213612003795704869">Sayfa yazdırıldı</translation>
@@ -1972,6 +1973,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5866898949289125849">Geliştirici araçları sayfasını görüntülüyorsunuz</translation>
 <translation id="5869405914158311789">Bu siteye ulaşılamıyor</translation>
 <translation id="5869522115854928033">Kayıtlı şifreler</translation>
+<translation id="5872692522325383488">IBAN kaydedildi</translation>
 <translation id="5873013647450402046">Bankanız kimliğinizi doğrulamak istiyor.</translation>
 <translation id="5877831137320480913">Güzellik ve form koruma</translation>
 <translation id="5884465125445718607">Zarf Chinese #6</translation>
@@ -2141,6 +2143,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6300452962057769623">{0,plural, =0{Cihazınız şimdi yeniden başlatılacak}=1{Cihazınız 1 saniye içinde yeniden başlatılacak}other{Cihazınız # saniye içinde yeniden başlatılacak}}</translation>
 <translation id="6301104306974789820">Fiyat takibi bildirimleri al</translation>
 <translation id="6305205051461490394"><ph name="URL" /> adresine ulaşılamıyor.</translation>
+<translation id="6306713302480826305">Bu adres, bu cihazdan ve oturum açtığınız diğer cihazlardan silinecek</translation>
 <translation id="6311165245110979290">Sanal kart mevcut</translation>
 <translation id="6312113039770857350">Web sayfası mevcut değil</translation>
 <translation id="6316226860534107313">Scooter'lar ve mopetler</translation>
@@ -3032,6 +3035,7 @@ Ek ayrıntılar:
 <translation id="8473863474539038330">Adresler ve daha fazlası</translation>
 <translation id="8474910779563686872">Geliştirici ayrıntılarını göster</translation>
 <translation id="8479754468255770962">Sol altta tel zımba</translation>
+<translation id="8483229036294884935">Bu adres, Google Hesabınızdan (<ph name="ACCOUNT" />) silinecek</translation>
 <translation id="8483780878231876732">Google Hesabınızda kayıtlı kartları kullanmak için Chrome'da oturum açın</translation>
 <translation id="8488350697529856933">Uygulandığı yer</translation>
 <translation id="8490137692873530638">Yığınlayıcı 10</translation>

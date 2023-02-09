@@ -284,6 +284,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1244303850296295656">Kesalahan ekstensi</translation>
 <translation id="1245628370644070008">Pemulihan data lokal</translation>
 <translation id="1246863218384630739">Tidak dapat menginstal <ph name="VM_NAME" />: URL gambar menampilkan kode error <ph name="HTTP_ERROR" />. Harap hubungi administrator Anda.</translation>
+<translation id="1247372569136754018">Mikrofon (internal)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Notifikasi tidak diizinkan untuk 1 situs}other{Notifikasi tidak diizinkan untuk {NUM_SITES} situs}}</translation>
 <translation id="1251366534849411931">Sepertinya ada kurung kurawal terbuka: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Ini akan menghapus <ph name="TOTAL_USAGE" /> data yang disimpan oleh situs dan aplikasi yang terinstal di dalamnya</translation>
@@ -542,6 +543,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1482626744466814421">Bookmark Tab Ini...</translation>
 <translation id="1482772681918035149">mengedit sandi</translation>
 <translation id="1483493594462132177">Kirim</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Situs menggunakan Bluetooth</translation>
 <translation id="1485015260175968628">Sekarang aplikasi/ekstensi dapat:</translation>
 <translation id="1485141095922496924">Versi <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1107,6 +1109,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1965624977906726414">Tidak memiliki izin khusus.</translation>
 <translation id="1966649499058910679">Soroti setiap kata saat kata tersebut diucapkan</translation>
 <translation id="1967970931040389207">Aktifkan hotspot</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">Log teks WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Anda akan menjelajah lebih cepat karena konten dimuat secara proaktif berdasarkan halaman web yang sedang Anda buka</translation>
 <translation id="197288927597451399">Tetap Download</translation>
@@ -1832,7 +1835,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="25899519884572181">Keluar dari Mode Pembaca</translation>
 <translation id="2593499352046705383">Sebelum memulai, pastikan Anda sudah mencadangkan data Anda. Menginstal <ph name="DEVICE_OS" /> akan menimpa semua data di hard drive. Pelajari lebih lanjut di g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Telusuri di Google atau ketik URL</translation>
-<translation id="25957578727513093">Tambahkan pintasan ke Pengelola Sandi Google agar dapat diakses lebih cepat</translation>
 <translation id="2599048253926156421">Nama pengguna disalin ke papan klip</translation>
 <translation id="2602501489742255173">Geser ke atas untuk memulai</translation>
 <translation id="2603115962224169880">Bersihkan komputer</translation>
@@ -2410,6 +2412,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3103451787721578293">Masukkan alasan untuk mengupload data ini:</translation>
 <translation id="3105339775057145050">Update Gagal Terakhir</translation>
 <translation id="3105796011181310544">Ubah kembali ke Google?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Situs sedang menggunakan bluetooth</translation>
 <translation id="3108931485517391283">Tidak dapat menerima</translation>
 <translation id="3108957152224931571">Warna sorotan</translation>
@@ -3051,6 +3054,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="371300529209814631">Sebelumnya/Selanjutnya</translation>
 <translation id="3713047097299026954">Kunci keamanan ini tidak memiliki data login apa pun</translation>
 <translation id="3713091615825314967">Update otomatis diaktifkan.</translation>
+<translation id="371370241367527062">Mikrofon depan</translation>
 <translation id="3714195043138862580">Perangkat demo ini disetel ke status akses dicabut.</translation>
 <translation id="3719826155360621982">Beranda</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3146,6 +3150,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3797900183766075808">&amp;Menelusuri <ph name="SEARCH_ENGINE" /> untuk “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="3798449238516105146">Versi</translation>
 <translation id="3798632811625902122">Perangkat Bluetooth <ph name="DEVICE" /> meminta izin untuk tersambung.</translation>
+<translation id="3798670284305777884">Speaker (internal)</translation>
 <translation id="3799128412641261490">Setelan tombol akses</translation>
 <translation id="3800030395703848668">Lihat Opsi Daftar</translation>
 <translation id="3800806661949714323">Tampilkan semua (disarankan)</translation>
@@ -5148,6 +5153,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5643620609347735571">Hapus dan lanjutkan</translation>
 <translation id="5646376287012673985">Lokasi</translation>
 <translation id="5646558797914161501">Pengusaha</translation>
+<translation id="5648021990716966815">Colokan mikrofon</translation>
 <translation id="5648166631817621825">7 hari terakhir</translation>
 <translation id="5651308944918885595">Visibilitas Berbagi Langsung</translation>
 <translation id="5653154844073528838">Anda memiliki <ph name="PRINTER_COUNT" /> printer tersimpan.</translation>
@@ -6256,6 +6262,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6678717876183468697">URL Kueri</translation>
 <translation id="6680442031740878064">Tersedia: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Beri rating</translation>
+<translation id="6683022854667115063">Headphone</translation>
 <translation id="6683087162435654533">&amp;Pulihkan Semua Tab</translation>
 <translation id="6684827949542560880">Mendownload update terbaru</translation>
 <translation id="668599234725812620">Buka Google Play</translation>
@@ -6884,6 +6891,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7255002516883565667">Sekarang, Anda memiliki satu kartu yang hanya dapat digunakan di perangkat ini</translation>
 <translation id="7255935316994522020">Terapkan</translation>
 <translation id="7256069762010468647">Situs sedang menggunakan kamera Anda</translation>
+<translation id="7256634071279256947">Mikrofon belakang</translation>
 <translation id="7256710573727326513">Buka di tab</translation>
 <translation id="7257173066616499747">Jaringan Wi-Fi</translation>
 <translation id="725758059478686223">Layanan Pencetakan</translation>

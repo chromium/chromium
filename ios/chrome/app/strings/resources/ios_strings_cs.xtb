@@ -408,6 +408,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4038354071007134711">Soubor nelze otevřít pomocí žádné aplikace v tomto zařízení.</translation>
 <translation id="4042870976416480368">Najít na stránce</translation>
 <translation id="40433179647657191">Vytvořte a sdílejte přímý odkaz na část stránky, kterou jste označili.</translation>
+<translation id="4045648459118332842">Používejte uložená hesla jedním klepnutím v libovolné aplikaci</translation>
 <translation id="4049507953662678203">Zkontrolujte, zda jste připojeni k síti a zkuste to znovu.</translation>
 <translation id="4063300985191096908">Přejít na informační kanál</translation>
 <translation id="408404951701638773">Vyhledávací pole je teď snáze dostupné</translation>
@@ -667,6 +668,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5988097621740394599">Zobrazit pokles ceny na kartách</translation>
 <translation id="5988851877894965432">Otevírat adresy URL v Chromu</translation>
 <translation id="6006672969046233841">Nová karta</translation>
+<translation id="6011308810877101166">Vylepšovat návrhy ve vyhledávání</translation>
 <translation id="6012140227487808125">Šifrování...</translation>
 <translation id="6021332621416007159">Otevřít v ...</translation>
 <translation id="6027945736510816438">Měli jste na mysli <ph name="WEBSITE" />?</translation>
@@ -886,6 +888,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="746684838091935575">3. Vyberte Chrome.</translation>
 <translation id="7472734401283673885">Název společnosti</translation>
 <translation id="7473891865547856676">Ne, děkuji</translation>
+<translation id="7491131399623468277">Přejít do Nastavení…</translation>
 <translation id="750493650310597496">Vybráno 0</translation>
 <translation id="7508728395076009983">Pokud chcete uzamknout anonymní karty, nastavte Touch ID, Face ID nebo heslo.</translation>
 <translation id="7514365320538308">Stáhnout</translation>

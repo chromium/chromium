@@ -93,6 +93,7 @@
 <translation id="7045244423563602563">Tilpas Chromium</translation>
 <translation id="7099326575020694068">Chromium kan ikke bruge dit kamera i tilstanden Opdelt visning</translation>
 <translation id="7118091470949186573">Du kan nu bruge Chromium, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
+<translation id="7165402419892018581">Vælg Chromium for Autofyld</translation>
 <translation id="7175400662502680481">Din adgangskode er blevet offentliggjort i forbindelse med et brud på datasikkerheden. Adgangskodeadministrator anbefaler, at du ændrer det nu.</translation>
 <translation id="7208566199746267865">Med Chromium sparer du tid ved at gøre alle dine konti tilgængelige online. Du kan tilføje eller fjerne konti under Indstillinger.</translation>
 <translation id="725427773388857052">Chromium kan hjælpe med at beskytte dig mod brud på datasikkerheden, usikre websites og meget mere.</translation>
@@ -107,6 +108,7 @@
 <translation id="7746854981345936341">Chromium-tip. Nogle knapper som f.eks. Tilbage, Frem og Søg findes nu nederst på skærmen.</translation>
 <translation id="7763454117143368771">Brug Chromium som din standardbrowser for at blive beskyttet mod skadelige websites og holde dine adgangskoder private</translation>
 <translation id="7812317783196516890">Du er logget ind og synkroniserer dine data med en konto, der administreres af <ph name="DOMAIN" />, hvor kontoens administrator nu kan konfigurere brugerpolitikker, der er specifikke for den pågældende konto, og som kan ændre Chromiums adfærd.</translation>
+<translation id="7859018312476869945">Når du indtaster noget i adresselinjen eller søgefeltet, sender Chromium det, du skriver, til din standardsøgemaskine for at få bedre forslag. Dette er deaktiveret i inkognitotilstand.</translation>
 <translation id="786327964234957808">Du er ved at skifte synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. Dine eksisterende Chromium-data administreres af <ph name="DOMAIN" />. Denne handling sletter dine data fra denne enhed, men dine data forbliver gemt på <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Begynd at bruge Chromium-scanner</translation>
 <translation id="7928628054454574139">Åbn Chromium, hver gang du trykker på links i andre apps</translation>
@@ -116,6 +118,7 @@
 <translation id="8073677936375100957">Vil du rydde dine Chromium-data på denne enhed?</translation>
 <translation id="8240981428553046115">Chromium kunne ikke søge efter opdateringer. Prøv igen senere.</translation>
 <translation id="8409374867500149834">Du har Chromiums stærkeste beskyttelse mod skadelige websites</translation>
+<translation id="8460301378281140593">Gå til Indstillinger på din iPhone, åbn "Indstillinger til adgangskode", og vælg "Chromium"</translation>
 <translation id="858114650497379505">Du kan bruge de adgangskoder, du har gemt i Adgangskodeadministrator, i andre apps på din iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Forfatterne bag Chromium. Alle rettigheder forbeholdes.</translation>
 <translation id="8603022514504485810">Google Adgangskodeadministrator kunne ikke tjekke alle adgangskoder. Prøv igen i morgen, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>

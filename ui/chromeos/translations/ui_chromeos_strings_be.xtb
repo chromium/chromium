@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Англійская (ЗША) з раскладкай Дворака</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – хост</translation>
 <translation id="1521655867290435174">Табліцы Google</translation>
+<translation id="1521795806314479294">Ідзе падрыхтоўка файла "<ph name="FILE_NAME" />"...</translation>
 <translation id="1538729222189715449">Адкрываюцца файлы Linux...</translation>
 <translation id="1547964879613821194">Англійская (Канада)</translation>
 <translation id="1556189134700913550">Прымяніць да ўсяго</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Элементы (<ph name="NUMBER_OF_ITEMS" />) архівуюцца...</translation>
 <translation id="1722687688096767818">Ідзе дадаванне профілю...</translation>
 <translation id="1726100011689679555">Серверы даменных імён</translation>
+<translation id="1727562178154619254">Можна сінхранізаваць</translation>
 <translation id="1729953886957086472">Нямецкая (Германія)</translation>
 <translation id="1730235522912993863">Кітайская (цанцзе)</translation>
 <translation id="1731889557567069540">Скапіраваны элементы (<ph name="NUMBER_OF_ITEMS" />).</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">Карыстальніцкія серверы даменных імён</translation>
 <translation id="4465725236958772856">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, знаходзіцца пад кіраваннем адміністратара, падключыцца</translation>
 <translation id="4470564870223067757">Карэйскі алфавіт (хангыль), рэжым 2 Set</translation>
+<translation id="4474142134969976028">Адпаведных вынікаў няма</translation>
 <translation id="4477002475007461989">Румынская</translation>
 <translation id="4477219268485577442">Балгарская фанетычная</translation>
 <translation id="4508265954913339219">Не ўдалося актываваць</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">Максімальна дапушчальная даўжыня назвы (у сімвалах): <ph name="MAX_LENGTH" /></translation>
 <translation id="4973970068702235170">Не ўдалося стварыць архіў – нечаканая памылка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Японская</translation>
+<translation id="4987699874727873250">Англійская (Індыя)</translation>
 <translation id="4988205478593450158">Сапраўды выдаліць файл "<ph name="FILE_NAME" />?"</translation>
 <translation id="498902553138568924">Чырвоны матылёк</translation>
 <translation id="4992066212339426712">Уключыць гук</translation>
@@ -509,6 +513,7 @@
    Выдаленне прылады падчас яе выкарыстання можа прывесці да страты даных.  Дачакайцеся заканчэння аперацыі, затым выміце прыладу, выкарыстаўшы праграму "Файлы".</translation>
 <translation id="5163869187418756376">Збой абагульвання. Праверце падключэнне і паўтарыце спробу пазней.</translation>
 <translation id="516592729076796170">Праграмісцкая Дворака для ЗША</translation>
+<translation id="5167102019886320507">Ідзе падрыхтоўка элементаў (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="5177526793333269655">Рэжым мініяцюр</translation>
 <translation id="5181896909298187506">Няма нядаўніх файлаў</translation>
 <translation id="5194713942430106590">Каб адсартаваць слупок па ўзрастанні, націсніце тут.</translation>
@@ -812,6 +817,7 @@
 <translation id="7655441028674523381">Лёгкі доступ да Google Фота</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7663224033570512922">Хіндзі</translation>
+<translation id="7665680517722058469">Паспрабуйце ўвесці іншы пошукавы запыт</translation>
 <translation id="7689532716264131859">Элементы (<ph name="NUMBER_OF_ITEMS" />) перамешчаны ў сметніцу</translation>
 <translation id="7693909743393669729">Фармаціраванне дыска прывядзе да сцірання ўсіх захаваных на ім даных і выдалення ўсіх наяўных раздзелаў, у тым ліку нябачных. Гэта дзеянне немагчыма адрабіць.</translation>
 <translation id="7695430100978772476">Не ўдалося адфармаціраваць дыск "<ph name="DRIVE_NAME" />"</translation>

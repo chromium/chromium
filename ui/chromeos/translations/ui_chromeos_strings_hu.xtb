@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">angol (USA) billentyűzet Dvorak kiosztással</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – gazdagép</translation>
 <translation id="1521655867290435174">Google Táblázatok</translation>
+<translation id="1521795806314479294"><ph name="FILE_NAME" /> előkészítése…</translation>
 <translation id="1538729222189715449">Linux-fájlok megnyitása…</translation>
 <translation id="1547964879613821194">kanadai angol</translation>
 <translation id="1556189134700913550">Alkalmazás az összesre</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> elem tömörítése…</translation>
 <translation id="1722687688096767818">Profil hozzáadása…</translation>
 <translation id="1726100011689679555">Névszerverek</translation>
+<translation id="1727562178154619254">Szinkronizálásra kész</translation>
 <translation id="1729953886957086472">német (Németország)</translation>
 <translation id="1730235522912993863">kínai (kanji)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elem a vágólapra másolva.</translation>
@@ -480,6 +482,7 @@
 <translation id="4973523518332075481">Olyan nevet adjon meg, amely legfeljebb <ph name="MAX_LENGTH" /> karakter hosszú</translation>
 <translation id="4973970068702235170">A tömörítés váratlan hiba miatt nem sikerült: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">japán</translation>
+<translation id="4987699874727873250">angol (India)</translation>
 <translation id="4988205478593450158">Biztosan törli a(z) „<ph name="FILE_NAME" />” fájlt?</translation>
 <translation id="498902553138568924">Piros pillangó</translation>
 <translation id="4992066212339426712">Némítás feloldása</translation>
@@ -510,6 +513,7 @@
        Ha használat közben távolítja el eszközét, az adatvesztést eredményezhet. Kérjük, várjon, amíg a művelet befejeződik, majd válassza le az eszközt a Fájlok alkalmazás használatával.</translation>
 <translation id="5163869187418756376">Nem sikerült a megosztás. Ellenőrizze a kapcsolatot, és később próbálkozzon újra.</translation>
 <translation id="516592729076796170">US Dvorak programozó</translation>
+<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> elem előkészítése…</translation>
 <translation id="5177526793333269655">Indexképnézet</translation>
 <translation id="5181896909298187506">Nincsenek új fájlok</translation>
 <translation id="5194713942430106590">Kattintson az oszlop növekvő sorrendben való rendezéséhez.</translation>

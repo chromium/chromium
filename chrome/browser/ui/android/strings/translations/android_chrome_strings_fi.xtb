@@ -226,7 +226,6 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="2248941474044011069">Salasanat salataan laitteella ennen niiden tallentamista Googlen Salasanojen ylläpitoon</translation>
 <translation id="2249635629516220541">Valitse, mitä tietoja sivustot käyttävät mainosten näyttämiseen</translation>
 <translation id="2259659629660284697">Vie salasanat…</translation>
-<translation id="2276231040576210443">Voit valita synkronoitavan sisällön <ph name="BEGIN_LINK1" />asetuksista<ph name="END_LINK1" />. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
 <translation id="2276696007612801991">Kirjaudu Google-tilillesi tarkistaaksesi salasanasi</translation>
 <translation id="2278052315791335171">Vaikka poistat salasanan, tiliäsi (<ph name="SITE" />) ei poisteta</translation>
 <translation id="2286841657746966508">Laskutusosoite</translation>
@@ -304,7 +303,6 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="2669454659051515572">Kaikki tämän laitteen käyttäjät voivat nähdä ladatut tiedostot</translation>
 <translation id="2702516483241149200">Uutta: jaa linkki, joka vie tähän tekstiin</translation>
 <translation id="2707726405694321444">Päivitä sivu</translation>
-<translation id="2709516037105925701">Automaattinen täyttö</translation>
 <translation id="271033894570825754">Uusi</translation>
 <translation id="2711073837061989559">Kokeilut</translation>
 <translation id="2718352093833049315">Vain Wi-Fillä</translation>
@@ -396,7 +394,6 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="3114507951000454849">Lue päivän uutiset <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">linkitetty:</translation>
 <translation id="3123734510202723619">Ilmoitukset</translation>
-<translation id="3130863904455712965">Historia ja muita</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Chromen etusivu</translation>
 <translation id="3157931365184549694">Palauta</translation>
@@ -990,7 +987,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6397616442223433927">Verkkoyhteys palautettu</translation>
 <translation id="6401458660421980302">Jos haluat lähettää tämän välilehden toiselle laitteelle, kirjaudu Chromeen sieltä</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" />, <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">Synkronoi datasi kaikilla laitteilla</translation>
 <translation id="6404511346730675251">Muokkaa kirjanmerkkiä</translation>
 <translation id="6406506848690869874">Synkronointi</translation>
 <translation id="6407224748847589805">Tietokoneeseen ei voi yhdistää. Kokeile toista vahvistustapaa.</translation>
@@ -1319,7 +1315,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8037801708772278989">Tarkistettu juuri äsken</translation>
 <translation id="804335162455518893">SD-korttia ei löydy</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> incognito-välilehti}other{<ph name="TAB_COUNT_NORMAL" /> incognito-välilehteä}}</translation>
-<translation id="8048728378294435881">Varmuuskopioi sisältösi ja käytä sitä millä tahansa laitteella</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> Mt käytettävissä</translation>
 <translation id="8058655154417507695">Viimeinen voimassaolovuosi</translation>
 <translation id="8058746566562539958">Avaa, uusi Chrome-välilehti</translation>

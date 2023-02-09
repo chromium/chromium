@@ -817,6 +817,7 @@
 <translation id="6869389390665537774">您可查看瀏覽過的網頁，或從記錄移除網頁</translation>
 <translation id="687135068089457384">顯示設定</translation>
 <translation id="6873263987691478642">分割檢視</translation>
+<translation id="6873366418270195926">如果產品在任何網站上降價，系統會透過快訊通知你。這個頁面儲存在<ph name="BEGIN_LINK" />書籤<ph name="END_LINK" />中。</translation>
 <translation id="6882836635272038266">對已知的危險網站、下載檔案及擴充程式提供標準保護功能。</translation>
 <translation id="6888009575607455378">確定要捨棄變更嗎？</translation>
 <translation id="6896758677409633944">複製</translation>
@@ -1120,6 +1121,7 @@
 <translation id="952704832371081537">取消</translation>
 <translation id="953008885340860025">您已登出 Chrome</translation>
 <translation id="959066944189734975">您正在追蹤「<ph name="CHANNEL_NAME" />」</translation>
+<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">您的機構只允許您透過特定帳戶登入。系統已隱藏不適用的帳戶。</translation>
 <translation id="984509647832111802">同步功能無法正常運作。</translation>
 <translation id="988141524645182168">其他裝置</translation>

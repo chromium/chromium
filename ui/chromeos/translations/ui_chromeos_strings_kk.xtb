@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Ағылшын (АҚШ), Дворак пернетақтасымен</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – хост</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
+<translation id="1521795806314479294"><ph name="FILE_NAME" /> дайындалып жатыр…</translation>
 <translation id="1538729222189715449">Linux файлдары ашылуда…</translation>
 <translation id="1547964879613821194">Ағылшын (Канада)</translation>
 <translation id="1556189134700913550">Барлығына қолдану</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> элемент қысылуда…</translation>
 <translation id="1722687688096767818">Профиль қосылуда…</translation>
 <translation id="1726100011689679555">Ат серверлері</translation>
+<translation id="1727562178154619254">Синхрондауға дайын</translation>
 <translation id="1729953886957086472">Неміс (Германия)</translation>
 <translation id="1730235522912993863">Қытай (цанцзе)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> элемент көшірілді.</translation>
@@ -480,6 +482,7 @@
 <translation id="4973523518332075481">Атау <ph name="MAX_LENGTH" /> таңбадан аспауы керек</translation>
 <translation id="4973970068702235170">Қысылмады. Күтпеген қате шықты: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Жапон</translation>
+<translation id="4987699874727873250">Ағылшын (Үндістан)</translation>
 <translation id="4988205478593450158">"<ph name="FILE_NAME" />" файлын шынымен жойғыңыз келе ме?</translation>
 <translation id="498902553138568924">Қызыл көбелек</translation>
 <translation id="4992066212339426712">Дыбысын қосу</translation>
@@ -510,6 +513,7 @@
    Құрылғыңызды пайдалану кезінде жою деректердің жоғалуына себеп болуы мүмкін. Операцияның аяқталуын күтіп, Files қолданбасының көмегімен құрылғыны өшіріңіз.</translation>
 <translation id="5163869187418756376">Бөлісу сәтсіз аяқталды. Байланысты тексеріңіз және кейінірек қайталап көріңіз.</translation>
 <translation id="516592729076796170">АҚШ Бағдарламашы Дворак</translation>
+<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> элемент дайындалып жатыр...</translation>
 <translation id="5177526793333269655">Нобай көрінісі</translation>
 <translation id="5181896909298187506">Жаңа файлдар жоқ</translation>
 <translation id="5194713942430106590">Бағанды өсу ретімен сұрыптау үшін басыңыз.</translation>

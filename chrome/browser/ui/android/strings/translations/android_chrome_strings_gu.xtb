@@ -226,7 +226,6 @@
 <translation id="2248941474044011069">તમારા પાસવર્ડ Google પાસવર્ડ મેનેજર પર સાચવવામાં આવે તે પહેલાં તેમને તમારા ડિવાઇસ પર એન્ક્રિપ્ટ કરવામાં આવે છે</translation>
 <translation id="2249635629516220541">તમારી જાહેરાતો બતાવવા માટે સાઇટ દ્વારા ઉપયોગમાં લેવામાં આવતી માહિતી કસ્ટમાઇઝ કરો</translation>
 <translation id="2259659629660284697">બધા પાસવર્ડની નિકાસ કરો…</translation>
-<translation id="2276231040576210443">શું સિંક કરવું, તે તમે <ph name="BEGIN_LINK1" />સેટિંગ<ph name="END_LINK1" />માં જઈને કોઈપણ સમયે પસંદ કરી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
 <translation id="2276696007612801991">તમારા પાસવર્ડ ચેક કરવા માટે તમારા Google એકાઉન્ટમાં સાઇન ઇન કરો</translation>
 <translation id="2278052315791335171">આ પાસવર્ડ ડિલીટ કરવાથી <ph name="SITE" /> પરનું તમારું એકાઉન્ટ ડિલીટ થશે નહીં</translation>
 <translation id="2286841657746966508">બિલિંગ સરનામું</translation>
@@ -304,7 +303,6 @@
 <translation id="2669454659051515572">આ ડિવાઇસનો ઉપયોગ કરનારી કોઈપણ વ્યક્તિ ડાઉનલોડ કરેલી ફાઇલો જોઈ શકે છે</translation>
 <translation id="2702516483241149200">નવું: આ ટેક્સ્ટ પર સ્ક્રોલ કરતી હોય એવી કોઈ લિંક શેર કરો</translation>
 <translation id="2707726405694321444">પેજ રિફ્રેશ કરો</translation>
-<translation id="2709516037105925701">સ્વતઃભરો</translation>
 <translation id="271033894570825754">નવું</translation>
 <translation id="2711073837061989559">અજમાયશો</translation>
 <translation id="2718352093833049315">ફક્ત વાઇ-ફાઇ પર</translation>
@@ -396,7 +394,6 @@
 <translation id="3114507951000454849">આજના સમાચાર વાંચો <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">આની સાથે લિંક કર્યું</translation>
 <translation id="3123734510202723619">ઘોષણાઓ</translation>
-<translation id="3130863904455712965">ઇતિહાસ અને વધુ</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chromeનું હોમપેજ</translation>
 <translation id="3157931365184549694">રિસ્ટોર કરો</translation>
@@ -922,6 +919,7 @@
 <translation id="6000203700195075278">ફરીથી ફૉલો કરો</translation>
 <translation id="6002122790816966947">તમારા ડિવાઇસ</translation>
 <translation id="6005538289190791541">સૂચવેલ પાસવર્ડ</translation>
+<translation id="6011308810877101166">શોધ સંબંધિત સૂચનો બહેતર બનાવો</translation>
 <translation id="6039379616847168523">આગલા ટૅબ પર જાઓ</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="604124094241169006">સ્વચલિત</translation>
@@ -989,7 +987,6 @@
 <translation id="6397616442223433927">પાછા ઑનલાઇન થયા</translation>
 <translation id="6401458660421980302">આ ટૅબને અન્ય ડિવાઇસ પર મોકલવા માટે, એ ડિવાઇસના Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> પર <ph name="ERROR_CODE" /></translation>
-<translation id="6403371459378431832">બધા ડિવાઇસ પર તમારો ડેટા સિંક કરો</translation>
 <translation id="6404511346730675251">બુકમાર્કમાં ફેરફાર કરો</translation>
 <translation id="6406506848690869874">સમન્વયન</translation>
 <translation id="6407224748847589805">તમારા કમ્પ્યુટર સાથે કનેક્ટ કરી શકાતું નથી. ચકાસણી માટે બીજો કોઈ વિકલ્પ અજમાવો.</translation>
@@ -1318,7 +1315,6 @@
 <translation id="8037801708772278989">હમણાં જ ચેક કર્યું</translation>
 <translation id="804335162455518893">SD કાર્ડ મળ્યું નથી</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> છૂપી ટૅબ}one{<ph name="TAB_COUNT_NORMAL" /> છૂપી ટૅબ}other{<ph name="TAB_COUNT_NORMAL" /> છૂપી ટૅબ}}</translation>
-<translation id="8048728378294435881">તમારી સામગ્રીનું બૅકઅપ લો અને કોઈપણ ડિવાઇસ પર તેનો ઉપયોગ કરો</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB ઉપલબ્ધ</translation>
 <translation id="8058655154417507695">સમાપ્તિ વર્ષ</translation>
 <translation id="8058746566562539958">નવા Chrome ટૅબમાં ખોલો</translation>
@@ -1452,6 +1448,7 @@
 <translation id="8746155870861185046">હાઇલાઇટ કરેલી ટેક્સ્ટ શેર કરો</translation>
 <translation id="8748850008226585750">સામગ્રીઓ છુપાવેલ છે</translation>
 <translation id="8756969031206844760">પાસવર્ડ અપડેટ કરીએ?</translation>
+<translation id="8765470054473112089">જ્યારે તમે ઍડ્રેસ બાર અથવા શોધ બૉક્સમાં ટાઇપ કરો છો, ત્યારે બહેતર સૂચનો મેળવવા માટે Chrome તમે જે ટાઇપ કરો છો તેને તમારા ડિફૉલ્ટ શોધ એન્જિનને મોકલે છે. આ સુવિધા છૂપા મોડમાં કામ કરતી નથી.</translation>
 <translation id="8766529642647037772">શું આના જેવી હાઇલાઇટ કરેલી લિંક બનાવીએ?</translation>
 <translation id="8773160212632396039">વિનંતી પર પ્રક્રિયા ચાલુ છે</translation>
 <translation id="8788265440806329501">નૅવિગેશન ઇતિહાસ બંધ છે</translation>

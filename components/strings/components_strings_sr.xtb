@@ -540,6 +540,7 @@
 <translation id="2241693394036365668">Датотека је преузета</translation>
 <translation id="2246264294482514010">10×12 in</translation>
 <translation id="2246480341630108201">Родитељ још није рекао да је у реду</translation>
+<translation id="2247789808226901522">Картица је истекла</translation>
 <translation id="2248949050832152960">Користи WebAuthn</translation>
 <translation id="2250931979407627383">Спајање ивица шавом на левој страни</translation>
 <translation id="225207911366869382">Ова вредност је застарела за ове смернице.</translation>
@@ -1078,6 +1079,7 @@
 <translation id="3646643500201740985">Мерење учинка огласа</translation>
 <translation id="3647286794400715637">Унос сваког стринга URL-а мора да садржи између 1 и 2 URL-а.</translation>
 <translation id="3650584904733503804">Потврда ваљаности је успела</translation>
+<translation id="3650594806107685466">Да бисте заштитили картицу, унесите CVC (<ph name="SIDE_OF_CARD" />)</translation>
 <translation id="3653033846669030038">Забавни паркови</translation>
 <translation id="3655241534245626312">Иди у подешавања дозвола</translation>
 <translation id="3655670868607891010">Ако вам се ово често приказује, можда вам помогну следећи <ph name="HELP_LINK" />.</translation>
@@ -2457,6 +2459,7 @@
 <translation id="7112327784801341716">Не видите актуелне податке? Обратите се банци да бисте их ажурирали.</translation>
 <translation id="7118618213916969306">Потражите URL у привременој меморији, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Затворите друге картице или програме</translation>
+<translation id="7124354851782353862">Унесите CVC</translation>
 <translation id="7129355289156517987">Када затворите све Chromium картице без архивирања, активност на тим картицама се брише са уређаја:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Активности прегледања<ph name="END_LIST_ITEM" />
@@ -2783,6 +2786,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Ниједна}=1{1 апликација (<ph name="EXAMPLE_APP_1" />)}=2{2 апликације (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# апликације (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">Сајт који касније посетите може да затражи од Chrome-а теме да би персонализовао огласе који вам се приказују. Chrome дели до 3 теме, а истовремено штити историју прегледања и идентитет.</translation>
+<translation id="7860345425589240791">Унесите нови датум истека и CVC (<ph name="SIDE_OF_CARD" />)</translation>
 <translation id="7862185352068345852">Желите ли да напустите сајт?</translation>
 <translation id="7865448901209910068">Најбоља брзина</translation>
 <translation id="7871445724586827387">Промените лозинку за Google налог</translation>

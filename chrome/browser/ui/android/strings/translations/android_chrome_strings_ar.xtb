@@ -226,7 +226,6 @@
 <translation id="2248941474044011069">‏يتم تشفير كلمات المرور على جهازك قبل حفظها في "مدير كلمات المرور" من Google.</translation>
 <translation id="2249635629516220541">تخصيص المعلومات التي تستخدمها المواقع الإلكترونية لعرض الإعلانات لك</translation>
 <translation id="2259659629660284697">تصدير كلمات المرور...</translation>
-<translation id="2276231040576210443">‏يمكنك متى شئت اختيار البيانات التي تريد مزامنتها، وذلك من خلال <ph name="BEGIN_LINK1" />الإعدادات<ph name="END_LINK1" />. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
 <translation id="2276696007612801991">‏يُرجى تسجيل الدخول إلى حسابك على Google للتحقُّق من كلمات المرور.</translation>
 <translation id="2278052315791335171">لن يؤدي حذف كلمة المرور هذه إلى حذف حسابك على <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">عنوان الفاتورة</translation>
@@ -305,7 +304,6 @@
 <translation id="2669454659051515572">يمكن لأي شخص يستخدم هذا الجهاز الاطّلاع على الملفات التي تم تنزيلها.</translation>
 <translation id="2702516483241149200">ميزة جديدة: يمكنك مشاركة رابط يؤدي إلى هذا النص.</translation>
 <translation id="2707726405694321444">إعادة تحميل الصفحة</translation>
-<translation id="2709516037105925701">الملء التلقائي</translation>
 <translation id="271033894570825754">جديد</translation>
 <translation id="2711073837061989559">الإصدارات التجريبية</translation>
 <translation id="2718352093833049315">‏باستخدام شبكة Wi-Fi فقط</translation>
@@ -397,7 +395,6 @@
 <translation id="3114507951000454849">الاطّلاع على أخبار اليوم <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">مرتبطة بـ</translation>
 <translation id="3123734510202723619">الإعلامات</translation>
-<translation id="3130863904455712965">السجلّ وغير ذلك</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">‏الصفحة الرئيسية لمتصفّح Chrome</translation>
 <translation id="3157931365184549694">استعادة</translation>
@@ -991,7 +988,6 @@
 <translation id="6397616442223433927">تمّت استعادة الاتصال بالإنترنت.</translation>
 <translation id="6401458660421980302">‏لإرسال علامة التبويب هذه إلى جهاز آخر، عليك تسجيل الدخول إلى Chrome على ذلك الجهاز.</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> في <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">مزامنة بياناتك على جميع الأجهزة</translation>
 <translation id="6404511346730675251">تعديل الإشارة المرجعية</translation>
 <translation id="6406506848690869874">المزامنة</translation>
 <translation id="6407224748847589805">تعذّر الاتصال بجهاز الكمبيوتر. يمكنك تجربة خيار آخر لإثبات الهوية.</translation>
@@ -1320,7 +1316,6 @@
 <translation id="8037801708772278989">تمّ إجراء عملية التحقُّق للتوّ.</translation>
 <translation id="804335162455518893">‏لم يتم العثور على بطاقة SD.</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{علامة تبويب واحدة في وضع التصفُّح المتخفي (<ph name="TAB_COUNT_ONE" />)}zero{<ph name="TAB_COUNT_NORMAL" /> علامة تبويب في وضع التصفُّح المتخفي}two{علامتا تبويب في وضع التصفُّح المتخفي (<ph name="TAB_COUNT_NORMAL" />)}few{<ph name="TAB_COUNT_NORMAL" /> علامات تبويب في وضع التصفُّح المتخفي}many{<ph name="TAB_COUNT_NORMAL" /> علامة تبويب في وضع التصفُّح المتخفي}other{<ph name="TAB_COUNT_NORMAL" /> علامة تبويب في وضع التصفُّح المتخفي}}</translation>
-<translation id="8048728378294435881">الاحتفاظ بنسخة احتياطية من بياناتك واستخدامها على أي جهاز</translation>
 <translation id="8051695050440594747">هناك <ph name="MEGABYTES" /> ميغابايت متوفرة</translation>
 <translation id="8058655154417507695">سنة انتهاء الصلاحية</translation>
 <translation id="8058746566562539958">‏فتح بعلامة تبويب Chrome جديدة</translation>

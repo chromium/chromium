@@ -524,6 +524,7 @@
 <translation id="2202627062836089804">તમારા કાર્ડની પાછળનો ભાગ</translation>
 <translation id="22081806969704220">ટ્રે 3</translation>
 <translation id="2210794033760923560">રિપોર્ટ અપલોડ કરો</translation>
+<translation id="2212579473415663542">આ ઍડ્રેસ તમારા Google એકાઉન્ટ (<ph name="ACCOUNT" />)માં સાચવવામાં આવશે. તમે કોઈપણ ડિવાઇસ પર Googleની બધી પ્રોડક્ટમાં આ ઍડ્રેસનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="2212735316055980242">પૉલિસી મળી નથી</translation>
 <translation id="2213606439339815911">પ્રવિષ્ટિઓનું આનયન કરી રહ્યાં છે...</translation>
 <translation id="2213612003795704869">પેજ પ્રિન્ટ થયું</translation>
@@ -1972,6 +1973,7 @@
 <translation id="5866898949289125849">તમે ડેવલપર સાધનોનું પેજ જોઈ રહ્યાં છો</translation>
 <translation id="5869405914158311789">આ સાઇટ પર પહોંચી શકાતું નથી</translation>
 <translation id="5869522115854928033">સાચવેલા પાસવર્ડ્સ</translation>
+<translation id="5872692522325383488">IBAN સાચવ્યો</translation>
 <translation id="5873013647450402046">તમારી બેંક કન્ફર્મ કરવા માગે છે કે આ તમે જ છો.</translation>
 <translation id="5877831137320480913">બ્યુટી અને ફિટનેસ</translation>
 <translation id="5884465125445718607">એન્વલપ ચાઇનીઝ #6</translation>
@@ -2141,6 +2143,7 @@
 <translation id="6300452962057769623">{0,plural, =0{તમારું ડિવાઇસ હમણાં જ ફરી શરૂ થશે}=1{તમારું ડિવાઇસ 1 સેકન્ડમાં ફરી શરૂ થશે}one{તમારું ડિવાઇસ # સેકન્ડમાં ફરી શરૂ થશે}other{તમારું ડિવાઇસ # સેકન્ડમાં ફરી શરૂ થશે}}</translation>
 <translation id="6301104306974789820">કિંમત ટ્રૅક કરવા વિશે નોટિફિકેશન મેળવો</translation>
 <translation id="6305205051461490394"><ph name="URL" />, પહોંચવા યોગ્ય નથી.</translation>
+<translation id="6306713302480826305">આ ઍડ્રેસ આમાંથી અને તમે સાઇન ઇન કર્યું હોય એવા અન્ય ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે</translation>
 <translation id="6311165245110979290">વર્ચ્યુઅલ કાર્ડ ઉપલબ્ધ છે</translation>
 <translation id="6312113039770857350">વેબપેજ ઉપલબ્ધ નથી</translation>
 <translation id="6316226860534107313">સ્કૂટર અને મોપેડ</translation>
@@ -3032,6 +3035,7 @@
 <translation id="8473863474539038330">સરનામા અને વધુ</translation>
 <translation id="8474910779563686872">ડેવલપરની વિગતો બતાવો</translation>
 <translation id="8479754468255770962">નીચેની ડાબી બાજુએ સ્ટેપલ લગાવો</translation>
+<translation id="8483229036294884935">આ ઍડ્રેસ તમારા Google એકાઉન્ટ, <ph name="ACCOUNT" />માંથી ડિલીટ કરવામાં આવશે</translation>
 <translation id="8483780878231876732">તમારા Google એકાઉન્ટમાંથી કાર્ડ્સનો ઉપયોગ કરવા માટે, Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="8488350697529856933">આમને લાગુ</translation>
 <translation id="8490137692873530638">સ્ટૅકર 10</translation>

@@ -540,6 +540,7 @@
 <translation id="2241693394036365668">ລະບົບຈະດາວໂຫຼດໄຟລ໌</translation>
 <translation id="2246264294482514010">10 x 12 ນິ້ວ</translation>
 <translation id="2246480341630108201">ຜູ້ປົກຄອງຂອງທ່ານຍັງບໍ່ໄດ້ບອກວ່າບໍ່ເປັນຫຍັງເທື່ອ</translation>
+<translation id="2247789808226901522">ບັດໝົດອາຍຸແລ້ວ</translation>
 <translation id="2248949050832152960">ໃຊ້ WebAuthn</translation>
 <translation id="2250931979407627383">ຫຍິບຂອບເບື້ອງຂວາ</translation>
 <translation id="225207911366869382">ຄ່ານີ້ຖືກຄັດຄ້ານສໍາ​ລັບ​ນະ​ໂຍ​ບາຍ​ນີ້​.</translation>
@@ -1078,6 +1079,7 @@
 <translation id="3646643500201740985">ການວັດແທກປະສິດທິພາບຂອງໂຄສະນາ</translation>
 <translation id="3647286794400715637">ສະຕຣິງ URL ແຕ່ລະອັນຕ້ອງມີ URL ຈຳນວນ 1 ຫາ 2 ອັນ.</translation>
 <translation id="3650584904733503804">ການຮັບຮອງສໍາ​ເລັດ</translation>
+<translation id="3650594806107685466">ເພື່ອຊ່ວຍໃຫ້ບັດຂອງທ່ານປອດໄພ, ໃຫ້ປ້ອນ CVC ຢູ່ <ph name="SIDE_OF_CARD" /> ໃສ່</translation>
 <translation id="3653033846669030038">ສວນສະໜຸກ</translation>
 <translation id="3655241534245626312">ໄປຫາການຕັ້ງຄ່າການອະນຸຍາດ</translation>
 <translation id="3655670868607891010">ຖ້າ​​ທ່ານ​ເຫັນອັນນີ້ເລື້ອຍໆ​, ລອງ <ph name="HELP_LINK" /> ​ເຫຼົ່າ​ນີ້.</translation>
@@ -2458,6 +2460,7 @@
 <translation id="7112327784801341716">ບໍ່ເຫັນຂໍ້ມູນປັດຈຸບັນຂອງທ່ານບໍ? ກະລຸນາຕິດຕໍ່ທະນາຄານຂອງທ່ານເພື່ອອັບເດດມັນ.</translation>
 <translation id="7118618213916969306">ຊອກຫາ URL ຄລິບບອດ, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">ປິດແຖບ ຫຼື ໂປຣແກຣມອື່ນ</translation>
+<translation id="7124354851782353862">ປ້ອນ CVC ຂອງທ່ານ</translation>
 <translation id="7129355289156517987">ເມື່ອທ່ານປິດແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນ Chromium ທັງໝົດໄວ້ແລ້ວ, ການເຄື່ອນໄຫວຂອງທ່ານໃນແຖບເຫຼົ່ານັ້ນຈະຖືກລຶບລ້າງອອກຈາກອຸປະກອນນີ້:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />ການເຄື່ອນໄຫວການທ່ອງເວັບ<ph name="END_LIST_ITEM" />
@@ -2784,6 +2787,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{ບໍ່ມີ}=1{1 ແອັບ (<ph name="EXAMPLE_APP_1" />)}=2{2 ແອັບ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ແອັບ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງອາດຂໍຫົວຂໍ້ຂອງທ່ານຈາກ Chrome ໃນພາຍຫຼັງເພື່ອປັບແຕ່ງໂຄສະນາທີ່ທ່ານເຫັນໃຫ້ເປັນແບບສ່ວນຕົວ. Chrome ຈະແບ່ງປັນສູງສຸດ 3 ຫົວຂໍ້ໃນຂະນະທີ່ປົກປ້ອງປະຫວັດການທ່ອງເວັບ ແລະ ຕົວຕົນຂອງທ່ານ.</translation>
+<translation id="7860345425589240791">ປ້ອນວັນທີໝົດອາຍຸໃໝ່ ແລະ CVC ຢູ່ <ph name="SIDE_OF_CARD" /> ຂອງທ່ານໃສ່</translation>
 <translation id="7862185352068345852">ອອກຈາກເວັບໄຊບໍ?</translation>
 <translation id="7865448901209910068">ຄວາມໄວດີສຸດ</translation>
 <translation id="7871445724586827387">ປ່ຽນລະຫັດຜ່ານບັນຊີ Google ຂອງທ່ານ</translation>

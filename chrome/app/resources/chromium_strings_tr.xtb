@@ -319,6 +319,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7828947555739565424">Cihazda bu hesaba sahip bir Chromium profili zaten var</translation>
 <translation id="7845233973568007926">Yüklediğiniz için teşekkür ederiz. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce bilgisayarınızı yeniden başlatmanız gerekir.</translation>
+<translation id="7859018312476869945">Adres çubuğuna veya arama kutusuna yazdığınızda Chromium, yazdıklarınızı varsayılan arama motorunuza göndererek daha iyi öneriler görmenizi sağlar. Bu ayar Gizli modda kapalıdır.</translation>
 <translation id="7867198900892795913">Chromium en son sürüme güncellenemediği için yeni özellikler ve güvenlik düzeltmeleri cihazınızda bulunmuyor.</translation>
 <translation id="7872446069773932638">İndiriliyor... <ph name="SECONDS" /> saniye kaldı</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Verilerinizi yönetme:<ph name="END_BOLD" /> Gizliliğinizi korumak için 4 haftadan eski ilgi alanlarınızı otomatik olarak sileriz. Siz internette gezindikçe ilgi alanları tekrar listede görünmeye başlayabilir. Dilerseniz Chromium'un dikkate almasını istemediğiniz ilgi alanlarını kaldırabilirsiniz.</translation>

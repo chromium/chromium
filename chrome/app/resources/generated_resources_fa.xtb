@@ -285,6 +285,7 @@
 <translation id="1244303850296295656">خطای افزونه</translation>
 <translation id="1245628370644070008">بازیابی داده‌های محلی</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> نصب نشد: نشانی وب تصویر کد خطای <ph name="HTTP_ERROR" /> را برگرداند. لطفاً با سرپرست تماس بگیرید.</translation>
+<translation id="1247372569136754018">میکروفون (داخلی)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{اعلان‌های یک سایت مجاز نیستند}one{اعلان‌های {NUM_SITES} سایت مجاز نیستند}other{اعلان‌های {NUM_SITES} سایت مجاز نیستند}}</translation>
 <translation id="1251366534849411931">اینجا باید آکولاد باز باشد: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">با این کار <ph name="TOTAL_USAGE" /> از داده‌هایی که سایت‌ها و برنامه‌های نصب‌شده ذخیره کرده‌اند پاک می‌شود</translation>
@@ -543,6 +544,7 @@
 <translation id="1482626744466814421">نشانک‌گذاری این برگه…</translation>
 <translation id="1482772681918035149">ویرایش گذرواژه‌ها</translation>
 <translation id="1483493594462132177">ارسال</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">سایت درحال استفاده از بلوتوث است</translation>
 <translation id="1485015260175968628">هم‌اکنون این می‌تواند:</translation>
 <translation id="1485141095922496924">نسخه <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1104,6 +1106,7 @@
 <translation id="1965624977906726414">مجوز خاصی ندارد.</translation>
 <translation id="1966649499058910679">وقتی کلمه‌ای گفته می‌شود، برجسته شود</translation>
 <translation id="1967970931040389207">روشن کردن نقطه اتصال</translation>
+<translation id="1969011864782743497">‏<ph name="DEVICE_NAME" /> (‏USB)</translation>
 <translation id="1969654639948595766">‏گزارش‌های نوشتاری WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">سریع‌تر مرور خواهید کرد چون محتوا به‌صورت پیش‌نگرانه براساس بازدید صفحه وب فعلی‌تان بار می‌شود</translation>
 <translation id="197288927597451399">ادامه دادن</translation>
@@ -1829,7 +1832,6 @@
 <translation id="25899519884572181">خروج از «حالت خواننده»</translation>
 <translation id="2593499352046705383">‏پیش‌از شروع، حتماً از داده‌هایتان پشتیبان‌گیری کنید. نصب <ph name="DEVICE_OS" /> داده‌های دیسک سخت را بازنویسی خواهد کرد. در g.co/flex/InstallGuide، اطلاعات بیشتری دریافت کنید.</translation>
 <translation id="2594999711683503743">‏در Google جستجو کنید یا نشانی وب را تایپ کنید</translation>
-<translation id="25957578727513093">‏برای اینکه سریع‌تر به اینجا دسترسی پیدا کنید، میان‌بری به «مدیر گذرواژه Google» اضافه کنید</translation>
 <translation id="2599048253926156421">نام کاربری در بریده‌دان کپی شد</translation>
 <translation id="2602501489742255173">برای شروع‌به‌کار تند بکشید</translation>
 <translation id="2603115962224169880">پاک کردن رایانه</translation>
@@ -2407,6 +2409,7 @@
 <translation id="3103451787721578293">لطفاً دلیلی برای بارگذاری این داده وارد کنید:</translation>
 <translation id="3105339775057145050">آخرین به‌روزرسانی ناموفق</translation>
 <translation id="3105796011181310544">‏به Google تغییر می‌دهید؟</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوتوث)</translation>
 <translation id="310671807099593501">سایت درحال استفاده از بلوتوث شما است</translation>
 <translation id="3108931485517391283">دریافت نمی‌شود</translation>
 <translation id="3108957152224931571">رنگ برجسته‌سازی</translation>
@@ -3048,6 +3051,7 @@
 <translation id="371300529209814631">عقب/جلو</translation>
 <translation id="3713047097299026954">این کلید امنیتی هیچ داده ورود به سیستمی ندارد</translation>
 <translation id="3713091615825314967">به‌روزرسانی‌های خودکار روشن هستند.</translation>
+<translation id="371370241367527062">میکروفون جلو</translation>
 <translation id="3714195043138862580">این دستگاه نمایشی در وضعیت لغو مجوز دسترسی قرار داده شده است.</translation>
 <translation id="3719826155360621982">صفحه اصلی</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3143,6 +3147,7 @@
 <translation id="3797900183766075808">‏(&amp;S) جستجوی <ph name="SEARCH_ENGINE" /> برای «<ph name="SEARCH_TERMS" />»</translation>
 <translation id="3798449238516105146">نسخه</translation>
 <translation id="3798632811625902122">دستگاه بلوتوث <ph name="DEVICE" /> برای مرتبط‌سازی به اجازه نیاز دارد.</translation>
+<translation id="3798670284305777884">بلندگو (داخلی)</translation>
 <translation id="3799128412641261490">تنظیمات دسترسی کلیدی</translation>
 <translation id="3800030395703848668">مشاهده گزینه‌های فهرست</translation>
 <translation id="3800806661949714323">نمایش همه موارد (توصیه می‌شود)</translation>
@@ -5145,6 +5150,7 @@
 <translation id="5643620609347735571">پاک کردن و ادامه دادن</translation>
 <translation id="5646376287012673985">مکان</translation>
 <translation id="5646558797914161501">تاجر</translation>
+<translation id="5648021990716966815">فیش میکروفون</translation>
 <translation id="5648166631817621825">۷ روز گذشته</translation>
 <translation id="5651308944918885595">قابلیت شناسایی «هم‌رسانی با اطراف»</translation>
 <translation id="5653154844073528838"><ph name="PRINTER_COUNT" /> چاپگر ذخیره‌شده دارید.</translation>
@@ -6255,6 +6261,7 @@
 <translation id="6678717876183468697">نشانی وب عبارت</translation>
 <translation id="6680442031740878064">در دسترس: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">رده‌بندی</translation>
+<translation id="6683022854667115063">هدفون</translation>
 <translation id="6683087162435654533">بازیابی همه برگه‌ها</translation>
 <translation id="6684827949542560880">درحال بارگیری آخرین به‌روزرسانی</translation>
 <translation id="668599234725812620">‏باز کردن Google Play</translation>
@@ -6883,6 +6890,7 @@
 <translation id="7255002516883565667">درحال‌حاضر، یک کارت دارید که فقط در این دستگاه قابل استفاده است</translation>
 <translation id="7255935316994522020">اعمال</translation>
 <translation id="7256069762010468647">سایت درحال استفاده از دوربین شما است</translation>
+<translation id="7256634071279256947">میکروفون پشت</translation>
 <translation id="7256710573727326513">باز کردن در برگه</translation>
 <translation id="7257173066616499747">‏شبکه‌های Wi-Fi</translation>
 <translation id="725758059478686223">سرویس چاپ</translation>

@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Inglés (EE. UU.) con teclado Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> (host)</translation>
 <translation id="1521655867290435174">Hojas de cálculo de Google</translation>
+<translation id="1521795806314479294">Preparando <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">Abriendo archivos de Linux...</translation>
 <translation id="1547964879613821194">Inglés canadiense</translation>
 <translation id="1556189134700913550">Aplicar a todo</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Se están comprimiendo <ph name="NUMBER_OF_ITEMS" /> elementos...</translation>
 <translation id="1722687688096767818">Añadiendo perfil...</translation>
 <translation id="1726100011689679555">Servidores de nombres</translation>
+<translation id="1727562178154619254">Listo para sincronizar</translation>
 <translation id="1729953886957086472">Alemán (Alemania)</translation>
 <translation id="1730235522912993863">Chino (Cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementos copiados.</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">Servidores de nombres personalizados</translation>
 <translation id="4465725236958772856">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, gestionada por el administrador, conectar</translation>
 <translation id="4470564870223067757">Hangul de doble alternancia</translation>
+<translation id="4474142134969976028">No hay resultados que coincidan</translation>
 <translation id="4477002475007461989">Rumano</translation>
 <translation id="4477219268485577442">Búlgaro fonético</translation>
 <translation id="4508265954913339219">Error de activación</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">Utiliza un nombre que tenga <ph name="MAX_LENGTH" /> caracteres como máximo</translation>
 <translation id="4973970068702235170">Error al comprimir; error inesperado: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japonés</translation>
+<translation id="4987699874727873250">Inglés (India)</translation>
 <translation id="4988205478593450158">¿Seguro que quieres eliminar "<ph name="FILE_NAME" />"?</translation>
 <translation id="498902553138568924">Mariposa roja</translation>
 <translation id="4992066212339426712">Activar sonido</translation>
@@ -509,6 +513,7 @@
    Si desconectas el dispositivo mientras se utiliza, puedes perder tus datos. Espera hasta que finalice la operación y, a continuación, desconecta el dispositivo con la aplicación Archivos.</translation>
 <translation id="5163869187418756376">Se ha producido un error al compartir contenido. Comprueba la conexión e inténtalo de nuevo más tarde.</translation>
 <translation id="516592729076796170">Programmer Dvorak de EE. UU.</translation>
+<translation id="5167102019886320507">Preparando <ph name="NUMBER_OF_ITEMS" /> elementos...</translation>
 <translation id="5177526793333269655">Vista de miniaturas</translation>
 <translation id="5181896909298187506">No hay archivos recientes</translation>
 <translation id="5194713942430106590">Haz clic para mostrar la columna en orden ascendente.</translation>
@@ -813,6 +818,7 @@
 <translation id="7655441028674523381">Accede fácilmente a Google Fotos</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7665680517722058469">Prueba con otra búsqueda</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> elementos enviados a la papelera</translation>
 <translation id="7693909743393669729">Al formatear una unidad, se borrarán todos los datos almacenados en ella y se quitarán todas las particiones que contenga, incluidas las no visibles. Esta acción no se puede deshacer.</translation>
 <translation id="7695430100978772476">No se ha podido formatear <ph name="DRIVE_NAME" /></translation>

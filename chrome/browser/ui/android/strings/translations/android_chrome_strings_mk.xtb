@@ -226,7 +226,6 @@
 <translation id="2248941474044011069">Лозинките се шифрираат на уредот пред да се зачуваат во „Управникот со лозинки на Google“</translation>
 <translation id="2249635629516220541">Приспособете ги податоците што ги користат сајтовите за да ви прикажуваат реклами</translation>
 <translation id="2259659629660284697">Извезување лозинки…</translation>
-<translation id="2276231040576210443">Секогаш може да изберете што да синхронизирате во <ph name="BEGIN_LINK1" />Поставки<ph name="END_LINK1" />. Google може да ги персонализира „Пребарување“ и другите услуги според вашата историја.</translation>
 <translation id="2276696007612801991">Најавете се на сметката на Google за да ги проверите лозинките</translation>
 <translation id="2278052315791335171">Со бришењето на лозинкава нема да се избрише вашата сметка на <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Адреса за наплата</translation>
@@ -304,7 +303,6 @@
 <translation id="2669454659051515572">Сите кои го користат уредов може да ги видат преземените датотеки</translation>
 <translation id="2702516483241149200">Ново: споделете линк што ќе ве одведе до текстов со лизгање</translation>
 <translation id="2707726405694321444">Освежи ја страницата</translation>
-<translation id="2709516037105925701">Автоматско пополнување</translation>
 <translation id="271033894570825754">Ново</translation>
 <translation id="2711073837061989559">Пробни периоди</translation>
 <translation id="2718352093833049315">Само преку Wi-Fi</translation>
@@ -396,7 +394,6 @@
 <translation id="3114507951000454849">Прочитајте ги денешните вести <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">поврзана со</translation>
 <translation id="3123734510202723619">Соопштенија</translation>
-<translation id="3130863904455712965">Историја и друго</translation>
 <translation id="3134784203083076891">“</translation>
 <translation id="314939179385989105">Почетна страница на Chrome</translation>
 <translation id="3157931365184549694">Обнови</translation>
@@ -990,7 +987,6 @@
 <translation id="6397616442223433927">Повторно сте онлајн</translation>
 <translation id="6401458660421980302">За да ја испратите картичкава на друг уред, најавете се на Chrome таму</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> на <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">Синхронизирајте ги податоците на сите уреди</translation>
 <translation id="6404511346730675251">Измени обележувач</translation>
 <translation id="6406506848690869874">Синхронизација</translation>
 <translation id="6407224748847589805">Не може да се поврзе со вашиот компјутер. Обидете се со друга опција за потврда.</translation>
@@ -1319,7 +1315,6 @@
 <translation id="8037801708772278989">Тукушто проверено</translation>
 <translation id="804335162455518893">SD-картичката не е најдена</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> картичка „Инкогнито“}one{<ph name="TAB_COUNT_NORMAL" /> картичка „Инкогнито“}other{<ph name="TAB_COUNT_NORMAL" /> картички „Инкогнито“}}</translation>
-<translation id="8048728378294435881">Направете бекап од вашите работи и користете ги на сите уреди</translation>
 <translation id="8051695050440594747">Достапни се <ph name="MEGABYTES" /> MB</translation>
 <translation id="8058655154417507695">Година на истекување</translation>
 <translation id="8058746566562539958">Отвори во нова Chrome картичка</translation>

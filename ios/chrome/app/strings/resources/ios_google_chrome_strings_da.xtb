@@ -90,6 +90,7 @@
 <translation id="6709398533399187136">Din adgangskode er blevet offentliggjort i forbindelse med et brud på datasikkerheden. Google Adgangskodeadministrator anbefaler, at du ændrer det nu.</translation>
 <translation id="6822673484890854830">Chrome kunne ikke tjekke alle adgangskoder. Prøv igen senere.</translation>
 <translation id="6964931465519938134">Du kan nu bruge Chrome, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
+<translation id="6975725306479268850">Vælg Chrome for Autofyld</translation>
 <translation id="701356708427365932">Lær den nye Chrome-menu at kende</translation>
 <translation id="7059914902409643750">Tilpas Chrome</translation>
 <translation id="7124339256045485976">Sørger for, at Chrome er opdateret</translation>
@@ -110,6 +111,7 @@
 <translation id="7754633291442704733">Din organisation <ph name="DOMAIN" /> får adgang til din Chrome-historik samt dine Chrome-data, -bogmærker, -adgangskoder og andre indstillinger, som du har gemt på denne konto. Når du logger ud, ryddes dine data fra denne enhed.  Dine data vil dog fortsat være gemt på din managerstyrede Google-konto, og de vil fortsat være tilgængelige for din organisation. Din organisation kan også konfigurere brugerpolitikker, der gælder specifikt for den pågældende konto, og som kan ændre Chromes adfærd.</translation>
 <translation id="7780154209050837198">Log ind i Chrome med din Google-konto for at få mest muligt ud af Chrome.</translation>
 <translation id="7855730255114109580">Google Chrome er opdateret</translation>
+<translation id="7939179037291298976">Gå til Indstillinger på din iPhone, åbn "Indstillinger til adgangskode", og vælg "Chrome"</translation>
 <translation id="8022947259858476807">Brug som standard Chrome til at åbne links, søge efter widgets og udfylde adgangskoder automatisk i andre apps</translation>
 <translation id="81358522153858150">Chrome understøtter nu brugerpolitikker for din administrerede konto</translation>
 <translation id="8160472928944011082">Chrome kan ikke opdateres</translation>
@@ -125,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Google Adgangskodeadministrator kunne ikke tjekke alle adgangskoder. Prøv igen i morgen, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Sikkerhed i Google Chrome</translation>
+<translation id="8765470054473112089">Når du indtaster noget i adresselinjen eller søgefeltet, sender Chrome det, du skriver, til din standardsøgemaskine for at få bedre forslag. Dette er deaktiveret i inkognitotilstand.</translation>
 <translation id="8772179140489533211">Viser anmodninger om at logge ind i Chrome.</translation>
 <translation id="8788269841521769222">Du behøver ikke at huske denne adgangskode. Den gemmes i Googles Adgangskodeadministrator for <ph name="EMAIL" /></translation>
 <translation id="8857676124663337448">Google Adgangskodeadministrator kunne ikke tjekke alle adgangskoder. Prøv igen i morgen.</translation>

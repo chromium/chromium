@@ -22,6 +22,7 @@
 <translation id="2347208864470321755">Eginbide hau aktibatzen denean, beste hizkuntzetan dauden orriak Google Translate bidez itzuli nahi dituzun galdetuko dizu Chrome-k. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome-ren eginbide batzuekin errazagoa da Interneteko datuak eta web-orriak kargatzeko behar den denbora kudeatzea.
 <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
+<translation id="2444854139071078915">Gordetako pasahitzak beste aplikazioetan erraz lortzeko, erabili Chrome betetze automatikorako</translation>
 <translation id="2561231791489583059">Erabili Chrome arakatzaile lehenetsi gisa webgune arriskutsuen aurka babestuta egoteko eta pasahitzak seguru mantentzeko</translation>
 <translation id="2574249610672786438">Chrome erabiltzen duzun gailu guztietan zure fitxak eskura izateko, hasi saioa gailu guztietan</translation>
 <translation id="2576431527583832481">Chrome hobetu egin dugu! Bertsio berria duzu erabilgarri.</translation>
@@ -89,6 +90,7 @@
 <translation id="6709398533399187136">Pasahitza arriskuan jarri da, datuen isilpekotasuna urratu delako. Google-ren Pasahitz-kudeatzailea zerbitzuak hura orain aldatzea gomendatzen du.</translation>
 <translation id="6822673484890854830">Chrome-k ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro geroago.</translation>
 <translation id="6964931465519938134">Orain, mezuetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean, Chrome erabili ahalko duzu.</translation>
+<translation id="6975725306479268850">Aukeratu Chrome betetze automatikorako</translation>
 <translation id="701356708427365932">Ezagutu Chrome-ko menu berria</translation>
 <translation id="7059914902409643750">Pertsonalizatu Chrome</translation>
 <translation id="7124339256045485976">Mantendu Chrome eguneratuta</translation>
@@ -109,6 +111,7 @@
 <translation id="7754633291442704733">Chrome-ko datuak, laster-markak, historia, pasahitzak eta kontu honetan gordetzen dituzun bestelako ezarpenak atzitu ahalko ditu zure erakundeak (<ph name="DOMAIN" />). Saioa amaitzen duzunean, datuak garbitu egingo dira gailu honetatik.  Hala ere, Google-ko kontu kudeatuan jarraituko dute, eta erakundea haiek atzitzeko gai izango da. Halaber, erabiltzaile-gidalerro jakin batzuk ezar ditzake erakundeak kontu horretarako, eta gidalerro horiek Chrome-ren portaera alda dezakete.</translation>
 <translation id="7780154209050837198">Chrome-ri etekinik handiena ateratzeko, hasi saioa Chrome-n Google-ko kontuarekin.</translation>
 <translation id="7855730255114109580">Eguneratuta dago Google Chrome</translation>
+<translation id="7939179037291298976">iPhone-aren ezarpenetan, ireki Password Options (pasahitzen aukerak) eta hautatu Chrome</translation>
 <translation id="8022947259858476807">Erabili Chrome modu lehenetsian estekak irekitzeko, widgetetatik bilaketak egiteko eta beste aplikazio batzuetako pasahitzak automatikoki betetzeko</translation>
 <translation id="81358522153858150">Orain, Chrome-k kontu kudeaturako erabiltzaile-gidalerroak onartzen ditu</translation>
 <translation id="8160472928944011082">Ezin da eguneratu Chrome</translation>
@@ -124,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Google-ren Pasahitz-kudeatzailea zerbitzuak ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro bihar edo <ph name="BEGIN_LINK" />egiaztatu pasahitzak Google-ko kontuan<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Egon babestuta Google Chrome-rekin</translation>
+<translation id="8765470054473112089">Helbide-barran edo bilaketa-koadroan zerbait idazten duzunean, Chrome-k bilatzaile lehenetsira bidaltzen du, iradokizun hobeak lortzeko. Ezkutuko moduan, aukera hori desaktibatuta dago.</translation>
 <translation id="8772179140489533211">Chrome-n saioa hasteko onarpen-mezuak erakusten ditu.</translation>
 <translation id="8788269841521769222">Ez duzu pasahitza gogoratu beharko. <ph name="EMAIL" /> kontuko Google-ren Pasahitz-kudeatzailea zerbitzuan gordeko da.</translation>
 <translation id="8857676124663337448">Google-ren Pasahitz-kudeatzailea zerbitzuak ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro bihar.</translation>

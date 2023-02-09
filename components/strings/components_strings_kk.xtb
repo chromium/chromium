@@ -524,6 +524,7 @@
 <translation id="2202627062836089804">картаңыздың артқы жағы</translation>
 <translation id="22081806969704220">3-науа</translation>
 <translation id="2210794033760923560">Есепті жүктеп салу</translation>
+<translation id="2212579473415663542">Бұл мекенжай Google аккаунтыңызда (<ph name="ACCOUNT" />) сақталады. Мекенжайды кез келген құрылғы арқылы түрлі Google өнімдерінде пайдалана аласыз.</translation>
 <translation id="2212735316055980242">Саясат табылмады</translation>
 <translation id="2213606439339815911">Жазбалар алынуда…</translation>
 <translation id="2213612003795704869">Бет басып шығарылды.</translation>
@@ -1973,6 +1974,7 @@
 <translation id="5866898949289125849">Әзірлеуші құралдары беті ашылды.</translation>
 <translation id="5869405914158311789">Бұл сайтқа кіру мүмкін емес</translation>
 <translation id="5869522115854928033">Сақталған құпия сөздер</translation>
+<translation id="5872692522325383488">IBAN сақталды</translation>
 <translation id="5873013647450402046">Банк жеке басыңызды растауды сұрайды.</translation>
 <translation id="5877831137320480913">Сұлулық және фитнес</translation>
 <translation id="5884465125445718607">Chinese #6 хатқалтасы</translation>
@@ -2142,6 +2144,7 @@
 <translation id="6300452962057769623">{0,plural, =0{Құрылғыңыз қазір қайта қосылады}=1{Құрылғыңыз 1 секундтан кейін қайта қосылады}other{Құрылғыңыз # секундтан кейін қайта қосылады}}</translation>
 <translation id="6301104306974789820">Бағаны бақылау туралы хабарландырулар алу</translation>
 <translation id="6305205051461490394"><ph name="URL" /> мекенжайына кіру мүмкін емес.</translation>
+<translation id="6306713302480826305">Бұл мекенжай осы және аккаунтқа кірген басқа құрылғыларыңыздан жойылады.</translation>
 <translation id="6311165245110979290">Виртуалдық карта қолжетімді.</translation>
 <translation id="6312113039770857350">Веб-бет қол жетімді емес</translation>
 <translation id="6316226860534107313">Скутерлер мен мопедтер</translation>
@@ -3035,6 +3038,7 @@
 <translation id="8473863474539038330">Мекенжайлар және басқа ақпарат</translation>
 <translation id="8474910779563686872">Әзірлеуші туралы мәліметтерді көрсету</translation>
 <translation id="8479754468255770962">Төменгі сол жағын қапсыру</translation>
+<translation id="8483229036294884935">Бұл мекенжай Google аккаунтыңыздан (<ph name="ACCOUNT" />) жойылады.</translation>
 <translation id="8483780878231876732">Google аккаунтында белгіленген карталарды пайдалану үшін Chrome жүйесіне кіріңіз.</translation>
 <translation id="8488350697529856933">Келесіге қолданылады</translation>
 <translation id="8490137692873530638">10-жинастырушы</translation>

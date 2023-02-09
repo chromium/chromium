@@ -284,6 +284,7 @@
 <translation id="1244303850296295656">Laajennusvirhe</translation>
 <translation id="1245628370644070008">Paikallisen datan palauttaminen</translation>
 <translation id="1246863218384630739">Asennus (<ph name="VM_NAME" />) epäonnistui: kuvan URL-osoite palautti <ph name="HTTP_ERROR" />-virhekoodin. Ota yhteyttä järjestelmänvalvojaan.</translation>
+<translation id="1247372569136754018">Mikrofoni (sisäinen)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Ilmoitukset eivät ole sallittuja yhdellä sivustolla}other{Ilmoitukset eivät ole sallittuja {NUM_SITES} sivustolla}}</translation>
 <translation id="1251366534849411931">Odotettu aloittava kaarisulje: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Tämä poistaa <ph name="TOTAL_USAGE" /> dataa, jonka sivustot ja niiden asentamat sovellukset ovat tallentaneet.</translation>
@@ -542,6 +543,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1482626744466814421">Lisää tämä välilehti kirjanmerkiksi…</translation>
 <translation id="1482772681918035149">muokkaa salasanoja</translation>
 <translation id="1483493594462132177">Lähetä</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Sivusto käyttää Bluetoothia</translation>
 <translation id="1485015260175968628">Se voi nyt:</translation>
 <translation id="1485141095922496924">Versio <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1106,6 +1108,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1965624977906726414">Ei erityiskäyttöoikeuksia.</translation>
 <translation id="1966649499058910679">Korosta jokainen sana kun se lausutaan</translation>
 <translation id="1967970931040389207">Laita hotspot päälle</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">WebRTC-tekstilokit (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Selaaminen sujuu nopeammin, koska sisältö ladataan proaktiivisesti tällä hetkellä auki olevan verkkosivun perusteella</translation>
 <translation id="197288927597451399">Säilytä</translation>
@@ -1831,7 +1834,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="25899519884572181">Poistu lukijatilasta</translation>
 <translation id="2593499352046705383">Varmista ennen aloittamista, että sinulla on varmuuskopio datastasi. Asentaminen (<ph name="DEVICE_OS" />) korvaa kiintolevysi sisällön. Lue lisää osoitteesta g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Hae Googlesta tai kirjoita URL-osoite</translation>
-<translation id="25957578727513093">Lisää pikakuvake Google Salasanoihin, jotta pääset tänne nopeammin</translation>
 <translation id="2599048253926156421">Käyttäjätunnus kopioitu leikepöydälle</translation>
 <translation id="2602501489742255173">Aloita pyyhkäisemällä ylös</translation>
 <translation id="2603115962224169880">Puhdista tietokone</translation>
@@ -2409,6 +2411,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3103451787721578293">Kerro, miksi lataat tätä dataa:</translation>
 <translation id="3105339775057145050">Viimeisin epäonnistunut päivitys</translation>
 <translation id="3105796011181310544">Vaihdetaanko takaisin Googleen?</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Sivusto käyttää Bluetoothia</translation>
 <translation id="3108931485517391283">Ei voi vastaanottaa</translation>
 <translation id="3108957152224931571">Korostusväri</translation>
@@ -3050,6 +3053,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="371300529209814631">Takaisin/seuraava</translation>
 <translation id="3713047097299026954">Tässä suojausavaimessa ei ole mitään kirjautumisdataa.</translation>
 <translation id="3713091615825314967">Automaattiset päivitykset ovat käytössä.</translation>
+<translation id="371370241367527062">Etumikrofoni</translation>
 <translation id="3714195043138862580">Esittelylaitteen oikeudet on poistettu.</translation>
 <translation id="3719826155360621982">Etusivu</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3145,6 +3149,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" />-haku termillä <ph name="SEARCH_TERMS" /></translation>
 <translation id="3798449238516105146">Versio</translation>
 <translation id="3798632811625902122">Bluetooth-laite <ph name="DEVICE" /> pyytää lupaa laiteparin muodostamiseen.</translation>
+<translation id="3798670284305777884">Kaiutin (sisäinen)</translation>
 <translation id="3799128412641261490">Kytkimen käytön asetukset</translation>
 <translation id="3800030395703848668">Näytä listavaihtoehdot</translation>
 <translation id="3800806661949714323">Näytä kaikki (suositus)</translation>
@@ -5144,6 +5149,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5643620609347735571">Poista ja jatka</translation>
 <translation id="5646376287012673985">Sijainti</translation>
 <translation id="5646558797914161501">Liikemies</translation>
+<translation id="5648021990716966815">Mikrofoniliitäntä</translation>
 <translation id="5648166631817621825">Viimeiset seitsemän päivää</translation>
 <translation id="5651308944918885595">Lähijakaminen löydettävyys</translation>
 <translation id="5653154844073528838">Sinulla on <ph name="PRINTER_COUNT" /> tallennettua tulostinta</translation>
@@ -6252,6 +6258,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6678717876183468697">Haun URL-osoite</translation>
 <translation id="6680442031740878064">Käytettävissä: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Nopeus</translation>
+<translation id="6683022854667115063">Kuulokkeet</translation>
 <translation id="6683087162435654533">Palauta kaikki välilehdet</translation>
 <translation id="6684827949542560880">Ladataan uusinta päivitystä</translation>
 <translation id="668599234725812620">Avaa Google Play</translation>
@@ -6880,6 +6887,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7255002516883565667">Yhtä korteistasi voi juuri nyt käyttää vain tällä laitteella</translation>
 <translation id="7255935316994522020">Ota käyttöön</translation>
 <translation id="7256069762010468647">Sivusto käyttää kameraasi</translation>
+<translation id="7256634071279256947">Takamikrofoni</translation>
 <translation id="7256710573727326513">Avaa välilehdessä</translation>
 <translation id="7257173066616499747">Wi-Fi-verkot</translation>
 <translation id="725758059478686223">Tulostuspalvelu</translation>

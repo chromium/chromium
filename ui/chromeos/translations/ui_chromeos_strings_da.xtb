@@ -410,6 +410,7 @@
 <translation id="4462159676511157176">Tilpassede navneservere</translation>
 <translation id="4465725236958772856">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, administreret af din administrator, opret forbindelse</translation>
 <translation id="4470564870223067757">Hangul 2-sæt</translation>
+<translation id="4474142134969976028">Der er ingen matchende resultater</translation>
 <translation id="4477002475007461989">Rumænsk</translation>
 <translation id="4477219268485577442">Bulgarsk (fonetisk)</translation>
 <translation id="4508265954913339219">Aktiveringen mislykkedes</translation>
@@ -817,6 +818,7 @@
 <translation id="7655441028674523381">Få nem adgang til Google Fotos</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7665680517722058469">Prøv en anden søgning</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> elementer er flyttet til papirkurven</translation>
 <translation id="7693909743393669729">Formatering af et drev sletter alle de data, der er gemt på drevet, og fjerner alle eksisterende partitioner, herunder partitioner, der muligvis ikke er synlige. Denne handling kan ikke fortrydes.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> kunne ikke formateres</translation>

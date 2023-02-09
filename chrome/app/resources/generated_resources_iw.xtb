@@ -286,6 +286,7 @@
 <translation id="1244303850296295656">שגיאת תוסף</translation>
 <translation id="1245628370644070008">שחזור הנתונים המקומיים</translation>
 <translation id="1246863218384630739">‏לא ניתן היה להתקין את <ph name="VM_NAME" />: כתובת ה-URL של התמונה החזירה קוד שגיאה <ph name="HTTP_ERROR" />. יש לפנות למנהל המערכת.</translation>
+<translation id="1247372569136754018">מיקרופון (פנימי)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{לאתר אחד אין הרשאה לשליחת התראות}one{ל-{NUM_SITES} אתרים אין הרשאה לשליחת התראות}two{ל-{NUM_SITES} אתרים אין הרשאה לשליחת התראות}other{ל-{NUM_SITES} אתרים אין הרשאה לשליחת התראות}}</translation>
 <translation id="1251366534849411931">חסרים סוגריים מסולסלים פותחים: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">הפעולה הזו תגרום למחיקת נתונים בנפח של <ph name="TOTAL_USAGE" /> שאוחסנו על ידי אתרים ואפליקציות מותקנות</translation>
@@ -414,6 +415,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{אין סיסמאות שנחשפו}=1{סיסמה אחת שנחשפה}one{{NUM_COMPROMISED} סיסמאות שנחשפו}two{{NUM_COMPROMISED} סיסמאות שנחשפו}other{{NUM_COMPROMISED} סיסמאות שנחשפו}}</translation>
 <translation id="1380028686461971526">התחברות אוטומטית לרשת</translation>
 <translation id="1381567580865186407">‏הדיבור ב<ph name="LANGUAGE" /> נשלח אל Google לעיבוד.</translation>
+<translation id="1383381142702995121">ניהול התוסף הזה</translation>
 <translation id="1383597849754832576">אין אפשרות להוריד קובצי דיבור. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="1383861834909034572">פתיחה בסיום</translation>
 <translation id="1383876407941801731">חיפוש</translation>
@@ -543,6 +545,7 @@
 <translation id="1482626744466814421">הוספת הכרטיסייה הזו לסימניות...</translation>
 <translation id="1482772681918035149">לערוך את הסיסמאות</translation>
 <translation id="1483493594462132177">שליחה</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">‏נעשה שימוש ב-Bluetooth באתר</translation>
 <translation id="1485015260175968628">יכולה כעת:</translation>
 <translation id="1485141095922496924">גרסה <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1107,6 +1110,7 @@
 <translation id="1965624977906726414">אין הרשאות מיוחדות.</translation>
 <translation id="1966649499058910679">הדגשה של כל מילה בזמן שהיא נאמרת</translation>
 <translation id="1967970931040389207">הפעלת הנקודה לשיתוף אינטרנט</translation>
+<translation id="1969011864782743497">‏<ph name="DEVICE_NAME" />‏ (USB)</translation>
 <translation id="1969654639948595766">‏יומני טקסט של WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">מהירות הגלישה תגבר כי התוכן ייטען באופן יזום, על סמך הביקור הנוכחי שלך בדף האינטרנט</translation>
 <translation id="197288927597451399">שמירה</translation>
@@ -1833,7 +1837,6 @@
 <translation id="25899519884572181">יציאה ממצב קורא</translation>
 <translation id="2593499352046705383">‏לפני שמתחילים, צריך לוודא שיש גיבוי של הנתונים. התקנת <ph name="DEVICE_OS" /> תחליף את כל הנתונים שבכונן הקשיח שלך. מידע נוסף זמין בכתובת g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">זה המקום לחפש את מה שמעניין או להקליד כתובת של אתר ספציפי</translation>
-<translation id="25957578727513093">‏כדי להגיע לכאן מהר יותר, ניתן להוסיף קיצור דרך ל'מנהל הסיסמאות של Google'</translation>
 <translation id="2599048253926156421">שם המשתמש הועתק ללוח</translation>
 <translation id="2602501489742255173">יש להחליק כלפי מעלה כדי להתחיל</translation>
 <translation id="2603115962224169880">ניקוי המחשב</translation>
@@ -2412,6 +2415,7 @@
 <translation id="3103451787721578293">יש להזין סיבה להעלאת הנתונים האלה:</translation>
 <translation id="3105339775057145050">העדכון האחרון נכשל</translation>
 <translation id="3105796011181310544">‏להחזיר אל Google?</translation>
+<translation id="3105990244222795498">‏<ph name="DEVICE_NAME" />‏ (Bluetooth)</translation>
 <translation id="310671807099593501">‏האתר משתמש ב-Bluetooth</translation>
 <translation id="3108931485517391283">לא ניתן לקבל את הקובץ</translation>
 <translation id="3108957152224931571">הצבע להדגשה</translation>
@@ -3053,6 +3057,7 @@
 <translation id="371300529209814631">הקודם/הבא</translation>
 <translation id="3713047097299026954">אין פרטי כניסה במפתח האבטחה הזה</translation>
 <translation id="3713091615825314967">עדכונים אוטומטיים מופעלים.</translation>
+<translation id="371370241367527062">מיקרופון קדמי</translation>
 <translation id="3714195043138862580">מכשיר ההדגמה הזה הועבר למצב ביטול של ניהול תצורה.</translation>
 <translation id="3719826155360621982">דף הבית</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3148,6 +3153,7 @@
 <translation id="3797900183766075808">&amp;חיפוש ב-<ph name="SEARCH_ENGINE" /> אחר '<ph name="SEARCH_TERMS" />'</translation>
 <translation id="3798449238516105146">גרסה</translation>
 <translation id="3798632811625902122">‏מכשיר ה-Bluetooth <ph name="DEVICE" /> מבקש הרשאה לבצע התאמה.</translation>
+<translation id="3798670284305777884">רמקול (פנימי)</translation>
 <translation id="3799128412641261490">הגדרות גישה באמצעות מתג</translation>
 <translation id="3800030395703848668">הצגת האפשרויות ברשימה</translation>
 <translation id="3800806661949714323">הצגת הכול (מומלץ)</translation>
@@ -4246,6 +4252,7 @@
 <translation id="4807098396393229769">שם על הכרטיס</translation>
 <translation id="4808667324955055115">חלונות קופצים חסומים</translation>
 <translation id="4809079943450490359">הוראות ממנהל המכשיר שלך:</translation>
+<translation id="4809447465126035330">מחיקה</translation>
 <translation id="480990236307250886">פתיחת דף הבית</translation>
 <translation id="4809927044794281115">עיצוב בהיר</translation>
 <translation id="4811212958317149293">סריקה אוטומטית של מקלדת גישה באמצעות מתג</translation>
@@ -5048,6 +5055,7 @@
 <translation id="5556459405103347317">טעינה מחדש</translation>
 <translation id="5558129378926964177">הת&amp;קרבות</translation>
 <translation id="5558247502209241936">פתיחת האפליקציה בחלון</translation>
+<translation id="5559311991468302423">מחיקת הכתובת</translation>
 <translation id="55601339223879446">שינוי גבולות שולחן העבודה שלך בצג</translation>
 <translation id="5561162485081632007">מזהה אירועים מסוכנים כשהם מתרחשים ומזהיר אותך על כך</translation>
 <translation id="5562781907504170924">‏הכרטיסייה הזו מחוברת להתקן Bluetooth.</translation>
@@ -5148,6 +5156,7 @@
 <translation id="5643620609347735571">ניקוי והמשך</translation>
 <translation id="5646376287012673985">מיקום</translation>
 <translation id="5646558797914161501">איש עסקים</translation>
+<translation id="5648021990716966815">שקע מיקרופון</translation>
 <translation id="5648166631817621825">מהשבוע האחרון</translation>
 <translation id="5651308944918885595">יכולת גילוי של 'שיתוף בקרבת מקום'</translation>
 <translation id="5653154844073528838">יש לך <ph name="PRINTER_COUNT" /> מדפסות שמורות.</translation>
@@ -6261,6 +6270,7 @@
 <translation id="6678717876183468697">כתובת אתר של שאילתה</translation>
 <translation id="6680442031740878064">השטח הזמין: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">קצב</translation>
+<translation id="6683022854667115063">אוזניות</translation>
 <translation id="6683087162435654533">ש&amp;חזור כל הכרטיסיות</translation>
 <translation id="6684827949542560880">המערכת מורידה את העדכון האחרון</translation>
 <translation id="668599234725812620">‏פתיחת Google Play</translation>
@@ -6444,6 +6454,7 @@
 <translation id="6839916869147598086">תהליך הכניסה השתנה</translation>
 <translation id="6840155290835956714">יש לשאול לפני שליחה</translation>
 <translation id="6840184929775541289">אינו רשות אישורים</translation>
+<translation id="6840214587087739194">הכתובת נמחקה</translation>
 <translation id="6841143363521180029">מוצפן</translation>
 <translation id="6841186874966388268">שגיאות</translation>
 <translation id="6842136130964845393">כדי לוודא שתמיד תהיה לך גישה לסיסמאות השמורות, עליך לאמת את זהותך</translation>
@@ -6888,6 +6899,7 @@
 <translation id="7255002516883565667">יש לך כרגע כרטיס אחד שאפשר להשתמש בו רק במכשיר הזה</translation>
 <translation id="7255935316994522020">החלה</translation>
 <translation id="7256069762010468647">האתר משתמש במצלמה</translation>
+<translation id="7256634071279256947">מיקרופון אחורי</translation>
 <translation id="7256710573727326513">פתיחה בכרטיסייה</translation>
 <translation id="7257173066616499747">‏רשתות Wi-Fi</translation>
 <translation id="725758059478686223">שירות הדפסה</translation>
@@ -8289,6 +8301,7 @@
 <translation id="8525306231823319788">מסך מלא</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">הוספת שפות</translation>
+<translation id="8528479410903501741">‏שמירת מספר IBAN</translation>
 <translation id="8528962588711550376">תהליך הכניסה מתבצע.</translation>
 <translation id="8529925957403338845">יצירת החיבור לשיתוף אינטרנט מיידי בין ניידים נכשלה</translation>
 <translation id="8531701051932785007">הגרסה המשופרת של הגלישה הבטוחה מושבתת</translation>

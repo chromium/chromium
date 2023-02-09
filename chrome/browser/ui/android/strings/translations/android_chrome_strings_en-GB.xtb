@@ -226,7 +226,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2248941474044011069">Your passwords are encrypted on your device before they’re saved to Google Password Manager</translation>
 <translation id="2249635629516220541">Customise the info used by sites to show you ads</translation>
 <translation id="2259659629660284697">Export passwords…</translation>
-<translation id="2276231040576210443">You can always choose what to sync in <ph name="BEGIN_LINK1" />settings<ph name="END_LINK1" />. Google may personalise Search and other services based on your history.</translation>
 <translation id="2276696007612801991">Sign in to your Google Account to check your passwords</translation>
 <translation id="2278052315791335171">Deleting this password will not delete your account on <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Billing address</translation>
@@ -304,7 +303,6 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="2669454659051515572">Anyone using this device can see downloaded files</translation>
 <translation id="2702516483241149200">New: Share a link that scrolls to this text</translation>
 <translation id="2707726405694321444">Refresh page</translation>
-<translation id="2709516037105925701">Auto-fill</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2711073837061989559">Trials</translation>
 <translation id="2718352093833049315">Only on Wi-Fi</translation>
@@ -396,7 +394,6 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="3114507951000454849">Read today's news <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">linked with</translation>
 <translation id="3123734510202723619">Announcements</translation>
-<translation id="3130863904455712965">History and more</translation>
 <translation id="3134784203083076891">'</translation>
 <translation id="314939179385989105">Chrome’s homepage</translation>
 <translation id="3157931365184549694">Restore</translation>
@@ -990,7 +987,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6397616442223433927">Back online</translation>
 <translation id="6401458660421980302">To send this tab to another device, sign in to Chrome there</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> on <ph name="VIOLATED_URL" /></translation>
-<translation id="6403371459378431832">Sync your data on all devices</translation>
 <translation id="6404511346730675251">Edit bookmark</translation>
 <translation id="6406506848690869874">Sync</translation>
 <translation id="6407224748847589805">Can’t connect to your computer. Try another verification option.</translation>
@@ -1319,7 +1315,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8037801708772278989">Checked just now</translation>
 <translation id="804335162455518893">SD card not found</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> incognito tab}other{<ph name="TAB_COUNT_NORMAL" /> incognito tabs}}</translation>
-<translation id="8048728378294435881">Back up your stuff and use it on any device</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB available</translation>
 <translation id="8058655154417507695">Expiry year</translation>
 <translation id="8058746566562539958">Open in new Chrome tab</translation>

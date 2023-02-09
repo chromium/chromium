@@ -524,6 +524,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2202627062836089804">a kártya hátoldalán</translation>
 <translation id="22081806969704220">3. tálca</translation>
 <translation id="2210794033760923560">Jelentés feltöltése</translation>
+<translation id="2212579473415663542">Ezt a címet a Google-fiókjába (<ph name="ACCOUNT" />) mentette a rendszer. A Google-termékekben tárolt címeket bármelyik eszközön használhatja.</translation>
 <translation id="2212735316055980242">Nem találhatók irányelvek</translation>
 <translation id="2213606439339815911">Bejegyzések lekérése...</translation>
 <translation id="2213612003795704869">Oldal kinyomtatva</translation>
@@ -1970,6 +1971,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5866898949289125849">A fejlesztői eszközök egyik oldalát látja</translation>
 <translation id="5869405914158311789">A webhely nem érhető el</translation>
 <translation id="5869522115854928033">Mentett jelszavak</translation>
+<translation id="5872692522325383488">IBAN-kód mentve</translation>
 <translation id="5873013647450402046">Bankja szeretné, ha megerősítené személyazonosságát.</translation>
 <translation id="5877831137320480913">Szépség és fitnesz</translation>
 <translation id="5884465125445718607">6. kínai boríték</translation>
@@ -2139,6 +2141,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6300452962057769623">{0,plural, =0{Eszköze most újraindul}=1{Eszköze 1 másodperc múlva újraindul}other{Eszköze # másodperc múlva újraindul}}</translation>
 <translation id="6301104306974789820">Árkövetési értesítések fogadása</translation>
 <translation id="6305205051461490394">A(z) <ph name="URL" /> nem érhető el.</translation>
+<translation id="6306713302480826305">Ez a cím törlődni fog erről és a többi bejelentkezett eszközről</translation>
 <translation id="6311165245110979290">Virtuális kártya rendelkezésre áll</translation>
 <translation id="6312113039770857350">A weboldal nem érhető el</translation>
 <translation id="6316226860534107313">Robogók és mopedek</translation>
@@ -3030,6 +3033,7 @@ További részletek:
 <translation id="8473863474539038330">Címek és egyebek</translation>
 <translation id="8474910779563686872">Fejlesztői részletek megjelenítése</translation>
 <translation id="8479754468255770962">Kapocs balra lent</translation>
+<translation id="8483229036294884935">Ez a cím törlődik az Ön Google-fiókjából (<ph name="ACCOUNT" />)</translation>
 <translation id="8483780878231876732">Jelentkezzen be a Chrome-ba, hogy használhassa a kártyákat Google-fiókjából.</translation>
 <translation id="8488350697529856933">A következőre érvényes</translation>
 <translation id="8490137692873530638">10. kötegelő</translation>

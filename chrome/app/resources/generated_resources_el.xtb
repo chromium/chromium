@@ -284,6 +284,7 @@
 <translation id="1244303850296295656">Σφάλμα επέκτασης</translation>
 <translation id="1245628370644070008">Ανάκτηση τοπικών δεδομένων</translation>
 <translation id="1246863218384630739">Δεν ήταν δυνατή η εγκατάσταση του <ph name="VM_NAME" />: Το URL εικόνας εμφάνισε κωδικό σφάλματος <ph name="HTTP_ERROR" />. Επικοινωνήστε με τον διαχειριστή.</translation>
+<translation id="1247372569136754018">Μικρόφωνο (εσωτερικό)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Δεν επιτρέπονται ειδοποιήσεις για έναν ιστότοπο}other{Δεν επιτρέπονται ειδοποιήσεις για {NUM_SITES} ιστοτόπους}}</translation>
 <translation id="1251366534849411931">Αναμενόμενο άγκιστρο ανοίγματος: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Με αυτήν την ενέργεια θα διαγραφούν <ph name="TOTAL_USAGE" /> των δεδομένων που έχουν αποθηκευτεί από ιστοτόπους και τις εγκατεστημένες εφαρμογές τους.</translation>
@@ -542,6 +543,7 @@
 <translation id="1482626744466814421">Προσθήκη αυτής της καρτέλας στους σελιδοδείκτες…</translation>
 <translation id="1482772681918035149">επεξεργασία κωδικών πρόσβασης</translation>
 <translation id="1483493594462132177">Αποστολή</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Ο ιστότοπος χρησιμοποιεί Bluetooth.</translation>
 <translation id="1485015260175968628">Τώρα έχει τις εξής δυνατότητες:</translation>
 <translation id="1485141095922496924">Έκδοση <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -630,6 +632,7 @@
 <translation id="1567387640189251553">Συνδέθηκε διαφορετικό πληκτρολόγιο από την τελευταία φορά που εισαγάγατε τον κωδικό πρόσβασής σας. Μπορεί να επιχειρεί να υποκλέψει τα πατήματα πλήκτρων σας.</translation>
 <translation id="156793199942386351">Το <ph name="CURRENTKEY" /> έχει ήδη ανατεθεί στην ενέργεια "<ph name="ACTION" />". Πατήστε οποιοδήποτε πλήκτρο για <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Κονσόλα JavaScript</translation>
+<translation id="1569466257325986920">Την επόμενη φορά που θα αλλάξει ο κωδικός πρόσβασης του Λογαριασμού σας Google, τα τοπικά δεδομένα σας θα ανακτηθούν αυτόματα αφού συνδεθείτε στον Λογαριασμό σας Google.</translation>
 <translation id="1570604804919108255">Κατάργηση σίγασης ειδοποιήσεων</translation>
 <translation id="1571304935088121812">Αντιγραφή ονόματος χρήστη</translation>
 <translation id="1571738973904005196">Προβολή καρτέλας: <ph name="TAB_ORIGIN" /></translation>
@@ -896,6 +899,7 @@
 <translation id="1781979858217752599">Κοινοποίηση ήχου παραθύρου</translation>
 <translation id="1782101999402987960">Οι ενημερώσεις έχουν αποκλειστεί από τον διαχειριστή σας</translation>
 <translation id="1782196717298160133">Εύρεση του τηλεφώνου σας</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 σημείωση}other{# σημειώσεις}}</translation>
 <translation id="1784707308176068866">Εκτέλεση στο παρασκήνιο μετά από αίτημα εγγενούς συνεργαζόμενης εφαρμογής</translation>
 <translation id="1784849162047402014">Ο ελεύθερος χώρος στον δίσκο της συσκευής είναι περιορισμένος</translation>
 <translation id="1787350673646245458">Εικόνα χρήστη</translation>
@@ -1107,6 +1111,7 @@
 <translation id="1965624977906726414">Δεν έχει ειδικά δικαιώματα.</translation>
 <translation id="1966649499058910679">Επισημάνετε κάθε λέξη καθώς εκφωνείται</translation>
 <translation id="1967970931040389207">Ενεργοποίηση σημείου πρόσβασης Wi-Fi</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969654639948595766">Αρχεία καταγραφής κειμένου WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Η περιήγησή σας θα είναι πιο γρήγορη επειδή το περιεχόμενο φορτώνεται προληπτικά με βάση την τρέχουσα επίσκεψή σας στην ιστοσελίδα.</translation>
 <translation id="197288927597451399">Διατήρηση</translation>
@@ -1691,6 +1696,7 @@
 <translation id="2467755475704469005">Δεν εντοπίστηκε συσκευή. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Επιτάχυνση κύλισης επιφάνειας αφής</translation>
 <translation id="2468205691404969808">Χρησιμοποιεί cookie για την απομνημόνευση των προτιμήσεών σας, ακόμα κι αν δεν επισκέπτεστε αυτές τις σελίδες</translation>
+<translation id="2468247643665097563">Σειρά</translation>
 <translation id="2468402215065996499">Ταμαγκότσι</translation>
 <translation id="2468470085922875120">Χρησιμοποιείτε κωδικούς πρόσβασης που δεν μπορεί κάποιος να μαντέψει εύκολα.</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 καρτέλα}other{<ph name="GROUP_TITLE" /> - # καρτέλες}}</translation>
@@ -1832,7 +1838,6 @@
 <translation id="25899519884572181">Έξοδος από τη λειτουργία ανάγνωσης</translation>
 <translation id="2593499352046705383">Πριν ξεκινήσετε, βεβαιωθείτε ότι έχετε δημιουργήσει αντίγραφα ασφαλείας για τα δεδομένα σας. Η εγκατάσταση του <ph name="DEVICE_OS" /> θα αντικαταστήσει όλα τα δεδομένα στον σκληρό δίσκο σας. Μάθετε περισσότερα στη διεύθυνση g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Κάντε αναζήτηση στο Google ή πληκτρολογήστε το URL</translation>
-<translation id="25957578727513093">Για πιο γρήγορη πρόσβαση, προσθέστε μια συντόμευση στον Διαχειριστή κωδικών πρόσβασης Google</translation>
 <translation id="2599048253926156421">Το όνομα χρήστη αντιγράφηκε στο πρόχειρο</translation>
 <translation id="2602501489742255173">Σύρετε προς τα επάνω για να ξεκινήσετε</translation>
 <translation id="2603115962224169880">Εκκαθάριση υπολογιστή</translation>
@@ -2410,6 +2415,7 @@
 <translation id="3103451787721578293">Καταχωρίστε έναν λόγο για τη μεταφόρτωση αυτών των δεδομένων:</translation>
 <translation id="3105339775057145050">Τελευταία μη επιτυχής ενημέρωση</translation>
 <translation id="3105796011181310544">Αλλαγή σε Google;</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Ο ιστότοπος χρησιμοποιεί bluetooth</translation>
 <translation id="3108931485517391283">Δεν είναι δυνατή η λήψη</translation>
 <translation id="3108957152224931571">Χρώμα επισήμανσης</translation>
@@ -3051,6 +3057,7 @@
 <translation id="371300529209814631">Εμπρός/Πίσω</translation>
 <translation id="3713047097299026954">Αυτό το κλειδί ασφαλείας δεν διαθέτει δεδομένα σύνδεσης.</translation>
 <translation id="3713091615825314967">Οι αυτόματες ενημερώσεις είναι ενεργοποιημένες.</translation>
+<translation id="371370241367527062">Μπροστινό μικρόφωνο</translation>
 <translation id="3714195043138862580">Αυτή η συσκευή επίδειξης έχει τεθεί σε κατάσταση κατάργησης παροχής.</translation>
 <translation id="3719826155360621982">Αρχική σελίδα</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3146,6 +3153,7 @@
 <translation id="3797900183766075808">&amp;Αναζήτηση <ph name="SEARCH_ENGINE" /> για "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="3798449238516105146">Έκδοση</translation>
 <translation id="3798632811625902122">Η συσκευή Bluetooth <ph name="DEVICE" /> ζητά άδεια σύζευξης.</translation>
+<translation id="3798670284305777884">Ηχείο (εσωτερικό)</translation>
 <translation id="3799128412641261490">Ρυθμίσεις Πρόσβασης με διακόπτη</translation>
 <translation id="3800030395703848668">Προβολή επιλογών λίστας</translation>
 <translation id="3800806661949714323">Εμφάνιση όλων (συνιστάται)</translation>
@@ -5149,6 +5157,7 @@
 <translation id="5643620609347735571">Διαγραφή και συνέχεια</translation>
 <translation id="5646376287012673985">Τοποθεσία</translation>
 <translation id="5646558797914161501">Επιχειρηματίας</translation>
+<translation id="5648021990716966815">Υποδοχή μικροφώνου</translation>
 <translation id="5648166631817621825">Τελευταίες 7 ημέρες</translation>
 <translation id="5651308944918885595">Δυνατότητα ανακάλυψης Κοινοποίησης κοντά</translation>
 <translation id="5653154844073528838">Έχετε <ph name="PRINTER_COUNT" /> αποθηκευμένους εκτυπωτές.</translation>
@@ -5964,6 +5973,7 @@
 <translation id="6410668567036790476">Προσθήκη μηχανής αναζήτησης</translation>
 <translation id="641469293210305670">Εγκατάσταση ενημερώσεων και εφαρμογών</translation>
 <translation id="6414878884710400018">Άνοιγμα προτιμήσεων συστήματος</translation>
+<translation id="6415816101512323589">Ενεργοποίηση της ανάκτησης τοπικών δεδομένων για την προστασία των δεδομένων σας;</translation>
 <translation id="6415900369006735853">Συνδεθείτε στο διαδίκτυο μέσω του τηλεφώνου σας</translation>
 <translation id="6416743254476733475">Αποδοχή ή αποκλεισμός στον υπολογιστή σας.</translation>
 <translation id="6417265370957905582">Βοηθός Google</translation>
@@ -6257,6 +6267,7 @@
 <translation id="6678717876183468697">URL ερωτήματος</translation>
 <translation id="6680442031740878064">Διαθέσιμος χώρος: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Βαθμολόγηση</translation>
+<translation id="6683022854667115063">Ακουστικά</translation>
 <translation id="6683087162435654533">Επαναφορά όλων των καρτελών</translation>
 <translation id="6684827949542560880">Πραγματοποιείται λήψη της πιο πρόσφατης ενημέρωσης</translation>
 <translation id="668599234725812620">Άνοιγμα Google Play</translation>
@@ -6885,6 +6896,7 @@
 <translation id="7255002516883565667">Αυτήν τη στιγμή, έχετε μία κάρτα που μπορεί να χρησιμοποιηθεί μόνο σε αυτήν τη συσκευή</translation>
 <translation id="7255935316994522020">Εφαρμογή</translation>
 <translation id="7256069762010468647">Ο ιστότοπος χρησιμοποιεί την κάμερά σας</translation>
+<translation id="7256634071279256947">Πίσω μικρόφωνο</translation>
 <translation id="7256710573727326513">Άνοιγμα σε καρτέλα</translation>
 <translation id="7257173066616499747">Δίκτυα Wi-Fi</translation>
 <translation id="725758059478686223">Υπηρεσία εκτύπωσης</translation>
