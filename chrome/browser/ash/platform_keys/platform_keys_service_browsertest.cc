@@ -399,7 +399,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerProfileBrowserTest,
   const std::vector<uint8_t> public_key = GenerateKeyPair(token_id_1);
 
   test_util::IsKeyOnTokenExecutionWaiter is_key_on_token_waiter;
-  platform_keys_service()->IsKeyOnToken(token_id_2, BytesToStr(public_key),
+  platform_keys_service()->IsKeyOnToken(token_id_2, std::move(public_key),
                                         is_key_on_token_waiter.GetCallback());
   ASSERT_TRUE(is_key_on_token_waiter.Wait());
 
@@ -748,7 +748,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest, IsKeyOnToken) {
   const std::vector<uint8_t> public_key = GenerateKeyPair(token_id);
 
   test_util::IsKeyOnTokenExecutionWaiter is_key_on_token_waiter;
-  platform_keys_service()->IsKeyOnToken(token_id, BytesToStr(public_key),
+  platform_keys_service()->IsKeyOnToken(token_id, std::move(public_key),
                                         is_key_on_token_waiter.GetCallback());
   ASSERT_TRUE(is_key_on_token_waiter.Wait());
 
@@ -761,8 +761,12 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
                        IsKeyOnTokenWhenNoKeysGenerated) {
   const TokenId token_id = GetParam().token_id;
 
+  // A public key for a key that was never generated. (The content is also not
+  // realistic.)
+  std::vector<uint8_t> bad_key = {1, 2, 3, 4, 5};
+
   test_util::IsKeyOnTokenExecutionWaiter is_key_on_token_waiter;
-  platform_keys_service()->IsKeyOnToken(token_id, "test_public_key",
+  platform_keys_service()->IsKeyOnToken(token_id, std::move(bad_key),
                                         is_key_on_token_waiter.GetCallback());
   ASSERT_TRUE(is_key_on_token_waiter.Wait());
 
@@ -825,8 +829,10 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerUnavailableTokenBrowserTest,
                        IsKeyOnToken) {
   const TokenId token_id = GetParam().token_id;
 
+  std::vector<uint8_t> some_key = {1, 2, 3, 4, 5};
+
   test_util::IsKeyOnTokenExecutionWaiter is_key_on_token_waiter;
-  platform_keys_service()->IsKeyOnToken(token_id, "test_public_key",
+  platform_keys_service()->IsKeyOnToken(token_id, std::move(some_key),
                                         is_key_on_token_waiter.GetCallback());
   ASSERT_TRUE(is_key_on_token_waiter.Wait());
 

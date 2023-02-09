@@ -275,7 +275,7 @@ class PlatformKeysService : public KeyedService {
   // be invoked on the UI thread with the result. If an error occurred, an error
   // |status| will be returned and absl::nullopt |on_token| will be returned.
   virtual void IsKeyOnToken(chromeos::platform_keys::TokenId token_id,
-                            const std::string& public_key_spki_der,
+                            std::vector<uint8_t> public_key_spki_der,
                             IsKeyOnTokenCallback callback) = 0;
 
   // Softoken NSS PKCS11 module (used for testing) allows only predefined key
@@ -394,7 +394,7 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
       chromeos::platform_keys::KeyAttributeType attribute_type,
       GetAttributeForKeyCallback callback) override;
   void IsKeyOnToken(chromeos::platform_keys::TokenId token_id,
-                    const std::string& public_key_spki_der,
+                    std::vector<uint8_t> public_key_spki_der,
                     IsKeyOnTokenCallback callback) override;
   void SetMapToSoftokenAttrsForTesting(
       bool map_to_softoken_attrs_for_testing) override;

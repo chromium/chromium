@@ -655,10 +655,10 @@ class GetAttributeForKeyState : public NSSOperationState {
 class IsKeyOnTokenState : public NSSOperationState {
  public:
   IsKeyOnTokenState(ServiceWeakPtr weak_ptr,
-                    const std::string& public_key_spki_der,
+                    std::vector<uint8_t> public_key_spki_der,
                     IsKeyOnTokenCallback callback)
       : NSSOperationState(weak_ptr),
-        public_key_spki_der_(public_key_spki_der),
+        public_key_spki_der_(std::move(public_key_spki_der)),
         callback_(std::move(callback)) {}
 
   ~IsKeyOnTokenState() override = default;
@@ -672,7 +672,7 @@ class IsKeyOnTokenState : public NSSOperationState {
   }
 
   // Must be a DER encoding of a SubjectPublicKeyInfo.
-  const std::string public_key_spki_der_;
+  const std::vector<uint8_t> public_key_spki_der_;
 
  private:
   void CallBack(const base::Location& from,
@@ -1497,8 +1497,8 @@ void IsKeyOnTokenWithDb(std::unique_ptr<IsKeyOnTokenState> state,
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(state->slot_.get());
 
-  bool key_on_slot = GetPrivateKey(StrToBytes(state->public_key_spki_der_),
-                                   state->slot_.get()) != nullptr;
+  bool key_on_slot =
+      GetPrivateKey(state->public_key_spki_der_, state->slot_.get()) != nullptr;
   state->OnSuccess(FROM_HERE, key_on_slot);
 }
 
@@ -1861,12 +1861,13 @@ void PlatformKeysServiceImpl::GetAttributeForKey(
 
 void PlatformKeysServiceImpl::IsKeyOnToken(
     TokenId token_id,
-    const std::string& public_key_spki_der,
+    std::vector<uint8_t> public_key_spki_der,
     IsKeyOnTokenCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto state = std::make_unique<IsKeyOnTokenState>(
-      weak_factory_.GetWeakPtr(), public_key_spki_der, std::move(callback));
+      weak_factory_.GetWeakPtr(), std::move(public_key_spki_der),
+      std::move(callback));
   if (delegate_->IsShutDown()) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);
     return;

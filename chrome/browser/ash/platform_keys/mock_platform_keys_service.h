@@ -143,7 +143,7 @@ class MockPlatformKeysService : public PlatformKeysService {
   MOCK_METHOD(void,
               IsKeyOnToken,
               (chromeos::platform_keys::TokenId token_id,
-               const std::string& public_key_spki_der,
+               std::vector<uint8_t> public_key_spki_der,
                IsKeyOnTokenCallback callback),
               (override));
 
