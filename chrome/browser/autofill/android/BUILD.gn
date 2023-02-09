@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 java_cpp_enum("autofill_generated_enums") {
   sources = [
+    "//chrome/browser/android/preferences/autofill/autofill_profile_bridge.h",
     "//components/autofill/core/browser/data_model/autofill_profile.h",
     "//components/autofill/core/browser/data_model/autofill_structured_address_component.h",
   ]

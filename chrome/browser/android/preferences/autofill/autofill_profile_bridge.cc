@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/AutofillProfileBridge_jni.h"
@@ -95,6 +96,7 @@ JNI_AutofillProfileBridge_GetAddressUiComponents(
     JNIEnv* env,
     const JavaParamRef<jstring>& j_country_code,
     const JavaParamRef<jstring>& j_language_code,
+    jint j_validation_type,
     const JavaParamRef<jobject>& j_id_list,
     const JavaParamRef<jobject>& j_name_list,
     const JavaParamRef<jobject>& j_required_list,
@@ -125,13 +127,23 @@ JNI_AutofillProfileBridge_GetAddressUiComponents(
   ExtendAddressComponents(ui_components, country, localization,
                           /*include_literals=*/false);
 
+  AddressValidationType validation_type =
+      static_cast<AddressValidationType>(j_validation_type);
   for (const auto& ui_component : ui_components) {
+    component_ids.push_back(ui_component.field);
     component_labels.push_back(ui_component.name);
-    component_required.push_back(
-        IsFieldRequired(ui_component.field, country_code));
     component_length.push_back(ui_component.length_hint ==
                                AddressUiComponent::HINT_LONG);
-    component_ids.push_back(ui_component.field);
+
+    switch (validation_type) {
+      case AddressValidationType::kPaymentRequest:
+        component_required.push_back(
+            IsFieldRequired(ui_component.field, country_code));
+        break;
+      case AddressValidationType::kAccount:
+        component_required.push_back(
+            country.IsAddressFieldRequired(ui_component.field));
+    }
   }
 
   Java_AutofillProfileBridge_intArrayToList(
