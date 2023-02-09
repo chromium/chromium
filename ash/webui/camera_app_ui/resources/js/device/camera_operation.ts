@@ -144,7 +144,7 @@ class Reconfigurer {
         let photoResolutions;
         if (deviceOperator !== null) {
           assert(cameraInfo.camera3DevicesInfo !== null);
-          candidates = await this.capturePreferrer.getSortedCandidates(
+          candidates = this.capturePreferrer.getSortedCandidates(
               cameraInfo.camera3DevicesInfo, deviceId, mode, hasAudio);
           photoResolutions = await deviceOperator.getPhotoResolutions(deviceId);
         } else {
