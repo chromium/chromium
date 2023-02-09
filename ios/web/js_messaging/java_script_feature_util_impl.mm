@@ -21,6 +21,7 @@
 #import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
 #import "ios/web/navigation/navigation_java_script_feature.h"
 #import "ios/web/navigation/session_restore_java_script_feature.h"
+#import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/text_fragments/text_fragments_java_script_feature.h"
@@ -93,7 +94,7 @@ WindowErrorJavaScriptFeature* GetWindowErrorJavaScriptFeature() {
 JavaScriptFeature* GetPluginPlaceholderJavaScriptFeature() {
   // Static storage is ok for `plugin_placeholder_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> plugin_placeholder_feature(
-      JavaScriptFeature::ContentWorld::kAnyContentWorld,
+      ContentWorld::kAnyContentWorld,
       std::vector<const JavaScriptFeature::FeatureScript>(
           {JavaScriptFeature::FeatureScript::CreateWithFilename(
               kPluginPlaceholderScriptName,
@@ -108,7 +109,7 @@ JavaScriptFeature* GetPluginPlaceholderJavaScriptFeature() {
 JavaScriptFeature* GetShareWorkaroundJavaScriptFeature() {
   // Static storage is ok for `share_workaround_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> share_workaround_feature(
-      JavaScriptFeature::ContentWorld::kPageContentWorld,
+      ContentWorld::kPageContentWorld,
       std::vector<const JavaScriptFeature::FeatureScript>(
           {JavaScriptFeature::FeatureScript::CreateWithFilename(
               kShareWorkaroundScriptName,
@@ -163,7 +164,7 @@ ScrollHelperJavaScriptFeature* GetScrollHelperJavaScriptFeature() {
 JavaScriptFeature* GetBaseJavaScriptFeature() {
   // Static storage is ok for `base_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> base_feature(
-      JavaScriptFeature::ContentWorld::kAnyContentWorld,
+      ContentWorld::kAnyContentWorld,
       std::vector<const JavaScriptFeature::FeatureScript>(
           {JavaScriptFeature::FeatureScript::CreateWithFilename(
               kBaseScriptName,
@@ -175,7 +176,7 @@ JavaScriptFeature* GetBaseJavaScriptFeature() {
 JavaScriptFeature* GetCommonJavaScriptFeature() {
   // Static storage is ok for `common_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> common_feature(
-      JavaScriptFeature::ContentWorld::kAnyContentWorld,
+      ContentWorld::kAnyContentWorld,
       std::vector<const JavaScriptFeature::FeatureScript>(
           {JavaScriptFeature::FeatureScript::CreateWithFilename(
               kCommonScriptName,
@@ -188,7 +189,7 @@ JavaScriptFeature* GetCommonJavaScriptFeature() {
 JavaScriptFeature* GetMessageJavaScriptFeature() {
   // Static storage is ok for `message_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> message_feature(
-      JavaScriptFeature::ContentWorld::kAnyContentWorld,
+      ContentWorld::kAnyContentWorld,
       std::vector<const JavaScriptFeature::FeatureScript>(
           {JavaScriptFeature::FeatureScript::CreateWithFilename(
               kMessageScriptName,

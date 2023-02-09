@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
+#import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
@@ -38,7 +39,7 @@ class JavaScriptFeaturePageContentWorldTest : public WebTestWithWebState {
  protected:
   JavaScriptFeaturePageContentWorldTest()
       : WebTestWithWebState(std::make_unique<web::FakeWebClient>()),
-        feature_(JavaScriptFeature::ContentWorld::kPageContentWorld) {}
+        feature_(ContentWorld::kPageContentWorld) {}
 
   void SetUp() override {
     WebTestWithWebState::SetUp();
@@ -222,7 +223,7 @@ class JavaScriptFeatureAnyContentWorldTest : public WebTestWithWebState {
  protected:
   JavaScriptFeatureAnyContentWorldTest()
       : WebTestWithWebState(std::make_unique<web::FakeWebClient>()),
-        feature_(JavaScriptFeature::ContentWorld::kAnyContentWorld) {}
+        feature_(ContentWorld::kAnyContentWorld) {}
 
   void SetUp() override {
     WebTestWithWebState::SetUp();
@@ -346,7 +347,7 @@ class JavaScriptFeatureIsolatedWorldTest : public WebTestWithWebState {
  protected:
   JavaScriptFeatureIsolatedWorldTest()
       : WebTestWithWebState(std::make_unique<web::FakeWebClient>()),
-        feature_(JavaScriptFeature::ContentWorld::kIsolatedWorldOnly) {}
+        feature_(ContentWorld::kIsolatedWorldOnly) {}
 
   void SetUp() override {
     WebTestWithWebState::SetUp();

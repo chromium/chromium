@@ -32,7 +32,7 @@ extern const char kFakeJavaScriptFeaturePostMessageReplyValue[];
 // post message.
 class FakeJavaScriptFeature : public JavaScriptFeature {
  public:
-  FakeJavaScriptFeature(JavaScriptFeature::ContentWorld content_world);
+  FakeJavaScriptFeature(ContentWorld content_world);
   ~FakeJavaScriptFeature() override;
 
   // Executes `kJavaScriptFeatureTestScriptReplaceDivContents` in `web_frame`.

@@ -8,6 +8,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/js_messaging/page_script_util.h"
+#import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -108,8 +109,7 @@ TEST_F(JavaScriptFeatureTest, CreateFeature) {
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
           "gcrweb", document_start_injection_time, target_frames_all);
 
-  auto any_content_world =
-      web::JavaScriptFeature::ContentWorld::kAnyContentWorld;
+  auto any_content_world = web::ContentWorld::kAnyContentWorld;
   web::JavaScriptFeature feature(any_content_world, {feature_script});
 
   EXPECT_EQ(any_content_world, feature.GetSupportedContentWorld());
@@ -140,8 +140,7 @@ TEST_F(JavaScriptFeatureTest, CreateFeatureWithPlaceholder) {
             return @{placeholder : replacement};
           }));
 
-  auto any_content_world =
-      web::JavaScriptFeature::ContentWorld::kAnyContentWorld;
+  auto any_content_world = web::ContentWorld::kAnyContentWorld;
   web::JavaScriptFeature feature(any_content_world, {feature_script});
 
   EXPECT_EQ(any_content_world, feature.GetSupportedContentWorld());
@@ -179,8 +178,7 @@ TEST_F(JavaScriptFeatureTest, CreateFeatureWithDependentFeature) {
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
           "common", document_end_injection_time, target_frames_main);
 
-  auto page_content_world =
-      web::JavaScriptFeature::ContentWorld::kPageContentWorld;
+  auto page_content_world = web::ContentWorld::kPageContentWorld;
   web::JavaScriptFeature dependent_feature(page_content_world,
                                            {dependent_feature_script});
   web::JavaScriptFeature feature(page_content_world, {feature_script},

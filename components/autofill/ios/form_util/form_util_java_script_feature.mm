@@ -29,7 +29,7 @@ FormUtilJavaScriptFeature::FormUtilJavaScriptFeature()
     : web::JavaScriptFeature(
           // TODO(crbug.com/1175793): Move autofill code to kAnyContentWorld
           // once all scripts are converted to JavaScriptFeatures.
-          ContentWorld::kPageContentWorld,
+          web::ContentWorld::kPageContentWorld,
           {FeatureScript::CreateWithFilename(
                kFillScriptName,
                FeatureScript::InjectionTime::kDocumentStart,

@@ -47,8 +47,7 @@ const char kGetErrorCount[] = "javaScriptFeatureTest.getErrorCount";
 // Timeout for response of kGetErrorCount.
 const int kGetErrorCountTimeout = 1;
 
-FakeJavaScriptFeature::FakeJavaScriptFeature(
-    JavaScriptFeature::ContentWorld content_world)
+FakeJavaScriptFeature::FakeJavaScriptFeature(ContentWorld content_world)
     : JavaScriptFeature(
           content_world,
           {FeatureScript::CreateWithFilename(

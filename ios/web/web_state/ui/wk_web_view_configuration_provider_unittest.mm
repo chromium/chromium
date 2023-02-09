@@ -8,6 +8,7 @@
 
 #import "base/memory/ptr_util.h"
 #import "ios/web/js_messaging/page_script_util.h"
+#import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
@@ -217,8 +218,7 @@ TEST_F(WKWebViewConfigurationProviderTest, JavaScriptFeatureInjection) {
 
   std::unique_ptr<web::JavaScriptFeature> feature =
       std::make_unique<web::JavaScriptFeature>(
-          web::JavaScriptFeature::ContentWorld::kPageContentWorld,
-          feature_scripts);
+          web::ContentWorld::kPageContentWorld, feature_scripts);
 
   client->SetJavaScriptFeatures({feature.get()});
   GetProvider().UpdateScripts();

@@ -8,6 +8,7 @@
 
 #import "base/ios/ios_util.h"
 #import "ios/web/public/browser_state.h"
+#import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 
@@ -77,13 +78,12 @@ void JavaScriptFeatureManager::ConfigureFeatures(
   AddSharedCommonFeatures(isolated_world_.get());
 
   for (JavaScriptFeature* feature : features) {
-    if (isolated_world_ &&
-        feature->GetSupportedContentWorld() !=
-            JavaScriptFeature::ContentWorld::kPageContentWorld) {
+    if (isolated_world_ && feature->GetSupportedContentWorld() !=
+                               ContentWorld::kPageContentWorld) {
       isolated_world_->AddFeature(feature);
     } else {
       DCHECK_NE(feature->GetSupportedContentWorld(),
-                JavaScriptFeature::ContentWorld::kIsolatedWorldOnly);
+                ContentWorld::kIsolatedWorldOnly);
       page_content_world_->AddFeature(feature);
     }
   }

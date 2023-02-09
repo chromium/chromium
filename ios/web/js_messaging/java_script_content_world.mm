@@ -10,6 +10,7 @@
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/js_messaging/web_view_web_state_map.h"
 #import "ios/web/public/browser_state.h"
+#import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
@@ -78,17 +79,15 @@ void JavaScriptContentWorld::AddFeature(const JavaScriptFeature* feature) {
 
   // Ensure `feature` supports this content world.
   if (content_world_) {
-    JavaScriptFeature::ContentWorld incompatible_world_value;
+    ContentWorld incompatible_world_value;
     if (content_world_ == WKContentWorld.pageWorld) {
       // A feature specifying kIsolatedWorldOnly must not be added to the page
       // content world.
-      incompatible_world_value =
-          JavaScriptFeature::ContentWorld::kIsolatedWorldOnly;
+      incompatible_world_value = ContentWorld::kIsolatedWorldOnly;
     } else {
       // A feature specifying kPageContentWorld must not be added to an
       // isolated world.
-      incompatible_world_value =
-          JavaScriptFeature::ContentWorld::kPageContentWorld;
+      incompatible_world_value = ContentWorld::kPageContentWorld;
     }
     DCHECK_NE(feature->GetSupportedContentWorld(), incompatible_world_value);
   }

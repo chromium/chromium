@@ -16,6 +16,7 @@ source_set("js_messaging") {
   frameworks = [ "Foundation.framework" ]
 
   sources = [
+    "content_world.h",
     "java_script_feature.h",
     "java_script_feature_util.h",
     "script_message.h",

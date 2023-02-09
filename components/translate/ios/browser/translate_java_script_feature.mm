@@ -25,7 +25,7 @@ TranslateJavaScriptFeature* TranslateJavaScriptFeature::GetInstance() {
 
 TranslateJavaScriptFeature::TranslateJavaScriptFeature()
     : web::JavaScriptFeature(
-          ContentWorld::kPageContentWorld,
+          web::ContentWorld::kPageContentWorld,
           {/* The `translate_ios` script is injected on demand */
            /* by JSTranslateWebFrameManager. */}) {}
 

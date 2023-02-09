@@ -13,6 +13,7 @@
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/page_script_util.h"
 #import "ios/web/js_messaging/web_frame_internal.h"
+#import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -133,8 +134,7 @@ JavaScriptFeature::JavaScriptFeature(
 
 JavaScriptFeature::~JavaScriptFeature() = default;
 
-JavaScriptFeature::ContentWorld JavaScriptFeature::GetSupportedContentWorld()
-    const {
+ContentWorld JavaScriptFeature::GetSupportedContentWorld() const {
   return supported_world_;
 }
 

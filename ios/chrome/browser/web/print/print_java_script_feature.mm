@@ -21,7 +21,7 @@ const char kScriptHandlerName[] = "PrintMessageHandler";
 
 PrintJavaScriptFeature::PrintJavaScriptFeature()
     : JavaScriptFeature(
-          ContentWorld::kPageContentWorld,
+          web::ContentWorld::kPageContentWorld,
           {FeatureScript::CreateWithFilename(
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,

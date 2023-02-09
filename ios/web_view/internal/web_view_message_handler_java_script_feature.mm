@@ -31,7 +31,7 @@ WebViewMessageHandlerJavaScriptFeature::GetInstance() {
 
 WebViewMessageHandlerJavaScriptFeature::WebViewMessageHandlerJavaScriptFeature()
     : web::JavaScriptFeature(
-          ContentWorld::kPageContentWorld,
+          web::ContentWorld::kPageContentWorld,
           {FeatureScript::CreateWithFilename(
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,

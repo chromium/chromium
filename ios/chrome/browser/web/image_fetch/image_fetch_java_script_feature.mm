@@ -31,7 +31,7 @@ ImageFetchJavaScriptFeature::Handler* GetHandlerFromWebState(
 ImageFetchJavaScriptFeature::ImageFetchJavaScriptFeature(
     base::RepeatingCallback<Handler*(web::WebState*)> handler_factory)
     : JavaScriptFeature(
-          ContentWorld::kAnyContentWorld,
+          web::ContentWorld::kAnyContentWorld,
           {FeatureScript::CreateWithFilename(
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,

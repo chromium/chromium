@@ -5,6 +5,7 @@
 #import "ios/web/js_messaging/java_script_content_world.h"
 
 #import "base/test/gtest_util.h"
+#import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/test/web_test.h"
 #import "ios/web/test/fakes/fake_java_script_feature.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
@@ -33,8 +34,7 @@ TEST_F(JavaScriptContentWorldTest, AddFeature) {
   web::JavaScriptContentWorld world(GetBrowserState(),
                                     WKContentWorld.pageWorld);
 
-  FakeJavaScriptFeature feature(
-      JavaScriptFeature::ContentWorld::kAnyContentWorld);
+  FakeJavaScriptFeature feature(ContentWorld::kAnyContentWorld);
   world.AddFeature(&feature);
   EXPECT_TRUE(world.HasFeature(&feature));
   EXPECT_EQ(WKContentWorld.pageWorld, world.GetWKContentWorld());
@@ -57,8 +57,7 @@ TEST_F(JavaScriptContentWorldTest, AddFeatureToSpecificWKContentWorld) {
   web::JavaScriptContentWorld world(GetBrowserState(),
                                     WKContentWorld.defaultClientWorld);
 
-  FakeJavaScriptFeature feature(
-      JavaScriptFeature::ContentWorld::kAnyContentWorld);
+  FakeJavaScriptFeature feature(ContentWorld::kAnyContentWorld);
   world.AddFeature(&feature);
   EXPECT_TRUE(world.HasFeature(&feature));
 
@@ -82,8 +81,7 @@ TEST_F(JavaScriptContentWorldTest, AddFeatureToIsolatedWorldOnly) {
   web::JavaScriptContentWorld world(GetBrowserState(),
                                     WKContentWorld.defaultClientWorld);
 
-  FakeJavaScriptFeature feature(
-      JavaScriptFeature::ContentWorld::kIsolatedWorldOnly);
+  FakeJavaScriptFeature feature(ContentWorld::kIsolatedWorldOnly);
   world.AddFeature(&feature);
   EXPECT_TRUE(world.HasFeature(&feature));
 
@@ -98,8 +96,7 @@ TEST_F(JavaScriptContentWorldTest, AddFeatureToIsolatedWorldOnly) {
 TEST_F(JavaScriptContentWorldTest, AddIsolatedWorldFeatureToPageWorld) {
   web::JavaScriptContentWorld world(GetBrowserState(),
                                     WKContentWorld.pageWorld);
-  FakeJavaScriptFeature feature(
-      JavaScriptFeature::ContentWorld::kIsolatedWorldOnly);
+  FakeJavaScriptFeature feature(ContentWorld::kIsolatedWorldOnly);
 
   EXPECT_DCHECK_DEATH(world.AddFeature(&feature));
 }

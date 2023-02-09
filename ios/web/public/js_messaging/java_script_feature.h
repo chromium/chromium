@@ -10,9 +10,10 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#import "base/functional/callback.h"
+#import "base/memory/weak_ptr.h"
+#import "ios/web/public/js_messaging/content_world.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
@@ -41,25 +42,6 @@ class JavaScriptFeature {
   friend class FuzzerEnvWithJavaScriptFeature;
 
  public:
-  // The content world which this feature supports.
-  // NOTE: Features should use kAnyContentWorld whenever possible to allow for
-  // isolation between the feature and the loaded webpage JavaScript.
-  enum class ContentWorld {
-    // Represents any content world.
-    kAnyContentWorld = 0,
-    // Represents the page content world which is shared by the JavaScript of
-    // the webpage. This value should only be used if the feature provides
-    // JavaScript which needs to be accessible to the client JavaScript. For
-    // example, JavaScript polyfills.
-    kPageContentWorld,
-    // Represents an isolated world that is not accessible to the JavaScript of
-    // the webpage. This value should be used when it is important from a
-    // security standpoint to make a feature's JavaScript inaccessible to
-    // client JavaScript. Isolated worlds are supported only on iOS 14+, so
-    // using the value on earlier iOS versions will trigger a DCHECK.
-    kIsolatedWorldOnly,
-  };
-
   // A script to be injected into webpage frames which support this feature.
   class FeatureScript {
    public:
@@ -142,8 +124,16 @@ class JavaScriptFeature {
     PlaceholderReplacementsCallback replacements_callback_;
   };
 
+  // Constructs a new feature instance inside the world described by
+  // `supported_world`. Each FeatureScript within `feature_scripts` will be
+  // configured within that same world.
+  // NOTE: Features should use `kAnyContentWorld` whenever possible to allow for
+  // isolation between the feature and the loaded webpage JavaScript.
   JavaScriptFeature(ContentWorld supported_world,
                     std::vector<const FeatureScript> feature_scripts);
+  // Same as above constructor with the addition of dependent features. If
+  // `dependent_features` are given, they will be setup in the world specified
+  // prior to configuring this feaure.
   JavaScriptFeature(ContentWorld supported_world,
                     std::vector<const FeatureScript> feature_scripts,
                     std::vector<const JavaScriptFeature*> dependent_features);

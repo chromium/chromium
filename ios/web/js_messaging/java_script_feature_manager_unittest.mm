@@ -7,6 +7,7 @@
 #import <WebKit/WebKit.h>
 
 #import "base/ios/ios_util.h"
+#import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/web_test.h"
@@ -64,8 +65,7 @@ TEST_F(JavaScriptFeatureManagerTest, AllFramesStartFeature) {
 
   std::unique_ptr<web::JavaScriptFeature> feature =
       std::make_unique<web::JavaScriptFeature>(
-          web::JavaScriptFeature::ContentWorld::kPageContentWorld,
-          feature_scripts);
+          web::ContentWorld::kPageContentWorld, feature_scripts);
 
   GetJavaScriptFeatureManager()->ConfigureFeatures({feature.get()});
 
@@ -92,8 +92,7 @@ TEST_F(JavaScriptFeatureManagerTest, MainFrameEndFeature) {
 
   std::unique_ptr<web::JavaScriptFeature> feature =
       std::make_unique<web::JavaScriptFeature>(
-          web::JavaScriptFeature::ContentWorld::kAnyContentWorld,
-          feature_scripts);
+          web::ContentWorld::kAnyContentWorld, feature_scripts);
 
   GetJavaScriptFeatureManager()->ConfigureFeatures({feature.get()});
 
@@ -119,8 +118,7 @@ TEST_F(JavaScriptFeatureManagerTest, MainFrameEndFeatureIsolatedWorld) {
 
   std::unique_ptr<web::JavaScriptFeature> feature =
       std::make_unique<web::JavaScriptFeature>(
-          web::JavaScriptFeature::ContentWorld::kIsolatedWorldOnly,
-          feature_scripts);
+          web::ContentWorld::kIsolatedWorldOnly, feature_scripts);
 
   GetJavaScriptFeatureManager()->ConfigureFeatures({feature.get()});
 

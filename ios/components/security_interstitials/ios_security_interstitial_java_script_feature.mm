@@ -30,7 +30,7 @@ IOSSecurityInterstitialJavaScriptFeature::
     IOSSecurityInterstitialJavaScriptFeature()
     // This feature must be in the page content world in order to listen for
     // messages from the Error Page JavaScript.
-    : JavaScriptFeature(ContentWorld::kPageContentWorld, {}) {}
+    : JavaScriptFeature(web::ContentWorld::kPageContentWorld, {}) {}
 
 IOSSecurityInterstitialJavaScriptFeature::
     ~IOSSecurityInterstitialJavaScriptFeature() = default;

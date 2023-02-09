@@ -30,7 +30,7 @@ const char kSenderFrameIdKey[] = "sender_frame";
 
 JavaScriptConsoleFeature::JavaScriptConsoleFeature()
     : JavaScriptFeature(
-          ContentWorld::kPageContentWorld,
+          web::ContentWorld::kPageContentWorld,
           {FeatureScript::CreateWithFilename(
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,
