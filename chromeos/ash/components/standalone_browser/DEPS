@@ -2,4 +2,7 @@ specific_include_rules = {
   "lacros_availability\.cc": [
     "+components/user_manager/user.h",
   ],
+  "lacros_availability_unittest\.cc": [
+    "+components/user_manager/fake_user_manager.h",
+  ],
 }

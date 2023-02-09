@@ -42,6 +42,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/proximity_auth:unit_tests",
     "//chromeos/ash/components/settings:unit_tests",
     "//chromeos/ash/components/smbfs:unit_tests",
+    "//chromeos/ash/components/standalone_browser:unit_tests",
     "//chromeos/ash/components/string_matching:unit_tests",
     "//chromeos/ash/components/sync_wifi:unit_tests",
     "//chromeos/ash/components/system:unit_tests",
