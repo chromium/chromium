@@ -105,6 +105,10 @@ class BLINK_COMMON_EXPORT StorageKey {
 
   // Creates a StorageKey with the passed in |origin|, and all other information
   // taken from the existing StorageKey instance.
+  //
+  // Note: This function may modify the `ancestor_chain_bit*` if the new origin
+  // is cross-site to the top_level_site and may modify the `top_leve_site*` to
+  // match `origin`'s site if `this` has a nonce.
   StorageKey WithOrigin(const url::Origin& origin) const;
 
   // Copyable and Moveable.
@@ -162,8 +166,8 @@ class BLINK_COMMON_EXPORT StorageKey {
   // not mean that whoever sent the values did not lie,
   // merely that they are well-formed.
   //
-  // This function should only be used for serializing from Mojo or
-  // testing.
+  // This function should only be used for serializing from Mojo, testing, or
+  // converting directly from a BlinkStorageKey.
   //
   // TODO(crbug.com/1159586): This function can be removed (or greatly
   // simplified) once the

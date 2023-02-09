@@ -530,20 +530,51 @@ StorageKey StorageKey::CreateFromOriginAndIsolationInfo(
 }
 
 StorageKey StorageKey::WithOrigin(const url::Origin& origin) const {
-  blink::mojom::AncestorChainBit ancestor_chain_bit = ancestor_chain_bit_;
   net::SchemefulSite top_level_site = top_level_site_;
+  net::SchemefulSite top_level_site_if_third_party_enabled =
+      top_level_site_if_third_party_enabled_;
+  blink::mojom::AncestorChainBit ancestor_chain_bit = ancestor_chain_bit_;
+  blink::mojom::AncestorChainBit ancestor_chain_bit_if_third_party_enabled =
+      ancestor_chain_bit_if_third_party_enabled_;
 
   if (nonce_) {
     // If the nonce is set we have to update the top level site to match origin
     // as that's an invariant.
     top_level_site = net::SchemefulSite(origin);
-  } else if (net::SchemefulSite(origin) != top_level_site_) {
-    // If the top level site doesn't match the new origin the ancestor chain
-    // bit needs to be updated to CrossSite.
-    ancestor_chain_bit = blink::mojom::AncestorChainBit::kCrossSite;
+    top_level_site_if_third_party_enabled = top_level_site;
+  } else if (!top_level_site_.opaque()) {
+    // If `top_level_site_` is opaque then so is
+    // `top_level_site_if_third_party_enabled` and we don't need to explicitly
+    // check it. The ancestor chain bit also doesn't need to be changed in this
+    // case.
+
+    // Only adjust the ancestor chain bit if it's currently kSameSite but the
+    // new origin and top level site don't match. Note that the ACB might not
+    // necessarily be kSameSite if the TLS and origin do match, so we won't
+    // adjust the other way.
+    if (ancestor_chain_bit == blink::mojom::AncestorChainBit::kSameSite &&
+        net::SchemefulSite(origin) != top_level_site_) {
+      ancestor_chain_bit = blink::mojom::AncestorChainBit::kCrossSite;
+    }
+
+    if (ancestor_chain_bit_if_third_party_enabled ==
+            blink::mojom::AncestorChainBit::kSameSite &&
+        net::SchemefulSite(origin) != top_level_site_if_third_party_enabled) {
+      ancestor_chain_bit_if_third_party_enabled =
+          blink::mojom::AncestorChainBit::kCrossSite;
+    }
   }
-  return CreateWithOptionalNonce(
-      origin, top_level_site, base::OptionalToPtr(nonce_), ancestor_chain_bit);
+
+  StorageKey out = *this;
+  out.origin_ = origin;
+  out.top_level_site_ = top_level_site;
+  out.top_level_site_if_third_party_enabled_ =
+      top_level_site_if_third_party_enabled;
+  out.ancestor_chain_bit_ = ancestor_chain_bit;
+  out.ancestor_chain_bit_if_third_party_enabled_ =
+      ancestor_chain_bit_if_third_party_enabled;
+
+  return out;
 }
 
 StorageKey::StorageKey(const url::Origin& origin,

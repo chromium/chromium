@@ -445,4 +445,116 @@ TEST(BlinkStorageKeyTest, FromWireReturnValue) {
     }
   }
 }
+
+TEST(BlinkStorageKeyTest, WithOrigin) {
+  scoped_refptr<const SecurityOrigin> origin =
+      SecurityOrigin::CreateFromString("https://foo.com");
+  scoped_refptr<const SecurityOrigin> other_origin =
+      SecurityOrigin::CreateFromString("https://notfoo.com");
+  const BlinkSchemefulSite site(origin);
+  const BlinkSchemefulSite other_site(other_origin);
+  const BlinkSchemefulSite opaque_site;
+  const base::UnguessableToken nonce = base::UnguessableToken::Create();
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  // WithOrigin's operation doesn't depend on the state of
+  // kThirdPartyStoragePartitioning and toggling the feature's state makes the
+  // test more difficult since the constructor's behavior *will* change. So we
+  // only run with it on.
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kThirdPartyStoragePartitioning);
+
+  const struct {
+    BlinkStorageKey original_key;
+    scoped_refptr<const SecurityOrigin> new_origin;
+    absl::optional<BlinkStorageKey> expected_key;
+  } kTestCases[] = {
+      // No change in first-party key updated with same origin.
+      {
+          BlinkStorageKey(origin, site, nullptr,
+                          mojom::AncestorChainBit::kSameSite),
+          origin,
+          absl::nullopt,
+      },
+      // Change in first-party key updated with new origin.
+      {
+          BlinkStorageKey(origin, site, nullptr,
+                          mojom::AncestorChainBit::kSameSite),
+          other_origin,
+          BlinkStorageKey(other_origin, site, nullptr,
+                          mojom::AncestorChainBit::kCrossSite),
+      },
+      // No change in third-party same-site key updated with same origin.
+      {
+          BlinkStorageKey(origin, site, nullptr,
+                          mojom::AncestorChainBit::kCrossSite),
+          origin,
+          absl::nullopt,
+      },
+      // Change in third-party same-site key updated with same origin.
+      {
+          BlinkStorageKey(origin, site, nullptr,
+                          mojom::AncestorChainBit::kCrossSite),
+          other_origin,
+          BlinkStorageKey(other_origin, site, nullptr,
+                          mojom::AncestorChainBit::kCrossSite),
+      },
+      // No change in third-party key updated with same origin.
+      {
+          BlinkStorageKey(origin, other_site, nullptr,
+                          mojom::AncestorChainBit::kCrossSite),
+          origin,
+          absl::nullopt,
+      },
+      // Change in third-party key updated with new origin.
+      {
+          BlinkStorageKey(origin, other_site, nullptr,
+                          mojom::AncestorChainBit::kCrossSite),
+          other_origin,
+          BlinkStorageKey(other_origin, other_site, nullptr,
+                          mojom::AncestorChainBit::kCrossSite),
+      },
+      // No change in opaque tls key updated with same origin.
+      {
+          BlinkStorageKey(origin, opaque_site, nullptr,
+                          mojom::AncestorChainBit::kCrossSite),
+          origin,
+          absl::nullopt,
+      },
+      // Change in opaque tls key updated with new origin.
+      {
+          BlinkStorageKey(origin, opaque_site, nullptr,
+                          mojom::AncestorChainBit::kCrossSite),
+          other_origin,
+          BlinkStorageKey(other_origin, opaque_site, nullptr,
+                          mojom::AncestorChainBit::kCrossSite),
+      },
+      // No change in nonce key updated with same origin.
+      {
+          BlinkStorageKey(origin, site, &nonce,
+                          mojom::AncestorChainBit::kCrossSite),
+          origin,
+          absl::nullopt,
+      },
+      // Change in nonce key updated with new origin.
+      {
+          BlinkStorageKey(origin, site, &nonce,
+                          mojom::AncestorChainBit::kCrossSite),
+          other_origin,
+          BlinkStorageKey(other_origin, other_site, &nonce,
+                          mojom::AncestorChainBit::kCrossSite),
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    if (test_case.expected_key == absl::nullopt) {
+      EXPECT_EQ(test_case.original_key,
+                test_case.original_key.WithOrigin(test_case.new_origin));
+    } else {
+      ASSERT_NE(test_case.expected_key, test_case.original_key);
+      EXPECT_EQ(test_case.expected_key,
+                test_case.original_key.WithOrigin(test_case.new_origin));
+    }
+  }
+}
 }  // namespace blink
