@@ -224,6 +224,14 @@ if (toolchain_has_rust) {
       this_file = "$out_libdir/lib$lib.rlib"
       ldflags += [ this_file ]
     }
+    if (is_win) {
+      # Our C++ builds already link against a wide variety of Windows API import libraries,
+      # but the Rust stdlib requires a few extra.
+      ldflags += [
+        "bcrypt.lib",
+        "userenv.lib",
+      ]
+    }
   }
 
   source_set("remap_alloc") {

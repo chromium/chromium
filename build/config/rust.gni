@@ -182,6 +182,8 @@ if (is_linux) {
   } else {
     assert(false, "Architecture not supported")
   }
+} else if (is_win) {
+  rust_abi_target = "x86_64-pc-windows-msvc"
 }
 
 assert(!toolchain_has_rust || rust_abi_target != "")

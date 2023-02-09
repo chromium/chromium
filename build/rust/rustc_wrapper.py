@@ -17,10 +17,11 @@ sys.path.append(
                  os.pardir, 'build', 'android', 'gyp'))
 from util import build_utils
 
-# This script wraps rustc for (currently) three reasons:
+# This script wraps rustc for (currently) these reasons:
 # * To work around some ldflags escaping performed by ninja/gn
 # * To remove dependencies on some environment variables from the .d file.
 # * To enable use of .rsp files.
+# * To work around two gn bugs on Windows
 #
 # LDFLAGS ESCAPING
 #
@@ -55,6 +56,11 @@ from util import build_utils
 # the adjustment. This works around a gn issue:
 # TODO(https://bugs.chromium.org/p/gn/issues/detail?id=249): fix this
 #
+# WORKAROUND WINDOWS BUGS:
+#
+# On Windows platforms, this temporarily works around some issues in gn.
+# See comments inline, linking to the relevant gn fixes.
+#
 # Usage:
 #   rustc_wrapper.py --rustc <path to rustc> --depfile <path to .d file>
 #      -- <normal rustc args> LDFLAGS {{ldflags}} RUSTENV {{rustenv}}
@@ -76,6 +82,13 @@ from util import build_utils
 # script.
 
 
+# Equivalent of python3.9 built-in
+def remove_lib_suffix_from_l_args(text):
+  if text.startswith("-l") and text.endswith(".lib"):
+    return text[:-len(".lib")]
+  return text
+
+
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--rustc', required=True, type=pathlib.Path)
@@ -93,12 +106,21 @@ def main():
   ldflags = remaining_args[ldflags_separator + 1:rustenv_separator]
   rustenv = remaining_args[rustenv_separator + 1:]
 
+  is_windows = os.name == 'nt'
+
   rustc_args.extend(["-Clink-arg=%s" % arg for arg in ldflags])
 
   # Workaround for https://bugs.chromium.org/p/gn/issues/detail?id=249
   if args.rsp:
     with open(args.rsp) as rspfile:
       rsp_args = [l.rstrip() for l in rspfile.read().split(' ') if l.rstrip()]
+    if is_windows:
+      # Work around for hard-coded string in gn; full fix will come from
+      # https://gn-review.googlesource.com/c/gn/+/12460
+      rsp_args = [arg for arg in rsp_args if not arg.endswith("-Bdynamic")]
+      # Work around for "-l<foo>.lib", where ".lib" suffix is undesirable.
+      # Full fix will come from https://gn-review.googlesource.com/c/gn/+/12480
+      rsp_args = [remove_lib_suffix_from_l_args(arg) for arg in rsp_args]
     with open(args.rsp, 'w') as rspfile:
       rspfile.write("\n".join(rsp_args))
     rustc_args.append(f'@{args.rsp}')

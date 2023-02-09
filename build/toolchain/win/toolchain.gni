@@ -309,13 +309,14 @@ template("single_msvc_toolchain") {
       rustc_wrapper = rebase_path("//build/rust/rustc_wrapper.py")
       rustc = rebase_path("${rust_sysroot}/bin/rustc", root_build_dir)
       rust_sysroot_relative_to_out = rebase_path(rust_sysroot, root_out_dir)
+      rustc_windows_args = " -Clinker=$link $rustc_common_args"
 
       tool("rust_staticlib") {
         rust_outfile = "{{output_dir}}/{{target_output_name}}.lib"
         depfile = "{{output}}.d"
         rspfile = "$rust_outfile.rsp"
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
+        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
         rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
@@ -328,7 +329,7 @@ template("single_msvc_toolchain") {
         # Do not use rsp files in this (common) case because they occupy the
         # ninja main thread, and {{rlibs}} have shorter command lines than
         # fully linked targets.
-        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile -- $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile {{rustdeps}} {{externs}} LDFLAGS RUSTENV {{rustenv}}"
+        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rust_outfile {{rustdeps}} {{externs}} LDFLAGS RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
         rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
@@ -339,7 +340,7 @@ template("single_msvc_toolchain") {
         depfile = "{{output}}.d"
         rspfile = "$rust_outfile.rsp"
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} RUSTENV {{rustenv}}"
+        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} $sys_lib_flags RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
         rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
@@ -350,7 +351,7 @@ template("single_msvc_toolchain") {
         depfile = "{{output}}.d"
         rspfile = "$rust_outfile.rsp"
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} RUSTENV {{rustenv}}"
+        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} $sys_lib_flags RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
         rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
@@ -361,7 +362,7 @@ template("single_msvc_toolchain") {
         depfile = "{{output}}.d"
         rspfile = "$rust_outfile.rsp"
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} RUSTENV {{rustenv}}"
+        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} $sys_lib_flags RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
         rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
