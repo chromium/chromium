@@ -4528,13 +4528,7 @@ class PDFExtensionSubmitFormTest : public PDFExtensionTest {
   base::OnceClosure quit_closure_;
 };
 
-// TODO(crbug.com/1259994): Fix Windows 7 flakes.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_SubmitForm DISABLED_SubmitForm
-#else
-#define MAYBE_SubmitForm SubmitForm
-#endif
-IN_PROC_BROWSER_TEST_F(PDFExtensionSubmitFormTest, MAYBE_SubmitForm) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionSubmitFormTest, SubmitForm) {
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/submit_form.pdf"));
   ASSERT_TRUE(guest);
