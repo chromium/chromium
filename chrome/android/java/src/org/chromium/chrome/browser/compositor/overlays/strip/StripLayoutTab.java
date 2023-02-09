@@ -899,7 +899,7 @@ public class StripLayoutTab implements VirtualView {
     }
 
     public int getCloseButtonPadding() {
-        return CLOSE_BUTTON_PADDING_DP;
+        return ChromeFeatureList.sTabStripRedesign.isEnabled() ? CLOSE_BUTTON_PADDING_DP : 0;
     }
 
     // TODO(dtrainor): Don't animate this if we're selecting or deselecting this tab.
