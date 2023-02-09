@@ -10,6 +10,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "device/bluetooth/adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -20,9 +22,20 @@
 #include "chrome/browser/ash/bluetooth/debug_logs_manager.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/permissions/android/android_permission_util.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
+namespace {
+using content::RenderFrameHost;
+using content::WebContents;
+}  // namespace
+
 BluetoothInternalsHandler::BluetoothInternalsHandler(
+    content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<mojom::BluetoothInternalsHandler> receiver)
-    : receiver_(this, std::move(receiver)) {}
+    : render_frame_host_(*render_frame_host),
+      receiver_(this, std::move(receiver)) {}
 
 BluetoothInternalsHandler::~BluetoothInternalsHandler() = default;
 
@@ -72,4 +85,48 @@ void BluetoothInternalsHandler::OnGetAdapter(
   mojo::MakeSelfOwnedReceiver(std::make_unique<bluetooth::Adapter>(adapter),
                               pending_adapter.InitWithNewPipeAndPassReceiver());
   std::move(callback).Run(std::move(pending_adapter));
+}
+
+void BluetoothInternalsHandler::CheckSystemPermissions(
+    CheckSystemPermissionsCallback callback) {
+  bool need_location_permission = false;
+  bool need_nearby_devices_permission = false;
+  bool need_location_services = false;
+  bool can_request_system_permissions = false;
+
+#if BUILDFLAG(IS_ANDROID)
+  WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host_.get());
+  need_location_permission =
+      permissions::NeedsLocationPermissionForBluetooth(web_contents);
+  need_nearby_devices_permission =
+      permissions::NeedsNearbyDevicesPermissionForBluetooth(web_contents);
+  need_location_services = permissions::NeedsLocationServicesForBluetooth();
+  can_request_system_permissions =
+      permissions::CanRequestSystemPermissionsForBluetooth(web_contents);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  std::move(callback).Run(
+      need_location_permission, need_nearby_devices_permission,
+      need_location_services, can_request_system_permissions);
+}
+
+void BluetoothInternalsHandler::RequestSystemPermissions(
+    RequestSystemPermissionsCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host_.get());
+  permissions::RequestSystemPermissionsForBluetooth(web_contents);
+#endif  // BUILDFLAG(IS_ANDROID)
+  std::move(callback).Run();
+}
+
+void BluetoothInternalsHandler::RequestLocationServices(
+    RequestLocationServicesCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host_.get());
+  permissions::RequestLocationServices(web_contents);
+#endif  // BUILDFLAG(IS_ANDROID)
+  std::move(callback).Run();
 }

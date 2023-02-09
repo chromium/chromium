@@ -52,9 +52,6 @@ let discoverySession = null;
 /** @type {boolean} */
 let userRequestedScanStop = false;
 
-/** @type {!BluetoothInternalsHandlerRemote} */
-const bluetoothInternalsHandler = BluetoothInternalsHandler.getRemote();
-
 /**
  * Observer for page changes. Used to update page title header.
  */
@@ -270,7 +267,7 @@ function setupDeviceSystem(response) {
   });
 }
 
-function setupPages() {
+function setupPages(bluetoothInternalsHandler) {
   sidebarObj = new Sidebar(/** @type {!HTMLElement} */ ($('sidebar')));
   $('menu-btn').addEventListener('click', function() {
     sidebarObj.open();
@@ -306,9 +303,74 @@ function setupPages() {
   pageManager.showPageByName(window.location.hash.split('/')[0].substr(1));
 }
 
-export function initializeViews() {
-  setupPages();
-  return getAdapterBroker()
+function showRefreshPageDialog() {
+  document.getElementById('refresh-page').showModal();
+}
+
+function showNeedLocationServicesOnDialog(bluetoothInternalsHandler) {
+  const dialog = document.getElementById('need-location-services-on');
+  const servicesLink =
+      document.getElementById('need-location-services-on-services-link');
+  servicesLink.onclick = () => {
+    dialog.close();
+    showRefreshPageDialog();
+    bluetoothInternalsHandler.requestLocationServices();
+  };
+  dialog.showModal();
+}
+
+function showNeedLocationPermissionAndServicesOnDialog(
+    bluetoothInternalsHandler) {
+  const dialog =
+      document.getElementById('need-location-permission-and-services-on');
+  const servicesLink = document.getElementById(
+      'need-location-permission-and-services-on-services-link');
+  servicesLink.onclick = () => {
+    dialog.close();
+    showRefreshPageDialog();
+    bluetoothInternalsHandler.requestLocationServices();
+  };
+  const permissionLink = document.getElementById(
+      'need-location-permission-and-services-on-permission-link');
+  permissionLink.onclick = () => {
+    dialog.close();
+    showRefreshPageDialog();
+    bluetoothInternalsHandler.requestSystemPermissions();
+  };
+  dialog.showModal();
+}
+
+function showNeedNearbyDevicesPermissionDialog(bluetoothInternalsHandler) {
+  const dialog = document.getElementById('need-nearby-devices-permission');
+  const permissionLink =
+      document.getElementById('need-nearby-devices-permission-permission-link');
+  permissionLink.onclick = () => {
+    dialog.close();
+    showRefreshPageDialog();
+    bluetoothInternalsHandler.requestSystemPermissions();
+  };
+  dialog.showModal();
+}
+
+function showNeedLocationPermissionDialog(bluetoothInternalsHandler) {
+  const dialog = document.getElementById('need-location-permission');
+  const permissionLink =
+      document.getElementById('need-location-permission-permission-link');
+  permissionLink.onclick = () => {
+    dialog.close();
+    showRefreshPageDialog();
+    bluetoothInternalsHandler.requestSystemPermissions();
+  };
+  dialog.showModal();
+}
+
+function showCanNotRequestPermissionsDialog() {
+  document.getElementById('can-not-request-permissions').showModal();
+}
+
+export function initializeViews(bluetoothInternalsHandler) {
+  setupPages(bluetoothInternalsHandler);
+  return getAdapterBroker(bluetoothInternalsHandler)
       .then(function(broker) {
         adapterBroker = broker;
       })
@@ -324,4 +386,48 @@ export function initializeViews() {
         showSnackbar(error.message, SnackbarType.ERROR);
         console.error(error);
       });
+}
+
+/**
+ * Check if the system has all the needed system permissions for using
+ * bluetooth.
+ * @param {BluetoothInternalsHandlerRemote} bluetoothInternalsHandler Mojo
+ *     remote handler.
+ * @param {Function} successCallback The callback to be called when the system
+ *     has the permissions for using bluetooth.
+ */
+export async function checkSystemPermissions(
+    bluetoothInternalsHandler, successCallback) {
+  const {
+    needLocationPermission,
+    needNearbyDevicesPermission,
+    needLocationServices,
+    canRequestPermissions,
+  } = await bluetoothInternalsHandler.checkSystemPermissions();
+  const havePermission =
+      !needNearbyDevicesPermission && !needLocationPermission;
+  // In order to access Bluetooth, Android S+ requires us to have Nearby Devices
+  // permission, and older versions of Android require Location permission and
+  // Location Services to be turned on. Other platforms shouldn't have any of
+  // these fields set to true.
+  if (havePermission) {
+    if (needLocationServices) {
+      showNeedLocationServicesOnDialog(bluetoothInternalsHandler);
+    } else {
+      successCallback(bluetoothInternalsHandler);
+    }
+  } else if (canRequestPermissions) {
+    if (needLocationServices) {
+      // If Location Services are needed we can assume we are on an Android
+      // version lower S and so Location, rather than Nearby Devices permission,
+      // is also needed.
+      showNeedLocationPermissionAndServicesOnDialog(bluetoothInternalsHandler);
+    } else if (needNearbyDevicesPermission) {
+      showNeedNearbyDevicesPermissionDialog(bluetoothInternalsHandler);
+    } else {
+      showNeedLocationPermissionDialog(bluetoothInternalsHandler);
+    }
+  } else {
+    showCanNotRequestPermissionsDialog(bluetoothInternalsHandler);
+  }
 }

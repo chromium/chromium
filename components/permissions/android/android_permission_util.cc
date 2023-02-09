@@ -109,4 +109,52 @@ bool AreAppLevelNotificationsEnabled() {
   return Java_PermissionUtil_areAppLevelNotificationsEnabled(env);
 }
 
+bool NeedsLocationPermissionForBluetooth(content::WebContents* web_contents) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
+  DCHECK(window_android);
+  return Java_PermissionUtil_needsLocationPermissionForBluetooth(
+      env, window_android->GetJavaObject());
+}
+
+bool NeedsNearbyDevicesPermissionForBluetooth(
+    content::WebContents* web_contents) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
+  DCHECK(window_android);
+  return Java_PermissionUtil_needsNearbyDevicesPermissionForBluetooth(
+      env, window_android->GetJavaObject());
+}
+
+bool NeedsLocationServicesForBluetooth() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_PermissionUtil_needsLocationServicesForBluetooth(env);
+}
+
+bool CanRequestSystemPermissionsForBluetooth(
+    content::WebContents* web_contents) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
+  DCHECK(window_android);
+  return Java_PermissionUtil_canRequestSystemPermissionsForBluetooth(
+      env, window_android->GetJavaObject());
+}
+
+void RequestSystemPermissionsForBluetooth(content::WebContents* web_contents) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
+  DCHECK(window_android);
+  // TODO(crbug.com/1412290): Pass the callback from native layer.
+  return Java_PermissionUtil_requestSystemPermissionsForBluetooth(
+      env, window_android->GetJavaObject(), nullptr);
+}
+
+void RequestLocationServices(content::WebContents* web_contents) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
+  DCHECK(window_android);
+  return Java_PermissionUtil_requestLocationServices(
+      env, window_android->GetJavaObject());
+}
+
 }  // namespace permissions

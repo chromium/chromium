@@ -24,6 +24,7 @@ class BluetoothInternalsUI : public ui::MojoWebUIController {
   // Instantiates the implementor of the mojom::BluetoothInternalsHandler mojo
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
+      content::RenderFrameHost* host,
       mojo::PendingReceiver<mojom::BluetoothInternalsHandler> receiver);
 
  private:

@@ -4,7 +4,7 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {adapterBroker, devices, initializeViews, pageManager, sidebarObj} from 'chrome://bluetooth-internals/bluetooth_internals.js';
+import {adapterBroker, checkSystemPermissions, devices, initializeViews, pageManager, sidebarObj} from 'chrome://bluetooth-internals/bluetooth_internals.js';
 import {BluetoothInternalsHandler} from 'chrome://bluetooth-internals/bluetooth_internals.mojom-webui.js';
 import {connectedDevices} from 'chrome://bluetooth-internals/device_broker.js';
 import {dismissSnackbar, getSnackbarStateForTest, showSnackbar} from 'chrome://bluetooth-internals/snackbar.js';
@@ -22,6 +22,7 @@ suite('bluetooth_internals', function() {
   let adapterFieldSet = null;
   let deviceTable = null;
   let sidebarNode = null;
+  let bluetoothInternalsHandlerRemote = null;
   const pageNames = ['adapter', 'devices'];
   const EXPECTED_DEVICES = 2;
 
@@ -48,9 +49,12 @@ suite('bluetooth_internals', function() {
       whenSetupDone.resolve();
     };
     internalsHandlerInterceptor.start();
-    initializeViews();
+    bluetoothInternalsHandlerRemote = BluetoothInternalsHandler.getRemote();
+    await checkSystemPermissions(
+        bluetoothInternalsHandlerRemote, initializeViews);
     await whenSetupDone.promise;
     await Promise.all([
+      internalsHandler.whenCalled('checkSystemPermissions'),
       internalsHandler.whenCalled('getAdapter'),
       internalsHandler.adapter.whenCalled('getInfo'),
       internalsHandler.adapter.whenCalled('getDevices'),
@@ -85,6 +89,14 @@ suite('bluetooth_internals', function() {
         pageManager.unregister(page);
       }
     }
+
+    // Close all of the dialogs.
+    document.getElementById('need-location-services-on').close();
+    document.getElementById('need-location-permission-and-services-on').close();
+    document.getElementById('need-nearby-devices-permission').close();
+    document.getElementById('need-location-permission').close();
+    document.getElementById('can-not-request-permissions').close();
+    document.getElementById('refresh-page').close();
   });
 
   /**
@@ -593,6 +605,118 @@ suite('bluetooth_internals', function() {
           detailsPage = document.getElementById(deviceDetailsPageId);
           assertFalse(!!detailsPage);
         });
+  });
+
+  test('CheckSystemPermissions_need_location_permission', async function() {
+    internalsHandler.setSystemPermission(
+        /*needLocationPermission=*/ true,
+        /*needNearbyDevicesPermission=*/ false,
+        /*needLocationServices=*/ false,
+        /*canRequestPermissions=*/ true,
+    );
+    await checkSystemPermissions(bluetoothInternalsHandlerRemote, () => {
+      assert(false);
+    });
+    await internalsHandler.whenCalled('checkSystemPermissions');
+    assertTrue(document.getElementById('need-location-permission').open);
+    document.getElementById('need-location-permission-permission-link').click();
+    await internalsHandler.whenCalled('requestSystemPermissions');
+    assertFalse(document.getElementById('need-location-permission').open);
+    assertTrue(document.getElementById('refresh-page').open);
+  });
+
+  test(
+      'CheckSystemPermissions_need_location_permission_and_services_on_' +
+          'click_permission_link',
+      async function() {
+        internalsHandler.setSystemPermission(
+            /*needLocationPermission=*/ true,
+            /*needNearbyDevicesPermission=*/ false,
+            /*needLocationServices=*/ true,
+            /*canRequestPermissions=*/ true,
+        );
+        await checkSystemPermissions(bluetoothInternalsHandlerRemote, () => {
+          assert(false);
+        });
+        await internalsHandler.whenCalled('checkSystemPermissions');
+        assertTrue(
+            document.getElementById('need-location-permission-and-services-on')
+                .open);
+        document
+            .getElementById(
+                'need-location-permission-and-services-on-permission-link')
+            .click();
+        await internalsHandler.whenCalled('requestSystemPermissions');
+        assertFalse(
+            document.getElementById('need-location-permission-and-services-on')
+                .open);
+        assertTrue(document.getElementById('refresh-page').open);
+      });
+
+  test(
+      'CheckSystemPermissions_need_location_permission_and_services_on_' +
+          'click_services_link',
+      async function() {
+        internalsHandler.setSystemPermission(
+            /*needLocationPermission=*/ true,
+            /*needNearbyDevicesPermission=*/ false,
+            /*needLocationServices=*/ true,
+            /*canRequestPermissions=*/ true,
+        );
+        await checkSystemPermissions(bluetoothInternalsHandlerRemote, () => {
+          assert(false);
+        });
+        await internalsHandler.whenCalled('checkSystemPermissions');
+        assertTrue(
+            document.getElementById('need-location-permission-and-services-on')
+                .open);
+        document
+            .getElementById(
+                'need-location-permission-and-services-on-services-link')
+            .click();
+        await internalsHandler.whenCalled('requestLocationServices');
+        assertFalse(
+            document.getElementById('need-location-permission-and-services-on')
+                .open);
+        assertTrue(document.getElementById('refresh-page').open);
+      });
+
+  test(
+      'CheckSystemPermissions_need_nearby_devices_permission',
+      async function() {
+        internalsHandler.setSystemPermission(
+            /*needLocationPermission=*/ false,
+            /*needNearbyDevicesPermission=*/ true,
+            /*needLocationServices=*/ false,
+            /*canRequestPermissions=*/ true,
+        );
+        await checkSystemPermissions(bluetoothInternalsHandlerRemote, () => {
+          assert(false);
+        });
+        await internalsHandler.whenCalled('checkSystemPermissions');
+        assertTrue(
+            document.getElementById('need-nearby-devices-permission').open);
+        document
+            .getElementById('need-nearby-devices-permission-permission-link')
+            .click();
+        await internalsHandler.whenCalled('requestSystemPermissions');
+        assertFalse(
+            document.getElementById('need-nearby-devices-permission').open);
+        assertTrue(document.getElementById('refresh-page').open);
+      });
+
+  test('CheckSystemPermissions_can_not_request_permission', async function() {
+    internalsHandler.setSystemPermission(
+        /*needLocationPermission=*/ false,
+        /*needNearbyDevicesPermission=*/ true,
+        /*needLocationServices=*/ false,
+        /*canRequestPermissions=*/ false,
+    );
+    await checkSystemPermissions(bluetoothInternalsHandlerRemote, () => {
+      assert(false);
+    });
+    await internalsHandler.whenCalled('checkSystemPermissions');
+    assertTrue(document.getElementById('can-not-request-permissions').open);
   });
 });
 

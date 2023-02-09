@@ -27,4 +27,23 @@ interface BluetoothInternalsHandler {
   GetDebugLogsChangeHandler()
       => (pending_remote<DebugLogsChangeHandler>? handler,
           bool initial_toggle_value);
+
+  // Checks if the Chrome needs permissions to use Bluetooth.
+  // This is needed for Android as it requires some system permissions to be
+  // granted for accessing Bluetooth. For other platforms, false is returned for
+  // all values.
+  CheckSystemPermissions() => (bool need_location_permission,
+    bool need_nearby_devices_permission, bool need_location_services,
+    bool can_request_permissions);
+
+  // Requests the permissions necessary to access Bluetooth.
+  // On Android, this prompts the user for permissions.
+  // On all other platforms, this is a no-op.
+  RequestSystemPermissions() => ();
+
+  // Requests enabling Location Services.
+  // On Android, the user is shown the Location Services settings page so they
+  // can turn it on.
+  // On all other platforms, this is a no-op.
+  RequestLocationServices() => ();
 };

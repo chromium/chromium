@@ -29,6 +29,12 @@ source_set("bluetooth_internals") {
   if (is_chromeos_ash) {
     deps += [ "//chrome/browser/ash" ]
   }
+  if (is_android) {
+    deps += [
+      "//components/permissions:permissions",
+      "//ui/android:android",
+    ]
+  }
 }
 
 mojom("mojo_bindings") {

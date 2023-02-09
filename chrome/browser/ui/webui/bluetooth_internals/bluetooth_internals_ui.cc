@@ -45,9 +45,10 @@ WEB_UI_CONTROLLER_TYPE_IMPL(BluetoothInternalsUI)
 BluetoothInternalsUI::~BluetoothInternalsUI() {}
 
 void BluetoothInternalsUI::BindInterface(
+    content::RenderFrameHost* host,
     mojo::PendingReceiver<mojom::BluetoothInternalsHandler> receiver) {
   page_handler_ =
-      std::make_unique<BluetoothInternalsHandler>(std::move(receiver));
+      std::make_unique<BluetoothInternalsHandler>(host, std::move(receiver));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   page_handler_->set_debug_logs_manager(
       ash::bluetooth::DebugLogsManagerFactory::GetForProfile(

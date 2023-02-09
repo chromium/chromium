@@ -77,6 +77,27 @@ bool DoesAppLevelSettingsAllowSiteNotifications();
 // permission.
 bool AreAppLevelNotificationsEnabled();
 
+// Checks if Chrome needs Location permission for using Bluetooth.
+bool NeedsLocationPermissionForBluetooth(content::WebContents* web_contents);
+
+// Checks if Chrome needs Nearby Devices permission for using Bluetooth.
+bool NeedsNearbyDevicesPermissionForBluetooth(
+    content::WebContents* web_contents);
+
+// Checks if Chrome needs Location Services to be turned on before using
+// Bluetooth.
+bool NeedsLocationServicesForBluetooth();
+
+// Checks if Chrome can request system permissions for using Bluetooth.
+bool CanRequestSystemPermissionsForBluetooth(
+    content::WebContents* web_contents);
+
+// Request the needed system permissions for using Bluetooth.
+void RequestSystemPermissionsForBluetooth(content::WebContents* web_contents);
+
+// Starts an activity for showing the Location Services setting page.
+void RequestLocationServices(content::WebContents* web_contents);
+
 }  // namespace permissions
 
 #endif  // COMPONENTS_PERMISSIONS_ANDROID_ANDROID_PERMISSION_UTIL_H_

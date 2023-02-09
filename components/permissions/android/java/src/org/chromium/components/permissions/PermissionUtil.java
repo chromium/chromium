@@ -139,17 +139,20 @@ public class PermissionUtil {
                 && !needsLocationPermissionForBluetooth(windowAndroid);
     }
 
+    @CalledByNative
     public static boolean needsLocationPermissionForBluetooth(WindowAndroid windowAndroid) {
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.S
                 && !windowAndroid.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION);
     }
 
+    @CalledByNative
     public static boolean needsNearbyDevicesPermissionForBluetooth(WindowAndroid windowAndroid) {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 && (!windowAndroid.hasPermission(Manifest.permission.BLUETOOTH_SCAN)
                         || !windowAndroid.hasPermission(Manifest.permission.BLUETOOTH_CONNECT));
     }
 
+    @CalledByNative
     public static boolean needsLocationServicesForBluetooth() {
         // Location services are not required on Android S+ to use Bluetooth if the application has
         // Nearby Devices permission and has set the neverForLocation flag on the BLUETOOTH_SCAN
@@ -158,6 +161,7 @@ public class PermissionUtil {
                 && !LocationUtils.getInstance().isSystemLocationSettingEnabled();
     }
 
+    @CalledByNative
     public static boolean canRequestSystemPermissionsForBluetooth(WindowAndroid windowAndroid) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             return windowAndroid.canRequestPermission(Manifest.permission.BLUETOOTH_SCAN)
@@ -167,6 +171,7 @@ public class PermissionUtil {
         return windowAndroid.canRequestPermission(Manifest.permission.ACCESS_FINE_LOCATION);
     }
 
+    @CalledByNative
     public static void requestSystemPermissionsForBluetooth(
             WindowAndroid windowAndroid, PermissionCallback callback) {
         String[] requiredPermissions;
@@ -183,6 +188,7 @@ public class PermissionUtil {
         windowAndroid.requestPermissions(requiredPermissions, callback);
     }
 
+    @CalledByNative
     public static void requestLocationServices(WindowAndroid windowAndroid) {
         windowAndroid.getActivity().get().startActivity(
                 LocationUtils.getInstance().getSystemLocationSettingsIntent());
