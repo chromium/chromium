@@ -288,8 +288,11 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
           l10n_util::GetStringUTF16(name_id_),
           type[static_cast<size_t>(DeviceType::kCamera)],
           type[static_cast<size_t>(DeviceType::kMic)],
-          base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
-              weak_ptr_factory_.GetMutableWeakPtr()));
+          base::MakeRefCounted<PrivacyIndicatorsNotificationDelegate>(
+              /*launch_app=*/absl::nullopt,
+              /*launch_settings=*/base::BindRepeating(
+                  &VmCameraMicManager::VmInfo::OpenSettings,
+                  weak_ptr_factory_.GetMutableWeakPtr())));
       notification->set_fullscreen_visibility(
           message_center::FullscreenVisibility::OVER_USER);
 
@@ -340,6 +343,11 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
   // This open the settings page if the button is clicked on the notification.
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override {
+    OpenSettings();
+  }
+
+  // Opens the settings page.
+  void OpenSettings() {
     switch (vm_type_) {
       case VmType::kCrostiniVm:
         chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
