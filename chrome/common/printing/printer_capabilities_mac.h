@@ -6,6 +6,11 @@
 #define CHROME_COMMON_PRINTING_PRINTER_CAPABILITIES_MAC_H_
 
 #include "printing/backend/print_backend.h"
+#include "printing/buildflags/buildflags.h"
+
+#if !BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#error "Only used by Print Preview"
+#endif
 
 namespace base {
 class FilePath;

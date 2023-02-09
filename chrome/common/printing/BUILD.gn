@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//printing/buildflags/buildflags.gni")
 if (is_chromeos) {
   import("//printing/backend/tools/code_generator.gni")
 }
@@ -33,8 +34,6 @@ if (is_chromeos) {
 
 source_set("printing") {
   sources = [
-    "printer_capabilities.cc",
-    "printer_capabilities.h",
     "printing_init.cc",
     "printing_init.h",
   ]
@@ -54,13 +53,6 @@ source_set("printing") {
     "//printing/mojom",
     "//ui/base",
   ]
-
-  if (is_mac) {
-    sources += [
-      "printer_capabilities_mac.h",
-      "printer_capabilities_mac.mm",
-    ]
-  }
 
   if (is_chromeos) {
     deps += [ ":ipp_l10n_generate" ]
@@ -83,27 +75,44 @@ source_set("printing") {
       "print_media_l10n.h",
     ]
   }
+
+  if (enable_print_preview) {
+    sources += [
+      "printer_capabilities.cc",
+      "printer_capabilities.h",
+    ]
+
+    if (is_mac) {
+      sources += [
+        "printer_capabilities_mac.h",
+        "printer_capabilities_mac.mm",
+      ]
+    }
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "printer_capabilities_unittest.cc" ]
+  sources = []
 
   deps = [
     "//base",
     "//build:chromeos_buildflags",
     "//chrome/common/printing",
-    "//components/printing/browser",
     "//content/test:test_support",
     "//printing:test_support",
     "//testing/gtest",
   ]
 
-  if (is_mac) {
-    sources += [ "printer_capabilities_mac_unittest.mm" ]
-  }
-
   if (enable_print_media_l10n) {
     sources += [ "print_media_l10n_unittest.cc" ]
+  }
+
+  if (enable_print_preview) {
+    sources += [ "printer_capabilities_unittest.cc" ]
+
+    if (is_mac) {
+      sources += [ "printer_capabilities_mac_unittest.mm" ]
+    }
   }
 }
