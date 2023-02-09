@@ -143,7 +143,9 @@ export class EmptyFolderController {
     } else if (currentRootType === VolumeManagerCommon.RootType.TRASH) {
       svgRef = TRASH_EMPTY_FOLDER;
     } else if (this.directoryModel_.isSearching()) {
-      svgRef = SEARCH_EMPTY_RESULTS;
+      if (util.isSearchV2Enabled()) {
+        svgRef = SEARCH_EMPTY_RESULTS;
+      }
     }
 
     const fileListModel = assert(this.directoryModel_.getFileList());

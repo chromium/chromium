@@ -6,7 +6,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 
 import {createChild} from '../../common/js/dom_utils.js';
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
-import {str} from '../../common/js/util.js';
+import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 
@@ -167,6 +167,7 @@ export function testShownForTrash() {
  */
 export function testShowNoSearchResult() {
   directoryModel.isSearching = () => true;
+  util.isSearchV2Enabled = () => true;
   emptyFolderController.updateUI_();
   assertFalse(element.hidden);
   const text = emptyFolderController.label_.innerText;
