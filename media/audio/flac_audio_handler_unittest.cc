@@ -26,7 +26,7 @@ TEST(FlacAudioHandlerTest, SampleDataTest) {
   EXPECT_TRUE(base::ReadFileToString(file_path, &bitstream));
 
   FlacAudioHandler handler(bitstream);
-  ASSERT_TRUE(handler.is_initialized());
+  ASSERT_TRUE(handler.Initialize());
 
   auto bus1 = AudioBus::Create(handler.GetNumChannels(), kDefaultFrameCount);
   size_t frames_written1 = 0u;
@@ -57,7 +57,7 @@ TEST(FlacAudioHandlerTest, BadSampleDataTest) {
   const std::string data(kTestAudioData, kTestAudioDataSize);
 
   FlacAudioHandler handler(data);
-  ASSERT_FALSE(handler.is_initialized());
+  ASSERT_FALSE(handler.Initialize());
 }
 
 }  // namespace media

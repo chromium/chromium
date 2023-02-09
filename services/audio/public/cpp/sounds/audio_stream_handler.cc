@@ -33,9 +33,6 @@ namespace {
 // Volume percent.
 const double kOutputVolumePercent = 0.8;
 
-// The number of frames each Render() call will request.
-const int kDefaultFrameCount = 1024;
-
 // Keep alive timeout for audio stream.
 const int kKeepAliveMs = 1500;
 
@@ -69,7 +66,8 @@ class AudioStreamHandler::AudioStreamContainer
       const media::AudioParameters params(
           media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
           media::ChannelLayoutConfig::Guess(audio_handler_->GetNumChannels()),
-          audio_handler_->GetSampleRate(), kDefaultFrameCount);
+          audio_handler_->GetSampleRate(),
+          media::AudioHandler::kDefaultFrameCount);
       if (g_observer_for_testing) {
         g_observer_for_testing->Initialize(this, params);
       } else {
@@ -178,7 +176,7 @@ AudioStreamHandler::AudioStreamHandler(
   switch (codec) {
     case media::AudioCodec::kPCM: {
       audio_handler = media::WavAudioHandler::Create(audio_data);
-      if (!audio_handler) {
+      if (!audio_handler || !audio_handler->Initialize()) {
         LOG(ERROR) << "wav_data is not valid";
         return;
       }
@@ -186,7 +184,7 @@ AudioStreamHandler::AudioStreamHandler(
     }
     case media::AudioCodec::kFLAC: {
       auto tmp_handler = std::make_unique<media::FlacAudioHandler>(audio_data);
-      if (!tmp_handler->is_initialized()) {
+      if (!tmp_handler->Initialize()) {
         LOG(ERROR) << "flac_data is not valid";
         return;
       }
@@ -203,7 +201,7 @@ AudioStreamHandler::AudioStreamHandler(
   const media::AudioParameters params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
       media::ChannelLayoutConfig::Guess(audio_handler->GetNumChannels()),
-      audio_handler->GetSampleRate(), kDefaultFrameCount);
+      audio_handler->GetSampleRate(), media::AudioHandler::kDefaultFrameCount);
   if (!params.IsValid()) {
     LOG(ERROR) << "Audio params are invalid.";
     return;

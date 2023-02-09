@@ -42,6 +42,7 @@ class MEDIA_EXPORT WavAudioHandler : public AudioHandler {
       const base::StringPiece wav_data);
 
   // AudioHandler:
+  bool Initialize() override;
   int GetNumChannels() const override;
   int GetSampleRate() const override;
   base::TimeDelta GetDuration() const override;

@@ -22,7 +22,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       media::WavAudioHandler::Create(wav_data);
 
   // Abort early to avoid crashing inside AudioBus's ValidateConfig() function.
-  if (!handler || handler->total_frames_for_testing() <= 0) {
+  if (!handler || !handler->Initialize() ||
+      handler->total_frames_for_testing() <= 0) {
     return 0;
   }
 

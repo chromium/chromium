@@ -33,11 +33,8 @@ class MEDIA_EXPORT FlacAudioHandler : public AudioHandler {
   FlacAudioHandler& operator=(const FlacAudioHandler&) = delete;
   ~FlacAudioHandler() override;
 
-  // Returns true if the decoder delivered the metadata successfully and
-  // initialized the `fifo_`.
-  bool is_initialized() const { return !!fifo_; }
-
   // AudioHandler:
+  bool Initialize() override;
   int GetNumChannels() const override;
   int GetSampleRate() const override;
   base::TimeDelta GetDuration() const override;
@@ -48,10 +45,6 @@ class MEDIA_EXPORT FlacAudioHandler : public AudioHandler {
   int total_frames_for_testing() const { return total_frames_; }
 
  private:
-  // To get metadata, we can run
-  // `FLAC__stream_decoder_process_until_end_of_metadata`.
-  void Initialize();
-
   // Callbacks for the `decoder_`.
   static FLAC__StreamDecoderReadStatus ReadCallback(
       const FLAC__StreamDecoder* decoder,
@@ -70,6 +63,8 @@ class MEDIA_EXPORT FlacAudioHandler : public AudioHandler {
                             FLAC__StreamDecoderErrorStatus status,
                             void* client_data);
 
+  bool is_initialized() const { return !!fifo_; }
+
   // Internal callbacks.
   FLAC__StreamDecoderReadStatus ReadCallbackInternal(FLAC__byte buffer[],
                                                      size_t* bytes);
@@ -77,6 +72,12 @@ class MEDIA_EXPORT FlacAudioHandler : public AudioHandler {
       const FLAC__Frame* frame,
       const FLAC__int32* const buffer[]);
   void MetaCallbackInternal(const FLAC__StreamMetadata* metadata);
+
+  // Check if the metadata fecthed in `MetaCallback()` is valid or not. This
+  // function will check the `num_channels_`, `bits_per_sample_`, `sample_rate_`
+  // and `total_frames_`.
+  // Note: We only consider 16 bits per second of audio data currently.
+  bool AreParamsValid() const;
 
   const base::StringPiece flac_data_;
   const std::unique_ptr<FLAC__StreamDecoder, FlacStreamDecoderDeleter> decoder_;
@@ -92,6 +93,7 @@ class MEDIA_EXPORT FlacAudioHandler : public AudioHandler {
 
   int num_channels_ = 0;
   int sample_rate_ = 0;
+  int bits_per_sample_ = 0;
 
   // Equal to the total number of samples per channel.
   uint64_t total_frames_ = 0u;

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "media/audio/audio_handler.h"
 #include "media/audio/flac_audio_handler.h"
 #include "media/base/audio_bus.h"
 
@@ -22,12 +23,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       std::make_unique<media::FlacAudioHandler>(flac_data);
 
   // Abort early to avoid crashing inside AudioBus's ValidateConfig() function.
-  if (!handler->is_initialized() || handler->total_frames_for_testing() <= 0) {
+  if (!handler->Initialize() || handler->total_frames_for_testing() <= 0) {
     return 0;
   }
 
   std::unique_ptr<media::AudioBus> audio_bus = media::AudioBus::Create(
-      handler->GetNumChannels(), handler->total_frames_for_testing());
+      handler->GetNumChannels(), media::AudioHandler::kDefaultFrameCount);
   size_t frames_written;
   handler->CopyTo(audio_bus.get(), &frames_written);
   return 0;

@@ -152,6 +152,7 @@ TEST(WavAudioHandlerTest, TestTooBigTotalSizeIsOkay) {
   data[kWavDataSizeIndex + 3] = '\x00';
   auto handler = WavAudioHandler::Create(data);
   EXPECT_TRUE(handler);
+  EXPECT_TRUE(handler->Initialize());
   ASSERT_EQ(2, handler->GetNumChannels());
   ASSERT_EQ(16, handler->bits_per_sample_for_testing());
   ASSERT_EQ(48000, handler->GetSampleRate());
@@ -174,6 +175,7 @@ TEST(WavAudioHandlerTest, TestTooBigDataChunkSizeIsOkay) {
   data[kDataHeaderIndex + 7] = '\x00';
   auto handler = WavAudioHandler::Create(data);
   EXPECT_TRUE(handler);
+  EXPECT_TRUE(handler->Initialize());
   ASSERT_EQ(2, handler->GetNumChannels());
   ASSERT_EQ(16, handler->bits_per_sample_for_testing());
   ASSERT_EQ(48000, handler->GetSampleRate());
@@ -207,6 +209,7 @@ TEST(WavAudioHandlerTest, TestOtherSectionTypesIsOkay) {
 
   auto handler = WavAudioHandler::Create(data);
   EXPECT_TRUE(handler);
+  EXPECT_TRUE(handler->Initialize());
   ASSERT_EQ(2, handler->GetNumChannels());
   ASSERT_EQ(16, handler->bits_per_sample_for_testing());
   ASSERT_EQ(48000, handler->GetSampleRate());
@@ -237,6 +240,7 @@ TEST(WavAudioHandlerTest, TestNoDataSectionIsOkay) {
   data[kDataHeaderIndex + 3] = 'd';
   auto handler = WavAudioHandler::Create(data);
   EXPECT_TRUE(handler);
+  EXPECT_TRUE(handler->Initialize());
   ASSERT_EQ(2, handler->GetNumChannels());
   ASSERT_EQ(16, handler->bits_per_sample_for_testing());
   ASSERT_EQ(48000, handler->GetSampleRate());

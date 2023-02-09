@@ -233,6 +233,10 @@ std::unique_ptr<WavAudioHandler> WavAudioHandler::Create(
                           params.bits_per_sample, params.audio_format));
 }
 
+bool WavAudioHandler::Initialize() {
+  return true;
+}
+
 int WavAudioHandler::GetNumChannels() const {
   return static_cast<int>(num_channels_);
 }

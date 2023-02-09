@@ -14,22 +14,20 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_fifo.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/limits.h"
 #include "third_party/flac/include/FLAC/ordinals.h"
 #include "third_party/flac/include/FLAC/stream_decoder.h"
 
 namespace media {
 
-namespace {
-
-// TODO(hongyulong): In audio_stream_handler.cc, it also has this const
-// variable. Should these two combine to one?
-constexpr int kDefaultFrameCount = 1024;
-
-}  // namespace
-
 FlacAudioHandler::FlacAudioHandler(base::StringPiece data)
-    : flac_data_(data), decoder_(FLAC__stream_decoder_new()) {
+    : flac_data_(data), decoder_(FLAC__stream_decoder_new()) {}
+
+FlacAudioHandler::~FlacAudioHandler() = default;
+
+bool FlacAudioHandler::Initialize() {
   DCHECK(decoder_);
+  DCHECK(!is_initialized());
 
   // Initialize the `decoder_`.
   const FLAC__StreamDecoderInitStatus init_status =
@@ -42,10 +40,15 @@ FlacAudioHandler::FlacAudioHandler(base::StringPiece data)
           /*client_data=*/static_cast<void*>(this));
   DCHECK_EQ(init_status, FLAC__STREAM_DECODER_INIT_STATUS_OK);
 
-  Initialize();
+  // Get the metadata.
+  if (!FLAC__stream_decoder_process_until_end_of_metadata(decoder_.get())) {
+    return false;
+  }
+  // Avoid that `fifo_` will be unbounded if metadata isn't in the first
+  // packet.
+  Reset();
+  return is_initialized();
 }
-
-FlacAudioHandler::~FlacAudioHandler() = default;
 
 int FlacAudioHandler::GetNumChannels() const {
   DCHECK(is_initialized());
@@ -70,7 +73,6 @@ bool FlacAudioHandler::AtEnd() const {
 
 bool FlacAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
   DCHECK(bus);
-  DCHECK(decoder_);
   DCHECK(is_initialized());
 
   if (AtEnd()) {
@@ -97,24 +99,11 @@ bool FlacAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
 }
 
 void FlacAudioHandler::Reset() {
-  DCHECK(is_initialized());
-
   FLAC__stream_decoder_reset(decoder_.get());
-  fifo_->Clear();
-  cursor_ = 0;
-}
-
-void FlacAudioHandler::Initialize() {
-  DCHECK(decoder_);
-  if (!AtEnd()) {
-    FLAC__stream_decoder_process_until_end_of_metadata(decoder_.get());
-  }
-
   if (is_initialized()) {
-    // Avoid that `fifo_` will be unbounded if metadata isn't in the first
-    // packet.
-    Reset();
+    fifo_->Clear();
   }
+  cursor_ = 0;
 }
 
 FLAC__StreamDecoderReadStatus FlacAudioHandler::ReadCallback(
@@ -206,31 +195,55 @@ FLAC__StreamDecoderWriteStatus FlacAudioHandler::WriteCallbackInternal(
 void FlacAudioHandler::MetaCallbackInternal(
     const FLAC__StreamMetadata* metadata) {
   DCHECK(metadata);
-  if (metadata->type == FLAC__METADATA_TYPE_STREAMINFO) {
-    // Stores the metadata for the audio.
-    num_channels_ = static_cast<int>(metadata->data.stream_info.channels);
-    sample_rate_ = static_cast<int>(metadata->data.stream_info.sample_rate);
-    total_frames_ = metadata->data.stream_info.total_samples;
-
-    DCHECK(num_channels_);
-
-    if (!fifo_) {
-      // There will be at most `max_blocksize` of frames for each call to the
-      // `WriteCallback()`. For the client bus in `CopyTo()`, it will always
-      // have `kDefaultFrameCount` frames. We want to make sure the `fifo_` can
-      // hold enough data to refill for a request. For example, we might have `N
-      // - 1` frames in the `fifo_` when a request for `N` frames comes in. Then
-      // we need to fill the new coming `N` frames into `fifo_`, as a result it
-      // requires a total capacity of `N + N - 1`. Technically, it can be
-      // `kDefaultFrameCount + kDefaultFrameCount - 1` and `max_blocksize +
-      // kDefaultFrameCount - 1`. 2 is just used for simplicity.
-      fifo_ = std::make_unique<AudioFifo>(
-          num_channels_,
-          std::max(
-              kDefaultFrameCount * 2,
-              static_cast<int>(metadata->data.stream_info.max_blocksize * 2)));
-    }
+  if (metadata->type != FLAC__METADATA_TYPE_STREAMINFO) {
+    return;
   }
+
+  // Stores the metadata for the audio.
+  num_channels_ = static_cast<int>(metadata->data.stream_info.channels);
+  sample_rate_ = static_cast<int>(metadata->data.stream_info.sample_rate);
+  total_frames_ = metadata->data.stream_info.total_samples;
+  bits_per_sample_ =
+      static_cast<int>(metadata->data.stream_info.bits_per_sample);
+
+  // We will create `fifo_` only when the params are valid.
+  if (!AreParamsValid()) {
+    LOG(ERROR) << "****Format is invalid. "
+               << "num_channels: " << num_channels_ << " "
+               << "sample_rate: " << sample_rate_ << " "
+               << "bits_per_sample: " << bits_per_sample_ << " "
+               << "total_frames_: " << total_frames_;
+    return;
+  }
+
+  if (is_initialized()) {
+    return;
+  }
+
+  // There will be at most `max_blocksize` of frames for each call to the
+  // `WriteCallback()`. For the client bus in `CopyTo()`, it will always
+  // have `kDefaultFrameCount` frames. We want to make sure the `fifo_`
+  // can hold enough data to refill for a request. For example, we might
+  // have `N
+  // - 1` frames in the `fifo_` when a request for `N` frames comes in.
+  // Then we need to fill the new coming `N` frames into `fifo_`, as a
+  // result it requires a total capacity of `N + N - 1`. Technically, it
+  // can be `kDefaultFrameCount + kDefaultFrameCount - 1` and
+  // `max_blocksize + kDefaultFrameCount - 1`. 2 is just used for
+  // simplicity.
+  fifo_ = std::make_unique<AudioFifo>(
+      num_channels_,
+      std::max(kDefaultFrameCount * 2,
+               static_cast<int>(metadata->data.stream_info.max_blocksize * 2)));
+}
+
+bool FlacAudioHandler::AreParamsValid() const {
+  return (num_channels_ > 0 &&
+          num_channels_ <= static_cast<int>(limits::kMaxChannels)) &&
+         (bits_per_sample_ == 16) &&
+         (sample_rate_ >= static_cast<int>(limits::kMinSampleRate) &&
+          sample_rate_ <= static_cast<int>(limits::kMaxSampleRate)) &&
+         (total_frames_ != 0);
 }
 
 }  // namespace media

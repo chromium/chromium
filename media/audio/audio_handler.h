@@ -22,6 +22,11 @@ class MEDIA_EXPORT AudioHandler {
   AudioHandler& operator=(const AudioHandler&) = delete;
   virtual ~AudioHandler() = default;
 
+  // The number of frames of `bus` in `CopyTo()`.
+  static constexpr int kDefaultFrameCount = 1024;
+
+  // Returns true if the instance of this class can be initialized successfully.
+  virtual bool Initialize() = 0;
   virtual int GetNumChannels() const = 0;
   virtual int GetSampleRate() const = 0;
   virtual base::TimeDelta GetDuration() const = 0;
