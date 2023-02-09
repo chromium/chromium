@@ -22,16 +22,19 @@ struct ArchiveAnalyzerResults;
 // This class is used to analyze zip files in a sandboxed utility process for
 // file download protection. This class lives on the UI thread, which is where
 // the result callback will be invoked.
-class SandboxedZipAnalyzer
-    : public base::RefCountedDeleteOnSequence<SandboxedZipAnalyzer> {
+class SandboxedZipAnalyzer {
  public:
   using ResultCallback =
       base::OnceCallback<void(const safe_browsing::ArchiveAnalyzerResults&)>;
 
-  SandboxedZipAnalyzer(
-      const base::FilePath& zip_file,
-      ResultCallback callback,
-      mojo::PendingRemote<chrome::mojom::FileUtilService> service);
+  // Factory function for creating SandboxedZipAnalyzers with the appropriate
+  // deleter.
+  static std::unique_ptr<SandboxedZipAnalyzer, base::OnTaskRunnerDeleter>
+  CreateAnalyzer(const base::FilePath& zip_file,
+                 ResultCallback callback,
+                 mojo::PendingRemote<chrome::mojom::FileUtilService> service);
+
+  ~SandboxedZipAnalyzer();
 
   SandboxedZipAnalyzer(const SandboxedZipAnalyzer&) = delete;
   SandboxedZipAnalyzer& operator=(const SandboxedZipAnalyzer&) = delete;
@@ -40,13 +43,10 @@ class SandboxedZipAnalyzer
   void Start();
 
  private:
-  friend class base::RefCountedDeleteOnSequence<SandboxedZipAnalyzer>;
-  friend class base::DeleteHelper<SandboxedZipAnalyzer>;
-
-  ~SandboxedZipAnalyzer();
-
-  // Prepare the file for analysis.
-  void PrepareFileToAnalyze();
+  SandboxedZipAnalyzer(
+      const base::FilePath& zip_file,
+      ResultCallback callback,
+      mojo::PendingRemote<chrome::mojom::FileUtilService> service);
 
   // If file preparation failed, analysis has failed: report failure.
   void ReportFileFailure(safe_browsing::ArchiveAnalysisResult reason);
@@ -57,6 +57,9 @@ class SandboxedZipAnalyzer
   // The response containing the file analyze results.
   void AnalyzeFileDone(const safe_browsing::ArchiveAnalyzerResults& results);
 
+  // Return a weak pointer to this.
+  base::WeakPtr<SandboxedZipAnalyzer> GetWeakPtr();
+
   // The file path of the file to analyze.
   const base::FilePath file_path_;
 
@@ -66,6 +69,8 @@ class SandboxedZipAnalyzer
   // Remote interfaces to the file util service. Only used from the UI thread.
   mojo::Remote<chrome::mojom::FileUtilService> service_;
   mojo::Remote<chrome::mojom::SafeArchiveAnalyzer> remote_analyzer_;
+
+  base::WeakPtrFactory<SandboxedZipAnalyzer> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_SERVICES_FILE_UTIL_PUBLIC_CPP_SANDBOXED_ZIP_ANALYZER_H_
