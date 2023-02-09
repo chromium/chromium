@@ -76,12 +76,6 @@ DOMArrayBuffer* RTCEncodedVideoFrameDelegate::CreateAdditionalDataBuffer()
   return DOMArrayBuffer::Create(std::move(contents));
 }
 
-absl::optional<uint32_t> RTCEncodedVideoFrameDelegate::Ssrc() const {
-  base::AutoLock lock(lock_);
-  return webrtc_frame_ ? absl::make_optional(webrtc_frame_->GetSsrc())
-                       : absl::nullopt;
-}
-
 absl::optional<uint8_t> RTCEncodedVideoFrameDelegate::PayloadType() const {
   base::AutoLock lock(lock_);
   return webrtc_frame_ ? absl::make_optional(webrtc_frame_->GetPayloadType())

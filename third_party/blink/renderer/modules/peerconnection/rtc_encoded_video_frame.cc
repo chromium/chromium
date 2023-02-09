@@ -226,15 +226,14 @@ DOMArrayBuffer* RTCEncodedVideoFrame::data() const {
 RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
   RTCEncodedVideoFrameMetadata* metadata =
       RTCEncodedVideoFrameMetadata::Create();
-  if (delegate_->Ssrc()) {
-    metadata->setSynchronizationSource(*delegate_->Ssrc());
-  }
   if (delegate_->PayloadType()) {
     metadata->setPayloadType(*delegate_->PayloadType());
   }
   const auto* webrtc_metadata = delegate_->GetMetadata();
   if (!webrtc_metadata)
     return metadata;
+
+  metadata->setSynchronizationSource(webrtc_metadata->GetSsrc());
 
   if (webrtc_metadata->GetFrameId())
     metadata->setFrameId(*webrtc_metadata->GetFrameId());
@@ -309,7 +308,8 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
       !metadata->hasSpatialIndex() || !metadata->hasTemporalIndex() ||
       !metadata->hasDecodeTargetIndications() ||
       !metadata->hasIsLastFrameInPicture() || !metadata->hasSimulcastIdx() ||
-      !metadata->hasCodec() || !metadata->hasCodecSpecifics()) {
+      !metadata->hasCodec() || !metadata->hasCodecSpecifics() ||
+      !metadata->hasSynchronizationSource()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
         "Member(s) missing in RTCEncodedVideoFrameMetadata.");
@@ -362,6 +362,7 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
       VideoCodecTypeFromRTCVideoCodecType(metadata->codec());
   webrtc_metadata.SetFrameType(
       VideoFrameTypeFromRTCEncodedVideoFrameType(metadata->frameType()));
+  webrtc_metadata.SetSsrc(metadata->synchronizationSource());
 
   webrtc_metadata.SetCodec(codec);
   switch (codec) {
