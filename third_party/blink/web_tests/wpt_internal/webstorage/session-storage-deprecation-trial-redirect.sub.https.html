@@ -1,0 +1,36 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Session Storage: deprecation trial redirect</title>
+<meta name=help href="https://privacycg.github.io/storage-partitioning/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+// Here's the set-up for this test:
+// Step 1 (original tab) Set up a listener for "success" and "failure" messages.
+// Step 2 (original tab) Open a new tab on origin 1.
+// Step 3 (new tab, origin 1) Redirect to origin 2.
+// Step 4 (new tab, origin 2) Add session storage data.
+// Step 5 (new tab, origin 2) Redirect to origin 1.
+// Step 6 (new tab, origin 1) Set up a listener for "success" and "failure" messages.
+// Step 7 (new tab, origin 1) Embed an iframe of origin 2.
+// Step 8 (new tab iframe, origin 2) Send "success" if session storage data present and "failure" otherwise.
+// Step 9 (new tab, origin 1) Propagate "success" or "failure" message.
+// Step 10 (original tab) Assert success and exit.
+
+async_test(t => {
+  let newTab;
+
+  // Step 1
+  window.addEventListener("message", t.step_func(e => {
+    // Step 10
+    assert_true(e.data == "success", "The session storage data must be consistent.");
+    newTab.close();
+    t.done();
+  }));
+
+  // Step 2
+  newTab = window.open("https://{{host}}:{{ports[https][0]}}/wpt_internal/webstorage/resources/session-storage-deprecation-trial-redirect-tab-1.sub.https.html");
+}, "Test for Session Storage with DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning enabled and a cross-origin redirect");
+</script>
+</body>
