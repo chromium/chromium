@@ -19,9 +19,11 @@ import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Keyboard} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_keyboard_subsection.html.js';
 
 export class SettingsPerDeviceKeyboardSubsectionElement extends PolymerElement {
@@ -115,6 +117,11 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends PolymerElement {
       keyboard: {
         type: Object,
       },
+
+      remapKeyboardKeysSublabel: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -125,17 +132,19 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends PolymerElement {
           'enableAutoRepeatPref.value,' +
           'autoRepeatDelaysPref.value,' +
           'autoRepeatIntervalsPref.value)',
+      'onModifierRemappingsChanged(keyboard.settings.modifierRemappings)',
     ];
   }
 
+  protected keyboard: Keyboard;
   private autoRepeatDelays: number[];
   private autoRepeatIntervals: number[];
-  private keyboard: Object;
   private topRowAreFunctionKeysPref: chrome.settingsPrivate.PrefObject;
   private blockMetaFunctionKeyRewritesPref: chrome.settingsPrivate.PrefObject;
   private enableAutoRepeatPref: chrome.settingsPrivate.PrefObject;
   private autoRepeatDelaysPref: chrome.settingsPrivate.PrefObject;
   private autoRepeatIntervalsPref: chrome.settingsPrivate.PrefObject;
+  private remapKeyboardKeysSublabel: string;
 
   private onLearnMoreLinkClicked_(event: Event): void {
     const path = event.composedPath();
@@ -151,6 +160,20 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends PolymerElement {
 
   private onSettingsChanged(): void {
     // TODO(wangdanny): Implement onSettingsChanged.
+  }
+
+  private async onModifierRemappingsChanged(): Promise<void> {
+    const numRemappedModifierKeys =
+        this.keyboard.settings.modifierRemappings.size;
+
+    // Only display the sub-label if the modifierRemappings map isn't empty.
+    if (numRemappedModifierKeys > 0) {
+      this.remapKeyboardKeysSublabel =
+          await PluralStringProxyImpl.getInstance().getPluralString(
+              'remapKeyboardKeysRowSubLabel', numRemappedModifierKeys);
+    } else {
+      this.remapKeyboardKeysSublabel = '';
+    }
   }
 
   private onRemapKeyboardKeysTap(): void {

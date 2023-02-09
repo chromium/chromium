@@ -42,6 +42,11 @@ suite('PerDeviceKeyboardSubsection', function() {
     return flushTasks();
   }
 
+  function changeKeyboardState(keyboard) {
+    subsection.keyboard = keyboard;
+    return flushTasks();
+  }
+
   /**
    * Test that keyboard settings are correctly show or hidden based on internal
    * vs external.
@@ -123,13 +128,33 @@ suite('PerDeviceKeyboardSubsection', function() {
     assertTrue(!!repeatRateLabel);
     assertEquals('Repeat rate', repeatRateLabel.textContent.trim());
     assertTrue(!!subsection.shadowRoot.querySelector('#repeatRateSlider'));
+  });
 
-    // Verify the keyboard remap keys row item is in the page.
+  /**
+   * Verify the Keyboard remap keys row label is loaded, and sub-label is
+   * correctly displayed when the keyboard has 2, 1 or 0 remapped keys.
+   */
+  test('remap keys sub-label displayed correctly', async () => {
+    await initializePerDeviceKeyboardSubsection();
     const remapKeysRow =
         subsection.shadowRoot.querySelector('#remapKeyboardKeys');
     assertTrue(!!remapKeysRow);
     assertEquals(
         'Remap keyboard keys',
         remapKeysRow.shadowRoot.querySelector('#label').textContent.trim());
+
+    const remapKeysSubLabel =
+        remapKeysRow.shadowRoot.querySelector('#subLabel');
+    assertTrue(!!remapKeysSubLabel);
+    assertEquals(2, subsection.keyboard.settings.modifierRemappings.size);
+    assertEquals('2 remapped keys', remapKeysSubLabel.textContent.trim());
+
+    await changeKeyboardState(fakeKeyboards[2]);
+    assertEquals(1, subsection.keyboard.settings.modifierRemappings.size);
+    assertEquals('1 remapped key', remapKeysSubLabel.textContent.trim());
+
+    await changeKeyboardState(fakeKeyboards[1]);
+    assertEquals(0, subsection.keyboard.settings.modifierRemappings.size);
+    assertEquals('', remapKeysSubLabel.textContent.trim());
   });
 });

@@ -52,6 +52,30 @@ export const fakeKeyboards: Keyboard[] = [
       autoRepeatInterval: 20,
     },
   },
+  {
+    id: 8,
+    name: 'Logitech G713 Aurora',
+    isExternal: true,
+    metaKey: MetaKey.LAUNCHER,
+    modifierKeys: [
+      ModifierKey.ALT,
+      ModifierKey.BACKSPACE,
+      ModifierKey.CAPS_LOCK,
+      ModifierKey.CONTROL,
+      ModifierKey.ESC,
+      ModifierKey.META,
+    ],
+    settings: {
+      modifierRemappings: new Map<ModifierKey, ModifierKey>([
+        [ModifierKey.CAPS_LOCK, ModifierKey.ASSISTANT],
+      ]),
+      topRowAreFKeys: true,
+      suppressMetaFKeyRewrites: false,
+      autoRepeatEnabled: true,
+      autoRepeatDelay: 500,
+      autoRepeatInterval: 100,
+    },
+  },
 ];
 
 export const fakeTouchpads: Touchpad[] = [

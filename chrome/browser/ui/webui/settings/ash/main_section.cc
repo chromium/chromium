@@ -292,6 +292,10 @@ std::unique_ptr<PluralStringHandler> MainSection::CreatePluralStringHandler() {
   plural_string_handler->AddLocalizedString(
       "lockScreenNumberFingerprints",
       IDS_SETTINGS_PEOPLE_LOCK_SCREEN_NUM_FINGERPRINTS);
+
+  plural_string_handler->AddLocalizedString(
+      "remapKeyboardKeysRowSubLabel",
+      IDS_SETTINGS_KEYBOARD_REMAP_KEYS_ROW_SUB_LABEL);
   return plural_string_handler;
 }
 
