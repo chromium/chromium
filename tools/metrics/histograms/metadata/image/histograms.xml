@@ -64,9 +64,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".Feed" summary="Showing cache patterns only for Feed."/>
   <variant name=".Internal"
       summary="Showing cache patterns only for Internal."/>
-  <variant name=".LightweightReactions"
-      summary="Thumbnails and GIFs fetched for the Lightweight Reactions
-               feature."/>
   <variant name=".NewTabPageAnimatedLogo"
       summary="Showing cache patterns only for NewTabPageAnimatedLogo."/>
   <variant name=".OfflinePages"

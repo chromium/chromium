@@ -6927,33 +6927,6 @@
             ]
         }
     ],
-    "LightweightReactions": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithOnDemandReactions",
-                    "params": {
-                        "should_load_reactions_on_demand": "true"
-                    },
-                    "enable_features": [
-                        "LightweightReactions"
-                    ]
-                },
-                {
-                    "name": "EnabledWithPreloadedReactions",
-                    "params": {
-                        "should_load_reactions_on_demand": "false"
-                    },
-                    "enable_features": [
-                        "LightweightReactions"
-                    ]
-                }
-            ]
-        }
-    ],
     "LimitImageDecodeCacheAge": [
         {
             "platforms": [
