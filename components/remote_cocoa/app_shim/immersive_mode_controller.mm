@@ -205,6 +205,17 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
             options:NSKeyValueObservingOptionInitial |
                     NSKeyValueObservingOptionNew
             context:NULL];
+
+  // Sometimes AppKit incorrectly positions NSToolbarFullScreenWindow entirely
+  // offscreen (particularly when this is a out-of-process app shim). Toggling
+  // visibility seems to fix the positioning.
+  // Only toggle the visibility if fullScreenMinHeight is not zero though, as
+  // triggering the repositioning when the toolbar is set to auto hide would
+  // result in it being incorrectly positioned in that case.
+  if (self.fullScreenMinHeight != 0 && !self.hidden) {
+    self.hidden = YES;
+    self.hidden = NO;
+  }
 }
 
 - (BOOL)titlebarFullyVisible {
