@@ -7,11 +7,19 @@ import * as dom from '../dom.js';
 import * as localStorage from '../models/local_storage.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
+import * as state from '../state.js';
 import {Facing, Resolution} from '../type.js';
 import {sleep} from '../util.js';
 import {windowController} from '../window_controller.js';
 
-import {SELECTOR_MAP, UIComponent} from './cca_type.js';
+import {
+  SELECTOR_MAP,
+  SETTING_MENU_MAP,
+  SETTING_OPTION_MAP,
+  SettingMenu,
+  SettingOption,
+  UIComponent,
+} from './cca_type.js';
 
 /**
  * Possible HTMLElement types that can have a boolean attribute "disabled".
@@ -173,6 +181,20 @@ export class CCATest {
   }
 
   /**
+   * Clicks on the back button to close the setting menu.
+   */
+  static closeSettingMenu(menu: SettingMenu): void {
+    assert(menu !== undefined, 'Invalid SettingMenu value');
+    const view = SETTING_MENU_MAP[menu].view;
+    const selector = `#${view} .menu-header button`;
+    const closeButton = dom.get(selector, HTMLButtonElement);
+    assert(
+        isVisibleElement(closeButton),
+        `Close button for settings menu ${menu} is not visible.`);
+    closeButton.click();
+  }
+
+  /**
    * Returns the number of ui elements of the specified component.
    */
   static countUI(component: UIComponent): number {
@@ -268,6 +290,15 @@ export class CCATest {
   }
 
   /**
+   * Return whether the state associated to the open is checked.
+   */
+  static getOptionState(option: SettingOption): boolean {
+    assert(option !== undefined, 'Invalid SettingOption value.');
+    const optionState = SETTING_OPTION_MAP[option].state;
+    return state.get(optionState);
+  }
+
+  /**
    * Creates a canvas which renders a frame from the preview video.
    *
    * @return Context from the created canvas.
@@ -353,6 +384,15 @@ export class CCATest {
   }
 
   /**
+   * Checks whether the setting menu is opened.
+   */
+  static isSettingMenuOpened(menu: SettingMenu): boolean {
+    assert(menu !== undefined, 'Invalid SettingMenu value');
+    const view = SETTING_MENU_MAP[menu].view;
+    return state.get(view);
+  }
+
+  /**
    * Checks whether the preview video stream has been set and the stream status
    * is active.
    *
@@ -383,6 +423,15 @@ export class CCATest {
    */
   static minimizeWindow(): Promise<void> {
     return windowController.minimize();
+  }
+
+  /**
+   * Clicks on the component to open setting menu.
+   */
+  static openSettingMenu(menu: SettingMenu): void {
+    assert(menu !== undefined, 'Invalid SettingMenu value');
+    const component = SETTING_MENU_MAP[menu].component;
+    CCATest.click(component);
   }
 
   /**
@@ -437,5 +486,14 @@ export class CCATest {
   static toggleExpertMode(): void {
     document.body.dispatchEvent(new KeyboardEvent(
         'keydown', {ctrlKey: true, shiftKey: true, key: 'E'}));
+  }
+
+  /**
+   * Toggles the settings option.
+   */
+  static toggleOption(option: SettingOption): void {
+    assert(option !== undefined, 'Invalid SettingOption value.');
+    const component = SETTING_OPTION_MAP[option].component;
+    CCATest.click(component);
   }
 }

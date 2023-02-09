@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ExpertOption} from '../expert.js';
+import {StateUnion} from '../state.js';
+import {ViewName} from '../type.js';
+
 export const SELECTOR_MAP = {
   backAspectRatioOptions: `#view-photo-aspect-ratio-settings ` +
       `.menu-item>input[data-facing="environment"]`,
@@ -36,7 +40,12 @@ export const SELECTOR_MAP = {
       '.document-preview-mode button[i18n-text=label_save_photo_document]',
   documentSaveAsPdfButton:
       '.document-preview-mode button[i18n-text=label_save_pdf_document]',
+  expertCustomVideoParametersOption: '#custom-video-parameters',
   expertModeButton: '#settings-expert',
+  expertModeOption: '#expert-enable-expert-mode',
+  expertMultiStreamRecordingOption: '#expert-enable-multistream-recording',
+  expertSaveMetadataOption: '#expert-save-metadata',
+  expertShowMetadataOption: '#expert-show-metadata',
   feedbackButton: '#settings-feedback',
   frontAspectRatioOptions:
       '#view-photo-aspect-ratio-settings .menu-item>input[data-facing="user"]',
@@ -86,3 +95,51 @@ export const SELECTOR_MAP = {
   zoomOutButton: '#zoom-out',
 } as const;
 export type UIComponent = keyof typeof SELECTOR_MAP;
+
+export const SETTING_OPTION_MAP = {
+  customVideoParametersOption: {
+    component: 'expertCustomVideoParametersOption',
+    state: ExpertOption.CUSTOM_VIDEO_PARAMETERS,
+  },
+  expertModeOption: {
+    component: 'expertModeOption',
+    state: ExpertOption.EXPERT,
+  },
+  multiStreamRecordingOption: {
+    component: 'expertMultiStreamRecordingOption',
+    state: ExpertOption.ENABLE_MULTISTREAM_RECORDING,
+  },
+  saveMetadataOption: {
+    component: 'expertSaveMetadataOption',
+    state: ExpertOption.SAVE_METADATA,
+  },
+  showMetadataOption: {
+    component: 'expertShowMetadataOption',
+    state: ExpertOption.SHOW_METADATA,
+  },
+} satisfies Record<string, {component: UIComponent, state: StateUnion}>;
+export type SettingOption = keyof typeof SETTING_OPTION_MAP;
+
+export const SETTING_MENU_MAP = {
+  expertMenu: {
+    component: 'expertModeButton',
+    view: ViewName.EXPERT_SETTINGS,
+  },
+  mainMenu: {
+    component: 'settingsButton',
+    view: ViewName.SETTINGS,
+  },
+  photoAspectRatioMenu: {
+    component: 'photoAspectRatioSettingButton',
+    view: ViewName.PHOTO_ASPECT_RATIO_SETTINGS,
+  },
+  photoResolutionMenu: {
+    component: 'photoResolutionSettingButton',
+    view: ViewName.PHOTO_RESOLUTION_SETTINGS,
+  },
+  videoResolutionMenu: {
+    component: 'videoResolutionSettingButton',
+    view: ViewName.VIDEO_RESOLUTION_SETTINGS,
+  },
+} satisfies Record<string, {component: UIComponent, view: ViewName}>;
+export type SettingMenu = keyof typeof SETTING_MENU_MAP;
