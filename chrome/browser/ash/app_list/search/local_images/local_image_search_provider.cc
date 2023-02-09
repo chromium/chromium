@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/files/file_result.h"
 #include "chrome/browser/ash/app_list/search/local_images/annotation_storage.h"
 #include "chrome/browser/ash/app_list/search/local_images/image_annotation_worker.h"
@@ -28,6 +29,23 @@ base::FilePath ConstructPathToAnnotationDb(const Profile* const profile) {
 
 }  // namespace
 
+ImageInfo::ImageInfo(const std::set<std::string>& annotations,
+                     const base::FilePath& path,
+                     const base::Time& last_modified)
+    : annotations(annotations), path(path), last_modified(last_modified) {}
+
+ImageInfo::ImageInfo(const std::set<std::string>& annotations,
+                     const base::FilePath& path,
+                     const base::Time& last_modified,
+                     const double relevance)
+    : annotations(annotations),
+      path(path),
+      last_modified(last_modified),
+      relevance(relevance) {}
+
+ImageInfo::~ImageInfo() = default;
+ImageInfo::ImageInfo(const ImageInfo&) = default;
+
 LocalImageSearchProvider::LocalImageSearchProvider(Profile* profile)
     : profile_(profile),
       thumbnail_loader_(profile),
@@ -35,7 +53,8 @@ LocalImageSearchProvider::LocalImageSearchProvider(Profile* profile)
       annotation_storage_(base::MakeRefCounted<AnnotationStorage>(
           ConstructPathToAnnotationDb(profile_),
           /* histogram_tag = */ kHistogramTag,
-          /* current_version_number= */ 2,
+          /* current_version_number= */ 1,
+          /* compatible_version_number= */ 1,
           std::make_unique<ImageAnnotationWorker>(root_path_))) {
   DCHECK(profile_);
   DCHECK(!root_path_.empty());
@@ -44,6 +63,7 @@ LocalImageSearchProvider::LocalImageSearchProvider(Profile* profile)
 }
 
 LocalImageSearchProvider::~LocalImageSearchProvider() {
+  annotation_storage_->Close();
   annotation_storage_.reset();
 }
 
@@ -69,8 +89,7 @@ void LocalImageSearchProvider::StopQuery() {
   last_query_.clear();
 }
 
-void LocalImageSearchProvider::OnSearchComplete(
-    std::vector<FileSearchResult> paths) {
+void LocalImageSearchProvider::OnSearchComplete(std::vector<ImageInfo> paths) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "OnSearchComplete";
 
@@ -86,7 +105,7 @@ void LocalImageSearchProvider::OnSearchComplete(
 }
 
 std::unique_ptr<FileResult> LocalImageSearchProvider::MakeResult(
-    const FileSearchResult& path) {
+    const ImageInfo& path) {
   // Use the parent directory name as details text. Take care to remove newlines
   // and handle RTL as this is displayed directly.
   std::u16string parent_dir_name = base::CollapseWhitespace(
@@ -95,12 +114,12 @@ std::unique_ptr<FileResult> LocalImageSearchProvider::MakeResult(
 
   DVLOG(1) << "id: " << kFileSearchSchema + path.path.value() << " "
            << parent_dir_name << " " << last_query_
-           << " rl: " << path.relevance;
+           << " rl: " << path.relevance.value();
 
   auto result = std::make_unique<FileResult>(
       /*id=*/kFileSearchSchema + path.path.value(), path.path, parent_dir_name,
       ash::AppListSearchResultType::kImageSearch,
-      ash::SearchResultDisplayType::kList, path.relevance, last_query_,
+      ash::SearchResultDisplayType::kList, path.relevance.value(), last_query_,
       FileResult::Type::kFile, profile_);
   result->RequestThumbnail(&thumbnail_loader_);
   return result;

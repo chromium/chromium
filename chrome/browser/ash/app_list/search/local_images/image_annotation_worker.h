@@ -11,13 +11,9 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/file_path_watcher.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom.h"
-#include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace base {
 class FilePathWatcher;
@@ -41,45 +37,37 @@ class ImageAnnotationWorker {
 
   // Spawns the worker in a low-priority sequence and attaches it to the
   // storage. Can be called from any sequence.
-  void Run(scoped_refptr<AnnotationStorage> annotation_storage);
-  void UseFakeAnnotatorForTests();
+  void Run(AnnotationStorage* const annotation_storage);
 
  private:
   // Setups file watchers.
   void StartWatching();
-  void OnFileChange(const base::FilePath& path, bool error);
+  void OnFileChange(const base::FilePath& path,
+                    bool is_exist,
+                    std::unique_ptr<base::File::Info> file_info);
 
   // Gets an annotations from the `image_path`.
   void ProcessImage(base::FilePath image_path,
                     std::unique_ptr<base::File::Info> file_info,
                     std::vector<ImageInfo> stored_annotations_with_this_path);
 
+  // Obtains stored image paths and checks for deleted images
+  void CheckForDeletedImages();
+
   // Removes deleted images from the annotation storage.
   void FindAndRemoveDeletedImages(const std::vector<ImageInfo> images);
 
-  void ConnectToImageAnnotator();
-  void RunImageAnnotator(ImageInfo image_info,
-                         base::MappedReadOnlyRegion mapped_region);
-  // For testing.
-  void RunFakeImageAnnotator(ImageInfo image_info,
-                             base::MappedReadOnlyRegion mapped_region);
-
-  void EnsureAnnotatorIsConnected();
+  // Removes deleted images from the annotation storage.
+  void RemovePathsFromDb(const std::set<base::FilePath>& paths);
 
   std::unique_ptr<base::FilePathWatcher> file_watcher_;
   base::FilePath root_path_;
-  scoped_refptr<AnnotationStorage> annotation_storage_;
 
-  mojo::Remote<chromeos::machine_learning::mojom::MachineLearningService>
-      ml_service_;
-  mojo::Remote<chromeos::machine_learning::mojom::ImageContentAnnotator>
-      image_content_annotator_;
-
-  base::FilePathWatcher::Callback on_file_change_callback_;
-
-  bool use_fake_annotator_for_tests_ = false;
+  // Owned by the caller.
+  AnnotationStorage* annotation_storage_;
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<ImageAnnotationWorker> weak_ptr_factory_{this};
 };
 }  // namespace app_list
