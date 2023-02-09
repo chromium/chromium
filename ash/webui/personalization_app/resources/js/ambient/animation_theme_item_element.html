@@ -34,9 +34,9 @@
   }
 
   :host([aria-checked='true']) .item {
-    background-color: rgba(
+    background-color: var(--cros-sys-highlight_shape, rgba(
       var(--cros-color-prominent-rgb),
-      var(--personalization-app-second-tone-opacity));
+      var(--personalization-app-second-tone-opacity)));
     border-radius:
       calc(var(--personalization-app-grid-item-border-radius) + 4px);
   }
