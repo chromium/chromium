@@ -65,7 +65,7 @@ OSSettingsAccessibilityV3Test.prototype = {
 
   /** @override */
   browsePreload:
-      'chrome://os-settings/test_loader.html?module=settings/a11y/basic_a11y_v3_test.js&host=test',
+      'chrome://os-settings/test_loader.html?module=settings/a11y/basic_a11y_v3_test.js',
 
   // Include files that define the mocha tests.
   extraLibraries: [

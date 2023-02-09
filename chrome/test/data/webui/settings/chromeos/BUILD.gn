@@ -201,15 +201,20 @@ test_files = [
   "timezone_subpage_test.js",
   "tts_subpage_test.js",
   "utils.ts",
-]
 
-copy("copy_ts") {
-  sources = [ "$root_gen_dir/mojom-webui/chrome/test/data/webui/settings/chromeos/test_api.test-mojom-webui.js" ] + test_files
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-  deps = [ ":test_api_mojom_webui_js" ]
-}
+  # Subfolder files.
+  "a11y/basic_a11y_v3_test.js",
+  "a11y/crostini_settings_details_a11y_v3_test.js",
+  "a11y/crostini_settings_export_import_a11y_v3_test.js",
+  "a11y/crostini_settings_shared_paths_a11y_v3_test.js",
+  "a11y/crostini_settings_shared_usb_devices_a11y_v3_test.js",
+  "a11y/crostini_settings_subpage_a11y_v3_test.js",
+  "a11y/google_assistant_a11y_v3_test.js",
+  "a11y/manage_accessibility_a11y_v3_test.js",
+  "a11y/multidevice_a11y_v3_test.js",
+  "a11y/multidevice_features_a11y_v3_test.js",
+  "a11y/tts_subpage_a11y_v3_test.js",
 
-app_management_tests = [
   "app_management/app_details_item_test.js",
   "app_management/app_detail_view_test.js",
   "app_management/app_item_test.js",
@@ -234,24 +239,29 @@ app_management_tests = [
   "app_management/toggle_row_test.js",
 ]
 
-copy("copy_app_management") {
-  sources = app_management_tests
-  outputs = [ "$target_gen_dir/app_management/{{source_file_part}}" ]
+copy("copy_ts") {
+  sources = test_files
+  outputs = [ "$target_gen_dir/{{source_target_relative}}" ]
+}
+
+copy("copy_mojo") {
+  sources = [ "$root_gen_dir/mojom-webui/chrome/test/data/webui/settings/chromeos/test_api.test-mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+  deps = [ ":test_api_mojom_webui_js" ]
 }
 
 ts_library("build_ts") {
   root_dir = target_gen_dir
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
-  in_files =
-      [ "test_api.test-mojom-webui.js" ] + test_files + app_management_tests
+  in_files = [ "test_api.test-mojom-webui.js" ] + test_files
   deps = [
     "//chrome/test/data/webui:build_ts",
     "//ui/webui/resources/cr_components/app_management:build_ts",
     "//ui/webui/resources/mojo:library",
   ]
   extra_deps = [
-    ":copy_app_management",
+    ":copy_mojo",
     ":copy_ts",
   ]
   path_mappings = [ "chrome://webui-test/*|" +

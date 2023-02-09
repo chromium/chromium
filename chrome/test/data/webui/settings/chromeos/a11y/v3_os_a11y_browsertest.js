@@ -147,7 +147,7 @@ function defineTest(testName, module, config) {
     /** @override */
     get browsePreload() {
       return `chrome://os-settings/test_loader.html?module=settings/chromeos/a11y/${
-          module}&host=test`;
+          module}`;
     }
 
     /** @override */
