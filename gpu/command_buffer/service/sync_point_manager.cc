@@ -11,7 +11,8 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace gpu {
@@ -61,14 +62,16 @@ void SyncPointOrderData::Destroy() {
   // because they are assumed to be released on the destruction of the
   // SyncPointClientState.
   {
-    base::AutoLock auto_lock(lock_);
+    base::AutoLock lock(lock_);
     DCHECK(!destroyed_);
     destroyed_ = true;
-    while (!order_fence_queue_.empty())
+    while (!order_fence_queue_.empty()) {
       order_fence_queue_.pop();
+    }
   }
-  // Call DestroyedSyncPointOrderData outside the lock to prevent deadlock.
-  sync_point_manager_->DestroyedSyncPointOrderData(sequence_id_);
+  // Now what we've marked ourselves as destroyed_, we can finally remove
+  // ourselves from the manager's map.
+  sync_point_manager_->RemoveSyncPointOrderData(base::WrapRefCounted(this));
 }
 
 uint32_t SyncPointOrderData::GenerateUnprocessedOrderNumber() {
@@ -144,7 +147,9 @@ uint64_t SyncPointOrderData::ValidateReleaseOrderNumber(
     scoped_refptr<SyncPointClientState> client_state,
     uint32_t wait_order_num,
     uint64_t fence_release) {
-  base::AutoLock auto_lock(lock_);
+  client_state->fence_sync_lock_.AssertAcquired();  // Can't statically check.
+  base::AutoLock lock(lock_);
+
   if (destroyed_)
     return 0;
 
@@ -164,8 +169,8 @@ uint64_t SyncPointOrderData::ValidateReleaseOrderNumber(
   uint32_t expected_order_num =
       std::min(unprocessed_order_nums_.back(), wait_order_num);
   uint64_t callback_id = ++current_callback_id_;
-  order_fence_queue_.push(OrderFence(expected_order_num, fence_release,
-                                     std::move(client_state), callback_id));
+  order_fence_queue_.emplace(expected_order_num, fence_release,
+                             std::move(client_state), callback_id);
   return callback_id;
 }
 
@@ -197,12 +202,24 @@ SyncPointClientState::~SyncPointClientState() {
 }
 
 void SyncPointClientState::Destroy() {
-  // Release all fences on destruction.
-  ReleaseFenceSyncHelper(UINT64_MAX);
+  sync_point_manager_->DestroySyncPointClientState(base::WrapRefCounted(this));
+}
+
+std::vector<base::OnceClosure>
+SyncPointClientState::DestroyAndReturnCallbacks() {
+  base::AutoLock lock(fence_sync_lock_);
   DCHECK(sync_point_manager_);  // not destroyed
-  sync_point_manager_->DestroyedSyncPointClientState(namespace_id_,
-                                                     command_buffer_id_);
   sync_point_manager_ = nullptr;
+  std::vector<base::OnceClosure> callbacks;
+  callbacks.reserve(release_callback_queue_.size());
+  while (!release_callback_queue_.empty()) {
+    callbacks.push_back(
+        std::move(const_cast<ReleaseCallback&>(release_callback_queue_.top())
+                      .callback_closure));
+    release_callback_queue_.pop();
+  }
+  fence_sync_release_ = UINT64_MAX;
+  return callbacks;
 }
 
 bool SyncPointClientState::Wait(const SyncToken& sync_token,
@@ -256,6 +273,8 @@ void SyncPointClientState::ReleaseFenceSync(uint64_t release) {
   // Validate that this Release call is between BeginProcessingOrderNumber() and
   // FinishProcessingOrderNumber(), or else we may deadlock.
   DCHECK(order_data_->IsProcessingOrderNumber());
+  DCHECK(sync_point_manager_)
+      << "Attempting to release fence on destroyed client state.";
   ReleaseFenceSyncHelper(release);
 }
 
@@ -349,10 +368,14 @@ scoped_refptr<SyncPointOrderData> SyncPointManager::CreateSyncPointOrderData() {
   return order_data;
 }
 
-void SyncPointManager::DestroyedSyncPointOrderData(SequenceId sequence_id) {
+void SyncPointManager::RemoveSyncPointOrderData(
+    scoped_refptr<SyncPointOrderData> order_data) {
   base::AutoLock auto_lock(lock_);
-  DCHECK(order_data_map_.count(sequence_id));
-  order_data_map_.erase(sequence_id);
+  // destroyed_ is the flag used to check the validity of SyncPointOrderData. It
+  // must be destroyed before removing it from order_data_map_.
+  DCHECK(TS_UNCHECKED_READ(order_data->destroyed_));
+  const int num_erased = order_data_map_.erase(order_data->sequence_id());
+  DCHECK_EQ(num_erased, 1);
 }
 
 scoped_refptr<SyncPointClientState>
@@ -360,37 +383,51 @@ SyncPointManager::CreateSyncPointClientState(
     CommandBufferNamespace namespace_id,
     CommandBufferId command_buffer_id,
     SequenceId sequence_id) {
+  base::AutoLock auto_lock(lock_);
+
   scoped_refptr<SyncPointOrderData> order_data =
       GetSyncPointOrderData(sequence_id);
-
   scoped_refptr<SyncPointClientState> client_state = new SyncPointClientState(
       this, order_data, namespace_id, command_buffer_id);
 
-  {
-    base::AutoLock auto_lock(lock_);
-    DCHECK_GE(namespace_id, 0);
-    DCHECK_LT(static_cast<size_t>(namespace_id), std::size(client_state_maps_));
-    DCHECK(!client_state_maps_[namespace_id].count(command_buffer_id));
-    client_state_maps_[namespace_id].insert(
-        std::make_pair(command_buffer_id, client_state));
-  }
+  DCHECK_GE(namespace_id, 0);
+  DCHECK_LT(static_cast<size_t>(namespace_id), std::size(client_state_maps_));
+  const auto [_, inserted] = client_state_maps_[namespace_id].insert(
+      std::make_pair(command_buffer_id, client_state));
+  DCHECK(inserted);
 
   return client_state;
 }
 
-void SyncPointManager::DestroyedSyncPointClientState(
-    CommandBufferNamespace namespace_id,
-    CommandBufferId command_buffer_id) {
-  base::AutoLock auto_lock(lock_);
-  DCHECK_GE(namespace_id, 0);
-  DCHECK_LT(static_cast<size_t>(namespace_id), std::size(client_state_maps_));
-  DCHECK(client_state_maps_[namespace_id].count(command_buffer_id));
-  client_state_maps_[namespace_id].erase(command_buffer_id);
+void SyncPointManager::DestroySyncPointClientState(
+    scoped_refptr<SyncPointClientState> client_state) {
+  std::vector<base::OnceClosure> callbacks;
+  // First, destroy the client state (which marks it as destroyed). Its pending
+  // callbacks will be executed after we remove the client state from our map.
+  {
+    base::AutoLock lock(lock_);
+    callbacks = client_state->DestroyAndReturnCallbacks();
+    const CommandBufferNamespace namespace_id = client_state->namespace_id();
+    const CommandBufferId command_buffer_id = client_state->command_buffer_id();
+    DCHECK_GE(namespace_id, 0);
+    DCHECK_LT(static_cast<size_t>(namespace_id), std::size(client_state_maps_));
+    DCHECK(client_state_maps_[namespace_id].count(command_buffer_id));
+    client_state_maps_[namespace_id].erase(command_buffer_id);
+  }
+  // At this point, if SyncPointClientState::Wait is called, it will (correctly)
+  // return false because client_state is removed from our map. It is safe to
+  // call the callbacks (assuming they don't reference any of the other
+  // SyncPointClientState methods that DCHECK(sync_point_manager_)).
+  for (auto& closure : callbacks) {
+    std::move(closure).Run();
+  }
 }
 
 bool SyncPointManager::IsSyncTokenReleased(const SyncToken& sync_token) {
+  base::AutoLock auto_lock(lock_);
   scoped_refptr<SyncPointClientState> release_state = GetSyncPointClientState(
       sync_token.namespace_id(), sync_token.command_buffer_id());
+  // release_state can't be destroyed while we hold lock_.
   if (release_state)
     return release_state->IsFenceSyncReleased(sync_token.release_count());
   return true;
@@ -398,10 +435,17 @@ bool SyncPointManager::IsSyncTokenReleased(const SyncToken& sync_token) {
 
 SequenceId SyncPointManager::GetSyncTokenReleaseSequenceId(
     const SyncToken& sync_token) {
+  base::AutoLock auto_lock(lock_);
+  return GetSyncTokenReleaseSequenceIdInternal(sync_token);
+}
+
+SequenceId SyncPointManager::GetSyncTokenReleaseSequenceIdInternal(
+    const SyncToken& sync_token) {
   scoped_refptr<SyncPointClientState> client_state = GetSyncPointClientState(
       sync_token.namespace_id(), sync_token.command_buffer_id());
-  if (client_state)
+  if (client_state) {
     return client_state->sequence_id();
+  }
   return SequenceId();
 }
 
@@ -429,9 +473,10 @@ bool SyncPointManager::Wait(const SyncToken& sync_token,
                             SequenceId sequence_id,
                             uint32_t wait_order_num,
                             base::OnceClosure callback) {
-  // Waits on the same sequence can cause deadlocks.
-  if (sequence_id == GetSyncTokenReleaseSequenceId(sync_token))
+  base::AutoLock auto_lock(lock_);
+  if (sequence_id == GetSyncTokenReleaseSequenceIdInternal(sync_token)) {
     return false;
+  }
 
   scoped_refptr<SyncPointClientState> release_state = GetSyncPointClientState(
       sync_token.namespace_id(), sync_token.command_buffer_id());
@@ -440,7 +485,6 @@ bool SyncPointManager::Wait(const SyncToken& sync_token,
                                     std::move(callback))) {
     return true;
   }
-
   // Do not run callback if wait is invalid.
   return false;
 }
@@ -474,7 +518,6 @@ scoped_refptr<SyncPointClientState> SyncPointManager::GetSyncPointClientState(
     CommandBufferId command_buffer_id) {
   if (namespace_id >= 0) {
     DCHECK_LT(static_cast<size_t>(namespace_id), std::size(client_state_maps_));
-    base::AutoLock auto_lock(lock_);
     ClientStateMap& client_state_map = client_state_maps_[namespace_id];
     auto it = client_state_map.find(command_buffer_id);
     if (it != client_state_map.end())
@@ -485,7 +528,6 @@ scoped_refptr<SyncPointClientState> SyncPointManager::GetSyncPointClientState(
 
 scoped_refptr<SyncPointOrderData> SyncPointManager::GetSyncPointOrderData(
     SequenceId sequence_id) {
-  base::AutoLock auto_lock(lock_);
   auto it = order_data_map_.find(sequence_id);
   if (it != order_data_map_.end())
     return it->second;

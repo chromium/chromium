@@ -19,8 +19,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/synchronization/condition_variable.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/constants.h"
@@ -44,7 +45,8 @@ class GPU_EXPORT SyncPointOrderData
   SyncPointOrderData(const SyncPointOrderData&) = delete;
   SyncPointOrderData& operator=(const SyncPointOrderData&) = delete;
 
-  void Destroy();
+  // Helper function that calls SyncPointManager::DestroySyncPointOrderData.
+  void Destroy() LOCKS_EXCLUDED(lock_);
 
   SequenceId sequence_id() { return sequence_id_; }
 
@@ -98,27 +100,30 @@ class GPU_EXPORT SyncPointOrderData
              std::tie(rhs.order_num, rhs.fence_release);
     }
   };
-  typedef std::priority_queue<OrderFence,
-                              std::vector<OrderFence>,
-                              std::greater<OrderFence>>
-      OrderFenceQueue;
+  typedef std::
+      priority_queue<OrderFence, std::vector<OrderFence>, std::greater<>>
+          OrderFenceQueue;
 
   SyncPointOrderData(SyncPointManager* sync_point_manager,
                      SequenceId seqeunce_id);
 
   ~SyncPointOrderData();
 
+  // Called by SyncPointManager after it has removed this SyncPointerOrderData
+  // from its order_data_map_.
+  void DestroyInternal() LOCKS_EXCLUDED(lock_);
+
   // Returns callback_id for created OrderFence on success, 0 on failure.
   uint64_t ValidateReleaseOrderNumber(
       scoped_refptr<SyncPointClientState> client_state,
       uint32_t wait_order_num,
-      uint64_t fence_release);
+      uint64_t fence_release) LOCKS_EXCLUDED(lock_);
 
   const raw_ptr<SyncPointManager> sync_point_manager_;
 
   const SequenceId sequence_id_;
 
-  uint64_t current_callback_id_ = 0;
+  uint64_t current_callback_id_ GUARDED_BY(lock_) = 0;
 
   // Non thread-safe functions need to be called from a single thread.
   base::ThreadChecker processing_thread_checker_;
@@ -133,18 +138,18 @@ class GPU_EXPORT SyncPointOrderData
   // unprocessed_order_nums_, and order_fence_queue_.
   mutable base::Lock lock_;
 
-  bool destroyed_ = false;
+  bool destroyed_ GUARDED_BY(lock_) = false;
 
   // Last finished IPC order number.
-  uint32_t processed_order_num_ = 0;
+  uint32_t processed_order_num_ GUARDED_BY(lock_) = 0;
 
   // Last unprocessed order number. Updated in GenerateUnprocessedOrderNumber.
-  uint32_t last_unprocessed_order_num_ = 0;
+  uint32_t last_unprocessed_order_num_ GUARDED_BY(lock_) = 0;
 
   // Queue of unprocessed order numbers. Order numbers are enqueued in
   // GenerateUnprocessedOrderNumber, and dequeued in
   // FinishProcessingOrderNumber.
-  base::queue<uint32_t> unprocessed_order_nums_;
+  base::queue<uint32_t> unprocessed_order_nums_ GUARDED_BY(lock_);
 
   // In situations where we are waiting on fence syncs that do not exist, we
   // validate by making sure the order number does not pass the order number
@@ -155,7 +160,7 @@ class GPU_EXPORT SyncPointOrderData
   // previous fence syncs. All order numbers (n) in order_fence_queue_ must
   // follow the invariant:
   //   unprocessed_order_nums_.front() < n <= unprocessed_order_nums_.back().
-  OrderFenceQueue order_fence_queue_;
+  OrderFenceQueue order_fence_queue_ GUARDED_BY(lock_);
 };
 
 class GPU_EXPORT SyncPointClientState
@@ -164,7 +169,8 @@ class GPU_EXPORT SyncPointClientState
   SyncPointClientState(const SyncPointClientState&) = delete;
   SyncPointClientState& operator=(const SyncPointClientState&) = delete;
 
-  void Destroy();
+  // Calls SyncPointManager::DestroySyncPointClientState.
+  void Destroy() LOCKS_EXCLUDED(fence_sync_lock_);
 
   CommandBufferNamespace namespace_id() const { return namespace_id_; }
   CommandBufferId command_buffer_id() const { return command_buffer_id_; }
@@ -173,18 +179,21 @@ class GPU_EXPORT SyncPointClientState
   // This behaves similarly to SyncPointManager::Wait but uses the order data
   // to guarantee no deadlocks with other clients. Must be called on order
   // number processing thread.
-  bool Wait(const SyncToken& sync_token, base::OnceClosure callback);
+  bool Wait(const SyncToken& sync_token, base::OnceClosure callback)
+      LOCKS_EXCLUDED(fence_sync_lock_);
 
   // Like Wait but runs the callback on the given task runner's thread. Must be
   // called on order number processing thread.
+  // TODO(elgarawany): Rename this method to instead make it explicit that the
+  // callback is going to run on |task_runner|.
   bool WaitNonThreadSafe(
       const SyncToken& sync_token,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      base::OnceClosure callback);
+      base::OnceClosure callback) LOCKS_EXCLUDED(fence_sync_lock_);
 
   // Release fence sync and run queued callbacks. Must be called on order number
   // processing thread.
-  void ReleaseFenceSync(uint64_t release);
+  void ReleaseFenceSync(uint64_t release) LOCKS_EXCLUDED(fence_sync_lock_);
 
  private:
   friend class base::RefCountedThreadSafe<SyncPointClientState>;
@@ -210,7 +219,7 @@ class GPU_EXPORT SyncPointClientState
   };
   typedef std::priority_queue<ReleaseCallback,
                               std::vector<ReleaseCallback>,
-                              std::greater<ReleaseCallback>>
+                              std::greater<>>
       ReleaseCallbackQueue;
 
   SyncPointClientState(SyncPointManager* sync_point_manager,
@@ -220,27 +229,33 @@ class GPU_EXPORT SyncPointClientState
 
   ~SyncPointClientState();
 
+  std::vector<base::OnceClosure> DestroyAndReturnCallbacks()
+      LOCKS_EXCLUDED(fence_sync_lock_);
+
   // Returns true if fence sync has been released.
-  bool IsFenceSyncReleased(uint64_t release);
+  bool IsFenceSyncReleased(uint64_t release) LOCKS_EXCLUDED(fence_sync_lock_);
 
   // Queues the callback to be called if the release is valid. If the release
   // is invalid this function will return False and the callback will never
   // be called.
   bool WaitForRelease(uint64_t release,
                       uint32_t wait_order_num,
-                      base::OnceClosure callback);
+                      base::OnceClosure callback)
+      LOCKS_EXCLUDED(fence_sync_lock_);
 
   // Does not release the fence sync, but releases callbacks waiting on that
   // fence sync.
-  void EnsureWaitReleased(uint64_t release, uint64_t callback_id);
+  void EnsureWaitReleased(uint64_t release, uint64_t callback_id)
+      LOCKS_EXCLUDED(fence_sync_lock_);
 
-  void ReleaseFenceSyncHelper(uint64_t release);
+  void ReleaseFenceSyncHelper(uint64_t release)
+      LOCKS_EXCLUDED(fence_sync_lock_);
 
   // Sync point manager is guaranteed to exist in the lifetime of the client.
   raw_ptr<SyncPointManager> sync_point_manager_ = nullptr;
 
   // Global order data where releases will originate from.
-  scoped_refptr<SyncPointOrderData> order_data_;
+  const scoped_refptr<SyncPointOrderData> order_data_;
 
   // Unique namespace/client id pair for this sync point client.
   const CommandBufferNamespace namespace_id_;
@@ -250,11 +265,11 @@ class GPU_EXPORT SyncPointClientState
   base::Lock fence_sync_lock_;
 
   // Current fence sync release that has been signaled.
-  uint64_t fence_sync_release_ = 0;
+  uint64_t fence_sync_release_ GUARDED_BY(fence_sync_lock_) = 0;
 
   // In well defined fence sync operations, fence syncs are released in order
   // so simply having a priority queue for callbacks is enough.
-  ReleaseCallbackQueue release_callback_queue_;
+  ReleaseCallbackQueue release_callback_queue_ GUARDED_BY(fence_sync_lock_);
 };
 
 // This class manages the sync points, which allow cross-channel
@@ -277,16 +292,17 @@ class GPU_EXPORT SyncPointManager {
 
   // Returns true if the sync token has been released or if the command
   // buffer does not exist.
-  bool IsSyncTokenReleased(const SyncToken& sync_token);
+  bool IsSyncTokenReleased(const SyncToken& sync_token) LOCKS_EXCLUDED(lock_);
 
   // Returns the sequence ID that will release this sync token.
-  SequenceId GetSyncTokenReleaseSequenceId(const SyncToken& sync_token);
+  SequenceId GetSyncTokenReleaseSequenceId(const SyncToken& sync_token)
+      LOCKS_EXCLUDED(lock_);
 
   // Returns the global last processed order number.
-  uint32_t GetProcessedOrderNum() const;
+  uint32_t GetProcessedOrderNum() const LOCKS_EXCLUDED(lock_);
 
   // // Returns the global last unprocessed order number.
-  uint32_t GetUnprocessedOrderNum() const;
+  uint32_t GetUnprocessedOrderNum() const LOCKS_EXCLUDED(lock_);
 
   // If the wait is valid (sync token hasn't been processed or command buffer
   // does not exist), the callback is queued to run when the sync point is
@@ -296,28 +312,36 @@ class GPU_EXPORT SyncPointManager {
   bool Wait(const SyncToken& sync_token,
             SequenceId sequence_id,
             uint32_t wait_order_num,
-            base::OnceClosure callback);
+            base::OnceClosure callback) LOCKS_EXCLUDED(lock_);
 
   // Like Wait but runs the callback on the given task runner's thread.
+  // TODO(elgarawany): Rename this method to instead make it explicit that the
+  // callback is going to run on |task_runner|.
   bool WaitNonThreadSafe(
       const SyncToken& sync_token,
       SequenceId sequence_id,
       uint32_t wait_order_num,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      base::OnceClosure callback);
+      base::OnceClosure callback) LOCKS_EXCLUDED(lock_);
 
   // WaitOutOfOrder allows waiting for a sync token indefinitely, so it
   // should be used with trusted sync tokens only.
   bool WaitOutOfOrder(const SyncToken& trusted_sync_token,
-                      base::OnceClosure callback);
+                      base::OnceClosure callback) LOCKS_EXCLUDED(lock_);
 
   // Used by SyncPointOrderData.
   uint32_t GenerateOrderNumber();
 
-  void DestroyedSyncPointOrderData(SequenceId sequence_id);
+  // Is called by SyncPointOrderData::Destroy to remove `order_data` from
+  // client_state_map_.
+  void RemoveSyncPointOrderData(scoped_refptr<SyncPointOrderData> order_data)
+      LOCKS_EXCLUDED(lock_);
 
-  void DestroyedSyncPointClientState(CommandBufferNamespace namespace_id,
-                                     CommandBufferId command_buffer_id);
+  // Grabs any remaining callbacks in |client_state|'s release queue, destroys
+  // |client_state|, then runs those remaining callbacks.
+  void DestroySyncPointClientState(
+      scoped_refptr<SyncPointClientState> client_state)
+      LOCKS_EXCLUDED(lock_, client_state->fence_sync_lock_);
 
  private:
   using ClientStateMap =
@@ -327,23 +351,29 @@ class GPU_EXPORT SyncPointManager {
       base::flat_map<SequenceId, scoped_refptr<SyncPointOrderData>>;
 
   scoped_refptr<SyncPointOrderData> GetSyncPointOrderData(
-      SequenceId sequence_id);
+      SequenceId sequence_id) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   scoped_refptr<SyncPointClientState> GetSyncPointClientState(
       CommandBufferNamespace namespace_id,
-      CommandBufferId command_buffer_id);
+      CommandBufferId command_buffer_id) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Internal version of GetSyncTokenReleaseSequenceId that requires lock to be
+  // acquired.
+  SequenceId GetSyncTokenReleaseSequenceIdInternal(const SyncToken& sync_token)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Order number is global for all clients.
   base::AtomicSequenceNumber order_num_generator_;
 
   // The following are protected by |lock_|.
   // Map of command buffer id to client state for each namespace.
-  ClientStateMap client_state_maps_[NUM_COMMAND_BUFFER_NAMESPACES];
+  ClientStateMap client_state_maps_[NUM_COMMAND_BUFFER_NAMESPACES] GUARDED_BY(
+      lock_);
 
   // Map of sequence id to order data.
-  OrderDataMap order_data_map_;
+  OrderDataMap order_data_map_ GUARDED_BY(lock_);
 
-  SequenceId::Generator sequence_id_generator_;
+  SequenceId::Generator sequence_id_generator_ GUARDED_BY(lock_);
 
   mutable base::Lock lock_;
 };
