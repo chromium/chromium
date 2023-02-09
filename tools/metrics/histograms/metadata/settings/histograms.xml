@@ -698,7 +698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.StartSetAsDefault" enum="BooleanHit"
-    expires_after="M115">
+    expires_after="2023-08-08">
   <owner>pmonette@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
