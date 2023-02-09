@@ -3,20 +3,21 @@
 # found in the LICENSE file.
 
 # If this presubmit check fails or misbehaves, please complain to
-# mnissler@chromium.org, bartfab@chromium.org or atwilson@chromium.org.
+# chromium-policy-owners@google.com.
 
 PRESUBMIT_VERSION = '2.0.0'
 USE_PYTHON3 = True
 
+import glob
 import os
 import sys
 from xml.dom import minidom
 from xml.parsers import expat
 
-sys.path.append(os.path.abspath('.'))
+sys.path.append(os.path.abspath('./resources'))
 from policy_templates import GetPolicyTemplates
 
-sys.path.append(os.path.join('..', '..', '..', 'third_party'))
+sys.path.append(os.path.join('..', '..', 'third_party'))
 import pyyaml
 
 
@@ -25,12 +26,12 @@ _CACHED_POLICY_CHANGE_LIST = []
 
 _TEST_CASES_DEPOT_PATH = os.path.join(
       'chrome', 'test', 'data', 'policy', 'policy_test_cases.json')
-_PRESUBMIT_PATH = os.path.join(
-      'components', 'policy', 'resources', 'PRESUBMIT.py')
-_SYNTAX_CHECK_SCRIPT_PATH = os.path.join('components', 'policy', 'tools',
+_COMPONENTS_POLICY_PATH = os.path.join('components', 'policy')
+_PRESUBMIT_PATH = os.path.join(_COMPONENTS_POLICY_PATH, 'PRESUBMIT.py')
+_TOOLS_PATH = os.path.join(_COMPONENTS_POLICY_PATH, 'tools')
+_SYNTAX_CHECK_SCRIPT_PATH = os.path.join(_TOOLS_PATH,
       'syntax_check_policy_template_json.py')
-_TEMPLATES_PATH = os.path.join(
-      'components', 'policy', 'resources',
+_TEMPLATES_PATH = os.path.join(_COMPONENTS_POLICY_PATH, 'resources',
       'templates')
 _MESSAGES_PATH = os.path.join(_TEMPLATES_PATH, 'messages.yaml')
 _COMMON_SCHEMAS_PATH = os.path.join(_TEMPLATES_PATH, 'common_schemas.yaml')
@@ -39,7 +40,7 @@ _POLICIES_YAML_PATH = os.path.join(_TEMPLATES_PATH, 'policies.yaml')
 _HISTOGRAMS_PATH = os.path.join(
       'tools', 'metrics', 'histograms', 'enums.xml')
 _DEVICE_POLICY_PROTO_PATH = os.path.join(
-      'components', 'policy', 'proto', 'chrome_device_policy.proto')
+      _COMPONENTS_POLICY_PATH, 'proto', 'chrome_device_policy.proto')
 _DEVICE_POLICY_PROTO_MAP_PATH = os.path.join(
       _TEMPLATES_PATH, 'device_policy_proto_map.yaml')
 _LEGACY_DEVICE_POLICY_PROTO_MAP_PATH = os.path.join(
@@ -67,6 +68,14 @@ def _SkipPresubmitChecks(input_api, files_watchlist):
       return False
 
   return True
+
+def _CheckerWasModified(input_api):
+  '''Returns True if the syntax checker file was modified.
+     Args:
+       input_api
+  '''
+  return any(_SYNTAX_CHECK_SCRIPT_PATH == f for f in
+             input_api.change.LocalPaths())
 
 
 def _LoadYamlFile(root, path):
@@ -104,6 +113,36 @@ def _GetCurrentVersion(input_api):
   except:
     pass
   return _CACHED_FILES['version']
+
+
+def _GetUnchangedPolicyList(input_api):
+  '''Returns a list of policies NOT modified in the changelist
+     Args:
+       input_api
+      Returns:
+        The list of policies loaded from their yaml files with the 'name' added.
+  '''
+  changed_policy_names = {
+      policy['policy'] for policy in _GetPolicyChangeList(input_api)
+  }
+  root = input_api.change.RepositoryRoot()
+  policies_dir = input_api.os_path.join(root,
+                                        _POLICIES_DEFINITIONS_PATH)
+  results = []
+  for path in glob.iglob(policies_dir + '/**/*.yaml', recursive=True):
+    filename = os.path.basename(path)
+    if not filename.endswith(".yaml"):
+      continue;
+    if (filename == '.group.details.yaml' or
+        filename == 'policy_atomic_groups.yaml'):
+      continue
+    policy_name = filename.partition('.')[0]
+    if policy_name in changed_policy_names:
+      continue;
+    policy = _LoadYamlFile('/', path)
+    policy['name'] = policy_name
+    results.append(policy)
+  return results
 
 def _GetPolicyChangeList(input_api):
   '''Returns a list of policies modified inthe changelist with their old schema
@@ -646,22 +685,31 @@ def CheckPolicyDefinitions(input_api, output_api):
 
   old_sys_path = sys.path
   tools_path = input_api.os_path.normpath(input_api.os_path.join(
-    input_api.PresubmitLocalPath(), input_api.os_path.pardir, 'tools'))
+    input_api.PresubmitLocalPath(), 'tools'))
   sys.path.append(tools_path)
   # Optimization: only load this when it's needed.
   import syntax_check_policy_template_json
   sys.path = old_sys_path
 
+  schemas_by_id = _GetCommonSchema(input_api)
   checker = syntax_check_policy_template_json.PolicyTemplateChecker()
+  checker.SetFeatures(_GetKnownFeatures(input_api))
   # Check if there is a tag that allows us to bypass compatibility checks.
   # This can be used in situations where there is a bug in the validation
   # code or if a policy change needs to urgently be submitted.
   skip_compatibility_check = ('BYPASS_POLICY_COMPATIBILITY_CHECK'
                                 in input_api.change.tags)
-  errors, warnings = checker.CheckModifiedPolicies(
+  checker.CheckModifiedPolicies(
     _GetPolicyChangeList(input_api), current_version,
-    _GetKnownFeatures(input_api), _GetCommonSchema(input_api),
-    skip_compatibility_check)
+    schemas_by_id, skip_compatibility_check)
+
+  if _CheckerWasModified(input_api):
+    # Check the rest of the policies
+    checker.CheckPolicyDefinitions(_GetUnchangedPolicyList(input_api),
+                                   current_version,
+                                   schemas_by_id)
+
+  errors, warnings = checker.errors, checker.warnings
 
   # PRESUBMIT won't print warning if there is any error. Append warnings to
   # error for policy_templates.json so that they can always be printed

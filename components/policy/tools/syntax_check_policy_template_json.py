@@ -1563,21 +1563,33 @@ class PolicyTemplateChecker(object):
           'Key \'%s\' was added to policy schema path \'%s\' in new schema.' %
           (new_key, current_schema_key))
 
+  def SetFeatures(self, known_features):
+    '''
+      'known_features' is a list of features that we can find in the feature
+      list for policies.
+    '''
+    self.features = known_features
+
+  def CheckPolicyDefinitions(self, policy_list, current_version, schemas_by_id):
+    '''
+      Checks that policy comply to the definitions checks.
+      with the `current_version` and previous versions of the policy.
+      This also check that the policy definition schema matches the expected
+      schema for a policy.
+    '''
+    for policy in policy_list:
+      self._CheckPolicyDefinition(policy, current_version, schemas_by_id)
 
   def CheckModifiedPolicies(self, policy_change_list, current_version,
-                            known_features, schemas_by_id,
-                            skip_compatibility_check):
+                            schemas_by_id, skip_compatibility_check):
     '''
       Checks that changes made to policies `policy_change_list` are compatible
       with the `current_version` and previous versions of the policy.
       This also check that the policy definition schema matches the expected
       schema for a policy.
-      'known_features' is a list of features that we can find in the feature
-      list for policies.
       'skip_compatibility_check' is a flag used to bypass compatibility checks.
       Returns warnings and errors found in the policies.
     '''
-    self.features = known_features
     for policy_change in policy_change_list:
       policy = policy_change['new_policy']
       # Nothing to check if the policy was removed.
