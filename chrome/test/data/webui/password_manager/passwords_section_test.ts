@@ -20,7 +20,8 @@ import {createCredentialGroup, createPasswordEntry} from './test_util.js';
  */
 function validatePasswordsSubsection(
     section: PasswordsSectionElement,
-    expectedGroups: chrome.passwordsPrivate.CredentialGroup[]) {
+    expectedGroups: chrome.passwordsPrivate.CredentialGroup[],
+    searchTerm: string) {
   const listItemElements =
       section.shadowRoot!.querySelectorAll('password-list-item');
   assertEquals(listItemElements.length, expectedGroups.length);
@@ -29,9 +30,32 @@ function validatePasswordsSubsection(
     const expectedGroup = expectedGroups[index]!;
     const listItemElement = listItemElements[index];
 
+    const matchingUsername =
+        expectedGroup.entries.find(cred => cred.username.includes(searchTerm))
+            ?.username;
+    const matchingDomain =
+        expectedGroup.entries
+            .find(
+                cred => cred.affiliatedDomains?.some(
+                    domain => domain.name.includes(searchTerm)))
+            ?.affiliatedDomains
+            ?.find(domain => domain.name.includes(searchTerm))
+            ?.name;
+
     assertTrue(!!listItemElement);
-    assertEquals(
-        expectedGroup.name, listItemElement.$.displayName.textContent!.trim());
+    if (!searchTerm || expectedGroup.name.includes(searchTerm)) {
+      assertEquals(
+          expectedGroup.name,
+          listItemElement.$.displayedName.textContent!.trim());
+    } else if (matchingUsername) {
+      assertEquals(
+          expectedGroup.name + ' • ' + matchingUsername,
+          listItemElement.$.displayedName.textContent!.trim());
+    } else {
+      assertEquals(
+          expectedGroup.name + ' • ' + matchingDomain,
+          listItemElement.$.displayedName.textContent!.trim());
+    }
   }
 }
 
@@ -73,7 +97,7 @@ suite('PasswordsSectionTest', function() {
 
     const section = await createPasswordsSection();
 
-    validatePasswordsSubsection(section, passwordManager.data.groups);
+    validatePasswordsSubsection(section, passwordManager.data.groups, '');
   });
 
   test('passwords list is hidden if nothing to show', async function() {
@@ -159,15 +183,13 @@ suite('PasswordsSectionTest', function() {
     assertEquals(2, listEntries.length);
 
     // Since there is only 1 PasswordUIEntry in the group number of accounts is
-    // missing.
-    assertFalse(
-        !!listEntries[0]!.shadowRoot!.querySelector('#numberOfAccounts'));
+    // hidden.
+    assertTrue(listEntries[0]!.$.numberOfAccounts.hidden);
     // For group with 2 PasswordUIEntries |numberOfAccounts| is visible.
-    const numberOfAccounts =
-        listEntries[1]!.shadowRoot!.querySelector('#numberOfAccounts');
-    assertTrue(!!numberOfAccounts);
-    assertTrue(isVisible(numberOfAccounts));
-    assertEquals(pluralString.text, numberOfAccounts.textContent!.trim());
+    assertFalse(listEntries[1]!.$.numberOfAccounts.hidden);
+    assertEquals(
+        pluralString.text,
+        listEntries[1]!.$.numberOfAccounts.textContent!.trim());
   });
 
   test('search by group name', async function() {
@@ -182,14 +204,15 @@ suite('PasswordsSectionTest', function() {
 
     const section = await createPasswordsSection();
 
-    validatePasswordsSubsection(section, passwordManager.data.groups);
+    validatePasswordsSubsection(section, passwordManager.data.groups, '');
 
     const query = new URLSearchParams();
     query.set(UrlParam.SEARCH_TERM, 'bar');
     Router.getInstance().updateRouterParams(query);
     await flushTasks();
 
-    validatePasswordsSubsection(section, passwordManager.data.groups.slice(1));
+    validatePasswordsSubsection(
+        section, passwordManager.data.groups.slice(1), 'bar');
   });
 
   test('search by username', async function() {
@@ -206,7 +229,7 @@ suite('PasswordsSectionTest', function() {
 
     const section = await createPasswordsSection();
 
-    validatePasswordsSubsection(section, passwordManager.data.groups);
+    validatePasswordsSubsection(section, passwordManager.data.groups, '');
 
     const query = new URLSearchParams();
     query.set(UrlParam.SEARCH_TERM, 'ert');
@@ -214,7 +237,7 @@ suite('PasswordsSectionTest', function() {
     await flushTasks();
 
     validatePasswordsSubsection(
-        section, passwordManager.data.groups.slice(0, 1));
+        section, passwordManager.data.groups.slice(0, 1), 'ert');
   });
 
   test('search by domain', async function() {
@@ -239,14 +262,15 @@ suite('PasswordsSectionTest', function() {
 
     const section = await createPasswordsSection();
 
-    validatePasswordsSubsection(section, passwordManager.data.groups);
+    validatePasswordsSubsection(section, passwordManager.data.groups, '');
 
     const query = new URLSearchParams();
     query.set(UrlParam.SEARCH_TERM, 'bar.uk');
     Router.getInstance().updateRouterParams(query);
     await flushTasks();
 
-    validatePasswordsSubsection(section, passwordManager.data.groups.slice(1));
+    validatePasswordsSubsection(
+        section, passwordManager.data.groups.slice(1), 'bar.uk');
   });
 
   test('clicking add button opens an add password dialog', async function() {

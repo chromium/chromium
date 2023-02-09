@@ -48,6 +48,7 @@ build_webui("build") {
     "prefs/pref_mixin.ts",
     "prefs/prefs_browser_proxy.ts",
     "router.ts",
+    "searchable_label.ts",
     "show_password_mixin.ts",
   ]
 
