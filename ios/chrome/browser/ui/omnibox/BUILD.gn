@@ -42,7 +42,6 @@ source_set("omnibox_suggestion_icon_util") {
     "resources:answer_calculator",
     "resources:answer_conversion",
     "resources:answer_dictionary",
-    "resources:answer_local_time",
     "resources:answer_stock",
     "resources:answer_sunrise",
     "resources:answer_translation",

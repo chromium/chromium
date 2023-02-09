@@ -52,13 +52,6 @@ imageset("answer_sunrise") {
     "answer_sunrise.imageset/answer_sunrise@3x.png",
   ]
 }
-imageset("answer_local_time") {
-  sources = [
-    "answer_local_time.imageset/Contents.json",
-    "answer_local_time.imageset/answer_local_time@2x.png",
-    "answer_local_time.imageset/answer_local_time@3x.png",
-  ]
-}
 
 imageset("answer_when_is") {
   sources = [

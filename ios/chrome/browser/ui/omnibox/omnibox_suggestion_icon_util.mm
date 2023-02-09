@@ -29,8 +29,6 @@ NSString* GetOmniboxSuggestionIconTypeAssetName(
       return @"answer_stock";
     case OmniboxSuggestionIconType::kSunrise:
       return @"answer_sunrise";
-    case OmniboxSuggestionIconType::kLocalTime:
-      return @"answer_local_time";
     case OmniboxSuggestionIconType::kWhenIs:
       return @"answer_when_is";
     case OmniboxSuggestionIconType::kTranslation:

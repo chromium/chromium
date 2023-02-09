@@ -68,7 +68,6 @@
     case OmniboxSuggestionIconType::kDictionary:
     case OmniboxSuggestionIconType::kStock:
     case OmniboxSuggestionIconType::kSunrise:
-    case OmniboxSuggestionIconType::kLocalTime:
     case OmniboxSuggestionIconType::kWhenIs:
     case OmniboxSuggestionIconType::kTranslation:
       return YES;

@@ -17,7 +17,6 @@ enum class OmniboxSuggestionIconType {
   kDictionary,
   kStock,
   kSunrise,
-  kLocalTime,
   kWhenIs,
   kTranslation,
   // The FALLBACK_ANSWER icon is used for all answers that don't have special
