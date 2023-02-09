@@ -103,6 +103,7 @@ web_component_files = [
   "js/wallpaper/google_photos_photos_by_album_id_element.ts",
   "js/wallpaper/google_photos_photos_element.ts",
   "js/wallpaper/google_photos_zero_state_element.ts",
+  "js/wallpaper/info_svg_element.ts",
   "js/wallpaper/local_images_element.ts",
   "js/wallpaper/wallpaper_collections_element.ts",
   "js/wallpaper/wallpaper_error_element.ts",

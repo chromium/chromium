@@ -6,6 +6,7 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -307,5 +308,76 @@ suite('WallpaperGridItemTest', function() {
     assertDeepEquals(
         src.slice(0, 4).map(({url}) => url), images.map(img => img.src),
         'first four image urls are shown');
+  });
+
+  test('shows an info icon for infoText', async () => {
+    loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
+
+    wallpaperGridItemElement = initElement(
+        WallpaperGridItem,
+        {infoText: 'some text', src: {url: createSvgDataUrl('test')}});
+    await waitAfterNextRender(wallpaperGridItemElement);
+
+    assertEquals(
+        'some text',
+        wallpaperGridItemElement.shadowRoot!.getElementById('infoIcon')!.title,
+        'icon exists and has title attribute');
+  });
+
+  test('no info icon if infoText is empty string', async () => {
+    loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
+
+    wallpaperGridItemElement = initElement(
+        WallpaperGridItem,
+        {infoText: '', src: {url: createSvgDataUrl('test')}});
+    await waitAfterNextRender(wallpaperGridItemElement);
+
+    assertFalse(wallpaperGridItemElement.hasAttribute('placeholder'));
+
+    assertEquals(
+        null, wallpaperGridItemElement.shadowRoot!.getElementById('infoIcon'),
+        'no info text set');
+
+    wallpaperGridItemElement.infoText = 'description';
+    await waitAfterNextRender(wallpaperGridItemElement);
+
+    assertEquals(
+        'description',
+        wallpaperGridItemElement.shadowRoot!.getElementById('infoIcon')!.title,
+        'correct title text now set');
+  });
+
+  test('no info icon if placeholder', async () => {
+    loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
+    wallpaperGridItemElement =
+        initElement(WallpaperGridItem, {infoText: 'some text'});
+    await waitAfterNextRender(wallpaperGridItemElement);
+
+    assertTrue(wallpaperGridItemElement.hasAttribute('placeholder'));
+
+    assertEquals(
+        null, wallpaperGridItemElement.shadowRoot!.getElementById('infoIcon'),
+        'no info text shown if placeholder');
+
+    wallpaperGridItemElement.src = {url: createSvgDataUrl('testing')};
+    await waitAfterNextRender(wallpaperGridItemElement);
+
+    assertEquals(
+        'some text',
+        wallpaperGridItemElement.shadowRoot!.getElementById('infoIcon')!.title,
+        'correct title text now set');
+  });
+
+  test('no info icon if isPersonalizationJellyEnabled false', async () => {
+    loadTimeData.overrideValues({isPersonalizationJellyEnabled: false});
+
+    wallpaperGridItemElement = initElement(
+        WallpaperGridItem,
+        {infoText: 'some text', src: {url: createSvgDataUrl('test')}});
+    await waitAfterNextRender(wallpaperGridItemElement);
+
+    assertEquals(
+        null, wallpaperGridItemElement.shadowRoot!.getElementById('infoIcon'),
+        'icon does not exist');
   });
 });

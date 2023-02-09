@@ -187,6 +187,12 @@ const std::string& StructTraits<
   return collection.collection_name();
 }
 
+const std::string& StructTraits<
+    ash::personalization_app::mojom::WallpaperCollectionDataView,
+    backdrop::Collection>::description(const backdrop::Collection& collection) {
+  return collection.description();
+}
+
 std::vector<GURL> StructTraits<
     ash::personalization_app::mojom::WallpaperCollectionDataView,
     backdrop::Collection>::previews(const backdrop::Collection& collection) {

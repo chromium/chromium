@@ -10,7 +10,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
+import {baseSetup, createSvgDataUrl, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
@@ -215,5 +215,45 @@ suite('WallpaperCollectionsTest', function() {
     assertTrue(
         !!googlePhotosTile.querySelector(managedIconSelector),
         'managed icon now shown');
+  });
+
+  test('sets collection description text', async () => {
+    wallpaperProvider.setCollections([
+      {
+        id: 'asdf',
+        name: 'asdf name',
+        description: 'asdf description',
+        previews: [{url: createSvgDataUrl('asdf')}],
+      },
+      {
+        id: 'qwerty',
+        name: 'qwerty name',
+        description: '',
+        previews: [{url: createSvgDataUrl('qwerty')}],
+      },
+    ]);
+    personalizationStore.data.wallpaper.backdrop.collections =
+        wallpaperProvider.collections;
+    personalizationStore.data.wallpaper.backdrop.images = {
+      asdf: wallpaperProvider.images,
+      qwerty: wallpaperProvider.images,
+    };
+    personalizationStore.data.wallpaper.loading.collections = false;
+    personalizationStore.data.wallpaper.loading.images = {
+      asdf: false,
+      qwerty: false,
+    };
+    wallpaperCollectionsElement = initElement(WallpaperCollections);
+    await waitAfterNextRender(wallpaperCollectionsElement);
+
+    const onlineTiles = wallpaperCollectionsElement.shadowRoot!
+                            .querySelectorAll<WallpaperGridItem>(
+                                `${WallpaperGridItem.is}[data-online]`);
+
+    assertEquals(2, onlineTiles.length);
+    assertDeepEquals(
+        ['asdf description', ''],
+        Array.from(onlineTiles).map(item => item.infoText),
+        'correct info text set for both online collections');
   });
 });

@@ -52,12 +52,17 @@ message Collection {
   // The unique id for the collection.
   optional string collection_id = 1;
 
-  // A localized description of the collection e.g. "Landscapes" or "Kunst".
+  // A localized name of the collection e.g. "Landscapes" or "Kunst".
   optional string collection_name = 2;
 
   // A list of representative images for the collection. Currently only a single
   // image will be returned.
   repeated Image preview = 3;
+
+  // Supplemental description of the collection e.g.
+  // "Celebrate [Holiday] with Google".
+  // TODO(b/250617579) replace with real value.
+  optional string description = 100;
 }
 
 message GetCollectionsRequest {

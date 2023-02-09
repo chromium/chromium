@@ -45,16 +45,19 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
      */
     this.collections_ = [
       {
+        description: 'description for collection zero',
         id: 'id_0',
         name: 'zero',
         previews: [{url: 'https://collections.googleusercontent.com/0'}],
       },
       {
+        description: '',
         id: 'id_1',
         name: 'one',
         previews: [{url: 'https://collections.googleusercontent.com/1'}],
       },
       {
+        description: '',
         id: 'id_2',
         name: 'dark-light',
         previews: [

@@ -8,11 +8,13 @@
 
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import '../../css/common.css.js';
+import './info_svg_element.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {isSelectionEvent} from '../utils.js';
 
 import {getLoadingPlaceholderAnimationDelay} from './utils.js';
@@ -85,6 +87,7 @@ export class WallpaperGridItem extends PolymerElement {
       index: Number,
       primaryText: String,
       secondaryText: String,
+      infoText: String,
 
       isGooglePhotos: {
         type: Boolean,
@@ -137,6 +140,9 @@ export class WallpaperGridItem extends PolymerElement {
 
   /** The secondary text to render for the grid item. */
   secondaryText: string|undefined;
+
+  /** Additional informational text about the item. */
+  infoText: string|undefined;
 
   /**
    * Passed to cr-auto-img to send google photos auth token on image request.
@@ -296,6 +302,12 @@ export class WallpaperGridItem extends PolymerElement {
       return false;
     }
     return this.isSecondaryTextVisible_() || this.isPrimaryTextVisible_();
+  }
+
+  private shouldShowInfoText_(): boolean {
+    return isPersonalizationJellyEnabled() &&
+        typeof this.infoText === 'string' && this.infoText.length > 0 &&
+        !shouldShowPlaceholder(this.imageStatus_);
   }
 }
 

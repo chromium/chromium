@@ -79,6 +79,9 @@ struct WallpaperCollection {
     // Name of this collection to be displayed to the user.
     string name;
 
+    // Extra description text about the wallpaper collection.
+    string description;
+
     // The preview image URLs of this collection.
     array<url.mojom.Url> previews;
 };
