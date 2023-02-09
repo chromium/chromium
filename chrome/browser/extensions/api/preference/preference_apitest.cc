@@ -684,9 +684,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, ThirdPartyCookiesAllowed) {
 // This check is not done in the Standard test so we can test if the granular
 // Privacy Sandbox APIs are turned off, when |kPrivacySandboxApisEnabled| is
 // turned off, in isolation of controlling them directly.
-// Disabled due to flakes on multiple platforms; see https://crbug.com/1410736.
-IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest,
-                       DISABLED_PrivacySandboxMigration) {
+IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, PrivacySandboxMigration) {
   PrefService* prefs = profile_->GetPrefs();
   prefs->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
   prefs->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
@@ -695,97 +693,88 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest,
   base::FilePath extension_path =
       test_data_dir_.AppendASCII("preference/privacy_sandbox_migration");
 
-  // STEP 1. Install extension and set the pref |kPrivacySandboxApisEnabled| to
-  // false.
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener listener_disable_end("disable end",
+                                                    ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener listener_enable_end("enable end",
+                                                   ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener listener_disable_end_second(
+      "disable end second", ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener listener_clear_end("clear end",
+                                                  ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener listener_disable_no_test("disable no test end");
+  extensions::ResultCatcher catcher;
+
+  // STEP 1. Install extension
+  EXPECT_TRUE(LoadExtension(extension_path,
+                            {.context_type = ContextType::kFromManifest}))
+      << message_;
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+  listener.Reply("run tests");
+
+  // STEP 2. Disable the pref |kPrivacySandboxApisEnabled| to false.
   // The preferences for PrivacySandbox, Topics, Fledge and AdMeasurement should
   // all be disabled.
-  {
-    extensions::ResultCatcher catcher;
-    ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
-    EXPECT_TRUE(LoadExtension(extension_path)) << message_;
-    EXPECT_TRUE(listener.WaitUntilSatisfied());
-    // Run the tests.
-    listener.Reply("run set to false test");
-    EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-  }
+  EXPECT_TRUE(listener_disable_end.WaitUntilSatisfied());
   CheckPrivacySandboxPreferencesDisabled();
+  listener_disable_end.Reply("ok");
 
-  // STEP 2. Reload extension.
-  // The preferences should not be reset when the extension is reloaded.
-  {
-    ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
-    ReloadExtension(last_loaded_extension_id());
-    EXPECT_TRUE(listener.WaitUntilSatisfied());
-    listener.Reply("");
-  }
-  CheckPrivacySandboxPreferencesDisabled();
-
-  // STEP 4. Enable the pref |kPrivacySandboxApisEnabled|.
+  // STEP 3. Enable the pref |kPrivacySandboxApisEnabled|.
   // The preference PrivacySandbox should be enabled but the preferences Topics,
   // Fledge and AdMeasurement should all be cleared and on their default values.
-  {
-    extensions::ResultCatcher catcher;
-    ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
-    ReloadExtension(last_loaded_extension_id());
-    EXPECT_TRUE(listener.WaitUntilSatisfied());
-    // Run the tests.
-    listener.Reply("run set to true test");
-    EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-  }
+  EXPECT_TRUE(listener_enable_end.WaitUntilSatisfied());
   CheckPrivacySandboxPreferencesEnabled();
+  listener_enable_end.Reply("ok");
 
-  // STEP 5. Redo Step 1.
-  // So we can see a meaningful change on Step 6.
-  {
-    extensions::ResultCatcher catcher;
-    ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
-    ReloadExtension(last_loaded_extension_id());
-    EXPECT_TRUE(listener.WaitUntilSatisfied());
-    listener.Reply("run set to false test");
-    EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-  }
+  // STEP 4. Redo Step 2.
+  // So we can see a meaningful change on Step 5.
+  EXPECT_TRUE(listener_disable_end_second.WaitUntilSatisfied());
   CheckPrivacySandboxPreferencesDisabled();
+  listener_disable_end_second.Reply("ok");
 
-  // STEP 6. Clear the pref |kPrivacySandboxApisEnabled|.
+  // STEP 5. Clear the pref |kPrivacySandboxApisEnabled|.
   // The preferences for PrivacySandbox, Topics, Fledge and AdMeasurement should
   // all be cleared and on their default values.
-  {
-    extensions::ResultCatcher catcher;
-    ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
-    ReloadExtension(last_loaded_extension_id());
-    EXPECT_TRUE(listener.WaitUntilSatisfied());
-    // Run the tests.
-    listener.Reply("run clear test");
-    EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-  }
+  EXPECT_TRUE(listener_clear_end.WaitUntilSatisfied());
   CheckPrivacySandboxPreferencesCleared();
+  listener_clear_end.Reply("ok");
 
-  // STEP 7. Redo Step 1.
+  // STEP 6. Verify that all JS tests have succeeded
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  // STEP 7. Disable the pref |kPrivacySandboxApisEnabled|.
   // So we can see a meaningful change on Step 8.
   {
-    extensions::ResultCatcher catcher;
-    ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
+    ExtensionTestMessageListener listener_ready("ready",
+                                                ReplyBehavior::kWillReply);
     ReloadExtension(last_loaded_extension_id());
-    EXPECT_TRUE(listener.WaitUntilSatisfied());
-    listener.Reply("run set to false test");
-    EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+    EXPECT_TRUE(listener_ready.WaitUntilSatisfied());
+    listener_ready.Reply("disable no test");
+    EXPECT_TRUE(listener_disable_no_test.WaitUntilSatisfied());
   }
   CheckPrivacySandboxPreferencesDisabled();
 
   // STEP 8. Uninstall and install the extension (without running the test
-  // that calls the extension API)
+  // that calls the extension API).
   // Uninstalling and installing should clear the preferences.
+
+  // STEP 8.1. Uninstall extension.
+  // Verify that preferences are cleared.
   extensions::TestExtensionRegistryObserver observer(
       extensions::ExtensionRegistry::Get(profile_), last_loaded_extension_id());
   UninstallExtension(last_loaded_extension_id());
   observer.WaitForExtensionUninstalled();
   CheckPrivacySandboxPreferencesCleared();
 
+  // STEP 8.2. Install extension without calling |privacySandboxEnabled|.
+  // Verify that preferences continue to be cleared.
   {
-    ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
-    EXPECT_TRUE(LoadExtension(extension_path));
-    EXPECT_TRUE(listener.WaitUntilSatisfied());
-    listener.Reply("");
+    ExtensionTestMessageListener listener_ready("ready",
+                                                ReplyBehavior::kWillReply);
+    EXPECT_TRUE(LoadExtension(extension_path,
+                              {.context_type = ContextType::kFromManifest}));
+    EXPECT_TRUE(listener_ready.WaitUntilSatisfied());
+    listener_ready.Reply("");
   }
   CheckPrivacySandboxPreferencesCleared();
 }
