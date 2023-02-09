@@ -1758,7 +1758,7 @@ bool Textfield::IsTextEditCommandEnabled(ui::TextEditCommand command) const {
       return !GetText().empty() &&
              GetSelectedRange().length() != GetText().length();
     case ui::TextEditCommand::SELECT_WORD:
-      return !GetText().empty();
+      return readable && !GetText().empty() && !HasSelection();
     case ui::TextEditCommand::TRANSPOSE:
       return editable && !HasSelection() && !model_->HasCompositionText();
     case ui::TextEditCommand::YANK:
