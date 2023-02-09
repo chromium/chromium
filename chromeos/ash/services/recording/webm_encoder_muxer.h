@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_ENCODER_MUXER_H_
-#define CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_ENCODER_MUXER_H_
+#ifndef CHROMEOS_ASH_SERVICES_RECORDING_WEBM_ENCODER_MUXER_H_
+#define CHROMEOS_ASH_SERVICES_RECORDING_WEBM_ENCODER_MUXER_H_
 
 #include <memory>
 
@@ -38,7 +38,6 @@ namespace mojom {
 class DriveFsQuotaDelegate;
 }  // namespace mojom
 
-// TODO(afakhry): Rename this class to `WebmEncoderMuxer`.
 // Encapsulates encoding and muxing audio and video frame. An instance of this
 // object can only be interacted with via a |base::SequenceBound| wrapper, which
 // guarantees all encoding and muxing operations as well as destruction of the
@@ -48,9 +47,9 @@ class DriveFsQuotaDelegate;
 //
 // This object performs VP8 video encoding and Opus audio encoding, and mux the
 // audio and video encoded frames into a Webm container.
-class RecordingEncoderMuxer : public RecordingEncoder {
+class WebmEncoderMuxer : public RecordingEncoder {
  private:
-  using PassKey = base::PassKey<RecordingEncoderMuxer>;
+  using PassKey = base::PassKey<WebmEncoderMuxer>;
 
  public:
   // Creates an instance of this class that is bound to the given sequenced
@@ -66,7 +65,7 @@ class RecordingEncoderMuxer : public RecordingEncoder {
   // EncodeAudio() will be ignored.
   //
   // By default, |on_failure_callback| will be called on the same sequence of
-  // |blocking_task_runner| (unless the caller binds the given callbacks to a
+  // |blocking_task_runner| (unless the caller binds the given callback to a
   // different sequence by means of base::BindPostTask()).
   static base::SequenceBound<RecordingEncoder> Create(
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
@@ -76,16 +75,16 @@ class RecordingEncoderMuxer : public RecordingEncoder {
       const base::FilePath& webm_file_path,
       OnFailureCallback on_failure_callback);
 
-  RecordingEncoderMuxer(
+  WebmEncoderMuxer(
       PassKey,
       const media::VideoEncoder::Options& video_encoder_options,
       const media::AudioParameters* audio_input_params,
       mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
       const base::FilePath& webm_file_path,
       OnFailureCallback on_failure_callback);
-  RecordingEncoderMuxer(const RecordingEncoderMuxer&) = delete;
-  RecordingEncoderMuxer& operator=(const RecordingEncoderMuxer&) = delete;
-  ~RecordingEncoderMuxer() override;
+  WebmEncoderMuxer(const WebmEncoderMuxer&) = delete;
+  WebmEncoderMuxer& operator=(const WebmEncoderMuxer&) = delete;
+  ~WebmEncoderMuxer() override;
 
   // RecordingEncoder:
   void InitializeVideoEncoder(
@@ -204,10 +203,10 @@ class RecordingEncoderMuxer : public RecordingEncoder {
   bool is_audio_encoder_initialized_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
 
-  base::WeakPtrFactory<RecordingEncoderMuxer> weak_ptr_factory_
+  base::WeakPtrFactory<WebmEncoderMuxer> weak_ptr_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace recording
 
-#endif  // CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_ENCODER_MUXER_H_
+#endif  // CHROMEOS_ASH_SERVICES_RECORDING_WEBM_ENCODER_MUXER_H_

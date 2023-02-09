@@ -14,9 +14,10 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chromeos/ash/services/recording/recording_encoder_muxer.h"
+#include "chromeos/ash/services/recording/gif_encoder.h"
 #include "chromeos/ash/services/recording/recording_service_constants.h"
 #include "chromeos/ash/services/recording/video_capture_params.h"
+#include "chromeos/ash/services/recording/webm_encoder_muxer.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -125,6 +126,31 @@ void TerminateServiceImmediately() {
   LOG(ERROR)
       << "The recording service client was disconnected. Exiting immediately.";
   std::exit(EXIT_FAILURE);
+}
+
+// Creates and returns the appropriate encoder based on the type of the given
+// `output_file_path`.
+base::SequenceBound<RecordingEncoder> CreateEncoder(
+    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
+    const media::VideoEncoder::Options& video_encoder_options,
+    const media::AudioParameters* audio_input_params,
+    mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
+    const base::FilePath& output_file_path,
+    OnFailureCallback on_failure_callback) {
+  if (output_file_path.MatchesExtension(".gif")) {
+    DCHECK(!audio_input_params);
+
+    return GifEncoder::Create(std::move(blocking_task_runner),
+                              video_encoder_options,
+                              std::move(drive_fs_quota_delegate),
+                              output_file_path, std::move(on_failure_callback));
+  }
+
+  DCHECK(output_file_path.MatchesExtension(".webm"));
+  return WebmEncoderMuxer::Create(
+      std::move(blocking_task_runner), video_encoder_options,
+      audio_input_params, std::move(drive_fs_quota_delegate), output_file_path,
+      std::move(on_failure_callback));
 }
 
 }  // namespace
@@ -449,7 +475,7 @@ void RecordingService::StartNewRecording(
   current_video_capture_params_ = std::move(capture_params);
   const bool should_record_audio = audio_stream_factory.is_valid();
 
-  encoder_muxer_ = RecordingEncoderMuxer::Create(
+  encoder_muxer_ = CreateEncoder(
       encoding_task_runner_,
       CreateVideoEncoderOptions(current_video_capture_params_->GetVideoSize()),
       should_record_audio ? &audio_parameters_ : nullptr,

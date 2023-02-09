@@ -8,10 +8,10 @@ assert(is_chromeos_ash)
 
 source_set("recording") {
   sources = [
+    "gif_encoder.cc",
+    "gif_encoder.h",
     "recording_encoder.cc",
     "recording_encoder.h",
-    "recording_encoder_muxer.cc",
-    "recording_encoder_muxer.h",
     "recording_file_io_helper.cc",
     "recording_file_io_helper.h",
     "recording_service.cc",
@@ -19,6 +19,8 @@ source_set("recording") {
     "recording_service_constants.h",
     "video_capture_params.cc",
     "video_capture_params.h",
+    "webm_encoder_muxer.cc",
+    "webm_encoder_muxer.h",
   ]
 
   deps = [
