@@ -26,6 +26,7 @@ if (visual_studio_path == "") {
   toolchain_data =
       exec_script("../../vs_toolchain.py", [ "get_toolchain_dir" ], "scope")
   visual_studio_path = toolchain_data.vs_path
+  windows_sdk_version = toolchain_data.sdk_version
   windows_sdk_path = toolchain_data.sdk_path
   visual_studio_version = toolchain_data.vs_version
   wdk_path = toolchain_data.wdk_dir

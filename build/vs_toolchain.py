@@ -28,11 +28,14 @@ from gn_helpers import ToGNString
 #
 # * //base/win/windows_version.cc NTDDI preprocessor check
 #   Triggers a compiler error if the available SDK is older than the minimum.
+# * SDK_VERSION in this file - must match the packaged/required SDK version.
+# * SDK_VERSION in build/toolchain/win/setup_toolchain.py.
 # * //build/config/win/BUILD.gn NTDDI_VERSION value
 #   Affects the availability of APIs in the toolchain headers.
 # * //docs/windows_build_instructions.md mentions of VS or Windows SDK.
 #   Keeps the document consistent with the toolchain version.
 TOOLCHAIN_HASH = '0b5ee4d2b1'
+SDK_VERSION = '10.0.20348.0'
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 json_data_file = os.path.join(script_dir, 'win_toolchain.json')
@@ -455,9 +458,9 @@ def _CopyDebugger(target_dir, target_cpu):
         continue
       else:
         raise Exception('%s not found in "%s"\r\nYou must install '
-                        'Windows 10 SDK version 10.0.20348.0 including the '
+                        'Windows 10 SDK version %s including the '
                         '"Debugging Tools for Windows" feature.' %
-                        (debug_file, full_path))
+                        (debug_file, full_path, SDK_VERSION))
     target_path = os.path.join(target_dir, debug_file)
     _CopyRuntimeImpl(target_path, full_path)
 
@@ -576,11 +579,13 @@ def GetToolchainDir():
   win_sdk_dir = SetEnvironmentAndGetSDKDir()
 
   print('''vs_path = %s
+sdk_version = %s
 sdk_path = %s
 vs_version = %s
 wdk_dir = %s
 runtime_dirs = %s
-''' % (ToGNString(NormalizePath(os.environ['GYP_MSVS_OVERRIDE_PATH'])),
+''' % (ToGNString(NormalizePath(
+      os.environ['GYP_MSVS_OVERRIDE_PATH'])), ToGNString(SDK_VERSION),
        ToGNString(win_sdk_dir), ToGNString(GetVisualStudioVersion()),
        ToGNString(NormalizePath(os.environ.get('WDK_DIR', ''))),
        ToGNString(os.path.pathsep.join(runtime_dll_dirs or ['None']))))
