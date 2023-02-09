@@ -211,9 +211,16 @@ def GetAsanStatus(gpu_info: tgi.GPUInfo) -> str:
   return 'no-asan'
 
 
-def GetTargetCpuStatus(gpu_info):
+def GetTargetCpuStatus(gpu_info: tgi.GPUInfo) -> str:
   return 'target-cpu-%s' % (gpu_info.aux_attributes.get('target_cpu_bits',
                                                         'unknown'), )
+
+
+def GetClangCoverage(gpu_info: tgi.GPUInfo) -> str:
+  if gpu_info.aux_attributes.get('is_clang_coverage', False):
+    return 'clang-coverage'
+  return 'no-clang-coverage'
+
 
 # TODO(rivr): Use GPU feature status for Dawn instead of command line.
 def HasDawnSkiaRenderer(extra_browser_args: List[str]) -> bool:

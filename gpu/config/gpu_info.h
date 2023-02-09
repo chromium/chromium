@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/clang_profiling_buildflags.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/time/time.h"
@@ -418,6 +419,13 @@ struct GPU_EXPORT GPUInfo {
   bool is_asan = true;
 #else
   bool is_asan = false;
+#endif
+
+// Whether the browser was built with Clang coverage enabled or not.
+#if BUILDFLAG(USE_CLANG_COVERAGE) || BUILDFLAG(CLANG_PROFILING)
+  bool is_clang_coverage = true;
+#else
+  bool is_clang_coverage = false;
 #endif
 
 #if defined(ARCH_CPU_64_BITS)

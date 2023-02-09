@@ -58,6 +58,9 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
             InfoCollectionTestArgs()])
     yield ('InfoCollection_asan_info_surfaced', '_',
            ['_RunAsanInfoTest', InfoCollectionTestArgs()])
+    yield ('InfoCollection_clang_coverage_info_surfaced', '_',
+           ['_RunClangCoverageInfoTest',
+            InfoCollectionTestArgs()])
 
   @classmethod
   def SetUpProcess(cls) -> None:
@@ -78,7 +81,6 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
     assert len(args) == 2
     test_func = args[0]
     test_args = args[1]
-    assert test_args.gpu is None
     test_args.gpu = system_info.gpu
     getattr(self, test_func)(test_args)
 
@@ -154,6 +156,10 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
   def _RunAsanInfoTest(self, _: InfoCollectionTestArgs) -> None:
     gpu_info = self.browser.GetSystemInfo().gpu
     self.assertIn('is_asan', gpu_info.aux_attributes)
+
+  def _RunClangCoverageInfoTest(self, _: InfoCollectionTestArgs) -> None:
+    gpu_info = self.browser.GetSystemInfo().gpu
+    self.assertIn('is_clang_coverage', gpu_info.aux_attributes)
 
   @staticmethod
   def _ValueToStr(value: Union[str, bool]) -> str:

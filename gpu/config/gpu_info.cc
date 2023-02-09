@@ -306,7 +306,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     std::string max_msaa_samples;
     std::string machine_model_name;
     std::string machine_model_version;
-    std::string gl_version_string;
+    std::string gl_version;
     std::string gl_vendor;
     std::string gl_renderer;
     std::string gl_extensions;
@@ -319,9 +319,10 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     bool sandboxed;
     bool in_process_gpu;
     bool passthrough_cmd_decoder;
-    bool is_asan;
-    uint32_t target_cpu_bits;
     bool can_support_threaded_texture_mailbox;
+    bool is_asan;
+    bool is_clang_coverage;
+    uint32_t target_cpu_bits;
 #if BUILDFLAG(IS_MAC)
     uint32_t macos_specific_texture_target;
 #endif  // BUILDFLAG(IS_MAC)
@@ -389,6 +390,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
   enumerator->AddBool("inProcessGpu", in_process_gpu);
   enumerator->AddBool("passthroughCmdDecoder", passthrough_cmd_decoder);
   enumerator->AddBool("isAsan", is_asan);
+  enumerator->AddBool("isClangCoverage", is_clang_coverage);
   enumerator->AddInt("targetCpuBits", static_cast<int>(target_cpu_bits));
   enumerator->AddBool("canSupportThreadedTextureMailbox",
                       can_support_threaded_texture_mailbox);

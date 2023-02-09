@@ -832,6 +832,7 @@ class GpuIntegrationTest(
       gpu_tags.append(gpu_helper.GetCommandDecoder(gpu_info))
       gpu_tags.append(gpu_helper.GetOOPCanvasStatus(gpu_info.feature_status))
       gpu_tags.append(gpu_helper.GetAsanStatus(gpu_info))
+      gpu_tags.append(gpu_helper.GetClangCoverage(gpu_info))
       gpu_tags.append(gpu_helper.GetTargetCpuStatus(gpu_info))
       if gpu_info and gpu_info.devices:
         for ii in range(0, len(gpu_info.devices)):
