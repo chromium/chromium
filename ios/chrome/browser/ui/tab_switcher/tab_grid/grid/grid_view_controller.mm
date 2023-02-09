@@ -66,6 +66,7 @@ NSString* const kCellIdentifier = @"GridCellIdentifier";
 NSString* const kPlusSignCellIdentifier = @"PlusSignCellIdentifier";
 NSString* const kSuggestedActionsCellIdentifier =
     @"SuggestedActionsCellIdentifier";
+NSString* const kGridHeaderIdentifier = @"GridHeaderIdentifier";
 
 // Creates an NSIndexPath with `index` in section 0.
 NSIndexPath* CreateIndexPath(NSInteger index) {
@@ -203,7 +204,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       forCellWithReuseIdentifier:kSuggestedActionsCellIdentifier];
   [collectionView registerClass:[GridHeader class]
       forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-             withReuseIdentifier:UICollectionElementKindSectionHeader];
+             withReuseIdentifier:kGridHeaderIdentifier];
 
   // During deletion (in horizontal layout) the backgroundView can resize,
   // revealing temporarily the collectionView background. This makes sure
@@ -510,10 +511,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (UICollectionReusableView*)collectionView:(UICollectionView*)collectionView
           viewForSupplementaryElementOfKind:(NSString*)kind
                                 atIndexPath:(NSIndexPath*)indexPath {
-  GridHeader* headerView =
-      [collectionView dequeueReusableSupplementaryViewOfKind:kind
-                                         withReuseIdentifier:kind
-                                                forIndexPath:indexPath];
+  GridHeader* headerView = [collectionView
+      dequeueReusableSupplementaryViewOfKind:kind
+                         withReuseIdentifier:kGridHeaderIdentifier
+                                forIndexPath:indexPath];
   if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
     switch (indexPath.section) {
       case kOpenTabsSectionIndex: {
