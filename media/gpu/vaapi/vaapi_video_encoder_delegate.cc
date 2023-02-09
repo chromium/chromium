@@ -42,10 +42,10 @@ VaapiVideoEncoderDelegate::EncodeJob::EncodeJob(bool keyframe,
 
 VaapiVideoEncoderDelegate::EncodeJob::~EncodeJob() = default;
 
-std::unique_ptr<VaapiVideoEncoderDelegate::EncodeResult>
+VaapiVideoEncoderDelegate::EncodeResult
 VaapiVideoEncoderDelegate::EncodeJob::CreateEncodeResult(
     const BitstreamBufferMetadata& metadata) && {
-  return std::make_unique<EncodeResult>(std::move(coded_buffer_), metadata);
+  return EncodeResult(std::move(coded_buffer_), metadata);
 }
 
 base::TimeDelta VaapiVideoEncoderDelegate::EncodeJob::timestamp() const {
@@ -71,6 +71,11 @@ VaapiVideoEncoderDelegate::EncodeResult::EncodeResult(
     : coded_buffer_(std::move(coded_buffer)), metadata_(metadata) {}
 
 VaapiVideoEncoderDelegate::EncodeResult::~EncodeResult() = default;
+
+VaapiVideoEncoderDelegate::EncodeResult::EncodeResult(EncodeResult&&) = default;
+
+VaapiVideoEncoderDelegate::EncodeResult&
+VaapiVideoEncoderDelegate::EncodeResult::operator=(EncodeResult&&) = default;
 
 VABufferID VaapiVideoEncoderDelegate::EncodeResult::coded_buffer_id() const {
   return coded_buffer_->id();
@@ -125,7 +130,7 @@ bool VaapiVideoEncoderDelegate::Encode(EncodeJob& encode_job) {
   return true;
 }
 
-std::unique_ptr<VaapiVideoEncoderDelegate::EncodeResult>
+absl::optional<VaapiVideoEncoderDelegate::EncodeResult>
 VaapiVideoEncoderDelegate::GetEncodeResult(
     std::unique_ptr<EncodeJob> encode_job) {
   const VASurfaceID va_surface_id = encode_job->input_surface_id();
@@ -133,13 +138,14 @@ VaapiVideoEncoderDelegate::GetEncodeResult(
       encode_job->coded_buffer_id(), va_surface_id);
   if (encoded_chunk_size == 0) {
     VLOGF(1) << "Invalid encoded chunk size";
-    return nullptr;
+    return absl::nullopt;
   }
 
   BitrateControlUpdate(encoded_chunk_size);
 
   auto metadata = GetMetadata(*encode_job, encoded_chunk_size);
-  return std::move(*encode_job).CreateEncodeResult(metadata);
+  return absl::make_optional<EncodeResult>(
+      std::move(*encode_job).CreateEncodeResult(metadata));
 }
 
 }  // namespace media

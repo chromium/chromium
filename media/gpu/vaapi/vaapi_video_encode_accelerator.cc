@@ -850,9 +850,9 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
     const InputFrameRef& input_frame = input_queue_.front();
     if (!input_frame.frame) {
       // If this is a flush (null) frame, don't create/submit a new encode
-      // result for it, but forward a null result to the
+      // result for it, but forward absl::nulloptto the
       // |pending_encode_results_| queue.
-      pending_encode_results_.push(nullptr);
+      pending_encode_results_.push(absl::nullopt);
       input_queue_.pop();
       TryToReturnBitstreamBuffers();
       continue;
@@ -909,7 +909,7 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
 
       {
         TRACE_EVENT0("media,gpu", "VAVEA::GetEncodeResult");
-        std::unique_ptr<EncodeResult> result =
+        absl::optional<EncodeResult> result =
             encoder_->GetEncodeResult(std::move(job));
         if (!result) {
           NOTIFY_ERROR(kPlatformFailureError, "Failed getting encode result");
@@ -1071,8 +1071,7 @@ void VaapiVideoEncodeAccelerator::DestroyTask() {
   // |vaapi_wrapper_| is destroyed to ensure VADisplay is valid on the
   // ScopedVABuffer's destruction.
   DCHECK(vaapi_wrapper_ || pending_encode_results_.empty());
-  while (!pending_encode_results_.empty())
-    pending_encode_results_.pop();
+  pending_encode_results_ = {};
 
   encoder_ = nullptr;
 

@@ -17,6 +17,7 @@
 #include "media/base/video_codecs.h"
 #include "media/video/video_encode_accelerator.h"
 #include "media/video/video_encoder_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -58,13 +59,17 @@ class VaapiVideoEncoderDelegate {
     EncodeResult(std::unique_ptr<ScopedVABuffer> coded_buffer,
                  const BitstreamBufferMetadata& metadata);
     ~EncodeResult();
+    EncodeResult(EncodeResult&&);
+    EncodeResult& operator=(EncodeResult&&);
+    EncodeResult(const EncodeResult&) = delete;
+    EncodeResult& operator=(const EncodeResult&) = delete;
 
     VABufferID coded_buffer_id() const;
     const BitstreamBufferMetadata& metadata() const;
 
    private:
-    const std::unique_ptr<ScopedVABuffer> coded_buffer_;
-    const BitstreamBufferMetadata metadata_;
+    std::unique_ptr<ScopedVABuffer> coded_buffer_;
+    BitstreamBufferMetadata metadata_;
   };
 
   // An abstraction of an encode job for one frame. Parameters required for an
@@ -96,8 +101,7 @@ class VaapiVideoEncoderDelegate {
     // Creates EncodeResult with |metadata|. This passes ownership of the
     // resources owned by EncodeJob and therefore must be called with
     // std::move().
-    std::unique_ptr<EncodeResult> CreateEncodeResult(
-        const BitstreamBufferMetadata& metadata) &&;
+    EncodeResult CreateEncodeResult(const BitstreamBufferMetadata& metadata) &&;
 
     // Requests this job to produce a keyframe; requesting a keyframe may not
     // always result in one being produced by the encoder (e.g. if it would
@@ -158,8 +162,9 @@ class VaapiVideoEncoderDelegate {
   bool Encode(EncodeJob& encode_job);
 
   // Creates and returns the encode result for specified EncodeJob by
-  // synchronizing the corresponding encode operation.
-  std::unique_ptr<EncodeResult> GetEncodeResult(
+  // synchronizing the corresponding encode operation. absl::nullopt is returned
+  // on failure.
+  absl::optional<EncodeResult> GetEncodeResult(
       std::unique_ptr<EncodeJob> encode_job);
 
   // Gets the active spatial layer resolutions for K-SVC encoding, VaapiVEA

@@ -288,7 +288,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
 
   // VASurfaces already encoded and waiting for the bitstream buffer to
   // be downloaded.
-  base::queue<std::unique_ptr<EncodeResult>> pending_encode_results_;
+  base::queue<absl::optional<EncodeResult>> pending_encode_results_;
 
   // Task runner for interacting with the client, and its checker.
   const scoped_refptr<base::SequencedTaskRunner> child_task_runner_;
