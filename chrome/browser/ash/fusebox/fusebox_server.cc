@@ -430,14 +430,16 @@ Server::FuseFileMapEntry::FuseFileMapEntry(
     const std::string& profile_path_arg,
     bool readable_arg,
     bool writable_arg,
-    bool use_temp_file_arg)
+    bool use_temp_file_arg,
+    bool temp_file_starts_with_copy_arg)
     : fs_context_(fs_context_arg),
       readable_(readable_arg),
       writable_(writable_arg),
       seqbnd_read_writer_(content::GetIOThreadTaskRunner({}),
                           fs_url_arg,
                           profile_path_arg,
-                          use_temp_file_arg) {}
+                          use_temp_file_arg,
+                          temp_file_starts_with_copy_arg) {}
 
 Server::FuseFileMapEntry::FuseFileMapEntry(FuseFileMapEntry&&) = default;
 
@@ -698,7 +700,7 @@ void Server::Create(const CreateRequestProto& request_proto,
       use_temp_file
           ? ProfileManager::GetActiveUserProfile()->GetPath().AsUTF8Unsafe()
           : std::string(),
-      readable, writable, use_temp_file));
+      readable, writable, use_temp_file, false));
 
   if (use_temp_file) {
     base::Time now = base::Time::Now();
@@ -792,18 +794,13 @@ void Server::Open2(const Open2RequestProto& request_proto,
       !parsed->read_only && ((access_mode == AccessMode::WRITE_ONLY) ||
                              (access_mode == AccessMode::READ_WRITE));
   bool use_temp_file = writable && UseTempFile(fs_url_as_string);
-  if (use_temp_file) {
-    // TODO(b/255703917): allow use_temp_file when modifying existing files,
-    // not just creating new ones.
-    Open2ResponseProto response_proto;
-    response_proto.set_posix_error_code(ENOTSUP);
-    std::move(callback).Run(response_proto);
-    return;
-  }
 
-  uint64_t fuse_handle = InsertFuseFileMapEntry(
-      FuseFileMapEntry(std::move(parsed->fs_context), std::move(parsed->fs_url),
-                       std::string(), readable, writable, use_temp_file));
+  uint64_t fuse_handle = InsertFuseFileMapEntry(FuseFileMapEntry(
+      std::move(parsed->fs_context), parsed->fs_url,
+      use_temp_file
+          ? ProfileManager::GetActiveUserProfile()->GetPath().AsUTF8Unsafe()
+          : std::string(),
+      readable, writable, use_temp_file, true));
 
   Open2ResponseProto response_proto;
   response_proto.set_fuse_handle(fuse_handle);

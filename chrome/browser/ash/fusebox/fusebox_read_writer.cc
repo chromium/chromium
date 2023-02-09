@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "chrome/browser/ash/fusebox/fusebox_copy_to_fd.h"
 #include "chrome/browser/ash/fusebox/fusebox_errno.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -87,10 +88,12 @@ ReadWriter::WriteTempFileResult WriteTempFile(
 
 ReadWriter::ReadWriter(const storage::FileSystemURL& fs_url,
                        const std::string& profile_path,
-                       bool use_temp_file)
+                       bool use_temp_file,
+                       bool temp_file_starts_with_copy)
     : fs_url_(fs_url),
       profile_path_(profile_path),
-      use_temp_file_(use_temp_file) {
+      use_temp_file_(use_temp_file),
+      temp_file_starts_with_copy_(temp_file_starts_with_copy) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 }
 
@@ -206,6 +209,7 @@ void ReadWriter::Read(scoped_refptr<storage::FileSystemContext> fs_context,
   }
 }
 
+// static
 void ReadWriter::OnRead(
     base::WeakPtr<ReadWriter> weak_ptr,
     Read2Callback callback,
@@ -278,16 +282,19 @@ void ReadWriter::Write(scoped_refptr<storage::FileSystemContext> fs_context,
         return;
       }
       created_temp_file_ = true;
+      if (temp_file_starts_with_copy_) {
+        auto outer_callback = base::BindOnce(
+            OnTempFileInitialized, weak_ptr_factory_.GetWeakPtr(),
+            std::move(buffer), offset, length, std::move(callback));
+        is_loaning_temp_file_scoped_fd_ = true;
+        CopyToFileDescriptor(fs_context, fs_url_, std::move(temp_file_),
+                             std::move(outer_callback));
+        return;
+      }
     }
 
-    is_in_flight_ = true;
-    is_loaning_temp_file_scoped_fd_ = true;
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&WriteTempFile, std::move(temp_file_), std::move(buffer),
-                       offset, length),
-        base::BindOnce(&OnWriteTempFile, weak_ptr_factory_.GetWeakPtr(),
-                       std::move(callback)));
+    CallWriteTempFile(weak_ptr_factory_.GetWeakPtr(), std::move(buffer), offset,
+                      length, std::move(callback));
     return;
   }
 
@@ -325,6 +332,67 @@ void ReadWriter::Write(scoped_refptr<storage::FileSystemContext> fs_context,
   }
 }
 
+// static
+void ReadWriter::OnTempFileInitialized(
+    base::WeakPtr<ReadWriter> weak_ptr,
+    scoped_refptr<net::StringIOBuffer> buffer,
+    int64_t offset,
+    int length,
+    Write2Callback callback,
+    base::expected<base::ScopedFD, int> result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  if (!result.has_value()) {
+    Write2ResponseProto response_proto;
+    response_proto.set_posix_error_code(result.error());
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), response_proto));
+    return;
+  }
+
+  ReadWriter* self = weak_ptr.get();
+  if (!self) {
+    Write2ResponseProto response_proto;
+    response_proto.set_posix_error_code(EBUSY);
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), response_proto));
+    return;
+  }
+
+  self->is_loaning_temp_file_scoped_fd_ = false;
+  self->temp_file_ = std::move(result.value());
+  CallWriteTempFile(std::move(weak_ptr), std::move(buffer), offset, length,
+                    std::move(callback));
+}
+
+// static
+void ReadWriter::CallWriteTempFile(base::WeakPtr<ReadWriter> weak_ptr,
+                                   scoped_refptr<net::StringIOBuffer> buffer,
+                                   int64_t offset,
+                                   int length,
+                                   Write2Callback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  ReadWriter* self = weak_ptr.get();
+  if (!self) {
+    Write2ResponseProto response_proto;
+    response_proto.set_posix_error_code(EBUSY);
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), response_proto));
+    return;
+  }
+
+  self->is_in_flight_ = true;
+  self->is_loaning_temp_file_scoped_fd_ = true;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&WriteTempFile, std::move(self->temp_file_),
+                     std::move(buffer), offset, length),
+      base::BindOnce(&OnWriteTempFile, std::move(weak_ptr),
+                     std::move(callback)));
+}
+
+// static
 void ReadWriter::OnWriteTempFile(base::WeakPtr<ReadWriter> weak_ptr,
                                  Write2Callback callback,
                                  WriteTempFileResult result) {

@@ -10,6 +10,7 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/fusebox/fusebox.pb.h"
 #include "net/base/io_buffer.h"
 #include "storage/browser/file_system/file_stream_reader.h"
@@ -51,9 +52,15 @@ class ReadWriter {
   // Chromebook, which is a file-oriented rather than block-oriented protocol).
   // In this case, the Write calls are diverted to a temporary file and the
   // Close call saves that temporary file to |fs_url|.
+  //
+  // |temp_file_starts_with_copy| states whether to initialize that temporary
+  // file with a copy of the underlying file. If |temp_file_starts_with_copy|
+  // false, the temporary file is initially empty. When |use_temp_file| is
+  // false, |temp_file_starts_with_copy| is ignored.
   ReadWriter(const storage::FileSystemURL& fs_url,
              const std::string& profile_path,
-             bool use_temp_file);
+             bool use_temp_file,
+             bool temp_file_starts_with_copy);
   ~ReadWriter();
 
   void Close(scoped_refptr<storage::FileSystemContext> fs_context,
@@ -77,8 +84,21 @@ class ReadWriter {
   // Saves the |temp_file_| to the |fs_url_|.
   void Save();
 
-  // The OnXxx methods are static (but take a WeakPtr) so that the callback
-  // will run even if the WeakPtr is invalidated.
+  // The CallXxx and OnXxx methods are static (but take a WeakPtr) so that the
+  // callback will run even if the WeakPtr is invalidated.
+
+  static void OnTempFileInitialized(base::WeakPtr<ReadWriter> weak_ptr,
+                                    scoped_refptr<net::StringIOBuffer> buffer,
+                                    int64_t offset,
+                                    int length,
+                                    Write2Callback callback,
+                                    base::expected<base::ScopedFD, int> result);
+
+  static void CallWriteTempFile(base::WeakPtr<ReadWriter> weak_ptr,
+                                scoped_refptr<net::StringIOBuffer> buffer,
+                                int64_t offset,
+                                int length,
+                                Write2Callback callback);
 
   static void OnRead(base::WeakPtr<ReadWriter> weak_ptr,
                      Read2Callback callback,
@@ -127,6 +147,7 @@ class ReadWriter {
   bool created_temp_file_ = false;
 
   const bool use_temp_file_;
+  const bool temp_file_starts_with_copy_;
 
   base::WeakPtrFactory<ReadWriter> weak_ptr_factory_{this};
 };

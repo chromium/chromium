@@ -203,7 +203,8 @@ class Server {
                      const std::string& profile_path_arg,
                      bool readable_arg,
                      bool writable_arg,
-                     bool use_temp_file_arg);
+                     bool use_temp_file_arg,
+                     bool temp_file_starts_with_copy_arg);
     FuseFileMapEntry(FuseFileMapEntry&&);
     ~FuseFileMapEntry();
 

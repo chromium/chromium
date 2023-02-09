@@ -1287,6 +1287,8 @@ source_set("ash") {
     "floating_workspace/floating_workspace_service_factory.h",
     "floating_workspace/floating_workspace_util.cc",
     "floating_workspace/floating_workspace_util.h",
+    "fusebox/fusebox_copy_to_fd.cc",
+    "fusebox/fusebox_copy_to_fd.h",
     "fusebox/fusebox_errno.cc",
     "fusebox/fusebox_errno.h",
     "fusebox/fusebox_moniker.cc",
