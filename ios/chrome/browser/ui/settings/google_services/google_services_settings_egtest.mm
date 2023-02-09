@@ -128,7 +128,13 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 }
 
 // Tests the Google Services settings.
-- (void)testOpeningServices {
+// TODO(crbug.com/1414307): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testOpeningServices DISABLED_testOpeningServices
+#else
+#define MAYBE_testOpeningServices testOpeningServices
+#endif
+- (void)MAYBE_testOpeningServices {
   [self openGoogleServicesSettings];
   [self assertNonPersonalizedServices];
 }
