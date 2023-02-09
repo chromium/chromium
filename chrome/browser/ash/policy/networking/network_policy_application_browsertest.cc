@@ -1278,8 +1278,9 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
 // Configures a network that uses variable expansions with variables based on a
 // client certificate selected using a CertificatePattern.
 // The network is device-wide because that is easier to set up in the test.
+// TODO(https://crbug.com/1414476): Flaky test.
 IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
-                       DevicePolicyCertBasedVariableExpansions) {
+                       DISABLED_DevicePolicyCertBasedVariableExpansions) {
   const char* kCertKeyFilename = "client_3.pk8";
   const char* kCertFilename = "client_3.pem";
   const char* kCertIssuerCommonName = "E CA";
