@@ -1618,6 +1618,28 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ResetTtsSettings) {
   sm_.Replay();
 }
 
+// Tests the keyboard shortcut to cycle the punctuation echo setting,
+// Search+A then P.
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TogglePunctuationEcho) {
+  EnableChromeVox();
+  sm_.Call([this]() {
+    SendKeyPressWithSearch(ui::VKEY_A);
+    SendKeyPress(ui::VKEY_P);
+  });
+  sm_.ExpectSpeech("All punctuation");
+  sm_.Call([this]() {
+    SendKeyPressWithSearch(ui::VKEY_A);
+    SendKeyPress(ui::VKEY_P);
+  });
+  sm_.ExpectSpeech("No punctuation");
+  sm_.Call([this]() {
+    SendKeyPressWithSearch(ui::VKEY_A);
+    SendKeyPress(ui::VKEY_P);
+  });
+  sm_.ExpectSpeech("Some punctuation");
+  sm_.Replay();
+}
+
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShowFormControlsList) {
   EnableChromeVox();
   sm_.Call([this]() {
