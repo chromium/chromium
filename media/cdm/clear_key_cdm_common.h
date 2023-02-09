@@ -29,6 +29,9 @@ inline constexpr char kExternalClearKeyKeySystem[] =
 inline constexpr char kMediaFoundationClearKeyKeySystem[] =
     "org.chromium.externalclearkey.mediafoundation";
 
+inline constexpr wchar_t kMediaFoundationClearKeyKeySystemWideString[] =
+    L"org.chromium.externalclearkey.mediafoundation";
+
 // A sub key system that is invalid for testing purpose.
 inline constexpr char kExternalClearKeyInvalidKeySystem[] =
     "org.chromium.externalclearkey.invalid";
