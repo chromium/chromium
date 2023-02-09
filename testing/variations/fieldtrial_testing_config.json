@@ -340,10 +340,18 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Default_On_With_Zoom_20221114",
+                    "name": "Enabled_Default_On_M109_20230208",
                     "params": {
+                        "availability": ">1",
                         "default_on_display_size_threshold_inches": "10.0",
+                        "default_on_memory_limit": "1024",
                         "default_on_on_low_end_devices": "true",
+                        "event_1": "name:desktop_site_default_on_primary_action;comparator:==0;window:360;storage:360",
+                        "event_2": "name:desktop_site_default_on_gesture;comparator:any;window:360;storage:360",
+                        "event_trigger": "name:request_desktop_site_default_on_iph_trigger;comparator:<=1;window:360;storage:360",
+                        "event_trigger_1": "name:request_desktop_site_default_on_iph_trigger;comparator:==0;window:7;storage:360",
+                        "event_used": "name:desktop_site_settings_page_opened;comparator:any;window:360;storage:360",
+                        "session_rate": "<1",
                         "show_message_on_default_on": "true",
                         "show_opt_in_message": "false"
                     },
